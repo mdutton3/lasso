@@ -156,196 +156,10 @@ else
     fi
 fi
 
-dnl ==========================================================================
-dnl find glib
-dnl ==========================================================================
-if test "$GLIB_FOUND" = "no"; then
-    GLIB_MIN_VERSION="2.2.3"
-    GLIB_CONFIG="glib-config"
-    GLIB_CFLAGS=""
-    GLIB_LIBS=""
-    AC_ARG_WITH(glib, [  --with-glib=[PFX]       glib location])
-    if test "z$with_glib" = "zno" ; then 
-        AC_MSG_CHECKING(for glib libraries >= $GLIB_MIN_VERSION) 
-        AC_MSG_ERROR(glib >= $GLIB_MIN_VERSION is required for $PACKAGE)
-    elif test "z$with_glib" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-        PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_MIN_VERSION,
-            [GLIB_FOUND=yes],
-            [GLIB_FOUND=no])
-    fi
-fi
-
-if test "z$GLIB_FOUND" = "zno" ; then
-    AC_MSG_CHECKING(for glib libraries >= $GLIB_MIN_VERSION) 
-    if test "z$with_glib" != "z" ; then 
-	GLIB_CONFIG=$with_glib/bin/$GLIB_CONFIG
-    fi
-    if ! $GLIB_CONFIG --version > /dev/null 2>&1 ; then
-	AC_MSG_ERROR(Could not find glib anywhere (see config.log for details).)
-    fi
-    vers=`$GLIB_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    minvers=`echo $GLIB_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    if test "$vers" -ge "$minvers" ; then
-        GLIB_LIBS="`$GLIB_CONFIG --libs`"
-        GLIB_CFLAGS="`$GLIB_CONFIG --cflags`"
-	GLIB_FOUND="yes"
-        AC_MSG_RESULT(yes ('$GLIB_VERSION'))
-    else
-        AC_MSG_ERROR(You need at least glib $GLIB_MIN_VERSION for this version of $PACKAGE)
-    fi
-fi
-
-AC_SUBST(GLIB_CFLAGS)
-AC_SUBST(GLIB_LIBS)
-AC_SUBST(GLIB_CONFIG)
-AC_SUBST(GLIB_MIN_VERSION)
-
-dnl ==========================================================================
-dnl find libxml
-dnl ==========================================================================
-if test "z$LIBXML_FOUND" = "zno" ; then
-    LIBXML_MIN_VERSION="2.4.2"
-    LIBXML_CONFIG="xml2-config"
-    LIBXML_CFLAGS=""
-    LIBXML_LIBS=""
-    AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
-    if test "z$with_libxml" = "zno" ; then 
-        AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
-        AC_MSG_ERROR(libxml2 >= $LIBXML_MIN_VERSION is required for $PACKAGE)
-    elif test "z$with_libxml" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-        PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_MIN_VERSION,
-            [LIBXML_FOUND=yes],
-            [LIBXML_FOUND=no])
-        PKG_CHECK_MODULES(LIBXML262, libxml-2.0 >= 2.6.2,
-            [LIBXML262_FOUND=yes],
-            [LIBXML262_FOUND=no])
-    fi
-fi
-
-if test "z$LIBXML_FOUND" = "zno" ; then
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
-    if test "z$with_libxml" != "z" ; then 
-	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
-    fi
-    if ! $LIBXML_CONFIG --version > /dev/null 2>&1 ; then
-	AC_MSG_ERROR(Could not find libxml2 anywhere (see config.log for details).)
-    fi
-    vers=`$LIBXML_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    minvers=`echo $LIBXML_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    if test "$vers" -ge "$minvers" ; then
-        LIBXML_LIBS="`$LIBXML_CONFIG --libs`"
-        LIBXML_CFLAGS="`$LIBXML_CONFIG --cflags`"
-	LIBXML_FOUND="yes"
-	if test "$vers" -ge "2006002" ;  then 
-	    LIBXML262_FOUND="yes"
-	fi
-        AC_MSG_RESULT(yes ('$LIBXML_VERSION'))
-    else
-        AC_MSG_ERROR(You need at least libxml2 $LIBXML_MIN_VERSION for this version of $PACKAGE)
-    fi
-fi
-
-AC_SUBST(LIBXML_CFLAGS)
-AC_SUBST(LIBXML_LIBS)
-AC_SUBST(LIBXML_CONFIG)
-AC_SUBST(LIBXML_MIN_VERSION)
-
-dnl ==========================================================================
-dnl find libxslt
-dnl ==========================================================================
-LASSO_NO_LIBXSLT="1"
-if test "z$LIBXSLT_FOUND" = "zno" ; then
-    LIBXSLT_MIN_VERSION=1.0.20
-    LIBXSLT_CONFIG="xslt-config"
-    LIBXSLT_CFLAGS=""
-    LIBXSLT_LIBS=""
-    AC_ARG_WITH(libxslt, [  --with-libxslt=[PFX]      libxslt location])
-    if test "z$with_libxslt" = "zno" ; then
-        AC_MSG_CHECKING(for libxslt libraries >= $LIBXSLT_MIN_VERSION) 
-        AC_MSG_RESULT(no)
-        LIBXSLT_FOUND="without"
-    elif test "z$with_libxslt" = "z" -a  "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-        PKG_CHECK_MODULES(LIBXSLT, libxslt >= $LIBXSLT_MIN_VERSION,
-            [LIBXSLT_FOUND=yes],
-            [LIBXSLT_FOUND=no])
-    fi
-fi
-
-if test "z$LIBXSLT_FOUND" = "zno" ; then
-    AC_MSG_CHECKING(for libxslt libraries >= $LIBXSLT_MIN_VERSION) 
-    if test "z$LIBXSLT_CONFIG" != "z" ; then 
-	LIBXSLT_CONFIG=$with_libxslt/bin/$LIBXSLT_CONFIG
-    fi
-    if ! $LIBXSLT_CONFIG --version > /dev/null 2>&1 ; then
-	if test "z$with_libxslt" != "z" ; then
-	    AC_MSG_ERROR(Unable to find libxslt at '$with_libxslt')
-	else 
-	    AC_MSG_RESULT(no)
-	fi
-    else
-        vers=`$LIBXSLT_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-	minvers=`echo $LIBXSLT_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-	if test "$vers" -ge "$minvers" ; then
-    	    LIBXSLT_LIBS="`$LIBXSLT_CONFIG --libs`"
-	    LIBXSLT_CFLAGS="`$LIBXSLT_CONFIG --cflags`"
-    	    AC_MSG_RESULT(yes ('$LIBXSLT_VERSION'))
-	else
-    	    AC_MSG_ERROR(You need at least libxslt $LIBXSLT_MIN_VERSION for this version of $PACKAGE)
-	fi	
-    fi
-fi
-
-if test "z$LIBXSLT_FOUND" = "zyes" ; then
-    LASSO_NO_LIBXSLT="0"
-else
-    LASSO_DEFINES="$LASSO_DEFINES -DLASSO_NO_XSLT=1"
-fi
-
-AC_SUBST(LASSO_NO_LIBXSLT)
-AC_SUBST(LIBXSLT_CFLAGS)
-AC_SUBST(LIBXSLT_LIBS)
-AC_SUBST(LIBXSLT_CONFIG)
-AC_SUBST(LIBXSLT_MIN_VERSION)
-
-dnl ==========================================================================
-dnl find xmlsec1
-dnl ==========================================================================
-if test "z$XMLSEC1_FOUND" = "zno" ; then
-    XMLSEC1_MIN_VERSION="1.2.4"
-    XMLSEC1_CONFIG="xmlsec1-config"
-    XMLSEC1_CFLAGS=""
-    XMLSEC1_LIBS=""
-    AC_ARG_WITH(xmlsec1, [  --with-xmlsec1=[PFX]       xmlsec1 location])
-    if test "z$with_xmlsec1" = "zno" ; then 
-        AC_MSG_CHECKING(for xmlsec1 libraries >= $XMLSEC1_MIN_VERSION) 
-        AC_MSG_ERROR(xmlsec1 >= $XMLSEC1_MIN_VERSION is required for $PACKAGE)
-    elif test "z$with_xmlsec1" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-        PKG_CHECK_MODULES(XMLSEC1, xmlsec1 >= $XMLSEC1_MIN_VERSION,
-            [XMLSEC1_FOUND=yes],
-            [XMLSEC1_FOUND=no])
-    fi
-fi
-
-if test "z$XMLSEC1_FOUND" = "zno" ; then
-    AC_MSG_CHECKING(for xmlsec1 libraries >= $XMLSEC1_MIN_VERSION) 
-    if test "z$with_xmlsec1" != "z" ; then 
-	XMLSEC1_CONFIG=$with_xmlsec1/bin/$XMLSEC1_CONFIG
-    fi
-    if ! $XMLSEC1_CONFIG --version > /dev/null 2>&1 ; then
-	AC_MSG_ERROR(Could not find xmlsec1 anywhere (see config.log for details).)
-    fi
-    vers=`$XMLSEC1_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    minvers=`echo $XMLSEC1_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    if test "$vers" -ge "$minvers" ; then
-        XMLSEC1_LIBS="`$XMLSEC1_CONFIG --libs`"
-        XMLSEC1_CFLAGS="`$XMLSEC1_CONFIG --cflags`"
-        XMLSEC1_VERSION="`$XMLSEC1_CONFIG --version`"
-	XMLSEC1_FOUND="yes"
-        AC_MSG_RESULT(yes ('$XMLSEC1_VERSION'))
-    else
-        AC_MSG_ERROR(You need at least xmlsec1 $XMLSEC1_MIN_VERSION for this version of $PACKAGE)
-    fi
-fi
+PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
+AC_SUBST(LASSO_LIBS)
+AC_SUBST(LASSO_CFLAGS)
+	
 
 dnl find xmlsec crypto library (openssl) if not under Windows(c)
 if test "z$CWINDOWS" = "zno" ; then
@@ -365,10 +179,43 @@ if test "z$CWINDOWS" = "zno" ; then
     fi
 fi
 
-AC_SUBST(XMLSEC1_CFLAGS)
-AC_SUBST(XMLSEC1_LIBS)
-AC_SUBST(XMLSEC1_CONFIG)
-AC_SUBST(XMLSEC1_MIN_VERSION)
+dnl ==========================================================================
+dnl python
+dnl ==========================================================================
+
+AC_CHECK_PROG(python_val, python, true, false)
+if $python_val; then
+        AC_MSG_CHECKING(for Python development files)
+        PY_PREFIX=`python -c 'import sys ; print sys.prefix'`
+        PY_EXEC_PREFIX=`python -c 'import sys ; print sys.exec_prefix'`
+        changequote(<<, >>)dnl
+        PY_VERSION=`python -c 'import sys ; print sys.version[0:3]'`
+        changequote([, ])dnl
+        PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
+        LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
+	if test -f $PYTHON_H; then
+                AC_MSG_RESULT(yes)
+                PYTHON="python$PY_VERSION"
+                PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
+                PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
+                PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
+                PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
+                PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
+                PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
+                PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
+		PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
+                AC_SUBST(PYTHON)
+                AC_SUBST(PY_LIB_LOC)
+                AC_SUBST(PY_CFLAGS)
+                AC_SUBST(PY_EXTRA_LIBS)
+                AC_SUBST(PY_DYNLOAD)
+                AC_SUBST(PY_LIB_A)
+		AC_SUBST(PY_SITE_PACKAGES)
+        else
+                AC_MSG_RESULT("no")
+	fi
+fi
+
 
 dnl ==========================================================================
 dnl find gtk-doc
@@ -479,8 +326,8 @@ LASSO_CORE_LIBS="-llasso "
 AC_SUBST(LASSO_CORE_CFLAGS)
 AC_SUBST(LASSO_CORE_LIBS)
 
-LASSO_CFLAGS="$LASSO_CORE_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $LIBXSLT_CFLAGS $XMLSEC1_CFLAGS $LASSO_CRYPTO_CFLAGS"
-LASSO_LIBS="-L${libdir} $LASSO_CRYPTO_LIB $LASSO_CORE_LIBS $GLIB_LIBS $LIBXML_LIBS $LIBXSLT_LIBS $XMLSEC1_LIBS $LASSO_CRYPTO_LIBS"
+LASSO_CFLAGS="$LASSO_CORE_CFLAGS $LASSO_CFLAGS"
+LASSO_LIBS="-L${libdir} $LASSO_LIBS"
 AC_SUBST(LASSO_CFLAGS)
 AC_SUBST(LASSO_LIBS)
 
@@ -513,6 +360,15 @@ lasso/protocols/elements/Makefile
 lasso/environs/Makefile
 docs/Makefile
 docs/reference/Makefile
+python/Makefile
+python/doc/Makefile
+python/doc/tutorial/Makefile
+python/environs/Makefile
+python/examples/Makefile
+python/protocols/Makefile
+python/protocols/elements/Makefile
+python/tests/Makefile
+python/xml/Makefile
 ]
 [lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]

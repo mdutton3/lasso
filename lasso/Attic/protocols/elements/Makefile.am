@@ -4,10 +4,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
-	$(GLIB_CFLAGS) \
-	$(LIBXSLT_CFLAGS) \
-	$(LIBXML_CFLAGS) \
-	$(XMLSEC1_CFLAGS) \
+	$(LASSO_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 noinst_LTLIBRARIES = liblasso-elements.la

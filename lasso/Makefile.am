@@ -8,10 +8,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
-	$(GLIB_CFLAGS) \
-	$(LIBXSLT_CFLAGS) \
-	$(LIBXML_CFLAGS) \
-	$(XMLSEC1_CFLAGS) \
+	$(LASSO_CFLAGS) \
 	$(NULL)
 
 EXTRA_DIST = \
@@ -35,10 +32,7 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/protocols/liblasso-protocols.la \
 	$(top_builddir)/lasso/environs/liblasso-environs.la \
-	$(GLIB_LIBS) \
-	$(LIBXSLT_LIBS) \
-	$(LIBXML_LIBS) \
-	$(XMLSEC1_LIBS) \
+	$(LASSO_LIBS) \
 	$(NULL)
 
 liblasso_la_LDFLAGS = \
