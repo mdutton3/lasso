@@ -835,6 +835,31 @@ class Server:
     def destroy(self):
         lassomod.server_destroy(self)
 
+class User:
+    """
+    """
+
+    def __init__(self, _obj):
+	"""
+	"""
+	self._o = _obj
+
+    def new(cls):
+	obj = lassmod.user_new()
+	return User(obj)
+    new = classmethod(new)
+
+    def new_from_dump(cls, dump):
+	obj = lassomod.user_new_from_dump(dump)
+	return User(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def dump(self):
+	return lassomod.user_dump(self)
+
+    def destroy(self):
+	lassomod.server_destroy(self)
+
 
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2
@@ -924,11 +949,27 @@ class Login:
         return lassomod.login_must_authenticate(self)
 
 
+providerTypeSp  = 1
+providerTypeIdp = 2
+
 class Logout:
     """\brief Short desc
 
     Long desc
     """
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.login_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        return ret
 
     def __init__(self, _obj):
 	"""
@@ -936,8 +977,8 @@ class Logout:
 	"""
 	self._o = _obj
 
-    def new(cls, server, user=None):
-	obj = lassomod.logout_new(server, user)
+    def new(cls, server, user, provider_type):
+	obj = lassomod.logout_new(server, user, provider_type)
 	return Logout(obj)
     new = classmethod(new)
 
@@ -950,8 +991,8 @@ class Logout:
     def init_request(self, remote_providerID):
 	return lassomod.logout_init_request(self, remote_providerID);
 
-    def process_request(self, request_msg, request_method):
-	return lassomod.logout_process_request(self, request_msg, request_method);
+    def process_request_msg(self, request_msg, request_method):
+	return lassomod.logout_process_request_msg(self, request_msg, request_method);
 
-    def process_response(self, response_msg, response_method):
-	return lassomod.logout_process_response(self, response_msg, response_method);
+    def process_response_msg(self, response_msg, response_method):
+	return lassomod.logout_process_response_msg(self, response_msg, response_method);

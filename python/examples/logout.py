@@ -6,48 +6,39 @@ import lasso
 
 lasso.init()
 
-print 
-print 'Build LogoutRequest ...'
-req = lasso.LogoutRequest.new("http://providerid.com", "CDSC7SCD6SSDJCSCKSDKCDSCLSD", "http://qualifier.com", "federated")
-soap = req.soap_envelop()
-req2 = lasso.LogoutRequest.new_from_soap(soap)
+spserver = lasso.Server.new("../../examples/sp.xml",
+			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+			    lasso.signatureMethodRsaSha1)
 
-print
-print 'Rebuild LogoutRequest from soap message ...'
-req2.dump()
-query = req2.url_encode(1, 'rsakey.pem')
-print 'query : ', query
+spserver.add_provider("../../examples/idp.xml", None, None)
 
-print
-print 'Rebuild LogoutRequest from query ...'
-req3 = lasso.LogoutRequest.new_from_query(query)
-req3.dump()
+spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">LLLLLLLLLLLLLLLLLLLLLLLLL</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
 
-print
-print 'Build the LogoutResponse from the request soap ...'
-res = lasso.LogoutResponse.new_from_request_soap(soap, "http://providerid.com", "success")
-soap = res.dump()
+spuser = lasso.User.new_from_dump(spuser_dump)
 
-print
-print 'Build LogoutResponse from soap response dump'
-res2 = lasso.LogoutResponse.new_from_soap(soap)
-print res2.dump()
+# LogoutRequest :
+splogout = lasso.Logout.new(spserver, spuser, lasso.providerTypeSp)
+splogout.init_request("https://identity-provider:2003/liberty-alliance/metadata")
+splogout.build_request_msg()
 
-print
-print 'Build LogoutResponse from response dump'
-dump = res.dump()
-res3 = lasso.LogoutResponse.new_from_dump(dump)
+request_msg = splogout.msg_body
+print 'request url : ', splogout.msg_url
+print 'request body : ', splogout.msg_body
 
-print
-print 'Build LogoutResponse from request query'
-res4 = lasso.LogoutResponse.new_from_request_query(query, "http://providerid.com", "success")
-res4.dump()
 
-print
-print 'Rebuild LogoutResponse from response query'
-query = res4.url_encode(1, 'rsakey.pem')
-res5 = lasso.LogoutResponse.new_from_query(query)
-print res5.dump()
+# LogoutResponse :
+idpserver = lasso.Server.new("../../examples/idp.xml",
+			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+			    lasso.signatureMethodRsaSha1)
+idpserver.add_provider("../../examples/sp.xml", None, None)
 
+idpuser_dump = "<LassoUser><LassoAssertions></LassoAssertions><LassoIdentities></LassoIdentities></LassoUser>"
+idpuser = lasso.User.new_from_dump(idpuser_dump)
+
+idplogout = lasso.Logout.new(idpserver, idpuser, lasso.providerTypeIdp)
+idplogout.process_request_msg(request_msg, lasso.httpMethodSoap)
+idplogout.build_response_msg()
+print 'url : ', idplogout.msg_url
+print 'body : ', idplogout.msg_body
 
 lasso.shutdown()
