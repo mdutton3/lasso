@@ -60,7 +60,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQueryItem, Select) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, id) },
-	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE_BOOL, \
+	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN, \
 	  G_STRUCT_OFFSET(LassoDstQueryItem, itemID) },
 	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, itemID) },
 	{ "changedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, changedSince) },

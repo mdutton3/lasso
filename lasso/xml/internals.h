@@ -33,15 +33,16 @@ extern "C" {
 typedef enum {
 	SNIPPET_NODE,
 	SNIPPET_CONTENT,
-	SNIPPET_CONTENT_BOOL,
-	SNIPPET_CONTENT_INT,
 	SNIPPET_TEXT_CHILD,
 	SNIPPET_NAME_IDENTIFIER,
 	SNIPPET_ATTRIBUTE,
-	SNIPPET_ATTRIBUTE_BOOL,
-	SNIPPET_ATTRIBUTE_INT,
 	SNIPPET_LIST_NODES,
 	SNIPPET_LIST_CONTENT,
+
+	/* transformers for content transformation */
+	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */
+	SNIPPET_BOOLEAN = 1 << 20,
+	SNIPPET_INTEGER = 1 << 21
 } SnippetType;
 
 struct XmlSnippetObsolete {

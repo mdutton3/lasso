@@ -75,7 +75,7 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AssertionConsumerServiceURL) },
 	{ "IDPList", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IDPList) },
-	{ "IsPassive", SNIPPET_CONTENT_BOOL,
+	{ "IsPassive", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
 		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IsPassive) },
 	{ NULL, 0, 0 }
 };

@@ -56,9 +56,9 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "RequestID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
-	{ "MajorVersion", SNIPPET_ATTRIBUTE_INT,
+	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MajorVersion) },
-	{ "MinorVersion", SNIPPET_ATTRIBUTE_INT,
+	{ "MinorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MinorVersion) },
 	{ "IssueInstant", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, IssueInstant) },
