@@ -85,10 +85,11 @@ lasso_node_dump(LassoNode     *node,
 void
 lasso_node_destroy(LassoNode *node)
 {
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->destroy(node));
+  if (node != NULL) {
+    LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+    return (class->destroy(node));
+  }
+  return;
 }
 
 /**
@@ -420,7 +421,7 @@ lasso_node_get_xmlNode(LassoNode *node)
 
 /**
  * lasso_node_new_child:
- * @node: the LassoNode
+ * @node: a LassoNode
  * @name: the name of the child
  * @content: the content of the child
  * @unbounded: if TRUE, several children with the same name can be added else
@@ -502,9 +503,12 @@ static LassoNode *
 lasso_node_impl_copy(LassoNode *node)
 {
   LassoNode *copy;
+  
+  copy = LASSO_NODE(g_object_new(G_OBJECT_TYPE(node), NULL));
+  copy->private->node = xmlCopyNode(node->private->node, 1);
+  /* copy = lasso_node_new_from_xmlNode(xmlCopyNode(node->private->node, 1)); */
+  /* copy->private->node_is_weak_ref = FALSE; */
 
-  copy = lasso_node_new_from_xmlNode(xmlCopyNode(node->private->node, 1));
-  copy->private->node_is_weak_ref = FALSE;
   return (copy);
 }
 
@@ -630,6 +634,14 @@ lasso_node_impl_export_to_query(LassoNode            *node,
   return (ret);
 }
 
+/**
+ * lasso_node_impl_export_to_soap:
+ * @node: a LassoNode
+ * 
+ * 
+ * 
+ * Return value: 
+ **/
 static xmlChar *
 lasso_node_impl_export_to_soap(LassoNode *node)
 {
@@ -651,9 +663,8 @@ lasso_node_impl_export_to_soap(LassoNode *node)
 
   buffer = lasso_node_export(envelope);
 
-  lasso_node_destroy(node);
-  lasso_node_destroy(body);
   lasso_node_destroy(envelope);
+  lasso_node_destroy(body);
   
   return(buffer);
 }
@@ -874,10 +885,10 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   xmlNodePtr signature;
   xmlSecKeysMngrPtr mngr;
   xmlSecDSigCtxPtr dsigCtx;
-  gint ret = -1;
+  gint ret = -3;
 
-  g_return_val_if_fail (LASSO_IS_NODE(node), -1);
-  g_return_val_if_fail (certificate_file != NULL, -1);
+  g_return_val_if_fail (LASSO_IS_NODE(node), -4);
+  g_return_val_if_fail (certificate_file != NULL, -5);
 
   /* we must associate the xmlNode with an xmlDoc !!! */
   xmlAddChild((xmlNodePtr)doc,
@@ -887,19 +898,20 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
 			     xmlSecDSigNs);
   if (signature == NULL) {
-    fprintf(stderr, "Error: start node not found\n");
+    debug(ERROR, "Signature element not found.\n");
+    ret = -2;
     goto done;	
   }
 
   /* create simple keys mngr */
   mngr = xmlSecKeysMngrCreate();
   if (mngr == NULL) {
-    fprintf(stderr, "Error: failed to create keys manager.\n");
+    debug(ERROR, "Failed to create keys manager.\n");
     goto done;
   }
 
   if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
-    fprintf(stderr, "Error: failed to initialize keys manager.\n");
+    debug(ERROR, "Failed to initialize keys manager.\n");
     goto done;
   }
   
@@ -907,30 +919,30 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   if (xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file,
 				      xmlSecKeyDataFormatPem,
 				      xmlSecKeyDataTypeTrusted) < 0) {
-    fprintf(stderr, "Error: failed to load pem certificate from \"%s\"\n",
-	    certificate_file);
+    debug(ERROR, "Failed to load pem certificate from \"%s\".\n",
+	  certificate_file);
     goto done;
   }
 
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(mngr);
   if (dsigCtx == NULL) {
-    fprintf(stderr, "Error: failed to create signature context\n");
+    debug(ERROR, "Failed to create signature context.\n");
     goto done;
   }
 
   /* verify signature */
   if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
-    fprintf(stderr, "Error: signature verify\n");
+    debug(ERROR, "Failed to verify signature.\n");
     goto done;
   }
 
-  /* print verification result to stdout */
   if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    ret = 1;
+    ret = 0;
   }
   else {
-    ret = 0;
+    debug(ERROR, "The signature of response is invalid.\n");
+    ret = -1;
   }
 
  done:
