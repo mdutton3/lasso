@@ -144,12 +144,16 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(spLoginContext.process_response_msg(soapResponseMsg), 0)
         self.failUnlessEqual(spLoginContext.nameIdentifier, nameIdentifier)
         # The user doesn't have any federation yet.
-        self.failUnlessEqual(spLoginContext.create_identity(None), 0)
-        spIdentityContext = spLoginContext.identity
+        self.failUnlessEqual(spLoginContext.accept_sso(), 0)
+        spIdentityContext = spLoginContext.get_identity()
         self.failUnless(spIdentityContext)
         spIdentityContextDump = spIdentityContext.dump()
         self.failUnless(spIdentityContextDump)
-        authenticationMethod = spIdentityContext.get_authentication_method()
+        spSessionContext = spLoginContext.get_session()
+        self.failUnless(spSessionContext)
+        spSessionContextDump = spSessionContext.dump()
+        self.failUnless(spSessionContextDump)
+        authenticationMethod = spSessionContext.get_authentication_method()
         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
 
         # Service provider logout.
