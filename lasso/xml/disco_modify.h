@@ -33,11 +33,15 @@ extern "C" {
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_DISCO_MODIFY (lasso_disco_modify_get_type())
-#define LASSO_DISCO_MODIFY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModify))
-#define LASSO_DISCO_MODIFY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModifyClass))
+#define LASSO_DISCO_MODIFY(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModify))
+#define LASSO_DISCO_MODIFY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModifyClass))
 #define LASSO_IS_DISCO_MODIFY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_MODIFY))
-#define LASSO_IS_DISCO_MODIFY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_MODIFY))
-#define LASSO_DISCO_MODIFY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModifyClass)) 
+#define LASSO_IS_DISCO_MODIFY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_MODIFY))
+#define LASSO_DISCO_MODIFY_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_MODIFY, LassoDiscoModifyClass)) 
 
 typedef struct _LassoDiscoModify LassoDiscoModify;
 typedef struct _LassoDiscoModifyClass LassoDiscoModifyClass;

@@ -33,11 +33,16 @@ extern "C" {
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_DISCO_OPTIONS (lasso_disco_options_get_type())
-#define LASSO_DISCO_OPTIONS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptions))
-#define LASSO_DISCO_OPTIONS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptionsClass))
-#define LASSO_IS_DISCO_OPTIONS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_OPTIONS))
-#define LASSO_IS_DISCO_OPTIONS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_OPTIONS))
-#define LASSO_DISCO_OPTIONS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptionsClass)) 
+#define LASSO_DISCO_OPTIONS(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptions))
+#define LASSO_DISCO_OPTIONS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptionsClass))
+#define LASSO_IS_DISCO_OPTIONS(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_OPTIONS))
+#define LASSO_IS_DISCO_OPTIONS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_OPTIONS))
+#define LASSO_DISCO_OPTIONS_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_OPTIONS, LassoDiscoOptionsClass)) 
 
 typedef struct _LassoDiscoOptions LassoDiscoOptions;
 typedef struct _LassoDiscoOptionsClass LassoDiscoOptionsClass;

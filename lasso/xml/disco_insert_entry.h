@@ -34,11 +34,17 @@ extern "C" {
 #include <lasso/xml/disco_resource_offering.h>
 
 #define LASSO_TYPE_DISCO_INSERT_ENTRY (lasso_disco_insert_entry_get_type())
-#define LASSO_DISCO_INSERT_ENTRY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_INSERT_ENTRY, LassoDiscoInsertEntry))
-#define LASSO_DISCO_INSERT_ENTRY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_INSERT_ENTRY, LassoDiscoInsertEntryClass))
-#define LASSO_IS_DISCO_INSERT_ENTRY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_INSERT_ENTRY))
-#define LASSO_IS_DISCO_INSERT_ENTRY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_INSERT_ENTRY))
-#define LASSO_DISCO_INSERT_ENTRY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_INSERT_ENTRY, LassoDiscoInsertEntryClass)) 
+#define LASSO_DISCO_INSERT_ENTRY(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DISCO_INSERT_ENTRY, LassoDiscoInsertEntry))
+#define LASSO_DISCO_INSERT_ENTRY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_INSERT_ENTRY, \
+				 LassoDiscoInsertEntryClass))
+#define LASSO_IS_DISCO_INSERT_ENTRY(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_INSERT_ENTRY))
+#define LASSO_IS_DISCO_INSERT_ENTRY_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_INSERT_ENTRY))
+#define LASSO_DISCO_INSERT_ENTRY_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_INSERT_ENTRY, LassoDiscoInsertEntryClass))
 
 typedef struct _LassoDiscoInsertEntry LassoDiscoInsertEntry;
 typedef struct _LassoDiscoInsertEntryClass LassoDiscoInsertEntryClass;
