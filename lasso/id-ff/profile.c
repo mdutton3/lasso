@@ -257,7 +257,6 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
-
 static LassoNodeClass *parent_class = NULL;
 
 /*****************************************************************************/

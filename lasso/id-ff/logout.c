@@ -775,6 +775,19 @@ lasso_logout_validate_request(LassoLogout *logout)
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "InitialRequest", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogout, initial_request) },
+	{ "InitialResponse", SNIPPET_NODE_IN_CHILD,
+		G_STRUCT_OFFSET(LassoLogout, initial_response) },
+	{ "InitialRemoteProviderID", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLogout, initial_remote_providerID) },
+	/* "ProviderIdIndex" must not be dumped (since apps assume to get
+	 * it back to 0 after a restore from dump) (maybe this behaviour should
+	 * be fixed)
+	 */
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile)
@@ -806,30 +819,11 @@ static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
-	xmlNode *xmlnode, *t;
-	LassoLogout *logout = LASSO_LOGOUT(node);
+	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "Logout");
 	xmlSetProp(xmlnode, "LogoutDumpVersion", "2");
-
-	if (logout->initial_request) {
-		t = xmlNewTextChild(xmlnode, NULL, "InitialRequest", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(logout->initial_request));
-	}
-
-	if (logout->initial_response) {
-		t = xmlNewTextChild(xmlnode, NULL, "InitialResponse", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(logout->initial_response));
-	}
-
-	if (logout->initial_remote_providerID)
-		xmlNewTextChild(xmlnode, NULL, "InitialRemoteProviderID",
-				logout->initial_remote_providerID);
-
-	if (logout->providerID_index) {
-		/* XXX: I don't think is is still necessary */
-	}
 
 	return xmlnode;
 }
@@ -837,32 +831,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLogout *logout = LASSO_LOGOUT(node);
-	xmlNode *t;
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "InitialRemoteProviderID") == 0)
-			logout->initial_remote_providerID = xmlNodeGetContent(t);
-
-		/* XXX: restore initial_request and initial_response */
-		if (strcmp(t->name, "InitialRequest") == 0) {
-			/* XXX */
-		}
-		if (strcmp(t->name, "InitialResponse") == 0) {
-			/* XXX */
-		}
-
-		t = t->next;
-	}
-	return 0;
+	return parent_class->init_from_xml(node, xmlnode);
 }
 
 /*****************************************************************************/
@@ -919,10 +888,14 @@ instance_init(LassoLogout *logout)
 static void
 class_init(LassoLogoutClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Logout");
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
