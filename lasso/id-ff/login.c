@@ -72,6 +72,7 @@ lasso_login_build_assertion(LassoLogin      *login,
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+  /* federation MAY be NULL */
 
   /* get RequestID to build Assertion */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
@@ -160,7 +161,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 {
   xmlChar *nameIDPolicy, *consent;
   LassoFederation *federation = NULL;
-  gboolean ret = FALSE;
+  gboolean ret;
 
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 					      "NameIDPolicy", lassoLibHRef, NULL);
@@ -438,6 +439,7 @@ lasso_login_accept_sso(LassoLogin *login)
   LassoNode *ni = NULL;
   LassoNode *idp_ni, *idp_ni_copy = NULL;
   LassoFederation *federation = NULL;
+  xmlChar *nameIdentifier_format;
   gint ret = 0;
   GError *err = NULL;
 
@@ -477,6 +479,10 @@ lasso_login_accept_sso(LassoLogin *login)
       g_error_free(err);
       goto done;
     }
+    /* get the format of the nameIdentifier */
+    nameIdentifier_format = lasso_node_get_attr_value(LASSO_NODE(ni), "Format", NULL);
+    /* FIXME : check nameIdentifier_format */
+
     /* 2 - the lib:IDPProvidedNameIdentifier */
     idp_ni = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier",
 				  lassoLibHRef, &err);
@@ -490,20 +496,23 @@ lasso_login_accept_sso(LassoLogin *login)
 						lassoSamlAssertionPrefix);
     }
 
-    /* create federation */
-    federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-    if (ni != NULL && idp_ni_copy != NULL) {
-      lasso_federation_set_local_nameIdentifier(federation, ni);
-      lasso_federation_set_remote_nameIdentifier(federation, idp_ni_copy);
+    /* create federation, only if nameidentifier format is Federated */
+    if (xmlStrEqual(nameIdentifier_format, lassoLibNameIdentifierFormatFederated)) {
+      federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
+      if (ni != NULL && idp_ni_copy != NULL) {
+	lasso_federation_set_local_nameIdentifier(federation, ni);
+	lasso_federation_set_remote_nameIdentifier(federation, idp_ni_copy);
+      }
+      else {
+	lasso_federation_set_remote_nameIdentifier(federation, ni);
+      }
+      /* add federation in identity */
+      lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
+				    LASSO_PROFILE(login)->remote_providerID,
+				    federation);
+      lasso_federation_destroy(federation);
     }
-    else {
-      lasso_federation_set_remote_nameIdentifier(federation, ni);
-    }
-    /* add federation in identity */
-    lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
-				  LASSO_PROFILE(login)->remote_providerID,
-				  federation);
-    lasso_federation_destroy(federation);
+    xmlFree(nameIdentifier_format);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "response attribute is empty.\n");
@@ -777,7 +786,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 {
   LassoProvider *remote_provider;
   LassoFederation *federation;
-  gint ret= 0;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -845,6 +854,15 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   return ret;
 }
 
+/**
+ * lasso_login_build_request_msg:
+ * @login: a LassoLogin
+ * 
+ * Builds a SOAP request message. The data for the sending of the request
+ * are stored in msg_url and msg_body.
+ * 
+ * Return value: 0 on success and a negative value otherwise.
+ **/
 gint
 lasso_login_build_request_msg(LassoLogin *login)
 {
@@ -881,7 +899,15 @@ lasso_login_build_request_msg(LassoLogin *login)
   return ret;
 }
 
-gint
+/**
+ * lasso_login_build_response_msg:
+ * @login: a LassoLogin
+ * 
+ * Builds a SOAP response message. The data for the sending of the response
+ * are stored in msg_body.
+ * 
+ * Return value: 0 on success and a negative value otherwise.
+ **/gint
 lasso_login_build_response_msg(LassoLogin *login,
 			       gchar      *remote_providerID)
 {
@@ -1064,7 +1090,7 @@ lasso_login_init_request(LassoLogin      *login,
 }
 
 /**
- * lasso_login_must_ask_for_consent_private:
+ * lasso_login_must_ask_for_consent:
  * @login: a LassoLogin
  * 
  * Evaluates if a consent must be ask to the Principal to federate him.
@@ -1096,6 +1122,14 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
   return ret;
 }
 
+/**
+ * lasso_login_must_authenticate:
+ * @login: a LassoLogin
+ * 
+ * Verifies if the user must be authenticated or not.
+ * 
+ * Return value: TRUE or FALSE
+ **/
 gboolean
 lasso_login_must_authenticate(LassoLogin *login)
 {
@@ -1113,7 +1147,7 @@ lasso_login_must_authenticate(LassoLogin *login)
     str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
 				       NULL, NULL);
     if (str != NULL) {
-      if (xmlStrEqual(str, "false")) {
+      if (xmlStrEqual(str, "false") || xmlStrEqual(str, "0")) {
 	isPassive = FALSE;
       }
       xmlFree(str);
@@ -1122,7 +1156,7 @@ lasso_login_must_authenticate(LassoLogin *login)
     str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "ForceAuthn",
 				       NULL, NULL);
     if (str != NULL) {
-      if (xmlStrEqual(str, "true")) {
+      if (xmlStrEqual(str, "true") || xmlStrEqual(str, "1")) {
 	forceAuthn = TRUE;
       }
       xmlFree(str);
