@@ -125,7 +125,7 @@ class LoginTestCase(unittest.TestCase):
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
         failIf(spSite.sessions)
         failIf(idpSite.sessions)
@@ -144,7 +144,7 @@ class LoginTestCase(unittest.TestCase):
         httpResponse = principal.sendHttpRequestToSite(
             spSite, 'GET', '/login?RelayState=a_sample_relay_state')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
         failIf(spSite.sessions)
         failIf(idpSite.sessions)
@@ -162,13 +162,13 @@ class LoginTestCase(unittest.TestCase):
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Now the principal already has a federation between spSite and idpSite.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Do a new passive login between normal login and logout.
@@ -177,7 +177,7 @@ class LoginTestCase(unittest.TestCase):
         del principal.keyring[idpSite.url] # Ensure identity provider will be really passive.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again, with isPassive and the user having no web session.
@@ -197,7 +197,7 @@ class LoginTestCase(unittest.TestCase):
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 401)
 
     def test04(self):
@@ -214,7 +214,7 @@ class LoginTestCase(unittest.TestCase):
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 401)
 
     def test05(self):
@@ -244,7 +244,7 @@ class LoginTestCase(unittest.TestCase):
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
 
         # Ask user to reauthenticate while he is already logged.
@@ -253,13 +253,13 @@ class LoginTestCase(unittest.TestCase):
         del principal.keyring[idpSite.url] # Ensure user can't authenticate.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 200)
 
         # Force authentication, but user won't authenticate.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
         failUnlessEqual(httpResponse.statusCode, 401)
 
     def test07(self):

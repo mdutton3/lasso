@@ -259,14 +259,16 @@ class ServiceProviderMixin(Provider.ProviderMixin):
         # Note: The uppercase for RelayState below is not a bug.
         return self.callHttpFunction(self.assertionConsumer_done, handler, RelayState = relayState)
 
-    def logoutUsingSoap(self, handler):
+    def logout(self, handler):
         session = handler.session
         if session is None:
             return handler.respond(401, 'Access Unauthorized: User has no session opened.')
         user = handler.user
         if user is None:
             return handler.respond(401, 'Access Unauthorized: User is not logged in.')
+        return self.logout_do(handler, session, user)
 
+    def logout_do(self, handler, session, user):
         lassoServer = self.getLassoServer()
         logout = lasso.Logout.new(lassoServer, lasso.providerTypeSp)
         if user.lassoIdentityDump is not None:
@@ -305,6 +307,9 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             failUnless(lassoSessionDump)
             session.lassoSessionDump = lassoSessionDump
         nameIdentifier = logout.nameIdentifier
+        return self.logout_done(handler, nameIdentifier)
+
+    def logout_done(self, handler, nameIdentifier):
         failUnless(nameIdentifier)
         del self.sessionTokensByNameIdentifier[nameIdentifier]
 

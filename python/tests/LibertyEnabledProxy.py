@@ -33,6 +33,13 @@ class LibertyEnabledProxyMixin(IdentityProviderMixin, ServiceProviderMixin):
         ServiceProviderMixin.__init__(self)
         IdentityProviderMixin.__init__(self)
 
+    def assertionConsumer_done(self, handler):
+        # Before, this proxy was considered as a service provider. Now it acts again as an identity
+        # provider.
+        # FIXME: We should retrieve authentication method from session.lassoSessionDump.
+        # FIXME: Handle Liberty ProxyCount.
+        return self.login_done(handler, True, lasso.samlAuthenticationMethodPassword)
+
     def login(self, handler):
         # Before, this proxy was considered as an identity provider. Now it is a service provider.
         # FIXME: Handle Liberty ProxyCount.
@@ -44,9 +51,15 @@ class LibertyEnabledProxyMixin(IdentityProviderMixin, ServiceProviderMixin):
         # FIXME: Handle Liberty ProxyCount.
         return self.login_done(handler, False, None)
 
-    def assertionConsumer_done(self, handler):
+    def logout_done(self, handler, nameIdentifier):
         # Before, this proxy was considered as a service provider. Now it acts again as an identity
         # provider.
-        # FIXME: We should retrieve authentication method from session.lassoSessionDump.
         # FIXME: Handle Liberty ProxyCount.
-        return self.login_done(handler, True, lasso.samlAuthenticationMethodPassword)
+
+        # Don't do logout_done actions, because they will be done in soapEndpoint.
+        return None
+
+    def soapEndpoint_logout_prepare(self, handler, session, user):
+        # Before, this proxy was considered as an identity provider. Now it is a service provider.
+        # FIXME: Handle Liberty ProxyCount.
+        return self.logout_do(handler, session, user)

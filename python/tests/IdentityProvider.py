@@ -154,7 +154,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
         responseUrl = login.msg_url
         failUnless(responseUrl)
         return handler.respondRedirectTemporarily(responseUrl)
-        
+
     def soapEndpoint(self, handler):
         soapRequestMsg = handler.httpRequest.body
         requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
@@ -182,17 +182,21 @@ class IdentityProviderMixin(Provider.ProviderMixin):
             nameIdentifier = logout.nameIdentifier
             failUnless(nameIdentifier)
 
-            # Retrieve session dump and identity dump using name identifier.
+            # Retrieve session and user using name identifier.
             session = self.getSessionFromNameIdentifier(nameIdentifier)
             if session is None:
                 raise Exception('FIXME: Handle the case when there is no web session')
+            user = self.getUserFromNameIdentifier(nameIdentifier)
+            if user is None:
+                raise Exception('FIXME: Handle the case when there is no web user')
+
+            # The identity provider may want to do some things, before logging out.
+            self.soapEndpoint_logout_prepare(handler, session, user)
+
             if session.lassoSessionDump is None:
                 raise Exception(
                     'FIXME: Handle the case when there is no session dump in web session')
             logout.set_session_from_dump(session.lassoSessionDump)
-            user = self.getUserFromNameIdentifier(nameIdentifier)
-            if user is None:
-                raise Exception('FIXME: Handle the case when there is no web user')
             if user.lassoIdentityDump is None:
                 raise Exception(
                     'FIXME: Handle the case when there is no identity dump in web user')
@@ -243,3 +247,10 @@ class IdentityProviderMixin(Provider.ProviderMixin):
                 headers = {'Content-Type': 'text/xml'}, body = soapResponseMsg)
         else:
             raise Exception('Unknown request type: %s' % requestType)
+
+    def soapEndpoint_logout_prepare(self, handler, session, user):
+        """Prepare logout.
+
+        Override this method to do some processing before identity provider logout proceeds.
+        """
+        pass
