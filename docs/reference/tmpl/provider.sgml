@@ -157,25 +157,3 @@ It holds all the data about a provider.
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_provider_load_metadata ##### -->
-<para>
-
-</para>
-
-@provider: 
-@metadata: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_provider_verify_signature ##### -->
-<para>
-
-</para>
-
-@provider: 
-@message: 
-@id_attr_name: 
-@format: 
-@Returns: 
-
-

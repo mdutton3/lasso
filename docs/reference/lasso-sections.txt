@@ -16,8 +16,6 @@ lasso_provider_get_first_http_method
 lasso_provider_get_metadata_list
 lasso_provider_get_metadata_one
 lasso_provider_has_protocol_profile
-lasso_provider_load_metadata
-lasso_provider_verify_signature
 <SUBSECTION Standard>
 LASSO_PROVIDER
 LASSO_IS_PROVIDER
@@ -948,5 +946,65 @@ LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED
 LASSO_LIB_NAMEID_POLICY_TYPE_ANY
 LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART
 LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST
+</SECTION>
+
+<SECTION>
+<FILE>saml_attribute_designator</FILE>
+<TITLE>LassoSamlAttributeDesignator</TITLE>
+LassoSamlAttributeDesignator
+lasso_saml_attribute_designator_new
+<SUBSECTION Standard>
+LASSO_SAML_ATTRIBUTE_DESIGNATOR
+LASSO_IS_SAML_ATTRIBUTE_DESIGNATOR
+LASSO_TYPE_SAML_ATTRIBUTE_DESIGNATOR
+lasso_saml_attribute_designator_get_type
+LASSO_SAML_ATTRIBUTE_DESIGNATOR_CLASS
+LASSO_IS_SAML_ATTRIBUTE_DESIGNATOR_CLASS
+LASSO_SAML_ATTRIBUTE_DESIGNATOR_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>saml_attribute</FILE>
+<TITLE>LassoSamlAttribute</TITLE>
+LassoSamlAttribute
+lasso_saml_attribute_new
+<SUBSECTION Standard>
+LASSO_SAML_ATTRIBUTE
+LASSO_IS_SAML_ATTRIBUTE
+LASSO_TYPE_SAML_ATTRIBUTE
+lasso_saml_attribute_get_type
+LASSO_SAML_ATTRIBUTE_CLASS
+LASSO_IS_SAML_ATTRIBUTE_CLASS
+LASSO_SAML_ATTRIBUTE_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>saml_attribute_statement</FILE>
+<TITLE>LassoSamlAttributeStatement</TITLE>
+LassoSamlAttributeStatement
+lasso_saml_attribute_statement_new
+<SUBSECTION Standard>
+LASSO_SAML_ATTRIBUTE_STATEMENT
+LASSO_IS_SAML_ATTRIBUTE_STATEMENT
+LASSO_TYPE_SAML_ATTRIBUTE_STATEMENT
+lasso_saml_attribute_statement_get_type
+LASSO_SAML_ATTRIBUTE_STATEMENT_CLASS
+LASSO_IS_SAML_ATTRIBUTE_STATEMENT_CLASS
+LASSO_SAML_ATTRIBUTE_STATEMENT_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>saml_subject_statement</FILE>
+<TITLE>LassoSamlSubjectStatement</TITLE>
+LassoSamlSubjectStatement
+lasso_saml_subject_statement_new
+<SUBSECTION Standard>
+LASSO_SAML_SUBJECT_STATEMENT
+LASSO_IS_SAML_SUBJECT_STATEMENT
+LASSO_TYPE_SAML_SUBJECT_STATEMENT
+lasso_saml_subject_statement_get_type
+LASSO_SAML_SUBJECT_STATEMENT_CLASS
+LASSO_IS_SAML_SUBJECT_STATEMENT_CLASS
+LASSO_SAML_SUBJECT_STATEMENT_GET_CLASS
 </SECTION>
 
