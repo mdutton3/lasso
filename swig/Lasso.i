@@ -188,7 +188,9 @@ int lasso_shutdown(void);
 
 /* Helper variables and functions */
 
-#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
+#if defined(SWIGCSHARP) || defined(SWIGJAVA)
+
+#else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
 %{
 
@@ -202,7 +204,7 @@ static node_info node_infos[100]; /* FIXME: Size should be computed */
 %}
 
 %init %{
-
+{ /* Brace needed for gcc 2.95 */
 	node_info *info;
 
 #define SET_NODE_INFO(nodeTypeName) info->name = #nodeTypeName;\
@@ -270,7 +272,7 @@ static node_info node_infos[100]; /* FIXME: Size should be computed */
 
 	info->name = NULL;
 	info->swig = NULL;
-
+}
 %}
 
 /* Accept any GObject class derivated from LassoNode as a LassoNode */
@@ -324,7 +326,8 @@ static swig_type_info *LassoNode_dynamic(void **nodePointer) {
 /* Register the above casting function. */
 DYNAMIC_CAST(SWIGTYPE_p_LassoNode, LassoNode_dynamic);
 
-#endif
+#endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+
 
 %{
 
