@@ -39,8 +39,8 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 
 	profile = LASSO_PROFILE(lecp);
 
-	assertionConsumerServiceURL = lasso_provider_get_metadata_one(
-			LASSO_PROVIDER(profile->server), "AssertionConsumerServiceURL");
+	assertionConsumerServiceURL = lasso_provider_get_assertion_consumer_service_url(
+			LASSO_PROVIDER(profile->server), NULL);
 	if (assertionConsumerServiceURL == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
@@ -147,8 +147,8 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	/* build lib:AuthnResponse */
 	lasso_login_build_authn_response_msg(LASSO_LOGIN(lecp));
 
-	assertionConsumerServiceURL = lasso_provider_get_metadata_one(
-			provider, "AssertionConsumerServiceURL");
+	assertionConsumerServiceURL = lasso_provider_get_assertion_consumer_service_url(
+			provider, NULL);
 	if (assertionConsumerServiceURL == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
