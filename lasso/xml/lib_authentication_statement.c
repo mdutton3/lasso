@@ -86,18 +86,69 @@ lasso_lib_authentication_statement_set_sessionIndex(LassoLibAuthenticationStatem
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-lasso_lib_authentication_statement_instance_init(LassoLibAuthenticationStatement *node)
-{
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
+enum {
+  LASSO_LIB_AUTHENTICATION_STATEMENT_USE_XSITYPE = 1
+};
 
-  class->set_name(LASSO_NODE(node), "AuthenticationStatement");
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+static void
+lasso_lib_authentication_statement_set_property (GObject      *object,
+						 guint         property_id,
+						 const GValue *value,
+						 GParamSpec   *pspec)
+{
+  LassoLibAuthenticationStatement *self = LASSO_LIB_AUTHENTICATION_STATEMENT(object);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(object));
+
+  switch (property_id) {
+  case LASSO_LIB_AUTHENTICATION_STATEMENT_USE_XSITYPE:
+    self->use_xsitype = g_value_get_boolean (value);
+    if (self->use_xsitype == TRUE) {
+      /* namespace and name were already set in parent class
+	 LassoSamlAuthenticationStatement */
+      class->new_ns_prop(LASSO_NODE(object),
+			 "type", "lib:AuthenticationStatementType",
+			 lassoXsiHRef, lassoXsiPrefix);
+    }
+    else {
+      /* node name was already set in parent class
+	 LassoSamlAuthenticationStatement, just change ns */
+      class->set_ns(LASSO_NODE(object), lassoLibHRef, lassoLibPrefix);
+    }
+    break;
+  default:
+    /* We don't have any other property... */
+    g_assert (FALSE);
+    break;
+  }
 }
 
 static void
-lasso_lib_authentication_statement_class_init(LassoLibAuthenticationStatementClass *klass)
+lasso_lib_authentication_statement_instance_init(LassoLibAuthenticationStatement *node)
 {
+/*   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
+
+/*   class->set_name(LASSO_NODE(node), "AuthenticationStatement"); */
+/*   class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix); */
+}
+
+static void
+lasso_lib_authentication_statement_class_init(LassoLibAuthenticationStatementClass *g_class,
+					      gpointer                              g_class_data)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
+  GParamSpec *pspec;
+  
+  /* override parent class methods */
+  gobject_class->set_property = lasso_lib_authentication_statement_set_property;
+  
+  pspec = g_param_spec_boolean ("use_xsitype",
+				"use_xsitype",
+				"using xsi:type",
+				FALSE,
+				G_PARAM_CONSTRUCT_ONLY | G_PARAM_WRITABLE);
+  g_object_class_install_property (gobject_class,
+                                   LASSO_LIB_AUTHENTICATION_STATEMENT_USE_XSITYPE,
+                                   pspec);
 }
 
 GType lasso_lib_authentication_statement_get_type() {
@@ -123,14 +174,14 @@ GType lasso_lib_authentication_statement_get_type() {
   return this_type;
 }
 
-/**
- * lasso_lib_authentication_statement_new:
- *
- * Creates a new <lib:AuthenticationStatement> node object.
- * 
- * Return value: the new @LassoLibAuthenticationStatement
- **/
-LassoNode* lasso_lib_authentication_statement_new()
+LassoNode*
+lasso_lib_authentication_statement_new(gboolean use_xsitype)
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, NULL));
+  LassoNode *node;
+
+  node = LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT,
+				 "use_xsitype", use_xsitype,
+				 NULL));
+
+  return (node);
 }

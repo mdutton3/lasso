@@ -46,6 +46,7 @@ typedef struct _LassoLibSubjectClass LassoLibSubjectClass;
 struct _LassoLibSubject {
   LassoSamlSubject parent;
   /*< private >*/
+  gboolean use_xsitype;
 };
 
 struct _LassoLibSubjectClass {
@@ -53,7 +54,8 @@ struct _LassoLibSubjectClass {
 };
 
 LASSO_EXPORT GType lasso_lib_subject_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_subject_new(void);
+
+LASSO_EXPORT LassoNode* lasso_lib_subject_new(gboolean use_xsitype);
 
 LASSO_EXPORT void lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 								  LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier);

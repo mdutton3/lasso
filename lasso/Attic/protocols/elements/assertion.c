@@ -75,7 +75,9 @@ lasso_assertion_new(const xmlChar *issuer,
 
   g_return_val_if_fail(issuer != NULL, NULL);
 
-  assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION, NULL));
+  assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION,
+				      "use_xsitype", TRUE,
+				      NULL));
 
   id = lasso_build_unique_id(32);
   lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),

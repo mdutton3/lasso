@@ -47,14 +47,16 @@ typedef struct _LassoLibAssertionClass LassoLibAssertionClass;
 struct _LassoLibAssertion {
   LassoSamlAssertion parent;
   /*< private >*/
+  gboolean use_xsitype;
 };
 
 struct _LassoLibAssertionClass {
   LassoSamlAssertionClass parent;
 };
 
-LASSO_EXPORT GType lasso_lib_assertion_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_assertion_new(void);
+LASSO_EXPORT GType lasso_lib_assertion_get_type        (void);
+
+LASSO_EXPORT LassoNode* lasso_lib_assertion_new        (gboolean use_xsitype);
 
 LASSO_EXPORT void lasso_lib_assertion_set_inResponseTo (LassoLibAssertion *,
 							const xmlChar *);

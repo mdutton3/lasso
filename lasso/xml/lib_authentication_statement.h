@@ -48,6 +48,7 @@ typedef struct _LassoLibAuthenticationStatementClass LassoLibAuthenticationState
 struct _LassoLibAuthenticationStatement {
   LassoSamlAuthenticationStatement parent;
   /*< private >*/
+  gboolean use_xsitype;
 };
 
 struct _LassoLibAuthenticationStatementClass {
@@ -55,8 +56,9 @@ struct _LassoLibAuthenticationStatementClass {
   /*< vtable >*/
 };
 
-LASSO_EXPORT GType lasso_lib_authentication_statement_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_authentication_statement_new(void);
+LASSO_EXPORT GType lasso_lib_authentication_statement_get_type                   (void);
+
+LASSO_EXPORT LassoNode* lasso_lib_authentication_statement_new                   (gboolean use_xsitype);
 
 LASSO_EXPORT void lasso_lib_authentication_statement_set_authnContext            (LassoLibAuthenticationStatement *node,
 										  LassoLibAuthnContext *authnContext);

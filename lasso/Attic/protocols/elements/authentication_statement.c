@@ -80,7 +80,9 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 
   g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(idp_identifier), NULL);
 
-  statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
+  statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT,
+				      "use_xsitype", TRUE,
+				      NULL));
 
   lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
 							       authenticationMethod);
@@ -91,7 +93,8 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   lasso_lib_authentication_statement_set_reauthenticateOnOrAfter(LASSO_LIB_AUTHENTICATION_STATEMENT(statement),
 								 reauthenticateOnOrAfter);
 
-  subject = lasso_lib_subject_new();
+  /* use_xsitype = TRUE */
+  subject = lasso_lib_subject_new(TRUE);
   if (sp_identifier == NULL) {
     if (idp_identifier != NULL) {
       new_identifier = lasso_node_copy(LASSO_NODE(idp_identifier));

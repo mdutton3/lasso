@@ -61,17 +61,65 @@ lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-lasso_lib_subject_instance_init(LassoLibSubject *node)
-{
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
+enum {
+  LASSO_LIB_SUBJECT_USE_XSITYPE = 1
+};
 
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "Subject");
+static void
+lasso_lib_subject_set_property (GObject      *object,
+				guint         property_id,
+				const GValue *value,
+				GParamSpec   *pspec)
+{
+  LassoLibSubject *self = LASSO_LIB_SUBJECT(object);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(object));
+
+  switch (property_id) {
+  case LASSO_LIB_SUBJECT_USE_XSITYPE:
+    self->use_xsitype = g_value_get_boolean (value);
+    if (self->use_xsitype == TRUE) {
+      /* namespace and name were already set in parent class
+	 LassoSamlAssertion */
+      class->new_ns_prop(LASSO_NODE(object),
+			 "type", "lib:SubjectType",
+			 lassoXsiHRef, lassoXsiPrefix);
+    }
+    else {
+      /* node name was already set in parent class LassoSamlAssertion
+	 just change ns */
+      class->set_ns(LASSO_NODE(object), lassoLibHRef, lassoLibPrefix);
+    }
+    break;
+  default:
+    /* We don't have any other property... */
+    g_assert (FALSE);
+    break;
+  }
 }
 
 static void
-lasso_lib_subject_class_init(LassoLibSubjectClass *klass) {
+lasso_lib_subject_instance_init(LassoLibSubject *node)
+{
+}
+
+static void
+lasso_lib_subject_class_init(LassoLibSubjectClass *g_class,
+			     gpointer              g_class_data)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
+  GParamSpec *pspec;
+
+  /* override parent class methods */
+  gobject_class->set_property = lasso_lib_subject_set_property;
+
+  pspec = g_param_spec_boolean ("use_xsitype",
+				"use_xsitype",
+				"using xsi:type",
+				FALSE,
+				G_PARAM_CONSTRUCT_ONLY | G_PARAM_WRITABLE);
+  g_object_class_install_property (gobject_class,
+                                   LASSO_LIB_SUBJECT_USE_XSITYPE,
+                                   pspec);
 }
 
 GType lasso_lib_subject_get_type() {
@@ -97,14 +145,14 @@ GType lasso_lib_subject_get_type() {
   return this_type;
 }
 
-/**
- * lasso_lib_subject_new:
- * 
- * Creates a new <saml:Subject> node object.
- *
- * Return value: the new @LassoLibSubject
- **/
-LassoNode* lasso_lib_subject_new()
+LassoNode*
+lasso_lib_subject_new(gboolean use_xsitype)
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_SUBJECT, NULL));
+  LassoNode *node;
+
+  node = LASSO_NODE(g_object_new(LASSO_TYPE_LIB_SUBJECT,
+				 "use_xsitype", use_xsitype,
+				 NULL));
+
+  return (node);
 }
