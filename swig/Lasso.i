@@ -5054,6 +5054,9 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
+
+	%newobject getAssertions;
+	LassoNodeList *getAssertions(char *providerId);
 }
 
 %{
@@ -5081,6 +5084,20 @@ LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
 /* Methods implementations */
 
 #define LassoSession_dump lasso_session_dump
+
+LassoNodeList *LassoSession_getAssertions(LassoSession *self, char *providerId) {
+	GPtrArray *assertionsArray;
+	GList *assertionsList;
+
+	assertionsList = lasso_session_get_assertions(self, providerId);
+	if (assertionsList) {
+		assertionsArray = get_node_list(assertionsList);
+		g_list_foreach(assertionsList, (GFunc) free_node_list_item, NULL);
+		g_list_free(assertionsList);
+	} else
+		assertionsArray = NULL;
+	return assertionsArray;
+}
 
 %}
 

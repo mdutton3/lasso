@@ -85,6 +85,7 @@ public class LoginTest extends TestCase {
 	Identity idpIdentity, spIdentity;
 	Login idpLogin, spLogin;
 	Logout idpLogout, spLogout;
+	SamlAssertion assertion;
 	Server idp, sp;
 	Session idpSession, spSession;
 	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpDump,
@@ -179,8 +180,8 @@ public class LoginTest extends TestCase {
         assertNotNull(spSession);
         spSessionDump = spSession.dump();
         assertNotNull(spSessionDump);
-	// FIXME: To uncomment.
-	// authenticationMethod = spSession.getAuthenticationMethod("https://idp1/metadata");
+	assertion = (SamlAssertion) spSession.getAssertions("https://idp1/metadata").getItem(0);
+	authenticationMethod = assertion.getAuthenticationStatement().getAuthenticationMethod();
         assertEquals(lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
 
         // Service provider logout.
