@@ -185,23 +185,23 @@ int lasso_init(void);
 #endif
 int lasso_shutdown(void);
 
-/* Utilities */
+/* Helper functions */
 
 %{
 
-void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
+static void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
 {
         g_ptr_array_add(array, g_strdup(key));
 }
 
-void add_node_to_array(gpointer node, GPtrArray *array)
+static void add_node_to_array(gpointer node, GPtrArray *array)
 {
 	if (node != NULL)
 		g_object_ref(node);
         g_ptr_array_add(array, node);
 }
 
-void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
+static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 {
 	xmlOutputBufferPtr buf;
 	gchar *xmlString;
@@ -221,7 +221,7 @@ void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 	g_ptr_array_add(array, xmlString);
 }
 
-void free_node_array_item(gpointer node, gpointer unused)
+static void free_node_array_item(gpointer node, gpointer unused)
 {
 	if (node != NULL)
 		/* Test added to help debugging. */
@@ -231,7 +231,7 @@ void free_node_array_item(gpointer node, gpointer unused)
 			g_object_unref(node);
 }
 
-void free_node_list_item(gpointer node, gpointer unused)
+static void free_node_list_item(gpointer node, gpointer unused)
 {
 	if (node != NULL)
 		/* Test added to help debugging. */
@@ -241,18 +241,18 @@ void free_node_list_item(gpointer node, gpointer unused)
 			g_object_unref(node);
 }
 
-void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
+static void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
 {
 	if (xmlnode != NULL)
 		xmlFreeNode(xmlnode);
 }
 
-gpointer get_node(gpointer node)
+static gpointer get_node(gpointer node)
 {
 	return node == NULL ? NULL : g_object_ref(node);
 }
 
-GPtrArray *get_node_list(GList *nodeList) {
+static GPtrArray *get_node_list(GList *nodeList) {
 	GPtrArray *nodeArray;
 
 	if (nodeList == NULL)
@@ -262,7 +262,7 @@ GPtrArray *get_node_list(GList *nodeList) {
 	return nodeArray;
 }
 
-GPtrArray *get_xml_list(GList *xmlList) {
+static GPtrArray *get_xml_list(GList *xmlList) {
 	GPtrArray *xmlArray;
 
 	if (xmlList == NULL)
@@ -272,7 +272,7 @@ GPtrArray *get_xml_list(GList *xmlList) {
 	return xmlArray;
 }
 
-void set_node(gpointer *nodePointer, gpointer value)
+static void set_node(gpointer *nodePointer, gpointer value)
 {
 	if (*nodePointer != NULL)
 		/* Test added to help debugging. */
@@ -283,7 +283,7 @@ void set_node(gpointer *nodePointer, gpointer value)
 	*nodePointer = value == NULL ? NULL : g_object_ref(value);
 }
 
-void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
+static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
 	if (*nodeListPointer != NULL) {
 		g_list_foreach(*nodeListPointer, (GFunc) free_node_list_item, NULL);
 		g_list_free(*nodeListPointer);
@@ -303,14 +303,14 @@ void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
 	}
 }
 
-void set_string(char **pointer, char *value)
+static void set_string(char **pointer, char *value)
 {
 	if (*pointer != NULL)
 		free(*pointer);
 	*pointer = value == NULL ? NULL : strdup(value);
 }
 
-void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
+static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 	if (*xmlListPointer != NULL) {
 		g_list_foreach(*xmlListPointer, (GFunc) free_xml_list_item, NULL);
 		g_list_free(*xmlListPointer);
@@ -653,7 +653,7 @@ typedef enum {
 
 %{
 
-void lasso_exception(int errorCode) {
+static void lasso_exception(int errorCode) {
 	PyObject *errorTuple;
 
 	if (errorCode > 0) {
@@ -685,7 +685,7 @@ void lasso_exception(int errorCode) {
 
 %{
 
-void build_exception_msg(int errorCode, char *errorMsg) {
+static void build_exception_msg(int errorCode, char *errorMsg) {
 	if (errorCode > 0)
 		sprintf(errorMsg, "%d / Lasso Warning", errorCode);
 	else
@@ -1154,6 +1154,85 @@ typedef struct {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoSamlAssertion_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:Attribute
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlAttribute) LassoSamlAttribute;
+#endif
+typedef struct {
+} LassoSamlAttribute;
+%extend LassoSamlAttribute {
+	/* Attributes inherited from SamlAttributeDesignator */
+
+#ifndef SWIGPHP4
+	%rename(attributeName) AttributeName;
+#endif
+	char *AttributeName;
+
+#ifndef SWIGPHP4
+	%rename(attributeNamespace) AttributeNamespace;
+#endif
+	char *AttributeNamespace;
+
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(attributeValue) AttributeValue;
+#endif
+	%newobject AttributeValue_get;
+	LassoNodeArray *AttributeValue;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlAttribute();
+
+	~LassoSamlAttribute();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Implementations of attributes inherited from SamlAttributeDesignator */
+
+/* AttributeName */
+#define LassoSamlAttribute_get_AttributeName(self) LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeName
+#define LassoSamlAttribute_AttributeName_get(self) LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeName
+#define LassoSamlAttribute_set_AttributeName(self, value) set_string(&LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeName, (value))
+#define LassoSamlAttribute_AttributeName_set(self, value) set_string(&LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeName, (value))
+
+/* AttributeNamespace */
+#define LassoSamlAttribute_get_AttributeNamespace(self) LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeNamespace
+#define LassoSamlAttribute_AttributeNamespace_get(self) LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeNamespace
+#define LassoSamlAttribute_set_AttributeNamespace(self, value) set_string(&LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeNamespace, (value))
+#define LassoSamlAttribute_AttributeNamespace_set(self, value) set_string(&LASSO_SAML_ATTRIBUTE_DESIGNATOR(self)->AttributeNamespace, (value))
+
+/* Attributes implementations */
+
+/* AttributeValue */
+#define LassoSamlAttribute_get_AttributeValue(self) get_node_list((self)->AttributeValue)
+#define LassoSamlAttribute_AttributeValue_get(self) get_node_list((self)->AttributeValue)
+#define LassoSamlAttribute_set_AttributeValue(self, value) set_node_list(&(self)->AttributeValue, (value))
+#define LassoSamlAttribute_AttributeValue_set(self, value) set_node_list(&(self)->AttributeValue, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlAttribute lasso_saml_attribute_new
+#define delete_LassoSamlAttribute(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlAttribute_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
