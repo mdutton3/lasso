@@ -476,11 +476,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					continue;
 
 				if (type == SNIPPET_NODE) {
-					LassoNode **location = value;
-					LassoNode *n = lasso_node_new_from_xmlNode(t);
-					*location = n;
-				}
-				else if (type == SNIPPET_CONTENT)
+					(*(LassoNode**)value) = lasso_node_new_from_xmlNode(t);
+				} else if (type == SNIPPET_NODE_IN_CHILD) {
+					xmlNode *t2 = t->children;
+					while (t2 && t2->type != XML_ELEMENT_NODE)
+						t2 = t2->next;
+					if (t2)
+						(*(LassoNode**)value) =
+							lasso_node_new_from_xmlNode(t2);
+				} else if (type == SNIPPET_CONTENT)
 					(*(char**)value) = xmlNodeGetContent(t);
 				else if (type == SNIPPET_NAME_IDENTIFIER)
 					(*(LassoSamlNameIdentifier**)value) =
@@ -1040,6 +1044,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				xmlNodeSetName(t, snippet->name);
 				xmlSetNs(t, xmlns);
 				break;
+			case SNIPPET_NODE_IN_CHILD:
+				t = xmlNewTextChild(xmlnode, NULL, snippet->name, NULL);
+				xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value)));
 			case SNIPPET_LIST_NODES:
 				elem = (GList *)value;
 				while (elem) {
