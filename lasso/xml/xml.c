@@ -1148,16 +1148,21 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   g_return_val_if_fail(public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   doc = xmlNewDoc("1.0");
-  xmlNode = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
+  /* Don't use xmlCopyNode here because it changed the attrs and ns order :-( */
+  xmlNode = lasso_node_get_xmlNode(node);
   xmlAddChild((xmlNodePtr)doc, xmlNode);
 
   /* FIXME : register 'AssertionID' ID attribute manually */
   id_attr = lasso_node_get_attr(node, "AssertionID", NULL);
   if (id_attr != NULL) {
+    printf("OK AssertionID attr found, try to add new ID\n");
     id_value = xmlNodeListGetString(doc, id_attr->children, 1);
     id = xmlAddID(NULL, doc, id_value, id_attr);
+    if (id == NULL) printf("Failed add new ID\n");
     xmlFree(id_value);
   }
+  else
+    printf("AssertionID attr not found\n");
 
   /* find start node */
   signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
@@ -1215,7 +1220,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   if(dsigCtx != NULL) {
     xmlSecDSigCtxDestroy(dsigCtx);
   }
-  xmlFreeDoc(doc);
+  /* FIXME xmlFreeDoc(doc); */
   return (ret);
 }
 
@@ -1237,7 +1242,8 @@ lasso_node_impl_verify_x509_signature(LassoNode   *node,
 		       LASSO_PARAM_ERROR_INVALID_VALUE);
 
   doc = xmlNewDoc("1.0");
-  xmlNode = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
+  /* Don't use xmlCopyNode here because it changed the attrs and ns order :-( */
+  xmlNode = lasso_node_get_xmlNode(node);
   xmlAddChild((xmlNodePtr)doc, xmlNode);
 
   /* FIXME: register 'AssertionID' ID attribute manually */
@@ -1322,7 +1328,7 @@ lasso_node_impl_verify_x509_signature(LassoNode   *node,
   if(mngr != NULL) {
     xmlSecKeysMngrDestroy(mngr);
   }
-  xmlFreeDoc(doc);
+  /* FIXME xmlFreeDoc(doc); */
   return (ret);
 }
 
