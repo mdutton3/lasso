@@ -131,19 +131,48 @@ def newError(code, functionName):
 ################################################################################
 
 
+_registeredClasses = {}
+
+
 class _ObjectMixin(object):
     """Abstract mixin class"""
 
-    def __init__(self, *arguments, **keywordArguments):
-        # Don't execute SWIG __init__ method, because object has already be inited in constructor.
-        pass
+    # Constants
+
+    lassomodClass = None
+
+    # Attributes
+
+    def get_parent(self):
+        parent = super(_ObjectMixin, self).parent
+        if parent is not None:
+            _setRegisteredClass(parent)
+        return parent
+    parent = property(get_parent)
+
+##     # Constructors
+
+##     def __init__(self, *arguments, **keywordArguments):
+##         super(_ObjectMixin, self).__init__(*arguments, **keywordArguments)
+##         _setRegisteredClass(self)
+
+    # Methods
 
     def __repr__(self):
         return '<Lasso %s instance wrapping %s>' % (self.__class__.__name__, self.this)
 
-    def swig_init(self):
-        # Call SWIG __init__.
-        super(_ObjectMixin, self).__init__()
+
+def _setRegisteredClass(instance):
+    cls = _registeredClasses.get(instance.__class__, None)
+    if cls is None and instance.__class__.__name__.endswith('Ptr'):
+        cls = _registeredClasses.get(instance.__class__.__bases__[0], None)
+    if cls is not None:
+        object.__setattr__(instance, '__class__', cls)
+
+
+def registerClass(cls):
+    assert cls.lassomodClass
+    _registeredClasses[cls.lassomodClass] = cls
 
 
 ################################################################################
@@ -152,6 +181,10 @@ class _ObjectMixin(object):
 
 
 class AuthnRequest(_ObjectMixin, lassomod.LassoAuthnRequest):
+    # Constants
+
+    lassomodClass = lassomod.LassoAuthnRequest
+
     # Attributes
 
     def set_affiliationID(self, affiliationID):
@@ -191,9 +224,15 @@ class AuthnRequest(_ObjectMixin, lassomod.LassoAuthnRequest):
         lassomod.lasso_lib_authn_request_set_relayState(self.parent, relayState)
     relayState = property(None, set_relayState)
 
+registerClass(AuthnRequest)
+
 
 class Request(_ObjectMixin, lassomod.LassoRequestPtr):
-    pass
+    # Constants
+
+    lassomodClass = lassomod.LassoRequestPtr
+
+registerClass(Request)
 
 
 ################################################################################
@@ -201,26 +240,18 @@ class Request(_ObjectMixin, lassomod.LassoRequestPtr):
 ################################################################################
 
 
-get_request_type_from_soap_msg = lassomod.lasso_profile_get_request_type_from_soap_msg
-
-
 class Server(_ObjectMixin, lassomod.LassoServer):
-    # Constructors
+    # Constants
 
-    def __new__(cls, metadata = None, public_key = None, private_key = None, certificate = None,
-                signature_method = signatureMethodRsaSha1):
-        self = lassomod.lasso_server_new(
-            metadata, public_key, private_key, certificate, signature_method)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_server_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
+    lassomodClass = lassomod.LassoServer
+
+    # Constructors
 
     def new_from_dump(cls, dump):
         self = lassomod.lasso_server_new_from_dump(dump)
         if self is None:
             raise ErrorInstanceCreationFailed('lasso_server_new_from_dump')
-        object.__setattr__(self, '__class__', cls)
+        _setRegisteredClass(self)
         return self
     new_from_dump = classmethod(new_from_dump)
 
@@ -234,24 +265,21 @@ class Server(_ObjectMixin, lassomod.LassoServer):
     def dump(self):
         return lassomod.lasso_server_dump(self)
 
+registerClass(Server)
+
 
 class Identity(_ObjectMixin, lassomod.LassoIdentity):
-    # Constructors
+    # Constants
 
-    def __new__(cls, metadata = None, public_key = None, private_key = None, certificate = None,
-                signature_method = signatureMethodRsaSha1):
-        self = lassomod.lasso_identity_new(
-            metadata, public_key, private_key, certificate, signature_method)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_identity_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
+    lassomodClass = lassomod.LassoIdentity
+
+    # Constructors
 
     def new_from_dump(cls, dump):
         self = lassomod.lasso_identity_new_from_dump(dump)
         if self is None:
             raise ErrorInstanceCreationFailed('lasso_identity_new_from_dump')
-        object.__setattr__(self, '__class__', cls)
+        _setRegisteredClass(self)
         return self
     new_from_dump = classmethod(new_from_dump)
 
@@ -260,24 +288,21 @@ class Identity(_ObjectMixin, lassomod.LassoIdentity):
     def dump(self):
         return lassomod.lasso_identity_dump(self)
 
+registerClass(Identity)
+
 
 class Session(_ObjectMixin, lassomod.LassoSession):
-    # Constructors
+    # Constants
 
-    def __new__(cls, metadata = None, public_key = None, private_key = None, certificate = None,
-                signature_method = signatureMethodRsaSha1):
-        self = lassomod.lasso_session_new(
-            metadata, public_key, private_key, certificate, signature_method)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_session_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
+    lassomodClass = lassomod.LassoSession
+
+    # Constructors
 
     def new_from_dump(cls, dump):
         self = lassomod.lasso_session_new_from_dump(dump)
         if self is None:
             raise ErrorInstanceCreationFailed('lasso_session_new_from_dump')
-        object.__setattr__(self, '__class__', cls)
+        _setRegisteredClass(self)
         return self
     new_from_dump = classmethod(new_from_dump)
 
@@ -292,6 +317,8 @@ class Session(_ObjectMixin, lassomod.LassoSession):
     def dump(self):
         return lassomod.lasso_session_dump(self)
 
+registerClass(Session)
+
 
 class _ProfileChild(object):
     """Abstract class for all Lasso objects that inherit from LassoProfile"""
@@ -301,7 +328,7 @@ class _ProfileChild(object):
     def get_identity(self):
         identity = lassomod.lasso_profile_get_identity(self.parent)
         if identity is not None:
-            object.__setattr__(identity, '__class__', Identity)
+            _setRegisteredClass(identity)
         return identity
     def set_identity(self, identity):
         lassomod.lasso_profile_set_identity(self.parent, identity)
@@ -335,12 +362,11 @@ class _ProfileChild(object):
         request_type = self.request_type
         if request_type == messageTypeAuthnRequest:
             request = lassomod.lasso_profile_get_authn_request_ref(self.parent)
-            object.__setattr__(request, '__class__', AuthnRequest)
         elif request_type == messageTypeRequest:
             request = lassomod.lasso_profile_get_request_ref(self.parent)
-            object.__setattr__(request, '__class__', Request)
         else:
             raise ErrorUnknownRequestType('lasso_profile_get_???_request', request_type)
+        _setRegisteredClass(request)
         return request
     request = property(get_request)
 
@@ -352,12 +378,11 @@ class _ProfileChild(object):
         response_type = self.response_type
         if response_type == messageTypeAuthnResponse:
             response = lassomod.lasso_profile_get_authn_response_ref(self.parent)
-            object.__setattr__(response, '__class__', AuthnResponse)
         elif response_type == messageTypeResponse:
             response = lassomod.lasso_profile_get_response_ref(self.parent)
-            object.__setattr__(response, '__class__', Response)
         else:
             raise ErrorUnknownResponseType('lasso_profile_get_???_response', response_type)
+        _setRegisteredClass(response)
         return response
     response = property(get_response)
 
@@ -372,14 +397,14 @@ class _ProfileChild(object):
     def get_server(self):
         server = self.parent.server
         if server is not None:
-            object.__setattr__(server, '__class__', Server)
+            _setRegisteredClass(server)
         return server
     server = property(get_server)
 
     def get_session(self):
         session = lassomod.lasso_profile_get_session(self.parent)
         if session is not None:
-            object.__setattr__(session, '__class__', Session)
+            _setRegisteredClass(session)
         return session
     def set_session(self, session):
         lassomod.lasso_profile_set_session(self.parent, session)
@@ -406,20 +431,17 @@ class _ProfileChild(object):
 
 
 class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
-    # Constructors
+    # Constants
 
-    def __new__(cls, server):
-        self = lassomod.lasso_login_new(server)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_login_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
+    lassomodClass = lassomod.LassoLogin
+
+    # Constructors
 
     def new_from_dump(cls, server, dump):
         self = lassomod.lasso_login_new_from_dump(server, dump)
         if self is None:
             raise ErrorInstanceCreationFailed('lasso_login_new_from_dump')
-        object.__setattr__(self, '__class__', cls)
+        _setRegisteredClass(self)
         return self
     new_from_dump = classmethod(new_from_dump)
 
@@ -491,17 +513,13 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_login_process_response_msg')
 
+registerClass(Login)
+
 
 class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
-    # Constructors
+    # Constants
 
-    def __new__(cls, server, provider_type):
-        self = lassomod.lasso_logout_new(server, provider_type)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_logout_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
-    new = classmethod(__new__)
+    lassomodClass = lassomod.LassoLogout
 
     # Methods
 
@@ -539,49 +557,39 @@ class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_logout_validate_request')
 
+registerClass(Logout)
+
 
 class Lecp(_ObjectMixin, lassomod.LassoLecp):
+    # Constants
+
+    lassomodClass = lassomod.LassoLecp
+
     # Attributes
 
     def get_msg_body(self):
-        return self.parent.parent.msg_body
+        return self.parent.msg_body
     msg_body = property(get_msg_body)
 
     def get_msg_url(self):
-        return self.parent.parent.msg_url
+        return self.parent.msg_url
     msg_url = property(get_msg_url)
 
     def get_request(self):
-        request_type = self.request_type
-        if request_type == messageTypeAuthnRequest:
-            request = lassomod.lasso_profile_get_authn_request_ref(self.parent.parent)
-            object.__setattr__(request, '__class__', AuthnRequest)
-        elif request_type == messageTypeRequest:
-            request = lassomod.lasso_profile_get_request_ref(self.parent.parent)
-            object.__setattr__(request, '__class__', Request)
-        else:
-            raise ErrorUnknownRequestType('lasso_profile_get_???_request', request_type)
-        return request
+        return parent.request
     request = property(get_request)
 
     def get_request_type(self):
-        return self.parent.parent.request_type
+        return self.parent.request_type
     request_type = property(get_request_type)
 
     # Constructors
-
-    def __new__(cls, server):
-        self = lassomod.lasso_lecp_new(server)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_lecp_new')
-        object.__setattr__(self, '__class__', cls)
-        return self
 
     def new_from_dump(cls, server, dump):
         self = lassomod.lasso_lecp_new_from_dump(server, dump)
         if self is None:
             raise ErrorInstanceCreationFailed('lasso_lecp_new_from_dump')
-        object.__setattr__(self, '__class__', cls)
+        _setRegisteredClass(self)
         return self
     new_from_dump = classmethod(new_from_dump)
 
@@ -631,10 +639,15 @@ class Lecp(_ObjectMixin, lassomod.LassoLecp):
             raise newError(errorCode, 'lasso_lecp_process_authn_response_envelope_msg')
 
     def set_identity_from_dump(self, dump):
-        lassomod.lasso_profile_set_identity_from_dump(self.parent.parent, dump)
+        return parent.set_identity_from_dump(dump)
 
     def set_session_from_dump(self, dump):
-        lassomod.lasso_profile_set_session_from_dump(self.parent.parent, dump)
+        return parent.set_session_from_dump(dump)
+
+registerClass(Lecp)
+
+
+get_request_type_from_soap_msg = lassomod.lasso_profile_get_request_type_from_soap_msg
 
 
 ################################################################################
@@ -683,13 +696,21 @@ if __name__ == '__main__':
         os.path.join(dataDirectoryPath, 'idp1-la/metadata.xml'),
         os.path.join(dataDirectoryPath, 'idp1-la/public-key.pem'),
         os.path.join(dataDirectoryPath, 'idp1-la/certificate.pem'))
+
+    # We override one of the binding classes.
+    class MyAuthnRequest(AuthnRequest):
+        def __repr__(self):
+            return 'This is my own class for AuthnRequest!'
+    registerClass(MyAuthnRequest)
+
     login = Login(server)
     login.init_authn_request()
+    print 'Class overriding works:', login.request
     login.request.set_isPassive(False)
     login.request.set_nameIDPolicy(libNameIDPolicyTypeFederated)
     login.request.set_consent(libConsentObtained)
     login.build_authn_request_msg('https://idp1/metadata')
-    print login.msg_url
+    print 'Redirect URL =', login.msg_url
     shutdown()
 else:
     if not _initialized:
