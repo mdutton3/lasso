@@ -41,7 +41,7 @@ if not '../.libs' in sys.path:
 
 
 testSuites = (
-    'login_tests',
+    'profiles_tests',
     'errorchecking_tests',
     )
 

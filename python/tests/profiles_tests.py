@@ -42,6 +42,36 @@ except NameError:
     dataDir = '../../tests/data'
 
 
+class ServerTestCase(unittest.TestCase):
+    def test01(self):
+        """Server construction, dump & new_from_dump."""
+
+        lassoServer = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'),
+            lasso.signatureMethodRsaSha1)
+        lassoServer.add_provider(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        dump = lassoServer.dump()
+        lassoServer2 = lassoServer.new_from_dump(dump)
+        dump2 = lassoServer2.dump()
+        self.failUnlessEqual(dump, dump2)
+
+    def test02(self):
+        """Server construction without argument, dump & new_from_dump."""
+
+        lassoServer = lasso.Server()
+        lassoServer.add_provider(os.path.join(dataDir, 'idp1-la/metadata.xml'))
+        dump = lassoServer.dump()
+        lassoServer2 = lassoServer.new_from_dump(dump)
+        dump2 = lassoServer2.dump()
+        self.failUnlessEqual(dump, dump2)
+
+
 class LoginTestCase(unittest.TestCase):
     def test01(self):
         """SP login; testing access to authentication request."""
@@ -127,11 +157,12 @@ class DefederationTestCase(unittest.TestCase):
             self.fail('Defederation process_notification_msg should have failed.')
 
 
-suite1 = unittest.makeSuite(LoginTestCase, 'test')
-suite2 = unittest.makeSuite(LogoutTestCase, 'test')
-suite3 = unittest.makeSuite(DefederationTestCase, 'test')
+suite1 = unittest.makeSuite(ServerTestCase, 'test')
+suite2 = unittest.makeSuite(LoginTestCase, 'test')
+suite3 = unittest.makeSuite(LogoutTestCase, 'test')
+suite4 = unittest.makeSuite(DefederationTestCase, 'test')
 
-allTests = unittest.TestSuite((suite1, suite2, suite3))
+allTests = unittest.TestSuite((suite1, suite2, suite3, suite4))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
