@@ -2,15 +2,15 @@ Source: lasso
 Priority: optional
 Section: libs
 Maintainer: Frederic Peters <fpeters@debian.org>
-Build-Depends: debhelper (>= 4.0.0), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python2.3-dev, mono-mcs, mono-gac, mono-utils, php4-dev
+Build-Depends: debhelper (>= 4.0.0), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python, python2.3-dev, mono-mcs, mono-gac, mono-utils, php4-dev (>= 4:4.3.10-3), libexpat1-dev
 Standards-Version: 3.6.1
 
-Package: liblasso1-dev
+Package: liblasso3-dev
 Section: libdevel
 Architecture: any
-Depends: liblasso1 (= ${Source-Version}), libxml2-dev, libxmlsec1-dev
+Depends: liblasso3 (= ${Source-Version}), libxml2-dev, libxmlsec1-dev, libglib2.0-dev
 Provides: liblasso-dev
-Conflicts: liblasso-dev, liblasso0
+Conflicts: liblasso-dev, liblasso0, liblasso1
 Description: Liberty ID-FF library - development kit
  Lasso is an implementation of the Liberty Identity Federation specifications
  defined by the Liberty Alliance consortium.  They defines processes such as
@@ -21,7 +21,7 @@ Description: Liberty ID-FF library - development kit
  Homepage: http://lasso.entrouvert.org
  
 
-Package: liblasso1
+Package: liblasso3
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
@@ -69,7 +69,7 @@ Description: Liberty ID-FF library - .NET bindings
 Package: php4-lasso
 Section: web
 Architecture: any
-Depends: phpapi-20020918, ${shlibs:Depends}, ${misc:depends}
+Depends: phpapi-20020918-zts, ${shlibs:Depends}, ${misc:depends}
 Description: Liberty ID-FF library - PHP 4 bindings
  Lasso is an implementation of the Liberty Identity Federation specifications
  defined by the Liberty Alliance consortium.  They defines processes such as
