@@ -298,8 +298,11 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             # The user is no more authenticated on any identity provider. Log him out.
             del session.lassoSessionDump
             del session.userId
+            del user.sessionToken
+            del handler.user
             # We also delete the session, but it is not mandantory, since the user is logged out
             # anyway.
+            del handler.session
             del self.sessions[session.token] 
         else:
             # The user is still logged in on some other identity providers.

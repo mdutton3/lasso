@@ -215,6 +215,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
             # accept passive login connections inbetween.
             del session.lassoSessionDump
             del session.userId
+            del user.sessionToken
             # We also delete the session, but it is not mandantory, since the user is logged out
             # anyway.
             del self.sessions[session.token] 
