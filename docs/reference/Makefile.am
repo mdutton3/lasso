@@ -34,6 +34,7 @@ sgml: templates
 	@echo '*** Building SGML ***'
 	cd build && gtkdoc-mkdb --module=lasso \
 		    --main-sgml-file=lasso.sgml \
+		    --output-format=xml \
 		    --tmpl-dir=../tmpl/ \
 		    --source-dir=../$(DOC_SOURCE_DIR)/lasso \
 		    --output-dir=../sgml/
