@@ -27,22 +27,29 @@
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
-char *lasso_provider_get_providerID(LassoProvider *provider){
-     char *content;
-     
-     content = lasso_node_get_attr_value(provider->metadata, "ProviderID");
-
-     return(content);
+xmlChar *lasso_provider_get_providerID(LassoProvider *provider){
+     return(lasso_node_get_attr_value(provider->metadata, "ProviderID"));
 }
 
-char *lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider){
+xmlChar *lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider){
      return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL));
 }
 
-char *lasso_provider_get_singleSignOnServiceUrl(LassoProvider *provider){
+xmlChar *lasso_provider_get_singleSignOnServiceUrl(LassoProvider *provider){
      return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceUrl", NULL));
 }
 
+xmlChar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider){
+     return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL));
+}
+
+xmlChar *lasso_provider_get_singleLogoutServiceUrl(LassoProvider *provider){
+     return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceUrl", NULL));
+}
+
+xmlChar *lasso_provider_get_singleLogoutServiceReturnUrl(LassoProvider *provider){
+     return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnUrl", NULL));
+}
 
 /*****************************************************************************/
 /* private methods                                                           */
