@@ -25,11 +25,6 @@
 
 #include <lasso/id-wsf/wsf_profile.h>
 
-struct _LassoWsfProfilePrivate
-{
-	gboolean dispose_has_run;
-};
-
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -37,7 +32,6 @@ struct _LassoWsfProfilePrivate
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
-	profile->msg_url = NULL; /* FIXME : set SOAP url */
 	profile->msg_body = lasso_node_export_to_soap(profile->request, /* FIXME : set keys */
 						      NULL,
 						      NULL);
@@ -48,7 +42,6 @@ lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 gint
 lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 {
-	profile->msg_url = NULL; /* FIXME : set SOAP url */
 	profile->msg_body = lasso_node_export_to_soap(profile->response, /* FIXME : set keys */
 						      NULL,
 						      NULL);
@@ -62,39 +55,6 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 
 static LassoNodeClass *parent_class = NULL;
 
-/*****************************************************************************/
-/* overridden parent class methods                                           */
-/*****************************************************************************/
-
-static void
-dispose(GObject *object)
-{
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(object);
-
-	if (profile->private_data->dispose_has_run) {
-		return;
-	}
-	profile->private_data->dispose_has_run = TRUE;
-
-	debug("LassoWsfProfile object 0x%x disposed ...", profile);
-
-	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
-}
-
-static void
-finalize(GObject *object)
-{
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(object);
-
-	debug("LassoWsfProfile object 0x%x finalized ...", object);
-
-	g_free(profile->msg_url);
-	g_free(profile->msg_body);
-
-	g_free(profile->private_data);
-
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -103,9 +63,6 @@ finalize(GObject *object)
 static void
 instance_init(LassoWsfProfile *profile)
 {
-	profile->private_data = g_new(LassoWsfProfilePrivate, 1);
-	profile->private_data->dispose_has_run = FALSE;
-
 	profile->server = NULL;
 	profile->request = NULL;
 	profile->response = NULL;
@@ -116,10 +73,7 @@ instance_init(LassoWsfProfile *profile)
 static void
 class_init(LassoWsfProfileClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
 
-	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType

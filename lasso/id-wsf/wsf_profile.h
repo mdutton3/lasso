@@ -59,7 +59,6 @@ struct _LassoWsfProfile {
 	gchar *msg_url;
 	gchar *msg_body;
 
-	LassoWsfProfilePrivate *private_data;
 };
 
 struct _LassoWsfProfileClass {
