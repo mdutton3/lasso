@@ -721,6 +721,10 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 	}
 
+	if (strcmp(xmlnode->ns->href, LASSO_SOAP_ENV_HREF) == 0)
+		prefix = "Soap";
+	if (strcmp(xmlnode->ns->href, LASSO_SOAP_BINDING_HREF) == 0)
+		prefix = "SoapBinding";
 	if (strcmp(xmlnode->ns->href, LASSO_DISCO_HREF) == 0)
 		prefix = "Disco";
 	if (strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0)

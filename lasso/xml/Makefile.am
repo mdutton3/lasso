@@ -95,6 +95,10 @@ liblasso_xml_la_SOURCES = \
 	samlp_response_abstract.c \
 	samlp_status.c \
 	samlp_status_code.c \
+	soap_binding_correlation.c \
+	soap_body.c \
+	soap_envelope.c \
+	soap_header.c \
 	utility_status.c
 
 liblassoinclude_HEADERS = \
@@ -184,6 +188,10 @@ liblassoinclude_HEADERS = \
 	samlp_response_abstract.h \
 	samlp_status.h \
 	samlp_status_code.h \
+	soap_binding_correlation.h \
+	soap_body.h \
+	soap_envelope.h \
+	soap_header.h \
 	utility_status.h
 
 lasso_private_h_sources = \
