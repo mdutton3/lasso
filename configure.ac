@@ -670,6 +670,8 @@ tests/data/idp1-la/Makefile
 tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
 lasso.pc
+win32/Makefile
+win32/nsis/Makefile
 ])
 languages_available=`echo $languages_available | sed -e "s/^ //" `
 AC_MSG_RESULT(
