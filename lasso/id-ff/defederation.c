@@ -148,9 +148,6 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   }
 
   done:
-/*   if (provider != NULL) { */
-/*     lasso_provider_destroy(provider); */
-/*   } */
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
   }
