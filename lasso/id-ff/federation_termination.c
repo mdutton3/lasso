@@ -67,8 +67,18 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 							 profileContext->server->private_key);
     profileContext->msg_body = NULL;
   }
+  else{
+    debug(ERROR, "Unknown protocol profile\n");
+    return(-4);
+  }
 
   return(0);
+}
+
+void
+lasso_federation_termination_destroy(LassoFederationTermination *defederation)
+{
+  g_object_unref(G_OBJECT(defederation));
 }
 
 gchar *

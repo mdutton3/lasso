@@ -62,6 +62,8 @@ LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new       
   
 LASSO_EXPORT gint                        lasso_federation_termination_build_notification_msg   (LassoFederationTermination *defederation);
 
+LASSO_EXPORT void                        lasso_federation_termination_destroy                  (LassoFederationTermination *defederation);
+
 LASSO_EXPORT gchar*                      lasso_federation_termination_dump                    (LassoFederationTermination *defederation); 
 
 LASSO_EXPORT gint                        lasso_federation_termination_init_notification        (LassoFederationTermination *defederation,

@@ -255,31 +255,39 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
 						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
 
-  g_return_val_if_fail(profileContext->response!=NULL, -4);
+  if(profileContext->response==NULL){
+    debug(ERROR, "Error while building response\n");
+    return(-4);
+  }
 
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
   statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
 
   nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
   if(nameIdentifier==NULL){
+    debug(ERROR, "No name identifier found in logout request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-5);
   }
 
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
+  if(remote_providerID==NULL){
+    debug(ERROR, "No provider id found in logout request\n");
+    return(-6);
+  }
 
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
     debug(WARNING, "No identity for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-6);
+    return(-7);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
     debug(WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-7);
+    return(-8);
   }
 
   /* verify authentication (if ok, delete assertion) */
@@ -287,7 +295,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   if(assertion==NULL){
     debug(WARNING, "%s has no assertion\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
-    return(-8);
+    return(-9);
   }
 
   return(0);
@@ -311,6 +319,9 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
   switch(response_method){
   case lassoHttpMethodSoap:
     profileContext->response = lasso_logout_response_new_from_soap(response_msg);
+    break;
+  case lassoHttpMethodRedirect:
+    profileContext->response = lasso_logout_response_new_from_query(response_msg);
     break;
   default:
     debug(ERROR, "Unknown response method\n");

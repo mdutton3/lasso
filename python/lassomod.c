@@ -53,6 +53,7 @@
 #include "protocols/elements/py_assertion.h"
 #include "protocols/elements/py_authentication_statement.h"
 
+#include "environs/py_federation_termination.h"
 #include "environs/py_login.h"
 #include "environs/py_logout.h"
 #include "environs/py_server.h"
@@ -201,6 +202,14 @@ static PyMethodDef lasso_methods[] = {
   {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
 
   /* environs */
+
+  /* py_federation_termination.h */
+  {"federation_termination_new",                      federation_termination_new,                      METH_VARARGS},
+  {"federation_termination_build_notification_msg",   federation_termination_build_notification_msg,   METH_VARARGS},
+  {"federation_termination_destroy",                  federation_termination_destroy,                  METH_VARARGS},
+  {"federation_termination_init_notification",        federation_termination_init_notification,        METH_VARARGS},
+  {"federation_termination_process_notification_msg", federation_termination_process_notification_msg, METH_VARARGS},
+
   /* py_login.h */
   {"login_getattr",                     login_getattr,                     METH_VARARGS},
   {"login_new",                         login_new,                         METH_VARARGS},
