@@ -44,6 +44,7 @@ typedef enum {
 	SNIPPET_LIST_CONTENT,
 	SNIPPET_EXTENSION,
 	SNIPPET_SIGNATURE,
+	SNIPPET_LIST_XMLNODES,
 
 	/* transformers for content transformation */
 	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */

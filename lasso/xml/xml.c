@@ -336,7 +336,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					GList **location = value;
 					xmlChar *s = xmlNodeGetContent(t);
 					*location = g_list_append(*location, s);
-				} else if (type == SNIPPET_EXTENSION) {
+				} else if (type == SNIPPET_EXTENSION ||
+						type == SNIPPET_LIST_XMLNODES) {
 					GList **location = value;
 					*location = g_list_append(*location, xmlCopyNode(t, 1));
 				}
@@ -485,8 +486,11 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_EXTENSION:
 				case SNIPPET_LIST_NODES:
 				case SNIPPET_LIST_CONTENT:
+				case SNIPPET_LIST_XMLNODES:
 					elem = (GList*)(*value);
 					while (elem) {
+						if (type == SNIPPET_LIST_XMLNODES)
+							xmlFreeNode(elem->data);
 						if (type == SNIPPET_EXTENSION)
 							xmlFreeNode(elem->data);
 						if (type == SNIPPET_LIST_NODES)
@@ -919,6 +923,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					elem = g_list_next(elem);
 				}
 				break;
+			case SNIPPET_LIST_XMLNODES:
 			case SNIPPET_EXTENSION:
 				elem = (GList *)value;
 				while (elem) {

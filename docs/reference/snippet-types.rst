@@ -60,6 +60,15 @@ SNIPPET_LIST_CONTENT
     <Name>Value-n</Name>
   </Parent>
 
+SNIPPET_LIST_XMLNODES
+
+  <Parent>
+    <Value-1/>
+    <Value-2/>
+    <Value-3/>
+  </Parent>
+
+
 SNIPPET_EXTENSION
 
   (for <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>)
