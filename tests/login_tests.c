@@ -96,6 +96,7 @@ START_TEST(test02_serviceProviderLogin)
 	char *idpIdentityContextDump;
 	char *soapResponseMsg;
 	char *spIdentityContextDump, *spIdentityContextDumpTemp;
+	char *spSessionDump;
 	int requestType;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
@@ -184,6 +185,7 @@ START_TEST(test02_serviceProviderLogin)
 			"spLoginContext has no identity");
 	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
 	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
+	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
 
 	/* Service provider logout */
 	lasso_server_destroy(spContext);
@@ -191,9 +193,11 @@ START_TEST(test02_serviceProviderLogin)
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
 	spLogoutContext = lasso_logout_new(spContext, lassoProviderTypeSp);
+	fail_unless(spLogoutContext != NULL, "spLogoutContext should not be NULL");
 	lasso_profile_set_identity_from_dump(LASSO_PROFILE(spLogoutContext),
 						 spIdentityContextDump);
-	fail_unless(spLogoutContext != NULL, "spLogoutContext should not be NULL");
+	lasso_profile_set_session_from_dump(LASSO_PROFILE(spLogoutContext),
+						spSessionDump);
 	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLogoutContext)->identity);
 	fail_unless(spIdentityContextDump != NULL, "spIdentityContextDump should not be NULL");
 	rc = lasso_logout_init_request(spLogoutContext, NULL);
