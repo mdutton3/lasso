@@ -90,7 +90,7 @@ struct _LassoProfile {
 	lassoHttpMethod http_request_method;
 	gint signature_status;
 
-	LassoProfilePrivate *private;
+	LassoProfilePrivate *private_data;
 };
 
 struct _LassoProfileClass {

@@ -57,14 +57,13 @@ typedef enum {
 struct _LassoLogin {
 	LassoProfile parent;
 
-	/*< public >*/
 	lassoLoginProtocolProfile protocolProfile;
 	gchar *assertionArtifact;
 
 	/*< private >*/
 	gchar *nameIDPolicy;
 	lassoHttpMethod http_method;
-	LassoLoginPrivate *private;
+	LassoLoginPrivate *private_data;
 };
 
 struct _LassoLoginClass {

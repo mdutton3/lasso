@@ -46,8 +46,7 @@ typedef struct _LassoDefederationPrivate LassoDefederationPrivate;
 
 struct _LassoDefederation {
 	LassoProfile parent;
-	/*< private >*/
-	LassoDefederationPrivate *private;
+	LassoDefederationPrivate *private_data;
 };
 
 struct _LassoDefederationClass {

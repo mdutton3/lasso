@@ -76,8 +76,7 @@ struct _LassoProvider {
 	gchar *public_key;
 	gchar *ca_cert_chain;
 
-	/*< private >*/
-	LassoProviderPrivate *private;
+	LassoProviderPrivate *private_data;
 };
 
 struct _LassoProviderClass {

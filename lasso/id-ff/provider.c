@@ -67,9 +67,9 @@ lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 	GList *l;
 	GHashTable *descriptor;
 
-	descriptor = provider->private->SPDescriptor; /* default to SP */
+	descriptor = provider->private_data->SPDescriptor; /* default to SP */
 	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
-		descriptor = provider->private->IDPDescriptor;
+		descriptor = provider->private_data->IDPDescriptor;
 
 	l = g_hash_table_lookup(descriptor, name);
 	if (l)
@@ -83,9 +83,9 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 {
 	GHashTable *descriptor;
 
-	descriptor = provider->private->SPDescriptor; /* default to SP */
+	descriptor = provider->private_data->SPDescriptor; /* default to SP */
 	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
-		descriptor = provider->private->IDPDescriptor;
+		descriptor = provider->private_data->IDPDescriptor;
 
 	return g_hash_table_lookup(descriptor, name);
 }
@@ -244,15 +244,15 @@ get_xmlNode(LassoNode *node)
 	if (provider->ca_cert_chain)
 		xmlNewTextChild(xmlnode, NULL, "CaCertChainFilePath", provider->ca_cert_chain);
 
-	if (g_hash_table_size(provider->private->SPDescriptor)) {
+	if (g_hash_table_size(provider->private_data->SPDescriptor)) {
 		t = xmlNewTextChild(xmlnode, NULL, "SPDescriptor", NULL);
-		g_hash_table_foreach(provider->private->SPDescriptor,
+		g_hash_table_foreach(provider->private_data->SPDescriptor,
 				(GHFunc)add_descriptor_childnodes, t);
 	}
 
-	if (g_hash_table_size(provider->private->IDPDescriptor)) {
+	if (g_hash_table_size(provider->private_data->IDPDescriptor)) {
 		t = xmlNewTextChild(xmlnode, NULL, "IDPDescriptor", NULL);
-		g_hash_table_foreach(provider->private->IDPDescriptor,
+		g_hash_table_foreach(provider->private_data->IDPDescriptor,
 				(GHFunc)add_descriptor_childnodes, t);
 	}
 	
@@ -292,9 +292,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		if (strcmp(t->name, "CaCertChainFilePath") == 0)
 			provider->ca_cert_chain = xmlNodeGetContent(t);
 		if (strcmp(t->name, "SPDescriptor") == 0)
-			load_descriptor(t, provider->private->SPDescriptor);
+			load_descriptor(t, provider->private_data->SPDescriptor);
 		if (strcmp(t->name, "IDPDescriptor") == 0)
-			load_descriptor(t, provider->private->IDPDescriptor);
+			load_descriptor(t, provider->private_data->IDPDescriptor);
 		t = t->next;
 	}
 	return 0;
@@ -309,10 +309,10 @@ dispose(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
 
-	if (provider->private->dispose_has_run) {
+	if (provider->private_data->dispose_has_run) {
 		return;
 	}
-	provider->private->dispose_has_run = TRUE;
+	provider->private_data->dispose_has_run = TRUE;
 
 	debug("Provider object 0x%x disposed ...", provider);
 
@@ -330,7 +330,7 @@ finalize(GObject *object)
 
 	g_free(provider->public_key);
 	g_free(provider->ca_cert_chain);
-	g_free(provider->private);
+	g_free(provider->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(provider));
 }
@@ -342,15 +342,15 @@ finalize(GObject *object)
 static void
 instance_init(LassoProvider *provider)
 {
-	provider->private = g_new (LassoProviderPrivate, 1);
-	provider->private->dispose_has_run = FALSE;
+	provider->private_data = g_new(LassoProviderPrivate, 1);
+	provider->private_data->dispose_has_run = FALSE;
 	provider->role = LASSO_PROVIDER_ROLE_NONE;
 	provider->public_key = NULL;
 	provider->ca_cert_chain = NULL;
 	provider->ProviderID = NULL;
-	provider->private->IDPDescriptor = g_hash_table_new_full(
+	provider->private_data->IDPDescriptor = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free, NULL);
-	provider->private->SPDescriptor = g_hash_table_new_full(
+	provider->private_data->SPDescriptor = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free, NULL);
 }
 
@@ -413,11 +413,13 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:IDPDescriptor", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval->nodeNr == 1)
-		load_descriptor(xpathObj->nodesetval->nodeTab[0], provider->private->IDPDescriptor);
+		load_descriptor(xpathObj->nodesetval->nodeTab[0],
+				provider->private_data->IDPDescriptor);
 	xmlXPathFreeObject(xpathObj);
 	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:SPDescriptor", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval->nodeNr == 1)
-		load_descriptor(xpathObj->nodesetval->nodeTab[0], provider->private->SPDescriptor);
+		load_descriptor(xpathObj->nodesetval->nodeTab[0],
+				provider->private_data->SPDescriptor);
 	xmlXPathFreeObject(xpathObj);
 
 	xmlFreeDoc(doc);

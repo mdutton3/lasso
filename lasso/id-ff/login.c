@@ -1311,10 +1311,10 @@ dispose(GObject *object)
 {
 	LassoLogin *login = LASSO_LOGIN(object);
 
-	if (login->private->dispose_has_run == TRUE) {
+	if (login->private_data->dispose_has_run == TRUE) {
 		return;
 	}
-	login->private->dispose_has_run = TRUE;
+	login->private_data->dispose_has_run = TRUE;
 
 	debug("Login object 0x%x disposed ...", login);
 
@@ -1330,7 +1330,7 @@ finalize(GObject *object)
 
 	debug("Login object 0x%x finalized ...", login);
 	g_free(login->assertionArtifact);
-	g_free(login->private);
+	g_free(login->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -1341,8 +1341,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogin *login)
 {
-	login->private = g_new (LassoLoginPrivate, 1);
-	login->private->dispose_has_run = FALSE;
+	login->private_data = g_new(LassoLoginPrivate, 1);
+	login->private_data->dispose_has_run = FALSE;
 
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;

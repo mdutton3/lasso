@@ -200,10 +200,10 @@ static void
 dispose(GObject *object)
 {
 	LassoFederation *federation = LASSO_FEDERATION(object);
-	if (federation->private->dispose_has_run) {
+	if (federation->private_data->dispose_has_run) {
 		return;
 	}
-	federation->private->dispose_has_run = TRUE;
+	federation->private_data->dispose_has_run = TRUE;
 
 	debug("Federation object 0x%x disposed ...", federation);
 
@@ -221,7 +221,7 @@ finalize(GObject *object)
 	debug("Federation object 0x%x finalized ...", federation);
 
 	g_free(federation->remote_providerID);
-	g_free(federation->private);
+	g_free(federation->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
@@ -233,8 +233,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoFederation *federation)
 {
-	federation->private = g_new (LassoFederationPrivate, 1);
-	federation->private->dispose_has_run = FALSE;
+	federation->private_data = g_new(LassoFederationPrivate, 1);
+	federation->private_data->dispose_has_run = FALSE;
 
 	federation->remote_providerID  = NULL;
 	federation->local_nameIdentifier  = NULL;

@@ -133,10 +133,10 @@ dispose(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
-	if (identity->private->dispose_has_run == TRUE) {
+	if (identity->private_data->dispose_has_run == TRUE) {
 		return;
 	}
-	identity->private->dispose_has_run = TRUE;
+	identity->private_data->dispose_has_run = TRUE;
 
 	debug("Identity object 0x%x disposed ...", identity);
 
@@ -152,7 +152,7 @@ finalize(GObject *object)
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
 	debug("Identity object 0x%x finalized ...", identity);
-	identity->private = NULL;
+	identity->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -163,8 +163,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoIdentity *identity)
 {
-	identity->private = g_new (LassoIdentityPrivate, 1);
-	identity->private->dispose_has_run = FALSE;
+	identity->private_data = g_new(LassoIdentityPrivate, 1);
+	identity->private_data->dispose_has_run = FALSE;
 
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,

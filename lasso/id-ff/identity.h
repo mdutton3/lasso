@@ -47,12 +47,10 @@ typedef struct _LassoIdentityPrivate LassoIdentityPrivate;
 struct _LassoIdentity {
 	LassoNode parent;
 
-	/*< public >*/
 	GHashTable *federations; /* hash for federations with remote ProviderID as key */
 	gboolean is_dirty;
 
-	/*< private >*/
-	LassoIdentityPrivate *private;
+	LassoIdentityPrivate *private_data;
 };
 
 struct _LassoIdentityClass {

@@ -80,7 +80,7 @@ lasso_session_get_first_providerID(LassoSession *session)
 static void
 add_providerID(gchar *key, LassoLibAssertion *assertion, LassoSession *session)
 {
-	session->private->providerIDs = g_list_append(session->private->providerIDs, key);
+	session->private_data->providerIDs = g_list_append(session->private_data->providerIDs, key);
 }
 
 gchar*
@@ -88,7 +88,7 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 {
 	GList *element;
 
-	if (session->private->providerIDs == NULL) {
+	if (session->private_data->providerIDs == NULL) {
 		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
 		/* XXX? create list */
 	}
@@ -96,7 +96,7 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 	if (g_hash_table_size(session->assertions) == 0)
 		return NULL;
 
-	element = g_list_nth(session->private->providerIDs, index);
+	element = g_list_nth(session->private_data->providerIDs, index);
 	if (element == NULL)
 		return NULL;
 
@@ -188,10 +188,10 @@ dispose(GObject *object)
 {
 	LassoSession *session = LASSO_SESSION(object);
 
-	if (session->private->dispose_has_run == TRUE) {
+	if (session->private_data->dispose_has_run == TRUE) {
 		return;
 	}
-	session->private->dispose_has_run = TRUE;
+	session->private_data->dispose_has_run = TRUE;
 
 	debug("Session object 0x%x disposed ...", session);
 
@@ -210,8 +210,8 @@ finalize(GObject *object)
 
 	debug("Session object 0x%x finalized ...", session);
 
-	g_free(session->private);
-	session->private = NULL;
+	g_free(session->private_data);
+	session->private_data = NULL;
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
@@ -223,9 +223,9 @@ finalize(GObject *object)
 static void
 instance_init(LassoSession *session)
 {
-	session->private = g_new (LassoSessionPrivate, 1);
-	session->private->dispose_has_run = FALSE;
-	session->private->providerIDs = NULL;
+	session->private_data = g_new (LassoSessionPrivate, 1);
+	session->private_data->dispose_has_run = FALSE;
+	session->private_data->providerIDs = NULL;
 
 	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,

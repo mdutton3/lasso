@@ -51,7 +51,7 @@ struct _LassoSession {
 	gboolean is_dirty;
 
 	/*< private >*/
-	LassoSessionPrivate *private;
+	LassoSessionPrivate *private_data;
 };
 
 struct _LassoSessionClass {

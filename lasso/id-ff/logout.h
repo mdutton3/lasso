@@ -55,7 +55,7 @@ struct _LassoLogout {
 	gint       providerID_index;
 	lassoHttpMethod initial_http_request_method;
 
-	LassoLogoutPrivate *private;
+	LassoLogoutPrivate *private_data;
 };
 
 struct _LassoLogoutClass {

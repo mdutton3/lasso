@@ -440,10 +440,10 @@ static void
 dispose(GObject *object)
 {
 	LassoDefederation *defederation = LASSO_DEFEDERATION(object);
-	if (defederation->private->dispose_has_run == TRUE) {
+	if (defederation->private_data->dispose_has_run == TRUE) {
 		return;
 	}
-	defederation->private->dispose_has_run = TRUE;
+	defederation->private_data->dispose_has_run = TRUE;
 	debug("Defederation object 0x%x disposed ...", defederation);
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
@@ -454,7 +454,7 @@ finalize(GObject *object)
 {
 	LassoDefederation *defederation = LASSO_DEFEDERATION(object);
 	debug("Defederation object 0x%x finalized ...", defederation);
-	g_free (defederation->private);
+	g_free(defederation->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -465,8 +465,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoDefederation *defederation)
 {
-	defederation->private = g_new (LassoDefederationPrivate, 1);
-	defederation->private->dispose_has_run = FALSE;
+	defederation->private_data = g_new(LassoDefederationPrivate, 1);
+	defederation->private_data->dispose_has_run = FALSE;
 }
 
 static void

@@ -52,8 +52,7 @@ struct _LassoFederation {
 	LassoSamlNameIdentifier *local_nameIdentifier;
 	LassoSamlNameIdentifier *remote_nameIdentifier;
 
-	/*< private >*/
-	LassoFederationPrivate *private;
+	LassoFederationPrivate *private_data;
 };
 
 struct _LassoFederationClass {

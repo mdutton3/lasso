@@ -239,10 +239,10 @@ dispose(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
 
-	if (server->private->dispose_has_run == TRUE) {
+	if (server->private_data->dispose_has_run == TRUE) {
 		return;
 	}
-	server->private->dispose_has_run = TRUE;
+	server->private_data->dispose_has_run = TRUE;
 
 	debug("Server object 0x%x disposed ...", server);
 
@@ -263,7 +263,7 @@ finalize(GObject *object)
 	g_free(server->secret_key);
 	g_free(server->certificate);
 
-	g_free(server->private);
+	g_free(server->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(server));
 }
@@ -275,8 +275,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoServer *server)
 {
-	server->private = g_new(LassoServerPrivate, 1);
-	server->private->dispose_has_run = FALSE;
+	server->private_data = g_new(LassoServerPrivate, 1);
+	server->private_data->dispose_has_run = FALSE;
 
 	server->providers = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free,

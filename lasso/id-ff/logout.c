@@ -733,11 +733,11 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
 			profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 
-		logout->private->all_soap = TRUE;
+		logout->private_data->all_soap = TRUE;
 		g_hash_table_foreach(profile->server->providers,
 				(GHFunc)check_soap_support, profile);
 
-		if (logout->private->all_soap == FALSE) {
+		if (logout->private_data->all_soap == FALSE) {
 			lasso_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE);
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
@@ -796,7 +796,7 @@ static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile
 		return; /* provider support profile */
 
 	
-	LASSO_LOGOUT(profile)->private->all_soap = FALSE;
+	LASSO_LOGOUT(profile)->private_data->all_soap = FALSE;
 }
 
 
@@ -870,10 +870,10 @@ static void
 dispose(GObject *object)
 {
 	LassoLogout *logout = LASSO_LOGOUT(object);
-	if (logout->private->dispose_has_run) {
+	if (logout->private_data->dispose_has_run) {
 		return;
 	}
-	logout->private->dispose_has_run = TRUE;
+	logout->private_data->dispose_has_run = TRUE;
 
 	debug("Logout object 0x%x disposed ...", logout);
 
@@ -892,7 +892,7 @@ finalize(GObject *object)
 	LassoLogout *logout = LASSO_LOGOUT(object);
 	debug("Logout object 0x%x finalized ...", logout);
 	g_free(logout->initial_remote_providerID);
-	g_free(logout->private);
+	g_free(logout->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -903,8 +903,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoLogout *logout)
 {
-	logout->private = g_new(LassoLogoutPrivate, 1);
-	logout->private->dispose_has_run = FALSE;
+	logout->private_data = g_new(LassoLogoutPrivate, 1);
+	logout->private_data->dispose_has_run = FALSE;
 
 	logout->initial_request = NULL;
 	logout->initial_response = NULL;

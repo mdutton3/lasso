@@ -341,10 +341,10 @@ dispose(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
 
-	if (profile->private->dispose_has_run) {
+	if (profile->private_data->dispose_has_run) {
 		return;
 	}
-	profile->private->dispose_has_run = TRUE;
+	profile->private_data->dispose_has_run = TRUE;
 
 	debug("Profile object 0x%x disposed ...", profile);
 
@@ -373,7 +373,7 @@ finalize(GObject *object)
 	g_free(profile->msg_body);
 	g_free(profile->msg_relayState);
 
-	g_free (profile->private);
+	g_free(profile->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
@@ -385,8 +385,8 @@ finalize(GObject *object)
 static void
 instance_init(LassoProfile *profile)
 {
-	profile->private = g_new (LassoProfilePrivate, 1);
-	profile->private->dispose_has_run = FALSE;
+	profile->private_data = g_new(LassoProfilePrivate, 1);
+	profile->private_data->dispose_has_run = FALSE;
 
 	profile->server = NULL;
 	profile->request = NULL;

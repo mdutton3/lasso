@@ -54,7 +54,7 @@ struct _LassoServer {
 	lassoSignatureMethod signature_method;
 
 	/*< private >*/
-	LassoServerPrivate *private;
+	LassoServerPrivate *private_data;
 };
 
 struct _LassoServerClass {
