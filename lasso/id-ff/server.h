@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-ff/provider.h>
+#include <lasso/id-ff/service.h>
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
 #define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))
@@ -49,6 +50,7 @@ struct _LassoServer {
 	LassoProvider parent;
 
 	GHashTable *providers;
+	GHashTable *services;  /* hash for services with 'service type' as key */
 
 	gchar *private_key;
 	gchar *secret_key;
@@ -75,6 +77,10 @@ LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
 LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
 		LassoProviderRole role, gchar *metadata,
 		gchar *public_key, gchar *ca_cert_chain);
+
+LASSO_EXPORT gint lasso_server_add_service(LassoServer *server,
+					   const gchar *service_type,
+					   const gchar *service_endpoint);
 
 LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
 LASSO_EXPORT gchar* lasso_server_get_first_providerID(LassoServer *server);
