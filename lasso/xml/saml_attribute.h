@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SAML_REQUEST_H__
-#define __LASSO_SAML_REQUEST_H__
+#ifndef __LASSO_SAML_ATTRIBUTE_H__
+#define __LASSO_SAML_ATTRIBUTE_H__
 
 #ifdef __cplusplus
 extern "C" {
