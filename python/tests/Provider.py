@@ -21,8 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# FIXME: Replace principal with client in most methods.
-# FIXME: Rename webUser to userAccount.
 
 
 import lasso
@@ -31,5 +29,13 @@ from websimulator import *
 
 
 class Provider(WebSite):
+    responseHeaders = WebSite.responseHeaders.copy()
+    responseHeaders.update({
+        'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
+        })
+    serverDump = None
+    webUserIdsByNameIdentifier = None
+    webSessionIdsByNameIdentifier = None
+
     def getServer(self):
         return lasso.Server.new_from_dump(self.serverDump)

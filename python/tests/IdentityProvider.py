@@ -21,8 +21,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# FIXME: Replace principal with client in most methods.
-# FIXME: Rename webUser to userAccount.
 
 
 import lasso
@@ -40,49 +38,92 @@ class IdentityProvider(Provider):
 
     def singleSignOn(self, httpRequest):
         server = self.getServer()
-        login = lasso.Login.new(server)
-        webSession = self.getWebSession(httpRequest.client)
-        webUser = None
-        if webSession is not None:
+        if httpRequest.method == 'GET':
+            # Single sign-on using HTTP redirect.
+            login = lasso.Login.new(server)
+            webSession = self.getWebSession(httpRequest.client)
+            webUser = None
+            if webSession is not None:
+                if webSession.sessionDump is not None:
+                    login.set_session_from_dump(webSession.sessionDump)
+                webUser = self.getWebUserFromWebSession(webSession)
+                if webUser is not None and webUser.identityDump is not None:
+                    login.set_identity_from_dump(webUser.identityDump)
+            login.init_from_authn_request_msg(httpRequest.query, lasso.httpMethodRedirect)
+
+            if not login.must_authenticate():
+                userAuthenticated = webUser is not None
+                authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+                return self.singleSignOn_part2(
+                    httpRequest, login, webSession, webUser, userAuthenticated,
+                    authenticationMethod)
+
+            if webSession is None:
+                webSession = self.createWebSession(httpRequest.client)
+            webSession.loginDump = login.dump()
+
+            # A real identity provider using a HTML form to ask user's login & password would store
+            # idpLoginDump in a session variable and display the HTML login form.
+            webUserId = httpRequest.client.keyring.get(self.url, None)
+            userAuthenticated = webUserId in self.webUsers
+            if userAuthenticated:
+                webSession.webUserId = webUserId
+            authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+
+            server = self.getServer()
+            webSession = self.getWebSession(httpRequest.client)
+            loginDump = webSession.loginDump
+            del webSession.loginDump
+            login = lasso.Login.new_from_dump(server, loginDump)
+            # Set identity & session in login, because loginDump doesn't contain them.
             if webSession.sessionDump is not None:
                 login.set_session_from_dump(webSession.sessionDump)
             webUser = self.getWebUserFromWebSession(webSession)
             if webUser is not None and webUser.identityDump is not None:
                 login.set_identity_from_dump(webUser.identityDump)
-        login.init_from_authn_request_msg(httpRequest.query, lasso.httpMethodRedirect)
 
-        if not login.must_authenticate():
-            userAuthenticated = webUser is not None
-            authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
             return self.singleSignOn_part2(
                 httpRequest, login, webSession, webUser, userAuthenticated, authenticationMethod)
-
-        if webSession is None:
-            webSession = self.createWebSession(httpRequest.client)
-        webSession.loginDump = login.dump()
-
-        # A real identity provider using a HTML form to ask user's login & password would store
-        # idpLoginDump in a session variable and display the HTML login form.
-        webUserId = httpRequest.client.keyring.get(self.url, None)
-        userAuthenticated = webUserId in self.webUsers
-        if userAuthenticated:
-            webSession.webUserId = webUserId
-        authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
-
-        server = self.getServer()
-        webSession = self.getWebSession(httpRequest.client)
-        loginDump = webSession.loginDump
-        del webSession.loginDump
-        login = lasso.Login.new_from_dump(server, loginDump)
-        # Set identity & session in login, because loginDump doesn't contain them.
-        if webSession.sessionDump is not None:
-            login.set_session_from_dump(webSession.sessionDump)
-        webUser = self.getWebUserFromWebSession(webSession)
-        if webUser is not None and webUser.identityDump is not None:
-            login.set_identity_from_dump(webUser.identityDump)
-
-        return self.singleSignOn_part2(
-            httpRequest, login, webSession, webUser, userAuthenticated, authenticationMethod)
+        elif httpRequest.method == 'POST' \
+               and httpRequest.headers.get('Content-Type', None) == 'text/xml':
+            # SOAP request => LECP single sign-on.
+            lecp = lasso.Lecp.new(server)
+            webSession = self.getWebSession(httpRequest.client)
+            webUser = None
+            if webSession is not None:
+                if webSession.sessionDump is not None:
+                    lecp.set_session_from_dump(webSession.sessionDump)
+                webUser = self.getWebUserFromWebSession(webSession)
+                if webUser is not None and webUser.identityDump is not None:
+                    lecp.set_identity_from_dump(webUser.identityDump)
+            lecp.init_from_authn_request_msg(httpRequest.body, lasso.httpMethodSoap)
+            # FIXME: lecp.must_authenticate() should always return False.
+            # The other solution is that we are able to not call lecp.must_authenticate()
+            # self.failIf(lecp.must_authenticate())
+            userAuthenticated = webUser is not None
+            authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+            # FIXME: It is very very strange that we don't provide userAuthenticated,
+            # authenticationMethod, reauthenticateOnOrAfter' to lecp before or when build response.
+            lecp.build_authn_response_envelope_msg()
+            soapResponseMsg = lecp.msg_body
+            self.failUnless(soapResponseMsg)
+            # FIXME: Lasso should set a lecp.msg_content_type to
+            # "application/vnd.liberty-response+xml". This should also be done for SOAP, etc, with
+            # other profiles.
+            # contentType = lecp.msg_content_type
+            # self.failUnlessEqual(contentType, 'application/vnd.liberty-response+xml')
+            contentType = 'application/vnd.liberty-response+xml'
+            return self.newHttpResponse(
+                200,
+                headers = {
+                    'Content-Type': contentType,
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    },
+                body = soapResponseMsg)
+        else:
+            return self.newHttpResponse(
+                400, 'Bad Request: Method %s not handled by singleSignOn' % httpRequest.method)
 
     def singleSignOn_part2(self, httpRequest, login, webSession, webUser, userAuthenticated,
                            authenticationMethod):
@@ -127,7 +168,8 @@ class IdentityProvider(Provider):
             soapResponseMsg = self.soapResponseMsgs.get(artifact, None)
             if soapResponseMsg is None:
                 raise Exception('FIXME: Handle the case when artifact is wrong')
-            return HttpResponse(200, body = soapResponseMsg)
+            return self.newHttpResponse(
+                200, headers = {'Content-Type': 'text/xml'}, body = soapResponseMsg)
         elif requestType == lasso.requestTypeLogout:
             server = self.getServer()
             logout = lasso.Logout.new(server, lasso.providerTypeIdp)
@@ -183,7 +225,9 @@ class IdentityProvider(Provider):
                 self.failUnless(soapEndpoint)
                 soapRequestMsg = logout.msg_body
                 self.failUnless(soapRequestMsg)
-                httpResponse = HttpRequest(self, 'POST', soapEndpoint, body = soapRequestMsg).ask()
+                httpResponse = sendHttpRequest(
+                    'POST', soapEndpoint, headers = {'Content-Type': 'text/xml'},
+                    body = soapRequestMsg)
                 self.failUnlessEqual(httpResponse.statusCode, 200)
                 logout.process_response_msg(httpResponse.body, lasso.httpMethodSoap)
 
@@ -192,6 +236,7 @@ class IdentityProvider(Provider):
             logout.build_response_msg()
             soapResponseMsg = logout.msg_body
             self.failUnless(soapResponseMsg)
-            return HttpResponse(200, body = soapResponseMsg)
+            return self.newHttpResponse(
+                200, headers = {'Content-Type': 'text/xml'}, body = soapResponseMsg)
         else:
             raise Exception('Unknown request type: %s' % requestType)

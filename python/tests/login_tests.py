@@ -33,6 +33,7 @@ sys.path.insert(0, '../.libs')
 import lasso
 
 from IdentityProvider import IdentityProvider
+from LibertyEnabledClient import LibertyEnabledClient
 from ServiceProvider import ServiceProvider
 from websimulator import *
 
@@ -63,6 +64,24 @@ class LoginTestCase(unittest.TestCase):
         # Frederic Peters has no account on identity provider.
         return site
 
+    def generateLibertyEnabledClient(self, internet):
+        client = LibertyEnabledClient(self, internet)
+        # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
+        # metadata, instead of using 'singleSignOnServiceUrl'.
+##         server = lasso.Server.new(
+##             None, # A LECP has no metadata.
+##             '../../examples/data/client-public-key.pem',
+##             '../../examples/data/client-private-key.pem',
+##             '../../examples/data/client-crt.pem',
+##             lasso.signatureMethodRsaSha1)
+##         server.add_provider(
+##             '../../examples/data/idp-metadata.xml',
+##             '../../examples/data/idp-public-key.pem',
+##             '../../examples/data/ca-crt.pem')
+##         client.server = server
+        client.idpSingleSignOnServiceUrl = 'https://identity-provider/singleSignOn'
+        return client
+        
     def generateSpSite(self, internet):
         site = ServiceProvider(self, internet, 'https://service-provider/')
         site.providerId = 'https://service-provider/metadata'
@@ -94,6 +113,19 @@ class LoginTestCase(unittest.TestCase):
 ##     def tearDown(self):
 ##         pass
 
+    def test00(self):
+        """LECP login."""
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        lec = self.generateLibertyEnabledClient(internet)
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
+        httpResponse = lec.login(principal, spSite, '/login')
+        raise str((httpResponse.headers['Content-Type'], httpResponse.body))
+
     def test01(self):
         """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP."""
 
@@ -105,9 +137,9 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
         self.failIf(spSite.webSessions)
         self.failIf(idpSite.webSessions)
@@ -123,30 +155,28 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Now the principal already has a federation between spSite and idpSite.
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Do a new passive login between normal login and logout.
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 200)
         del principal.keyring[idpSite.url] # Ensure identity provider will be really passive.
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again, with isPassive and the user having no web session.
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
     def test03(self):
@@ -160,9 +190,9 @@ class LoginTestCase(unittest.TestCase):
         # Frederic Peters has no account on identity provider.
         principal.keyring[spSite.url] = 'Frederic'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
     def test04(self):
@@ -177,9 +207,9 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[idpSite.url] = 'Nowicki'
         # Christophe Nowicki has no account on service provider.
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         self.failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
     def test05(self):
@@ -193,8 +223,7 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
     def test06(self):
@@ -208,28 +237,24 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Ask user to reauthenticate while he is already logged.
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         self.failUnlessEqual(httpResponse.statusCode, 200)
         del principal.keyring[idpSite.url] # Ensure user can't authenticate.
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         self.failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Force authentication, but user won't authenticate.
-        httpResponse = spSite.doHttpRequest(HttpRequest(
-            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
         self.failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
 ##     def test06(self):

@@ -21,6 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
 # FIXME: Replace principal with client in most methods.
 # FIXME: Rename webUser to userAccount.
 
@@ -28,20 +30,32 @@
 class HttpRequest(object):
     client = None # Principal or web site sending the request.
     body = None
-    header = None
+    form = None
+    headers = None
     method = None # 'GET' or 'POST' or 'PUT' or...
     url = None
 
-    def __init__(self, client, method, url, body = None):
+    def __init__(self, client, method, url, headers = None, body = None, form = None):
         self.client = client
         self.method = method
         self.url = url
+        if headers:
+            self.headers = headers
         if body:
             self.body = body
+        if form:
+            self.form = form
 
-    def ask(self):
+    def send(self):
         webSite = self.client.internet.getWebSite(self.url)
         return webSite.doHttpRequest(self)
+
+    def getFormField(self, name, default = 'none'):
+        if self.form and name in self.form:
+            return self.form[name]
+        if default == 'none':
+            raise KeyError(name)
+        return default
 
     def getQueryBoolean(self, name, default = 'none'):
         try:
@@ -60,8 +74,7 @@ class HttpRequest(object):
             return ''
 
     def getQueryField(self, name, default = 'none'):
-        query = self.query
-        if query:
+        if self.query:
             for field in self.query.split('&'):
                 fieldName, fieldValue = field.split('=')
                 if name == fieldName:
@@ -75,14 +88,16 @@ class HttpRequest(object):
 
 class HttpResponse(object):
     body = None
-    header = None
+    headers = None
     statusCode = None # 200 or...
     statusMessage = None
 
-    def __init__(self, statusCode, statusMessage = None, body = None):
+    def __init__(self, statusCode, statusMessage = None, headers = None, body = None):
         self.statusCode = statusCode
         if statusMessage:
             self.statusMessage = statusMessage
+        if headers:
+            self.headers = headers
         if body:
             self.body = body
 
@@ -137,6 +152,10 @@ class Simulation(object):
 class WebClient(object):
     internet = None
     keyring = None
+    requestHeaders = {
+        'User-Agent': 'LassoSimulator/0.0.0',
+        'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html',
+        }
     webSessionIds = None # Simulate the cookies, stored in user's navigator, and containing the
                          # IDs of sessions already opened by the user.
 
@@ -146,8 +165,30 @@ class WebClient(object):
         self.webSessionIds = {}
 
     def redirect(self, url):
-        webSite = self.internet.getWebSite(url)
-        return webSite.doHttpRequest(HttpRequest(self, 'GET', url))
+        return self.sendHttpRequest('GET', url)
+
+    def sendHttpRequest(self, method, url, headers = None, body = None, form = None):
+        requestHeaders = self.requestHeaders
+        if headers:
+            requestHeaders = self.requestHeaders.copy()
+            for name, value in headers.iteritems():
+                requestHeaders[name] = value
+        else:
+            requestHeaders = self.requestHeaders
+        return HttpRequest(
+            self, method, url, headers = requestHeaders, body = body, form = form).send()
+
+    def sendHttpRequestToSite(self, webSite, method, path, headers = None, body = None,
+                              form = None):
+        url = webSite.url
+        if path:
+            if path[0] == '/':
+                while url[-1] == '/':
+                    url = url[:-1]
+            elif url[-1] != '/':
+                url += '/'
+            url += path
+        return self.sendHttpRequest(method, url, headers = headers, body = body, form = form)
 
 
 class Principal(WebClient):
@@ -189,11 +230,11 @@ class WebSite(WebClient, Simulation):
 
     lastWebSessionId = 0
     providerId = None # The Liberty providerID of this web site
-    serverDump = None
+    responseHeaders = {
+        'Server': 'Lasso Simulator Web Server',
+        }
     url = None # The main URL of web site
-    webUserIdsByNameIdentifier = None
     webUsers = None
-    webSessionIdsByNameIdentifier = None
     webSessions = None
 
     def __init__(self, test, internet, url):
@@ -267,3 +308,14 @@ class WebSite(WebClient, Simulation):
             # The user has no account on this site.
             return None
         return self.webUsers.get(webUserId, None)
+
+    def newHttpResponse(self, statusCode, statusMessage = None, headers = None, body = None):
+        responseHeaders = self.responseHeaders
+        if headers:
+            responseHeaders = self.responseHeaders.copy()
+            for name, value in headers.iteritems():
+                responseHeaders[name] = value
+        else:
+            responseHeaders = self.responseHeaders
+        return HttpResponse(
+            statusCode, statusMessage = statusMessage, headers = headers, body = body)
