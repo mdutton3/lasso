@@ -71,7 +71,7 @@ public class CFLassoSingleSignOn {
     public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
 			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
         server = new Server(metadataPath, publicKeyPath, privateKeyPath, null,
-			    lassoConstants.signatureMethodRsaSha1);
+			    lassoConstants.SIGNATURE_METHOD_RSA_SHA1);
 	this.idpProviderId = idpProviderId;
         server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
         login = new Login(server);
@@ -113,17 +113,17 @@ public class CFLassoSingleSignOn {
 	AuthnRequest authnRequest;
 	String authnRequestUrl;
 
-        login.initAuthnRequest(lassoConstants.httpMethodRedirect);
+        login.initAuthnRequest(lassoConstants.HTTP_METHOD_REDIRECT);
 	authnRequest = login.getAuthnRequest();
         authnRequest.setIsPassive(false);
-        authnRequest.setNameIdPolicy(lassoConstants.libNameIdPolicyTypeFederated);
-        authnRequest.setConsent(lassoConstants.libConsentObtained);
+        authnRequest.setNameIdPolicy(lassoConstants.LIB_NAMEID_POLICY_TYPE_FEDERATED);
+        authnRequest.setConsent(lassoConstants.LIB_CONSENT_OBTAINED);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
     }
 
     public void initRequest(String queryString) {
-	login.initRequest(queryString, lassoConstants.httpMethodRedirect);
+	login.initRequest(queryString, lassoConstants.HTTP_METHOD_REDIRECT);
     }
 
     static public void main(String [] args) {

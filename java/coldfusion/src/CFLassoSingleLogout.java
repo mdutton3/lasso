@@ -46,7 +46,7 @@ public class CFLassoSingleLogout {
     public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
 			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
         server = new Server(metadataPath, publicKeyPath, privateKeyPath, null,
-			    lassoConstants.signatureMethodRsaSha1);
+			    lassoConstants.SIGNATURE_METHOD_RSA_SHA1);
 	this.idpProviderId = idpProviderId;
         server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
         logout = new Logout(server, lassoConstants.providerTypeSp);
@@ -81,11 +81,11 @@ public class CFLassoSingleLogout {
     }
 
     public void initRequest() {
-	logout.initRequest(idpProviderId, lassoConstants.httpMethodAny);
+	logout.initRequest(idpProviderId, lassoConstants.HTTP_METHOD_ANY);
     }
 
     public void processResponseMsg(String responseMsg) {
-	logout.processResponseMsg(responseMsg, lassoConstants.httpMethodSoap);
+	logout.processResponseMsg(responseMsg, lassoConstants.HTTP_METHOD_SOAP);
     }
 
     public void setIdentityFromDump(String identityDump) {

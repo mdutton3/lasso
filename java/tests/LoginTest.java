@@ -47,7 +47,7 @@ public class LoginTest extends TestCase {
 	    NULL, //"../../tests/data/idp1-la/public-key.pem",
             "../../tests/data/idp1-la/private-key-raw.pem",
             "../../tests/data/idp1-la/certificate.pem",
-	    Lasso.signatureMethodRsaSha1);
+	    Lasso.SIGNATURE_METHOD_RSA_SHA1);
         serverContext.addProvider(
             "../../tests/data/sp1-la/metadata.xml",
             "../../tests/data/sp1-la/public-key.pem",
@@ -62,7 +62,7 @@ public class LoginTest extends TestCase {
 	    NULL, //"../../tests/data/sp1-la/public-key.pem",
             "../../tests/data/sp1-la/private-key-raw.pem",
             "../../tests/data/sp1-la/certificate.pem",
-	    Lasso.signatureMethodRsaSha1);
+	    Lasso.SIGNATURE_METHOD_RSA_SHA1);
         serverContext.addProvider(
             "../../tests/data/idp1-la/metadata.xml",
             "../../tests/data/idp1-la/public-key.pem",
@@ -100,17 +100,17 @@ public class LoginTest extends TestCase {
         spLoginContext = new LassoLogin(spContext);
         assertEquals(0, spLoginContext.initAuthnRequest(
             "https://identity-provider:1998/liberty-alliance/metadata"));
-        assertEquals(Lasso.messageTypeAuthnRequest, spLoginContext.getRequestType());
+        assertEquals(Lasso.MESSAGE_TYPE_AUTHN_REQUEST, spLoginContext.getRequestType());
 	authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
         authnRequest.setPassive(false);
-        authnRequest.setNameIdPolicy(Lasso.libNameIdPolicyTypeFederated);
-        authnRequest.setConsent(Lasso.libConsentObtained);
+        authnRequest.setNameIdPolicy(Lasso.LIB_NAMEID_POLICY_TYPE_FEDERATED);
+        authnRequest.setConsent(Lasso.LIB_CONSENT_OBTAINED);
 	relayState = "fake";
         authnRequest.setRelayState(relayState);
         assertEquals(0, spLoginContext.buildAuthnRequestMsg());
         authnRequestUrl = spLoginContext.getMsgUrl();
         authnRequestQuery = authnRequestUrl.substring(authnRequestUrl.indexOf("?") + 1);
-        method = Lasso.httpMethodRedirect;
+        method = Lasso.HTTP_METHOD_REDIRECT;
 
 	// Identity provider singleSignOn, for a user having no federation.
         idpContextDump = generateIdentityProviderContextDump();
@@ -121,11 +121,11 @@ public class LoginTest extends TestCase {
         assertTrue(idpLoginContext.mustAuthenticate());
 
         userAuthenticated = true;
-        authenticationMethod = Lasso.samlAuthenticationMethodPassword;
-        assertEquals(Lasso.loginProtocolProfileBrwsArt, idpLoginContext.getProtocolProfile());
+        authenticationMethod = Lasso.SAML_AUTHENTICATION_METHOD_PASSWORD;
+        assertEquals(Lasso.LOGIN_PROTOCOL_PROFILE_BRWS_ART, idpLoginContext.getProtocolProfile());
         assertEquals(0, idpLoginContext.buildArtifactMsg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
-            Lasso.httpMethodRedirect));
+            Lasso.HTTP_METHOD_REDIRECT));
 	idpIdentityContextDump = idpLoginContext.getIdentity().dump();
         assertNotNull(idpIdentityContextDump);
 	idpSessionContextDump = idpLoginContext.getSession().dump();
@@ -135,7 +135,7 @@ public class LoginTest extends TestCase {
         soapResponseMsg = idpLoginContext.getResponseDump();
         artifact = idpLoginContext.getAssertionArtifact();
 	nameIdentifier = idpLoginContext.getNameIdentifier();
-        method = Lasso.httpMethodRedirect;
+        method = Lasso.HTTP_METHOD_REDIRECT;
 
         // Service provider assertion consumer.
         spContextDump = generateServiceProviderContextDump();
@@ -149,7 +149,7 @@ public class LoginTest extends TestCase {
 
         // Identity provider SOAP endpoint.
         requestType = Lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
-        assertEquals(Lasso.requestTypeLogin, requestType);
+        assertEquals(Lasso.REQUEST_TYPE_LOGIN, requestType);
 
 	// Service provider assertion consumer (step 2: process SOAP response).
         assertEquals(0, spLoginContext.processResponseMsg(soapResponseMsg));
@@ -165,7 +165,7 @@ public class LoginTest extends TestCase {
         spSessionContextDump = spSessionContext.dump();
         assertNotNull(spSessionContextDump);
 	authenticationMethod = spSessionContext.getAuthenticationMethod(null);
-        assertEquals(Lasso.samlAuthenticationMethodPassword, authenticationMethod);
+        assertEquals(Lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
 
         // Service provider logout.
         spContextDump = generateServiceProviderContextDump();
@@ -184,13 +184,13 @@ public class LoginTest extends TestCase {
 
 	// Identity provider SOAP endpoint.
 	requestType = Lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
-        assertEquals(Lasso.requestTypeLogout, requestType);
+        assertEquals(Lasso.REQUEST_TYPE_LOGOUT, requestType);
         idpContextDump = generateIdentityProviderContextDump();
         assertNotNull(idpContextDump);
         idpContext = new LassoServer(idpContextDump);
         assertNotNull(idpContext);
         idpLogoutContext = new LassoLogout(idpContext, Lasso.providerTypeIdp);
-	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.httpMethodSoap));
+	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.HTTP_METHOD_SOAP));
         assertEquals(nameIdentifier, idpLogoutContext.getNameIdentifier());
         assertNotNull(idpIdentityContextDump);
         assertEquals(0, idpLogoutContext.setIdentityFromDump(idpIdentityContextDump));
@@ -207,7 +207,7 @@ public class LoginTest extends TestCase {
         soapResponseMsg = idpLogoutContext.getMsgBody();
 
 	// Service provider logout (step 2: process SOAP response).
-        assertEquals(0, spLogoutContext.processResponseMsg(soapResponseMsg, Lasso.httpMethodSoap));
+        assertEquals(0, spLogoutContext.processResponseMsg(soapResponseMsg, Lasso.HTTP_METHOD_SOAP));
         spIdentityContextDump = spLogoutContext.getIdentity().dump();
         assertNotNull(spIdentityContextDump);
     }

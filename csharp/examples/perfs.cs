@@ -17,7 +17,7 @@ public class perfs
 			null,
 			"../../tests/data/sp1-la/certificate.pem");
 
-	server.addProvider(lasso.LassoProviderRole.providerRoleSp,
+	server.addProvider(lasso.LassoProviderRole.PROVIDER_ROLE_SP,
 			"../../tests/data/idp1-la/metadata.xml",
 			"../../tests/data/idp1-la/public-key.pem",
 			"../../tests/data/ca1-la/certificate.pem");
@@ -26,7 +26,7 @@ public class perfs
 	
 	login.initAuthnRequest("https://idp1/metadata", (lasso.LassoHttpMethod)4);
 	lasso.LibAuthnRequest request = (lasso.LibAuthnRequest)login.request;
-	login.request.protocolProfile = lasso.lasso.libProtocolProfileBrwsPost;
+	login.request.protocolProfile = lasso.lasso.LIB_PROTOCOL_PROFILE_BRWS_POST;
 	login.buildAuthnRequestMsg();
 
 	Console.WriteLine(login.msgUrl);

@@ -50,8 +50,8 @@ class BindingTestCase(unittest.TestCase):
 
         # Test a string attribute.
         self.failUnlessEqual(authnRequest.consent, None)
-        authnRequest.consent = lasso.libConsentObtained
-        self.failUnlessEqual(authnRequest.consent, lasso.libConsentObtained)
+        authnRequest.consent = lasso.LIB_CONSENT_OBTAINED
+        self.failUnlessEqual(authnRequest.consent, lasso.LIB_CONSENT_OBTAINED)
         authnRequest.consent = None
         self.failUnlessEqual(authnRequest.consent, None)
 
@@ -232,8 +232,8 @@ class BindingTestCase(unittest.TestCase):
 
         self.failUnlessEqual(login.request, None)
         login.request = lasso.LibAuthnRequest()
-        login.request.consent = lasso.libConsentObtained
-        self.failUnlessEqual(login.request.consent, lasso.libConsentObtained)
+        login.request.consent = lasso.LIB_CONSENT_OBTAINED
+        self.failUnlessEqual(login.request.consent, lasso.LIB_CONSENT_OBTAINED)
         login.request = None
         self.failUnlessEqual(login.request, None)
 

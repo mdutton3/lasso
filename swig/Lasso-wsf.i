@@ -49,12 +49,12 @@
 
 /* WSF prefix & href */
 #ifndef SWIGPHP4
-%rename(discoHref) LASSO_DISCO_HREF;
-%rename(discoPrefix) LASSO_DISCO_PREFIX;
-%rename(epHref) LASSO_EP_HREF;
-%rename(epPrefix) LASSO_EP_PREFIX;
-%rename(ppHref) LASSO_PP_HREF;
-%rename(ppPrefix) LASSO_PP_PREFIX;
+%rename(DISCO_HREF) LASSO_DISCO_HREF;
+%rename(DISCO_PREFIX) LASSO_DISCO_PREFIX;
+%rename(EP_HREF) LASSO_EP_HREF;
+%rename(EP_PREFIX) LASSO_EP_PREFIX;
+%rename(PP_HREF) LASSO_PP_HREF;
+%rename(PP_PREFIX) LASSO_PP_PREFIX;
 #endif
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
@@ -65,28 +65,28 @@
 
 /* WSF status code */
 #ifndef SWIGPHP4
-%rename(dstStatusCodeActionNotAuthorized) LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED;
-%rename(dstStatusCodeActionNotSupported) LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED;
-%rename(dstStatusCodeAllReturned) LASSO_DST_STATUS_CODE_ALL_RETURNED;
-%rename(dstStatusCodeChangeHistoryNotSupported) LASSO_DST_STATUS_CODE_CHANGE_HISTORY_NOT_SUPPORTED;
-%rename(dstStatusCodechangedSinceReturnsAll) LASSO_DST_STATUS_CODE_CHANGED_SINCE_RETURNS_ALL;
-%rename(dstStatusCodeDataTooLong) LASSO_DST_STATUS_CODE_DATA_TOO_LONG;
-%rename(dstStatusCodeExistsAlready) LASSO_DST_STATUS_CODE_EXISTS_ALREADY;
-%rename(dstStatusCodeExtensionNotSupported) LASSO_DST_STATUS_CODE_EXTENSION_NOT_SUPPORTED;
-%rename(dstStatusCodeFailed) LASSO_DST_STATUS_CODE_FAILED;
-%rename(dstStatusCodeInvalidData) LASSO_DST_STATUS_CODE_INVALID_DATA;
-%rename(dstStatusCodeInvalidResourceId) LASSO_DST_STATUS_CODE_INVALID_RESOURCE_ID;
-%rename(dstStatusCodeInvalidSelect) LASSO_DST_STATUS_CODE_INVALID_SELECT;
-%rename(dstStatusCodeMissingNewDataElement) LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT;
-%rename(dstStatusCodeMissingResourceIdElement) LASSO_DST_STATUS_CODE_MISSING_RESOURCE_ID_ELEMENT;
-%rename(dstStatusCodeMissingSelect) LASSO_DST_STATUS_CODE_MISSING_SELECT;
-%rename(dstStatusCodeModifiedSince) LASSO_DST_STATUS_CODE_MODIFIED_SINCE;
-%rename(dstStatusCodeNoMoreElements) LASSO_DST_STATUS_CODE_NO_MORE_ELEMENTS;
-%rename(dstStatusCodeNoMultipleAllowed) LASSO_DST_STATUS_CODE_NO_MULTIPLE_ALLOWED;
-%rename(dstStatusCodeNoMultipleResources) LASSO_DST_STATUS_CODE_NO_MULTIPLE_RESOURCES;
-%rename(dstStatusCodeOk) LASSO_DST_STATUS_CODE_OK;
-%rename(dstStatusCodeTimeOut) LASSO_DST_STATUS_CODE_TIME_OUT;
-%rename(dstStatusCodeUnexpectedError) LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR;
+%rename(DST_STATUS_CODE_ACTION_NOT_AUTHORIZED) LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED;
+%rename(DST_STATUS_CODE_ACTION_NOT_SUPPORTED) LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED;
+%rename(DST_STATUS_CODE_ALL_RETURNED) LASSO_DST_STATUS_CODE_ALL_RETURNED;
+%rename(DST_STATUS_CODE_CHANGE_HISTORY_NOT_SUPPORTED) LASSO_DST_STATUS_CODE_CHANGE_HISTORY_NOT_SUPPORTED;
+%rename(DST_STATUS_CODE_CHANGED_SINCE_RETURNS_ALL) LASSO_DST_STATUS_CODE_CHANGED_SINCE_RETURNS_ALL;
+%rename(DST_STATUS_CODE_DATA_TOO_LONG) LASSO_DST_STATUS_CODE_DATA_TOO_LONG;
+%rename(DST_STATUS_CODE_EXISTS_ALREADY) LASSO_DST_STATUS_CODE_EXISTS_ALREADY;
+%rename(DST_STATUS_CODE_EXTENSION_NOT_SUPPORTED) LASSO_DST_STATUS_CODE_EXTENSION_NOT_SUPPORTED;
+%rename(DST_STATUS_CODE_FAILED) LASSO_DST_STATUS_CODE_FAILED;
+%rename(DST_STATUS_CODE_INVALID_DATA) LASSO_DST_STATUS_CODE_INVALID_DATA;
+%rename(DST_STATUS_CODE_INVALID_RESOURCE_ID) LASSO_DST_STATUS_CODE_INVALID_RESOURCE_ID;
+%rename(DST_STATUS_CODE_INVALID_SELECT) LASSO_DST_STATUS_CODE_INVALID_SELECT;
+%rename(DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT) LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT;
+%rename(DST_STATUS_CODE_MISSING_RESOURCE_ID_ELEMENT) LASSO_DST_STATUS_CODE_MISSING_RESOURCE_ID_ELEMENT;
+%rename(DST_STATUS_CODE_MISSING_SELECT) LASSO_DST_STATUS_CODE_MISSING_SELECT;
+%rename(DST_STATUS_CODE_MODIFIED_SINCE) LASSO_DST_STATUS_CODE_MODIFIED_SINCE;
+%rename(DST_STATUS_CODE_NO_MORE_ELEMENTS) LASSO_DST_STATUS_CODE_NO_MORE_ELEMENTS;
+%rename(DST_STATUS_CODE_NO_MULTIPLE_ALLOWED) LASSO_DST_STATUS_CODE_NO_MULTIPLE_ALLOWED;
+%rename(DST_STATUS_CODE_NO_MULTIPLE_RESOURCES) LASSO_DST_STATUS_CODE_NO_MULTIPLE_RESOURCES;
+%rename(DST_STATUS_CODE_OK) LASSO_DST_STATUS_CODE_OK;
+%rename(DST_STATUS_CODE_TIME_OUT) LASSO_DST_STATUS_CODE_TIME_OUT;
+%rename(DST_STATUS_CODE_UNEXPECTED_ERROR) LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR;
 #endif
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
@@ -151,11 +151,11 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* AttributeValue */
-#define LassoDiscoCredentials_get_AttributeValue(self) get_node_list((self)->any)
-#define LassoDiscoCredentials_AttributeValue_get(self) get_node_list((self)->any)
-#define LassoDiscoCredentials_set_AttributeValue(self, value) set_node_list(&(self)->any, (value))
-#define LassoDiscoCredentials_AttributeValue_set(self, value) set_node_list(&(self)->any, (value))
+/* any */
+#define LassoDiscoCredentials_get_any(self) get_node_list((self)->any)
+#define LassoDiscoCredentials_any_get(self) get_node_list((self)->any)
+#define LassoDiscoCredentials_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoDiscoCredentials_any_set(self, value) set_node_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoDiscoCredentials lasso_disco_credentials_new

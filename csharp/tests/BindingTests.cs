@@ -81,8 +81,8 @@ public class BindingTests {
 
 		// Test a string attribute.
 		assertNull(authnRequest.consent);
-		authnRequest.consent = lasso.lasso.libConsentObtained;
-		assertEquals(authnRequest.consent, lasso.lasso.libConsentObtained);
+		authnRequest.consent = lasso.lasso.LIB_CONSENT_OBTAINED;
+		assertEquals(authnRequest.consent, lasso.lasso.LIB_CONSENT_OBTAINED);
 		authnRequest.consent = null;
 		assertNull(authnRequest.consent);
 
@@ -293,9 +293,9 @@ public class BindingTests {
 
 	        assertNull(login.request);
 	        login.request = (lasso.SamlpRequestAbstract) new lasso.LibAuthnRequest();
-	        ((lasso.LibAuthnRequest) login.request).consent = lasso.lasso.libConsentObtained;
+	        ((lasso.LibAuthnRequest) login.request).consent = lasso.lasso.LIB_CONSENT_OBTAINED;
 	        assertEquals(((lasso.LibAuthnRequest) login.request).consent,
-			 lasso.lasso.libConsentObtained);
+			 lasso.lasso.LIB_CONSENT_OBTAINED);
 	        login.request = null;
 	        assertNull(login.request);
 	

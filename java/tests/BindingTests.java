@@ -63,8 +63,8 @@ public class BindingTests extends TestCase {
 
 	// Test a string attribute.
 	assertNull(authnRequest.getConsent());
-	authnRequest.setConsent(lasso.libConsentObtained);
-	assertEquals(authnRequest.getConsent(), lasso.libConsentObtained);
+	authnRequest.setConsent(lasso.LIB_CONSENT_OBTAINED);
+	assertEquals(authnRequest.getConsent(), lasso.LIB_CONSENT_OBTAINED);
 	authnRequest.setConsent(null);
 	assertNull(authnRequest.getConsent());
 
@@ -255,9 +255,9 @@ public class BindingTests extends TestCase {
 
         assertNull(login.getRequest());
         login.setRequest((SamlpRequestAbstract) new LibAuthnRequest());
-        ((LibAuthnRequest) login.getRequest()).setConsent(lasso.libConsentObtained);
+        ((LibAuthnRequest) login.getRequest()).setConsent(lasso.LIB_CONSENT_OBTAINED);
         assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(),
-		     lasso.libConsentObtained);
+		     lasso.LIB_CONSENT_OBTAINED);
         login.setRequest(null);
         assertNull(login.getRequest());
 

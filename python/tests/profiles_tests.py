@@ -53,7 +53,7 @@ class ServerTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleIdp,
+            lasso.PROVIDER_ROLE_IDP,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
@@ -67,7 +67,7 @@ class ServerTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server()
         lassoServer.addProvider(
-            lasso.providerRoleIdp, os.path.join(dataDir, 'idp1-la/metadata.xml'))
+            lasso.PROVIDER_ROLE_IDP, os.path.join(dataDir, 'idp1-la/metadata.xml'))
         dump = lassoServer.dump()
         lassoServer2 = lassoServer.newFromDump(dump)
         dump2 = lassoServer2.dump()
@@ -84,15 +84,15 @@ class LoginTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleIdp,
+            lasso.PROVIDER_ROLE_IDP,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(lassoServer)
         login.initAuthnRequest()
         login.request
-        login.request.protocolProfile = lasso.libProtocolProfileBrwsArt
-        self.failUnlessEqual(login.request.protocolProfile, lasso.libProtocolProfileBrwsArt)
+        login.request.protocolProfile = lasso.LIB_PROTOCOL_PROFILE_BRWS_ART
+        self.failUnlessEqual(login.request.protocolProfile, lasso.LIB_PROTOCOL_PROFILE_BRWS_ART)
 
     def test02(self):
         """SP login; testing processing of an empty Response."""
@@ -103,7 +103,7 @@ class LoginTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleIdp,
+            lasso.PROVIDER_ROLE_IDP,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
@@ -125,7 +125,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleIdp,
+            lasso.PROVIDER_ROLE_IDP,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
@@ -147,7 +147,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleSp,
+            lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
@@ -163,7 +163,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleSp,
+            lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
@@ -186,7 +186,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleSp,
+            lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
@@ -209,7 +209,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleSp,
+            lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
@@ -225,7 +225,7 @@ class DefederationTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
-            lasso.providerRoleSp,
+            lasso.PROVIDER_ROLE_SP,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))

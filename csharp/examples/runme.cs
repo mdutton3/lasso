@@ -16,7 +16,7 @@ public class runme
 			"../../tests/data/sp1-la/private-key-raw.pem",
 			null,
 			"../../tests/data/sp1-la/certificate.pem");
-	server.addProvider(lasso.LassoProviderRole.providerRoleSp,
+	server.addProvider(lasso.LassoProviderRole.PROVIDER_ROLE_SP,
 			"../../tests/data/idp1-la/metadata.xml",
 			"../../tests/data/idp1-la/public-key.pem",
 			"../../tests/data/ca1-la/certificate.pem");

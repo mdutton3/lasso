@@ -47,8 +47,8 @@ sub test02 {
 
     # Test a string attribute.
     $authnRequest->{consent} eq undef or die "Assertion failed\n";
-    $authnRequest->{consent} = $lasso::libConsentObtained;
-    $authnRequest->{consent} eq $lasso::libConsentObtained or die "Assertion failed\n";
+    $authnRequest->{consent} = $lasso::LIB_CONSENT_OBTAINED;
+    $authnRequest->{consent} eq $lasso::LIB_CONSENT_OBTAINED or die "Assertion failed\n";
     $authnRequest->{consent} = undef;
     $authnRequest->{consent} eq undef or die "Assertion failed\n";
 
@@ -238,8 +238,8 @@ sub test06 {
 
     $login->{request} eq undef or die "Assertion failed\n";
     $login->{request} = new lasso::LibAuthnRequest;
-    $login->{request}->{consent} = lasso::libConsentObtained;
-    $login->{request}->{consent} eq lasso::libConsentObtained or die "Assertion failed\n";
+    $login->{request}->{consent} = lasso::LIB_CONSENT_OBTAINED;
+    $login->{request}->{consent} eq lasso::LIB_CONSENT_OBTAINED or die "Assertion failed\n";
     undef $login->{request};
     $login->{request} eq undef or die "Assertion failed\n";
 

@@ -13,7 +13,7 @@ idpidentity_dump = "<LassoIdentity><LassoFederations><LassoFederation RemoteProv
 # SP :
 spserver = lasso.Server.new("../../examples/sp.xml",
                             "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                            lasso.signatureMethodRsaSha1)
+                            lasso.SIGNATURE_METHOD_RSA_SHA1)
 spserver.add_provider("../../examples/idp.xml", None, None)
 
 spdefederation = lasso.FederationTermination.new(spserver, lasso.providerTypeSp)
@@ -29,11 +29,11 @@ notification_msg = spdefederation.msg_body
 # IDP :
 idpserver = lasso.Server.new("../../examples/idp.xml",
                             "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                            lasso.signatureMethodRsaSha1)
+                            lasso.SIGNATURE_METHOD_RSA_SHA1)
 idpserver.add_provider("../../examples/sp.xml", None, None)
 
 idpdefederation = lasso.FederationTermination.new(idpserver, lasso.providerTypeIdp)
-idpdefederation.process_notification_msg(notification_msg, lasso.httpMethodSoap)
+idpdefederation.process_notification_msg(notification_msg, lasso.HTTP_METHOD_SOAP)
 print 'NameIdentifier :', idpdefederation.nameIdentifier
 
 idpdefederation.set_identity_from_dump(idpidentity_dump);

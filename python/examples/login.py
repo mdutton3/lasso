@@ -12,7 +12,7 @@ import lasso
 ####################
 server = lasso.Server.new("../../examples/sp.xml",
                           "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                          lasso.signatureMethodRsaSha1)
+                          lasso.SIGNATURE_METHOD_RSA_SHA1)
 
 server.add_provider("../../examples/idp.xml", None, None)
 server_dump = server.dump()
@@ -26,8 +26,8 @@ splogin.request.set_isPassive(0)
 splogin.request.set_forceAuthn(1)
 splogin.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 splogin.request.set_relayState("fake")
-splogin.request.set_consent(lasso.libConsentObtained)
-splogin.request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
+splogin.request.set_consent(lasso.LIB_CONSENT_OBTAINED)
+splogin.request.set_protocolProfile(lasso.LIB_PROTOCOL_PROFILE_BRWS_ART)
 
 splogin.build_authn_request_msg()
 print "message url =", splogin.msg_url
@@ -37,7 +37,7 @@ print "message url =", splogin.msg_url
 #####################
 server = lasso.Server.new("../../examples/idp.xml",
                           None, "../../examples/rsakey.pem", "../../examples/rootcert.pem",
-                          lasso.signatureMethodRsaSha1)
+                          lasso.SIGNATURE_METHOD_RSA_SHA1)
 
 server.add_provider("../../examples/sp.xml",
                     "../../examples/rsapub.pem", "../../examples/rsacert.pem")
@@ -48,18 +48,18 @@ idplogin = lasso.Login.new(server)
 # get query part in msg_url
 authn_request_msg = string.split(splogin.msg_url, '?')[1]
 ret = idplogin.init_from_authn_request_msg(authn_request_msg,
-                                           lasso.httpMethodRedirect)
+                                           lasso.HTTP_METHOD_REDIRECT)
 
 print "ProtocolProfile =", idplogin.protocolProfile
 
 must_authenticate = idplogin.must_authenticate()
 print "User must be authenticated =", must_authenticate
 
-if idplogin.protocolProfile == lasso.loginProtocolProfileBrwsArt:
+if idplogin.protocolProfile == lasso.LOGIN_PROTOCOL_PROFILE_BRWS_ART:
     ret = idplogin.build_artifact_msg(1,
-                                      lasso.samlAuthenticationMethodPassword,
+                                      lasso.SAML_AUTHENTICATION_METHOD_PASSWORD,
                                       "",
-                                      lasso.httpMethodRedirect)
+                                      lasso.HTTP_METHOD_REDIRECT)
     print "ret = %d, msg_url = %s" % (ret, idplogin.msg_url)
     sess = idplogin.get_session()
     print sess.providerIDs
@@ -69,7 +69,7 @@ if idplogin.protocolProfile == lasso.loginProtocolProfileBrwsArt:
 ####################
 server = lasso.Server.new("../../examples/sp.xml",
                           "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                          lasso.signatureMethodRsaSha1)
+                          lasso.SIGNATURE_METHOD_RSA_SHA1)
 
 server.add_provider("../../examples/idp.xml", None, None)
 
@@ -78,7 +78,7 @@ splogin = lasso.Login.new(server)
 
 response_msg = string.split(idplogin.msg_url, '?')[1]
 ret = splogin.init_request(response_msg,
-                           lasso.httpMethodRedirect)
+                           lasso.HTTP_METHOD_REDIRECT)
 
 ret = splogin.build_request_msg()
 print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.msg_body)
@@ -88,7 +88,7 @@ print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.m
 #####################
 server = lasso.Server.new("../../examples/idp.xml",
                           None, "../../examples/rsakey.pem", "../../examples/rootcert.pem",
-                          lasso.signatureMethodRsaSha1)
+                          lasso.SIGNATURE_METHOD_RSA_SHA1)
 
 server.add_provider("../../examples/sp.xml",
                     "../../examples/rsapub.pem", "../../examples/rsacert.pem")
