@@ -33,5 +33,5 @@ LassoLecp.cs
 LassoIdentity.cs
 LassoAuthnResponse.cs
 LassoAuthnRequest.cs
+LassoDefederation.cs
 lasso-sharp.pc
-
