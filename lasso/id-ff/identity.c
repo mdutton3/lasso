@@ -187,6 +187,23 @@ lasso_identity_get_federation(LassoIdentity *identity,
   g_return_val_if_fail(identity != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
 
+  federation = lasso_identity_get_federation_ref(identity, remote_providerID);
+  if (federation != NULL) {
+    return lasso_federation_copy(federation);
+  }
+
+  return NULL;
+}
+
+LassoFederation*
+lasso_identity_get_federation_ref(LassoIdentity *identity,
+				  gchar         *remote_providerID)
+{
+  LassoFederation *federation;
+
+  g_return_val_if_fail(identity != NULL, NULL);
+  g_return_val_if_fail(remote_providerID != NULL, NULL);
+
   federation = (LassoFederation *)g_hash_table_lookup(identity->federations,
 						      remote_providerID);
   if (federation == NULL) {
@@ -194,7 +211,7 @@ lasso_identity_get_federation(LassoIdentity *identity,
     return NULL;
   }
 
-  return lasso_federation_copy(federation);
+  return federation;
 }
 
 gchar*
