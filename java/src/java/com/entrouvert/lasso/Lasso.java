@@ -46,6 +46,22 @@ public class Lasso { // Lasso
     static final public String libNameIdPolicyTypeFederated = "federated";
     static final public String libNameIdPolicyTypeAny = "any";
 
+    static final public int loginProtocolProfileBrwsArt = 1;
+    static final public int loginProtocolProfileBrwsPost = 2;
+
+    /* AuthenticationMethods */
+    static final public String samlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password";
+    static final public String samlAuthenticationMethodKerberos = "urn:ietf:rfc:1510";
+    static final public String samlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945";
+    static final public String samlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
+    static final public String samlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246";
+    static final public String samlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
+    static final public String samlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP";
+    static final public String samlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
+    static final public String samlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
+    static final public String samlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075";
+    static final public String samlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
+
     static final public int signatureMethodRsaSha1 = 1;
     static final public int signatureMethodDsaSha1 = 2;
 

@@ -89,10 +89,11 @@ class LoginTestCase(unittest.TestCase):
         spLoginContext.request.set_isPassive(False)
         spLoginContext.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         spLoginContext.request.set_consent(lasso.libConsentObtained)
-        spLoginContext.request.set_relayState("fake")
+        relayState = "fake"
+        spLoginContext.request.set_relayState(relayState)
         self.failUnlessEqual(spLoginContext.build_authn_request_msg(), 0)
         authnRequestUrl = spLoginContext.msg_url
-        authnRequestMsg = authnRequestUrl.split("?", 1)[1]
+        authnRequestQuery = authnRequestUrl.split("?", 1)[1]
         method = lasso.httpMethodRedirect
 
         # Identity provider singleSignOn, for a user having no federation.
@@ -100,9 +101,40 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpContextDump)
         idpContext = lasso.Server.new_from_dump(idpContextDump)
         idpLoginContext = lasso.Login.new(idpContext)
-        self.failUnlessEqual(idpLoginContext.init_from_authn_request_msg(authnRequestMsg, method),
-                             0)
+        self.failUnlessEqual(
+            idpLoginContext.init_from_authn_request_msg(authnRequestQuery, method), 0)
         self.failUnless(idpLoginContext.must_authenticate())
+
+        userAuthenticated = True
+        authenticationMethod = lasso.samlAuthenticationMethodPassword
+        self.failUnlessEqual(idpLoginContext.protocolProfile, lasso.loginProtocolProfileBrwsArt)
+        self.failUnlessEqual(idpLoginContext.build_artifact_msg(
+            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
+            lasso.httpMethodRedirect), 0)
+        responseUrl = idpLoginContext.msg_url
+        responseQuery = responseUrl.split("?", 1)[1]
+        responseMsg = idpLoginContext.response_dump
+        artifact = idpLoginContext.assertionArtifact
+        nameIdentifier = idpLoginContext.nameIdentifier
+        method = lasso.httpMethodRedirect
+
+        # Service provider assertion consumer.
+        spContextDump = self.generateServiceProviderContextDump()
+        self.failUnless(spContextDump)
+        spContext = lasso.Server.new_from_dump(spContextDump)
+        spLoginContext = lasso.Login.new(spContext)
+        self.failUnlessEqual(spLoginContext.init_request(responseQuery, method), 0)
+        self.failUnlessEqual(spLoginContext.build_request_msg(), 0)
+        soapEndpoint = spLoginContext.msg_url
+        soapRequestMsg = spLoginContext.msg_body
+
+##         soapResponseMsg = self.callSoap(loginContext.msg_url, loginContext.msg_body)
+##         logs.debug("soapResponseMsg = %s" % soapResponseMsg)
+##         errorCode = loginContext.process_response_msg(soapResponseMsg)
+##         if errorCode:
+##             raise Exception("Lasso login error %s" % errorCode)
+##         nameIdentifier = loginContext.nameIdentifier
+
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 

@@ -44,7 +44,7 @@ public class LassoLogin extends LassoProfileContext { // LassoLogin
                                        LassoUser user,
                                        String dump);
 
-    native public int buildArtifactMsg(int authenticationResult,
+    native public int buildArtifactMsg(boolean authenticationResult,
                                        String authenticationMethod,
                                        String reauthenticateOnOrAfter,
                                        int method);
@@ -66,6 +66,14 @@ public class LassoLogin extends LassoProfileContext { // LassoLogin
 
     native public int initRequest(String responseMsg,
                                   int responseMethod);
+
+    native public String getAssertionArtifact();
+
+    native public String getNameIdentifier();
+
+    native public int getProtocolProfile();
+
+    native public String getResponseDump();
 
     native public boolean mustAuthenticate();
 

@@ -882,7 +882,7 @@ class User:
 
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2
-  
+
 class Login:
     """\brief Short desc
 

@@ -77,30 +77,63 @@ public class LoginTest extends TestCase {
     }
 
     public void test02_serviceProviderLogin() {
+	boolean userAuthenticated;
+	int method;
+	LassoAuthnRequest authnRequest;
+	LassoLogin idpLoginContext, spLoginContext;
+	LassoServer idpContext, spContext;
+	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpContextDump,
+	    nameIdentifier, relayState, responseMsg, responseQuery, responseUrl, spContextDump,
+	    soapEndpoint, soapRequestMsg;
+
 	// Service provider login using HTTP redirect.
-        String spContextDump = generateServiceProviderContextDump();
+        spContextDump = generateServiceProviderContextDump();
 	assertNotNull(spContextDump);
-        LassoServer spContext = new LassoServer(spContextDump);
-        LassoLogin spLoginContext = new LassoLogin(spContext, null);
+        spContext = new LassoServer(spContextDump);
+        spLoginContext = new LassoLogin(spContext, null);
         assertEquals(spLoginContext.initAuthnRequest(
 	    "https://identity-provider:1998/liberty-alliance/metadata"), 0);
-	LassoAuthnRequest authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
+	authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
         authnRequest.setPassive(false);
         authnRequest.setNameIdPolicy(Lasso.libNameIdPolicyTypeFederated);
         authnRequest.setConsent(Lasso.libConsentObtained);
-        authnRequest.setRelayState("fake");
+	relayState = "fake";
+        authnRequest.setRelayState(relayState);
         assertEquals(spLoginContext.buildAuthnRequestMsg(), 0);
-        String authnRequestUrl = spLoginContext.getMsgUrl();
-        String authnRequestMsg = authnRequestUrl.substring(authnRequestUrl.indexOf("?") + 1);
-        int method = Lasso.httpMethodRedirect;
+        authnRequestUrl = spLoginContext.getMsgUrl();
+        authnRequestQuery = authnRequestUrl.substring(authnRequestUrl.indexOf("?") + 1);
+        method = Lasso.httpMethodRedirect;
 
 	// Identity provider singleSignOn, for a user having no federation.
-        String idpContextDump = generateIdentityProviderContextDump();
+        idpContextDump = generateIdentityProviderContextDump();
         assertNotNull(idpContextDump);
-        LassoServer idpContext = new LassoServer(idpContextDump);
-        LassoLogin idpLoginContext = new LassoLogin(idpContext, null);
-        assertEquals(idpLoginContext.initFromAuthnRequestMsg(authnRequestMsg, method), 0);
+        idpContext = new LassoServer(idpContextDump);
+        idpLoginContext = new LassoLogin(idpContext, null);
+        assertEquals(idpLoginContext.initFromAuthnRequestMsg(authnRequestQuery, method), 0);
         assertTrue(idpLoginContext.mustAuthenticate());
+
+        userAuthenticated = true;
+        authenticationMethod = Lasso.samlAuthenticationMethodPassword;
+        assertEquals(idpLoginContext.getProtocolProfile(), Lasso.loginProtocolProfileBrwsArt);
+        assertEquals(idpLoginContext.buildArtifactMsg(
+            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
+            Lasso.httpMethodRedirect), 0);
+        responseUrl = idpLoginContext.getMsgUrl();
+        responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);
+        responseMsg = idpLoginContext.getResponseDump();
+        artifact = idpLoginContext.getAssertionArtifact();
+	nameIdentifier = idpLoginContext.getNameIdentifier();
+        method = Lasso.httpMethodRedirect;
+
+        // Service provider assertion consumer.
+        spContextDump = generateServiceProviderContextDump();
+	assertNotNull(spContextDump);
+        spContext = new LassoServer(spContextDump);
+        spLoginContext = new LassoLogin(spContext, null);
+        assertEquals(spLoginContext.initRequest(responseQuery, method), 0);
+        assertEquals(spLoginContext.buildRequestMsg(), 0);
+        soapEndpoint = spLoginContext.getMsgUrl();
+	soapRequestMsg = spLoginContext.getMsgBody();
     }
 
     public static Test suite() { 
