@@ -110,8 +110,8 @@ lasso_authn_response_new(xmlChar       *query,
 
   /* consent */
   if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "consent"), 0) != NULL) {
-    lasso_samlp_response_abstract_set_consent(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "consent"), 0));
+    lasso_lib_authn_response_set_consent(LASSO_LIB_AUTHN_RESPONSE(response),
+					 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "consent"), 0));
   }  
 
   /* Recipient */
