@@ -133,7 +133,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    /* TODO - implement HTTP-Redirect */
     gchar *url, *query;
     const gchar *separator = "?";
 
