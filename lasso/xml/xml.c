@@ -725,8 +725,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 void
 lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 {
-	xmlNode *t, *ts;
-	GList *s;
+	xmlNode *t;
 	int i;
 
 	for (i = 0; snippets[i].name; i++) {
@@ -750,14 +749,25 @@ lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 				*(snippets[i].value) = (void*)
 					lasso_saml_name_identifier_new_from_xmlNode(t);
 			if (snippets[i].type == 's') { /* sequence of complex elements */
+				xmlNode *ts;
+				GList *s = NULL;
 				for (ts = t->children; ts; ts = ts->next) {
 					if (ts->type != XML_ELEMENT_NODE)
 						continue;
-					g_list_append(s, (gpointer)lasso_node_new_from_xmlNode(ts));
+					g_list_append(s, lasso_node_new_from_xmlNode(ts));
 				}
-				*(snippets[i].value) = (void*) s;
+				*(snippets[i].value) = s;
 			}
-			/* TODO: type 't' sequence of simple elements */
+			if (snippets[i].type == 't') { /* sequence of simple elements */
+				xmlNode *ts;
+				GList *s = NULL;
+				for (ts = t->children; ts; ts = ts->next) {
+					if (ts->type != XML_ELEMENT_NODE)
+						continue;
+					g_list_append(s, xmlNodeGetContent(ts));
+				}
+				*(snippets[i].value) = s;
+			}
 			break;
 		}
 	}
@@ -767,7 +777,6 @@ void
 lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 {
 	int i;
-	GList *next = NULL;
 	
 	for (i = 0; snippets[i].name; i++) {
 		if (*(snippets[i].value) == NULL)
@@ -791,20 +800,20 @@ lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 			xmlSetNs(t, xmlns);
 		}
 		if (snippets[i].type == 's') { /* sequence of complex elements */
-			next = (GList *)(*(snippets[i].value));
-			while (next) {
-				xmlAddChild(node, lasso_node_get_xmlNode(
-						    LASSO_NODE(next->data)));
-				next = g_list_next(next);
+			GList *elem = (GList *)(*(snippets[i].value));
+			while (elem) {
+				xmlAddChild(node, lasso_node_get_xmlNode(LASSO_NODE(elem->data)));
+				elem = g_list_next(elem);
 			}
 		}
-		if (snippets[i].type == 't') { /* sequence of simple elements (no children, no attrs, just content) */
-			next = (GList *)(*(snippets[i].value));
-			while (next) {
-				xmlNewTextChild(node, NULL, snippets[i].name,
-						(char*)(next->data));
-				next = g_list_next(next);
+		if (snippets[i].type == 't') {
+			/* sequence of simple elements (no children, no attrs, just content) */
+			GList *elem = (GList *)(*(snippets[i].value));
+			while (elem) {
+				xmlNewTextChild(node, NULL, snippets[i].name, (char*)(elem->data));
+				elem = g_list_next(elem);
 			}
 		}
 	}
 }
+
