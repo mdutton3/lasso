@@ -305,7 +305,7 @@ dispose(GObject *object)
 	}
 	provider->private->dispose_has_run = TRUE;
 
-	debug("Provider object 0x%x disposed ...\n", provider);
+	debug("Provider object 0x%x disposed ...", provider);
 
 	/* XXX: free hash tables (here or in finalize() below) ? */
 
@@ -317,7 +317,7 @@ finalize(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
 
-	debug("Provider object 0x%x finalized ...\n", provider);
+	debug("Provider object 0x%x finalized ...", provider);
 
 	g_free(provider->public_key);
 	g_free(provider->ca_cert_chain);

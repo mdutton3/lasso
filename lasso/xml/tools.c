@@ -169,7 +169,7 @@ lasso_get_pem_file_type(const gchar *pem_file)
 
   bio = BIO_new_file(pem_file, "rb");
   if (bio == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file\n",
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file",
 	    pem_file);
     return -1;
   }
@@ -221,7 +221,7 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
   /* load pem certificate from file */
   fd = fopen(pem_cert_file, "r");
   if (fd == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file\n",
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file",
 	    pem_cert_file);
     return NULL;
   }
@@ -229,7 +229,7 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
   pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
   fclose(fd);
   if (pem_cert == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate");
     return NULL;
   }
 
@@ -242,7 +242,7 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
   }
   else {
     message(G_LOG_LEVEL_CRITICAL,
-	    "Failed to get the public key in the X509 certificate\n");
+	    "Failed to get the public key in the X509 certificate");
   }
   X509_free(pem_cert);
 
@@ -366,7 +366,7 @@ lasso_query_sign(xmlChar              *query,
 
   bio = BIO_new_file(private_key_file, "rb");
   if (bio == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file\n",
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file",
 	    private_key_file);
     return NULL;
   }
@@ -388,7 +388,7 @@ lasso_query_sign(xmlChar              *query,
   /* build buffer digest */
   digest = lasso_sha1(new_query);
   if (digest == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest");
     goto done;
   }
 

@@ -207,7 +207,7 @@ dispose(GObject *object)
 	}
 	federation->private->dispose_has_run = TRUE;
 
-	debug("Federation object 0x%x disposed ...\n", federation);
+	debug("Federation object 0x%x disposed ...", federation);
 
 	/* unref reference counted objects */
 	lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
@@ -220,7 +220,7 @@ static void
 finalize(GObject *object)
 {
 	LassoFederation *federation = LASSO_FEDERATION(object);
-	debug("Federation object 0x%x finalized ...\n", federation);
+	debug("Federation object 0x%x finalized ...", federation);
 
 	g_free(federation->remote_providerID);
 	g_free(federation->private);

@@ -33,65 +33,65 @@ lasso_strerror(int error_code)
 {
   switch (error_code) {
   case LASSO_XML_ERROR_NODE_NOT_FOUND:
-    return "Unable to get '%s' child of '%s' element.\n";
+    return "Unable to get '%s' child of '%s' element.";
   case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
-    return "Unable to get content of '%s' element.\n";
+    return "Unable to get content of '%s' element.";
   case LASSO_XML_ERROR_ATTR_NOT_FOUND:
-    return "Unable to get '%s' attribute of '%s' element.\n";
+    return "Unable to get '%s' attribute of '%s' element.";
   case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
-    return "Unable to get '%s' attribute value of '%s' element.\n";
+    return "Unable to get '%s' attribute value of '%s' element.";
 
   case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
-    return "Signature element not found in %s.\n";
+    return "Signature element not found in %s.";
   case LASSO_DS_ERROR_INVALID_SIGNATURE:
-    return "The signature of %s is invalid.\n";
+    return "The signature of %s is invalid.";
   case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
-    return "Failed to create signature context.\n";
+    return "Failed to create signature context.";
   case LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
-    return "Failed to load public key %s.\n";
+    return "Failed to load public key %s.";
   case LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED:
-    return "Failed to load private key %s.\n";
+    return "Failed to load private key %s.";
   case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
-    return "Failed to load certificate %s.\n";
+    return "Failed to load certificate %s.";
   case LASSO_DS_ERROR_SIGNATURE_FAILED:
-    return "Failed to sign the node %s.\n";
+    return "Failed to sign the node %s.";
   case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
-    return "Failed to create keys manager.\n";
+    return "Failed to create keys manager.";
   case LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED:
-    return "Failed to initialize keys manager.\n";
+    return "Failed to initialize keys manager.";
   case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
-    return "Failed to verify signature of %s.\n";
+    return "Failed to verify signature of %s.";
   case LASSO_DS_ERROR_INVALID_SIGALG:
-    return "Invalid signature algorithm.\n";
+    return "Invalid signature algorithm.";
     
   case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
-    return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
+    return "Failed to get LassoProvider object with providerID %s in LassoServer object.";
 
   case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
-    return "Unsupported logout protocol profile\n";
+    return "Unsupported logout protocol profile";
 
   case LASSO_PROFILE_ERROR_INVALID_QUERY:
-    return "Invalid URL query\n";
+    return "Invalid URL query";
   case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
-    return "Invalid POST message\n";
+    return "Invalid POST message";
   case LASSO_PROFILE_ERROR_INVALID_SOAP_MSG:
-    return "Invalid SOAP message\n";
+    return "Invalid SOAP message";
   case LASSO_PROFILE_ERROR_MISSING_REQUEST:
-    return "Missing request\n";
+    return "Missing request";
   case LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
-    return "Invalid HTTP method\n";
+    return "Invalid HTTP method";
   case LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
-    return "Invalid protocol profile\n";
+    return "Invalid protocol profile";
 
   case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
-    return "An object type provided as parameter is invalid or object is NULL.\n";
+    return "An object type provided as parameter is invalid or object is NULL.";
   case LASSO_PARAM_ERROR_INVALID_VALUE:
-    return "A parameter value is invalid.\n";
+    return "A parameter value is invalid.";
   case LASSO_PARAM_ERROR_CHECK_FAILED:
-    return "The error return location should be either NULL or contains a NULL error.\n";
+    return "The error return location should be either NULL or contains a NULL error.";
 
   case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
-    return "Invalid NameIDPolicy in lib:AuthnRequest: %s\n";
+    return "Invalid NameIDPolicy in lib:AuthnRequest: %s";
 
   default:
     return g_strdup_printf("Undefined error code %d.", error_code);

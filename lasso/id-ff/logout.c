@@ -121,7 +121,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	}
 
 	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method\n");
+		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
 		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 	}
 
@@ -195,7 +195,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 				       profile->server->signature_method,
 				       profile->server->private_key);
     if ( (url == NULL) || (query == NULL) ) {
-      message(G_LOG_LEVEL_CRITICAL, "Url %s or query %s not found\n", url, query);
+      message(G_LOG_LEVEL_CRITICAL, "Url %s or query %s not found", url, query);
       ret = -1;
       goto done;
     }
@@ -693,7 +693,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 				0);
 	}
 	if (LASSO_IS_LIB_LOGOUT_RESPONSE(profile->response) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Error while building response\n");
+		message(G_LOG_LEVEL_CRITICAL, "Error while building response");
 		return -1;
 	}
 
@@ -892,7 +892,7 @@ dispose(GObject *object)
 	}
 	logout->private->dispose_has_run = TRUE;
 
-	debug("Logout object 0x%x disposed ...\n", logout);
+	debug("Logout object 0x%x disposed ...", logout);
 
 	/* unref reference counted objects */
 	/* XXX
@@ -907,7 +907,7 @@ static void
 finalize(GObject *object)
 {  
 	LassoLogout *logout = LASSO_LOGOUT(object);
-	debug("Logout object 0x%x finalized ...\n", logout);
+	debug("Logout object 0x%x finalized ...", logout);
 	g_free(logout->initial_remote_providerID);
 	g_free(logout->private);
 	G_OBJECT_CLASS(parent_class)->finalize(object);

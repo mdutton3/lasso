@@ -102,7 +102,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	}
 
 	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method\n");
+		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
 		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 	}
 
@@ -582,7 +582,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 finalize(GObject *object)
 {  
-	debug("Register Name Identifier object 0x%x finalized ...\n");
+	debug("Register Name Identifier object 0x%x finalized ...");
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

@@ -166,7 +166,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
 			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s\n", nameIDPolicy);
+		message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s", nameIDPolicy);
 		/* we consider NameIDPolicy as empty (none value) if its value is unknown/invalid */
 		return TRUE;
 	}
@@ -200,7 +200,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 	if (strcmp(consent, LASSO_LIB_CONSENT_INAPPLICABLE) == 0)
 		return TRUE;
 
-	message(G_LOG_LEVEL_CRITICAL, "Unknown consent value : %s\n", consent);
+	message(G_LOG_LEVEL_CRITICAL, "Unknown consent value : %s", consent);
 	/* we consider consent as empty if its value is unknown/invalid */
 	return TRUE;
 }
@@ -867,7 +867,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					LASSO_PROFILE(login)->remote_providerID);
 			if (assertion == NULL) {
 				/* FIXME should this message output by lasso_session_get_assertion () ? */
-				message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session\n");
+				message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session");
 			}
 			LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion =
 				g_object_ref(assertion);
@@ -1244,7 +1244,7 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	profile->request = lasso_node_new_from_soap(request_msg);
 	/* XXX was: lasso_request_new_from_export(request_msg, LASSO_NODE_EXPORT_TYPE_SOAP); */
 	if (profile->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Request with request message.\n");
+		message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Request with request message.");
 		return LASSO_ERROR_UNDEFINED;
 	}
 	/* get AssertionArtifact */
@@ -1346,7 +1346,7 @@ dispose(GObject *object)
 	}
 	login->private->dispose_has_run = TRUE;
 
-	debug("Login object 0x%x disposed ...\n", login);
+	debug("Login object 0x%x disposed ...", login);
 
 	/* unref reference counted objects */
 
@@ -1358,7 +1358,7 @@ finalize(GObject *object)
 { 
 	LassoLogin *login = LASSO_LOGIN(object);
 
-	debug("Login object 0x%x finalized ...\n", login);
+	debug("Login object 0x%x finalized ...", login);
 	g_free(login->assertionArtifact);
 	g_free(login->private);
 	G_OBJECT_CLASS(parent_class)->finalize(object);

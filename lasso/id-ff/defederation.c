@@ -122,7 +122,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	}
 
 	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method\n");
+		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
 		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 	}
 
@@ -371,7 +371,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
 		if (remote_provider == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
+			message(G_LOG_LEVEL_CRITICAL, "Provider not found");
 			return -1;
 		}
 
@@ -417,7 +417,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	}
 
 	if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "No name identifier for %s\n",
+		message(G_LOG_LEVEL_CRITICAL, "No name identifier for %s",
 				profile->remote_providerID);
 		return -1;
 	}
@@ -450,7 +450,7 @@ dispose(GObject *object)
 		return;
 	}
 	defederation->private->dispose_has_run = TRUE;
-	debug("Defederation object 0x%x disposed ...\n", defederation);
+	debug("Defederation object 0x%x disposed ...", defederation);
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
@@ -459,7 +459,7 @@ static void
 finalize(GObject *object)
 {
 	LassoDefederation *defederation = LASSO_DEFEDERATION(object);
-	debug("Defederation object 0x%x finalized ...\n", defederation);
+	debug("Defederation object 0x%x finalized ...", defederation);
 	g_free (defederation->private);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

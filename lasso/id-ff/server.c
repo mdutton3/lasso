@@ -63,7 +63,7 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 
 	provider = lasso_provider_new(role, metadata, public_key, ca_cert_chain);
 	if (provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
+		message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.");
 		return LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
 	}
 
@@ -244,7 +244,7 @@ dispose(GObject *object)
 	}
 	server->private->dispose_has_run = TRUE;
 
-	debug("Server object 0x%x disposed ...\n", server);
+	debug("Server object 0x%x disposed ...", server);
 
 	/* free allocated memory for providers array */
 	/* XXX */
@@ -257,7 +257,7 @@ finalize(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
 
-	debug("Server object 0x%x finalized ...\n", server);
+	debug("Server object 0x%x finalized ...", server);
 
 	g_free(server->private_key);
 	g_free(server->secret_key);

@@ -120,7 +120,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_LECP;
 	}
 	else {
-		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s\n", name);
+		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
 	}
 
 	xmlFreeDoc(doc);
@@ -357,7 +357,7 @@ dispose(GObject *object)
 	}
 	profile->private->dispose_has_run = TRUE;
 
-	debug("Profile object 0x%x disposed ...\n", profile);
+	debug("Profile object 0x%x disposed ...", profile);
 
 	/* XXX unref reference counted objects */
 	/* lasso_server_destroy(profile->server);
@@ -376,7 +376,7 @@ finalize(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
 
-	debug("Profile object 0x%x finalized ...\n", object);
+	debug("Profile object 0x%x finalized ...", object);
 
 	g_free(profile->nameIdentifier);
 	g_free(profile->remote_providerID);
