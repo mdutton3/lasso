@@ -126,7 +126,7 @@ lasso_sa_sasl_request_new(const char *mechanism)
 	g_return_val_if_fail(mechanism != NULL, NULL);
 
 	node = g_object_new(LASSO_TYPE_SA_SASL_REQUEST, NULL);
-	node->mechanism = mechanism;
+	node->mechanism = g_strdup(mechanism);
 
 	return node;
 }
