@@ -212,6 +212,8 @@ static swig_type_info *dynamic_cast_node(void **nodePointer) {
 	node_info *info;
 	char *name;
 
+	if (*nodePointer == NULL)
+		return NULL;
 	name = (char *) G_OBJECT_TYPE_NAME(*nodePointer);
 	for (info = node_infos; info->swig; info++) {
 		if (strcmp(info->name, name) == 0)
@@ -4819,8 +4821,11 @@ typedef struct {
 
 	char *remoteProviderId;
 
-	%immutable request;
-	LassoLibFederationTerminationNotification *request;
+	%newobject request_get;
+	LassoSamlpRequestAbstract *request;
+
+	%newobject response_get;
+	LassoSamlpResponseAbstract *response;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -4904,14 +4909,16 @@ typedef struct {
 #define LassoDefederation_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
 /* request */
-#define LassoDefederation_get_request(self) LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request)
-#define LassoDefederation_request_get(self) LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request)
+#define LassoDefederation_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoDefederation_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoDefederation_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoDefederation_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
-/* responseStatus */
-#define LassoDefederation_get_responseStatus(self) NULL /* FIXME: no set */
-#define LassoDefederation_responseStatus_get(self) NULL /* FIXME: no set */
-#define LassoDefederation_set_responseStatus(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
-#define LassoDefederation_responseStatus_set(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
+/* response */
+#define LassoDefederation_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoDefederation_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoDefederation_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoDefederation_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* session */
 #define LassoDefederation_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -4987,13 +4994,11 @@ typedef struct {
 
 	char *remoteProviderId;
 
-	%immutable request;
+	%newobject request_get;
 	LassoSamlpRequestAbstract *request;
 
-	%immutable response;
+	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
-
-	char *responseStatus;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5136,16 +5141,14 @@ typedef struct {
 /* request */
 #define LassoLogin_get_request(self) get_node(LASSO_PROFILE(self)->request)
 #define LassoLogin_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLogin_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoLogin_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
 #define LassoLogin_get_response(self) get_node(LASSO_PROFILE(self)->response)
 #define LassoLogin_response_get(self) get_node(LASSO_PROFILE(self)->response)
-
-/* responseStatus */
-#define LassoLogin_get_responseStatus(self) NULL /* FIXME: no set */
-#define LassoLogin_responseStatus_get(self) NULL /* FIXME: no set */
-#define LassoLogin_set_responseStatus(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
-#define LassoLogin_responseStatus_set(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
+#define LassoLogin_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoLogin_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* session */
 #define LassoLogin_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5233,13 +5236,11 @@ typedef struct {
 
 	char *remoteProviderId;
 
-	%immutable request;
-	LassoLibLogoutRequest *request;
+	%newobject request_get;
+	LassoSamlpRequestAbstract *request;
 
-	%immutable response;
-	LassoLibLogoutResponse *response;
-
-	char *responseStatus;
+	%newobject response_get;
+	LassoSamlpResponseAbstract *response;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5344,18 +5345,16 @@ typedef struct {
 #define LassoLogout_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
 /* request */
-#define LassoLogout_get_request(self) LASSO_LIB_LOGOUT_REQUEST(LASSO_PROFILE(self)->request)
-#define LassoLogout_request_get(self) LASSO_LIB_LOGOUT_REQUEST(LASSO_PROFILE(self)->request)
+#define LassoLogout_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLogout_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLogout_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoLogout_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
-#define LassoLogout_get_response(self) LASSO_LIB_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response)
-#define LassoLogout_response_get(self) LASSO_LIB_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response)
-
-/* responseStatus */
-#define LassoLogout_get_responseStatus(self) NULL /* FIXME: no set */
-#define LassoLogout_responseStatus_get(self) NULL /* FIXME: no set */
-#define LassoLogout_set_responseStatus(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
-#define LassoLogout_responseStatus_set(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
+#define LassoLogout_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoLogout_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoLogout_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoLogout_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* session */
 #define LassoLogout_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5437,13 +5436,11 @@ typedef struct {
 
 	char *remoteProviderId;
 
-	%immutable request;
+	%newobject request_get;
 	LassoSamlpRequestAbstract *request;
 
-	%immutable response;
+	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
-
-	char *responseStatus;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5556,16 +5553,14 @@ typedef struct {
 /* request */
 #define LassoLecp_get_request(self) get_node(LASSO_PROFILE(self)->request)
 #define LassoLecp_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLecp_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoLecp_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
 #define LassoLecp_get_response(self) get_node(LASSO_PROFILE(self)->response)
 #define LassoLecp_response_get(self) get_node(LASSO_PROFILE(self)->response)
-
-/* responseStatus */
-#define LassoLecp_get_responseStatus(self) NULL /* FIXME: no set */
-#define LassoLecp_responseStatus_get(self) NULL /* FIXME: no set */
-#define LassoLecp_set_responseStatus(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
-#define LassoLecp_responseStatus_set(self, value) lasso_profile_set_response_status(LASSO_PROFILE(self), value)
+#define LassoLecp_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoLecp_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* session */
 #define LassoLecp_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5616,6 +5611,7 @@ int LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult,
 
 %}
 
+
 /***********************************************************************
  * lasso:NameIdentifierMapping
  ***********************************************************************/
@@ -5650,6 +5646,12 @@ typedef struct {
 	LassoSamlNameIdentifier *nameIdentifier;
 
 	char *remoteProviderId;
+
+	%newobject request_get;
+	LassoSamlpRequestAbstract *request;
+
+	%newobject response_get;
+	LassoSamlpResponseAbstract *response;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5742,6 +5744,18 @@ typedef struct {
 #define LassoNameIdentifierMapping_set_remoteProviderId(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 #define LassoNameIdentifierMapping_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
+/* request */
+#define LassoNameIdentifierMapping_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameIdentifierMapping_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameIdentifierMapping_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoNameIdentifierMapping_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoNameIdentifierMapping_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameIdentifierMapping_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameIdentifierMapping_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoNameIdentifierMapping_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+
 /* session */
 #define LassoNameIdentifierMapping_get_session LassoNameIdentifierMapping_session_get
 LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping *self) {
@@ -5814,11 +5828,11 @@ typedef struct {
 
 	char *remoteProviderId;
 
-	%immutable request;
-	LassoLibRegisterNameIdentifierRequest *request;
+	%newobject request_get;
+	LassoSamlpRequestAbstract *request;
 
-	%immutable response;
-	LassoLibRegisterNameIdentifierResponse *response;
+	%newobject response_get;
+	LassoSamlpResponseAbstract *response;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5921,12 +5935,16 @@ typedef struct {
 #define LassoNameRegistration_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
 /* request */
-#define LassoNameRegistration_get_request(self) LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->request)
-#define LassoNameRegistration_request_get(self) LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->request)
+#define LassoNameRegistration_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameRegistration_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameRegistration_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoNameRegistration_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
 
 /* response */
-#define LassoNameRegistration_get_response(self) LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(LASSO_PROFILE(self)->response)
-#define LassoNameRegistration_response_get(self) LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(LASSO_PROFILE(self)->response)
+#define LassoNameRegistration_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameRegistration_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameRegistration_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoNameRegistration_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
 /* session */
 #define LassoNameRegistration_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
