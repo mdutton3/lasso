@@ -90,4 +90,14 @@ SamlSubjectStatementAbstract.java
 StringArray.java
 StringList.java
 NodeList.java
+DiscoCredentials.java
+DiscoDescription.java
+DiscoEncryptedResourceID.java
+DiscoInsertEntry.java
+LassoHttpMethod.java
+LassoLoginProtocolProfile.java
+LassoMessageType.java
+LassoProviderRole.java
+LassoRequestType.java
+LassoSignatureMethod.java
 
