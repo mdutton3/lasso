@@ -39,16 +39,31 @@ clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
-	Defederation.cs Identity.cs lasso.cs lassoHttpMethod.cs \
-	lassoLoginProtocolProfile.cs lassoMessageType.cs lassoPINVOKE.cs \
-	LassoProviderRole.cs lassoRequestType.cs lassoSignatureMethod.cs \
-	Lecp.cs LibAssertion.cs LibAuthnRequest.cs LibAuthnResponse.cs \
-	LibFederationTerminationNotification.cs LibLogoutRequest.cs \
-	LibLogoutResponse.cs LibRegisterNameIdentifierRequest.cs \
-	LibRegisterNameIdentifierResponse.cs Login.cs Logout.cs \
-	NameIdentifierMapping.cs NameRegistration.cs Node.cs Provider.cs \
-	ProviderIds.cs SamlpRequest.cs SamlpResponse.cs Server.cs \
-	Session.cs SWIGTYPE_p_void.cs
+	Credentials.cs Defederation.cs Description.cs DiscoModify.cs \
+	DiscoModifyResponse.cs DiscoQuery.cs DiscoQueryResponse.cs \
+	Discovery.cs DstModification.cs DstModify.cs DstModifyResponse.cs \
+	DstQuery.cs DstQueryResponse.cs Federation.cs Identity.cs \
+	InsertEntry.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
+	LassoMessageType.cs LassoProviderRole.cs LassoRequestType.cs \
+	LassoSignatureMethod.cs Lecp.cs LibAssertion.cs LibAuthnRequest.cs \
+	LibAuthnResponse.cs LibFederationTerminationNotification.cs \
+	LibLogoutRequest.cs LibLogoutResponse.cs \
+	LibRegisterNameIdentifierRequest.cs \
+	LibRegisterNameIdentifierResponse.cs LibStatusResponse.cs Login.cs \
+	Logout.cs NameIdentifierMapping.cs NameRegistration.cs Node.cs \
+	NodeArray.cs Options.cs PPMsgContact.cs PersonalProfileService.cs \
+	Provider.cs QueryItem.cs RemoveEntry.cs ResourceID.cs \
+	ResourceOffering.cs SWIGTYPE_p_LassoDiscoEncryptedResourceID.cs \
+	SWIGTYPE_p_LassoDiscoRequestedServiceType.cs \
+	SWIGTYPE_p_LassoDstNewData.cs SWIGTYPE_p_LassoMdProtocolType.cs \
+	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs SamlAdvice.cs \
+	SamlAssertion.cs SamlAttributeStatement.cs \
+	SamlAuthenticationStatement.cs SamlConditions.cs \
+	SamlNameIdentifier.cs SamlSubject.cs SamlSubjectConfirmation.cs \
+	SamlSubjectLocality.cs SamlSubjectStatement.cs SamlpRequest.cs \
+	SamlpResponse.cs SamlpStatus.cs SamlpStatusCode.cs Server.cs \
+	ServiceInstance.cs Session.cs Status.cs StringArray.cs \
+	lassoPINVOKE.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
