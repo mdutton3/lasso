@@ -40,6 +40,13 @@ extern "C" {
 #define LASSP_IS_USER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_USER))
 #define LASSO_USER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_USER, LassoUserClass)) 
 
+#define LASSO_USER_NODE                   "LassoUser"
+#define LASSO_USER_IDENTITIES_NODE        "LassoIdentities"
+#define LASSO_USER_IDENTITY_NODE          "LassoIdentity"
+#define LASSO_USER_ASSERTIONS_NODE        "LassoAssertions"
+#define LASSO_USER_ASSERTION_NODE         "LassoAssertion"
+#define LASSO_USER_REMOTE_PROVIDERID_NODE "RemoteProviderID"
+
 typedef struct _LassoUser LassoUser;
 typedef struct _LassoUserClass LassoUserClass;
 
@@ -47,8 +54,8 @@ struct _LassoUser {
   GObject parent;
 
   /*< public >*/
-  GHashTable *assertions;          /* hash for assertions with nameIdentifier as key */
-  GHashTable *identities;          /* hash for identities with remote ProviderID as key */
+  GHashTable *assertions; /* hash for assertions with remote providerID as key */
+  GHashTable *identities; /* hash for identities with remote ProviderID as key */
 
   /*< private >*/
 };

@@ -39,11 +39,11 @@ lasso_server_dump(LassoServer *server)
 
   server_node = lasso_node_new();
   server_class = LASSO_NODE_GET_CLASS(server_node);
-  server_class->set_name(server_node, "Server");
+  server_class->set_name(server_node, LASSO_SERVER_NODE);
 
   /* set private key and signature method */
   if(server->private_key)
-    server_class->set_prop(server_node, "PrivateKey", server->private_key);
+    server_class->set_prop(server_node, LASSO_SERVER_PRIVATE_KEY_NODE, server->private_key);
 
   /* TODO : add the signature method in the dump */
 
@@ -51,14 +51,14 @@ lasso_server_dump(LassoServer *server)
   provider = LASSO_PROVIDER(server);
   server_class->add_child(server_node, provider->metadata, FALSE);
   if(provider->public_key)
-    server_class->set_prop(server_node, "PublicKey", provider->public_key);
+    server_class->set_prop(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
   if(provider->certificate)
-    server_class->set_prop(server_node, "Certificate", provider->certificate);
+    server_class->set_prop(server_node, LASSO_PROVIDER_CERTIFICATE_NODE, provider->certificate);
 
   /* set Providers node */
   providers_node = lasso_node_new();
   providers_class = LASSO_NODE_GET_CLASS(providers_node);
-  providers_class->set_name(providers_node, "Providers");
+  providers_class->set_name(providers_node, LASSO_SERVER_PROVIDERS_NODE);
 
   /* add providers */
   for(i = 0; i<server->providers->len; i++){
@@ -190,25 +190,25 @@ lasso_server_new_from_dump(xmlChar *dump)
     return(NULL);
   }
 
-  content = xmlGetProp(xmlNode, "PrivateKey");
+  content = xmlGetProp(xmlNode, LASSO_SERVER_PRIVATE_KEY_NODE);
   if(content){
     server->private_key = content;
   }
 
-  content = xmlGetProp(xmlNode, "SignatureMethod");
+  content = xmlGetProp(xmlNode, LASSO_SERVER_SIGNATURE_METHOD_NODE);
   if(content){
     server->signature_method = atoi(content);
   }
 
   /* set providers */
-  providers_node  = lasso_node_get_child(server_node, "Providers", NULL);
+  providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, NULL);
   providers_class = LASSO_NODE_GET_CLASS(providers_node);
   if(providers_node){
     providers_xmlNode = providers_class->get_xmlNode(providers_node);
     provider_xmlNode = providers_xmlNode->children;
     while(provider_xmlNode){
       /* a provider node, get the public key, certifcate and metadata */
-      if(provider_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(provider_xmlNode->name, "Provider")){
+      if(provider_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(provider_xmlNode->name, LASSO_PROVIDER_NODE)){
 	/* get the metadata child node */
 	entity_xmlNode = provider_xmlNode->children;
 	while(entity_xmlNode){
@@ -216,8 +216,8 @@ lasso_server_new_from_dump(xmlChar *dump)
 	    break;
 	  entity_xmlNode = entity_xmlNode->next;
 	}
-	public_key  = xmlGetProp(provider_xmlNode, "PublicKey");
-	certificate = xmlGetProp(provider_xmlNode, "Certificate");
+	public_key  = xmlGetProp(provider_xmlNode, LASSO_PROVIDER_PUBLIC_KEY_NODE);
+	certificate = xmlGetProp(provider_xmlNode, LASSO_PROVIDER_CERTIFICATE_NODE);
 	
 	/* add a new provider */
 /* 	provider = lasso_provider_new_metadata_xmlNode(metadata); */

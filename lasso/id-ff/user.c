@@ -33,7 +33,22 @@ lasso_user_dump_assertion(gpointer   key,
 			  gpointer   value,
 			  LassoNode *assertions)
 {
+  LassoNode      *assertion;
+  LassoNodeClass *assertion_class, *assertions_class;
 
+  /* a new lasso assertion dump node */
+  assertion = lasso_node_new();
+  assertion_class = LASSO_NODE_GET_CLASS(assertion);
+  assertion_class->set_name(assertion, LASSO_USER_ASSERTION_NODE);
+
+  /* set the remote provider id */
+  assertion_class->set_prop(assertion, LASSO_USER_REMOTE_PROVIDERID_NODE, value);
+  
+  /* add the liberty alliance assertion node */
+  assertions_class = LASSO_NODE_GET_CLASS(assertions);
+
+  /* add the lasso assertion node in lasso assertions node */
+  assertion_class->add_child(assertions, assertion, FALSE);
 }
 
 static void
@@ -59,19 +74,19 @@ lasso_user_dump(LassoUser *user)
 
   user_node = lasso_node_new();
   user_class = LASSO_NODE_GET_CLASS(user_node);
-  user_class->set_name(user_node, "User");
+  user_class->set_name(user_node, LASSO_USER_NODE);
 
   /* dump the assertions */
   assertions_node = lasso_node_new();
   assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
-  assertions_class->set_name(assertions_node, "Assertions");
+  assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
   g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
   user_class->add_child(user_node, assertions_node, FALSE);
 
   /* dump the identities */
   identities_node = lasso_node_new();
   identities_class = LASSO_NODE_GET_CLASS(identities_node);
-  identities_class->set_name(identities_node, "Identities");
+  identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
   g_hash_table_foreach(user->identities, lasso_user_dump_identity, identities_node);
   user_class->add_child(user_node, identities_node, FALSE);
 
@@ -163,30 +178,44 @@ lasso_user_new()
 LassoUser*
 lasso_user_new_from_dump(xmlChar *dump)
 {
-  LassoNode      *user_node, *identities_node;
-  LassoNodeClass *identities_class;
+  LassoNode      *user_node, *identities_node, *assertions_node, *assertion_node;
+  LassoNodeClass *identities_class, *assertions_class;
   LassoIdentity  *identity;
-  xmlNodePtr      xmlNode;
+  xmlNodePtr      xmlNode, assertion_xmlNode;
   LassoUser      *user;
   xmlChar        *remote_providerID;
 
   /* new object */
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
 
-  /* get node from dump */
+  /* get user */
   user_node = lasso_node_new_from_dump(dump);
 
-  /* get the assertions */
+  /* get lasso assertion */
+  assertions_node = lasso_node_get_child(user_node, LASSO_USER_ASSERTIONS_NODE, NULL);
+  if(assertions_node){
+    assertions_class = LASSO_NODE_GET_CLASS(identities_node);    
+    xmlNode = assertions_class->get_xmlNode(assertions_node);
+    assertion_xmlNode = xmlNode->children;
+    while(assertion_xmlNode){
+      if(assertion_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(assertion_xmlNode->name, LASSO_USER_ASSERTION_NODE)){
+	remote_providerID = xmlGetProp(assertion_xmlNode, LASSO_USER_REMOTE_PROVIDERID_NODE);
+	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
+	lasso_user_add_assertion(user, remote_providerID, assertion_node);
+      }
+      assertion_xmlNode = assertion_xmlNode->next;
+    }
+  }
 
-  /* set the identities */
-  identities_node = lasso_node_get_child(user_node, "Identities", NULL);
+  /* get the lasso identities */
+  identities_node = lasso_node_get_child(user_node, LASSO_USER_IDENTITIES_NODE, NULL);
   identities_class = LASSO_NODE_GET_CLASS(identities_node);
   xmlNode = identities_class->get_xmlNode(identities_node);
   if(xmlNode){
     xmlNode = xmlNode->children;
     while(xmlNode){
-      if(xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(xmlNode->name, "Identity")){
-	identity = lasso_identity_new(xmlGetProp(xmlNode, "RemoteProviderID"));
+      if(xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(xmlNode->name, LASSO_USER_IDENTITY_NODE)){
+	identity = lasso_identity_new(xmlGetProp(xmlNode, LASSO_USER_REMOTE_PROVIDERID_NODE));
 	lasso_identity_set_local_nameIdentifier(user, identity);
 	xmlNode = xmlNode->next;
       }
