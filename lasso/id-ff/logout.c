@@ -573,25 +573,33 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 #endif
 	}
 
-	/* If at IDP and if there is no more assertion, IDP a logged out every SPs,
-	   return the initial response to initial SP */
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
-			logout->initial_remote_providerID &&
+	/* If at IDP and if there is no more assertion, IDP has logged out
+	 * every SPs, return the initial response to initial SP.  Caution: We
+	 * can't use the test (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
+	 * to know whether the server is acting as an IDP or a SP, because it
+	 * can be a proxy. So we have to use the role of the initial remote
+	 * provider instead.
+	 */
+	if (logout->initial_remote_providerID && 
 			g_hash_table_size(profile->session->assertions) == 0) {
-		if (profile->remote_providerID != NULL)
-			g_free(profile->remote_providerID);
-		if (profile->request != NULL)
-			lasso_node_destroy(profile->request);
-		if (profile->response != NULL)
-			lasso_node_destroy(profile->response);
+		remote_provider = g_hash_table_lookup(profile->server->providers,
+				logout->initial_remote_providerID);
+		if (remote_provider == LASSO_PROVIDER_ROLE_SP) {
+			if (profile->remote_providerID != NULL)
+				g_free(profile->remote_providerID);
+			if (profile->request != NULL)
+				lasso_node_destroy(profile->request);
+			if (profile->response != NULL)
+				lasso_node_destroy(profile->response);
 
-		profile->remote_providerID = logout->initial_remote_providerID;
-		profile->request = logout->initial_request;
-		profile->response = logout->initial_response;
+			profile->remote_providerID = logout->initial_remote_providerID;
+			profile->request = logout->initial_request;
+			profile->response = logout->initial_response;
 
-		logout->initial_remote_providerID = NULL;
-		logout->initial_request = NULL;
-		logout->initial_response = NULL;
+			logout->initial_remote_providerID = NULL;
+			logout->initial_request = NULL;
+			logout->initial_response = NULL;
+		}
 	}
 
 	return rc;
