@@ -11,8 +11,8 @@ Single Log Out
                 lasso_logout_init_request(logout, idpProviderId, lassoHttpMethodAny)
                     # if idpProviderId is NULL the first one defined in the metadata will be picked
                     # if third param http method is lassoHttpMethodAny, then lasso retrieves
-		    # the first http mehtod supported by both providers, else check
-		    # the passed http method is supported.
+                    # the first http mehtod supported by both providers, else check
+                    # the passed http method is supported.
                 request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(logout)->request)
                 lasso_lib_authn_request_set_relayState(request, relayState)
                     # relayState is an optional value set by the SP

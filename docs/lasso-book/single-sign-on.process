@@ -58,11 +58,11 @@ Single Sign-On and Federation
                    # proceed to an IDP initiated SSO.
                    # First ask the user the SP for which he wants to proceed to sign-on.
                    lasso_login_init_idp_initiated_authn_request(serviceProviderId)
-            IF METHOD IS POST
+            ELSE (METHOD IS POST)
                 authn_request_msg = /form submitted LAREQ field/
 
             IF authn_request_msg:
-                lasso_login_process_msg(login, authn_request_msg)
+                lasso_login_process_authn_request_msg(login, authn_request_msg)
 
             IF lasso_login_must_authenticate(login)
                 # proceed to authentication
