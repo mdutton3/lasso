@@ -56,23 +56,26 @@ From schema liberty-authentication-context-v1.2.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibAuthnContext *context = LASSO_LIB_AUTHN_CONTEXT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) }, \
+		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
-	if (LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextClassRef)
-		xmlNewTextChild(xmlnode, NULL, "AuthnContextClassRef",
-				LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextClassRef);
-	if (LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextStatementRef)
-		xmlNewTextChild(xmlnode, NULL, "AuthnContextStatementRef",
-				LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextStatementRef);
-
 	xmlNodeSetName(xmlnode, "AuthnContext");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -80,12 +83,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibAuthnContext *context = LASSO_LIB_AUTHN_CONTEXT(node);
-	struct XmlSnippet snippets[] = {
-		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) },
-		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

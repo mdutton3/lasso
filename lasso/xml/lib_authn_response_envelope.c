@@ -31,24 +31,27 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibAuthnResponseEnvelope *env = LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(node); \
+	struct XmlSnippet snippets[] = { \
+		/* Extension */ \
+		{ "AuthnResponse", 'n', (void**)&(env->AuthnResponse) }, \
+		{ "AssertionConsumerServiceURL", 'c', \
+			(void**)&(env->AssertionConsumerServiceURL) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibAuthnResponseEnvelope *env = LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "AuthnResponseEnvelope");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (env->Extension)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->Extension)));
-	if (env->AuthnResponse)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->AuthnResponse)));
-	if (env->AssertionConsumerServiceURL)
-		xmlNewTextChild(xmlnode, NULL, "AssertionConsumerServiceURL",
-				env->AssertionConsumerServiceURL);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -56,13 +59,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibAuthnResponseEnvelope *env = LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(node);
-	struct XmlSnippet snippets[] = {
-		/* Extension */
-		{ "AuthnResponse", 'n', (void**)&(env->AuthnResponse) },
-		{ "AssertionConsumerServiceURL", 'c', (void**)&(env->AssertionConsumerServiceURL) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return 1;

@@ -43,19 +43,26 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AudienceRestrictionCondition", 'n', \
+			(void**)&(conditions->AudienceRestrictionCondition) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Conditions");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	if (conditions->AudienceRestrictionCondition)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(conditions->AudienceRestrictionCondition)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+
 	if (conditions->NotBefore)
 		xmlSetProp(xmlnode, "NotBefore", conditions->NotBefore);
 	if (conditions->NotOnOrAfter)
@@ -67,13 +74,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node);
-	struct XmlSnippet snippets[] = {
-		{ "AudienceRestrictionCondition", 'n',
-			(void**)&(conditions->AudienceRestrictionCondition) },
-		{ NULL, 0, NULL}
-	};
-
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

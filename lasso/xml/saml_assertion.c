@@ -60,6 +60,16 @@ From oasis-sstc-saml-schema-assertion-1.0.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "Conditions", 'n', (void**)&(assertion->Conditions) },  \
+		{ "Advice", 'n', (void**)&(assertion->Advice) },  \
+		{ "SubjectStatement", 'n', (void**)&(assertion->SubjectStatement) },  \
+		{ "AuthenticationStatement", 'n', (void**)&(assertion->AuthenticationStatement) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static void
@@ -97,9 +107,9 @@ static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 	xmlNs *ns;
 	char s[10];
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Assertion");
 	xmlSetProp(xmlnode, "AssertionID", assertion->AssertionID);
@@ -114,17 +124,7 @@ get_xmlNode(LassoNode *node)
 	if (assertion->IssueInstant)
 		xmlSetProp(xmlnode, "IssueInstant", assertion->IssueInstant);
 
-	if (assertion->Conditions)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(assertion->Conditions)));
-	if (assertion->Advice)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(assertion->Advice)));
-	if (assertion->AuthenticationStatement)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(assertion->AuthenticationStatement)));
-	if (assertion->SubjectStatement)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(assertion->SubjectStatement)));
-
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;
@@ -134,14 +134,7 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	char *s;
-	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
-	struct XmlSnippet snippets[] = {
-		{ "Conditions", 'n', (void**)&(assertion->Conditions) }, 
-		{ "Advice", 'n', (void**)&(assertion->Advice) }, 
-		{ "SubjectStatement", 'n', (void**)&(assertion->SubjectStatement) }, 
-		{ "AuthenticationStatement", 'n', (void**)&(assertion->AuthenticationStatement) }, 
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

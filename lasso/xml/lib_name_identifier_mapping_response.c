@@ -48,26 +48,28 @@ The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibNameIdentifierMappingResponse *response = \
+		LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(response->ProviderID) }, \
+		{ "Status", 'n', (void**)&(response->Status) }, \
+		{ "NameIdentifier", 'n', (void**)&(response->NameIdentifier) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibNameIdentifierMappingResponse *response;
+	snippets();
 
-	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
-	
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "NameIdentifierMappingResponse");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (response->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", response->ProviderID);
-	if (response->Status)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(response->Status)));
-	if (response->NameIdentifier)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(response->NameIdentifier)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -75,14 +77,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibNameIdentifierMappingResponse *response = 
-		LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(response->ProviderID) },
-		{ "Status", 'n', (void**)&(response->Status) },
-		{ "NameIdentifier", 'n', (void**)&(response->NameIdentifier) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

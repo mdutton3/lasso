@@ -51,28 +51,32 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlpRequest *request = LASSO_SAMLP_REQUEST(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AssertionArtifact", 'c', (void**)&(request->AssertionArtifact) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
 	xmlNode *xmlnode;
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
-	xmlNewTextChild(xmlnode, NULL, "AssertionArtifact",
-			LASSO_SAMLP_REQUEST(node)->AssertionArtifact);
 	xmlNodeSetName(xmlnode, "Request");
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+
 	return xmlnode;
 }
 
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlpRequest *request = LASSO_SAMLP_REQUEST(node);
-	struct XmlSnippet snippets[] = {
-		{ "AssertionArtifact", 'c', (void**)&(request->AssertionArtifact) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

@@ -44,24 +44,26 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "NameIdentifier", 'n', (void**)&(subject->NameIdentifier) },  \
+		{ "SubjectConfirmation", 'n', (void**)&(subject->SubjectConfirmation) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
-	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node);
 	xmlNode *xmlnode;
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Subject");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-
-	if (subject->NameIdentifier)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(subject->NameIdentifier)));
-
-	if (subject->SubjectConfirmation)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(subject->SubjectConfirmation)));
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode,
+				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -69,12 +71,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node);
-	struct XmlSnippet snippets[] = {
-		{ "NameIdentifier", 'n', (void**)&(subject->NameIdentifier) }, 
-		{ "SubjectConfirmation", 'n', (void**)&(subject->SubjectConfirmation) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

@@ -61,27 +61,29 @@ From liberty-metadata-v1.0.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
+		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) }, \
+		{ "SessionIndex", 'c', (void**)&(request->SessionIndex) }, \
+		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
-	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
 	xmlNode *xmlnode;
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "LogoutRequest");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	if (request->Extension)
-		xmlNewTextChild(xmlnode, NULL, "Extension", request->Extension);
-	if (request->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
-	if (request->NameIdentifier)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(request->NameIdentifier)));
-	if (request->SessionIndex)
-		xmlNewTextChild(xmlnode, NULL, "SessionIndex", request->SessionIndex);
-	if (request->RelayState)
-		xmlNewTextChild(xmlnode, NULL, "RelayState", request->RelayState);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+
 	if (request->consent)
 		xmlSetProp(xmlnode, "consent", request->consent);
 
@@ -169,14 +171,7 @@ init_from_query(LassoNode *node, char **query_fields)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
-		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) },
-		{ "SessionIndex", 'c', (void**)&(request->SessionIndex) },
-		{ "RelayState", 'c', (void**)&(request->RelayState) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

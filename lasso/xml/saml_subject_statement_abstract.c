@@ -43,20 +43,25 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlSubjectStatementAbstract *statement = \
+		LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "Subject", 'n', (void**)&(statement->Subject) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlSubjectStatementAbstract *statement;
-	
-	statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "SubjectStatementAbstract");
-	if (statement->Subject)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(statement->Subject)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -64,12 +69,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlSubjectStatementAbstract *statement =
-		LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node);
-	struct XmlSnippet snippets[] = {
-		{ "Subject", 'n', (void**)&(statement->Subject) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

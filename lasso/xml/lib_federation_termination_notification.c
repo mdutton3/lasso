@@ -58,24 +58,27 @@ From liberty-metadata-v1.0.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibFederationTerminationNotification *ob = \
+		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(ob->ProviderID) }, \
+		{ "NameIdentifier", 'n', (void**)&(ob->NameIdentifier) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibFederationTerminationNotification *ob;
-
-	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "FederationTerminationNotification");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (ob->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", ob->ProviderID);
-	if (ob->NameIdentifier)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(ob->NameIdentifier)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	if (ob->consent)
 		xmlSetProp(xmlnode, "consent", ob->consent);
@@ -86,14 +89,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibFederationTerminationNotification *ob =
-		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(ob->ProviderID) },
-		{ "NameIdentifier", 'n', (void**)&(ob->NameIdentifier) },
-		{ NULL, 0, NULL}
-	};
-
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return 1;

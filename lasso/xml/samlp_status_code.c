@@ -41,21 +41,27 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "StatusCode", 'n', (void**)&(status_code->StatusCode) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "StatusCode");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+
 	if (status_code->Value)
 		xmlSetProp(xmlnode, "Value", status_code->Value);
-
-	if (status_code->StatusCode)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(status_code->StatusCode)));
 
 	return xmlnode;
 }
@@ -63,12 +69,8 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node);
-	struct XmlSnippet snippets[] = {
-		{ "StatusCode", 'n', (void**)&(status_code->StatusCode) },
-		{ NULL, 0, NULL}
-	};
-
+	snippets();
+	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);

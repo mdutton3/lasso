@@ -48,20 +48,25 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AssertionIDReference", 'c', (void**)&(advice->AssertionIDReference) }, \
+		{ "Assertion", 'n', (void**)&(advice->Assertion) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Advice");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	if (advice->AssertionIDReference)
-		xmlNewTextChild(xmlnode, NULL, "AssertionIDReference", advice->AssertionIDReference);
-	if (advice->Assertion)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(advice->Assertion)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -69,12 +74,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
-	struct XmlSnippet snippets[] = {
-		{ "AssertionIDReference", 'c', (void**)&(advice->AssertionIDReference) },
-		{ "Assertion", 'n', (void**)&(advice->Assertion) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

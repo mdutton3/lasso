@@ -47,23 +47,26 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "SubjectLocality", 'n', (void**)&(statement->SubjectLocality) }, \
+		{ "AuthorityBinding", 'n', (void**)&(statement->AuthorityBinding) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AuthenticationStatement");
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (statement->SubjectLocality)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(statement->SubjectLocality)));
-	if (statement->AuthorityBinding)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(statement->AuthorityBinding)));
 	if (statement->AuthenticationMethod)
 		xmlSetProp(xmlnode, "AuthenticationMethod", statement->AuthenticationMethod);
 	if (statement->AuthenticationInstant)
@@ -75,12 +78,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
-	struct XmlSnippet snippets[] = {
-		{ "SubjectLocality", 'n', (void**)&(statement->SubjectLocality) },
-		{ "AuthorityBinding", 'n', (void**)&(statement->AuthorityBinding) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

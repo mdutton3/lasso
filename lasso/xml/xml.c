@@ -744,11 +744,38 @@ lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 			if (snippets[i].type == 'c') /* content */
 				*(snippets[i].value) = xmlNodeGetContent(t);
 			if (snippets[i].type == 'i') /* special case for name identifier */
-				*(snippets[i].value) =
+				*(snippets[i].value) = (void*)
 					lasso_saml_name_identifier_new_from_xmlNode(t);
 			break;
 		}
 	}
 
+}
+
+void
+lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
+{
+	int i;
+
+	for (i = 0; snippets[i].name; i++) {
+		if (*(snippets[i].value) == NULL)
+			continue;
+		if (snippets[i].type == 'n')
+			xmlAddChild(node, lasso_node_get_xmlNode(
+						LASSO_NODE(*(snippets[i].value))));
+		if (snippets[i].type == 'c')
+			xmlNewTextChild(node, NULL, snippets[i].name,
+					(char*)(*(snippets[i].value)));
+		if (snippets[i].type == 'i') {
+			xmlNode *t;
+			xmlNs *xmlns;
+			xmlns = xmlNewNs(node, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+
+			t = xmlAddChild(node, lasso_node_get_xmlNode(
+						LASSO_NODE(*(snippets[i].value))));
+			xmlNodeSetName(t, snippets[i].name);
+			xmlSetNs(t, xmlns);
+		}
+	}
 }
 

@@ -58,28 +58,30 @@ From liberty-metadata-v1.0.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibNameIdentifierMappingRequest *request = \
+		LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
+		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) }, \
+		{ "TargetNamespace", 'c', (void**)&(request->TargetNamespace) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibNameIdentifierMappingRequest *request;
+	snippets();
 	
 	request = LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node);
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "NameIdentifierMappingRequest");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (request->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
-
-	if (request->NameIdentifier)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(request->NameIdentifier)));
-
-	if (request->TargetNamespace)
-		xmlNewTextChild(xmlnode, NULL, "TargetNamespace", request->TargetNamespace);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	if (request->consent)
 		xmlSetProp(xmlnode, "consent", request->consent);
@@ -90,14 +92,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibNameIdentifierMappingRequest *request = 
-		LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node);
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
-		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) },
-		{ "TargetNamespace", 'c', (void**)&(request->TargetNamespace) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

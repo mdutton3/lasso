@@ -46,20 +46,25 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlAudienceRestrictionCondition *condition = \
+		LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "Audience", 'c', (void**)&(condition->Audience) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlAudienceRestrictionCondition *condition;
-
-	condition = LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AudienceRestrictionCondition");
-	if (condition->Audience)
-		xmlNewTextChild(xmlnode, NULL, "Audience", condition->Audience);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -67,12 +72,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlAudienceRestrictionCondition *condition =
-		LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(node);
-	struct XmlSnippet snippets[] = {
-		{ "Audience", 'c', (void**)&(condition->Audience) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

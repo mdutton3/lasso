@@ -41,24 +41,32 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node); \
+	char *proxy_count = NULL; \
+	struct XmlSnippet snippets[] = { \
+		{ "ProxyCount", 'c', (void**)&proxy_count }, \
+		{ "IDPList", 'n', (void**)&(scoping->IDPList) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
-	char s[20];
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Scoping");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
 	if (scoping->ProxyCount) {
-		snprintf(s, 19, "%d", scoping->ProxyCount);
-		xmlNewTextChild(xmlnode, NULL, "ProxyCount", s);
+		proxy_count = g_strdup_printf("%d", scoping->ProxyCount);
 	}
-	if (scoping->IDPList)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(scoping->IDPList)));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+
+	if (proxy_count)
+		g_free(proxy_count);
 
 	return xmlnode;
 }
@@ -66,13 +74,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
-	char *proxy_count = NULL;
-	struct XmlSnippet snippets[] = {
-		{ "ProxyCount", 'c', (void**)&proxy_count },
-		{ "IDPList", 'n', (void**)&(scoping->IDPList) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

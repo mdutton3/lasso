@@ -47,39 +47,35 @@ The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AuthnContext", 'n', (void**)&(statement->AuthnContext) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (statement->AuthnContext)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(statement->AuthnContext)));
-	if (statement->ReauthenticateOnOrAfter)
-		xmlSetProp(xmlnode, "ReauthenticateOnOrAfter", statement->ReauthenticateOnOrAfter);
-	if (statement->SessionIndex)
-		xmlSetProp(xmlnode, "SessionIndex", statement->SessionIndex);
-	
 	return xmlnode;
 }
 
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node);
-	int rc;
-	struct XmlSnippet snippets[] = {
-		{ "AuthnContext", 'n', (void**)&(statement->AuthnContext) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc) return rc;
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	statement->ReauthenticateOnOrAfter = xmlGetProp(xmlnode, "ReauthenticateOnOrAfter");
 	statement->SessionIndex = xmlGetProp(xmlnode, "SessionIndex");

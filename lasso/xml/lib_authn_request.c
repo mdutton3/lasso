@@ -81,47 +81,44 @@ From liberty-metadata-v1.0.xsd:
 */
 
 
-static LassoNodeClass *parent_class = NULL;
-
-
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node); \
+	char *force_authn = NULL, *is_passive = NULL; \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
+		{ "NameIDPolicy", 'c', (void**)&(request->NameIDPolicy) }, \
+		{ "ProtocolProfile", 'c', (void**)&(request->ProtocolProfile) }, \
+		{ "AssertionConsumerServiceID", 'c', \
+			(void**)&(request->AssertionConsumerServiceID) }, \
+		/* XXX: RequestAuthnContext */ \
+		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
+		{ "ForceAuthn", 'c', (void**)&force_authn }, \
+		{ "IsPassive", 'c', (void**)&is_passive }, \
+		/* XXX: Scoping */ \
+		{ NULL, 0, NULL} \
+	};
+
+static LassoNodeClass *parent_class = NULL;
+
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
-	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
 	xmlNode *xmlnode;
+	snippets();
+
+	is_passive = request->IsPassive ? "true" : "false";
+	force_authn = request->ForceAuthn ? "true" : "false";
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AuthnRequest");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	if (request->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
-	if (request->AffiliationID)
-		xmlNewTextChild(xmlnode, NULL, "AffiliationID", request->AffiliationID);
-	if (request->NameIDPolicy)
-		xmlNewTextChild(xmlnode, NULL, "NameIDPolicy", request->NameIDPolicy);
-	if (request->ProtocolProfile)
-		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", request->ProtocolProfile);
-	if (request->AssertionConsumerServiceID)
-		xmlNewTextChild(xmlnode, NULL, "AssertionConsumerServiceID",
-				request->AssertionConsumerServiceID);
-	if (request->RelayState)
-		xmlNewTextChild(xmlnode, NULL, "RelayState", request->RelayState);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 	if (request->consent)
 		xmlSetProp(xmlnode, "consent", request->consent);
-
-	xmlNewTextChild(xmlnode, NULL, "IsPassive", request->IsPassive ? "true" : "false");
-	xmlNewTextChild(xmlnode, NULL, "ForceAuthn", request->ForceAuthn ? "true" : "false");
-
-	if (request->RequestAuthnContext)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(request->RequestAuthnContext)));
-	if (request->Scoping)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(request->Scoping)));
 
 	return xmlnode;
 }
@@ -211,25 +208,11 @@ init_from_query(LassoNode *node, char **query_fields)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
 	xmlNode *t, *n;
 	char *s;
 	int rc;
-	char *force_authn = NULL, *is_passive = NULL;
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
-		{ "NameIDPolicy", 'c', (void**)&(request->NameIDPolicy) },
-		{ "ProtocolProfile", 'c', (void**)&(request->ProtocolProfile) },
-		{ "AssertionConsumerServiceID", 'c',
-			(void**)&(request->AssertionConsumerServiceID) },
-		/* XXX: RequestAuthnContext */
-		{ "RelayState", 'c', (void**)&(request->RelayState) },
-		{ "ForceAuthn", 'c', (void**)&force_authn },
-		{ "IsPassive", 'c', (void**)&is_passive },
-		/* XXX: Scoping */
-		{ NULL, 0, NULL}
-	};
-
+	snippets();
+	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 

@@ -48,27 +48,28 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) }, \
+		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) }, \
+		{ "AuthnContextComparisonType", 'c', \
+			(void**)&(context->AuthnContextComparisonType) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "RequestAuthnContext");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (context->AuthnContextClassRef)
-		xmlNewTextChild(xmlnode, NULL,
-				"AuthnContextClassRef", context->AuthnContextClassRef);
-	if (context->AuthnContextStatementRef)
-		xmlNewTextChild(xmlnode, NULL,
-				"AuthnContextStatementRef", context->AuthnContextStatementRef);
-	if (context->AuthnContextComparisonType)
-		xmlNewTextChild(xmlnode, NULL,
-				"AuthnContextComparisonType", context->AuthnContextComparisonType);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -76,14 +77,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node);
-	struct XmlSnippet snippets[] = {
-		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) },
-		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) },
-		{ "AuthnContextComparisonType", 'c',
-			(void**)&(context->AuthnContextComparisonType) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

@@ -64,49 +64,35 @@ From liberty-metadata-v1.0.xsd:
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibRegisterNameIdentifierRequest *request = \
+		LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
+		{ "IDPProvidedNameIdentifier", 'i', \
+			(void**)&(request->IDPProvidedNameIdentifier) }, \
+		{ "SPProvidedNameIdentifier", 'i', \
+			(void**)&(request->SPProvidedNameIdentifier) }, \
+		{ "OldProvidedNameIdentifier", 'i', \
+			(void**)&(request->OldProvidedNameIdentifier) }, \
+		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
-	xmlNode *xmlnode, *t;
-	LassoLibRegisterNameIdentifierRequest *request;
+	xmlNode *xmlnode;
 	xmlNs *xmlns;
-
-	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "RegisterNameIdentifierRequest");
 	xmlns = xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	xmlSetNs(xmlnode, xmlns);
-
-	if (request->Extension)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(request->Extension));
-	if (request->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
-
-	if (request->IDPProvidedNameIdentifier) {
-		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(request->IDPProvidedNameIdentifier)));
-		xmlNodeSetName(t, "IDPProvidedNameIdentifier");
-		xmlSetNs(t, xmlns);
-	}
-
-	if (request->SPProvidedNameIdentifier) {
-		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(request->SPProvidedNameIdentifier)));
-		xmlNodeSetName(t, "SPProvidedNameIdentifier");
-		xmlSetNs(t, xmlns);
-	}
-
-	if (request->OldProvidedNameIdentifier) {
-		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(request->OldProvidedNameIdentifier)));
-		xmlNodeSetName(t, "OldProvidedNameIdentifier");
-		xmlSetNs(t, xmlns);
-	}
-	if (request->RelayState)
-		xmlNewTextChild(xmlnode, NULL, "RelayState", request->RelayState);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -114,19 +100,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibRegisterNameIdentifierRequest *request =
-		LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
-	struct XmlSnippet snippets[] = {
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
-		{ "IDPProvidedNameIdentifier", 'i',
-			(void**)&(request->IDPProvidedNameIdentifier) },
-		{ "SPProvidedNameIdentifier", 'i',
-			(void**)&(request->SPProvidedNameIdentifier) },
-		{ "OldProvidedNameIdentifier", 'i',
-			(void**)&(request->OldProvidedNameIdentifier) },
-		{ "RelayState", 'c', (void**)&(request->RelayState) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

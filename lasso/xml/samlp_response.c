@@ -47,30 +47,34 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "Assertion", 'n', (void**)&(response->Assertion) }, \
+		{ "Status", 'n', (void**)&(response->Status) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
 	xmlNode *xmlnode, *t;
+	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "Response");
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (LASSO_SAMLP_RESPONSE(node)->Status) /* XXX: is mandatory */
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-				LASSO_NODE(LASSO_SAMLP_RESPONSE(node)->Status)));
+	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
 
-	if (LASSO_SAMLP_RESPONSE(node)->Assertion) {
-		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-					LASSO_NODE(LASSO_SAMLP_RESPONSE(node)->Assertion)));
-		if (strcmp(t->ns->href, LASSO_LIB_HREF) == 0) {
-			/* liberty nodes are not allowed in samlp nodes */
-			xmlSetNs(t, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF,
-						LASSO_SAML_ASSERTION_PREFIX));
-			xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
-					"type", "lib:AssertionType");
-		}
+	if (t && strcmp(t->ns->href, LASSO_LIB_HREF) == 0) {
+		/* liberty nodes are not allowed in samlp nodes */
+		xmlSetNs(t, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF,
+					LASSO_SAML_ASSERTION_PREFIX));
+		xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
+				"type", "lib:AssertionType");
 	}
 
 	return xmlnode;
@@ -79,12 +83,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node);
-	struct XmlSnippet snippets[] = {
-		{ "Assertion", 'n', (void**)&(response->Assertion) },
-		{ "Status", 'n', (void**)&(response->Status) },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

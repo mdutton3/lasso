@@ -62,30 +62,32 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node); \
+	char *is_passive = NULL; \
+	struct XmlSnippet snippets[] = { \
+		/* XXX: Extension */ \
+		{ "ProviderID", 'c', (void**)&(env->ProviderID) }, \
+		{ "ProviderName", 'c', (void**)&(env->ProviderName) }, \
+		{ "AssertionConsumerServiceURL", 'c', \
+			(void**)&(env->AssertionConsumerServiceURL) }, \
+		{ "IDPList", 'n', (void**)&(env->IDPList) }, \
+		{ "IsPassive", 'c', (void**)&is_passive }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "AuthnRequestEnvelope");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (env->Extension)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->Extension)));
-	if (env->ProviderID)
-		xmlNewTextChild(xmlnode, NULL, "ProviderID", env->ProviderID);
-	if (env->ProviderName)
-		xmlNewTextChild(xmlnode, NULL, "ProviderName", env->ProviderName);
-	if (env->AssertionConsumerServiceURL)
-		xmlNewTextChild(xmlnode, NULL, "AssertionConsumerServiceURL",
-				env->AssertionConsumerServiceURL);
-	if (env->IDPList)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->IDPList)));
-
-	xmlNewTextChild(xmlnode, NULL, "IsPassive", env->IsPassive ? "true" : "false");
+	is_passive = env->IsPassive ? "true" : "false";
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -93,17 +95,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node);
-	char *is_passive = NULL;
-	struct XmlSnippet snippets[] = {
-		/* XXX: Extension */
-		{ "ProviderID", 'c', (void**)&(env->ProviderID) },
-		{ "ProviderName", 'c', (void**)&(env->ProviderName) },
-		{ "AssertionConsumerServiceURL", 'c', (void**)&(env->AssertionConsumerServiceURL) },
-		{ "IDPList", 'n', (void**)&(env->IDPList) },
-		{ "IsPassive", 'c', (void**)&is_passive },
-		{ NULL, 0, NULL}
-	};
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;

@@ -123,6 +123,7 @@ LASSO_EXPORT gint       lasso_node_verify_signature(LassoNode *node,
 
 
 void lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
+void lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
 
 
 #ifdef __cplusplus
