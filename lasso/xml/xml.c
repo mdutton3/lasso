@@ -37,7 +37,11 @@
 #include <lasso/xml/xml.h>
 #include <lasso/xml/saml_name_identifier.h>
 
-static GObjectClass *parent_class = NULL;
+
+
+static void lasso_node_build_xmlNode_from_snippets(
+		LassoNode *node, xmlNode *xmlnode, struct XmlSnippet *snippets);
+
 
 /*****************************************************************************/
 /* virtual public methods                                                    */
@@ -582,6 +586,8 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 /* overridden parent class methods                                            */
 /*****************************************************************************/
 
+static GObjectClass *parent_class = NULL;
+
 static void
 lasso_node_dispose(GObject *object)
 {
@@ -884,101 +890,10 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 	return LASSO_MESSAGE_FORMAT_UNKNOWN;
 }
 
-void
-init_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets)
-{
-	xmlNode *t;
-	int i;
-
-	for (i = 0; snippets[i].name; i++) {
-		if (snippets[i].type == SNIPPET_ATTRIBUTE)
-			*(snippets[i].value) = xmlGetProp(node, snippets[i].name);
-	}
-
-	for (t = node->children; t; t = t->next) {
-		if (t->type != XML_ELEMENT_NODE)
-			continue;
-
-		for (i = 0; snippets[i].name; i++) {
-			if (strcmp(t->name, snippets[i].name) != 0)
-				continue;
-			else if (snippets[i].type == SNIPPET_NODE)
-				*(snippets[i].value) = lasso_node_new_from_xmlNode(t);
-			else if (snippets[i].type == SNIPPET_CONTENT)
-				*(snippets[i].value) = xmlNodeGetContent(t);
-			else if (snippets[i].type == SNIPPET_NAME_IDENTIFIER)
-				*(snippets[i].value) = (void*)
-					lasso_saml_name_identifier_new_from_xmlNode(t);
-			else if (snippets[i].type == SNIPPET_LIST_NODES) {
-				xmlNode *ts;
-				GList *s = NULL;
-				for (ts = t->children; ts; ts = ts->next) {
-					if (ts->type != XML_ELEMENT_NODE)
-						continue;
-					g_list_append(s, lasso_node_new_from_xmlNode(ts));
-				}
-				*(snippets[i].value) = s;
-			} else if (snippets[i].type == SNIPPET_LIST_CONTENT) {
-				xmlNode *ts;
-				GList *s = NULL;
-				for (ts = t->children; ts; ts = ts->next) {
-					if (ts->type != XML_ELEMENT_NODE)
-						continue;
-					g_list_append(s, xmlNodeGetContent(ts));
-				}
-				*(snippets[i].value) = s;
-			}
-			break;
-		}
-	}
-}
-
-void
-build_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets)
-{
-	int i;
-
-	for (i = 0; snippets[i].name; i++) {
-		if (*(snippets[i].value) == NULL)
-			continue;
-		else if (snippets[i].type == SNIPPET_ATTRIBUTE)
-			xmlSetProp(node, snippets[i].name, (char*)(*(snippets[i].value)));
-		else if (snippets[i].type == SNIPPET_NODE)
-			xmlAddChild(node, lasso_node_get_xmlNode(
-						LASSO_NODE(*(snippets[i].value))));
-		else if (snippets[i].type == SNIPPET_CONTENT)
-			xmlNewTextChild(node, NULL, snippets[i].name, 
-					(char*)(*(snippets[i].value)));
-		else if (snippets[i].type == SNIPPET_NAME_IDENTIFIER) {
-			xmlNode *t;
-			xmlNs *xmlns;
-			xmlns = xmlNewNs(node, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
-
-			t = xmlAddChild(node, lasso_node_get_xmlNode(
-						LASSO_NODE(*(snippets[i].value))));
-			xmlNodeSetName(t, snippets[i].name);
-			xmlSetNs(t, xmlns);
-		} else if (snippets[i].type == SNIPPET_LIST_NODES) {
-			GList *elem = (GList *)(*(snippets[i].value));
-			while (elem) {
-				xmlAddChild(node, lasso_node_get_xmlNode(LASSO_NODE(elem->data)));
-				elem = g_list_next(elem);
-			}
-		} else if (snippets[i].type == SNIPPET_LIST_CONTENT) {
-			/* sequence of simple elements (no children, no attrs, just content) */
-			GList *elem = (GList *)(*(snippets[i].value));
-			while (elem) {
-				xmlNewTextChild(node, NULL, snippets[i].name, (char*)(elem->data));
-				elem = g_list_next(elem);
-			}
-		}
-	}
-}
-
 
 /**
  * lasso_node_class_add_snippets
- * @klass: self
+ * @klass: object class
  * @snippets: array of XmlSnippet (NULL terminated)
  **/
 void
@@ -988,6 +903,11 @@ lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets
 }
 
 
+/**
+ * lasso_node_class_set_nodename
+ * @klass: object class
+ * @name: name for element node
+ **/
 void
 lasso_node_class_set_nodename(LassoNodeClass *klass, char *name)
 {
@@ -996,6 +916,13 @@ lasso_node_class_set_nodename(LassoNodeClass *klass, char *name)
 	klass->node_data->node_name = g_strdup(name);
 }
 
+
+/**
+ * lasso_node_class_set_ns
+ * @klass: object class
+ * @href: namespace uri
+ * @prefix: namespace prefix
+ **/
 void
 lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 {
@@ -1005,7 +932,7 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 }
 
 
-void
+static void
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets)
 {

@@ -46,20 +46,11 @@ typedef enum {
 	SNIPPET_INTEGER = 1 << 21
 } SnippetType;
 
-struct XmlSnippetObsolete {
-	char *name;
-	SnippetType type;
-	void **value;
-};
-
 struct XmlSnippet {
 	char *name;
 	SnippetType type;
 	guint offset;
 };
-
-void init_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets);
-void build_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets);
 
 struct _LassoNodeClassData
 {
@@ -71,8 +62,6 @@ struct _LassoNodeClassData
 void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
 void lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix);
 void lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets);
-void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
-		struct XmlSnippet *snippets);
 
 #ifdef __cplusplus
 }
