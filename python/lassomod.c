@@ -134,6 +134,8 @@ static PyMethodDef lasso_methods[] = {
 
   /* py_federation_termination_notification.h */
   {"federation_termination_notification_new", federation_termination_notification_new, METH_VARARGS},
+  {"federation_termination_notification_new_from_soap", federation_termination_notification_new_from_soap, METH_VARARGS},
+  {"federation_termination_notification_new_from_query", federation_termination_notification_new_from_query, METH_VARARGS},
 
   /* py_logout_request.h */
   {"logout_request_new",                logout_request_new,                METH_VARARGS},

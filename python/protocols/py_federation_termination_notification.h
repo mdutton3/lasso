@@ -37,5 +37,7 @@ typedef struct {
 PyObject *LassoFederationTerminationNotification_wrap(LassoFederationTerminationNotification *notification);
 
 PyObject *federation_termination_notification_new(PyObject *self, PyObject *args);
+PyObject *federation_termination_notification_new_from_soap(PyObject *self, PyObject *args);
+PyObject *federation_termination_notification_new_from_query(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_FEDERATION_TERMINATION_NOTIFICATION_H__ */

@@ -324,21 +324,26 @@ class AuthnResponse(Node):
 
 
 class FederationTerminationNotification(LibFederationTerminationNotification):
-    def __init__(self, providerID,
-                 nameIdentifier, nameQualifier = None, format = None, _obj=None):
+    def __init__(self, obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        self._o = lassomod.federation_termination_notification_new(providerID,
-                                                                   nameIdentifier,
-                                                                   nameQualifier,
-                                                                   format)
-        if self._o is None:
-            raise Error('lasso_federation_termination_notification_new() failed')
-        LibFederationTerminationNotification.__init__(self, _obj=_obj)
+        self._o = obj
+        LibFederationTerminationNotification.__init__(self, _obj=self._o)
 
+    def new(cls, providerID, nameIdentifier, nameQualifier, format):
+        obj = lassomod.federation_termination_notification_new(providerID, nameIdentifier, nameQualifier, format)
+        return FederationTerminationNotification(obj)
+    new = classmethod(new)
+
+    def new_from_soap(cls, envelope):
+        obj = lassomod.federation_termination_notification_new_from_soap(envelope)
+        return FederationTerminationNotification(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_query(cls, query):
+        obj = lassomod.federation_termination_notification_new_from_query(query)
+        return FederationTerminationNotification(obj)
+    new_from_query = classmethod(new_from_query)
 
 class LogoutRequest(LibLogoutRequest):
     def __init__(self, obj):
@@ -429,28 +434,29 @@ class NameIdentifierMappingResponse(Node):
 
 
 class RegisterNameIdentifierRequest(Node):
-    def __init__(self,
-                 providerID,
-                 idpNameIdentifier, idpNameQualifier, idpFormat,
-                 spNameIdentifier,  spNameQualifier,  spFormat,
-                 oldNameIdentifier, oldNameQualifier, oldFormat,
-		 _obj=None):
+    def __init__(_obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.register_name_identifier_request_new(providerID,
-                                                             idpNameIdentifier, idpNameQualifier, idpFormat,
-                                                             spNameIdentifier,  spNameQualifier,  spFormat,
-                                                             oldNameIdentifier, oldNameQualifier, oldFormat)
-        if _obj is None:
-            raise Error('lasso_register_name_identifier_request_new() failed')
-        Node.__init__(self, _obj=_obj)
+        self._o = obj
+        LibRegisterNameIdentifierRequest.__init__(self, _obj = self._o)
 
-    def changeAttributeNamesIdentifiers(self):
-        lassomod.register_name_identifier_request_change_attribute_names_identifiers(self);
+    def new(cls, providerID, nameIdentifier, nameQualifier, format):
+        obj = lassomod.register_name_identifier_new(providerID, nameIdentifier, nameQualifier, format)
+        return RegisterNameIdentifierRequest(obj)
+    new = classmethod(new)
 
+    def new_from_soap(cls, envelope):
+        obj = lassomod.register_name_identifier_new_from_soap(envelope)
+        return RegisterNameIdentifierRequest(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_query(cls, query):
+        obj = lassomod.register_name_identifier_new_from_query(query)
+        return RegisterNameIdentifierRequest(obj)
+    new_from_query = classmethod(new_from_query)
+
+    def url_encode(self):
+        pass
 
 class RegisterNameIdentifierResponse(Node):
     def __init__(self,

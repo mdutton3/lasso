@@ -49,10 +49,9 @@ PyObject *federation_termination_notification_new(PyObject *self, PyObject *args
 
   LassoNode *notification;
 
-  if (CheckArgs(args, "SSss:federation_termination_notification_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "sszz:federation_termination_notification_new",
-			 &providerID, &nameIdentifier,
-			 &nameQualifier, &format))
+  if (CheckArgs(args, "SSSS:federation_termination_notification_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssss:federation_termination_notification_new",
+			 &providerID, &nameIdentifier,&nameQualifier, &format))
       return NULL;
   }
   else return NULL;
@@ -61,6 +60,40 @@ PyObject *federation_termination_notification_new(PyObject *self, PyObject *args
 							       nameIdentifier,
 							       nameQualifier,
 							       format);
+
+  return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
+}
+
+PyObject *federation_termination_notification_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *soap_buffer;
+
+  LassoNode     *notification;
+
+  if (CheckArgs(args, "S:federation_termination_notification_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:federation_termination_notification_new_from_soap",
+			 &soap_buffer))
+      return NULL;
+  }
+  else return NULL;
+
+  notification = lasso_federation_termination_notification_new_from_soap(soap_buffer);
+
+  return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
+}
+
+PyObject *federation_termination_notification_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode     *notification;
+
+  if (CheckArgs(args, "S:federation_termination_notification_new_from_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:federation_termination_notification_new_from_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  notification = lasso_federation_termination_notification_new_from_query(query);
 
   return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
 }
