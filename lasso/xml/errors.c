@@ -69,7 +69,7 @@ lasso_strerror(int error_code)
   case LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ:
     return "An object type provided as parameter is invalid or object is NULL.\n";
   case LASSO_PARAM_ERROR_INVALID_VALUE:
-    return "The value of a parameter is invalid.\n";
+    return "A parameter value is invalid.\n";
   case LASSO_PARAM_ERROR_ERR_CHECK_FAILED:
     return "The error return location should be either NULL or contains a NULL error.\n";
 
