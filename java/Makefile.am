@@ -12,7 +12,11 @@ javalib_LTLIBRARIES = jlasso.la
 jlasso_la_SOURCES =	lasso_wrap.c
 jlasso_la_CFLAGS = $(JDK_INCLUDES) $(LASSO_CFLAGS) -I$(top_srcdir)
 jlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
+if MINGW
 jlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
+else
+jlasso_la_LDFLAGS =	-no-undefined -avoid-version
+endif
 
 javashare_DATA = lasso.jar
 
