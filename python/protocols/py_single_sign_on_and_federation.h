@@ -35,7 +35,25 @@ typedef struct {
 #define lassoAuthnRequest_get(v) (((v) == Py_None) ? NULL : (((lassoAuthnRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *lassoAuthnRequest_wrap(lassoAuthnRequest *request);
 
+typedef struct {
+    PyObject_HEAD
+    lassoAuthnResponse *obj;
+} lassoAuthnResponse_object;
+
+#define lassoAuthnResponse_get(v) (((v) == Py_None) ? NULL : (((lassoAuthnResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *lassoAuthnResponse_wrap(lassoAuthnResponse *response);
+
 PyObject *authn_request_getattr(PyObject *self, PyObject *args);
 PyObject *authn_request_create(PyObject *self, PyObject *args);
+
+PyObject *authn_response_getattr(PyObject *self, PyObject *args);
+PyObject *authn_response_create(PyObject *self, PyObject *args);
+PyObject *authn_response_init(PyObject *self, PyObject *args);
+PyObject *authn_response_add_assertion(PyObject *self, PyObject *args);
+
+PyObject *assertion_build(PyObject *self, PyObject *args);
+PyObject *assertion_add_authenticationStatement(PyObject *self, PyObject *args);
+
+PyObject *authentication_statement_build(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__ */

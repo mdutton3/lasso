@@ -27,19 +27,19 @@
 #include "py_lasso.h"
 
 PyObject *init(PyObject *self, PyObject *args) {
-  return (wrap_int(lasso_init()));
+  return (int_wrap(lasso_init()));
 }
 
 PyObject *shutdown(PyObject *self, PyObject *args) {
-  return (wrap_int(lasso_shutdown()));
+  return (int_wrap(lasso_shutdown()));
 }
 
 PyObject *check_version_exact(PyObject *self, PyObject *args) {
-  return (wrap_int(lasso_check_version_exact()));
+  return (int_wrap(lasso_check_version_exact()));
 }
 
 PyObject *check_version(PyObject *self, PyObject *args) {
-  return (wrap_int(lasso_check_version()));
+  return (int_wrap(lasso_check_version()));
 }
 
 PyObject *check_version_ext(PyObject *self, PyObject *args) {
@@ -55,5 +55,5 @@ PyObject *check_version_ext(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  return (wrap_int(lasso_check_version_ext(major, minor, subminor, mode)));
+  return (int_wrap(lasso_check_version_ext(major, minor, subminor, mode)));
 }

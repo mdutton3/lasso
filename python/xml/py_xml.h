@@ -37,5 +37,6 @@ PyObject *LassoNode_wrap(LassoNode *node);
 
 PyObject *node_dump(PyObject *self, PyObject *args);
 PyObject *node_unref(PyObject *self, PyObject *args);
+PyObject *node_url_encode(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_XML_H__ */

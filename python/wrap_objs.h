@@ -51,9 +51,9 @@ typedef struct {
 xmlChar **PythonStringList_get(PyObject *list_obj);
 GPtrArray *PythonStringList2_get(PyObject *list_obj);
 
-PyObject *wrap_int(int val);
-PyObject *wrap_charPtr(char *str);
-PyObject *wrap_charPtrConst(const char *str);
+PyObject *int_wrap(int val);
+PyObject *charPtr_wrap(char *str);
+PyObject *charPtrConst_wrap(const char *str);
 
 PyObject *wrap_xmlCharPtr(xmlChar *str);
 PyObject *wrap_xmlCharPtrConst(const xmlChar *str);

@@ -10,19 +10,42 @@ req = lasso.AuthnRequest("providerid.com",
                          "federated",
                          "false",
                          "true",
-                         "", # None
+                         "pp", # None
                          "3",
                          None,
                          None,
                          "", # None
-                         "", # None
+                         "encoded_RelayState", # None
                          0,
                          None,
                          "obtained")
 
-req.request.dump("iso-8859-1", 1)
+req.node.dump("iso-8859-1", 1)
 
-#req.dump("iso-8859-1", 1)
-#req.destroy()
+query = req.node.url_encode(1, "../../examples/rsakey.pem")
+
+res = lasso.AuthnResponse(query, 1,
+                          "../../examples/rsapub.pem",
+                          "../../examples/rsakey2.pem",
+                          "../../examples/rsacert.pem", 0)
+
+res.init("toto", 1)
+
+assertion = lasso.assertion_build(res, "http://idprovider.com")
+authentication_statement = lasso.authentication_statement_build("password",
+                                                                "3",
+                                                                "tralalal",
+                                                                "dslqkjfslfj",
+                                                                "http://service-provider.com",
+                                                                "federated",
+                                                                "wxkfjesmqfj",
+                                                                "http://idp-provider.com",
+                                                                "federated",
+                                                                "bearer")
+lasso.assertion_add_authenticationStatement(assertion, authentication_statement);
+res.add_assertion(assertion)
+
+res.node.dump("iso-8859-1", 1)
+#req.node.destroy()
 
 #print lasso.shutdown()

@@ -37,13 +37,21 @@ static PyMethodDef lasso_methods[] = {
   {"check_version_ext",   check_version_ext,   METH_VARARGS},
 
   /* py_xml.h */
-  {"node_dump",  node_dump,  METH_VARARGS},
-  {"node_unref", node_unref, METH_VARARGS},
+  {"node_dump",       node_dump,       METH_VARARGS},
+  {"node_unref",      node_unref,      METH_VARARGS},
+  {"node_url_encode", node_url_encode, METH_VARARGS},
 
   /* py_single_sign_on_and_federation.h */
   {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
-  {"authn_request_create",  authn_request_create,   METH_VARARGS},
-
+  {"authn_request_create",  authn_request_create,  METH_VARARGS},
+  {"authn_response_getattr",       authn_response_getattr,       METH_VARARGS},
+  {"authn_response_create",        authn_response_create,        METH_VARARGS},
+  {"authn_response_init",          authn_response_init,          METH_VARARGS},
+  {"authn_response_add_assertion", authn_response_add_assertion, METH_VARARGS},
+  {"assertion_build",                       assertion_build,                       METH_VARARGS},
+  {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS},
+  {"authentication_statement_build", authentication_statement_build, METH_VARARGS},
+  
   {NULL, NULL} /* End of Methods Sentinel */
 };
 

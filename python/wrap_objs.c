@@ -37,11 +37,11 @@ GPtrArray *PythonStringList2_get(PyObject *list_obj) {
 /* Functions to wrap C objects -> Python objects                             */
 /*****************************************************************************/
 
-PyObject *wrap_int(int val) {
+PyObject *int_wrap(int val) {
   return (Py_BuildValue("i", val));
 }
 
-PyObject *wrap_charPtr(char *str) {
+PyObject *charPtr_wrap(char *str) {
   PyObject *ret;
 
   if (str == NULL) {
@@ -55,7 +55,7 @@ PyObject *wrap_charPtr(char *str) {
   return (ret);
 }
 
-PyObject *wrap_charPtrConst(const char *str) {
+PyObject *charPtrConst_wrap(const char *str) {
   PyObject *ret;
 
   if (str == NULL) {
