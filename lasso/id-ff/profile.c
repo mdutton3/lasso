@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
+#include <lasso/xml/errors.h>
 #include <lasso/xml/samlp_response.h>
 #include <lasso/protocols/request.h>
 #include <lasso/protocols/response.h>
@@ -272,7 +273,7 @@ gint
 lasso_profile_set_identity(LassoProfile  *ctx,
 			   LassoIdentity *identity)
 {
-  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
+  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   ctx->identity = lasso_identity_copy(identity);
   ctx->identity->is_dirty = FALSE;
@@ -284,6 +285,8 @@ gint
 lasso_profile_set_identity_from_dump(LassoProfile *ctx,
 				     const gchar  *dump)
 {
+  g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
   ctx->identity = lasso_identity_new_from_dump((gchar *)dump);
   if (ctx->identity == NULL) {
     message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump\n");
@@ -298,7 +301,7 @@ gint
 lasso_profile_set_session(LassoProfile *ctx,
 			  LassoSession *session)
 {
-  g_return_val_if_fail(LASSO_IS_SESSION(session), -1);
+  g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   ctx->session = lasso_session_copy(session);
   ctx->session->is_dirty = FALSE;
@@ -310,6 +313,8 @@ gint
 lasso_profile_set_session_from_dump(LassoProfile *ctx,
 				    const gchar  *dump)
 {
+  g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
   ctx->session = lasso_session_new_from_dump((gchar *)dump);
   if (ctx->session == NULL) {
     message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump\n");
