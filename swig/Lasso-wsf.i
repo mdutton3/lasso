@@ -28,14 +28,14 @@
 
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/profile_service.h>
-#include <lasso/xml/is_interaction_request.h>
-#include <lasso/xml/is_interaction_response.h>
-#include <lasso/xml/is_inquiry.h>
 #include <lasso/xml/dst_new_data.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
+#include <lasso/xml/is_interaction_request.h>
+#include <lasso/xml/is_interaction_response.h>
+#include <lasso/xml/is_inquiry.h>
 
 %}
 
@@ -178,16 +178,50 @@ typedef struct {
 %rename(DiscoDescription) LassoDiscoDescription;
 #endif
 typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(endpoint) Endpoint;
+#endif
+	char *Endpoint;
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(serviceNameRef) ServiceNameRef;
+#endif
+	char *ServiceNameRef;
+
+#ifndef SWIGPHP4
+	%rename(soapAction) SoapAction;
+#endif
+	char *SoapAction;
+
+#ifndef SWIGPHP4
+	%rename(wsdlUri) WsdlURI;
+#endif
+	char *WsdlURI;
 } LassoDiscoDescription;
 %extend LassoDiscoDescription {
 	/* Attributes */
 
+#ifndef SWIGPHP4
+	%rename(credentialRef) CredentialRef;
+#endif
+	%newobject CredentialRef_get;
+	LassoStringList *CredentialRef;
+
+#ifndef SWIGPHP4
+	%rename(securityMechId) SecurityMechID;
+#endif
+	%newobject SecurityMechID_get;
+	LassoStringList *SecurityMechID;
+
 	/* Constructor, Destructor & Static Methods */
-	LassoDiscoDescription(gchar *securityMechID,
-			      gchar *wsdlURI,
-			      gchar *serviceNameRef,
-			      gchar *endpoint,
-			      gchar *soapAction);
+
+	LassoDiscoDescription(
+			char *securityMechID, char *wsdlURI, char *serviceNameRef,
+			char *endpoint, char *soapAction);
 
 	~LassoDiscoDescription();
 
@@ -195,14 +229,23 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
+
+/* CredentialRef */
+#define LassoDiscoDescription_get_CredentialRef(self) get_string_list((self)->CredentialRef)
+#define LassoDiscoDescription_CredentialRef_get(self) get_string_list((self)->CredentialRef)
+#define LassoDiscoDescription_set_CredentialRef(self, value) set_string_list(&(self)->CredentialRef, (value))
+#define LassoDiscoDescription_CredentialRef_set(self, value) set_string_list(&(self)->CredentialRef, (value))
+
+/* SecurityMechID */
+#define LassoDiscoDescription_get_SecurityMechID(self) get_string_list((self)->SecurityMechID)
+#define LassoDiscoDescription_SecurityMechID_get(self) get_string_list((self)->SecurityMechID)
+#define LassoDiscoDescription_set_SecurityMechID(self, value) set_string_list(&(self)->SecurityMechID, (value))
+#define LassoDiscoDescription_SecurityMechID_set(self, value) set_string_list(&(self)->SecurityMechID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -213,13 +256,58 @@ typedef struct {
 
 #define LassoDiscoDescription_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
+%}
+
+
+/***********************************************************************
+ * disco:Credentials
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoEncryptedResourceID) LassoDiscoEncryptedResourceID;
+#endif
+typedef struct {
+} LassoDiscoEncryptedResourceID;
+%extend LassoDiscoEncryptedResourceID {
+	/* Attributes */
+
+	/* FIXME: Missing from Lasso. */
+/* 	LassoXencEncryptedData *EncryptedData; */
+/* 	LassoXencEncryptedKey *EncryptedKey; */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoEncryptedResourceID();
+
+	~LassoDiscoEncryptedResourceID();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoEncryptedResourceID lasso_disco_encrypted_resource_id_new
+#define delete_LassoDiscoEncryptedResourceID(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoEncryptedResourceID_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
+
 
 /***********************************************************************
  * disco:InsertEntry
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DiscoInsertEntry) LassoDiscoInsertEntry;
@@ -228,9 +316,18 @@ typedef struct {
 } LassoDiscoInsertEntry;
 %extend LassoDiscoInsertEntry {
 	/* Attributes */
-	LassoDiscoResourceOffering *resourceOffering;
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+#ifndef SWIGPHP4
+	%rename(resourceOffering) ResourceOffering;
+#endif
+	%newobject ResourceOffering_get;
+	LassoDiscoResourceOffering *ResourceOffering;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoInsertEntry();
 
 	~LassoDiscoInsertEntry();
@@ -239,25 +336,23 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
-/* resourceOffering */
-#define LassoDiscoInsertEntry_get_resourceOffering LassoDiscoInsertEntry_resourceOffering_get
-LassoDiscoResourceOffering *LassoDiscoInsertEntry_resourceOffering_get(LassoDiscoInsertEntry *self) {
-	return self->ResourceOffering;
-}
 
-#define LassoDiscoInsertEntry_set_resourceOffering LassoDiscoInsertEntry_resourceOffering_set
-void LassoDiscoInsertEntry_resourceOffering_set(LassoDiscoInsertEntry *self,
-						LassoDiscoResourceOffering *resourceOffering) {
-	self->ResourceOffering = resourceOffering;
-}
+/* any */
+#define LassoDiscoInsertEntry_get_any(self) get_node_list((self)->any)
+#define LassoDiscoInsertEntry_any_get(self) get_node_list((self)->any)
+#define LassoDiscoInsertEntry_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoDiscoInsertEntry_any_set(self, value) set_node_list(&(self)->any, (value))
+
+/* ResourceOffering */
+#define LassoDiscoInsertEntry_get_ResourceOffering(self) get_node((self)->ResourceOffering)
+#define LassoDiscoInsertEntry_ResourceOffering_get(self) get_node((self)->ResourceOffering)
+#define LassoDiscoInsertEntry_set_ResourceOffering(self, value) set_node((gpointer *) &(self)->ResourceOffering, (value))
+#define LassoDiscoInsertEntry_ResourceOffering_set(self, value) set_node((gpointer *) &(self)->ResourceOffering, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -268,31 +363,51 @@ void LassoDiscoInsertEntry_resourceOffering_set(LassoDiscoInsertEntry *self,
 
 #define LassoDiscoInsertEntry_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:Modify
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoModify) LassoDiscoModify;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
 } LassoDiscoModify;
 %extend LassoDiscoModify {
 	/* Attributes */
-	%immutable resourceId;
-	LassoDiscoResourceID *resourceId;
 
-	%immutable insertEntry;
-	LassoDiscoInsertEntry *insertEntry; /* FIXME : should be a list LassoInsertEntry */
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	%immutable removeEntry;
-	LassoDiscoRemoveEntry *removeEntry; /* FIXME : should be a list LassoRemoveEntry */
+#ifndef SWIGPHP4
+	%rename(insertEntry) InsertEntry;
+#endif
+	%newobject InsertEntry_get;
+	LassoNodeList *InsertEntry;
+
+#ifndef SWIGPHP4
+	%rename(removeEntry) RemoveEntry;
+#endif
+	%newobject RemoveEntry_get;
+	LassoNodeList *RemoveEntry;
+
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoModify();
 
 	~LassoDiscoModify();
@@ -301,40 +416,35 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
-/* resourceId */	
-#define LassoDiscoModify_get_resourceId LassoDiscoModify_resourceId_get
-LassoDiscoResourceID *LassoDiscoModify_resourceId_get(LassoDiscoModify *self) {
-	if (LASSO_IS_DISCO_MODIFY(self)) {
-		return self->ResourceID;
-	}
-	return NULL;
-}
 
-/* insertEntry */
-#define LassoDiscoModify_get_insertEntry LassoDiscoModify_insertEntry_get
-LassoDiscoInsertEntry *LassoDiscoModify_insertEntry_get(LassoDiscoModify *self) {
-	if (LASSO_IS_DISCO_MODIFY(self)) {
-		return LASSO_DISCO_INSERT_ENTRY(self->InsertEntry->data);
-	}
-	return NULL;
-}
+/* EncryptedResourceID */
+#define LassoDiscoModify_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoModify_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoModify_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDiscoModify_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
-/* removeEntry */
-#define LassoDiscoModify_get_removeEntry LassoDiscoModify_removeEntry_get
-LassoDiscoRemoveEntry *LassoDiscoModify_removeEntry_get(LassoDiscoModify *self) {
-	if (LASSO_IS_DISCO_MODIFY(self)) {
-		return LASSO_DISCO_REMOVE_ENTRY(self->RemoveEntry->data);
-	}
-	return NULL;
-}
+/* InsertEntry */
+#define LassoDiscoModify_get_InsertEntry(self) get_node_list((self)->InsertEntry)
+#define LassoDiscoModify_InsertEntry_get(self) get_node_list((self)->InsertEntry)
+#define LassoDiscoModify_set_InsertEntry(self, value) set_node_list(&(self)->InsertEntry, (value))
+#define LassoDiscoModify_InsertEntry_set(self, value) set_node_list(&(self)->InsertEntry, (value))
+
+/* RemoveEntry */
+#define LassoDiscoModify_get_RemoveEntry(self) get_node_list((self)->RemoveEntry)
+#define LassoDiscoModify_RemoveEntry_get(self) get_node_list((self)->RemoveEntry)
+#define LassoDiscoModify_set_RemoveEntry(self, value) set_node_list(&(self)->RemoveEntry, (value))
+#define LassoDiscoModify_RemoveEntry_set(self, value) set_node_list(&(self)->RemoveEntry, (value))
+
+/* ResourceID */
+#define LassoDiscoModify_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDiscoModify_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDiscoModify_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDiscoModify_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -345,28 +455,45 @@ LassoDiscoRemoveEntry *LassoDiscoModify_removeEntry_get(LassoDiscoModify *self) 
 
 #define LassoDiscoModify_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:ModifyResponse
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoModifyResponse) LassoDiscoModifyResponse;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(newEntryIds) newEntryIDs;
+#endif
+	char *newEntryIDs;
 } LassoDiscoModifyResponse;
 %extend LassoDiscoModifyResponse {
 	/* Attributes */
-	%immutable status;
-	LassoUtilityStatus *status;
 
-	%immutable newEntryIds;
-	char *newEntryIds;
+	/* FIXME: Missing from Lasso. */
+/* #ifndef SWIGPHP4 */
+/* 	%rename(extension) Extension; */
+/* #endif */
+/* 	%newobject Extension_get; */
+/* 	xmlNode *Extension; */
+
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoModifyResponse(LassoUtilityStatus *status);
 
 	~LassoDiscoModifyResponse();
@@ -375,30 +502,24 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
 }
 
 %{
 
 /* Attributes Implementations */
-/* status */
-#define LassoDiscoModifyResponse_get_status LassoDiscoModifyResponse_status_get
-LassoUtilityStatus *LassoDiscoModifyResponse_status_get(LassoDiscoModifyResponse *self) {
-	if (LASSO_IS_DISCO_MODIFY_RESPONSE(self) == TRUE) {
-		return self->Status;
-	}
-	return NULL;
-}
 
-/* newEntryIds */
-#define LassoDiscoModifyResponse_get_newEntryIds LassoDiscoModifyResponse_newEntryIds_get
-char *LassoDiscoModifyResponse_newEntryIds_get(LassoDiscoModifyResponse *self) {
-	if (LASSO_IS_DISCO_MODIFY_RESPONSE(self) == TRUE) {
-		return self->newEntryIDs;
-	}
-	return NULL;
-}
+/* Extension */
+/* FIXME: Missing from Lasso. */
+/* #define LassoDiscoModifyResponse_get_Extension(self) get_xml((self)->Extension) */
+/* #define LassoDiscoModifyResponse_Extension_get(self) get_xml((self)->Extension) */
+/* #define LassoDiscoModifyResponse_set_Extension(self, value) set_xml(&(self)->Extension, (value)) */
+/* #define LassoDiscoModifyResponse_Extension_set(self, value) set_xml(&(self)->Extension, (value)) */
+
+/* Status */
+#define LassoDiscoModifyResponse_get_Status(self) get_node((self)->Status)
+#define LassoDiscoModifyResponse_Status_get(self) get_node((self)->Status)
+#define LassoDiscoModifyResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoDiscoModifyResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -409,13 +530,13 @@ char *LassoDiscoModifyResponse_newEntryIds_get(LassoDiscoModifyResponse *self) {
 
 #define LassoDiscoModifyResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:Options
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DiscoOptions) LassoDiscoOptions;
@@ -425,7 +546,14 @@ typedef struct {
 %extend LassoDiscoOptions {
 	/* Attributes */
 
+#ifndef SWIGPHP4
+	%rename(option) Option;
+#endif
+	%newobject Option_get;
+	LassoStringList *Option;
+
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoOptions();
 
 	~LassoDiscoOptions();
@@ -434,16 +562,20 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
+/* Option */
+#define LassoDiscoOptions_get_Option(self) get_string_list((self)->Option)
+#define LassoDiscoOptions_Option_get(self) get_string_list((self)->Option)
+#define LassoDiscoOptions_set_Option(self, value) set_string_list(&(self)->Option, (value))
+#define LassoDiscoOptions_Option_set(self, value) set_string_list(&(self)->Option, (value))
+
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoOptions lasso_disco_options_new
 #define delete_LassoDiscoOptions(self) lasso_node_destroy(LASSO_NODE(self))
 
@@ -451,25 +583,45 @@ typedef struct {
 
 #define LassoDiscoOptions_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:Query
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoQuery) LassoDiscoQuery;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
 } LassoDiscoQuery;
 %extend LassoDiscoQuery {
 	/* Attributes */
-	%immutable resourceId;
-	LassoDiscoResourceID *resourceId;
+
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
+
+#ifndef SWIGPHP4
+	%rename(requestedServiceType) RequestedServiceType;
+#endif
+	%newobject RequestedServiceType_get;
+	LassoNodeList *RequestedServiceType;
+
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoQuery();
 
 	~LassoDiscoQuery();
@@ -478,23 +630,29 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-	LassoDiscoRequestedServiceType* addRequestedServiceType(char *serviceType);
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* resourceId */
-#define LassoDiscoQuery_get_resourceId LassoDiscoQuery_resourceId_get
-LassoDiscoResourceID *LassoDiscoQuery_resourceId_get(LassoDiscoQuery *self) {
-	if (LASSO_IS_DISCO_QUERY(self))
-		return self->ResourceID;
-	return NULL;
-}
+/* EncryptedResourceID */
+#define LassoDiscoQuery_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoQuery_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoQuery_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDiscoQuery_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+
+/* RequestedServiceType */
+#define LassoDiscoQuery_get_RequestedServiceType(self) get_node_list((self)->RequestedServiceType)
+#define LassoDiscoQuery_RequestedServiceType_get(self) get_node_list((self)->RequestedServiceType)
+#define LassoDiscoQuery_set_RequestedServiceType(self, value) set_node_list(&(self)->RequestedServiceType, (value))
+#define LassoDiscoQuery_RequestedServiceType_set(self, value) set_node_list(&(self)->RequestedServiceType, (value))
+
+/* ResourceID */
+#define LassoDiscoQuery_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDiscoQuery_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDiscoQuery_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDiscoQuery_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -505,42 +663,45 @@ LassoDiscoResourceID *LassoDiscoQuery_resourceId_get(LassoDiscoQuery *self) {
 
 #define LassoDiscoQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
-LassoDiscoRequestedServiceType *LassoDiscoQuery_addRequestedServiceType(LassoDiscoQuery *self,
-									char *serviceType) {
-	LassoDiscoRequestedServiceType *requestedServiceType;
-
-	if (LASSO_IS_DISCO_QUERY(self) == FALSE)
-		return NULL;
-	if (serviceType == NULL)
-		return NULL;
-	requestedServiceType = lasso_disco_requested_service_type_new(serviceType);
-	self->RequestedServiceType = g_list_append(self->RequestedServiceType,
-						   (gpointer)requestedServiceType);
-	return requestedServiceType;
-}
-
 %}
+
 
 /***********************************************************************
  * disco:QueryResponse
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoQueryResponse) LassoDiscoQueryResponse;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
 } LassoDiscoQueryResponse;
 %extend LassoDiscoQueryResponse {
 	/* Attributes */
-	%immutable status;
-	LassoUtilityStatus *status;
 
-	%immutable credentials;
-	LassoDiscoCredentials *credentials;
+#ifndef SWIGPHP4
+	%rename(credentials) Credentials;
+#endif
+	%newobject Credentials_get;
+	LassoDiscoCredentials *Credentials;
+
+#ifndef SWIGPHP4
+	%rename(resourceOffering) ResourceOffering;
+#endif
+	%newobject ResourceOffering_get;
+	LassoNodeList *ResourceOffering;
+
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoQueryResponse(LassoUtilityStatus *status);
 
 	~LassoDiscoQueryResponse();
@@ -549,30 +710,29 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* status */
-LassoUtilityStatus *LassoDiscoQueryResponse_status_get(LassoDiscoQueryResponse *self) {
-	if (LASSO_IS_DISCO_QUERY_RESPONSE(self) == TRUE) {
-		return self->Status;
-	}
-	return NULL;
-}
+/* Credentials */
+#define LassoDiscoQueryResponse_get_Credentials(self) get_node((self)->Credentials)
+#define LassoDiscoQueryResponse_Credentials_get(self) get_node((self)->Credentials)
+#define LassoDiscoQueryResponse_set_Credentials(self, value) set_node((gpointer *) &(self)->Credentials, (value))
+#define LassoDiscoQueryResponse_Credentials_set(self, value) set_node((gpointer *) &(self)->Credentials, (value))
 
-/* credentials */
-LassoDiscoCredentials *LassoDiscoQueryResponse_credentials_get(LassoDiscoQueryResponse *self) {
-	if (LASSO_IS_DISCO_QUERY_RESPONSE(self) == TRUE) {
-		return self->Credentials;
-	}
-	return NULL;
-}
+/* ResourceOffering */
+#define LassoDiscoQueryResponse_get_ResourceOffering(self) get_node_list((self)->ResourceOffering)
+#define LassoDiscoQueryResponse_ResourceOffering_get(self) get_node_list((self)->ResourceOffering)
+#define LassoDiscoQueryResponse_set_ResourceOffering(self, value) set_node_list(&(self)->ResourceOffering, (value))
+#define LassoDiscoQueryResponse_ResourceOffering_set(self, value) set_node_list(&(self)->ResourceOffering, (value))
+
+/* Status */
+#define LassoDiscoQueryResponse_get_Status(self) get_node((self)->Status)
+#define LassoDiscoQueryResponse_Status_get(self) get_node((self)->Status)
+#define LassoDiscoQueryResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoDiscoQueryResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -585,22 +745,27 @@ LassoDiscoCredentials *LassoDiscoQueryResponse_credentials_get(LassoDiscoQueryRe
 
 %}
 
+
 /***********************************************************************
  * disco:RemoveEntry
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DiscoRemoveEntry) LassoDiscoRemoveEntry;
 #endif
 typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(entryId) entryID;
+#endif
+	char *entryID;
 } LassoDiscoRemoveEntry;
 %extend LassoDiscoRemoveEntry {
-	/* Attributes */
-	%immutable entryId;
-	char *entryId;
-
 	/* Constructor, Destructor & Static Methods */
-	LassoDiscoRemoveEntry(gchar *entryId);
+
+	LassoDiscoRemoveEntry(char *entryId);
 
 	~LassoDiscoRemoveEntry();
 
@@ -608,20 +773,9 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
-
-/* Attributes Implementations */
-
-/* entryId */
-#define LassoDiscoRemoveEntry_get_entryId LassoDiscoRemoveEntry_entryId_get
-char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
-	return self->entryID;
-}
 
 /* Constructors, destructors & static methods implementations */
 
@@ -632,25 +786,86 @@ char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
 
 #define LassoDiscoRemoveEntry_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
+%}
+
+
+/***********************************************************************
+ * disco:RequestedServiceType
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoRequestedServiceType) LassoDiscoRequestedServiceType;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(serviceType) ServiceType;
+#endif
+	char *ServiceType;
+} LassoDiscoRequestedServiceType;
+%extend LassoDiscoRequestedServiceType {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(options) Options;
+#endif
+	%newobject Options_get;
+	LassoDiscoOptions *Options;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoRequestedServiceType(char *serviceType);
+
+	~LassoDiscoRequestedServiceType();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Options */
+#define LassoDiscoRequestedServiceType_get_Options(self) get_node((self)->Options)
+#define LassoDiscoRequestedServiceType_Options_get(self) get_node((self)->Options)
+#define LassoDiscoRequestedServiceType_set_Options(self, value) set_node((gpointer *) &(self)->Options, (value))
+#define LassoDiscoRequestedServiceType_Options_set(self, value) set_node((gpointer *) &(self)->Options, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoRequestedServiceType lasso_disco_requested_service_type_new
+#define delete_LassoDiscoRequestedServiceType(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoRequestedServiceType_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
+
 
 /***********************************************************************
  * disco:ResourceID
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoResourceID) LassoDiscoResourceID;
 #endif
 typedef struct {
-} LassoDiscoResourceID;
-%extend LassoDiscoResourceID {
 	/* Attributes */
-	%immutable content;
+
 	char *content;
 
+	char *id;
+} LassoDiscoResourceID;
+%extend LassoDiscoResourceID {
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDiscoResourceID(char *content);
 
 	~LassoDiscoResourceID();
@@ -659,20 +874,9 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
-
-/* Attributes Implementations */
-
-/* content */
-#define LassoDiscoResourceID_get_content LassoDiscoResourceID_content_get
-char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
-	return self->content;
-}
 
 /* Constructors, destructors & static methods implementations */
 
@@ -683,30 +887,57 @@ char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
 
 #define LassoDiscoResourceID_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:ResourceOffering
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoResourceOffering) LassoDiscoResourceOffering;
 #endif
 typedef struct {
+	/* Attributes */
+
+#if !defined(SWIGPHP4) && !defined(SWIGCSHARP)
+	/* "abstract" is a reserved word in C#. */
+	%rename(abstract) Abstract;
+#endif
+	char *Abstract;
+
+#ifndef SWIGPHP4
+	%rename(entryId) entryID;
+#endif
+	char *entryID;
 } LassoDiscoResourceOffering;
 %extend LassoDiscoResourceOffering {
 	/* Attributes */
 
-	%mutable resourceId;
-	LassoDiscoResourceID *resourceId;
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	LassoDiscoServiceInstance *serviceInstance;
+#ifndef SWIGPHP4
+	%rename(options) Options;
+#endif
+	%newobject Options_get;
+	LassoDiscoOptions *Options;
 
-	/* LassoDiscoOptions *options; */
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
 
-	/* gchar *abstract; */
+#ifndef SWIGPHP4
+	%rename(serviceInstance) ServiceInstance;
+#endif
+	%newobject ServiceInstance_get;
+	LassoDiscoServiceInstance *ServiceInstance;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -718,39 +949,35 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* resourceOffering */
-#define LassoDiscoResourceOffering_get_resourceId LassoDiscoResourceOffering_resourceId_get
-LassoDiscoResourceID *LassoDiscoResourceOffering_resourceId_get(LassoDiscoResourceOffering *self) {
-	return self->ResourceID;
-}
+/* EncryptedResourceID */
+#define LassoDiscoResourceOffering_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoResourceOffering_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoResourceOffering_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDiscoResourceOffering_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
-#define LassoDiscoResourceOffering_set_resourceId LassoDiscoResourceOffering_resourceId_set
-void LassoDiscoResourceOffering_resourceId_set(LassoDiscoResourceOffering *self,
-					      LassoDiscoResourceID *resourceId) {
-	LASSO_DISCO_RESOURCE_OFFERING(self)->ResourceID = resourceId;
-}
+/* Options */
+#define LassoDiscoResourceOffering_get_Options(self) get_node((self)->Options)
+#define LassoDiscoResourceOffering_Options_get(self) get_node((self)->Options)
+#define LassoDiscoResourceOffering_set_Options(self, value) set_node((gpointer *) &(self)->Options, (value))
+#define LassoDiscoResourceOffering_Options_set(self, value) set_node((gpointer *) &(self)->Options, (value))
 
-/* serviceInstance */
-#define LassoDiscoResourceOffering_get_serviceInstance LassoDiscoResourceOffering_serviceInstance_get
-LassoDiscoServiceInstance *LassoDiscoResourceOffering_serviceInstance_get(
-	LassoDiscoResourceOffering *self) {
-	return self->ServiceInstance;
-}
+/* ResourceID */
+#define LassoDiscoResourceOffering_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDiscoResourceOffering_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDiscoResourceOffering_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDiscoResourceOffering_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
-#define LassoDiscoResourceOffering_set_serviceInstance LassoDiscoResourceOffering_serviceInstance_set
-void LassoDiscoResourceOffering_serviceInstance_set(LassoDiscoResourceOffering *self,
-					 LassoDiscoServiceInstance *serviceInstance) {
-	LASSO_DISCO_RESOURCE_OFFERING(self)->ServiceInstance = serviceInstance;
-}
+/* ServiceInstance */
+#define LassoDiscoResourceOffering_get_ServiceInstance(self) get_node((self)->ServiceInstance)
+#define LassoDiscoResourceOffering_ServiceInstance_get(self) get_node((self)->ServiceInstance)
+#define LassoDiscoResourceOffering_set_ServiceInstance(self, value) set_node((gpointer *) &(self)->ServiceInstance, (value))
+#define LassoDiscoResourceOffering_ServiceInstance_set(self, value) set_node((gpointer *) &(self)->ServiceInstance, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -761,27 +988,43 @@ void LassoDiscoResourceOffering_serviceInstance_set(LassoDiscoResourceOffering *
 
 #define LassoDiscoResourceOffering_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
+
 
 /***********************************************************************
  * disco:ServiceInstance
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(DiscoServiceInstance) LassoDiscoServiceInstance;
 #endif
 typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(serviceType) ServiceType;
+#endif
+	char *ServiceType;
+
+#ifndef SWIGPHP4
+	%rename(ProviderID) ProviderID;
+#endif
+	char *ProviderID;
 } LassoDiscoServiceInstance;
 %extend LassoDiscoServiceInstance {
 	/* Attributes */
 
+#ifndef SWIGPHP4
+	%rename(description) Description;
+#endif
+	%newobject Description_get;
+	LassoNodeList *Description;
+
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDiscoServiceInstance(gchar *serviceType,
-				  gchar *providerID,
-				  LassoDiscoDescription *description);
+	LassoDiscoServiceInstance(
+			char *serviceType, char *providerID, LassoDiscoDescription *description);
 
 	~LassoDiscoServiceInstance();
 
@@ -789,20 +1032,23 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
+/* Description */
+#define LassoDiscoServiceInstance_get_Description(self) get_node_list((self)->Description)
+#define LassoDiscoServiceInstance_Description_get(self) get_node_list((self)->Description)
+#define LassoDiscoServiceInstance_set_Description(self, value) set_node_list(&(self)->Description, (value))
+#define LassoDiscoServiceInstance_Description_set(self, value) set_node_list(&(self)->Description, (value))
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoDiscoServiceInstance LassoDiscoServiceInstance_new
-LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
-							 gchar *providerID,
+LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(char *serviceType,
+							 char *providerID,
 							 LassoDiscoDescription *description) {
 	GList *l_desc = NULL;
 	LassoDiscoServiceInstance *serviceInstance;
@@ -818,8 +1064,6 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 
 #define LassoDiscoServiceInstance_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
-
 %}
 
 
@@ -833,6 +1077,8 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 /***********************************************************************
  * dst:Modification
  ***********************************************************************/
+
+
 #ifndef SWIGPHP4
 %rename(DstModification) LassoDstModification;
 #endif
@@ -898,6 +1144,7 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 /***********************************************************************
  * dst:Modify
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DstModify) LassoDstModify;
@@ -971,9 +1218,11 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 
 %}
 
+
 /***********************************************************************
  * dst:ModifyResponse
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DstModifyResponse) LassoDstModifyResponse;
@@ -1027,9 +1276,11 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 
 %}
 
+
 /***********************************************************************
  * dst:Query
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DstQuery) LassoDstQuery;
@@ -1091,9 +1342,11 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 
 %}
 
+
 /***********************************************************************
  * dst:QueryItem
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DstQueryItem) LassoDstQueryItem;
@@ -1144,9 +1397,11 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 
 %}
 
+
 /***********************************************************************
  * dst:QueryResponse
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(DstQueryResponse) LassoDstQueryResponse;
@@ -1205,6 +1460,7 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 /***********************************************************************
  * utility:Status
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(UtilityStatus) LassoUtilityStatus;
@@ -1268,6 +1524,7 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 /***********************************************************************
  * is:InteractionRequest
  ***********************************************************************/
+
 
 #ifndef SWIGPHP4
 %rename(IsInteractionRequest) LassoIsInteractionRequest;
@@ -1363,6 +1620,7 @@ void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *se
  * lasso:Discovery
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(Discovery) LassoDiscovery;
 #endif
@@ -1384,10 +1642,10 @@ typedef struct {
 	LassoDiscoModifyResponse *modifyResponse;
 
 	%immutable msgBody;
-	gchar *msgBody;
+	char *msgBody;
 
 	%immutable msgUrl;
-	gchar *msgUrl;
+	char *msgUrl;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1502,13 +1760,13 @@ LassoDiscoModifyResponse *LassoDiscovery_modifyResponse_get(LassoDiscovery *self
 
 /* msgBody */
 #define LassoDiscovery_get_msgBody LassoDiscovery_msgBody_get
-gchar *LassoDiscovery_msgBody_get(LassoDiscovery *self) {
+char *LassoDiscovery_msgBody_get(LassoDiscovery *self) {
 	return LASSO_WSF_PROFILE(self)->msg_body;
 }
 
 /* msgUrl */
 #define LassoDiscovery_get_msgUrl LassoDiscovery_msgUrl_get
-gchar *LassoDiscovery_msgUrl_get(LassoDiscovery *self) {
+char *LassoDiscovery_msgUrl_get(LassoDiscovery *self) {
 	return LASSO_WSF_PROFILE(self)->msg_url;
 }
 
@@ -1550,6 +1808,7 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
  * lasso:ProfileService
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(ProfileService) LassoProfileService;
 #endif
@@ -1571,10 +1830,10 @@ typedef struct {
 	LassoDstModifyResponse *modifyResponse;
 
 	%immutable msgBody;
-	gchar *msgBody;
+	char *msgBody;
 
 	%immutable msgUrl;
-	gchar *msgUrl;
+	char *msgUrl;
 
 	/* Constructor, Destructor & Static Methods */
 
