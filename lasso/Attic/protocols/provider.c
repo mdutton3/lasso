@@ -174,6 +174,7 @@ lasso_provider_finalize(LassoProvider *provider)
   lasso_node_destroy(provider->metadata);
   g_free(provider->public_key);
   g_free(provider->certificate);
+  g_free(provider->private);
 }
 
 /*****************************************************************************/
