@@ -9,19 +9,19 @@ public class runme
 {
     static void Main() 
     {
-        Console.WriteLine("lasso_init");
-	lasso.lasso_init();
+	lasso.lasso.init();
 
-	Console.WriteLine("new LassoServer");
-	LassoServer server = new LassoServer(
+	lasso.Server server = new lasso.Server(
+			"../../tests/data/sp1-la/metadata.xml",
+			"../../tests/data/sp1-la/private-key-raw.pem",
+			null,
+			"../../tests/data/sp1-la/certificate.pem");
+	server.addProvider(lasso.LassoProviderRole.providerRoleSp,
 			"../../tests/data/idp1-la/metadata.xml",
-			"",
-			"../../tests/data/idp1-la/private-key-raw.pem",
-			"../../tests/data/idp1-la/certificate.pem",
-			lasso.lassoSignatureMethodRsaSha1);
+			"../../tests/data/idp1-la/public-key.pem",
+			"../../tests/data/ca1-la/certificate.pem");
+	Console.WriteLine(server.dump());
 
-
-        Console.WriteLine("lasso_shutdown");
-        lasso.lasso_shutdown();
+        lasso.lasso.shutdown();
     }
 }
