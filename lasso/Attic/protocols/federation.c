@@ -45,8 +45,12 @@ lasso_federation_copy(LassoFederation *federation)
 
   copy = LASSO_FEDERATION(g_object_new(LASSO_TYPE_FEDERATION, NULL));
   copy->remote_providerID = g_strdup(federation->remote_providerID);
-  copy->local_nameIdentifier = lasso_node_copy(federation->local_nameIdentifier);
-  copy->remote_nameIdentifier = lasso_node_copy(federation->remote_nameIdentifier);
+  if (federation->local_nameIdentifier != NULL) {
+    copy->local_nameIdentifier = lasso_node_copy(federation->local_nameIdentifier);
+  }
+  if (federation->remote_nameIdentifier != NULL) {
+    copy->remote_nameIdentifier = lasso_node_copy(federation->remote_nameIdentifier);
+  }
 
   return(copy);
 }
