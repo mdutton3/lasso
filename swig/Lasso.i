@@ -568,7 +568,8 @@ void build_exception_msg(int errorCode, char *errorMsg) {
 	errorCode = $action
 	if (errorCode) {
 		char errorMsg[256];
-		SWIG_exception(SWIG_UnknownError, build_exception_msg(errorCode, errorMsg));
+		build_exception_msg(errorCode, errorMsg);
+		SWIG_exception(SWIG_UnknownError, errorMsg);
 	}
 }
 %enddef
