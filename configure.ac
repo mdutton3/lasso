@@ -257,12 +257,10 @@ if test "X$JDK_INCLUDE" != X; then
 fi
 
 dnl If we found a java version information, we have java compilation environment.
-if test "X$JAVA_VERSION" != X; then
-  if test "X$JAR" != X; then
-    languages_available="$languages_available $JAVA($JAVA_VERSION)"
-  else
-    enable_java=no
-  fi
+if test "X$JAVA_VERSION" != X && test "X$JAR" != X; then
+  languages_available="$languages_available $JAVA($JAVA_VERSION)"
+else
+  enable_java=no
 fi
 
 dnl Conditional java sub dir test.
