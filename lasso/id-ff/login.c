@@ -512,10 +512,14 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
 
-	if (profile->session == NULL)
+	if (profile->session == NULL && strcmp(LASSO_SAMLP_RESPONSE(
+					profile->response)->Status->StatusCode->Value,
+				"samlp:Success") != 0) {
 		profile->session = lasso_session_new();
-	lasso_session_add_status(profile->session, profile->remote_providerID,
-			g_object_ref(LASSO_SAMLP_RESPONSE(profile->response)->Status));
+
+		lasso_session_add_status(profile->session, profile->remote_providerID,
+				g_object_ref(LASSO_SAMLP_RESPONSE(profile->response)->Status));
+	}
 
 	return ret;
 }
@@ -748,6 +752,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					g_object_ref(assertion);
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
+				lasso_session_remove_status(profile->session, remote_providerID);
 			} else {
 				LassoSamlpStatus *status;
 				/* no assertion, get back status code */
