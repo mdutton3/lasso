@@ -123,7 +123,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		profile->msg_url = NULL; /* XXX ??? */
+		profile->msg_url = NULL;
 		profile->response->private_key_file = profile->server->private_key;
 		profile->response->certificate_file = profile->server->certificate;
 		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->response));
