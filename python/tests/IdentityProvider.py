@@ -78,21 +78,25 @@ class IdentityProvider(Provider):
             login.set_session_from_dump(sessionDump)
         self.failUnlessEqual(login.protocolProfile, lasso.loginProtocolProfileBrwsArt) # FIXME
         login.build_artifact_msg(
-            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
+            userAuthenticated, authenticationMethod, 'FIXME: reauthenticateOnOrAfter',
             lasso.httpMethodRedirect)
-        webUser = self.getWebUserFromWebSession(webSession)
-        if login.is_identity_dirty():
-            identityDump = login.get_identity().dump()
-            self.failUnless(identityDump)
-            webUser.identityDump = identityDump
-        self.failUnless(login.is_session_dirty())
-        sessionDump = login.get_session().dump()
-        self.failUnless(sessionDump)
-        webSession.sessionDump = sessionDump
-        nameIdentifier = login.nameIdentifier
-        self.failUnless(nameIdentifier)
-        self.webUserIdsByNameIdentifier[nameIdentifier] = webUser.uniqueId
-        self.webSessionIdsByNameIdentifier[nameIdentifier] = webSession.uniqueId
+        if userAuthenticated:
+            webUser = self.getWebUserFromWebSession(webSession)
+            if login.is_identity_dirty():
+                identityDump = login.get_identity().dump()
+                self.failUnless(identityDump)
+                webUser.identityDump = identityDump
+            self.failUnless(login.is_session_dirty())
+            sessionDump = login.get_session().dump()
+            self.failUnless(sessionDump)
+            webSession.sessionDump = sessionDump
+            nameIdentifier = login.nameIdentifier
+            self.failUnless(nameIdentifier)
+            self.webUserIdsByNameIdentifier[nameIdentifier] = webUser.uniqueId
+            self.webSessionIdsByNameIdentifier[nameIdentifier] = webSession.uniqueId
+        else:
+            self.failIf(login.is_identity_dirty())
+            self.failIf(login.is_session_dirty())
         artifact = login.assertionArtifact
         self.failUnless(artifact)
         soapResponseMsg = login.response_dump
@@ -113,7 +117,7 @@ class IdentityProvider(Provider):
             self.failUnless(artifact)
             soapResponseMsg = self.soapResponseMsgs.get(artifact, None)
             if soapResponseMsg is None:
-                raise Exception("FIXME: Handle the case when artifact is wrong")
+                raise Exception('FIXME: Handle the case when artifact is wrong')
             return HttpResponse(200, body = soapResponseMsg)
         elif requestType == lasso.requestTypeLogout:
             server = self.getServer()
@@ -125,19 +129,19 @@ class IdentityProvider(Provider):
             # Retrieve session dump and identity dump using name identifier.
             webSession = self.getWebSessionFromNameIdentifier(nameIdentifier)
             if webSession is None:
-                raise Exception("FIXME: Handle the case when there is no web session")
+                raise Exception('FIXME: Handle the case when there is no web session')
             sessionDump = webSession.sessionDump
             if sessionDump is None:
                 raise Exception(
-                    "FIXME: Handle the case when there is no session dump in web session")
+                    'FIXME: Handle the case when there is no session dump in web session')
             logout.set_session_from_dump(sessionDump)
             webUser = self.getWebUserFromNameIdentifier(nameIdentifier)
             if webUser is None:
-                raise Exception("FIXME: Handle the case when there is no web user")
+                raise Exception('FIXME: Handle the case when there is no web user')
             identityDump = webUser.identityDump
             if identityDump is None:
                 raise Exception(
-                    "FIXME: Handle the case when there is no identity dump in web user")
+                    'FIXME: Handle the case when there is no identity dump in web user')
             logout.set_identity_from_dump(identityDump)
 
             logout.validate_request()
@@ -168,7 +172,7 @@ class IdentityProvider(Provider):
                 self.failUnless(soapEndpoint)
                 soapRequestMsg = logout.msg_body
                 self.failUnless(soapRequestMsg)
-                httpResponse = HttpRequest(self, "POST", soapEndpoint, body = soapRequestMsg).ask()
+                httpResponse = HttpRequest(self, 'POST', soapEndpoint, body = soapRequestMsg).ask()
                 self.failUnlessEqual(httpResponse.statusCode, 200)
                 logout.process_response_msg(httpResponse.body, lasso.httpMethodSoap)
 
@@ -179,4 +183,4 @@ class IdentityProvider(Provider):
             self.failUnless(soapResponseMsg)
             return HttpResponse(200, body = soapResponseMsg)
         else:
-            raise Exception("Unknown request type: %s" % requestType)
+            raise Exception('Unknown request type: %s' % requestType)

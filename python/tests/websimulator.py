@@ -29,7 +29,7 @@ class HttpRequest(object):
     client = None # Principal or web site sending the request.
     body = None
     header = None
-    method = None # "GET" or "POST" or "PUT" or...
+    method = None # 'GET' or 'POST' or 'PUT' or...
     url = None
 
     def __init__(self, client, method, url, body = None):
@@ -71,7 +71,7 @@ class Internet(object):
         for webSiteUrl, webSite in self.webSites.iteritems():
             if url.startswith(webSiteUrl):
                 return webSite
-        raise Exception("Unknown web site: %s" % url)
+        raise Exception('Unknown web site: %s' % url)
 
 
 class Simulation(object):
@@ -118,7 +118,7 @@ class WebClient(object):
 
     def redirect(self, url):
         webSite = self.internet.getWebSite(url)
-        return webSite.doHttpRequest(HttpRequest(self, "GET", url))
+        return webSite.doHttpRequest(HttpRequest(self, 'GET', url))
 
 
 class Principal(WebClient):
@@ -191,12 +191,12 @@ class WebSite(WebClient, Simulation):
         url = httpRequest.url
         if url.startswith(self.url):
             url = url[len(self.url):]
-        methodName = url.split("?", 1)[0].replace("/", "")
+        methodName = url.split('?', 1)[0].replace('/', '')
         method = getattr(self, methodName)
         return method(httpRequest)
 
     def extractQueryFromUrl(self, url):
-        return url.split("?", 1)[1]
+        return url.split('?', 1)[1]
 
     def getIdentityDump(self, principal):
         webSession = self.getWebSession(principal)

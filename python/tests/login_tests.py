@@ -39,19 +39,19 @@ from websimulator import *
 
 class LoginTestCase(unittest.TestCase):
     def generateIdpSite(self, internet):
-        site = IdentityProvider(self, internet, "https://identity-provider/")
-        site.providerId = "https://identity-provider/metadata"
+        site = IdentityProvider(self, internet, 'https://identity-provider/')
+        site.providerId = 'https://identity-provider/metadata'
 
         server = lasso.Server.new(
-            "../../examples/data/idp-metadata.xml",
-            "../../examples/data/idp-public-key.pem",
-            "../../examples/data/idp-private-key.pem",
-            "../../examples/data/idp-crt.pem",
+            '../../examples/data/idp-metadata.xml',
+            '../../examples/data/idp-public-key.pem',
+            '../../examples/data/idp-private-key.pem',
+            '../../examples/data/idp-crt.pem',
             lasso.signatureMethodRsaSha1)
         server.add_provider(
-            "../../examples/data/sp-metadata.xml",
-            "../../examples/data/sp-public-key.pem",
-            "../../examples/data/ca-crt.pem")
+            '../../examples/data/sp-metadata.xml',
+            '../../examples/data/sp-public-key.pem',
+            '../../examples/data/ca-crt.pem')
         site.serverDump = server.dump()
         self.failUnless(site.serverDump)
         server.destroy()
@@ -60,22 +60,23 @@ class LoginTestCase(unittest.TestCase):
         site.addWebUser('Clapies')
         site.addWebUser('Febvre')
         site.addWebUser('Nowicki')
+        # Frederic Peters has no account on identity provider.
         return site
 
     def generateSpSite(self, internet):
-        site = ServiceProvider(self, internet, "https://service-provider/")
-        site.providerId = "https://service-provider/metadata"
+        site = ServiceProvider(self, internet, 'https://service-provider/')
+        site.providerId = 'https://service-provider/metadata'
 
         server = lasso.Server.new(
-            "../../examples/data/sp-metadata.xml",
-            "../../examples/data/sp-public-key.pem",
-            "../../examples/data/sp-private-key.pem",
-            "../../examples/data/sp-crt.pem",
+            '../../examples/data/sp-metadata.xml',
+            '../../examples/data/sp-public-key.pem',
+            '../../examples/data/sp-private-key.pem',
+            '../../examples/data/sp-crt.pem',
             lasso.signatureMethodRsaSha1)
         server.add_provider(
-            "../../examples/data/idp-metadata.xml",
-            "../../examples/data/idp-public-key.pem",
-            "../../examples/data/ca-crt.pem")
+            '../../examples/data/idp-metadata.xml',
+            '../../examples/data/idp-public-key.pem',
+            '../../examples/data/ca-crt.pem')
         site.serverDump = server.dump()
         self.failUnless(site.serverDump)
         server.destroy()
@@ -83,6 +84,8 @@ class LoginTestCase(unittest.TestCase):
         site.addWebUser('Nicolas')
         site.addWebUser('Romain')
         site.addWebUser('Valery')
+        # Christophe Nowicki has no account on service provider.
+        site.addWebUser('Frederic')
         return site
 
 ##     def setUp(self):
@@ -92,44 +95,56 @@ class LoginTestCase(unittest.TestCase):
 ##         pass
 
     def test01(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated
-        logout using SOAP."""
+        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP."""
 
         internet = Internet()
         idpSite = self.generateIdpSite(internet)
         spSite = self.generateSpSite(internet)
         spSite.idpSite = idpSite
-        principal = Principal(internet, "Romain Chantereau")
-        principal.keyring[idpSite.url] = "Chantereau"
-        principal.keyring[spSite.url] = "Romain"
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
     def test02(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated
-        logout using SOAP."""
+        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done twice."""
 
         internet = Internet()
         idpSite = self.generateIdpSite(internet)
         spSite = self.generateSpSite(internet)
         spSite.idpSite = idpSite
-        principal = Principal(internet, "Romain Chantereau")
-        principal.keyring[idpSite.url] = "Chantereau"
-        principal.keyring[spSite.url] = "Romain"
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
 
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again, but now the principal already has a federation between spSite and idpSite.
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
+
+    def test03(self):
+        """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, 'Frederic Peters')
+        # Frederic Peters has no account on identity provider.
+        principal.keyring[spSite.url] = 'Frederic'
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
 
 ##     def test06(self):
 ##         """Service provider LECP login."""

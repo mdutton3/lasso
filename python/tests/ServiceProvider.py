@@ -45,9 +45,16 @@ class ServiceProvider(Provider):
         self.failUnless(soapEndpoint)
         soapRequestMsg = login.msg_body
         self.failUnless(soapRequestMsg)
-        httpResponse = HttpRequest(self, "POST", soapEndpoint, body = soapRequestMsg).ask()
+        httpResponse = HttpRequest(self, 'POST', soapEndpoint, body = soapRequestMsg).ask()
         self.failUnlessEqual(httpResponse.statusCode, 200)
-        login.process_response_msg(httpResponse.body)
+        try:
+            login.process_response_msg(httpResponse.body)
+        except lasso.Error, error:
+            if error.code == -7: # FIXME: This will change, he said.
+                return HttpResponse(
+                    401, 'Access Unauthorized: User authentication failed on identity provider.')
+            else:
+                raise
         nameIdentifier = login.nameIdentifier
         self.failUnless(nameIdentifier)
 
@@ -82,8 +89,6 @@ class ServiceProvider(Provider):
         self.failUnless(session)
         sessionDump = session.dump()
         self.failUnless(sessionDump)
-        nameIdentifier = login.nameIdentifier
-        self.failUnless(nameIdentifier)
 
         # User is now authenticated.
 
@@ -96,7 +101,7 @@ class ServiceProvider(Provider):
             webUserId = httpRequest.client.keyring.get(self.url, None)
             userAuthenticated = webUserId in self.webUsers
             if not userAuthenticated:
-                return HttpResponse(401, "Access Unauthorized: User has no account.")
+                return HttpResponse(401, 'Access Unauthorized: User has no account.')
             webSession.webUserId = webUserId
             webUser = self.webUsers[webUserId]
 
@@ -117,7 +122,7 @@ class ServiceProvider(Provider):
         login.request.set_isPassive(False)
         login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         login.request.set_consent(lasso.libConsentObtained)
-        relayState = "fake"
+        relayState = 'fake'
         login.request.set_relayState(relayState)
         login.build_authn_request_msg()
         authnRequestUrl = login.msg_url
@@ -127,10 +132,10 @@ class ServiceProvider(Provider):
     def logoutUsingSoap(self, httpRequest):
         webSession = self.getWebSession(httpRequest.client)
         if webSession is None:
-            return HttpResponse(401, "Access Unauthorized: User has no session opened.")
+            return HttpResponse(401, 'Access Unauthorized: User has no session opened.')
         webUser = self.getWebUserFromWebSession(webSession)
         if webUser is None:
-            return HttpResponse(401, "Access Unauthorized: User is not logged in.")
+            return HttpResponse(401, 'Access Unauthorized: User is not logged in.')
 
         server = self.getServer()
         logout = lasso.Logout.new(server, lasso.providerTypeSp)
@@ -147,7 +152,7 @@ class ServiceProvider(Provider):
         self.failUnless(soapEndpoint)
         soapRequestMsg = logout.msg_body
         self.failUnless(soapRequestMsg)
-        httpResponse = HttpRequest(self, "POST", soapEndpoint, body = soapRequestMsg).ask()
+        httpResponse = HttpRequest(self, 'POST', soapEndpoint, body = soapRequestMsg).ask()
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
         logout.process_response_msg(httpResponse.body, lasso.httpMethodSoap)
