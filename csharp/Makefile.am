@@ -41,33 +41,34 @@ clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
-	Credentials.cs Defederation.cs Description.cs DiscoModify.cs \
-	DiscoModifyResponse.cs DiscoQuery.cs DiscoQueryResponse.cs \
-	Discovery.cs DowncastableNode.cs DstModification.cs DstModify.cs \
-	DstModifyResponse.cs DstQuery.cs DstQueryResponse.cs Federation.cs \
-	Identity.cs InsertEntry.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
-	LassoMessageType.cs LassoProviderRole.cs LassoRequestType.cs \
+	Defederation.cs DiscoCredentials.cs DiscoDescription.cs \
+	DiscoEncryptedResourceID.cs DiscoInsertEntry.cs DiscoModify.cs \
+	DiscoModifyResponse.cs DiscoOptions.cs DiscoQuery.cs \
+	DiscoQueryResponse.cs DiscoRemoveEntry.cs DiscoRequestedServiceType.cs \
+	DiscoResourceID.cs DiscoResourceOffering.cs DiscoServiceInstance.cs \
+	Discovery.cs DowncastableNode.cs DstData.cs DstModification.cs \
+	DstModify.cs DstModifyResponse.cs DstNewData.cs DstQuery.cs \
+	DstQueryItem.cs DstQueryResponse.cs Federation.cs Identity.cs \
+	InteractionProfileService.cs IsHelp.cs IsInquiry.cs IsInquiryElement.cs \
+	IsInteractionRequest.cs IsInteractionResponse.cs IsInteractionStatement.cs \
+	IsItem.cs IsParameter.cs IsRedirectRequest.cs IsSelect.cs IsText.cs \
+	IsUserInteraction.cs lasso.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
+	LassoMessageType.cs lassoPINVOKE.cs LassoProviderRole.cs LassoRequestType.cs \
 	LassoSignatureMethod.cs Lecp.cs LibAssertion.cs LibAuthnRequest.cs \
 	LibAuthnResponse.cs LibFederationTerminationNotification.cs \
-	LibLogoutRequest.cs LibLogoutResponse.cs \
-	LibRegisterNameIdentifierRequest.cs \
-	LibRegisterNameIdentifierResponse.cs LibStatusResponse.cs Login.cs \
-	Logout.cs NameIdentifierMapping.cs NameRegistration.cs Node.cs \
-	NodeList.cs Options.cs PPMsgContact.cs PersonalProfileService.cs \
-	Provider.cs QueryItem.cs RemoveEntry.cs ResourceID.cs \
-	ResourceOffering.cs SWIGTYPE_p_LassoDiscoEncryptedResourceID.cs \
-	SWIGTYPE_p_LassoDiscoRequestedServiceType.cs \
-	SWIGTYPE_p_LassoDstNewData.cs SWIGTYPE_p_LassoMdProtocolType.cs \
-	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs SamlAdvice.cs \
-	SamlAssertion.cs SamlAttributeStatement.cs \
-	SamlAuthenticationStatement.cs SamlConditions.cs \
-	SamlNameIdentifier.cs SamlSubject.cs SamlSubjectConfirmation.cs \
-	SamlSubjectLocality.cs SamlSubjectStatement.cs SamlpRequest.cs \
-	SamlpResponse.cs SamlpStatus.cs SamlpStatusCode.cs Server.cs \
-	ServiceInstance.cs Session.cs Status.cs StringList.cs \
-	lassoPINVOKE.cs SamlpRequestAbstract.cs SamlpResponseAbstract.cs \
-	LibRequestAuthnContext.cs lasso.cs SamlAttribute.cs \
-	SamlSubjectStatementAbstract.cs SamlStatementAbstract.cs
+	LibLogoutRequest.cs LibLogoutResponse.cs LibRegisterNameIdentifierRequest.cs \
+	LibRegisterNameIdentifierResponse.cs LibRequestAuthnContext.cs \
+	LibStatusResponse.cs Login.cs Logout.cs NameIdentifierMapping.cs \
+	NameRegistration.cs Node.cs NodeList.cs ProfileService.cs Provider.cs \
+	SamlAdvice.cs SamlAssertion.cs SamlAttribute.cs SamlAttributeDesignator.cs \
+	SamlAttributeStatement.cs SamlAudienceRestrictionCondition.cs \
+	SamlAuthenticationStatement.cs SamlAuthorityBinding.cs SamlConditionAbstract.cs \
+	SamlConditions.cs SamlNameIdentifier.cs SamlpRequestAbstract.cs SamlpRequest.cs \
+	SamlpResponseAbstract.cs SamlpResponse.cs SamlpStatusCode.cs SamlpStatus.cs \
+	SamlStatementAbstract.cs SamlSubjectConfirmation.cs SamlSubject.cs \
+	SamlSubjectLocality.cs SamlSubjectStatementAbstract.cs SamlSubjectStatement.cs \
+	Server.cs Session.cs StringList.cs SWIGTYPE_p_LassoMdProtocolType.cs \
+	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs UtilityStatus.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
