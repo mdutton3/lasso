@@ -70,19 +70,15 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "AssertionIDReference", 'c', (void**)&(advice->AssertionIDReference) },
+		{ "Assertion", 'n', (void**)&(advice->Assertion) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "AssertionIDReference") == 0)
-			advice->AssertionIDReference = xmlNodeGetContent(t);
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "Assertion") == 0)
-			advice->Assertion = lasso_node_new_from_xmlNode(t);
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

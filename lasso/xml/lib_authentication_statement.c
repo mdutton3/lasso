@@ -72,24 +72,18 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node);
-	xmlNode *t;
 	int rc;
+	struct XmlSnippet snippets[] = {
+		{ "AuthnContext", 'n', (void**)&(statement->AuthnContext) },
+		{ NULL, 0, NULL}
+	};
 
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;
 
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "AuthnContext") == 0) {
-			statement->AuthnContext = LASSO_LIB_AUTHN_CONTEXT(
-					lasso_node_new_from_xmlNode(t));
-			break;
-		}
-		t = t->next;
-	}
-
 	statement->ReauthenticateOnOrAfter = xmlGetProp(xmlnode, "ReauthenticateOnOrAfter");
 	statement->SessionIndex = xmlGetProp(xmlnode, "SessionIndex");
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

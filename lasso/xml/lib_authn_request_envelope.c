@@ -94,49 +94,27 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node);
-	xmlNode *t, *n;
-	char *s;
+	char *is_passive = NULL;
+	struct XmlSnippet snippets[] = {
+		/* XXX: Extension */
+		{ "ProviderID", 'c', (void**)&(env->ProviderID) },
+		{ "ProviderName", 'c', (void**)&(env->ProviderName) },
+		{ "AssertionConsumerServiceURL", 'c', (void**)&(env->AssertionConsumerServiceURL) },
+		{ "IDPList", 'n', (void**)&(env->IDPList) },
+		{ "IsPassive", 'c', (void**)&is_passive },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		n = t;
-		t = t->next;
-		if (n->type != XML_ELEMENT_NODE) {
-			continue;
-		}
-		if (strcmp(n->name, "Extension") == 0) {
-			/* XXX */
-			continue;
-		}
-		if (strcmp(n->name, "ProviderID") == 0) {
-			env->ProviderID = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "ProviderName") == 0) {
-			env->ProviderName = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "AssertionConsumerServiceURL") == 0) {
-			env->AssertionConsumerServiceURL = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "IDPList") == 0) {
-			env->IDPList = LASSO_LIB_IDP_LIST(lasso_node_new_from_xmlNode(n));
-			continue;
-		}
-	}
-
-	s = xmlGetProp(xmlnode, "IsPassive");
-	if (s) {
-		env->IsPassive = (strcmp(s, "true") == 0);
-		xmlFree(s);
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	if (is_passive) {
+		env->IsPassive = (strcmp(is_passive, "true") == 0);
+		xmlFree(is_passive);
 	}
 	return 0;
 }
-	
+
 		
 /*****************************************************************************/
 /* instance and class init functions                                         */

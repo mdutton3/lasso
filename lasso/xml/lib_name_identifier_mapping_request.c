@@ -90,32 +90,18 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibNameIdentifierMappingRequest *request;
-	xmlNode *t;
-
-	request = LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node);
+	LassoLibNameIdentifierMappingRequest *request = 
+		LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node);
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
+		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) },
+		{ "TargetNamespace", 'c', (void**)&(request->TargetNamespace) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "ProviderID") == 0) {
-			request->ProviderID = xmlNodeGetContent(t);
-		}
-		if (strcmp(t->name, "NameIdentifier") == 0) {
-			request->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					lasso_node_new_from_xmlNode(t));
-		}
-		if (strcmp(t->name, "TargetNamespace") == 0) {
-			request->TargetNamespace = xmlNodeGetContent(t);
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	request->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }

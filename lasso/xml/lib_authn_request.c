@@ -215,60 +215,36 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlNode *t, *n;
 	char *s;
 	int rc;
+	char *force_authn = NULL, *is_passive = NULL;
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
+		{ "NameIDPolicy", 'c', (void**)&(request->NameIDPolicy) },
+		{ "ProtocolProfile", 'c', (void**)&(request->ProtocolProfile) },
+		{ "AssertionConsumerServiceID", 'c',
+			(void**)&(request->AssertionConsumerServiceID) },
+		/* XXX: RequestAuthnContext */
+		{ "RelayState", 'c', (void**)&(request->RelayState) },
+		{ "ForceAuthn", 'c', (void**)&force_authn },
+		{ "IsPassive", 'c', (void**)&is_passive },
+		/* XXX: Scoping */
+		{ NULL, 0, NULL}
+	};
 
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc)
-		return rc;
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
-	t = xmlnode->children;
-	while (t) {
-		n = t;
-		t = t->next;
-		if (n->type != XML_ELEMENT_NODE) {
-			continue;
-		}
-		if (strcmp(n->name, "ProviderID") == 0) {
-			request->ProviderID = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "NameIDPolicy") == 0) {
-			request->NameIDPolicy = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "ForceAuthn") == 0) {
-			s = xmlNodeGetContent(n);
-			request->ForceAuthn = (strcmp(s, "true") == 0);
-			xmlFree(s);
-			continue;
-		}
-		if (strcmp(n->name, "IsPassive") == 0) {
-			s = xmlNodeGetContent(n);
-			request->IsPassive = (strcmp(s, "true") == 0);
-			xmlFree(s);
-			continue;
-		}
-		if (strcmp(n->name, "ProtocolProfile") == 0) {
-			request->ProtocolProfile = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "AssertionConsumerServiceID") == 0) {
-			request->AssertionConsumerServiceID = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "RequestAuthnContext") == 0) {
-			/* XXX */
-			continue;
-		}
-		if (strcmp(n->name, "RelayState") == 0) {
-			request->RelayState = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "Scoping") == 0) {
-			/* XXX */
-			continue;
-		}
-	}
 	request->consent = xmlGetProp(xmlnode, "consent");
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+
+	if (is_passive) {
+		request->IsPassive = (strcmp(is_passive, "true") == 0);
+		xmlFree(is_passive);
+	}
+	if (force_authn) {
+		request->ForceAuthn = (strcmp(force_authn, "true") == 0);
+		xmlFree(force_authn);
+	}
+
 	return 0;
 }
 

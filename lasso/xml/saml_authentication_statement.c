@@ -76,28 +76,17 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "SubjectLocality", 'n', (void**)&(statement->SubjectLocality) },
+		{ "AuthorityBinding", 'n', (void**)&(statement->AuthorityBinding) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	statement->AuthenticationMethod = xmlGetProp(xmlnode, "AuthenticationMethod");
 	statement->AuthenticationInstant = xmlGetProp(xmlnode, "AuthenticationInstant");
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			if (strcmp(t->name, "SubjectLocality") == 0) {
-				statement->SubjectLocality = LASSO_SAML_SUBJECT_LOCALITY(
-						lasso_node_new_from_xmlNode(t));
-			}
-			if (strcmp(t->name, "AuthorityBinding") == 0) {
-				statement->AuthorityBinding = LASSO_SAML_AUTHORITY_BINDING(
-						lasso_node_new_from_xmlNode(t));
-			}
-		}
-		t = t->next;
-	}
 	return 0;
 }
 	

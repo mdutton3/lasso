@@ -725,3 +725,30 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 	return LASSO_MESSAGE_FORMAT_UNKNOWN;
 }
 
+void
+lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
+{
+	xmlNode *t;
+	int i;
+
+	t = node->children;
+	for (t = node->children; t; t = t->next) {
+		if (t->type != XML_ELEMENT_NODE)
+			continue;
+
+		for (i = 0; snippets[i].name; i++) {
+			if (strcmp(t->name, snippets[i].name) != 0)
+				continue;
+			if (snippets[i].type == 'n') /* node */
+				*(snippets[i].value) = lasso_node_new_from_xmlNode(t);
+			if (snippets[i].type == 'c') /* content */
+				*(snippets[i].value) = xmlNodeGetContent(t);
+			if (snippets[i].type == 'i') /* special case for name identifier */
+				*(snippets[i].value) =
+					lasso_saml_name_identifier_new_from_xmlNode(t);
+			break;
+		}
+	}
+
+}
+

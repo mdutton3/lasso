@@ -67,23 +67,21 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
-	xmlNode *t;
-	char *s;
+	char *proxy_count = NULL;
+	struct XmlSnippet snippets[] = {
+		{ "ProxyCount", 'c', (void**)&proxy_count },
+		{ "IDPList", 'n', (void**)&(scoping->IDPList) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProxyCount") == 0) {
-			s = xmlNodeGetContent(t);
-			scoping->ProxyCount = atoi(s);
-			xmlFree(s);
-		}
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "IDPList") == 0)
-			scoping->IDPList = LASSO_LIB_IDP_LIST(lasso_node_new_from_xmlNode(t));
-		t = t->next;
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	if (proxy_count) {
+		scoping->ProxyCount = atoi(proxy_count);
+		xmlFree(proxy_count);
 	}
+
 	return 0;
 }
 

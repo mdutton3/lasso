@@ -85,23 +85,15 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthnResponse *response = LASSO_LIB_AUTHN_RESPONSE(node);
-	xmlNode *t;
-	int rc;
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(response->ProviderID) },
+		{ "RelayState", 'c', (void**)&(response->RelayState) },
+		{ NULL, 0, NULL}
+	};
 
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc)
-		return rc;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderID") == 0) {
-			response->ProviderID = xmlNodeGetContent(t);
-		}
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "RelayState") == 0 ) {
-			response->RelayState = xmlNodeGetContent(t);
-		}
-		t = t->next;
-	}
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	response->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }

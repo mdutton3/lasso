@@ -67,20 +67,16 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlAudienceRestrictionCondition *condition;
-	xmlNode *t;
+	LassoSamlAudienceRestrictionCondition *condition =
+		LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(node);
+	struct XmlSnippet snippets[] = {
+		{ "Audience", 'c', (void**)&(condition->Audience) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			if (strcmp(t->name, "Audience") == 0)
-				condition->Audience = xmlNodeGetContent(t);
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

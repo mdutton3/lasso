@@ -75,32 +75,18 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibNameIdentifierMappingResponse *response;
-	xmlNode *t;
-
-	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
+	LassoLibNameIdentifierMappingResponse *response = 
+		LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(response->ProviderID) },
+		{ "Status", 'n', (void**)&(response->Status) },
+		{ "NameIdentifier", 'n', (void**)&(response->NameIdentifier) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "ProviderID") == 0) {
-			response->ProviderID = xmlNodeGetContent(t);
-		}
-		if (strcmp(t->name, "Status") == 0) {
-			response->Status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(t));
-		}
-		if (strcmp(t->name, "NameIdentifier") == 0) {
-			response->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					lasso_node_new_from_xmlNode(t));
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

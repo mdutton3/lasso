@@ -79,26 +79,16 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	xmlNode *t;
 	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node);
+	struct XmlSnippet snippets[] = {
+		{ "Assertion", 'n', (void**)&(response->Assertion) },
+		{ "Status", 'n', (void**)&(response->Status) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			if (strcmp(t->name, "Assertion") == 0) {
-				response->Assertion = LASSO_SAML_ASSERTION(
-						lasso_node_new_from_xmlNode(t));
-			}
-			if (strcmp(t->name, "Status") == 0) {
-				response->Status = LASSO_SAMLP_STATUS(
-						lasso_node_new_from_xmlNode(t));
-			}
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

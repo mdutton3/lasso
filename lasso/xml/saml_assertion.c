@@ -134,8 +134,14 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	char *s;
-	xmlNode *t;
 	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
+	struct XmlSnippet snippets[] = {
+		{ "Conditions", 'n', (void**)&(assertion->Conditions) }, 
+		{ "Advice", 'n', (void**)&(assertion->Advice) }, 
+		{ "SubjectStatement", 'n', (void**)&(assertion->SubjectStatement) }, 
+		{ "AuthenticationStatement", 'n', (void**)&(assertion->AuthenticationStatement) }, 
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
@@ -154,28 +160,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		xmlFree(s);
 	}
 
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 
-		if (strcmp(t->name, "Conditions") == 0)
-			assertion->Conditions = LASSO_SAML_CONDITIONS(
-					lasso_node_new_from_xmlNode(t));
-		if (strcmp(t->name, "Advice") == 0)
-			assertion->Advice = LASSO_SAML_ADVICE(
-					lasso_node_new_from_xmlNode(t));
-		if (strcmp(t->name, "SubjectStatement") == 0)
-			assertion->SubjectStatement = LASSO_SAML_SUBJECT_STATEMENT(
-					lasso_node_new_from_xmlNode(t));
-		if (strcmp(t->name, "AuthenticationStatement") == 0)
-			assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(
-					lasso_node_new_from_xmlNode(t));
-
-		t = t->next;
-	}
 	return 0;
 }
 

@@ -67,21 +67,15 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibIDPList *list = LASSO_LIB_IDP_LIST(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "IDPEntries", 'n', (void**)&(list->IDPEntries) },
+		{ "GetComplete", 'c', (void**)&(list->GetComplete) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "IDPEntries") == 0) {
-			list->IDPEntries = LASSO_LIB_IDP_ENTRIES(lasso_node_new_from_xmlNode(t));
-		}
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "GetComplete") == 0) {
-			list->GetComplete = xmlNodeGetContent(t);
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

@@ -86,20 +86,16 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(response->ProviderID) },
+		{ "Status", 'n', (void**)&(response->Status) },
+		{ "RelayState", 'c', (void**)&(response->RelayState) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderID") == 0)
-			response->ProviderID = xmlNodeGetContent(t);
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "Status") == 0)
-			response->Status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(t));
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "RelayState") == 0)
-			response->RelayState = xmlNodeGetContent(t);
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

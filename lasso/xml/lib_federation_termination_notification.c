@@ -86,30 +86,18 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoLibFederationTerminationNotification *ob;
-	xmlNode *t, *n;
+	LassoLibFederationTerminationNotification *ob =
+		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(ob->ProviderID) },
+		{ "NameIdentifier", 'n', (void**)&(ob->NameIdentifier) },
+		{ NULL, 0, NULL}
+	};
 
-	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return 1;
-
-	t = xmlnode->children;
-	while (t) {
-		n = t;
-		t = t->next;
-		if (n->type != XML_ELEMENT_NODE)
-			continue;
-		if (strcmp(n->name, "ProviderID") == 0) {
-			ob->ProviderID = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "NameIdentifier") == 0) {
-			ob->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					lasso_node_new_from_xmlNode(n));
-			continue;
-		}
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	ob->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }

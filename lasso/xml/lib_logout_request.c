@@ -170,36 +170,17 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
-	xmlNode *t, *n;
+	struct XmlSnippet snippets[] = {
+		{ "ProviderID", 'c', (void**)&(request->ProviderID) },
+		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) },
+		{ "SessionIndex", 'c', (void**)&(request->SessionIndex) },
+		{ "RelayState", 'c', (void**)&(request->RelayState) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		n = t;
-		t = t->next;
-		if (n->type != XML_ELEMENT_NODE) {
-			continue;
-		}
-		if (strcmp(n->name, "ProviderID") == 0) {
-			request->ProviderID = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "NameIdentifier") == 0) {
-			request->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					lasso_node_new_from_xmlNode(n));
-			continue;
-		}
-		if (strcmp(n->name, "SessionIndex") == 0) {
-			request->SessionIndex = xmlNodeGetContent(n);
-			continue;
-		}
-		if (strcmp(n->name, "RelayState") == 0) {
-			request->RelayState = xmlNodeGetContent(n);
-			continue;
-		}
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	request->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }

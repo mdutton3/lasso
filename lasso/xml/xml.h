@@ -70,6 +70,12 @@ typedef struct _xmlAttr LassoAttr;
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
 
+struct XmlSnippet {
+	char *name;
+	char type;
+	void **value;
+};
+
 /**
  * _LassoNode:
  **/
@@ -114,6 +120,10 @@ LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
 LASSO_EXPORT gint       lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file);
+
+
+void lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
+
 
 #ifdef __cplusplus
 }

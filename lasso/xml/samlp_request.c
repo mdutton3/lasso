@@ -68,21 +68,15 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	xmlNode *t;
+	LassoSamlpRequest *request = LASSO_SAMLP_REQUEST(node);
+	struct XmlSnippet snippets[] = {
+		{ "AssertionArtifact", 'c', (void**)&(request->AssertionArtifact) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			if (strcmp(t->name, "AssertionArtifact") == 0) {
-				LASSO_SAMLP_REQUEST(node)->AssertionArtifact = xmlNodeGetContent(t);
-				break;
-			}
-		}
-		t = t->next;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

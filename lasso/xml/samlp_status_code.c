@@ -64,22 +64,15 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "StatusCode", 'n', (void**)&(status_code->StatusCode) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	status_code->Value = xmlGetProp(xmlnode, "Value");
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE || strcmp(t->name, "StatusCode") != 0) {
-			t = t->next;
-			continue;
-		}
-		status_code->StatusCode = LASSO_SAMLP_STATUS_CODE(lasso_node_new_from_xmlNode(t));
-		break;
-	}
-
 	return 0;
 }
 

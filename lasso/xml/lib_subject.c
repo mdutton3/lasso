@@ -71,23 +71,14 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibSubject *subject = LASSO_LIB_SUBJECT(node);
-	xmlNode *t;
+	struct XmlSnippet snippets[] = {
+		{ "IDPProvidedNameIdentifier", 'i', (void**)&(subject->IDPProvidedNameIdentifier) },
+		{ NULL, 0, NULL}
+	};
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "IDPProvidedNameIdentifier") != 0) {
-			t = t->next;
-			continue;
-		}
-		subject->IDPProvidedNameIdentifier = lasso_saml_name_identifier_new_from_xmlNode(t);
-		break;
-	}
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

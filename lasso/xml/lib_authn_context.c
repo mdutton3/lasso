@@ -81,23 +81,15 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthnContext *context = LASSO_LIB_AUTHN_CONTEXT(node);
-	xmlNode *t;
-	int rc;
+	struct XmlSnippet snippets[] = {
+		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) },
+		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) },
+		{ NULL, 0, NULL}
+	};
 
-	rc = parent_class->init_from_xml(node, xmlnode);
-	if (rc)
-		return rc;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE) {
-			if (strcmp(t->name, "AuthnContextClassRef") == 0)
-				context->AuthnContextClassRef = xmlNodeGetContent(t);
-			if (strcmp(t->name, "AuthnContextStatementRef") == 0 )
-				context->AuthnContextStatementRef = xmlNodeGetContent(t);
-		}
-		t = t->next;
-	}
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 
