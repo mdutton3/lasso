@@ -10,7 +10,11 @@ _lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 if DARWIN
 _lasso_la_LDFLAGS = -no-undefined -module -avoid-version -Wl,-F. -Wl,-F. -bundle -framework Python 
 else
+if MINGW
+_lasso_la_LDFLAGS = -no-undefined -module -avoid-version -Wl,--add-stdcall-alias
+else
 _lasso_la_LDFLAGS = -no-undefined -module -avoid-version
+endif
 endif
 lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i
 	$(SWIG) -v -python -module lasso -o lasso_wrap.c $<

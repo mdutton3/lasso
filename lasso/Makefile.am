@@ -30,16 +30,21 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/environs/liblasso-environs.la \
 	$(LASSO_LIBS) \
 	lasso.rc.lo
+# Just make damn sure the ABI stays the same between
+# upgrades.
+# Obviously if you don't, fixing the situation up again can be painful. 
+liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@ \
+                      -Wl,--add-stdcall-alias 
 else
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/protocols/liblasso-protocols.la \
 	$(top_builddir)/lasso/environs/liblasso-environs.la \
 	$(LASSO_LIBS)
-endif
-
 # Just make damn sure the ABI stays the same between
 # upgrades.
 # Obviously if you don't, fixing the situation up again can be painful. 
 liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@
+endif
+
 
