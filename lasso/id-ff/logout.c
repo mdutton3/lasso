@@ -255,6 +255,7 @@ gint lasso_logout_load_user_dump(LassoLogout *logout,
 
   profileContext->user = lasso_user_new_from_dump(user_dump);
 
+  return(0);
 }
 
 gint lasso_logout_load_request_msg(LassoLogout     *logout,
