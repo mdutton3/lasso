@@ -327,7 +327,7 @@ lasso_identity_instance_init(LassoIdentity *identity)
   identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 						(GDestroyNotify)g_free,
 						(GDestroyNotify)lasso_federation_destroy);
-  identity->is_dirty = TRUE;
+  identity->is_dirty = FALSE;
 }
 
 static void

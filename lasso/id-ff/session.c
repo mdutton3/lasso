@@ -366,7 +366,7 @@ lasso_session_instance_init(LassoSession *session)
   session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      (GDestroyNotify)g_free,
 					      (GDestroyNotify)lasso_node_destroy);
-  session->is_dirty = TRUE;
+  session->is_dirty = FALSE;
 }
 
 static void
