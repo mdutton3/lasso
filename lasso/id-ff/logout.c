@@ -98,7 +98,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	}
 
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* build and optionaly sign the logout request QUERY message */
+		/* build and optionally sign the logout request QUERY message */
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"SingleLogoutServiceURL");
 		if (url == NULL) {
@@ -524,7 +524,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 				logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
 			gchar *url, *query;
 
-			/* Build and optionaly sign the logout request QUERY message */
+			/* Build and optionally sign the logout request QUERY message */
 			url = lasso_provider_get_metadata_one(remote_provider,
 					"SingleLogoutServiceURL");
 			if (url == NULL) {

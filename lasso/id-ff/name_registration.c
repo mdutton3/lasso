@@ -41,12 +41,12 @@
  * <itemizedlist>
  * <listitem><para>
  *   if it is a SOAP method, then it builds the register name identifier
- *   request SOAP message, optionaly signs his node, set the msg_body
+ *   request SOAP message, optionally signs his node, set the msg_body
  *   attribute, gets the SoapEndpoint url and set the msg_url attribute.
  * </para></listitem>
  * <listitem><para>
  *   if it is a HTTP-Redirect method, then it builds the register name
- *   identifier request QUERY message (optionaly signs the request message),
+ *   identifier request QUERY message (optionally signs the request message),
  *   builds the request url with register name identifier url with register
  *   name identifier service url, set the msg_url attribute of the register
  *   name identifier object, set the msg_body to NULL.
@@ -83,7 +83,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* build and optionaly sign the query message and build the
+		/* build and optionally sign the query message and build the
 		 * register name identifier request url */
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"RegisterNameIdentifierServiceURL");

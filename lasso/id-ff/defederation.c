@@ -42,13 +42,13 @@
  * <itemizedlist>
  * <listitem><para>
  *   if it is a SOAP method, then it builds the federation termination
- *   notification SOAP message, optionaly signs the notification node, set the
+ *   notification SOAP message, optionally signs the notification node, set the
  *   msg_body attribute, gets the SoapEndpoint url and set the msg_url
  *   attribute of the federation termination object.
  * </para></listitem>
  * <listitem><para>
  *   if it is a HTTP-Redirect method, then it builds the federation termination
- *   notification QUERY message (optionaly signs the notification message),
+ *   notification QUERY message (optionally signs the notification message),
  *   builds the federation termination notification url with federation
  *   termination service url, set the msg_url attribute of the federation
  *   termination object, set the msg_body to NULL
@@ -91,7 +91,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
-		/* build and optionaly sign the query message and build the
+		/* build and optionally sign the query message and build the
 		 * federation termination notification url */
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"FederationTerminationServiceURL");
@@ -251,7 +251,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
  * request object from the message and optionally verifies its signature.
  * 
  * Set the msg_nameIdentifier attribute with the NameIdentifier content of the
- * notification object and optionaly set the msg_relayState attribute with the
+ * notification object and optionally set the msg_relayState attribute with the
  * RelayState content of the notification object.
  *
  * Return value: 0 on success; or a negative value otherwise.
