@@ -137,6 +137,42 @@ class LoginTestCase(TestCase):
         self.failUnless(artifact)
         return idpLogin
 
+    def idpSoapEndpointForLogout(self, soapRequestMsg):
+        requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
+        self.failUnlessEqual(requestType, lasso.requestTypeLogout)
+        idpServer = self.generateIdpServer()
+        idpLogout = lasso.Logout.new(idpServer, lasso.providerTypeIdp)
+        self.failUnless(idpLogout)
+        errorCode = idpLogout.process_request_msg(soapRequestMsg, lasso.httpMethodSoap)
+        self.failUnlessEqual(errorCode, 0)
+        nameIdentifier = idpLogout.nameIdentifier
+        self.failUnless(nameIdentifier)
+        return idpLogout
+
+    def idpSoapEndpointForLogout_part2(self, idpLogout, identityDump, sessionDump):
+        if identityDump is not None:
+            idpLogout.set_identity_from_dump(identityDump)
+        if sessionDump is not None:
+            idpLogout.set_session_from_dump(sessionDump)
+        errorCode = idpLogout.validate_request()
+        self.failUnlessEqual(errorCode, 0)
+        idpIdentityDump = idpLogout.get_identity().dump()
+        self.failUnless(idpIdentityDump)
+        self.failUnless(idpLogout.is_session_dirty())
+        idpSessionDump = idpLogout.get_session().dump()
+        # After logout, idpSession can be None or still contain other assertions.
+        # self.failUnless(idpSessionDump)
+
+        # There is no other service provider from which the user must be logged out.
+        # FIXME: Handle the case where there are authentication assertions for other service
+        # providers.
+        self.failUnlessEqual(idpLogout.get_next_providerID(), None)
+        errorCode = idpLogout.build_response_msg()
+        self.failUnlessEqual(errorCode, 0)
+        soapResponseMsg = idpLogout.msg_body
+        self.failUnless(soapResponseMsg)
+        return idpLogout
+
     def spAssertionConsumerForRedirect(self, responseQuery):
         spServer = self.generateSpServer()
         spLogin = lasso.Login.new(spServer)
@@ -195,7 +231,37 @@ class LoginTestCase(TestCase):
         authnRequestUrl = spLogin.msg_url
         self.failUnless(authnRequestUrl)
         return spLogin
-        
+
+    def spLogoutForSoap(self, spIdentityDump, spSessionDump):
+        spServer = self.generateSpServer()
+        spLogout = lasso.Logout.new(spServer, lasso.providerTypeSp)
+        self.failUnless(spLogout)
+        if spIdentityDump is not None:
+            spLogout.set_identity_from_dump(spIdentityDump)
+        if spSessionDump is not None:
+            spLogout.set_session_from_dump(spSessionDump)
+        errorCode = spLogout.init_request()
+        self.failUnlessEqual(errorCode, 0)
+        errorCode = spLogout.build_request_msg()
+        self.failUnlessEqual(errorCode, 0)
+        soapEndpoint = spLogout.msg_url
+        self.failUnless(soapEndpoint)
+        soapRequestMsg = spLogout.msg_body
+        self.failUnless(soapRequestMsg)
+        return spLogout
+
+    def spLogoutForSoap_part2(self, spLogout, soapResponseMsg):
+        errorCode = spLogout.process_response_msg(soapResponseMsg, lasso.httpMethodSoap)
+        self.failUnlessEqual(errorCode, 0)
+        self.failIf(spLogout.is_identity_dirty())
+        spIdentity = spLogout.get_identity()
+        self.failUnless(spIdentity)
+        spIdentityDump = spIdentity.dump()
+        self.failUnless(spIdentityDump)
+        self.failUnless(spLogout.is_session_dirty())
+        spSession = spLogout.get_session()
+        return spLogout
+
     def test01_generateServers(self):
         """Generate identity and service provider server contexts"""
         self.generateIdpServer()
@@ -263,53 +329,42 @@ class LoginTestCase(TestCase):
         spSessionDump = spSession.dump()
         authenticationMethod = spSession.get_authentication_method()
         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
-        # A real service provider would store spIdentityDump in user record and store
-        # spSessionDump in session variables or user record.
+        # A real service provider would store spIdentityDump in user record and spSessionDump
+        # in session variables or user record.
         # It would then index its user record and its session using nameIdentifier.
         # It would create a web session (using cookie, ...).
         # And finally, it would display a page saying that Liberty authentication has succeeded.
 
-        # FIXME: To refactor.
-
-        # Service provider logout.
-        spServer = self.generateSpServer()
-        spLogout = lasso.Logout.new(spServer, lasso.providerTypeSp)
-        self.failUnless(spIdentityDump)
-        spLogout.set_identity_from_dump(spIdentityDump)
-        self.failUnless(spSessionDump)
-        spLogout.set_session_from_dump(spSessionDump)
-        self.failUnlessEqual(spLogout.init_request(), 0)
-        self.failUnlessEqual(spLogout.build_request_msg(), 0)
-        soapEndpoint = spLogout.msg_url
-        soapRequestMsg = spLogout.msg_body
+        # Service provider logout using SOAP.
+        spLogout = self.spLogoutForSoap(spIdentityDump, spSessionDump)
+        # A real service provider would issue a SOAP HTTPS request containing spLogout.msg_body to
+        # spLogout.msg_url.
 
         # Identity provider SOAP endpoint.
-        requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
-        self.failUnlessEqual(requestType, lasso.requestTypeLogout)
-        idpServer = self.generateIdpServer()
-        idpLogout = lasso.Logout.new(idpServer, lasso.providerTypeIdp)
-        self.failUnlessEqual(
-            idpLogout.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+        idpLogout = self.idpSoapEndpointForLogout(spLogout.msg_body)
         self.failUnlessEqual(idpLogout.nameIdentifier, nameIdentifier)
-        self.failUnless(idpIdentityDump)
-        self.failUnlessEqual(idpLogout.set_identity_from_dump(idpIdentityDump), 0)
-        self.failUnless(idpSessionDump)
-        self.failUnlessEqual(idpLogout.set_session_from_dump(idpSessionDump), 0)
-        self.failUnlessEqual(idpLogout.validate_request(), 0)
-        idpIdentity = idpLogout.get_identity()
-        self.failUnless(idpIdentity)
-        idpIdentityDump = idpIdentity.dump()
-        self.failUnless(idpIdentityDump)
-        # There is no other service provider from which the user must be logged out.
-        self.failUnlessEqual(idpLogout.get_next_providerID(), None)
-        self.failUnlessEqual(idpLogout.build_response_msg(), 0)
-        soapResponseMsg = idpLogout.msg_body
+        # A real identity provider would retrieve the user record and the session indexed by
+        # idpLogout.nameIdentifier.
+        
+        idpLogout = self.idpSoapEndpointForLogout_part2(idpLogout, idpIdentityDump, idpSessionDump)
+        # A real identity provider would store idpIdentityDump in user record and store or delete
+        # idpSessionDump in session variables or user record.
+        # It would then remove the nameIdentifier index to the user record and the session.
+        # And finally, it would return idpLogout.msg_body as SOAP response.
 
-        # Service provider logout (step 2: process SOAP response).
-        self.failUnlessEqual(
-            spLogout.process_response_msg(soapResponseMsg, lasso.httpMethodSoap), 0)
+        # Service provider logout (part 2: process SOAP response).
+        spLogout = self.spLogoutForSoap_part2(spLogout, idpLogout.msg_body)
+        self.failIf(spLogout.is_identity_dirty())
         spIdentityDump = spLogout.get_identity().dump()
-        self.failUnless(spIdentityDump)
+        spSession = spLogout.get_session()
+        # In this case, spSession should be None, but Lasso doesn't implement it yet.
+        # self.failIf(spSession)
+        #
+        # A real service provider would store spIdentityDump in user record and store or delete
+        # spSessionDump in session variables or user record.
+        # It would then remove the idpLogout.nameIdentifier index to the user record and the
+        # session.
+        # And finally, it would display a page saying that Liberty logout has succeeded.
 
     def test03(self):
         """Identity provider single sign-on when identity and session already exist."""
