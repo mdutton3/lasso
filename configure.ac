@@ -510,6 +510,7 @@ tests/Makefile
 java/Makefile]
 dnl [java/coldfusion/Makefile]
 [java/src/Makefile
+java/src/java/Makefile
 java/src/c/Makefile]
 [lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]
