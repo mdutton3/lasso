@@ -27,6 +27,7 @@
 #include "py_lasso.h"
 
 #include "xml/py_xml.h"
+#include "xml/py_lib_authentication_statement.h"
 #include "xml/py_lib_authn_request.h"
 #include "xml/py_lib_federation_termination_notification.h"
 #include "xml/py_lib_logout_request.h"
@@ -67,6 +68,10 @@ static PyMethodDef lasso_methods[] = {
   {"node_url_encode",       node_url_encode,       METH_VARARGS},
   {"node_soap_envelop",     node_soap_envelop,     METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
+
+  /* py_lib_authentication_statement.h */
+  {"lib_authentication_statement_new",              lib_authentication_statement_new,              METH_VARARGS},
+  {"lib_authentication_statement_set_sessionIndex", lib_authentication_statement_set_sessionIndex, METH_VARARGS},
 
   /* py_lib_authn_request.h */
   {"lib_authn_request_new",                 lib_authn_request_new,                 METH_VARARGS},
@@ -119,7 +124,8 @@ static PyMethodDef lasso_methods[] = {
 
   /* py_authn_response.h */
   {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
-  {"authn_response_new",                           authn_response_new,                           METH_VARARGS},
+  {"authn_response_new_from_dump",                 authn_response_new_from_dump,                 METH_VARARGS},
+  {"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
   {"authn_response_add_assertion",                 authn_response_add_assertion,                 METH_VARARGS},
   {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
   {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},

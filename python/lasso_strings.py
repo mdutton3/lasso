@@ -128,3 +128,16 @@ samlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
 samlAuthenticationMethodXmlSign = "urn:ietf:rfc:3075"
 samlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
+# * ConfirmationMethods */
+samlConfirmationMethodArtifact01 = "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
+samlConfirmationMethodBearer = "urn:oasis:names:tc:SAML:1.1:cm:bearer"
+samlConfirmationMethodHolderOfKey = "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
+samlConfirmationMethodSenderVouches = "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
+
+# *****************************************************************************/
+# * SOAP                                                                      */
+# *****************************************************************************/
+
+# * prefix & href */
+soapEnvHRef = "http://schemas.xmlsoap.org/soap/envelope/"
+soapEnvPrefix = "soap-env"

@@ -189,6 +189,7 @@ libraries.append('lasso')
 em = Extension("lassomod",
                sources = ["py_lasso.c",
                           "xml/py_xml.c",
+                          "xml/py_lib_authentication_statement.c",
                           "xml/py_lib_authn_request.c",
                           "xml/py_lib_federation_termination_notification.c",
                           "xml/py_lib_logout_request.c",

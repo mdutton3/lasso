@@ -54,15 +54,13 @@ struct _LassoAuthenticationStatementClass {
 
 LASSO_EXPORT GType      lasso_authentication_statement_get_type (void);
 LASSO_EXPORT LassoNode* lasso_authentication_statement_new      (const xmlChar *authenticationMethod,
-								 const xmlChar *sessionIndex,
 								 const xmlChar *reauthenticateOnOrAfter,
 								 xmlChar       *nameIdentifier,
 								 const xmlChar *nameQualifier,
 								 const xmlChar *format,
 								 xmlChar       *idp_nameIdentifier,
 								 const xmlChar *idp_nameQualifier,
-								 const xmlChar *idp_format,
-								 const xmlChar *confirmationMethod);
+								 const xmlChar *idp_format);
 
 #ifdef __cplusplus
 }

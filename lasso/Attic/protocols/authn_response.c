@@ -24,6 +24,9 @@
  */
 
 #include <lasso/protocols/authn_response.h>
+#include <lasso/protocols/authn_request.h>
+                                                                                          
+static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -41,7 +44,7 @@ lasso_authn_response_add_assertion(LassoAuthnResponse *response,
   /* FIXME : Signature */
   doc = xmlNewDoc("1.0"); // <---
   xmlAddChild((xmlNodePtr)doc,
-	      LASSO_NODE_GET_CLASS(response)->get_xmlNode(response));
+	      LASSO_NODE_GET_CLASS(response)->get_xmlNode(LASSO_NODE(response)));
 
   signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
@@ -51,6 +54,12 @@ lasso_authn_response_add_assertion(LassoAuthnResponse *response,
   lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
 			  private_key_file,
 			  certificate_file);
+}
+
+void
+lasso_authn_response_get_requestID(LassoAuthnResponse *response)
+{
+
 }
 
 gboolean
@@ -103,7 +112,7 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 				      xmlChar            *public_key_file,
 				      xmlChar            *private_key_file)
 {
-  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(response), 1);
+  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(response), FALSE);
 
   LassoNode *status, *status_code;
   gboolean signature_status;
@@ -139,6 +148,50 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 }
 
 /*****************************************************************************/
+/* overrided parent classes methods                                          */
+/*****************************************************************************/
+
+static void
+lasso_authn_response_dispose(LassoAuthnResponse *response)
+{
+  parent_class->dispose(LASSO_NODE(response));
+}
+
+/* override lasso_node_dump() method */
+static xmlChar *
+lasso_authn_response_dump(LassoAuthnResponse *response,
+			  const xmlChar      *encoding,
+			  int                 format)
+{
+  LassoNode *response_dump;
+  xmlChar   *dump;
+
+  response_dump = lasso_node_new();
+  LASSO_NODE_GET_CLASS(response_dump)->set_name(response_dump, "LassoDumpAuthnResponse");
+  LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
+						 lasso_node_copy(response), 0);
+  if (response->query != NULL)
+    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
+						   lasso_authn_request_new_from_query(response->query), 0);
+  else
+    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
+						   lasso_node_copy(response->request), 0);
+  dump = lasso_node_dump(response_dump, encoding, format);
+  g_object_unref(G_OBJECT (response_dump));
+
+  return (dump);
+}
+
+static void
+lasso_authn_response_finalize(LassoAuthnResponse *response)
+{
+  xmlFree(response->query);
+  if (response->request != NULL)
+    g_object_unref(response->request);
+  parent_class->finalize(LASSO_NODE(response));
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
@@ -150,6 +203,14 @@ lasso_authn_response_instance_init(LassoAuthnResponse *response)
 static void
 lasso_authn_response_class_init(LassoAuthnResponseClass *class)
 {
+  GObjectClass   *gobject_class = G_OBJECT_CLASS(class);
+  LassoNodeClass *lasso_node_class = LASSO_NODE_CLASS(class);
+
+  parent_class = g_type_class_peek_parent(class);
+  /* override parent classes methods */
+  gobject_class->dispose  = (void *)lasso_authn_response_dispose;
+  gobject_class->finalize = (void *)lasso_authn_response_finalize;
+  lasso_node_class->dump  = lasso_authn_response_dump;
 }
 
 GType lasso_authn_response_get_type() {
@@ -176,8 +237,35 @@ GType lasso_authn_response_get_type() {
 }
 
 LassoNode*
-lasso_authn_response_new(xmlChar       *query,
-			 const xmlChar *providerID)
+lasso_authn_response_new_from_dump(xmlChar *buffer)
+{
+  LassoNode *response, *request, *node_dump;
+  xmlNodePtr xmlNode_response, xmlNode_request;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
+  request  = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST, NULL));
+
+  node_dump = lasso_node_new_from_dump(buffer);
+  /* get xmlNodes */
+  xmlNode_response = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(lasso_node_get_child(node_dump, "AuthnResponse")), 1);
+  xmlNode_request = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(lasso_node_get_child(node_dump, "AuthnRequest")), 1);
+
+  /* put xmlNodes in LassoNodes */
+  LASSO_NODE_GET_CLASS(response)->set_xmlNode(response, xmlNode_response);
+  LASSO_NODE_GET_CLASS(request)->set_xmlNode(request, xmlNode_request);
+
+  LASSO_AUTHN_RESPONSE(response)->request = request;
+  LASSO_AUTHN_RESPONSE(response)->query = NULL;
+  g_object_unref(node_dump);
+
+  return (response);
+}
+
+LassoNode*
+lasso_authn_response_new_from_request_query(xmlChar       *query,
+					    const xmlChar *providerID)
 {
   GData         *gd;
   LassoNode     *response, *status, *status_code;
@@ -188,7 +276,9 @@ lasso_authn_response_new(xmlChar       *query,
   response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
 
   gd = lasso_query_to_dict(query);
+  /* store query - need to verify signature */
   LASSO_AUTHN_RESPONSE(response)->query = query;
+  LASSO_AUTHN_RESPONSE(response)->request = NULL;
 
   /* ResponseID */
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
@@ -216,7 +306,6 @@ lasso_authn_response_new(xmlChar       *query,
   if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0) != NULL) {
     lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0));
-    LASSO_AUTHN_RESPONSE(response)->requestID = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0));
   }
 
   /* consent */
@@ -242,4 +331,11 @@ lasso_authn_response_new(xmlChar       *query,
   g_datalist_clear(&gd);
 
   return (response);
+}
+
+LassoNode*
+lasso_authn_response_new_from_lareq(xmlChar       *lareq,
+				    const xmlChar *providerID)
+{
+  
 }

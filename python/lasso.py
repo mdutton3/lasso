@@ -82,6 +82,48 @@ class Node:
         return lassomod.node_verify_signature(self, certificate_file)
 
 
+class SamlAssertion(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_assertion_new()
+        if _obj is None: raise Error('lasso_saml_assertion_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def add_authenticationStatement(self, authenticationStatement):
+        lassomod.saml_assertion_add_authenticationStatement(self,
+                                                            authenticationStatement)
+
+
+class SamlAuthenticationStatement(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_authentication_statement_new()
+        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+
+class LibAuthenticationStatement(SamlAuthenticationStatement):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_authentication_statement_new()
+        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        SamlAuthenticationStatement.__init__(self, _obj=_obj)
+    def set_sessionIndex(self, sessionIndex):
+        lassomod.lib_authentication_statement_set_sessionIndex(self, sessionIndex)
+
+
 class LibAuthnRequest(Node):
     def __init__(self, _obj=None):
         """
@@ -179,34 +221,6 @@ class LibNameIdentifierMappingRequest(Node):
         lassomod.lib_name_identifier_mapping_request_set_consent(self, consent)
 
 
-class SamlAssertion(Node):
-    def __init__(self, _obj=None):
-        """
-        """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.saml_assertion_new()
-        if _obj is None: raise Error('lasso_saml_assertion_new() failed')
-        Node.__init__(self, _obj=_obj)
-
-    def add_authenticationStatement(self, authenticationStatement):
-        lassomod.saml_assertion_add_authenticationStatement(self,
-                                                            authenticationStatement)
-
-
-class SamlAuthenticationStatement(Node):
-    def __init__(self, _obj=None):
-        """
-        """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.saml_authentication_statement_new()
-        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
-        Node.__init__(self, _obj=_obj)
-
-
 class SamlNameIdentifier(Node):
     def __init__(self, _obj=None):
         """
@@ -254,15 +268,21 @@ class AuthnRequest(LibAuthnRequest):
 
 
 class AuthnResponse(Node):
-    def __init__(self, query, providerID, _obj=None):
+    def __init__(self, _obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.authn_response_new(query, providerID)
-        if _obj is None: raise Error('lasso_authn_response_new() failed')
+        self._o = _obj
         Node.__init__(self, _obj=_obj)
+
+    def new_from_dump(cls, buffer):
+        obj = lassomod.authn_response_new_from_dump(buffer)
+        return AuthnResponse(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def new_from_request_query(cls, query, providerID):
+        obj = lassomod.authn_response_new_from_request_query(query, providerID)
+        return AuthnResponse(obj)
+    new_from_request_query = classmethod(new_from_request_query)
 
     def __isprivate(self, name):
         return name == '_o'
@@ -461,7 +481,6 @@ class Assertion(SamlAssertion):
 class AuthenticationStatement(Node):
     def __init__(self,
                  authenticationMethod,
-                 sessionIndex,
                  reauthenticateOnOrAfter,
                  nameIdentifier,
                  nameQualifier,
@@ -469,7 +488,6 @@ class AuthenticationStatement(Node):
                  idp_nameIdentifier,
                  idp_nameQualifier,
                  idp_format,
-                 confirmationMethod,
                  _obj=None):
         """
         """
@@ -477,15 +495,13 @@ class AuthenticationStatement(Node):
             self._o = _obj
             return
         _obj = lassomod.authentication_statement_new(authenticationMethod,
-                                                     sessionIndex,
                                                      reauthenticateOnOrAfter,
                                                      nameIdentifier,
                                                      nameQualifier,
                                                      format,
                                                      idp_nameIdentifier,
                                                      idp_nameQualifier,
-                                                     idp_format,
-                                                     confirmationMethod)
+                                                     idp_format)
         if _obj is None:
             raise Error('lasso_authentication_statement_new() failed')
         Node.__init__(self, _obj=_obj)

@@ -68,15 +68,13 @@ GType lasso_authentication_statement_get_type() {
 
 LassoNode*
 lasso_authentication_statement_new(const xmlChar *authenticationMethod,
-				   const xmlChar *sessionIndex,
 				   const xmlChar *reauthenticateOnOrAfter,
 				   xmlChar       *nameIdentifier,
 				   const xmlChar *nameQualifier,
 				   const xmlChar *format,
 				   xmlChar       *idp_nameIdentifier,
 				   const xmlChar *idp_nameQualifier,
-				   const xmlChar *idp_format,
-				   const xmlChar *confirmationMethod)
+				   const xmlChar *idp_format)
 {
   LassoNode *statement;
   LassoNode *subject, *identifier, *idp_identifier, *subject_confirmation;
@@ -87,10 +85,6 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
 							       authenticationMethod);
   lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
 								lasso_get_current_time());
-  if (sessionIndex != NULL) {
-    lasso_lib_authentication_statement_set_sessionIndex(LASSO_LIB_AUTHENTICATION_STATEMENT(statement),
-							sessionIndex);
-  }
   lasso_lib_authentication_statement_set_reauthenticateOnOrAfter(LASSO_LIB_AUTHENTICATION_STATEMENT(statement),
 								 reauthenticateOnOrAfter);
 
@@ -113,14 +107,12 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
 						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idp_identifier));
   subject_confirmation = lasso_saml_subject_confirmation_new();
   lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LASSO_SAML_SUBJECT_CONFIRMATION(subject_confirmation),
-								confirmationMethod);
+								lassoSamlConfirmationMethodBearer);
   lasso_saml_subject_set_subjectConfirmation(LASSO_SAML_SUBJECT(subject),
 					     LASSO_SAML_SUBJECT_CONFIRMATION(subject_confirmation));
 
-  if (confirmationMethod != NULL) {
-    lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
-						      LASSO_SAML_SUBJECT(subject));
-  }
+  lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
+						    LASSO_SAML_SUBJECT(subject));
 
   return (statement);
 }

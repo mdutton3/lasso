@@ -685,7 +685,6 @@ lasso_node_impl_url_encode(LassoNode   *node,
   gchar *ret;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-  g_return_val_if_fail (private_key_file != NULL, NULL);
 
   msg = lasso_node_build_query(node);
 

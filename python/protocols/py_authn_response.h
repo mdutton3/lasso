@@ -38,7 +38,8 @@ typedef struct {
 PyObject *LassoAuthnResponse_wrap(LassoAuthnResponse *response);
 
 PyObject *authn_response_getattr(PyObject *self, PyObject *args);
-PyObject *authn_response_new(PyObject *self, PyObject *args);
+PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args);
+PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args);
 PyObject *authn_response_add_assertion(PyObject *self, PyObject *args);
 PyObject *authn_response_must_authenticate(PyObject *self, PyObject *args);
 PyObject *authn_response_process_authentication_result(PyObject *self, PyObject *args);

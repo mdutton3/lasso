@@ -46,34 +46,36 @@ typedef struct _LassoAuthnResponseClass LassoAuthnResponseClass;
 struct _LassoAuthnResponse {
   LassoLibAuthnResponse parent;
   /*< public >*/
-  xmlChar *requestID;
+  xmlChar   *query;
+  LassoNode *request;
   /*< private >*/
-  xmlChar *query;
 };
 
 struct _LassoAuthnResponseClass {
   LassoLibAuthnResponseClass parent;
 };
 
-LASSO_EXPORT GType      lasso_authn_response_get_type          (void);
+LASSO_EXPORT GType      lasso_authn_response_get_type                      (void);
 
-LASSO_EXPORT LassoNode* lasso_authn_response_new               (xmlChar       *query,
-								const xmlChar *providerID);
+LASSO_EXPORT LassoNode* lasso_authn_response_new_from_request_query        (xmlChar       *query,
+									    const xmlChar *providerID);
 
-LASSO_EXPORT void       lasso_authn_response_add_assertion     (LassoAuthnResponse *response,
-								LassoAssertion     *assertion,
-								const xmlChar      *private_key_file,
-								const xmlChar      *certificate_file);
+LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlChar *buffer);
 
-LASSO_EXPORT gboolean   lasso_authn_response_must_authenticate (LassoAuthnResponse *response,
-								gboolean            is_authenticated);
+LASSO_EXPORT void       lasso_authn_response_add_assertion                 (LassoAuthnResponse *response,
+									    LassoAssertion     *assertion,
+									    const xmlChar      *private_key_file,
+									    const xmlChar      *certificate_file);
 
-LASSO_EXPORT void       lasso_authn_response_process_authentication_result(LassoAuthnResponse *response,
-									   gboolean            authentication_result);
+LASSO_EXPORT gboolean   lasso_authn_response_must_authenticate             (LassoAuthnResponse *response,
+									    gboolean            is_authenticated);
 
-LASSO_EXPORT gboolean   lasso_authn_response_verify_signature  (LassoAuthnResponse *response,
-								xmlChar            *public_key_file,
-								xmlChar            *private_key_file);
+LASSO_EXPORT void       lasso_authn_response_process_authentication_result (LassoAuthnResponse *response,
+									    gboolean            authentication_result);
+
+LASSO_EXPORT gboolean   lasso_authn_response_verify_signature              (LassoAuthnResponse *response,
+									    xmlChar            *public_key_file,
+									    xmlChar            *private_key_file);
 
 #ifdef __cplusplus
 }

@@ -17,13 +17,8 @@ req.set_requestAuthnContext(["test"],
                             lasso.libAuthnContextComparisonExact)
 req.set_scoping(proxyCount=1)
 
-# admiration du resultat
-req.dump()
-
 # url encodage + signature
 query = req.url_encode(1, "../../examples/rsakey.pem")
-
-print query
 req.destroy()
 
 # creation de la response AuthnResponse OU Response
@@ -31,38 +26,39 @@ req.destroy()
 protocolProfile = lasso.authn_request_get_protocolProfile(query)
 if protocolProfile == lasso.libProtocolProfilePost:
     # partie IDP
-    res = lasso.AuthnResponse(query, "http://providerid.com")
+    res = lasso.AuthnResponse.new_from_request_query(query, "http://providerid.com")
     # verification de la signature de la query
     print res.verify_signature("../../examples/rsapub.pem",
                                "../../examples/rsakey.pem")
     print res.must_authenticate(is_authenticated=0)
     res.process_authentication_result(0)
+    # dump pour envoi au SP
+    dump_response = res.dump()
+    res.destroy()
+    
+    res = lasso.AuthnResponse.new_from_dump(dump_response)
     # creation de l'assertion
-    assertion = lasso.Assertion("issuer", res.requestID)
+    assertion = lasso.Assertion("issuer", res.get_attr_value("InResponseTo"))
     authentication_statement = lasso.AuthenticationStatement("password",
-                                                             "3",
                                                              "tralala",
                                                              "dslqkjfslfj",
                                                              "http://service-provider.com",
                                                              "federated",
                                                              "wxkfjesmqfj",
                                                              "http://idp-provider.com",
-                                                             "federated",
-                                                             "bearer")
+                                                             "federated")
     assertion.add_authenticationStatement(authentication_statement)
     # ajout de l'assertion
     res.add_assertion(assertion, "../../examples/rsakey.pem",
                       "../../examples/rsacert.pem")
-    # dump pour envoi au SP
-    dump_response = res.dump()
 
     # partie SP
     # Verification de la signature de l'assertion
-    print res.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
+    print "Signature check: ", res.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
     # recuperation du StatusCode
     status_code = res.get_child("StatusCode")
     # recuperation de la valeur de l'attribut "Value"
-    print status_code.get_attr_value("Value")
+    print "Resultat de la demande d'authentification:", status_code.get_attr_value("Value")
     res.destroy()
 else:
     print "La Response (par artifact) n'est pas encore implementée"

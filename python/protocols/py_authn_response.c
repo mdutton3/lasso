@@ -61,8 +61,6 @@ PyObject *authn_response_getattr(PyObject *self, PyObject *args) {
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[ss]", "requestID", "query");
-  if (!strcmp(attr, "requestID"))
-    return (xmlCharPtr_wrap(reponse->requestID));
   if (!strcmp(attr, "query"))
     return (xmlCharPtr_wrap(reponse->query));
 
@@ -72,19 +70,35 @@ PyObject *authn_response_getattr(PyObject *self, PyObject *args) {
 
 /******************************************************************************/
 
-PyObject *authn_response_new(PyObject *self, PyObject *args) {
-  xmlChar       *query;
-  const xmlChar *providerID;
-  LassoNode     *response;
+PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args) {
+  xmlChar   *buffer;
+  LassoNode *response;
 
-  if (CheckArgs(args, "SS:authn_response_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "ss:authn_response_new", &query,
-			 &providerID))
+  if (CheckArgs(args, "S:authn_response_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:authn_response_new_from_dump",
+			 &buffer))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_authn_response_new(query, providerID);
+  response = lasso_authn_response_new_from_dump(buffer);
+
+  return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
+}
+
+PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args) {
+  xmlChar       *query = NULL;
+  const xmlChar *providerID = NULL;
+  LassoNode     *response;
+
+  if (CheckArgs(args, "ss:authn_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "zz:authn_response_new_from_request_query",
+			 &query, &providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_authn_response_new_from_request_query(query, providerID);
 
   return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
 }

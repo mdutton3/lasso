@@ -43,7 +43,6 @@ PyObject *LassoAuthenticationStatement_wrap(LassoAuthenticationStatement *statem
 
 PyObject *authentication_statement_new(PyObject *self, PyObject *args) {
   const xmlChar *authenticationMethod;
-  const xmlChar *sessionIndex;
   const xmlChar *reauthenticateOnOrAfter;
   xmlChar       *nameIdentifier;
   const xmlChar *nameQualifier;
@@ -51,27 +50,22 @@ PyObject *authentication_statement_new(PyObject *self, PyObject *args) {
   xmlChar       *idp_nameIdentifier;
   const xmlChar *idp_nameQualifier;
   const xmlChar *idp_format;
-  const xmlChar *confirmationMethod;
   LassoNode *statement;
 
-  if(!PyArg_ParseTuple(args, (char *) "ssssssssss:authentication_statement_new",
-		       &authenticationMethod, &sessionIndex,
-		       &reauthenticateOnOrAfter,
+  if(!PyArg_ParseTuple(args, (char *) "ssssssss:authentication_statement_new",
+		       &authenticationMethod, &reauthenticateOnOrAfter,
 		       &nameIdentifier, &nameQualifier, &format,
-		       &idp_nameIdentifier, &idp_nameQualifier, &idp_format,
-		       &confirmationMethod))
+		       &idp_nameIdentifier, &idp_nameQualifier, &idp_format))
     return NULL;
 
   statement = lasso_authentication_statement_new(authenticationMethod,
-						 sessionIndex,
 						 reauthenticateOnOrAfter,
 						 nameIdentifier,
 						 nameQualifier,
 						 format,
 						 idp_nameIdentifier,
 						 idp_nameQualifier,
-						 idp_format,
-						 confirmationMethod);
+						 idp_format);
 
   return (LassoAuthenticationStatement_wrap(LASSO_AUTHENTICATION_STATEMENT(statement)));
 }
