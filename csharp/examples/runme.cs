@@ -14,10 +14,10 @@ public class runme
 
 	Console.WriteLine("new LassoServer");
 	LassoServer server = new LassoServer(
-			"../tests/data/idp1-la/metadata.xml",
+			"../../tests/data/idp1-la/metadata.xml",
 			"",
-			"../tests/data/idp1-la/private-key-raw.pem",
-			"../tests/data/idp1-la/certificate.pem",
+			"../../tests/data/idp1-la/private-key-raw.pem",
+			"../../tests/data/idp1-la/certificate.pem",
 			lasso.lassoSignatureMethodRsaSha1);
 
 
