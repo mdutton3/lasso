@@ -42,7 +42,6 @@ extern "C" {
 typedef enum {
   lassoSignatureMethodRsaSha1 = 1,
   lassoSignatureMethodDsaSha1,
-  lassoSignatureMethodSha1
 } lassoSignatureMethod;
 
 LASSO_EXPORT xmlChar*   lasso_build_random_sequence  (guint8 size);

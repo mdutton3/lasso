@@ -23,6 +23,7 @@ liblasso_protocols_la_LIBADD = \
 
 liblasso_protocols_la_SOURCES = \
 	protocols.c \
+	artifact.c \
 	authn_request.c \
 	authn_response.c \
 	federation_termination_notification.c \
@@ -39,6 +40,7 @@ liblasso_protocols_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	protocols.h \
+	artifact.h \
 	authn_request.h \
 	authn_response.h \
 	federation_termination_notification.h \
