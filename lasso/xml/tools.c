@@ -234,13 +234,28 @@ lasso_query_to_dict(const gchar *query)
   
   i = 0;
   sa1 = g_strsplit(query, "&", 0);
+
   while (sa1[i++] != NULL) {
     /* split of key=value to get (key, value) sub-strings */
     sa2 = g_strsplit(sa1[i-1], "=", 0);
+    /* if no key / value found, then continue */
+    if (sa2 == NULL) {
+      continue;
+    }
+    /* if only a key but no value, then continue */
+    if (sa2[1] == NULL) {
+      continue;
+    }
+
     /* printf("%s => ", sa2[0]); */
     /* split of value to get mutli values sub-strings separated by SPACE char */
     str_unescaped = lasso_str_unescape(sa2[1]);
     sa3 = g_strsplit(str_unescaped, " ", 0);
+    if (sa3 == NULL) {
+      g_strfreev(sa2);
+      continue;
+    }
+
     xmlFree(str_unescaped);
     gpa = g_ptr_array_new();
     j = 0;
