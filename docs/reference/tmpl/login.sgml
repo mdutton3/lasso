@@ -6,8 +6,57 @@ Single Sign-On and Federation Profile
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The Single Sign On process allows a user to log in once to an identity provider
+(IdP), and to be then transparently loged in to the required service providers
+(SP) belonging to the IP "circle of trust".  Subordinating different identities
+of the same user within a circle of trust to a unique IP is called "Identity
+Federation".  The liberty Alliance specifications allows, thanks to this
+federation, strong and unique authentication coupled with control by the user
+of his personnal informations. The explicit user agreement is necessary before
+proceeding to Identity Federation.
 </para>
+
+<para>
+The service provider must implement the following process:
+<itemizedlist>
+ <listitem><para>creating an authentication request (#LassoLibAuthnRequest) with
+ lasso_login_init_authn_request();</para></listitem>
+ <listitem><para>sending it to the identity provider with
+ lasso_login_build_authn_request_msg();</para></listitem>
+ <listitem><para>receiving and processing the answer:
+   <itemizedlist>
+     <listitem>either an authentication response with
+     lasso_login_process_authn_response_msg()</listitem>
+     <listitem>or an artifact with lasso_login_init_request() then sending the
+     request to the IdP with lasso_login_build_request_msg() and processing the
+     new answer with lasso_login_process_response_msg().</listitem>
+   </itemizedlist>
+   </para></listitem>
+</itemizedlist>
+</para>
+
+<example>
+<title>Service Provider Login URL</title>
+<programlisting>
+LassoLogin *login;
+
+login = lasso_login_new(server);
+lasso_login_init_authn_request(login, "http://identity-provider-id/",
+		LASSO_HTTP_METHOD_REDIRECT);
+
+/* customize AuthnRequest */
+request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+request->NameIDPolicy = strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
+request->ForceAuthn = TRUE;
+request->IsPassive = FALSE;
+request->ProtocolProfile = strdup(LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART);
+
+lasso_login_build_authn_request_msg(login);
+
+/* redirect user to identity provider */
+printf("Location: %s\n\nRedirected to IdP\n", LASSO_PROFILE(login)->msg_url);
+</programlisting>
+</example>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
