@@ -167,29 +167,32 @@ PHP_FUNCTION(lasso_login_build_request_msg) {
 }
 /* }}} */
 
-/* {{{ proto lasso_login_build_authn_request_msg(resource login, string remote_providerID) */
+/* {{{ proto lasso_login_build_authn_request_msg(resource login, string remote_providerID,
+ * long http_method) */
 PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 
   	LassoLogin   *login;  
 	char *remote_providerID;
 	int remote_providerID_len;
+	long http_method;
 
 	zval *parm;
 
 	int num_args;
 	int ret;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 2) 
+	if ((num_args = ZEND_NUM_ARGS()) != 3) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
-		  &remote_providerID, &remote_providerID_len) == FAILURE) {
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zsl", &parm,
+		  &remote_providerID, &remote_providerID_len,
+		  &http_method) == FAILURE) {
 		return;
 	}
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
 	
-	lasso_login_build_authn_request_msg(login, remote_providerID);
+	lasso_login_build_authn_request_msg(login, remote_providerID, http_method);
 }
 /* }}} */
 

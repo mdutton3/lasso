@@ -47,7 +47,7 @@
   lasso_lib_authn_request_set_nameidpolicy($lib_authn_request, lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_request_set_consent($lib_authn_request, lassoLibConsentObtained); 
 
-  lasso_login_build_authn_request_msg($login, "https://idp1/metadata");
+  lasso_login_build_authn_request_msg($login, "https://idp1/metadata", lassoHttpMethodRedirect);
 
   
   $url = lasso_profile_get_msg_url($profile);

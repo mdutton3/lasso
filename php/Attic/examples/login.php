@@ -34,7 +34,7 @@
   lasso_lib_authn_request_set_relaystate($lib_authn_request, "fake");
   lasso_lib_authn_request_set_protocolprofile($lib_authn_request, lassoLibProtocolProfileBrwsArt);
 
-  lasso_login_build_authn_request_msg($splogin);
+  lasso_login_build_authn_request_msg($splogin, lassoHttpMethodRedirect);
 
   print "msg_url : " . lasso_profile_get_msg_url($profile) . "\n";
   print "msg_body : " . lasso_profile_get_msg_body($profile) . "\n";
