@@ -52,7 +52,7 @@ PHP_FUNCTION(lasso_server_new) {
 	
 	int num_args;
 	
-	zend_printf("DEBUG: lasso_server_new\n");
+	
 
 	if ((num_args = ZEND_NUM_ARGS()) != 5) 
 		WRONG_PARAM_COUNT
@@ -82,7 +82,7 @@ PHP_FUNCTION(lasso_server_add_provider) {
 	char *b;
 	int b_len;
 
-	zend_printf("DEBUG: lasso_server_add_provider\n");
+	
 
 	int num_args;
 
@@ -111,7 +111,7 @@ PHP_FUNCTION(lasso_server_dump) {
 	
 	int num_args;
 
-	zend_printf("DEBUG: lasso_server_dump\n");
+	
 	
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT
@@ -134,7 +134,7 @@ PHP_FUNCTION(lasso_server_destroy) {
 	LassoServer  *server;
 	zval *param;
 
-	zend_printf("DEBUG: lasso_server_destroy\n");
+	
 
 	int num_args;
 
@@ -161,7 +161,7 @@ PHP_FUNCTION(lasso_server_new_from_dump) {
 	int dump_len;
 	int num_args;
 
-	zend_printf("DEBUG: lasso_server_new_from_dump\n");
+	
 	
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT

@@ -37,7 +37,7 @@
 PHP_FUNCTION(lasso_identity_new) {
 	LassoIdentity *identity;
 	
-	zend_printf("DEBUG: lasso_identity_new\n");
+	
 
 	identity = lasso_identity_new();
 
@@ -51,7 +51,7 @@ PHP_FUNCTION(lasso_identity_destroy) {
 	LassoIdentity *identity;
 	zval *param;
 
-	zend_printf("DEBUG: lasso_identity_destroy\n");
+	
 
 	int num_args;
 
@@ -64,7 +64,6 @@ PHP_FUNCTION(lasso_identity_destroy) {
 
 	ZEND_FETCH_RESOURCE(identity, LassoIdentity *, &param, -1, le_lassoidentity_name, le_lassoidentity);
 	
-	zend_printf("DEBUG: identity at 0x%p\n", identity);
 
 	lasso_identity_destroy(identity);
 
@@ -80,7 +79,7 @@ PHP_FUNCTION(lasso_identity_dump) {
 	
 	int num_args;
 
-	zend_printf("DEBUG: lasso_identity_dump\n");
+	
 	
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT
@@ -91,8 +90,6 @@ PHP_FUNCTION(lasso_identity_dump) {
 
 	ZEND_FETCH_RESOURCE(identity, LassoIdentity *, &param, -1, le_lassoidentity_name, le_lassoidentity);
 	
-	zend_printf("DEBUG: identity at 0x%p\n", identity);
-
 	identity_dump = lasso_identity_dump(identity);
 
 	RETURN_STRING(identity_dump, 1);

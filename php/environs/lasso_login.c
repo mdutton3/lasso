@@ -39,7 +39,7 @@ PHP_FUNCTION(lasso_login_new) {
 	LassoServer  *server;
 	zval *param;
 
-	zend_printf("DEBUG: lasso_login_new\n");
+	
 
 	int num_args;
 
@@ -65,7 +65,7 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	char *meta;
 	int meta_len;
 
-	zend_printf("DEBUG: lasso_login_init_authn_request\n");
+	
 
 	int num_args;
 	int ret;
@@ -94,7 +94,7 @@ PHP_FUNCTION(lasso_login_destroy) {
 	LassoLogin  *login;
 	zval *param;
 
-	zend_printf("DEBUG: lasso_login_destroy\n");
+	
 
 	int num_args;
 
@@ -121,7 +121,7 @@ PHP_FUNCTION(lasso_login_new_from_dump) {
 	char 		 *dump;
 	int 		 dump_len;
 
-	zend_printf("DEBUG: lasso_login_new_from_dump\n");
+	
 
 	zval *parm_server, *parm_user;
 
@@ -150,7 +150,7 @@ PHP_FUNCTION(lasso_login_build_request_msg) {
 
 	LassoLogin   *login;  
 
-	zend_printf("DEBUG: lasso_login_build_request_msg\n");
+	
 
 	zval *parm;
 
@@ -177,14 +177,12 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 	char *remote_providerID;
 	int remote_providerID_len;
 
-	zend_printf("DEBUG: lasso_login_build_authn_request_msg\n");
-
 	zval *parm;
 
 	int num_args;
 	int ret;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+	if ((num_args = ZEND_NUM_ARGS()) != 2) 
 		WRONG_PARAM_COUNT
 
 	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,

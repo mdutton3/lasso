@@ -43,7 +43,7 @@ PHP_FUNCTION(lasso_cast_to_lib_authn_request)
   int num_args;
 
 
-  zend_printf("DEBUG: lasso_cast_to_lib_authn_request\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 1) 
 	WRONG_PARAM_COUNT
@@ -55,8 +55,6 @@ PHP_FUNCTION(lasso_cast_to_lib_authn_request)
   ZEND_FETCH_RESOURCE(node, LassoNode *, &param, -1, 
 	  le_lassonode_name, le_lassonode);
 	
-  zend_printf("DEBUG: node at 0x%p\n", node);
-
   lib_authn_request = LASSO_LIB_AUTHN_REQUEST(node);
 
   ZEND_REGISTER_RESOURCE(return_value, lib_authn_request, le_lassolibauthnrequest);
@@ -72,7 +70,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_consent)
   int consent_len;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_consent_set\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -99,7 +97,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_ispassive)
   unsigned int isPassive;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_ispassive_set\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -111,10 +109,6 @@ PHP_FUNCTION(lasso_lib_authn_request_set_ispassive)
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
 
-  zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
-
-  zend_printf("DEBUG: isPassive %d\n", isPassive - 137311488);
-	
   lasso_lib_authn_request_set_isPassive(lib_authn_request, isPassive - 137311488);
 }
 /* }}} */
@@ -127,7 +121,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_forceauthn)
   zend_bool forceauthn = 1;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_set_forceauthn\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -139,10 +133,6 @@ PHP_FUNCTION(lasso_lib_authn_request_set_forceauthn)
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
 
-  zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
-
-  zend_printf("DEBUG: forceAuthn %d\n", forceauthn);
-	
   lasso_lib_authn_request_set_forceAuthn(lib_authn_request, forceauthn);
 }
 /* }}} */
@@ -156,7 +146,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_nameidpolicy)
   int nameidpolicy_len;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_set_nameidpolicy\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -167,10 +157,6 @@ PHP_FUNCTION(lasso_lib_authn_request_set_nameidpolicy)
 
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
-
-  zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
-
-  zend_printf("DEBUG: nameIDPolicy %s\n", nameidpolicy);
 	
   lasso_lib_authn_request_set_nameIDPolicy(lib_authn_request, nameidpolicy);
 }
@@ -185,7 +171,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_relaystate)
   int relaystate_len;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_set_relaystate\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -196,10 +182,6 @@ PHP_FUNCTION(lasso_lib_authn_request_set_relaystate)
 
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
-
-  zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
-
-  zend_printf("DEBUG: relaystate %s\n", relaystate);
 
   lasso_lib_authn_request_set_relayState(lib_authn_request, relaystate);
 }
@@ -215,7 +197,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_protocolprofile)
   int protocolprofile_len;
   int num_args;
 
-  zend_printf("DEBUG: lasso_lib_authn_request_set_protocolprofile\n");
+  
 
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
@@ -226,10 +208,6 @@ PHP_FUNCTION(lasso_lib_authn_request_set_protocolprofile)
 
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
-
-  zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
-
-  zend_printf("DEBUG: protocolprofile %s\n", protocolprofile);
 
   lasso_lib_authn_request_set_protocolProfile(lib_authn_request, protocolprofile);
 }

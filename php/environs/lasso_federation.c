@@ -40,7 +40,7 @@ PHP_FUNCTION(lasso_federation_new) {
 
 	int num_args;
 	
-	zend_printf("DEBUG: lasso_federation_new\n");
+	
 
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT

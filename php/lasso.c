@@ -285,7 +285,7 @@ PHP_MINFO_FUNCTION(lasso)
    Initialise le bourdel */
 PHP_FUNCTION(lasso_init)
 {
-	zend_printf("DEBUG: lasso_init\n");
+	
 	if (ZEND_NUM_ARGS() != 0) 
 		WRONG_PARAM_COUNT
 
@@ -297,7 +297,7 @@ PHP_FUNCTION(lasso_init)
 /* {{{ proto long lasso_shutdown() */
 PHP_FUNCTION(lasso_shutdown)
 {
-	zend_printf("DEBUG: lasso_shutdown\n");
+	
 	if (ZEND_NUM_ARGS() != 0) 
 		WRONG_PARAM_COUNT
 
@@ -311,7 +311,7 @@ PHP_FUNCTION(lasso_version)
 {
 	char lasso_version[6];
 
-	zend_printf("DEBUG: lasso_version\n");
+	
 
 	/* snprintf(lasso_version, 6, "%d.%d.%d", LASSO_VERSION_MAJOR, 
 			LASSO_VERSION_MINOR, LASSO_VERSION_SUBMINOR); */

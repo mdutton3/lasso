@@ -44,7 +44,7 @@ PHP_FUNCTION(lasso_profile_new)
 
 	zval *parm_server, *parm_identity, *parm_session;
 
-  	zend_printf("DEBUG: lasso_profile_new\n");
+  	
 
 	int num_args;
 
@@ -58,17 +58,11 @@ PHP_FUNCTION(lasso_profile_new)
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &parm_server, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 
 	ZEND_FETCH_RESOURCE(identity, LassoIdentity *, &parm_identity, -1, le_lassoidentity_name, le_lassoidentity);
 	
-	zend_printf("DEBUG: identity at 0x%p\n", identity);
-
 	ZEND_FETCH_RESOURCE(session, LassoSession *, &parm_session, -1, le_lassosession_name, le_lassosession);
 	
-	zend_printf("DEBUG: session at 0x%p\n", session);
-
 	ctx = lasso_profile_new(server, identity, session);
 
 	ZEND_REGISTER_RESOURCE(return_value, ctx, le_lassoprofile);
@@ -79,35 +73,35 @@ PHP_FUNCTION(lasso_profile_new)
 /* {{{ proto lasso_profile_dump() */
 PHP_FUNCTION(lasso_profile_dump) 
 {
-  zend_printf("DEBUG: lasso_profile_dump\n");
+  
 }
 /* }}} */
 
 /* {{{ proto lasso_profile_set_remote_providerid() */
 PHP_FUNCTION(lasso_profile_set_remote_providerid) 
 {
-  zend_printf("DEBUG: lasso_profile_set_remote_providerid\n");
+  
 }
 /* }}} */
 
 /* {{{ proto lasso_profile_set_response_status() */
 PHP_FUNCTION(lasso_profile_set_response_status) 
 {
-  zend_printf("DEBUG: lasso_profile_set_response_status\n");
+  
 }
 /* }}} */
 
 /* {{{ proto lasso_profile_user_from_dump() */
 PHP_FUNCTION(lasso_profile_user_from_dump) 
 {
-  zend_printf("DEBUG: lasso_profile_user_from_dump\n");
+  
 }
 /* }}} */
 
 /* {{{ proto lasso_profile_get_request_type_from_soap_msg() */
 PHP_FUNCTION(lasso_profile_get_request_type_from_soap_msg) 
 {
-  zend_printf("DEBUG: lasso_profile_get_request_type_from_soap_msg\n");
+  
 }
 /* }}} */
 
@@ -117,7 +111,7 @@ PHP_FUNCTION(lasso_cast_to_profile)
   	LassoProfile	*ctx;  
   	LassoLogin   		*login;  
 
-  	zend_printf("DEBUG: lasso_cast_to_profile\n");
+  	
 
 	zval *parm;
 
@@ -133,8 +127,6 @@ PHP_FUNCTION(lasso_cast_to_profile)
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
 	
-	zend_printf("DEBUG: login at 0x%p\n", login);
-
 	ctx = LASSO_PROFILE(login);
 
 	ZEND_REGISTER_RESOURCE(return_value, ctx, le_lassoprofile);
@@ -146,7 +138,7 @@ PHP_FUNCTION(lasso_profile_get_request) {
 	LassoProfile	*ctx;  
   	LassoNode   		*node;  
 
-  	zend_printf("DEBUG: lasso_profile_get_request\n");
+  	
 
 	zval *parm;
 
@@ -162,9 +154,7 @@ PHP_FUNCTION(lasso_profile_get_request) {
 
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 	
-	zend_printf("DEBUG: profile  at 0x%p\n", ctx);
 
-	zend_printf("DEBUG: ctx->request at 0x%p\n", ctx->request);
 	node = ctx->request;
 
 	ZEND_REGISTER_RESOURCE(return_value, node, le_lassonode);
@@ -175,7 +165,7 @@ PHP_FUNCTION(lasso_profile_get_msg_url) {
 	LassoProfile	*ctx;  
   	LassoNode   		*node;  
 
-  	zend_printf("DEBUG: lasso_profile_get_msg_url\n");
+  	
 
 	zval *parm;
 
@@ -191,10 +181,6 @@ PHP_FUNCTION(lasso_profile_get_msg_url) {
 
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 	
-	zend_printf("DEBUG: profile at 0x%p\n", ctx);
-
-	zend_printf("DEBUG: ctx->msg_url at 0x%p\n", ctx->msg_url);
-
 	if (ctx->msg_url)
 	  RETURN_STRING(ctx->msg_url, 1);
 }
@@ -206,7 +192,7 @@ PHP_FUNCTION(lasso_profile_get_msg_body) {
 	LassoProfile	*ctx;  
   	LassoNode   		*node;  
 
-  	zend_printf("DEBUG: lasso_profile_get_msg_body\n");
+  	
 
 	zval *parm;
 
@@ -222,10 +208,6 @@ PHP_FUNCTION(lasso_profile_get_msg_body) {
 
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 	
-	zend_printf("DEBUG: profile  at 0x%p\n", ctx);
-
-	zend_printf("DEBUG: ctx->msg_body at 0x%p\n", ctx->msg_body);
-
 	if (ctx->msg_body)
 	  RETURN_STRING(ctx->msg_body, 1);
 }
@@ -236,7 +218,7 @@ PHP_FUNCTION(lasso_profile_get_msg_relaystate) {
 	LassoProfile	*ctx;  
   	LassoNode   		*node;  
 
-  	zend_printf("DEBUG: lasso_profile_get_msg_relaystate\n");
+  	
 
 	zval *parm;
 
@@ -252,10 +234,6 @@ PHP_FUNCTION(lasso_profile_get_msg_relaystate) {
 
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 	
-	zend_printf("DEBUG: profile  at 0x%p\n", ctx);
-
-	zend_printf("DEBUG: ctx->msg_relayState at 0x%p\n", ctx->msg_relayState);
-
 	if (ctx->msg_relayState)
 	  RETURN_STRING(ctx->msg_relayState, 1);
 }
