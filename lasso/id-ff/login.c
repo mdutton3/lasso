@@ -1207,6 +1207,12 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		}
 	}
 
+	/* create LibAuthnResponse */
+	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(
+			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
+			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request));
+
+
 	return ret;
 }
 
@@ -1595,11 +1601,6 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
-
-	/* create LibAuthnResponse */
-	profile->response = lasso_lib_authn_response_new(
-			LASSO_PROVIDER(profile->server)->ProviderID,
-			LASSO_LIB_AUTHN_REQUEST(profile->request));
 
 	/* modify AuthnResponse StatusCode if user authentication is not OK */
 	if (authentication_result == FALSE) {
