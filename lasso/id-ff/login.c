@@ -157,25 +157,26 @@ lasso_login_process_federation(LassoLogin *login)
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
     debug("NameIDPolicy is federated\n");
-    consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request,
-					"consent", &err);
-    if (consent != NULL) {
-      if (!xmlStrEqual(consent, lassoLibConsentObtained)) {
-	lasso_profile_set_response_status(LASSO_PROFILE(login),
-					  lassoSamlStatusCodeRequestDenied);
-	message(G_LOG_LEVEL_WARNING, "Consent not obtained");
-	ret = -3;
-	goto done;
-      }
-    }
-    else {
-      lasso_profile_set_response_status(LASSO_PROFILE(login),
-					lassoSamlStatusCodeRequestDenied);
-      message(G_LOG_LEVEL_WARNING, err->message);
-      ret = err->code;
-      g_error_free(err);
-      goto done;
-    }
+    /* FIXME : AuthnRequest consent attribute */
+    /* consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request, */
+    /*        				"consent", &err); */
+    /* if (consent != NULL) { */
+    /*   if (!xmlStrEqual(consent, lassoLibConsentObtained)) { */
+    /*     lasso_profile_set_response_status(LASSO_PROFILE(login), */
+    /* 		       			  lassoSamlStatusCodeRequestDenied); */
+    /* 	   message(G_LOG_LEVEL_WARNING, "Consent not obtained"); */
+    /* 	   ret = -3; */
+    /* 	   goto done; */
+    /*   } */
+    /* } */
+    /* else { */
+    /*   lasso_profile_set_response_status(LASSO_PROFILE(login), */
+    /*  				lassoSamlStatusCodeRequestDenied); */
+    /*   message(G_LOG_LEVEL_WARNING, err->message); */
+    /*   ret = err->code; */
+    /*   g_error_free(err); */
+    /*   goto done; */
+    /* } */
     if (federation == NULL) {
       federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
 
