@@ -182,8 +182,8 @@ lasso_samlp_response_abstract_sign_signature_tmpl(LassoSamlpResponseAbstract *no
 
   class = LASSO_NODE_GET_CLASS(node);
 
-  return(class->sign_signature_tmpl(LASSO_NODE (node), private_key_file,
-				    certificate_file));
+  return class->sign_signature_tmpl(LASSO_NODE (node), private_key_file,
+				    certificate_file);
 }
 
 /*****************************************************************************/

@@ -99,7 +99,7 @@ int lasso_init()
     message(G_LOG_LEVEL_CRITICAL, "Unable to load default xmlsec-crypto library. Make sure\n"
 	    "that you have it installed and check shared libraries path\n"
 	    "(LD_LIBRARY_PATH) environment variable.\n");
-    return(-1);	
+    return -1;	
   }
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 

@@ -267,7 +267,7 @@ lasso_server_get_provider_ref(LassoServer  *server,
     if (id != NULL) {
       if (xmlStrEqual(providerID, id)) {
 	xmlFree(id);
-	return(provider);
+	return provider;
       }
       xmlFree(id);
     }
@@ -305,7 +305,7 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
       xmlFree(hash_providerID);
       if (xmlStrEqual(b64_hash_providerID, b64_hash)) {
 	xmlFree(b64_hash_providerID);
-	return(providerID);
+	return providerID;
       }
       else {
 	xmlFree(b64_hash_providerID);
