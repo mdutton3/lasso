@@ -138,7 +138,7 @@ lasso_session_copy(LassoSession *session)
 					   (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->assertions, (GHFunc)lasso_session_copy_assertion,
 		       (gpointer)copy->assertions);
-  copy->is_durty = FALSE;
+  copy->is_durty = session->is_durty;
 
   return(copy);
 }

@@ -93,9 +93,6 @@ struct _LassoProfile {
   gchar *msg_body;
   gchar *msg_relayState;
 
-  gboolean identity_is_durty;
-  gboolean session_is_durty;
-
   /*< private >*/
   LassoProfilePrivate *private;
   lassoMessageTypes  request_type;
@@ -107,35 +104,43 @@ struct _LassoProfileClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT gint          lasso_profile_get_request_type_from_soap_msg (gchar *soap);
+LASSO_EXPORT gint           lasso_profile_get_request_type_from_soap_msg (gchar *soap);
 
 
-LASSO_EXPORT GType         lasso_profile_get_type                       (void);
+LASSO_EXPORT GType          lasso_profile_get_type                       (void);
 
-LASSO_EXPORT LassoProfile* lasso_profile_new                            (LassoServer   *server,
-									 LassoIdentity *identity,
+LASSO_EXPORT LassoProfile*  lasso_profile_new                            (LassoServer   *server,
+									  LassoIdentity *identity,
+									  LassoSession  *session);
+
+LASSO_EXPORT gchar*         lasso_profile_dump                           (LassoProfile *ctx,
+									  const gchar  *name);
+
+LASSO_EXPORT LassoIdentity* lasso_profile_get_identity                   (LassoProfile *ctx);
+
+LASSO_EXPORT LassoSession*  lasso_profile_get_session                    (LassoProfile *ctx);
+
+LASSO_EXPORT gboolean       lasso_profile_is_identity_durty              (LassoProfile *ctx);
+
+LASSO_EXPORT gboolean       lasso_profile_is_session_durty               (LassoProfile *ctx);
+
+LASSO_EXPORT gint           lasso_profile_set_remote_providerID          (LassoProfile *ctx,
+									  gchar        *providerID);
+
+LASSO_EXPORT void           lasso_profile_set_response_status            (LassoProfile *ctx,
+									  const gchar  *statusCodeValue);
+
+LASSO_EXPORT gint           lasso_profile_set_session                    (LassoProfile *ctx,
 									 LassoSession  *session);
 
-LASSO_EXPORT gchar*        lasso_profile_dump                           (LassoProfile *ctx,
-									 const gchar         *name);
+LASSO_EXPORT gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
+									 const gchar   *dump);
 
-LASSO_EXPORT gint          lasso_profile_set_remote_providerID          (LassoProfile *ctx,
-									 gchar               *providerID);
+LASSO_EXPORT gint           lasso_profile_set_identity                   (LassoProfile *ctx,
+									 LassoIdentity *identity);
 
-LASSO_EXPORT void          lasso_profile_set_response_status            (LassoProfile *ctx,
-									 const gchar         *statusCodeValue);
-
-LASSO_EXPORT gint          lasso_profile_set_session                    (LassoProfile *ctx,
-									 LassoSession        *session);
-
-LASSO_EXPORT gint          lasso_profile_set_session_from_dump          (LassoProfile *ctx,
-									 const gchar         *dump);
-
-LASSO_EXPORT gint          lasso_profile_set_identity                   (LassoProfile *ctx,
-									 LassoIdentity       *identity);
-
-LASSO_EXPORT gint          lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
-									 const gchar         *dump);
+LASSO_EXPORT gint           lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
+									 const gchar   *dump);
 
 #ifdef __cplusplus
 }

@@ -131,7 +131,7 @@ lasso_identity_copy(LassoIdentity *identity)
 					    (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->federations, (GHFunc)lasso_identity_copy_federation,
 		       (gpointer)copy->federations);
-  copy->is_durty = FALSE;
+  copy->is_durty = identity->is_durty;
 
   return(copy);
 }
