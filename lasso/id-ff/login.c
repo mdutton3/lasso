@@ -315,16 +315,13 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 	response = LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response);
 
-	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status))
+	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status) || 
+			response->Status->StatusCode == NULL ||
+			response->Status->StatusCode->Value == NULL) {
 		return LASSO_ERROR_UNDEFINED;
-
-	if (response->Status->StatusCode == NULL)
-		return LASSO_ERROR_UNDEFINED;
+	}
 
 	status_value = response->Status->StatusCode->Value;
-	if (status_value == NULL) {
-		/* XXX ? was ignored before ? */ 
-	}
 	if (status_value && strcmp(status_value, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		if (strcmp(status_value, LASSO_SAML_STATUS_CODE_REQUEST_DENIED) == 0)
 			return LASSO_LOGIN_ERROR_REQUEST_DENIED;
@@ -1337,6 +1334,7 @@ dispose(GObject *object)
 {
 	LassoLogin *login = LASSO_LOGIN(object);
 	g_free(login->private_data->soap_request_msg);
+	login->private_data->soap_request_msg = NULL;
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -1345,6 +1343,7 @@ finalize(GObject *object)
 {  
 	LassoLogin *login = LASSO_LOGIN(object);
 	g_free(login->private_data);
+	login->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
