@@ -43,7 +43,7 @@ echo "- Define autotools programs command line arguments."
 echo " - Add missing required files to the package by symbolic links."
 automake_args=--add-missing
 autoconf_args=
-aclocal_args=-I macros
+aclocal_args="-I macros"
 
 echo - Store the used shell interpreter name.
 program=`basename $0`
