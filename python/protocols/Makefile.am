@@ -9,9 +9,7 @@ INCLUDES = \
 	$(PY_CFLAGS) \
 	$(NULL)
 
-noinst_LIBRARIES = libprotocols.a
-
-libprotocols_a_SOURCES = \
+PROTSOURCES = \
 	py_authn_request.c \
 	py_authn_response.c \
 	py_federation_termination_notification.c \
@@ -22,7 +20,14 @@ libprotocols_a_SOURCES = \
 	py_register_name_identifier_request.c \
 	py_register_name_identifier_response.c
 
+
+if WITH_PYTHON
+libprotocols_a_SOURCES = $(PROTSOURCES)
+noinst_LIBRARIES = libprotocols.a
+endif
+
 EXTRA_DIST = \
+	$(PROTSOURCES) \
 	py_authn_request.h \
 	py_authn_response.h \
 	py_federation_termination_notification.h \

@@ -1,4 +1,9 @@
+ELEMSOURCES = py_assertion.c py_authentication_statement.c
+
+if WITH_PYTHON
 noinst_LIBRARIES = libelements.a
+libelements_a_SOURCES = $(ELEMSOURCES)
+endif
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -9,7 +14,5 @@ INCLUDES = \
 	$(PY_CFLAGS) \
 	$(NULL)
 
-noinst_LIBRARIES = libelements.a
-libelements_a_SOURCES = py_assertion.c py_authentication_statement.c
 
-EXTRA_DIST = py_assertion.h py_authentication_statement.h
+EXTRA_DIST = $(ELEMSOURCES) py_assertion.h py_authentication_statement.h

@@ -137,9 +137,19 @@ if $python_val; then
                 AC_SUBST(PY_LIB_A)
 		AC_SUBST(PY_SITE_PACKAGES)
         else
-                AC_MSG_RESULT("no")
+		python_val=false
+                AC_MSG_RESULT(no)
 	fi
 fi
+
+AC_ARG_ENABLE(python,
+[  --enable-python         build the Python interpreter (default)],
+[case "${enableval}" in
+        yes) ;;
+        no)  python_val=false;;
+esac])
+
+AM_CONDITIONAL(WITH_PYTHON, $python_val)
 
 
 dnl ==========================================================================

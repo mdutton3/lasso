@@ -1,17 +1,4 @@
-noinst_LIBRARIES = libxml.a
-
-INCLUDES = \
-	-DPACKAGE=\"@PACKAGE@\" \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/lasso \
-	$(LASSO_DEFINES) \
-	$(LASSO_CFLAGS) \
-	$(PY_CFLAGS) \
-	$(NULL)
-
-noinst_LIBRARIES = libxml.a
-
-libxml_a_SOURCES = \
+XMLSOURCES = \
 	py_lib_authentication_statement.c \
 	py_lib_authn_request.c \
 	py_lib_federation_termination_notification.c \
@@ -26,7 +13,22 @@ libxml_a_SOURCES = \
 	py_samlp_response.c \
 	py_xml.c
 
+if WITH_PYTHON
+noinst_LIBRARIES = libxml.a
+libxml_a_SOURCES = $(XMLSOURCES)
+endif
+
+INCLUDES = \
+	-DPACKAGE=\"@PACKAGE@\" \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/lasso \
+	$(LASSO_DEFINES) \
+	$(LASSO_CFLAGS) \
+	$(PY_CFLAGS) \
+	$(NULL)
+
 EXTRA_DIST = \
+	$(XMLSOURCES) \
 	py_lib_authentication_statement.h \
 	py_lib_authn_request.h \
 	py_lib_federation_termination_notification.h \
