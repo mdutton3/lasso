@@ -51,8 +51,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceIDGroup", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceIDGroup) },
+	{ "ResourceID", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
 	{ "ServiceInstance", SNIPPET_NODE,
 	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
 	{ "Options", SNIPPET_NODE,
@@ -71,7 +73,8 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoResourceOffering *node)
 {
-	node->ResourceIDGroup = NULL;
+	node->ResourceID = NULL;
+	node->EncryptedResourceID = NULL;
 	node->ServiceInstance = NULL;
 	node->Options = NULL;
 	node->Abstract = NULL;
@@ -114,19 +117,16 @@ lasso_disco_resource_offering_get_type()
 }
 
 LassoDiscoResourceOffering*
-lasso_disco_resource_offering_new(LassoDiscoResourceIDGroup *resourceIDGroup,
-				  LassoDiscoServiceInstance *serviceInstance)
+lasso_disco_resource_offering_new(LassoDiscoServiceInstance *serviceInstance)
 {
 	LassoDiscoResourceOffering *resource;
 
-	g_return_val_if_fail (LASSO_IS_DISCO_RESOURCE_ID_GROUP(resourceIDGroup), NULL);
-	g_return_val_if_fail (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
 
 	resource = g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
 
-	/* FIXME: Should ServiceInstance and ResourceIDGroup be copies ? */
+	/* FIXME: Should ServiceInstance be copy ? */
 	resource->ServiceInstance = serviceInstance;
-	resource->ResourceIDGroup = resourceIDGroup;
 
 	return resource;
 }

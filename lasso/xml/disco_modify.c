@@ -37,6 +37,15 @@
  *   </xs:sequence>
  *   <xs:attribute name="id" type="xs:ID" use="optional"/>
  * </xs:complexType>
+ * 
+ * <xs:group name="ResourceIDGroup">
+ *   <xs:sequence>
+ *     <xs:choice minOccurs="0" maxOccurs="1">
+ *       <xs:element ref="ResourceID"/>
+ *       <xs:element ref="EncryptedResourceID"/>
+ *     </xs:choice>
+ *   </xs:sequence>
+ * </xs:group>
  */
 
 /*****************************************************************************/
@@ -44,7 +53,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceIDGroup", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, ResourceIDGroup) },
+	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, ResourceID) },
+	{ "EncryptedResourceID",
+	  SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, EncryptedResourceID) },
 	{ "InsertEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, InsertEntry) },
 	{ "RemoveEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, RemoveEntry) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModify, id) },
@@ -58,7 +69,8 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoModify *node)
 {
-	node->ResourceIDGroup = NULL;
+	node->ResourceID = NULL;
+	node->EncryptedResourceID = NULL;
 	node->InsertEntry = NULL;
 	node->RemoveEntry = NULL;
 	node->id = NULL;
@@ -100,14 +112,11 @@ lasso_disco_modify_get_type()
 }
 
 LassoDiscoModify*
-lasso_disco_modify_new(LassoDiscoResourceIDGroup *resourceIDGroup)
+lasso_disco_modify_new()
 {
 	LassoDiscoModify *node;
 
 	node = g_object_new(LASSO_TYPE_DISCO_MODIFY, NULL);
-
-	/* FIXME : should ResourceIDGroup be a copy */
-	node->ResourceIDGroup = resourceIDGroup;
 
 	return node;
 }
