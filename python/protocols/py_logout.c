@@ -46,22 +46,22 @@ PyObject *lassoLogoutRequest_wrap(lassoLogoutRequest *request) {
 /******************************************************************************/
 
 PyObject *logout_request_getattr(PyObject *self, PyObject *args) {
-  PyObject *lareq_obj;
-  lassoLogoutRequest *lareq;
+  PyObject *request_obj;
+  lassoLogoutRequest *request;
   const char *attr;
 
   if (CheckArgs(args, "OS:logout_request_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:logout_request_get_attr", &lareq_obj, &attr))
+    if (!PyArg_ParseTuple(args, "Os:logout_request_get_attr", &request_obj, &attr))
       return NULL;
   }
   else return NULL;
 
-  lareq = lassoLogoutRequest_get(lareq_obj);
+  request = lassoLogoutRequest_get(request_obj);
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[s]", "node");
   if (!strcmp(attr, "node"))
-    return (LassoNode_wrap(lareq->node));
+    return (LassoNode_wrap(request->node));
 
   Py_INCREF(Py_None);
   return (Py_None);

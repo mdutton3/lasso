@@ -38,6 +38,4 @@ PyObject *lassoLogoutRequest_wrap(lassoLogoutRequest *request);
 PyObject *logout_request_getattr(PyObject *self, PyObject *args);
 PyObject *logout_request_create(PyObject *self, PyObject *args);
 
-
-
-#endif
+#endif /* __PYLASSO_PY_LOGOUT_H__ */

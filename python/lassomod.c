@@ -26,8 +26,8 @@
 
 #include "py_lasso.h"
 #include "xml/py_xml.h"
-#include "protocols/py_single_sign_on_and_federation.h"
 #include "protocols/py_logout.h"
+#include "protocols/py_single_sign_on_and_federation.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -37,6 +37,7 @@ static PyMethodDef lasso_methods[] = {
   {"check_version",       check_version,       METH_VARARGS},
   {"check_version_ext",   check_version_ext,   METH_VARARGS},
 
+  /* xml */
   /* py_xml.h */
   {"node_dump",             node_dump,             METH_VARARGS},
   {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
@@ -44,6 +45,11 @@ static PyMethodDef lasso_methods[] = {
   {"node_unref",            node_unref,            METH_VARARGS},
   {"node_url_encode",       node_url_encode,       METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
+
+  /* protocols */
+  /* py_logout.h */
+  {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
+  {"logout_request_create",  logout_request_create,  METH_VARARGS},
 
   /* py_single_sign_on_and_federation.h */
   {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
@@ -55,10 +61,6 @@ static PyMethodDef lasso_methods[] = {
   {"assertion_build",                       assertion_build,                       METH_VARARGS},
   {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS},
   {"authentication_statement_build", authentication_statement_build, METH_VARARGS},
-  
-  /* py_logout.h */
-  {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
-  {"logout_request_create",  logout_request_create,  METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
