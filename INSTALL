@@ -140,10 +140,7 @@ options to 'configure', where FEATURE indicates an optional part of the
 package.  It also pays attention to '--with-PACKAGE' options, where
 PACKAGE is something like 'gnu-ld' or 'pic'.
 
-'configure' recognizes the following FEATUREs.
-
-coldfusion
-    Build Lasso ColdFusion binding (enabled by default).
+'configure' recognizes the following FEATUREs:
 
 debugging
     Display debugging messages in 'stderr'.
@@ -152,17 +149,27 @@ gtk-doc
     Build Lasso API reference manual using gtk-doc system (enabled by
     default if gtk-doc is installed).
 
-java
-    Build Lasso Java binding (enabled by default).
-
-php
-    Build Lasso PHP binding (enabled by default).
-
-python
-    Build Lasso Python binding (enabled by default).
-
 tests
     Build unit test suite (enabled by default)
+
+'configure' recognizes the following PACKAGEs:
+
+.. coldfusion
+       Build Lasso ColdFusion binding (enabled by default, use
+       ``--with-coldfusion=no`` to disable).
+
+java
+    Build Lasso Java binding (enabled by default, use
+    ``--with-java=no`` to disable).
+
+.. php
+       Build Lasso PHP binding (enabled by default, use
+       ``--with-php=no`` to disable).
+
+python
+    Build Lasso Python binding (enabled by default, use
+    ``--with-python=no`` to disable).
+
 
 Specifying the System Type
 ==========================
