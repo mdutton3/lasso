@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 
-# Python Lasso Simulator
+# Lasso Simulator
+# By: Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # Copyright (C) 2004 Entr'ouvert
 # http://lasso.entrouvert.org
-# 
-# Author: Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +27,7 @@ import lasso
 from websimulator import *
 
 
-class LibertyEnabledClient(WebClient, Simulation):
+class LibertyEnabledClient(WebClient):
     # A service provider MAY provide a list of identity providers it recognizes by including the
     # <lib:IDPList> element in the <lib:AuthnRequestEnvelope>. The format and processing rules for
     # the identity provider list MUST be as defined in [LibertyProtSchema].
@@ -59,28 +58,27 @@ class LibertyEnabledClient(WebClient, Simulation):
     # <lib:AuthnResponse> MUST be encoded by applying a base64 transformation (refer to
     # [RFC2045]) to the <lib:AuthnResponse> and all its elements.
 
-    # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
-    # metadata, instead of using 'singleSignOnServiceUrl'.
-    idpSingleSignOnServiceUrl = None
-    requestHeaders = WebClient.requestHeaders.copy()
-    requestHeaders.update({
+    httpRequestHeaders = WebClient.httpRequestHeaders.copy()
+    httpRequestHeaders.update({
         # FIXME: Is this the correct syntax for several URLs in LIBV?
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
         'Liberty-Agent': 'LassoSimulator/0.0.0',
         # FIXME: As an alternative to 'Liberty-Enabled' header, a user agent may use:
         # 'User-Agent': ' '.join((
-        #     requestHeaders['User-Agent'],
+        #     httpRequestHeaders['User-Agent'],
         #     'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1'))
-        'Accept': ','.join((requestHeaders['Accept'], 'application/vnd.liberty-request+xml'))
+        'Accept': ','.join((httpRequestHeaders['Accept'], 'application/vnd.liberty-request+xml'))
         })
+    # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
+    # metadata, instead of using 'singleSignOnServiceUrl'.
+    idpSingleSignOnServiceUrl = None
 
-    def __init__(self, test, internet):
-        Simulation.__init__(self, test)
+    def __init__(self, internet):
         WebClient.__init__(self, internet)
 
     def login(self, principal, site, path):
         httpResponse = self.sendHttpRequestToSite(site, 'GET', path)
-        self.failUnlessEqual(
+        failUnlessEqual(
             httpResponse.headers['Content-Type'], 'application/vnd.liberty-request+xml')
         lecp = lasso.Lecp.new(None)
         authnRequestEnvelope = httpResponse.body
@@ -95,12 +93,12 @@ class LibertyEnabledClient(WebClient, Simulation):
         httpResponse = self.sendHttpRequest(
             'POST', self.idpSingleSignOnServiceUrl, headers = {'Content-Type': 'text/xml'},
             body = lecp.msg_body)
-        self.failUnlessEqual(
+        failUnlessEqual(
             httpResponse.headers.get('Content-Type', None), 'application/vnd.liberty-response+xml')
         lecp.process_authn_response_envelope_msg(httpResponse.body)
         lecp.build_authn_response_msg()
-        self.failUnless(lecp.msg_url)
-        self.failUnless(lecp.msg_body)
+        failUnless(lecp.msg_url)
+        failUnless(lecp.msg_body)
         # FIXME: Should we use 'multipart/form-data' for forms?
         return self.sendHttpRequest(
             'POST', lecp.msg_url, headers = {'Content-Type': 'multipart/form-data'},

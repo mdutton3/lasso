@@ -3,11 +3,11 @@
 
 
 # Python unit tests for Lasso library
+# By: Frederic Peters <fpeters@entrouvert.com>
+#     Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # Copyright (C) 2004 Entr'ouvert
 # http://lasso.entrouvert.org
-# 
-# Authors: Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,11 +27,14 @@
 import unittest
 import sys
 
-sys.path.insert(0, '..')
-sys.path.insert(0, '../.libs')
+if not '..' in sys.path:
+    sys.path.insert(0, '..')
+if not '../.libs' in sys.path:
+    sys.path.insert(0, '../.libs')
 
 import lasso
 
+import builtins
 from IdentityProvider import IdentityProvider
 from LibertyEnabledClient import LibertyEnabledClient
 from ServiceProvider import ServiceProvider
@@ -40,7 +43,7 @@ from websimulator import *
 
 class LoginTestCase(unittest.TestCase):
     def generateIdpSite(self, internet):
-        site = IdentityProvider(self, internet, 'https://identity-provider/')
+        site = IdentityProvider(internet, 'https://identity-provider/')
         site.providerId = 'https://identity-provider/metadata'
 
         server = lasso.Server.new(
@@ -54,7 +57,7 @@ class LoginTestCase(unittest.TestCase):
             '../../examples/data/sp-public-key.pem',
             '../../examples/data/ca-crt.pem')
         site.serverDump = server.dump()
-        self.failUnless(site.serverDump)
+        failUnless(site.serverDump)
         server.destroy()
 
         site.addWebUser('Chantereau')
@@ -65,7 +68,7 @@ class LoginTestCase(unittest.TestCase):
         return site
 
     def generateLibertyEnabledClient(self, internet):
-        client = LibertyEnabledClient(self, internet)
+        client = LibertyEnabledClient(internet)
         # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
         # metadata, instead of using 'singleSignOnServiceUrl'.
 ##         server = lasso.Server.new(
@@ -83,7 +86,7 @@ class LoginTestCase(unittest.TestCase):
         return client
         
     def generateSpSite(self, internet):
-        site = ServiceProvider(self, internet, 'https://service-provider/')
+        site = ServiceProvider(internet, 'https://service-provider/')
         site.providerId = 'https://service-provider/metadata'
 
         server = lasso.Server.new(
@@ -97,7 +100,7 @@ class LoginTestCase(unittest.TestCase):
             '../../examples/data/idp-public-key.pem',
             '../../examples/data/ca-crt.pem')
         site.serverDump = server.dump()
-        self.failUnless(site.serverDump)
+        failUnless(site.serverDump)
         server.destroy()
 
         site.addWebUser('Nicolas')
@@ -107,11 +110,15 @@ class LoginTestCase(unittest.TestCase):
         site.addWebUser('Frederic')
         return site
 
-##     def setUp(self):
-##         pass
+    def setUp(self):
+        for name in ('fail', 'failIf', 'failIfAlmostEqual', 'failIfEqual', 'failUnless',
+                     'failUnlessAlmostEqual', 'failUnlessRaises', 'failUnlessEqual'):
+            builtins.set(name, getattr(self, name))
 
-##     def tearDown(self):
-##         pass
+    def tearDown(self):
+        for name in ('fail', 'failIf', 'failIfAlmostEqual', 'failIfEqual', 'failUnless',
+                     'failUnlessAlmostEqual', 'failUnlessRaises', 'failUnlessEqual'):
+            builtins.delete(name)
 
     def test00(self):
         """LECP login."""
@@ -138,11 +145,11 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Romain'
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
-        self.failIf(spSite.webSessions)
-        self.failIf(idpSite.webSessions)
+        failUnlessEqual(httpResponse.statusCode, 200)
+        failIf(spSite.webSessions)
+        failIf(idpSite.webSessions)
 
     def test02(self):
         """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done three times."""
@@ -156,28 +163,28 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Romain'
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Now the principal already has a federation between spSite and idpSite.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again. Do a new passive login between normal login and logout.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         del principal.keyring[idpSite.url] # Ensure identity provider will be really passive.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
 
         # Once again, with isPassive and the user having no web session.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
 
     def test03(self):
         """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider. Then logout, with same problem."""
@@ -191,9 +198,9 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Frederic'
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
 
     def test04(self):
         """Service provider initiated login using HTTP redirect, but user has no account on service
@@ -208,9 +215,9 @@ class LoginTestCase(unittest.TestCase):
         # Christophe Nowicki has no account on service provider.
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
 
     def test05(self):
         """Service provider initiated login using HTTP redirect with isPassive for a user without federation yet."""
@@ -224,7 +231,7 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Romain'
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
 
     def test06(self):
         """Testing forceAuthn flag."""
@@ -238,24 +245,24 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Romain'
 
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
 
         # Ask user to reauthenticate while he is already logged.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
         del principal.keyring[idpSite.url] # Ensure user can't authenticate.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 200)
+        failUnlessEqual(httpResponse.statusCode, 200)
 
         # Force authentication, but user won't authenticate.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
-        self.failUnlessEqual(httpResponse.statusCode, 401)
+        failUnlessEqual(httpResponse.statusCode, 401)
 
 ##     def test06(self):
 ##         """Service provider LECP login."""

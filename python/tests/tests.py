@@ -2,14 +2,12 @@
 # -*- coding: UTF-8 -*-
 
 
-# PyLasso -- Python bindings for Lasso library
+# Python unit tests for Lasso library
+# By: Frederic Peters <fpeters@entrouvert.com>
+#     Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # Copyright (C) 2004 Entr'ouvert
 # http://lasso.entrouvert.org
-# 
-# Authors: Nicolas Clapies <nclapies@entrouvert.com>
-#          Valery Febvre <vfebvre@easter-eggs.com>
-#          Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,8 +31,10 @@ import unittest
 
 from XmlTestRunner import XmlTestRunner
 
-sys.path.insert(0, '..')
-sys.path.insert(0, '../.libs')
+if not '..' in sys.path:
+    sys.path.insert(0, '..')
+if not '../.libs' in sys.path:
+    sys.path.insert(0, '../.libs')
 
 
 testSuites = (

@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 
-# Python Lasso Simulator
+# Lasso Simulator
+# By: Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # Copyright (C) 2004 Entr'ouvert
 # http://lasso.entrouvert.org
-# 
-# Author: Emmanuel Raviart <eraviart@entrouvert.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,8 +28,8 @@ from websimulator import *
 
 
 class Provider(WebSite):
-    responseHeaders = WebSite.responseHeaders.copy()
-    responseHeaders.update({
+    httpResponseHeaders = WebSite.httpResponseHeaders.copy()
+    httpResponseHeaders.update({
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
         })
     serverDump = None
