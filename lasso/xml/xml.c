@@ -773,9 +773,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	/* XXX: new Dst namespaces can be added dynamically; they should not
 	 * be hardcoded here
 	 */
-	if (strcmp(xmlnode->ns->href, LASSO_LIB_SERVICE_TYPE_ID_SIS_PP) == 0)
+	if (strcmp(xmlnode->ns->href, LASSO_PP_HREF) == 0)
 		prefix = "Dst";
-	if (strcmp(xmlnode->ns->href, LASSO_LIB_SERVICE_TYPE_ID_SIS_EP) == 0)
+	if (strcmp(xmlnode->ns->href, LASSO_EP_HREF) == 0)
 		prefix = "Dst";
 
 	xsitype = xmlGetNsProp(xmlnode, "type", LASSO_XSI_HREF);
