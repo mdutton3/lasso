@@ -133,13 +133,15 @@ lasso_logout_response_new(gchar       *providerID,
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					      recipient);
   lasso_node_destroy(request_providerID);
-  
+  xmlFree(recipient);
+
   request_relayState = lasso_node_get_child(request, "RelayState", NULL);
   if (request_relayState != NULL) {
     relayState = lasso_node_get_content(request_relayState);
     lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
 					     relayState);
     lasso_node_destroy(request_relayState);
+    xmlFree(relayState);
   }
 
   ss = lasso_samlp_status_new();

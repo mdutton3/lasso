@@ -141,14 +141,17 @@ lasso_identity_verify_nameIdentifier(LassoIdentity *identity,
     if(xmlStrEqual(identity_content, nameIdentifier_content)){
       return(TRUE);
     }
+    xmlFree(identity_content);
   }
   if(identity->remote_nameIdentifier){
     identity_content = lasso_node_get_content(identity->remote_nameIdentifier);
     if(xmlStrEqual(identity_content, nameIdentifier_content)){
       return(TRUE);
     }
+    xmlFree(identity_content);
   }
-
+  xmlFree(nameIdentifier_content);
+    
   return(FALSE);
 }
 

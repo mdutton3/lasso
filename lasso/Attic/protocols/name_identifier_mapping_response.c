@@ -108,6 +108,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					      recipient);
   lasso_node_destroy(request_providerID);
+  xmlFree(recipient);
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();

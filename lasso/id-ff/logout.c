@@ -183,23 +183,23 @@ lasso_logout_init_request(LassoLogout *logout,
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  if(remote_providerID==NULL){
+  if(remote_providerID == NULL) {
     /* message(G_LOG_LEVEL_INFO, "No remote provider id, get the next assertion peer provider id\n"); */
     profileContext->remote_providerID = lasso_user_get_next_assertion_remote_providerID(profileContext->user);
   }
-  else{
+  else {
     /* message(G_LOG_LEVEL_INFO, "A remote provider id for logout request : %s\n", remote_providerID); */
     profileContext->remote_providerID = g_strdup(remote_providerID);
   }
 
-  if(profileContext->remote_providerID==NULL){
+  if(profileContext->remote_providerID == NULL) {
     message(G_LOG_LEVEL_ERROR, "No provider id for init request\n");
     return(-2);
   }
 
   /* get identity */
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(identity==NULL){
+  if(identity == NULL) {
     message(G_LOG_LEVEL_ERROR, "Identity not found\n");
     return(-3);
   }
@@ -207,21 +207,23 @@ lasso_logout_init_request(LassoLogout *logout,
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
-    nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
-    if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
+    nameIdentifier = lasso_identity_get_local_nameIdentifier(identity);
+    if(nameIdentifier == NULL) {
+      nameIdentifier = lasso_identity_get_remote_nameIdentifier(identity);
+    }
     break;
   case lassoProviderTypeIdp:
-    nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
-    if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
+    nameIdentifier = lasso_identity_get_remote_nameIdentifier(identity);
+    if(nameIdentifier == NULL) {
+      nameIdentifier = lasso_identity_get_local_nameIdentifier(identity);
+    }
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
     return(-4);
   }
   
-  if(!nameIdentifier){
+  if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "Name identifier not found for %s\n", profileContext->remote_providerID);
     return(-5);
   }
@@ -234,6 +236,10 @@ lasso_logout_init_request(LassoLogout *logout,
 						     content,
 						     nameQualifier,
 						     format);
+  xmlFree(content);
+  xmlFree(nameQualifier);
+  xmlFree(format);
+  lasso_node_destroy(nameIdentifier);
 
   if(profileContext->request==NULL){
     message(G_LOG_LEVEL_ERROR, "Error while creating the request\n");
@@ -361,6 +367,7 @@ lasso_logout_process_request(LassoLogout *logout)
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
     return(-8);
   }
+  lasso_node_destroy(assertion);
 
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);

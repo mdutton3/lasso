@@ -324,6 +324,7 @@ lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier *
   if(assertion==NULL){
     message(G_LOG_LEVEL_WARNING, "%s has no assertion\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+    lasso_node_destroy(assertion);
     return(-9);
   }
 
