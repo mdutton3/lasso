@@ -18,7 +18,7 @@ javalib_LTLIBRARIES=libjlasso.la
 libjlasso_la_SOURCES=	$(JAVA_MODULE)_wrap.c
 libjlasso_la_CFLAGS=	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
-			-I$(top_srcdir) \
+			-I$(top_srcdir) -I$(top_srcdir)/lasso \
 			$(NULL)
 libjlasso_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
                    	$(LASSO_LIBS) \
