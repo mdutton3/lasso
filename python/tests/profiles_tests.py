@@ -297,6 +297,22 @@ class LoginTestCase(unittest.TestCase):
         login.request.protocolProfile = lasso.libProtocolProfileBrwsArt
         self.failUnlessEqual(login.request.protocolProfile, lasso.libProtocolProfileBrwsArt)
 
+    def test02(self):
+        """SP login; testing processing of an empty Response."""
+
+        lassoServer = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        lassoServer.addProvider(
+            lasso.providerRoleIdp,
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        login = lasso.Login(lassoServer)
+        login.processResponseMsg('')
+
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
