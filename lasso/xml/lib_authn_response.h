@@ -34,11 +34,18 @@ extern "C" {
 #include <lasso/xml/lib_authn_request.h>
 
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
-#define LASSO_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponse))
-#define LASSO_LIB_AUTHN_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponseClass))
-#define LASSO_IS_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE))
-#define LASSO_IS_LIB_AUTHN_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_AUTHN_RESPONSE))
-#define LASSO_LIB_AUTHN_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponseClass)) 
+#define LASSO_LIB_AUTHN_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponse))
+#define LASSO_LIB_AUTHN_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), \
+				 LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponseClass))
+#define LASSO_IS_LIB_AUTHN_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE))
+#define LASSO_IS_LIB_AUTHN_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_AUTHN_RESPONSE))
+#define LASSO_LIB_AUTHN_RESPONSE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_AUTHN_RESPONSE, \
+				    LassoLibAuthnResponseClass)) 
 
 typedef struct _LassoLibAuthnResponse LassoLibAuthnResponse;
 typedef struct _LassoLibAuthnResponseClass LassoLibAuthnResponseClass;

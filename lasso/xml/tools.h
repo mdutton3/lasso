@@ -57,7 +57,8 @@ LASSO_EXPORT xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const c
 LASSO_EXPORT xmlChar* lasso_query_sign(xmlChar *query,
 		lassoSignatureMethod sign_method, const char *private_key_file);
 
-LASSO_EXPORT int lasso_query_verify_signature(const char *query, const char *sender_public_key_file);
+LASSO_EXPORT int lasso_query_verify_signature(
+		const char *query, const char *sender_public_key_file);
 
 LASSO_EXPORT char* lasso_sha1(const char *str);
 

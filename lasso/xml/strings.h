@@ -59,7 +59,8 @@
 
 /* StatusCodes */
 #define LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST	       "lib:FederationDoesNotExist"
-#define LASSO_LIB_STATUS_CODE_INVALID_ASSERTION_CONSUMER_SERVICE_INDEX "lib:InvalidAssertionConsumerServiceIndex"
+#define LASSO_LIB_STATUS_CODE_INVALID_ASSERTION_CONSUMER_SERVICE_INDEX \
+	"lib:InvalidAssertionConsumerServiceIndex"
 #define LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE	               "lib:InvalidSignature"
 #define LASSO_LIB_STATUS_CODE_NO_AUTHN_CONTEXT	               "lib:NoAuthnContext"
 #define LASSO_LIB_STATUS_CODE_NO_AVAILABLEIDP	               "lib:NoAvailableIDP"
@@ -71,13 +72,20 @@
 #define LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE	               "lib:UnsupportedProfile"
 
 /* ProtocolProfile */
-#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART	         "http://projectliberty.org/profiles/brws-art"
-#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST	         "http://projectliberty.org/profiles/brws-post"
-#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP	 "http://projectliberty.org/profiles/fedterm-idp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_SOAP	 "http://projectliberty.org/profiles/fedterm-idp-soap"
-#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_HTTP	 "http://projectliberty.org/profiles/fedterm-sp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_SOAP	 "http://projectliberty.org/profiles/fedterm-sp-soap"
-#define LASSO_LIB_PROTOCOL_PROFILE_NIM_SP_HTTP         "http://projectliberty.org/profiles/nim-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART	\
+	"http://projectliberty.org/profiles/brws-art"
+#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST	\
+	"http://projectliberty.org/profiles/brws-post"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP	\
+	"http://projectliberty.org/profiles/fedterm-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_SOAP	\
+	"http://projectliberty.org/profiles/fedterm-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_HTTP	\
+	"http://projectliberty.org/profiles/fedterm-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_SOAP	\
+	"http://projectliberty.org/profiles/fedterm-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_NIM_SP_HTTP	\
+	"http://projectliberty.org/profiles/nim-sp-http"
 #define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_HTTP	 "http://projectliberty.org/profiles/rni-idp-http"
 #define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_SOAP	 "http://projectliberty.org/profiles/rni-idp-soap"
 #define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_HTTP	 "http://projectliberty.org/profiles/rni-sp-http"
@@ -139,20 +147,25 @@
 #define LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD	 "urn:oasis:names:tc:SAML:1.0:am:password"
 #define LASSO_SAML_AUTHENTICATION_METHOD_KERBEROS	 "urn:ietf:rfc:1510"
 #define LASSO_SAML_AUTHENTICATION_METHOD_SECURE_REMOTE_PASSWORD	 "urn:ietf:rfc:2945"
-#define LASSO_SAML_AUTHENTICATION_METHOD_HARDWARE_TOKEN	 "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+#define LASSO_SAML_AUTHENTICATION_METHOD_HARDWARE_TOKEN		\
+	"urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
 #define LASSO_SAML_AUTHENTICATION_METHOD_SMARTCARD_PKI	 "urn:ietf:rfc:2246"
 #define LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI	 "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
 #define LASSO_SAML_AUTHENTICATION_METHOD_PGP	 "urn:oasis:names:tc:SAML:1.0:am:PGP"
 #define LASSO_SAML_AUTHENTICATION_METHODS_PKI	 "urn:oasis:names:tc:SAML:1.0:am:SPKI"
 #define LASSO_SAML_AUTHENTICATION_METHOD_XKMS	 "urn:oasis:names:tc:SAML:1.0:am:XKMS"
 #define LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG	 "urn:ietf:rfc:3075"
-#define LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED	 "urn:oasis:names:tc:SAML:1.0:am:unspecified"
+#define LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED	\
+	"urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 /* ConfirmationMethods */
-#define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01	 "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
+#define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01	\
+	"urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
 #define LASSO_SAML_CONFIRMATION_METHOD_BEARER	 "urn:oasis:names:tc:SAML:1.0:cm:bearer"
-#define LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY	 "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
-#define LASSO_SAML_CONFIRMATION_METHOD_SENDER_VOUCHES	 "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
+#define LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY	 \
+	"urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
+#define LASSO_SAML_CONFIRMATION_METHOD_SENDER_VOUCHES	 \
+	"urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
 
 /*****************************************************************************/
 /* SOAP                                                                      */

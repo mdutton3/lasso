@@ -29,7 +29,8 @@
 /*
 The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 
-<xs:element name="AuthenticationStatement" type="AuthenticationStatementType" substitutionGroup="saml:Statement"/>
+<xs:element name="AuthenticationStatement" type="AuthenticationStatementType"
+  substitutionGroup="saml:Statement"/>
 <xs:complexType name="AuthenticationStatementType">
   <xs:complexContent>
     <xs:extension base="saml:AuthenticationStatementType">

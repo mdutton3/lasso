@@ -33,15 +33,26 @@ extern "C" {
 #include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_request_abstract.h>
 
-#define LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION (lasso_lib_federation_termination_notification_get_type())
-#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, LassoLibFederationTerminationNotification))
-#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, LassoLibFederationTerminationNotificationClass))
-#define LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION))
-#define LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION))
-#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, LassoLibFederationTerminationNotificationClass)) 
+#define LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION \
+	(lasso_lib_federation_termination_notification_get_type())
+#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, \
+				    LassoLibFederationTerminationNotification))
+#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, \
+				 LassoLibFederationTerminationNotificationClass))
+#define LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION))
+#define LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION))
+#define LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, \
+				    LassoLibFederationTerminationNotificationClass)) 
 
-typedef struct _LassoLibFederationTerminationNotification LassoLibFederationTerminationNotification;
-typedef struct _LassoLibFederationTerminationNotificationClass LassoLibFederationTerminationNotificationClass;
+typedef struct _LassoLibFederationTerminationNotification \
+	LassoLibFederationTerminationNotification;
+typedef struct _LassoLibFederationTerminationNotificationClass \
+	LassoLibFederationTerminationNotificationClass;
 
 struct _LassoLibFederationTerminationNotification {
 	LassoSamlpRequestAbstract parent;

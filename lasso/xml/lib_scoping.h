@@ -34,11 +34,16 @@ extern "C" {
 #include <lasso/xml/lib_idp_list.h>
 
 #define LASSO_TYPE_LIB_SCOPING (lasso_lib_scoping_get_type())
-#define LASSO_LIB_SCOPING(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_SCOPING, LassoLibScoping))
-#define LASSO_LIB_SCOPING_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_SCOPING, LassoLibScopingClass))
-#define LASSO_IS_LIB_SCOPING(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_SCOPING))
-#define LASSO_IS_LIB_SCOPING_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_SCOPING))
-#define LASSO_LIB_SCOPING_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_SCOPING, LassoLibScopingClass)) 
+#define LASSO_LIB_SCOPING(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_SCOPING, LassoLibScoping))
+#define LASSO_LIB_SCOPING_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_SCOPING, LassoLibScopingClass))
+#define LASSO_IS_LIB_SCOPING(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_SCOPING))
+#define LASSO_IS_LIB_SCOPING_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_SCOPING))
+#define LASSO_LIB_SCOPING_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_SCOPING, LassoLibScopingClass)) 
 
 typedef struct _LassoLibScoping LassoLibScoping;
 typedef struct _LassoLibScopingClass LassoLibScopingClass;

@@ -160,7 +160,9 @@ lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMod
 
 	if (mode == LASSO_CHECK_VERSION_EXACT) {
 		if (minor != LASSO_VERSION_MINOR || subminor != LASSO_VERSION_SUBMINOR) {
-			g_message("mode=exact;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
+			g_message("mode=exact;expected minor version=%d;"
+					"real minor version=%d;expected subminor version=%d;"
+					"real subminor version=%d",
 					LASSO_VERSION_MINOR, minor,
 					LASSO_VERSION_SUBMINOR, subminor);
 			return 0;
@@ -169,7 +171,9 @@ lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMod
 	if (mode == LASSO_CHECK_VERSIONABI_COMPATIBLE) {
 		if (minor < LASSO_VERSION_MINOR || (minor == LASSO_VERSION_MINOR && 
 					subminor < LASSO_VERSION_SUBMINOR)) {
-			g_message("mode=abi compatible;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
+			g_message("mode=abi compatible;expected minor version=%d;"
+					"real minor version=%d;expected subminor version=%d;"
+					"real subminor version=%d",
 					LASSO_VERSION_MINOR, minor,
 					LASSO_VERSION_SUBMINOR, subminor);
 			return 0;

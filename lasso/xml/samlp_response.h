@@ -35,11 +35,16 @@ extern "C" {
 #include <lasso/xml/saml_assertion.h>
 
 #define LASSO_TYPE_SAMLP_RESPONSE (lasso_samlp_response_get_type())
-#define LASSO_SAMLP_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponse))
-#define LASSO_SAMLP_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass))
-#define LASSO_IS_SAMLP_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP_RESPONSE))
-#define LASSO_IS_SAMLP_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_RESPONSE))
-#define LASSO_SAMLP_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass)) 
+#define LASSO_SAMLP_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponse))
+#define LASSO_SAMLP_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass))
+#define LASSO_IS_SAMLP_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP_RESPONSE))
+#define LASSO_IS_SAMLP_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_RESPONSE))
+#define LASSO_SAMLP_RESPONSE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass)) 
 
 typedef struct _LassoSamlpResponse LassoSamlpResponse;
 typedef struct _LassoSamlpResponseClass LassoSamlpResponseClass;

@@ -34,10 +34,12 @@ extern "C" {
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
 #define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))
-#define LASSO_SERVER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SERVER, LassoServerClass))
+#define LASSO_SERVER_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SERVER, LassoServerClass))
 #define LASSO_IS_SERVER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SERVER))
 #define LASSO_IS_SERVER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SERVER))
-#define LASSO_SERVER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SERVER, LassoServerClass)) 
+#define LASSO_SERVER_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SERVER, LassoServerClass)) 
 
 typedef struct _LassoServer LassoServer;
 typedef struct _LassoServerClass LassoServerClass;
@@ -58,34 +60,26 @@ struct _LassoServer {
 };
 
 struct _LassoServerClass {
-  LassoProviderClass parent;
+	LassoProviderClass parent;
 };
 
-LASSO_EXPORT GType                lasso_server_get_type                 (void);
+LASSO_EXPORT GType lasso_server_get_type(void);
 
-LASSO_EXPORT LassoServer*         lasso_server_new                      (const gchar *metadata,
-									 const gchar *private_key,
-									 const gchar *secret_key,
-									 const gchar *certificate);
+LASSO_EXPORT LassoServer* lasso_server_new(const gchar *metadata,
+		const gchar *private_key,
+		const gchar *secret_key,
+		const gchar *certificate);
 
-LASSO_EXPORT LassoServer*         lasso_server_new_from_dump            (const gchar       *dump);
+LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
 
-LASSO_EXPORT gint                 lasso_server_add_provider             (LassoServer *server,
-		LassoProviderRole role,
-		gchar       *metadata,
-		gchar       *public_key,
-		gchar       *ca_cert_chain);
+LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
+		LassoProviderRole role, gchar *metadata,
+		gchar *public_key, gchar *ca_cert_chain);
 
-LASSO_EXPORT void                 lasso_server_destroy                  (LassoServer *server);
-
-LASSO_EXPORT gchar*               lasso_server_get_first_providerID     (LassoServer *server);
-
-LASSO_EXPORT LassoProvider*       lasso_server_get_provider             (LassoServer  *server,
-									 gchar        *providerID);
-
-LASSO_EXPORT gchar*               lasso_server_get_providerID_from_hash (LassoServer *server,
-									 gchar       *b64_hash);
-
+LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
+LASSO_EXPORT gchar* lasso_server_get_first_providerID(LassoServer *server);
+LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar *providerID);
+LASSO_EXPORT gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
 LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 
 #ifdef __cplusplus

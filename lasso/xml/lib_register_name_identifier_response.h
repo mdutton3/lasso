@@ -33,15 +33,25 @@ extern "C" {
 #include <lasso/xml/lib_register_name_identifier_request.h>
 #include <lasso/xml/lib_status_response.h>
 
-#define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE (lasso_lib_register_name_identifier_response_get_type())
-#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, LassoLibRegisterNameIdentifierResponse))
-#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, LassoLibRegisterNameIdentifierResponseClass))
-#define LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE))
-#define LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE))
-#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, LassoLibRegisterNameIdentifierResponseClass)) 
+#define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE \
+	(lasso_lib_register_name_identifier_response_get_type())
+#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, \
+				    LassoLibRegisterNameIdentifierResponse))
+#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, \
+				 LassoLibRegisterNameIdentifierResponseClass))
+#define LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
+			LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE))
+#define LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE))
+#define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, \
+				    LassoLibRegisterNameIdentifierResponseClass)) 
 
 typedef struct _LassoLibRegisterNameIdentifierResponse LassoLibRegisterNameIdentifierResponse;
-typedef struct _LassoLibRegisterNameIdentifierResponseClass LassoLibRegisterNameIdentifierResponseClass;
+typedef struct _LassoLibRegisterNameIdentifierResponseClass \
+	LassoLibRegisterNameIdentifierResponseClass;
 
 struct _LassoLibRegisterNameIdentifierResponse {
 	LassoLibStatusResponse parent;

@@ -35,11 +35,15 @@ extern "C" {
 #include <lasso/xml/saml_subject_confirmation.h>
 
 #define LASSO_TYPE_SAML_SUBJECT (lasso_saml_subject_get_type())
-#define LASSO_SAML_SUBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubject))
-#define LASSO_SAML_SUBJECT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass))
+#define LASSO_SAML_SUBJECT(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubject))
+#define LASSO_SAML_SUBJECT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass))
 #define LASSO_IS_SAML_SUBJECT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAML_SUBJECT))
-#define LASSO_IS_SAML_SUBJECT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_SUBJECT))
-#define LASSO_SAML_SUBJECT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass)) 
+#define LASSO_IS_SAML_SUBJECT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_SUBJECT))
+#define LASSO_SAML_SUBJECT_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass)) 
 
 typedef struct _LassoSamlSubject LassoSamlSubject;
 typedef struct _LassoSamlSubjectClass LassoSamlSubjectClass;

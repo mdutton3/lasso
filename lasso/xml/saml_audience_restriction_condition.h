@@ -32,15 +32,25 @@ extern "C" {
 
 #include <lasso/xml/saml_condition_abstract.h>
 
-#define LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION (lasso_saml_audience_restriction_condition_get_type())
-#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, LassoSamlAudienceRestrictionCondition))
-#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, LassoSamlAudienceRestrictionConditionClass))
-#define LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION))
-#define LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION))
-#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, LassoSamlAudienceRestrictionConditionClass)) 
+#define LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION \
+	(lasso_saml_audience_restriction_condition_get_type())
+#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION,\
+				    LassoSamlAudienceRestrictionCondition))
+#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, \
+				 LassoSamlAudienceRestrictionConditionClass))
+#define LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION))
+#define LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION))
+#define LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, \
+				    LassoSamlAudienceRestrictionConditionClass)) 
 
 typedef struct _LassoSamlAudienceRestrictionCondition LassoSamlAudienceRestrictionCondition;
-typedef struct _LassoSamlAudienceRestrictionConditionClass LassoSamlAudienceRestrictionConditionClass;
+typedef struct _LassoSamlAudienceRestrictionConditionClass \
+	LassoSamlAudienceRestrictionConditionClass;
 
 struct _LassoSamlAudienceRestrictionCondition {
 	LassoSamlConditionAbstract parent;

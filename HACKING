@@ -51,6 +51,8 @@ Coding Style
            message(G_LOG_LEVEL_MESSAGE, "Ok");
          }
 
+- Limit line length to at most 100 characters.
+
 - Check for memory leaks.
   I recommend valgrind (http://valgrind.kde.org) utility with options:
     --leak-check=yes

@@ -82,7 +82,8 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	/* build the logout request message */
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		/* build the logout request message */
-		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
+		profile->msg_url = lasso_provider_get_metadata_one(
+				remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
 		return 0;
@@ -248,13 +249,14 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
  * First it verifies session and identity are set.
  * Next, gets federation with the remote provider and gets the name identifier for the request.
  *       gets the protocol profile and build the logout request object.
- * If the local provider is a Service Provider and if the protocol profile is a HTTP Redirect / GET method,
- *       then removes the assertion.
+ * If the local provider is a Service Provider and if the protocol profile
+ * is a HTTP Redirect / GET method, then removes the assertion.
  * 
  * Return value: 0 if ok, else < 0
  **/
 gint
-lasso_logout_init_request(LassoLogout *logout, char *remote_providerID, lassoHttpMethod http_method)
+lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
+		lassoHttpMethod http_method)
 {
 	LassoProfile      *profile;
 	LassoProvider     *remote_provider;
@@ -372,7 +374,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID, lassoHtt
 	/* Set the name identifier attribute with content local variable */
 	profile->nameIdentifier = g_strdup(nameIdentifier->content);
 
-	/* if logout request from a SP and if an HTTP Redirect / GET method, then remove assertion */
+	/* if logout request from a SP and if an HTTP Redirect/GET method, then remove assertion */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && is_http_redirect_get_method) {
 		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 	}
@@ -534,7 +536,8 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			profile->msg_body = NULL;
 
 			/* send a HTTP Redirect / GET method, so first remove session */
-			lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+			lasso_session_remove_assertion(
+					profile->session, profile->remote_providerID);
 
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 		}
@@ -680,7 +683,8 @@ lasso_logout_validate_request(LassoLogout *logout)
 
 	/* verify signature status */
 	if (profile->signature_status != 0) {
-		lasso_profile_set_response_status(profile, LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+		lasso_profile_set_response_status(profile, 
+				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 	}
 
 	/* Get the name identifier */

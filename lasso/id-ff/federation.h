@@ -34,11 +34,15 @@ extern "C" {
 #include <lasso/xml/saml_name_identifier.h>
 
 #define LASSO_TYPE_FEDERATION (lasso_federation_get_type())
-#define LASSO_FEDERATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_FEDERATION, LassoFederation))
-#define LASSO_FEDERATION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_FEDERATION, LassoFederationClass))
+#define LASSO_FEDERATION(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_FEDERATION, LassoFederation))
+#define LASSO_FEDERATION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_FEDERATION, LassoFederationClass))
 #define LASSO_IS_FEDERATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_FEDERATION))
-#define LASSO_IS_FEDERATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_FEDERATION))
-#define LASSO_FEDERATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_FEDERATION, LassoFederationClass)) 
+#define LASSO_IS_FEDERATION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_FEDERATION))
+#define LASSO_FEDERATION_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_FEDERATION, LassoFederationClass)) 
 
 typedef struct _LassoFederation LassoFederation;
 typedef struct _LassoFederationClass LassoFederationClass;

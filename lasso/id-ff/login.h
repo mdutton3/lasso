@@ -40,10 +40,12 @@ extern "C" {
 
 #define LASSO_TYPE_LOGIN (lasso_login_get_type())
 #define LASSO_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGIN, LassoLogin))
-#define LASSO_LOGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LOGIN, LassoLoginClass))
+#define LASSO_LOGIN_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LOGIN, LassoLoginClass))
 #define LASSO_IS_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LOGIN))
 #define LASSO_IS_LOGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LOGIN))
-#define LASSO_LOGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LOGIN, LassoLoginClass)) 
+#define LASSO_LOGIN_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LOGIN, LassoLoginClass)) 
 
 typedef struct _LassoLogin LassoLogin;
 typedef struct _LassoLoginClass LassoLoginClass;
@@ -70,16 +72,12 @@ struct _LassoLoginClass {
 	LassoProfileClass parent;
 };
 
-LASSO_EXPORT GType       lasso_login_get_type                   (void);
+LASSO_EXPORT GType lasso_login_get_type(void);
+LASSO_EXPORT LassoLogin* lasso_login_new(LassoServer *server);
+LASSO_EXPORT LassoLogin* lasso_login_new_from_dump(LassoServer *server, const gchar *dump);
+LASSO_EXPORT gint lasso_login_accept_sso(LassoLogin *login);
 
-LASSO_EXPORT LassoLogin* lasso_login_new                        (LassoServer *server);
-
-LASSO_EXPORT LassoLogin* lasso_login_new_from_dump              (LassoServer *server,
-								 const gchar       *dump);
-
-LASSO_EXPORT gint        lasso_login_accept_sso                 (LassoLogin *login);
-
-LASSO_EXPORT gint        lasso_login_build_artifact_msg         (LassoLogin      *login,
+LASSO_EXPORT gint lasso_login_build_artifact_msg(LassoLogin *login,
 		gboolean authentication_result,
 		gboolean is_consent_obtained,
 		const char *authenticationMethod,
@@ -89,10 +87,10 @@ LASSO_EXPORT gint        lasso_login_build_artifact_msg         (LassoLogin     
 		const char *notOnOrAfter,
 		lassoHttpMethod http_method);
 
-LASSO_EXPORT gint        lasso_login_build_authn_request_msg    (LassoLogin  *login,
-								 const gchar *remote_providerID);
+LASSO_EXPORT gint lasso_login_build_authn_request_msg(
+		LassoLogin *login, const gchar *remote_providerID);
 
-LASSO_EXPORT gint        lasso_login_build_authn_response_msg   (LassoLogin  *login,
+LASSO_EXPORT gint lasso_login_build_authn_response_msg(LassoLogin *login,
 		gboolean authentication_result,
 		gboolean is_consent_obtained,
 		const char *authenticationMethod,
@@ -101,39 +99,29 @@ LASSO_EXPORT gint        lasso_login_build_authn_response_msg   (LassoLogin  *lo
 		const char *notBefore,
 		const char *notOnOrAfter);
 
-LASSO_EXPORT gint        lasso_login_build_request_msg          (LassoLogin *login);
+LASSO_EXPORT gint lasso_login_build_request_msg(LassoLogin *login);
+LASSO_EXPORT gint lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID);
+LASSO_EXPORT void lasso_login_destroy(LassoLogin *login);
+LASSO_EXPORT gchar* lasso_login_dump(LassoLogin *login);
+LASSO_EXPORT gint lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method);
 
-LASSO_EXPORT gint        lasso_login_build_response_msg         (LassoLogin *login,
-								 gchar      *remote_providerID);
+LASSO_EXPORT gint lasso_login_init_request(LassoLogin *login, gchar *response_msg,
+		lassoHttpMethod response_http_method);
 
-LASSO_EXPORT void        lasso_login_destroy                    (LassoLogin *login);
+LASSO_EXPORT gint lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
+		const gchar *remote_providerID);
 
-LASSO_EXPORT gchar*      lasso_login_dump                       (LassoLogin *login);
+LASSO_EXPORT gboolean lasso_login_must_ask_for_consent(LassoLogin *login);
+LASSO_EXPORT gboolean lasso_login_must_authenticate(LassoLogin *login);
 
-LASSO_EXPORT gint        lasso_login_init_authn_request         (LassoLogin      *login,
-								 lassoHttpMethod  http_method);
+LASSO_EXPORT int lasso_login_process_authn_request_msg(LassoLogin *login,
+		const char *authn_request_msg);
 
-LASSO_EXPORT gint        lasso_login_init_request               (LassoLogin      *login,
-								 gchar           *response_msg,
-								 lassoHttpMethod  response_http_method);
-LASSO_EXPORT gint        lasso_login_init_idp_initiated_authn_request (LassoLogin  *login,
-									const gchar *remote_providerID);
+LASSO_EXPORT gint lasso_login_process_authn_response_msg(LassoLogin *login,
+		gchar *authn_response_msg);
 
-LASSO_EXPORT gboolean    lasso_login_must_ask_for_consent       (LassoLogin *login);
-
-LASSO_EXPORT gboolean    lasso_login_must_authenticate          (LassoLogin *login);
-
-LASSO_EXPORT int        lasso_login_process_authn_request_msg  (LassoLogin *login,
-								const char *authn_request_msg);
-
-LASSO_EXPORT gint        lasso_login_process_authn_response_msg (LassoLogin *login,
-								 gchar      *authn_response_msg);
-
-LASSO_EXPORT gint        lasso_login_process_request_msg        (LassoLogin *login,
-								 gchar      *request_msg);
-
-LASSO_EXPORT gint        lasso_login_process_response_msg        (LassoLogin  *login,
-								  gchar       *response_msg);
+LASSO_EXPORT gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
+LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
 
 #ifdef __cplusplus
 }

@@ -34,11 +34,15 @@ extern "C" {
 #include <lasso/xml/samlp_status_code.h>
 
 #define LASSO_TYPE_SAMLP_STATUS (lasso_samlp_status_get_type())
-#define LASSO_SAMLP_STATUS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatus))
-#define LASSO_SAMLP_STATUS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatusClass))
+#define LASSO_SAMLP_STATUS(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatus))
+#define LASSO_SAMLP_STATUS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatusClass))
 #define LASSO_IS_SAMLP_STATUS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP_STATUS))
-#define LASSO_IS_SAMLP_STATUS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_STATUS))
-#define LASSO_SAMLP_STATUS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatusClass)) 
+#define LASSO_IS_SAMLP_STATUS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_STATUS))
+#define LASSO_SAMLP_STATUS_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatusClass)) 
 
 typedef struct _LassoSamlpStatus LassoSamlpStatus;
 typedef struct _LassoSamlpStatusClass LassoSamlpStatusClass;

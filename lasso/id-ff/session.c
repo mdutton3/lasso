@@ -36,7 +36,7 @@ struct _LassoSessionPrivate
 /*****************************************************************************/
 
 gint
-lasso_session_add_assertion(LassoSession *session, gchar *providerID, LassoSamlAssertion *assertion)
+lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAssertion *assertion)
 {
 	g_return_val_if_fail(session != NULL, -1);
 	g_return_val_if_fail(providerID != NULL, -2);
@@ -80,7 +80,8 @@ lasso_session_get_first_providerID(LassoSession *session)
 static void
 add_providerID(gchar *key, LassoLibAssertion *assertion, LassoSession *session)
 {
-	session->private_data->providerIDs = g_list_append(session->private_data->providerIDs, key);
+	session->private_data->providerIDs = g_list_append(
+			session->private_data->providerIDs, key);
 }
 
 gchar*
@@ -140,7 +141,8 @@ get_xmlNode(LassoNode *node)
 	xmlSetProp(xmlnode, "Version", "2");
 
 	if (g_hash_table_size(session->assertions))
-		g_hash_table_foreach(session->assertions, (GHFunc)add_assertion_childnode, xmlnode);
+		g_hash_table_foreach(session->assertions,
+				(GHFunc)add_assertion_childnode, xmlnode);
 
 	return xmlnode;
 }

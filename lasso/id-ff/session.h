@@ -35,10 +35,12 @@ extern "C" {
 
 #define LASSO_TYPE_SESSION (lasso_session_get_type())
 #define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
-#define LASSO_SESSION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SESSION, LassoSessionClass))
+#define LASSO_SESSION_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SESSION, LassoSessionClass))
 #define LASSO_IS_SESSION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SESSION))
 #define LASSO_IS_SESSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SESSION))
-#define LASSO_SESSION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SESSION, LassoSessionClass)) 
+#define LASSO_SESSION_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SESSION, LassoSessionClass)) 
 
 typedef struct _LassoSession LassoSession;
 typedef struct _LassoSessionClass LassoSessionClass;
@@ -58,14 +60,14 @@ struct _LassoSessionClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType          lasso_session_get_type                             (void);
+LASSO_EXPORT GType lasso_session_get_type(void);
 
-LASSO_EXPORT LassoSession*  lasso_session_new                                  (void);
+LASSO_EXPORT LassoSession* lasso_session_new(void);
 
 LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT gint lasso_session_add_assertion(LassoSession *session,
-		gchar *providerID, LassoSamlAssertion *assertion);
+		char *providerID, LassoSamlAssertion *assertion);
   
 LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
 

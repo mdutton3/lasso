@@ -33,11 +33,19 @@ extern "C" {
 #include <lasso/xml/saml_subject_statement_abstract.h>
 
 #define LASSO_TYPE_SAML_SUBJECT_STATEMENT (lasso_saml_subject_statement_abstract_get_type())
-#define LASSO_SAML_SUBJECT_STATEMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT_STATEMENT, LassoSamlSubjectStatement))
-#define LASSO_SAML_SUBJECT_STATEMENT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_SUBJECT_STATEMENT, LassoSamlSubjectStatementClass))
-#define LASSO_IS_SAML_SUBJECT_STATEMENT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAML_SUBJECT_STATEMENT))
-#define LASSO_IS_SAML_SUBJECT_STATEMENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_SUBJECT_STATEMENT))
-#define LASSO_SAML_SUBJECT_STATEMENT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT_STATEMENT, LassoSamlSubjectStatementClass)) 
+#define LASSO_SAML_SUBJECT_STATEMENT(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT_STATEMENT, \
+				    LassoSamlSubjectStatement))
+#define LASSO_SAML_SUBJECT_STATEMENT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_SAML_SUBJECT_STATEMENT, \
+				 LassoSamlSubjectStatementClass))
+#define LASSO_IS_SAML_SUBJECT_STATEMENT(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAML_SUBJECT_STATEMENT))
+#define LASSO_IS_SAML_SUBJECT_STATEMENT_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAML_SUBJECT_STATEMENT))
+#define LASSO_SAML_SUBJECT_STATEMENT_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT_STATEMENT, \
+				    LassoSamlSubjectStatementClass)) 
 
 typedef struct _LassoSamlSubjectStatement LassoSamlSubjectStatement;
 typedef struct _LassoSamlSubjectStatementClass LassoSamlSubjectStatementClass;

@@ -6,7 +6,7 @@
  * http://lasso.entrouvert.org
  * 
  * Authors: Nicolas Clapies <nclapies@entrouvert.com>
- * Valery Febvre <vfebvre@easter-eggs.com>
+ *          Valery Febvre <vfebvre@easter-eggs.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,8 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = LASSO_SAML_ASSERTION(assertion);
+		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = 
+			LASSO_SAML_ASSERTION(assertion);
 	}
 	/* store assertion in session object */
 	if (profile->session == NULL) {
@@ -346,7 +347,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 		/* store NameIdentifier */
 		profile->nameIdentifier = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-				response->Assertion->AuthenticationStatement)->Subject->NameIdentifier->content;
+				response->Assertion->AuthenticationStatement
+				)->Subject->NameIdentifier->content;
 
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
 			return LASSO_ERROR_UNDEFINED;
@@ -399,7 +401,8 @@ lasso_login_accept_sso(LassoLogin *login)
 	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
 
 	authentication_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-			LASSO_SAMLP_RESPONSE(profile->response)->Assertion->AuthenticationStatement);
+			LASSO_SAMLP_RESPONSE(profile->response
+				)->Assertion->AuthenticationStatement);
 	ni = authentication_statement->Subject->NameIdentifier;
 
 	if (ni == NULL)
@@ -493,7 +496,8 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 
 		/* fill the response with the assertion */
 		if (ret == 0) {
-			federation = g_hash_table_lookup(LASSO_PROFILE(login)->identity->federations,
+			federation = g_hash_table_lookup(
+					LASSO_PROFILE(login)->identity->federations,
 					LASSO_PROFILE(login)->remote_providerID);
 			lasso_login_build_assertion(login, federation, authenticationMethod,
 					authenticationInstant, reauthenticateOnOrAfter,
@@ -527,7 +531,8 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 					"%s?SAMLart=%s", url, b64_samlArt);
 		} else {
 			LASSO_PROFILE(login)->msg_url = g_strdup_printf(
-					"%s?SAMLart=%s&RelayState=%s", url, b64_samlArt, relayState);
+					"%s?SAMLart=%s&RelayState=%s", 
+					url, b64_samlArt, relayState);
 		}
 	}
 
@@ -626,7 +631,8 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 		/* POST -> form */
 #if 0 /* XXX: signatures are done differently */
 		if (must_sign) {
-			ret = lasso_samlp_request_abstract_sign_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
+			ret = lasso_samlp_request_abstract_sign_signature_tmpl(
+					LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
 					LASSO_PROFILE(login)->server->private_key,
 					LASSO_PROFILE(login)->server->certificate);
 			if (ret < 0)
@@ -1127,7 +1133,8 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 	}
 	else {
-		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
+		message(G_LOG_LEVEL_CRITICAL, 
+				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
 		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 	}
 

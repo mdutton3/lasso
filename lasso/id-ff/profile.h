@@ -37,10 +37,12 @@ extern "C" {
 
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())
 #define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))
-#define LASSO_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_PROFILE, LassoProfileClass))
+#define LASSO_PROFILE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_PROFILE, LassoProfileClass))
 #define LASSO_IS_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_PROFILE))
 #define LASSO_IS_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROFILE))
-#define LASSO_PROFILE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROFILE, LassoProfileClass)) 
+#define LASSO_PROFILE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROFILE, LassoProfileClass)) 
 
 typedef struct _LassoProfile LassoProfile;
 typedef struct _LassoProfileClass LassoProfileClass;
@@ -99,37 +101,28 @@ struct _LassoProfileClass {
 
 /* public functions */
 
-LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg (const gchar *soap);
+LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg(const gchar *soap);
+LASSO_EXPORT gboolean lasso_profile_is_liberty_query(const gchar *query);
 
-LASSO_EXPORT gboolean         lasso_profile_is_liberty_query               (const gchar *query);
 
 /* public methods */
 
-LASSO_EXPORT GType          lasso_profile_get_type                       (void);
+LASSO_EXPORT GType lasso_profile_get_type(void);
 
-LASSO_EXPORT LassoProfile*  lasso_profile_new                            (LassoServer   *server,
-									  LassoIdentity *identity,
-									  LassoSession  *session);
+LASSO_EXPORT LassoProfile* lasso_profile_new(LassoServer *server,
+		LassoIdentity *identity, LassoSession *session);
 
-LASSO_EXPORT gchar*         lasso_profile_dump                           (LassoProfile *ctx);
+LASSO_EXPORT gchar* lasso_profile_dump(LassoProfile *ctx);
+LASSO_EXPORT LassoIdentity* lasso_profile_get_identity(LassoProfile *ctx);
+LASSO_EXPORT LassoSession* lasso_profile_get_session(LassoProfile *ctx);
+LASSO_EXPORT gboolean lasso_profile_is_identity_dirty(LassoProfile *ctx);
+LASSO_EXPORT gboolean lasso_profile_is_session_dirty(LassoProfile *ctx);
 
-LASSO_EXPORT LassoIdentity* lasso_profile_get_identity                   (LassoProfile *ctx);
+LASSO_EXPORT void lasso_profile_set_response_status(
+		LassoProfile *ctx, const gchar *statusCodeValue);
 
-LASSO_EXPORT LassoSession*  lasso_profile_get_session                    (LassoProfile *ctx);
-
-LASSO_EXPORT gboolean       lasso_profile_is_identity_dirty              (LassoProfile *ctx);
-
-LASSO_EXPORT gboolean       lasso_profile_is_session_dirty               (LassoProfile *ctx);
-
-LASSO_EXPORT void           lasso_profile_set_response_status            (LassoProfile *ctx,
-									  const gchar  *statusCodeValue);
-
-LASSO_EXPORT gint           lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
-									  const gchar  *dump);
-
-LASSO_EXPORT gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
-									  const gchar  *dump);
-
+LASSO_EXPORT gint lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump);
+LASSO_EXPORT gint lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar *dump);
 LASSO_EXPORT LassoSamlNameIdentifier* lasso_profile_get_nameIdentifier(LassoProfile *ctx);
 
 #ifdef __cplusplus

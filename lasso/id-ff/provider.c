@@ -429,7 +429,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 }
 
 LassoProvider*
-lasso_provider_new(LassoProviderRole role, gchar *metadata, gchar *public_key, gchar *ca_cert_chain)
+lasso_provider_new(LassoProviderRole role, char *metadata, char *public_key, char *ca_cert_chain)
 {
 	LassoProvider *provider;
 
