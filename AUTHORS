@@ -7,15 +7,15 @@ released under the same license as Lasso (see README file).
 
 Note: NEVER send bug reports, help and feature requests directly to the authors.
 The best way to report a bug is to use the Lasso tracking database at
-http://labs.libre-entreprise.org/tracker/?group_id=31
+http://lasso.entrouvert.org/bugs
 There is also a mailing list (please see the README file).
 
 
 Main Developers
 ===============
 
-Nicolas Clapiès (Developer)  <nclapies@entrouvert.com>
-Valéry Febvre (Lead Developer) <vfebvre@easter-eggs.com>
+Nicolas Clapiès (initial developer) <nclapies@entrouvert.com>
+Valéry Febvre (lead developer) <vfebvre@easter-eggs.com>
 
 
 Packaging
@@ -29,7 +29,7 @@ Frédéric Péters <fpeters@entrouvert.com>
 Java Bindings
 =============
 
-Benjamin Poussin <poussin@codelutin.com> (initial developer)
+Benjamin Poussin (initial developer) <poussin@codelutin.com>
 Emmanuel Raviart <eraviart@entrouvert.com>
 
 
