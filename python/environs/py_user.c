@@ -65,17 +65,18 @@ PyObject *user_new_from_dump(PyObject *self, PyObject *args) {
 }
 
 PyObject *user_add_assertion(PyObject *self, PyObject *args){
-  PyObject  *user_obj;
-  LassoNode *assertion_node;
+  PyObject  *user_obj, *assertion_obj;
   gchar     *remote_providerID;
 
   if (CheckArgs(args, "OSO:user_add_assertion")) {
-    if(!PyArg_ParseTuple(args, (char *) "OsO:user_add_assertion", &user_obj, &remote_providerID, &assertion_node))
+    if(!PyArg_ParseTuple(args, (char *) "OsO:user_add_assertion", &user_obj,
+			 &remote_providerID, &assertion_obj))
       return NULL;
   }
   else return NULL;
 
-  lasso_user_add_assertion(LassoUser_get(user_obj), remote_providerID, LassoAssertion_get(assertion_node));
+  lasso_user_add_assertion(LassoUser_get(user_obj), remote_providerID,
+			   LassoAssertion_get(assertion_obj));
 
   Py_INCREF(Py_None);
   return (Py_None);
