@@ -203,7 +203,7 @@ PyObject *logout_validate_request(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  codeError = lasso_logout_vallidate_request(LassoLogout_get(logout_obj));
+  codeError = lasso_logout_validate_request(LassoLogout_get(logout_obj));
 
   return(int_wrap(codeError));
 }

@@ -100,8 +100,8 @@ static PyMethodDef lasso_methods[] = {
   {"lib_authn_request_set_relayState",      lib_authn_request_set_relayState,      METH_VARARGS},
 
   /* py_lib_authn_response.h */
-  {"lib_authn_response_new",                 lib_authn_response_new,                 METH_VARARGS},
-  {"lib_authn_response_add_assertion",       lib_authn_response_add_assertion,       METH_VARARGS},
+/*   {"lib_authn_response_new",                 lib_authn_response_new,                 METH_VARARGS}, */
+/*   {"lib_authn_response_add_assertion",       lib_authn_response_add_assertion,       METH_VARARGS}, */
 
   /* py_lib_federation_termination_notification.h */
   {"lib_federation_termination_notification_new",         lib_federation_termination_notification_new,         METH_VARARGS},
