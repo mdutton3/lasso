@@ -348,7 +348,9 @@ lasso_server_new(const gchar *metadata,
 	/* metadata can be NULL (if server is a LECP) */
 	if (metadata != NULL) {
 		lasso_provider_load_metadata(LASSO_PROVIDER(server), metadata);
-		/* XXX: error checking */
+		message(G_LOG_LEVEL_CRITICAL, "Failed to load metadata from %s.", metadata);
+		g_object_unref(server);
+		return NULL;
 	}
 
 	server->private_key = g_strdup(private_key);
