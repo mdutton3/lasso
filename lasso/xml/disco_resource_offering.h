@@ -60,6 +60,11 @@ struct _LassoDiscoResourceOffering {
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	LassoDiscoServiceInstance *ServiceInstance;
+
+	/*
+	 * If the Options element is present, but it is empty, it means that the service instance
+	 * explicitly advertises that none of the options are available.
+	*/
 	LassoDiscoOptions *Options;
 	gchar *Abstract;
 
