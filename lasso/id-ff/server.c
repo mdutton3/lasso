@@ -24,6 +24,12 @@
 
 #include <lasso/environs/server.h>
 
+#define LASSO_SERVER_NODE                  "LassoServer"
+#define LASSO_SERVER_PROVIDERS_NODE        "LassoProviders"
+#define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
+#define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
+#define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
+
 static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
