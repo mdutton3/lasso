@@ -143,11 +143,17 @@ if $python_val; then
 fi
 
 AC_ARG_ENABLE(python,
-[  --enable-python         build the Python interpreter (default)],
+[  --enable-python         build the Python binding (default)],
 [case "${enableval}" in
         yes) ;;
         no)  python_val=false;;
 esac])
+
+if test x$python_val = xtrue ; then
+  enable_python=yes
+else
+  enable_python=no
+fi
 
 AM_CONDITIONAL(WITH_PYTHON, $python_val)
 
@@ -176,7 +182,7 @@ else
 fi
 
 dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc  Use gtk-doc to build documentation [default=auto]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
+AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc        Use gtk-doc to build documentation [[default=auto]]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
 
 if test x$enable_gtk_doc = xauto ; then
   if test x$GTKDOC = xtrue ; then
@@ -208,11 +214,12 @@ dnl ==========================================================================
 AC_MSG_CHECKING(for debugging) 
 AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging messages (no)])
 if test "z$enable_debugging" = "zyes" ; then
-    AC_MSG_RESULT(yes)
+    enable_debugging=yes
     LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
 else
-    AC_MSG_RESULT(no)
+    enable_debugging=no
 fi    
+AC_MSG_RESULT($enable_debugging)
 
 dnl ==========================================================================
 dnl Profiling 
@@ -312,3 +319,15 @@ win32/nsis/Makefile
 dnl [lasso-config:lasso-config.in]
 dnl [lasso.spec:lasso.spec.in]
 )
+echo "
+
+Configuration:
+
+	Compiler:		${CC} 
+	Install prefix:		${prefix}
+	Debugging:		$enable_debugging
+
+	Build Python binding:	${enable_python}
+
+	Build C API reference:	${enable_gtk_doc}
+"
