@@ -123,7 +123,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
     const gchar *separator = "?";
 
     /* build and optionaly sign the query message and build the register name identifier request url */
-    url = lasso_provider_get_singleLogoutServiceURL(provider, profile->provider_type, NULL);
+    url = lasso_provider_get_registerNameIdentifierServiceURL(provider, profile->provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
