@@ -33,7 +33,7 @@ lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
 SWIG_OUTPUTS = lasso_wrap.c lasso.py
 
 clean-local:
-	-rm lasso_wrap.c.bak
+	-rm lasso_wrap.c.bak lasso_wrap.c.bak.1 lasso_wrap.c.bak.2
 
 # In distribution, swig generated files are present.
 EXTRA_DIST = $(SWIG_OUTPUTS)
