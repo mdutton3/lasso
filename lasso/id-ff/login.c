@@ -272,7 +272,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     }
   }
   else {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
+    /* no assertion found */
+    debug(err->message);
     ret = err->code;
     g_clear_error(&err);
     /* we continue */
@@ -400,10 +401,10 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 {
   LassoFederation *federation = NULL;
   LassoProvider *remote_provider;
-
-  gchar   *b64_samlArt, *samlArt, *url;
-  xmlChar *relayState;
+  gchar   *url;
+  xmlChar samlArt[42+1], *b64_samlArt, *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
+  gint i;
 
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL, -1);
 
@@ -444,15 +445,22 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 						  LASSO_PROFILE(login)->remote_providerID);
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
   url = lasso_provider_get_assertionConsumerServiceURL(remote_provider, lassoProviderTypeSp, NULL);
-  samlArt = g_new(gchar, 2+20+20+1);
-  identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE(login)->server->providerID,
-					      LASSO_PROFILE(login)->server->private_key);
+  /* identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE(login)->server->providerID, */
+  /* 	      			      LASSO_PROFILE(login)->server->private_key); */
+  identityProviderSuccinctID = lasso_sha1(LASSO_PROFILE(login)->server->providerID);
   assertionHandle = lasso_build_random_sequence(20);
-  g_sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
-  g_free(assertionHandle);
+
+  //g_sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
+  g_sprintf(samlArt, "%c%c", 0, 3); /* ByteCode */
+  for(i=0;i<20;i++) {
+    samlArt[i+2] = identityProviderSuccinctID[i];
+  }
+  for(i=0;i<20;i++) {
+    samlArt[i+22] = assertionHandle[i];
+  }
+  xmlFree(assertionHandle);
   xmlFree(identityProviderSuccinctID);
-  b64_samlArt = (gchar *)xmlSecBase64Encode(samlArt, 42, 0);
-  g_free(samlArt);
+  b64_samlArt = xmlSecBase64Encode((const xmlSecByte *)samlArt, 42, 0);
   relayState = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 					    "RelayState", NULL, NULL);
 
