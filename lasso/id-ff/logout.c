@@ -760,9 +760,12 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   /* set the msg_relayState */
   profile->msg_relayState = lasso_node_get_child_content(profile->response, "RelayState", lassoLibHRef, NULL);
 
-  /* Only if SOAP method, then remove assertion */
+  /* Only if SOAP method or, if IDP provider type and HTTP Redirect, then remove assertion */
   if ( (response_method == lassoHttpMethodSoap) || (profile->provider_type == lassoProviderTypeIdp && response_method == lassoHttpMethodRedirect) ) {
-    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+    ret = lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+    if (ret < 0) {
+      goto done;
+    }
     if (profile->provider_type == lassoProviderTypeIdp && logout->providerID_index > 0) {
       logout->providerID_index--;
     }
@@ -980,7 +983,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 
     if (all_http_soap==FALSE) {
       statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeUnsupportedProfile);
-      ret = -1;
+      ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
       goto done;
     }
   }
