@@ -1,3 +1,5 @@
+SUBDIRS = figures
+
 docdir = $(datadir)/doc/lasso
 
 LASSOBOOK_FILES = book.rst common-knowledge.rst getting-lasso.rst \
@@ -19,4 +21,5 @@ endif
 
 CLEANFILES = writing-a-c-sp.html book.html
 EXTRA_DIST = lasso-book.txt writing-a-c-sp.txt $(LASSOBOOK_FILES)
+
 

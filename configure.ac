@@ -712,6 +712,7 @@ csharp/Makefile
 csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
+docs/lasso-book/figures/Makefile
 docs/reference/Makefile
 docs/reference/version.xml
 java/Makefile
