@@ -1,8 +1,18 @@
-lasso (0.4.0-0.pre20040831.0) unstable; urgency=low
+lasso (0.4.0-1) unstable; urgency=low
 
-  * CVS snapshot.
+  * New upstream release.
+    * changed soname, liblasso0 -> liblasso1
+  * Packaging of PHP4 binding and .NET assemblies.
 
- -- Frederic Peters <fpeters@debian.org>  Tue, 31 Aug 2004 13:33:43 +0200
+ -- Frederic Peters <fpeters@debian.org>  Mon,  6 Sep 2004 19:18:38 +0200
+
+lasso (0.3.0-6) unstable; urgency=low
+
+  * debian/control: improved package description (closes: #266556)
+  * python/: backported fix to use libtool correctly; should fix the build
+    failures on hppa and amd64 (closes: #267556, #268198)
+
+ -- Frederic Peters <fpeters@debian.org>  Thu, 26 Aug 2004 17:01:13 +0200
 
 lasso (0.3.0-4) unstable; urgency=low
 
