@@ -61,6 +61,12 @@ struct _LassoNodeClass {
   /*< vtable >*/
   /*< public >*/
   GString *   (* build_query)  (LassoNode     *node);
+  LassoAttr*  (* get_attr)     (LassoNode     *,
+				const xmlChar *);
+  GPtrArray*  (* get_attrs)    (LassoNode     *);
+  LassoNode*  (* get_child)    (LassoNode     *,
+				const xmlChar *);
+  GPtrArray*  (* get_children) (LassoNode     *);
   xmlChar *   (* get_name)     (LassoNode     *);
   void        (* dump)         (LassoNode     *,
 				const xmlChar *,
@@ -74,12 +80,6 @@ struct _LassoNodeClass {
   void       (* add_child)    (LassoNode *,
 			       LassoNode *,
 			       gboolean);
-  LassoAttr* (* get_attr)     (LassoNode     *,
-				const xmlChar *);
-  GPtrArray* (* get_attrs)    (LassoNode     *);
-  LassoNode* (* get_child)    (LassoNode     *,
-			       const xmlChar *);
-  GPtrArray* (* get_children) (LassoNode     *);
   xmlNodePtr (* get_xmlNode)  (LassoNode     *);
   void       (* new_child)    (LassoNode     *,
 			       const xmlChar *,
@@ -110,11 +110,21 @@ LASSO_EXPORT LassoNode* lasso_node_new(xmlNodePtr node);
 
 LASSO_EXPORT GString*   lasso_node_build_query  (LassoNode *node);
 
-LASSO_EXPORT xmlChar*   lasso_node_get_name     (LassoNode *node);
-
 LASSO_EXPORT void       lasso_node_dump         (LassoNode     *,
 						 const xmlChar *,
 						 int);
+
+LASSO_EXPORT LassoAttr* lasso_node_get_attr     (LassoNode *node,
+						 const xmlChar *name);
+
+LASSO_EXPORT GPtrArray* lasso_node_get_attrs    (LassoNode *node);
+
+LASSO_EXPORT LassoNode* lasso_node_get_child    (LassoNode *node,
+						 const xmlChar *name);
+
+LASSO_EXPORT GPtrArray* lasso_node_get_children (LassoNode *node);
+
+LASSO_EXPORT xmlChar*   lasso_node_get_name     (LassoNode *node);
 
 LASSO_EXPORT void       lasso_node_rename_prop  (LassoNode *node,
 						 const xmlChar *old_name,
