@@ -36,21 +36,35 @@ import lassomod
 ################################################################################
 
 
-# Copy constants from lassomod as is, except that the 'lasso' prefix is removed
-# and the first letter is lowered.
-_globals = globals()
-for constantName, constantValue in lassomod.__dict__.iteritems():
-    if constantName.startswith('lassoHttpMethod') \
-           or constantName.startswith('lassoLibConsent') \
-           or constantName.startswith('lassoLibNameIDPolicyType') \
-           or constantName.startswith('lassoLibProtocolProfile') \
-           or constantName.startswith('lassoLoginProtocolProfile') \
-           or constantName.startswith('lassoMessageType') \
-           or constantName.startswith('lassoProviderType') \
-           or constantName.startswith('lassoRequestType') \
-           or constantName.startswith('lassoSamlAuthenticationMethod') \
-           or constantName.startswith('lassoSignatureMethod'):
-        _globals[constantName[5].lower() + constantName[6:]] = constantValue
+def _initConstants():
+    """Copy constants from module lassomod.
+
+    They are copied in two forms :
+
+    - as a global variable, with the 'lasso' prefix removed and the first letter in lower case,
+
+    - as an item in a global dictionnary of all constants having the same prefix.
+    """
+
+    constantPrefixes = (
+        'lassoHttpMethod', 'lassoLibConsent', 'lassoLibNameIDPolicyType',
+        'lassoLibProtocolProfile', 'lassoLoginProtocolProfile', 'lassoMessageType',
+        'lassoProviderType', 'lassoRequestType', 'lassoSamlAuthenticationMethod',
+        'lassoSignatureMethod')
+    globals_ = globals()
+    for constantName, constantValue in lassomod.__dict__.iteritems():
+        for contantPrefix in constantPrefixes:
+            if constantName.startswith(contantPrefix):
+                globals_[constantName[5].lower() + constantName[6:]] = constantValue
+                constantPlural = contantPrefix[5].lower() + contantPrefix[6:] + 's'
+                constantCore = constantName[len(contantPrefix)].lower() \
+                               + constantName[len(contantPrefix) + 1:]
+                if constantPlural in globals_:
+                    globals_[constantPlural][constantCore] = constantValue
+                else:
+                    globals_[constantPlural] = {constantCore: constantValue}
+
+_initConstants()
 
 
 ################################################################################
@@ -683,8 +697,11 @@ if __name__ == '__main__':
     import os
 
     init()
+
+    # Lasso constants have two forms.
+    assert libNameIDPolicyTypeFederated == libNameIDPolicyTypes['federated']
+
     dataDirectoryPath = '../tests/data'
-    
     server = Server(
         os.path.join(dataDirectoryPath, 'sp1-la/metadata.xml'),
         os.path.join(dataDirectoryPath, 'sp1-la/public-key.pem'),
