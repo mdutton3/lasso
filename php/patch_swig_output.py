@@ -195,4 +195,11 @@ wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
 wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval',
     r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC', wrap)
 
+wrap = wrap.replace('int argbase=0 ;\n    \n    \n', 'int argbase=0 ;\n    TSRMLS_FETCH();\n\n')
+wrap = wrap.replace('zval *return_value=&_return_value;',
+    'zval *return_value=&_return_value;\n    TSRMLS_FETCH();\n')
+
+wrap = wrap.replace('int argbase=0 ;\n    \n    {\n        node_info *info, *super;\n%s' % ('        \n'*8),
+    'int argbase=0 ;\n\n    TSRMLS_FETCH();\n    {\n        node_info *info, *super;\n')
+
 print wrap
