@@ -127,11 +127,6 @@ if (swig -help) </dev/null >/dev/null 2>&1; then
     echo "           (version $swig_min_vers or newer is required)"
 #    DIE="yes"
   fi
-else
-    echo
-    echo "$program: WARNING: You will need to have \`swig' installed to compile $PACKAGE."
-    echo "           (version $swig_min_vers or newer is required)"
-#    DIE="yes"
 fi
 
 # - If something went wrong, exit with error code:1.
