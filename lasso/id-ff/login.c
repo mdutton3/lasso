@@ -23,6 +23,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
+#include <glib/gprintf.h>
+#include <xmlsec/base64.h>
+
 #include <lasso/environs/login.h>
 
 #include <lasso/protocols/artifact.h>
@@ -120,7 +124,6 @@ lasso_login_process_federation(LassoLogin *login)
   LassoIdentity *identity;
   LassoNode *nameIdentifier;
   xmlChar *nameIDPolicy;
-  gint ret = 0;
 
   /* verify if a user context exists else create it */
   if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
@@ -310,6 +313,10 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
       LASSO_PROFILE_CONTEXT(login)->msg_relayState = g_strdup(relayState);
     }
     break;
+  case lassoHttpMethodGet:
+    break; /* XXX */
+  case lassoHttpMethodSoap:
+    break; /* XXX */
   }
   login->assertionArtifact = g_strdup(b64_samlArt);
   xmlFree(url);
@@ -581,8 +588,6 @@ gint
 lasso_login_init_authn_request(LassoLogin  *login,
 			       const gchar *remote_providerID)
 {
-  LassoProvider *server;
-
   g_return_val_if_fail(remote_providerID != NULL, -1);
   
   LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(LASSO_PROFILE_CONTEXT(login)->server->providerID);
@@ -619,6 +624,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   case lassoHttpMethodPost:
     /* TODO LibAuthnRequest send by method POST */
     break;
+  case lassoHttpMethodSoap:
+    break; /* XXX */
   }
   LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
 
@@ -673,6 +680,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
       signature_status = lasso_node_verify_signature(LASSO_PROFILE_CONTEXT(login)->request,
 						     remote_provider->ca_certificate);
       break;
+    case lassoHttpMethodSoap:
+      break; /* XXX */
     }
     
     /* Modify StatusCode if signature is not OK */
@@ -699,7 +708,7 @@ lasso_login_init_request(LassoLogin       *login,
 			 lassoHttpMethods  response_method)
 {
   LassoNode *response;
-  xmlChar *artifact, *providerID, *identityProviderSuccinctID;
+  xmlChar *artifact, *identityProviderSuccinctID;
 
   /* rebuild response (artifact) */
   switch (response_method) {
@@ -712,6 +721,8 @@ lasso_login_init_request(LassoLogin       *login,
     /* artifact by POST */
     response = lasso_artifact_new_from_lares(response_msg, NULL);
     break;
+  case lassoHttpMethodSoap:
+    break; /* XXX */
   }
   LASSO_PROFILE_CONTEXT(login)->response = response;
   /* get remote identityProviderSuccinctID */
@@ -771,10 +782,6 @@ gint
 lasso_login_process_authn_response_msg(LassoLogin *login,
 				       gchar      *authn_response_msg)
 {
-  LassoNode *assertion, *status, *statusCode;
-  LassoProvider *idp;
-  gchar *statusCode_value;
-
   LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
 										lassoNodeExportTypeBase64);
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
@@ -917,6 +924,8 @@ lasso_login_new_from_dump(LassoServer *server,
       LASSO_PROFILE_CONTEXT(login)->request = lasso_request_new_from_export(lasso_node_export(request_node),
 									    lassoNodeExportTypeXml);
       break;
+    default:
+      break; /* XXX */
     }
     lasso_node_destroy(request_node);
   }
@@ -933,6 +942,8 @@ lasso_login_new_from_dump(LassoServer *server,
       LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(lasso_node_export(response_node),
 									      lassoNodeExportTypeXml);
       break;
+    default:
+      break; /* XXX */
     }
     lasso_node_destroy(response_node);
   }
