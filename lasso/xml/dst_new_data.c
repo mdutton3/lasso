@@ -41,7 +41,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	/* FIXME : implement xs:any type */
+	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstNewData, any) },
 	{NULL, 0, 0}
 };
 
