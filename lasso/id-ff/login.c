@@ -224,10 +224,35 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+  /* check StatusCode value */
+  status = lasso_node_get_child(LASSO_PROFILE(login)->response,
+				"Status", lassoSamlProtocolHRef, &err);
+  if (status == NULL) {
+    /* nico : return a code error if status code not found */
+    ret = -1;
+    goto done;
+  }
+  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, &err);
+  if (statusCode == NULL) {
+    /* nico : return a code error if status code not found */
+    ret = -1;
+    goto done;
+  }
+  statusCode_value = lasso_node_get_attr_value(statusCode, "Value", &err);
+  if (statusCode_value != NULL) {
+    if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
+      ret = -7;
+      /* nico : go to done */
+      goto done;
+    }
+  }
+
+  /* check assertion */
+  /* nico : removed ref on err pointer */
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
 				   NULL, /* lassoLibHRef, FIXME changed for SourceID */
-				   &err);
+				   NULL);
 
   if (assertion != NULL) {
     idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
@@ -259,30 +284,14 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
       /* we continue */
     }
   }
-  else {
-    /* no assertion found */
-    debug(err->message);
-    ret = err->code;
-    g_clear_error(&err);
-    /* we continue */
-  }
-
-  /* check StatusCode value */
-  status = lasso_node_get_child(LASSO_PROFILE(login)->response,
-				"Status", lassoSamlProtocolHRef, &err);
-  if (status == NULL) {
-    goto done;
-  }
-  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, &err);
-  if (statusCode == NULL) {
-    goto done;
-  }
-  statusCode_value = lasso_node_get_attr_value(statusCode, "Value", &err);
-  if (statusCode_value != NULL) {
-    if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
-      ret = -7;
-    }
-  }
+/* nico : dont return a code error if no assertion found */
+/*   else { */
+/*     /\* no assertion found *\/ */
+/*     debug(err->message); */
+/*     ret = err->code; */
+/*     g_clear_error(&err); */
+/*     /\* we continue *\/ */
+/*   } */
 
  done:
   if (err != NULL) {
@@ -430,6 +439,11 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   xmlChar *assertionHandle, *identityProviderSuccinctID;
   gint i;
 
+  /* nico */
+  LassoNodeClass *assertion_class;
+  LassoNode *assertion_node;
+  xmlNodePtr assertion_xmlNode;
+
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL,
 		       LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -463,8 +477,26 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
       lasso_federation_destroy(federation);
     }
   }
+
   /* save response dump */
-  login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE(login)->response);
+  /*        login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE(login)->response); */
+
+  /* nico : doesn't dump the response anymore, instead store the assertion */
+  login->assertion = NULL;
+  assertion_node = lasso_node_get_child(LASSO_PROFILE(login)->response, "Assertion", NULL, NULL);
+  if (assertion_node != NULL) {
+    login->assertion = g_object_new(LASSO_TYPE_ASSERTION,
+				    "use_xsitype", TRUE,
+				    NULL);
+
+    assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
+    assertion_xmlNode = xmlCopyNode(assertion_class->get_xmlNode(LASSO_NODE(assertion_node)), 1);
+
+    assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
+    assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
+
+    lasso_node_destroy(assertion_node);
+  }
 
   /* build artifact infos */
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
@@ -734,6 +766,44 @@ lasso_login_build_request_msg(LassoLogin *login)
   return ret;
 }
 
+gint
+lasso_login_build_response_msg(LassoLogin *login)
+{
+  LassoNode *status, *status_code;
+  LassoNode *response, *assertion;
+  LassoNodeClass *class;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+
+  response = lasso_response_new();
+
+  /* set status code */
+  status = lasso_samlp_status_new();
+  status_code = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
+				    lassoSamlStatusCodeSuccess);
+
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
+				    LASSO_SAMLP_STATUS_CODE(status_code));
+
+  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
+				  LASSO_SAMLP_STATUS(status));
+  lasso_node_destroy(status_code);
+  lasso_node_destroy(status);
+
+  /* add assertion */
+  if (LASSO_IS_ASSERTION(login->assertion) == TRUE) {
+    assertion = lasso_node_copy(LASSO_NODE(login->assertion));
+    
+    class = LASSO_NODE_GET_CLASS(response);
+    class->add_child(LASSO_NODE(response), assertion, TRUE);
+  }
+
+  LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(response);
+
+  return 0;
+}
+
 void
 lasso_login_destroy(LassoLogin *login)
 {
@@ -756,6 +826,11 @@ lasso_login_dump(LassoLogin *login)
   g_sprintf(protocolProfile, "%d", login->protocolProfile);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);
 
+  /* nico : Added dump of assertion */
+  if (login->assertion != NULL) {
+    LASSO_NODE_GET_CLASS(node)->add_child(node, LASSO_NODE(login->assertion), FALSE);
+  }
+
   if (login->assertionArtifact != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "AssertionArtifact", login->assertionArtifact, FALSE);
   }
@@ -767,6 +842,33 @@ lasso_login_dump(LassoLogin *login)
   lasso_node_destroy(node);
 
   return dump;
+}
+
+LassoAssertion*
+lasso_login_get_assertion(LassoLogin *login)
+{
+  LassoNodeClass *class;
+  LassoAssertion *assertion;
+  LassoNode      *node;
+  xmlNodePtr      assertion_xmlNode;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), NULL);
+
+  if (LASSO_IS_ASSERTION(login->assertion) == FALSE) {
+    return NULL;
+  }
+
+  assertion = g_object_new(LASSO_TYPE_ASSERTION,
+			   "use_xsitype", TRUE,
+			   NULL);
+
+  class = LASSO_NODE_GET_CLASS(login->assertion);
+  assertion_xmlNode = xmlCopyNode(class->get_xmlNode(login->assertion), 1);
+
+  class = LASSO_NODE_GET_CLASS(assertion);
+  class->set_xmlNode(LASSO_NODE(assertion), assertion_xmlNode);
+
+  return assertion;
 }
 
 gint
@@ -1139,6 +1241,50 @@ lasso_login_process_response_msg(LassoLogin  *login,
   return lasso_login_process_response_status_and_assertion(login);
 }
 
+gint
+lasso_login_set_assertion(LassoLogin     *login,
+			  LassoAssertion *assertion)
+{
+  LassoNodeClass *assertion_class;
+  xmlNodePtr      assertion_xmlNode;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+  g_return_val_if_fail(LASSO_IS_ASSERTION(assertion), -1);
+
+  login->assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION,
+					     "use_xsitype", TRUE,
+					     NULL));
+
+  assertion_xmlNode = xmlCopyNode(LASSO_NODE_GET_CLASS(assertion)->get_xmlNode(LASSO_NODE(assertion)), 1);
+  assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
+  assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
+
+  return 0;
+}
+
+gint
+lasso_login_set_assertion_from_dump(LassoLogin  *login,
+				     gchar       *assertion_dump)
+{
+  LassoNodeClass *assertion_class;
+  LassoNode      *assertion_node;
+  xmlNodePtr      assertion_xmlNode;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+  g_return_val_if_fail(assertion_dump != NULL, -1);
+
+  login->assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION,
+					     "use_xsitype", TRUE,
+					     NULL));
+  
+  assertion_node = lasso_node_new_from_dump(assertion_dump);
+  assertion_xmlNode = xmlCopyNode(LASSO_NODE_GET_CLASS(assertion_node)->get_xmlNode(LASSO_NODE(assertion_node)), 1);
+  assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
+  assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
+
+  return 0;
+}
+
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
@@ -1245,6 +1391,11 @@ lasso_login_new_from_dump(LassoServer *server,
   LassoNode *node_dump, *request_node, *response_node;
   gchar *protocolProfile, *export, *type;
 
+  /* nico : assertion vars */
+  LassoNode      *assertion_node;
+  LassoNodeClass *assertion_class;
+  xmlNodePtr      assertion_xmlNode;
+
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(dump != NULL, NULL);
 
@@ -1321,6 +1472,21 @@ lasso_login_new_from_dump(LassoServer *server,
   xmlFree(type);
 
   /* login attributes */
+  /* nico : get the assertion */
+  assertion_node = lasso_node_get_child(node_dump, "Assertion", NULL, NULL);
+  if (assertion_node != NULL) {
+    login->assertion = g_object_new(LASSO_TYPE_ASSERTION,
+				    "use_xsitype", TRUE,
+				    NULL);
+
+    assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
+    assertion_xmlNode = xmlCopyNode(assertion_class->get_xmlNode(LASSO_NODE(assertion_node)), 1);
+
+    assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
+    assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
+    lasso_node_destroy(assertion_node);
+  }
+
   protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile",
 						 lassoLassoHRef, NULL);
   if (protocolProfile != NULL) {

@@ -59,8 +59,10 @@ struct _LassoLogin {
   /*< public >*/
   lassoLoginProtocolProfile protocolProfile;
 
-  gchar *assertionArtifact;
-  gchar *response_dump;
+  gchar     *assertionArtifact;
+  gchar     *response_dump;
+  LassoNode *assertion;
+
   /*< private >*/
   lassoHttpMethod http_method;
   LassoLoginPrivate *private;
@@ -95,9 +97,13 @@ LASSO_EXPORT gint        lasso_login_build_authn_response_msg    (LassoLogin  *l
 
 LASSO_EXPORT gint        lasso_login_build_request_msg           (LassoLogin *login);
 
+LASSO_EXPORT gint        lasso_login_build_response_msg          (LassoLogin *login);
+
 LASSO_EXPORT void        lasso_login_destroy                     (LassoLogin *login);
 
 LASSO_EXPORT gchar*      lasso_login_dump                        (LassoLogin *login);
+
+LASSO_EXPORT LassoAssertion* lasso_login_get_assertion             (LassoLogin *login);
 
 LASSO_EXPORT gint        lasso_login_init_authn_request          (LassoLogin      *login,
 								  lassoHttpMethod  http_method);
@@ -120,6 +126,12 @@ LASSO_EXPORT gint        lasso_login_process_request_msg         (LassoLogin *lo
 
 LASSO_EXPORT gint        lasso_login_process_response_msg        (LassoLogin  *login,
 								  gchar       *response_msg);
+
+LASSO_EXPORT gint        lasso_logint_set_assertion              (LassoLogin     *login,
+								  LassoAssertion *assertion);
+
+LASSO_EXPORT gint        lasso_logint_set_assertion_from_dump    (LassoLogin *login,
+								  gchar      *assertion_dump);
 
 #ifdef __cplusplus
 }

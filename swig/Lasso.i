@@ -459,6 +459,46 @@ int get_exception_type(int errorCode)
  ***********************************************************************
  ***********************************************************************/
 
+/***********************************************************************
+ * Assertion
+ ***********************************************************************/
+
+
+#ifndef SWIG_PHP
+%rename(Assertion) LassoAssertion;
+#endif
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoAssertion(xmlChar *issuer, xmlChar *requestId);
+
+		~LassoAssertion();
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
+	}
+} LassoAssertion;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoAssertion lasso_assertion_new
+#define delete_LassoAssertion lasso_assertion_destroy
+
+/* Methods implementations */
+void delete_LassoAssertion(LassoAssertion *self){
+	lasso_node_destroy(LASSO_NODE(self));
+}
+
+gchar* LassoAssertion_dump(LassoAssertion *self){
+	return lasso_node_export(LASSO_NODE(self));
+}
+%}
+
 
 /***********************************************************************
  * AuthnRequest
@@ -1105,6 +1145,12 @@ typedef struct {
 		%newobject session_get;
 		LassoSession *session;
 
+		/* Attributes */
+
+		%newobject assertion_get;
+		LassoAssertion *assertion;
+
+
 		/* Constructor, Destructor & Static Methods */
 
 		LassoLogin(LassoServer *server);
@@ -1115,6 +1161,10 @@ typedef struct {
 		static LassoLogin *newFromDump(LassoServer *server, gchar *dump);
 
 		/* Methods inherited from LassoProfile */
+
+	        THROW_ERROR
+		void setAssertionFromDump(gchar *dump);
+		END_THROW_ERROR
 
 	        THROW_ERROR
 		void setIdentityFromDump(gchar *dump);
@@ -1146,6 +1196,10 @@ typedef struct {
 
 		THROW_ERROR
 		void buildRequestMsg();
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void buildResponseMsg();
 		END_THROW_ERROR
 
 		%newobject dump;
@@ -1287,6 +1341,16 @@ gint LassoLogin_session_set(LassoLogin *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
 
+/* Attributes from LassoLogin implementations */
+
+/* assertion */
+LassoAssertion *LassoLogin_assertion_get(LassoLogin *self) {
+	return lasso_login_get_assertion(self);
+}
+gint LassoLogin_assertion_set(LassoLogin *self, LassoAssertion *assertion) {
+	return lasso_login_set_assertion(self, assertion);
+}
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoLogin lasso_login_new
@@ -1307,6 +1371,13 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
 }
 
+/* Methods */
+
+/* assertion */
+gint LassoLogin_setAssertionFromDump(LassoLogin *self, gchar *dump) {
+	return lasso_login_set_assertion_from_dump(self, dump);
+}
+
 /* Methods implementations */
 
 #define LassoLogin_acceptSso lasso_login_accept_sso
@@ -1314,6 +1385,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_buildAuthnRequestMsg lasso_login_build_authn_request_msg
 #define LassoLogin_buildAuthnResponseMsg lasso_login_build_authn_response_msg
 #define LassoLogin_buildRequestMsg lasso_login_build_request_msg
+#define LassoLogin_buildResponseMsg lasso_login_build_response_msg
 #define LassoLogin_dump lasso_login_dump
 #define LassoLogin_initAuthnRequest lasso_login_init_authn_request
 #define LassoLogin_initFromAuthnRequestMsg lasso_login_init_from_authn_request_msg
