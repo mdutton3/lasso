@@ -472,8 +472,9 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_artifact_msg')
 
-    def build_authn_request_msg(self, remote_providerID):
-        errorCode = lassomod.lasso_login_build_authn_request_msg(self, remote_providerID)
+    def build_authn_request_msg(self, remote_providerID, http_method):
+        errorCode = lassomod.lasso_login_build_authn_request_msg(
+            self, remote_providerID, http_method)
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_authn_request_msg')
 
@@ -497,14 +498,14 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_authn_request')
 
-    def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
+    def init_from_authn_request_msg(self, authn_request_msg, authn_request_http_method):
         errorCode = lassomod.lasso_login_init_from_authn_request_msg(
-            self, authn_request_msg, authn_request_method)
+            self, authn_request_msg, authn_request_http_method)
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_from_authn_request_msg')
 
-    def init_request(self, response_msg, response_method):
-        errorCode = lassomod.lasso_login_init_request(self, response_msg, response_method)
+    def init_request(self, response_msg, response_http_method):
+        errorCode = lassomod.lasso_login_init_request(self, response_msg, response_http_method)
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_request')
 
@@ -725,7 +726,7 @@ if __name__ == '__main__':
     login.request.set_isPassive(False)
     login.request.set_nameIDPolicy(libNameIDPolicyTypeFederated)
     login.request.set_consent(libConsentObtained)
-    login.build_authn_request_msg('https://idp1/metadata')
+    login.build_authn_request_msg('https://idp1/metadata', httpMethodRedirect)
     print 'Redirect URL =', login.msg_url
     shutdown()
 else:

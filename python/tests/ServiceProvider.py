@@ -233,7 +233,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             login.request.set_consent(lasso.libConsentObtained)
             if relayState:
                 login.request.set_relayState(relayState)
-            login.build_authn_request_msg(self.idpSite.providerId)
+            login.build_authn_request_msg(self.idpSite.providerId, lasso.httpMethodRedirect)
             authnRequestUrl = login.msg_url
             failUnless(authnRequestUrl)
             return handler.respondRedirectTemporarily(authnRequestUrl)

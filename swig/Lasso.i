@@ -144,8 +144,6 @@ typedef enum {
 %constant xmlChar *lassoLibNameIDPolicyTypeAny = "any";
 
 /* ProtocolProfile */
-%constant xmlChar *lassoLibProtocolProfileSSOGet = "http://projectliberty.org/profiles/sso-get";
-%constant xmlChar *lassoLibProtocolProfileSSOPost = "http://projectliberty.org/profiles/sso-post";
 %constant xmlChar *lassoLibProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art";
 %constant xmlChar *lassoLibProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post";
 %constant xmlChar *lassoLibProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http";
@@ -560,9 +558,11 @@ gint lasso_login_accept_sso(LassoLogin *login);
 
 gint lasso_login_build_artifact_msg(LassoLogin *login, gint authentication_result,
 				    const gchar *authenticationMethod,
-				    const gchar *reauthenticateOnOrAfter, lassoHttpMethod method);
+				    const gchar *reauthenticateOnOrAfter,
+				    lassoHttpMethod http_method);
 
-gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID);
+gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID,
+					 lassoHttpMethod http_method);
 
 gint lasso_login_build_authn_response_msg(LassoLogin  *login, gint authentication_result,
 					  const gchar *authenticationMethod,
@@ -576,10 +576,10 @@ gchar* lasso_login_dump(LassoLogin *login);
 gint lasso_login_init_authn_request(LassoLogin *login);
 
 gint lasso_login_init_from_authn_request_msg(LassoLogin *login, gchar *authn_request_msg,
-					     lassoHttpMethod  authn_request_method);
+					     lassoHttpMethod  authn_request_http_method);
 
 gint lasso_login_init_request(LassoLogin *login, gchar *response_msg,
-			      lassoHttpMethod response_method);
+			      lassoHttpMethod response_http_method);
 
 gboolean lasso_login_must_authenticate(LassoLogin *login);
 

@@ -115,7 +115,8 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_lib_authn_request_set_consent(request, lassoLibConsentObtained);
 	relayState = "fake";
 	lasso_lib_authn_request_set_relayState(request, "fake");
-	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata");
+	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata",
+						 lassoHttpMethodRedirect);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,
