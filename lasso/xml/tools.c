@@ -51,7 +51,7 @@ lasso_build_unique_id(guint8 size)
   id[size] = '\0';
 
   /* base64 encoding of build string */
-  enc_id = xmlSecBase64Encode(id, size, 0);
+  enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0);
 
   g_free(id);
   return (enc_id);
@@ -96,6 +96,16 @@ lasso_get_current_time()
   return (ret);
 }
 
+static void gdata_query_to_dict_destroy_notify(gpointer data) {
+  gint i;
+  GPtrArray *array = data;
+
+  for (i=0; i<array->len; i++) {
+    g_free(array->pdata[i]);
+  }
+  g_ptr_array_free(array, TRUE);
+}
+
 /**
  * lasso_query_to_dict:
  * @query: the query part of the 'url-encoded + signed' message
@@ -112,32 +122,36 @@ lasso_query_to_dict(const xmlChar *query)
 {
   GData *gd = NULL;
   gchar **sa1, **sa2, **sa3;
-  
+  xmlChar *str_unescaped;
   GPtrArray *gpa;
   guint i, j;
   
   g_datalist_init(&gd);
   
-  sa1 = g_strsplit(query, "&", 0);
-  
   i = 0;
+  sa1 = g_strsplit(query, "&", 0);
   while (sa1[i++] != NULL) {
     /* split of key=value to get (key, value) sub-strings */
-    sa2 = g_strsplit(lasso_str_unescape(sa1[i-1]), "=", 0);
+    str_unescaped = lasso_str_unescape(sa1[i-1]);
+    sa2 = g_strsplit(str_unescaped, "=", 0);
+    xmlFree(str_unescaped);
     //printf("%s => ", sa2[0]);
     /* split of value to get mutli values sub-strings separated by SPACE char */
-    sa3 = g_strsplit(lasso_str_unescape(sa2[1]), " ", 0);
+    str_unescaped = lasso_str_unescape(sa2[1]);
+    sa3 = g_strsplit(str_unescaped, " ", 0);
+    xmlFree(str_unescaped);
     gpa = g_ptr_array_new();
     j = 0;
     while (sa3[j++] != NULL) {
-      g_ptr_array_add(gpa, sa3[j-1]);
+      g_ptr_array_add(gpa, g_strdup(sa3[j-1]));
       //printf("%s, ", sa3[j-1]);
     }
-    // add key => values in dict
-    g_datalist_set_data(&gd, sa2[0], gpa);
     //printf("\n");
-    //g_strfreev(sa3);
-    //g_strfreev(sa2);
+    /* add key => values in dict */
+    g_datalist_set_data_full(&gd, sa2[0], gpa,
+			     gdata_query_to_dict_destroy_notify);
+    g_strfreev(sa3);
+    g_strfreev(sa2);
   }
   
   g_strfreev(sa1);

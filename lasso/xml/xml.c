@@ -291,10 +291,9 @@ lasso_node_set_prop(LassoNode     *node,
 /* implementation methods                                                    */
 /*****************************************************************************/
 
-static void
-gdata_build_query_foreach_func(GQuark   key_id,
-			       gpointer data,
-			       gpointer user_data) {
+static void gdata_build_query_foreach_func(GQuark   key_id,
+					   gpointer data,
+					   gpointer user_data) {
   guint i;
   GString *str;
   GPtrArray *array;
@@ -306,10 +305,8 @@ gdata_build_query_foreach_func(GQuark   key_id,
     if (i<((GPtrArray *)data)->len - 1) {
       str = g_string_append(str, " ");
     }
-    /* free each val get with xmlGetProp() in lasso_node_impl_serialize() */
-    xmlFree(g_ptr_array_index((GPtrArray *)data, i));
   }
-  g_ptr_array_add(array, (gpointer)g_quark_to_string(key_id));
+  g_ptr_array_add(array, g_strdup((gpointer)g_quark_to_string(key_id)));
   g_ptr_array_add(array, str->str);
   g_string_free(str, FALSE);
   g_ptr_array_add((GPtrArray *)user_data, array);
@@ -318,10 +315,11 @@ gdata_build_query_foreach_func(GQuark   key_id,
 static GString *
 lasso_node_impl_build_query(LassoNode *node)
 {
-  guint i;
+  guint i, j;
   GData *gd;
   GPtrArray *a, *aa;
   GString *query;
+  xmlChar *str_escaped;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
@@ -336,14 +334,19 @@ lasso_node_impl_build_query(LassoNode *node)
     aa = g_ptr_array_index(a, i);
     query = g_string_append(query, g_ptr_array_index(aa, 0));
     query = g_string_append(query, "=");
-    query = g_string_append(query, lasso_str_escape(g_ptr_array_index(aa, 1)));
+    str_escaped = lasso_str_escape(g_ptr_array_index(aa, 1));
+    query = g_string_append(query, str_escaped);
+    xmlFree(str_escaped);
     if (i<a->len - 1) {
       query = g_string_append(query, "&");
     }
-    // free allocated memory
+    /* free allocated memory for array aa */
+    for (j=0; j<aa->len; j++) {
+      g_free(aa->pdata[j]);
+    }
     g_ptr_array_free(aa, TRUE);
   }
-  // free allocated memory
+  /* free allocated memory for array a */
   g_ptr_array_free(a, TRUE);
   g_datalist_clear(&gd);
 
@@ -563,6 +566,18 @@ lasso_node_impl_rename_prop(LassoNode     *node,
   }
 }
 
+static void
+gdata_serialize_destroy_notify(gpointer data)
+{
+  gint i;
+  GPtrArray *array = data;
+
+  for (i=0; i<array->len; i++) {
+    xmlFree(array->pdata[i]);
+  }
+  g_ptr_array_free(array, TRUE);
+}
+
 static GData *
 lasso_node_impl_serialize(LassoNode *node,
 			  GData     *gd)
@@ -583,10 +598,12 @@ lasso_node_impl_serialize(LassoNode *node,
   for(i=0; i<attrs->len; i++) {
     values = g_ptr_array_new();
     name = (xmlChar *)((LassoAttr *)g_ptr_array_index(attrs, i))->name;
-    /* val must be xmlFree() */
+    /* xmlGetProp returns a COPY of attr value
+       each val must be xmlFree in gdata_serialize_destroy_notify()
+       which is called by g_datalist_clear() */
     val = xmlGetProp(node->private->node, name);
     g_ptr_array_add(values, val);
-    g_datalist_set_data(&gd, name, values);
+    g_datalist_set_data_full(&gd, name, values, gdata_serialize_destroy_notify);
   }
   g_ptr_array_free(attrs, TRUE);
 
@@ -600,14 +617,20 @@ lasso_node_impl_serialize(LassoNode *node,
 	break;
       case XML_TEXT_NODE:
 	name   = lasso_node_get_name(node);
+	/* xmlNodeGetContent returns a COPY of node content
+	   each val must be xmlFree in gdata_serialize_destroy_notify()
+	   which is called by g_datalist_clear() */
+	val    = xmlNodeGetContent(node->private->node);
 	values = (GPtrArray *)g_datalist_get_data(&gd, name);
 	if (values == NULL) {
 	  values = g_ptr_array_new();
+	  g_ptr_array_add(values, val);
+	  g_datalist_set_data_full(&gd, name, values,
+				   gdata_serialize_destroy_notify);
 	}
-	/* val must be xmlFree() */
-	val = xmlNodeGetContent(node->private->node);
-	g_ptr_array_add(values, val);
-	g_datalist_set_data(&gd, name, values);
+	else {
+	  g_ptr_array_add(values, val);
+	}
 	break;
       }
     }
@@ -624,7 +647,7 @@ lasso_node_impl_url_encode(LassoNode   *node,
 {
   GString *msg;
   xmlDocPtr doc;
-  xmlChar *str1, *str2;
+  xmlChar *str1, *str2, *str_escaped;
   gchar *ret;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -633,35 +656,31 @@ lasso_node_impl_url_encode(LassoNode   *node,
   msg = lasso_node_build_query(node);
 
   if (sign_method > 0 && private_key_file != NULL) {
+    msg = g_string_append(msg, "&SigAlg=");
     switch (sign_method) {
     case lassoUrlEncodeRsaSha1:
-      msg = g_string_append(msg, "&SigAlg=");
-      msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#rsa-sha1"));
+      str_escaped = lasso_str_escape(xmlSecHrefRsaSha1);
+      msg = g_string_append(msg, str_escaped);
       doc = lasso_str_sign(msg->str, xmlSecTransformRsaSha1Id, private_key_file);
-      msg = g_string_append(msg, "&Signature=");
-      str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
-      str2 = lasso_str_escape(str1);
-      xmlFree(str1);
-      msg = g_string_append(msg, str2);
-      xmlFree(str2);
       break;
     case lassoUrlEncodeDsaSha1:
-      msg = g_string_append(msg, "&SigAlg=");
-      msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#dsa-sha1"));
+      str_escaped = lasso_str_escape(xmlSecHrefDsaSha1);
+      msg = g_string_append(msg, str_escaped);
       doc = lasso_str_sign(msg->str, xmlSecTransformDsaSha1Id, private_key_file);
-      msg = g_string_append(msg, "&Signature=");
-      str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
-      str2 = lasso_str_escape(str1);
-      xmlFree(str1);
-      msg = g_string_append(msg, str2);
-      xmlFree(str2);
       break;
     }
+    xmlFree(str_escaped);
+    msg = g_string_append(msg, "&Signature=");
+    str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
+    str2 = lasso_str_escape(str1);
+    xmlFree(str1);
+    msg = g_string_append(msg, str2);
+    xmlFree(str2);
+    xmlFreeDoc(doc);
   }
 
   ret = g_strdup(msg->str);
   g_string_free(msg, TRUE);
-  xmlFreeDoc(doc);
   return (ret);
 }
 
