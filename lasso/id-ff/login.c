@@ -374,12 +374,11 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 gint
 lasso_login_accept_sso(LassoLogin *login)
 {
-	LassoSamlAssertion *assertion = NULL;
-	LassoSamlNameIdentifier *ni = NULL;
-	LassoSamlNameIdentifier *idp_ni = NULL;
-	LassoFederation *federation = NULL;
-	LassoSamlSubjectStatementAbstract *authentication_statement;
 	LassoProfile *profile;
+	LassoSamlAssertion *assertion;
+	LassoSamlNameIdentifier *ni, *idp_ni;
+	LassoFederation *federation;
+	LassoSamlSubjectStatementAbstract *authentication_statement;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -408,17 +407,18 @@ lasso_login_accept_sso(LassoLogin *login)
 		return -1;
 
 	if (LASSO_IS_LIB_SUBJECT(authentication_statement->Subject)) {
-		idp_ni = LASSO_LIB_SUBJECT(authentication_statement->Subject)->IDPProvidedNameIdentifier;
+		idp_ni = LASSO_LIB_SUBJECT(
+				authentication_statement->Subject)->IDPProvidedNameIdentifier;
 	}
 
 	/* create federation, only if nameidentifier format is Federated */
 	if (strcmp(ni->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED) == 0) {
 		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
 		if (ni != NULL && idp_ni != NULL) {
-			federation->local_nameIdentifier = ni;
-			federation->remote_nameIdentifier = idp_ni;
+			federation->local_nameIdentifier = g_object_ref(ni);
+			federation->remote_nameIdentifier = g_object_ref(idp_ni);
 		} else {
-			federation->remote_nameIdentifier = ni;
+			federation->remote_nameIdentifier = g_object_ref(ni);
 		}
 		/* add federation in identity */
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
