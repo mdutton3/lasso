@@ -36,10 +36,9 @@ generateIdentityProviderContextDump()
 	
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/idp1-la/metadata.xml",
-			NULL, /* "../tests/data/idp1-la/public-key.pem" is no more used */
 			TESTSDATADIR "/idp1-la/private-key-raw.pem",
-			TESTSDATADIR "/idp1-la/certificate.pem",
-			lassoSignatureMethodRsaSha1);
+			NULL, /* Secret key to unlock private key */
+			TESTSDATADIR "/idp1-la/certificate.pem");
 	lasso_server_add_provider(
 			serverContext,
 			TESTSDATADIR "/sp1-la/metadata.xml",
@@ -55,10 +54,9 @@ generateServiceProviderContextDump()
 	
 	serverContext = lasso_server_new(
 			TESTSDATADIR "/sp1-la/metadata.xml",
-			NULL, /* "../tests/data/sp1-la/public-key.pem" is no more used */
 			TESTSDATADIR "/sp1-la/private-key-raw.pem",
-			TESTSDATADIR "/sp1-la/certificate.pem",
-			lassoSignatureMethodRsaSha1);
+			NULL, /* Secret key to unlock private key */
+			TESTSDATADIR "/sp1-la/certificate.pem");
 	lasso_server_add_provider(
 			serverContext,
 			TESTSDATADIR "/idp1-la/metadata.xml",
