@@ -26,13 +26,15 @@ dotnetlibdir = $(datadir)/dotnet/lasso/
 dotnetlib_DATA = lasso.dll lasso.dll.config
 
 lasso.dll: liblassosharpglue.la
+	$(LN_S) $(srcdir)/lasso-sharp.snk lasso-sharp-build.snk
 	$(CSHARPCOMPILER) -out:lasso.dll -target:library $(srcdir)/*.cs
+	rm -f lasso-sharp-build.snk
 
 pkgconfig_DATA  = lasso-sharp.pc
 pkgconfigdir    = $(libdir)/pkgconfig
 
 install-data-local:
-	$(GACUTIL) -i lasso.dll -f -package lasso -gacdir $(libdir)
+	-$(GACUTIL) -i lasso.dll -f -package lasso -gacdir $(libdir)
 
 clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
@@ -42,6 +44,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	LassoLecp.cs LassoLibAuthnRequest.cs LassoLibAuthnResponse.cs \
 	LassoLogin.cs LassoLogout.cs LassoProfile.cs LassoRequest.cs \
 	LassoResponse.cs LassoSamlpRequest.cs LassoSamlpResponse.cs \
+	LassoDefederation.cs \
 	LassoServer.cs LassoSession.cs lasso.cs lassoPINVOKE.cs \
 	SWIGTYPE_p_GHashTable.cs SWIGTYPE_p_GObject.cs SWIGTYPE_p_GPtrArray.cs \
 	SWIGTYPE_p_LassoLibRequestAuthnContext.cs \
