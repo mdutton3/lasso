@@ -50,11 +50,16 @@ case "${host}" in
                 CFLAGS="${CFLAGS} -D_MSC_VER -DIN_LASSO -DMINGW -DWIN32 -D_WIN32 -I/usr/local/include"
                 LDFLAGS="${LDFLAGS} -L/usr/local/lib"
                 MINGW=1
+                SUN_EXTRA_INCLUDE="win32" 
                 ;;
             dnl ==========================================================================
             dnl Workaround for non libtool standard library name specs.
             dnl ==========================================================================
+            *)
+            SUN_EXTRA_INCLUDE="win32" 
+            ;;
         esac
+
 dnl         if test -f "/cygdrive/c/windows/system/user32.dll"; then
 dnl             dnl make symbolic link.
 dnl             if test ! -f "/usr/local/lib/libuser32.dll"; then
@@ -69,10 +74,13 @@ dnl                         /usr/local/lib/libkernel32.dll
 dnl             fi
 dnl         fi
         dnl FIXME: This is a guessing, no test yet under windows with sun JDK
-        SUN_EXTRA_INCLUDE="/win32" 
+        ;;
+    *-pc-cygwin)
+        SUN_EXTRA_INCLUDE="win32" 
         ;;
     *linux*)
-        SUN_EXTRA_INCLUDE="/linux"
+        SUN_EXTRA_INCLUDE="linux"
+        ;;
 esac
 
 
@@ -251,7 +259,7 @@ dnl Now transform JDK_INCLUDE in CFLAG option if applicable.
 if test "X$JDK_INCLUDE" != X; then
     dnl If it is a sun environment
     if test "x$SUN" = "xyes"; then
-        JDK_INCLUDE="$JDK_INCLUDE -I$JDK_INCLUDE$SUN_EXTRA_INCLUDE"
+        JDK_INCLUDE="$JDK_INCLUDE -I$JDK_INCLUDE/$SUN_EXTRA_INCLUDE"
     fi
     JDK_INCLUDE=-I$JDK_INCLUDE
 fi
