@@ -35,6 +35,54 @@
 static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
+/* private functions                                                         */
+/*****************************************************************************/
+
+static void
+lasso_user_dump_assertion(gpointer   key,
+			  gpointer   value,
+			  LassoNode *assertions)
+{
+  LassoNode      *assertion_node, *assertion_copy;
+  LassoNodeClass *assertion_class, *assertions_class;
+
+  /* new lasso assertion node */
+  assertion_node = lasso_node_new();
+  assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
+  assertion_class->set_name(assertion_node, LASSO_USER_ASSERTION_NODE);
+
+  /* set the remote provider id */
+  assertion_class->set_prop(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE, key);
+  
+  /* set assertion node */
+  assertion_copy = lasso_node_copy(LASSO_NODE(value));
+  assertion_class->add_child(assertion_node, assertion_copy, FALSE);
+  lasso_node_destroy(assertion_copy);
+
+  /* add lasso assertion node to lasso assertions node */
+  assertions_class = LASSO_NODE_GET_CLASS(assertions);
+  assertions_class->add_child(assertions, assertion_node, TRUE);
+  lasso_node_destroy(assertion_node);
+}
+
+static void
+lasso_user_dump_identity(gpointer   key,
+			 gpointer   value,
+			 LassoNode *identities)
+{
+  LassoNode      *identity_node;
+  LassoNodeClass *identity_class;
+  xmlChar        *dump;
+
+  dump = lasso_identity_dump(LASSO_IDENTITY(value));
+  identity_node = lasso_node_new_from_dump(dump);
+  xmlFree(dump);
+  identity_class = LASSO_NODE_GET_CLASS(identity_node);
+  identity_class->add_child(identities, identity_node, TRUE);
+  lasso_node_destroy(identity_node);
+}
+
+/*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
@@ -52,11 +100,11 @@ lasso_user_add_assertion(LassoUser *user,
 
   /* add the remote provider id */
   found = FALSE;
-  for(i = 0; i<user->assertion_providerIDs->len; i++){
+  for(i = 0; i<user->assertion_providerIDs->len; i++) {
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i)))
       found = TRUE;
   }
-  if(found==TRUE){
+  if(found == TRUE){
     message(G_LOG_LEVEL_ERROR, "A provider id already exists\n");
     return(-4);
   }
@@ -78,9 +126,9 @@ lasso_user_add_identity(LassoUser     *user,
   gboolean found;
   int i;
 
-  g_return_val_if_fail(user!=NULL, -1);
-  g_return_val_if_fail(remote_providerID!=NULL, -2);
-  g_return_val_if_fail(identity!=NULL, -3);
+  g_return_val_if_fail(user != NULL, -1);
+  g_return_val_if_fail(remote_providerID != NULL, -2);
+  g_return_val_if_fail(identity != NULL, -3);
 
   /* add the remote provider id if not already saved */
   found = FALSE;
@@ -88,7 +136,7 @@ lasso_user_add_identity(LassoUser     *user,
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->identity_providerIDs, i)))
       found = TRUE;
   }
-  if(found==FALSE){
+  if(found == FALSE){
     g_ptr_array_add(user->identity_providerIDs, g_strdup(remote_providerID));
   }  
 
@@ -96,52 +144,12 @@ lasso_user_add_identity(LassoUser     *user,
   old_identity = lasso_user_get_identity(user, remote_providerID);
   if (old_identity != NULL) {
     lasso_user_remove_identity(user, remote_providerID);
-    lasso_identity_destroy(old_identity);
+    /* BEWARE: Don't destroy old_identity here.
+       It's not a copy. But it must change */
   }
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 
   return(0);
-}
-
-static void
-lasso_user_dump_assertion(gpointer   key,
-			  gpointer   value,
-			  LassoNode *assertions)
-{
-  LassoNode      *assertion_node;
-  LassoNodeClass *assertion_class, *assertions_class;
-
-  /* new lasso assertion node */
-  assertion_node = lasso_node_new();
-  assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
-  assertion_class->set_name(assertion_node, LASSO_USER_ASSERTION_NODE);
-
-  /* set the remote provider id */
-  assertion_class->set_prop(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE, key);
-  
-  /* set assertion node */
-  assertion_class->add_child(assertion_node, value, FALSE);
-
-  /* add lasso assertion node to lasso assertions node */
-  assertions_class = LASSO_NODE_GET_CLASS(assertions);
-  assertions_class->add_child(assertions, assertion_node, TRUE);
-}
-
-static void
-lasso_user_dump_identity(gpointer   key,
-			 gpointer   value,
-			 LassoNode *identities)
-{
-  LassoNode      *identity_node;
-  LassoNodeClass *identity_class;
-  xmlChar        *dump;
-
-  dump = lasso_identity_dump(LASSO_IDENTITY(value));
-  identity_node = lasso_node_new_from_dump(dump);
-  xmlFree(dump);
-  identity_class = LASSO_NODE_GET_CLASS(identity_node);
-  identity_class->add_child(identities, identity_node, TRUE);
-  lasso_node_destroy(identity_node);
 }
 
 void
@@ -156,8 +164,9 @@ lasso_user_dump(LassoUser *user)
   LassoNode      *user_node, *assertions_node, *identities_node;
   LassoNodeClass *user_class, *assertions_class, *identities_class;
   int table_size;
+  xmlChar *dump;
 
-  g_return_val_if_fail(user!=NULL, NULL);
+  g_return_val_if_fail(user != NULL, NULL);
 
   user_node = lasso_node_new();
   user_class = LASSO_NODE_GET_CLASS(user_node);
@@ -165,34 +174,46 @@ lasso_user_dump(LassoUser *user)
 
   /* dump the assertions */
   table_size = g_hash_table_size(user->assertions);
-  if(table_size>0){
+  if (table_size > 0) {
     assertions_node = lasso_node_new();
     assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
     assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
     g_hash_table_foreach(user->assertions, (GHFunc)lasso_user_dump_assertion, assertions_node);
     user_class->add_child(user_node, assertions_node, FALSE);
+    lasso_node_destroy(assertions_node);
   }
   
   /* dump the identities */
   table_size = g_hash_table_size(user->identities);
-  if(table_size>0){
+  if (table_size > 0) {
     identities_node = lasso_node_new();
     identities_class = LASSO_NODE_GET_CLASS(identities_node);
     identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
     g_hash_table_foreach(user->identities, (GHFunc)lasso_user_dump_identity, identities_node);
     user_class->add_child(user_node, identities_node, FALSE);
+    lasso_node_destroy(identities_node);
   }
 
-  return(lasso_node_export(user_node));
+  dump = lasso_node_export(user_node);
+
+  lasso_node_destroy(user_node);
+
+  return(dump);
 }
 
 LassoNode*
 lasso_user_get_assertion(LassoUser *user,
 			 gchar     *remote_providerID)
 {
+  LassoNode *assertion;
+
   g_return_val_if_fail(user != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
-  return(g_hash_table_lookup(user->assertions, remote_providerID));
+
+  assertion = (LassoNode *)g_hash_table_lookup(user->assertions,
+					       remote_providerID);
+
+  return(lasso_node_copy(assertion));
 }
 
 gchar*
@@ -223,6 +244,25 @@ lasso_user_get_authentication_method(LassoUser *user,
   return (authentication_method);
 }
 
+LassoIdentity*
+lasso_user_get_identity(LassoUser *user,
+			gchar     *remote_providerID)
+{
+  g_return_val_if_fail(user!=NULL, NULL);
+  g_return_val_if_fail(remote_providerID!=NULL, NULL);
+
+  LassoIdentity *id;
+
+  id = (LassoIdentity *)g_hash_table_lookup(user->identities,
+					    remote_providerID);
+  if (id == NULL) {
+    message(G_LOG_LEVEL_INFO, "No Identity found with remote ProviderID = %s\n", remote_providerID);
+  }
+
+  /* FIXME: identity should be a copy */
+  return(id);
+}
+
 gchar*
 lasso_user_get_next_assertion_remote_providerID(LassoUser *user)
 {
@@ -230,8 +270,9 @@ lasso_user_get_next_assertion_remote_providerID(LassoUser *user)
 
   g_return_val_if_fail(user!=NULL, NULL);
 
-  if(user->assertion_providerIDs->len==0)
+  if(user->assertion_providerIDs->len == 0) {
     return(NULL);
+  }
 
   remote_providerID = g_strdup(g_ptr_array_index(user->assertion_providerIDs, 0));
 
@@ -245,29 +286,13 @@ lasso_user_get_next_identity_remote_providerID(LassoUser *user)
 
   g_return_val_if_fail(user!=NULL, NULL);
 
-  if(user->identity_providerIDs->len==0)
+  if(user->identity_providerIDs->len == 0) {
     return(NULL);
+  }
 
   remote_providerID = g_strdup(g_ptr_array_index(user->identity_providerIDs, 0));
 
   return(remote_providerID);
-}
-
-LassoIdentity*
-lasso_user_get_identity(LassoUser *user,
-			gchar     *remote_providerID)
-{
-  g_return_val_if_fail(user!=NULL, NULL);
-  g_return_val_if_fail(remote_providerID!=NULL, NULL);
-
-  LassoIdentity *id;
-
-  id = (LassoIdentity*)g_hash_table_lookup(user->identities, remote_providerID);
-  if (id == NULL) {
-    debug("No Identity found with remote ProviderID = %s\n", remote_providerID);
-  }
-
-  return(id);
 }
 
 gint
@@ -284,7 +309,7 @@ lasso_user_remove_assertion(LassoUser     *user,
   /* remove the assertion */
   assertion = lasso_user_get_assertion(user, remote_providerID);
   if (assertion != NULL) {
-    g_hash_table_steal(user->assertions, remote_providerID);
+    g_hash_table_remove(user->assertions, remote_providerID);
     lasso_node_destroy(assertion);
   }
 
@@ -312,7 +337,7 @@ lasso_user_remove_identity(LassoUser *user,
   /* remove the identity */
   identity = lasso_user_get_identity(user, remote_providerID);
   if (identity != NULL) {
-    g_hash_table_steal(user->identities, remote_providerID);
+    g_hash_table_remove(user->identities, remote_providerID);
   }
   else {
     debug("Failed to remove identity for remote Provider %s\n", remote_providerID);
@@ -336,8 +361,25 @@ lasso_user_remove_identity(LassoUser *user,
 
 static void
 lasso_user_finalize(LassoUser *user)
-{  
+{
+  gint i;
+
   debug("User object 0x%x finalized ...\n", user);
+
+  /* free allocated memory for assertion_providerIDs array */
+  for (i=0; i<user->assertion_providerIDs->len; i++) {
+    g_free(user->assertion_providerIDs->pdata[i]);
+  }
+  g_ptr_array_free(user->assertion_providerIDs, TRUE);
+
+  /* free allocated memory for identity_providerIDs array */
+  for (i=0; i<user->identity_providerIDs->len; i++) {
+    g_free(user->identity_providerIDs->pdata[i]);
+  }
+  g_ptr_array_free(user->identity_providerIDs, TRUE);
+
+  g_hash_table_destroy(user->assertions);
+  g_hash_table_destroy(user->identities);
 
   parent_class->finalize(G_OBJECT(user));
 }
@@ -350,10 +392,14 @@ static void
 lasso_user_instance_init(LassoUser *user)
 {
   user->assertion_providerIDs = g_ptr_array_new();
-  user->assertions = g_hash_table_new(g_str_hash, g_str_equal);
+  user->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
+					   (GDestroyNotify)g_free,
+					   (GDestroyNotify)lasso_node_destroy);
 
   user->identity_providerIDs = g_ptr_array_new();
-  user->identities = g_hash_table_new(g_str_hash, g_str_equal);
+  user->identities = g_hash_table_new_full(g_str_hash, g_str_equal,
+					   (GDestroyNotify)g_free,
+					   (GDestroyNotify)lasso_identity_destroy);
 }
 
 static void
