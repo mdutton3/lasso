@@ -5913,9 +5913,6 @@ typedef struct {
 	int buildResponseMsg();
 	END_THROW_ERROR
 
-	%newobject dump;
-	char *dump();
-
 	THROW_ERROR
 	int initRequest(char *targetNamespace, char *remoteProviderId = NULL);
 	END_THROW_ERROR
@@ -6014,7 +6011,6 @@ int LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *se
 
 #define LassoNameIdentifierMapping_buildRequestMsg lasso_name_identifier_mapping_build_request_msg
 #define LassoNameIdentifierMapping_buildResponseMsg lasso_name_identifier_mapping_build_response_msg
-#define LassoNameIdentifierMapping_dump lasso_name_identifier_mapping_dump
 #define LassoNameIdentifierMapping_initRequest lasso_name_identifier_mapping_init_request
 #define LassoNameIdentifierMapping_processRequestMsg lasso_name_identifier_mapping_process_request_msg
 #define LassoNameIdentifierMapping_processResponseMsg lasso_name_identifier_mapping_process_response_msg
