@@ -46,6 +46,20 @@ struct _LassoLoginPrivate
 /* functions                                                                 */
 /*****************************************************************************/
 
+/**
+ * lasso_login_get_assertion_nameIdentifier:
+ * @assertion: an assertion
+ * @err: return location for an allocated GError, or NULL to ignore errors
+ * 
+ * An assertion may contain 2 NameIdentifier elements (one called NameIdentifier
+ * and the other called IDPProvidedNameIdentifier).
+ * If contents of the 2 name identifiers are equal then returns one of both
+ * else returns the NameIdentifier content.
+ * If both contents are NULL or NameIdentifier elements are missing then
+ * returns NULL.
+ * 
+ * Return value: a string or NULL
+ **/
 static gchar*
 lasso_login_get_assertion_nameIdentifier(LassoNode  *assertion,
 					 GError    **err)
@@ -76,6 +90,20 @@ lasso_login_get_assertion_nameIdentifier(LassoNode  *assertion,
   }
 }
 
+/**
+ * lasso_login_add_response_assertion:
+ * @login: a Login
+ * @federation: a Federation
+ * @authenticationMethod: the authentication method
+ * @reauthenticateOnOrAfter: the reauthenticate on or after time
+ * 
+ * Adds an assertion into the samlp:Response.
+ * Assertion is also stored in login->session. If login->session
+ * is NULL, a new session is build before.
+ * The NameIdentifier of the assertion is stored into login->nameIdentifier.
+ * 
+ * Return value: 0 on success and a negative value otherwise.
+ **/
 static gint
 lasso_login_add_response_assertion(LassoLogin      *login,
 				   LassoFederation *federation,
@@ -1045,6 +1073,8 @@ LassoLogin*
 lasso_login_new(LassoServer *server)
 {
   LassoLogin *login;
+
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
 				   "server", lasso_server_copy(server),
