@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
-
-
-# Python unit tests for Lasso library
-# By: Frederic Peters <fpeters@entrouvert.com>
-#     Emmanuel Raviart <eraviart@entrouvert.com>
 #
-# Copyright (C) 2004 Entr'ouvert
+# $Id$
+#
+# Python unit tests for Lasso library
+#
+# Copyright (C) 2004, 2005 Entr'ouvert
 # http://lasso.entrouvert.org
+#
+# Authors: See AUTHORS file.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

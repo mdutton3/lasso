@@ -7,11 +7,7 @@
  * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  *
- * Authors: Romain Chantereau <rchantereau@entrouvert.com>
- *          Nicolas Clapies <nclapies@entrouvert.com>
- *          Valery Febvre <vfebvre@easter-eggs.com>
- *          Frederic Peters <fpeters@entrouvert.com>
- *          Emmanuel Raviart <eraviart@entrouvert.com>
+ * Authors: See AUTHORS file.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
-
-
-# Python unit tests for Lasso library
-# By: Frederic Peters <fpeters@entrouvert.com>
-#     Emmanuel Raviart <eraviart@entrouvert.com>
 #
-# Copyright (C) 2004 Entr'ouvert
+# $Id$
+#
+# Python unit tests for Lasso library
+#
+# Copyright (C) 2004, 2005 Entr'ouvert
 # http://lasso.entrouvert.org
+#
+# Authors: See AUTHORS file.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,210 +41,6 @@ try:
     dataDir
 except NameError:
     dataDir = '../../tests/data'
-
-
-class BindingTestCase(unittest.TestCase):
-    def test01(self):
-        """Create and delete nodes."""
-
-        authnRequest = lasso.LibAuthnRequest()
-        del authnRequest
-
-    def test02(self):
-        """Get & set simple attributes of nodes."""
-
-        authnRequest = lasso.LibAuthnRequest()
-
-        # Test a string attribute.
-        self.failUnlessEqual(authnRequest.consent, None)
-        authnRequest.consent = lasso.libConsentObtained
-        self.failUnlessEqual(authnRequest.consent, lasso.libConsentObtained)
-        authnRequest.consent = None
-        self.failUnlessEqual(authnRequest.consent, None)
-
-        # Test a renamed string attribute.
-        self.failUnlessEqual(authnRequest.relayState, None)
-        authnRequest.relayState = 'Hello World!'
-        self.failUnlessEqual(authnRequest.relayState, 'Hello World!')
-        authnRequest.relayState = None
-        self.failUnlessEqual(authnRequest.relayState, None)
-
-        # Test an integer attribute.
-        self.failUnlessEqual(authnRequest.majorVersion, 0)
-        authnRequest.majorVersion = 314
-        self.failUnlessEqual(authnRequest.majorVersion, 314)
-
-        del authnRequest
-
-    def test03(self):
-        """Get & set attributes of nodes of type string list."""
-
-        authnRequest = lasso.LibAuthnRequest()
-
-        self.failUnlessEqual(authnRequest.respondWith, None)
-
-        respondWith = lasso.StringList()
-        self.failUnlessEqual(len(respondWith), 0)
-        respondWith.append('first string')
-        self.failUnlessEqual(len(respondWith), 1)
-        self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[0], 'first string')
-        respondWith.append('second string')
-        self.failUnlessEqual(len(respondWith), 2)
-        self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[1], 'second string')
-        respondWith.append('third string')
-        self.failUnlessEqual(len(respondWith), 3)
-        self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[1], 'second string')
-        self.failUnlessEqual(respondWith[2], 'third string')
-        authnRequest.respondWith = respondWith
-        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
-        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
-        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
-        self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[1], 'second string')
-        self.failUnlessEqual(respondWith[2], 'third string')
-        del respondWith
-        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
-        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
-        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
-        respondWith = authnRequest.respondWith
-        self.failUnlessEqual(respondWith[0], 'first string')
-        self.failUnlessEqual(respondWith[1], 'second string')
-        self.failUnlessEqual(respondWith[2], 'third string')
-        del respondWith
-        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
-        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
-        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
-        authnRequest.respondWith = None
-        self.failUnlessEqual(authnRequest.respondWith, None)
-
-        del authnRequest
-
-    def test04(self):
-        """Get & set attributes of nodes of type node list."""
-
-        response = lasso.SamlpResponse()
-
-        self.failUnlessEqual(response.assertion, None)
-
-        assertions = lasso.NodeList()
-        self.failUnlessEqual(len(assertions), 0)
-        assertion1 = lasso.SamlAssertion()
-        assertion1.assertionId = 'assertion 1'
-        assertions.append(assertion1)
-        self.failUnlessEqual(len(assertions), 1)
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        assertion2 = lasso.SamlAssertion()
-        assertion2.assertionId = 'assertion 2'
-        assertions.append(assertion2)
-        self.failUnlessEqual(len(assertions), 2)
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
-        assertion3 = lasso.SamlAssertion()
-        assertion3.assertionId = 'assertion 3'
-        assertions.append(assertion3)
-        self.failUnlessEqual(len(assertions), 3)
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
-        response.assertion = assertions
-        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
-        del assertions
-        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
-        assertions = response.assertion
-        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
-        del assertions
-        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
-        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
-        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
-        response.assertion = None
-        self.failUnlessEqual(response.assertion, None)
-
-        del response
-
-    def test05(self):
-        """Get & set attributes of nodes of type XML list."""
-
-        authnRequest = lasso.LibAuthnRequest()
-
-        self.failUnlessEqual(authnRequest.extension, None)
-
-        actionString1 = """\
-<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
-  <action>do 1</action>
-</lib:Extension>"""
-        actionString2 = """\
-<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
-  <action>do 2</action>
-</lib:Extension>"""
-        actionString3 = """\
-<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
-  <action>do 3</action>
-</lib:Extension>"""
-        extension = lasso.StringList()
-        self.failUnlessEqual(len(extension), 0)
-        extension.append(actionString1)
-        self.failUnlessEqual(len(extension), 1)
-        self.failUnlessEqual(extension[0], actionString1)
-        self.failUnlessEqual(extension[0], actionString1)
-        extension.append(actionString2)
-        self.failUnlessEqual(len(extension), 2)
-        self.failUnlessEqual(extension[0], actionString1)
-        self.failUnlessEqual(extension[1], actionString2)
-        extension.append(actionString3)
-        self.failUnlessEqual(len(extension), 3)
-        self.failUnlessEqual(extension[0], actionString1)
-        self.failUnlessEqual(extension[1], actionString2)
-        self.failUnlessEqual(extension[2], actionString3)
-        authnRequest.extension = extension
-        self.failUnlessEqual(authnRequest.extension[0], actionString1)
-        self.failUnlessEqual(authnRequest.extension[1], actionString2)
-        self.failUnlessEqual(authnRequest.extension[2], actionString3)
-        self.failUnlessEqual(extension[0], actionString1)
-        self.failUnlessEqual(extension[1], actionString2)
-        self.failUnlessEqual(extension[2], actionString3)
-        del extension
-        self.failUnlessEqual(authnRequest.extension[0], actionString1)
-        self.failUnlessEqual(authnRequest.extension[1], actionString2)
-        self.failUnlessEqual(authnRequest.extension[2], actionString3)
-        extension = authnRequest.extension
-        self.failUnlessEqual(extension[0], actionString1)
-        self.failUnlessEqual(extension[1], actionString2)
-        self.failUnlessEqual(extension[2], actionString3)
-        del extension
-        self.failUnlessEqual(authnRequest.extension[0], actionString1)
-        self.failUnlessEqual(authnRequest.extension[1], actionString2)
-        self.failUnlessEqual(authnRequest.extension[2], actionString3)
-        authnRequest.extension = None
-        self.failUnlessEqual(authnRequest.extension, None)
-
-        del authnRequest
-
-    def test06(self):
-        """Get & set attributes of nodes of type node."""
-
-        login = lasso.Login(lasso.Server())
-
-        self.failUnlessEqual(login.request, None)
-        login.request = lasso.LibAuthnRequest()
-        login.request.consent = lasso.libConsentObtained
-        self.failUnlessEqual(login.request.consent, lasso.libConsentObtained)
-        login.request = None
-        self.failUnlessEqual(login.request, None)
-
-        del login
 
 
 class ServerTestCase(unittest.TestCase):
@@ -454,15 +251,14 @@ class IdentityTestCase(unittest.TestCase):
         self.failUnlessEqual(identityDump, newIdentityDump)
 
 
-bindingSuite = unittest.makeSuite(BindingTestCase, 'test')
 serverSuite = unittest.makeSuite(ServerTestCase, 'test')
 loginSuite = unittest.makeSuite(LoginTestCase, 'test')
 logoutSuite = unittest.makeSuite(LogoutTestCase, 'test')
 defederationSuite = unittest.makeSuite(DefederationTestCase, 'test')
 identitySuite = unittest.makeSuite(IdentityTestCase, 'test')
 
-allTests = unittest.TestSuite((bindingSuite, serverSuite, loginSuite, logoutSuite,
-                               defederationSuite, identitySuite))
+allTests = unittest.TestSuite((serverSuite, loginSuite, logoutSuite, defederationSuite,
+                               identitySuite))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())

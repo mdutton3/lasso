@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 #
+# $Id$
+#
 # XmlTestRunner
 #
 # Copyright (C) 2004 Entr'ouvert
