@@ -1488,12 +1488,6 @@ typedef struct {
 		%newobject session_get;
 		LassoSession *session;
 
-		/* Attributes */
-
-		%newobject assertion_get;
-		LassoAssertion *assertion;
-
-
 		/* Constructor, Destructor & Static Methods */
 
 		LassoLogin(LassoServer *server);
@@ -1504,10 +1498,6 @@ typedef struct {
 		static LassoLogin *newFromDump(LassoServer *server, gchar *dump);
 
 		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setAssertionFromDump(gchar *dump);
-		END_THROW_ERROR
 
 	        THROW_ERROR
 		void setIdentityFromDump(gchar *dump);
@@ -1697,18 +1687,6 @@ gint LassoLogin_session_set(LassoLogin *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
 
-/* Attributes from LassoLogin implementations */
-
-/* assertion */
-#define LassoLogin_get_assertion LassoLogin_assertion_get
-LassoAssertion *LassoLogin_assertion_get(LassoLogin *self) {
-	return lasso_login_get_assertion(self);
-}
-#define LassoLogin_set_assertion LassoLogin_assertion_set
-gint LassoLogin_assertion_set(LassoLogin *self, LassoAssertion *assertion) {
-	return lasso_login_set_assertion(self, assertion);
-}
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoLogin lasso_login_new
@@ -1727,13 +1705,6 @@ gint LassoLogin_setIdentityFromDump(LassoLogin *self, gchar *dump) {
 
 gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
-}
-
-/* Methods */
-
-/* assertion */
-gint LassoLogin_setAssertionFromDump(LassoLogin *self, gchar *dump) {
-	return lasso_login_set_assertion_from_dump(self, dump);
 }
 
 /* Methods implementations */
