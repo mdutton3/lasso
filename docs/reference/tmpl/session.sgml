@@ -37,17 +37,6 @@ Principal Session
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_session_add_assertion ##### -->
-<para>
-
-</para>
-
-@session: 
-@providerID: 
-@assertion: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_session_destroy ##### -->
 <para>
 
@@ -65,16 +54,6 @@ Principal Session
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_session_get_assertion ##### -->
-<para>
-
-</para>
-
-@session: 
-@providerID: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_session_get_provider_index ##### -->
 <para>
 
@@ -82,16 +61,6 @@ Principal Session
 
 @session: 
 @index: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_session_remove_assertion ##### -->
-<para>
-
-</para>
-
-@session: 
-@providerID: 
 @Returns: 
 
 

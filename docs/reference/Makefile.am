@@ -10,7 +10,7 @@ EXTRA_DIST = \
 DOC_SOURCE_DIR = ./code
 DOC_SOURCE_FILES = \
 	$(shell find $(top_srcdir)/lasso -name '*.c' -print ) \
-	$(shell find $(top_srcdir)/lasso -name '*.h' -print )
+	$(shell find $(top_srcdir)/lasso -name '*.h' -print | grep -v private)
 
 IGNORE_HFILES = lasso_config.h
 
@@ -34,6 +34,7 @@ SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisit
 #
 sgml: templates
 	@echo '*** Building SGML ***'
+	cp $(srcdir)/*.sgml $(srcdir)/version.xml build/
 	cd build && gtkdoc-mkdb --module=lasso \
 		    --main-sgml-file=lasso.sgml \
 		    --sgml-mode \
@@ -41,7 +42,6 @@ sgml: templates
 		    --tmpl-dir=../tmpl/ \
 		    --source-dir=../$(DOC_SOURCE_DIR)/lasso \
 		    --output-dir=../sgml/
-	cp $(srcdir)/*.sgml $(srcdir)/version.xml build/
 	(for i in `find sgml -name "*.sgml" -print` ; do \
 	    cat $$i | \
 		sed 's!\(&lt;dsig:\)\([^/]*\)\(\/&gt;\)!<ulink URL=\"http://www.w3.org/TR/xmldsig-core/#sec-\2\">\1\2\3</ulink>!g' | \
@@ -123,7 +123,6 @@ lasso-index: scan
 clean-local: clean-sources
 	-rm -rf $(DOC_SOURCE_DIR)
 	-rm -rf .libs
-	-rm -rf tmpl
 	-rm -rf sgml
 	-rm -rf html
 	-rm -rf build

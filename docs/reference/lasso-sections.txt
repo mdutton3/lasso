@@ -78,12 +78,9 @@ LASSO_IDENTITY_GET_CLASS
 LassoSession
 lasso_session_new
 lasso_session_new_from_dump
-lasso_session_add_assertion
 lasso_session_destroy
 lasso_session_dump
-lasso_session_get_assertion
 lasso_session_get_provider_index
-lasso_session_remove_assertion
 <SUBSECTION Standard>
 LASSO_SESSION
 LASSO_IS_SESSION
