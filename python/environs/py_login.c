@@ -56,7 +56,7 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[sssssss]", "request", "response", "request_type",
+    return Py_BuildValue("[ssssssss]", "request", "response", "request_type", "response_dump",
 			 "msg_url", "msg_body", "protocolProfile", "assertionArtifact");
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
@@ -64,6 +64,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->response));
   if (!strcmp(attr, "request_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
+  if (!strcmp(attr, "response_dump"))
+    return (charPtrConst_wrap(login->response_dump));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
   if (!strcmp(attr, "msg_body"))
