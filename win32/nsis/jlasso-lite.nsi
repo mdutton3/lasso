@@ -4,7 +4,7 @@
 !define PRODUCT_NAME "Liberty Alliance Single Sign On Java"
 !define PRODUCT_VERSION "0.4.1"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
-!define PRODUCT_WEB_SITE "http://www.entrouvert.org"
+!define PRODUCT_WEB_SITE "http://lasso.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
@@ -28,8 +28,8 @@ SetCompressor bzip2
 ; License page
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 !insertmacro MUI_PAGE_LICENSE "..\..\COPYING"
-; Components page
-!insertmacro MUI_PAGE_COMPONENTS
+; Directory page
+!insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
@@ -57,7 +57,9 @@ Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
-Section "L.A.S.S.O. Java" SEC08
+Section "Java Lasso binding" SEC01
+  SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
   File "..\..\java\.libs\jlasso.dll"
   File "..\..\java\lasso.jar"
 SectionEnd
@@ -78,11 +80,6 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
-; Section descriptions
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Free implementation of the Liberty Alliance specifications."
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
-
 
 Function un.onUninstSuccess
   HideWindow
@@ -98,9 +95,9 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\libjlasso.dll"
   Delete "$INSTDIR\lasso.jar"
-  
+  Delete "$INSTDIR\jlasso.dll"
+
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On Java\Uninstall.lnk"
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On Java\Website.lnk"
 
