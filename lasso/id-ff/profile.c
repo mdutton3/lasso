@@ -109,6 +109,9 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	const char *name = NULL;
 	xmlNs *ns = NULL;
 
+	if (soap == NULL)
+		return LASSO_REQUEST_TYPE_INVALID;
+
 	doc = xmlParseMemory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
