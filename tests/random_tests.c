@@ -173,7 +173,6 @@ START_TEST(test05_xsi_type)
 	stmt->AuthnContext = LASSO_LIB_AUTHN_CONTEXT(lasso_lib_authn_context_new());
 	stmt->AuthnContext->AuthnContextClassRef = g_strdup("urn:toto");
 
-	printf("%s\n", lasso_node_dump(LASSO_NODE(assertion)));
 	fail_unless(strstr(lasso_node_dump(LASSO_NODE(assertion)),
 				"xsi:type=\"lib:AuthnContextType\"") == NULL,
 			"AuthnContext got a xsi:type");
