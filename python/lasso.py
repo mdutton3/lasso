@@ -34,13 +34,14 @@ class Error(Exception):
         self.msg = msg
     def __str__(self):
         return repr(self.msg)
-
+    
 def init():
     """
     """
     return lassomod.init()
 def shutdown():
     """
+    Shutdown Lasso Library
     """
     return lassomod.shutdown()
 
@@ -181,5 +182,11 @@ class Node:
         lassomod.node_dump(self, encoding, format)
     def destroy(self):
         lassomod.node_unref(self)
+    def get_attr_value(self, name):
+        return lassomod.node_get_attr_value(self, name)
+    def get_child(self, name):
+        return Node(_obj=lassomod.node_get_child(self, name))
     def url_encode(self, sign_method, private_key_file):
         return lassomod.node_url_encode(self, sign_method, private_key_file)
+    def verify_signature(self, certificate_file):
+        return lassomod.node_verify_signature(self, certificate_file)
