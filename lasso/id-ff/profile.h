@@ -52,13 +52,13 @@ typedef struct _LassoProfilePrivate LassoProfilePrivate;
 /* Request types (used by SOAP endpoint) */
 typedef enum {
   lassoRequestTypeInvalid = 0,
-  lassoRequestTypeLogin,
-  lassoRequestTypeLogout,
-  lassoRequestTypeDefederation,
-  lassoRequestTypeRegisterNameIdentifier,
-  lassoRequestTypeNameRegistration,
-  lassoRequestTypeNameIdentifierMapping,
-  lassoRequestTypeLecp
+  lassoRequestTypeLogin = 1,
+  lassoRequestTypeLogout = 2,
+  lassoRequestTypeDefederation = 3,
+  lassoRequestTypeNameRegistration = 4,
+  lassoRequestTypeRegisterNameIdentifier = 4, /* obsolete keep API compatible */
+  lassoRequestTypeNameIdentifierMapping = 5,
+  lassoRequestTypeLecp = 6
 } lassoRequestType;
 
 typedef enum {
