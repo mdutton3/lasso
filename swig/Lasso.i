@@ -694,7 +694,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
 %rename(WSF_SUPPORT) LASSO_WSF_SUPPORT;
 #endif
-%include "../lasso/lasso_config.h"
+/*%include "../lasso/lasso_config.h"*/
 #ifdef LASSO_WSF_ENABLED
 %{
 #define LASSO_WSF_SUPPORT 1
