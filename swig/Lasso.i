@@ -79,13 +79,14 @@
 %pragma(java) jniclasscode=%{
   static {
     try {
-        // Load a library whose "core" name is "jlasso".
-        // Operating system specific stuff will be added to make an
-        // actual filename from this: Under Unix this will become
-	// libjlasso.so while under Windows it will likely become
-	// something like jlasso.dll.
-        System.loadLibrary("jlasso");
-    } catch (UnsatisfiedLinkError e) {
+      // Load a library whose "core" name is "jlasso".
+      // Operating system specific stuff will be added to make an
+      // actual filename from this: Under Unix this will become
+      // libjlasso.so while under Windows it will likely become
+      // something like jlasso.dll.
+      System.loadLibrary("jlasso");
+    }
+    catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);
     }
@@ -185,7 +186,145 @@ int lasso_init(void);
 #endif
 int lasso_shutdown(void);
 
-/* Helper functions */
+/* Helper variables and functions */
+
+#if !defined(SWIGJAVA) && !defined(SWIGCSHARP)
+
+%{
+
+typedef struct node_info {
+	char *name;
+	swig_type_info *swig;
+} node_info;
+
+static node_info node_infos[100]; /* FIXME: Size should be computed */
+
+%}
+
+%init %{
+
+	node_info *info;
+
+#define SET_NODE_INFO(nodeTypeName) info->name = #nodeTypeName;\
+	info->swig = SWIGTYPE_p_##nodeTypeName;\
+	info++
+
+	info = node_infos;
+	SET_NODE_INFO(LassoNode);
+
+#if 0
+	SET_NODE_INFO(LassoDiscoCredentials);
+	SET_NODE_INFO(LassoDiscoDescription);
+	SET_NODE_INFO(LassoDiscoEncryptedResourceID);
+	SET_NODE_INFO(LassoDiscoInsertEntry);
+	SET_NODE_INFO(LassoDiscoModify);
+	SET_NODE_INFO(LassoDiscoModifyResponse);
+	SET_NODE_INFO(LassoDiscoOptions);
+	SET_NODE_INFO(LassoDiscoQuery);
+	SET_NODE_INFO(LassoDiscoQueryResponse);
+	SET_NODE_INFO(LassoDiscoRemoveEntry);
+	SET_NODE_INFO(LassoDiscoRequestedServiceType);
+	SET_NODE_INFO(LassoDiscoResourceID);
+	SET_NODE_INFO(LassoDiscoResourceOffering);
+	SET_NODE_INFO(LassoDiscoServiceInstance);
+
+	SET_NODE_INFO(LassoDstModification);
+	SET_NODE_INFO(LassoDstModify);
+	SET_NODE_INFO(LassoDstModifyResponse);
+	SET_NODE_INFO(LassoDstNewData);
+	SET_NODE_INFO(LassoDstQuery);
+	SET_NODE_INFO(LassoDstQueryItem);
+	SET_NODE_INFO(LassoDstQueryResponse);
+#endif
+
+	SET_NODE_INFO(LassoLibAssertion);
+	SET_NODE_INFO(LassoLibAuthnRequest);
+	SET_NODE_INFO(LassoLibAuthnResponse);
+	SET_NODE_INFO(LassoLibFederationTerminationNotification);
+	SET_NODE_INFO(LassoLibLogoutRequest);
+	SET_NODE_INFO(LassoLibLogoutResponse);
+	SET_NODE_INFO(LassoLibRegisterNameIdentifierRequest);
+	SET_NODE_INFO(LassoLibRegisterNameIdentifierResponse);
+	SET_NODE_INFO(LassoLibStatusResponse);
+
+#if 0
+	SET_NODE_INFO(LassoPPMsgContact);
+#endif
+
+	SET_NODE_INFO(LassoSamlAdvice);
+	SET_NODE_INFO(LassoSamlAssertion);
+	SET_NODE_INFO(LassoSamlAttribute);
+	SET_NODE_INFO(LassoSamlAttributeStatement);
+	SET_NODE_INFO(LassoSamlAuthenticationStatement);
+	SET_NODE_INFO(LassoSamlConditions);
+	SET_NODE_INFO(LassoSamlNameIdentifier);
+	SET_NODE_INFO(LassoSamlSubject);
+	SET_NODE_INFO(LassoSamlSubjectConfirmation);
+	SET_NODE_INFO(LassoSamlSubjectLocality);
+	SET_NODE_INFO(LassoSamlSubjectStatement);
+
+	SET_NODE_INFO(LassoSamlpRequest);
+	SET_NODE_INFO(LassoSamlpResponse);
+	SET_NODE_INFO(LassoSamlpStatus);
+	SET_NODE_INFO(LassoSamlpStatusCode);
+
+	info->name = NULL;
+	info->swig = NULL;
+
+%}
+
+/* Accept any GObject class derivated from LassoNode as a LassoNode */
+%typemap(in) LassoNode * {
+	node_info *info;
+#ifdef SWIGPERL5
+	for (info = node_infos; info->swig; info++)
+		if (SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) < 0)
+			break;
+	if (! info->swig)
+		SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle");
+#else
+#ifdef SWIGPHP4
+	for (info = node_infos; info->swig; info++)
+		if (SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) < 0)
+			break;
+	if (! info->swig)
+		zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
+			   $argnum-argbase, $1_descriptor->name);
+#else /* SWIGPYTHON */
+	for (info = node_infos; info->swig; info++)
+		if (SWIG_ConvertPtr($input, (void **) &$1, info->swig, $disown) != -1)
+			break;
+	if (! info->swig) {
+		/* Display error message. */
+		SWIG_ConvertPtr($input, (void **) &$1, $1_descriptor,
+				SWIG_POINTER_EXCEPTION | $disown);
+		SWIG_fail;
+	}
+#endif
+#endif
+}
+
+%apply SWIGTYPE *DYNAMIC { LassoNode * };
+
+/* Cast a LassoNode into the appropriate derivated class. */
+%{
+static swig_type_info *LassoNode_dynamic(void **nodePointer) {
+	node_info *info;
+	char *name;
+
+	name = (char *) G_OBJECT_TYPE_NAME(*nodePointer);
+	for (info = node_infos; info->swig; info++) {
+		if (strcmp(info->name, name) == 0)
+			return info->swig;
+	}
+	return NULL;
+}
+%}
+
+/* Register the above casting function. */
+DYNAMIC_CAST(SWIGTYPE_p_LassoNode, LassoNode_dynamic);
+
+#endif
 
 %{
 
