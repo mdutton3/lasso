@@ -24,7 +24,9 @@
  */
 
 #include <string.h>
+
 #include <glib/gprintf.h>
+#include <libxml/uri.h>
 #include <xmlsec/base64.h>
 
 #include <lasso/xml/errors.h>
@@ -475,13 +477,15 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
 		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 	}
 
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
-		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
 		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 	}
 
@@ -495,13 +499,9 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 		if (ret == 0) {
 			federation = g_hash_table_lookup(LASSO_PROFILE(login)->identity->federations,
 					LASSO_PROFILE(login)->remote_providerID);
-			lasso_login_build_assertion(login,
-					federation,
-					authenticationMethod,
-					authenticationInstant,
-					reauthenticateOnOrAfter,
-					notBefore,
-					notOnOrAfter);
+			lasso_login_build_assertion(login, federation, authenticationMethod,
+					authenticationInstant, reauthenticateOnOrAfter,
+					notBefore, notOnOrAfter);
 		}
 	}
 
@@ -522,31 +522,30 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 
 	xmlFree(identityProviderSuccinctID);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
-	relayState = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->RelayState;
+	relayState = xmlURIEscapeStr(
+			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->RelayState, NULL);
 
-	switch (http_method) {
-		case LASSO_HTTP_METHOD_REDIRECT:
-			if (relayState == NULL) {
-				LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s", url, b64_samlArt);
-			}
-			else {
-				LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s&RelayState=%s",
-						url, b64_samlArt, relayState);
-			}
-			break;
-		case LASSO_HTTP_METHOD_POST:
-			LASSO_PROFILE(login)->msg_url = g_strdup(url);
-			LASSO_PROFILE(login)->msg_body = g_strdup(b64_samlArt);
-			if (relayState != NULL) {
-				LASSO_PROFILE(login)->msg_relayState = g_strdup(relayState);
-			}
-			break;
-		default:
-			break;
+	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
+		if (relayState == NULL) {
+			LASSO_PROFILE(login)->msg_url = g_strdup_printf(
+					"%s?SAMLart=%s", url, b64_samlArt);
+		} else {
+			LASSO_PROFILE(login)->msg_url = g_strdup_printf(
+					"%s?SAMLart=%s&RelayState=%s", url, b64_samlArt, relayState);
+		}
+	}
+
+	if (http_method == LASSO_HTTP_METHOD_POST) {
+		LASSO_PROFILE(login)->msg_url = g_strdup(url);
+		LASSO_PROFILE(login)->msg_body = g_strdup(b64_samlArt);
+		if (relayState != NULL) {
+			LASSO_PROFILE(login)->msg_relayState = g_strdup(relayState);
+		}
 	}
 	login->assertionArtifact = g_strdup(b64_samlArt);
 	xmlFree(url);
 	xmlFree(b64_samlArt);
+	xmlFree(relayState);
 
 	return ret;
 }
