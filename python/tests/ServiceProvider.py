@@ -120,7 +120,12 @@ class ServiceProvider(Provider):
         login = lasso.Login.new(server)
         login.init_authn_request(self.idpSite.providerId)
         self.failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
-        login.request.set_isPassive(httpRequest.getQueryBoolean('isPassive', False))
+        forceAuthn = httpRequest.getQueryBoolean('forceAuthn', False)
+        if forceAuthn:
+            login.request.set_forceAuthn(forceAuthn)
+        isPassive = httpRequest.getQueryBoolean('isPassive', False)
+        if not isPassive:
+            login.request.set_isPassive(isPassive)
         login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         login.request.set_consent(lasso.libConsentObtained)
         relayState = 'fake'

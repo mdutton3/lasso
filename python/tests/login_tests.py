@@ -197,6 +197,41 @@ class LoginTestCase(unittest.TestCase):
             principal, 'GET', '/loginUsingRedirect?isPassive=1'))
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
+    def test06(self):
+        """Testing forceAuthn flag."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+
+        # Ask user to reauthenticate while he is already logged.
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        del principal.keyring[idpSite.url] # Ensure user can't authenticate.
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+
+        # Force authentication, but user won't authenticate.
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?forceAuthn=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+
 ##     def test06(self):
 ##         """Service provider LECP login."""
 
