@@ -230,7 +230,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
   /* remove federation of the remote provider */
   lasso_identity_remove_remote_nameIdentifier(identity);
   message(G_LOG_LEVEL_INFO, "Remote name identifier removed from federation with %s\n",
-	profileContext->remote_providerID);
+	  profileContext->remote_providerID);
 
   return(0);
 }
