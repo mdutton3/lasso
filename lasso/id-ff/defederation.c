@@ -246,11 +246,11 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
     goto done;
   }
 
-  /* get the content, name qualifier and the format of the name identifier */
+  /* Get the content, name qualifier and the format of the name identifier */
+  /* WARNING : Don't free content, it will be backed up in nameIdentifier attribute of LassoDefederation object */
   content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
-
   if (content == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "NameIdentifier has no content\n");
     ret = -1;
@@ -311,15 +311,15 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
     ret = -1;
     goto done;    
   }
-
   if (profile->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while creating the federation termination notification\n");
     ret = -1;
     goto done;
   }
 
-  /* set the nameIdentifier attribute, dont free content variable ! */
+  /* Set the nameIdentifier attribute from content local variable */
   profile->nameIdentifier = content;
+  content = NULL;
 
   /* remove federation with remote provider id */
   if (profile->identity == NULL) {
@@ -335,13 +335,21 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
   }
 
   done:
+  if (nameIdentifier != NULL) {
+    lasso_node_destroy(nameIdentifier);
+  }
   if (federation!=NULL) {
     lasso_federation_destroy(federation);
   }
-
-  xmlFree(nameQualifier);
-  xmlFree(format);
-  lasso_node_destroy(nameIdentifier);
+  if (content != NULL) {
+    xmlFree(content);
+  }
+  if (nameQualifier != NULL) {
+    xmlFree(nameQualifier);
+  }
+  if (format != NULL) {
+    xmlFree(format);
+  }
 
   return ret;
 }
