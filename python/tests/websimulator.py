@@ -182,8 +182,8 @@ class WebSession(abstractweb.WebSessionMixin, object):
 
     expirationTime = None # A sample session variable
     isDirty = True
-    loginDump = None # Used only by some identity providers
     lassoSessionDump = None
+    loginDump = None # Used only by some identity providers
     userId = None # ID of logged user. 
 
     def __init__(self, token):
@@ -288,9 +288,13 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
 class WebUser(abstractweb.WebUserMixin, object):
     """Simulation of user of a web site"""
 
+    isDirty = True
     lassoIdentityDump = None
     language = 'fr' # A sample user variable
     uniqueId = None # The user name is used as an ID in this simulation.
 
     def __init__(self, uniqueId):
         self.uniqueId = uniqueId
+
+    def save(self):
+        pass

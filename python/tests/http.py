@@ -335,9 +335,6 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                         if session is None:
                             sessionToken = None
                             del user.sessionToken
-                            # Don't call user.getDocument().save() now, because the session
-                            # will be retrieved (from cookie or sessionToken query field)
-                            # or created. So user/@sessionToken will be updated.
                         else:
                             # For security reasons, we want to minimize the publication of
                             # session token (it is better not to store it in a cookie or in
@@ -372,7 +369,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                 except:
                     login = loginAndPassword
                     password = ''
-                logs.debug('Basic authentication: login = "%s" / password = "%s"' % (
+                logger.debug('Basic authentication: login = "%s" / password = "%s"' % (
                     login, password))
                 if password:
                     user = self.site.authenticateLoginPasswordUser(login, password)
@@ -382,47 +379,41 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                         return self.outputErrorUnauthorized(httpPath)
                     else:
                         sessionToken = user.sessionToken
-                    if sessionToken:
-                        session = sessions.retrieveSession(sessionToken)
-                        if session is None:
-                            sessionToken = None
-                            user.deleteSessionToken()
-                            # Don't call user.getDocument().save() now, because the session
-                            # will be retrieved (from cookie or sessionToken query field)
-                            # or created. So user/@sessionToken will be updated.
-                        else:
-                            # For security reasons, we want to minimize the publication of
-                            # session token (it is better not to store it in a cookie or in
-                            # URLs).
-                            if session.publishToken:
-                                del session.publishToken
+                        if sessionToken:
+                            session = self.site.getSessionFromToken(sessionToken)
+                            if session is None:
+                                sessionToken = None
+                                del user.sessionToken
+                            else:
+                                # For security reasons, we want to minimize the publication of
+                                # session token (it is better not to store it in a cookie or in
+                                # URLs). The client need to send the certificate each time, for the
+                                # session to continue.
+                                if session.publishToken:
+                                    del session.publishToken
                 elif login:
                     # No password was given. Assume login contains a session token.
                     # TODO: sanity chek on login
-                    session = sessions.retrieveSession(login)
+                    session = self.site.getSessionFromToken(sessionToken)
                     if session is not None:
-                        account = session.getAccount()
-                        if account is not None:
-                            user = account.getUser()
-                            if user is not None \
-                                   and user.getSessionToken() != session.getToken():
-                                # Sanity check.
-                                user.setSessionToken(session.getToken())
-                                user.getDocument().save()
+                        user = session.user
+                        if user is not None and user.sessionToken != session.token:
+                            # Sanity check.
+                            user.sessionToken = session.token
             else:
-                logs.info('Unknown authentication scheme = %s' % authenticationScheme)
+                logger.info('Unknown authentication scheme = %s' % authenticationScheme)
                 return self.outputErrorUnauthorized(httpPath)
 
         # Handle use of cookies, session and user.
         cookie = None
         cookieContent = {}
         if self.httpRequest.headers.has_key('Cookie'):
-            logs.debug('Cookie received:')
+            logger.debug('Cookie received:')
             cookie = Cookie.SimpleCookie(
                 self.httpRequest.headers['Cookie'])
             for k, v in cookie.items():
                 cookieContent[k] = v.value
-                logs.debug('  %s = %s' % (k, cookieContent[k]))
+                logger.debug('  %s = %s' % (k, cookieContent[k]))
         self.cookie = cookie
 
         sessionToken = None
@@ -443,50 +434,44 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                         sessionTokenInCookie = True
         canUseCookie = True
         if session is None and sessionToken is not None:
-            session = sessions.retrieveSession(sessionToken)
+            session = self.site.getSessionFromToken(sessionToken)
             if session is None:
                 sessionToken = None
                 sessionTokenInCookie = False
             else:
                 if user is None:
-                    # import expression.modules.passwordaccounts as passwordaccounts
-                    account = session.getAccount(acceptOnlyAccount = False)
-                    if account is not None:
-                        user = account.getUser()
-                        if user is not None and user.getSessionToken() != sessionToken:
-                            # Sanity check.
-                            user.setSessionToken(session.getToken())
-                            user.getDocument().save()
+                    user = session.user
+                    if user is not None and user.sessionToken != sessionToken:
+                        # Sanity check.
+                        user.sessionToken = sessionToken
                 else:
-                    # The user has been authenticated (using HTTP authentication), but the
+                    # The user has been authenticated (using HTTP or X.509 authentication), but the
                     # associated session didn't exist (or was too old, or...). So, update
                     # its sessionToken.
-                    user.setSessionToken(session.getToken())
-                    user.getDocument().save()
+                    user.sessionToken = sessionToken
                     # For security reasons, we want to minimize the publication of session
                     # token (it is better not to store it in a cookie or in URLs).
                     if session.publishToken:
                         del session.publishToken
         if session is None and user is not None:
-            # The user has been authenticated (using HTTP authentication), but the session
+            # The user has been authenticated (using HTTP or X.509 authentication), but the session
             # doesn't exist yet (or was too old, or...). Create a new session.
             session = sessions.getOrCreateSession()
             # For security reasons, we want to minimize the publication of session
             # token (it is better not to store it in a cookie or in URLs).
             # session.publishToken = False # False is the default value.
             session.setAccountAbsolutePath(account.getAbsolutePath())
-            user.setSessionToken(session.getToken())
-            user.getDocument().save()
+            user.sessionToken = session.token
         self.user = user
         if user is not None:
-            logs.debug('User: %s' % user.simpleLabel)
+            logger.debug('User: %s' % user.simpleLabel)
         self.session = session
         if session is not None:
             if not sessionTokenInCookie:
                 # The sessionToken is valid but is not stored in the cookie. So, don't try to
                 # use cookie.
                 canUseCookie = False
-            logs.debug('Session: %s' % session.token)
+            logger.debug('Session: %s' % session.simpleLabel)
         self.canUseCookie = canUseCookie
 
 ###############
@@ -530,10 +515,13 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
 
 ##     def outputData(self, data, contentLocation = None, headers = None, mimeType = None,
 ##                    modificationTime = None, successCode = 200):
-##         # Session must be saved before responding. Otherwise, when the server is multitasked or
-##         # multithreaded, it may receive a new HTTP request before the session is saved.
+##         # Session and user must be saved before responding. Otherwise, when the server is
+##         # multitasked or multithreaded, it may receive a new HTTP request before the session is
+##         # saved.
 ##         if self.session is not None and self.session.isDirty:
 ##             self.session.save()
+##         if self.user is not None and self.user.isDirty:
+##             self.user.save()
 
 ##         if isinstance(data, basestring):
 ##             dataFile = None
@@ -738,10 +726,13 @@ An exception "%(exception)s" of class "%(exceptionType)s" occurred.
         return self.outputErrorInternalServer()
 
     def respondRedirectTemporarily(self, url):
-        # Session must be saved before responding. Otherwise, when the server is multitasked or
-        # multithreaded, it may receive a new HTTP request before the session is saved.
+        # Session and user must be saved before responding. Otherwise, when the server is
+        # multitasked or multithreaded, it may receive a new HTTP request before the session is
+        # saved.
         if self.session is not None and self.session.isDirty:
             self.session.save()
+        if self.user is not None and self.user.isDirty:
+            self.user.save()
 
         message = 'Moved Temporarily to "%s".' % url
         logger.debug(message)
@@ -760,10 +751,13 @@ An exception "%(exception)s" of class "%(exceptionType)s" occurred.
             self.wfile.write(data)
 
     def send_error(self, code, message = None, data = None, headers = None, setCookie = False):
-        # Session must be saved before responding. Otherwise, when the server is multitasked or
-        # multithreaded, it may receive a new HTTP request before the session is saved.
+        # Session and user must be saved before responding. Otherwise, when the server is
+        # multitasked or multithreaded, it may receive a new HTTP request before the session is
+        # saved.
         if self.session is not None and self.session.isDirty:
             self.session.save()
+        if self.user is not None and self.user.isDirty:
+            self.user.save()
 
         shortMessage, longMessage = self.responses.get(code, ('???', '???'))
         if message is None:

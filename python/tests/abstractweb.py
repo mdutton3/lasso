@@ -143,19 +143,16 @@ class HttpRequestHandlerMixin:
     site = None # The virtual host
 
     def respond(self, statusCode = 200, statusMessage = None, headers = None, body = None):
-        # Session must be saved before responding. Otherwise, when the server is multitasked or
-        # multithreaded, it may receive a new HTTP request before the session is saved.
-        if self.session is not None and self.session.isDirty:
-            self.session.save()
-
         self.httpResponse = self.HttpResponse(
             self, statusCode, statusMessage = statusMessage, headers = headers, body = body)
 
-        # Session must be saved before responding. Otherwise, when the server is multitasked or
-        # multithreaded, it may receive a new HTTP request before the session is saved.
-        # FIXME: For some status codes, session must not be saved. See outputXXX methods in http.
+        # Session and user must be saved before responding. Otherwise, when the server is
+        # multitasked or multithreaded, it may receive a new HTTP request before the session is
+        # saved.
         if self.session is not None and self.session.isDirty:
             self.session.save()
+        if self.user is not None and self.user.isDirty:
+            self.user.save()
 
         return self.httpResponse.send(self)
 

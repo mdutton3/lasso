@@ -251,13 +251,23 @@ class LoginTestCase(unittest.TestCase):
         idpSite = self.generateIdpSite(internet)
         spSite = self.generateSpSite(internet)
         spSite.idpSite = idpSite
-        lec = self.generateLibertyEnabledClient(internet)
-        lec.idpSite = idpSite
         principal = Principal(internet, 'Romain Chantereau')
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
+        lec = self.generateLibertyEnabledClient(internet)
+        lec.idpSite = idpSite
+
+        # Try LECP, but the principal is not authenticated on identity-provider. So, LECP must
+        # fail.
         httpResponse = lec.login(principal, spSite, '/login')
-        raise str((httpResponse.statusCode, httpResponse.statusMessage, httpResponse.headers['Content-Type'], httpResponse.body))
+        failUnlessEqual(httpResponse.statusCode, 401)
+
+        # Now we authenticate principal, before testing LECP. So, LECP must succeed.
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
+        failUnlessEqual(httpResponse.statusCode, 200)
+        idpSite.createSession(lec)
+        httpResponse = lec.login(principal, spSite, '/login')
+        failUnlessEqual(httpResponse.statusCode, 200)
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')

@@ -73,6 +73,7 @@ class LibertyEnabledClient(WebClient):
     # without metadata, instead of using 'singleSignOnServiceUrl'.
     idpSingleSignOnServiceUrl = None
     lassoServerDump = None
+    principal = None
 
     def __init__(self, internet):
         WebClient.__init__(self, internet)
@@ -80,7 +81,15 @@ class LibertyEnabledClient(WebClient):
     def getLassoServer(self):
         return lasso.Server.new_from_dump(self.lassoServerDump)
 
+    def getSessionTokens(self):
+        # LECP is a proxy, not au principal, so it doesn't have its own sessionTokens.
+        if self.principal is None:
+            return {}
+        return self.principal.sessionTokens
+
     def login(self, principal, site, path):
+        self.principal = principal
+
         httpResponse = self.sendHttpRequestToSite(site, 'GET', path)
         failUnlessEqual(
             httpResponse.headers['Content-Type'], 'application/vnd.liberty-request+xml')
@@ -102,7 +111,20 @@ class LibertyEnabledClient(WebClient):
         lecp.build_authn_response_msg()
         failUnless(lecp.msg_url)
         failUnless(lecp.msg_body)
+
+        del self.principal
+
         # FIXME: Should we use 'multipart/form-data' for forms?
         return self.sendHttpRequest(
             'POST', lecp.msg_url, headers = {'Content-Type': 'multipart/form-data'},
             form = {'LARES': lecp.msg_body})
+
+    def setKeyring(self, keyring):
+        # LECP is a proxy, not au principal, so it doesn't have its own keyring.
+        pass
+
+    def setSessionTokens(self, sessionTokens):
+        # LECP is a proxy, not au principal, so it doesn't have its own sessionTokens.
+        pass
+
+    sessionTokens = property(getSessionTokens, setSessionTokens)
