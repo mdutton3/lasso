@@ -770,6 +770,14 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (strcmp(xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
 		prefix = "Samlp";
 
+	/* XXX: new Dst namespaces can be added dynamically; they should not
+	 * be hardcoded here
+	 */
+	if (strcmp(xmlnode->ns->href, LASSO_LIB_SERVICE_TYPE_ID_SIS_PP) == 0)
+		prefix = "Dst";
+	if (strcmp(xmlnode->ns->href, LASSO_LIB_SERVICE_TYPE_ID_SIS_EP) == 0)
+		prefix = "Dst";
+
 	xsitype = xmlGetNsProp(xmlnode, "type", LASSO_XSI_HREF);
 	if (xsitype) {
 		/* XXX: should look for proper namespace prefix declaration
