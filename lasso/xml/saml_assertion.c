@@ -105,8 +105,6 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 	xmlNode *t;
 	xmlNs *xsi_ns;
 
-	xsi_ns = xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX);
-
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -118,6 +116,7 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 			typename = g_strdup_printf("lib:%sType", xmlnode->name);
 			xmlSetNs(xmlnode, ns);
 			if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL) {
+				xsi_ns = xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX);
 				xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
 			}
 			g_free(typename);
