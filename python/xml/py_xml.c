@@ -144,6 +144,7 @@ PyObject *node_export_to_soap(PyObject *self, PyObject *args) {
 PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   const xmlChar *name;
+  GError *err = NULL;
   xmlChar *ret;
 
   if (CheckArgs(args, "OS:node_get_attr_value")) {
@@ -153,7 +154,9 @@ PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  ret = lasso_node_get_attr_value(LassoNode_get(node_obj), name);
+  ret = lasso_node_get_attr_value(LassoNode_get(node_obj), name, &err);
+  /* FIXME generate an exception here */
+  g_error_free(err);
 
   return (xmlCharPtr_wrap(ret));
 }
