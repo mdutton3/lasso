@@ -13,6 +13,7 @@ noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
 	federation_termination.c \
+	identity.c \
 	lecp.c \
 	login.c \
 	logout.c \
@@ -20,11 +21,11 @@ liblasso_environs_la_SOURCES = \
 	profile_context.c \
 	register_name_identifier.c \
 	server.c \
-	session.c \
-	user.c
+	session.c
 
 liblassoinclude_HEADERS = \
 	federation_termination.h \
+	identity.h \
 	lecp.h \
 	login.h \
 	logout.h \
@@ -32,5 +33,4 @@ liblassoinclude_HEADERS = \
 	profile_context.h \
 	register_name_identifier.h \
 	server.h \
-	session.h \
-	user.h
+	session.h
