@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/disco_resource_id_group.h>
+#include <lasso/xml/disco_resource_offering.h>
 #include <lasso/xml/dst_data.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
@@ -38,29 +38,64 @@ struct _LassoPersonalProfileServicePrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
-gint
-lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
-					  LassoDiscoResourceOffering *ResourceOffering,
-					  const char *Select)
+LassoDstQueryItem*
+lasso_personal_profile_service_add_query_item(LassoPersonalProfileService *pp, const char *select)
 {
-  LassoDstQueryItem *QueryItem;
-  LassoWsfProfile *profile;
-  LassoAbstractService *service;
+	LassoWsfProfile *profile;
+	LassoDstQueryItem *query_item;
 
-  profile = LASSO_WSF_PROFILE(pp);
-  service = LASSO_ABSTRACT_SERVICE(pp);
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
+	g_return_val_if_fail(select != NULL, NULL);
 
-  QueryItem = lasso_dst_query_item_new(Select);
-  
-  profile->request = LASSO_NODE(lasso_dst_query_new(QueryItem));
-  LASSO_DST_QUERY(profile->request)->prefixServiceType = LASSO_PP_PREFIX;
-  LASSO_DST_QUERY(profile->request)->hrefServiceType = LASSO_PP_HREF;
+	profile = LASSO_WSF_PROFILE(pp);
 
-  /* set ResourceIDGroup  */
-/*   service->ResourceOffering = ResourceOffering; */
-/*   LASSO_DST_QUERY(profile->request)->ResourceIDGroup = ResourceOffering->ResourceIDGroup; */
+	query_item = lasso_dst_query_item_new(select);
+	LASSO_DST_QUERY(profile->request)->QueryItem = g_list_append(
+		LASSO_DST_QUERY(profile->request)->QueryItem, (gpointer)query_item);
 
-  return 0;
+	return query_item;
+}
+
+LassoDstQueryItem*
+lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
+					  LassoDiscoResourceOffering *resourceOffering,
+					  LassoDiscoDescription *description,
+					  const char *select)
+{
+	LassoDstQueryItem *query_item;
+	LassoWsfProfile *profile;
+	LassoAbstractService *service;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
+	g_return_val_if_fail(select != NULL, NULL);
+
+	profile = LASSO_WSF_PROFILE(pp);
+	service = LASSO_ABSTRACT_SERVICE(pp);
+	
+	/* init Query */
+	query_item = lasso_dst_query_item_new(select);
+	profile->request = LASSO_NODE(lasso_dst_query_new(query_item));
+	LASSO_DST_QUERY(profile->request)->prefixServiceType = LASSO_PP_PREFIX;
+	LASSO_DST_QUERY(profile->request)->hrefServiceType = LASSO_PP_HREF;
+	
+	/* get ResourceID / EncryptedResourceID */
+	if (resourceOffering->ResourceID != NULL) {
+		LASSO_DST_QUERY(profile->request)->ResourceID = resourceOffering->ResourceID;
+	}
+	else {
+	  LASSO_DST_QUERY(profile->request)->EncryptedResourceID = \
+		  resourceOffering->EncryptedResourceID;
+	}
+	
+	/* set msg_url */
+	/* TODO : implement WSDLRef */
+	if (description->Endpoint) {
+		profile->msg_url = g_strdup(description->Endpoint);
+	}
+
+	return query_item;
 }
 
 gint
@@ -68,6 +103,9 @@ lasso_personal_profile_service_add_data(LassoPersonalProfileService *pp, LassoDs
 {
 	LassoWsfProfile *profile;
 	LassoDstQueryResponse *response;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
+	g_return_val_if_fail(LASSO_IS_DST_DATA(data), -1);
 
 	profile = LASSO_WSF_PROFILE(pp);
 	response = LASSO_DST_QUERY_RESPONSE(profile->response);
@@ -87,16 +125,24 @@ lasso_personal_profile_service_process_request_msg(LassoPersonalProfileService *
 	LassoWsfProfile *profile;
 	LassoUtilityStatus *status;
 
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
+	g_return_val_if_fail(query_soap_msg != NULL, -1);
+
 	profile = LASSO_WSF_PROFILE(pp);
 
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 	lasso_node_init_from_message(LASSO_NODE(query), query_soap_msg);
 
 	/* get ResourceIDGroup */
-	LASSO_ABSTRACT_SERVICE(pp)->ResourceIDGroup = query->ResourceIDGroup;
+	if (query->ResourceID) {
+		LASSO_ABSTRACT_SERVICE(pp)->ResourceID = query->ResourceID;
+	}
+	else {
+		LASSO_ABSTRACT_SERVICE(pp)->EncryptedResourceID = query->EncryptedResourceID;
+	}
 
 	/* get QueryItems */
-	LASSO_ABSTRACT_SERVICE(pp)->QueryItem = query->QueryItem;
+	LASSO_ABSTRACT_SERVICE(pp)->queryItem = query->QueryItem;
 
 	/* init QueryResponse */
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
@@ -114,12 +160,15 @@ lasso_personal_profile_service_process_response_msg(LassoPersonalProfileService 
 	LassoDstQueryResponse *query_response;
 	GList *Data;
 
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
+	g_return_val_if_fail(query_response_soap_msg != NULL, -1);
+
 	query_response = g_object_new(LASSO_TYPE_DST_QUERY_RESPONSE, NULL);
 	lasso_node_init_from_message(LASSO_NODE(query_response), query_response_soap_msg);
 
 	LASSO_WSF_PROFILE(pp)->response = LASSO_NODE(query_response);
 
-	LASSO_ABSTRACT_SERVICE(pp)->Data = query_response->Data;
+	LASSO_ABSTRACT_SERVICE(pp)->data = query_response->Data;
 
 	return 0;
 }
@@ -130,36 +179,6 @@ lasso_personal_profile_service_process_response_msg(LassoPersonalProfileService 
 
 static LassoPersonalProfileServiceClass *parent_class = NULL;
 
-/*****************************************************************************/
-/* overridden parent class methods                                           */
-/*****************************************************************************/
-
-static void
-dispose(GObject *object)
-{
-	LassoPersonalProfileService *pp = LASSO_PERSONAL_PROFILE_SERVICE(object);
-
-	if (pp->private_data->dispose_has_run) {
-		return;
-	}
-	pp->private_data->dispose_has_run = TRUE;
-
-	debug("Profile object 0x%x disposed ...", pp);
-
-	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(pp));
-}
-
-static void
-finalize(GObject *object)
-{
-	LassoPersonalProfileService *pp = LASSO_PERSONAL_PROFILE_SERVICE(object);
-
-	debug("LassoPersonalProfileService object 0x%x finalized ...", object);
-
-	g_free(pp->private_data);
-
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -168,8 +187,6 @@ finalize(GObject *object)
 static void
 instance_init(LassoPersonalProfileService *pp)
 {
-	pp->private_data = g_new(LassoPersonalProfileServicePrivate, 1);
-	pp->private_data->dispose_has_run = FALSE;
 
 }
 
@@ -178,8 +195,6 @@ class_init(LassoPersonalProfileServiceClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
 
-	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType
@@ -210,6 +225,8 @@ LassoPersonalProfileService*
 lasso_personal_profile_service_new(LassoServer *server)
 {
 	LassoPersonalProfileService *pp = NULL;
+
+/* 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL); */
 
 	pp = g_object_new(LASSO_TYPE_PERSONAL_PROFILE_SERVICE, NULL);
 

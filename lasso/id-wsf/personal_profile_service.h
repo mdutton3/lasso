@@ -32,10 +32,11 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-wsf/abstract_service.h>
+#include <lasso/xml/dst_query_item.h>
+#include <lasso/xml/disco_resource_offering.h>
 
 #define LASSO_PP_HREF   "urn:liberty:pp:2003-08"
 #define LASSO_PP_PREFIX "pp"
-
 
 #define LASSO_TYPE_PERSONAL_PROFILE_SERVICE (lasso_personal_profile_service_get_type())
 #define LASSO_PERSONAL_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -56,7 +57,6 @@ typedef struct _LassoPersonalProfileServicePrivate LassoPersonalProfileServicePr
 struct _LassoPersonalProfileService {
 	LassoAbstractService parent;
 
-	LassoPersonalProfileServicePrivate *private_data;
 };
 
 struct _LassoPersonalProfileServiceClass {
@@ -66,9 +66,14 @@ struct _LassoPersonalProfileServiceClass {
 
 LASSO_EXPORT GType lasso_personal_profile_service_get_type(void);
 
-LASSO_EXPORT gint lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
-							    LassoDiscoResourceOffering *ro,
-							    const char *Select);
+LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_add_query_item(
+	LassoPersonalProfileService *pp, const char *select);
+
+LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_init_query(
+	LassoPersonalProfileService *pp,
+	LassoDiscoResourceOffering *ro,
+	LassoDiscoDescription *description,
+	const char *select);
 
 LASSO_EXPORT gint lasso_personal_profile_process_request_msg(LassoPersonalProfileService *pp,
 							     const char *request_soap_msg);
