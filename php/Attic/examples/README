@@ -146,8 +146,8 @@ CONFIGURATION
 
  At first we need to add two hosts in the /etc/hosts file :
 
- 127.0.0.2       idp1
- 127.0.0.3       sp1
+ 127.0.0.2       idp1   idp1.lasso.lan
+ 127.0.0.3       sp1    sp1.lasso.lan
 
  In the Apache configuration file add two lines :
  
