@@ -82,7 +82,7 @@ PyObject *lecp_new(PyObject *self, PyObject *args) {
 
 PyObject *lecp_build_authn_request_envelope_msg(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "O:lecp_build_authn_request_envelope_msg")) {
     if(!PyArg_ParseTuple(args, (char *) "O:lecp_build_authn_request_envelope_msg",
@@ -98,7 +98,7 @@ PyObject *lecp_build_authn_request_envelope_msg(PyObject *self, PyObject *args){
 
 PyObject *lecp_build_authn_response_envelope_msg(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "O:lecp_build_authn_response_envelope_msg")) {
     if(!PyArg_ParseTuple(args, (char *) "O:lecp_build_authn_response_envelope_msg",
@@ -131,7 +131,7 @@ PyObject *lecp_destroy(PyObject *self, PyObject *args){
 PyObject *lecp_init_authn_request_envelope(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
   gchar    *remote_providerID;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "Os:lecp_init_authn_request_envelope")) {
     if(!PyArg_ParseTuple(args, (char *) "Oz:lecp_init_authn_request_envelope",
@@ -148,7 +148,7 @@ PyObject *lecp_init_authn_request_envelope(PyObject *self, PyObject *args){
 PyObject *lecp_init_authn_response_envelope(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
   gchar    *remote_providerID;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "Os:lecp_init_authn_response_envelope")) {
     if(!PyArg_ParseTuple(args, (char *) "Oz:lecp_init_authn_response_envelope",
@@ -166,7 +166,7 @@ PyObject *lecp_process_authn_request_envelope_msg(PyObject *self, PyObject *args
   PyObject *lecp_obj;
   gchar    *request_msg;
   gint      request_method;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "OSI:lecp_process_authn_request_envelope_msg")) {
     if(!PyArg_ParseTuple(args, (char *) "Osi:lecp_process_authn_request_envelope_msg",
@@ -184,7 +184,7 @@ PyObject *lecp_process_authn_response_envelope_msg(PyObject *self, PyObject *arg
   PyObject *lecp_obj;
   gchar    *response_msg;
   gint      response_method;
-  gint      codeError;
+  gint      codeError = 0;
 
   if (CheckArgs(args, "OSI:lecp_process_authn_response_envelope_msg")) {
     if(!PyArg_ParseTuple(args, (char *) "Osi:lecp_process_authn_response_envelope_msg",
