@@ -645,7 +645,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
 static xmlChar *
 lasso_node_impl_export_to_soap(LassoNode *node)
 {
-  LassoNode *envelope, *body;
+  LassoNode *envelope, *body, *copy_node;
   xmlChar *buffer;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -653,18 +653,21 @@ lasso_node_impl_export_to_soap(LassoNode *node)
   envelope = lasso_node_new();
   lasso_node_set_name(envelope, "Envelope");
   lasso_node_set_ns(envelope, lassoSoapEnvHRef, lassoSoapEnvPrefix);
+
+  copy_node = lasso_node_copy(node);
   
   body = lasso_node_new();
   lasso_node_set_name(body, "Body");
   lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
   
-  lasso_node_add_child(body, node, FALSE);
+  lasso_node_add_child(body, copy_node, FALSE);
   lasso_node_add_child(envelope, body, FALSE);
 
   buffer = lasso_node_export(envelope);
 
-  lasso_node_destroy(envelope);
+  lasso_node_destroy(copy_node);
   lasso_node_destroy(body);
+  lasso_node_destroy(envelope);
   
   return(buffer);
 }
