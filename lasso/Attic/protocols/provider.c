@@ -129,6 +129,9 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
     descriptor = lasso_node_get_child(provider->metadata,
 				      "IDPDescriptor", NULL, &tmp_err);
     break;
+  default:
+    descriptor = NULL;
+    break;
   }
   if (descriptor == NULL) {
     g_propagate_error (err, tmp_err);
