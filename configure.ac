@@ -644,6 +644,7 @@ tests/data/idp1-la/Makefile
 tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
 lasso.pc
+macros/Makefile
 win32/Makefile
 win32/nsis/Makefile
 ])
