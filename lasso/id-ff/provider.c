@@ -397,6 +397,9 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	xmlNode *node;
+	gboolean compatibility = FALSE; /* compatibility with ID-FF 1.1 metadata files */
+	const char *xpath_idp = "md:EntityDescriptor/md:IDPDescriptor";
+	const char *xpath_sp = "md:EntityDescriptor/md:SPDescriptor";
 
 	doc = xmlParseFile(metadata);
 	if (doc == NULL)
@@ -404,27 +407,60 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
-	xpathObj = xmlXPathEvalExpression("/md:EntityDescriptor", xpathCtx);
-	/* if empty: not a metadata file -> bails out */
+	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
+	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor", xpathCtx);
+	/* if empty: not a ID-FF 1.2 metadata file -> bails out */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
-		xmlFreeDoc(doc);
-		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
-		return FALSE;
+		xpathObj = xmlXPathEvalExpression(
+				"lib:SPDescriptor|lib:IDPDescriptor", xpathCtx);
+		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+			xmlXPathFreeObject(xpathObj);
+			xmlFreeDoc(doc);
+			xmlXPathFreeContext(xpathCtx);
+			return FALSE;
+		}
+		compatibility = TRUE;
+		xpath_idp = "lib:IDPDescriptor";
+		xpath_sp = "lib:SPDescriptor";
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
 	provider->ProviderID = xmlGetProp(node, "providerID");
 
-	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:IDPDescriptor", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1)
+	xpathObj = xmlXPathEvalExpression(xpath_idp, xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->IDPDescriptor);
+		if (compatibility) {
+			/* lookup ProviderID */
+			node = xpathObj->nodesetval->nodeTab[0]->children;
+			while (node) {
+				if (strcmp(node->name, "ProviderID") == 0) {
+					provider->ProviderID = xmlNodeGetContent(node);
+					break;
+				}
+				node = node->next;
+			}
+		}
+	}
 	xmlXPathFreeObject(xpathObj);
 
-	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:SPDescriptor", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1)
+	xpathObj = xmlXPathEvalExpression(xpath_sp, xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->SPDescriptor);
+		if (compatibility) {
+			/* lookup ProviderID */
+			node = xpathObj->nodesetval->nodeTab[0]->children;
+			while (node) {
+				if (strcmp(node->name, "ProviderID") == 0) {
+					provider->ProviderID = xmlNodeGetContent(node);
+					break;
+				}
+				node = node->next;
+			}
+		}
+	}
 	xmlXPathFreeObject(xpathObj);
 
 	xmlFreeDoc(doc);
