@@ -43,6 +43,7 @@ extern "C" {
 
 typedef struct _LassoUser LassoUser;
 typedef struct _LassoUserClass LassoUserClass;
+typedef struct _LassoUserPrivate LassoUserPrivate;
 
 struct _LassoUser {
   GObject parent;
@@ -55,6 +56,7 @@ struct _LassoUser {
   GHashTable *identities;  /* hash for identities with remote ProviderID as key */
 
   /*< private >*/
+  LassoUserPrivate *private;
 };
 
 struct _LassoUserClass {
@@ -74,6 +76,8 @@ LASSO_EXPORT gint           lasso_user_add_assertion                        (Las
 LASSO_EXPORT gint           lasso_user_add_identity                         (LassoUser     *user,
 									     gchar         *remote_providerID,
 									     LassoIdentity *identity);
+
+LASSO_EXPORT LassoUser*     lasso_user_copy                                 (LassoUser *user);
 
 LASSO_EXPORT void           lasso_user_destroy                              (LassoUser *user);
 
