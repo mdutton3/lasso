@@ -261,6 +261,7 @@ lasso_session_remove_assertion(LassoSession *session,
   /* remove the assertion */
   assertion = lasso_session_get_assertion(session, remote_providerID);
   if (assertion != NULL) {
+    debug("Remove assertion of remote provider id %s\n", remote_providerID);
     g_hash_table_remove(session->assertions, remote_providerID);
     lasso_node_destroy(assertion);
   }
@@ -268,6 +269,7 @@ lasso_session_remove_assertion(LassoSession *session,
   /* remove the remote provider id */
   for(i = 0; i<session->providerIDs->len; i++) {
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(session->providerIDs, i))) {
+      debug("Remove remote provider id %s\n", remote_providerID);
       g_ptr_array_remove_index(session->providerIDs, i);
       break;
     }
