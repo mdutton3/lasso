@@ -9,7 +9,7 @@ dnl Version
 dnl ==========================================================================
 LASSO_PACKAGE=lasso
 LASSO_VERSION_MAJOR=0
-LASSO_VERSION_MINOR=2
+LASSO_VERSION_MINOR=3
 LASSO_VERSION_SUBMINOR=0
 LASSO_VERSION="$LASSO_VERSION_MAJOR.$LASSO_VERSION_MINOR.$LASSO_VERSION_SUBMINOR"
 LASSO_VERSION_INFO=`echo $LASSO_VERSION | awk -F. '{ printf "%d:%d:%d", $1+$2, $3, $2 }'`
