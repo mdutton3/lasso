@@ -25,19 +25,22 @@ import unittest
 import time
 import sys
 
+def xml(text):
+    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
 class XmlTestResult(unittest.TestResult):
     def addSuccess(self, test):
         print """    <test result="success">
       <id>%s</id>
       <description>%s</description>
-    </test>""" % (test.id(), test.shortDescription())
+    </test>""" % (test.id(), xml(test.shortDescription()))
 
     def addError(self, test, err):
         unittest.TestResult.addError(self, test, err)
         print """    <test result="error">
       <id>%s</id>
       <description>%s</description>
-    </test>""" % (test.id(), test.shortDescription())
+    </test>""" % (test.id(), xml(test.shortDescription()))
         # TODO: add err
 
     def addFailure(self, test, err):
@@ -45,12 +48,8 @@ class XmlTestResult(unittest.TestResult):
         print """    <test result="failure">
       <id>%s</id>
       <description>%s</description>
-    </test>""" % (test.id(), test.shortDescription())
+    </test>""" % (test.id(), xml(test.shortDescription()))
         # TODO: add err
-
-    def shortDescription(self):
-        text = unittest.TestResult.shortDescription()
-        return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
 class XmlTestRunner:
