@@ -87,3 +87,6 @@ SamlpResponseAbstract.java
 SamlStatementAbstract.java
 SamlSubjectStatementAbstract.java
 StringArray.java
+StringList.java
+NodeList.java
+
