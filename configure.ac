@@ -689,6 +689,7 @@ AM_CONDITIONAL(DARWIN, test $DARWIN == 1)
 dnl ==========================================================================
 dnl Writing result files
 dnl ==========================================================================
+AC_CONFIG_FILES([lasso-src-config], [chmod +x lasso-src-config])
 AC_OUTPUT(
 [Makefile
 csharp/Makefile
@@ -719,7 +720,6 @@ lasso.pc
 win32/Makefile
 win32/nsis/Makefile
 ])
-AC_CONFIG_FILES([lasso-src-config], [chmod +x lasso-src-config])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
 AC_MSG_RESULT(
