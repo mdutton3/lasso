@@ -84,9 +84,7 @@ PyObject *saml_assertion_set_signature(PyObject *self, PyObject *args) {
 
   ret = lasso_saml_assertion_set_signature(LassoSamlAssertion_get(node_obj),
 					   sign_method,
-					   private_key_file, certificate_file,
-					   NULL);
-  /* FIXME generate an exception here */
+					   private_key_file, certificate_file);
 
   Py_INCREF(Py_None);
   return (Py_None);

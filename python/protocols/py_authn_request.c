@@ -44,11 +44,13 @@ PyObject *LassoAuthnRequest_wrap(LassoAuthnRequest *request) {
 PyObject *authn_request_new(PyObject *self, PyObject *args) {
   const xmlChar *providerID;
   LassoNode *request;
+  gint sign_type, sign_method;
 
-  if(!PyArg_ParseTuple(args, (char *) "s:authn_request_new", &providerID))
+  if(!PyArg_ParseTuple(args, (char *) "sii:authn_request_new", &providerID,
+		       &sign_type, &sign_method))
     return NULL;
 
-  request = lasso_authn_request_new(providerID);
+  request = lasso_authn_request_new(providerID, sign_type, sign_method);
 
   return (LassoAuthnRequest_wrap(LASSO_AUTHN_REQUEST(request)));
 }

@@ -207,8 +207,7 @@ PyObject *node_verify_signature(PyObject *self, PyObject *args) {
   else return NULL;
 
   ret = lasso_node_verify_signature(LassoNode_get(node_obj),
-				    certificate_file, NULL);
-  /* FIXME generate an exception here */
+				    certificate_file);
 
   return (int_wrap(ret));
 }
