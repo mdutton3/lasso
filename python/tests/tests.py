@@ -28,6 +28,7 @@
 
 import imp
 import sys
+import time
 import unittest
 
 from XmlTestRunner import XmlTestRunner
@@ -43,6 +44,8 @@ testSuites = (
 if "--xml" in sys.argv:
     print """<?xml version="1.0"?>"""
     print """<testsuites xmlns="http://www.0d.be/ns/unittest">"""
+    print """  <title>Python Bindings</title>"""
+    print """  <datetime>%s</datetime>""" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
 success = True
 for testSuite in testSuites:
