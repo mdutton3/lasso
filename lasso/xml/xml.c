@@ -509,30 +509,19 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					(*(LassoSamlNameIdentifier**)value) =
 						lasso_saml_name_identifier_new_from_xmlNode(t);
 				else if (snippet->type == SNIPPET_LIST_NODES) {
-					xmlNode *ts;
-					GList *s = NULL;
-					for (ts = t->children; ts; ts = ts->next) {
-						if (ts->type != XML_ELEMENT_NODE)
-							continue;
-						g_list_append(s, lasso_node_new_from_xmlNode(ts));
-					}
-					(*(GList**)value) = s;
+					GList **location = value;
+					LassoNode *n = lasso_node_new_from_xmlNode(t);
+					*location = g_list_append(*location, n);
 				} else if (snippet->type == SNIPPET_LIST_CONTENT) {
-					xmlNode *ts;
-					GList *s = NULL;
-					for (ts = t->children; ts; ts = ts->next) {
-						if (ts->type != XML_ELEMENT_NODE)
-							continue;
-						g_list_append(s, xmlNodeGetContent(ts));
-					}
-					(*(GList**)value) = s;
+					GList **location = value;
+					LassoNode *n = xmlNodeGetContent(t);
+					*location = g_list_append(*location, n);
 				}
 				break;
 			}
 		}
 		class = g_type_class_peek_parent(class);
 	}
-
 	return 0;
 }
 
@@ -760,6 +749,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 	}
 
+	if (strcmp(xmlnode->ns->href, LASSO_DISCO_HREF) == 0)
+		prefix = "Disco";
 	if (strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0)
 		prefix = "Lib";
 	if (strcmp(xmlnode->ns->href, LASSO_LASSO_HREF) == 0)
