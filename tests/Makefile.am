@@ -23,3 +23,5 @@ EXTRA_DIST = tests.c login_tests.c basic_tests.c
 
 SUBDIRS = data
 
+CLEANFILES = result.xml
+
