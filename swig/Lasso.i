@@ -687,17 +687,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 
 
 /* Configuration Constants */
-#ifndef SWIGPHP4
-%rename(VERSION_DECIMAL) LASSO_VERSION_DECIMAL;
-%rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
-%rename(VERSION_MINOR) LASSO_VERSION_MINOR;
-%rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
-%rename(WSF_SUPPORT) LASSO_WSF_SUPPORT;
-#endif
-#define LASSO_VERSION_MAJOR     @VERSION_MAJOR@
-#define LASSO_VERSION_MINOR     @VERSION_MINOR@
-#define LASSO_VERSION_SUBMINOR  @VERSION_RELEASE@
-#@LASSO_WSF_ENABLE@
+#undef LASSO_WSF_ENABLE
 
 #ifdef LASSO_WSF_ENABLED
 %{
@@ -1098,6 +1088,11 @@ int lasso_init(void);
 %rename(shutdown) lasso_shutdown;
 #endif
 int lasso_shutdown(void);
+
+#ifndef SWIGPHP4
+%rename(checkVersion) lasso_check_version;
+#endif
+int lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mode = 2);
 
 
 /***********************************************************************

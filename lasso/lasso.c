@@ -160,6 +160,12 @@ int lasso_shutdown()
 int 
 lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mode)
 {
+	if (mode == LASSO_CHECK_VERSION_NUMERIC) {
+		if (LASSO_VERSION_MAJOR*10000 + LASSO_VERSION_MINOR*100 + LASSO_VERSION_SUBMINOR <
+				major*10000 + minor*100 + subminor)
+			return 0;
+		return 1;
+	}
 	/* we always want to have a match for major version number */
 	if (major != LASSO_VERSION_MAJOR) {
 		g_message("expected major version=%d;real major version=%d",
@@ -177,6 +183,7 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
 			return 0;
 		}
 	}
+
 	if (mode == LASSO_CHECK_VERSIONABI_COMPATIBLE) {
 		if (minor < LASSO_VERSION_MINOR || (minor == LASSO_VERSION_MINOR && 
 					subminor < LASSO_VERSION_SUBMINOR)) {
@@ -188,6 +195,9 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
 			return 0;
 		}
 	}
+
+	if (mode > LASSO_CHECK_VERSION_NUMERIC)
+		return -1;
 
 	return 1;
 }

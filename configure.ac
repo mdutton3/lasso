@@ -765,7 +765,6 @@ perl/Makefile
 php/Makefile
 python/Makefile
 swig/Makefile
-swig/Lasso.i
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile
