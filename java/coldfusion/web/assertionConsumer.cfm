@@ -1,9 +1,9 @@
 <html>
   <head>
-    <title>Lasso</title>
+    <title>Lasso Assertion Consumer</title>
   </head>
   <body>
-    <h1>Lasso</h1>
+    <h1>Lasso Assertion Consumer</h1>
 <!--
     <cfdump var="#QUERY_STRING#">
     <cfobject type="java" name="sys" class="java.lang.System" action="create">
@@ -36,7 +36,7 @@
     <cfset lasso.acceptSso()>
     <cfset identityDump=lasso.getIdentityDump()>
     <cfset sessionDump=lasso.getSessionDump()>
-    <!-- TODO: Store identity dump and session dump into your users and sessions databases. -->
+    <!-- TODO: Store identity dump and session dump into your users and sessions databases.-->
     <cfoutput>
       <p>User is now logged. RelayState = #relayState#</p>
     </cfoutput>

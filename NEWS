@@ -1,6 +1,11 @@
 NEWS
 ====
 
+0.4.1 - September 7th 2004
+--------------------------
+
+Small bug fixes. Windows DLL are now linked with standard call aliases.
+
 0.4.0 - September 6th 2004
 --------------------------
 

@@ -1,9 +1,9 @@
 <html>
   <head>
-    <title>Lasso</title>
+    <title>Lasso Single Sign-On</title>
   </head>
   <body>
-    <h1>Lasso</h1>
+    <h1>Lasso Single Sign-On</h1>
 <!--
     <cfobject type="java" name="sys" class="java.lang.System" action="create">
     <cfset properties=sys.getProperties()>
