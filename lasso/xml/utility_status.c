@@ -69,7 +69,6 @@ get_xmlNode(LassoNode *node)
 	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Status");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
 
 	build_xml_with_snippets(xmlnode, snippets);
 
