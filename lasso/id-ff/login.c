@@ -241,7 +241,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     /* verify signature */
     if (idp != NULL) {
       /* FIXME detect X509Data ? */
-      ret = lasso_node_verify_signature(assertion, idp->public_key);
+      ret = lasso_node_verify_signature(assertion, idp->public_key, idp->ca_cert_chain);
       if (ret < 0) {
 	goto done;
       }
@@ -753,7 +753,8 @@ lasso_login_build_response_msg(LassoLogin *login,
 						    NULL);
     /* FIXME verify the SOAP request signature */
     ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
-				      remote_provider->public_key);
+				      remote_provider->public_key,
+				      remote_provider->ca_cert_chain);
     /* changed status code into RequestDenied
        if signature is invalid or not found
        if an error occurs during verification */
@@ -1020,6 +1021,7 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Unknown protocol profile : %s\n", protocolProfile);
+    xmlFree(protocolProfile);
     return -2;
   }
   xmlFree(protocolProfile);
@@ -1064,7 +1066,8 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
     case lassoHttpMethodSoap:
       /* FIXME detect X509Data ? */
       ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
-					remote_provider->public_key);
+					remote_provider->public_key,
+					remote_provider->ca_cert_chain);
       break;
     }
     LASSO_PROFILE(login)->signature_status = ret;

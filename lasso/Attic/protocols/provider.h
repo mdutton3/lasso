@@ -39,9 +39,9 @@ extern "C" {
 #define LASSO_IS_PROVIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROVIDER))
 #define LASSO_PROVIDER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROVIDER, LassoProviderClass)) 
 
-#define LASSO_PROVIDER_NODE                "Provider"
-#define LASSO_PROVIDER_PUBLIC_KEY_NODE     "PublicKey"
-#define LASSO_PROVIDER_CA_CERTIFICATE_NODE "CaCertificate"
+#define LASSO_PROVIDER_NODE               "Provider"
+#define LASSO_PROVIDER_PUBLIC_KEY_NODE    "PublicKey"
+#define LASSO_PROVIDER_CA_CERT_CHAIN_NODE "CaCertChain"
 
 typedef struct _LassoProvider LassoProvider;
 typedef struct _LassoProviderClass LassoProviderClass;
@@ -59,7 +59,7 @@ struct _LassoProvider {
   LassoNode *metadata;
 
   gchar *public_key;
-  gchar *ca_certificate;
+  gchar *ca_cert_chain;
 
   /*< private >*/
   LassoProviderPrivate *private;
@@ -73,7 +73,7 @@ LASSO_EXPORT GType          lasso_provider_get_type                             
 
 LASSO_EXPORT LassoProvider* lasso_provider_new                                                  (gchar *metadata,
 												 gchar *public_key,
-												 gchar *ca_certificate);
+												 gchar *ca_cert_chain);
 
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_metadata_node                               (LassoNode *metadata_node);
 
@@ -147,8 +147,8 @@ LASSO_EXPORT gchar*         lasso_provider_get_soapEndpoint                     
 LASSO_EXPORT void           lasso_provider_set_public_key                                       (LassoProvider *provider,
 												 gchar         *public_key);
 
-LASSO_EXPORT void           lasso_provider_set_ca_certificate                                   (LassoProvider *provider,
-												 gchar         *ca_certificate);
+LASSO_EXPORT void           lasso_provider_set_ca_cert_chain                                    (LassoProvider *provider,
+												 gchar         *ca_cert_chain);
 
 #ifdef __cplusplus
 }

@@ -630,8 +630,9 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       g_error_free(err);
       goto done;
     }
-    if (provider->ca_certificate != NULL) {
-      ret = lasso_node_verify_x509_signature(profile->request, provider->ca_certificate);
+    if (provider->ca_cert_chain != NULL) {
+      ret = lasso_node_verify_signature(profile->request, provider->public_key,
+					provider->ca_cert_chain);
     }
     break;
   case lassoHttpMethodRedirect:

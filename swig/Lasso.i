@@ -1022,9 +1022,8 @@ typedef struct {
 
 		/* Constructor, destructor & static methods */
 
-		LassoServer(gchar *metadata = NULL, gchar *publicKey = NULL,
-			    gchar *privateKey = NULL, gchar *certificate = NULL,
-			    lassoSignatureMethod signatureMethod = lassoSignatureMethodRsaSha1);
+		LassoServer(gchar *metadata = NULL, gchar *privateKey = NULL,
+			    gchar *secretKey = NULL, gchar *certificate = NULL);
 
 		~LassoServer();
 
@@ -1035,7 +1034,7 @@ typedef struct {
 
 	        THROW_ERROR
 		void addProvider(gchar *metadata, gchar *publicKey = NULL,
-				 gchar *caCertificate = NULL);
+				 gchar *caCertChain = NULL);
 		END_THROW_ERROR
 
 		%newobject dump;
