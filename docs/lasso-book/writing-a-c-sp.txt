@@ -8,6 +8,8 @@ Writing a Liberty Alliance service provider in C
 :revision: $Revision$
 :copyright: Copyright © 2004 Entr'ouvert
 
+.. contents:: Table of Contents
+.. section-numbering::
 
 
 Lasso Projects Basics
