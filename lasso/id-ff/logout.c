@@ -925,16 +925,12 @@ lasso_logout_validate_request(LassoLogout *logout)
     goto done;
   }
 
-  /* get the status code */
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
-  statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
-
   /* Get the name identifier */
   nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier",
 					NULL, NULL);
   if (nameIdentifier == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request\n");
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
+    lasso_profile_set_response_status(profile, lassoLibStatusCodeFederationDoesNotExist);
     ret = -1;
     goto done;
   }
@@ -943,14 +939,14 @@ lasso_logout_validate_request(LassoLogout *logout)
   if (profile->identity == NULL) {
     message(G_LOG_LEVEL_WARNING, "Identity not found\n");
     /* FIXME : use RequestDenied if no identity found ? */
-    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+    lasso_profile_set_response_status(profile, lassoSamlStatusCodeRequestDenied);
     ret = -1;
     goto done;
   }
   assertion = lasso_session_get_assertion(profile->session, remote_providerID);
   if (assertion == NULL) {
     message(G_LOG_LEVEL_WARNING, "%s has no assertion\n", remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+    lasso_profile_set_response_status(profile, lassoSamlStatusCodeRequestDenied);
     ret = -1;
     goto done;
   }
@@ -960,14 +956,14 @@ lasso_logout_validate_request(LassoLogout *logout)
   federation = lasso_identity_get_federation(profile->identity, remote_providerID);
   if (federation == NULL) {
     message(G_LOG_LEVEL_WARNING, "No federation for %s\n", remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
+    lasso_profile_set_response_status(profile, lassoLibStatusCodeFederationDoesNotExist);
     ret = -1;
     goto done;
   }
 
   if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
+    lasso_profile_set_response_status(profile, lassoLibStatusCodeFederationDoesNotExist);
     ret = -1;
     goto done;
   }
@@ -1015,7 +1011,7 @@ lasso_logout_validate_request(LassoLogout *logout)
     }
 
     if (all_http_soap==FALSE) {
-      statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeUnsupportedProfile);
+      lasso_profile_set_response_status(profile, lassoLibStatusCodeUnsupportedProfile);
       ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
       goto done;
     }
