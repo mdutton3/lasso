@@ -137,6 +137,8 @@ lasso_server_get_provider(LassoServer *server,
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(providerID!=NULL, NULL);
 
+  debug(INFO, "Get information of provider id %s\n", providerID);
+
   len = server->providers->len;
   for(index = 0; index<len; index++) {
     provider = g_ptr_array_index(server->providers, index);
