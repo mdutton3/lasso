@@ -59,7 +59,7 @@ Coding Style
             ``return(0);``
 
 - Check for memory leaks.
-  I recommend valgrind utility with options:
+  I recommend valgrind (http://valgrind.kde.org) utility with options:
     --leak-check=yes
     --show-reachable=yes
     --num-callers=32
