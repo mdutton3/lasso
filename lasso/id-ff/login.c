@@ -42,7 +42,7 @@ lasso_login_process_federation(LassoLogin *login)
 
   /* verify if a user context exists else create it */
   if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
-    LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new("");
+    LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new();
   }
   identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
 				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
