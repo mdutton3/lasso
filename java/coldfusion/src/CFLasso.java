@@ -39,15 +39,15 @@
 public class CFLasso {
     protected com.entrouvert.lasso.Server getServer() {
         com.entrouvert.lasso.Server server = new com.entrouvert.lasso.Server(
-            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/metadata.xml'",
-	    null, //"/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/public-key.pem",
-            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/private-key-raw.pem",
-            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/certificate.pem",
+            "../../../tests/data/sp1-la/metadata.xml",
+	    null, //"../../../tests/data/sp1-la/public-key.pem",
+            "../../../tests/data/sp1-la/private-key-raw.pem",
+            "../../../tests/data/sp1-la/certificate.pem",
             com.entrouvert.lasso.lassoConstants.signatureMethodRsaSha1);
         server.addProvider(
-            "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/metadata.xml",
-            "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/public-key.pem",
-            "/home/manou/projects/lasso/lasso-devel/tests/data/ca1-la/certificate.pem");
+            "../../../tests/data/idp1-la/metadata.xml",
+            "../../../tests/data/idp1-la/public-key.pem",
+            "../../../tests/data/ca1-la/certificate.pem");
 	return server;
     }
 
@@ -68,7 +68,7 @@ public class CFLasso {
         authnRequest.setConsent(com.entrouvert.lasso.lassoConstants.libConsentObtained);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
-        login.buildAuthnRequestMsg("https://sp1/metadata");
+        login.buildAuthnRequestMsg("https://idp1/metadata");
         authnRequestUrl = login.getMsgUrl();
 
 	// com.entrouvert.lasso.lasso.shutdown();
