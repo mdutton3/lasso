@@ -62,6 +62,13 @@ static PyMethodDef lasso_methods[] = {
   {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS},
   {"authentication_statement_build", authentication_statement_build, METH_VARARGS},
 
+  {"request_create", request_create, METH_VARARGS},
+  {"request_getattr", request_getattr, METH_VARARGS},
+
+  {"response_create", response_create, METH_VARARGS},
+  {"response_getattr", response_getattr, METH_VARARGS},
+  {"response_init", response_init, METH_VARARGS},
+
   {NULL, NULL} /* End of Methods Sentinel */
 };
 
