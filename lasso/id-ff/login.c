@@ -390,11 +390,11 @@ lasso_login_accept_sso(LassoLogin *login)
 }
 
 gint
-lasso_login_build_artifact_msg(LassoLogin       *login,
-			       gint              authentication_result,
-			       const gchar      *authenticationMethod,
-			       const gchar      *reauthenticateOnOrAfter,
-			       lassoHttpMethods  method)
+lasso_login_build_artifact_msg(LassoLogin      *login,
+			       gint             authentication_result,
+			       const gchar     *authenticationMethod,
+			       const gchar     *reauthenticateOnOrAfter,
+			       lassoHttpMethod  method)
 {
   LassoFederation *federation = NULL;
   LassoProvider *remote_provider;
@@ -685,9 +685,9 @@ lasso_login_init_authn_request(LassoLogin  *login,
 }
 
 gint
-lasso_login_init_from_authn_request_msg(LassoLogin       *login,
-					gchar            *authn_request_msg,
-					lassoHttpMethods  authn_request_method)
+lasso_login_init_from_authn_request_msg(LassoLogin      *login,
+					gchar           *authn_request_msg,
+					lassoHttpMethod  authn_request_method)
 {
   LassoServer *server;
   LassoProvider *remote_provider;
@@ -805,9 +805,9 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
 }
 
 gint
-lasso_login_init_request(LassoLogin       *login,
-			 gchar            *response_msg,
-			 lassoHttpMethods  response_method)
+lasso_login_init_request(LassoLogin      *login,
+			 gchar           *response_msg,
+			 lassoHttpMethod  response_method)
 {
   LassoNode *response = NULL;
   xmlChar *artifact, *identityProviderSuccinctID;
@@ -1021,9 +1021,8 @@ lasso_login_new(LassoServer *server)
 }
 
 LassoLogin*
-lasso_login_new_from_dump(LassoServer   *server,
-			  LassoIdentity *identity,
-			  gchar         *dump)
+lasso_login_new_from_dump(LassoServer *server,
+			  gchar       *dump)
 {
   LassoLogin *login;
   LassoNode *node_dump, *request_node, *response_node;
@@ -1031,7 +1030,6 @@ lasso_login_new_from_dump(LassoServer   *server,
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
 				   "server", lasso_server_copy(server),
-				   "identity", lasso_identity_copy(identity),
 				   NULL));
   
   node_dump = lasso_node_new_from_dump(dump);

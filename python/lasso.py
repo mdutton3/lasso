@@ -1006,8 +1006,8 @@ class Login(Profile):
         return Login(obj)
     new = classmethod(new)
 
-    def new_from_dump(cls, server, identity, dump):
-        obj = lassomod.login_new_from_dump(server, identity, dump)
+    def new_from_dump(cls, server, dump):
+        obj = lassomod.login_new_from_dump(server, dump)
         return Login(obj)
     new_from_dump = classmethod(new_from_dump)
 

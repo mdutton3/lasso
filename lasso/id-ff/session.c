@@ -101,7 +101,7 @@ lasso_session_add_assertion(LassoSession *session,
     }
   }
   if(found == TRUE) {
-    message(G_LOG_LEVEL_CRITICAL, "An assertion existed already for this providerID, it was replaced by the new one.\n");
+    debug("An assertion existed already for this providerID, it was replaced by the new one.\n");
   }
   else {
     g_ptr_array_add(session->providerIDs, g_strdup(remote_providerID));

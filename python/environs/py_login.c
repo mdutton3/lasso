@@ -108,24 +108,20 @@ PyObject *login_new(PyObject *self, PyObject *args) {
 }
 
 PyObject *login_new_from_dump(PyObject *self, PyObject *args) {
-  PyObject *server_obj, *identity_obj;
+  PyObject *server_obj;
   LassoLogin *login;
   LassoServer *server;
-  LassoIdentity *identity = NULL;
   gchar       *dump;
 
   if (CheckArgs(args, "OoS:login_new_from_dump")) {
     if(!PyArg_ParseTuple(args, (char *) "OOs:login_new_from_dump", &server_obj,
-			 &identity_obj, &dump))
+			 &dump))
       return NULL;
   }
   else return NULL;
 
   server = LassoServer_get(server_obj);
-  if (identity_obj != Py_None) {
-    identity = LassoIdentity_get(identity_obj);
-  }
-  login = lasso_login_new_from_dump(server, identity, dump);
+  login = lasso_login_new_from_dump(server, dump);
 
   return (LassoLogin_wrap(login));
 }
@@ -135,7 +131,7 @@ PyObject *login_build_artifact_msg(PyObject *self, PyObject *args) {
   gint              authentication_result;
   const gchar      *authenticationMethod;
   const gchar      *reauthenticateOnOrAfter;
-  lassoHttpMethods  method;
+  lassoHttpMethod   method;
   gint ret;
 
   if (CheckArgs(args, "OISSI:login_build_artifact_msg")) {
@@ -264,7 +260,7 @@ PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
 PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gchar            *authn_request_msg;
-  lassoHttpMethods  authn_request_method;
+  lassoHttpMethod   authn_request_method;
   gint ret;
 
   if (CheckArgs(args, "OSI:login_init_from_authn_request_msg")) {
@@ -284,7 +280,7 @@ PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args) {
 PyObject *login_init_request(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gchar            *response_msg;
-  lassoHttpMethods  response_method;
+  lassoHttpMethod   response_method;
   gint ret;
 
   if (CheckArgs(args, "OSI:login_init_request")) {
