@@ -52,9 +52,8 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	InteractionProfileService.cs IsHelp.cs IsInquiry.cs IsInquiryElement.cs \
 	IsInteractionRequest.cs IsInteractionResponse.cs IsInteractionStatement.cs \
 	IsItem.cs IsParameter.cs IsRedirectRequest.cs IsSelect.cs IsText.cs \
-	IsUserInteraction.cs lasso.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
-	LassoMessageType.cs lassoPINVOKE.cs LassoProviderRole.cs LassoRequestType.cs \
-	LassoSignatureMethod.cs Lecp.cs LibAssertion.cs LibAuthnRequest.cs \
+	IsUserInteraction.cs lasso.cs lassoPINVOKE.cs Lecp.cs LibAssertion.cs \
+	LibAuthnRequest.cs \
 	LibAuthnResponse.cs LibFederationTerminationNotification.cs \
 	LibLogoutRequest.cs LibLogoutResponse.cs LibRegisterNameIdentifierRequest.cs \
 	LibRegisterNameIdentifierResponse.cs LibRequestAuthnContext.cs \
@@ -68,7 +67,9 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SamlStatementAbstract.cs SamlSubjectConfirmation.cs SamlSubject.cs \
 	SamlSubjectLocality.cs SamlSubjectStatementAbstract.cs SamlSubjectStatement.cs \
 	Server.cs Session.cs StringList.cs SWIGTYPE_p_LassoMdProtocolType.cs \
-	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs UtilityStatus.cs
+	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs UtilityStatus.cs \
+	HttpMethod.cs ProviderRole.cs SignatureMethod.cs LoginProtocolProfile.cs \
+	RequestType.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
