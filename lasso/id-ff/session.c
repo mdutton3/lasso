@@ -25,9 +25,9 @@
 
 #include <lasso/environs/session.h>
 
-#define LASSO_SESSION_NODE                   "LassoSession"
-#define LASSO_SESSION_ASSERTIONS_NODE        "LassoAssertions"
-#define LASSO_SESSION_ASSERTION_NODE         "LassoAssertion"
+#define LASSO_SESSION_NODE                   "Session"
+#define LASSO_SESSION_ASSERTIONS_NODE        "Assertions"
+#define LASSO_SESSION_ASSERTION_NODE         "AuthnAssertion"
 #define LASSO_SESSION_REMOTE_PROVIDERID_ATTR "RemoteProviderID"
 
 struct _LassoSessionPrivate
@@ -164,6 +164,7 @@ lasso_session_dump(LassoSession *session)
   session_node = lasso_node_new();
   session_class = LASSO_NODE_GET_CLASS(session_node);
   session_class->set_name(session_node, LASSO_SESSION_NODE);
+  session_class->set_ns(session_node, lassoLassoHRef, NULL);
 
   /* dump the assertions */
   table_size = g_hash_table_size(session->assertions);
@@ -406,7 +407,7 @@ lasso_session_new_from_dump(gchar *dump)
   /* get assertions */
   assertions_node = lasso_node_get_child(session_node,
 					 LASSO_SESSION_ASSERTIONS_NODE,
-					 NULL, NULL);
+					 lassoLassoHRef, NULL);
   if (assertions_node != NULL) {
     assertions_xmlNode = LASSO_NODE_GET_CLASS(assertions_node)->get_xmlNode(assertions_node);
     assertion_xmlNode = assertions_xmlNode->children;
