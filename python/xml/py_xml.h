@@ -37,6 +37,8 @@ typedef struct {
 PyObject *LassoNode_wrap(LassoNode *node);
 
 PyObject *node_dump(PyObject *self, PyObject *args);
+PyObject *node_export(PyObject *self, PyObject *args);
+PyObject *node_export_to_base64(PyObject *self, PyObject *args);
 PyObject *node_export_to_query(PyObject *self, PyObject *args);
 PyObject *node_export_to_soap(PyObject *self, PyObject *args);
 PyObject *node_get_attr_value(PyObject *self, PyObject *args);

@@ -61,6 +61,36 @@ PyObject *node_dump(PyObject *self, PyObject *args) {
   return (xmlCharPtr_wrap(ret));
 }
 
+PyObject *node_export(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  xmlChar *ret;
+
+  if (CheckArgs(args, "O:node_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_export", &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_export(LassoNode_get(node_obj));
+
+  return (xmlCharPtr_wrap(ret));
+}
+
+PyObject *node_export_to_base64(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  xmlChar *ret;
+
+  if (CheckArgs(args, "O:node_export_to_base64")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_export_to_base64", &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_export_to_base64(LassoNode_get(node_obj));
+
+  return (xmlCharPtr_wrap(ret));
+}
+
 PyObject *node_export_to_query(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   guint sign_method;
