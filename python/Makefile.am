@@ -1,6 +1,6 @@
 NULL=
 
-INCLUDES=-I$(top_srcdir)/lasso
+INCLUDES=-I$(top_srcdir)/lasso -I$(top_srcdir)
 
 pythondir= $(PY_SITE_PACKAGES)
 python_DATA=lassomod.py
