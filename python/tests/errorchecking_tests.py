@@ -36,13 +36,13 @@ import lasso
 
 
 class ErrorCheckingTestCase(unittest.TestCase):
-    def DISABLEDtest01(self):
+    def test01(self):
         try:
             lasso.Login(None).msg_url
         except:
             pass
 
-    def DISABLEDtest02(self):
+    def test02(self):
         # Same as test01; replace Login by Logout
         try:
             lasso.Logout(None, lasso.providerTypeSp).msg_url
