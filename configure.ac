@@ -521,16 +521,16 @@ docs/Makefile
 docs/reference/Makefile
 docs/tutorial/Makefile
 docs/lasso-book/Makefile
-python/Makefile
-python/doc/Makefile
-python/doc/tutorial/Makefile
-python/environs/Makefile
-python/examples/Makefile
-python/protocols/Makefile
-python/protocols/elements/Makefile
-python/tests/Makefile
-python/xml/Makefile
-php/Makefile
+python/Makefile]
+dnl [python/doc/Makefile
+dnl python/doc/tutorial/Makefile
+dnl python/environs/Makefile
+dnl python/examples/Makefile
+dnl python/protocols/Makefile
+dnl python/protocols/elements/Makefile
+dnl python/tests/Makefile
+dnl python/xml/Makefile]
+[php/Makefile
 php/run-tests.php
 php/environs/Makefile
 php/xml/Makefile
