@@ -59,11 +59,11 @@ lasso_samlp_request_abstract_add_respondWith(LassoSamlpRequestAbstract *node,
 					     const xmlChar *respondWith)
 {
   LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
-  g_assert(respondWith != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "RespondWith", respondWith, TRUE);
+  if (LASSO_IS_SAMLP_REQUEST_ABSTRACT(node) && respondWith != NULL) {
+    class = LASSO_NODE_GET_CLASS(node);
+    class->new_child(LASSO_NODE (node), "RespondWith", respondWith, TRUE);
+  }
 }
 
 void
@@ -71,11 +71,11 @@ lasso_samlp_request_abstract_set_issueInstant(LassoSamlpRequestAbstract *node,
 					      const xmlChar *issueInstant)
 {
   LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
-  g_assert(issueInstant != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
+  if (LASSO_IS_SAMLP_REQUEST_ABSTRACT(node) && issueInstant != NULL) {
+    class = LASSO_NODE_GET_CLASS(node);
+    class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
+  }
 }
 
 void
@@ -83,11 +83,11 @@ lasso_samlp_request_abstract_set_majorVersion(LassoSamlpRequestAbstract *node,
 					      const xmlChar *majorVersion)
 {
   LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
-  g_assert(majorVersion != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "MajorVersion", majorVersion);
+  if (LASSO_IS_SAMLP_REQUEST_ABSTRACT(node) && majorVersion != NULL) {
+    class = LASSO_NODE_GET_CLASS(node);
+    class->set_prop(LASSO_NODE (node), "MajorVersion", majorVersion);
+  }
 }
 
 void
@@ -95,11 +95,11 @@ lasso_samlp_request_abstract_set_minorVersion(LassoSamlpRequestAbstract *node,
 					      const xmlChar *minorVersion)
 {
   LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
-  g_assert(minorVersion != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
+  if (LASSO_IS_SAMLP_REQUEST_ABSTRACT(node) && minorVersion != NULL) {
+    class = LASSO_NODE_GET_CLASS(node);
+    class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
+  }
 }
 
 /**
@@ -114,11 +114,11 @@ lasso_samlp_request_abstract_set_requestID(LassoSamlpRequestAbstract *node,
 					   const xmlChar *requestID)
 {
   LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
-  g_assert(requestID != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "RequestID", requestID);
+  if (LASSO_IS_SAMLP_REQUEST_ABSTRACT(node) && requestID != NULL) {
+    class = LASSO_NODE_GET_CLASS(node);
+    class->set_prop(LASSO_NODE (node), "RequestID", requestID);
+  }
 }
 
 /* obsolete method */
