@@ -851,11 +851,25 @@ lasso_logout_validate_request(LassoLogout *logout)
   profile->remote_providerID = remote_providerID;
 
   /* Set LogoutResponse */
-  profile->response = lasso_logout_response_new(profile->server->providerID,
-						lassoSamlStatusCodeSuccess,
-						profile->request,
-						lassoSignatureTypeWithX509,
-						lassoSignatureMethodRsaSha1);
+  if (profile->http_request_method == lassoHttpMethodSoap) {
+    profile->response = lasso_logout_response_new(profile->server->providerID,
+						  lassoSamlStatusCodeSuccess,
+						  profile->request,
+						  lassoSignatureTypeWithX509,
+						  lassoSignatureMethodRsaSha1);
+  }
+  else if (profile->http_request_method == lassoHttpMethodRedirect) {
+    profile->response = lasso_logout_response_new(profile->server->providerID,
+						  lassoSamlStatusCodeSuccess,
+						  profile->request,
+						  lassoSignatureTypeNone,
+						  0);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP request method\n");
+    ret = -1;
+    goto done;
+  }
   if (profile->response == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building response\n");
     ret = -1;
