@@ -108,7 +108,7 @@ PyObject *login_new_from_dump(PyObject *self, PyObject *args) {
   gchar       *dump;
 
   if (CheckArgs(args, "OoS:login_new_from_dump")) {
-    if(!PyArg_ParseTuple(args, (char *) "O|Os:login_new_from_dump", &server_obj,
+    if(!PyArg_ParseTuple(args, (char *) "OOs:login_new_from_dump", &server_obj,
 			 &user_obj, &dump))
       return NULL;
   }

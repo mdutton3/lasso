@@ -861,6 +861,11 @@ class Login:
 	return Login(obj)
     new = classmethod(new)
 
+    def new_from_dump(cls, server, user, dump):
+	obj = lassomod.login_new_from_dump(server, user, dump)
+	return Login(obj)
+    new_from_dump = classmethod(new_from_dump)
+
     def build_artifact_msg(self, authentication_result, authenticationMethod,
                            reauthenticateOnOrAfter, method):
         return lassomod.login_build_artifact_msg(self, authentication_result,
@@ -871,8 +876,17 @@ class Login:
     def build_authn_request_msg(self):
         return lassomod.login_build_authn_request_msg(self)
 
+    def build_authn_response_msg(self, authentication_result, authenticationMethod,
+                                 reauthenticateOnOrAfter):
+        return lassomod.login_build_authn_response_msg(self, authentication_result,
+                                                       authenticationMethod,
+                                                       reauthenticateOnOrAfter)
+
     def build_request_msg(self):
         return lassomod.login_build_request_msg(self)
+
+    def dump(self):
+        return lassomod.login_dump(self)
 
     def handle_authn_response_msg(self, authn_response_msg):
         return lassomod.login_handle_authn_response_msg(self, authn_response_msg)
