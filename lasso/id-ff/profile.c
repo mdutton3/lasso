@@ -263,13 +263,6 @@ get_xmlNode(LassoNode *node)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
 	xmlSetProp(xmlnode, "Version", "2");
 
-	/* XXX: server is not saved in profile dump */
-	/* (what was the reason ?)
-	if (profile->server) {
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(profile->server)));
-	}
-	*/
-
 	if (profile->request) {
 		t = xmlNewTextChild(xmlnode, NULL, "Request", NULL);
 		xmlAddChild(t, lasso_node_get_xmlNode(profile->request));
@@ -318,12 +311,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			profile->msg_body = xmlNodeGetContent(t);
 		if (strcmp(t->name, "MsgRelayState") == 0)
 			profile->msg_relayState = xmlNodeGetContent(t);
-
-		if (strcmp(t->name, "Server") == 0) {
-			LassoServer *s;
-			s = g_object_new(LASSO_TYPE_SERVER, NULL);
-			LASSO_NODE_GET_CLASS(s)->init_from_xml(LASSO_NODE(s), t);
-		}
 
 		if (strcmp(t->name, "Request") == 0) {
 			xmlNode *t2 = t->children;
