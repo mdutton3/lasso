@@ -2244,6 +2244,9 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%immutable targetNameIdentifier;
+		gchar *targetNameIdentifier;
+
 		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
@@ -2252,7 +2255,7 @@ typedef struct {
 
 		/* Constructor, Destructor & Static Methods */
 
-		LassoNameIdentifierMapping(LassoServer *server);
+		LassoNameIdentifierMapping(LassoServer *server, lassoProviderType provider_type);
 
 		~LassoNameIdentifierMapping();
 
@@ -2339,6 +2342,12 @@ gchar *LassoNameIdentifierMapping_msgUrl_get(LassoNameIdentifierMapping *self) {
 #define LassoNameIdentifierMapping_get_nameIdentifier LassoNameIdentifierMapping_nameIdentifier_get
 gchar *LassoNameIdentifierMapping_nameIdentifier_get(LassoNameIdentifierMapping *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
+}
+
+/* targetNameIdentifier */
+#define LassoNameIdentifierMapping_get_targetNameIdentifier LassoNameIdentifierMapping_targetNameIdentifier_get
+gchar *LassoNameIdentifierMapping_targetNameIdentifier_get(LassoNameIdentifierMapping *self) {
+	return self->targetNameIdentifier;
 }
 
 /* remoteProviderId */
