@@ -1446,7 +1446,21 @@ class Lecp(Login):
             raise AttributeError, name
         ret = lassomod.lecp_getattr(self, name)
         if ret is None:
-            return None
+            raise AttributeError, name
+        elif name == "request":
+            if lassomod.lecp_getattr(self, "request_type") == messageTypeAuthnRequest:
+                ret = AuthnRequest(None, _obj=ret)
+            elif lassomod.lecp_getattr(self, "request_type") == messageTypeRequest:
+                ret = Node(_obj=ret)
+                # FIXME ret = Request(_obj=ret)
+        elif name == "response":
+            if lassomod.lecp_getattr(self, "response_type") == messageTypeAuthnResponse:
+                ret = AuthnResponse(None, _obj=ret)
+            elif lassomod.lecp_getattr(self, "response_type") == messageTypeResponse:
+                ret = SamlpResponse(_obj=ret)
+                # FIXME ret = Response(_obj=ret)
+            elif lassomod.lecp_getattr(self, "response_type") == messageTypeArtifact:
+                ret = Node(_obj=ret)
         return ret
 
     def new(cls, server = None):

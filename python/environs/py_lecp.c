@@ -24,6 +24,7 @@
  */
 
 #include "../lassomod.h"
+#include "../xml/py_xml.h"
 
 #include "py_lecp.h"
 #include "py_server.h"
@@ -59,14 +60,22 @@ PyObject *lecp_getattr(PyObject *self, PyObject *args) {
   lecp = LassoLecp_get(lecp_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[sss]", "assertionConsumerServiceURL",
-			 "msg_body", "msg_url");
+    return Py_BuildValue("[sssssss]", "assertionConsumerServiceURL", "msg_body", "msg_url",
+			 "request", "request_type", "response", "response_type");
   if (!strcmp(attr, "assertionConsumerServiceURL"))
     return (charPtrConst_wrap(lecp->assertionConsumerServiceURL));
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_body));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_url));
+  if (!strcmp(attr, "request"))
+    return (LassoNode_wrap(LASSO_PROFILE(lecp)->request));
+  if (!strcmp(attr, "request_type"))
+    return (int_wrap(LASSO_PROFILE(lecp)->request_type));
+  if (!strcmp(attr, "response"))
+    return (LassoNode_wrap(LASSO_PROFILE(lecp)->response));
+  if (!strcmp(attr, "response_type"))
+    return (int_wrap(LASSO_PROFILE(lecp)->response_type));
 
   Py_INCREF(Py_None);
   return (Py_None);
