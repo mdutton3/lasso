@@ -366,8 +366,14 @@ typedef struct {
 
 	%extend {
 		LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
-			    gchar *certificate, lassoSignatureMethod signature_method);
-		~LassoServer();
+			    gchar *certificate, lassoSignatureMethod signature_method) {
+			return lasso_server_new(metadata, public_key, private_key, certificate,
+						signature_method);
+		}
+
+		~LassoServer() {
+			lasso_server_destroy(self);
+		}
 	}
 } LassoServer;
 
@@ -405,8 +411,13 @@ typedef struct {
 	gboolean is_dirty;
 
 	%extend {
-		LassoIdentity();
-		~LassoIdentity();
+		LassoIdentity() {
+			return lasso_identity_new();
+		}
+
+		~LassoIdentity() {
+			lasso_identity_destroy(self);
+		}
 	}
 } LassoIdentity;
 
@@ -440,8 +451,13 @@ typedef struct {
 	gboolean is_dirty;
 
 	%extend {
-		LassoSession();
-		~LassoSession();
+		LassoSession() {
+			return lasso_session_new();
+		}
+
+		~LassoSession() {
+			lasso_session_destroy(self);
+		}
 	}
 } LassoSession;
 
@@ -532,8 +548,13 @@ typedef struct {
 	LassoProfile parent;
 
 	%extend {
-		LassoDefederation(LassoServer *server, lassoProviderType provider_type);
-		~LassoDefederation();
+		LassoDefederation(LassoServer *server, lassoProviderType provider_type) {
+			return lasso_defederation_new(server, provider_type);
+		}
+
+		~LassoDefederation() {
+			lasso_defederation_destroy(self);
+		}
 	}
 } LassoDefederation;
 
@@ -572,8 +593,13 @@ typedef struct {
 	gchar *response_dump;
 
 	%extend {
-		LassoLogin(LassoServer *server);
-		~LassoLogin();
+		LassoLogin(LassoServer *server) {
+			return lasso_login_new(server);
+		}
+
+		~LassoLogin() {
+			lasso_login_destroy(self);
+		}
 	}
 } LassoLogin;
 
@@ -635,8 +661,13 @@ typedef struct {
 	LassoProfile parent;
 
 	%extend {
-		LassoLogout(LassoServer *server, lassoProviderType provider_type);
-		~LassoLogout();
+		LassoLogout(LassoServer *server, lassoProviderType provider_type) {
+			return lasso_logout_new(server, provider_type);
+		}
+
+		~LassoLogout() {
+			lasso_logout_destroy(self);
+		}
 	}
 } LassoLogout;
 
@@ -678,8 +709,13 @@ typedef struct {
 	LassoLogin parent;
 
 	%extend {
-		LassoLecp(LassoServer *server);
-		~LassoLecp();
+		LassoLecp(LassoServer *server) {
+			return lasso_lecp_new(server);
+		}
+
+		~LassoLecp() {
+			lasso_lecp_destroy(self);
+		}
 	}
 } LassoLecp;
 
