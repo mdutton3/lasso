@@ -32,10 +32,10 @@ extern "C" {
 #include <lasso/export.h>
 #include <libxml/tree.h>
 
-
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/
+
 /* prefix & href */
 LASSO_EXPORT_VAR const xmlChar lassoLassoHRef[];
 LASSO_EXPORT_VAR const xmlChar lassoLassoPrefix[];

@@ -29,7 +29,6 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/lasso.h>
 #include <lasso/xml/saml_subject.h>
 #include <lasso/xml/lib_idp_provided_name_identifier.h>
 

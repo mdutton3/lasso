@@ -29,7 +29,6 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/lasso.h>
 #include <lasso/xml/saml_authentication_statement.h>
 #include <lasso/xml/lib_authn_context.h>
 

@@ -30,9 +30,10 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
 #include <lasso/environs/profile_context.h>
+
 #include <lasso/protocols/logout_request.h>
+#include <lasso/protocols/logout_response.h>
 
 #define LASSO_TYPE_LOGOUT (lasso_logout_get_type())
 #define LASSO_LOGOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT, LassoLogout))

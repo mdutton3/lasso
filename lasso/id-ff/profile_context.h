@@ -31,7 +31,9 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
+#include <lasso/xml/strings.h>
+#include <lasso/xml/tools.h>
+
 #include <lasso/environs/server.h>
 #include <lasso/environs/user.h>
 

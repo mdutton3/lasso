@@ -26,6 +26,7 @@
 #include <lasso/protocols/response.h>
 #include <lasso/protocols/artifact.h>
 #include <lasso/protocols/authn_response.h>
+#include <lasso/protocols/provider.h>
 
 #include <lasso/environs/login.h>
 

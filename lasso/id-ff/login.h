@@ -31,11 +31,12 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
-#include <lasso/protocols/provider.h>
 #include <lasso/environs/profile_context.h>
-#include <lasso/environs/server.h>
-#include <lasso/environs/user.h>
+
+#include <lasso/protocols/authn_request.h>
+#include <lasso/protocols/authn_response.h>
+#include <lasso/protocols/request.h>
+#include <lasso/protocols/response.h>
 
 #define LASSO_TYPE_LOGIN (lasso_login_get_type())
 #define LASSO_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGIN, LassoLogin))

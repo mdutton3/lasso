@@ -32,13 +32,8 @@ extern "C" {
 #include <lasso/version.h>
 #include <lasso/export.h>
 
-#include <xmlsec/xmlsec.h>
-#include <xmlsec/crypto.h>
-
-#include <lasso/xml/strings.h>
-#include <lasso/xml/saml.h>
-#include <lasso/xml/lib.h>
-#include <lasso/protocols/protocols.h>
+#include <lasso/environs/login.h>
+#include <lasso/environs/logout.h>
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);

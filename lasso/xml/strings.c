@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/lasso.h>
+#include <lasso/xml/strings.h>
 
 /*****************************************************************************/
 /* Lasso                                                                     */
@@ -31,7 +31,6 @@
 /* prefix & href */
 const xmlChar lassoLassoHRef[]   = "http://www.entrouvert.org/namespaces/lasso/0.0";
 const xmlChar lassoLassoPrefix[] = "lasso";
-
 
 /*****************************************************************************/
 /* Liberty Alliance                                                          */
@@ -99,7 +98,6 @@ const xmlChar lassoLibNameIdentifierFormatEntityID[]  = "urn:liberty:iff:nameid:
 /* prefix & href */
 const xmlChar lassoMetadataHRef[]   = "urn:liberty:metadata:2003-08";
 const xmlChar lassoMetadataPrefix[] = "md";
-
 
 /*****************************************************************************/
 /* SAML                                                                      */
