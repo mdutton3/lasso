@@ -48,17 +48,18 @@
   $login = new LassoLogin($server);
 
   if ($_GET['profile'] == 'post')
-	$login->initauthnrequest(lassoHttpMethodPost);
+	$login->initAuthnRequest(LASSO_HTTP_METHOD_POST);
   elseif ($_GET['profile'] == 'artifact')
-	$login->initauthnrequest(lassoHttpMethodRedirect);
+	$login->initAuthnRequest(LASSO_HTTP_METHOD_REDIRECT);
   else
 	die('Unknown Single Sign ON Profile');
 
   $request = $login->authnRequest;
-  $request->isPassive = FALSE;
-  $request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
-  $request->consent = lassoLibConsentObtained;
 
+  $request->isPassive = FALSE;
+  $request->nameIdPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
+  $request->consent = LASSO_LIB_CONSENT_OBTAINED;
+  
   $login->buildAuthnRequestMsg($config['providerID']);
 
   $url = $login->msgUrl;
