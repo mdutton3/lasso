@@ -150,9 +150,11 @@ lasso_server_dump(LassoServer *server)
   }
   /* metadata */
   provider = LASSO_PROVIDER(server);
-  metadata_copy = lasso_node_copy(provider->metadata);
-  server_class->add_child(server_node, metadata_copy, FALSE);
-  lasso_node_destroy(metadata_copy);
+  if (provider->metadata != NULL) {
+    metadata_copy = lasso_node_copy(provider->metadata);
+    server_class->add_child(server_node, metadata_copy, FALSE);
+    lasso_node_destroy(metadata_copy);
+  }
   /* public key */
   if (provider->public_key) {
     server_class->set_prop(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
