@@ -794,6 +794,17 @@ lasso_login_destroy(LassoLogin *login)
 	lasso_node_destroy(LASSO_NODE(login));
 }
 
+/**
+ * lasso_login_init_authn_request:
+ * @login: a #LassoLogin
+ * @remote_providerID: the providerID of the identity provider. When NULL, the
+ *     first known identity provider is used.
+ * @http_method: HTTP method to use for request transmission
+ *
+ * Initializes a new lib:AuthnRequest.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID,
 		lassoHttpMethod http_method)

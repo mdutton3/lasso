@@ -196,9 +196,13 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 
 /**
  * lasso_lecp_init_authn_request:
- * @lecp: a LassoLecp
+ * @lecp: a #LassoLecp
  * @remote_providerID: the providerID of the identity provider. When NULL, the
- *     firstidentity provider is used.
+ *     first known identity provider is used.
+ *
+ * Initializes a new lib:AuthnRequest.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 int
 lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
