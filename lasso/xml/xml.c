@@ -97,7 +97,7 @@ lasso_node_dump(LassoNode     *node,
 void
 lasso_node_destroy(LassoNode *node)
 {
-  if (node != NULL) {
+  if (LASSO_IS_NODE(node)) {
     LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
     class->destroy(node);
   }

@@ -176,7 +176,7 @@ LASSO_EXPORT GPtrArray*     lasso_node_get_children     (LassoNode *node);
 
 LASSO_EXPORT xmlChar*       lasso_node_get_content      (LassoNode *node);
 
-LASSO_EXPORT const xmlChar*       lasso_node_get_name         (LassoNode *node);
+LASSO_EXPORT xmlChar*       lasso_node_get_name         (LassoNode *node);
 
 LASSO_EXPORT void           lasso_node_import           (LassoNode     *node,
 							 const xmlChar *buffer);
