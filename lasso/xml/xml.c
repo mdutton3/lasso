@@ -24,7 +24,6 @@
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/ds_signature.h>
-#include "../export.h"
 
 struct _LassoNodePrivate
 {
@@ -35,15 +34,6 @@ struct _LassoNodePrivate
 /*****************************************************************************/
 /* virtual public methods                                                    */
 /*****************************************************************************/
-
-gchar *
-lasso_node_build_query(LassoNode *node)
-{
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->build_query(node));
-}
 
 LassoNode *
 lasso_node_copy(LassoNode *node)
@@ -63,6 +53,44 @@ lasso_node_dump(LassoNode     *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   return (class->dump(node, encoding, format));
+}
+
+xmlChar *
+lasso_node_export(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->export(node));
+}
+
+xmlChar *
+lasso_node_export_to_base64(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->export_to_base64(node));
+}
+
+gchar *
+lasso_node_export_to_query(LassoNode   *node,
+			   gint         sign_method,
+			   const gchar *private_key_file)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->export_to_query(node, sign_method, private_key_file));
+}
+
+xmlChar *
+lasso_node_export_to_soap(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->export_to_soap(node));
 }
 
 LassoAttr *
@@ -144,13 +172,13 @@ lasso_node_get_name(LassoNode *node)
 }
 
 void
-lasso_node_load_from_buffer(LassoNode  *node,
-			    const char *buffer)
+lasso_node_import(LassoNode     *node,
+		  const xmlChar *buffer)
 {
   g_return_if_fail(LASSO_IS_NODE(node));
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->load_from_buffer(node, buffer);
+  class->import(node, buffer);
 }
 
 void
@@ -162,36 +190,6 @@ lasso_node_rename_prop(LassoNode     *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->rename_prop(node, old_name, new_name);
-}
-
-GData *
-lasso_node_serialize(LassoNode *node,
-		     GData     *gd)
-{
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->serialize(node, gd));
-}
-
-gchar *
-lasso_node_soap_envelop(LassoNode *node)
-{
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->soap_envelop(node));
-}
-
-gchar *
-lasso_node_url_encode(LassoNode   *node,
-		      gint         sign_method,
-		      const gchar *private_key_file)
-{
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->url_encode(node, sign_method, private_key_file));
 }
 
 gint
@@ -231,6 +229,15 @@ lasso_node_add_signature(LassoNode         *node,
   class->add_signature(node, sign_method, private_key_file, certificate_file);
 }
 
+static gchar *
+lasso_node_build_query(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->build_query(node));
+}
+
 static xmlNodePtr
 lasso_node_get_xmlNode(LassoNode *node)
 {
@@ -262,6 +269,16 @@ lasso_node_new_child(LassoNode     *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(node, name, content, unbounded);
+}
+
+static GData *
+lasso_node_serialize(LassoNode *node,
+		     GData     *gd)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->serialize(node, gd));
 }
 
 static void
@@ -310,72 +327,6 @@ lasso_node_set_xmlNode(LassoNode *node,
 /* implementation methods                                                    */
 /*****************************************************************************/
 
-static void gdata_build_query_foreach_func(GQuark   key_id,
-					   gpointer data,
-					   gpointer user_data) {
-  guint i;
-  GString *str;
-  GPtrArray *array;
-
-  array = g_ptr_array_new();
-  str = g_string_new("");
-  for (i=0; i<((GPtrArray *)data)->len; i++) {
-    str = g_string_append(str, g_ptr_array_index((GPtrArray *)data, i));
-    if (i<((GPtrArray *)data)->len - 1) {
-      str = g_string_append(str, " ");
-    }
-  }
-  g_ptr_array_add(array, g_strdup((gpointer)g_quark_to_string(key_id)));
-  g_ptr_array_add(array, str->str);
-  g_string_free(str, FALSE);
-  g_ptr_array_add((GPtrArray *)user_data, array);
-}
-
-static gchar *
-lasso_node_impl_build_query(LassoNode *node)
-{
-  guint i, j;
-  GData *gd;
-  GPtrArray *a, *aa;
-  GString *query;
-  xmlChar *str_escaped;
-  gchar   *ret;
-
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  gd = lasso_node_serialize(node, NULL);
-  a = g_ptr_array_new();
-  /* transform dict into array
-     each key => [val1, val2, ...] of dict become [key, "val1 val2 ..."] */
-  g_datalist_foreach(&gd, gdata_build_query_foreach_func, a);
-  
-  query = g_string_new("");
-  for (i=0; i<a->len; i++) {
-    aa = g_ptr_array_index(a, i);
-    query = g_string_append(query, g_ptr_array_index(aa, 0));
-    query = g_string_append(query, "=");
-    str_escaped = lasso_str_escape(g_ptr_array_index(aa, 1));
-    query = g_string_append(query, str_escaped);
-    xmlFree(str_escaped);
-    if (i<a->len - 1) {
-      query = g_string_append(query, "&");
-    }
-    /* free allocated memory for array aa */
-    for (j=0; j<aa->len; j++) {
-      g_free(aa->pdata[j]);
-    }
-    g_ptr_array_free(aa, TRUE);
-  }
-  /* free allocated memory for array a */
-  g_ptr_array_free(a, TRUE);
-  g_datalist_clear(&gd);
-
-  ret = g_strdup(query->str);
-  g_string_free(query, TRUE);
-  
-  return (ret);
-}
-
 static LassoNode *
 lasso_node_impl_copy(LassoNode *node)
 {
@@ -422,6 +373,96 @@ lasso_node_impl_dump(LassoNode     *node,
   (void) xmlOutputBufferClose(buf);
 
   return (ret);
+}
+
+static xmlChar *
+lasso_node_impl_export(LassoNode *node)
+{
+  /* using lasso_node_impl_dump because dump method can be overrided */
+  return (lasso_node_impl_dump(node, "utf-8", 1));
+}
+
+static xmlChar *
+lasso_node_impl_export_to_base64(LassoNode *node)
+{
+  xmlChar *buffer, *ret;
+
+  buffer = lasso_node_impl_dump(node, "utf-8", 1);
+  ret = xmlSecBase64Encode((const xmlSecByte *) buffer,
+			   (xmlSecSize)strlen((const char *)buffer), 0);
+  xmlFree(buffer);
+
+  return (ret);
+}
+
+static gchar *
+lasso_node_impl_export_to_query(LassoNode   *node,
+				gint         sign_method,
+				const gchar *private_key_file)
+{
+  GString *query;
+  xmlDocPtr doc;
+  xmlChar *str1, *str2, *str_escaped;
+  gchar *unsigned_query, *ret;
+
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  unsigned_query = lasso_node_build_query(node);
+  query = g_string_new(unsigned_query);
+  g_free(unsigned_query);
+  
+  if (sign_method > 0 && private_key_file != NULL) {
+    query = g_string_append(query, "&SigAlg=");
+    switch (sign_method) {
+    case lassoSignatureMethodRsaSha1:
+      str_escaped = lasso_str_escape((xmlChar *)xmlSecHrefRsaSha1);
+      query = g_string_append(query, str_escaped);
+      doc = lasso_str_sign(query->str, xmlSecTransformRsaSha1Id, private_key_file);
+      break;
+    case lassoSignatureMethodDsaSha1:
+      str_escaped = lasso_str_escape((xmlChar *)xmlSecHrefDsaSha1);
+      query = g_string_append(query, str_escaped);
+      doc = lasso_str_sign(query->str, xmlSecTransformDsaSha1Id, private_key_file);
+      break;
+    }
+    xmlFree(str_escaped);
+    query = g_string_append(query, "&Signature=");
+    str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
+    str2 = lasso_str_escape(str1);
+    xmlFree(str1);
+    query = g_string_append(query, str2);
+    xmlFree(str2);
+    xmlFreeDoc(doc);
+  }
+
+  ret = g_strdup(query->str);
+  g_string_free(query, TRUE);
+  return (ret);
+}
+
+static xmlChar *
+lasso_node_impl_export_to_soap(LassoNode *node)
+{
+  LassoNode *envelope, *body;
+  xmlChar *buffer;
+
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  
+  envelope = lasso_node_new();
+  lasso_node_set_name(envelope, "Envelope");
+  lasso_node_set_ns(envelope, lassoSoapEnvHRef, lassoSoapEnvPrefix);
+  
+  body = lasso_node_new();
+  lasso_node_set_name(body, "Body");
+  lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
+  
+  lasso_node_add_child(body, lasso_node_copy(node), 0);
+  lasso_node_add_child(envelope, body, 0);
+
+  buffer = lasso_node_export(envelope);
+  g_object_unref(G_OBJECT(envelope));
+  
+  return(buffer);
 }
 
 static LassoAttr*
@@ -553,8 +594,8 @@ lasso_node_impl_get_name(LassoNode *node)
 }
 
 static void
-lasso_node_impl_load_from_buffer(LassoNode  *node,
-				 const char *buffer)
+lasso_node_impl_import(LassoNode     *node,
+		       const xmlChar *buffer)
 {
   xmlDocPtr doc;
   xmlNodePtr root;
@@ -588,154 +629,6 @@ lasso_node_impl_rename_prop(LassoNode     *node,
   }
 }
 
-static void
-gdata_serialize_destroy_notify(gpointer data)
-{
-  gint i;
-  GPtrArray *array = data;
-
-  for (i=0; i<array->len; i++) {
-    xmlFree(array->pdata[i]);
-  }
-  g_ptr_array_free(array, TRUE);
-}
-
-static GData *
-lasso_node_impl_serialize(LassoNode *node,
-			  GData     *gd)
-{
-  GPtrArray *attrs, *children;
-  GPtrArray *values;
-  const xmlChar *name;
-  xmlChar *val;
-  int i;
-
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  if (gd == NULL) {
-    g_datalist_init(&gd);
-  }
-
-  attrs = lasso_node_get_attrs(node);
-  if (attrs != NULL) {
-    for(i=0; i<attrs->len; i++) {
-      values = g_ptr_array_new();
-      name = (xmlChar *)((LassoAttr *)g_ptr_array_index(attrs, i))->name;
-      /* xmlGetProp returns a COPY of attr value
-	 each val must be xmlFree in gdata_serialize_destroy_notify()
-	 which is called by g_datalist_clear() */
-      val = xmlGetProp(node->private->node, name);
-      g_ptr_array_add(values, val);
-      g_datalist_set_data_full(&gd, name, values, gdata_serialize_destroy_notify);
-    }
-    g_ptr_array_free(attrs, TRUE);
-  }
-
-  children = lasso_node_get_children(node);
-  if (children != NULL) {
-    for(i=0; i<children->len; i++) {
-      xmlNodePtr xml_node = ((LassoNode *)g_ptr_array_index(children, i))->private->node;
-      switch (xml_node->type) {
-      case XML_ELEMENT_NODE:
-	gd = lasso_node_serialize(g_ptr_array_index(children, i), gd);
-	break;
-      case XML_TEXT_NODE:
-	name   = lasso_node_get_name(node);
-	/* xmlNodeGetContent returns a COPY of node content
-	   each val must be xmlFree in gdata_serialize_destroy_notify()
-	   which is called by g_datalist_clear() */
-	val    = xmlNodeGetContent(node->private->node);
-	if (val == NULL)
-	  break;
-	values = (GPtrArray *)g_datalist_get_data(&gd, name);
-	if (values == NULL) {
-	  values = g_ptr_array_new();
-	  g_ptr_array_add(values, val);
-	  g_datalist_set_data_full(&gd, name, values,
-				   gdata_serialize_destroy_notify);
-	}
-	else {
-	  g_ptr_array_add(values, val);
-	}
-	break;
-      }
-    }
-    g_ptr_array_free(children, TRUE);
-  }
-    
-  return (gd);
-}
-
-static gchar *
-lasso_node_impl_soap_envelop(LassoNode *node)
-{
-  LassoNode *envelope, *body;
-  xmlChar *envelope_dump;
-
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-  
-  envelope = lasso_node_new();
-  lasso_node_set_name(envelope, "Envelope");
-  lasso_node_set_ns(envelope, lassoSoapEnvHRef, lassoSoapEnvPrefix);
-  
-  body = lasso_node_new();
-  lasso_node_set_name(body, "Body");
-  lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
-  
-  lasso_node_add_child(body, lasso_node_copy(node), 0);
-  lasso_node_add_child(envelope, body, 0);
-
-  envelope_dump = lasso_node_dump(envelope, "utf-8", 1);
-  g_object_unref(envelope);
-  
-  return(envelope_dump);
-}
-
-static gchar *
-lasso_node_impl_url_encode(LassoNode   *node,
-			   gint         sign_method,
-			   const gchar *private_key_file)
-{
-  GString *url;
-  xmlDocPtr doc;
-  xmlChar *str1, *str2, *str_escaped;
-  gchar *unsigned_query, *ret;
-
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  unsigned_query = lasso_node_build_query(node);
-  url = g_string_new(unsigned_query);
-  g_free(unsigned_query);
-  
-  if (sign_method > 0 && private_key_file != NULL) {
-    url = g_string_append(url, "&SigAlg=");
-    switch (sign_method) {
-    case lassoUrlEncodeRsaSha1:
-      str_escaped = lasso_str_escape(xmlSecHrefRsaSha1);
-      url = g_string_append(url, str_escaped);
-      doc = lasso_str_sign(url->str, xmlSecTransformRsaSha1Id, private_key_file);
-      break;
-    case lassoUrlEncodeDsaSha1:
-      str_escaped = lasso_str_escape(xmlSecHrefDsaSha1);
-      url = g_string_append(url, str_escaped);
-      doc = lasso_str_sign(url->str, xmlSecTransformDsaSha1Id, private_key_file);
-      break;
-    }
-    xmlFree(str_escaped);
-    url = g_string_append(url, "&Signature=");
-    str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
-    str2 = lasso_str_escape(str1);
-    xmlFree(str1);
-    url = g_string_append(url, str2);
-    xmlFree(str2);
-    xmlFreeDoc(doc);
-  }
-
-  ret = g_strdup(url->str);
-  g_string_free(url, TRUE);
-  return (ret);
-}
-
 static gint
 lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
@@ -755,7 +648,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
 
   /* find start node */
   signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
- 			     xmlSecDSigNs);
+			     xmlSecDSigNs);
   if (signature == NULL) {
     fprintf(stderr, "Error: start node not found\n");
     goto done;	
@@ -842,24 +735,91 @@ lasso_node_impl_add_child(LassoNode *node,
 }
 
 static void
-lasso_node_impl_add_signature(LassoNode         *node,
-			      gint               sign_method,
-			      const xmlChar     *private_key_file,
-			      const xmlChar     *certificate_file)
+lasso_node_impl_add_signature(LassoNode     *node,
+			      gint           sign_method,
+			      const xmlChar *private_key_file,
+			      const xmlChar *certificate_file)
 {
-  xmlDocPtr doc;
   LassoNode *signature;
 
-  /* FIXME : destroy doc after */
-  doc = xmlNewDoc("1.0"); // <---
-  xmlAddChild((xmlNodePtr)doc, node->private->node);
-
-  /* FIXME : use sign_method */
-  signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
-  lasso_node_add_child(node, signature, 0);
+  switch (sign_method) {
+  case lassoSignatureMethodRsaSha1:
+    signature = lasso_ds_signature_new(node, xmlSecTransformRsaSha1Id);
+    break;
+  case lassoSignatureMethodDsaSha1:
+    signature = lasso_ds_signature_new(node, xmlSecTransformDsaSha1Id);
+    break;
+  }
+  lasso_node_add_child(node, signature, FALSE);
   lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
 			  private_key_file,
 			  certificate_file);
+}
+
+static void gdata_build_query_foreach_func(GQuark   key_id,
+					   gpointer data,
+					   gpointer user_data) {
+  guint i;
+  GString *str;
+  GPtrArray *array;
+
+  array = g_ptr_array_new();
+  str = g_string_new("");
+  for (i=0; i<((GPtrArray *)data)->len; i++) {
+    str = g_string_append(str, g_ptr_array_index((GPtrArray *)data, i));
+    if (i<((GPtrArray *)data)->len - 1) {
+      str = g_string_append(str, " ");
+    }
+  }
+  g_ptr_array_add(array, g_strdup((gpointer)g_quark_to_string(key_id)));
+  g_ptr_array_add(array, str->str);
+  g_string_free(str, FALSE);
+  g_ptr_array_add((GPtrArray *)user_data, array);
+}
+
+static gchar *
+lasso_node_impl_build_query(LassoNode *node)
+{
+  guint i, j;
+  GData *gd;
+  GPtrArray *a, *aa;
+  GString *query;
+  xmlChar *str_escaped;
+  gchar   *ret;
+
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  gd = lasso_node_serialize(node, NULL);
+  a = g_ptr_array_new();
+  /* transform dict into array
+     each key => [val1, val2, ...] of dict become [key, "val1 val2 ..."] */
+  g_datalist_foreach(&gd, gdata_build_query_foreach_func, a);
+  
+  query = g_string_new("");
+  for (i=0; i<a->len; i++) {
+    aa = g_ptr_array_index(a, i);
+    query = g_string_append(query, g_ptr_array_index(aa, 0));
+    query = g_string_append(query, "=");
+    str_escaped = lasso_str_escape(g_ptr_array_index(aa, 1));
+    query = g_string_append(query, str_escaped);
+    xmlFree(str_escaped);
+    if (i<a->len - 1) {
+      query = g_string_append(query, "&");
+    }
+    /* free allocated memory for array aa */
+    for (j=0; j<aa->len; j++) {
+      g_free(aa->pdata[j]);
+    }
+    g_ptr_array_free(aa, TRUE);
+  }
+  /* free allocated memory for array a */
+  g_ptr_array_free(a, TRUE);
+  g_datalist_clear(&gd);
+
+  ret = g_strdup(query->str);
+  g_string_free(query, TRUE);
+  
+  return (ret);
 }
 
 static xmlNodePtr
@@ -892,6 +852,84 @@ lasso_node_impl_new_child(LassoNode     *node,
   else {
     xmlNewChild(node->private->node, NULL, name, content);
   }
+}
+
+static void
+gdata_serialize_destroy_notify(gpointer data)
+{
+  gint i;
+  GPtrArray *array = data;
+
+  for (i=0; i<array->len; i++) {
+    xmlFree(array->pdata[i]);
+  }
+  g_ptr_array_free(array, TRUE);
+}
+
+static GData *
+lasso_node_impl_serialize(LassoNode *node,
+			  GData     *gd)
+{
+  GPtrArray *attrs, *children;
+  GPtrArray *values;
+  const xmlChar *name;
+  xmlChar *val;
+  int i;
+
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  if (gd == NULL) {
+    g_datalist_init(&gd);
+  }
+
+  attrs = lasso_node_get_attrs(node);
+  if (attrs != NULL) {
+    for(i=0; i<attrs->len; i++) {
+      values = g_ptr_array_new();
+      name = (xmlChar *)((LassoAttr *)g_ptr_array_index(attrs, i))->name;
+      /* xmlGetProp returns a COPY of attr value
+	 each val must be xmlFree in gdata_serialize_destroy_notify()
+	 which is called by g_datalist_clear() */
+      val = xmlGetProp(node->private->node, name);
+      g_ptr_array_add(values, val);
+      g_datalist_set_data_full(&gd, name, values, gdata_serialize_destroy_notify);
+    }
+    g_ptr_array_free(attrs, TRUE);
+  }
+
+  children = lasso_node_get_children(node);
+  if (children != NULL) {
+    for(i=0; i<children->len; i++) {
+      xmlNodePtr xml_node = ((LassoNode *)g_ptr_array_index(children, i))->private->node;
+      switch (xml_node->type) {
+      case XML_ELEMENT_NODE:
+	gd = lasso_node_serialize(g_ptr_array_index(children, i), gd);
+	break;
+      case XML_TEXT_NODE:
+	name   = lasso_node_get_name(node);
+	/* xmlNodeGetContent returns a COPY of node content
+	   each val must be xmlFree in gdata_serialize_destroy_notify()
+	   which is called by g_datalist_clear() */
+	val    = xmlNodeGetContent(node->private->node);
+	if (val == NULL)
+	  break;
+	values = (GPtrArray *)g_datalist_get_data(&gd, name);
+	if (values == NULL) {
+	  values = g_ptr_array_new();
+	  g_ptr_array_add(values, val);
+	  g_datalist_set_data_full(&gd, name, values,
+				   gdata_serialize_destroy_notify);
+	}
+	else {
+	  g_ptr_array_add(values, val);
+	}
+	break;
+      }
+    }
+    g_ptr_array_free(children, TRUE);
+  }
+    
+  return (gd);
 }
 
 static void
@@ -1001,9 +1039,12 @@ lasso_node_class_init(LassoNodeClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS(class);
   
   /* virtual public methods */
-  class->build_query      = lasso_node_impl_build_query;
   class->copy             = lasso_node_impl_copy;
   class->dump             = lasso_node_impl_dump;
+  class->export           = lasso_node_impl_export;
+  class->export_to_base64 = lasso_node_impl_export_to_base64;
+  class->export_to_query  = lasso_node_impl_export_to_query;
+  class->export_to_soap   = lasso_node_impl_export_to_soap;
   class->get_attr         = lasso_node_impl_get_attr;
   class->get_attr_value   = lasso_node_impl_get_attr_value;
   class->get_attrs        = lasso_node_impl_get_attrs;
@@ -1011,17 +1052,16 @@ lasso_node_class_init(LassoNodeClass *class)
   class->get_children     = lasso_node_impl_get_children;
   class->get_content      = lasso_node_impl_get_content;
   class->get_name         = lasso_node_impl_get_name;
-  class->load_from_buffer = lasso_node_impl_load_from_buffer;
+  class->import           = lasso_node_impl_import;
   class->rename_prop      = lasso_node_impl_rename_prop;
-  class->serialize        = lasso_node_impl_serialize;
-  class->soap_envelop     = lasso_node_impl_soap_envelop;
-  class->url_encode       = lasso_node_impl_url_encode;
   class->verify_signature = lasso_node_impl_verify_signature;
   /* virtual private methods */
   class->add_child     = lasso_node_impl_add_child;
   class->add_signature = lasso_node_impl_add_signature;
+  class->build_query   = lasso_node_impl_build_query;
   class->get_xmlNode   = lasso_node_impl_get_xmlNode;
   class->new_child     = lasso_node_impl_new_child;
+  class->serialize     = lasso_node_impl_serialize;
   class->set_name      = lasso_node_impl_set_name;
   class->set_ns        = lasso_node_impl_set_ns;
   class->set_prop      = lasso_node_impl_set_prop;
@@ -1060,7 +1100,7 @@ lasso_node_new()
 }
 
 LassoNode*
-lasso_node_new_from_dump(xmlChar *buffer)
+lasso_node_new_from_dump(const xmlChar *buffer)
 {
   LassoNode *node;
   xmlDocPtr  doc;

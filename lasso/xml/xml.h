@@ -60,77 +60,87 @@ struct _LassoNodeClass {
   GObjectClass parent_class;
   /*< vtable >*/
   /*< public >*/
-  gchar*         (* build_query)      (LassoNode     *node);
   LassoNode*     (* copy)             (LassoNode     *node);
   xmlChar*       (* dump)             (LassoNode     *node,
 				       const xmlChar *encoding,
 				       int            format);
-  LassoAttr*     (* get_attr)         (LassoNode     *,
-				       const xmlChar *);
+  xmlChar*       (* export)           (LassoNode     *node);
+  xmlChar*       (* export_to_base64) (LassoNode     *node);
+  gchar*         (* export_to_query)  (LassoNode     *node,
+				       gint           sign_method,
+				       const gchar   *private_key_file);
+  xmlChar*       (* export_to_soap)   (LassoNode     *node);
+  LassoAttr*     (* get_attr)         (LassoNode     *node,
+				       const xmlChar *name);
   xmlChar*       (* get_attr_value)   (LassoNode     *node,
 				       const xmlChar *name);
-  GPtrArray*     (* get_attrs)        (LassoNode     *);
-  LassoNode*     (* get_child)        (LassoNode     *,
-				       const xmlChar *);
-  GPtrArray*     (* get_children)     (LassoNode     *);
-  xmlChar*       (* get_content)      (LassoNode     *);
-  const xmlChar* (* get_name)         (LassoNode     *);
-  void           (* load_from_buffer) (LassoNode     *node,
-                                       const char    *buffer);
+  GPtrArray*     (* get_attrs)        (LassoNode     *node);
+  LassoNode*     (* get_child)        (LassoNode     *node,
+				       const xmlChar *name);
+  GPtrArray*     (* get_children)     (LassoNode     *node);
+  xmlChar*       (* get_content)      (LassoNode     *node);
+  const xmlChar* (* get_name)         (LassoNode     *node);
+  void           (* import)           (LassoNode     *node,
+                                       const xmlChar *buffer);
   void           (* rename_prop)      (LassoNode     *node,
 				       const xmlChar *old_name,
 				       const xmlChar *new_name);
-  GData*         (* serialize)        (LassoNode     *,
-				       GData         *);
-  gchar*         (* url_encode)       (LassoNode     *node,
-				       gint           sign_method,
-				       const gchar   *private_key_file);
-  gchar*         (* soap_envelop)     (LassoNode     *node);
   gint           (* verify_signature) (LassoNode     *node,
 				       const gchar   *certificate_file);
   /*< private >*/
-  void       (* add_child)    (LassoNode *,
-			       LassoNode *,
-			       gboolean);
-  void       (*add_signature) (LassoNode     *node,
-			       gint           sign_method,
-			       const xmlChar *private_key_file,
-			       const xmlChar *certificate_file);
-  xmlNodePtr (* get_xmlNode)  (LassoNode     *);
-  void       (* new_child)    (LassoNode     *,
-			       const xmlChar *,
-			       const xmlChar *,
-			       gboolean);
-  void       (* set_name)     (LassoNode     *,
-			       const xmlChar *);
-  void       (* set_ns)       (LassoNode     *node,
-			       const xmlChar *href,
-			       const xmlChar *prefix);
-  void       (* set_prop)     (LassoNode     *,
-			       const xmlChar *,
-			       const xmlChar *);
-  void       (* set_xmlNode)  (LassoNode     *,
-			       xmlNodePtr);
+  void       (* add_child)     (LassoNode     *node,
+				LassoNode     *child,
+				gboolean       unbounded);
+  void       (* add_signature) (LassoNode     *node,
+				gint           sign_method,
+				const xmlChar *private_key_file,
+				const xmlChar *certificate_file);
+  gchar*     (* build_query)   (LassoNode     *node);
+  xmlNodePtr (* get_xmlNode)   (LassoNode     *node);
+  void       (* new_child)     (LassoNode     *node,
+				const xmlChar *name,
+				const xmlChar *content,
+				gboolean       unbounded);
+  GData*     (* serialize)     (LassoNode     *node,
+				GData         *gd);
+  void       (* set_name)      (LassoNode     *node,
+				const xmlChar *name);
+  void       (* set_ns)        (LassoNode     *node,
+				const xmlChar *href,
+				const xmlChar *prefix);
+  void       (* set_prop)      (LassoNode     *node,
+				const xmlChar *name,
+				const xmlChar *value);
+  void       (* set_xmlNode)   (LassoNode     *node,
+				xmlNodePtr     libxml_node);
 };
 
 typedef enum {
-  lassoUrlEncodeRsaSha1 = 1,
-  lassoUrlEncodeDsaSha1
-} lassoUrlEncodeSignMethod;
+  lassoSignatureMethodRsaSha1 = 1,
+  lassoSignatureMethodDsaSha1
+} lassoSignatureMethod;
 
 LASSO_EXPORT GType          lasso_node_get_type         (void);
 
 LASSO_EXPORT LassoNode*     lasso_node_new              (void);
-LASSO_EXPORT LassoNode*     lasso_node_new_from_dump    (xmlChar *buffer);
+LASSO_EXPORT LassoNode*     lasso_node_new_from_dump    (const xmlChar *buffer);
 LASSO_EXPORT LassoNode*     lasso_node_new_from_xmlNode (xmlNodePtr node);
-
-LASSO_EXPORT gchar*         lasso_node_build_query      (LassoNode *node);
 
 LASSO_EXPORT LassoNode*     lasso_node_copy             (LassoNode *node);
 
 LASSO_EXPORT xmlChar*       lasso_node_dump             (LassoNode     *node,
 							 const xmlChar *encoding,
 							 int            format);
+
+LASSO_EXPORT xmlChar*       lasso_node_export           (LassoNode *node);
+
+LASSO_EXPORT xmlChar*       lasso_node_export_to_base64 (LassoNode *node);
+
+LASSO_EXPORT gchar*         lasso_node_export_to_query  (LassoNode   *node,
+							 gint         sign_method,
+							 const gchar *private_key_file);
+
+LASSO_EXPORT xmlChar*       lasso_node_export_to_soap   (LassoNode *node);
 
 LASSO_EXPORT LassoAttr*     lasso_node_get_attr         (LassoNode *node,
 							 const xmlChar *name);
@@ -149,21 +159,12 @@ LASSO_EXPORT xmlChar*       lasso_node_get_content      (LassoNode *node);
 
 LASSO_EXPORT const xmlChar* lasso_node_get_name         (LassoNode *node);
 
-LASSO_EXPORT void           lasso_node_load_from_buffer (LassoNode  *node,
-							 const char *buffer);
+LASSO_EXPORT void           lasso_node_import           (LassoNode     *node,
+							 const xmlChar *buffer);
 
 LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode *node,
 							 const xmlChar *old_name,
 							 const xmlChar *new_name);
-
-LASSO_EXPORT GData*         lasso_node_serialize        (LassoNode *node,
-							 GData     *gd);
-
-LASSO_EXPORT gchar*         lasso_node_soap_envelop     (LassoNode *node);
-
-LASSO_EXPORT gchar*         lasso_node_url_encode       (LassoNode   *node,
-							 gint         sign_method,
-							 const gchar *private_key_file);
 
 LASSO_EXPORT gint           lasso_node_verify_signature (LassoNode *node,
 							 const gchar *certificate_file);
