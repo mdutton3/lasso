@@ -466,7 +466,6 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 		const char *notOnOrAfter,
 		lassoHttpMethod http_method)
 {
-	/* XXX: function to check */
 	LassoFederation *federation = NULL;
 	LassoProvider *remote_provider;
 	gchar *url;
@@ -568,11 +567,7 @@ gint
 lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID)
 {
 	LassoProvider *provider, *remote_provider;
-	xmlChar *md_authnRequestsSigned = NULL;
-	xmlChar *request_protocolProfile = NULL;
-	xmlChar *url = NULL;
-	gchar *query = NULL;
-	gchar *lareq = NULL;
+	char *md_authnRequestsSigned, *url, *query, *lareq, *protocolProfile;
 	gboolean must_sign;
 	gint ret = 0;
 
@@ -592,15 +587,19 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 		return -1; /* XXX */
 	}
 
+	protocolProfile = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProtocolProfile;
+	if (protocolProfile == NULL)
+		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
+
+	if (lasso_provider_has_protocol_profile(remote_provider,
+				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON, protocolProfile) == FALSE) {
+		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+	}
+
 	/* check if authnRequest must be signed */
 	md_authnRequestsSigned = lasso_provider_get_metadata_one(provider, "AuthnRequestsSigned");
 	must_sign = (md_authnRequestsSigned && strcmp(md_authnRequestsSigned, "true") == 0);
-
-	/* get SingleSignOnServiceURL metadata */
-	url = lasso_provider_get_metadata_one(remote_provider, "SingleSignOnServiceURL");
-	if (url == NULL) {
-		return -1; /* XXX */
-	}
+	g_free(md_authnRequestsSigned);
 
 	if (login->http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* REDIRECT -> query */
@@ -608,55 +607,47 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 			query = lasso_node_export_to_query(LASSO_PROFILE(login)->request,
 					LASSO_PROFILE(login)->server->signature_method,
 					LASSO_PROFILE(login)->server->private_key);
-			if (query == NULL) {
-				message(G_LOG_LEVEL_CRITICAL,
-						"Failed to create AuthnRequest query (signed).");
-				ret = -3;
-				goto done;
-			}
 		}
-		else {
-			query = lasso_node_export_to_query(LASSO_PROFILE(login)->request, 0, NULL);
-			if (query == NULL) {
-				message(G_LOG_LEVEL_CRITICAL,
-						"Failed to create AuthnRequest query.");
-				ret = -4;
-				goto done;
-			}
+		if (query == NULL) {
+			message(G_LOG_LEVEL_CRITICAL, "Failed to create AuthnRequest query");
+			return -3;
 		}
+
+		/* get SingleSignOnServiceURL metadata */
+		url = lasso_provider_get_metadata_one(remote_provider, "SingleSignOnServiceURL");
+		if (url == NULL) {
+			return -1; /* XXX */
+		}
+
 		/* alloc msg_url (+2 for the ? and \0) */
 		LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?%s", url, query);
 		LASSO_PROFILE(login)->msg_body = NULL;
 		g_free(query);
+		g_free(url);
 	}
 	if (login->http_method == LASSO_HTTP_METHOD_POST) {
-		/* POST -> formular */
-		if (must_sign) {
+		/* POST -> form */
 #if 0 /* XXX: signatures are done differently */
+		if (must_sign) {
 			ret = lasso_samlp_request_abstract_sign_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
 					LASSO_PROFILE(login)->server->private_key,
 					LASSO_PROFILE(login)->server->certificate);
+			if (ret < 0)
+				goto done;
+		}
 #endif
-		}
-
-		if (ret < 0) {
-			goto done;
-		}
 		lareq = lasso_node_export_to_base64(LASSO_PROFILE(login)->request);
 
-		if (lareq != NULL) {
-			LASSO_PROFILE(login)->msg_url = g_strdup(url);
-			LASSO_PROFILE(login)->msg_body = lareq;
-		} else {
+		if (lareq == NULL) {
 			message(G_LOG_LEVEL_CRITICAL,
 					"Failed to export AuthnRequest (Base64 encoded).");
-			ret = -5;
+			return -5;
 		}
-	}
 
-done:
-	xmlFree(url);
-	xmlFree(request_protocolProfile);
+		LASSO_PROFILE(login)->msg_url = lasso_provider_get_metadata_one(
+				remote_provider, "SingleSignOnServiceURL");
+		LASSO_PROFILE(login)->msg_body = lareq;
+	}
 
 	return ret;
 }

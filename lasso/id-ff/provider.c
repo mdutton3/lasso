@@ -63,7 +63,7 @@ char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
 /*****************************************************************************/
 
 gchar*
-lasso_provider_get_metadata_one(LassoProvider *provider, gchar *name)
+lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 {
 	GList *l;
 	GHashTable *descriptor;
@@ -80,7 +80,7 @@ lasso_provider_get_metadata_one(LassoProvider *provider, gchar *name)
 }
 
 GList*
-lasso_provider_get_metadata_list(LassoProvider *provider, gchar *name)
+lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 {
 	GHashTable *descriptor;
 
@@ -149,8 +149,6 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 { 
 	LassoProviderRole initiating_role;
 	char *protocol_profile;
-	GList *local_supported_profiles;
-	GList *remote_supported_profiles;
 
 	initiating_role = remote_provider->role;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
@@ -167,19 +165,28 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 			protocol_roles[initiating_role],
 			protocol_methods[http_method+1]);
 
-	local_supported_profiles = lasso_provider_get_metadata_list(
+	if (lasso_provider_has_protocol_profile(provider,
+				protocol_type, protocol_profile) == FALSE)
+		return FALSE;
+
+	if (lasso_provider_has_protocol_profile(remote_provider,
+				protocol_type, protocol_profile) == FALSE)
+		return FALSE;
+
+	return TRUE;
+}
+
+gboolean
+lasso_provider_has_protocol_profile(LassoProvider *provider,
+		lassoMdProtocolType protocol_type, const char *protocol_profile)
+{
+	GList *supported;
+	
+	supported = lasso_provider_get_metadata_list(
 			provider, protocol_md_nodename[protocol_type]);
-	remote_supported_profiles = lasso_provider_get_metadata_list(
-			remote_provider, protocol_md_nodename[protocol_type]);
-
-	if (g_list_find_custom(local_supported_profiles, protocol_profile,
-				(GCompareFunc)strcmp) == NULL)
+	
+	if (g_list_find_custom(supported, protocol_profile, (GCompareFunc)strcmp) == NULL)
 		return FALSE;
-
-	if (g_list_find_custom(remote_supported_profiles, protocol_profile,
-				(GCompareFunc)strcmp) == NULL)
-		return FALSE;
-
 	return TRUE;
 }
 

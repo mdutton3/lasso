@@ -87,8 +87,8 @@ struct _LassoProviderClass {
 LASSO_EXPORT GType lasso_provider_get_type(void);
 LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, gchar *metadata,
 		gchar *public_key, gchar *ca_cert_chain);
-LASSO_EXPORT gchar* lasso_provider_get_metadata_one(LassoProvider *provider, gchar *name);
-LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, gchar *name);
+LASSO_EXPORT gchar* lasso_provider_get_metadata_one(LassoProvider *provider, const char *name);
+LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, const char *name);
 
 LASSO_EXPORT gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
 
@@ -103,6 +103,9 @@ LASSO_EXPORT lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider 
 LASSO_EXPORT gboolean lasso_provider_accept_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, lassoMdProtocolType protocol_type,
 		lassoHttpMethod http_method, gboolean initiate_profile);
+
+LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provider,
+		lassoMdProtocolType protocol_type, const char *protocol_profile);
 
 #ifdef __cplusplus
 }
