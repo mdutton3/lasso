@@ -59,8 +59,22 @@
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_header.h>
 #include <lasso/xml/soap_binding_correlation.h>
-
 %}
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Functions
+ ***********************************************************************
+ ***********************************************************************/
+
+/* SOAP envelope */
+#ifdef SWIGPHP4
+%rename(lasso_soapEnvelopeNewFromMessage) lasso_soap_envelope_new_from_message;
+#else
+%rename(soapEnvelopeNewFromMessage) lasso_soap_envelope_new_from_message;
+#endif
+LassoSoapEnvelope *lasso_soap_envelope_new_from_message(char *message);
 
 
 /***********************************************************************
@@ -73,7 +87,7 @@
 #ifndef SWIGPHP4
 %rename(SECURITY_MECH_NULL) LASSO_SECURITY_NULL;
 
-%rename(SECURITY_MECH_TLS) LASSO_SECURITY_MECH_X509;
+%rename(SECURITY_MECH_X509) LASSO_SECURITY_MECH_X509;
 %rename(SECURITY_MECH_SAML) LASSO_SECURITY_MECH_SAML;
 %rename(SECURITY_MECH_BEARER) LASSO_SECURITY_MECH_BEARER;
 
@@ -101,6 +115,52 @@
 #define LASSO_SECURITY_MECH_CLIENT_TLS_X509   "urn:liberty:security:2003-08:ClientTLS:X509"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_SAML   "urn:liberty:security:2003-08:ClientTLS:SAML"
 #define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
+
+/* SASL mechanisms */
+#ifndef SWIGPHP4
+%rename(SASL_MECH_ANONYMOUS) LASSO_SASL_MECH_ANONYMOUS;
+%rename(SASL_MECH_PLAIN) LASSO_SASL_MECH_PLAIN;
+%rename(SASL_MECH_CRAM_MD5) LASSO_SASL_MECH_CRAM_MD5;
+#endif
+#define LASSO_SASL_MECH_ANONYMOUS "ANONYMOUS"
+#define LASSO_SASL_MECH_PLAIN     "PLAIN"
+#define LASSO_SASL_MECH_CRAM_MD5  "CRAM-MD5"
+
+/* SASL result codes: */
+#define SASL_CONTINUE    1   /* another step is needed in authentication */
+#define SASL_OK          0   /* successful result */
+#define SASL_FAIL       -1   /* generic failure */
+#define SASL_NOMEM      -2   /* memory shortage failure */
+#define SASL_BUFOVER    -3   /* overflowed buffer */
+#define SASL_NOMECH     -4   /* mechanism not supported */
+#define SASL_BADPROT    -5   /* bad protocol / cancel */
+#define SASL_NOTDONE    -6   /* can't request info until later in exchange */
+#define SASL_BADPARAM   -7   /* invalid parameter supplied */
+#define SASL_TRYAGAIN   -8   /* transient failure (e.g., weak key) */
+#define SASL_BADMAC	-9   /* integrity check failed */
+#define SASL_NOTINIT    -12  /* SASL library not initialized */
+                             /* -- client only codes -- */
+#define SASL_INTERACT    2   /* needs user interaction */
+#define SASL_BADSERV    -10  /* server failed mutual authentication step */
+#define SASL_WRONGMECH  -11  /* mechanism doesn't support requested feature */
+                             /* -- server only codes -- */
+#define SASL_BADAUTH    -13  /* authentication failure */
+#define SASL_NOAUTHZ    -14  /* authorization failure */
+#define SASL_TOOWEAK    -15  /* mechanism too weak for this user */
+#define SASL_ENCRYPT    -16  /* encryption needed to use mechanism */
+#define SASL_TRANS      -17  /* One time use of a plaintext password will
+				enable requested mechanism for user */
+#define SASL_EXPIRED    -18  /* passphrase expired, has to be reset */
+#define SASL_DISABLED   -19  /* account disabled */
+#define SASL_NOUSER     -20  /* user not found */
+#define SASL_BADVERS    -23  /* version mismatch with plug-in */
+#define SASL_UNAVAIL    -24  /* remote authentication server unavailable */
+#define SASL_NOVERIFY   -26  /* user exists, but no verifier for user */
+			     /* -- codes for password setting -- */
+#define SASL_PWLOCK     -21  /* passphrase locked */
+#define SASL_NOCHANGE   -22  /* requested change was not needed */
+#define SASL_WEAKPASS   -27  /* passphrase is too weak for security policy */
+#define SASL_NOUSERPASS -28  /* user supplied passwords not permitted */
 
 
 /* WSF prefix & href */
@@ -188,18 +248,6 @@
 #define LASSO_SA_STATUS_CODE_CONTINUE "continue"
 #define LASSO_SA_STATUS_CODE_ABORT "abort"
 #define LASSO_SA_STATUS_CODE_OK "OK"
-
-/* Sasl cyrus code */
-#ifndef SWIGPHP4
-%rename(SASL_OK) LASSO_SASL_OK;
-%rename(SASL_CONTINUE) LASSO_SASL_CONTINUE;
-%rename(SASL_INTERACT) LASSO_SASL_INTERACT;
-#endif
-typedef enum {
-	LASSO_SASL_OK = SASL_OK,
-	LASSO_SASL_CONTINUE = SASL_CONTINUE,
-	LASSO_SASL_INTERACT = SASL_INTERACT,
-} LassoSaslType;
 
 
 /***********************************************************************
@@ -3025,7 +3073,15 @@ typedef struct {
 #endif
 typedef struct {
 	/* Attributes */
+#ifndef SWIGPHP4
+	%rename(messageId) messageID;
+#endif
 	char *messageID;
+
+#ifndef SWIGPHP4
+	%rename(refToMessageId) refToMessageID;
+#endif
+	char *refToMessageID;
 
 	char *timestamp;
 
@@ -3079,8 +3135,8 @@ typedef struct {
 %extend LassoSoapBody {
 	/* Attributes */
 
-	%newobject Any_get;
-	LassoNodeList *Any;
+	%newobject any_get;
+	LassoNodeList *any;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -3098,11 +3154,11 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* Any */
-#define LassoSoapBody_get_Any(self) get_node_list((self)->Any)
-#define LassoSoapBody_Any_get(self) get_node_list((self)->Any)
-#define LassoSoapBody_set_Any(self, value) set_node_list(&(self)->Any, (value))
-#define LassoSoapBody_Any_set(self, value) set_node_list(&(self)->Any, (value))
+/* any */
+#define LassoSoapBody_get_any(self) get_node_list((self)->any)
+#define LassoSoapBody_any_get(self) get_node_list((self)->any)
+#define LassoSoapBody_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoSoapBody_any_set(self, value) set_node_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoSoapBody lasso_soap_body_new
@@ -3191,6 +3247,9 @@ typedef struct {
 %extend LassoSoapHeader {
 	/* Attributes */
 
+#ifndef SWIGPHP4
+	%rename(other) Other;
+#endif
 	%newobject Other_get;
 	LassoNodeList *Other;
 
@@ -3738,45 +3797,16 @@ gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
 %}
 
 /***********************************************************************
- * Cyrus SASL sasl_conn_t binding
+ * LassoUserAccount
  ***********************************************************************/
 
-/***********************************************************************
- * Cyrus SASL sasl_callback_t binding
- ***********************************************************************/
-
-/*
- * Extensible type for a client/server callbacks
- *  id      -- identifies callback type
- *  proc    -- procedure call arguments vary based on id
- *  context -- context passed to procedure
- *
- * Note that any memory that is allocated by the callback needs to be
- * freed by the application, be it via function call or interaction.
- *
- * It may be freed after sasl_*_step returns SASL_OK.  if the mechanism
- * requires this information to persist (for a security layer, for example)
- * it must maintain a private copy.
- *
- * typedef struct sasl_callback {
- *      Identifies the type of the callback function.
- *      Mechanisms must ignore callbacks with id's they don't recognize.
- *
- *     unsigned long id;
- *     int (*proc)();
- *             Callback function.  Types of arguments vary by 'id'
- *     void *context;
- * } sasl_callback_t; */
-
-#ifndef SWIGPHP4
-%rename(SaslCallback) sasl_callback_t;
-#endif
+%rename(UserAccount) LassoUserAccount;
 typedef struct {
-	int (*proc)();
-	unsigned long id;
-	void *context;
+	char *login;
 
-} sasl_callback_t;
+	char *password;
+
+} LassoUserAccount;
 
 /***********************************************************************
  * lasso:Authentication
@@ -3798,9 +3828,15 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+#ifndef SWIGPHP4
+	%rename(soapEnvelopeRequest) soap_envelope_request;
+#endif
 	%newobject soap_envelope_request_get;
 	LassoSoapEnvelope *soap_envelope_request;
 
+#ifndef SWIGPHP4
+	%rename(soapEnvelopeResponse) soap_envelope_response;
+#endif
 	%newobject soap_envelope_response_get;
 	LassoSoapEnvelope *soap_envelope_response;
 
@@ -3840,7 +3876,7 @@ typedef struct {
 	int getMechanismList();
 	END_THROW_ERROR
 
-	int initRequest(LassoDiscoDescription *description, char *mechanisms, sasl_callback_t *callbacks = NULL);
+	int initRequest(LassoDiscoDescription *description, char *mechanisms, LassoUserAccount *account = NULL);
 
 	int processRequestMsg(char *soap_msg);
 

@@ -27,7 +27,62 @@
 #include <lasso/xml/sa_sasl_response.h>
 #include <lasso/xml/soap_body.h>
 #include <lasso/xml/soap_header.h>
+
 #include <lasso/xml/soap_binding_correlation.h>
+
+#include <xmlsec/base64.h>
+
+/* SASL client callbacks (for secret, login, password, ... ) */
+static sasl_callback_t lasso_sasl_callbacks[5];
+
+static int
+lasso_sasl_cb_log(void* context, int priority, const char* message)
+{
+	printf("SASL lasso_sasl_cb_log() : %s\n", message);
+
+	return SASL_OK;
+}
+
+static int
+lasso_sasl_cb_authname(void* context, int id, const char** result, unsigned* len)
+{
+	LassoUserAccount *account;
+	int ret = SASL_FAIL;
+
+	*result = NULL;
+	if (len) *len = 0;
+
+	account = (LassoUserAccount *)context;
+	if (account != NULL && account->login != NULL) {
+		*result = g_strdup(account->login);
+		if (len) *len = strlen(account->login);
+		ret = SASL_OK;
+	} 
+
+	return ret;
+}
+
+static int
+lasso_sasl_cb_pass(sasl_conn_t* conn, void* context, int id, sasl_secret_t** psecret)
+{
+	static sasl_secret_t *s;
+	LassoUserAccount *account;
+	int ret = SASL_FAIL;
+   
+	account = (LassoUserAccount *)context;
+	if (account != NULL && account->password != NULL) {
+		s = (sasl_secret_t*) g_malloc0(sizeof(sasl_secret_t) + strlen(account->password));
+
+		strcpy(s->data, account->password);
+		s->len = strlen(account->password);
+
+		*psecret = s;
+
+		ret = SASL_OK;
+	}
+
+	return ret;
+}
 
 struct _LassoAuthenticationPrivate
 {
@@ -43,7 +98,7 @@ lasso_authentication_client_start(LassoAuthentication *authentication)
 	const char *out;
 	int outlen = 0;
 
-	xmlChar *outbase64;
+	char *outbase64;
 
 	/* Liberty part */
 	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
@@ -80,7 +135,7 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 	int inlen = 0;
 	xmlChar *inbase64 = NULL;
 
-	xmlChar *outbase64;
+	char *outbase64;
 	const char *out;
 	int outlen = 0;
 
@@ -89,22 +144,22 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
 
 	/* sasl part */
+
 	if (response->Data != NULL) {
 		inbase64 = response->Data->data;
 		in = g_malloc(strlen(inbase64));
 		xmlSecBase64Decode(inbase64, in, strlen(inbase64));
-	}
 
-	res = sasl_client_step(authentication->connection, /* our context */
-			       in,    /* the data from the server */
-			       inlen, /* it's length */
-			       NULL,  /* this should be unallocated and NULL */
-			       &out,     /* filled in on success */
-			       &outlen); /* filled in on success */
-
-	if (strlen(out) > 0) {
-		outbase64 = xmlSecBase64Encode(out, outlen, 0);
-		request->Data = g_list_append(request->Data, outbase64);
+		res = sasl_client_step(authentication->connection, /* our context */
+				       in,    /* the data from the server */
+				       inlen, /* it's length */
+				       NULL,  /* this should be unallocated and NULL */
+				       &out,     /* filled in on success */
+				       &outlen); /* filled in on success */
+		if (outlen > 0) {
+			outbase64 = xmlSecBase64Encode(out, outlen, 0);
+			request->Data = g_list_append(request->Data, outbase64);
+		}
 	}
 
 	return res;
@@ -147,7 +202,7 @@ gint
 lasso_authentication_init_request(LassoAuthentication *authentication,
 				  LassoDiscoDescription *description,
 				  const gchar *mechanisms,
-				  sasl_callback_t *callbacks)
+				  LassoUserAccount *account)
 {
 	LassoSoapBody *body;
 	LassoSoapHeader *header;
@@ -156,30 +211,37 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 
 	int res;
 
+	/* global callback for every connection */
+	static sasl_callback_t global_callbacks[2];
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(mechanisms != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	/* Liberty part : init request, set url SOAP end point */
+	/* Init request, set url SOAP end point */
+	/* liberty-idwsf-authn-svc-1.1.pdf - page 13 - lignes 342 / 343 :
+	   In the case where a single SASL mechanism name is conveyed, the <SASLRequest> message
+	   can contain a so-called initial response (see Section 5.1 of [RFC2222]) in the <Data>
+	   element. */
 	LASSO_WSF_PROFILE(authentication)->request = \
 		LASSO_NODE(lasso_sa_sasl_request_new(mechanisms));
 
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(authentication)->msg_url = g_strdup(description->Endpoint);
 	}
+
 	/* TODO: get Endpoint at WsdlURI */
 	else if (description->WsdlURI != NULL) {
 
 	}
 
-	/* init soap envelope and add previous request */
+	/* Set soap envelope, add previous request and correlation element */
 	body = lasso_soap_body_new();
-	body->Any = g_list_append(body->Any, LASSO_WSF_PROFILE(authentication)->request);
+	body->any = g_list_append(body->any, LASSO_WSF_PROFILE(authentication)->request);
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_request = lasso_soap_envelope_new(body);
 
-	/* add correlation in header */
 	header = lasso_soap_header_new();
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_request->Header = header;
 
@@ -188,22 +250,61 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
 	header->Other = g_list_append(header->Other, correlation);
 
+	/* sasl client init */
+
+	/* set up default logging callback */
+	global_callbacks[0].id = SASL_CB_LOG;
+	global_callbacks[0].proc = lasso_sasl_cb_log;
+	global_callbacks[0].context = NULL;
+
+	global_callbacks[1].id = SASL_CB_LIST_END;
+	global_callbacks[1].proc = NULL;
+	global_callbacks[1].context = NULL;
+
+	sasl_client_init(global_callbacks);
+
 	/* sasl client new connection */
-	res = sasl_client_init(callbacks);
-	if (res != SASL_OK) {
-		return res;
+	{
+		sasl_callback_t* callback;
+
+		callback = lasso_sasl_callbacks;
+	
+		callback->id = SASL_CB_AUTHNAME;
+		callback->proc = &lasso_sasl_cb_authname;
+		callback->context = account;
+		callback++;
+
+		callback->id = SASL_CB_USER;
+		callback->proc = &lasso_sasl_cb_authname;
+		callback->context = account;
+		callback++;
+
+		callback->id = SASL_CB_PASS;
+		callback->proc = &lasso_sasl_cb_pass;
+		callback->context = account;
+		callback++;
+
+		callback->id = SASL_CB_GETREALM;
+		callback->proc = NULL;
+		callback->context = NULL;
+		callback++;
+
+		callback->id = SASL_CB_LIST_END;
+		callback->proc = NULL;
+		callback->context = NULL;
 	}
+
 
 	res = sasl_client_new(LASSO_SA_SASL_SERVICE_NAME,
 			      NULL,
 			      NULL,
 			      NULL,
-			      NULL,
+			      lasso_sasl_callbacks, /* new connection callbacks (log, ...) */
 			      0,
 			      &authentication->connection);
 
-	return res;
-}
+	return res;}
+
 
 gint
 lasso_authentication_process_request_msg(LassoAuthentication *authentication,
@@ -215,8 +316,8 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	LassoUtilityStatus *status;
 
 	LassoSoapBody *body;
-	LassoSoapHeader *header;
-	LassoSoapBindingCorrelation *correlation;
+	LassoSoapHeader *header, *header_request;
+	LassoSoapBindingCorrelation *correlation, *correlation_request;
 
 	gchar *messageId, *timestamp;
 	int res = 0;
@@ -228,29 +329,60 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	/* process soap envelope request */
-	soap_envelope = lasso_node_new_from_dump(soap_msg);
-	LASSO_WSF_PROFILE(authentication)->soap_envelope_request = soap_envelope;
-	LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(soap_envelope->Body->Any->data);
+	/* if a previous request and response, then remove */
+	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_response) \
+	    == TRUE) {
+		lasso_node_destroy(LASSO_NODE(LASSO_WSF_PROFILE(authentication)->\
+					      soap_envelope_response));
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_response = NULL;
+		LASSO_WSF_PROFILE(authentication)->response = NULL;
+	}
 
-	/* Liberty part : init response */
+	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_request) \
+	    == TRUE) {
+		lasso_node_destroy(LASSO_NODE(LASSO_WSF_PROFILE(authentication)->\
+					      soap_envelope_request));
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_request = NULL;
+		LASSO_WSF_PROFILE(authentication)->request = NULL;
+	}
+
+	/* process soap envelope request */
+	soap_envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
+	LASSO_WSF_PROFILE(authentication)->soap_envelope_request = soap_envelope;
+	LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(soap_envelope->Body->any->data);
+
+	/* Init response with soap envelope, correlation header */
 	status = lasso_utility_status_new(LASSO_SA_STATUS_CODE_OK);
 	response = lasso_sa_sasl_response_new(status);
 	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(response);
 
-	/* set soap Envelope and Body */
 	body = lasso_soap_body_new();
-	body->Any = g_list_append(body->Any, response);
+	body->any = g_list_append(body->any, response);
 	soap_envelope = lasso_soap_envelope_new(body);
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_response = soap_envelope;
 	
-	/* add Correlation in Header */
 	header = lasso_soap_header_new();
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_response->Header = header;
 	messageId = lasso_build_unique_id(32);
 	timestamp = lasso_get_current_time();
 	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+
+	/* If request message has a messageID, then set correlation->refToMessageID */
+	header_request = LASSO_WSF_PROFILE(authentication)->soap_envelope_request->Header;
+	correlation_request = header_request->Other->data;
+	correlation->refToMessageID = g_strdup(correlation_request->messageID);
+
 	header->Other = g_list_append(header->Other, correlation);
+
+	/* liberty-idwsf-authn-svc-1.1.pdf - page 13 - lignes 359 / 361 :
+	   <SASLRequest> message with multiple mechanism MUST NOT contain any "initial response"
+	   data, and MUST be the initial SASL request. See Section 4.5.2.1.2 for details on the
+	   returned <SASLResponse> message in this case. */
+
+	/* liberty-idwsf-authn-svc-1.1.pdf - page 13 - lignes 380 / 384 :
+	   A NULL string ("") in mechanism list SASLRequest indicates to the authentication server
+	   that the client wishes to abort the authentication exchange.
+	*/
 
 	return res;
 }
@@ -263,23 +395,80 @@ lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 	LassoSaSASLRequest *request;
 	LassoSaSASLResponse *response;
 
+	LassoSoapBody *body;
+	LassoSoapHeader *header, *header_response;
+	LassoSoapBindingCorrelation *correlation, *correlation_response;
+
+	gchar *messageId, *timestamp;
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	soap_envelope = lasso_node_new_from_dump(soap_msg);
+	/* if a previous requestand response, remove */
+	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_request) \
+	    == TRUE) {
+		lasso_node_destroy(LASSO_NODE(LASSO_WSF_PROFILE(authentication)->\
+					      soap_envelope_request));
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_request = NULL;
+		LASSO_WSF_PROFILE(authentication)->request = NULL;
+	}
+
+	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_response) \
+	    == TRUE) {
+		lasso_node_destroy(LASSO_NODE(LASSO_WSF_PROFILE(authentication)->\
+					      soap_envelope_response));
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_response = NULL;
+		LASSO_WSF_PROFILE(authentication)->response = NULL;
+	}
+
+	/* process soap response msg */
+	soap_envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
+	if (LASSO_IS_SOAP_ENVELOPE(soap_envelope) == FALSE) {
+		printf("Soap Envelope not found\n");
+		return -1;
+	}
+	if (LASSO_IS_SOAP_BODY(soap_envelope->Body) == FALSE) {
+		printf("Soap Body not found\n");
+		return -1;
+	}
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_response = soap_envelope;
-	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(soap_envelope->Body->Any->data);
-	response = LASSO_WSF_PROFILE(authentication)->response;
+
+	if (soap_envelope->Body->any == NULL) {
+		printf("Soap Body data is empty\n");
+		return -1;
+	}
+	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(soap_envelope->Body->any->data);
+	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
+	if (LASSO_IS_SA_SASL_RESPONSE(response) == FALSE) {
+		printf("SASLResponse not found\n");
+		return -1;
+	}
 
 	/* if continue, init another request */
 	if (g_str_equal(response->Status->code, LASSO_SA_STATUS_CODE_CONTINUE) == TRUE) {
-		if (LASSO_IS_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request) == TRUE) {
-			lasso_node_destroy(LASSO_WSF_PROFILE(authentication)->request);
-		}
-
+		/* Init request with soap envelope, correlation header */
 		request = lasso_sa_sasl_request_new(g_strdup(response->serverMechanism));
 		LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(request);
+
+		body = lasso_soap_body_new();
+		body->any = g_list_append(body->any, request);
+		soap_envelope = lasso_soap_envelope_new(body);
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_request = soap_envelope;
+	
+		header = lasso_soap_header_new();
+		LASSO_WSF_PROFILE(authentication)->soap_envelope_request->Header = header;
+		messageId = lasso_build_unique_id(32);
+		timestamp = lasso_get_current_time();
+		correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+
+		/* If response message has a messageID, then set correlation->refToMessageID */
+		header_response = LASSO_WSF_PROFILE(authentication)->soap_envelope_response->Header;
+		correlation_response = header_response->Other->data;
+		correlation->refToMessageID = g_strdup(correlation_response->messageID);
+
+		header->Other = g_list_append(header->Other, correlation);
+
 	}
 
 	return 0;
@@ -298,7 +487,8 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 
 	const char *out;
 	int outlen = 0;
-	xmlChar *outbase64;
+
+	char *outbase64;
 
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -330,24 +520,23 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 				&out, /* The output of the library. Might not be NULL terminated */
 				&outlen);
 
-	/* set status code in SASLResponse message */
+	/* set status code in SASLResponse message if not ok */
 	if (res != SASL_OK) {
 		g_free(response->Status->code);
+
+		/* continue, set Data in response */
 		if (res == SASL_CONTINUE) {
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_CONTINUE);
+			response->serverMechanism = g_strdup(request->mechanism);
+			if (outlen > 0) {
+				outbase64 = xmlSecBase64Encode(out, outlen, 0);
+				response->Data = g_list_append(response->Data, outbase64);
+			}
 		}
+		/* abort authentication */
 		else {
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		}
-	}
-
-	/* Liberty part : */
-	response->serverMechanism = g_strdup(request->mechanism);
-
-	/* base64 encode out and add in Data element of SASLResponse */
-	if (outlen > 0) {
-		outbase64 = xmlSecBase64Encode(out, outlen, 0);
-		response->Data = g_list_append(response->Data, outbase64);
 	}
 
 	return res;
@@ -367,7 +556,8 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 
 	const char *out;
 	int outlen = 0;
-	xmlChar *outbase64;
+
+	char *outbase64;
 	
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -376,6 +566,14 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
 	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
 
+	/* If mechanism is NULL, thene client wants to abort authentication exchange */
+	if (request->mechanism == NULL) {
+		g_free(response->Status->code);
+		response->Status->code = LASSO_SA_STATUS_CODE_ABORT;
+
+		return 0;
+	}
+
 	if (request->Data != NULL) {
 		inbase64 = request->Data->data;
 		in = g_malloc(strlen(inbase64));
@@ -383,7 +581,6 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 		inlen = strlen(in);
 	}
 
-	/* sasl part */
 	res = sasl_server_step(authentication->connection,
 			       in,      /* what the client gave */
 			       inlen,   /* it's length */
@@ -392,23 +589,21 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 
 	if (res != SASL_OK) {
 		g_free(response->Status->code);
+
+		/* authentication exchange must continue */
 		if (res == SASL_CONTINUE) {
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+
+			if (outlen > 0) {
+				outbase64 = xmlSecBase64Encode(out, outlen, 0);
+				response->Data = g_list_append(response->Data, outbase64);
+			}
 		}
+		/* authentication failed, abort exchange */
 		else  {
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		}
 	}
-
-	/* Liberty part : base64 encode out and add in Data element of SASLResponse */
-	if (outlen > 0) {
-		outbase64 = xmlSecBase64Encode(out, outlen, 0);
-		response->Data = g_list_append(response->Data, outbase64);
-	}
-
-	/* connection must be saved in application to be restore next exchange */
-	/* ref count on it */
-	g_object_ref(authentication->connection);
 
 	return res;
 }

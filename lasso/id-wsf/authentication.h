@@ -50,11 +50,18 @@ typedef struct _LassoAuthentication LassoAuthentication;
 typedef struct _LassoAuthenticationClass LassoAuthenticationClass;
 typedef struct _LassoAuthenticationPrivate LassoAuthenticationPrivate;
 
+typedef struct LassoUserAccount LassoUserAccount;
+
 typedef enum {
-	LASSO_SASL_OK = SASL_OK,             /* 0 */
-	LASSO_SASL_CONTINUE = SASL_CONTINUE, /* 1 */
-	LASSO_SASL_INTERACT = SASL_INTERACT, /* 2 */
-} LassoSaslType;
+	LASSO_SASL_MECH_ANONYMOUS = 1,
+	LASSO_SASL_MECH_PLAIN,
+	LASSO_SASL_MECH_CRAM_MD5,
+}LassoSaslMechanisms;
+
+struct LassoUserAccount {
+	char *login;
+	char *password;
+};
 
 struct _LassoAuthentication {
 	LassoWsfProfile parent;
@@ -84,7 +91,7 @@ LASSO_EXPORT char *lasso_authentication_get_mechanism_list(LassoAuthentication *
 LASSO_EXPORT gint lasso_authentication_init_request(LassoAuthentication *authentication,
 						    LassoDiscoDescription *description,
 						    const gchar *mechanisms,
-						    sasl_callback_t *callbacks);
+						    LassoUserAccount *account);
 
 LASSO_EXPORT gint lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 							   const gchar *soap_msg);
