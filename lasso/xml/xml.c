@@ -145,10 +145,10 @@ lasso_node_serialize(LassoNode *node, GData *gd)
 gchar *
 lasso_node_url_encode(LassoNode *node,
 		      guint sign_method,
-		      const gchar *key_file)
+		      const gchar *private_key_file)
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->url_encode(node, sign_method, key_file));
+  return (class->url_encode(node, sign_method, private_key_file));
 }
 
 gint
@@ -394,7 +394,7 @@ lasso_node_impl_get_child(LassoNode *node,
 static GPtrArray *
 lasso_node_impl_get_children(LassoNode *node)
 {
-  GPtrArray *children = NULL;
+  GPtrArray *children;
   xmlNodePtr cur;
 
   cur = node->private->node->children;
@@ -421,17 +421,26 @@ lasso_node_impl_get_name(LassoNode *node)
   return ((xmlChar *)(node->private->node->name));
 }
 
+/**
+ * lasso_node_impl_parse_memory:
+ * @node: a LassoNode instance
+ * @buffer: a string containing xml
+ * 
+ *
+ **/
 void
-lasso_node_impl_parse_memory(LassoNode *node,
+lasso_node_impl_parse_memory(LassoNode  *node,
 			     const char *buffer)
 {
   xmlDocPtr doc;
   xmlNodePtr root;
 
   doc = xmlParseMemory(buffer, strlen(buffer));
-  root = xmlDocGetRootElement(doc);
-  xmlFreeNode(node->private->node);
-  node->private->node = root;
+  /* get root element of doc and duplicate it */
+  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+  lasso_node_set_node(node, root);
+  /* free doc */
+  xmlFreeDoc(doc);
 }
 
 static void
@@ -440,7 +449,6 @@ lasso_node_impl_rename_prop(LassoNode *node,
 			    const xmlChar *new_name)
 {
   xmlChar *value;
-  LassoAttr *prop;
 
   value = xmlGetProp(node->private->node, old_name);
   if (value != NULL) {
@@ -502,7 +510,7 @@ lasso_node_impl_serialize(LassoNode *node, GData *gd)
 static gchar *
 lasso_node_impl_url_encode(LassoNode *node,
 			   guint sign_method,
-			   const gchar *key_file)
+			   const gchar *private_key_file)
 {
   GString *msg;
   xmlDocPtr doc;
@@ -511,12 +519,12 @@ lasso_node_impl_url_encode(LassoNode *node,
 
   msg = lasso_node_build_query(node);
 
-  if (sign_method > 0 && key_file != NULL) {
+  if (sign_method > 0 && private_key_file != NULL) {
     switch (sign_method) {
     case lassoUrlEncodeRsaSha1:
       msg = g_string_append(msg, "&SigAlg=");
       msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#rsa-sha1"));
-      doc = lasso_str_sign(msg->str, xmlSecTransformRsaSha1Id, key_file);
+      doc = lasso_str_sign(msg->str, xmlSecTransformRsaSha1Id, private_key_file);
       msg = g_string_append(msg, "&Signature=");
       str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
       str2 = lasso_str_escape(str1);
@@ -527,7 +535,7 @@ lasso_node_impl_url_encode(LassoNode *node,
     case lassoUrlEncodeDsaSha1:
       msg = g_string_append(msg, "&SigAlg=");
       msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#dsa-sha1"));
-      doc = lasso_str_sign(msg->str, xmlSecTransformDsaSha1Id, key_file);
+      doc = lasso_str_sign(msg->str, xmlSecTransformDsaSha1Id, private_key_file);
       msg = g_string_append(msg, "&Signature=");
       str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
       str2 = lasso_str_escape(str1);
@@ -540,6 +548,7 @@ lasso_node_impl_url_encode(LassoNode *node,
 
   ret = g_strdup(msg->str);
   g_string_free(msg, TRUE);
+  xmlFreeDoc(doc);
   return (ret);
 }
 

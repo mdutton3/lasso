@@ -83,7 +83,7 @@ struct _LassoNodeClass {
 				    GData         *);
   gchar *     (* url_encode)       (LassoNode     *node,
 				    guint          sign_method,
-				    const gchar   *key_file);
+				    const gchar   *private_key_file);
   gint        (* verify_signature) (LassoNode     *node,
 				    const gchar   *certificate_file);
   /*< private >*/
@@ -150,7 +150,7 @@ LASSO_EXPORT GData*     lasso_node_serialize        (LassoNode *node,
 
 LASSO_EXPORT gchar*     lasso_node_url_encode       (LassoNode *node,
 						     guint sign_method,
-						     const gchar *key_file);
+						     const gchar *private_key_file);
 
 LASSO_EXPORT gint       lasso_node_verify_signature (LassoNode *node,
 						     const gchar *certificate_file);

@@ -30,24 +30,26 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-xmlChar * lasso_build_unique_id(guint8 size);
+xmlChar*  lasso_build_unique_id      (guint8 size);
 
-xmlChar * lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name);
+xmlChar*  lasso_doc_get_node_content (xmlDocPtr      doc,
+				      const xmlChar *name);
 
-xmlChar * lasso_g_ptr_array_index(GPtrArray *a, guint i);
+xmlChar*  lasso_g_ptr_array_index    (GPtrArray *a,
+				      guint      i);
 
-xmlChar * lasso_get_current_time(void);
+xmlChar*  lasso_get_current_time     (void);
 
-GData   * lasso_query_to_dict(const xmlChar *query);
+GData*    lasso_query_to_dict        (const xmlChar *query);
 
-xmlChar * lasso_str_escape(xmlChar *str);
+xmlChar*  lasso_str_escape           (xmlChar *str);
 
-xmlDocPtr lasso_str_sign(xmlChar *str,
-			 xmlSecTransformId signMethodId,
-			 const char* key_file);
+xmlDocPtr lasso_str_sign             (xmlChar           *str,
+				      xmlSecTransformId  signMethodId,
+				      const char        *key_file);
 
-xmlChar * lasso_str_unescape(xmlChar *str);
+xmlChar*  lasso_str_unescape         (xmlChar *str);
 
-int       lasso_str_verify(xmlChar *str,
-			   const xmlChar *sender_public_key_file,
-			   const xmlChar *recipient_private_key_file);
+int       lasso_str_verify           (xmlChar       *str,
+				      const xmlChar *sender_public_key_file,
+				      const xmlChar *recipient_private_key_file);
