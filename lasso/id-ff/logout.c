@@ -1000,11 +1000,9 @@ lasso_logout_validate_request(LassoLogout *logout)
 	all_http_soap = FALSE;
 	break;
       }
-
       if (protocolProfile != NULL) {
 	xmlFree(protocolProfile);
       }
-
       if (providerID != NULL) {
 	xmlFree(providerID);
       }
