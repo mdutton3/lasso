@@ -15,6 +15,7 @@ DiscoModifyResponse.java
 DiscoQuery.java
 DiscoQueryResponse.java
 Discovery.java
+DowncastableNode.java
 DstModification.java
 DstModify.java
 DstModifyResponse.java
