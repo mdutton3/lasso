@@ -113,8 +113,8 @@ PyObject *login_new_from_dump(PyObject *self, PyObject *args) {
   LassoServer *server;
   gchar       *dump;
 
-  if (CheckArgs(args, "OoS:login_new_from_dump")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOs:login_new_from_dump", &server_obj,
+  if (CheckArgs(args, "OS:login_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_new_from_dump", &server_obj,
 			 &dump))
       return NULL;
   }
