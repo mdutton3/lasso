@@ -28,11 +28,6 @@ AC_SUBST(LASSO_VERSION_INFO)
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 AM_MAINTAINER_MODE
-GLIB_FOUND="no"
-XMLSEC1_FOUND="no"
-LIBXML_FOUND="no"
-LIBXML262_FOUND="no"
-LIBXSLT_FOUND="no"
 CWINDOWS="no"
 
 dnl ==========================================================================
@@ -51,17 +46,12 @@ dnl        CFLAGS="${CFLAGS} -mno-cygwin"
 dnl        LDFLAGS="${LDFLAGS} -mno-cygwin"
         GLIB_CFLAGS="-I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include"
         GLIB_LIBS="-lgobject-2.0 -lglib-2.0"
-        GLIB_FOUND="yes"
         XMLSEC1_CFLAGS="-DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1"
         XMLSEC1_LIBS="-lxmlsec-openssl -lxmlsec"
-        XMLSEC1_FOUND="yes"
         LIBXML_CFLAGS="-I/usr/local/include/libxml2"
         LIBXML_LIBS="-lxml2"
-        LIBXML_FOUND="yes"
-        LIBXML262_FOUND="yes"
         LIBXSLT_CFLAGS=""
         LIBXSLT_LIBS="-lxslt"
-        LIBXSLT_FOUND="yes"
         CWINDOWS="yes"
         ;;
 esac
@@ -70,19 +60,17 @@ dnl
 dnl Check the environment
 dnl
 AC_PROG_CC
+if test "x$GCC" = "xyes"; then
+  if test -z "`echo "$CFLAGS" | grep "\-Wall" 2> /dev/null`" ; then
+      CFLAGS="$CFLAGS -Wall -g"
+  fi
+fi
+AC_HEADER_STDC
 
 #AC_DISABLE_SHARED
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
-
 AC_PROG_INSTALL
-AC_STDC_HEADERS
-AC_PATH_PROG(RM, rm, /bin/rm)
-AC_PATH_PROG(CP, cp, /bin/cp)
-AC_PATH_PROG(MV, mv, /bin/mv)
-AC_PATH_PROG(TAR, tar, /bin/tar)
-AC_PATH_PROG(HELP2MAN, help2man)
-AC_PATH_PROG(MAN2HTML, man2html)
 
 LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[^_].*"'
 
@@ -90,46 +78,8 @@ dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES
 test "z$U" != "z" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
-dnl Checks for header files.
-AC_HEADER_DIRENT
-AC_HEADER_STDC
-AC_CHECK_HEADERS([stdio.h])
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([string.h])
-AC_CHECK_HEADERS([ctype.h])
-AC_CHECK_HEADERS([errno.h])
-AC_CHECK_HEADERS([ansidecl.h])
-AC_CHECK_HEADERS([time.h])
-AC_CHECK_FUNCS(printf sprintf fprintf snprintf vfprintf vsprintf vsnprintf sscanf timegm)
-
 dnl AC_LIB_LTDL
 
-LASSO_DEFINES="-DLASSO_DEBUG"
-dnl LASSO_DEFINES=""
-
-
-
-dnl ==========================================================================
-dnl Check for __FUNCTION__ or __func__
-dnl ==========================================================================
-dnl AC_MSG_CHECKING(for __FUNCTION__ or __func__)
-dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
-dnl 	[[char *foo = __FUNCTION__;]])],
-dnl 	[ac_function_exists=yes],
-dnl 	[ac_function_exists=no])
-dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
-dnl 	[[char *foo = __func__;]])],
-dnl 	[ac_func_exists=yes],
-dnl 	[ac_func_exists=no])
-dnl if test "z$ac_function_exists" = "zyes" ; then
-dnl 	AC_MSG_RESULT(__FUNCTION__)
-dnl 	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__FUNCTION__"
-dnl elif test "z$ac_func_exists" = "zyes" ; then 
-dnl 	AC_MSG_RESULT(__func__)
-dnl 	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__func__"
-dnl else 
-dnl 	AC_MSG_RESULT("no")
-dnl fi
 
 dnl ==========================================================================
 dnl check do we have size_t and its size, 
@@ -146,24 +96,6 @@ PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1
 AC_SUBST(LASSO_LIBS)
 AC_SUBST(LASSO_CFLAGS)
 	
-
-dnl find xmlsec crypto library (openssl) if not under Windows(c)
-if test "z$CWINDOWS" = "zno" ; then
-    if test "z$XMLSEC1_FOUND" = "zyes" ; then
-        AC_MSG_CHECKING(for xmlsec1 OpenSSL crypto library)
-        XMLSEC1_DEFAULT_CRYPTO_LIB=`$XMLSEC1_CONFIG --crypto`
-        if test "$XMLSEC1_DEFAULT_CRYPTO_LIB" = "openssl" ; then
-            prefix=`$XMLSEC1_CONFIG --prefix`
-            if test -e $prefix/lib/libxmlsec1-openssl.so ; then
-                AC_MSG_RESULT(yes)
-            else
-                AC_MSG_ERROR(Could not find xmlsec1 OpenSSL crypto library)
-            fi
-        else
-            AC_MSG_ERROR(Bad default crypto library ($XMLSEC1_DEFAULT_CRYPTO_LIB) detected, must be OpenSSL)
-        fi
-    fi
-fi
 
 dnl ==========================================================================
 dnl python
@@ -256,11 +188,11 @@ AC_SUBST(LASSO_DOCDIR)
 dnl ==========================================================================
 dnl Debug 
 dnl ==========================================================================
-AC_MSG_CHECKING(for debuging) 
-AC_ARG_ENABLE(debuging,   [  --enable-debuging       enable debuging compilation flags (no)])
-if test "z$enable_debuging" = "zyes" ; then
-    CFLAGS="$CFLAGS -g"
+AC_MSG_CHECKING(for debugging) 
+AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging messages (no)])
+if test "z$enable_debugging" = "zyes" ; then
     AC_MSG_RESULT(yes)
+    LASSO_DEFINES="$LASSO_DEFINES -DLASSO_DEBUG"
 else
     AC_MSG_RESULT(no)
 fi    
