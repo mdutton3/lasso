@@ -75,6 +75,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   g_return_val_if_fail(idp_identifier != NULL, NULL);
 
   LassoNode *statement;
+  LassoNode *new_identifier, *new_idp_identifier;
   LassoNode *subject, *subject_confirmation;
   gchar     *str;
   xmlChar   *time;
@@ -94,23 +95,30 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   if (identifier == NULL) {
     /* create a new NameIdentifier and use idp_identifier datas to fill it */
     str = lasso_node_get_content(LASSO_NODE(idp_identifier));
-    identifier = lasso_saml_name_identifier_new(str);
+    new_identifier = lasso_saml_name_identifier_new(str);
     xmlFree(str);
     str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier");
     if (str != NULL) {
-      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
       xmlFree(str);
     }
     str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format");
     if (str != NULL) {
-      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
       xmlFree(str);
     }
   }
+  else {
+    new_identifier = lasso_node_copy(LASSO_NODE(identifier));
+  }
+  new_idp_identifier = lasso_node_copy(LASSO_NODE(idp_identifier));
+
   lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
-					LASSO_SAML_NAME_IDENTIFIER(identifier));
+					LASSO_SAML_NAME_IDENTIFIER(new_identifier));
+  lasso_node_destroy(new_identifier);
   lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
-						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idp_identifier));
+						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(new_idp_identifier));
+  lasso_node_destroy(new_idp_identifier);
 
   subject_confirmation = lasso_saml_subject_confirmation_new();
   lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LASSO_SAML_SUBJECT_CONFIRMATION(subject_confirmation),

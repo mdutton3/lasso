@@ -32,7 +32,9 @@ xmlChar *
 lasso_identity_dump(LassoIdentity *identity)
 {
   LassoNode *identity_node, *nameIdentifier;
+  LassoNode *local_nameIdentifier, *remote_nameIdentifier;
   LassoNodeClass *identity_class, *class;
+  gchar *dump;
 
   identity_node = lasso_node_new();
   identity_class = LASSO_NODE_GET_CLASS(identity_node);
@@ -46,8 +48,11 @@ lasso_identity_dump(LassoIdentity *identity)
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
     class->set_name(nameIdentifier, LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE);
-    class->add_child(nameIdentifier, LASSO_NODE(identity->remote_nameIdentifier), FALSE);
+    remote_nameIdentifier = lasso_node_copy(identity->remote_nameIdentifier);
+    class->add_child(nameIdentifier, remote_nameIdentifier, FALSE);
+    lasso_node_destroy(remote_nameIdentifier);
     identity_class->add_child(identity_node, nameIdentifier, FALSE);
+    lasso_node_destroy(nameIdentifier);
   }
 
   /* add the local name identifier */
@@ -55,11 +60,17 @@ lasso_identity_dump(LassoIdentity *identity)
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
     class->set_name(nameIdentifier, LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE);
-    class->add_child(nameIdentifier, LASSO_NODE(identity->local_nameIdentifier), FALSE);
+    local_nameIdentifier = lasso_node_copy(identity->local_nameIdentifier);
+    class->add_child(nameIdentifier, local_nameIdentifier, FALSE);
+    lasso_node_destroy(local_nameIdentifier);
     identity_class->add_child(identity_node, nameIdentifier, FALSE);
+    lasso_node_destroy(nameIdentifier);
   }
 
-  return(lasso_node_export(identity_node));
+  dump = lasso_node_export(identity_node);
+  lasso_node_destroy(identity_node);
+
+  return(dump);
 }
 
 LassoNode *
