@@ -40,6 +40,11 @@ extern "C" {
 #define LASSP_IS_IDENTITY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDENTITY))
 #define LASSO_IDENTITY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDENTITY, LassoIdentityClass)) 
 
+#define LASSO_IDENTITY_NODE "LassoIdentity"
+#define LASSO_IDENTITY_REMOTE_PROVIDERID_NODE "LassoRemoteProviderID"
+#define LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE "LassoLocalNameIdentifier"
+#define LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE "LassoRemoteNameIdentifier"
+
 typedef struct _LassoIdentity LassoIdentity;
 typedef struct _LassoIdentityClass LassoIdentityClass;
 
@@ -69,6 +74,9 @@ LASSO_EXPORT LassoNode     *lasso_identity_get_local_nameIdentifier  (LassoIdent
 LASSO_EXPORT void           lasso_identity_set_local_nameIdentifier  (LassoIdentity *identity,
 								      LassoNode     *nameIdentifier);
 LASSO_EXPORT void           lasso_identity_set_remote_nameIdentifier (LassoIdentity *identity,
+								      LassoNode     *nameIdentifier);
+
+LASSO_EXPORT gboolean       lasso_identity_verify_nameIdentifier     (LassoIdentity *identity,
 								      LassoNode     *nameIdentifier);
 
 #ifdef __cplusplus

@@ -36,16 +36,16 @@ lasso_identity_dump(LassoIdentity *identity)
 
   identity_node = lasso_node_new();
   identity_class = LASSO_NODE_GET_CLASS(identity_node);
-  identity_class->set_name(identity_node, "Identity");
+  identity_class->set_name(identity_node, LASSO_IDENTITY_NODE);
 
   /* set the remote providerID */
-  identity_class->set_prop(identity_node, "RemoteProviderID", identity->remote_providerID);
+  identity_class->set_prop(identity_node, LASSO_IDENTITY_REMOTE_PROVIDERID_NODE, identity->remote_providerID);
 
   /* add the remote name identifier */
   if(identity->remote_nameIdentifier){
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
-    class->set_name(nameIdentifier, "RemoteNameIdentifier");
+    class->set_name(nameIdentifier, LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE);
     class->add_child(nameIdentifier, identity->remote_nameIdentifier, FALSE);
     identity_class->add_child(identity_node, nameIdentifier, FALSE);
   }
@@ -54,12 +54,24 @@ lasso_identity_dump(LassoIdentity *identity)
   if(identity->local_nameIdentifier){
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
-    class->set_name(nameIdentifier, "LocalNameIdentifier");
+    class->set_name(nameIdentifier, LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE);
     class->add_child(nameIdentifier, identity->local_nameIdentifier, FALSE);
     identity_class->add_child(identity_node, nameIdentifier, FALSE);
   }
 
   return(lasso_node_export(identity_node));
+}
+
+LassoNode *
+lasso_identity_get_local_nameIdentifier(LassoIdentity *identity)
+{
+  return(identity->local_nameIdentifier);
+}
+
+LassoNode *
+lasso_identity_get_remote_nameIdentifier(LassoIdentity *identity)
+{
+  return(identity->remote_nameIdentifier);
 }
 
 void
@@ -76,18 +88,28 @@ lasso_identity_set_remote_nameIdentifier(LassoIdentity *identity,
   identity->remote_nameIdentifier = nameIdentifier;
 }
 
-LassoNode *
-lasso_identity_get_local_nameIdentifier(LassoIdentity *identity)
+gboolean
+lasso_identity_verify_nameIdentifier(LassoIdentity *identity,
+				     LassoNode     *nameIdentifier)
 {
-  return(identity->local_nameIdentifier);
-}
+  gchar *identity_content, *nameIdentifier_content;
 
-LassoNode *
-lasso_identity_get_remote_nameIdentifier(LassoIdentity *identity)
-{
-  return(identity->remote_nameIdentifier);
-}
+  nameIdentifier_content = lasso_node_get_content(nameIdentifier);
+  if(identity->local_nameIdentifier){
+    identity_content = lasso_node_get_content(identity->local_nameIdentifier);
+    if(xmlStrEqual(identity_content, nameIdentifier_content)){
+      return(TRUE);
+    }
+  }
+  if(identity->remote_nameIdentifier){
+    identity_content = lasso_node_get_content(identity->remote_nameIdentifier);
+    if(xmlStrEqual(identity_content, nameIdentifier_content)){
+      return(TRUE);
+    }
+  }
 
+  return(FALSE);
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
