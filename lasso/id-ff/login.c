@@ -1465,6 +1465,7 @@ lasso_login_dump(LassoLogin *login)
 
 /**
  * lasso_login_validate_request_msg:
+ * @login: a #LassoLogin
  * @authentication_result: whether user has authenticated succesfully
  * @is_consent_obtained: whether user consent has been obtained
  *
