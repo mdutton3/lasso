@@ -108,8 +108,7 @@ LASSO_EXPORT gchar*         lasso_provider_get_nameIdentifierMappingProtocolProf
 												 lassoProviderType   provider_type,
 												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_providerID                                       (LassoProvider  *provider,
-												 GError        **err);
+LASSO_EXPORT gchar*         lasso_provider_get_providerID                                       (LassoProvider  *provider);
 
 LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierProtocolProfile            (LassoProvider      *provider,
 												 lassoProviderType   provider_type,

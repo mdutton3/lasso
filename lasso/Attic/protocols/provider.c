@@ -100,29 +100,42 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
   LassoNode *descriptor;
   GError *tmp_err = NULL;
 
-  g_return_val_if_fail (LASSO_IS_PROVIDER(provider), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL,NULL);
+  }
+  if (LASSO_IS_PROVIDER(provider) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+  }
+  if (name == NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_INVALID_VALUE,
+		lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
+    g_return_val_if_fail(name != NULL, NULL);
+  }
 
-  if (xmlStrEqual(name, "ProviderID")) {
+  switch (provider_type) {
+  case lassoProviderTypeSp:
     descriptor = lasso_node_get_child(provider->metadata,
-				      "EntityDescriptor", NULL, NULL);    
-    value = lasso_node_get_attr_value(descriptor, name, &tmp_err);
+				      "SPDescriptor", NULL, &tmp_err);
+    break;
+  case lassoProviderTypeIdp:
+    descriptor = lasso_node_get_child(provider->metadata,
+				      "IDPDescriptor", NULL, &tmp_err);
+    break;
   }
-  else {
-    switch (provider_type) {
-    case lassoProviderTypeSp:
-      descriptor = lasso_node_get_child(provider->metadata,
-					"SPDescriptor", NULL, NULL);
-      break;
-    case lassoProviderTypeIdp:
-      descriptor = lasso_node_get_child(provider->metadata,
-					"IDPDescriptor", NULL, NULL);      
-      break;
-    }
-    value = lasso_node_get_child_content(descriptor, name, NULL,
-					 &tmp_err);
+  if (descriptor == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (NULL);
   }
+
+  value = lasso_node_get_child_content(descriptor, name, NULL,
+				       &tmp_err);
   lasso_node_destroy(descriptor);
 
   if (value == NULL) {
@@ -258,20 +271,21 @@ lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider      *prov
 }
 
 gchar *
-lasso_provider_get_providerID(LassoProvider  *provider,
-			      GError        **err)
+lasso_provider_get_providerID(LassoProvider  *provider)
 {
+  LassoNode *descriptor;
   xmlChar *value;
-  GError  *tmp_err = NULL;
+  GError  *err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-  
-  value = lasso_provider_get_metadata_value(provider,
-					    lassoProviderTypeSp, /* bidon */
-					    "ProviderID",
-					    &tmp_err);
+  descriptor = lasso_node_get_child(provider->metadata,
+				    "EntityDescriptor", NULL, NULL);    
+  value = lasso_node_get_attr_value(descriptor, "providerID", &err);
+  lasso_node_destroy(descriptor);
+
   if (value == NULL) {
-    g_propagate_error (err, tmp_err);
+    /* providerID attr is required */
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    g_error_free(err);
   }
 
   return (value);
@@ -332,7 +346,7 @@ lasso_provider_get_singleSignOnProtocolProfile(LassoProvider  *provider,
 					    lassoProviderTypeIdp,
 					    "SingleSignOnProtocolProfile",
 					    &tmp_err);
-  if (value == NULL) {
+  if (tmp_err != NULL) {
     g_propagate_error (err, tmp_err);
   }
 
@@ -352,7 +366,7 @@ lasso_provider_get_singleSignOnServiceURL(LassoProvider  *provider,
 					    lassoProviderTypeIdp,
 					    "SingleSignOnServiceURL",
 					    &tmp_err);
-  if (value == NULL) {
+  if (tmp_err != NULL) {
     g_propagate_error (err, tmp_err);
   }
 
@@ -380,9 +394,10 @@ lasso_provider_get_singleLogoutProtocolProfile(LassoProvider      *provider,
   return (value);
 }
 
-gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider    *provider,
-					       lassoProviderType   provider_type,
-					       GError            **err)
+gchar *
+lasso_provider_get_singleLogoutServiceURL(LassoProvider      *provider,
+					  lassoProviderType   provider_type,
+					  GError            **err)
 {
   xmlChar *value;
   GError  *tmp_err = NULL;
@@ -400,9 +415,10 @@ gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider    *provider,
   return (value);
 }
 
-gchar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider      *provider,
-						       lassoProviderType   provider_type,
-						       GError            **err)
+gchar *
+lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider      *provider,
+						lassoProviderType   provider_type,
+						GError            **err)
 {
   xmlChar *value;
   GError  *tmp_err = NULL;
@@ -442,7 +458,8 @@ lasso_provider_get_soapEndpoint(LassoProvider      *provider,
 }
 
 void
-lasso_provider_set_public_key(LassoProvider *provider, gchar *public_key)
+lasso_provider_set_public_key(LassoProvider *provider,
+			      gchar         *public_key)
 {
   provider->public_key = g_strdup(public_key);
 }
@@ -459,7 +476,7 @@ lasso_provider_set_ca_certificate(LassoProvider *provider,
 /*****************************************************************************/
 
 static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider, 
-						      const gchar *name)
+						      const gchar   *name)
 {
   LassoNode *node;
   xmlChar *content;
