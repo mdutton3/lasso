@@ -87,10 +87,10 @@ lasso_request_new(const xmlChar *assertionArtifact)
   xmlFree(id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						lassoLibMajorVersion);
+						lassoSamlMajorVersion);
   /* MinorVersion */
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-						lassoLibMinorVersion);
+						lassoSamlMinorVersion);
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),

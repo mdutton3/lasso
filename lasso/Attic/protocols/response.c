@@ -87,10 +87,10 @@ lasso_response_new()
   xmlFree(id);
   /* MajorVersion */
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lassoLibMajorVersion);
+						 lassoSamlMajorVersion);
   /* MinorVersion */
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
-						 lassoLibMinorVersion);
+						 lassoSamlMinorVersion);
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
