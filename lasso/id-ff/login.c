@@ -148,7 +148,8 @@ lasso_login_process_federation(LassoLogin *login)
 					     LASSO_PROFILE(login)->remote_providerID);
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 					      "NameIDPolicy", lassoLibHRef, NULL);
-  if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
+  if ((nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) && \
+      login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
     if (federation == NULL) {
       lasso_profile_set_response_status(LASSO_PROFILE(login),
 					lassoLibStatusCodeFederationDoesNotExist);
@@ -422,11 +423,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
     return -3;
   }
 
-  if (authentication_result == 0) {
-    lasso_profile_set_response_status(LASSO_PROFILE(login),
-				      lassoSamlStatusCodeRequestDenied);
-  }
-  else {
+  if (authentication_result == TRUE) {
     /* federation */
     lasso_login_process_federation(login);
     federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
@@ -753,9 +750,9 @@ lasso_login_build_response_msg(LassoLogin *login,
     remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
 						    LASSO_PROFILE(login)->remote_providerID,
 						    NULL);
-    /* verify the SOAP request signature */
-    ret = lasso_node_verify_x509_signature(LASSO_PROFILE(login)->request,
-					   remote_provider->ca_certificate);
+    /* FIXME verify the SOAP request signature */
+    ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
+				      remote_provider->public_key);
     /* changed status code into RequestDenied
        if signature is invalid or not found
        if an error occurs during verification */
@@ -764,16 +761,19 @@ lasso_login_build_response_msg(LassoLogin *login,
 					lassoSamlStatusCodeRequestDenied);
     }
     
-    /* get assertion in session and add it in response */
-    assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
-					    LASSO_PROFILE(login)->remote_providerID);
-    if (assertion != NULL) {
-      lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
-					 assertion);
-      lasso_node_destroy(assertion);
-    }
-    else {
-      message(G_LOG_LEVEL_CRITICAL, "");
+    if (LASSO_PROFILE(login)->session) {
+      /* get assertion in session and add it in response */
+      assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
+					      LASSO_PROFILE(login)->remote_providerID);
+      if (assertion != NULL) {
+	lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
+					   assertion);
+	lasso_node_destroy(assertion);
+      }
+      else {
+	/* FIXME should this message output by lasso_session_get_assertion () ? */
+	message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session\n");
+      }
     }
   }
   else {
@@ -946,7 +946,9 @@ lasso_login_must_authenticate(LassoLogin *login)
   if ((forceAuthn == TRUE || LASSO_PROFILE(login)->session == NULL) && isPassive == FALSE) {
     must_authenticate = TRUE;
   }
-  else if (LASSO_PROFILE(login)->identity == NULL && isPassive == TRUE) {
+  else if (LASSO_PROFILE(login)->identity == NULL && \
+	   isPassive == TRUE && \
+	   login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
     lasso_profile_set_response_status(LASSO_PROFILE(login),
 				      lassoLibStatusCodeNoPassive);
   }
