@@ -576,8 +576,8 @@ GType lasso_federation_termination_get_type() {
  * Return value: a new instance of federation termination object or NULL
  **/
 LassoFederationTermination*
-lasso_federation_termination_new(LassoServer *server,
-				 gint         provider_type)
+lasso_federation_termination_new(LassoServer      *server,
+				 lassoProviderType provider_type)
 {
   LassoFederationTermination *defederation;
 

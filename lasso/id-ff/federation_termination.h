@@ -56,8 +56,8 @@ struct _LassoFederationTerminationClass {
 
 LASSO_EXPORT GType                       lasso_federation_termination_get_type (void);
 
-LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new      (LassoServer *server,
-										gint         provider_type);
+LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new      (LassoServer       *server,
+										lassoProviderType  provider_type);
   
 
 LASSO_EXPORT gint lasso_federation_termination_build_notification_msg   (LassoFederationTermination *defederation);
