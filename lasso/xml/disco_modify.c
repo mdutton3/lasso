@@ -55,8 +55,9 @@
 #define snippets() \
 	LassoDiscoModify *modify = LASSO_DISCO_MODIFY(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&(modify->ResourceID) },	\
-		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&(modify->EncryptedResourceID) }, \
+		{ "ResourceID", SNIPPET_CONTENT, (void**)&(modify->ResourceID) }, \
+		{ "EncryptedResourceID", SNIPPET_CONTENT, \
+			(void**)&(modify->EncryptedResourceID) }, \
 		{ "InsertEntry", SNIPPET_LIST_NODES, (void**)&(modify->InsertEntry) }, \
 		{ "RemoveEntry", SNIPPET_LIST_NODES, (void**)&(modify->RemoveEntry) }, \
 		{ "id", SNIPPET_ATTRIBUTE, (void**)&(modify->id) }, \

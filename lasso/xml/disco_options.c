@@ -43,7 +43,7 @@
 #define snippets() \
 	LassoDiscoOptions *options = LASSO_DISCO_OPTIONS(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Option", SNIPPET_LIST_CONTENT, (void**)&(options->Option) },	\
+		{ "Option", SNIPPET_LIST_CONTENT, (void**)&(options->Option) }, \
 		{ NULL, 0, NULL} \
 	};
 

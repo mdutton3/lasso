@@ -44,8 +44,7 @@
 /*****************************************************************************/
 
 #define snippets() \
-	LassoDiscoServiceInstance *instance = \
-		LASSO_DISCO_SERVICE_INSTANCE(node); \
+	LassoDiscoServiceInstance *instance = LASSO_DISCO_SERVICE_INSTANCE(node); \
 	struct XmlSnippet snippets[] = { \
 		{ "ServiceType", SNIPPET_CONTENT, (void**)&(instance->ServiceType) }, \
 		{ "ProviderID",  SNIPPET_CONTENT, (void**)&(instance->ProviderID) }, \

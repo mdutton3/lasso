@@ -62,7 +62,7 @@
 #define snippets() \
 	LassoDiscoDescription *description = LASSO_DISCO_DESCRIPTION(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "SecurityMechID", SNIPPET_CONTENT, (void**)&(description->SecurityMechID) },	\
+		{ "SecurityMechID", SNIPPET_CONTENT, (void**)&(description->SecurityMechID) }, \
 		{ "CredentialRef", SNIPPET_CONTENT, (void**)&(description->CredentialRef) }, \
 		{ "id", SNIPPET_ATTRIBUTE, (void**)&(description->id) }, \
 		{ NULL, 0, NULL} \

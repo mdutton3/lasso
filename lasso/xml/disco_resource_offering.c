@@ -60,11 +60,11 @@
 /*****************************************************************************/
 
 #define snippets() \
-	LassoDiscoResourceOffering *resource = \
-		LASSO_DISCO_RESOURCE_OFFERING(node); \
+	LassoDiscoResourceOffering *resource = LASSO_DISCO_RESOURCE_OFFERING(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&(resource->ResourceID) },	\
-		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&(resource->EncryptedResourceID) }, \
+		{ "ResourceID", SNIPPET_CONTENT, (void**)&(resource->ResourceID) }, \
+		{ "EncryptedResourceID", SNIPPET_CONTENT, \
+			(void**)&(resource->EncryptedResourceID) }, \
 		{ "ServiceInstance", SNIPPET_NODE, (void**)&(resource->ServiceInstance) }, \
 		{ "Options", SNIPPET_NODE, (void**)&(resource->Options) }, \
 		{ "Abstract", SNIPPET_CONTENT, (void**)&(resource->Abstract) }, \
