@@ -171,9 +171,9 @@ lasso_login_process_federation(LassoLogin *login)
 
 static gint
 lasso_login_process_response_status_and_assertion(LassoLogin *login) {
-  LassoNode *assertion, *status, *statusCode;
-  LassoProvider *idp;
-  gchar *statusCode_value;
+  LassoNode *assertion = NULL, *status = NULL, *statusCode = NULL;
+  LassoProvider *idp = NULL;
+  gchar *statusCode_value = NULL;
   gint signature_check, ret = 0;
 
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
@@ -250,10 +250,15 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   xmlChar *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
 
+  if (method != lassoHttpMethodRedirect && method != lassoHttpMethodPost) {
+    debug(ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
+    return (-1);
+  }
+
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
     debug(WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
-    return (-1);
+    return (-2);
   }
 
   /* federation */
@@ -313,10 +318,6 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
       LASSO_PROFILE_CONTEXT(login)->msg_relayState = g_strdup(relayState);
     }
     break;
-  case lassoHttpMethodGet:
-    break; /* XXX */
-  case lassoHttpMethodSoap:
-    break; /* XXX */
   }
   login->assertionArtifact = g_strdup(b64_samlArt);
   xmlFree(url);
@@ -330,7 +331,11 @@ gint
 lasso_login_build_authn_request_msg(LassoLogin *login)
 {
   LassoProvider *provider, *remote_provider;
-  xmlChar *md_authnRequestsSigned, *request_protocolProfile, *url, *query, *lareq;
+  xmlChar *md_authnRequestsSigned = NULL;
+  xmlChar *request_protocolProfile = NULL;
+  xmlChar *url = NULL;
+  xmlChar *query = NULL;
+  xmlChar *lareq = NULL;
   gboolean must_sign;
   gint ret = 0;
   
@@ -475,8 +480,11 @@ gint
 lasso_login_create_user(LassoLogin *login,
 			gchar      *user_dump)
 {
-  LassoNode *assertion, *nameIdentifier, *idpProvidedNameIdentifier, *copy_idpProvidedNameIdentifier;
-  LassoIdentity *identity;
+  LassoNode *assertion = NULL;
+  LassoNode *nameIdentifier = NULL;
+  LassoNode *idpProvidedNameIdentifier = NULL;
+  LassoNode *copy_idpProvidedNameIdentifier = NULL;
+  LassoIdentity *identity = NULL;
   gint ret = 0;
 
   if (user_dump != NULL) {
@@ -609,7 +617,14 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   LassoServer *server;
   LassoProvider *remote_provider;
   gchar *protocolProfile;
-  gboolean  must_verify_signature, signature_status;
+  gboolean  must_verify_signature, signature_status = 0;
+
+  if (authn_request_method != lassoHttpMethodRedirect && \
+      authn_request_method != lassoHttpMethodGet && \
+      authn_request_method != lassoHttpMethodPost) {
+    debug(ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+    return (-1);
+  }
 
   server = LASSO_PROFILE_CONTEXT(login)->server;
 
@@ -623,9 +638,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     break;
   case lassoHttpMethodPost:
     /* TODO LibAuthnRequest send by method POST */
-    break;
-  case lassoHttpMethodSoap:
-    break; /* XXX */
+    debug(ERROR, "HTTP method POST isn't implemented yet.\n");
+    return (-2);
   }
   LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
 
@@ -671,7 +685,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     switch (authn_request_method) {
     case lassoHttpMethodGet:
     case lassoHttpMethodRedirect:
-      debug(INFO, "Query signature has been verified\n");
+      debug(DEBUG, "Query signature has been verified\n");
       signature_status = lasso_query_verify_signature(authn_request_msg,
 						      remote_provider->public_key,
 						      LASSO_PROFILE_CONTEXT(login)->server->private_key);
@@ -680,8 +694,6 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
       signature_status = lasso_node_verify_signature(LASSO_PROFILE_CONTEXT(login)->request,
 						     remote_provider->ca_certificate);
       break;
-    case lassoHttpMethodSoap:
-      break; /* XXX */
     }
     
     /* Modify StatusCode if signature is not OK */
@@ -696,7 +708,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
 						  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
       }
-      return (-1);
+      return (-2);
     }
   }
   return (0);
@@ -707,8 +719,15 @@ lasso_login_init_request(LassoLogin       *login,
 			 gchar            *response_msg,
 			 lassoHttpMethods  response_method)
 {
-  LassoNode *response;
+  LassoNode *response = NULL;
   xmlChar *artifact, *identityProviderSuccinctID;
+
+  if (response_method != lassoHttpMethodRedirect && \
+      response_method != lassoHttpMethodGet && \
+      response_method != lassoHttpMethodPost) {
+    debug(ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+    return (-1);
+  }
 
   /* rebuild response (artifact) */
   switch (response_method) {
@@ -721,8 +740,6 @@ lasso_login_init_request(LassoLogin       *login,
     /* artifact by POST */
     response = lasso_artifact_new_from_lares(response_msg, NULL);
     break;
-  case lassoHttpMethodSoap:
-    break; /* XXX */
   }
   LASSO_PROFILE_CONTEXT(login)->response = response;
   /* get remote identityProviderSuccinctID */
