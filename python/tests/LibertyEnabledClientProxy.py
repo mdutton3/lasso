@@ -27,7 +27,7 @@ import lasso
 from websimulator import *
 
 
-class LibertyEnabledClient(WebClient):
+class LibertyEnabledClientProxy(WebClient):
     # A service provider MAY provide a list of identity providers it recognizes by including the
     # <lib:IDPList> element in the <lib:AuthnRequestEnvelope>. The format and processing rules for
     # the identity provider list MUST be as defined in [LibertyProtSchema].
@@ -69,9 +69,7 @@ class LibertyEnabledClient(WebClient):
         #     'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1'))
         'Accept': ','.join((httpRequestHeaders['Accept'], 'application/vnd.liberty-request+xml'))
         })
-    # FIXME: Lasso should provide a way for Liberty-enabled client to create a "lassoServer"
-    # without metadata, instead of using 'singleSignOnServiceUrl'.
-    idpSingleSignOnServiceUrl = None
+    idpSite = None # The identity provider, this LECP will use to authenticate users.
     lassoServerDump = None
     principal = None
 

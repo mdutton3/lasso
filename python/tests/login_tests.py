@@ -36,7 +36,7 @@ import lasso
 
 import builtins
 from IdentityProvider import IdentityProvider
-from LibertyEnabledClient import LibertyEnabledClient
+from LibertyEnabledClientProxy import LibertyEnabledClientProxy
 from ServiceProvider import ServiceProvider
 from websimulator import *
 
@@ -67,17 +67,17 @@ class LoginTestCase(unittest.TestCase):
         # Frederic Peters has no account on identity provider.
         return site
 
-    def generateLibertyEnabledClient(self, internet):
-        client = LibertyEnabledClient(internet)
+    def generateLibertyEnabledClientProxy(self, internet):
+        clientProxy = LibertyEnabledClientProxy(internet)
         lassoServer = lasso.Server.new()
         lassoServer.add_provider(
             '../../examples/data/idp-metadata.xml',
             '../../examples/data/idp-public-key.pem',
             '../../examples/data/ca-crt.pem')
-        client.lassoServerDump = lassoServer.dump()
-        failUnless(client.lassoServerDump)
+        clientProxy.lassoServerDump = lassoServer.dump()
+        failUnless(clientProxy.lassoServerDump)
         lassoServer.destroy()
-        return client
+        return clientProxy
         
     def generateSpSite(self, internet):
         site = ServiceProvider(internet, 'https://service-provider/')
@@ -254,19 +254,19 @@ class LoginTestCase(unittest.TestCase):
         principal = Principal(internet, 'Romain Chantereau')
         principal.keyring[idpSite.url] = 'Chantereau'
         principal.keyring[spSite.url] = 'Romain'
-        lec = self.generateLibertyEnabledClient(internet)
-        lec.idpSite = idpSite
+        lecp = self.generateLibertyEnabledClientProxy(internet)
+        lecp.idpSite = idpSite
 
         # Try LECP, but the principal is not authenticated on identity-provider. So, LECP must
         # fail.
-        httpResponse = lec.login(principal, spSite, '/login')
+        httpResponse = lecp.login(principal, spSite, '/login')
         failUnlessEqual(httpResponse.statusCode, 401)
 
         # Now we authenticate principal, before testing LECP. So, LECP must succeed.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
-        idpSite.createSession(lec)
-        httpResponse = lec.login(principal, spSite, '/login')
+        idpSite.createSession(lecp)
+        httpResponse = lecp.login(principal, spSite, '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
 
 
