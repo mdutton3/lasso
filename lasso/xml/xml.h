@@ -79,6 +79,9 @@ struct _LassoNodeClass {
   LassoNode*     (* get_child)        (LassoNode     *node,
 				       const xmlChar *name,
 				       const xmlChar *href);
+  xmlChar*       (* get_child_content)(LassoNode     *node,
+				       const xmlChar *name,
+				       const xmlChar *href);
   GPtrArray*     (* get_children)     (LassoNode     *node);
   xmlChar*       (* get_content)      (LassoNode     *node);
   const xmlChar* (* get_name)         (LassoNode     *node);
@@ -150,6 +153,10 @@ LASSO_EXPORT xmlChar*       lasso_node_get_attr_value   (LassoNode *node,
 LASSO_EXPORT GPtrArray*     lasso_node_get_attrs        (LassoNode *node);
 
 LASSO_EXPORT LassoNode*     lasso_node_get_child        (LassoNode *node,
+							 const xmlChar *name,
+							 const xmlChar *href);
+
+LASSO_EXPORT xmlChar *      lasso_node_get_child_content(LassoNode     *node,
 							 const xmlChar *name,
 							 const xmlChar *href);
 

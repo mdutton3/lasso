@@ -221,7 +221,7 @@ lasso_node_get_attrs(LassoNode *node)
 /**
  * lasso_node_get_child:
  * @node: a LassoNode
- * @name: the name
+ * @name: the child name
  * @href: the namespace (may be NULL)
  * 
  * Gets child of node having given @name and namespace @href.
@@ -237,6 +237,28 @@ lasso_node_get_child(LassoNode     *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   return (class->get_child(node, name, href));
+}
+
+/**
+ * lasso_node_get_child_content:
+ * @node: a LassoNode
+ * @name: the child name
+ * @href: the namespace (may be NULL)
+ * 
+ * Gets child content of node having given @name and namespace @href.
+ * 
+ * Return value: a new xmlChar * or NULL if no child found or no content is
+ * available. It's up to the caller to free the memory with xmlFree().
+ **/
+xmlChar *
+lasso_node_get_child_content(LassoNode     *node,
+			     const xmlChar *name,
+			     const xmlChar *href)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->get_child_content(node, name, href));
 }
 
 /**
@@ -734,6 +756,23 @@ lasso_node_impl_get_child(LassoNode     *node,
     return (lasso_node_new_from_xmlNode(child));
   else
     return (NULL);
+}
+
+static xmlChar *
+lasso_node_impl_get_child_content(LassoNode     *node,
+				  const xmlChar *name,
+				  const xmlChar *href)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+
+  LassoNode *child = lasso_node_get_child(node, name, href);
+  xmlChar *content;
+
+  content = lasso_node_get_content(child);
+  lasso_node_destroy(child);
+
+  return (content);
 }
 
 static GPtrArray *
@@ -1238,23 +1277,24 @@ lasso_node_class_init(LassoNodeClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS(class);
   
   /* virtual public methods */
-  class->copy             = lasso_node_impl_copy;
-  class->destroy          = lasso_node_impl_destroy;
-  class->dump             = lasso_node_impl_dump;
-  class->export           = lasso_node_impl_export;
-  class->export_to_base64 = lasso_node_impl_export_to_base64;
-  class->export_to_query  = lasso_node_impl_export_to_query;
-  class->export_to_soap   = lasso_node_impl_export_to_soap;
-  class->get_attr         = lasso_node_impl_get_attr;
-  class->get_attr_value   = lasso_node_impl_get_attr_value;
-  class->get_attrs        = lasso_node_impl_get_attrs;
-  class->get_child        = lasso_node_impl_get_child;
-  class->get_children     = lasso_node_impl_get_children;
-  class->get_content      = lasso_node_impl_get_content;
-  class->get_name         = lasso_node_impl_get_name;
-  class->import           = lasso_node_impl_import;
-  class->rename_prop      = lasso_node_impl_rename_prop;
-  class->verify_signature = lasso_node_impl_verify_signature;
+  class->copy              = lasso_node_impl_copy;
+  class->destroy           = lasso_node_impl_destroy;
+  class->dump              = lasso_node_impl_dump;
+  class->export            = lasso_node_impl_export;
+  class->export_to_base64  = lasso_node_impl_export_to_base64;
+  class->export_to_query   = lasso_node_impl_export_to_query;
+  class->export_to_soap    = lasso_node_impl_export_to_soap;
+  class->get_attr          = lasso_node_impl_get_attr;
+  class->get_attr_value    = lasso_node_impl_get_attr_value;
+  class->get_attrs         = lasso_node_impl_get_attrs;
+  class->get_child         = lasso_node_impl_get_child;
+  class->get_child_content = lasso_node_impl_get_child_content;
+  class->get_children      = lasso_node_impl_get_children;
+  class->get_content       = lasso_node_impl_get_content;
+  class->get_name          = lasso_node_impl_get_name;
+  class->import            = lasso_node_impl_import;
+  class->rename_prop       = lasso_node_impl_rename_prop;
+  class->verify_signature  = lasso_node_impl_verify_signature;
   /* virtual private methods */
   class->add_child     = lasso_node_impl_add_child;
   class->add_signature = lasso_node_impl_add_signature;
