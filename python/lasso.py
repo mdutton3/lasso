@@ -934,10 +934,6 @@ class Login(Profile):
         ret = lassomod.login_getattr(self, name)
         if ret is None:
             raise AttributeError, name
-        elif name == "identity":
-            ret= Identity(_obj=ret)
-        elif name == "session":
-            ret= Session(_obj=ret)
         elif name == "request":
             if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
                 ret = AuthnRequest(None, _obj=ret)
@@ -1039,10 +1035,6 @@ class Logout(Profile):
         ret = lassomod.logout_getattr(self, name)
         if ret is None:
             return None
-        elif name == "identity":
-            ret= Identity(_obj=ret)
-        elif name == "session":
-            ret= Session(_obj=ret)
         elif name == "request":
             ret = LogoutRequest(_obj=ret)
         elif name == "response":
