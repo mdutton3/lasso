@@ -37,6 +37,21 @@ static GObjectClass *parent_class = NULL;
 /* public methods                                                            */
 /*****************************************************************************/
 
+LassoProvider*
+lasso_provider_copy(LassoProvider *provider)
+{
+  LassoProvider *copy;
+
+  g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+
+  copy = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+  copy->metadata = lasso_node_copy(provider->metadata);
+  copy->public_key     = g_strdup(provider->public_key);
+  copy->ca_certificate = g_strdup(provider->ca_certificate);
+
+  return(copy);
+}
+
 void
 lasso_provider_destroy(LassoProvider *provider)
 {
