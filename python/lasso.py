@@ -841,3 +841,36 @@ class Login:
     def add_provider(self, metadata, public_key=None, certificate=None):
         lassomod.lasso_server_add_provider(self, metadata,
                                            public_key, certificate)
+
+
+class Logout:
+    """\brief Short desc
+
+    Long desc
+    """
+
+    def __init__(self, _obj):
+	"""
+	The constructor
+	"""
+	self._o = _obj
+
+    def new(cls, server, user=None):
+	obj = lassomod.logout_new(server, user)
+	return Logout(obj)
+    new = classmethod(new)
+
+    def build_request_msg(self):
+	return lassomod.logout_build_request_msg(self)
+
+    def build_response_msg(self):
+	return lassomod.logout_build_response_msg(self)
+
+    def init_request(self, remote_providerID):
+	return lassomod.logout_init_request(self, remote_providerID);
+
+    def handle_request(self, request_msg, request_method):
+	return lassomod.logout_handle_request(self, request_msg, request_method);
+
+    def handle_response(self, response_msg, response_method):
+	return lassomod.logout_handle_response(self, response_msg, response_method);
