@@ -93,8 +93,8 @@ PyObject *profile_context_set_user_from_dump(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  ret = lasso_profile_context_set_remote_providerID(LassoProfileContext_get(ctx_obj),
-						    dump);
+  ret = lasso_profile_context_set_user_from_dump(LassoProfileContext_get(ctx_obj),
+						 dump);
 
   return(int_wrap(ret));
 }
