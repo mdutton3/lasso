@@ -93,8 +93,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	/* verify the provider type is a service provider type */
 	/* build name identifier mapping response msg */
 	if (profile->http_request_method != LASSO_HTTP_METHOD_SOAP) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http request method");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	profile->msg_url = NULL;
@@ -319,8 +318,7 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 	}
 
 	if (profile->http_request_method != LASSO_HTTP_METHOD_SOAP) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP request method");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	request = LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request);
