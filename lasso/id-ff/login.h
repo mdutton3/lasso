@@ -61,7 +61,6 @@ struct _LassoLogin {
   gchar *assertionArtifact;
 
   /*< private >*/
-  gint signature_status;
   lassoHttpMethod http_method;
   LassoLoginPrivate *private;
 };

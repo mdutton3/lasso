@@ -382,20 +382,20 @@ lasso_profile_instance_init(GTypeInstance *instance,
   ctx->private->dispose_has_run = FALSE;
 
   ctx->server = NULL;
-  ctx->identity = NULL;
-  ctx->session  = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
   ctx->nameIdentifier = NULL;
-  ctx->request_type  = lassoMessageTypeNone;
-  ctx->response_type = lassoMessageTypeNone;
-  ctx->provider_type = lassoProviderTypeNone;
-  
   ctx->remote_providerID = NULL;
-  
   ctx->msg_url        = NULL;
   ctx->msg_body       = NULL;
   ctx->msg_relayState = NULL;
+
+  ctx->identity = NULL;
+  ctx->session  = NULL;
+  ctx->request_type  = lassoMessageTypeNone;
+  ctx->response_type = lassoMessageTypeNone;
+  ctx->provider_type = lassoProviderTypeNone;
+  ctx->signature_status = 0;
 }
 
 static void

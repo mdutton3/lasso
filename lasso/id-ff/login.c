@@ -650,9 +650,9 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
 
   /* modify AuthnResponse StatusCode if signature is not OK */
-  if (login->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE ||
-      login->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-    switch (login->signature_status) {
+  if (LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE ||
+      LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+    switch (LASSO_PROFILE(login)->signature_status) {
     case LASSO_DS_ERROR_INVALID_SIGNATURE:
       lasso_profile_set_response_status(LASSO_PROFILE(login),
 					lassoLibStatusCodeInvalidSignature);
@@ -671,7 +671,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 				      lassoSamlStatusCodeRequestDenied);
   }
 
-  if (login->signature_status == 0 && authentication_result == TRUE) {
+  if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
     /* process federation */
     lasso_login_process_federation(login);
     federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
@@ -1067,7 +1067,7 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
 					remote_provider->public_key);
       break;
     }
-    login->signature_status = ret;
+    LASSO_PROFILE(login)->signature_status = ret;
   }
 
   return ret;
@@ -1204,7 +1204,6 @@ lasso_login_instance_init(GTypeInstance   *instance,
 
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
-  login->signature_status = 0;
 }
 
 static void

@@ -104,6 +104,7 @@ struct _LassoProfile {
   lassoProviderType provider_type;
 
   lassoHttpMethod http_request_method;
+  gint signature_status;
 
   LassoProfilePrivate *private;
 };
