@@ -102,21 +102,23 @@ lasso_disco_service_instance_get_type()
 LassoDiscoServiceInstance*
 lasso_disco_service_instance_new(const gchar *serviceType,
 				 const gchar *providerID,
-				 GList       *descriptions)
+				 LassoDiscoDescription *description)
 {
 	LassoDiscoServiceInstance *service_instance;
 
 	g_return_val_if_fail (serviceType != NULL, NULL);
 	g_return_val_if_fail (providerID != NULL, NULL);
-	g_return_val_if_fail(g_list_length(descriptions) >= 1, NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description) == TRUE, NULL);
+
+	g_object_ref(description);
 
 	service_instance = g_object_new(LASSO_TYPE_DISCO_SERVICE_INSTANCE, NULL);
 
 	service_instance->ServiceType = g_strdup(serviceType);
 	service_instance->ProviderID = g_strdup(providerID);
 
-	/* FIXME: should Description be a copy ??*/
-	service_instance->Description = descriptions;
+	service_instance->Description = g_list_append(service_instance->Description,
+						      description);
 
 	return service_instance;
 }

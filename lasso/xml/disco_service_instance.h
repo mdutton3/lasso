@@ -64,9 +64,8 @@ struct _LassoDiscoServiceInstanceClass {
 
 LASSO_EXPORT GType lasso_disco_service_instance_get_type(void);
 
-LASSO_EXPORT LassoDiscoServiceInstance* lasso_disco_service_instance_new(const gchar *serviceType,
-									 const gchar *providerID,
-									 GList       *descriptions);
+LASSO_EXPORT LassoDiscoServiceInstance* lasso_disco_service_instance_new(
+	     const gchar *serviceType, const gchar *providerID, LassoDiscoDescription *description);
 
 #ifdef __cplusplus
 }

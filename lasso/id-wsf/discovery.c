@@ -63,7 +63,10 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
 	}
 	/* get ResourceID/EncryptedResourceID in description */
+	/* ResourceID and EncryptedResourceID are owned by resourceOffering,
+	 so increment reference count */
 	if (resourceOffering->ResourceID != NULL) {
+		g_object_ref(resourceOffering->ResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
 			LASSO_DISCO_MODIFY(profile->request)->ResourceID = \
 				resourceOffering->ResourceID;
@@ -74,6 +77,7 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 		}
 	}
 	else if (resourceOffering->EncryptedResourceID != NULL) {
+		g_object_ref(resourceOffering->EncryptedResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
 			LASSO_DISCO_MODIFY(profile->request)->EncryptedResourceID = \
 				resourceOffering->EncryptedResourceID;
@@ -84,7 +88,7 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 		}
 	}
 	if (description->Endpoint != NULL) {
-		profile->msg_url = description->Endpoint;
+		profile->msg_url = g_strdup(description->Endpoint);
 	}
 	else if (description->WsdlURI != NULL) {
 		/* TODO: get Endpoint at WsdlURI */
@@ -101,14 +105,11 @@ LassoDiscoInsertEntry*
 lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 				 const gchar                   *serviceType,
 				 const gchar                   *providerID,
-/* 				 GList                         *descriptions, */
 				 LassoDiscoDescription         *description,
 				 LassoDiscoResourceID          *resourceID,
 				 LassoDiscoEncryptedResourceID *encryptedResourceID,
-/* 				 GList                         *options) */
 				 const char                    *option)
 {
-	GList *descriptions = NULL;
 	LassoDiscoInsertEntry *entry;
 	LassoDiscoModify *modify;
 	LassoDiscoOptions *opts;
@@ -118,43 +119,29 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(serviceType!= NULL, NULL);
 	g_return_val_if_fail(providerID != NULL, NULL);
-	/* only one description is required */
-/* 	g_return_val_if_fail(g_list_length(descriptions) >= 1, NULL); */
-	/* resourceID/encryptedResourceID and options are optionals */
+	/* resourceID/encryptedResourceID and option are optional */
 	g_return_val_if_fail((resourceID == NULL && encryptedResourceID == NULL) || \
 			     (LASSO_IS_DISCO_RESOURCE_ID(resourceID) ^	\
 			      LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceID)), NULL);
 
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
-	/* create InsertEntry */
-	entry = lasso_disco_insert_entry_new();
-	/* create ServiceInstance */
-	descriptions = g_list_append(descriptions, (gpointer)description);
-	service = lasso_disco_service_instance_new(serviceType, providerID, descriptions);
-	/* create ResourceOffering */
-	resource = lasso_disco_resource_offering_new(service);
-	resource->ResourceID = resourceID;
-	resource->EncryptedResourceID = encryptedResourceID;
+	service = lasso_disco_service_instance_new(serviceType, providerID, description);
 
+	resource = lasso_disco_resource_offering_new(service);
+	/* ResourceID and EncryptedResourceID are owned by the method caller,
+	 so increment reference count */
+	resource->ResourceID = g_object_ref(resourceID);
+	resource->EncryptedResourceID = g_object_ref(encryptedResourceID);
 	/* optional data */
-	/* create Options */
-/* 	if (options != NULL) { */
-/* 		opts = lasso_disco_options_new(); */
-/* 		while (options != NULL) { */
-/* 			opts->Option = g_list_append(opts->Option, options->data); */
-/* 			options = g_list_next(options); */
-/* 		} */
-/* 		resource->Options = opts; */
-/* 	} */
 	if (option != NULL) {
 		opts = lasso_disco_options_new();
-		opts->Option = g_list_append(opts->Option, (gpointer)option);
+		opts->Option = g_list_append(opts->Option, g_strdup(option));
+		resource->Options = opts;
 	}
 
+	entry = lasso_disco_insert_entry_new();
 	entry->ResourceOffering = resource;
-
-	/* add InsertEntry */
 	modify->InsertEntry = g_list_append(modify->InsertEntry, (gpointer)entry);
 
 	return entry;
@@ -170,9 +157,10 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 	g_return_val_if_fail(entryID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
+
 	/* add RemoveEntry */
 	modify->RemoveEntry = g_list_append(modify->RemoveEntry,
-					    (gpointer)lasso_disco_remove_entry_new(entryID));
+					    lasso_disco_remove_entry_new(entryID));
 
 	return 0;
 }
@@ -180,7 +168,6 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 LassoDiscoRequestedServiceType*
 lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 					   const gchar    *serviceType,
-/* 					   GList          *options) */
 					   const char     *option)
 {
 	LassoDiscoQuery *query;
@@ -189,23 +176,17 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(serviceType != NULL, NULL);
-	/* options is optional */
+	/* option is optional */
 
 	query = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
 
 	rst = lasso_disco_requested_service_type_new(serviceType);
 
 	/* optionals data */
-	/* create Options */
 	if (option != NULL) {
+		opts = lasso_disco_options_new();
 		opts->Option = g_list_append(opts->Option, (gpointer)option);
 		rst->Options = opts;
-/* 		opts = lasso_disco_options_new(); */
-/* 		while (options != NULL) { */
-/* 			opts->Option = g_list_append(opts->Option, options->data); */
-/* 			options = g_list_next(options); */
-/* 		} */
-/* 		rst->Options = opts; */
 	}
 
 	/* add RequestedServiceType */
@@ -356,7 +337,6 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
-	LassoDiscovery *discovery = LASSO_DISCOVERY(node);
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlNodeSetName(xmlnode, "Discovery");
@@ -368,8 +348,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoDiscovery *discovery = LASSO_DISCOVERY(node);
-	xmlNode *t;
 	int rc;
 
 	rc = parent_class->init_from_xml(node, xmlnode);

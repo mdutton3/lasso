@@ -68,6 +68,21 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 	return 0;
 }
 
+gint
+lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service)
+{
+	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(service),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	/* append new service */
+	g_hash_table_insert(server->services,
+			    g_strdup(service->ServiceType),
+			    g_object_ref(service));
+
+	return 0;  	
+}
+
 /**
  * lasso_server_destroy:
  * @server: a #LassoServer
@@ -100,6 +115,12 @@ add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
+static void
+add_service_childnode(gchar *key, LassoNode *value, xmlNode *xmlnode)
+{
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));	
+}
+
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -117,6 +138,14 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		t = xmlNewTextChild(xmlnode, NULL, "Providers", NULL);
 		g_hash_table_foreach(server->providers,
 				(GHFunc)add_provider_childnode, t);
+	}
+
+	/* Services */
+	if (g_hash_table_size(server->services)) {
+		xmlNode *t;
+		t = xmlNewTextChild(xmlnode, NULL, "Services", NULL);
+		g_hash_table_foreach(server->services,
+				(GHFunc)add_service_childnode, t);
 	}
 
 	xmlCleanNs(xmlnode);
@@ -149,21 +178,41 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	while (t) {
 		xmlNode *t2 = t->children;
 		LassoProvider *p;
+		LassoDiscoServiceInstance *s;
 
-		if (t->type != XML_ELEMENT_NODE || strcmp(t->name, "Providers") != 0) {
+		if (t->type != XML_ELEMENT_NODE) {
 			t = t->next;
 			continue;
 		}
-		while (t2) {
-			if (t2->type != XML_ELEMENT_NODE) {
+
+		/* Providers part */
+		if (strcmp(t->name, "Providers") == 0) {
+			while (t2) {
+				if (t2->type != XML_ELEMENT_NODE) {
+					t2 = t2->next;
+					continue;
+				}
+				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
+				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
+				g_hash_table_insert(server->providers, g_strdup(p->ProviderID), p);
 				t2 = t2->next;
-				continue;
 			}
-			p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-			LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
-			g_hash_table_insert(server->providers, g_strdup(p->ProviderID), p);
-			t2 = t2->next;
 		}
+
+		/* Services part */
+		else if (strcmp(t->name, "Services") == 0) {
+			while (t2) {
+				if (t2->type != XML_ELEMENT_NODE) {
+					t2 = t2->next;
+					continue;
+				}
+				s = g_object_new(LASSO_TYPE_DISCO_SERVICE_INSTANCE, NULL);
+				LASSO_NODE_GET_CLASS(s)->init_from_xml(LASSO_NODE(s), t2);
+				g_hash_table_insert(server->services, g_strdup(s->ServiceType), s);
+				t2 = t2->next;
+			}
+		}
+
 		t = t->next;
 	}
 	return 0;
@@ -212,6 +261,11 @@ lasso_server_get_provider(LassoServer *server, gchar *providerID)
 	return g_hash_table_lookup(server->providers, providerID);
 }
 
+LassoDiscoServiceInstance*
+lasso_server_get_service(LassoServer *server, gchar *serviceType)
+{
+	return g_hash_table_lookup(server->services, serviceType);
+}
 
 static gboolean
 get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
@@ -300,10 +354,15 @@ instance_init(LassoServer *server)
 	server->providers = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free,
 			(GDestroyNotify)lasso_node_destroy);
+
 	server->private_key = NULL;
 	server->secret_key = NULL;
 	server->certificate = NULL;
 	server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+
+	/* FIXME: set the value_destroy_func */
+	server->services = g_hash_table_new_full(g_str_hash, g_str_equal,
+						 (GDestroyNotify)g_free, NULL);
 }
 
 static void

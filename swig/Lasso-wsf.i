@@ -1033,8 +1033,8 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	/* FIXME: Add typemap for LassoNodeList *description. */
-	LassoDiscoServiceInstance(char *serviceType, char *providerID, void *description = NULL);
+	LassoDiscoServiceInstance(char *serviceType, char *providerID,
+				  LassoDiscoDescription *description);
 
 	~LassoDiscoServiceInstance();
 
@@ -1095,7 +1095,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject any_get;
-	LassoNodeList *any;
+	LassoStringList *any;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1114,10 +1114,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* any */
-#define LassoDstData_get_any(self) get_node_list((self)->any)
-#define LassoDstData_any_get(self) get_node_list((self)->any)
-#define LassoDstData_set_any(self, value) set_node_list(&(self)->any, (value))
-#define LassoDstData_any_set(self, value) set_node_list(&(self)->any, (value))
+#define LassoDstData_get_any(self) get_xml_list((self)->any)
+#define LassoDstData_any_get(self) get_xml_list((self)->any)
+#define LassoDstData_set_any(self, value) set_xml_list(&(self)->any, (value))
+#define LassoDstData_any_set(self, value) set_xml_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1382,7 +1382,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject any_get;
-	LassoNodeList *any;
+	LassoStringList *any;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1401,10 +1401,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* any */
-#define LassoDstNewData_get_any(self) get_node_list((self)->any)
-#define LassoDstNewData_any_get(self) get_node_list((self)->any)
-#define LassoDstNewData_set_any(self, value) set_node_list(&(self)->any, (value))
-#define LassoDstNewData_any_set(self, value) set_node_list(&(self)->any, (value))
+#define LassoDstNewData_get_any(self) get_xml_list((self)->any)
+#define LassoDstNewData_any_get(self) get_xml_list((self)->any)
+#define LassoDstNewData_set_any(self, value) set_xml_list(&(self)->any, (value))
+#define LassoDstNewData_any_set(self, value) set_xml_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2813,7 +2813,7 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	int addData(LassoNode *data);
+	int addData(char *xmlNodeBuffer);
 	END_THROW_ERROR
 
 	LassoDstModification *addModification(char *select);

@@ -74,7 +74,7 @@ LASSO_EXPORT LassoProfileService* lasso_profile_service_new(LassoServer *server)
 
 
 LASSO_EXPORT gint lasso_profile_service_add_data(LassoProfileService *service,
-						 LassoNode *requested_data);
+						 const char *xmlNodeBuffer);
 
 LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(
 	LassoProfileService *service,

@@ -47,6 +47,9 @@
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
 
+#include <lasso/xml/disco_resource_id.h>
+#include <lasso/xml/disco_encrypted_resource_id.h>
+
 %}
 
 /* GLib types */
@@ -820,6 +823,10 @@ typedef enum {
 %rename(REQUEST_TYPE_NAME_REGISTRATION) LASSO_REQUEST_TYPE_NAME_REGISTRATION;
 %rename(REQUEST_TYPE_NAME_IDENTIFIER_MAPPING) LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 %rename(REQUEST_TYPE_LECP) LASSO_REQUEST_TYPE_LECP;
+%rename(REQUEST_TYPE_DISCO_QUERY) LASSO_REQUEST_TYPE_DISCO_QUERY;
+%rename(REQUEST_TYPE_DISCO_MODIFY) LASSO_REQUEST_TYPE_DISCO_MODIFY;
+%rename(REQUEST_TYPE_DST_QUERY) LASSO_REQUEST_TYPE_DST_QUERY;
+%rename(REQUEST_TYPE_DST_MODIFY) LASSO_REQUEST_TYPE_DST_MODIFY;
 %rename(RequestType) LassoRequestType;
 #endif
 typedef enum {
@@ -829,7 +836,11 @@ typedef enum {
 	LASSO_REQUEST_TYPE_DEFEDERATION = 3,
 	LASSO_REQUEST_TYPE_NAME_REGISTRATION = 4,
 	LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING = 5,
-	LASSO_REQUEST_TYPE_LECP = 6
+	LASSO_REQUEST_TYPE_LECP = 6,
+	LASSO_REQUEST_TYPE_DISCO_QUERY = 7,
+	LASSO_REQUEST_TYPE_DISCO_MODIFY = 8,
+	LASSO_REQUEST_TYPE_DST_QUERY = 9,
+	LASSO_REQUEST_TYPE_DST_MODIFY = 10,
 } LassoRequestType;
 
 /* lib:AuthnContextClassRef */
@@ -4777,6 +4788,8 @@ typedef struct {
 %rename(Server) LassoServer;
 #endif
 typedef struct {
+	/* Attributes */
+
 	char *certificate;
 
 #ifndef SWIGPHP4
@@ -4857,15 +4870,21 @@ typedef struct {
 
 	/* Methods */
 
-        THROW_ERROR
+	THROW_ERROR
 	int addProvider(LassoProviderRole role, char *metadata, char *publicKey = NULL,
 			char *caCertChain = NULL);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int addService(LassoDiscoServiceInstance *service);
 	END_THROW_ERROR
 
 	%newobject dump;
 	char *dump();
 
 	LassoProvider *getProvider(char *providerId);
+
+	LassoDiscoServiceInstance *getService(char *serviceType);
 }
 
 %{
@@ -4928,8 +4947,10 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 /* Methods implementations */
 
 #define LassoServer_addProvider lasso_server_add_provider
+#define LassoServer_addService lasso_server_add_service
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
+#define LassoServer_getService lasso_server_get_service
 
 %}
 
@@ -5513,6 +5534,14 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
+	int setEncryptedResourceId(LassoDiscoEncryptedResourceID *encryptedResourceId);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int setResourceId(char *content);
+	END_THROW_ERROR
+
+	THROW_ERROR
 	int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
 	END_THROW_ERROR
 }
@@ -5622,6 +5651,8 @@ int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
+#define LassoLogin_setEncryptedResourceId lasso_login_set_encryptedResourceId 
+#define LassoLogin_setResourceId lasso_login_set_resourceId
 #define LassoLogin_validateRequestMsg lasso_login_validate_request_msg
 
 %}

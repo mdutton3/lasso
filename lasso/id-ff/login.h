@@ -30,6 +30,8 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
+#include <lasso/xml/disco_encrypted_resource_id.h>
+#include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/lib_authn_request.h>
 #include <lasso/xml/lib_authn_response.h>
 #include <lasso/xml/samlp_request.h>
@@ -81,6 +83,11 @@ LASSO_EXPORT gint lasso_login_accept_sso(LassoLogin *login);
 
 LASSO_EXPORT gint lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method);
 
+LASSO_EXPORT int lasso_login_build_assertion(LassoLogin *login,
+		const char *authenticationMethod, const char *authenticationInstant,
+		const char *reauthenticateOnOrAfter,
+		const char *notBefore, const char *notOnOrAfter);
+
 LASSO_EXPORT gint lasso_login_build_authn_request_msg(LassoLogin *login);
 
 LASSO_EXPORT gint lasso_login_build_authn_response_msg(LassoLogin *login);
@@ -110,13 +117,14 @@ LASSO_EXPORT gint lasso_login_process_authn_response_msg(LassoLogin *login,
 LASSO_EXPORT gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
 LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
 
+LASSO_EXPORT int lasso_login_set_encryptedResourceId(
+		LassoLogin *login, LassoDiscoEncryptedResourceID *encryptedResourceId);
+
+LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *resourceId);
+
 LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);
 
-LASSO_EXPORT int lasso_login_build_assertion(LassoLogin *login,
-		const char *authenticationMethod, const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore, const char *notOnOrAfter);
 
 #ifdef __cplusplus
 }

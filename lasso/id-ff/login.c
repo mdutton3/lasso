@@ -24,8 +24,13 @@
 
 #include <xmlsec/base64.h>
 
+#include <lasso/xml/disco_description.h>
+#include <lasso/xml/disco_resource_offering.h>
+#include <lasso/xml/disco_service_instance.h>
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
+#include <lasso/xml/saml_attribute.h>
+#include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/samlp_response.h>
 
 #include <lasso/id-ff/login.h>
@@ -40,6 +45,8 @@
 struct _LassoLoginPrivate
 {
 	char *soap_request_msg;
+	LassoDiscoResourceID *resourceId;
+	LassoDiscoEncryptedResourceID *encryptedResourceId;
 };
 
 /*****************************************************************************/
@@ -129,6 +136,39 @@ lasso_login_build_assertion(LassoLogin *login,
 		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL,
 			LASSO_SAML_ASSERTION(assertion));
 	}
+
+	/* Bootstrapping : if server has a discovery service and if login->resourceId is set,
+	 then add a AttributeStatement / ResourceOffering */
+	{
+		LassoDiscoResourceOffering *resourceOffering;
+		LassoDiscoServiceInstance *serviceInstance;
+
+		LassoSamlAttributeStatement *attributeStatement;
+		LassoSamlAttribute *attribute;
+		LassoSamlAttributeValue *attributeValue;
+
+		serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
+		if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) == TRUE) {
+
+			resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
+			resourceOffering->ResourceID = g_object_ref(
+					login->private_data->resourceId);
+		
+			attributeValue = lasso_saml_attribute_value_new();
+			attributeValue->any = g_list_append(attributeValue->any, resourceOffering);
+			
+			attribute = lasso_saml_attribute_new();
+			attribute->AttributeValue = g_list_append(attribute->AttributeValue,
+								  attributeValue);
+
+			attributeStatement = lasso_saml_attribute_statement_new();
+			attributeStatement->Attribute = g_list_append(
+					attributeStatement->Attribute, attribute);
+			
+			assertion->AttributeStatement = attributeStatement;
+		}
+	}
+
 	/* store assertion in session object */
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
@@ -1271,6 +1311,31 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	}
 
 	return lasso_login_process_response_status_and_assertion(login);
+}
+
+int
+lasso_login_set_encryptedResourceId(LassoLogin *login,
+				    LassoDiscoEncryptedResourceID *encryptedResourceId)
+{
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
+			     LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	g_object_ref(encryptedResourceId);
+	login->private_data->encryptedResourceId = encryptedResourceId;
+
+	return 0;
+}
+
+int
+lasso_login_set_resourceId(LassoLogin *login, const char *content)
+{
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(content != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	login->private_data->resourceId = lasso_disco_resource_id_new(content);
+
+	return 0;
 }
 
 /*****************************************************************************/

@@ -122,9 +122,10 @@ lasso_disco_resource_offering_new(LassoDiscoServiceInstance *serviceInstance)
 
 	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
 
+	g_object_ref(serviceInstance);
+
 	resource = g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
 
-	/* FIXME: Should ServiceInstance be copy ? */
 	resource->ServiceInstance = serviceInstance;
 
 	return resource;

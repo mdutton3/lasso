@@ -29,7 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/xml/disco_service_instance.h>
 #include <lasso/id-ff/provider.h>
+
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
 #define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))
@@ -77,9 +79,16 @@ LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
 		LassoProviderRole role, const gchar *metadata,
 		const gchar *public_key, const gchar *ca_cert_chain);
 
+LASSO_EXPORT gint lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service);
+
 LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
-LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar *providerID);
+
 LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
+
+LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar *providerID);
+
+LASSO_EXPORT LassoDiscoServiceInstance* lasso_server_get_service(LassoServer *server,
+								 gchar *serviceType);
 
 #ifdef __cplusplus
 }

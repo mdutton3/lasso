@@ -33,18 +33,25 @@
 /*****************************************************************************/
 
 gint
-lasso_profile_service_add_data(LassoProfileService *service, LassoNode *requested_data)
+lasso_profile_service_add_data(LassoProfileService *service, const char *xmlNodeBuffer)
 {
 	LassoWsfProfile *profile;
 	LassoDstData *data;
-
+	xmlNode *root, *xmlnode;
+	xmlDoc *doc;
+	
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, -1);
-	g_return_val_if_fail(LASSO_IS_NODE(requested_data) == TRUE, -1);
+	g_return_val_if_fail(xmlNodeBuffer != NULL, -1);
 
 	profile = LASSO_WSF_PROFILE(service);
 
+	/* xmlBuffer must be parsed and set in LassoDstData */
+	doc = xmlParseMemory(xmlNodeBuffer, strlen(xmlNodeBuffer));
+	root = xmlDocGetRootElement(doc);
+	xmlnode = xmlCopyNode(root, 1);
+
 	data = lasso_dst_data_new();
-	data->any = g_list_append(data->any, requested_data);
+	data->any = g_list_append(data->any, xmlnode);
 
 	LASSO_DST_QUERY_RESPONSE(profile->response)->Data = \
 		g_list_append(LASSO_DST_QUERY_RESPONSE(profile->response)->Data, data);
@@ -137,7 +144,6 @@ lasso_profile_service_init_query(LassoProfileService *service,
 				 LassoDiscoDescription *description,
 				 const char *select)
 {
-	GList *l_desc;
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
 
@@ -179,8 +185,6 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service,
 					 const char *modify_soap_msg)
 {
 	LassoDstModify *modify;
-	LassoDstModification *modification;
-	LassoDstModifyResponse *modification_response;
 	LassoWsfProfile *profile;
 	LassoUtilityStatus *status;
 
@@ -212,8 +216,6 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 					const char *query_soap_msg)
 {
 	LassoDstQuery *query;
-	LassoDstQueryItem *query_item;
-	LassoDstQueryResponse *query_response;
 	LassoWsfProfile *profile;
 	LassoUtilityStatus *status;
 
@@ -243,7 +245,6 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 						 const char *query_response_soap_msg)
 {
 	LassoDstQueryResponse *query_response;
-	GList *Data;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
 	g_return_val_if_fail(query_response_soap_msg != NULL, -1);
@@ -263,7 +264,6 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 						  const char *modify_response_soap_msg)
 {
 	LassoDstModifyResponse *modify_response;
-	GList *Data;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
 	g_return_val_if_fail(modify_response_soap_msg != NULL, -1);
@@ -280,8 +280,6 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
-
-static LassoProfileServiceClass *parent_class = NULL;
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

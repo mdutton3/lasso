@@ -71,6 +71,7 @@ liblasso_xml_la_SOURCES = \
 	saml_attribute.c \
 	saml_attribute_designator.c \
 	saml_attribute_statement.c \
+	saml_attribute_value.c \
 	saml_audience_restriction_condition.c \
 	saml_authentication_statement.c \
 	saml_authority_binding.c \
@@ -154,6 +155,7 @@ liblassoinclude_HEADERS = \
 	saml_attribute.h \
 	saml_attribute_designator.h \
 	saml_attribute_statement.h \
+	saml_attribute_value.h \
 	saml_audience_restriction_condition.h \
 	saml_authentication_statement.h \
 	saml_authority_binding.h \

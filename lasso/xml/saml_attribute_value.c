@@ -1,11 +1,12 @@
-/* $Id$ 
+/* $Id$
  *
- * Lasso - A free implementation of the Liberty Alliance specifications.
+ * Lasso - A free implementation of the Samlerty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
- * Authors: See AUTHORS file in top-level directory.
+ * Authors: Nicolas Clapies <nclapies@entrouvert.com>
+ *          Valery Febvre <vfebvre@easter-eggs.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/dst_data.h>
+#include <lasso/xml/saml_attribute_value.h>
 
 /*
- * Schema fragments (liberty-idwsf-dst-v1.0.xsd):
+ * The schema fragment (oasis-sstc-saml-schema-assertion-1.1.xsd):
  * 
- * <xs:element name="Data" minOccurs="0" maxOccurs="unbounded">
- *   <xs:complexType>
- *     <xs:sequence>
- *       <xs:any minOccurs="0" maxOccurs="unbounded"/>
- *     </xs:sequence>
- *     <xs:attribute name="id" type="xs:ID"/>
- *     <xs:attribute name="itemIDRef" type="IDReferenceType"/>
- *   </xs:complexType>
- * </xs:element>
- *
- * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
- *
- * <xs:simpleType name="IDReferenceType">
- *   <xs:annotation>
- *     <xs:documentation> This type can be used when referring to elements that are
- *       identified using an IDType </xs:documentation>
- *     </xs:annotation>
- *   <xs:restriction base="xs:string"/>
- * </xs:simpleType>
  */
 
 /*****************************************************************************/
@@ -53,67 +35,58 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_XMLNODES, G_STRUCT_OFFSET(LassoDstData, any) },
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, id) },
-	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, itemIDRef) },
-	{ NULL, 0, 0}
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSamlAttributeValue, any) },
+	{ NULL, 0, 0 }
 };
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-instance_init(LassoDstData *node)
+instance_init(LassoSamlAttributeValue *node)
 {
 	node->any = NULL;
-	node->id = NULL;
-	node->itemIDRef = NULL;
 }
 
 static void
-class_init(LassoDstDataClass *klass)
+class_init(LassoSamlAttributeValueClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "Data");
-	/* no namespace */
+	lasso_node_class_set_nodename(nclass, "AttributeValue");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_dst_data_get_type()
+lasso_saml_attribute_value_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDstDataClass),
+			sizeof (LassoSamlAttributeValueClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDstData),
+			sizeof(LassoSamlAttributeValue),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDstData", &this_info, 0);
+						   "LassoSamlAttributeValue",
+						   &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoDstData*
-lasso_dst_data_new()
+LassoSamlAttributeValue*
+lasso_saml_attribute_value_new()
 {
-	LassoDstData *data;
-
-	data = g_object_new(LASSO_TYPE_DST_DATA, NULL);
-
-	return data;
+	return g_object_new(LASSO_TYPE_SAML_ATTRIBUTE_VALUE, NULL);
 }
-
