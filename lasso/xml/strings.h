@@ -32,7 +32,7 @@
 
 /* prefix & href */
 #define lassoLassoHRef	 "http://www.entrouvert.org/namespaces/lasso/0.0"
-#define lassoLassoPrefix	 "lasso"
+#define lassoLassoPrefix "lasso"
 
 /*****************************************************************************/
 /* Liberty Alliance                                                          */
@@ -94,9 +94,12 @@
 #define lassoLibNameIdentifierFormatEntityID	 "urn:liberty:iff:nameid:entityID"
 
 /* Consent */
-#define lassoLibConsentObtained	 "urn:liberty:consent:obtained"
-#define lassoLibConsentUnavailable	 "urn:liberty:consent:unavailable"
-#define lassoLibConsentInapplicable	 "urn:liberty:consent:inapplicable"
+#define lassoLibConsentObtained	               "urn:liberty:consent:obtained"
+#define lassoLibConsentObtainedPrior           "urn:liberty:consent:obtained:prior"
+#define lassoLibConsentObtainedCurrentImplicit "urn:liberty:consent:obtained:current:implicit"
+#define lassoLibConsentObtainedCurrentExplicit "urn:liberty:consent:obtained:current:explicit"
+#define lassoLibConsentUnavailable	       "urn:liberty:consent:unavailable"
+#define lassoLibConsentInapplicable	       "urn:liberty:consent:inapplicable"
 
 /*****************************************************************************/
 /* METADATA                                                                  */
@@ -112,7 +115,7 @@
 
 /* prefix & href */
 #define lassoSamlAssertionHRef	 "urn:oasis:names:tc:SAML:1.0:assertion"
-#define lassoSamlAssertionPrefix	 "saml"
+#define lassoSamlAssertionPrefix "saml"
 #define lassoSamlProtocolHRef	 "urn:oasis:names:tc:SAML:1.0:protocol"
 #define lassoSamlProtocolPrefix	 "samlp"
 
