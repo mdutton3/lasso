@@ -28,7 +28,6 @@
 struct _LassoNodePrivate
 {
   gboolean   dispose_has_run;
-  gchar     *type_name;
   xmlNodePtr node;
 };
 
@@ -839,7 +838,6 @@ lasso_node_impl_set_name(LassoNode     *node,
   g_return_if_fail (name != NULL);
 
   xmlNodeSetName(node->private->node, name);
-  node->private->type_name = xmlStrdup(name);
 }
 
 static void
@@ -905,7 +903,6 @@ lasso_node_instance_init(LassoNode *instance)
 
   node->private = g_new (LassoNodePrivate, 1);
   node->private->dispose_has_run = FALSE;
-  node->private->type_name = NULL;
   node->private->node = xmlNewNode(NULL, "no-name-set");
 }
 
@@ -921,14 +918,13 @@ lasso_node_dispose(LassoNode *node)
 
   /* unref reference counted objects */
   /* we don't have any here */
-  g_print("%s 0x%x disposed ...\n", node->private->type_name, node);
+  g_print("%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
 }
 
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  g_print("%s 0x%x finalized ...\n", node->private->type_name, node);
-  g_free (node->private->type_name);
+  g_print("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   xmlFreeNode(node->private->node);
   g_free (node->private);
 }
