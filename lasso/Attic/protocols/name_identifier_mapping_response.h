@@ -58,14 +58,14 @@ LASSO_EXPORT GType      lasso_name_identifier_mapping_response_get_type         
 LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new                    (const xmlChar       *providerID,
 										       const xmlChar       *statusCodeValue,
 										       LassoNode           *request,
-										       xmlChar             *content,
-										       xmlChar             *qualifier,
-										       xmlChar             *format,
 										       lassoSignatureType   sign_type,
 										       lassoSignatureMethod sign_method);
 
 LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_export        (gchar               *buffer,
 										       lassoNodeExportType  export_type);
+
+LASSO_EXPORT gint       lasso_name_identifier_mapping_response_set_status_code_value  (LassoNameIdentifierMappingResponse *response,
+										       xmlChar                            *statusCodeValue);
 
 #ifdef __cplusplus
 }

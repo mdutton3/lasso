@@ -29,151 +29,36 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-/*****************************************************************************/
-/* instance and class init functions                                         */
-/*****************************************************************************/
-
-static void
-lasso_name_identifier_mapping_response_instance_init(LassoNameIdentifierMappingResponse *response)
+gint
+lasso_name_identifier_mapping_response_set_status_code_value(LassoNameIdentifierMappingResponse *response,
+							     xmlChar                            *statusCodeValue)
 {
-}
+  LassoNode *status, *status_code;
 
-static void
-lasso_name_identifier_mapping_response_class_init(LassoNameIdentifierMappingResponseClass *class)
-{
-}
+  g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING_RESPONSE(response), -1);
 
-GType lasso_name_identifier_mapping_response_get_type() {
-  static GType this_type = 0;
+  status = lasso_samlp_status_new();
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoNameIdentifierMappingResponseClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_name_identifier_mapping_response_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoNameIdentifierMappingResponse),
-      0,
-      (GInstanceInitFunc) lasso_name_identifier_mapping_response_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE,
-				       "LassoNameIdentifierMappingResponse",
-				       &this_info, 0);
-  }
-  return this_type;
-}
-
-LassoNode*
-lasso_name_identifier_mapping_response_new(const xmlChar       *providerID,
-					   const xmlChar       *statusCodeValue,
-					   LassoNode           *request,
-					   xmlChar             *content,
-					   xmlChar             *nameQualifier,
-					   xmlChar             *format,
-					   lassoSignatureType   sign_type,
-					   lassoSignatureMethod sign_method)
-{
-  /* FIXME : change request type */
-  LassoNode *response, *ss, *ssc;
-  xmlChar *inResponseTo, *request_providerID;
-  xmlChar *id, *time;
-
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
-  
-  /* Set ONLY required elements/attributes */
-  /* ResponseID */
-  id = lasso_build_unique_id(32);
-  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       id);
-  xmlFree(id);
-  /* MajorVersion */
-  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lassoLibMajorVersion);
-  /* MinorVersion */
-  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lassoLibMinorVersion);
-  /* IssueInstant */
-  time = lasso_get_current_time();
-  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 time);
-  xmlFree(time);
-  /* ProviderID */
-  lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
-							    providerID);
-
-  inResponseTo = lasso_node_get_attr_value(request, "RequestID", NULL);
-  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 inResponseTo);
-  xmlFree(inResponseTo);
-
-  request_providerID = lasso_node_get_child_content(request, "ProviderID", NULL, NULL);
-  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      request_providerID);
-  xmlFree(request_providerID);
-
-  ss = lasso_samlp_status_new();
-  ssc = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+  status_code = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
 				    statusCodeValue);
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
-				    LASSO_SAMLP_STATUS_CODE(ssc));
+
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
+				    LASSO_SAMLP_STATUS_CODE(status_code));
 
   lasso_lib_name_identifier_mapping_response_set_status(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
-							LASSO_SAMLP_STATUS(ss));
-  lasso_node_destroy(ssc);
-  lasso_node_destroy(ss);
+							LASSO_SAMLP_STATUS(status));
+  lasso_node_destroy(status_code);
+  lasso_node_destroy(status);
 
-  return response;
+  return 0;
 }
 
-LassoNode *
-lasso_name_identifier_mapping_response_new_from_query(const gchar *query)
-{
-  LassoNode *response;
-  GData *gd;
-  
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
 
-  gd = lasso_query_to_dict(query);
-  
-  /* ResponseID */
-  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
-  
-  /* MajorVersion */
-  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
-  
-  /* MinorVersion */
-  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
-  
-  /* IssueInstant */
-  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0));
-  
-  /* InResponseTo */
-  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
-  
-  /* Recipient */
-  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
-  
-  /* ProviderID */
-  lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
-							  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
-
-
-  g_datalist_clear(&gd);
-
-  return response;
-}
-
-LassoNode *
+static LassoNode *
 lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
 {
   LassoNode *response;
@@ -219,6 +104,105 @@ lasso_name_identifier_mapping_response_new_from_xml(gchar *buffer)
   return response;
 }
 
+/*****************************************************************************/
+/* instance and class init functions                                         */
+/*****************************************************************************/
+
+static void
+lasso_name_identifier_mapping_response_instance_init(LassoNameIdentifierMappingResponse *response)
+{
+}
+
+static void
+lasso_name_identifier_mapping_response_class_init(LassoNameIdentifierMappingResponseClass *class)
+{
+}
+
+GType lasso_name_identifier_mapping_response_get_type() {
+  static GType this_type = 0;
+
+  if (!this_type) {
+    static const GTypeInfo this_info = {
+      sizeof (LassoNameIdentifierMappingResponseClass),
+      NULL,
+      NULL,
+      (GClassInitFunc) lasso_name_identifier_mapping_response_class_init,
+      NULL,
+      NULL,
+      sizeof(LassoNameIdentifierMappingResponse),
+      0,
+      (GInstanceInitFunc) lasso_name_identifier_mapping_response_instance_init,
+    };
+    
+    this_type = g_type_register_static(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE,
+				       "LassoNameIdentifierMappingResponse",
+				       &this_info, 0);
+  }
+  return this_type;
+}
+
+LassoNode*
+lasso_name_identifier_mapping_response_new(const xmlChar       *providerID,
+					   const xmlChar       *statusCodeValue,
+					   LassoNode           *request,
+					   lassoSignatureType   sign_type,
+					   lassoSignatureMethod sign_method)
+{
+  LassoNode *response, *ss, *ssc;
+  xmlChar *inResponseTo, *request_providerID;
+  xmlChar *id, *time;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+  
+  /* ResponseID */
+  id = lasso_build_unique_id(32);
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					       id);
+  xmlFree(id);
+  /* MajorVersion */
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lassoLibMajorVersion);
+  /* MinorVersion */
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lassoLibMinorVersion);
+  /* IssueInstant */
+  time = lasso_get_current_time();
+  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 time);
+  xmlFree(time);
+
+  /* ProviderID */
+  lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
+							    providerID);
+
+  /* InResponseTo */
+  inResponseTo = lasso_node_get_attr_value(request, "RequestID", NULL);
+  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 inResponseTo);
+  xmlFree(inResponseTo);
+
+  /* Recipient */
+  request_providerID = lasso_node_get_child_content(request, "ProviderID", NULL, NULL);
+  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					      request_providerID);
+  xmlFree(request_providerID);
+
+  /* Status / StatusCode / Value */
+  ss = lasso_samlp_status_new();
+  ssc = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+				    statusCodeValue);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
+				    LASSO_SAMLP_STATUS_CODE(ssc));
+
+  lasso_lib_name_identifier_mapping_response_set_status(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
+							LASSO_SAMLP_STATUS(ss));
+  lasso_node_destroy(ssc);
+  lasso_node_destroy(ss);
+
+  return response;
+}
+
 LassoNode*
 lasso_name_identifier_mapping_response_new_from_export(gchar               *buffer,
 						       lassoNodeExportType  export_type)
@@ -228,9 +212,6 @@ lasso_name_identifier_mapping_response_new_from_export(gchar               *buff
   g_return_val_if_fail(buffer != NULL, NULL);
 
   switch(export_type){
-  case lassoNodeExportTypeQuery:
-    response = lasso_name_identifier_mapping_response_new_from_query(buffer);
-    break;
   case lassoNodeExportTypeSoap:
     response = lasso_name_identifier_mapping_response_new_from_soap(buffer);
     break;
