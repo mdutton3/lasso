@@ -129,7 +129,7 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
   }
   ctx->private->dispose_has_run = TRUE;
 
-  debug(INFO, "ProfileContext object 0x%x disposed ...\n", ctx);
+  debug(DEBUG, "ProfileContext object 0x%x disposed ...\n", ctx);
 
   /* unref reference counted objects */
   lasso_node_destroy(ctx->request);
@@ -142,7 +142,7 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
 static void
 lasso_profile_context_finalize(LassoProfileContext *ctx)
 {
-  debug(INFO, "ProfileContext object 0x%x finalized ...\n", ctx);
+  debug(DEBUG, "ProfileContext object 0x%x finalized ...\n", ctx);
 
   g_free(ctx->remote_providerID);
   g_free(ctx->msg_url);

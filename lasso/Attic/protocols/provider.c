@@ -181,7 +181,7 @@ lasso_provider_dispose(LassoProvider *provider)
   }
   provider->private->dispose_has_run = TRUE;
 
-  debug(INFO, "Provider object 0x%x disposed ...\n", provider);
+  debug(DEBUG, "Provider object 0x%x disposed ...\n", provider);
 
   /* unref reference counted objects */
   lasso_node_destroy(provider->metadata);
@@ -192,7 +192,7 @@ lasso_provider_dispose(LassoProvider *provider)
 static void
 lasso_provider_finalize(LassoProvider *provider)
 {
-  debug(INFO, "Provider object 0x%x finalized ...\n", provider);
+  debug(DEBUG, "Provider object 0x%x finalized ...\n", provider);
 
   g_free(provider->public_key);
   g_free(provider->ca_certificate);

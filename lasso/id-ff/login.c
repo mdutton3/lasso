@@ -693,7 +693,7 @@ lasso_login_process_response_msg(LassoLogin  *login,
 static void
 lasso_login_finalize(LassoLogin *login)
 {  
-  debug(INFO, "Login object 0x%x finalized ...\n", login);
+  debug(DEBUG, "Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
   g_free(login->nameIdentifier);

@@ -161,7 +161,7 @@ lasso_server_dispose(LassoServer *server)
 /*   } */
 /*   server->private->dispose_has_run = TRUE; */
 
-  debug(INFO, "Server object 0x%x finalized ...\n", server);
+  debug(DEBUG, "Server object 0x%x finalized ...\n", server);
 
   /* TODO destroy the providers */
 
@@ -171,7 +171,7 @@ lasso_server_dispose(LassoServer *server)
 static void
 lasso_server_finalize(LassoServer *server)
 {
-  debug(INFO, "Server object 0x%x finalized ...\n", server);
+  debug(DEBUG, "Server object 0x%x finalized ...\n", server);
 
   g_free(server->private_key);
   g_free(server->certificate);
