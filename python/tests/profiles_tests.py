@@ -113,7 +113,49 @@ class LoginTestCase(unittest.TestCase):
         except lasso.Error, error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
+    def test03(self):
+        """Conversion of a lib:AuthnRequest into a query and back."""
 
+        sp = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        sp.addProvider(
+            lasso.PROVIDER_ROLE_IDP,
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        spLogin = lasso.Login(sp)
+        spLogin.initAuthnRequest()
+        requestAuthnContext = lasso.LibRequestAuthnContext()
+        authnContextClassRefsList = lasso.StringList()
+        authnContextClassRefsList.append(
+            lasso.LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD)
+        requestAuthnContext.authnContextClassRef = authnContextClassRefsList
+        spLogin.request.requestAuthnContext = requestAuthnContext
+        spLogin.request.protocolProfile = lasso.LIB_PROTOCOL_PROFILE_BRWS_ART
+        spLogin.buildAuthnRequestMsg()
+        authnRequestUrl = spLogin.msgUrl
+        authnRequestQuery = spLogin.msgUrl[spLogin.msgUrl.index('?') + 1:]
+        idp = lasso.Server(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        idp.addProvider(
+            lasso.PROVIDER_ROLE_SP,
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/public-key.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        idpLogin = lasso.Login(idp)
+        idpLogin.processAuthnRequestMsg(authnRequestQuery)
+        self.failUnless(idpLogin.request.requestAuthnContext)
+        authnContextClassRefsList = idpLogin.request.requestAuthnContext.authnContextClassRef
+        self.failUnlessEqual(len(authnContextClassRefsList), 1)
+        self.failUnlessEqual(authnContextClassRefsList[0],
+                             lasso.LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD)
+        
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):

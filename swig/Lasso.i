@@ -901,7 +901,7 @@ typedef enum {
 #define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD \
 	"http://www.projectliberty.org/schemas/authctx/classes/Password"
 #define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD_PROTECTED_TRANSPORT \
-	"http: //www.projectliberty.org/schemas/authctx/classes/PasswordProtectedTransport"
+	"http://www.projectliberty.org/schemas/authctx/classes/PasswordProtectedTransport"
 #define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PREVIOUS_SESSION \
 	"http://www.projectliberty.org/schemas/authctx/classes/PreviousSession"
 #define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_SMARTCARD \
