@@ -72,7 +72,7 @@ struct _LassoLecpClass {
 
 LASSO_EXPORT GType      lasso_lecp_get_type                            (void);
 
-LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (void);
+LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (LassoServer *server);
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
 
@@ -85,11 +85,9 @@ LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLec
 LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_init_authn_request_envelope         (LassoLecp         *lecp,
-									LassoServer       *server,
 									LassoAuthnRequest *authnRequest);
 
 LASSO_EXPORT gint       lasso_lecp_init_authn_response_envelope        (LassoLecp          *lecp,
-									LassoServer        *server,
 									LassoAuthnRequest  *authnRequest,
 									LassoAuthnResponse *authnResponse);
 

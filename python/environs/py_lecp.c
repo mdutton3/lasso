@@ -69,14 +69,15 @@ PyObject *lecp_getattr(PyObject *self, PyObject *args) {
 
 PyObject *lecp_new(PyObject *self, PyObject *args) {
   LassoLecp *lecp;
+  PyObject  *server_obj;
 
-  if (CheckArgs(args, ":lecp_new")) {
-    if(!PyArg_ParseTuple(args, (char *) ":lecp_new"))
+  if (CheckArgs(args, "o:lecp_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "|O:lecp_new", &server_obj))
       return NULL;
   }
   else return NULL;
 
-  lecp = lasso_lecp_new();
+  lecp = lasso_lecp_new(LassoServer_get(server_obj));
 
   return (LassoLecp_wrap(lecp));
 }
@@ -163,20 +164,18 @@ PyObject *lecp_destroy(PyObject *self, PyObject *args){
 
 PyObject *lecp_init_authn_request_envelope(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  PyObject *server_obj;
   PyObject *authnRequest_obj;
 
   gint      codeError = 0;
 
-  if (CheckArgs(args, "OOO:lecp_init_authn_request_envelope")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOO:lecp_init_authn_request_envelope",
-			 &lecp_obj, &server_obj, &authnRequest_obj))
+  if (CheckArgs(args, "OO:lecp_init_authn_request_envelope")) {
+    if(!PyArg_ParseTuple(args, (char *) "OO:lecp_init_authn_request_envelope",
+			 &lecp_obj, &authnRequest_obj))
       return NULL;
   }
   else return NULL;
 
   codeError = lasso_lecp_init_authn_request_envelope(LassoLecp_get(lecp_obj),
-						     LassoServer_get(server_obj),
 						     LassoAuthnRequest_get(authnRequest_obj));
 
   return(int_wrap(codeError));
@@ -184,21 +183,19 @@ PyObject *lecp_init_authn_request_envelope(PyObject *self, PyObject *args){
 
 PyObject *lecp_init_authn_response_envelope(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  PyObject *server_obj;
   PyObject *authnRequest_obj;
   PyObject *authnResponse_obj;
 
   gint      codeError = 0;
 
-  if (CheckArgs(args, "OOOO:lecp_init_authn_response_envelope")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOOO:lecp_init_authn_response_envelope",
-			 &lecp_obj, &server_obj, &authnRequest_obj, &authnResponse_obj))
+  if (CheckArgs(args, "OOO:lecp_init_authn_response_envelope")) {
+    if(!PyArg_ParseTuple(args, (char *) "OOO:lecp_init_authn_response_envelope",
+			 &lecp_obj, &authnRequest_obj, &authnResponse_obj))
       return NULL;
   }
   else return NULL;
 
   codeError = lasso_lecp_init_authn_response_envelope(LassoLecp_get(lecp_obj),
-						      LassoServer_get(server_obj),
 						      LassoAuthnRequest_get(authnRequest_obj),
 						      LassoAuthnResponse_get(authnResponse_obj));
 

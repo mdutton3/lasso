@@ -97,19 +97,24 @@ lasso_lecp_destroy(LassoLecp *lecp)
 
 gint
 lasso_lecp_init_authn_request_envelope(LassoLecp         *lecp,
-				       LassoServer       *server,
 				       LassoAuthnRequest *authnRequest)
 {
   gchar *assertionConsumerServiceURL;
 
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+  g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST(authnRequest), -1);
 
-  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(LASSO_PROVIDER(server),
+  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(LASSO_PROVIDER(lecp->server),
 									       lassoProviderTypeSp,
 									       NULL);
 
+  if(assertionConsumerServiceURL==NULL){
+    message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
+    return(-1);
+  }
+
   lecp->request = lasso_authn_request_envelope_new(authnRequest,
-						   server->providerID,
+						   lecp->server->providerID,
 						   assertionConsumerServiceURL);
   if(lecp->request==NULL){
     message(G_LOG_LEVEL_CRITICAL, "Error while building request\n");
@@ -123,7 +128,6 @@ lasso_lecp_init_authn_request_envelope(LassoLecp         *lecp,
 
 gint
 lasso_lecp_init_authn_response_envelope(LassoLecp          *lecp,
-					LassoServer        *server,
 					LassoAuthnRequest  *authnRequest,
 					LassoAuthnResponse *authnResponse)
 {
@@ -133,7 +137,6 @@ lasso_lecp_init_authn_response_envelope(LassoLecp          *lecp,
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
   g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST(authnRequest), -1);
 
-  lecp->server = lasso_server_copy(server);
   providerID = lasso_node_get_child_content(LASSO_NODE(authnRequest), "ProviderID",
 					    NULL, NULL);
   if(providerID == NULL) {
@@ -187,14 +190,11 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
   g_return_val_if_fail(response_msg!=NULL, -2);
 
-  printf("------------------- process authn response : %s\n", response_msg);
   lecp->response = lasso_authn_response_envelope_new_from_export(response_msg, lassoNodeExportTypeSoap);
   if (lecp->response == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the authentication response envelope\n");
     return(-3);
   }
-
-  printf("apres new_from_dump : %s\n", lasso_node_export(lecp->response));
 
   lecp->authnResponse = lasso_authn_response_envelope_get_authnResponse(LASSO_AUTHN_RESPONSE_ENVELOPE(lecp->response));
   if (lecp->authnResponse == NULL) {
@@ -231,6 +231,7 @@ lasso_lecp_finalize(LassoLecp *lecp)
 static void
 lasso_lecp_instance_init(LassoLecp *lecp)
 {
+  lecp->server                      = NULL;
   lecp->request                     = NULL;
   lecp->authnRequest                = NULL;
   lecp->response                    = NULL;
@@ -272,11 +273,16 @@ GType lasso_lecp_get_type() {
 }
 
 LassoLecp *
-lasso_lecp_new()
+lasso_lecp_new(LassoServer *server)
 {
   LassoLecp *lecp;
 
   lecp = g_object_new(LASSO_TYPE_LECP, NULL);
+
+  if(LASSO_IS_SERVER(server)){
+    debug("Add server to lecp object\n");
+    lecp->server = lasso_server_copy(server);
+  }
 
   return(lecp);
 }
