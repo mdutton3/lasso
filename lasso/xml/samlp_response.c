@@ -145,7 +145,6 @@ lasso_samlp_response_new()
 	response->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
 	response->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
 	response->IssueInstant = lasso_get_current_time();
-	/* XXX: shouldn't ->InResponseTo be set ? */
 
 	/* Add Status */
 	status = LASSO_SAMLP_STATUS(lasso_samlp_status_new());
