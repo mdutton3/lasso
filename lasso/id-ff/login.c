@@ -489,7 +489,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   case lassoHttpMethodRedirect:
     if (relayState == NULL) {
       LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s", url, b64_samlArt);
-    else {
+    } else {
       LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s&RelayState=%s",
                       url, b64_samlArt, relayState);
     }
