@@ -73,9 +73,9 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		/* XXX had call to lasso_samlp_request_abstract_sign_signature_tmpl */
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
+		profile->msg_body = lasso_node_export_to_soap(profile->request,
+				profile->server->private_key, profile->server->certificate);
 	}
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the query message and build the
