@@ -25,11 +25,7 @@
  */
 
 
-#ifdef SWIGPERL5
 %module lasso
-#else
-%module Lasso
-#endif
 
 
 %include exception.i       
@@ -649,11 +645,6 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(VERSION_MINOR) LASSO_VERSION_MINOR;
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
 #endif
-/* Useless because some lines before, we explicitly tell to include lasso_config
- * in the generated wrap C source code.
- * #define LASSO_VERSION_MAJOR 0
-#define LASSO_VERSION_MINOR 4
-#define LASSO_VERSION_SUBMINOR 0*/
 
 
 /* HttpMethod */
