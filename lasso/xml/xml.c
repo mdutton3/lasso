@@ -652,6 +652,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
     /* try to sign query */
     doc = lasso_str_sign(query->str, sign_method, private_key_file);
     if (doc != NULL) {
+      /* get signature (base64 encoded) */
       str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
       str2 = lasso_str_escape(str1);
       xmlFree(str1);
@@ -1095,16 +1096,16 @@ lasso_node_impl_add_child(LassoNode *node,
   g_return_if_fail (LASSO_IS_NODE(child));
 
   /* if child is not unbounded, we search it */
-  if (!unbounded) {
-    if (node->private->node->ns != NULL) {
-      href = node->private->node->ns->href;
+  if (unbounded == FALSE) {
+    if (child->private->node->ns != NULL) {
+      href = child->private->node->ns->href;
     }
     old_child = xmlSecFindNode(node->private->node,
 			       child->private->node->name,
 			       href);
   }
 
-  if (!unbounded && old_child != NULL) {
+  if (unbounded == FALSE && old_child != NULL) {
     /* child replace old child */
     xmlReplaceNode(old_child, child->private->node);
   }
