@@ -763,7 +763,7 @@ gchar* LassoNode_dump(LassoNode *self) {
 
 
 #ifndef SWIGPHP4
-%rename(Assertion) LassoLibAssertion;
+%rename(LibAssertion) LassoLibAssertion;
 #endif
 typedef struct {
 	%extend {
@@ -806,7 +806,7 @@ gchar* LassoLibAssertion_dump(LassoLibAssertion *self) {
 
 
 #ifndef SWIGPHP4
-%rename(AuthnRequest) LassoLibAuthnRequest;
+%rename(LibAuthnRequest) LassoLibAuthnRequest;
 #endif
 %nodefault LassoLibAuthnRequest;
 typedef struct {
@@ -993,7 +993,7 @@ void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, char *rel
 
 
 #ifndef SWIGPHP4
-%rename(LogoutResponse) LassoLibLogoutResponse;
+%rename(LibLogoutResponse) LassoLibLogoutResponse;
 #endif
 %nodefault LassoLibLogoutResponse;
 typedef struct {
@@ -1082,7 +1082,7 @@ void LassoLibRegisterNameIdentifierRequest_relayState_set(
 
 
 #ifndef SWIGPHP4
-%rename(RegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
+%rename(LibRegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
 #endif
 %nodefault LassoLibRegisterNameIdentifierResponse;
 typedef struct {

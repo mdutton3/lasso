@@ -27,17 +27,15 @@ libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 javashare_DATA = lasso.jar
 
 SWIG_OUTPUTS = lasso_wrap.c \
-	AuthnRequest.java   AuthnResponse.java   Request.java  \
-	Response.java       Server.java          Identity.java \
-	Session.java        Defederation.java    Login.java    \
-	Logout.java         Lecp.java            lassoJNI.java \
-	lasso.java          lassoConstants.java  LogoutRequest.java \
-	FederationTerminationNotification.java   LogoutResponse.java \
-	Assertion.java      ProviderIds.java     Provider.java \
-	Providers.java      NameIdentifierMapping.java NameRegistration.java \
-	Node.java           RegisterNameIdentifierRequest.java \
-	RegisterNameIdentifierResponse.java      SWIGTYPE_p_void.java
-
+	Defederation.java Identity.java lassoConstants.java lasso.java \
+	lassoJNI.java Lecp.java LibAssertion.java LibAuthnRequest.java \
+	LibAuthnResponse.java LibFederationTerminationNotification.java \
+	LibLogoutRequest.java LibLogoutResponse.java \
+	LibRegisterNameIdentifierRequest.java \
+	LibRegisterNameIdentifierResponse.java Login.java Logout.java \
+	NameIdentifierMapping.java NameRegistration.java Node.java \
+	ProviderIds.java Provider.java SamlpRequest.java \
+	SamlpResponse.java Server.java Session.java SWIGTYPE_p_void.java
 
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java

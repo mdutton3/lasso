@@ -79,11 +79,12 @@ liblasso_xml_la_SOURCES = \
 	samlp_response_abstract.c \
 	samlp_status.c \
 	samlp_status_code.c \
-	utility_status.c
+	utility_status.c \
+	tools.h \
+	internals.h
 
 liblassoinclude_HEADERS = \
 	strings.h \
-	tools.h \
 	errors.h \
 	xml.h	\
 	disco_credentials.h \

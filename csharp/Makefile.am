@@ -39,26 +39,16 @@ clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
-	lassoPINVOKE.cs        lasso.cs          Server.cs  \
-	Defederation.cs        Request.cs        Session.cs \
-	Identity.cs            Response.cs       AuthnRequest.cs \
-	Lecp.cs                AuthnResponse.cs  Login.cs \
-	Logout.cs              LogoutResponse.cs LogoutRequest.cs \
-	FederationTerminationNotification.cs     Assertion.cs \
-	NameIdentifierMapping.cs NameRegistration.cs Node.cs \
-	Provider.cs            ProviderIds.cs    Providers.cs \
-	RegisterNameIdentifierRequest.cs \
-	RegisterNameIdentifierResponse.cs \
-	SWIGTYPE_p_void.cs \
-	lassoHttpMethod.cs \
-	lassoLoginProtocolProfile.cs \
-	lassoMessageType.cs \
-	lassoNameIdentifierFormatType.cs \
-	lassoProviderRole.cs \
-	lassoRequestType.cs \
-	lassoSignatureMethod.cs
-
-
+	Defederation.cs Identity.cs lasso.cs lassoHttpMethod.cs \
+	lassoLoginProtocolProfile.cs lassoMessageType.cs lassoPINVOKE.cs \
+	LassoProviderRole.cs lassoRequestType.cs lassoSignatureMethod.cs \
+	Lecp.cs LibAssertion.cs LibAuthnRequest.cs LibAuthnResponse.cs \
+	LibFederationTerminationNotification.cs LibLogoutRequest.cs \
+	LibLogoutResponse.cs LibRegisterNameIdentifierRequest.cs \
+	LibRegisterNameIdentifierResponse.cs Login.cs Logout.cs \
+	NameIdentifierMapping.cs NameRegistration.cs Node.cs Provider.cs \
+	ProviderIds.cs SamlpRequest.cs SamlpResponse.cs Server.cs \
+	Session.cs SWIGTYPE_p_void.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)

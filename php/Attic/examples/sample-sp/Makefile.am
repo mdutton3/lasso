@@ -1,16 +1,17 @@
 EXTRA_DIST = \
 	admin_user.php \
 	assertionConsumer.php \
-	idp_certificate.pem \
-	idp_metadata.xml \
-	idp_public-key.pem \
+	cancel_federation.php \
 	index.php \
 	login.php \
 	logout.php \
+	metadata_idp1.xml \
+	metadata_sp1.xml \
+	misc.php \
 	register.php \
+	session.php \
 	setup.php \
-	sp_certificate.pem \
-	sp_metadata.xml \
-	sp_private-key-raw.pem \
-	sp_public-key.pem \
+	soapEndpoint.php \
+	view_session.php \
 	README
+

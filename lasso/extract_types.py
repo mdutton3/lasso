@@ -2,6 +2,12 @@
 
 import glob
 import re
+import sys
+
+if len(sys.argv) == 2:
+    srcdir = sys.argv[1]
+else:
+    srcdir = '.'
 
 fd = open('types.c', 'w')
 
@@ -10,7 +16,7 @@ print >> fd, ""
 print >> fd, "typedef GType (*type_function) (void);"
 print >> fd, ""
 
-for header_file in glob.glob('*/*.h'):
+for header_file in glob.glob('%s/*/*.h' % srcdir):
     try:
         type = re.findall('lasso_.*get_type', open(header_file).read())[0]
     except IndexError:
@@ -19,7 +25,7 @@ for header_file in glob.glob('*/*.h'):
 
 print >> fd, ""
 print >> fd, "type_function functions[] = {"
-for header_file in glob.glob('*/*.h'):
+for header_file in glob.glob('%s/*/*.h' % srcdir):
     try:
         type = re.findall('lasso_.*get_type', open(header_file).read())[0]
     except IndexError:
