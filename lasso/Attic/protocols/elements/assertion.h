@@ -53,6 +53,7 @@ struct _LassoAssertionClass {
 };
 
 LASSO_EXPORT GType      lasso_assertion_get_type (void);
+
 LASSO_EXPORT LassoNode* lasso_assertion_new      (const xmlChar *issuer,
 						  xmlChar       *requestID);
 
