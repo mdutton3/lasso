@@ -89,6 +89,23 @@ PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args) {
   return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
 }
 
+PyObject *authn_response_new_from_export(PyObject *self, PyObject *args) {
+  xmlChar   *buffer;
+  gint       type;
+  LassoNode *response;
+
+  if (CheckArgs(args, "Si:authn_response_new_from_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "si:authn_response_new_from_export",
+			 &buffer, &type))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_authn_response_new_from_export(buffer, type);
+
+  return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
+}
+
 PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args) {
   xmlChar       *query = NULL;
   const xmlChar *providerID = NULL;
