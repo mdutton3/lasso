@@ -55,7 +55,7 @@ LassoNode *lasso_build_full_logoutRequest(const char    *requestID,
      
      
      lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
-						 nameIdentifier);
+						 LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
 
      if(sessionIndex){
 	  lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request),

@@ -48,12 +48,15 @@ LassoNode *lasso_build_full_federationTerminationNotification(const xmlChar *req
 							     lasso_get_current_time());
 	 }
 
-	 lasso_lib_federation_termination_notification_set_providerID(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification), providerID);
+	 lasso_lib_federation_termination_notification_set_providerID(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification),
+								      providerID);
 
-	 lasso_lib_federation_termination_notification_set_nameIdentifier(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification), nameIdentifier);
+	 lasso_lib_federation_termination_notification_set_nameIdentifier(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification),
+									  LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
 
 	 if(consent){
-		  lasso_lib_federation_termination_notification_set_consent(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification), consent);
+	   lasso_lib_federation_termination_notification_set_consent(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification),
+								     consent);
 	 }
 
 	 return(notification);
