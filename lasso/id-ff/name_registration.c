@@ -597,6 +597,15 @@ lasso_name_registration_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_name_registration_new:
+ * @server: the #LassoServer
+ * 
+ * Creates a new #LassoNameRegistration.
+ * 
+ * Return value: a newly created #LassoNameRegistration object; or NULL if
+ *     an error occured
+ **/
 LassoNameRegistration *
 lasso_name_registration_new(LassoServer *server)
 {
@@ -610,6 +619,16 @@ lasso_name_registration_new(LassoServer *server)
 	return name_registration;
 }
 
+/**
+ * lasso_name_registration_new_from_dump:
+ * @server: the #LassoServer
+ * @dump: XML logout dump
+ *
+ * Restores the @dump to a new #LassoNameRegistration.
+ *
+ * Return value: a newly created #LassoNameRegistration; or NULL if an error
+ *     occured
+ **/
 LassoNameRegistration*
 lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 {
@@ -625,15 +644,14 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 
 /**
  * lasso_name_registration_dump:
- * @name_registration: the register name identifier object
+ * @name_registration: a #LassoNameRegistration
  * 
- * This method builds a dump of the register name identifier object
+ * Dumps @name_registration content to an XML string.
  * 
- * Return value: a newly allocated string or NULL
+ * Return value: the dump string.  It must be freed by the caller.
  **/
 gchar *
 lasso_name_registration_dump(LassoNameRegistration *name_registration)
 {
 	return lasso_node_dump(LASSO_NODE(name_registration), NULL, 1);
 }
-

@@ -311,6 +311,13 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *resp
 	return 0;
 }
 
+/**
+ * lasso_lecp_destroy:
+ * @lecp: a #LassoLecp
+ *
+ * Destroys a #LassoLecp object
+ * 
+ **/
 void
 lasso_lecp_destroy(LassoLecp *lecp)
 {
@@ -378,6 +385,15 @@ lasso_lecp_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lecp_new
+ * @server: the #LassoServer
+ *
+ * Creates a new #LassoLecp.
+ *
+ * Return value: a newly created #LassoLecp object; or NULL if an error
+ *     occured
+ **/
 LassoLecp*
 lasso_lecp_new(LassoServer *server)
 {
