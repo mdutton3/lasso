@@ -1,6 +1,6 @@
-================================================
-Writing a Liberty Alliance service provider in C
-================================================
+=======================================
+Writing a Liberty service provider in C
+=======================================
 
 :Author: Frederic Peters
 :Contact: fpeters@entrouvert.com
