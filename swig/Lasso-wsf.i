@@ -158,6 +158,7 @@ typedef struct {
 #define LassoDiscoCredentials_any_set(self, value) set_node_list(&(self)->any, (value))
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoCredentials lasso_disco_credentials_new
 #define delete_LassoDiscoCredentials(self) lasso_node_destroy(LASSO_NODE(self))
 
@@ -177,27 +178,40 @@ typedef struct {
 %rename(DiscoDescription) LassoDiscoDescription;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoDescription(gchar *securityMechID,
-				      gchar *wsdlURI,
-				      gchar *serviceNameRef,
-				      gchar *endpoint,
-				      gchar *soapAction);
-
-		/* Methods */
-
-	}
 } LassoDiscoDescription;
+%extend LassoDiscoDescription {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoDescription(gchar *securityMechID,
+			      gchar *wsdlURI,
+			      gchar *serviceNameRef,
+			      gchar *endpoint,
+			      gchar *soapAction);
+
+	~LassoDiscoDescription();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoDescription lasso_disco_description_new
+#define delete_LassoDiscoDescription(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoDescription_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -211,17 +225,24 @@ typedef struct {
 %rename(DiscoInsertEntry) LassoDiscoInsertEntry;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		LassoDiscoResourceOffering *resourceOffering;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoInsertEntry();
-
-		/* Methods */
-
-	}
 } LassoDiscoInsertEntry;
+%extend LassoDiscoInsertEntry {
+	/* Attributes */
+	LassoDiscoResourceOffering *resourceOffering;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoInsertEntry();
+
+	~LassoDiscoInsertEntry();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
@@ -239,7 +260,13 @@ void LassoDiscoInsertEntry_resourceOffering_set(LassoDiscoInsertEntry *self,
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoInsertEntry lasso_disco_insert_entry_new
+#define delete_LassoDiscoInsertEntry(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoInsertEntry_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -253,24 +280,31 @@ void LassoDiscoInsertEntry_resourceOffering_set(LassoDiscoInsertEntry *self,
 %rename(DiscoModify) LassoDiscoModify;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable resourceId;
-		LassoDiscoResourceID *resourceId;
-
-		%immutable insertEntry;
-		LassoDiscoInsertEntry *insertEntry; /* FIXME : should be a list LassoInsertEntry */
-
-		%immutable removeEntry;
-		LassoDiscoRemoveEntry *removeEntry; /* FIXME : should be a list LassoRemoveEntry */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoModify();
-
-		/* Methods */
-
-	}
 } LassoDiscoModify;
+%extend LassoDiscoModify {
+	/* Attributes */
+	%immutable resourceId;
+	LassoDiscoResourceID *resourceId;
+
+	%immutable insertEntry;
+	LassoDiscoInsertEntry *insertEntry; /* FIXME : should be a list LassoInsertEntry */
+
+	%immutable removeEntry;
+	LassoDiscoRemoveEntry *removeEntry; /* FIXME : should be a list LassoRemoveEntry */
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoModify();
+
+	~LassoDiscoModify();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
@@ -303,7 +337,13 @@ LassoDiscoRemoveEntry *LassoDiscoModify_removeEntry_get(LassoDiscoModify *self) 
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoModify lasso_disco_modify_new
+#define delete_LassoDiscoModify(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoModify_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -317,20 +357,27 @@ LassoDiscoRemoveEntry *LassoDiscoModify_removeEntry_get(LassoDiscoModify *self) 
 %rename(DiscoModifyResponse) LassoDiscoModifyResponse;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable status;
-		LassoUtilityStatus *status;
-
-		%immutable newEntryIds;
-		char *newEntryIds;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoModifyResponse(LassoUtilityStatus *status);
-
-		/* Methods */
-	}
 } LassoDiscoModifyResponse;
+%extend LassoDiscoModifyResponse {
+	/* Attributes */
+	%immutable status;
+	LassoUtilityStatus *status;
+
+	%immutable newEntryIds;
+	char *newEntryIds;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoModifyResponse(LassoUtilityStatus *status);
+
+	~LassoDiscoModifyResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+}
 
 %{
 
@@ -354,7 +401,13 @@ char *LassoDiscoModifyResponse_newEntryIds_get(LassoDiscoModifyResponse *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoModifyResponse lasso_disco_modify_response_new
+#define delete_LassoDiscoModifyResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoModifyResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -368,16 +421,23 @@ char *LassoDiscoModifyResponse_newEntryIds_get(LassoDiscoModifyResponse *self) {
 %rename(DiscoOptions) LassoDiscoOptions;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoOptions();
-
-		/* Methods */
-
-	}
 } LassoDiscoOptions;
+%extend LassoDiscoOptions {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoOptions();
+
+	~LassoDiscoOptions();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
@@ -385,6 +445,11 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoDiscoOptions lasso_disco_options_new
+#define delete_LassoDiscoOptions(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoOptions_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -398,23 +463,31 @@ typedef struct {
 %rename(DiscoQuery) LassoDiscoQuery;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable resourceId;
-		LassoDiscoResourceID *resourceId;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoQuery();
-
-		/* Methods */
-		LassoDiscoRequestedServiceType* addRequestedServiceType(char *serviceType);
-
-	}
 } LassoDiscoQuery;
+%extend LassoDiscoQuery {
+	/* Attributes */
+	%immutable resourceId;
+	LassoDiscoResourceID *resourceId;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoQuery();
+
+	~LassoDiscoQuery();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+	LassoDiscoRequestedServiceType* addRequestedServiceType(char *serviceType);
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* resourceId */
 #define LassoDiscoQuery_get_resourceId LassoDiscoQuery_resourceId_get
 LassoDiscoResourceID *LassoDiscoQuery_resourceId_get(LassoDiscoQuery *self) {
@@ -424,9 +497,16 @@ LassoDiscoResourceID *LassoDiscoQuery_resourceId_get(LassoDiscoQuery *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoQuery lasso_disco_query_new
+#define delete_LassoDiscoQuery(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
+
 LassoDiscoRequestedServiceType *LassoDiscoQuery_addRequestedServiceType(LassoDiscoQuery *self,
 									char *serviceType) {
 	LassoDiscoRequestedServiceType *requestedServiceType;
@@ -451,25 +531,33 @@ LassoDiscoRequestedServiceType *LassoDiscoQuery_addRequestedServiceType(LassoDis
 %rename(DiscoQueryResponse) LassoDiscoQueryResponse;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable status;
-		LassoUtilityStatus *status;
-
-		%immutable credentials;
-		LassoDiscoCredentials *credentials;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoQueryResponse(LassoUtilityStatus *status);
-
-		/* Methods */
-
-	}
 } LassoDiscoQueryResponse;
+%extend LassoDiscoQueryResponse {
+	/* Attributes */
+	%immutable status;
+	LassoUtilityStatus *status;
+
+	%immutable credentials;
+	LassoDiscoCredentials *credentials;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoQueryResponse(LassoUtilityStatus *status);
+
+	~LassoDiscoQueryResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* status */
 LassoUtilityStatus *LassoDiscoQueryResponse_status_get(LassoDiscoQueryResponse *self) {
 	if (LASSO_IS_DISCO_QUERY_RESPONSE(self) == TRUE) {
@@ -487,7 +575,13 @@ LassoDiscoCredentials *LassoDiscoQueryResponse_credentials_get(LassoDiscoQueryRe
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoQueryResponse lasso_disco_query_response_new
+#define delete_LassoDiscoQueryResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoQueryResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -499,22 +593,30 @@ LassoDiscoCredentials *LassoDiscoQueryResponse_credentials_get(LassoDiscoQueryRe
 %rename(DiscoRemoveEntry) LassoDiscoRemoveEntry;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable entryId;
-		char *entryId;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoRemoveEntry(gchar *entryId);
-
-		/* Methods */
-
-	}
 } LassoDiscoRemoveEntry;
+%extend LassoDiscoRemoveEntry {
+	/* Attributes */
+	%immutable entryId;
+	char *entryId;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoRemoveEntry(gchar *entryId);
+
+	~LassoDiscoRemoveEntry();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* entryId */
 #define LassoDiscoRemoveEntry_get_entryId LassoDiscoRemoveEntry_entryId_get
 char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
@@ -522,7 +624,13 @@ char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoRemoveEntry lasso_disco_remove_entry_new
+#define delete_LassoDiscoRemoveEntry(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoRemoveEntry_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -536,22 +644,30 @@ char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
 %rename(DiscoResourceID) LassoDiscoResourceID;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable content;
-		char *content;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoResourceID(char *content);
-
-		/* Methods */
-
-	}
 } LassoDiscoResourceID;
+%extend LassoDiscoResourceID {
+	/* Attributes */
+	%immutable content;
+	char *content;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDiscoResourceID(char *content);
+
+	~LassoDiscoResourceID();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* content */
 #define LassoDiscoResourceID_get_content LassoDiscoResourceID_content_get
 char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
@@ -559,7 +675,13 @@ char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoResourceID lasso_disco_resource_id_new
+#define delete_LassoDiscoResourceID(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoResourceID_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -573,29 +695,38 @@ char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
 %rename(DiscoResourceOffering) LassoDiscoResourceOffering;
 #endif
 typedef struct {
-
-	%extend {
-		/* Attributes */
-		%mutable resourceId;
-		LassoDiscoResourceID *resourceId;
-
-		LassoDiscoServiceInstance *serviceInstance;
-
-/* 		LassoDiscoOptions *options; */
-
-/* 		gchar *abstract; */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoResourceOffering(LassoDiscoServiceInstance *serviceInstance);
-
-		/* Methods */
-
-	}
 } LassoDiscoResourceOffering;
+%extend LassoDiscoResourceOffering {
+	/* Attributes */
+
+	%mutable resourceId;
+	LassoDiscoResourceID *resourceId;
+
+	LassoDiscoServiceInstance *serviceInstance;
+
+	/* LassoDiscoOptions *options; */
+
+	/* gchar *abstract; */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoResourceOffering(LassoDiscoServiceInstance *serviceInstance);
+
+	~LassoDiscoResourceOffering();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* resourceOffering */
 #define LassoDiscoResourceOffering_get_resourceId LassoDiscoResourceOffering_resourceId_get
 LassoDiscoResourceID *LassoDiscoResourceOffering_resourceId_get(LassoDiscoResourceOffering *self) {
@@ -622,7 +753,13 @@ void LassoDiscoResourceOffering_serviceInstance_set(LassoDiscoResourceOffering *
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoResourceOffering lasso_disco_resource_offering_new
+#define delete_LassoDiscoResourceOffering(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoResourceOffering_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -636,23 +773,33 @@ void LassoDiscoResourceOffering_serviceInstance_set(LassoDiscoResourceOffering *
 %rename(DiscoServiceInstance) LassoDiscoServiceInstance;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoServiceInstance(gchar *serviceType,
-					  gchar *providerID,
-					  LassoDiscoDescription *description);
-		/* Methods */
-
-	}
 } LassoDiscoServiceInstance;
+%extend LassoDiscoServiceInstance {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoServiceInstance(gchar *serviceType,
+				  gchar *providerID,
+				  LassoDiscoDescription *description);
+
+	~LassoDiscoServiceInstance();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscoServiceInstance LassoDiscoServiceInstance_new
 LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 							 gchar *providerID,
@@ -665,6 +812,11 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 
 	return serviceInstance;
 }
+#define delete_LassoDiscoServiceInstance(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoServiceInstance_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -685,25 +837,33 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 %rename(DstModification) LassoDstModification;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable select;
-		char *select;
-
-		%immutable newData;
-		LassoDstNewData *newData;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDstModification(char *select);
-
-		/* Methods */
-
-	}
 } LassoDstModification;
+%extend LassoDstModification {
+	/* Attributes */
+	%immutable select;
+	char *select;
+
+	%immutable newData;
+	LassoDstNewData *newData;
+
+	/* Constructor, Destructor & Static Methods */
+	LassoDstModification(char *select);
+
+	~LassoDstModification();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* newData */
 #define LassoDstModification_get_newData LassoDstModification_newData_get
 LassoDstNewData *LassoDstModification_newData_get(LassoDstModification *self) {
@@ -722,7 +882,13 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstModification lasso_dst_modification_new
+#define delete_LassoDstModification(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstModification_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -737,28 +903,38 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 %rename(DstModify) LassoDstModify;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable resourceId;
-		LassoDiscoResourceID *resourceId;
+} LassoDstModify;
+%extend LassoDstModify {
+	/* Attributes */
 
-		%immutable modification;
-		LassoDstModification *modification; /* FIXME : should return a list of Modification */
+	%immutable resourceId;
+	LassoDiscoResourceID *resourceId;
 
-		char *itemId;
+	%immutable modification;
+	LassoDstModification *modification; /* FIXME : should return a list of Modification */
 
-		/* Constructor, Destructor & Static Methods */
-		LassoDstModify(LassoDstModification *modification);
+	char *itemId;
 
-		/* Methods */
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstModify(LassoDstModification *modification);
+
+	~LassoDstModify();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
 		
 
-	}
-} LassoDstModify;
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* resourceId */
 #define LassoDstModify_get_resourceId LassoDstModify_resourceId_get
 LassoDiscoResourceID *LassoDstModify_resourceId_get(LassoDstModify *self) {
@@ -783,7 +959,13 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstModify lasso_dst_modify_new
+#define delete_LassoDstModify(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstModify_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -797,25 +979,35 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 %rename(DstModifyResponse) LassoDstModifyResponse;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		LassoUtilityStatus *status;
-
-		/* char *itemIdRef; */
-
-		/* char *timeStamp; */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDstModifyResponse(LassoUtilityStatus *status);
-
-		/* Methods */
-
-	}
 } LassoDstModifyResponse;
+%extend LassoDstModifyResponse {
+	/* Attributes */
+
+	LassoUtilityStatus *status;
+
+	/* char *itemIdRef; */
+
+	/* char *timeStamp; */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstModifyResponse(LassoUtilityStatus *status);
+
+	~LassoDstModifyResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* status */
 #define LassoDstModifyResponse_get_status LassoDstModifyResponse_status_get
 LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *self) {
@@ -823,7 +1015,13 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstModifyResponse lasso_dst_modify_response_new
+#define delete_LassoDstModifyResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstModifyResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -837,27 +1035,37 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 %rename(DstQuery) LassoDstQuery;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable resourceId;
-		LassoDiscoResourceID *resourceId;
-
-		%immutable queryItem;
-		LassoDstQueryItem *queryItem; /* FIXME : must be a GList of LassoDstQueryItem */
-
-		/* char *itemID; */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDstQuery(LassoDstQueryItem *queryItem);
-
-		/* Methods */
-
-	}
 } LassoDstQuery;
+%extend LassoDstQuery {
+	/* Attributes */
+
+	%immutable resourceId;
+	LassoDiscoResourceID *resourceId;
+
+	%immutable queryItem;
+	LassoDstQueryItem *queryItem; /* FIXME : must be a GList of LassoDstQueryItem */
+
+	/* char *itemID; */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstQuery(LassoDstQueryItem *queryItem);
+
+	~LassoDstQuery();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* resourceId */
 #define LassoDstQuery_get_resourceId LassoDstQuery_resourceId_get
 LassoDiscoResourceID *LassoDstQuery_resourceId_get(LassoDstQuery *self) {
@@ -871,7 +1079,13 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstQuery lasso_dst_query_new
+#define delete_LassoDstQuery(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -885,22 +1099,32 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 %rename(DstQueryItem) LassoDstQueryItem;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable select;
-		char *select;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDstQueryItem(char *select);
-
-		/* Methods */
-
-	}
 } LassoDstQueryItem;
+%extend LassoDstQueryItem {
+	/* Attributes */
+
+	%immutable select;
+	char *select;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstQueryItem(char *select);
+
+	~LassoDstQueryItem();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* select */
 #define LassoDstQuery_get_select LassoDstQueryItem_select_get
 char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
@@ -908,7 +1132,13 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstQueryItem lasso_dst_query_item_new
+#define delete_LassoDstQueryItem(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstQueryItem_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -922,20 +1152,29 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 %rename(DstQueryResponse) LassoDstQueryResponse;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable status;
-		LassoUtilityStatus *status;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDstQueryResponse(LassoUtilityStatus *status);
-
-	}
 } LassoDstQueryResponse;
+%extend LassoDstQueryResponse {
+	/* Attributes */
+
+	%immutable status;
+	LassoUtilityStatus *status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstQueryResponse(LassoUtilityStatus *status);
+
+	~LassoDstQueryResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* status */
 #define LassoDstQueryResponse_get_status LassoDstQueryResponse_status_get
 LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self) {
@@ -943,7 +1182,13 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDstQueryResponse lasso_dst_query_response_new
+#define delete_LassoDstQueryResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstQueryResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -965,17 +1210,26 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 %rename(UtilityStatus) LassoUtilityStatus;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		char *code;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoUtilityStatus(char *code);
-
-		/* Methods */
-
-	}
 } LassoUtilityStatus;
+%extend LassoUtilityStatus {
+	/* Attributes */
+
+	char *code;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoUtilityStatus(char *code);
+
+	~LassoUtilityStatus();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
@@ -993,6 +1247,11 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoUtilityStatus lasso_utility_status_new
+#define delete_LassoUtilityStatus(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoUtilityStatus_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -1014,25 +1273,35 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 %rename(IsInteractionRequest) LassoIsInteractionRequest;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		LassoDiscoResourceID *resourceID;
-
-		LassoIsInquiry *inquiry;
-
-		int maxInteractTime;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoIsInteractionRequest();
-
-		/* Methods */
-
-	}
 } LassoIsInteractionRequest;
+%extend LassoIsInteractionRequest {
+	/* Attributes */
+
+	LassoDiscoResourceID *resourceID;
+
+	LassoIsInquiry *inquiry;
+
+	int maxInteractTime;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInteractionRequest();
+
+	~LassoIsInteractionRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods */
+
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* resourceID */
 #define LassoIsInteractionRequest_get_resourceID LassoIsInteractionRequest_resourceID_get
 LassoDiscoResourceID *LassoIsInteractionRequest_resourceID_get(LassoIsInteractionRequest *self) {
@@ -1070,7 +1339,13 @@ void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *se
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoIsInteractionRequest lasso_is_interaction_request_new
+#define delete_LassoIsInteractionRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInteractionRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -1092,91 +1367,100 @@ void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *se
 %rename(Discovery) LassoDiscovery;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoProfile */
-		%immutable query;
-		LassoDiscoQuery *query;
-
-		%immutable queryResponse;
-		LassoDiscoQueryResponse *queryResponse;
-
-		%immutable modify;
-		LassoDiscoModify *modify;
-
-		%immutable modifyResponse;
-		LassoDiscoModifyResponse *modifyResponse;
-
-		%immutable msgBody;
-		gchar *msgBody;
-
-		%immutable msgUrl;
-		gchar *msgUrl;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscovery(LassoServer *server);
-
-		/* Methods inherited from LassoWsfProfile */
-
-	        THROW_ERROR
-		void buildRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildResponseMsg();
-		END_THROW_ERROR
-
-		/* Methods */
-
-		LassoDiscoInsertEntry* addInsertEntry(char *serviceType,
-						      char *providerID,
-						      LassoDiscoDescription *description,
-						      LassoDiscoResourceID *resourceID,
-						      LassoDiscoEncryptedResourceID *encryptedResourceID,
-						      char *option);
-
-		THROW_ERROR
-		void addRemoveEntry(char *entryID);
-		END_THROW_ERROR
-
-		LassoDiscoRequestedServiceType *addRequestedServiceType(char *serviceType,
-									char *option);
-
-		THROW_ERROR
-		void addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void initModify(LassoDiscoResourceOffering *resourceOffering,
-				LassoDiscoDescription *description);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void initQuery(LassoDiscoResourceOffering *resourceOffering,
-			       LassoDiscoDescription *description);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processModifyMsg(char *modify_msg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processModifyResponseMsg(char *modify_response_msg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processQueryMsg(char *query_msg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processQueryResponseMsg(char *query_response_msg);
-		END_THROW_ERROR
-
-	}
 } LassoDiscovery;
+%extend LassoDiscovery {
+	/* Attributes inherited from LassoProfile */
+
+	%immutable query;
+	LassoDiscoQuery *query;
+
+	%immutable queryResponse;
+	LassoDiscoQueryResponse *queryResponse;
+
+	%immutable modify;
+	LassoDiscoModify *modify;
+
+	%immutable modifyResponse;
+	LassoDiscoModifyResponse *modifyResponse;
+
+	%immutable msgBody;
+	gchar *msgBody;
+
+	%immutable msgUrl;
+	gchar *msgUrl;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscovery(LassoServer *server);
+
+	~LassoDiscovery();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods inherited from LassoWsfProfile */
+
+	THROW_ERROR
+	void buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildResponseMsg();
+	END_THROW_ERROR
+
+	/* Methods */
+
+	LassoDiscoInsertEntry* addInsertEntry(char *serviceType,
+					      char *providerID,
+					      LassoDiscoDescription *description,
+					      LassoDiscoResourceID *resourceID,
+					      LassoDiscoEncryptedResourceID *encryptedResourceID,
+					      char *option);
+
+	THROW_ERROR
+	void addRemoveEntry(char *entryID);
+	END_THROW_ERROR
+
+	LassoDiscoRequestedServiceType *addRequestedServiceType(char *serviceType,
+								char *option);
+
+	THROW_ERROR
+	void addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void initModify(LassoDiscoResourceOffering *resourceOffering,
+			LassoDiscoDescription *description);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void initQuery(LassoDiscoResourceOffering *resourceOffering,
+		       LassoDiscoDescription *description);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processModifyMsg(char *modify_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processModifyResponseMsg(char *modify_response_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processQueryMsg(char *query_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processQueryResponseMsg(char *query_response_msg);
+	END_THROW_ERROR
+}
 
 %{
 
 /* Attributes inherited from LassoWsfProfile implementations casted to Discovery domain */
+
 /* query */
 #define LassoDiscovery_get_query LassoDiscovery_query_get
 LassoDiscoQuery *LassoDiscovery_query_get(LassoDiscovery *self) {
@@ -1229,9 +1513,16 @@ gchar *LassoDiscovery_msgUrl_get(LassoDiscovery *self) {
 }
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoDiscovery lasso_discovery_new
+#define delete_LassoDiscovery(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscovery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods inherited from LassoWsfProfile implementations */
+
 gint LassoDiscovery_buildRequestMsg(LassoDiscovery *self) {
 	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
 }
@@ -1263,75 +1554,84 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 %rename(ProfileService) LassoProfileService;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-		%immutable query;
-		LassoDstQuery *query;
-
-		%immutable queryResponse;
-		LassoDstQueryResponse *queryResponse;
-
-		%immutable modify;
-		LassoDstModify *modify;
-
-		%immutable modifyResponse;
-		LassoDstModifyResponse *modifyResponse;
-
-		%immutable msgBody;
-		gchar *msgBody;
-
-		%immutable msgUrl;
-		gchar *msgUrl;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoProfileService(LassoServer *server);
-
-		/* Methods inherited from LassoWsfProfile */
-		void buildRequestMsg();
-
-		void buildResponseMsg();
-
-		/* Methods */
-		void addData(LassoNode *data);
-
-		LassoDstModification *addModification(char *select);
-		
-		LassoDstModification *initModify(char *prefix,
-						 char *href,
-						 LassoDiscoResourceOffering *resourceOffering,
-						 LassoDiscoDescription *description,
-						 char *select);
-		
-		LassoDstQueryItem *initQuery(char *prefix,
-					     char *href,
-					     LassoDiscoResourceOffering *resourceOffering,
-					     LassoDiscoDescription *description,
-					     char *select);
-
-		THROW_ERROR
-		void processModifyMsg(char *prefix, char *href, char *soap_msg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
-		END_THROW_ERROR
-
-	        LassoDstQueryItem *addQueryItem(char *select);
-
-		THROW_ERROR
-		void processQueryMsg(char *prefix, char *href, char *soap_msg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
-		END_THROW_ERROR
-
-	}
 } LassoProfileService;
+%extend LassoProfileService {
+	/* Attributes */
+
+	%immutable query;
+	LassoDstQuery *query;
+
+	%immutable queryResponse;
+	LassoDstQueryResponse *queryResponse;
+
+	%immutable modify;
+	LassoDstModify *modify;
+
+	%immutable modifyResponse;
+	LassoDstModifyResponse *modifyResponse;
+
+	%immutable msgBody;
+	gchar *msgBody;
+
+	%immutable msgUrl;
+	gchar *msgUrl;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoProfileService(LassoServer *server);
+
+	~LassoProfileService();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods inherited from LassoWsfProfile */
+	void buildRequestMsg();
+
+	void buildResponseMsg();
+
+	/* Methods */
+	void addData(LassoNode *data);
+
+	LassoDstModification *addModification(char *select);
+		
+	LassoDstModification *initModify(char *prefix,
+					 char *href,
+					 LassoDiscoResourceOffering *resourceOffering,
+					 LassoDiscoDescription *description,
+					 char *select);
+		
+	LassoDstQueryItem *initQuery(char *prefix,
+				     char *href,
+				     LassoDiscoResourceOffering *resourceOffering,
+				     LassoDiscoDescription *description,
+				     char *select);
+
+	THROW_ERROR
+	void processModifyMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+        LassoDstQueryItem *addQueryItem(char *select);
+
+	THROW_ERROR
+	void processQueryMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+}
 
 %{
 
 /* Attributes Implementations */
+
 /* modify */
 #define LassoProfileService_get_modify LassoProfileService_modify_get
 LassoDstModify *LassoProfileService_modify_get(LassoProfileService *self) {
@@ -1389,7 +1689,13 @@ LassoDstQueryResponse *LassoProfileService_queryResponse_get(LassoProfileService
 
 
 /* Constructors, destructors & static methods implementations */
+
 #define new_LassoProfileService lasso_profile_service_new
+#define delete_LassoProfileService(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoProfileService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 
 /* Methods inherited from LassoWsfProfile implementations */
