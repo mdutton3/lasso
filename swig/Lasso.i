@@ -73,6 +73,7 @@
 %}
 
 #ifdef SWIGJAVA
+%include "enumsimple.swg"
 %pragma(java) jniclasscode=%{
   static {
     try {
