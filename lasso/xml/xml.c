@@ -764,18 +764,13 @@ lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 			continue;
 		if (snippets[i].type == 'a') /* attribute */
 			xmlSetProp(node, snippets[i].name, (char*)(*(snippets[i].value)));
-	}
-
-	for (i = 0; snippets[i].name; i++) {
-		if (*(snippets[i].value) == NULL)
-			continue;
-		if (snippets[i].type == 'n')
+		if (snippets[i].type == 'n') /* node */
 			xmlAddChild(node, lasso_node_get_xmlNode(
 						LASSO_NODE(*(snippets[i].value))));
-		if (snippets[i].type == 'c')
+		if (snippets[i].type == 'c') /* content */
 			xmlNewTextChild(node, NULL, snippets[i].name,
 					(char*)(*(snippets[i].value)));
-		if (snippets[i].type == 'i') {
+		if (snippets[i].type == 'i') { /* name identifier */
 			xmlNode *t;
 			xmlNs *xmlns;
 			xmlns = xmlNewNs(node, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
