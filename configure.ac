@@ -172,6 +172,7 @@ AC_CHECK_PROGS(JAVAH, gcjh javah)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(PHP, php)
+AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
 AC_CHECK_PROGS(SWIG, swig)
 AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
 
@@ -222,34 +223,33 @@ AC_SUBST(SWIG_PYTHON_ARGS)
 dnl Detect available languages binding.
 languages_available=
 
-dnl Java(tm)
-
-AC_ARG_WITH(java, [  --with-java(=JAVA)      Enable the java interface], with_java="$withval", with_java="yes")
+dnl ==========================================================================
+dnl Java(tm) API
+dnl ==========================================================================
+dnl Check if java is explicitly disabled.
+AC_ARG_ENABLE(java, [  --disable-java          Disable the java API.],,
+              enable_java="yes")
 AC_MSG_CHECKING(Enable Java API)
-if test "X$with_java" != Xno ; then
-  if test "X$with_java" != Xyes; then
-    JAVA=$with_java
-  fi
-  with_java=yes
-fi
-
 JAVAC_FLAGS=
 JAVAH_FLAGS=
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
-JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/java version "\([^"]*\)".*/\1/p' 2>/dev/null`
-if test "X$JAVA_VERSION" = X; then
+if test "x$JAVA" != xgij; then
+    JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/java version "\([^"]*\)".*/\1/p' 2>/dev/null`
+else
     JAVA_VERSION=`$JAVA --version 2>&1 | $SED -ne 's/gij (GNU libgcj) version \([^"]*\) (.*/\1/p' 2>/dev/null`
 fi
-
 changequote([, ])dnl
+
+dnl If we found a java version information.
 if test "X$JAVA_VERSION" != X; then
-  languages_available="$languages_available java($JAVA_VERSION)"
+  languages_available="$languages_available $JAVA($JAVA_VERSION)"
 else
-  with_java=no
+  enable_java=no
 fi
-AM_CONDITIONAL([JAVA_ENABLED],[test "x$with_java" = "xyes"])
-AC_MSG_RESULT($with_java)
+dnl Conditional java sub dir test.
+AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
+AC_MSG_RESULT($enable_java)
 if test "X$JAVA" = "Xgij"; then
     JAVAC_FLAGS="-C"
     JAVAH_FLAGS="-jni"
@@ -259,63 +259,78 @@ AC_SUBST(JAVAC_FLAGS)
 AC_SUBST(JAVAH_FLAGS)
 
 
-dnl python
-AC_ARG_WITH(python, [  --with-python(=PYTHON)  Enable the Python interface], with_python="$withval", with_python="yes")
-AC_MSG_CHECKING(Enable Python API)
-if test "X$with_python" != Xno; then
-  if test "X$with_python" != Xyes; then
-    PYTHON=$with_python
-  fi
-  with_python=yes
-fi
+dnl ==========================================================================
+dnl Python API
+dnl ==========================================================================
+dnl Check if python is explicitly disabled.
+AC_ARG_ENABLE(python, [  --disable-python        Enable the Python interface],,
+              enable_python="yes")
 
+dnl Check if user passed a specific python program.
+AC_ARG_WITH(python,
+            [  --with-python=(PYTHON)  Set the full path to the python program to use.])
+AC_MSG_CHECKING(Enable Python API)
+
+dnl specific program passed, set PYTHON to it.
+if test "X$with_python" != X; then
+    PYTHON=$with_python
+fi
 
 
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
 changequote([, ])dnl
+
+dnl Check if we were be able to extract a good version number.
 if test "X$PYTHON_VERSION" != X; then
-  if test $with_python = yes; then
-        PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
-        PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
-        changequote(<<, >>)dnl
-        PY_VERSION=`$PYTHON -c 'import sys ; print sys.version[0:3]'`
-        changequote([, ])dnl
-        PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
-        LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
-	if test -f $PYTHON_H; then
-                dnl Not useful unless we make a test on the python version.
-                PYTHON="python$PY_VERSION"
-                PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
-                PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
-                PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
-                PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
-                PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
-                PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
-                PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
-		dnl Non pure module distribution location.
-                PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
-                AC_SUBST(PYTHON)
-                AC_SUBST(PY_LIB_LOC)
-                AC_SUBST(PY_CFLAGS)
-                AC_SUBST(PY_EXTRA_LIBS)
-                AC_SUBST(PY_DYNLOAD)
-                AC_SUBST(PY_LIB_A)
-		AC_SUBST(PY_SITE_PACKAGES)
-                languages_available="$languages_available python($PYTHON_VERSION)"
-        else
-		with_python=false
-	fi
+    PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
+    PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
+    changequote(<<, >>)dnl
+    PY_VERSION=`$PYTHON -c 'import sys ; print sys.version[0:3]'`
+    changequote([, ])dnl
+    PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
+    LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
+    if test -f $PYTHON_H; then
+            dnl Not useful unless we make a test on the python version.
+            PYTHON="python$PY_VERSION"
+            PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
+            PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
+            PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
+            PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
+            PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
+            PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
+            PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
+            dnl Non pure module distribution location.
+            PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
+            AC_SUBST(PYTHON)
+            AC_SUBST(PY_LIB_LOC)
+            AC_SUBST(PY_CFLAGS)
+            AC_SUBST(PY_EXTRA_LIBS)
+            AC_SUBST(PY_DYNLOAD)
+            AC_SUBST(PY_LIB_A)
+            AC_SUBST(PY_SITE_PACKAGES)
+            languages_available="$languages_available python($PYTHON_VERSION)"
+    else
+            enable_python=no
     fi
 fi
-AM_CONDITIONAL([PYTHON_ENABLED],[test "x$with_python" = "xyes"])
-AC_MSG_RESULT($with_python)
+AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
+AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
 
-AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
-if test "X$PHP_CONFIG" != X ; then
+dnl Check if python is explicitly disabled.
+AC_ARG_ENABLE(php, [  --disable-php           Disable the PHP interface],,
+              enable_php="yes")
 
+AC_ARG_WITH(php-config,
+            [  --with-php-config(=PHP_CONFIG)      Specify full path to php-config.])
+dnl Check if user passed a specific php-config program.
+if test "X$with_php_config" != X ; then
+    PHP_CONFIG=$with_php_config
+fi
+
+if test "X$PHP_CONFIG" != X ; then
   PHP_INCLUDES=`$PHP_CONFIG --includes`
   PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
   PHP_LIBS=`$PHP_CONFIG --libs`
@@ -334,53 +349,34 @@ AC_SUBST(PHP_LDFLAGS)
 AC_SUBST(PHP_LIBS)
 AC_SUBST(PHP_EXTENSION_DIR)
 
-AC_ARG_WITH(php, [  --with-php(=PHP)        Enable the PHP interface], with_php="$withval", with_php="yes")
 AC_MSG_CHECKING(Enable PHP API)
-if test "X$with_php" != Xno ; then
-  if test "X$with_php" != Xyes; then
-    PHP=$with_php
-  fi
-  with_php=yes
-fi
-
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
+dnl Check if we were be able to extract a good version number.
 if test "X$PHP_VERSION" != X; then
   languages_available="$languages_available php($PHP_VERSION)"
-  if test $with_php = yes; then
-    languages="$languages php"
-  fi
+else
+    enable_php=no
 fi
-AC_MSG_RESULT($with_php)
-AM_CONDITIONAL([PHP_ENABLED],[test "x$with_php" = "xyes"])
+AC_MSG_RESULT($enable_php)
+AM_CONDITIONAL([PHP_ENABLED], [test "x$enable_php" = "xyes"])
 AC_SUBST(PHP_VERSION)
 
-SD_LANG="$languages"
-AC_SUBST(SD_LANG)
 
 dnl ==========================================================================
 dnl Test suite (requires check)
 dnl ==========================================================================
-AC_ARG_ENABLE(tests,
-[  --enable-tests          build the test suite (default)],
-[case "${enableval}" in
-        yes) tests_val=true;;
-        no)  tests_val=false;;
-esac], tests_val=true)
+dnl Check if user disabled the tests.
+AC_ARG_ENABLE(tests, [  --disable-tests          disable the test suite],,
+              enable_tests="yes")
 AC_DEFINE([CHECK_IS_XML], [], [Define if check available with XML support])
-if $tests_val ; then
+if test "x$enable_tests" = xyes ; then
   AM_PATH_CHECK
   AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML)])
 fi
 
-AM_CONDITIONAL(WITH_TESTS, $tests_val)
-if test "z$tests_val" = "ztrue"; then
-    tests_val="yes"
-else
-    tests_val="no"
-fi
+AM_CONDITIONAL(WITH_TESTS, [test "x$enable_tests" = "xyes"])
 
 dnl Final step, add missing programs.
-
 AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
 AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
@@ -419,13 +415,10 @@ fi
 PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
 
 dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc        Disable documentation build], 
-[case "${enableval}" in
-        yes) enable_gtk_doc=true;;
-        no)  enable_gtk_doc=false;;
-esac], enable_gtk_doc=true)
+AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc        Disable documentation build],,
+              enable_gtk_doc="yes")
 
-if test "x$enable_gtk_doc" = "xtrue" ; then
+if test "x$enable_gtk_doc" = "xyes" ; then
     GTK_DOC_MIN_VERSION=1.0
     AC_MSG_CHECKING(gtk-doc support:)
     PKG_CHECK_MODULES(GTK_DOC, gtk-doc >= $GTK_DOC_MIN_VERSION, enable_gtk_doc="yes",
@@ -518,17 +511,6 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-dnl ==========================================================================
-dnl Producing DLL
-dnl ==========================================================================
-dnl if test "$MINGW" = "yes" ; then
-dnl     LINK="/usr/bin/dllwrap.exe --add-stdcall-alias -mwindows -s --driver-name \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) \$(LASSO_CORE_CFLAGS) \$(GLIB_CFLAGS) \$(LIBXML_CFLAGS) \$(LIBXSLT_CFLAGS) \$(XMLSEC1_CFLAGS) \$(LASSO_CRYPTO_CFLAGS) -L\${libdir} \$(GLIB_LIBS) \$(LIBXML_LIBS) \$(LIBXSLT_LIBS) \$(XMLSEC1_LIBS) \$(LASSO_CRYPTO_LIBS) -o \$@"
-dnl else
-dnl     LINK="\$(LIBTOOL) --mode=link \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) -o \$@"
-dnl fi
-dnl AC_SUBST(LINK)
-
-
 dnl Temporaly
 AM_CONDITIONAL(MINGW, test $MINGW == 1)
 AM_CONDITIONAL(WITH_PYTHON, test 1 -eq 0)
@@ -590,19 +572,22 @@ Debugging:
 
 Optionals builds
 ----------------
+  
+Available languages:
+    ${languages_available}
 
 Python binding:
-    ${with_python}
+    ${enable_python}
 
 PHP binding:
-    ${with_php}
+    ${enable_php}
 
 Java binding:
-    ${with_java}
+    ${enable_java}
         
 C API references:
     ${enable_gtk_doc}
 
 Tests suite:
-    ${tests_val}
+    ${enable_tests}
 ])
