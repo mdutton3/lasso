@@ -1,8 +1,7 @@
 if MINGW
 JAVA_CFLAGS = -mno-cygwin -mwindows -D_MSC_VER=1 \
     -D_WIN32 -DWIN32 -DLASSO_DEBUG \
-    -I../../.. \
-    -I../../win32 \
+    -I$(top_srcdir) \
     -I. -g \
     -I/usr/local/include \
     -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include \
@@ -14,7 +13,7 @@ else
 JAVA_CFLAGS = \
     -g \
     -I. -I/opt/jdk/include -I/opt/jdk/include/linux \
-    -I../../.. \
+    -I$(top_srcdir) \
     -I/usr/include/libxml2 \
     -I/usr/include/glib-2.0 \
     -I/usr/lib/glib-2.0/include \
