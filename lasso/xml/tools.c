@@ -369,15 +369,15 @@ lasso_query_verify_signature(const gchar   *query,
  * 
  * Builds the SHA-1 message digest (cryptographic hash) of @str
  * 
- * Return value: a 20 bytes length string
+ * Return value: 20-bytes buffer allocated with xmlMalloc
  **/
 xmlChar*
 lasso_sha1(xmlChar *str)
 {
-  unsigned char *md;
+  xmlChar *md;
 
   if (str != NULL) {
-    md = xmlMalloc(21);
+    md = xmlMalloc(20);
     return SHA1(str, strlen(str), md);
   }
   
