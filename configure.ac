@@ -28,7 +28,7 @@ AC_SUBST(LASSO_VERSION_INFO)
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 AM_MAINTAINER_MODE
-CWINDOWS="no"
+MINGW="no"
 
 dnl ==========================================================================
 dnl Perform host specific configuration
@@ -37,7 +37,7 @@ case "${host}" in
     *aix* )
 	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
 	;;
-    *-pc-*gw*)
+    *-pc-*mingw*)
 dnl     mno-cygwin to produce purely win32 DLL.
         CC="gcc -mno-cygwin"
 dnl     _MSC_VER to emulate a MSVC compilation and active secret room with
@@ -57,7 +57,7 @@ dnl     jni.h), then it do not cost to add this def...
         LIBXML_LIBS="-lxml2"
         LIBXSLT_CFLAGS=""
         LIBXSLT_LIBS="-lxslt"
-        CWINDOWS="yes"
+        MINGW="yes"
         ;;
 esac
 
@@ -97,8 +97,20 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 
-if test "$CWINDOWS" = "no" ; then
+if test "x$MINGW" != "xyes" ; then
     PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
+else
+    dnl Manualy add fill LASSO_CFLAGS for Windows. Until one day...
+    LASSO_CFLAGS="$GLIB_CFLAGS $XMLSEC1_CFLAGS $LIBXML_CFLAGS $LIBXSLT_CFLAGS"
+    LASSO_LIBS="$GLIB_LIBS $XMLSEC1_LIBS $LIBXML_LIBS $LIBXSLT_LIBS"
+    AC_SUBST(GLIB_CFLAGS)
+    AC_SUBST(GLIB_LIBS)
+    AC_SUBST(XMLSEC1_CFLAGS)
+    AC_SUBST(XMLSEC1_LIBS)
+    AC_SUBST(LIBXML_CFLAGS)
+    AC_SUBST(LIBXML_LIBS)
+    AC_SUBST(LIBXSLT_CFLAGS)
+    AC_SUBST(LIBXSLT_LIBS)
 fi
 AC_SUBST(LASSO_LIBS)
 AC_SUBST(LASSO_CFLAGS)
@@ -212,7 +224,6 @@ fi
 AM_CONDITIONAL(WITH_TESTS, $tests_val)
 
 
-
 dnl ==========================================================================
 dnl Where do we want to install docs
 dnl ==========================================================================
@@ -301,7 +312,7 @@ AC_SUBST(LDFLAGS)
 dnl ==========================================================================
 dnl Producing DLL
 dnl ==========================================================================
-dnl if test "$CWINDOWS" = "yes" ; then
+dnl if test "$MINGW" = "yes" ; then
 dnl     LINK="/usr/bin/dllwrap.exe --add-stdcall-alias -mwindows -s --driver-name \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) \$(LASSO_CORE_CFLAGS) \$(GLIB_CFLAGS) \$(LIBXML_CFLAGS) \$(LIBXSLT_CFLAGS) \$(XMLSEC1_CFLAGS) \$(LASSO_CRYPTO_CFLAGS) -L\${libdir} \$(GLIB_LIBS) \$(LIBXML_LIBS) \$(LIBXSLT_LIBS) \$(XMLSEC1_LIBS) \$(LASSO_CRYPTO_LIBS) -o \$@"
 dnl else
 dnl     LINK="\$(LIBTOOL) --mode=link \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) -o \$@"
