@@ -2015,7 +2015,7 @@ typedef struct {
 LassoLibAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
-		return LASSO_LIB_AUTHN_REQUEST(profile->request);
+		return LASSO_LIB_AUTHN_REQUEST(g_object_ref(profile->request));
 	return NULL;
 }
 
@@ -2024,7 +2024,7 @@ LassoLibAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
 LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
-		return LASSO_LIB_AUTHN_RESPONSE(profile->response);
+		return LASSO_LIB_AUTHN_RESPONSE(g_object_ref(profile->response));
 	return NULL;
 }
 
@@ -2071,7 +2071,7 @@ LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 LassoSamlpRequest *LassoLogin_request_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_SAMLP_REQUEST(profile->request))
-		return LASSO_SAMLP_REQUEST(profile->request);
+		return LASSO_SAMLP_REQUEST(g_object_ref(profile->request));
 	return NULL;
 }
 
@@ -2080,7 +2080,7 @@ LassoSamlpRequest *LassoLogin_request_get(LassoLogin *self) {
 LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
-		return LASSO_SAMLP_RESPONSE(profile->response);
+		return LASSO_SAMLP_RESPONSE(g_object_ref(profile->response));
 	return NULL;
 }
 
@@ -2467,7 +2467,7 @@ typedef struct {
 LassoLibAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
-		return LASSO_LIB_AUTHN_REQUEST(profile->request);
+		return LASSO_LIB_AUTHN_REQUEST(g_object_ref(profile->request));
 	return NULL;
 }
 
@@ -2476,7 +2476,7 @@ LassoLibAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
 LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
-		return LASSO_LIB_AUTHN_RESPONSE(profile->response);
+		return LASSO_LIB_AUTHN_RESPONSE(g_object_ref(profile->response));
 	return NULL;
 }
 
@@ -2523,7 +2523,7 @@ LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 LassoSamlpRequest *LassoLecp_request_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_SAMLP_REQUEST(profile->request))
-		return LASSO_SAMLP_REQUEST(profile->request);
+		return LASSO_SAMLP_REQUEST(g_object_ref(profile->request));
 	return NULL;
 }
 
@@ -2532,7 +2532,7 @@ LassoSamlpRequest *LassoLecp_request_get(LassoLecp *self) {
 LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
-		return LASSO_SAMLP_RESPONSE(profile->response);
+		return LASSO_SAMLP_RESPONSE(g_object_ref(profile->response));
 	return NULL;
 }
 
