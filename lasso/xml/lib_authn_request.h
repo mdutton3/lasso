@@ -68,7 +68,7 @@ struct _LassoLibAuthnRequest {
 	/* <xs:element ref="ProtocolProfile" minOccurs="0"/> */
 	char *ProtocolProfile; /* XXX: move to enum */
 	/* <xs:element name="AssertionConsumerServiceID" type="xs:string" minOccurs="0"/> */
-	char *AssertionConsumerServiceID; /* XXX: move to enum? */
+	char *AssertionConsumerServiceID;
 	/* <xs:element ref="RequestAuthnContext" minOccurs="0"/> */
 	LassoLibRequestAuthnContext *RequestAuthnContext;
 	/* <xs:element ref="RelayState" minOccurs="0"/> */
