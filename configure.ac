@@ -352,7 +352,7 @@ dnl Check if php is explicitly disabled.
 AC_ARG_ENABLE(php, [  --disable-php           disable the PHP binding],,
               enable_php="yes")
 
-AC_ARG_ENABLE(php-force, [  --enable-php-force           force enable of the PHP binding],
+AC_ARG_ENABLE(php-force, [  --enable-php-force      always enable of the PHP binding (win32)],
               [ENABLE_PHP_FORCE="yes"],
               [ENABLE_PHP_FORCE="no"])
 
@@ -521,7 +521,7 @@ fi
 AC_SUBST(PERLINSTALLSITEARCH)
 AC_SUBST(PERLMAN3DIR)
 
-AC_MSG_CHECKING(Enable Perl API)
+AC_MSG_CHECKING(for Perl API)
 if test "X$enable_perl" != "Xno" ; then
   if test "X$enable_perl" != "Xyes"; then
     PERL=$enable_perl
@@ -548,7 +548,7 @@ dnl Check if user disabled the tests.
 AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
               enable_tests="yes")
 if test "x$enable_tests" = xyes ; then
-  AM_PATH_CHECK
+  AC_CHECK_LIB(check, srunner_set_log, enable_tests="yes", enable_tests="no")
   AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML, [], [Define if check available with XML support])])
 fi
 
