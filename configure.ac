@@ -76,42 +76,6 @@ dnl         fi
 esac
 
 
-dnl ==========================================================================
-dnl Version Super.Size.Me.L
-dnl ==========================================================================
-
-changequote(<<, >>)dnl
-VERSION_MAJOR=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
-VERSION_MINOR=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
-VERSION_RELEASE=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
-changequote([, ])dnl
-
-version_decimal=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
-windows_version=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
-
-dnl Add versionning & package defines to lasso_config.h
-AC_DEFINE_UNQUOTED(LASSO_VERSION_MAJOR, $VERSION_MAJOR, [Major version number])
-AC_DEFINE_UNQUOTED(LASSO_VERSION_MINOR, $VERSION_MINOR, [Minor version number])
-AC_DEFINE_UNQUOTED(LASSO_VERSION_SUBMINOR, $VERSION_RELEASE, [Release version number])
-AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $version_decimal, [Release version as a decimal])
-
-dnl Dirty hack in order to have dynamic resource version numbering.
-AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of the lasso version])
-
-dnl CURRENT, REVISION, AGE
-dnl - library source changed -> increment REVISION
-dnl - interfaces added/removed/changed -> increment CURRENT, REVISION = 0
-dnl - interfaces added -> increment AGE
-dnl - interfaces removed -> AGE = 0
-
-# syntax: CURRENT[:REVISION[:AGE]]
-# So if M=major, m=minor, r=release:
-# c = M + a = M + m;
-# m = a
-# r = r
-current=`expr $VERSION_MAJOR + $VERSION_MINOR`
-LASSO_VERSION_INFO="$current:$VERSION_RELEASE:$VERSION_MINOR"
-AC_SUBST(LASSO_VERSION_INFO)
 
 # OSX Fink
 if test -d /sw/bin ; then
@@ -158,6 +122,42 @@ dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES
 test "z$U" != "z" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
+dnl ==========================================================================
+dnl Version Super.Size.Me.L
+dnl ==========================================================================
+
+changequote(<<, >>)dnl
+VERSION_MAJOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
+VERSION_MINOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
+VERSION_RELEASE=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
+changequote([, ])dnl
+
+version_decimal=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
+windows_version=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
+
+dnl Add versionning & package defines to lasso_config.h
+AC_DEFINE_UNQUOTED(LASSO_VERSION_MAJOR, $VERSION_MAJOR, [Major version number])
+AC_DEFINE_UNQUOTED(LASSO_VERSION_MINOR, $VERSION_MINOR, [Minor version number])
+AC_DEFINE_UNQUOTED(LASSO_VERSION_SUBMINOR, $VERSION_RELEASE, [Release version number])
+AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $version_decimal, [Release version as a decimal])
+
+dnl Dirty hack in order to have dynamic resource version numbering.
+AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of the lasso version])
+
+dnl CURRENT, REVISION, AGE
+dnl - library source changed -> increment REVISION
+dnl - interfaces added/removed/changed -> increment CURRENT, REVISION = 0
+dnl - interfaces added -> increment AGE
+dnl - interfaces removed -> AGE = 0
+
+# syntax: CURRENT[:REVISION[:AGE]]
+# So if M=major, m=minor, r=release:
+# c = M + a = M + m;
+# m = a
+# r = r
+current=`expr $VERSION_MAJOR + $VERSION_MINOR`
+LASSO_VERSION_INFO="$current:$VERSION_RELEASE:$VERSION_MINOR"
+AC_SUBST(LASSO_VERSION_INFO)
 
 dnl ==========================================================================
 dnl Swig
@@ -165,7 +165,7 @@ dnl ==========================================================================
 SWIG_MIN_VERSION=1.3
 AC_MSG_CHECKING(SWIG support)
 if test "X$SWIG" != "X"; then
-  SWIG_VERSION=`$SWIG -version 2>&1 |sed -ne 's/^SWIG Version //p'`
+  SWIG_VERSION=`$SWIG -version 2>&1 | $SED -ne 's/^SWIG Version //p'`
   SWIG_VERSION_DEC=`echo $SWIG_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
  if test $SWIG_VERSION_DEC -ge 010314; then
@@ -226,7 +226,7 @@ if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
     changequote([, ])dnl
     dnl If no java version found, perphas it is a kaffee environment...
     if test "x$JAVA_VERSION" = x; then
-        JAVA_VERSION=`$JAVA -version 2>&1 | grep "Java Version" | sed 's/^.*Java Version: //g'`
+        JAVA_VERSION=`$JAVA -version 2>&1 | grep "Java Version" | $SED 's/^.*Java Version: //g'`
         dnl If the java environment is kaffe, specify the JDK_INCLUDE directory.
         if test "x$JAVA_VERSION" != x; then
             JDK_INCLUDE="/usr/lib/kaffe/include"
@@ -316,7 +316,7 @@ if test "X$PYTHON_VERSION" != X; then
             PYTHON="python$PY_VERSION"
             PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
             PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
-            PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
+            PY_OTHER_LIBS=`$SED -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
             PY_SITE_PACKAGES="\${prefix}/lib/python$PY_VERSION/site-packages"
             AC_SUBST(PYTHON)
@@ -352,7 +352,7 @@ if test "X$PHP_CONFIG" != X ; then
   PHP_INCLUDES=`$PHP_CONFIG --includes`
   PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
   PHP_LIBS=`$PHP_CONFIG --libs`
-  PHP_EXTENSION_DIR=`$PHP_CONFIG --extension-dir`
+  PHP_UNPREFIXED_EXTENSION_DIR=`$PHP_CONFIG --extension-dir | $SED 's/\/usr//g'`
   PHP_PREFIX=`$PHP_CONFIG --prefix`
 else
   # This allows 'make clean' in the python directory to work when
@@ -361,13 +361,13 @@ else
   PHP_INCLUDES=
   PHP_LDFLAGS=
   PHP_LIBS=
-  PHP_EXTENSION_DIR=
+  PHP_UNPREFIXED_EXTENSION_DIR=
   PHP_PREFIX=
 fi
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LDFLAGS)
 AC_SUBST(PHP_LIBS)
-AC_SUBST(PHP_EXTENSION_DIR)
+AC_SUBST(PHP_UNPREFIXED_EXTENSION_DIR)
 AC_SUBST(PHP_PREFIX)
 
 dnl Check for expat
