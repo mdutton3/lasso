@@ -37,14 +37,6 @@ extern "C" {
 #include <lasso/xml/lib_register_name_identifier_request.h>
 #include <lasso/xml/lib_register_name_identifier_response.h>
 
-enum lassoProtocolTypes {
-  lassoProtocolTypeAuthnRequest,
-  lassoProtocolTypeAuthnResponse,
-  lassoProtocolTypeLogoutRequest,
-  lassoProtocolTypeLogoutResponse,
-  lassoProtocolTypeResponse
-};
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

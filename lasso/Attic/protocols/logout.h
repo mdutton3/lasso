@@ -32,14 +32,12 @@ typedef struct _lassoLogoutRequest lassoLogoutRequest;
 
 struct _lassoLogoutRequest{
   LassoNode  *node;
-  enum lassoProtocolTypes type;
 };
 
 typedef struct _lassoLogoutResponse lassoLogoutResponse;
 
 struct _lassoLogoutResponse{
   LassoNode  *node;
-  enum lassoProtocolTypes type;
   LassoNode  *request_node;
   xmlChar    *request_query;
 };

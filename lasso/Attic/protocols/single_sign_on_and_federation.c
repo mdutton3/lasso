@@ -203,7 +203,6 @@ lasso_authn_request_create(const xmlChar *providerID,
   lassoAuthnRequest *lareq;
 
   lareq = g_malloc(sizeof(lassoAuthnRequest));
-  lareq->type = lassoProtocolTypeAuthnRequest;
   lareq->node = lasso_authn_request_build_full(NULL,
 					       NULL,
 					       NULL,
@@ -244,7 +243,6 @@ lasso_authn_response_create(xmlChar       *query,
   gint         proxyCount = 0;
 
   lares = g_malloc(sizeof(lassoAuthnResponse));
-  lares->type = lassoProtocolTypeAuthnResponse;
   lares->request_query = query;
   lares->public_key = public_key;
   lares->private_key = private_key;
@@ -418,17 +416,17 @@ lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
 }
 
 LassoNode *
-lasso_assertion_build(gpointer *lares,
+lasso_assertion_build(gpointer lares,
 		      const xmlChar *issuer)
 {
   LassoNode *assertion, *statement, *subject;
   LassoAttr *requestID;
   xmlChar *content;
 
-  g_assert(((lassoAuthnResponse *)lares)->type == lassoProtocolTypeAuthnResponse ||
-	   ((lassoAuthnResponse *)lares)->type == lassoProtocolTypeResponse);
+  g_assert(LASSO_IS_LIB_AUTHN_RESPONSE(((lassoAuthnResponse *)lares)->node) ||
+	   LASSO_IS_SAMLP_RESPONSE(((lassoAuthnResponse *)lares)->node));
 
-  if (((lassoAuthnResponse *)lares)->type == lassoProtocolTypeAuthnResponse) {
+  if (LASSO_IS_LIB_AUTHN_RESPONSE(((lassoAuthnResponse *)lares)->node)) {
     assertion = lasso_lib_assertion_new();
   }
   else {
@@ -452,8 +450,14 @@ lasso_assertion_build(gpointer *lares,
 				  "RequestID");
   content = xmlNodeGetContent((xmlNodePtr)requestID);
   if (content != NULL) {
-    lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
-					 content);
+    if (LASSO_IS_LIB_AUTHN_RESPONSE(((lassoAuthnResponse *)lares)->node)) {
+      lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
+					   content);
+    }
+    else {
+      lasso_samlp_response_abstract_(LASSO_LIB_ASSERTION(assertion),
+				     content);
+    }
   }
   xmlFree(content);
 

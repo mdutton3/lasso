@@ -124,7 +124,6 @@ lasso_logout_request_create(const xmlChar *providerID,
      lassoLogoutRequest *lareq;
 
      lareq = g_malloc(sizeof(lassoLogoutRequest));
-     lareq->type = lassoProtocolTypeLogoutRequest;
      lareq->node = lasso_logout_request_build_full(NULL,
 						   NULL,
 						   NULL,
@@ -247,7 +246,6 @@ lasso_logout_response_create(xmlChar *query)
      lassoLogoutResponse *lares;
 
      lares = g_malloc(sizeof(lassoLogoutResponse));
-     lares->type = lassoProtocolTypeLogoutResponse;
      lares->request_query = NULL;
      if(query!=NULL){
 	  lares->request_query = query;

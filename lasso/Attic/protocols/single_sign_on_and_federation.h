@@ -36,14 +36,12 @@ typedef struct _lassoAuthnRequest lassoAuthnRequest;
 
 struct _lassoAuthnRequest {
   LassoNode  *node;
-  enum lassoProtocolTypes type;
 };
 
 typedef struct _lassoAuthnResponse lassoAuthnResponse;
 
 struct _lassoAuthnResponse {
   LassoNode     *node;
-  enum lassoProtocolTypes type;
   LassoNode     *request_node;
   xmlChar       *request_query;
   gboolean       isPassive;
@@ -81,7 +79,7 @@ gint lasso_authn_response_init(lassoAuthnResponse *lares,
 gint lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
 					LassoNode *assertion);
 
-LassoNode *lasso_assertion_build(gpointer *lares,
+LassoNode *lasso_assertion_build(gpointer lares,
 				 const xmlChar *issuer);
 
 gint lasso_assertion_add_authenticationStatement(LassoNode *assertion,
