@@ -65,8 +65,10 @@ LASSO_EXPORT char* lasso_sha1(const char *str);
 char** urlencoded_to_strings(const char *str);
 
 
-int _debug(GLogLevelFlags level, const char *filename, int line,
+void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
+
+int error_code(GLogLevelFlags level, int error, ...);
 
 #if defined LASSO_DEBUG
 # define debug(format, args...) \
@@ -77,9 +79,6 @@ int _debug(GLogLevelFlags level, const char *filename, int line,
 
 #define message(level, format, args...) \
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
-
-#define error_code(level, errorcode, args...) \
-	(message(level, lasso_strerror(errorcode), ##args) || errorcode)
 
 #ifdef __cplusplus
 }

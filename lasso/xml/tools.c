@@ -559,7 +559,7 @@ char** urlencoded_to_strings(const char *str)
 	return result;
 }
 
-int
+void
 _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...) 
 {
@@ -581,9 +581,21 @@ _debug(GLogLevelFlags level, const char *filename, int line,
 	} else {
 		g_log("Lasso", level, "%s\t%s", date, debug_string);
 	}
-
-	/* returns 0 so it can be chained to another value (with ||) in
-	 * error_code macro
-	 */
-	return 0;
 }
+
+int
+error_code(GLogLevelFlags level, int error, ...)
+{
+	const char *format;
+	char message[1024];
+	va_list args;
+
+	format = lasso_strerror(error);
+
+	va_start(args, error);
+	g_vsnprintf(message, 1024, format, args);
+	va_end(args);
+
+	return error;
+}
+
