@@ -447,7 +447,7 @@ typedef struct _LassoAuthnResponse {
 /* Methods */
 
 %newobject lasso_authn_response_get_status;
-xmlChar* lasso_authn_response_get_status(LassoAuthnResponse *response);
+xmlChar *lasso_authn_response_get_status(LassoAuthnResponse *response);
 
 
 /***********************************************************************
@@ -493,8 +493,11 @@ typedef struct {
 	guint signature_method;
 
 	%extend {
-		LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
-			    gchar *certificate, lassoSignatureMethod signature_method) {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoServer(gchar *metadata = NULL, gchar *public_key = NULL,
+			    gchar *private_key = NULL, gchar *certificate = NULL,
+			    lassoSignatureMethod signature_method = lassoSignatureMethodRsaSha1) {
 			return lasso_server_new(metadata, public_key, private_key, certificate,
 						signature_method);
 		}
@@ -502,17 +505,36 @@ typedef struct {
 		~LassoServer() {
 			lasso_server_destroy(self);
 		}
+
+		static LassoServer *new_from_dump(gchar *dump) {
+			return lasso_server_new_from_dump(dump);
+		}
+
+		/* Methods */
+
+		void add_provider(gchar *metadata, gchar *public_key = NULL,
+				  gchar *ca_certificate = NULL) {
+			int errorCode;
+			errorCode = lasso_server_add_provider(self, metadata, public_key,
+							      ca_certificate);
+			/* FIXME: Handle error */
+		}
+
+		gchar *dump() {
+			return lasso_server_dump(self);
+		}
 	}
 } LassoServer;
 
 /* Constructors */
 
 %newobject lasso_server_new;
-LassoServer* lasso_server_new(gchar *metadata, gchar *public_key, gchar *private_key,
-			      gchar *certificate, lassoSignatureMethod signature_method);
+LassoServer *lasso_server_new(gchar *metadata = NULL, gchar *public_key = NULL,
+			      gchar *private_key = NULL, gchar *certificate = NULL,
+			      lassoSignatureMethod signature_method = lassoSignatureMethodRsaSha1);
 
 %newobject lasso_server_new_from_dump;
-LassoServer* lasso_server_new_from_dump(gchar *dump);
+LassoServer *lasso_server_new_from_dump(gchar *dump);
 
 /* Destructor */
 
@@ -520,11 +542,11 @@ void lasso_server_destroy(LassoServer *server);
 
 /* Methods */
 
-gint lasso_server_add_provider(LassoServer *server, gchar *metadata, gchar *public_key,
-			       gchar *ca_certificate);
+gint lasso_server_add_provider(LassoServer *server, gchar *metadata, gchar *public_key = NULL,
+			       gchar *ca_certificate = NULL);
 
 %newobject lasso_server_dump;
-gchar* lasso_server_dump(LassoServer *server);
+gchar *lasso_server_dump(LassoServer *server);
 
 
 /***********************************************************************
@@ -552,10 +574,10 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_identity_new;
-LassoIdentity* lasso_identity_new(void);
+LassoIdentity *lasso_identity_new(void);
 
 %newobject lasso_identity_new_from_dump;
-LassoIdentity* lasso_identity_new_from_dump(gchar *dump);
+LassoIdentity *lasso_identity_new_from_dump(gchar *dump);
 
 /* Destructor */
 
@@ -564,7 +586,7 @@ void lasso_identity_destroy(LassoIdentity *identity);
 /* Methods */
 
 %newobject lasso_identity_dump;
-gchar* lasso_identity_dump(LassoIdentity *identity);
+gchar *lasso_identity_dump(LassoIdentity *identity);
 
 
 /***********************************************************************
@@ -592,10 +614,10 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_session_new;
-LassoSession* lasso_session_new(void);
+LassoSession *lasso_session_new(void);
 
 %newobject lasso_session_new_from_dump;
-LassoSession* lasso_session_new_from_dump(gchar *dump);
+LassoSession *lasso_session_new_from_dump(gchar *dump);
 
 /* Destructor */
 
@@ -604,10 +626,10 @@ void lasso_session_destroy(LassoSession *session);
 /* Methods */
 
 %newobject lasso_session_dump;
-gchar* lasso_session_dump(LassoSession *session);
+gchar *lasso_session_dump(LassoSession *session);
 
 %newobject lasso_session_get_authentication_method;
-gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *remote_providerID);
+gchar *lasso_session_get_authentication_method(LassoSession *session, gchar *remote_providerID);
 
 
 /***********************************************************************
@@ -690,10 +712,10 @@ LassoResponsePtr LassoProfile_response_get(LassoProfile *profile) {
 /* Methods */
 
 %newobject lasso_profile_get_identity;
-LassoIdentity* lasso_profile_get_identity(LassoProfile *profile);
+LassoIdentity *lasso_profile_get_identity(LassoProfile *profile);
 
 %newobject lasso_profile_get_session;
-LassoSession* lasso_profile_get_session(LassoProfile *profile);
+LassoSession *lasso_profile_get_session(LassoProfile *profile);
 
 gboolean lasso_profile_is_identity_dirty(LassoProfile *profile);
 
@@ -738,7 +760,7 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_defederation_new;
-LassoDefederation* lasso_defederation_new(LassoServer *server, lassoProviderType provider_type);
+LassoDefederation *lasso_defederation_new(LassoServer *server, lassoProviderType provider_type);
 
 /* Destructor */
 
@@ -784,10 +806,10 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_login_new;
-LassoLogin* lasso_login_new(LassoServer *server);
+LassoLogin *lasso_login_new(LassoServer *server);
 
 %newobject lasso_login_new_from_dump;
-LassoLogin* lasso_login_new_from_dump(LassoServer *server, gchar *dump);
+LassoLogin *lasso_login_new_from_dump(LassoServer *server, gchar *dump);
 
 /* Destructor */
 
@@ -811,7 +833,7 @@ gint lasso_login_build_authn_response_msg(LassoLogin  *login, gint authenticatio
 gint lasso_login_build_request_msg(LassoLogin *login);
 
 %newobject lasso_login_dump;
-gchar* lasso_login_dump(LassoLogin *login);
+gchar *lasso_login_dump(LassoLogin *login);
 
 gint lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method);
 
@@ -852,7 +874,7 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_logout_new;
-LassoLogout* lasso_logout_new(LassoServer *server, lassoProviderType provider_type);
+LassoLogout *lasso_logout_new(LassoServer *server, lassoProviderType provider_type);
 
 /* Destructor */
 
@@ -865,7 +887,7 @@ gint lasso_logout_build_request_msg(LassoLogout *logout);
 gint lasso_logout_build_response_msg(LassoLogout *logout);
 
 %newobject lasso_logout_get_next_providerID;
-gchar* lasso_logout_get_next_providerID (LassoLogout *logout);
+gchar *lasso_logout_get_next_providerID (LassoLogout *logout);
 
 gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID,
 			       lassoHttpMethod request_method);
@@ -903,7 +925,7 @@ typedef struct {
 /* Constructors */
 
 %newobject lasso_lecp_new;
-LassoLecp* lasso_lecp_new(LassoServer *server);
+LassoLecp *lasso_lecp_new(LassoServer *server);
 
 /* Destructor */
 

@@ -242,31 +242,6 @@ class Server(_ObjectMixin, lassomod.LassoServer):
 
     lassomodClass = lassomod.LassoServer
 
-    # Constructors
-
-    def __init__(self, metadata = None, public_key = None, private_key = None, certificate = None,
-                signature_method = signatureMethodRsaSha1):
-        super(Server, self).__init__(
-            metadata, public_key, private_key, certificate, signature_method)
-
-    def new_from_dump(cls, dump):
-        self = lassomod.lasso_server_new_from_dump(dump)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_server_new_from_dump')
-        _setRegisteredClass(self)
-        return self
-    new_from_dump = classmethod(new_from_dump)
-
-    # Methods
-
-    def add_provider(self, metadata, public_key = None, certificate = None):
-        errorCode = lassomod.lasso_server_add_provider(self, metadata, public_key, certificate)
-        if errorCode:
-            raise newError(errorCode, 'lasso_server_add_provider')
-
-    def dump(self):
-        return lassomod.lasso_server_dump(self)
-
 registerClass(Server)
 
 
