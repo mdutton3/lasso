@@ -77,7 +77,7 @@ lasso_identity_add_federation(LassoIdentity   *identity,
 			      LassoFederation *federation)
 {
   LassoFederation *old_federation;
-  gboolean found;
+  gboolean found = FALSE;
   int i;
 
   g_return_val_if_fail(identity != NULL, -1);
@@ -85,23 +85,20 @@ lasso_identity_add_federation(LassoIdentity   *identity,
   g_return_val_if_fail(federation != NULL, -3);
 
   /* add the remote provider id if not already saved */
-  found = FALSE;
   for(i = 0; i<identity->providerIDs->len; i++) {
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
       found = TRUE;
+      break;
     }
   }
-  if (found == FALSE) {
+  if(found == TRUE) {
+    message(G_LOG_LEVEL_CRITICAL, "A federation existed already for this providerID, it was replaced by the new one.\n");
+  }
+  else {
     g_ptr_array_add(identity->providerIDs, g_strdup(remote_providerID));
-  }  
+  }
 
   /* add the federation, replace if one already exists */
-  old_federation = lasso_identity_get_federation(identity, remote_providerID);
-  if (old_federation != NULL) {
-    lasso_identity_remove_federation(identity, remote_providerID);
-    /* BEWARE: Don't destroy old_federation here.
-       It's not a copy. But it must change */
-  }
   g_hash_table_insert(identity->federations, g_strdup(remote_providerID), federation);
 
   identity->is_dirty = TRUE;
@@ -230,7 +227,7 @@ lasso_identity_remove_federation(LassoIdentity *identity,
   }
 
   /* remove the federation remote provider id */
-  for(i = 0; i<identity->providerIDs->len; i++){
+  for(i = 0; i<identity->providerIDs->len; i++) {
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
       debug("Remove federation of %s\n", remote_providerID);
       g_ptr_array_remove_index(identity->providerIDs, i);
