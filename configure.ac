@@ -746,6 +746,7 @@ Main
 Compiler:               ${CC} 
 Install prefix:         ${prefix}
 Debugging:              $enable_debugging
+Experimental ID-WSF:    $enable_wsf
 
 Optionals builds
 ----------------
