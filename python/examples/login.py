@@ -57,7 +57,7 @@ ret = idplogin.init_from_authn_request_msg(authn_request_msg,
 print "ProtocolProfile =", idplogin.protocolProfile
 
 must_authenticate = idplogin.must_authenticate()
-print "User must be authenticated =", idplogin.protocolProfile
+print "User must be authenticated =", must_authenticate
 
 if idplogin.protocolProfile == 1:
     ret = idplogin.build_artifact_msg(1,
