@@ -1120,8 +1120,10 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	protocolProfile = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProtocolProfile;
 	if (protocolProfile == NULL ||
 			strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART) == 0) {
+		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-	} else if (xmlStrEqual(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST)) {
+	} else if (strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST) == 0) {
+		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 	} else {
 		message(G_LOG_LEVEL_CRITICAL, 
