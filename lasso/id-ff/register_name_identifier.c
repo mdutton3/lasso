@@ -56,14 +56,14 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
   if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
   }
 
   /* get the prototocol profile of the register_name_identifier */
   protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider);
   if(protocolProfile == NULL){
-    message(G_LOG_LEVEL_ERROR, "Register_Name_Identifier Protocol profile not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Register_Name_Identifier Protocol profile not found\n");
     return(-3);
   }
 
@@ -86,7 +86,7 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
     debug("Building a http get request message\n");
   }
   else {
-    message(G_LOG_LEVEL_ERROR, "Invalid protocol Profile for register name identifier\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid protocol Profile for register name identifier\n");
   }
 
   return(0);
@@ -105,13 +105,13 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
   if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider not found (ProviderID = %s)\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Provider not found (ProviderID = %s)\n", profile->remote_providerID);
     return(-2);
   }
 
   protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider);
   if(protocolProfile == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Register name identifier protocol profile not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Register name identifier protocol profile not found\n");
     return(-3);
   }
 
@@ -160,14 +160,14 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     profile->remote_providerID = g_strdup(remote_providerID);
   }
   if(profile->remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "No provider id for init request\n");
+    message(G_LOG_LEVEL_CRITICAL, "No provider id for init request\n");
     return(-2);
   }
 
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if(federation == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Federation not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
     return(-3);
   }
   printf("plop\n");
@@ -191,7 +191,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     /* idp name identifier */
     nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
     if(nameIdentifier_node == NULL) {
-      message(G_LOG_LEVEL_ERROR, "Remote NameIdentifier for service provider not found\n");
+      message(G_LOG_LEVEL_CRITICAL, "Remote NameIdentifier for service provider not found\n");
       return(-1);
     }
     idpNameIdentifier   = lasso_node_get_content(nameIdentifier_node, NULL);
@@ -232,7 +232,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     break;
 
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid provider type (%d)\n", profile->provider_type);
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type (%d)\n", profile->provider_type);
     return(-5);
   }
 
@@ -252,7 +252,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 								oldFormat);
 
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while creating the request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while creating the request\n");
     return(-6);
   }
 
@@ -283,11 +283,11 @@ gint lasso_register_name_identifier_load_request_msg(LassoRegisterNameIdentifier
     debug("TODO, implement the get method\n");
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid request method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
     return(-3);
   }
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while building the request from msg\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building the request from msg\n");
     return(-4);
   }
 
@@ -326,7 +326,7 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
 								  profile->request);
 
   if(profile->response == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while building response\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building response\n");
     return(-4);
   }
 
@@ -335,14 +335,14 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
 
   nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL, NULL);
   if(nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_ERROR, "No name identifier found in register_name_identifier request\n");
+    message(G_LOG_LEVEL_CRITICAL, "No name identifier found in register_name_identifier request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-5);
   }
 
   remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL, NULL);
   if(remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "No provider id found in register_name_identifier request\n");
+    message(G_LOG_LEVEL_CRITICAL, "No provider id found in register_name_identifier request\n");
     return(-6);
   }
 
@@ -397,7 +397,7 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
     profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unknown response method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
     return(-3);
   }
  
@@ -409,7 +409,7 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
     }
   }
   else {
-    message(G_LOG_LEVEL_ERROR, err->message);
+    message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
     return (ret);

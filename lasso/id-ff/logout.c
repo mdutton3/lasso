@@ -73,7 +73,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
   if(provider==NULL){
-    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
   }
 
@@ -81,7 +81,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
 
   if(protocolProfile==NULL){
-    message(G_LOG_LEVEL_ERROR, "Single Logout Protocol profile not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
     return(-3);
   }
 
@@ -122,7 +122,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   xmlChar *protocolProfile;
   
   if(!LASSO_IS_LOGOUT(logout)){
-    message(G_LOG_LEVEL_ERROR, "Not a Logout object\n");
+    message(G_LOG_LEVEL_CRITICAL, "Not a Logout object\n");
     return(-1);
   }
   
@@ -130,13 +130,13 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
   if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider not found %s\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Provider not found %s\n", profile->remote_providerID);
     return(-2);
   }
 
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
   if(protocolProfile == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Single Logout Protocol profile not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
     return(-3);
   }
 
@@ -219,14 +219,14 @@ lasso_logout_init_request(LassoLogout *logout,
   }
 
   if(profile->remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "No provider id for init request\n");
+    message(G_LOG_LEVEL_CRITICAL, "No provider id for init request\n");
     return(-2);
   }
 
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if(federation == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Federation not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
     return(-3);
   }
 
@@ -245,12 +245,12 @@ lasso_logout_init_request(LassoLogout *logout,
     }
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid provider type\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
     return(-4);
   }
   
   if(nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Name identifier not found for %s\n",
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s\n",
 	    profile->remote_providerID);
     return(-5);
   }
@@ -270,7 +270,7 @@ lasso_logout_init_request(LassoLogout *logout,
   lasso_node_destroy(nameIdentifier);
 
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while creating the request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while creating the request\n");
     return(-6);
   }
 
@@ -303,11 +303,11 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
     debug("TODO, implement the get method\n");
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid request method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
     return(-3);
   }
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while building the request from msg\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building the request from msg\n");
     return(-4);
   }
 
@@ -339,7 +339,7 @@ lasso_logout_process_request(LassoLogout *logout)
   profile = LASSO_PROFILE(logout);
 
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "LogoutRequest not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "LogoutRequest not found\n");
     return(-1);
   }
 
@@ -347,7 +347,7 @@ lasso_logout_process_request(LassoLogout *logout)
   remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
 						   NULL, NULL);
   if(remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "ProviderID in LogoutRequest not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "ProviderID in LogoutRequest not found\n");
     return(-1);
   }
   profile->remote_providerID = remote_providerID;
@@ -357,7 +357,7 @@ lasso_logout_process_request(LassoLogout *logout)
 						lassoSamlStatusCodeSuccess,
 						profile->request);
   if(profile->response == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while building response\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building response\n");
     return(-5);
   }
 
@@ -367,7 +367,7 @@ lasso_logout_process_request(LassoLogout *logout)
   nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier",
 					NULL, NULL);
   if(nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Name identifier not found in logout request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-6);
   }
@@ -375,7 +375,7 @@ lasso_logout_process_request(LassoLogout *logout)
   remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
 						   NULL, NULL);
   if(remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider id not found in logout request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Provider id not found in logout request\n");
     return(-7);
   }
 
@@ -430,7 +430,7 @@ lasso_logout_process_request(LassoLogout *logout)
 
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Uknown provider type\n");
+    message(G_LOG_LEVEL_CRITICAL, "Uknown provider type\n");
   }
 
   return(0);
@@ -459,18 +459,18 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unknown response method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
     return(-3);
   }
 
   if(profile->response == NULL) {
-    message(G_LOG_LEVEL_ERROR, "LogoutResponse is NULL\n");
+    message(G_LOG_LEVEL_CRITICAL, "LogoutResponse is NULL\n");
     return(-1);
   }
   statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
 
   if(statusCode == NULL) {
-    message(G_LOG_LEVEL_ERROR, "StatusCode node not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "StatusCode node not found\n");
     return(-1);
   }
 
@@ -493,7 +493,7 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
 
     /* if no more assertion for other providers, remove assertion of the original provider and restore the original requester infos */
     if(profile->session->providerIDs->len == 1){
-      message(G_LOG_LEVEL_WARNING, "remove assertion of the original provider\n");
+      message(G_LOG_LEVEL_WARNING, "Remove assertion of the original provider\n");
       lasso_session_remove_assertion(profile->session, logout->initial_remote_providerID);
 
       profile->remote_providerID = logout->initial_remote_providerID;
@@ -503,7 +503,7 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
 
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unkown provider type\n");
+    message(G_LOG_LEVEL_CRITICAL, "Unkown provider type\n");
   }
 
   return(0);

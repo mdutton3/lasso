@@ -42,14 +42,14 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
   if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
   }
 
   /* get the prototocol profile of the federation termination notification */
   protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider);
   if(protocolProfile == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Federation termination notification protocol profile not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Federation termination notification protocol profile not found\n");
     return(-3);
   }
 
@@ -58,7 +58,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
     profile->request_type = lassoHttpMethodSoap;
     profile->msg_url = lasso_provider_get_federationTerminationServiceURL(provider);
     if(profile->msg_url == NULL) {
-      message(G_LOG_LEVEL_ERROR, "Federation Termination Notification url not found\n");
+      message(G_LOG_LEVEL_CRITICAL, "Federation Termination Notification url not found\n");
       return(-4);
     }
     profile->msg_body = lasso_node_export_to_soap(profile->request);
@@ -72,7 +72,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
     profile->msg_body = NULL;
   }
   else{
-    message(G_LOG_LEVEL_ERROR, "Invalid protocol profile\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid protocol profile\n");
     return(-5);
   }
 
@@ -111,7 +111,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   }
 
   if (profile->remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "No provider Id for init notification\n");
+    message(G_LOG_LEVEL_CRITICAL, "No provider Id for init notification\n");
     codeError = -1;
     goto done;
   }
@@ -119,7 +119,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if (federation == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Federation not found for %s\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found for %s\n", profile->remote_providerID);
     codeError = -1;
     goto done;
   }
@@ -139,11 +139,11 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     }
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid provider type\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
   }
   
   if(!nameIdentifier) {
-    message(G_LOG_LEVEL_ERROR, "Name identifier not found for %s\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s\n", profile->remote_providerID);
     codeError = -1;
     goto done;
   }
@@ -158,7 +158,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
 								   format);
 
   if(profile->request == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while creating the notification\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while creating the notification\n");
     codeError = -1;
     goto done;
   }
@@ -196,11 +196,11 @@ lasso_federation_termination_load_notification_msg(LassoFederationTermination *d
     profile->request = lasso_federation_termination_notification_new_from_export(notification_msg, lassoNodeExportTypeQuery);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid notification method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid notification method\n");
     return(-3);
   }
   if(profile->request==NULL){
-    message(G_LOG_LEVEL_ERROR, "Error while building the notification from msg\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building the notification from msg\n");
     return(-4);
   }
 
@@ -225,7 +225,7 @@ lasso_federation_termination_process_notification(LassoFederationTermination *de
   profile = LASSO_PROFILE(defederation);
 
   if(profile->request == NULL){
-    message(G_LOG_LEVEL_ERROR, "Request not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Request not found\n");
     return(-1);
   }
 
@@ -233,20 +233,20 @@ lasso_federation_termination_process_notification(LassoFederationTermination *de
   profile->remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
 							    NULL, NULL);
   if(profile->remote_providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Remote provider id not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Remote provider id not found\n");
     return(-1);
   }
 
   nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier",
 					NULL, NULL);
   if(nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Name identifier not found in request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in request\n");
     return(-1);
   }
 
   /* Verify federation */
   if (profile->identity == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Identity environ not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Identity environ not found\n");
     return(-1);
   }
 
