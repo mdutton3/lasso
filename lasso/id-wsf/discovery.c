@@ -102,22 +102,25 @@ LassoDiscoInsertEntry*
 lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 				 const gchar                   *serviceType,
 				 const gchar                   *providerID,
-				 GList                         *descriptions,
+/* 				 GList                         *descriptions, */
+				 LassoDiscoDescription         *description,
 				 LassoDiscoResourceID          *resourceID,
 				 LassoDiscoEncryptedResourceID *encryptedResourceID,
-				 GList                         *options)
+/* 				 GList                         *options) */
+				 const char                    *option)
 {
-	LassoDiscoModify *modify;
+	GList *descriptions = NULL;
 	LassoDiscoInsertEntry *entry;
+	LassoDiscoModify *modify;
+	LassoDiscoOptions *opts;
 	LassoDiscoResourceOffering *resource;
 	LassoDiscoServiceInstance *service;
-	LassoDiscoOptions *opts;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(serviceType!= NULL, NULL);
 	g_return_val_if_fail(providerID != NULL, NULL);
 	/* only one description is required */
-	g_return_val_if_fail(g_list_length(descriptions) >= 1, NULL);
+/* 	g_return_val_if_fail(g_list_length(descriptions) >= 1, NULL); */
 	/* resourceID/encryptedResourceID and options are optionals */
 	g_return_val_if_fail((resourceID == NULL && encryptedResourceID == NULL) || \
 			     (LASSO_IS_DISCO_RESOURCE_ID(resourceID) ^	\
@@ -128,22 +131,28 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 	/* create InsertEntry */
 	entry = lasso_disco_insert_entry_new();
 	/* create ServiceInstance */
+	descriptions = g_list_append(descriptions, (gpointer)description);
 	service = lasso_disco_service_instance_new(serviceType, providerID, descriptions);
 	/* create ResourceOffering */
 	resource = lasso_disco_resource_offering_new(service);
 	resource->ResourceID = resourceID;
 	resource->EncryptedResourceID = encryptedResourceID;
 
-	/* optionals data */
+	/* optional data */
 	/* create Options */
-	if (options != NULL) {
+/* 	if (options != NULL) { */
+/* 		opts = lasso_disco_options_new(); */
+/* 		while (options != NULL) { */
+/* 			opts->Option = g_list_append(opts->Option, options->data); */
+/* 			options = g_list_next(options); */
+/* 		} */
+/* 		resource->Options = opts; */
+/* 	} */
+	if (option != NULL) {
 		opts = lasso_disco_options_new();
-		while (options != NULL) {
-			opts->Option = g_list_append(opts->Option, options->data);
-			options = g_list_next(options);
-		}
-		resource->Options = opts;
+		opts->Option = g_list_append(opts->Option, (gpointer)option);
 	}
+
 	entry->ResourceOffering = resource;
 
 	/* add InsertEntry */
@@ -322,6 +331,15 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 	/*
 	 * after the call of this method, app must add ResourceOffering
 	 */
+
+	return 0;
+}
+
+gint
+lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gchar *message)
+{
+	LASSO_WSF_PROFILE(discovery)->response =
+		LASSO_NODE(lasso_disco_modify_new_from_message(message));
 
 	return 0;
 }

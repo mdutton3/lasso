@@ -32,7 +32,13 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/disco_insert_entry.h>
+#include <lasso/xml/disco_modify.h>
+#include <lasso/xml/disco_modify_response.h>
+#include <lasso/xml/disco_query.h>
+#include <lasso/xml/disco_query_response.h>
+#include <lasso/xml/disco_remove_entry.h>
 #include <lasso/xml/disco_requested_service_type.h>
+
 #include <lasso/id-wsf/wsf_profile.h>
 
 #define LASSO_TYPE_DISCOVERY (lasso_discovery_get_type())
@@ -71,10 +77,10 @@ LASSO_EXPORT LassoDiscoInsertEntry* lasso_discovery_add_insert_entry(
 	LassoDiscovery                *discovery,
 	const gchar                   *serviceType,
 	const gchar                   *providerID,
-	GList                         *descriptions,
+	LassoDiscoDescription         *description, /* Was GList *descriptions before */
 	LassoDiscoResourceID          *resourceID,
 	LassoDiscoEncryptedResourceID *encryptedResourceID,
-	GList                         *options);
+	const char                    *option); /* Was GList *options before */
 
 LASSO_EXPORT gint                   lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 								     const gchar    *entryID);
@@ -107,8 +113,12 @@ LASSO_EXPORT gint                   lasso_discovery_process_modify_msg(LassoDisc
 
 LASSO_EXPORT gint lasso_discovery_process_modify_response_msg(
 		LassoDiscovery *discovery, const gchar *message);
+
 LASSO_EXPORT gint lasso_discovery_process_query_msg(
 		LassoDiscovery *discovery, const gchar *message);
+
+LASSO_EXPORT gint lasso_discovery_process_query_response_msg(
+	        LassoDiscovery *discovery, const gchar *message);
 
 #ifdef __cplusplus
 }
