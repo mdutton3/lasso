@@ -104,10 +104,12 @@ get_xmlNode(LassoNode *node)
 	xmlNodeSetName(xmlnode, "Server");
 	xmlSetProp(xmlnode, "ServerDumpVersion", "2");
 
-	xmlNewTextChild(xmlnode, NULL, "PrivateKeyFilePath", server->private_key);
-	if (server->secret_key)
+	if (server->private_key && server->private_key[0])
+		xmlNewTextChild(xmlnode, NULL, "PrivateKeyFilePath", server->private_key);
+	if (server->secret_key && server->secret_key[0])
 		xmlNewTextChild(xmlnode, NULL, "SecretKey", server->secret_key);
-	xmlNewTextChild(xmlnode, NULL, "CertificateFilePath", server->certificate);
+	if (server->certificate && server->certificate[0])
+		xmlNewTextChild(xmlnode, NULL, "CertificateFilePath", server->certificate);
 	xmlSetProp(xmlnode, "SignatureMethod", signature_methods[server->signature_method]);
 
 	if (g_hash_table_size(server->providers)) {
