@@ -1406,8 +1406,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
   }
 
   if (reference_uri != NULL) {
-    uri = xmlMalloc(strlen(reference_uri)+1+1);
-    g_sprintf(uri, "#%s", reference_uri);
+    uri = g_strdup_printf("#%s", reference_uri);
   }
   else {
     uri = NULL;
@@ -1415,6 +1414,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
   reference = xmlSecTmplSignatureAddReference(signature,
 					      xmlSecTransformSha1Id,
 					      NULL, uri, NULL);
+  g_free(uri);
 
   if (reference == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
