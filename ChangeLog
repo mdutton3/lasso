@@ -1,3 +1,5099 @@
+2005-01-27  fpeters
+
+	* configure.ac: wsf activation status in configure summary output
+
+2005-01-27  fpeters
+
+	* configure.ac, lasso/Makefile.am, lasso/extract_symbols.py,
+	swig/Lasso.i, swig/inheritance.h: configure flag to enable ID-WSF
+	(off by default)
+
+2005-01-27  fpeters
+
+	* swig/Lasso.i: don't use wsf for now
+
+2005-01-27  fpeters
+
+	* docs/lasso-book/defederation.process,
+	docs/lasso-book/single-logout.process: late 0.5 fixes to
+	documentation
+
+2005-01-27  fpeters
+
+	* lasso/extract_symbols.py, lasso/xml/xml.c: correctly deals with
+	multiple elements for the same query part
+
+2005-01-27  eraviart
+
+	* lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/strings.h,
+	swig/Lasso.i: Corrected name of element AuthnContextComparison.
+	Added missing constants.
+
+2005-01-26  fpeters
+
+	* php/Makefile.am: removed .bak file on clean
+
+2005-01-26  fpeters
+
+	* NEWS, configure.ac, doap.rdf: prepare for 0.6.0
+
+2005-01-26  fpeters
+
+	* docs/reference/tmpl/identity.sgml,
+	docs/reference/tmpl/server.sgml, docs/reference/tmpl/session.sgml:
+	take ntoe of function changes in doc
+
+2005-01-26  eraviart
+
+	* configure.ac, php/Makefile.am: Finished to remove PHP examples.
+
+2005-01-26  nclapies
+
+	* lasso/id-ff/server.c, lasso/id-wsf/discovery.c,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c: Added / updated ref counts.
+
+2005-01-26  fpeters
+
+	* .cvsignore: lasso-src-config is generated
+
+2005-01-26  fpeters
+
+	* csharp/.cvsignore, java/.cvsignore: ignore more and more files
+
+2005-01-26  nclapies
+
+	* lasso/id-ff/login.c: setting resourceId or encryptedResourceId in
+	LassoLogin return 0.
+
+2005-01-26  nclapies
+
+	* swig/Lasso.i: Added setting of resourceId and encryptedResourceId
+	in LassoLogin.
+
+2005-01-26  nclapies
+
+	* lasso/id-ff/login.c: Added ref count on resourceId and
+	encryptedResourceId in LassoLogin.
+
+2005-01-26  fpeters
+
+	* docs/reference/lasso.sgml: reworded
+
+2005-01-26  nclapies
+
+	* swig/Lasso-wsf.i: Now addData() method of DstData object take a
+	xml node buffer.
+
+2005-01-26  eraviart
+
+	* swig/Lasso-wsf.i: Removed forgotten test code.
+
+2005-01-26  nclapies
+
+	* lasso/xml/dst_data.h: Added comment.
+
+2005-01-26  nclapies
+
+	* lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h:
+	Added useful inc ref. Replaced type of param in add_data(). now it
+	is a xml node buffer.
+
+2005-01-26  nclapies
+
+	* lasso/id-wsf/discovery.c: Added useful inc ref.
+
+2005-01-26  nclapies
+
+	* lasso/xml/disco_resource_offering.c: Added an incrementation
+	reference on service instance in constructor of resource offering.
+
+2005-01-26  nclapies
+
+	* lasso/xml/disco_service_instance.c: Added an incrementation
+	reference on description in constructor of service instance.
+
+2005-01-26  eraviart
+
+	* swig/Lasso-wsf.i, swig/Lasso.i: SWIG: "any" attributes of DstData
+	& DstNewData are now lists of xmlNodes.
+
+2005-01-26  fpeters
+
+	* docs/reference/lasso.sgml: blah blah in reference manual
+	introduction
+
+2005-01-26  fpeters
+
+	* docs/reference/lasso-sections.txt: removed functions that are now
+	private from documentation
+
+2005-01-26  nclapies
+
+	* swig/Lasso.i: Added include of lasso_config.h for lasso version
+	constants.
+
+2005-01-26  eraviart
+
+	* python/examples/.cvsignore, python/examples/Makefile.am,
+	python/examples/defederation.py, python/examples/login.py,
+	python/examples/logout.py, python/examples/mapping.py,
+	python/examples/registration.py, python/examples/test.py,
+	python/examples/user.py: Removed obsolete Python sample code.
+
+2005-01-26  eraviart
+
+	* java/coldfusion/src/CFLassoSingleLogout.java,
+	java/coldfusion/src/CFLassoSingleSignOn.java: Updated ColdFusion
+	examples.
+
+2005-01-26  eraviart
+
+	* java/tests/LoginTest.java, swig/Lasso.i: Added SWIG binding for
+	lasso_session_get_assertions. Also added Java code to test it.
+
+2005-01-26  fpeters
+
+	* swig/Lasso.i: lasso_identity_{add,remove}_federation went private
+
+2005-01-26  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/session.c,
+	lasso/id-ff/session.h: new lasso_session_get_assertions, returns
+	GList* of (incref'd) assertions
+
+2005-01-26  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am: every morning I distcheck
+	and fix java and csharp classes; oh yeah.
+
+2005-01-26  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/identity.c,
+	lasso/id-ff/identity.h, lasso/id-ff/identityprivate.h,
+	lasso/id-ff/login.c: moved lasso_identity_{add,remove}_federation
+	to private
+
+2005-01-26  fpeters
+
+	* lasso/Makefile.am: use python as found by configure
+
+2005-01-26  eraviart
+
+	* java/tests/LoginTest.java, tests/data/idp1-la/metadata.xml,
+	tests/data/idp2-la/metadata.xml, tests/data/sp1-la/metadata.xml,
+	tests/data/sp2-la/metadata.xml, tests/data/sp3-la/metadata.xml:
+	Updated Java LoginTest and test metadata.
+
+2005-01-26  nclapies
+
+	* lasso/xml/saml_attribute_value.c: Set name of snippet node list
+	any to empty string.
+
+2005-01-26  nclapies
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h: Added private attribute
+	ResourceId and EncryptedResourceID. Added setting methods.
+
+2005-01-26  nclapies
+
+	* lasso/xml/dst_data.c: set name of xmlnode list snippet to empty
+	string.
+
+2005-01-25  nclapies
+
+	* lasso/xml/dst_data.c: Use snippet xmlnode list.
+
+2005-01-25  nclapies
+
+	* lasso/xml/xml.c: Added support of xsi:any element list.
+
+2005-01-25  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/xml.c: Empty node
+	name is allowed for LIST_NODES; this allows nodes to be
+	reconstructed looking at their names and namespaces.  This is
+	useful to implement xs:any
+
+2005-01-25  eraviart
+
+	* swig/Lasso.i: SWIG: Corrected Java enums. Renamed enum types.
+	Corrected constant name.
+
+2005-01-25  fpeters
+
+	* lasso/id-ff/identity.c: documented memory management for
+	lasso_identity_add_federation
+
+2005-01-25  fpeters
+
+	* php/Makefile.am: no more php/examples/ subdir
+
+2005-01-25  cnowicki
+
+	* configure.ac:
+	remove php samples
+
+2005-01-25  fpeters
+
+	* csharp/.cvsignore, csharp/Makefile.am: updated swig generated
+	files list for C#
+
+2005-01-25  fpeters
+
+	* java/.cvsignore, java/Makefile.am: updated swig generated file
+	list
+
+2005-01-25  fpeters
+
+	* java/Makefile.am: fixed DowncastableNode.java filename
+
+2005-01-25  fpeters
+
+	* lasso/id-ff/server.h: "hope you paid attention to API/ABI".
+
+2005-01-24  eraviart
+
+	* swig/Lasso.i: Cosmetic changes to SWIG Lasso.i #ifdefs.
+
+2005-01-24  rchantereau
+
+	* swig/Lasso.i: Added a special section for PHP4 SWIG execeptions.
+
+	Now positive lasso errors will not produce a E_ERROR PHP error but
+	simply a E_WARNING PHP error.
+
+2005-01-24  nclapies
+
+	* lasso/id-wsf/discovery.c: Fixed type of parameter in
+	lasso_disco_service_instance_new().
+
+2005-01-24  nclapies
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h, swig/Lasso.i: Added
+	support of disco / dst service type and query / modify request type
+	in lasso_profile_get_request_type_from_soap_msg()r. updated swig
+	binding.
+
+2005-01-24  nclapies
+
+	* swig/Lasso-wsf.i, swig/Lasso.i: Updated swig binding : added
+	services support in LassoServer, resourceId in LassoLogin. Replaced
+	parameter binding in LassoDiscoServiceInstance constructor.
+
+2005-01-24  nclapies
+
+	* lasso/xml/Makefile.am: Updated Makefile to include
+	saml_attribute_value.h
+
+2005-01-24  nclapies
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h: Added resourcId
+	attribute : resourceId. Added code to include a
+	LassoDiscoResourceOffering in Assertion. It needs to find a service
+	in LassoServer and resourceId must be set.
+
+2005-01-24  nclapies
+
+	* lasso/xml/saml_attribute_value.c,
+	lasso/xml/saml_attribute_value.h: Initial version.
+
+2005-01-24  nclapies
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: Added services
+	attribute : now LassoServer stores a hash of services indexed by
+	his service type.
+
+2005-01-24  nclapies
+
+	* lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h: Third parameter of constructor
+	is LassoDiscoDescription* descriptinn instead of GList
+	*descriptions.
+
+2005-01-24  nclapies
+
+	* lasso/xml/saml_attribute.c, lasso/xml/saml_attribute.h: Replaced
+	type of new returned object : LassoNode to LassoSamlAttribute.
+
+2005-01-24  nclapies
+
+	* lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_attribute_statement.h: Replaced type of new returned
+	object : LassoNode to LassoSamlAttributeStatement.
+
+2005-01-24  eraviart
+
+	* swig/Lasso.i: Added Lasso version numbers to bindings.
+
+2005-01-24  eraviart
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/server.c,
+	lasso/id-ff/server.h, lasso/id-ff/service.c, lasso/id-ff/service.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: Removed service from ID-FF. It was
+	obsolete and will be replaced with a new API, once Lasso 0.6 is
+	out.
+
+2005-01-23  eraviart
+
+	* lasso/xml/dst_modification.c, lasso/xml/dst_modification.h,
+	lasso/xml/is_inquiry.c, lasso/xml/is_inquiry_element.c,
+	lasso/xml/is_interaction_request.c, lasso/xml/is_item.c,
+	swig/Lasso-wsf.i, swig/Lasso.i, swig/inheritance.h: Completed
+	ID-WSF SWIG binding.  Added attribute server to binding of
+	LassoProfile.  Small corrections to declarations of ID-WSF objects.
+
+2005-01-23  eraviart
+
+	* swig/Lasso-wsf.i: Quick fix so that Lasso bindings work till SWIG
+	WSF part is fully updated.
+
+2005-01-22  eraviart
+
+	* swig/Lasso-wsf.i: Updated binding of all "discovery" nodes.
+
+2005-01-22  eraviart
+
+	* swig/Lasso-wsf.i: Work in progress: improving ID-WSF SWIG
+	binding.
+
+2005-01-22  eraviart
+
+	* README, doap.rdf, csharp/tests/BindingTests.cs, debian/copyright,
+	docs/lasso-book/book.rst, docs/lasso-book/writing-a-c-sp.txt,
+	java/coldfusion/src/CFLassoSingleLogout.java,
+	java/coldfusion/src/CFLassoSingleSignOn.java,
+	java/tests/BindingTests.java, java/tests/LoginTest.java,
+	lasso/errors.c, lasso/errors.h, lasso/export.h, lasso/lasso.c,
+	lasso/lasso.h, lasso/id-ff/defederation.c,
+	lasso/id-ff/defederation.h, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/identity.c,
+	lasso/id-ff/identity.h, lasso/id-ff/lecp.c, lasso/id-ff/lecp.h,
+	lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/logout.h, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/profileprivate.h, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/id-ff/serverprivate.h, lasso/id-ff/service.c,
+	lasso/id-ff/service.h, lasso/id-ff/session.c,
+	lasso/id-ff/session.h, lasso/id-ff/sessionprivate.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	lasso/id-wsf/interaction_profile_service.c,
+	lasso/id-wsf/interaction_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h,
+	lasso/xml/disco_credentials.c, lasso/xml/disco_credentials.h,
+	lasso/xml/disco_description.c, lasso/xml/disco_description.h,
+	lasso/xml/disco_encrypted_resource_id.c,
+	lasso/xml/disco_encrypted_resource_id.h,
+	lasso/xml/disco_insert_entry.c, lasso/xml/disco_insert_entry.h,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_modify_response.h, lasso/xml/disco_options.c,
+	lasso/xml/disco_options.h, lasso/xml/disco_query.c,
+	lasso/xml/disco_query.h, lasso/xml/disco_query_response.c,
+	lasso/xml/disco_query_response.h, lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_remove_entry.h,
+	lasso/xml/disco_requested_service_type.c,
+	lasso/xml/disco_requested_service_type.h,
+	lasso/xml/disco_resource_id.c, lasso/xml/disco_resource_id.h,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_resource_offering.h,
+	lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h, lasso/xml/dst_data.c,
+	lasso/xml/dst_data.h, lasso/xml/dst_modification.c,
+	lasso/xml/dst_modification.h, lasso/xml/dst_modify.c,
+	lasso/xml/dst_modify.h, lasso/xml/dst_modify_response.c,
+	lasso/xml/dst_modify_response.h, lasso/xml/dst_new_data.c,
+	lasso/xml/dst_new_data.h, lasso/xml/dst_query.c,
+	lasso/xml/dst_query.h, lasso/xml/dst_query_item.c,
+	lasso/xml/dst_query_item.h, lasso/xml/dst_query_response.c,
+	lasso/xml/dst_query_response.h, lasso/xml/is_help.c,
+	lasso/xml/is_help.h, lasso/xml/is_inquiry.c,
+	lasso/xml/is_inquiry.h, lasso/xml/is_inquiry_element.c,
+	lasso/xml/is_inquiry_element.h, lasso/xml/is_interaction_request.c,
+	lasso/xml/is_interaction_request.h,
+	lasso/xml/is_interaction_response.c,
+	lasso/xml/is_interaction_response.h,
+	lasso/xml/is_interaction_statement.c,
+	lasso/xml/is_interaction_statement.h, lasso/xml/is_item.c,
+	lasso/xml/is_item.h, lasso/xml/is_parameter.c,
+	lasso/xml/is_parameter.h, lasso/xml/is_redirect_request.c,
+	lasso/xml/is_redirect_request.h, lasso/xml/is_select.c,
+	lasso/xml/is_select.h, lasso/xml/is_text.c, lasso/xml/is_text.h,
+	lasso/xml/is_user_interaction.c, lasso/xml/is_user_interaction.h,
+	lasso/xml/lib_assertion.c, lasso/xml/lib_assertion.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_context.h,
+	lasso/xml/lib_authn_request.c, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.c, lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entries.h,
+	lasso/xml/lib_idp_entry.c, lasso/xml/lib_idp_entry.h,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_idp_list.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c, lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_scoping.h, lasso/xml/lib_status_response.c,
+	lasso/xml/lib_status_response.h, lasso/xml/lib_subject.c,
+	lasso/xml/lib_subject.h, lasso/xml/private.h,
+	lasso/xml/saml_advice.c, lasso/xml/saml_advice.h,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_assertion.h,
+	lasso/xml/saml_attribute.c, lasso/xml/saml_attribute.h,
+	lasso/xml/saml_attribute_designator.c,
+	lasso/xml/saml_attribute_designator.h,
+	lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_attribute_statement.h,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_audience_restriction_condition.h,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_authority_binding.h,
+	lasso/xml/saml_condition_abstract.c,
+	lasso/xml/saml_condition_abstract.h, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_conditions.h, lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_name_identifier.h,
+	lasso/xml/saml_statement_abstract.c,
+	lasso/xml/saml_statement_abstract.h, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject.h, lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_confirmation.h,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_locality.h,
+	lasso/xml/saml_subject_statement.c,
+	lasso/xml/saml_subject_statement.h,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/saml_subject_statement_abstract.h,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response.h, lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h, lasso/xml/samlp_status.c,
+	lasso/xml/samlp_status.h, lasso/xml/samlp_status_code.c,
+	lasso/xml/samlp_status_code.h, lasso/xml/strings.h,
+	lasso/xml/tools.c, lasso/xml/utility_status.c,
+	lasso/xml/utility_status.h, lasso/xml/xml.c, lasso/xml/xml.h,
+	perl/tests/binding_tests.pl, php/patch_swig_output.py,
+	php/tests/binding_tests.php, php/tests/perfs.php,
+	python/tests/binding_tests.py, python/tests/errorchecking_tests.py,
+	python/tests/profiles_tests.py, python/tests/tests.py,
+	swig/Lasso-wsf.i, swig/Lasso.i, swig/inheritance.h,
+	tests/basic_tests.c, tests/login_tests.c, tests/perfs.c,
+	tests/random_tests.c, tests/tests.c, win32/lasso.rc: Updated
+	Copyright and authors.
+
+2005-01-22  eraviart
+
+	* csharp/examples/perfs.cs, csharp/examples/runme.cs,
+	csharp/tests/BindingTests.cs,
+	java/coldfusion/src/CFLassoSingleLogout.java,
+	java/coldfusion/src/CFLassoSingleSignOn.java,
+	java/tests/BindingTests.java, java/tests/LoginTest.java,
+	perl/tests/binding_tests.pl, python/examples/defederation.py,
+	python/examples/login.py, python/examples/logout.py,
+	python/examples/registration.py, python/tests/binding_tests.py,
+	python/tests/profiles_tests.py, swig/Lasso-wsf.i, swig/Lasso.i:
+	SWIG: Renamed constants from camelCase to UPPER_CASE.
+
+2005-01-22  eraviart
+
+	* swig/Lasso-wsf.i, swig/Lasso.i: SWIG: Added missing renaming of
+	constant LASSO_HTTP_METHOD_NONE.
+
+	SWIG: Very preliminary clean-up of Lasso-wsf.i.
+
+2005-01-22  eraviart
+
+	* swig/Lasso.i: Renamed SWIG module name to "lasso" instead of
+	"Lasso" for every language.
+
+2005-01-22  fpeters
+
+	* lasso/id-ff/login.c: don't get remote provider id out of request
+	if it was initiated by provider
+
+2005-01-22  eraviart
+
+	* swig/Lasso.i: SWIG: Added binding for new_full constructors.
+
+2005-01-21  fpeters
+
+	* lasso/id-ff/login.c: fixed missing provider error code (and used
+	it in other places)
+
+2005-01-21  fpeters
+
+	* lasso/id-ff/login.c: don't segfault on missing remote provider id
+
+2005-01-21  fpeters
+
+	* lasso/xml/lib_authn_request.c: removed lib:Scoping, optional
+
+2005-01-21  fpeters
+
+	* lasso/xml/lib_authn_request.c: reordered lib:authnRequest
+	elements
+
+2005-01-21  fpeters
+
+	* lasso/xml/lib_authn_request.c, lasso/xml/lib_scoping.c,
+	lasso/xml/private.h, lasso/xml/xml.c: new SNIPPET_OPTIONAL_NEG
+	which allow to skip integer elements when set to -1 (useful for
+	proxycount)
+
+2005-01-21  fpeters
+
+	* lasso/xml/lib_status_response.c, lasso/xml/samlp_status_code.c:
+	moved samlp qname conversion to lib_status_response
+
+2005-01-21  fpeters
+
+	* lasso/xml/samlp_status_code.c: adds samlp: prefix to statuscode
+	qname if necessary
+
+2005-01-21  eraviart
+
+	* php/patch_swig_output.py: SWIG: Added yet another correction in
+	generated PHP lasso_wrap.c for handling of optional arguments.
+
+2005-01-21  eraviart
+
+	* php/patch_swig_output.py: SWIG: Added patch for PHP lasso_wrap.c
+	to correct handling of optional arguments in methods.
+
+2005-01-21  fpeters
+
+	* lasso/id-ff/logout.c: if existing, use SessionIndex from
+	assertion in lib:LogoutRequest.
+
+2005-01-21  fpeters
+
+	* lasso/xml/xml.c: removed out of place int caused by dubious
+	docstring copy/paste
+
+2005-01-21  fpeters
+
+	* lasso/xml/xml.c: documented remaining functions in xml/; looks
+	like all the functions are done.
+
+2005-01-21  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c: done with
+	documenting if-ff/* functions
+
+2005-01-21  fpeters
+
+	* docs/reference/lasso-sections.txt: removed
+	lasso_server_add_service from reference api since it is for wsf
+
+2005-01-21  eraviart
+
+	* swig/Lasso.i: SWIG: Removed method dump of NameIdentifierMapping.
+
+2005-01-20  eraviart
+
+	* swig/Lasso.i: SWIG: Every function that may raise an exception,
+	also returns the errorCode.
+
+2005-01-20  nclapies
+
+	* lasso/xml/saml_attribute.h: Fixed saml attribute tag define.
+
+2005-01-20  fpeters
+
+	* php/tests/binding_tests.php, php/tests/perfs.php: don't output
+	licensing comment when starting perfs.php
+
+2005-01-20  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c: corrected spelling of optionally.
+
+2005-01-20  fpeters
+
+	* lasso/id-ff/defederation.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c: documented
+	name_identifier_mapping.c; removed its unused dump functions; fixed
+	a few docstrings
+
+2005-01-20  fpeters
+
+	* lasso/id-ff/logout.c, lasso/id-ff/name_registration.c: documented
+	#LassoNameRegistration and fixed some docstrings in #LassoLogout
+
+2005-01-19  eraviart
+
+	* csharp/Makefile.am, csharp/tests/BindingTests.cs,
+	java/tests/BindingTests.java, swig/Lasso.i: Improved C# binding.
+
+2005-01-19  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/private.h,
+	lasso/xml/xml.c: added SNIPPET_LIST_XMLNODES support (mostly the
+	same thing as SNIPPET_EXTENSION for the moment)
+
+2005-01-18  fpeters
+
+	* docs/reference/tmpl/provider.sgml: restored documentation I wrote
+	before (and lost in enum name change)
+
+2005-01-18  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/login.sgml, docs/reference/tmpl/node.sgml,
+	docs/reference/tmpl/provider.sgml,
+	docs/reference/tmpl/saml_name_identifier.sgml,
+	docs/reference/tmpl/strings.sgml: documented a few things
+
+2005-01-18  eraviart
+
+	* csharp/Makefile.am, java/Makefile.am, perl/Makefile.am,
+	php/Makefile.am, python/Makefile.am, swig/Lasso.i,
+	swig/Makefile.am, swig/inheritance.h: Extracted the inheritance of
+	nodes from SWIG in a separate file, to remove its duplication in
+	Lasso.i.
+
+	Reorganized Lasso.i.
+
+2005-01-17  eraviart
+
+	* java/.cvsignore: Improved Java .cvsignore.
+
+2005-01-17  eraviart
+
+	* java/tests/BindingTests.java: Completed Java binding tests.
+
+2005-01-17  eraviart
+
+	* swig/Lasso.i: SWIG: Corrected constant name: SWIG macros are not
+	accessible inside %{ %}.
+
+2005-01-17  eraviart
+
+	* swig/Lasso.i: SWIG: Ported dynamic casting to all type of nodes.
+	Not fully tested yet.
+
+2005-01-17  eraviart
+
+	* java/Makefile.am, java/tests/BindingTests.java, swig/Lasso.i:
+	SWIG: Added support for dynamic casting in Java. It works, but it
+	has been only implemented for SamlpRequestAbstract. It will soon be
+	generalized to LassoNode.
+
+2005-01-15  eraviart
+
+	* java/tests/BindingTests.java, perl/tests/binding_tests.pl,
+	php/tests/binding_tests.php, swig/Lasso.i: SWIG: Renamed getitem to
+	getItem. Idem for setitem.  Java: Added a third binding test.  PHP:
+	Corrected header of binding test.
+
+2005-01-15  eraviart
+
+	* java/tests/BindingTests.java, java/tests/LoginTest.java: Added
+	first 2 binding tests for Java.  Corrected help for Java login
+	test.
+
+2005-01-15  eraviart
+
+	* AUTHORS, java/tests/LoginTest.java, perl/tests/binding_tests.pl,
+	php/patch_swig_output.py, php/tests/binding_tests.php,
+	php/tests/perfs.php, python/tests/XmlTestRunner.py,
+	python/tests/binding_tests.py, python/tests/errorchecking_tests.py,
+	python/tests/profiles_tests.py, python/tests/tests.py,
+	swig/Lasso-wsf.i, swig/Lasso.i: Updated authors.  Changed authors &
+	copyright in SWIG and unit tests headers.  Extracted
+	binding_tests.py from profiles_tests.py, so that each language has
+	a binding specific test.
+
+2005-01-14  eraviart
+
+	* perl/tests/binding_tests.pl, swig/Lasso.i: Corrected Perl binding
+	and added test program.
+
+2005-01-14  fpeters
+
+	* python/tests/profiles_tests.py: check for correct exception
+
+2005-01-14  fpeters
+
+	* lasso/xml/xml.c: handle non-soap messages in new_from_soap
+
+2005-01-14  rchantereau
+
+	* docs/reference/tmpl/saml_name_identifier.sgml: Added NameQualifer
+	definition paragraph and added a meta info on the
+	LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED.
+
+2005-01-14  eraviart
+
+	* python/tests/profiles_tests.py: Added a new test that generates a
+	segfault in new_from_soap.
+
+2005-01-13  nclapies
+
+	* swig/Lasso-wsf.i: Started to bind class LassoIsInteractionRequest
+	to process it in interaction profile service class.
+
+2005-01-13  fpeters
+
+	* perl/Makefile.am: don't pass prefix to install-perl
+
+2005-01-13  nclapies
+
+	* lasso/id-wsf/Makefile.am, lasso/id-wsf/abstract_service.c,
+	lasso/id-wsf/abstract_service.h: Removed class
+	LassoAbstractService.
+
+2005-01-13  eraviart
+
+	* php/tests/binding_tests.php, swig/Lasso.i: Swig PHP: Added test
+	to accept NULL for dynamic arguments.
+
+2005-01-13  eraviart
+
+	* php/tests/binding_tests.php: Added program to test PHP binding.
+
+2005-01-13  eraviart
+
+	* php/patch_swig_output.py: Corrected patch to SWIG PHP output.
+
+2005-01-13  fpeters
+
+	* php/patch_swig_output.py, php/tests/perfs.php: safe against
+	unfound strings
+
+2005-01-13  eraviart
+
+	* swig/Lasso.i: Swig PHP: Corrected LassoNode conversion for input
+	arguments.
+
+2005-01-13  nclapies
+
+	* lasso/xml/dst_query_response.c: Fixed error in xmlNewNs() call :
+	first param must be xmlnode instead of NULL.
+
+2005-01-13  nclapies
+
+	* lasso/xml/Makefile.am: Removed pp_msg_contact.c pp_msg_contact.h.
+
+2005-01-13  nclapies
+
+	* lasso/xml/pp_msg_contact.c, lasso/xml/pp_msg_contact.h,
+	swig/Lasso-wsf.i: Removed LassoPPMsgContact class. Updated binding
+	too.lasso/xml/Makefile.am
+
+2005-01-13  nclapies
+
+	* lasso/id-wsf/Makefile.am,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i: Removed specific class
+	LassoPersonalProfileService. Added generic web service class
+	LassoProfileService.
+
+2005-01-13  eraviart
+
+	* php/patch_swig_output.py, python/tests/profiles_tests.py,
+	swig/Lasso.i: PHP Binding: Added support for NULL return value.
+
+2005-01-13  fpeters
+
+	* lasso/id-wsf/Makefile.am: removed uncommited profile_service.[ch]
+	from Makefile.am
+
+2005-01-13  nclapies
+
+	* lasso/id-wsf/Makefile.am: Added support of interaction profile
+	service.
+
+2005-01-13  nclapies
+
+	* lasso/id-wsf/interaction_profile_service.c,
+	lasso/id-wsf/interaction_profile_service.h: Started to implement
+	interaction service profile.
+
+2005-01-13  nclapies
+
+	* lasso/xml/is_interaction_request.c,
+	lasso/xml/is_interaction_request.h,
+	lasso/xml/is_interaction_response.c,
+	lasso/xml/is_interaction_response.h: Added
+	lasso_*_new_from_message() method to rebuild objects from xml dump.
+
+2005-01-12  fpeters
+
+	* lasso/xml/Makefile.am: forgotten commit of new is* classes to
+	Makefile.am.
+
+2005-01-12  fpeters
+
+	* lasso/id-ff/provider.c: removed unused variable
+
+2005-01-12  fpeters
+
+	* lasso/Makefile.am, lasso/errors.c, lasso/errors.h, swig/Lasso.i,
+	lasso/xml/Makefile.am, lasso/xml/errors.c, lasso/xml/errors.h,
+	lasso/xml/xml.h: moved errors.[ch] up; as requested.
+
+2005-01-12  nclapies
+
+	* lasso/xml/is_help.c, lasso/xml/is_help.h, lasso/xml/is_inquiry.c,
+	lasso/xml/is_inquiry.h, lasso/xml/is_inquiry_element.c,
+	lasso/xml/is_inquiry_element.h, lasso/xml/is_interaction_request.c,
+	lasso/xml/is_interaction_request.h,
+	lasso/xml/is_interaction_response.c,
+	lasso/xml/is_interaction_response.h,
+	lasso/xml/is_interaction_statement.c,
+	lasso/xml/is_interaction_statement.h, lasso/xml/is_item.c,
+	lasso/xml/is_item.h, lasso/xml/is_parameter.c,
+	lasso/xml/is_parameter.h, lasso/xml/is_redirect_request.c,
+	lasso/xml/is_redirect_request.h, lasso/xml/is_select.c,
+	lasso/xml/is_select.h, lasso/xml/is_text.c, lasso/xml/is_text.h,
+	lasso/xml/is_user_interaction.c, lasso/xml/is_user_interaction.h:
+	Added low level classes for interaction service specification.
+
+2005-01-12  nclapies
+
+	* lasso/xml/strings.h: Added name space constant for interaction
+	service. Added interaction rule constants for interaction service
+	UserInteraction element.
+
+2005-01-12  fpeters
+
+	* lasso/id-ff/server.c, lasso/xml/private.h, lasso/xml/xml.c:
+	remove duplicate declaration of namespace (bug#398)
+
+2005-01-12  eraviart
+
+	* swig/Lasso.i: Swig: Removed attribute responseStatus (now
+	private). Corrected LassoProfile request and response attributes.
+	Corrected handling of NULL pointers in dynamic casting.
+
+2005-01-12  eraviart
+
+	* python/tests/profiles_tests.py: Added Python tests for XML lists
+	and nodes inside nodes.
+
+2005-01-12  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/profile.sgml: sync documentation sections with
+	current functions
+
+2005-01-12  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/profileprivate.h: made
+	lasso_profile_set_response_status into a private function
+
+2005-01-12  fpeters
+
+	* lasso/lasso.c, lasso/lasso.h: removed lasso_check_version_exact
+	and lasso_check_version macros; renamed lasso_check_version_ext to
+	lasso_check_version.
+
+2005-01-12  fpeters
+
+	* csharp/Makefile.am, docs/reference/Makefile.am, perl/Makefile.am:
+	install and uninstall correctly files (distcheck once again ok)
+
+2005-01-12  fpeters
+
+	* csharp/.cvsignore: added a new bunch of files to ignore
+
+2005-01-12  fpeters
+
+	* csharp/Makefile.am: replaced malloc by strdup; that was stupid.
+
+2005-01-12  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c: no longer allows NULL to get the
+	first known remote provider id
+
+2005-01-12  fpeters
+
+	* configure.ac: define check variables
+
+2005-01-12  fpeters
+
+	* configure.ac: don't use am_path_check since it fails when check
+	is not available (while it should continue and disable the test
+	suite)
+
+2005-01-12  fpeters
+
+	* lasso/xml/private.h, lasso/xml/xml.c: added support for
+	SNIPPET_OPTIONAL (for use with SNIPPET_INTEGER or SNIPPET_BOOLEAN)
+	(not that really tested)
+
+2005-01-12  fpeters
+
+	* java/Makefile.am: updated list of java swig generated files
+
+2005-01-12  eraviart
+
+	* python/tests/profiles_tests.py: Python: Added tests for list of
+	nodes.
+
+2005-01-12  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/server.c: use snippts in
+	#LassoProvider and #LassoServer
+
+2005-01-12  eraviart
+
+	* php/patch_swig_output.py: Corrected SWIG PHP output patch to be
+	pre-C99 compatible.
+
+2005-01-12  eraviart
+
+	* swig/Lasso.i: Swig: Cancel a %newobject getitem, because a
+	%newobject getitem applies to every method getitem in every classes
+	below. This caused an "interesting" memory handling bug.
+
+2005-01-12  eraviart
+
+	* python/tests/profiles_tests.py: Beginning to add binding specific
+	tests. The objective is to port these tests to every binding.
+	Discovered a binding bug in list handling.
+
+2005-01-11  fpeters
+
+	* configure.ac: homogenous quoting for "x" comparisons
+
+2005-01-11  fpeters
+
+	* java/.cvsignore: even more files to ignore
+
+2005-01-11  fpeters
+
+	* java/.cvsignore, java/Makefile.am: include new java files (note
+	that I also modified the buildbox, it was not checking lasso.jar
+	file, it does now and will therefore fail, too bad)
+
+2005-01-10  fpeters
+
+	* lasso/xml/xml.c: documented lasso_node_get_xmlNode
+
+2005-01-10  fpeters
+
+	* lasso/id-ff/defederation.h, lasso/id-ff/lecp.h,
+	lasso/id-ff/login.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h:
+	Reserved space for private_data expansion, so it will be possible
+	to maintain ABI compatibility if changes are needed.  Documented
+	some functions (and switched some destroy to use
+	lasso_node_destroy).
+
+2005-01-10  fpeters
+
+	* php/Makefile.am: integrate patch_swig_output.py in PHP swig
+	module build process
+
+2005-01-10  fpeters
+
+	* php/patch_swig_output.py: changed php swig patch script to use
+	stdin and stdout
+
+2005-01-10  eraviart
+
+	* php/patch_swig_output.py, swig/Lasso.i: Swig: Added a patch to
+	PHP, so that it handles correctly dynamic cast of function results.
+	[Note: Patch is not integrated in Makefile.am.]
+
+2005-01-09  fpeters
+
+	* swig/Lasso.i: fixed comment about gcc 2.95
+
+2005-01-09  fpeters
+
+	* php/tests/perfs.php: removed hack to get to lib; it doesn't seem
+	to work elsewhere.
+
+2005-01-09  eraviart
+
+	* swig/Lasso.i: Swig: Corrected LassoNode node_info.
+
+2005-01-09  eraviart
+
+	* python/tests/profiles_tests.py, swig/Lasso.i: Swig: Removed login
+	& lecp authnRequest & authnResponse attribute. Now uses attributes
+	request & response, like C. Added dynamic casting to
+	AuthnRequestAbstract & AuthnResponseAbstract.
+
+2005-01-09  fpeters
+
+	* lasso/xml/xml.c: replaced strncpy calls by g_strlcpy
+
+2005-01-09  fpeters
+
+	* lasso/extract_symbols.py: deals with lines ending with \; compile
+	regex only once.
+
+2005-01-09  fpeters
+
+	* lasso/xml/saml_audience_restriction_condition.h: ends lines with
+	\ so they get caught by extract_symbols.py
+
+2005-01-09  eraviart
+
+	* swig/Lasso.i: Swig: Beginning to add a kind of inheritance
+	mechanism to LassoNode.
+
+	Swig: Added missing classes.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Swig: Added several GList items.
+
+	Swig: Added SamlpRequestAbstract inheritance.
+
+2005-01-08  fpeters
+
+	* lasso/xml/saml_assertion.h: reserve abi-space for unsupported
+	elements in saml:Assertion
+
+2005-01-08  eraviart
+
+	* csharp/Makefile.am, java/Makefile.am: Renamed NodeArray (resp.
+	StringArray) to NodeList (resp. StringList).
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Renamed LassoStringArray to LassoStringList.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Corrected a typo.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Corrected a copy/paste error.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Swig: Renamed LassoNodeArray to LassoNodeList,
+	because, although it is physically an array, it is the Swig binding
+	of a GList.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: Swig: Added Assertion attribute in samlp:Response.
+
+2005-01-08  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/lib_assertion.c,
+	lasso/xml/saml_conditions.c, lasso/xml/saml_conditions.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response.h: moved remaining unbounded elements to
+	GList* (samlp:Response/Assertion being part of that bunch)
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: In SWIG, enclosed %init code inside braces to
+	preserve gcc 2.95 compatibility.
+
+2005-01-08  eraviart
+
+	* swig/Lasso.i: In SWIG added support for conversion to and from
+	LassoNode. Not implemented for C# nor Java yet.
+
+2005-01-08  fpeters
+
+	* lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.h, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/saml_advice.c,
+	lasso/xml/saml_advice.h,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_audience_restriction_condition.h,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_confirmation.h: turned a bunch of unbounded
+	elements into GList*
+
+2005-01-08  fpeters
+
+	* lasso/xml/saml_assertion.c: only give xsi namespace to nodes with
+	xsi: attributes
+
+2005-01-08  fpeters
+
+	* perl/Makefile.am: fixed maintainer-clean target for Perl binding
+
+2005-01-08  fpeters
+
+	* php/tests/perfs.php: port of perfs.c to PHP (it is surprisingly
+	faster than the C version).
+
+2005-01-08  fpeters
+
+	* lasso/id-ff/login.c: check for identity in build_assertion
+
+2005-01-07  fpeters
+
+	* csharp/examples/perfs.cs: beginning of a C# version of perfs.c
+
+2005-01-07  fpeters
+
+	* csharp/examples/runme.cs: updated simple C# example
+
+2005-01-07  fpeters
+
+	* csharp/Makefile.am: put c# binding in a lasso namespace
+
+2005-01-05  fpeters
+
+	* configure.ac: properly creates lasso-src-config from
+	lasso-src-config.in
+
+2005-01-05  fpeters
+
+	* lasso/xml/xml.c: mark sameNs as inline since it is short and
+	often called (thanks to kcachegrind for profiling details)
+
+2005-01-04  fpeters
+
+	* lasso/xml/saml_subject_confirmation.c: fixed element name for
+	SubjectConfirmation
+
+2005-01-04  fpeters
+
+	* lasso/xml/samlp_response.c: fixed order of samlp:Response
+	elements
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/login.c: clean some state and uri escape artifact
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/login.c: correctly allocates memory for
+	nameidentifier attributes
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/logout.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/id-wsf/discovery.c, lasso/xml/xml.c:
+	removed individual debug() statements in dispose() and finalize();
+	replaced by a single statement in xml/xml.c; surrouded that one by
+	LASSO_DEBUG so --enable-debugging prints those memory-management
+	debugging data.
+
+2005-01-04  fpeters
+
+	* lasso/xml/tools.c: added missing ;
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/session.c: completely handle memory management for
+	sessions
+
+2005-01-04  fpeters
+
+	* lasso/xml/lib_authentication_statement.c, lasso/xml/xml.c:
+	properly allocates memory for constant strings used in messages (or
+	readonly memory would be freed and segfaults would happen)
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/login.c,
+	docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/provider.sgml, docs/reference/tmpl/server.sgml,
+	lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/id-ff/serverprivate.h: created serverprivate.h for two
+	private #LassoServer methods
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/login.c: rewrote
+	lasso_login_init_idp_initiated_authn_request using
+	lasso_login_init_authn_request to avoid duplication.
+
+2005-01-04  fpeters
+
+	* lasso/id-ff/federation.c: don't care about NameFormat and
+	NameQualifier in comparaison
+
+2005-01-04  fpeters
+
+	* perl/Makefile.am: makefile perl magic to get distcheck running
+	(disabled installation)
+
+2005-01-03  eraviart
+
+	* swig/Lasso.i: SWIG binding helper functions are now static.
+	Added binding for saml:Attribute.
+
+2005-01-03  fpeters
+
+	* lasso/xml/saml_attribute_statement.h: added include of
+	#LassoSamlAttribute header file for #LassoSamlAttributeStatement
+
+2005-01-03  fpeters
+
+	* java/.cvsignore, java/Makefile.am: updated swig generated java
+	files list to have a working make distcheck
+
+2005-01-03  fpeters
+
+	* docs/reference/Makefile.am: build and ship html documentation;
+	distcheck runs ok.
+
+2005-01-03  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/federation.sgml,
+	docs/reference/tmpl/login.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/provider.sgml: fixed succint typo
+
+2005-01-03  fpeters
+
+	* docs/reference/Makefile.am: copy version.xml from the right
+	location for make distcheck to work
+
+2005-01-03  fpeters
+
+	* csharp/.cvsignore, csharp/Makefile.am: updated swig output files
+	list for make distcheck
+
+2005-01-03  fpeters
+
+	* perl/.cvsignore: more perl files to ignore
+
+2005-01-03  eraviart
+
+	* swig/Lasso.i: Adding SWIG support for GList of LassoNodes. Not
+	finished.
+
+2005-01-02  fpeters
+
+	* perl/Makefile.PL, perl/Makefile.am: use choosen CC and CFLAGS
+	when compiling the perl module
+
+2005-01-02  fpeters
+
+	* Makefile.am, configure.ac, lasso-src-config.in, perl/Makefile.PL,
+	perl/Makefile.am: Perl module builds and links correctly.
+
+2005-01-02  eraviart
+
+	* swig/Lasso.i: Improved SWIG binding for assertions.
+
+2005-01-02  fpeters
+
+	* perl/Makefile.PL, perl/Makefile.am: building the perl binding
+
+2005-01-02  eraviart
+
+	* swig/Lasso-wsf.i, swig/Lasso.i: Improved Extension support in
+	SWIG.  Corrected use of %newobject in SWIG.
+
+2005-01-02  fpeters
+
+	* Makefile.am, configure.ac, perl/.cvsignore, perl/Makefile.am:
+	first step to perl bindings (they still need to be compiled and
+	installed correctly)
+
+2005-01-01  fpeters
+
+	* tests/random_tests.c: accounts for changes in lasso_node_dump
+
+2005-01-01  fpeters
+
+	* swig/Lasso.i, lasso/id-ff/identity.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/server.c,
+	lasso/id-ff/service.c, lasso/id-ff/session.c,
+	lasso/id-wsf/discovery.c, lasso/xml/xml.c, lasso/xml/xml.h: Removed
+	second and third parameters of lasso_node_dump since @encoding is
+	always UTF-8 and @format is always to indent XML in lasso dumps.
+
+2005-01-01  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/name_registration.c: removed
+	lasso_federation_set_local_name_identifier and
+	lasso_federation_set_remote_name_identifier; they were no longer
+	necessary.
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: Removed %rename for attributes in PHP binding,
+	because they currently don't work.
+
+2005-01-01  fpeters
+
+	* configure.ac: applied esaracco patch for check configure test
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: Changed the way %extend was used in SWIG.
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: Removed binding for functions
+	lasso_federation_set_local_name_identifier and
+	lasso_federation_set_remote_name_identifier: the are useless.
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: SWIG binding now uses only lasso_node_destroy for
+	LassoNode: no more g_object_unref nor lasso_xxx_destroy.
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: SWIG binding: Added Federation; updated Identity.
+
+2005-01-01  eraviart
+
+	* swig/Lasso.i: Back to camelCase for attributes in SWIG binding.
+
+2004-12-31  eraviart
+
+	* lasso/id-ff/server.h, swig/Lasso.i: Updated LassoServer SWIG
+	binding.
+
+2004-12-31  fpeters
+
+	* swig/Lasso.i: replaced enum name in methods added between two cvs
+	runs
+
+2004-12-31  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/lasso.c, lasso/lasso.h,
+	lasso/id-ff/defederation.c, lasso/id-ff/defederation.h,
+	lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/logout.h, lasso/id-ff/name_registration.c,
+	lasso/id-ff/name_registration.h, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h, lasso/id-ff/server.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c, lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/private.h, lasso/xml/saml_assertion.h,
+	lasso/xml/samlp_request_abstract.h,
+	lasso/xml/samlp_response_abstract.h, lasso/xml/tools.c,
+	lasso/xml/xml.c, lasso/xml/xml.h, swig/Lasso.i: moved remaining
+	lasso[A-Z].* enums to Lasso[A-Z].*
+
+2004-12-31  eraviart
+
+	* swig/Lasso.i: Updated SWIG binding for LassoProvider.
+
+2004-12-31  eraviart
+
+	* lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h: Spelling correction: succint -> succinct.
+
+2004-12-31  eraviart
+
+	* swig/Lasso.i: In SWIG, added constructor, destructor and dump to
+	"lib:" objects.
+
+2004-12-31  eraviart
+
+	* swig/Lasso.i: Improved SWIG bindings of "lib:" objects.
+
+2004-12-31  fpeters
+
+	* lasso/xml/errors.c, lasso/xml/errors.h, lasso/xml/xml.h: moved
+	lasso_strerror to public interface
+
+2004-12-31  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/login.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: removed obsolete (since move to
+	structure) lasso_node_verify_signature (but lasso is still lacking
+	signature check for assertion)
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/samlp_response.c: sets
+	InResponseTo in samlp:Response
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: ret > 0 no longer happens
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: if AuthnRequestsSigned is missing assume it
+	as TRUE
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: removed obsolete comment
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: error on missing <Status>
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/logout.c: memory management in #LassoLogout (actually
+	already done with snippets; nothing to do but removing old FIXME
+	comments)
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/name_registration.c: it sure must be set to NULL
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/provider.c: memory management in #LassoProvider
+
+2004-12-31  fpeters
+
+	* lasso/xml/xml.c: don't output memory management debug strings
+
+2004-12-31  fpeters
+
+	* docs/reference/.cvsignore: ignore version.xml
+
+2004-12-31  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/provider.sgml: added new saml classes and
+	removed private functions from #LassoProvider
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/provider.c: fixed spelling in
+	lasso_provider_new_from_dump description
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/defederation.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c: moved some lasso private functions to new
+	providerprivate.h; insure it is included properly in other files
+	(as well as some sessionprivate.h that were missing)
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/server.c: documented
+	lasso_server_get_providerID_from_hash, reaching: 60% symbol docs
+	coverage (151 symbols documented, 101 not documented)
+
+2004-12-31  fpeters
+
+	* lasso/xml/lib_authn_response_envelope.c: fixed parameter name in
+	constructor
+
+2004-12-31  fpeters
+
+	* lasso/xml/lib_authn_response_envelope.c: fixed function name in
+	docstring for #LassoLibAuthnResponseEnvelope constructor
+
+2004-12-31  fpeters
+
+	* lasso/xml/saml_attribute.c, lasso/xml/samlp_request.c,
+	lasso/xml/samlp_response.c, lasso/xml/samlp_status.c,
+	lasso/xml/samlp_status_code.c: documented a bunch of LassoSaml*
+	classes _new functions
+
+2004-12-31  fpeters
+
+	* lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_response.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_request_authn_context.c: documented a bunch of other
+	xml base objects
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: forgot a parameter in
+	lasso_login_validate_request_msg docstring
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: documented remaining #LassoLogin function,
+	lasso_login_validate_request_msg
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c: fixed parameter names in some #LassoLogin
+	docstrings
+
+2004-12-31  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/xml/xml.c:
+	documented #LassoLogin
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/server.c: more memory management for #LassoServer
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/session.c: memory management
+	for #LassoIdentity and #LassoSession (partial)
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/service.c: implemented _destroy for LassoService (WSF
+	thing, but that's just a call to lasso_node_destroy)
+
+2004-12-30  fpeters
+
+	* lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_attribute_designator.c,
+	lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement.c: documented more functions,
+	reaching 50% symbol docs coverage (126 symbols documented, 126 not
+	documented)
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/profile.c: set members to NULL to be sure
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/profile.c: request and response fields are handled by
+	snippets; they must not be freed manually
+
+2004-12-30  eraviart
+
+	* swig/Lasso.i: Added missing g_object_ref for Logout et Lecp
+	request and response in SWIG binding.
+
+2004-12-30  eraviart
+
+	* swig/Lasso.i: Removed unused GLib types from SWIG.  SWIG now uses
+	errors.h.
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c: added refcounting of server to
+	other profiles
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/profile.c, lasso/id-ff/session.c:
+	fixing object refcounting in login/logout and proper object
+	destruction to profile
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/profile.c: documented #LassoProfile identity and
+	session methods
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/name_registration.c: documented
+	some new/destroy/dump/... functions
+
+2004-12-30  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/login.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/session.sgml: added some missing functions to
+	documentation
+
+2004-12-30  fpeters
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: moved lasso_node_build_query to
+	private functions
+
+2004-12-30  fpeters
+
+	* lasso/xml/Makefile.am, lasso/xml/internals.h,
+	lasso/xml/private.h, lasso/xml/tools.c, lasso/xml/tools.h,
+	lasso/xml/xml.h: merged tools.h and internals.h in new private.h,
+	excluded from API reference.
+
+2004-12-30  fpeters
+
+	* docs/reference/lasso-sections.txt: added lasso_session_is_empty
+	method to documented functions
+
+2004-12-30  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/session.sgml: Do not remove tmpl/ directory; it
+	holds real hand-written documentation there.  Copy lasso.sgml to
+	build/ directory before calling gtkdoc-mkdb so it is found by
+	gtkdoc-mkdb and xml prologues are not added everywhere.
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/login.c: documenting
+	lasso_{login|lecp}_init_authn_request
+
+2004-12-30  fpeters
+
+	* swig/Lasso.i: include LassoLibAssertion details into swig
+	bindings.
+
+2004-12-30  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/session.c, lasso/id-ff/session.h,
+	lasso/id-ff/sessionprivate.h: Moved #LassoSession private functions
+	(limited to Lasso internal use) to a new sessionprivate.h file.
+
+2004-12-30  eraviart
+
+	* swig/Lasso.i: Added handling of GObject reference counting to
+	SWIG binding.  Fully revamped SWIG binding.
+
+2004-12-30  eraviart
+
+	* lasso/xml/saml_assertion.c, lasso/xml/saml_assertion.h: Corrected
+	result type of lasso_saml_assertion_new.
+
+2004-12-29  fpeters
+
+	* autogen.sh: check for libtool and pkg-config m4 files (thanks
+	again to gnome-autogen.sh)
+
+2004-12-29  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am, php/Makefile.am,
+	python/Makefile.am: don't use $< since it fails with BSD make.
+
+2004-12-29  fpeters
+
+	* lasso/id-ff/login.c: only set Status in session on failure
+
+2004-12-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/profile.c,
+	lasso/id-ff/session.c, lasso/id-ff/session.h: Store status in
+	session to be restored for samlp:Response usage.  This means the
+	session *must* be saved in single sign-on service url and will be
+	dirty.
+
+	(so souk, libertyidentity.py line 1076 failIf(login.isSessionDirty)
+	will fail)
+
+2004-12-28  eraviart
+
+	* swig/Lasso.i: Added StatusCode binding in Logout.  Reorganized
+	objects in swig Lasso.i file.
+
+2004-12-28  fpeters
+
+	* autogen.sh: revamped autogen.sh so it works on FreeBSD (with many
+	thanks to gnome-autogen.sh)
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/samlp_response.c: only set
+	samlp:Success in samlp:Response if assertion was found; fall back
+	to samlp:RequestDenied in other cases since there is currently no
+	way to be more precise.
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/xml/errors.h,
+	swig/Lasso.i: added LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS error code
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/login.c: set error to lib:UnknownPrincipal if
+	authentication_result is FALSE
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/logout.c: don't crash if session was not set
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/lecp.c: removed old signature code from LECP
+
+2004-12-28  eraviart
+
+	* swig/Lasso.i: Added Status to AuthnResponse.
+
+2004-12-28  eraviart
+
+	* swig/Lasso.i: Added SamlpStatus & SamlpStatusCode to SWIG.
+	Beginning to use same case in SWIG for XML elements as in C.
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/login.c: return LASSO_LOGIN_ERROR_REQUEST_DENIED if
+	that's the response Status
+
+2004-12-28  fpeters
+
+	* configure.ac: fixed dependency on xmlsec1-openssl
+
+2004-12-28  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.h,
+	lasso/id-wsf/wsf_profile.c, lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c, lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response.h, lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h, lasso/xml/xml.c,
+	lasso/xml/xml.h: generate xmlsec signatures in get_xmlNode; this
+	should allow envelopes (in LECP) to work properly.
+
+2004-12-28  fpeters
+
+	* configure.ac: lasso requires xmlsec >= 1.2.6
+
+2004-12-27  eraviart
+
+	* swig/Lasso.i: Added cast to remove compile time warning.
+
+2004-12-27  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/xml/tools.c: Fixed
+	lasso_lecp_build_authn_request_envelope_msg,
+	lasso_lecp_process_authn_request_envelope_msg and
+	lasso_lecp_build_authn_request_msg to properly deal with signatures
+	(and, generally, to work)
+
+2004-12-27  fpeters
+
+	* lasso/xml/lib_authn_request.c, lasso/xml/xml.c: support for
+	<lib:Extension> elements in query (not yet reconstructed); enabled
+	for <lib:AuthnRequest>
+
+2004-12-27  fpeters
+
+	* lasso/xml/dst_modify.h, lasso/xml/dst_modify_response.h,
+	lasso/xml/dst_query.h, lasso/xml/dst_query_response.h,
+	lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_status_response.h, lasso/xml/xml.c, swig/Lasso.i:
+	Moved back Extension support from xmlNode* to GList*; "SP login
+	using post/artifact (testing Extension); SP logout using SOAP."
+	test now works.
+
+2004-12-26  eraviart
+
+	* lasso/id-ff/lecp.c: Replaced calls of
+	lasso_provider_get_metadata_one with
+	lasso_provider_get_assertion_consumer_service_url in lecp.
+
+2004-12-26  eraviart
+
+	* swig/Lasso.i: Corrected SWIG binding for LECP methods inherited
+	from Login.
+
+2004-12-25  eraviart
+
+	* swig/Lasso.i: Changed lib:Extension handling in SWIG
+	lib:AuthnRequest binding, to ensure that each lib:Extension element
+	has a valid namespace.
+
+2004-12-24  eraviart
+
+	* swig/Lasso.i: Added SWIG support for "Extension" elements in
+	lib:AuthnRequest.
+
+2004-12-24  fpeters
+
+	* lasso/xml/dst_modify.c, lasso/xml/dst_modify.h,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_modify_response.h,
+	lasso/xml/dst_query.c, lasso/xml/dst_query.h,
+	lasso/xml/dst_query_response.c, lasso/xml/dst_query_response.h:
+	added lib:Extension support to dst classes.
+
+2004-12-24  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h: Added missing declaration
+	for lasso_name_identity_mapping_new_from_dump (and moved dump type
+	to const char*).
+
+2004-12-24  fpeters
+
+	* lasso/xml/lib_register_name_identifier_request.h: errata2 makes
+	SPProvidedNameIdentifier optional; changed schema snippet
+	accordingly
+
+2004-12-24  fpeters
+
+	* lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h:
+	errata2 adds a NotOnOrAfter attribute to LogoutRequests
+
+2004-12-24  fpeters
+
+	* lasso/xml/lib_authn_request.h: removed obsolete comment
+
+2004-12-24  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/provider.sgml, lasso/id-ff/login.c,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h: Do not store
+	metadata in provider dumps; only store the filename.  Handle
+	AssertionConsumerServiceID in <lib:AuthnRequest>; this allows to
+	have more than one AssertionConsumerServiceURL in a single service
+	provider.
+
+2004-12-24  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/lib_authn_request.sgml: more <lib:AuthnRequest>
+	documentation
+
+2004-12-23  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/lasso-sections.txt,
+	docs/reference/lasso.sgml: removing lasso_config.h from scanned
+	header files
+
+2004-12-23  fpeters
+
+	* lasso/xml/dst_query.h, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_status_response.h, lasso/xml/xml.c: Moved
+	<lib:Extension> to xmlNode* since the developer can use
+	xmlAddNextSibling to add other nodes.  (not tested)
+
+2004-12-23  fpeters
+
+	* docs/reference/lasso-sections.txt,
+	docs/reference/tmpl/lib_authn_request.sgml: a few words about
+	lib:AuthnRequest
+
+2004-12-23  fpeters
+
+	* docs/reference/tmpl/saml_name_identifier.sgml: documented
+	#LassoSamlNameIdentifier
+
+2004-12-23  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/tmpl/identity.sgml, docs/reference/tmpl/logout.sgml,
+	docs/reference/tmpl/session.sgml: removed all old setter methods
+	and other removed functions from documentation.
+
+2004-12-23  fpeters
+
+	* lasso/id-ff/login.c: dot at the end
+
+2004-12-23  fpeters
+
+	* lasso/xml/lib_assertion.c, lasso/xml/lib_assertion.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_context.h, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_idp_entries.h, lasso/xml/lib_idp_entry.h,
+	lasso/xml/lib_idp_list.h, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/lib_scoping.h,
+	lasso/xml/lib_status_response.h, lasso/xml/lib_subject.h,
+	lasso/xml/saml_advice.h, lasso/xml/saml_assertion.h,
+	lasso/xml/saml_attribute.h, lasso/xml/saml_attribute_designator.h,
+	lasso/xml/saml_attribute_statement.h,
+	lasso/xml/saml_audience_restriction_condition.h,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_authority_binding.h,
+	lasso/xml/saml_condition_abstract.c,
+	lasso/xml/saml_condition_abstract.h, lasso/xml/saml_conditions.h,
+	lasso/xml/saml_name_identifier.h,
+	lasso/xml/saml_statement_abstract.c,
+	lasso/xml/saml_statement_abstract.h, lasso/xml/saml_subject.h,
+	lasso/xml/saml_subject_confirmation.h,
+	lasso/xml/saml_subject_locality.h,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/saml_subject_statement_abstract.h,
+	lasso/xml/samlp_request.h, lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.h,
+	lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h, lasso/xml/samlp_status.h,
+	lasso/xml/samlp_status_code.h, lasso/xml/xml.c, lasso/xml/xml.h:
+	Removed _new functions for abstract classes; added _new functions
+	for classes that only had _new_full functions.	Documented a little
+	bit; marked public members in structures as such.
+
+2004-12-23  fpeters
+
+	* lasso/xml/lib_scoping.c: removed cut'n pasted doc from oasis
+
+2004-12-23  fpeters
+
+	* docs/reference/lasso.sgml: removed liberty-alliance entity;
+
+2004-12-23  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/tmpl/session.sgml,
+	lasso/id-ff/logout.c: documented #LassoLogout; actually most
+	docstrings were already there but are way too much going into Lasso
+	internals.  Not fixed yet.
+
+2004-12-23  fpeters
+
+	* lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_scoping.c,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_attribute_designator.c,
+	lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_condition_abstract.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_statement_abstract.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement.c,
+	lasso/xml/saml_subject_statement_abstract.c: remove angle brackets
+	around elements in doc strings so they can now be considered as
+	docbook (necessary to produce itemized lists in docstrings)
+
+2004-12-23  fpeters
+
+	* lasso/xml/saml_audience_restriction_condition.c: removed
+	copy/pasted OASIS documentation
+
+2004-12-23  fpeters
+
+	* lasso/xml/saml_advice.c: Removed docstring copy/pasted from OASIS
+	documentation (looks like BSD so it should be allowed if they are
+	cited but I prefer to have full copyright over Lasso code)
+
+2004-12-23  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/logout.c,
+	lasso/id-ff/session.c, lasso/id-ff/session.h, swig/Lasso.i:
+	documented #LassoSession.  Removed
+	lasso_session_get_authentication_method and
+	lasso_session_get_first_providerID methods that were obsolete and
+	unused.
+
+2004-12-23  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am, php/Makefile.am,
+	python/Makefile.am, swig/Lasso-wsf.i, swig/Lasso.i,
+	swig/Makefile.am: Commited Nicolas SWIG binding for WSF since he is
+	on vacation.
+
+2004-12-23  fpeters
+
+	* lasso/xml/disco_query_response.c: create namespace in the air not
+	to disturb xmlnode
+
+2004-12-23  fpeters
+
+	* lasso/xml/xml.c: disco:Status doesn't exist; once again fall back
+	to UtilityStatus
+
+2004-12-23  fpeters
+
+	* lasso/xml/xml.c: pp:Status are not DstStatus but UtilityStatus;
+	acknowledge.
+
+2004-12-23  fpeters
+
+	* lasso/xml/dst_query_response.c: fixed QueryResponse get_xmlNode
+	function.
+
+2004-12-22  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Added missing header.
+
+2004-12-22  nclapies
+
+	* lasso/xml/dst_query_response.c: Updated get_xmlNode().
+
+2004-12-22  nclapies
+
+	* lasso/id-wsf/personal_profile_service.h: Added missing headers.
+
+2004-12-22  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c: Added set of request in
+	lasso_personal_profile_process_query_msg() and
+	lasso_personal_profile_process_modify_msg().
+
+2004-12-22  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h: Removed use
+	of GList for Options. Use only a Options pointer.
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/tmpl/defederation.sgml,
+	docs/reference/tmpl/federation.sgml,
+	docs/reference/tmpl/identity.sgml,
+	docs/reference/tmpl/session.sgml, lasso/id-ff/defederation.c,
+	lasso/id-ff/defederation.h, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/identity.c,
+	lasso/id-ff/identity.h, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/server.c: documenting
+	#LassoIdentity and #LassoFederation
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso.sgml: copyright and license in <bookinfo>
+	are ok
+
+2004-12-22  fpeters
+
+	* docs/reference/tmpl/login.sgml: assertion consumer *service* URL
+
+2004-12-22  fpeters
+
+	* docs/reference/tmpl/login.sgml: documented service provider
+	assertion consumer service url
+
+2004-12-22  fpeters
+
+	* docs/lasso-book/single-sign-on.process: close parenthesis
+
+2004-12-22  fpeters
+
+	* docs/reference/tmpl/login.sgml: documenting single sign-on;
+	Service Provider Login URL done with example.
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso.sgml: commented out <copyright>; not handled
+	by gtk-doc.xsl
+
+2004-12-22  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/lasso.sgml: Switched
+	documentation to docbook XML.
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/tmpl/defederation.sgml,
+	docs/reference/tmpl/logout.sgml,
+	docs/reference/tmpl/name_identifier_mapping.sgml,
+	docs/reference/tmpl/name_registration.sgml: titles for id-ff 1.2
+	profiles
+
+2004-12-22  fpeters
+
+	* lasso/xml/xml.c: minor adjustments to documentation
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/server.c, docs/reference/tmpl/login.sgml,
+	docs/reference/tmpl/profile.sgml: Minimal documentation for
+	#LassoProfile and #LassoLogin
+
+2004-12-22  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/tmpl/provider.sgml, docs/reference/tmpl/server.sgml,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h: documented #LassoServer
+
+2004-12-22  fpeters
+
+	* configure.ac, lasso.pc.in, docs/reference/Makefile.am,
+	docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/version.xml.in, docs/reference/tmpl/provider.sgml,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h: Started organizing
+	Lasso Reference Manual; documenting LassoProvider.
+
+2004-12-21  fpeters
+
+	* lasso/.cvsignore: fixed symbols.sym case
+
+2004-12-21  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h: added
+	lasso_provider_get_base64_succint_id method to LassoProvider to
+	facilitate Identity Provider Introduction implementation.
+
+2004-12-21  fpeters
+
+	* lasso/xml/xml.c: moves back <ds:Signature> to the place the
+	schema gave them.
+
+2004-12-21  fpeters
+
+	* lasso/extract_symbols.py: refined symbol regex
+
+2004-12-21  fpeters
+
+	* lasso/xml/lib_authentication_statement.h: removed declaration of
+	inexistant function
+
+2004-12-21  fpeters
+
+	* lasso/xml/tools.c: removed unused variable
+
+2004-12-21  fpeters
+
+	* csharp/.cvsignore, java/.cvsignore: ignoring some more swig
+	generated files
+
+2004-12-21  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am, lasso/Makefile.am,
+	lasso/extract_symbols.py, lasso/extract_types.py,
+	lasso/xml/Makefile.am, swig/Lasso.i: Updated list of files
+	generated by SWIG in C# and Java bindings; fixed PHP Makefile.am;
+	use $(srcdir) to get correct directory in code generation python
+	scrips.  make distcheck works after that.
+
+2004-12-21  fpeters
+
+	* configure.ac, lasso/.cvsignore, lasso/Makefile.am,
+	lasso/extract_symbols.py: only exports symbols declared with
+	LASSO_EXPORT (experimental)
+
+2004-12-21  nclapies
+
+	* lasso/id-wsf/discovery.c: Fixed call to constructor of
+	LassoDiscoQueryResponse and LassoDiscoModifyResponse.
+
+2004-12-21  fpeters
+
+	* tests/random_tests.c, tests/tests.c: added random suites with
+	random tests
+
+2004-12-21  nclapies
+
+	* lasso/xml/disco_query_response.h: Added
+	lasso_disco_query_response_new_from_message() constructor.
+
+2004-12-21  nclapies
+
+	* lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_query_response.c: fixed name space in dump message
+	of LassoDiscoQueryResponse and LassoDiscoModifyResponse : every
+	element children inerit the discovery name space.
+
+2004-12-21  fpeters
+
+	* lasso/id-ff/provider.c: don't use xmlSecFind to look up signature
+
+2004-12-21  fpeters
+
+	* lasso/xml/dst_query_response.c, lasso/xml/tools.c,
+	lasso/xml/xml.c: Severe libxml2 and xmlsec riot.
+
+	Always put <ds:Signature> as the last node since it looks like the
+	right thing to do (and even if the schema seems to say otherwise).
+
+	Try to clean xml messages and remove redundant xml namespace
+	declarations.  Behind libxml2 back and cleaning memory properly.
+
+	We’re off the streets now / And back on the road / On the riot
+	trail.
+
+2004-12-21  fpeters
+
+	* lasso/xml/dst_query_response.c: define correct namespace on
+	QueryResponse
+
+2004-12-20  fpeters
+
+	* lasso/xml/xml.c: removed unnecessary xmlReconciliateNs
+
+2004-12-20  fpeters
+
+	* lasso/xml/dst_modify.c, lasso/xml/dst_modify_response.c,
+	lasso/xml/dst_query.c, lasso/xml/dst_query_response.c: correctly
+	sets namespace on Query and QueryResponse Personal Profile nodes.
+
+2004-12-20  nclapies
+
+	* lasso/id-wsf/personal_profile_service.h: Fixed method
+	declarations : lasso_personal_profile_service_process_query_msg()
+	and lasso_personal_profile_service_process_query_msg_response().
+
+2004-12-20  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h: Removed GList
+	type in lasso_discovery_add_insert_entry() params. Instead use
+	simple type pointer until list support is implemented in swig
+	binding. Added missing method
+	lasso_discovery_process_query_response_msg().
+
+2004-12-20  fpeters
+
+	* lasso/id-ff/profile.c: don't include in a second-level status
+	code samlp error status
+
+2004-12-20  fpeters
+
+	* lasso/xml/errors.c, lasso/xml/errors.h,
+	lasso/xml/saml_assertion.c, lasso/xml/tools.c, lasso/xml/tools.h,
+	lasso/xml/xml.c: Refactored signature code so it is now shared
+	between requests/responses and artifacts.
+
+2004-12-19  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-ff/server.c, lasso/id-ff/session.c,
+	lasso/id-wsf/discovery.c, lasso/xml/dst_modify.c,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_query.c,
+	lasso/xml/dst_query_response.c, lasso/xml/internals.h,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_assertion.h,
+	lasso/xml/samlp_response.c, lasso/xml/xml.c, lasso/xml/xml.h: Added
+	differentiation between creating xmlnode for lasso use (the _dump
+	functions) and creating xmlnode for the wire (export_to_soap...).
+	This was necessary to keep track of private_key_file to use on an
+	Assertion while it was kept in a lasso session dump and restored
+	later.
+
+	This means the get_xmlNode functions have now a second parameter,
+	gboolean lasso_dump, TRUE when dumping for lasso internal use.
+
+	On the bright side assertions are now signed (that signature is not
+	yet checked).
+
+2004-12-19  fpeters
+
+	* tests/Makefile.am: removed minitests from tests Makefile.am
+
+2004-12-19  fpeters
+
+	* tests/perfs.c: little tests benchmarking AuthnRequest creation
+	and AuthnResponse processing.
+
+2004-12-19  fpeters
+
+	* lasso/xml/xml.c: add nodes in reverse class order to get them in
+	schema order
+
+2004-12-19  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/internals.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/xml.c: Moved
+	signature template stuff into xml.c and use XmlSnippet for them;
+	this should insure proper validation against Liberty XML schemas
+	and should help adding missing signature support to <Assertion>
+
+2004-12-19  fpeters
+
+	* docs/lasso-book/defederation.process,
+	docs/lasso-book/name-registration.process,
+	docs/lasso-book/single-logout.process,
+	docs/lasso-book/single-sign-on.process: cleaning up process files
+
+2004-12-19  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c: if
+	available, use profile->msg_relayState to init request in
+	init_request functions.
+
+2004-12-18  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	lasso/id-ff/profile.c, lasso/id-ff/profile.h, swig/Lasso.i: Moved
+	LassoProfile->nameIdentifier from char* to
+	LassoSamlNameIdentifier*, gaining back access to the nameFormat
+	added late before 0.5.
+
+	There are no bindings for LassoSamlNameIdentifier; as a temporary
+	and compatible measure; profile->nameIdentifier in bindings
+	continues to return a char* (profile->nameIdentifier->content).
+
+	At the same time the same change has been done for
+	LassoNameRegistration->oldNameIdentifier.
+
+2004-12-17  fpeters
+
+	* configure.ac: Isolated CFLAGS to be used when compiling Lasso in
+	LASSO_CORE_CFLAGS; don't use those when compiling tests in order to
+	catch errors in headers. (continuing)
+
+2004-12-17  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am, lasso/Makefile.am,
+	lasso/lasso.h, lasso/id-ff/Makefile.am, lasso/id-wsf/Makefile.am,
+	lasso/xml/Makefile.am, lasso/xml/tools.c, lasso/xml/tools.h,
+	lasso/xml/xml.h, php/Makefile.am, python/Makefile.am,
+	tests/Makefile.am: Isolated CFLAGS to be used when compiling Lasso
+	in LASSO_CORE_CFLAGS; don't use those when compiling tests in order
+	to catch errors in headers.  Also moved a few things in header
+	files; need more thinking about that.
+
+2004-12-17  fpeters
+
+	* lasso/Makefile.am: define LASSO_INTERNALS in lasso/
+
+2004-12-17  fpeters
+
+	* lasso/xml/tools.h, lasso/xml/xml.h: don't export functions
+	defined in tools.h
+
+2004-12-17  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/id-ff/profile.c:
+	<samlp:Status> created by Lasso should now be compatible with SAML
+	requirements [SAMLCore11].
+
+	[SAMLCore11] Maler, Eve, Mishra, Prateek, Philpott, Rob, eds. (27
+	May 2003).  "Assertions and Protocol for the OASIS Security
+	Assertion Markup Language (SAML) V1.1," OASIS Committee
+	Specification, version 1.1, Organization for the Advancement of
+	Structured Information Standards
+
+2004-12-17  fpeters
+
+	* lasso/id-ff/logout.c: deal with missing Status in LogoutResponse
+
+2004-12-17  fpeters
+
+	* lasso/xml/internals.h, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entries.h,
+	lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_status_response.c, lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_name_identifier.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/samlp_status.c,
+	lasso/xml/xml.c: Done with the new query snippets system
+	(everything but the IDPEntries in <lib:AuthnRequest>).	It has
+	nested <samlp:StatusCode> support but ID-FF layer must still be
+	updated to produce them.
+
+2004-12-17  fpeters
+
+	* lasso/xml/internals.h, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/saml_name_identifier.c, lasso/xml/xml.c: new (draft)
+	query snippet mechanism to generate query string; deployed in
+	<lib:RegisterNameIdentifier/>
+
+2004-12-16  fpeters
+
+	* python/tests/profiles_tests.py, swig/Lasso.i: merged new error
+	codes in SWIG and used one of them in the Python tests
+
+2004-12-16  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/xml/errors.c, lasso/xml/errors.h:
+	(almost) done with errors in ID-FF; remaining "return -1" have been
+	converted to LASSO_ERROR_UNDEFINED (there are forty-three of them).
+
+	LASSO_ERROR_UNDEFINED was redefined from -999 to -1 so it is easier
+	to add new sequences of errros.
+
+2004-12-16  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/internals.h,
+	lasso/xml/lib_authn_request.c, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.c, lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_status_response.h,
+	lasso/xml/xml.c: added minimal support (only XML, no mapping to URL
+	yet) for   <xs:element ref="Extension" minOccurs="0"
+	maxOccurs="unbounded"/>
+
+	added memory management to list* XmlSnippet
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/logout.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/id-wsf/discovery.c: pointers are %p in
+	format strings, not %x
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/login.c,
+	lasso/id-ff/profile.c, lasso/id-ff/provider.c,
+	lasso/id-ff/server.c, lasso/id-ff/session.c, lasso/xml/xml.c:
+	memory management work
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/federation.c: moved federation to XmlSnippet
+
+2004-12-15  fpeters
+
+	* lasso/xml/xml.c: no longer play fool mixing pointers and
+	integers; they are not always the same size and this bites quite
+	hard on AMD-64 (shame on me).
+
+2004-12-15  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: Reordered function
+	declarations. Added check of server param.
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/xml/tools.c, lasso/xml/xml.c: fixed a few "variable might be
+	used uninitialized in this function" detected with gcc-3.4 -O3.
+
+2004-12-15  nclapies
+
+	* lasso/id-wsf/abstract_service.h,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h,
+	lasso/xml/dst_modification.h, lasso/xml/dst_modify.c,
+	lasso/xml/dst_modify.h, lasso/xml/dst_modify_response.c,
+	lasso/xml/dst_modify_response.h: Added support of modify request
+	from a SP to AP : updated element's class in level 1 (Modify and
+	ModifyResponse) and implemented modify request in level 2 id wsf.
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	lasso/xml/errors.c, lasso/xml/errors.h: added new standard error
+	code LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/logout.c, lasso/xml/errors.c, lasso/xml/errors.h: new
+	LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND error code
+
+2004-12-15  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/errors.c,
+	lasso/xml/errors.h: coherent error handling for "identity not
+	found" and "federation not found" cases.
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c: replaced unknown error by
+	2 LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD in Name Identifier
+	Mapping profile.
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/errors.c,
+	lasso/xml/errors.h: new LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL
+	profile error and replaced a bunch of 'return -1;' with that one.
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/server.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, lasso/id-wsf/personal_profile_service.h,
+	lasso/xml/dst_modification.h: fixed some missing or wrong prototype
+	declarations
+
+2004-12-14  fpeters
+
+	* lasso/id-wsf/personal_profile_service.c: fixed function declared
+	as returning int that didn't return anything
+
+2004-12-14  fpeters
+
+	* docs/lasso-book/single-sign-on.process, lasso/id-ff/lecp.c,
+	lasso/id-ff/lecp.h, lasso/id-ff/login.c, lasso/id-ff/login.h,
+	lasso/xml/errors.h, swig/Lasso.i, tests/login_tests.c: API change
+	in Single Sign On profile (IdP side) to allow the developer to mess
+	with <lib:Assertion/>
+
+	Outlined in
+	http://lists.labs.libre-entreprise.org/pipermail/lasso-devel/2004-December/001119.html
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/server.c,
+	lasso/xml/errors.c, lasso/xml/tools.h: more error code harmony, now
+	with a new critical_error macro
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/logout.c: status code has been set in
+	lasso_lib_logout_respone_new_full
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/login.c: properly sign samlp:Response
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/provider.c:
+	properly check signature on soap samlp:Request (login/artifact)
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h: properly verify
+	signatures and return code appriopriately (closes: #362)
+
+2004-12-14  fpeters
+
+	* tests/login_tests.c: updated test to new api
+
+2004-12-14  fpeters
+
+	* python/tests/profiles_tests.py: updated test to new API
+
+2004-12-14  fpeters
+
+	* csharp/.cvsignore, java/.cvsignore: ignore generated files
+
+2004-12-14  fpeters
+
+	* docs/lasso-book/.cvsignore: ignore html rendition
+
+2004-12-14  fpeters
+
+	* docs/lasso-book/defederation.process,
+	docs/lasso-book/name-registration.process: process files taken from
+	lasso 0.5 (not uptodate)
+
+2004-12-14  fpeters
+
+	* docs/lasso-book/single-logout.process,
+	docs/lasso-book/single-sign-on.process,
+	docs/lasso-book/single-sign-on.rst,
+	docs/lasso-book/writing-a-c-sp.txt: got uptodate documentation
+	about single sign on (I think)
+
+2004-12-14  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/lecp.h, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, swig/Lasso.i: [API Change] For consistency
+	with the other profiles, remote_providerID has been moved from
+	build_authn_request_msg to init_authn_request in both Single
+	Sign-On and LECP profiles.  [details on lasso-devel@]
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/login.c: error codes handling in LassoLogin
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/logout.c, lasso/id-ff/profile.c: use XmlSnippet for
+	LassoLogout dump/restore
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/session.c: reenabled lasso_session_destroy()
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/errors.c: more error
+	code harmonization.
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/login.c: sign AuthnResponse and harmonous use of
+	LASSO_PROFILE_ERROR_INVALID_MSG
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/login.c: removed obsolete comment
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c: harmonized remote_provider tests
+	(check and error code set to LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND)
+
+2004-12-13  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: replaced error_code macro
+	with a function since that macro didn't work with gcc 2.95
+
+2004-12-13  fpeters
+
+	* lasso/xml/errors.c: error message for
+	LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED
+
+2004-12-13  fpeters
+
+	* lasso/xml/tools.h: removed trailing ; in macro
+
+2004-12-13  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/server.c,
+	lasso/xml/tools.c, lasso/xml/tools.h: dealing with errors; now like
+	this:	return error_code(G_LOG_LEVEL_CRITICAL,
+	LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
+
+2004-12-12  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c: properly sign soap
+	messages in name identifier mapping profile.
+
+2004-12-12  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/personal_profile_service.c:
+	got top-of-file license spaced the same way as in other files (+
+	fixed editor typo)
+
+2004-12-12  fpeters
+
+	* configure.ac: removed error message when java was not found
+
+2004-12-10  valos
+
+	* lasso/id-wsf/Makefile.am, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h: Added LassoDiscovery class
+
+2004-12-10  valos
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: Added
+	lasso_server_add_service() method
+
+2004-12-10  valos
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/service.c,
+	lasso/id-ff/service.h: Added LassoService class
+
+2004-12-10  valos
+
+	* lasso/id-ff/provider.c: Fixed the attribute name of the dump
+	version
+
+2004-12-10  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: Added
+	lasso_personal_profile_service_add_data() method : it allows to add
+	response elements corresponding to the requested attribute values.
+
+2004-12-10  nclapies
+
+	* lasso/xml/dst_data.c, lasso/xml/dst_data.h: Removed params of
+	constructor : id and itemIDRef are not required attributes.
+
+2004-12-10  nclapies
+
+	* lasso/xml/Makefile.am: Added support of MsgContact PP service.
+
+2004-12-10  nclapies
+
+	* lasso/xml/pp_msg_contact.c, lasso/xml/pp_msg_contact.h: Initial
+	version : support of personal profile msg contact. It is very
+	experimental and only supports msg account and msg provider part.
+
+2004-12-10  valos
+
+	* lasso/xml/Makefile.am, lasso/xml/disco_resource_id_group.c,
+	lasso/xml/disco_resource_id_group.h: Removed useless
+	LassoDiscoResourceIDGroup class
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/name_identifier_mapping.c, lasso/id-ff/provider.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: Added back xmlsec signature check
+	(and disabled it in name identifier mapping profile since it is
+	buggy there).  The signature check requires another call to
+	xmlParseMemory; this makes them 3 per SOAP message (sign check +
+	lasso_profile_get_request_type_from_soap_msg and
+	lasso_node_init_from_message).	I'll think further about this.
+
+2004-12-10  nclapies
+
+	* lasso/xml/dst_query_item.c: Fixed type mistake in snippets of
+	LassoDstQueryItem.
+
+2004-12-10  nclapies
+
+	* lasso/xml/Makefile.am: Added support of DST modify / modify
+	response.
+
+2004-12-10  nclapies
+
+	* lasso/xml/dst_query.c, lasso/xml/dst_query.h,
+	lasso/xml/dst_query_response.c: Replaced LassoDiscoResourceIDGroup
+	with old ResourceID and EncryptedResourceID.
+
+2004-12-10  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: Updated
+	lasso_personal_profile_service_init_query() method : now it takes a
+	LassoDiscoResourceOffering* resourceOfferring, a
+	LassoDiscoDescription* description and a char* select, init a Query
+	object, set the soap url from ResourceOffering, and return a
+	QueryItem* to optionaly set attributes. Now it is possible to add
+	extra QueryItems with
+	lasso_personal_profile_service_add_query_item(). It returns the new
+	QueryItem'pointer to set optional attributes;
+
+2004-12-10  nclapies
+
+	* lasso/id-wsf/abstract_service.c, lasso/id-wsf/abstract_service.h:
+	Removed ResourceOffering and ResourceIDGroup class's attributes.
+	Only keep data and queryItem attributes. Removed old unused private
+	methods (dispose() and finalize() )
+
+2004-12-10  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h: Updated
+	lasso_wsf_profile_build_*_msg() : now they only set msg_body
+	class's attribute with a soap message (request / response).
+
+2004-12-10  nclapies
+
+	* lasso/xml/dst_modification.c, lasso/xml/dst_modification.h,
+	lasso/xml/dst_modify.c, lasso/xml/dst_modify.h,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_modify_response.h,
+	lasso/xml/dst_new_data.c, lasso/xml/dst_new_data.h: Added DST
+	Modify part level 1.
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/logout.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/id-wsf/abstract_service.c,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/wsf_profile.c, lasso/xml/xml.c: overridden spelling
+	fix caused alignment wreckage
+
+2004-12-10  fpeters
+
+	* lasso/xml/internals.h, lasso/xml/xml.c: removed
+	XmlSnippetObsolete, no longer used anywhere.
+	lasso_node_build_xmlNode_from_snippets made static and documented
+	some new functions.
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h: reenabled signature checking on query
+	strings (xml messages still to do)
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/name_registration.c, lasso/xml/Makefile.am: moved
+	NameRegistration to XmlSnippet
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/login.c: removed unnecessary namespace declaration
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/defederation.h: removed
+	unnecessary private_data in LassoFederation; consequence being
+	instance_init, class_init, dispose and finalise have also been
+	removed.
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/login.h: removed struct LassoLoginPrivate declaration
+
+2004-12-10  fpeters
+
+	* lasso/id-ff/login.c: Moved LassoLogin to XmlSnippet; not
+	completely since an enum is converted in string and I'm not sure it
+	is a good idea to 1) store them as integer or 2) adds the mapping
+	value->string to xml.c.  Also removed unused LassoLoginPrivate
+	variable/struct/
+
+2004-12-09  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/profile.c: use xml snippet
+	in LassoProfile; better faster stronger.
+
+2004-12-09  fpeters
+
+	* lasso/xml/xml.c: don't sign query if not asked to; and fixed
+	SNIPPET_NODE_IN_CHILD support
+
+2004-12-09  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c: Removed code with
+	ResourceIDGroup in lasso_personal_profile_service_init_query() :
+	will be updated soon.
+
+2004-12-09  valos
+
+	* lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_query.c, lasso/xml/disco_query.h,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_resource_offering.h: Yet another modification about
+	ResourceID and EncrytpedResourceID elements
+
+2004-12-08  fpeters
+
+	* lasso/id-ff/login.c: force role as service provider in
+	lasso_login_build_authn_request_msg (closes: 382)
+
+2004-12-08  fpeters
+
+	* lasso/id-ff/login.c: forgot to get query when AuthnRequestsSigned
+	was not set
+
+2004-12-08  nclapies
+
+	* lasso/id-wsf/abstract_service.h,
+	lasso/id-wsf/personal_profile_service.c, lasso/xml/dst_query.c,
+	lasso/xml/dst_query.h, lasso/xml/dst_query_response.c: Fixed
+	support of ResourceIDGroup : updated class of level 1 and id-wsf
+	with this new class.
+
+2004-12-08  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c: Removed process of
+	ResourceOffering param. Need to be reactivated when ResourceID
+	process in level 1 will be completed.
+
+2004-12-08  eraviart
+
+	* lasso/id-ff/identity.c, lasso/id-ff/identity.h, swig/Lasso.i: For
+	Swig, corrected server providerIds.  Added providerIds to
+	identities and sessions.
+
+2004-12-08  valos
+
+	* lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_query.c, lasso/xml/disco_query.h,
+	lasso/xml/disco_resource_id_group.c,
+	lasso/xml/disco_resource_id_group.h,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_resource_offering.h: Fixed bad XML schema
+	interpretation of ResourceIDGroup element in: LassoDiscoModify,
+	LassoDiscoQuerya and LassoDiscoResourceOffering
+
+2004-12-08  nclapies
+
+	* lasso/xml/Makefile.am: Updated with support of
+	disco_resource_id_group.
+
+2004-12-08  nclapies
+
+	* lasso/xml/disco_resource_id_group.c,
+	lasso/xml/disco_resource_id_group.h: Initial version : complex
+	class to manage ResourceID and EncryptedResourceID choice.
+
+2004-12-08  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/internals.h,
+	lasso/xml/xml.c: new snippet type, SNIPPET_NODE_IN_CHILD, and
+	documented all of the types.
+
+2004-12-08  valos
+
+	* lasso/xml/Makefile.am, lasso/xml/disco_encrypted_resource_id.c,
+	lasso/xml/disco_encrypted_resource_id.h,
+	lasso/xml/disco_resource_id.c, lasso/xml/disco_resource_id.h: Added
+	LassoDiscoResourceID and LassoDiscoEncryptedResourceID classes
+
+2004-12-08  fpeters
+
+	* lasso/xml/lib_authn_request.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_status_response.c, lasso/xml/xml.c: reviewed code
+	marked with XXX
+
+2004-12-08  eraviart
+
+	* swig/Lasso.i: In SWIG: - Improved ProviderIds.  - Removed
+	LassoProviders structure (too complex to handle with SWIG).  -
+	Added attribute providerIds and method getProvider to LassoServer.
+	- Replaced xmlChar with gchar.
+
+2004-12-07  eraviart
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/federation.c,
+	lasso/id-ff/identity.c, lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	lasso/id-ff/profile.c, lasso/id-ff/provider.c,
+	lasso/id-ff/server.c, lasso/id-ff/session.c,
+	lasso/id-wsf/abstract_service.c,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/wsf_profile.c, lasso/xml/xml.c: The past participle of
+	"to override" is overridden.	  see
+	http://en.wiktionary.org/wiki/Overridden
+
+2004-12-07  fpeters
+
+	* lasso/xml/dst_query_item.c, lasso/xml/internals.h,
+	lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c, lasso/xml/lib_scoping.c,
+	lasso/xml/saml_assertion.c, lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/xml.c: another round
+	on snippets; no longer multiply types for content transformation
+	(CONTENT_BOOLEAN, ATTRIBUTE_BOOLEAN, CONTENT_INTEGER,
+	ATTRIBUTE_INTEGER...), instead does something like this:
+	SNIPPET_ATTRIBUTE | SNIPPET_INTEGER (other combinations allowed)
+
+2004-12-07  nclapies
+
+	* lasso/xml/disco_query.h: Fixed #ifndef
+	__LASSO_LIB_DISCO_QUERY_H__ to #ifndef __LASSO_DISCO_QUERY_H__
+
+2004-12-07  nclapies
+
+	* lasso/id-wsf/Makefile.am: Replaced template_service.* with
+	abstract_service.*
+
+2004-12-07  valos
+
+	* lasso/xml/disco_credentials.c, lasso/xml/disco_description.c,
+	lasso/xml/disco_description.h, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_modify_response.h, lasso/xml/disco_options.c,
+	lasso/xml/disco_options.h, lasso/xml/disco_query.c,
+	lasso/xml/disco_query.h, lasso/xml/disco_query_response.c,
+	lasso/xml/disco_query_response.h, lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_remove_entry.h,
+	lasso/xml/disco_requested_service_type.c,
+	lasso/xml/disco_requested_service_type.h,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_resource_offering.h,
+	lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h, lasso/xml/dst_data.c,
+	lasso/xml/dst_data.h, lasso/xml/dst_query.c, lasso/xml/dst_query.h,
+	lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h,
+	lasso/xml/dst_query_response.c, lasso/xml/dst_query_response.h,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_assertion.h,
+	lasso/xml/saml_subject_statement.h: Added AttributeStatement
+	element support in Saml:Assertion (required for id-WSF).  Fixed
+	constructor's required params of Disco classes.  Updated Disco
+	classes with new snippet.  Updated some schema fragments.
+
+2004-12-07  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: Initial version : class to
+	manage Personal profile service. Currently, only support
+	initiating, processing and building of Query and QueryResponse
+	messages.
+
+2004-12-07  nclapies
+
+	* lasso/id-wsf/abstract_service.c, lasso/id-wsf/abstract_service.h:
+	Initial version : abstract class to store ResourceID,
+	ResourceOfferings, QueryItem.
+
+2004-12-07  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Removed unused old code.
+
+2004-12-07  nclapies
+
+	* lasso/xml/dst_query_response.c, lasso/xml/dst_query_response.h:
+	Added support of specific service : now QueryResponse element can
+	be used by services and inherits their name space.
+
+2004-12-07  nclapies
+
+	* lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h: Fixed
+	required params of constructor lasso_dst_query_item_new() :
+	QueryItem's attribute itemID is optional.
+
+2004-12-07  nclapies
+
+	* lasso/xml/dst_query.c, lasso/xml/dst_query.h: Added support of
+	specific service : now Query element can be used by services and
+	inherits their name space.
+
+2004-12-07  fpeters
+
+	* NEWS, doap.rdf: updated informative files with data about Lasso
+	0.5.0.
+
+2004-12-07  valos
+
+	* lasso/xml/utility_status.c: Updated LassoUtilityStatus with new
+	snippet
+
+2004-12-07  nclapies
+
+	* lasso/xml/utility_status.c: Fixed namespace of Status element :
+	Status is included by schemas so no default name space.
+
+2004-12-06  fpeters
+
+	* lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c: removed obsolete doc args
+
+2004-12-06  valos
+
+	* lasso/xml/xml.c: Fixed a stupid copy/paste
+
+2004-12-06  valos
+
+	* lasso/xml/xml.c: Fixed SNIPPET_LIST_NODES and
+	SNIPPET_LIST_CONTENT snippet type support in
+	lasso_node_init_from_xml()
+
+2004-12-06  fpeters
+
+	* lasso/xml/xml.c: removed debugging fprintf
+
+2004-12-06  fpeters
+
+	* lasso/id-ff/provider.c: fixed xpath expressions for id-ff 1.1
+	compatibility
+
+2004-12-06  fpeters
+
+	* lasso/id-ff/provider.c: fixed metadata
+
+2004-12-06  fpeters
+
+	* lasso/id-ff/provider.c: added (untested) compatibility with ID-FF
+	1.1 metadata files
+
+2004-12-06  nclapies
+
+	* lasso/xml/xml.c: Renamed LASSO_LIB_SERVICE_TYPE_ID_SIS_* to
+	LASSO_*_HREF.
+
+2004-12-06  nclapies
+
+	* lasso/xml/strings.h: Oups ... bad, bad copy / paste.
+
+2004-12-06  nclapies
+
+	* lasso/xml/strings.h: Removed service types defines. Added prefix
+	and href for personal profile and employee profile.
+
+2004-12-06  fpeters
+
+	* lasso/xml/xml.c: added dst support
+
+2004-12-06  fpeters
+
+	* lasso/xml/xml.c: dealt with namespaces in a manner compatibler
+	with libxml2 2.6.11 and 2.6.16
+
+2004-12-04  fpeters
+
+	* docs/reference/lasso.sgml: more on documentation compilation; ok
+	now.
+
+2004-12-04  fpeters
+
+	* docs/reference/lasso.types: removed obsolete classes so the doc
+	compiles again
+
+2004-12-04  fpeters
+
+	* lasso/Makefile.am: Won anther automake battle.  Thanks to
+	Matthias Andree and Be Plouvier.
+
+2004-12-04  fpeters
+
+	* lasso/.cvsignore, lasso/Makefile.am: added types.c generation to
+	Makefile and to .cvsignore
+
+2004-12-04  fpeters
+
+	* lasso/extract_types.py, lasso/lasso.c: added types (classes)
+	extraction on build and registration in lasso_init
+
+2004-12-04  fpeters
+
+	* configure.ac: removed gmodule from libs; I failed to get class
+	registration dynamic
+
+2004-12-04  fpeters
+
+	* lasso/id-ff/logout.h: formatted for easier processing
+
+2004-12-04  fpeters
+
+	* configure.ac: link to gmodule (part of glib)
+
+2004-12-03  fpeters
+
+	* lasso/xml/dst_query_response.c: consistency: comment stars are
+	aligned; parent_class is no longer necessary; struct indentation
+	only use one tab; trailing \ are not necessary.
+
+2004-12-03  nclapies
+
+	* lasso/xml/dst_query_item.c: Removed old FIXME.
+
+2004-12-03  nclapies
+
+	* lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h: Updated
+	LassoDstQueryItem with new snippet feature in class instance. Moved
+	schema comment from .h to .c
+
+2004-12-03  fpeters
+
+	* lasso/xml/internals.h, lasso/xml/xml.c: added xml boolean
+	attribute snippet support
+
+2004-12-03  nclapies
+
+	* lasso/xml/dst_query_response.c, lasso/xml/dst_query_response.h:
+	Updated LassoDstQueryResponse with new snippet feature in class
+	instance. Moved schema comment from .h to .c
+
+2004-12-03  nclapies
+
+	* lasso/xml/dst_query.c, lasso/xml/dst_query.h: Updated
+	LassoDstQuery with new snippet feature in class instance. Moved
+	schema comment from .h to .c
+
+2004-12-03  fpeters
+
+	* lasso/xml/xml.c: removed memory management debugging fprintf
+
+2004-12-03  fpeters
+
+	* lasso/id-wsf/.cvsignore: cvs ignore for id-wsf/ files
+
+2004-12-03  fpeters
+
+	* lasso/xml/xml.c: memory management for XmlSnippets; xml/*.c
+	should no longer leak
+
+2004-12-03  fpeters
+
+	* lasso/id-ff/logout.c: do not share memory between
+	profile->remote_providerID and response->ProviderID
+
+2004-12-02  valos
+
+	* lasso/xml/strings.h: Added 22 DST status code constants
+
+2004-12-02  fpeters
+
+	* configure.ac: updated version to 0.5.9 and libtool version to
+	3.0.0
+
+2004-12-02  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/disco_credentials.c,
+	lasso/xml/disco_description.c, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_options.c, lasso/xml/disco_query.c,
+	lasso/xml/disco_query_response.c, lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_requested_service_type.c,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c, lasso/xml/dst_data.c,
+	lasso/xml/dst_query.c, lasso/xml/dst_query_item.c,
+	lasso/xml/dst_query_response.c, lasso/xml/internals.h,
+	lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_logout_response.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_attribute.c, lasso/xml/saml_attribute_designator.c,
+	lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_condition_abstract.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_statement_abstract.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/samlp_status.c,
+	lasso/xml/samlp_status_code.c, lasso/xml/utility_status.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: last(?) iteration on XmlSnippet;
+	now attached to classes, get_xmlNode and init_from_xml are no
+	longer necessary in many cases.  Previous XmlSnippet renamed to
+	XmlSnippetObsolete to keep compatibility (id-wsf classes have not
+	yet been converted).
+
+2004-12-02  fpeters
+
+	* lasso/xml/dst_data.h, lasso/xml/dst_query.h,
+	lasso/xml/dst_query_item.h, lasso/xml/dst_query_response.h: indent
+	using tabs
+
+2004-12-01  rchantereau
+
+	* win32/nsis/jlasso-lite.nsi, win32/nsis/lasso-deps.nsi,
+	win32/nsis/lasso-full.nsi, win32/nsis/lasso-lite.nsi: Update NSIS
+	scripts.  Install zlib, intl.dll instead of libtoolized name.
+	Install correctly in the lasso-lite installer.
+
+2004-11-30  nclapies
+
+	* configure.ac, lasso/Makefile.am, lasso/id-wsf/Makefile.am,
+	lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h: Added a
+	first support of id-wsf high level. Only the base class is defined
+	: LassoWsfProfile is intended to be inherited by future service
+	classes. It is still very incomplete.
+
+2004-11-30  nclapies
+
+	* lasso/xml/Makefile.am: Added support of DISCO and DST element
+	classes.
+
+2004-11-30  nclapies
+
+	* lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h: Fixed
+	wrong param in lasso_dst_query_item_new() : LibDstSelect doesnt
+	exist, it is a specific element of attributes services.
+
+2004-11-30  nclapies
+
+	* lasso/xml/dst_data.c, lasso/xml/dst_data.h,
+	lasso/xml/dst_query.c, lasso/xml/dst_query.h,
+	lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h,
+	lasso/xml/dst_query_response.c, lasso/xml/dst_query_response.h:
+	Initial version : added DST part of WSF for sis specific attribute
+	services.
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/session.c: extra consistency check in
+	lasso_session_get_provider_index
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/server.c: fixed error checking in lasso_server_new
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/server.c: added error checking in lasso_server_new
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/profile.c, lasso/id-ff/provider.c, lasso/xml/xml.c:
+	added proper error checking where xpath is used.
+
+2004-11-29  fpeters
+
+	* lasso/xml/disco_requested_service_type.c: removed unnecessary
+	include
+
+2004-11-29  fpeters
+
+	* lasso/xml/xml.c: remove erroneous (my bad) XXX comment
+
+2004-11-29  valos
+
+	* lasso/xml/Makefile.am, lasso/xml/saml_attribute.c,
+	lasso/xml/saml_attribute.h, lasso/xml/saml_attribute_designator.c,
+	lasso/xml/saml_attribute_designator.h,
+	lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_attribute_statement.h: Added LassoSamlAttribute,
+	LassoSamlAttributeDesignator & LassoSamlAttributeStatement classes
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	lasso/xml/disco_description.h, lasso/xml/disco_insert_entry.h,
+	lasso/xml/disco_query.h, lasso/xml/disco_remove_entry.h: cut on
+	some line lengths
+
+2004-11-29  fpeters
+
+	* lasso/xml/strings.h: reduced line length and aligning some
+	#define
+
+2004-11-29  fpeters
+
+	* lasso/xml/disco_credentials.c, lasso/xml/disco_credentials.h,
+	lasso/xml/disco_query.c, lasso/xml/disco_query.h,
+	lasso/xml/disco_query_response.c, lasso/xml/disco_query_response.h,
+	lasso/xml/disco_requested_service_type.c,
+	lasso/xml/disco_requested_service_type.h,
+	lasso/xml/lib_assertion.c, lasso/xml/samlp_status.c,
+	lasso/xml/utility_status.c, lasso/xml/utility_status.h: harmonize
+	schema fragment comments (indentation, in .c, no space between
+	namespace and element name)
+
+2004-11-29  nclapies
+
+	* lasso/xml/disco_credentials.c, lasso/xml/disco_credentials.h,
+	lasso/xml/disco_query.c, lasso/xml/disco_query.h,
+	lasso/xml/disco_query_response.c, lasso/xml/disco_query_response.h,
+	lasso/xml/disco_requested_service_type.c,
+	lasso/xml/disco_requested_service_type.h,
+	lasso/xml/utility_status.c, lasso/xml/utility_status.h: Initial
+	version of wsf query / query response discovery part files.
+
+2004-11-29  fpeters
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_options.c, lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c: harmony in snippets declaration
+
+2004-11-29  fpeters
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_modify_response.c, lasso/xml/disco_options.c,
+	lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c: harmony in schema fragment
+	comments
+
+2004-11-29  fpeters
+
+	* lasso/xml/disco_description.h, lasso/xml/disco_insert_entry.h,
+	lasso/xml/disco_modify.h, lasso/xml/disco_modify_response.h,
+	lasso/xml/disco_options.h, lasso/xml/disco_remove_entry.h,
+	lasso/xml/disco_resource_offering.h,
+	lasso/xml/disco_service_instance.h: cut on line length (along a fix
+	to commitinfo script to check this automatically)
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/login.c: fixed protocolProfile handling when NULL in
+	request in lasso_login_process_authn_request_msg
+
+2004-11-29  fpeters
+
+	* swig/Lasso.i: map server->providers to a kind of list (should be
+	dict)
+
+2004-11-29  valos
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_options.c, lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c: Minor fixes after the snippets
+	changes
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/defederation.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h: added
+	RelayState support in federation termination notification (used
+	only in redirect mode)
+
+2004-11-29  fpeters
+
+	* lasso/id-ff/login.c: updated
+	lasso_login_process_authn_request_msg to lasso 0.5 code
+
+2004-11-29  valos
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_description.h,
+	lasso/xml/disco_insert_entry.c, lasso/xml/disco_insert_entry.h,
+	lasso/xml/disco_modify.c, lasso/xml/disco_modify.h,
+	lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_modify_response.h, lasso/xml/disco_options.c,
+	lasso/xml/disco_options.h, lasso/xml/disco_remove_entry.c,
+	lasso/xml/disco_remove_entry.h,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_resource_offering.h,
+	lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h, lasso/xml/Makefile.am: Added 8
+	classes for discovering identity services (ID-WSF) They provide
+	methods to build Modify & ModifyResponse messages.
+
+2004-11-29  valos
+
+	* lasso/xml/strings.h: Added 2 constants: LASSO_DISCO_HREF and
+	LASSO_DISCO_PREFIX
+
+2004-11-29  fpeters
+
+	* lasso/xml/xml.c: check error and free memory in
+	lasso_node_new_from_soap
+
+2004-11-29  fpeters
+
+	* lasso/xml/xml.c: elsif'ing
+
+2004-11-28  fpeters
+
+	* lasso/id-ff/profile.c: error checking in
+	lasso_profile_get_request_type_from_soap_msg()
+
+2004-11-28  fpeters
+
+	* lasso/xml/xml.c: cleaned up useless affectation
+
+2004-11-26  fpeters
+
+	* lasso/xml/Makefile.am, lasso/xml/internals.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_subject.c, lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: moved xml snippet stuffs into new
+	internals.h; those should not be exposed; changed snippet type from
+	character to enum (defined in internals.h)
+
+2004-11-26  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c: signature for
+	FederatationTerminationNotification; preparation for AuthnResponse.
+
+2004-11-26  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.c, lasso/id-ff/profile.c,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/saml_advice.c,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_condition_abstract.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_statement_abstract.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c: cut some long lines
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_authority_binding.c: formatting
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_subject_locality.c: added attribute snippet
+	support to <saml:SubjectLocality>
+
+2004-11-26  fpeters
+
+	* lasso/xml/samlp_status_code.c: added attribute xml snippet
+	support to <samlp:StatusCode>
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c: signature support
+	in <lib:FederationTerminationNotification>,
+	<lib:NameIdentifierMappingRequest> and
+	<lib:NameIdentifierMappingResponse>
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_conditions.c: added attribute xml snippet support
+	to <saml:Conditions>
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_authority_binding.c: use xmlsnippets in
+	<saml:AuthorityBinding>
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_authentication_statement.c: fixed comment
+	formatting
+
+2004-11-26  fpeters
+
+	* lasso/xml/saml_authentication_statement.c: use attribute xml
+	snippet support in <saml:AuthenticationStatement>
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_name_identifier_mapping_request.c: use attribute
+	xml snippet support in <lib:NameIdentifierMappingRequest>
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_logout_request.c: use attribute xml snippet support
+	in <lib:LogoutRequest>
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_federation_termination_notification.c: use
+	attribute snippet support in
+	<lib:FederationTerminationNotification>
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_request_envelope.c: fixed comment formatting
+
+2004-11-26  fpeters
+
+	* lasso/xml/lib_authentication_statement.c: use attribute xml
+	snippet support in <AuthenticationStatement>
+
+2004-11-26  fpeters
+
+	* configure.ac: woke up to remove tutorials from configure.ac
+
+2004-11-25  fpeters
+
+	* tests/login_tests.c: indentation leftovers
+
+2004-11-25  fpeters
+
+	* docs/Makefile.am: removed examples/ and docs/tutorial directories
+	(obsolete stuffs)
+
+2004-11-25  fpeters
+
+	* lasso/export.h, lasso/lasso.h, lasso/id-ff/federation.c,
+	lasso/id-ff/logout.c, lasso/id-ff/logout.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/session.h, lasso/xml/errors.c,
+	lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_response.c, lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_entry.h, lasso/xml/lib_idp_list.c,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_status_response.h,
+	lasso/xml/lib_subject.c, lasso/xml/lib_subject.h,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/saml_subject_statement_abstract.h,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response.c, lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/tools.c, lasso/xml/xml.c: indentation work
+
+2004-11-25  fpeters
+
+	* lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.h, lasso/id-ff/provider.c: restore
+	spaces in front of author name
+
+2004-11-25  fpeters
+
+	* HACKING, lasso/lasso.c, lasso/id-ff/defederation.h,
+	lasso/id-ff/federation.h, lasso/id-ff/identity.h,
+	lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/logout.h, lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.h, lasso/id-ff/profile.h,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/server.h, lasso/id-ff/session.c, lasso/id-ff/session.h,
+	lasso/xml/lib_assertion.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_context.h, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_idp_entries.h, lasso/xml/lib_idp_entry.h,
+	lasso/xml/lib_idp_list.h, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/lib_scoping.h,
+	lasso/xml/lib_status_response.h, lasso/xml/lib_subject.h,
+	lasso/xml/saml_advice.h, lasso/xml/saml_assertion.h,
+	lasso/xml/saml_audience_restriction_condition.h,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_authority_binding.h,
+	lasso/xml/saml_condition_abstract.h, lasso/xml/saml_conditions.h,
+	lasso/xml/saml_name_identifier.h,
+	lasso/xml/saml_statement_abstract.h, lasso/xml/saml_subject.h,
+	lasso/xml/saml_subject_confirmation.h,
+	lasso/xml/saml_subject_locality.h,
+	lasso/xml/saml_subject_statement.h,
+	lasso/xml/saml_subject_statement_abstract.h,
+	lasso/xml/samlp_request.h, lasso/xml/samlp_request_abstract.h,
+	lasso/xml/samlp_response.h, lasso/xml/samlp_response_abstract.h,
+	lasso/xml/samlp_status.h, lasso/xml/samlp_status_code.h,
+	lasso/xml/strings.h, lasso/xml/tools.h, lasso/xml/xml.h: limit line
+	length to 100 characters.
+
+2004-11-25  fpeters
+
+	* lasso/xml/xml.c: cut down on line length; removed unnecessary
+	cast, implemented 't' snippet handling.
+
+2004-11-25  valos
+
+	* lasso/xml/xml.c: added xml complex and simple elements sequences
+	support to xmlsnippet
+
+2004-11-25  fpeters
+
+	* lasso/xml/xml.c: don't loop twice on xmlsnippets
+
+2004-11-25  fpeters
+
+	* lasso/xml/strings.h: removed some unused #define
+
+2004-11-25  fpeters
+
+	* lasso/xml/saml_assertion.c: use new xml attribute support for
+	saml:Assertion
+
+2004-11-25  fpeters
+
+	* lasso/xml/xml.c: added xml attribute support to xmlsnippet
+
+2004-11-22  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/defederation.h,
+	lasso/id-ff/federation.c, lasso/id-ff/federation.h,
+	lasso/id-ff/identity.c, lasso/id-ff/identity.h,
+	lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/logout.h, lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h, lasso/id-ff/session.c,
+	lasso/id-ff/session.h: renamed private struct member to
+	private_data (gtk+ does it like that)
+
+2004-11-22  fpeters
+
+	* HACKING: fixed emacs mode
+
+2004-11-22  fpeters
+
+	* HACKING: Note about lasso-c-mode for Emacs users
+
+2004-11-22  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_status_response.c,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/xml.c,
+	lasso/xml/xml.h, python/tests/profiles_tests.py: added error
+	checking on query strings; python tests should now pass
+
+2004-11-22  fpeters
+
+	* python/tests/errorchecking_tests.py,
+	python/tests/profiles_tests.py: sync python tests with lasso 0.5
+
+2004-11-22  fpeters
+
+	* lasso/id-ff/server.c: don't dump empty file path in server dumps
+
+2004-11-22  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am: merged late 0.5 changes to
+	java/ and csharp/ Makefile.am
+
+2004-11-18  fpeters
+
+	* lasso/xml/lib_authn_request.c: unused variables
+
+2004-11-18  fpeters
+
+	* lasso/xml/xml.c: include appropriate file so
+	saml_name_identifier_new is defined
+
+2004-11-18  fpeters
+
+	* lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c, lasso/xml/xml.c: removed
+	unnecessary lasso_node_impl_init_from_query
+
+2004-11-18  fpeters
+
+	* lasso/xml/tools.c: fixed signed/unsigned mismatch
+
+2004-11-18  fpeters
+
+	* lasso/id-ff/profile.c: server is not part of <profile> dump
+
+2004-11-18  fpeters
+
+	* lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_conditions.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: use same "xmlsnippets" (name will
+	probably change) to build xml nodes
+
+2004-11-17  fpeters
+
+	* lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_conditions.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/xml.c, lasso/xml/xml.h: refactored init_from_xml
+	functions (lasso is now less than 20000 lines)
+
+2004-11-16  fpeters
+
+	* lasso/id-ff/federation.h, lasso/id-ff/profile.h,
+	lasso/xml/errors.c, lasso/xml/lib_scoping.c,
+	lasso/xml/saml_assertion.c, lasso/xml/xml.c: more header cleaning
+
+2004-11-16  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/xml/lib_assertion.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_conditions.h, lasso/xml/samlp_response_abstract.h,
+	lasso/xml/tools.c, lasso/xml/tools.h, lasso/xml/xml.c,
+	lasso/xml/xml.h: cleaning #includes
+
+2004-11-16  fpeters
+
+	* lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/samlp_status_code.h: support for samlp:StatusCode in
+	samlp:StatusCode in ... ad vitam.
+
+2004-11-15  fpeters
+
+	* tests/login_tests.c: tests are ok
+
+2004-11-15  fpeters
+
+	* configure.ac, lasso/Makefile.am, lasso/lasso.h,
+	lasso/id-ff/Makefile.am, lasso/id-ff/defederation.c,
+	lasso/id-ff/defederation.h, lasso/id-ff/federation.c,
+	lasso/id-ff/identity.c, lasso/id-ff/identity.h, lasso/id-ff/lecp.c,
+	lasso/id-ff/lecp.h, lasso/id-ff/login.c, lasso/id-ff/login.h,
+	lasso/id-ff/logout.c, lasso/id-ff/logout.h,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/id-ff/session.c: renamed lasso/environs/ to lasso/id-ff/
+
+2004-11-15  fpeters
+
+	* tests/random_tests.c: new tests
+
+2004-11-15  fpeters
+
+	* tests/login_tests.c, tests/tests.c: updated tests
+
+2004-11-09  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_advice.c, lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_name_identifier.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response.c, lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_status.c, lasso/xml/samlp_status_code.c,
+	lasso/xml/tools.c, lasso/xml/tools.h, lasso/xml/xml.c,
+	lasso/xml/xml.h: return value on init_from_xml; and minor tweaks to
+	code style
+
+2004-11-04  fpeters
+
+	* tests/data/idp1-la/metadata.xml: Fixed value of
+	SingleSignOnProtocolProfile metadata : added support of artifact
+	and post. [lasso-orig rev1.2]
+
+2004-11-03  fpeters
+
+	* lasso/xml/Makefile.am, lasso/xml/debug.c, lasso/xml/debug.h,
+	lasso/xml/tools.c, lasso/xml/tools.h: move debug functions with
+	other tools functions in tools.c
+
+2004-11-03  fpeters
+
+	* lasso/xml/lib_authn_context.h: we're missing
+	AuthenticationContextStatement support
+
+2004-11-03  fpeters
+
+	* lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c: Fixed 2 bugs in
+	lasso_node_add_signature_tmpl() * the transform method "exclusive
+	C14N" was missing in Transforms element * removed useless KeyInfo
+	element in Signatures without X509 data
+
+	[from lasso-orig revision 1.95]
+
+2004-11-01  fpeters
+
+	* lasso/xml/lib_assertion.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_response.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_request_authn_context.c, lasso/xml/lib_subject.c,
+	lasso/xml/saml_assertion.c,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_name_identifier.c: cleaning files
+
+2004-11-01  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/lecp.h, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_authn_response_envelope.h: LECP converted to new tree
+
+2004-11-01  fpeters
+
+	* lasso/id-ff/federation.c: set RemoteProviderID has <federation>
+	attribute instead of text child to be a little more compatible with
+	lasso (still incompatible since they put all the federation in a
+	global <federations> while I put them directly in the <identity>).
+
+2004-11-01  fpeters
+
+	* lasso/id-ff/name_registration.c: sign message in name
+	registration
+
+2004-11-01  fpeters
+
+	* lasso/id-ff/logout.c: fixed previous lasso-head port
+
+2004-11-01  fpeters
+
+	* lasso/id-ff/logout.c: Corrected lasso_logout_process_response_msg
+	so that it works for proxies.
+
+2004-11-01  fpeters
+
+	* swig/Lasso.i: - Added Swig access to attribute role in
+	LassoProvider (needed for proxies).  - Renamed TargetNamespace
+	(without uppercase 'S').
+
+2004-10-30  fpeters
+
+	* lasso/id-ff/logout.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_logout_response.c,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h: xmlsec for logout requests and
+	responses
+
+2004-10-30  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/xml.c,
+	lasso/xml/xml.h: ds:Signature in <samlp:request/> (in login)  (and
+	the signature is not verified yet)
+
+2004-10-29  fpeters
+
+	* lasso/xml/lib_authn_response.c, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response.h: cleaning up
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: read over lasso_login_process_request_msg
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: syncing other functions
+
+2004-10-29  fpeters
+
+	* lasso/xml/lib_logout_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h:
+	lasso_samlp_response_abstract_fill to initialize responses with id,
+	time and versions.
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/profile.c: synced
+	lasso_login_build_authn_response_msg
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h: synced lasso_login_build_authn_request_msg;
+	added has_protocol_profile function.
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: synced lasso_login_build_artifact_msg
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: synced (not much to do)
+	lasso_login_accept_sso
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: not much on
+	lasso_login_process_response_status_and_assertion
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: cleaned up lasso_login_process_federation
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: no space before :
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c: sync unknown error value with lasso
+
+2004-10-29  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: reformatted
+	lasso_get_pem_file_type
+
+2004-10-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/tools.c, lasso/xml/tools.h: apply
+	optimization to build_random_sequence (and use it in
+	build_unique_id)
+
+2004-10-29  fpeters
+
+	* lasso/xml/xml.c: change function signature
+
+2004-10-28  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: style
+
+2004-10-28  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: fixed
+	lasso_get_current_time to return UTC time
+
+2004-10-28  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: removed unused
+	lasso_g_ptr_array_index
+
+2004-10-27  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/federation.c,
+	lasso/id-ff/identity.c, lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	lasso/id-ff/profile.c, lasso/id-ff/provider.c,
+	lasso/id-ff/server.c, lasso/id-ff/session.c, lasso/xml/errors.c,
+	lasso/xml/tools.c: removal of \n at end of error messages
+
+2004-10-27  fpeters
+
+	* lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entry.c,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_logout_request.c,
+	lasso/xml/lib_logout_response.c,
+	lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_status_response.c, lasso/xml/saml_advice.c,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_condition_abstract.c,
+	lasso/xml/saml_statement_abstract.c, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject_statement_abstract.c: removed useless casts
+
+2004-10-27  fpeters
+
+	* lasso/lasso.c: indented lasso.c
+
+2004-10-27  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/profile.c,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_subject.c, lasso/xml/saml_subject_statement.c,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request.h,
+	lasso/xml/samlp_request_abstract.c, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response_abstract.c: cleaning up
+
+2004-10-27  fpeters
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: removed unused code
+
+2004-10-27  fpeters
+
+	* configure.ac: [2004-10-26 19:36  rchantereau] configure.ac: Some
+	configuration variables and configure options in order to compile
+	php.
+
+2004-10-27  fpeters
+
+	* configure.ac, lasso/Makefile.am, lasso/lasso.c, lasso/lasso.h,
+	lasso/id-ff/Makefile.am, lasso/id-ff/defederation.c,
+	lasso/id-ff/defederation.h, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/identity.c,
+	lasso/id-ff/identity.h, lasso/id-ff/lecp.c, lasso/id-ff/lecp.h,
+	lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/logout.c,
+	lasso/id-ff/logout.h, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	lasso/id-ff/profile.c, lasso/id-ff/profile.h,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h, lasso/id-ff/session.c,
+	lasso/id-ff/session.h, lasso/xml/Makefile.am, lasso/xml/errors.h,
+	lasso/xml/lib.h, lasso/xml/lib_assertion.c,
+	lasso/xml/lib_assertion.h,
+	lasso/xml/lib_authentication_statement.c,
+	lasso/xml/lib_authentication_statement.h,
+	lasso/xml/lib_authn_context.c, lasso/xml/lib_authn_context.h,
+	lasso/xml/lib_authn_request.c, lasso/xml/lib_authn_request.h,
+	lasso/xml/lib_authn_request_envelope.c,
+	lasso/xml/lib_authn_request_envelope.h,
+	lasso/xml/lib_authn_response.c, lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_authn_response_envelope.c,
+	lasso/xml/lib_authn_response_envelope.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_idp_entries.c, lasso/xml/lib_idp_entries.h,
+	lasso/xml/lib_idp_entry.c, lasso/xml/lib_idp_entry.h,
+	lasso/xml/lib_idp_list.c, lasso/xml/lib_idp_list.h,
+	lasso/xml/lib_idp_provided_name_identifier.c,
+	lasso/xml/lib_idp_provided_name_identifier.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c, lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_old_provided_name_identifier.c,
+	lasso/xml/lib_old_provided_name_identifier.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_request_authn_context.h, lasso/xml/lib_scoping.c,
+	lasso/xml/lib_scoping.h,
+	lasso/xml/lib_sp_provided_name_identifier.c,
+	lasso/xml/lib_sp_provided_name_identifier.h,
+	lasso/xml/lib_status_response.c, lasso/xml/lib_status_response.h,
+	lasso/xml/lib_subject.c, lasso/xml/lib_subject.h, lasso/xml/saml.h,
+	lasso/xml/saml_advice.c, lasso/xml/saml_advice.h,
+	lasso/xml/saml_assertion.c, lasso/xml/saml_assertion.h,
+	lasso/xml/saml_audience_restriction_condition.c,
+	lasso/xml/saml_audience_restriction_condition.h,
+	lasso/xml/saml_authentication_statement.c,
+	lasso/xml/saml_authentication_statement.h,
+	lasso/xml/saml_authority_binding.c,
+	lasso/xml/saml_authority_binding.h,
+	lasso/xml/saml_condition_abstract.c,
+	lasso/xml/saml_condition_abstract.h, lasso/xml/saml_conditions.c,
+	lasso/xml/saml_conditions.h, lasso/xml/saml_name_identifier.c,
+	lasso/xml/saml_name_identifier.h,
+	lasso/xml/saml_statement_abstract.c,
+	lasso/xml/saml_statement_abstract.h, lasso/xml/saml_subject.c,
+	lasso/xml/saml_subject.h, lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_confirmation.h,
+	lasso/xml/saml_subject_locality.c,
+	lasso/xml/saml_subject_locality.h,
+	lasso/xml/saml_subject_statement.c,
+	lasso/xml/saml_subject_statement.h,
+	lasso/xml/saml_subject_statement_abstract.c,
+	lasso/xml/saml_subject_statement_abstract.h,
+	lasso/xml/samlp_request.c, lasso/xml/samlp_request.h,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_request_abstract.h, lasso/xml/samlp_response.c,
+	lasso/xml/samlp_response.h, lasso/xml/samlp_response_abstract.c,
+	lasso/xml/samlp_response_abstract.h, lasso/xml/samlp_status.c,
+	lasso/xml/samlp_status.h, lasso/xml/samlp_status_code.c,
+	lasso/xml/samlp_status_code.h, lasso/xml/soap-env_body.c,
+	lasso/xml/soap-env_body.h, lasso/xml/soap-env_envelope.c,
+	lasso/xml/soap-env_envelope.h, lasso/xml/strings.h,
+	lasso/xml/tools.c, lasso/xml/tools.h, lasso/xml/xml.c,
+	lasso/xml/xml.h, swig/Lasso.i, tests/Makefile.am,
+	tests/login_tests.c, tests/tests.c: Done with the move to
+	structures and the removal of protocols/ (lasso branched on October
+	2nd; occasional merges since then).
+
+	- Compatible with current souk test suites.  - Missing memory
+	management for everything in xml/ - Missing xmlsec support for SOAP
+	messages.
+
+2004-10-03  eraviart
+
+	* lasso/id-ff/name_registration.c: Removed wrong test and changed a
+	comment.
+
+2004-10-03  eraviart
+
+	* swig/Lasso.i: Added RegisterNameIdentifier request and response
+	to SWIG binding.
+
+2004-10-03  eraviart
+
+	* swig/Lasso.i: Corrected error in exception generation for
+	non-Python bindings.
+
+2004-10-03  eraviart
+
+	* python/tests/profiles_tests.py, swig/Lasso.i: Removed
+	SWIG_Warning which doesn't exist in Swig.
+
+	Updated Python tests.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h, lasso/xml/errors.h, swig/Lasso.i: Integrated
+	scalp_is_liberty_query into Lasso. Consequently,
+	LASSO_PROFILE_ERROR_INVALID_QUERY is now a negative error code and
+	a critical message is displayed when this error occurs.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/profile.h,
+	lasso/xml/errors.c, lasso/xml/errors.h, swig/Lasso.i: Removed
+	function lasso_login_process_without_authn_request_msg.  It has
+	been replaced with:
+	lasso_login_init_self_addressed_authn_request(remote_providerID);
+	/* ...Set protocolProfile, isPassive, consent, relayState here...
+	*/   lasso_login_process_authn_request_message(NULL,
+				     lassoHttpMethodSelfAddressed); This
+	change was needed because there was no way to set isPassive,
+	consent, etc, before.
+
+	Standardized some error codes and messages.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/errors.c,
+	lasso/xml/errors.h, swig/Lasso.i: Homogeneized error handling for
+	HTTP methods in requests.
+
+	Reworked error codes, so that positive and negative numbers don't
+	overlap: It will be easier to change the sign of an error code
+	without break API.
+
+	Realigned error codes definitions.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/login.c: Removed consent from fake authnRequest
+	created by lasso_login_process_without_authn_request_msg: Since the
+	nameIDPolicy is "any", must_ask_for_consent must return true and if
+	the user doesn't give its consent, a one-time nameidentifier should
+	be used.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/login.c: In
+	lasso_login_process_without_authn_request_msg, set the isPassive
+	flag of the fake authnRequest to false, so that must_authenticate()
+	returns true.
+
+2004-10-02  eraviart
+
+	* lasso/id-ff/login.c: Corrected handling of NULL remote_providerID
+	in lasso_login_process_without_authn_request_msg.
+
+2004-10-02  valos
+
+	* lasso/id-ff/login.c: Fixed a bug in
+	lasso_login_process_without_authn_request_msg() and
+	lasso_login_build_assertion() When Identity provider initiates SSO,
+	response assertion MUST not include an InResponseTo attribute.
+
+2004-10-02  valos
+
+	* lasso/xml/tools.c: Fixed a bug in lasso_query_to_dict() function
+	It occurred when a parameter didn't have a value.
+
+2004-10-02  eraviart
+
+	* swig/Lasso.i: Added login method processWithoutAuthnRequestMsg to
+	SWIG bindings.
+
+2004-10-02  valos
+
+	* lasso/id-ff/login.c: Added documentation
+
+2004-10-02  valos
+
+	* lasso/id-ff/login.c: Modified
+	lasso_login_process_without_authn_request_msg() The
+	'remote_providerID' param is now optional (can be NULL).
+
+2004-10-01  valos
+
+	* lasso/id-ff/login.c: Added methods comments
+
+	Fixed a bug in lasso_login_accept_sso()
+
+2004-10-01  eraviart
+
+	* lasso/id-ff/login.c: Removed federation test, because for
+	one-time single sign-on, there is no federation.
+
+2004-10-01  eraviart
+
+	* lasso/id-ff/login.c: Correction in consent handling for login
+	when testing IsPassive.
+
+2004-10-01  valos
+
+	* lasso/id-ff/login.c: Fixed a bug in lasso_login_ask_for_consent()
+	Some cases had been forgotten.
+
+2004-10-01  eraviart
+
+	* swig/Lasso.i: Corrected #define syntax in SWIG.
+
+2004-10-01  eraviart
+
+	* swig/Lasso.i: Added consent constants in SWIG.
+
+	Use #define instead of xmlChar for string constants in SWIG.
+
+2004-10-01  valos
+
+	* lasso/id-ff/identity.c, lasso/id-ff/session.c: Fixed a bug in
+	instance_init() methods of LassoIdentity and LassoSession classes
+	is_dirty flag was initialized to TRUE instead of FALSE.
+
+2004-10-01  eraviart
+
+	* swig/Lasso.i: camelCased argument name in SWIG.
+
+2004-10-01  eraviart
+
+	* lasso/xml/tools.c, lasso/xml/xml.c: English correction.
+
+2004-10-01  eraviart
+
+	* lasso/xml/errors.h, swig/Lasso.i: Synchronized SWIG error codes
+	with those in errors.h (Shame on the developper who forgot to
+	update them in Lasso.i :-)
+
+2004-10-01  valos
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: Fixed a bug in
+	lasso_query_verify_signature() It was impossible to verify queries
+	signed with the DSA-SHA1 algorithm.
+
+2004-10-01  valos
+
+	* lasso/xml/errors.c, lasso/xml/errors.h: Added one error code
+
+2004-09-30  eraviart
+
+	* tests/login_tests.c: Updated login C tests to new API for
+	obtaining consent.
+
+2004-09-30  eraviart
+
+	* swig/Lasso.i: Added mustAskForConsent to login in SWIG.
+
+	camelCased a parameter name.
+
+2004-09-30  valos
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/lecp.h, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, swig/Lasso.i: Added a param
+	'is_consent_obtained' in method:
+	lasso_login_build_artifact_msg(),
+	lasso_login_build_authn_response_msg(),
+	lasso_login_process_federation(),
+	lasso_lecp_build_authn_response_envelope_msg() AuthnRequest message
+	accepts now all possible values for the NameIDPolicy: none,
+	onetime, federated, any
+
+	Added lasso_login_must_ask_for_consent() method This method must be
+	called after lasso_login_process_authn_request_msg()
+
+	Added lasso_login_process_without_authn_request_msg() method This
+	method is useful to initiate SSO from IDP.
+
+	Lasso.i was updated according to the changes.
+
+2004-09-30  nclapies
+
+	* lasso/id-ff/name_registration.c: Updated registation profile :
+	now it supports multiple registration from SP and IDP. This profile
+	has been tested only with SOAP method in souk. Test must be added
+	with Redirect method.
+
+2004-09-30  eraviart
+
+	* tests/sourceid-2.0beta/login-response.xml: Added directory for
+	sample SourceID messages.
+
+2004-09-30  valos
+
+	* lasso/xml/errors.c, lasso/xml/errors.h: Added 3 error codes
+
+2004-09-30  valos
+
+	* lasso/xml/strings.h: Added 3 lassoLibConsent
+
+2004-09-30  eraviart
+
+	* python/tests/errorchecking_tests.py,
+	python/tests/profiles_tests.py: Updates Python tests to new Lasso
+	API.
+
+2004-09-29  eraviart
+
+	* tests/login_tests.c: Updated C tests to lasso_server_new new API.
+
+2004-09-29  nclapies
+
+	* lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	swig/Lasso.i: Added better support for name registration. There is
+	still problem with multiple registration needed to be fixed
+
+2004-09-28  nclapies
+
+	* lasso/id-ff/name_registration.c: Added support of RelayState. Now
+	if the requester wants to get back th RelayState, it has to acces
+	to profile->msg_relayState
+
+2004-09-27  valos
+
+	* lasso/xml/errors.h: Added an error code:
+	LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED
+
+2004-09-27  valos
+
+	* lasso/xml/xml.c: Improved lasso_node_verify_signature() method
+	The 'public_key_file' param can now be either a public_key or a
+	certificate
+
+2004-09-27  nclapies
+
+	* lasso/id-ff/name_registration.c: Added dump support in name
+	registration. Fixed a bug in lasso_process_request_msg() : removed
+	a free of node
+
+2004-09-27  valos
+
+	* lasso/id-ff/session.c, lasso/id-ff/session.h: Fixed bug #303
+
+2004-09-27  valos
+
+	* lasso/id-ff/profile.c: lasso_profile_set_session_from_dump() and
+	lasso_profile_set_identity_from_dump() methods log now a critical
+	message if dumps are NULL.
+
+2004-09-27  valos
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/id-ff/server.c,
+	lasso/id-ff/server.h, swig/Lasso.i: Renamed 'ca_certificate'
+	property of LassoProvider object to 'ca_cert_chain'
+
+	Added a new property 'secret_key' in LassoServer object
+
+	Changed prototype of lasso_server_new() method BEFORE: LassoServer
+	* lasso_server_new(gchar		*metadata,
+	gchar		     *public_key,		   gchar
+	    *private_key,		   gchar
+	*certificate,		       lassoSignatureMethod
+	signature_method) AFTER: LassoServer * lasso_server_new(const gchar
+	*metadata,		    const gchar *private_key,
+	   const gchar *secret_key,		     const gchar
+	*certificate) public_key param was removed because it was useless.
+	secret_key was added to decrypt private_key signature_method was
+	removed (default value is lassoSignatureMethodRsaSha1).  2 new
+	methods was added to access 'signature_method' property of
+	LassoServer: lasso_server_get_signature_method() and
+	lasso_server_set_signature_method()
+
+	Update Lasso.i
+
+2004-09-27  nclapies
+
+	* lasso/id-ff/name_registration.c: Fixed bug #294 : memory leak on
+	name identifiers local variables in
+	lasso_name_registration_init_request().
+
+2004-09-27  valos
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: Removed
+	lasso_node_verify_x509_signature() method. This method isn't useful
+	anymore.  lasso_node_verify_signature() can now verify signatures
+	with or without X509Data.  Added a new param "ca_cert_chain_file"
+	in lasso_node_verify_signature()
+
+2004-09-27  nclapies
+
+	* lasso/id-ff/logout.c: Fixed bug #293 : memory leak on content
+	local variable in lasso_logout_init_request().
+
+2004-09-27  valos
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: Added
+	lasso_load_certs_from_pem_certs_chain_file() function
+
+2004-09-27  nclapies
+
+	* lasso/id-ff/defederation.c: Fixed bug #292 : memory leak on
+	content attribute.
+
+2004-09-25  nclapies
+
+	* lasso/xml/strings.h: - Removed lassoLibProtocolProfileNimSpSoap
+	macro.
+
+2004-09-25  nclapies
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h: - Fixed mistake in the API :
+	restored the second param (provider type).  Added a new attribute.
+	Now targetNameIdentifier is used to get the target name identifier
+	of the remote Service Provider. Later it will be used to request an
+	attribute of a principal at this SP.
+
+	- Updated code of name identifier mapping object :
+	lasso_name_identifier_mapping_build_request_msg() : builds the name
+	identifier mapping SOAP request message.
+
+	lasso_name_identifier_mapping_process_request_msg() : parse a SOAP
+	request message.
+
+	lasso_name_identifier_mapping_validate_request() : now this method
+	verify federation of the principal.  and get the name identifier of
+	this principal from federation with the remote service provider.
+
+	lasso_name_identifier_mapping_build_response_msg() : build the name
+	identifier mapping SOAP response message.
+
+	lasso_name_identifier_mapping_process_response_msg() : parse the
+	SOAP response message and veriy the status code value.	If Success,
+	then it sets the targetNameIdentifier attribute.
+
+2004-09-25  nclapies
+
+	* swig/Lasso.i: Fixed mistake in LassoNameIdentifierMapping() :
+	restored the second param (provider type).  Added a new attribute
+	in NameIdentifierMapping object. Now targetNameIdentifier is the
+	name identifier of the target Service Provider. Later will be used
+	to request an attribute.
+
+2004-09-23  nclapies
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h: [no log message]
+
+2004-09-23  nclapies
+
+	* swig/Lasso.i: Major update of code in
+	lasso_name_identifier_mapping_init_request(),
+	lasso_name_identifier_mapping_process_request(),
+	lasso_name_identifier_mapping_validate_request(). Added binding in
+	swig for name identifier mapping profile
+
+2004-09-23  nclapies
+
+	* lasso/xml/strings.h: Added definition of name identifier mapping
+	protocol profiles
+
+2004-09-23  valos
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h: Moved 'signature_status' private property
+	from LassoLogin to LassoProfile
+
+2004-09-22  valos
+
+	* docs/reference/lasso-sections.txt: Update
+
+2004-09-22  valos
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h: Ooops, signature_status
+	type must be gint, not gboolean
+
+2004-09-22  valos
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: Changed returned values and
+	added some error messages in lasso_query_verify_signature()
+
+2004-09-22  eraviart
+
+	* tests/login_tests.c: Updated to new API (but it doesn't work
+	yet).
+
+2004-09-22  nclapies
+
+	* lasso/id-ff/name_registration.c: Added a test on the remote
+	provider id param in lasso_name_registration_init_request() method
+
+2004-09-22  valos
+
+	* lasso/id-ff/login.c: Minor fixs
+
+2004-09-22  nclapies
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h: Added method
+	lasso_lib_name_identifier_mapping_request_set_targetNameSpace() in
+	lib_name_identifier_mapping_reques.c / h files. Added support of
+	target name space in lasso_name_identifier_mapping_new() in
+	name_identifier_mapping_request.c / h files. Added support of
+	target name space in lasso_name_identifier_init_request() in
+	name_identifier_mapping.c / h files
+
+2004-09-22  fpeters
+
+	* lasso/xml/errors.c, lasso/xml/tools.c, lasso/xml/xml.c: forgotten
+	commit; /insert const keyword explanation here/
+
+2004-09-22  nclapies
+
+	* lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h,
+	swig/Lasso.i: fixed a lot of bug, added a new attribute
+	oldNameIdentifier. Now after the process of the identity object (
+	or dump), nameIdentifier holds the new name identifier and
+	oldNameIdentifier holds the old name identifier
+
+2004-09-22  nclapies
+
+	* lasso/id-ff/identity.c: [no log message]
+
+2004-09-22  nclapies
+
+	* lasso/id-ff/identity.h: Added lasso_identity_get_federation_ref :
+	it returns the reference of the asked federation object
+
+2004-09-22  valos
+
+	* lasso/xml/errors.h: update
+
+2004-09-22  eraviart
+
+	* swig/Lasso.i: Removed assertion from login in SWIG.
+
+2004-09-22  valos
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/lecp.h: Renamed
+	lasso_lecp_init_from_authn_request_msg() into
+	lasso_lecp_process_authn_request_msg()
+
+	BEWARE : this change breaks the API
+
+2004-09-22  valos
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h: Removed response_dump
+	and assertion properties in LassoLogin object Added an attribute
+	(remote_providerID) in lasso_login_build_response_msg() Renamed
+	lasso_login_add_response_assertion() into
+	lasso_login_build_assertion() Renamed
+	lasso_login_init_from_authn_request_msg() into
+	lasso_login_process_authn_request_msg() Removed
+	lasso_login_get_assertion(), lasso_login_set_assertion and
+	lasso_login_set_assertion_from_dump() methods
+
+	BEWARE : these changes break the API
+
+2004-09-22  valos
+
+	* lasso/xml/strings.h: Added 8 SamlStatusCode
+
+2004-09-22  valos
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h: Added
+	lasso_profile_get_remote_providerID() method
+
+2004-09-22  eraviart
+
+	* swig/Lasso.i: New API pour artefact handling.
+
+2004-09-20  valos
+
+	* docs/reference/lasso-sections.txt: update
+
+2004-09-20  eraviart
+
+	* swig/Lasso.i: Made argument remote_providerID optional for
+	Defederation.initNotification, in SWIG binding.
+
+2004-09-20  nclapies
+
+	* swig/Lasso.i: Added binding for new name registration type
+
+2004-09-20  nclapies
+
+	* lasso/id-ff/profile.h: [no log message]
+
+2004-09-20  eraviart
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/logout.c, swig/Lasso.i: Made
+	remote_providerID optional in lasso_lecp_build_authn_request_msg
+	and in SWIG
+
+	Corrected SWIG handling of metadata.
+
+	Added attribute providerIds to Session in SWIG.
+
+2004-09-20  nclapies
+
+	* lasso/id-ff/profile.h: Fixed big mistake when updating name
+	registration type in lassoRequestType : moved type at the end to
+	preserve API, sorry.
+
+2004-09-20  fpeters
+
+	* lasso/id-ff/profile.h: repair API/ABI; thanks you very much.
+
+2004-09-20  nclapies
+
+	* swig/Lasso.i: Added name registration declaration and definition
+
+2004-09-20  nclapies
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h: Added name
+	registration type in lassoRequestType enum. added test in function
+	lasso_profile_get_request_type_from_soap_msg()
+
+2004-09-20  fpeters
+
+	* docs/lasso-book/single-logout.process,
+	docs/lasso-book/single-sign-on.process: I wanted to login    /But
+	it was too long/ So I logged out    /It was not much shorter/
+
+2004-09-20  valos
+
+	* lasso/xml/tools.c, lasso/xml/tools.h: Added
+	lasso_get_public_key_from_pem_cert_file() and
+	lasso_get_pem_file_type() functions
+
+2004-09-20  nclapies
+
+	* lasso/id-ff/defederation.c: Replaced call to
+	lasso_identity_get_next_federation_remote_providerID() with
+	lasso_identity_get_first_providerID()
+
+2004-09-20  valos
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h: the remote_providerID
+	parameter of lasso_login_build_authn_request_msg() method is now
+	optional.  If it's NULL, the providerID of the first provider of
+	login->server is used.
+
+2004-09-20  nclapies
+
+	* lasso/id-ff/identity.c, lasso/id-ff/identity.h: Added
+	lasso_identity_get_first_providerID(). Now it replaces
+	lasso_identity_get_next_federation_remote_providerID() wich still
+	exists to keep API / ABI compatibility
+
+2004-09-20  valos
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: Added
+	lasso_server_get_first_providerID() method
+
+2004-09-18  eraviart
+
+	* swig/Lasso.i: Added SWIG bindings for metadata, providers and
+	providerIds.
+
+	Reworked PHP4 binding for Identity.providerIds => PHP API has
+	changed.
+
+2004-09-17  fpeters
+
+	* lasso/id-ff/login.c: fixed typo
+
+2004-09-17  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	lasso/id-ff/profile.c, lasso/id-ff/server.c, lasso/xml/errors.c,
+	lasso/xml/lib_scoping.c: use g_strdup_printf to avoir buffer size
+	calculations and g_snprintf to avoir buffer overrun.
+
+2004-09-17  fpeters
+
+	* lasso/xml/xml.c: use g_strdup_printf to avoid buffer size
+	calculation; and free() the uri once it has been used.
+
+2004-09-17  fpeters
+
+	* lasso/xml/debug.c: strncpy won't add a trailing \0 to the string
+	if it has over 512 characters; only copy 511 and add a zero
+	manually.
+
+2004-09-17  fpeters
+
+	* lasso/lasso.c, lasso/id-ff/server.c,
+	lasso/xml/samlp_request_abstract.c,
+	lasso/xml/samlp_response_abstract.c: removed remaining parenthesis
+	on return statements
+
+2004-09-17  fpeters
+
+	* lasso/xml/tools.c: lasso_sha1 doesn't return a string but a
+	buffer
+
+2004-09-17  rchantereau
+
+	* win32/nsis/lasso-deps.nsi, win32/nsis/lasso-full.nsi: Uptaded NSI
+	scripts:     * Set version to 0.4.1-2 (filename is set too)	*
+	Updated files modules documentation.	  * Added intl.dll (part of
+	gettext project) to dependencies installation.
+
+	PS: Gettext is not included, just intl.dll
+
+2004-09-17  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/xml/debug.c, lasso/xml/xml.c: remove removed code
+
+2004-09-17  fpeters
+
+	* lasso/xml/tools.c: alloc xmlChar with xmlMalloc in
+	lasso_build_unique_id; alloc one more character in lasso_sha1;
+	remove some removed code
+
+2004-09-17  fpeters
+
+	* lasso/id-ff/login.c: use memcpy to copy memory; also fixed type
+	of samlArt.
+
+2004-09-16  valos
+
+	* lasso/id-ff/login.c: Disabled "consent" attribute checking when
+	NameIDPolicy is set to federated in the AuthnRequest (in
+	lasso_login_process_federation method)
+
+2004-09-14  nclapies
+
+	* swig/Lasso.i: Added binding for LassoNameRegistration C object
+
+2004-09-14  nclapies
+
+	* lasso/id-ff/name_registration.c: Little indentation
+
+2004-09-13  cnowicki
+
+	* swig/Lasso.i: bind property providerIDs for LassoIdentity added
+	typemap, convert GPtrArray to PHP indexed string array
+
+2004-09-10  fpeters
+
+	* lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h:
+	Fixed ABI and API breakage.  Please don't modify function
+	signatures (even more so when the new arg is not used).
+
+2004-09-10  nclapies
+
+	* lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_identifier_mapping.h,
+	lasso/id-ff/name_registration.c: A lot of Updates ... currently it
+	is unusable : lasso_name_registration_validate_request(),
+	lasso_name_registration_process_response_msg(),
+	lasso_name_identifier_mapping_validate_request() and
+	lasso_name_identifier_mapping_process_response_msg() need to be
+	completed
+
+2004-09-10  nclapies
+
+	* lasso/id-ff/name_registration.c: Moved
+	lasso_name_registration_validate_request() method at the end of
+	definition order
+
+2004-09-10  nclapies
+
+	* lasso/id-ff/name_registration.h: Moved
+	lasso_name_registration_validate_request() at the end of
+	declaration order
+
+2004-09-10  fpeters
+
+	* lasso/id-ff/login.h: Moved assertion to private part of
+	LassoLogin* (use lasso_login_get_assertion to get it).	Without
+	breaking ABI.  Classy.
+
+2004-09-10  nclapies
+
+	* lasso/id-ff/name_registration.c, lasso/id-ff/name_registration.h:
+	Updated name registration object's methods code to have the same
+	structure as the other profiles. It still needs to be tested before
+	to be souked :)
+
+2004-09-10  nclapies
+
+	* lasso/id-ff/logout.c: Changed comment if error when building
+	query logout request message
+
+2004-09-10  nclapies
+
+	* docs/reference/lasso-sections.txt: Added entry for logout method
+	lasso_logout_dump(), lasso_logout_init_request() and
+	lasso_logout_reset_providerID_index()
+
+2004-09-09  cnowicki
+
+	* configure.ac: I've forget to add
+	lasso/php/examples/sample-idp/Makefile in the autoconf script.
+
+2004-09-08  fpeters
+
+	* docs/reference/Makefile.am, lasso/Makefile.am,
+	lasso/id-ff/Makefile.am, php/Makefile.am, python/doc/.cvsignore,
+	python/doc/tutorial/.cvsignore: please use spaces between variable
+	names and values
+
+2004-09-08  eraviart
+
+	* java/coldfusion/src/CFLasso.java,
+	java/coldfusion/src/CFLassoSingleLogout.java,
+	java/coldfusion/src/CFLassoSingleSignOn.java,
+	java/coldfusion/web/assertionConsumer.cfm,
+	java/coldfusion/web/singleLogout.cfm,
+	java/coldfusion/web/singleSignOn.cfm: Restructured ColdFusion code.
+	Added single logout code. Both single sign-on and single logout
+	work.
+
+2004-09-07  eraviart
+
+	* NEWS, doap.rdf, java/coldfusion/web/assertionConsumer.cfm,
+	java/coldfusion/web/singleSignOn.cfm: Added files that I forgot to
+	commit for 0.4.1
+
+	Improved ColdFusion.
+
+2004-09-07  rchantereau
+
+	* win32/nsis/jlasso-lite.nsi: Corrected install-java-lite nsi
+	script.
+
+2004-09-07  eraviart
+
+	* ChangeLog: Created ChangeLog using cvs2cl -f ChangeLog --FSF
+
 2004-09-07  eraviart
 
 	* README: Replaced Sign On with Sign-On.
