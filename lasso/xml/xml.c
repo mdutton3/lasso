@@ -738,14 +738,14 @@ init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 		for (i = 0; snippets[i].name; i++) {
 			if (strcmp(t->name, snippets[i].name) != 0)
 				continue;
-			if (snippets[i].type == SNIPPET_NODE)
+			else if (snippets[i].type == SNIPPET_NODE)
 				*(snippets[i].value) = lasso_node_new_from_xmlNode(t);
-			if (snippets[i].type == SNIPPET_CONTENT)
+			else if (snippets[i].type == SNIPPET_CONTENT)
 				*(snippets[i].value) = xmlNodeGetContent(t);
-			if (snippets[i].type == SNIPPET_NAME_IDENTIFIER)
+			else if (snippets[i].type == SNIPPET_NAME_IDENTIFIER)
 				*(snippets[i].value) = (void*)
 					lasso_saml_name_identifier_new_from_xmlNode(t);
-			if (snippets[i].type == SNIPPET_LIST_NODES) {
+			else if (snippets[i].type == SNIPPET_LIST_NODES) {
 				xmlNode *ts;
 				GList *s = NULL;
 				for (ts = t->children; ts; ts = ts->next) {
@@ -754,8 +754,7 @@ init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 					g_list_append(s, lasso_node_new_from_xmlNode(ts));
 				}
 				*(snippets[i].value) = s;
-			}
-			if (snippets[i].type == SNIPPET_LIST_CONTENT) {
+			} else if (snippets[i].type == SNIPPET_LIST_CONTENT) {
 				xmlNode *ts;
 				GList *s = NULL;
 				for (ts = t->children; ts; ts = ts->next) {
@@ -774,36 +773,34 @@ void
 build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 {
 	int i;
-	
+
 	for (i = 0; snippets[i].name; i++) {
 		if (*(snippets[i].value) == NULL)
 			continue;
-		if (snippets[i].type == SNIPPET_ATTRIBUTE)
+		else if (snippets[i].type == SNIPPET_ATTRIBUTE)
 			xmlSetProp(node, snippets[i].name, (char*)(*(snippets[i].value)));
-		if (snippets[i].type == SNIPPET_NODE)
+		else if (snippets[i].type == SNIPPET_NODE)
 			xmlAddChild(node, lasso_node_get_xmlNode(
 						LASSO_NODE(*(snippets[i].value))));
-		if (snippets[i].type == SNIPPET_CONTENT)
+		else if (snippets[i].type == SNIPPET_CONTENT)
 			xmlNewTextChild(node, NULL, snippets[i].name, 
 					(char*)(*(snippets[i].value)));
-		if (snippets[i].type == SNIPPET_NAME_IDENTIFIER) {
+		else if (snippets[i].type == SNIPPET_NAME_IDENTIFIER) {
 			xmlNode *t;
 			xmlNs *xmlns;
 			xmlns = xmlNewNs(node, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
-			
+
 			t = xmlAddChild(node, lasso_node_get_xmlNode(
 						LASSO_NODE(*(snippets[i].value))));
 			xmlNodeSetName(t, snippets[i].name);
 			xmlSetNs(t, xmlns);
-		}
-		if (snippets[i].type == SNIPPET_LIST_NODES) {
+		} else if (snippets[i].type == SNIPPET_LIST_NODES) {
 			GList *elem = (GList *)(*(snippets[i].value));
 			while (elem) {
 				xmlAddChild(node, lasso_node_get_xmlNode(LASSO_NODE(elem->data)));
 				elem = g_list_next(elem);
 			}
-		}
-		if (snippets[i].type == SNIPPET_LIST_CONTENT) {
+		} else if (snippets[i].type == SNIPPET_LIST_CONTENT) {
 			/* sequence of simple elements (no children, no attrs, just content) */
 			GList *elem = (GList *)(*(snippets[i].value));
 			while (elem) {
