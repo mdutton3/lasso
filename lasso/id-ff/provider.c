@@ -301,7 +301,7 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 
 	succinct_id = lasso_sha1(provider->ProviderID);
 	base64_succinct_id = xmlSecBase64Encode(succinct_id, 20, 0);
-	free(succinct_id);
+	xmlFree(succinct_id);
 	return base64_succinct_id;
 }
 
