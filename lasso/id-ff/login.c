@@ -882,7 +882,7 @@ lasso_login_process_response_msg(LassoLogin  *login,
 static void
 lasso_login_dispose(LassoLogin *login)
 {
-  if (login->private->dispose_has_run) {
+  if (login->private->dispose_has_run == TRUE) {
     return;
   }
   login->private->dispose_has_run = TRUE;
@@ -965,7 +965,7 @@ lasso_login_new(LassoServer *server)
   LassoLogin *login;
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
-				   "server", server,
+				   "server", lasso_server_copy(server),
 				   NULL));
   
   return (login);
@@ -981,8 +981,8 @@ lasso_login_new_from_dump(LassoServer *server,
   gchar *protocolProfile;
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
-				   "server", server,
-				   "user", user,
+				   "server", lasso_server_copy(server),
+				   "user", lasso_user_copy(user),
 				   NULL));
   
   node_dump = lasso_node_new_from_dump(dump);
