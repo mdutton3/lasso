@@ -26,6 +26,7 @@
 
 #include <lasso/protocols/artifact.h>
 #include <lasso/protocols/provider.h>
+#include <lasso/protocols/elements/authentication_statement.h>
 
 static GObjectClass *parent_class = NULL;
 
@@ -81,10 +82,11 @@ lasso_login_add_response_assertion(LassoLogin    *login,
   assertion = lasso_assertion_new(providerID, requestID);
   xmlFree(providerID);
   xmlFree(requestID);
-  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
-								reauthenticateOnOrAfter,
-								identity->remote_nameIdentifier,
-								identity->local_nameIdentifier);
+  authentication_statement = lasso_authentication_statement_new(
+		authenticationMethod,
+		reauthenticateOnOrAfter,
+		LASSO_SAML_NAME_IDENTIFIER(identity->remote_nameIdentifier),
+		LASSO_SAML_NAME_IDENTIFIER(identity->local_nameIdentifier));
   if (authentication_statement != NULL) {
     lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
