@@ -46,7 +46,7 @@ lasso_node_build_query(LassoNode *node)
 xmlChar *
 lasso_node_dump(LassoNode *node, const xmlChar *encoding, int format) {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->dump(node, encoding, format);
+  return (class->dump(node, encoding, format));
 }
 
 LassoAttr *
@@ -425,7 +425,7 @@ lasso_node_impl_parse_memory(LassoNode *node,
   xmlDocPtr doc;
   xmlNodePtr root;
 
-  doc = xmlParseMemory(buffer, streln(buffer));
+  doc = xmlParseMemory(buffer, strlen(buffer));
   root = xmlDocGetRootElement(doc);
   xmlFreeNode(node->private->node);
   node->private->node = root;
