@@ -168,7 +168,7 @@ instance_init(LassoLibAuthnRequest *node)
 	node->AssertionConsumerServiceID = NULL;
 	node->RequestAuthnContext = NULL;
 	node->RelayState = NULL;
-	node->Scoping = lasso_lib_scoping_new();
+	node->Scoping = NULL;
 	node->consent = NULL;
 }
 
