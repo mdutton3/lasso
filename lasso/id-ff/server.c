@@ -73,14 +73,14 @@ lasso_server_add_provider(LassoServer *server,
 
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
   if (provider != NULL) {
-    g_ptr_array_add(server->providers, provider);    
+    g_ptr_array_add(server->providers, provider);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
-    return (-1);
+    return (LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
   }
 
-  return(0);
+  return (0);
 }
 
 LassoServer*
