@@ -312,6 +312,26 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   return(response);
 }
 
+static LassoNode *
+lasso_logout_response_new_from_xml(gchar *buffer)
+{
+  LassoNode *response;
+  LassoNode *logout_response_node, *lassoNode_response;
+  xmlNodePtr xmlNode_response;
+  LassoNodeClass *class;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
+
+  lassoNode_response = lasso_node_new_from_dump(buffer);
+  class = LASSO_NODE_GET_CLASS(lassoNode_response);
+  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
+  class = LASSO_NODE_GET_CLASS(response);
+  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
+  lasso_node_destroy(lassoNode_response);
+  
+  return(response);
+}
+
 LassoNode*
 lasso_logout_response_new_from_export(gchar               *buffer,
 				      lassoNodeExportType  export_type)
@@ -326,6 +346,9 @@ lasso_logout_response_new_from_export(gchar               *buffer,
     break;
   case lassoNodeExportTypeSoap:
     response = lasso_logout_response_new_from_soap(buffer);
+    break;
+  case lassoNodeExportTypeXml:
+    response = lasso_logout_response_new_from_xml(buffer);
     break;
   default:
     message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
