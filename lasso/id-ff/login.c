@@ -343,14 +343,24 @@ lasso_login_init_authn_request(LassoLogin  *login,
 			       const gchar *remote_providerID)
 {
   LassoProvider *server;
+  gchar *local_providerID;
+
+  g_return_val_if_fail(remote_providerID != NULL, -1);
 
   server = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
-  LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(lasso_provider_get_providerID(server));
+  local_providerID = lasso_provider_get_providerID(server);
+  if (local_providerID == NULL) {
+    debug(ERROR, "The attribut 'ProviderID' is missing in metadata of server");
+    return (-1);
+  }
+  
+  LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(local_providerID);
+  g_free(local_providerID);
   LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
 
   if (LASSO_PROFILE_CONTEXT(login)->request == NULL) {
-    return (-1);
+    return (-2);
   }
 
   return (0);
