@@ -564,6 +564,11 @@ typedef struct {
 %rename(Server) LassoServer;
 typedef struct {
 	%extend {
+		/* Attributes */
+
+		%immutable providerId;
+		gchar *providerId;
+
 		/* Constructor, destructor & static methods */
 
 		LassoServer(gchar *metadata = NULL, gchar *publicKey = NULL,
@@ -589,9 +594,21 @@ typedef struct {
 
 %{
 
+/* Attributes implementations */
+
+/* providerID */
+gchar *LassoServer_providerId_get(LassoServer *self) {
+	return self->providerID;
+}
+
+/* Constructors, destructors & static methods implementations */
+
 #define new_LassoServer lasso_server_new
 #define delete_LassoServer lasso_server_destroy
 #define Server_newFromDump lasso_server_new_from_dump
+
+/* Methods implementations */
+
 #define LassoServer_addProvider lasso_server_add_provider
 #define LassoServer_dump lasso_server_dump
 
@@ -808,7 +825,7 @@ LassoResponse *LassoProfile_response_get(LassoProfile *profile) {
 
 /* Functions */
 
-%rename(get_request_type_from_soap_msg) lasso_profile_get_request_type_from_soap_msg;
+%rename(getRequestTypeFromSoapMsg) lasso_profile_get_request_type_from_soap_msg;
 lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
 
 
