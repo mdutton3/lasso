@@ -125,7 +125,8 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     ret = -1;
     goto done;
   }
-
+  
+  /* build the logout request message */
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
       xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     /* sign the request message */
@@ -306,6 +307,8 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   /* if a ProviderID from a SP request, pass it and return the next provider id found */
   for (i = 0; i < profile->session->providerIDs->len; i++) {
     current_provider_id = g_strdup(g_ptr_array_index(profile->session->providerIDs, i));
+
+    /* if logout request from SP at IDP, verify not to return the ProviderID of the initial SP requester */
     if (logout->initial_remote_providerID != NULL) {
       if (xmlStrEqual(current_provider_id, logout->initial_remote_providerID)) {
 	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
