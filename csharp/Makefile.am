@@ -18,10 +18,13 @@ liblassosharpglue_la_LDFLAGS =	-no-undefined -module -avoid-version
 
 liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i
 	$(SWIG) -v -csharp -package lasso -module lasso -o liblassosharpglue_wrap.c $<
+	cp liblassosharpglue_wrap.c liblassosharpglue_wrap.c.bak
+	sed -e 's/(char \*) "\(.*\)"/malloc("\1")/' \
+		< liblassosharpglue_wrap.c.bak > liblassosharpglue_wrap.c
 
 
 dotnetlibdir = $(datadir)/dotnet/lasso/
-dotnetlib_DATA = lasso.dll
+dotnetlib_DATA = lasso.dll lasso.dll.config
 
 lasso.dll: liblassosharpglue.la
 	mcs /out:lasso.dll /target:library $(srcdir)/*.cs
@@ -30,7 +33,7 @@ pkgconfig_DATA  = lasso-sharp.pc
 pkgconfigdir    = $(libdir)/pkgconfig
 
 clean-local:
-	-rm lasso.dll lasso-sharp.pc
+	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
 	LassoAuthnRequest.cs LassoAuthnResponse.cs LassoIdentity.cs \
