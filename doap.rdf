@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:doap="http://usefulinc.com/ns/doap#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:admin="http://webns.net/mvcb/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xml:lang="en">
+  <dc:Description rdf:about="">
+    <admin:generatorAgent rdf:resource="http://www.bonjourlesmouettes.org/doap-a-matic.php"/>
+  </dc:Description>
+  <doap:Project>
+    <doap:name>Lasso</doap:name>
+    <doap:homepage rdf:resource="http://lasso.entrouvert.org"/>
+    <doap:created>2003-07-01</doap:created>
+    <doap:description>Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation of the Liberty Alliance specifications.  Those define protocols for federated identities, single sign on, etc. Lasso provides both a C library and bindings for several languages (Python and Java for now).</doap:description>
+    <doap:shortdesc>A Free Software implementation of Liberty Alliance specifications</doap:shortdesc>
+    <doap:bug-database rdf:resource="http://lasso.entrouvert.org/bugs"/>
+    <doap:mailing-list rdf:resource="http://lasso.entrouvert.org/mailing-list"/>
+    <doap:programming-language>C</doap:programming-language>
+    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
+    <doap:download-page rdf:resource="http://lasso.entrouvert.org/download"/>
+    <doap:maintainer>
+      <foaf:Person>
+        <foaf:name>Nicolas Clapiès</foaf:name>
+        <foaf:mbox_sha1sum>73b9aa4736072365ed0eebfbcf94878adb6ac71d</foaf:mbox_sha1sum>
+      </foaf:Person>
+    </doap:maintainer>
+    <doap:repository>
+      <doap:CVSRepository>
+        <doap:anon-root>:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso</doap:anon-root>
+        <doap:module>lasso</doap:module>
+        <doap:browse rdf:resource="http://cvs.labs.libre-entreprise.org/cgi-bin/cvsweb.cgi/lasso/?cvsroot=lasso"/>
+      </doap:CVSRepository>
+    </doap:repository>
+  </doap:Project>
+</rdf:RDF>
+
