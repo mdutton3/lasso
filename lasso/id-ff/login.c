@@ -288,7 +288,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
-				   NULL, /* lassoLibHRef, comment for SourceID */
+				   NULL, /* lassoLibHRef, FIXME changed for SourceID */
 				   &err);
 
   if (assertion != NULL) {
@@ -398,7 +398,9 @@ lasso_login_accept_sso(LassoLogin *login)
 
   if (LASSO_PROFILE(login)->response != NULL) {
     assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
-    				     "Assertion", lassoLibHRef, &err);
+    				     "Assertion",
+				     NULL, /* lassoLibHRef, FIXME changed for SourceID */
+				     &err);
     if (assertion == NULL) {
       message(G_LOG_LEVEL_CRITICAL, err->message);
       ret = err->code;
@@ -421,26 +423,26 @@ lasso_login_accept_sso(LassoLogin *login)
       goto done;
     }
 
-    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier",
-						     lassoLibHRef, &err);
-    if (idpProvidedNameIdentifier == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, err->message);
-      ret = err->code;
-      g_error_free(err);
-      goto done;
-    }
-    copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier);
-    lasso_node_destroy(idpProvidedNameIdentifier);
-    /* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier */
-    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier");
-    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier,
-								 lassoSamlAssertionHRef,
-								 lassoSamlAssertionPrefix);
+/*     idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", */
+/* 						     lassoLibHRef, &err); */
+/*     if (idpProvidedNameIdentifier == NULL) { */
+/*       message(G_LOG_LEVEL_CRITICAL, err->message); */
+/*       ret = err->code; */
+/*       g_error_free(err); */
+/*       goto done; */
+/*     } */
+/*     copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier); */
+/*     lasso_node_destroy(idpProvidedNameIdentifier); */
+/*     /\* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier *\/ */
+/*     LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier"); */
+/*     LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier, */
+/* 								 lassoSamlAssertionHRef, */
+/* 								 lassoSamlAssertionPrefix); */
 
     /* create federation */
     federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
     lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-    lasso_federation_set_remote_nameIdentifier(federation, copy_idpProvidedNameIdentifier);
+    /* lasso_federation_set_remote_nameIdentifier(federation, copy_idpProvidedNameIdentifier); */
     lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
 				  LASSO_PROFILE(login)->remote_providerID,
 				  federation);
