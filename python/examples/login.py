@@ -7,8 +7,6 @@ import string
 
 import lasso
 
-lasso.init()
-
 ####################
 # Service provider #
 ####################

@@ -4,8 +4,6 @@ import sys
 sys.path.insert(0, '../')
 import lasso
 
-lasso.init()
-
 # servers :
 spserver = lasso.Server.new("../../examples/sp.xml",
     "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",

@@ -4,8 +4,6 @@ import sys
 sys.path.insert(0, '../')
 import lasso
 
-lasso.init()
-
 req = lasso.NameIdentifierMappingRequest.new("http://providerid.com",
                                              "CDSC7SCD65SCDSDCCDS", "http://qualifier.com", "federated")
 print 'dump req : ', req.dump()

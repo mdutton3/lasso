@@ -29,6 +29,8 @@ __docformat__ = "plaintext en"
 import lassomod
 from lasso_strings import *
 
+_inited = False
+
 class Error(Exception):
     def __init__(self, msg):
         self.msg = msg
@@ -39,13 +41,22 @@ def init():
     """
     Init Lasso Library.
     """
+    global _inited
+    if _inited:
+        raise Error('Lasso already inited')
+    _inited = True
     return lassomod.init()
 
 def shutdown():
     """
     Shutdown Lasso Library.
     """
+    global _inited
+    if not _inited:
+        raise Error('Lasso not inited or already shotdown')
+    _inited = False
     return lassomod.shutdown()
+
 
 ################################################################################
 # xml : low level classes
@@ -1221,3 +1232,7 @@ class Lecp:
 
     def process_authn_response_envelope_msg(self, response_msg):
         return lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)
+
+
+if not _inited:
+    init()

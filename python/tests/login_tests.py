@@ -34,7 +34,6 @@ sys.path.insert(0, '../.libs')
 
 
 import lasso
-lasso.init()
 
 
 class LoginTestCase(unittest.TestCase):

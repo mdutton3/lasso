@@ -5,8 +5,6 @@ import sys
 sys.path.insert(0, '../')
 import lasso
 
-lasso.init()
-
 # creation d'une AuthnRequest
 req = lasso.AuthnRequest("http://providerid.com")
 req.set_forceAuthn(0)

@@ -9,7 +9,6 @@ spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"htt
 
 idpuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://service-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">1111111111111111111111111</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
 
-lasso.init()
 
 # SP :
 spserver = lasso.Server.new("../../examples/sp.xml",

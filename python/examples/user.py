@@ -4,8 +4,6 @@ import sys
 sys.path.insert(0, '../')
 import lasso
 
-lasso.init()
-
 
 lasso_assertions = """<LassoAssertions><LassoAssertion RemoteProviderID="https://service-provider1:2003/liberty-alliance/metadata"><Assertion AssertionID="1234567890"></Assertion></LassoAssertion><LassoAssertion RemoteProviderID="https://service-provider2:2003/liberty-alliance/metadata"><Assertion AssertionID="1234567890"></Assertion></LassoAssertion><LassoAssertion RemoteProviderID="https://service-provider3:2003/liberty-alliance/metadata"><Assertion AssertionID="1234567890"></Assertion></LassoAssertion></LassoAssertions>"""
 
