@@ -88,7 +88,7 @@ LASSO_EXPORT gint                   lasso_discovery_add_remove_entry(LassoDiscov
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_service_type(
 	LassoDiscovery *discovery,
 	const gchar    *serviceType,
-	GList          *options);
+	const char     *options); /* Was GList *options before */
 
 LASSO_EXPORT gint                   lasso_discovery_add_resource_offering(
 	LassoDiscovery             *discovery,

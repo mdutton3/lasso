@@ -181,11 +181,12 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 LassoDiscoRequestedServiceType*
 lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 					   const gchar    *serviceType,
-					   GList          *options)
+/* 					   GList          *options) */
+					   const char     *option)
 {
 	LassoDiscoQuery *query;
 	LassoDiscoRequestedServiceType *rst;
-	LassoDiscoOptions *opts;
+	LassoDiscoOptions *opts = NULL;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
 	g_return_val_if_fail(serviceType != NULL, NULL);
@@ -197,13 +198,15 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 
 	/* optionals data */
 	/* create Options */
-	if (options != NULL) {
-		opts = lasso_disco_options_new();
-		while (options != NULL) {
-			opts->Option = g_list_append(opts->Option, options->data);
-			options = g_list_next(options);
-		}
+	if (option != NULL) {
+		opts->Option = g_list_append(opts->Option, (gpointer)option);
 		rst->Options = opts;
+/* 		opts = lasso_disco_options_new(); */
+/* 		while (options != NULL) { */
+/* 			opts->Option = g_list_append(opts->Option, options->data); */
+/* 			options = g_list_next(options); */
+/* 		} */
+/* 		rst->Options = opts; */
 	}
 
 	/* add RequestedServiceType */
