@@ -52,20 +52,12 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 								reauthenticateOnOrAfter,
 								identity->remote_nameIdentifier,
 								identity->local_nameIdentifier);
-  ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "NameIdentifier", NULL);
-  idp_ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "IDPProvidedNameIdentifier", NULL);
-  /* store NameIdentifier */
-  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
-    login->nameIdentifier = idp_ni;
-    xmlFree(ni);
-  }
-  else {
-    login->nameIdentifier = ni;
-    xmlFree(idp_ni);
-  }
-
   lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+
+  /* store NameIdentifier */
+  login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
@@ -416,7 +408,25 @@ lasso_login_build_request_msg(LassoLogin *login)
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
   LASSO_PROFILE_CONTEXT(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->request);
   LASSO_PROFILE_CONTEXT(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider);
+
   return (0);
+}
+
+gint
+lasso_login_create_user(LassoLogin *login,
+			gchar      *user_dump)
+{
+  if (user_dump != NULL) {
+    LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new_from_dump(user_dump);
+    if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
+      debug(ERROR, "Failed create user from the user dump\n");
+      return (-1);
+    }
+  }
+  else {
+    LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new();
+    return (0);
+  }
 }
 
 void
@@ -586,25 +596,30 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
 gint
 lasso_login_init_request(LassoLogin       *login,
 			 gchar            *response_msg,
-			 lassoHttpMethods  response_method,
-			 const gchar      *remote_providerID)
+			 lassoHttpMethods  response_method)
 {
-  xmlChar *artifact;
-
-  LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
+  LassoNode *response;
+  xmlChar *artifact, *providerID, *identityProviderSuccinctID;
 
   /* rebuild response (artifact) */
   switch (response_method) {
   case lassoHttpMethodGet:
   case lassoHttpMethodRedirect:
     /* artifact by REDIRECT */
-    LASSO_PROFILE_CONTEXT(login)->response = lasso_artifact_new_from_query(response_msg);
+    response = lasso_artifact_new_from_query(response_msg);
     break;
   case lassoHttpMethodPost:
     /* artifact by POST */
-    LASSO_PROFILE_CONTEXT(login)->response = lasso_artifact_new_from_lares(response_msg, NULL);
+    response = lasso_artifact_new_from_lares(response_msg, NULL);
     break;
   }
+  LASSO_PROFILE_CONTEXT(login)->response = response;
+  /* get remote identityProviderSuccinctID */
+  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(response);
+  LASSO_PROFILE_CONTEXT(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE_CONTEXT(login)->server,
+											  identityProviderSuccinctID);
+  xmlFree(identityProviderSuccinctID);
+  
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeArtifact;
 
   /* create SamlpRequest */

@@ -92,6 +92,9 @@ LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (Lasso
 
 LASSO_EXPORT gint                 lasso_login_build_request_msg           (LassoLogin *login);
 
+LASSO_EXPORT gint                 lasso_login_create_user                 (LassoLogin *login,
+									   gchar      *user_dump);
+
 LASSO_EXPORT void                 lasso_login_destroy                     (LassoLogin *login);
 
 LASSO_EXPORT gchar*               lasso_login_dump                        (LassoLogin *login);
@@ -105,8 +108,7 @@ LASSO_EXPORT gint                 lasso_login_init_from_authn_request_msg (Lasso
 
 LASSO_EXPORT gint                 lasso_login_init_request                (LassoLogin       *login,
 									   gchar            *response_msg,
-									   lassoHttpMethods  response_method,
-									   const gchar      *remote_providerID);
+									   lassoHttpMethods  response_method);
 
 LASSO_EXPORT gboolean             lasso_login_must_authenticate           (LassoLogin *login);
 
