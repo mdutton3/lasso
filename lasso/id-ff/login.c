@@ -468,8 +468,9 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	/* build artifact infos */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL)
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 
 	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
@@ -662,6 +663,9 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 
@@ -818,6 +822,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 		LassoHttpMethod http_method)
 {
 	LassoProfile *profile;
+	LassoProvider *remote_provider;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -838,6 +843,12 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	} else {
 		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
 	}
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 
 	login->http_method = http_method;
 
@@ -1181,6 +1192,9 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				LASSO_PROFILE(login)->remote_providerID);
 
 	LASSO_PROFILE(login)->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
 			LASSO_PROFILE(login)->response)->RelayState);
