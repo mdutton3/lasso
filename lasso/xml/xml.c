@@ -425,6 +425,9 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	GList *list_ns = NULL, *list_classes = NULL, *t;
+	LassoNode *value_node;
+	struct XmlSnippet *version_snippet;
+	
 
 	if (class->node_data == NULL)
 		return NULL;
@@ -455,6 +458,28 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	}
 
 	xmlCleanNs(xmlnode);
+
+	/* backward compatibility with Liberty ID-FF 1.1; */
+	if (find_path(node, "MajorVersion", &value_node, &version_snippet) == 0) {
+		int *value;
+		int major_version, minor_version;
+
+		value = G_STRUCT_MEMBER_P(value_node, version_snippet->offset);
+		major_version = *value;
+
+		find_path(node, "MinorVersion", &value_node, &version_snippet);
+		value = G_STRUCT_MEMBER_P(value_node, version_snippet->offset);
+		minor_version = *value;
+
+		if (strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
+			if (major_version == 1 && minor_version == 0) {
+				xmlFree((xmlChar*)xmlnode->ns->href); /* warning: discard const */
+				xmlnode->ns->href = xmlStrdup(
+						"http://projectliberty.org/schemas/core/2002/12");
+			}
+		}
+	}
+
 
 	return xmlnode;
 }
@@ -1384,7 +1409,12 @@ xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 __inline__ static int
 sameNs(xmlNs *ns1, xmlNs *ns2)
 {
-	return (ns1 == NULL && ns2 == NULL) || (ns1 && ns2 && strcmp(ns1->href, ns2->href) == 0);
+	/* this checks ns->prefix instead of ns->href so it is possible to
+	 * merge down to an earlier version of liberty namespace
+	 */
+	return (ns1 == NULL && ns2 == NULL) || (
+			ns1 && ns2 && ns1->prefix && ns2->prefix &&
+			strcmp(ns1->prefix, ns2->prefix) == 0);
 }
 
 static void
