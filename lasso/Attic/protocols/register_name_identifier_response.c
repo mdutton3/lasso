@@ -72,7 +72,7 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 					    LassoNode     *request)
 {
   /* FIXME : change request type */
-  LassoNode *response, *ss, *ssc;
+  LassoNode *response, *ss, *ssc, *request_providerID, *request_relayState;
   xmlChar *inResponseTo, *recipient, *relayState;
   xmlChar *id, *time;
 
@@ -100,18 +100,21 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 					   providerID);
 
   inResponseTo = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(request, "RequestID"));
-  recipient = lasso_node_get_content(lasso_node_get_child(request, "ProviderID"));
-
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 inResponseTo);
 
+  request_providerID = lasso_node_get_child(request, "ProviderID", NULL);
+  recipient = lasso_node_get_content(request_providerID);
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					      recipient);
+  lasso_node_destroy(request_providerID);
 
-  relayState = lasso_node_get_content(lasso_node_get_child(request, "RelayState"));
-  if (relayState != NULL) {
+  request_relayState = lasso_node_get_child(request, "RelayState", NULL);
+  if (request_relayState != NULL) {
+    relayState = lasso_node_get_content(request_relayState);
     lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
 					     relayState);
+    lasso_node_destroy(request_relayState);
   }
 
   ss = lasso_samlp_status_new();
@@ -122,6 +125,8 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 				    LASSO_SAMLP_STATUS_CODE(ssc));
   lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
 				       LASSO_SAMLP_STATUS(ss));
+  lasso_node_destroy(ssc);
+  lasso_node_destroy(ss);
 
   return (response);
 }
@@ -200,6 +205,7 @@ lasso_register_name_identifier_response_new_from_request_query(const xmlChar *qu
   response = lasso_register_name_identifier_response_new(providerID,
 				       statusCodeValue,
 				       request);
+  lasso_node_destroy(request);
 
   return(response);
 }
@@ -217,6 +223,7 @@ lasso_register_name_identifier_response_new_from_request_soap(const xmlChar *buf
   response = lasso_register_name_identifier_response_new(providerID,
 				       statusCodeValue,
 				       request);
+  lasso_node_destroy(request);
 
   return(response);
 }
@@ -232,14 +239,16 @@ lasso_register_name_identifier_response_new_from_soap(const xmlChar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_response = lasso_node_get_child(envelope, "RegisterNameIdentifierResponse");
-     
+  lassoNode_response = lasso_node_get_child(envelope, "RegisterNameIdentifierResponse",
+					    lassoLibHRef);
+  
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
-  
+  lasso_node_destroy(lassoNode_response);
+
   class = LASSO_NODE_GET_CLASS(response);
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
-  g_object_unref(envelope);
+  lasso_node_destroy(envelope);
   
   return(response);
 }

@@ -36,17 +36,20 @@ lasso_register_name_identifier_rename_attributes_for_query(LassoRegisterNameIden
 
   g_return_if_fail (LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST(request));
 
-  idpidentifier = lasso_node_get_child(LASSO_NODE(request), "IDPProvidedNameIdentifier");
+  idpidentifier = lasso_node_get_child(LASSO_NODE(request), "IDPProvidedNameIdentifier", NULL);
   lasso_node_rename_prop(idpidentifier, "NameQualifier", "IDPNameQualifier");
   lasso_node_rename_prop(idpidentifier, "Format", "IDPFormat");
+  lasso_node_destroy(idpidentifier);
 
-  spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier");
+  spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier", NULL);
   lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
   lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
+  lasso_node_destroy(spidentifier);
 
-  oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier");
+  oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier", NULL);
   lasso_node_rename_prop(oldidentifier, "NameQualifier", "OldNameQualifier");
   lasso_node_rename_prop(oldidentifier, "Format", "OldFormat");
+  lasso_node_destroy(oldidentifier);
 }
 
 /*****************************************************************************/
@@ -129,18 +132,21 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), idpFormat);
   lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
+  lasso_node_destroy(idpidentifier);
 
   spidentifier = lasso_lib_sp_provided_name_identifier_new(spProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spNameQualifier);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spFormat);
   lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									  LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
+  lasso_node_destroy(spidentifier);
 
   oldidentifier = lasso_lib_old_provided_name_identifier_new(oldProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldNameQualifier);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldFormat);
   lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
+  lasso_node_destroy(oldidentifier);
 
   return (request);
 }
@@ -191,6 +197,7 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
+  lasso_node_destroy(idpidentifier);
   
   /* SPPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
@@ -202,6 +209,7 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									  LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
+  lasso_node_destroy(spidentifier);
  
   /* OldPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldProvidedNameIdentifier"), 0);
@@ -213,7 +221,8 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
      
   lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
-  
+  lasso_node_destroy(oldidentifier);
+ 
   g_datalist_clear(&gd);
   
   return(request);
@@ -230,14 +239,16 @@ lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
   request = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_REQUEST, NULL));
   
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_request = lasso_node_get_child(envelope, "RegisterNameIdentifierRequest");
+  lassoNode_request = lasso_node_get_child(envelope, "RegisterNameIdentifierRequest",
+					   lassoLibHRef);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
-  
+  lasso_node_destroy(lassoNode_request);
+
   class = LASSO_NODE_GET_CLASS(request);
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
-  g_object_unref(envelope);
+  lasso_node_destroy(envelope);
   
   return(request);
 }

@@ -89,6 +89,7 @@ lasso_authn_request_set_requestAuthnContext(LassoAuthnRequest *request,
     /* Add RequestAuthnContext in AuthnRequest */
     lasso_lib_authn_request_set_requestAuthnContext(LASSO_LIB_AUTHN_REQUEST(request),
 						    LASSO_LIB_REQUEST_AUTHN_CONTEXT(request_authn_context));
+    lasso_node_destroy(request_authn_context);
   }
 }
 
@@ -107,6 +108,7 @@ lasso_authn_request_set_scoping(LassoAuthnRequest *request,
   /* FIXME : set IDPList here */
   lasso_lib_authn_request_set_scoping(LASSO_LIB_AUTHN_REQUEST(request),
 				      LASSO_LIB_SCOPING(scoping));
+  lasso_node_destroy(scoping);
 }
 
 /*****************************************************************************/
@@ -294,6 +296,7 @@ lasso_authn_request_new_from_query(gchar *query)
   if (authn_context != NULL)
     lasso_lib_authn_request_set_requestAuthnContext(LASSO_LIB_AUTHN_REQUEST(request),
 						    LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context));
+  lasso_node_destroy(authn_context);
 
   /* RelayState */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
@@ -311,6 +314,7 @@ lasso_authn_request_new_from_query(gchar *query)
     lasso_lib_scoping_set_proxyCount(LASSO_LIB_SCOPING(scoping), atoi(str));
     lasso_lib_authn_request_set_scoping(LASSO_LIB_AUTHN_REQUEST(request),
 					LASSO_LIB_SCOPING(scoping));
+    lasso_node_destroy(scoping);
   }
 
   /* consent */

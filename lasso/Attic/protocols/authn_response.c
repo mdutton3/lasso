@@ -28,6 +28,26 @@
                                                                                           
 static GObjectClass *parent_class = NULL;
 
+static void
+lasso_authn_response_set_status(LassoAuthnResponse *response,
+				const xmlChar      *statusCodeValue) {
+  LassoNode *status, *status_code;
+
+  status = lasso_samlp_status_new();
+
+  status_code = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
+				    statusCodeValue);
+
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
+				    LASSO_SAMLP_STATUS_CODE(status_code));
+
+  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
+				  LASSO_SAMLP_STATUS(status));
+  lasso_node_destroy(status_code);
+  lasso_node_destroy(status);
+}
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -54,7 +74,11 @@ lasso_authn_response_must_authenticate(LassoAuthnResponse *response,
   if ((forceAuthn == TRUE || is_authenticated == FALSE) && isPassive == FALSE) {
     must_authenticate = TRUE;
   }
-                                                                                                                          
+  else
+    if (is_authenticated == FALSE && isPassive == TRUE) {
+      lasso_authn_response_set_status(response, lassoLibStatusCodeNoPassive);
+    }
+  
   g_datalist_clear(&gd);
   return (must_authenticate);
 }
@@ -63,17 +87,8 @@ void
 lasso_authn_response_process_authentication_result(LassoAuthnResponse *response,
 						   gboolean            authentication_result)
 {
-  LassoNode *status, *status_code;
-
   if (authentication_result == FALSE) {
-    status = lasso_samlp_status_new();
-    status_code = lasso_samlp_status_code_new();
-    lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-				      lassoLibStatusCodeUnknownPrincipal);
-    lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
-				      LASSO_SAMLP_STATUS_CODE(status_code));
-    lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
-				    LASSO_SAMLP_STATUS(status));
+    lasso_authn_response_set_status(response, lassoLibStatusCodeUnknownPrincipal);
   }
 }
 
@@ -84,7 +99,6 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(response), FALSE);
 
-  LassoNode *status, *status_code;
   gboolean signature_status;
 
   signature_status = lasso_query_verify_signature(LASSO_AUTHN_RESPONSE(response)->query,
@@ -93,22 +107,14 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 
   /* Status & StatusCode */
   if (signature_status == 0 || signature_status == 2) {
-    status = lasso_samlp_status_new();
-    status_code = lasso_samlp_status_code_new();
     switch (signature_status) {
     case 0:
-      lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-					lassoLibStatusCodeInvalidSignature);
+      lasso_authn_response_set_status(response, lassoLibStatusCodeInvalidSignature);
       break;
     case 2:
-      lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-					lassoLibStatusCodeUnsignedAuthnRequest);
+      lasso_authn_response_set_status(response, lassoLibStatusCodeUnsignedAuthnRequest);
       break;
     }
-    lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
-				      LASSO_SAMLP_STATUS_CODE(status_code));
-    lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
-				    LASSO_SAMLP_STATUS(status));
   }
 
   if (signature_status == 1)
@@ -133,21 +139,26 @@ lasso_authn_response_dump(LassoAuthnResponse *response,
 			  const xmlChar      *encoding,
 			  int                 format)
 {
-  LassoNode *response_dump;
+  LassoNode *response_copy, *request, *response_dump;
   xmlChar   *dump;
 
   response_dump = lasso_node_new();
   LASSO_NODE_GET_CLASS(response_dump)->set_name(response_dump, "LassoDumpAuthnResponse");
-  LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
-						 lasso_node_copy(LASSO_NODE(response)), 0);
-  if (response->query != NULL)
-    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
-						   lasso_authn_request_new_from_query(response->query), 0);
-  else
-    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
-						   lasso_node_copy(response->request), 0);
+  response_copy = lasso_node_copy(LASSO_NODE(response));
+  LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump, response_copy, FALSE);
+  if (response->query != NULL) {
+    request = lasso_authn_request_new_from_query(response->query);
+    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump, request, FALSE);
+  }
+  else {
+    request = lasso_node_copy(response->request);
+    LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump, request, FALSE);
+  }
   dump = lasso_node_dump(response_dump, encoding, format);
-  g_object_unref(G_OBJECT (response_dump));
+
+  lasso_node_destroy(response_copy);
+  lasso_node_destroy(request);
+  lasso_node_destroy(response_dump);
 
   return (dump);
 }
@@ -158,7 +169,7 @@ lasso_authn_response_finalize(LassoAuthnResponse *response)
   if (response->query != NULL)
     g_free(response->query);
   if (response->request != NULL)
-    g_object_unref(response->request);
+    lasso_node_destroy(response->request);
   parent_class->finalize(G_OBJECT(response));
 }
 
@@ -210,7 +221,7 @@ GType lasso_authn_response_get_type() {
 LassoNode*
 lasso_authn_response_new_from_dump(xmlChar *buffer)
 {
-  LassoNode *response, *request, *node_dump;
+  LassoNode *response, *request, *response_dump, *request_dump, *node_dump;
   xmlNodePtr xmlNode_response, xmlNode_request;
 
   g_return_val_if_fail(buffer != NULL, NULL);
@@ -220,8 +231,11 @@ lasso_authn_response_new_from_dump(xmlChar *buffer)
 
   node_dump = lasso_node_new_from_dump(buffer);
   /* get xmlNodes */
-  xmlNode_response = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(lasso_node_get_child(node_dump, "AuthnResponse")), 1);
-  xmlNode_request = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(lasso_node_get_child(node_dump, "AuthnRequest")), 1);
+  response_dump = lasso_node_get_child(node_dump, "AuthnResponse", NULL);
+  request_dump  = lasso_node_get_child(node_dump, "AuthnRequest", NULL);
+  /* xmlNodes are copies because they will be freed when node_dump will be destroy */
+  xmlNode_response = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(response_dump), 1);
+  xmlNode_request  = xmlCopyNode(LASSO_NODE_GET_CLASS(response)->get_xmlNode(request_dump), 1);
 
   /* put xmlNodes in LassoNodes */
   LASSO_NODE_GET_CLASS(response)->set_xmlNode(response, xmlNode_response);
@@ -229,7 +243,10 @@ lasso_authn_response_new_from_dump(xmlChar *buffer)
 
   LASSO_AUTHN_RESPONSE(response)->request = request;
   LASSO_AUTHN_RESPONSE(response)->query = NULL;
-  g_object_unref(node_dump);
+
+  lasso_node_destroy(response_dump);
+  lasso_node_destroy(request_dump);
+  lasso_node_destroy(node_dump);
 
   return (response);
 }
@@ -254,7 +271,7 @@ lasso_authn_response_new_from_export(xmlChar *buffer,
 
   LASSO_AUTHN_RESPONSE(response)->request = NULL;
   LASSO_AUTHN_RESPONSE(response)->query = NULL;
-  g_object_unref(node);
+  lasso_node_destroy(node);
 
   return (response);
 }
@@ -264,7 +281,7 @@ lasso_authn_response_new_from_request_query(gchar         *query,
 					    const xmlChar *providerID)
 {
   GData     *gd;
-  LassoNode *response, *status, *status_code;
+  LassoNode *response;
   xmlChar   *id, *time;
 
   g_return_val_if_fail(query != NULL, NULL);
@@ -320,14 +337,7 @@ lasso_authn_response_new_from_request_query(gchar         *query,
 					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
 
   /* Status & StatusCode */
-  status = lasso_samlp_status_new();
-  status_code = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-				    lassoSamlStatusCodeSuccess);
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
-				    LASSO_SAMLP_STATUS_CODE(status_code));
-  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
-				  LASSO_SAMLP_STATUS(status));
+  lasso_authn_response_set_status(response, lassoSamlStatusCodeSuccess);
 
   g_datalist_clear(&gd);
 

@@ -72,7 +72,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 					   LassoNode     *request)
 {
   /* FIXME : change request type */
-  LassoNode *response, *ss, *ssc;
+  LassoNode *response, *ss, *ssc, *request_providerID;
   xmlChar *inResponseTo, *recipient, *relayState;
   xmlChar *id, *time;
 
@@ -100,13 +100,14 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 							    providerID);
 
   inResponseTo = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(request, "RequestID"));
-  recipient = lasso_node_get_content(lasso_node_get_child(request, "ProviderID"));
-
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 inResponseTo);
 
+  request_providerID = lasso_node_get_child(request, "ProviderID", NULL);
+  recipient = lasso_node_get_content(request_providerID);
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					      recipient);
+  lasso_node_destroy(request_providerID);
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
@@ -117,6 +118,8 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 
   lasso_lib_name_identifier_mapping_response_set_status(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
 							LASSO_SAMLP_STATUS(ss));
+  lasso_node_destroy(ssc);
+  lasso_node_destroy(ss);
 
   return (response);
 }
@@ -191,6 +194,7 @@ lasso_name_identifier_mapping_response_new_from_request_soap(const xmlChar *buff
   response = lasso_name_identifier_mapping_response_new(providerID,
 							statusCodeValue,
 							request);
+  lasso_node_destroy(request);
 
   return(response);
 }
@@ -206,14 +210,16 @@ lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse");
+  lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse",
+					    lassoLibHRef);
      
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
-  
+  lasso_node_destroy(lassoNode_response);
+
   class = LASSO_NODE_GET_CLASS(response);
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
-  g_object_unref(envelope);
+  lasso_node_destroy(envelope);
   
   return(response);
 }
@@ -231,6 +237,7 @@ lasso_name_identifier_mapping_response_new_from_request_query(const xmlChar *que
   response = lasso_name_identifier_mapping_response_new(providerID,
 							statusCodeValue,
 							request);
+  lasso_node_destroy(request);
 
   return(response);
 }

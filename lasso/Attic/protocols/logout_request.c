@@ -105,7 +105,8 @@ lasso_logout_request_new(const xmlChar *providerID,
   
   lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
 					      LASSO_SAML_NAME_IDENTIFIER(identifier));
-  
+  lasso_node_destroy(identifier);
+
   return(request);
 }
 
@@ -147,8 +148,9 @@ lasso_logout_request_new_from_query(const xmlChar *query)
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
-     
+  
   lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), LASSO_SAML_NAME_IDENTIFIER(identifier));
+  lasso_node_destroy(identifier);
   
   /* RelayState */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
@@ -181,14 +183,15 @@ lasso_logout_request_new_from_soap(const xmlChar *buffer)
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_request = lasso_node_get_child(envelope, "LogoutRequest");
+  lassoNode_request = lasso_node_get_child(envelope, "LogoutRequest", lassoLibHRef);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
-  
+  lasso_node_destroy(lassoNode_request);
+
   class = LASSO_NODE_GET_CLASS(request);
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
-  g_object_unref(envelope);
+  lasso_node_destroy(envelope);
   
   return(request);
 }
