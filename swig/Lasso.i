@@ -6449,5 +6449,3 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 %}
 
-%include Lasso-wsf.i
-
