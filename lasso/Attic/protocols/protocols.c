@@ -24,3 +24,18 @@
  */
 
 #include <lasso/protocols/protocols.h>
+
+
+LassoNode *lasso_protocol_export_to_soap(LassoNode *node)
+{
+     LassoNode *envelope, *body;
+
+     envelope = lasso_soap_env_envelope_new();
+     body = lasso_soap_env_body_new();
+
+     lasso_soap_env_body_add_child(body, node);
+
+     lasso_soap_env_envelope_add_body(envelope, body);
+
+     return(envelope);
+}

@@ -34,4 +34,8 @@ extern "C" {
 }
 #endif /* __cplusplus */
 
+#include <lasso/xml/xml.h>
+
+LassoNode *lasso_protocol_export_to_soap(LassoNode *node);
+
 #endif  /* __LASSO_PROTOCOLS_H__ */
