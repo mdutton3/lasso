@@ -40,7 +40,7 @@ lasso_lib_logout_response_instance_init(LassoLibLogoutResponse *node)
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  /* namespace herited from lib:StatusResponse */
   class->set_name(LASSO_NODE(node), "LogoutResponse");
 }
 

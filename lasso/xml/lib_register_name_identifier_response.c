@@ -40,7 +40,7 @@ lasso_lib_register_name_identifier_response_instance_init(LassoLibRegisterNameId
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  /* namespace herited from lib:StatusResponse */
   class->set_name(LASSO_NODE(node), "RegisterNameIdentifierResponse");
 }
 

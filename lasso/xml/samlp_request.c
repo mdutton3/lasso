@@ -67,8 +67,7 @@ lasso_samlp_request_instance_init(LassoSamlpRequest *node)
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
-		lassoSamlProtocolPrefix);
+  /* namespace herited from samlp:RequestAbstract */
   class->set_name(LASSO_NODE(node), "Request");
 }
 

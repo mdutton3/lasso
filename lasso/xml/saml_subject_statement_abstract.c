@@ -63,7 +63,7 @@ lasso_saml_subject_statement_abstract_instance_init(LassoSamlSubjectStatementAbs
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  // namespace herited from StatementAbstract
+  /* namespace herited from saml:StatementAbstract */
   class->set_name(LASSO_NODE(node), "SubjectStatementAbstract");
 }
 

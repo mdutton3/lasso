@@ -76,8 +76,7 @@ lasso_saml_audience_restriction_condition_instance_init(LassoSamlAudienceRestric
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
+  /* namespace herited from saml:ConditionAbstract */
   class->set_name(LASSO_NODE(node), "AudienceRestrictionCondition");
 }
 
