@@ -85,7 +85,6 @@ lasso_session_add_status(LassoSession *session, char *providerID, LassoSamlpStat
 }
 
 
-
 /**
  * lasso_session_get_assertion
  * @session: a #LassoSession
@@ -102,6 +101,28 @@ lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 {
 	return g_hash_table_lookup(session->assertions, providerID);
 }
+
+
+/**
+ * lasso_session_get_assertions
+ * @session: a #LassoSession
+ * @provider_id: the provider ID
+ *
+ * Gets the assertions for the given @provider_id.
+ *
+ * Return value: a GList* of #LassoSamlAssertion.  Caller must free the GList
+ *     and the assertions it contains.
+ **/
+GList*
+lasso_session_get_assertions(LassoSession *session, const char *provider_id)
+{
+	GList *r = NULL;
+	LassoSamlAssertion *assertion = g_hash_table_lookup(session->assertions, provider_id);
+	if (assertion)
+		r = g_list_append(r, g_object_ref(assertion));
+	return r;
+}
+
 
 /**
  * lasso_session_get_status

@@ -47,7 +47,8 @@ typedef struct _LassoSessionPrivate LassoSessionPrivate;
 struct _LassoSession {
 	LassoNode parent;
 
-	GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+	/*< public >*/
+	GHashTable *assertions;
 	gboolean is_dirty;
 
 	/*< private >*/
@@ -65,6 +66,7 @@ LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
 LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
 LASSO_EXPORT void lasso_session_destroy(LassoSession *session);
 
+LASSO_EXPORT GList* lasso_session_get_assertions(LassoSession *session, const char* provider_id);
 LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
 LASSO_EXPORT gboolean lasso_session_is_empty(LassoSession *session);
 
