@@ -281,6 +281,16 @@ get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
 }
 
 
+/**
+ * lasso_server_get_providerID_from_hash:
+ * @server: a #LassoServer
+ * @b64_hash: the base64-encoded provider ID hash
+ *
+ * Looks up a #LassoProvider whose ID hash is @b64_hash and returns its
+ * provider ID.
+ *
+ * Return value: the provider ID, NULL if it was not found.
+ **/
 gchar*
 lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)
 {
