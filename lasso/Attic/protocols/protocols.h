@@ -29,7 +29,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <lasso/lasso.h>
+#include <lasso/protocols/federation_termination_notification.h>
+#include <lasso/protocols/logout.h>
+#include <lasso/protocols/register_name_identifier.h>
 #include <lasso/protocols/single_sign_on_and_federation.h>
+
+GString *lasso_build_encoded_message_url(const char *authority,
+					 LassoNode *request);
+void lasso_sign_encoded_message(GString *message,
+				const char *private_key_filename);
 
 #ifdef __cplusplus
 }
