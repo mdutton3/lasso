@@ -32,6 +32,11 @@ extern "C" {
 #include <lasso/xml/xml.h>
 #include <xmlsec/crypto.h>
 
+#ifndef HAVE_VSNPRINTF
+int vsnprintf (char *str, size_t count, const char *fmt, va_list args);
+#endif
+
+
 typedef enum {
 	SNIPPET_NODE,
 	SNIPPET_CONTENT,
