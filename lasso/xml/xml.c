@@ -57,7 +57,7 @@ static GObjectClass *parent_class = NULL;
  * Return value: a full XML dump of @node
  **/
 char*
-lasso_node_dump(LassoNode *node, const xmlChar *encoding, int format)
+lasso_node_dump(LassoNode *node, const char *encoding, int format)
 {
 	xmlNode *xmlnode;
 	char *ret;
