@@ -360,7 +360,7 @@ lasso_logout_finalize(LassoLogout *logout)
 {  
   debug(INFO, "Logout object 0x%x finalized ...\n", logout);
 
-  parent_class->finalize(LASSO_PROFILE_CONTEXT(logout));
+  parent_class->finalize(G_OBJECT(logout));
 }
 
 /*****************************************************************************/
