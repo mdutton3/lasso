@@ -119,8 +119,7 @@ LASSO_EXPORT gint lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file);
 
 #ifdef LASSO_INTERNALS
-#include <lasso/xml/internals.h>
-#include <lasso/xml/tools.h>
+#include <lasso/xml/private.h>
 #endif
 
 #ifdef __cplusplus

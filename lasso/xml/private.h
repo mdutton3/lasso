@@ -34,6 +34,56 @@ extern "C" {
 #include <xmlsec/crypto.h>
 
 typedef enum {
+	SNIPPET_NODE,
+	SNIPPET_CONTENT,
+	SNIPPET_TEXT_CHILD,
+	SNIPPET_NAME_IDENTIFIER,
+	SNIPPET_ATTRIBUTE,
+	SNIPPET_NODE_IN_CHILD,
+	SNIPPET_LIST_NODES,
+	SNIPPET_LIST_CONTENT,
+	SNIPPET_EXTENSION,
+	SNIPPET_SIGNATURE,
+
+	/* transformers for content transformation */
+	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */
+	SNIPPET_BOOLEAN = 1 << 20,
+	SNIPPET_INTEGER = 1 << 21,
+	SNIPPET_LASSO_DUMP = 1 << 22,
+} SnippetType;
+
+struct XmlSnippet {
+	char *name;
+	SnippetType type;
+	guint offset;
+};
+
+struct QuerySnippet {
+	char *path;
+	char *field_name;
+};
+
+struct _LassoNodeClassData
+{
+	struct XmlSnippet *snippets;
+	struct QuerySnippet *query_snippets;
+	char *node_name;
+	xmlNs *ns;
+	int sign_type_offset;
+	int sign_method_offset;
+};
+
+void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
+void lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix);
+void lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets);
+void lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnippet *snippets);
+
+gchar* lasso_node_build_query_from_snippets(LassoNode *node);
+gboolean lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
+
+
+
+typedef enum {
 	LASSO_PEM_FILE_TYPE_UNKNOWN,
 	LASSO_PEM_FILE_TYPE_PUB_KEY,
 	LASSO_PEM_FILE_TYPE_PRIVATE_KEY,

@@ -39,8 +39,6 @@
 #include <xmlsec/xmltree.h>
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/tools.h>
-
 
 /**
  * lasso_build_random_sequence:

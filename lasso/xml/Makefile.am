@@ -79,9 +79,7 @@ liblasso_xml_la_SOURCES = \
 	samlp_response_abstract.c \
 	samlp_status.c \
 	samlp_status_code.c \
-	utility_status.c \
-	tools.h \
-	internals.h
+	utility_status.c
 
 liblassoinclude_HEADERS = \
 	strings.h \
@@ -155,3 +153,8 @@ liblassoinclude_HEADERS = \
 	samlp_status.h \
 	samlp_status_code.h \
 	utility_status.h
+
+lasso_private_h_sources = \
+	private.h
+
+EXTRA_DIST = $(lasso_private_h_sources)
