@@ -69,13 +69,13 @@ LASSO_EXPORT GType            lasso_federation_get_type                     (voi
 
 LASSO_EXPORT LassoFederation* lasso_federation_new                          (gchar *remote_providerID);
 
-LASSO_EXPORT LassoFederation* lasso_federation_new_from_dump                (xmlChar *dump);
+LASSO_EXPORT LassoFederation* lasso_federation_new_from_dump                (gchar *dump);
 
 LASSO_EXPORT LassoFederation* lasso_federation_copy                         (LassoFederation *federation);
 
 LASSO_EXPORT void             lasso_federation_destroy                      (LassoFederation *federation);
 
-LASSO_EXPORT xmlChar*         lasso_federation_dump                         (LassoFederation *federation);
+LASSO_EXPORT gchar*           lasso_federation_dump                         (LassoFederation *federation);
 
 LASSO_EXPORT LassoNode*       lasso_federation_get_remote_nameIdentifier    (LassoFederation *federation);
 

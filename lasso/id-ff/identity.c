@@ -147,7 +147,7 @@ lasso_identity_dump(LassoIdentity *identity)
 {
   LassoNode *identity_node, *federations_node;
   int table_size;
-  xmlChar *dump;
+  gchar *dump;
 
   g_return_val_if_fail(identity != NULL, NULL);
 

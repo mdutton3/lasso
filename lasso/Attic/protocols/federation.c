@@ -61,7 +61,7 @@ lasso_federation_destroy(LassoFederation *federation)
   g_object_unref(G_OBJECT(federation));
 }
 
-xmlChar *
+gchar *
 lasso_federation_dump(LassoFederation *federation)
 {
   LassoNode *federation_node, *nameIdentifier;
@@ -276,7 +276,7 @@ lasso_federation_new(gchar *remote_providerID)
 }
 
 LassoFederation*
-lasso_federation_new_from_dump(xmlChar *dump)
+lasso_federation_new_from_dump(gchar *dump)
 {
   LassoFederation *federation;
 

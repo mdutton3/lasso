@@ -125,7 +125,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 }
 
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_dump(const xmlChar *buffer)
+lasso_name_identifier_mapping_response_new_from_dump(const gchar *buffer)
 {
   LassoNode *response;
   
@@ -137,7 +137,7 @@ lasso_name_identifier_mapping_response_new_from_dump(const xmlChar *buffer)
 
 /* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse */
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
+lasso_name_identifier_mapping_response_new_from_query(const gchar *query)
 {
   LassoNode *response;
   GData *gd;
@@ -182,7 +182,7 @@ lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
 
 /* build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest */
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_request_soap(const xmlChar *buffer,
+lasso_name_identifier_mapping_response_new_from_request_soap(const gchar   *buffer,
 							     const xmlChar *providerID,
 							     const xmlChar *statusCodeValue)
 {
@@ -199,7 +199,7 @@ lasso_name_identifier_mapping_response_new_from_request_soap(const xmlChar *buff
 }
 
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
+lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
 {
   LassoNode *response;
   LassoNode *envelope, *lassoNode_response;
@@ -225,7 +225,7 @@ lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
 
 /* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest */
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_request_query(const xmlChar *query,
+lasso_name_identifier_mapping_response_new_from_request_query(const gchar   *query,
 							      const xmlChar *providerID,
 							      const xmlChar *statusCodeValue)
 {

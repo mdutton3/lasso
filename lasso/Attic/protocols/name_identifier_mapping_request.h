@@ -59,8 +59,8 @@ LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new               
 										 const xmlChar *format);
 
 
-LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_query    (const xmlChar *query);
-LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_soap     (const xmlChar *buffer);
+LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_query    (const gchar *query);
+LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_soap     (const gchar *buffer);
 
 #ifdef __cplusplus
 }

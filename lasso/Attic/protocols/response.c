@@ -110,11 +110,11 @@ lasso_response_new()
 }
 
 LassoNode*
-lasso_response_new_from_export(xmlChar             *buffer,
+lasso_response_new_from_export(gchar               *buffer,
 			       lassoNodeExportType  export_type)
 {
   LassoNode *response = NULL, *soap_node, *response_node;
-  xmlChar *export;
+  gchar *export;
 
   g_return_val_if_fail(buffer != NULL, NULL);
 
@@ -133,7 +133,7 @@ lasso_response_new_from_export(xmlChar             *buffer,
 					 lassoSamlProtocolHRef, NULL);
     export = lasso_node_export(response_node);
     lasso_node_import(response, export);
-    xmlFree(export);
+    g_free(export);
     lasso_node_destroy(response_node);
     lasso_node_destroy(soap_node);
     break;

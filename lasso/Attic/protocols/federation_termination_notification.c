@@ -111,7 +111,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
 }
 
 LassoNode *
-lasso_federation_termination_notification_new_from_query(const xmlChar *query)
+lasso_federation_termination_notification_new_from_query(const gchar *query)
 {
   LassoNode *notification, *identifier;
   xmlChar *str;
@@ -157,7 +157,7 @@ lasso_federation_termination_notification_new_from_query(const xmlChar *query)
 }
 
 LassoNode *
-lasso_federation_termination_notification_new_from_soap(const xmlChar *buffer)
+lasso_federation_termination_notification_new_from_soap(const gchar *buffer)
 {
   LassoNode *notification;
   LassoNode *envelope, *lassoNode_notification;
@@ -183,7 +183,7 @@ lasso_federation_termination_notification_new_from_soap(const xmlChar *buffer)
 
 
 LassoNode*
-lasso_federation_termination_notification_new_from_export(const xmlChar       *buffer,
+lasso_federation_termination_notification_new_from_export(const gchar         *buffer,
 							  lassoNodeExportType  export_type)
 {
   LassoNode *notification;

@@ -58,12 +58,12 @@ LASSO_EXPORT GType      lasso_authn_response_envelope_get_type                  
 LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new                             (LassoAuthnResponse *authnResponse,
 										       xmlChar            *assertionConsumerServiceURL);
 
+LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new_from_export                 (gchar               *buffer,
+										       lassoNodeExportType  export_type);
+
 LASSO_EXPORT xmlChar*   lasso_authn_response_envelope_get_assertionConsumerServiceURL (LassoAuthnResponseEnvelope *response);
 
 LASSO_EXPORT LassoNode* lasso_authn_response_envelope_get_authnResponse               (LassoAuthnResponseEnvelope *response);
-
-LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new_from_export                 (gchar               *buffer,
-										       lassoNodeExportType  export_type);
 
 #ifdef __cplusplus
 }

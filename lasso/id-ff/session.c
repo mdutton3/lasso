@@ -157,7 +157,7 @@ lasso_session_dump(LassoSession *session)
   LassoNode      *session_node, *assertions_node;
   LassoNodeClass *session_class, *assertions_class;
   int table_size;
-  xmlChar *dump;
+  gchar *dump;
 
   g_return_val_if_fail(session != NULL, NULL);
 

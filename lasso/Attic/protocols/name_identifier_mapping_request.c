@@ -118,7 +118,7 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
 }
 
 LassoNode *
-lasso_name_identifier_mapping_request_new_from_query(const xmlChar *query)
+lasso_name_identifier_mapping_request_new_from_query(const gchar *query)
 {
   LassoNode *request, *identifier;
   xmlChar *str;
@@ -171,7 +171,7 @@ lasso_name_identifier_mapping_request_new_from_query(const xmlChar *query)
 }
 
 LassoNode *
-lasso_name_identifier_mapping_request_new_from_soap(const xmlChar *buffer)
+lasso_name_identifier_mapping_request_new_from_soap(const gchar *buffer)
 {
   LassoNode *request;
   LassoNode *envelope, *lassoNode_request;

@@ -60,10 +60,10 @@ LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new              (LassoAuth
 								       xmlChar           *providerID,
 								       xmlChar           *assertionConsumerServiceURL);
 
-LASSO_EXPORT LassoNode* lasso_authn_request_envelope_get_authnRequest (LassoAuthnRequestEnvelope *request);
-
 LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new_from_export  (gchar               *buffer,
 								       lassoNodeExportType  export_type);
+
+LASSO_EXPORT LassoNode* lasso_authn_request_envelope_get_authnRequest (LassoAuthnRequestEnvelope *request);
 
 #ifdef __cplusplus
 }

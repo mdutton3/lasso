@@ -56,7 +56,7 @@ LASSO_EXPORT GType      lasso_response_get_type        (void);
 
 LASSO_EXPORT LassoNode* lasso_response_new             (void);
 
-LASSO_EXPORT LassoNode* lasso_response_new_from_export (xmlChar             *buffer,
+LASSO_EXPORT LassoNode* lasso_response_new_from_export (gchar               *buffer,
 							lassoNodeExportType  export_type);
 
 #ifdef __cplusplus
