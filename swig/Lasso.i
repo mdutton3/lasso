@@ -581,6 +581,65 @@ typedef struct {
 
 
 /***********************************************************************
+ * FederationTerminationNotification
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP
+%rename(FederationTerminationNotification) LassoFederationTerminationNotification;
+#endif
+%nodefault LassoFederationTerminationNotification;
+typedef struct {
+	/* FIXME: Add a relayState when Lasso supports it. */
+} LassoFederationTerminationNotification;
+
+
+/***********************************************************************
+ * LogoutRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP
+%rename(LogoutRequest) LassoLogoutRequest;
+#endif
+%nodefault LassoLogoutRequest;
+typedef struct {
+	%extend {
+		/* Attributes inherited from LassoLibLogoutRequest */
+
+		xmlChar *relayState;
+	}
+} LassoLogoutRequest;
+
+%{
+
+/* Attributes Implementations */
+
+/* relayState */
+xmlChar *LassoLogoutRequest_relayState_get(LassoLogoutRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoLogoutRequest_relayState_set(LassoLogoutRequest *self, xmlChar *relayState) {
+	 lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(self), relayState);
+}
+
+%}
+
+
+/***********************************************************************
+ * LogoutResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP
+%rename(LogoutResponse) LassoLogoutResponse;
+#endif
+%nodefault LassoLogoutResponse;
+typedef struct {
+} LassoLogoutResponse;
+
+
+/***********************************************************************
  * Request
  ***********************************************************************/
 
@@ -800,44 +859,6 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
  ***********************************************************************/
 
 
-%{
-
-/* Attributes Implementations */
-
-/* authnRequest */
-LassoAuthnRequest *LassoProfile_authnRequest_get(LassoProfile *profile) {
-	if (profile->request_type == lassoMessageTypeAuthnRequest)
-		return LASSO_AUTHN_REQUEST(profile->request);
-	else
-		return NULL;
-}
-
-/* authnResponse */
-LassoAuthnResponse *LassoProfile_authnResponse_get(LassoProfile *profile) {
-	if (profile->response_type == lassoMessageTypeAuthnResponse)
-		return LASSO_AUTHN_RESPONSE(profile->response);
-	else
-		return NULL;
-}
-
-/* request */
-LassoRequest *LassoProfile_request_get(LassoProfile *profile) {
-	if (profile->request_type == lassoMessageTypeRequest)
-		return LASSO_REQUEST(profile->request);
-	else
-		return NULL;
-}
-
-/* response */
-LassoResponse *LassoProfile_response_get(LassoProfile *profile) {
-	if (profile->response_type == lassoMessageTypeResponse)
-		return LASSO_RESPONSE(profile->response);
-	else
-		return NULL;
-}
-
-%}
-
 /* Functions */
 
 #ifdef SWIGPHP
@@ -859,12 +880,6 @@ lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
 typedef struct {
 	%extend {
 		/* Attributes inherited from LassoProfile */
-
-		%immutable authnRequest;
-		LassoAuthnRequest *authnRequest;
-
-		%immutable authnResponse;
-		LassoAuthnResponse *authnResponse;
 
 		%newobject identity_get;
 		LassoIdentity *identity;
@@ -891,11 +906,6 @@ typedef struct {
 
 		%immutable request;
 		LassoRequest *request;
-
-		%immutable response;
-		LassoResponse *response;
-
-		gchar *responseStatus;
 
 		%newobject session_get;
 		LassoSession *session;
@@ -940,16 +950,6 @@ typedef struct {
 %{
 
 /* Attributes inherited from LassoProfile implementations */
-
-/* authnRequest */
-LassoAuthnRequest *LassoDefederation_authnRequest_get(LassoDefederation *self) {
-	return LassoProfile_authnRequest_get(LASSO_PROFILE(self));
-}
-
-/* authnResponse */
-LassoAuthnResponse *LassoDefederation_authnResponse_get(LassoDefederation *self) {
-	return LassoProfile_authnResponse_get(LASSO_PROFILE(self));
-}
 
 /* identity */
 LassoIdentity *LassoDefederation_identity_get(LassoDefederation *self) {
@@ -998,13 +998,8 @@ void LassoDefederation_remoteProviderId_set(LassoDefederation *self, gchar *remo
 }
 
 /* request */
-LassoRequest *LassoDefederation_request_get(LassoDefederation *self) {
-	return LassoProfile_request_get(LASSO_PROFILE(self));
-}
-
-/* response */
-LassoResponse *LassoDefederation_response_get(LassoDefederation *self) {
-	return LassoProfile_response_get(LASSO_PROFILE(self));
+LassoFederationTerminationNotification *LassoDefederation_request_get(LassoDefederation *self) {
+	return LASSO_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request);
 }
 
 /* responseStatus */
@@ -1190,12 +1185,20 @@ typedef struct {
 
 /* authnRequest */
 LassoAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
-	return LassoProfile_authnRequest_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->request_type == lassoMessageTypeAuthnRequest)
+		return LASSO_AUTHN_REQUEST(profile->request);
+	else
+		return NULL;
 }
 
 /* authnResponse */
 LassoAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
-	return LassoProfile_authnResponse_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->response_type == lassoMessageTypeAuthnResponse)
+		return LASSO_AUTHN_RESPONSE(profile->response);
+	else
+		return NULL;
 }
 
 /* identity */
@@ -1246,12 +1249,20 @@ void LassoLogin_remoteProviderId_set(LassoLogin *self, gchar *remoteProviderId) 
 
 /* request */
 LassoRequest *LassoLogin_request_get(LassoLogin *self) {
-	return LassoProfile_request_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->request_type == lassoMessageTypeRequest)
+		return LASSO_REQUEST(profile->request);
+	else
+		return NULL;
 }
 
 /* response */
 LassoResponse *LassoLogin_response_get(LassoLogin *self) {
-	return LassoProfile_response_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->response_type == lassoMessageTypeResponse)
+		return LASSO_RESPONSE(profile->response);
+	else
+		return NULL;
 }
 
 /* responseDump */
@@ -1325,12 +1336,6 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 typedef struct {
 	%extend {
 		/* Attributes inherited from LassoProfile */
-
-		%immutable authnRequest;
-		LassoAuthnRequest *authnRequest;
-
-		%immutable authnResponse;
-		LassoAuthnResponse *authnResponse;
 
 		%newobject identity_get;
 		LassoIdentity *identity;
@@ -1428,16 +1433,6 @@ typedef struct {
 
 /* Attributes inherited from LassoProfile implementations */
 
-/* authnRequest */
-LassoAuthnRequest *LassoLogout_authnRequest_get(LassoLogout *self) {
-	return LassoProfile_authnRequest_get(LASSO_PROFILE(self));
-}
-
-/* authnResponse */
-LassoAuthnResponse *LassoLogout_authnResponse_get(LassoLogout *self) {
-	return LassoProfile_authnResponse_get(LASSO_PROFILE(self));
-}
-
 /* identity */
 LassoIdentity *LassoLogout_identity_get(LassoLogout *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
@@ -1485,13 +1480,13 @@ void LassoLogout_remoteProviderId_set(LassoLogout *self, gchar *remoteProviderId
 }
 
 /* request */
-LassoRequest *LassoLogout_request_get(LassoLogout *self) {
-	return LassoProfile_request_get(LASSO_PROFILE(self));
+LassoLogoutRequest *LassoLogout_request_get(LassoLogout *self) {
+	return LASSO_LOGOUT_REQUEST(LASSO_PROFILE(self)->request);
 }
 
 /* response */
-LassoResponse *LassoLogout_response_get(LassoLogout *self) {
-	return LassoProfile_response_get(LASSO_PROFILE(self));
+LassoLogoutResponse *LassoLogout_response_get(LassoLogout *self) {
+	return LASSO_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response);
 }
 
 /* responseStatus */
@@ -1657,12 +1652,20 @@ typedef struct {
 
 /* authnRequest */
 LassoAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
-	return LassoProfile_authnRequest_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->request_type == lassoMessageTypeAuthnRequest)
+		return LASSO_AUTHN_REQUEST(profile->request);
+	else
+		return NULL;
 }
 
 /* authnResponse */
 LassoAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
-	return LassoProfile_authnResponse_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->response_type == lassoMessageTypeAuthnResponse)
+		return LASSO_AUTHN_RESPONSE(profile->response);
+	else
+		return NULL;
 }
 
 /* identity */
@@ -1713,12 +1716,20 @@ void LassoLecp_remoteProviderId_set(LassoLecp *self, gchar *remoteProviderId) {
 
 /* request */
 LassoRequest *LassoLecp_request_get(LassoLecp *self) {
-	return LassoProfile_request_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->request_type == lassoMessageTypeRequest)
+		return LASSO_REQUEST(profile->request);
+	else
+		return NULL;
 }
 
 /* response */
 LassoResponse *LassoLecp_response_get(LassoLecp *self) {
-	return LassoProfile_response_get(LASSO_PROFILE(self));
+	LassoProfile *profile = LASSO_PROFILE(self);
+	if (profile->response_type == lassoMessageTypeResponse)
+		return LASSO_RESPONSE(profile->response);
+	else
+		return NULL;
 }
 
 /* responseStatus */
