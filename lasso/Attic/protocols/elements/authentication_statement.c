@@ -72,9 +72,12 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 				   LassoSamlNameIdentifier *identifier,
 				   LassoSamlNameIdentifier *idp_identifier)
 {
+  g_return_val_if_fail(idp_identifier != NULL, NULL);
+
   LassoNode *statement;
   LassoNode *subject, *subject_confirmation;
-  xmlChar *time;
+  gchar     *str;
+  xmlChar   *time;
 
   statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
 
@@ -88,6 +91,14 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 								 reauthenticateOnOrAfter);
 
   subject = lasso_lib_subject_new();
+  if (identifier == NULL) {
+    identifier = lasso_saml_name_identifier_new(lasso_node_get_content(LASSO_NODE(idp_identifier)));
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier");
+    if (str != NULL) {
+      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+      xmlFree(str);
+    }
+  }
   lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
 					LASSO_SAML_NAME_IDENTIFIER(identifier));
   lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),

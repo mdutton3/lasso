@@ -62,8 +62,8 @@ LASSO_EXPORT GType          lasso_identity_get_type(void);
 
 LASSO_EXPORT LassoIdentity* lasso_identity_new             (gchar *remote_providerID);
 
-LASSO_EXPORT gint lasso_identity_set_local_name_identifier (LassoIdentity *identity,
-							    LassoNode     *nameIdentifier);
+LASSO_EXPORT gint lasso_identity_set_local_nameIdentifier (LassoIdentity *identity,
+							   LassoNode     *nameIdentifier);
 
 LASSO_EXPORT gint lasso_identity_set_remote_nameIdentifier (LassoIdentity *identity,
 							    LassoNode     *nameIdentifier);

@@ -220,7 +220,8 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
       if (identity == NULL) {
 	identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
 	idpProvidedNameIdentifier = LASSO_NODE(lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32)));
-	lasso_identity_set_local_name_identifier(identity, idpProvidedNameIdentifier);
+	/* TODO : set nameQualifier and Format */
+	lasso_identity_set_local_nameIdentifier(identity, idpProvidedNameIdentifier);
       }
     }
     else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
@@ -238,6 +239,7 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
 								    identity->local_nameIdentifier);
       lasso_saml_assertion_add_authenticationStatement(assertion,
       						       authentication_statement);
+      printf(lasso_node_export(assertion));
       lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(authn)->response),
 					 assertion);
     }

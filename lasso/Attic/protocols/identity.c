@@ -29,8 +29,8 @@
 /*****************************************************************************/
 
 gint
-lasso_identity_set_local_name_identifier(LassoIdentity *identity,
-					 LassoNode     *nameIdentifier)
+lasso_identity_set_local_nameIdentifier(LassoIdentity *identity,
+					LassoNode     *nameIdentifier)
 {
   identity->local_nameIdentifier = nameIdentifier;
 }
@@ -86,10 +86,10 @@ lasso_identity_new(gchar *remote_providerID)
 {
   LassoIdentity *identity;
 
-  identity = g_object_new(LASSO_TYPE_IDENTITY, NULL);
+  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
-  identity->remote_providerID = (char *)malloc(strlen(remote_providerID)+1);
-  sprintf(identity->remote_providerID, "%s", remote_providerID);
+  identity->remote_providerID = g_strdup(remote_providerID);
+  //sprintf(identity->remote_providerID, "%s", remote_providerID);
 
   return(identity);
 }
