@@ -17,21 +17,20 @@ Introduction to Lasso objects
 
 .. warning:: The source code presented in this document has the purpose to
              explain the different steps necessary to implement Liberty
-	     Alliance profiles; they lack proper memory management and error
-	     checking.
+	     Alliance profiles; they notably lack proper error checking.
 
 
 Single Sign-On and Federation Profile
 =====================================
 
-.. note:: imagine the schema on liberty alliance, binding and profiles, figure
-          2, page 20.
+.. note:: It may be helpful to look at figure 2 in liberty alliance, binding
+          and profiles specification document.
 
 
-In step 1 the user points its browser to the service provider to the login URL;
-the service provider must response with an HTTP 302 Redirect response, pointing 
-the user browser to the identity provider single sign on service.
-
+As a first step the user points its browser to the service provider to the
+login URL; the service provider must then respond with an HTTP 302 Redirect
+response, pointing the user browser to the identity provider single sign on
+service.
 
 ``server`` is a ``LassoServer*`` and ``idpProviderId`` is a string with the
 identity provider Id (defined in metadata).
@@ -83,7 +82,7 @@ The users are defined by a ``nameIdentifier``.  Those typically map to users
 and sessions on the service provider.  If existing; the session should probably
 contains a ``session_dump`` element and the user a ``identity_dump`` element.
 
-.. note:: include sample database schema here ?
+.. XXX include sample database schema here ?
 
 ::
 
@@ -96,9 +95,30 @@ contains a ``session_dump`` element and the user a ``identity_dump`` element.
   lasso_login_accept_sso(login);
 
 After ``lasso_login_accept_sso`` the session and the identity are updated (or
-created) and should then be saved.
+created) and should then be saved.  You can get respective dumps like this::
 
-A success page can then be displayed.
+  LassoIdentity *identity;
+  LassoSession *session;
+  char *identity_dump = NULL, *session_dump = NULL;
+
+  if (lasso_profile_is_identity_dirty(LASSO_PROFILE(login))) {
+      identity = lasso_profile_get_identity(LASSO_PROFILE(login));
+      identity_dump = lasso_identity_dump(identity);
+      lasso_identity_destroy(identity);
+  }
+
+  if (lasso_profile_is_session_dirty(LASSO_PROFILE(login))) {
+      session = lasso_profile_get_session(LASSO_PROFILE(login));
+      session_dump = lasso_session_dump(session);
+      lasso_session_destroy(session);
+  }
+
+
+Finally the ``login`` object can then be destroyed::
+
+  lasso_login_destroy(login);
+
+And a success web page displayed.
 
 
 Single Logout Profile
@@ -131,5 +151,6 @@ The service provider must then make a SOAP request to the identity provider;
 
   logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
 
-And save back session and user dump.
+And save back session and user dump; the process is similar as the one at the
+end of the single sign on profile.
 
