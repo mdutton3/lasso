@@ -550,22 +550,29 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 {
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 	xmlNode *xmlnode;
-	xmlNs *firstns = NULL;
+	xmlNs *ns;
+	GList *list_ns = NULL, *t;
 
 	if (class->node_data == NULL)
 		return NULL;
 
 	xmlnode = xmlNewNode(NULL, class->node_data->node_name);
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
-		if (firstns == NULL) firstns = class->node_data->ns;
 		if (class->node_data->ns)
-			xmlSetNs(xmlnode, class->node_data->ns);
+			list_ns = g_list_append(list_ns, class->node_data->ns);
 		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
 		class = g_type_class_peek_parent(class);
 	}
 
-	class = LASSO_NODE_GET_CLASS(node);
-	xmlSetNs(xmlnode, firstns);
+	t = g_list_first(list_ns);
+	while (t) {
+		ns = t->data;
+		xmlNewNs(xmlnode, ns->href, ns->prefix);
+		t = g_list_next(t);
+	}
+
+	fprintf(stderr, "ns: %s\n", xmlnode->nsDef->prefix);
+	xmlSetNs(xmlnode, xmlnode->nsDef);
 
 	xmlReconciliateNs(NULL, xmlnode);
 
