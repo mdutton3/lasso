@@ -1,9 +1,11 @@
+.libs
+.deps
 liblassosharpglue_wrap.c
 liblassosharpglue_la-liblassosharpglue_wrap.lo
 liblassosharpglue_la-Lasso.lo
-liblassosharpgluePINVOKE.cs
 liblassosharpglue.la
-liblassosharpglue.cs
+lasso.cs
+lassoPINVOKE.cs
 lasso.dll
 SWIGTYPE_p_LassoSamlpResponseAbstract.cs
 SWIGTYPE_p_LassoSamlpRequestAbstract.cs
@@ -31,5 +33,5 @@ LassoLecp.cs
 LassoIdentity.cs
 LassoAuthnResponse.cs
 LassoAuthnRequest.cs
-.libs
-.deps
+lasso-sharp.pc
+
