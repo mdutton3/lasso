@@ -22,16 +22,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  $config = unserialize(file_get_contents('config.inc'));
-
+  require_once 'Log.php';
   require_once 'DB.php';
+
+  $config = unserialize(file_get_contents('config.inc'));
 	
   $number_of_users = 5; 
   
   $db = &DB::connect($config['dsn']);
 
   if (DB::isError($db)) 
-	  die($db->getMessage());
+     die("Could not connect to the database");
+
+  // create logger 
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
   // Show XML dump
   if (!empty($_GET['dump']) && !empty($_GET['type'])) 
@@ -105,9 +110,9 @@
   if (!isset($_GET['show_all']))
   	$query .= " OFFSET $startUser LIMIT " . ($startUser + $number_of_users);
   $res =& $db->query($query);
-  if (DB::isError($res)) 
-  	die($res->getMessage());
-
+  
+  if (DB::isError($db)) 
+  	die($db->getMessage());
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

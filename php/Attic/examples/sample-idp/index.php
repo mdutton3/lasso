@@ -65,41 +65,30 @@ You can get more informations about <b>Lasso</b> at <br>
 
 <body>
 <p>
-<table border="1" frame="above">
-<tr>
-  <td><b>Identity Provider Administration</b></td>
-</tr>
-<tr>
-  <td><a href="setup.php">Setup</a></td>
-</tr>
-<tr>
-  <td><a href="admin_user.php">Users Management</a></td>
-</tr>
-<tr>
-  <td><b>Identity Provider Fonctionnality</b></td>
-</tr>
+  <b>Identity Provider Administration</b><br>
+  <a href="setup.php">Setup</a><br>
+  <a href="admin_user.php">Users Management</a>
+<?php if ($config['log_handler'] == 'sql') { ?>
+  <br><a href="log_view.php">View log</a>
+<?php } ?>
+</p>
+<p>
+  <b>Identity Provider Fonctionnality</b><br>
 <?php
   if (!isset($_SESSION["user_id"])) {  
   ?>
-<tr>
-  <td><a href="login.php">Local Login</a></td>
-</tr>
+  <a href="login.php">Local Login</a><br>
 <?php } else { ?>
-<tr>
+<!--
   <td><a href="federate.php">Create federation</a></td>
-</tr>
-<tr>
   <td><a href="defederate.php">Destroy federation</a></td>
-</tr>
-<tr>
-  <td><a href="logout.php">Local Logout</a></td>
-</tr>
+-->
+  <a href="logout.php">Local Logout</a>
 <?php } ?>
-</table>
 </p>
 
 <p>
-<table border="1" frame="above">
+<table>
 <caption><b>Status</b></caption>
 <tr>
   <?php 

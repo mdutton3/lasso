@@ -23,13 +23,20 @@
  */
 
     require_once 'HTML/QuickForm.php';
+    require_once 'Log.php';
     require_once 'DB.php';
  
     $config = unserialize(file_get_contents('config.inc'));
     
+    // connect to the data base
+    $db = &DB::connect($config['dsn']);
+    if (DB::isError($db)) 
+        die("Could not connect to the database");
+
     // create logger 
-    $logger = &Log::factory($config['log_handler'], '', $config['log_name']."::".$_SERVER['PHP_SELF']);
-  
+    $conf['db'] = $db;
+    $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
     session_start();
   
     lasso_init();
@@ -55,15 +62,7 @@
             updateDumpsFromSession($login);
             initFromAuthnRequest($login);
 
-            // connect to the data base
-            $db = &DB::connect($config['dsn']);
-            if (DB::isError($db)) 
-            {
-                $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
-                $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-                die("Could not connect to the database");
-            }
-
+            
 
           	// User must *NOT* Authenticate with the IdP 
             if (!$login->mustAuthenticate()) 
@@ -385,16 +384,6 @@
         die("Login dump is not registred");
     }
 
-	// connect to the data base
-	$db = &DB::connect($config['dsn']);
-
-    if (DB::isError($db)) 
-    {
-        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
-        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-        die("Could not connect to the database");
-    }
-
 	$login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
 
 	if (($user_id = authentificateUser($db, $form->exportValue('username'), 
@@ -430,15 +419,6 @@
 	// User must NOT Authenticate with the IdP 
 	if (!$login->mustAuthenticate()) 
 	{
-	  // conect to the data base
-	  $db = &DB::connect($config['dsn']);
-	  if (DB::isError($db)) 
-      {
-        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
-        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-        die("Could not connect to the database");
-      }
-
       $user_id = getUserIDFromNameIdentifier($db, $login->nameIdentifier);
 	  
 	  if (!$user_id) 

@@ -66,34 +66,39 @@ You can get more informations about <b>Lasso</b> at <br>
 
 <body>
 <p>
-<table border="1" frame="above">
-<tr>
-  <td><b>Service Provider Administration</b></td>
-</tr>
-<tr>
-  <td><a href="setup.php">Setup</a></td>
-</tr>
-<tr>
-  <td><a href="admin_user.php">Users Management</a></td>
-</tr>
-<tr>
-  <td><b>Serice Provider Fonctionnality</b></td>
-</tr>
+<b>Service Provider Administration</b><br>
+<a href="setup.php">Setup</a><br>
+<a href="admin_user.php">Users Management</a><br>
+</p>
+<p>
+  <b>Serice Provider Fonctionnality</b>
+<table>
 <?php
   if (!isset($_SESSION["nameidentifier"])) {  
   ?>
 <tr>
-  <td><a href="login.php">Login!</a></td>
+  <td colspan="2">Single SignOn using an IdP</td>
+</tr>
+<tr>
+  <td>Provider</td>
+  <td>Profile</td>
+</tr>
+<tr>
+  <td><?php echo $config['providerID']; ?></td>
+  <td><a href="login.php">post</a> | <a href="login.php">artifact</a></td>
 </tr>
 <?php } else { ?>
 <tr>
-  <td><a href="logout.php">Logout!</a></td>
+  <td colspan="2">Single Logout</td>
+<tr>
+  <td colspan="2"><a href="logout.php">Logout!</a></td>
 </tr>
 <?php } ?>
 </table>
 </p>
+
 <p>
-<table border="1" frame="above">
+<table>
 <caption><b>Status</b></caption>
 <tr>
   <?php 

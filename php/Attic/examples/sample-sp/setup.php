@@ -50,6 +50,7 @@
 	  'sp-public_key' => $cwd . "/public-key_sp1.pem",
 	  'sp-private_key' => $cwd . "/private-key-raw_sp1.pem",
 	  'sp-ca' => $cwd . "/certificate_sp1.pem",
+	  'providerID' => "https://idp1/metadata",
 	  'idp-metadata' => $cwd . "/metadata_idp1.xml",
 	  'idp-public_key' => $cwd . "/public-key_idp1.pem",
 	  'idp-ca' => $cwd . "/certificate_idp1.pem",
@@ -144,6 +145,7 @@
 		
 		$keys = array_keys($config);
 		$files = preg_grep("/(sp|idp)/", $keys);
+
 
 		foreach($files as $file)
 		{
@@ -293,10 +295,17 @@
 </tr>
 
 <tr>
+  <td>ProviderID :</td>
+  <td><input type='text' name='providerID' size='50' value='<?php echo $config['providerID']; ?>'></td>
+  <td>&nbsp;</td>
+</tr>
+
+<tr>
   <td>Metadata :</td>
   <td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td>
   <td>&nbsp;</td>
 </tr>
+
 <tr>
   <td>Public Key :</td>
   <td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'>

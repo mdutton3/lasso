@@ -42,7 +42,7 @@
   $request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
   $request->consent = lassoLibConsentObtained;
 
-  $login->buildAuthnRequestMsg("https://idp1/metadata");
+  $login->buildAuthnRequestMsg($config['providerID']);
 
   $url = $login->msgUrl;
 

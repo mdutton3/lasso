@@ -21,14 +21,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-   $config = unserialize(file_get_contents('config.inc'));
 
   require_once 'HTML/QuickForm.php';
   require_once 'Log.php';
   require_once 'DB.php';
 
+   $config = unserialize(file_get_contents('config.inc'));
+   
+   // connect to the data base
+   $db = &DB::connect($config['dsn']);
+   if (DB::isError($db)) 
+	die("Could not connect to the database");
+
   // create logger 
-  $logger = &Log::factory($config['log_handler'], '', $config['log_name']."::".$_SERVER['PHP_SELF']);
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
   /*
    * 
@@ -68,15 +75,6 @@
 	  return ($row[0]);
 	}
 	return (0);
-  }
-
-  $db = &DB::connect($config['dsn']);
-  
-  if (DB::isError($db)) 
-  {
-    $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
-    $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-    die("Could not connect to the database");
   }
 
   if ($config['auth_type'] == 'auth_basic')

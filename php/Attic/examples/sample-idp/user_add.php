@@ -1,6 +1,6 @@
 <?php
 /*  
- * Service Provider Example -- User Administration 
+ * Identity Provider Example -- User Administration 
  *
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
@@ -23,7 +23,19 @@
  */
 
   require_once 'HTML/QuickForm.php';
+  require_once 'Log.php';  
   require_once 'DB.php';  
+
+   $config = unserialize(file_get_contents('config.inc'));
+
+   // connect to the data base
+   $db = &DB::connect($config['dsn']);
+   if (DB::isError($db)) 
+	die("Could not connect to the database");
+
+  // create logger 
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
   $form = new HTML_QuickForm('frm');
 
@@ -37,18 +49,20 @@
 
   if ($form->validate()) 
   {
-	  $config = unserialize(file_get_contents('config.inc'));
 	
-	  $db = &DB::connect($config['dsn']);
-	  if (DB::isError($db)) 
-	  die($db->getMessage());
-
-	  $query = "INSERT INTO users (user_id, username, password) VALUES(nextval('user_id_seq'),'";
-	  $query .= $form->exportValue('username') . "','" . $form->exportValue('password') . "')";
+	  $query = "INSERT INTO users (user_id, username, password) VALUES(nextval('user_id_seq'),";
+	  $query .= $db->quoteSmart($form->exportValue('username')) . ",";
+	  $query .= $db->quoteSmart($form->exportValue('password')) . ")";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
+	  { 
+		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ERR);
+		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
 		die("username exist!");
+	  }
+	  
+    	  $logger->log("Create User '" . $form->exportValue('username') . "'", PEAR_LOG_NOTICE);
 	  $db->disconnect();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

@@ -22,6 +22,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+  require_once 'Log.php';
+  require_once 'DB.php';
+
+  $config = unserialize(file_get_contents('config.inc'));
+   
+  // connect to the data base
+   $db = &DB::connect($config['dsn']);
+   if (DB::isError($db)) 
+	die("Could not connect to the database");
+
+  // create logger 
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
   session_start();
 
   # Destroy The PHP Session

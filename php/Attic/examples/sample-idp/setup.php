@@ -78,8 +78,7 @@
 	  $config = array(
 		'dsn' => "pgsql://idp:idp@localhost/idp",
 		'server_dump_filename' => "lasso_server_dump.xml",
-        'log_name' => $_SERVER['SERVER_NAME'],
-        'log_handler' => 'syslog',
+        'log_handler' => 'sql',
         'auth_type' => 'auth_form',
 		'idp-metadata' => $cwd . "/metadata_idp1.xml",
 		'idp-public_key' => $cwd . "/public-key_idp1.pem",
@@ -252,6 +251,35 @@
 
 		print "OK";
 
+		print "<br>Create table 'log' : ";
+		$query = "DROP TABLE log CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE log (
+		  id          integer primary key,
+		  logtime     timestamp,
+                  ident       varchar(16),
+                  priority    integer,
+                  message     text)";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
+
+		print "<br>Create sequence 'log_id' : ";
+		
+		$query = "DROP SEQUENCE log_id";
+		$res =& $db->query($query);
+		
+		$query = "CREATE SEQUENCE log_id";
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+		
+		print "OK";
+
 		$db->disconnect();
 
 		// Check if IdP files does exists
@@ -403,15 +431,11 @@
     <td colspan='3' align='center'>Logging</td>
 </tr>
 <tr>
-  <td>Name :</td>
-  <td><input type='text' name='log_name' size='50' value='<?php echo $config['log_name']; ?>' maxlength='100'></td>
-  <td>&nbsp;</td>
-</tr>
-<tr>
   <td>Handler :</td>
   <td>
   <select name='log_handler'>
     <option value="null" <?php if ($config['log_handler'] == 'null') echo 'selected="selected"'; ?>>NULL (disabled)</option>
+    <option value="sql" <?php if ($config['log_handler'] == 'sql') echo 'selected="selected"'; ?>>Database</option>
     <option value="syslog" <?php if ($config['log_handler'] == 'syslog') echo 'selected="selected"'; ?>>Syslog</option>
   </select>
   </td><td>&nbsp;</td>

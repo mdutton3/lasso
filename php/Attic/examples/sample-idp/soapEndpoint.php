@@ -22,13 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-  require_once 'DB.php';
   require_once 'Log.php';
+  require_once 'DB.php';
 
   header("Content-Type: text/xml\r\n");
+  
+  // connect to the data base
+  $db = &DB::connect($config['dsn']);
+  if (DB::isError($db)) 
+    die("Could not connect to the database");
 
-   // create logger 
-   $logger = &Log::factory($config['log_handler'], '', $config['log_name']."::".$_SERVER['PHP_SELF']);
+  // create logger 
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
   if (empty($HTTP_RAW_POST_DATA))
   {
@@ -44,15 +50,6 @@
 
   $requestype = lasso_getRequestTypeFromSoapMsg($HTTP_RAW_POST_DATA);
   $server = LassoServer::newFromDump($server_dump);
-
-  $db = &DB::connect($config['dsn']);
-
-  if (DB::isError($db)) 
-  {
-    $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
-    $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-    die("Could not connect to the database");
-  }
 
   switch ($requestype) 
   {
