@@ -106,7 +106,7 @@ lasso_federation_termination_init_request(LassoFederationTermination *notificati
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
-  switch(notification->provider_type){
+  switch(profileContext->provider_type){
   case lassoProfileContextServiceProviderType:
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
@@ -248,12 +248,12 @@ lasso_federation_termination_new(LassoServer *server,
 
   /* set the federation_termination object */
   notification = g_object_new(LASSO_TYPE_FEDERATION_TERMINATION, NULL);
-  notification->provider_type = provider_type;
 
   /* set the properties */
   profileContext = LASSO_PROFILE_CONTEXT(notification);
   profileContext->user = user;
   profileContext->server = server;
+  profileContext->provider_type = provider_type;
 
   return(notification);
 }
