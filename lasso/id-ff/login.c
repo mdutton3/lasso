@@ -33,42 +33,7 @@ static GObjectClass *parent_class = NULL;
 /* functions                                                                 */
 /*****************************************************************************/
 
-static gint
-lasso_login_add_response_assertion(LassoLogin    *login,
-				   LassoIdentity *identity,
-				   const gchar   *authenticationMethod,
-				   const gchar   *reauthenticateOnOrAfter)
-{
-  xmlChar *providerID;
-  LassoNode *assertion=NULL, *authentication_statement;
-  xmlChar *ni, *idp_ni;
-
-  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
-  printf("ProviderID = %s\n", providerID);
-  assertion = lasso_assertion_new(providerID,
-				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
-  xmlFree(providerID);
-  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
-								reauthenticateOnOrAfter,
-								identity->remote_nameIdentifier,
-								identity->local_nameIdentifier);
-  lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
-						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
-
-  /* store NameIdentifier */
-  login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
-
-  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
-				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
-				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
-				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
-				     assertion);
-
-  return (0);
-}
-
-static gint
+static gchar*
 lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
 {
   xmlChar *ni, *idp_ni;
@@ -90,6 +55,42 @@ lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
       return (NULL);
     }
   }
+}
+
+static gint
+lasso_login_add_response_assertion(LassoLogin    *login,
+				   LassoIdentity *identity,
+				   const gchar   *authenticationMethod,
+				   const gchar   *reauthenticateOnOrAfter)
+{
+  xmlChar *providerID, *requestID;
+  LassoNode *assertion=NULL, *authentication_statement;
+  xmlChar *ni, *idp_ni;
+
+  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
+  requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID");
+  assertion = lasso_assertion_new(providerID,
+				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
+  xmlFree(providerID);
+  xmlFree(requestID);
+  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
+								reauthenticateOnOrAfter,
+								identity->remote_nameIdentifier,
+								identity->local_nameIdentifier);
+  lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
+						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+
+  /* store NameIdentifier */
+  login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+
+  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
+				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
+				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
+				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
+  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
+				     assertion);
+
+  return (0);
 }
 
 static gint
@@ -115,7 +116,7 @@ lasso_login_process_federation(LassoLogin *login)
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
-    debug(DEBUG, "NameIDPolicy is federated");
+    debug(DEBUG, "NameIDPolicy is federated\n");
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
       idpProvidedNameIdentifier = lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32));
@@ -127,6 +128,7 @@ lasso_login_process_federation(LassoLogin *login)
       lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpProvidedNameIdentifier),
 					    lassoLibNameIdentifierFormatFederated);
       lasso_identity_set_local_nameIdentifier(identity, idpProvidedNameIdentifier);
+      lasso_node_destroy(idpProvidedNameIdentifier);
       lasso_user_add_identity(LASSO_PROFILE_CONTEXT(login)->user,
 			      LASSO_PROFILE_CONTEXT(login)->remote_providerID,
 			      identity);
@@ -228,6 +230,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
+    debug(WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
     return (-1);
   }
 
@@ -236,18 +239,16 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
 				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
-  printf(DEBUG, "ProviderID -> %s\n", lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server)));
- 
   /* fill the response with the assertion */
   if (identity != NULL && authentication_result == 1) {
-    printf("DEBUG - an identity found, so build an assertion\n");
+    debug(DEBUG, "An identity found, so build an assertion.\n");
     lasso_login_add_response_assertion(login,
 				       identity,
 				       authenticationMethod,
 				       reauthenticateOnOrAfter);
   }
   else {
-    printf("No identity or login failed !!!\n");
+    debug(DEBUG, "No identity or login failed !!!\n");
     if (authentication_result == 0) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						lassoSamlStatusCodeRequestDenied);
@@ -271,7 +272,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
   g_free(assertionHandle);
   xmlFree(identityProviderSuccinctID);
-  b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+  b64_samlArt = (gchar *)xmlSecBase64Encode(samlArt, 42, 0);
   g_free(samlArt);
   relayState = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
 					    "RelayState", NULL);
@@ -305,53 +306,87 @@ gint
 lasso_login_build_authn_request_msg(LassoLogin *login)
 {
   LassoProvider *provider, *remote_provider;
-  xmlChar *request_protocolProfile, *url, *query, *lareq;
+  xmlChar *md_authnRequestsSigned, *request_protocolProfile, *url, *query, *lareq;
   gboolean must_sign;
+  gint ret = 0;
   
   provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-  must_sign = xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true");
-  /* export request depending on the request ProtocolProfile */
-  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
-  /* get SingleSignOnServiceURL metadata */
-  url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
-  if (url == NULL) {
-    debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider\n");
-    return (-1);
+
+  /* check if authnRequest must be signed */
+  md_authnRequestsSigned = lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL);
+  if (md_authnRequestsSigned != NULL) {
+    must_sign = xmlStrEqual(md_authnRequestsSigned, "true");
+    xmlFree(md_authnRequestsSigned);
+  }
+  else {
+    /* FIXME : is there a default value for AuthnRequestsSigned */
+    must_sign = 0;
+    debug(WARNING, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
   }
 
-  if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
-    /* GET -> query */
-    if (must_sign) {
-      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
-					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
-					 LASSO_PROFILE_CONTEXT(login)->server->private_key);
-      if (query == NULL) {
-	debug(ERROR, "Query signature failed\n");
-	return (-2);
+  /* export request depending on the request ProtocolProfile */
+  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
+  if (request_protocolProfile == NULL) {
+    /* FIXME : is there a default value for SingleSignOnProtocolProfile */
+    debug(WARNING, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
+    ret = -1;
+  }
+
+  /* get SingleSignOnServiceURL metadata */
+  if (ret == 0) {
+    url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
+    if (url == NULL) {
+      debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider.\n");
+      ret = -2;
+    }
+  }
+  
+  if (ret == 0) {
+    if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
+      /* GET -> query */
+      if (must_sign) {
+	query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
+					   LASSO_PROFILE_CONTEXT(login)->server->signature_method,
+					   LASSO_PROFILE_CONTEXT(login)->server->private_key);
+	if (query == NULL) {
+	  debug(ERROR, "Failed to create AuthnRequest query (signed).\n");
+	  ret = -3;
+	}
+      }
+      else {
+	query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
+	if (query == NULL) {
+	  debug(ERROR, "Failed to create AuthnRequest query.\n");
+	  ret = -3;
+	}
+      }
+      if (ret == 0) {
+	/* alloc msg_url (+2 for the ? and \0) */
+	LASSO_PROFILE_CONTEXT(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
+	g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?%s", url, query);
+	LASSO_PROFILE_CONTEXT(login)->msg_body = NULL;
+	g_free(query);
       }
     }
-    else {
-      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
+    else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
+      /* POST -> formular */
+      lareq = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->request);
+      if (lareq != NULL) {
+	LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
+	LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
+      }
+      else {
+	debug(ERROR, "Failed to export AuthnRequest (Base64 encoded).\n");
+	ret = -3;
+      }
     }
-    if (query == NULL) return (-2);
-    /* alloc msg_url (+2 for the ? and \0) */
-    LASSO_PROFILE_CONTEXT(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
-    g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?%s", url, query);
-    LASSO_PROFILE_CONTEXT(login)->msg_body = NULL;
-    g_free(query);
   }
-  else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
-    /* POST -> formular */
-    lareq = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->request);
-    if (lareq == NULL) return (-2);
-    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
-    LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
-  }
-  g_free(url);
-  
-  return (0);
+  xmlFree(url);
+  xmlFree(request_protocolProfile);
+
+  return (ret);
 }
 
 gint
@@ -615,7 +650,7 @@ lasso_login_init_request(LassoLogin       *login,
   }
   LASSO_PROFILE_CONTEXT(login)->response = response;
   /* get remote identityProviderSuccinctID */
-  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(response);
+  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(LASSO_ARTIFACT(response));
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE_CONTEXT(login)->server,
 											  identityProviderSuccinctID);
   xmlFree(identityProviderSuccinctID);
@@ -714,7 +749,7 @@ lasso_login_finalize(LassoLogin *login)
   g_free(login->nameIdentifier);
   g_free(login->response_dump);
 
-  parent_class->finalize(LASSO_PROFILE_CONTEXT(login));
+  parent_class->finalize(G_OBJECT(login));
 }
 
 /*****************************************************************************/
