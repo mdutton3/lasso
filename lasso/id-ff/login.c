@@ -315,8 +315,8 @@ lasso_handle_authn_response_msg(LassoLogin *login,
   LassoProvider *idp;
   gchar *statusCode_value;
 
-  LASSO_PROFILE_CONTEXT(authn)->response = lasso_authn_response_new_from_export(AUTHN_response_msg, 0);
-  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(authn)->response,
+  LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg, 0);
+  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				   "Assertion",
 				   lassoLibHRef);
   idp = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
@@ -327,7 +327,7 @@ lasso_handle_authn_response_msg(LassoLogin *login,
   else {
     return (-1);
   }
-  status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(authn)->response,
+  status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				"Status",
 				lassoSamlProtocolHRef);
   if (status != NULL) {
