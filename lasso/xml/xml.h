@@ -61,6 +61,7 @@ struct _LassoNodeClass {
   /*< vtable >*/
   /*< public >*/
   GString*       (* build_query)      (LassoNode     *node);
+  LassoNode*     (* copy)             (LassoNode     *node);
   xmlChar*       (* dump)             (LassoNode     *node,
 				       const xmlChar *encoding,
 				       int            format);
@@ -122,7 +123,9 @@ LASSO_EXPORT LassoNode*     lasso_node_new              (xmlNodePtr node);
 
 LASSO_EXPORT GString*       lasso_node_build_query      (LassoNode *node);
 
-LASSO_EXPORT xmlChar *      lasso_node_dump             (LassoNode     *node,
+LASSO_EXPORT LassoNode*     lasso_node_copy             (LassoNode *node);
+
+LASSO_EXPORT xmlChar*       lasso_node_dump             (LassoNode     *node,
 							 const xmlChar *encoding,
 							 int            format);
 

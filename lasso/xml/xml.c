@@ -44,6 +44,15 @@ lasso_node_build_query(LassoNode *node)
   return (class->build_query(node));
 }
 
+LassoNode *
+lasso_node_copy(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->copy(node));
+}
+
 xmlChar *
 lasso_node_dump(LassoNode     *node,
 		const xmlChar *encoding,
@@ -361,6 +370,12 @@ lasso_node_impl_build_query(LassoNode *node)
   return (query);
 }
 
+static LassoNode *
+lasso_node_impl_copy(LassoNode *node)
+{
+  return (lasso_node_new(xmlCopyNode(lasso_node_get_xmlNode(node), 1)));
+}
+
 static xmlChar *
 lasso_node_impl_dump(LassoNode     *node,
 		     const xmlChar *encoding,
@@ -400,8 +415,6 @@ lasso_node_impl_dump(LassoNode     *node,
   }
   (void) xmlOutputBufferClose(buf);
 
-  /* debug */
-  printf("%s\n\n", ret);
   return (ret);
 }
 
@@ -537,7 +550,7 @@ lasso_node_impl_get_name(LassoNode *node)
  * 
  *
  **/
-void
+static void
 lasso_node_impl_parse_memory(LassoNode  *node,
 			     const char *buffer)
 {
@@ -648,6 +661,31 @@ lasso_node_impl_serialize(LassoNode *node,
 }
 
 static gchar *
+lasso_node_impl_soap_envelop(LassoNode *node)
+{
+  LassoNode *envelope, *body;
+  xmlChar *envelope_dump;
+
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  
+  envelope = lasso_node_new(NULL);
+  lasso_node_set_name(envelope, "Envelope");
+  lasso_node_set_ns(envelope, lassoSoapEnvHRef, lassoSoapEnvPrefix);
+  
+  body = lasso_node_new(NULL);
+  lasso_node_set_name(body, "Body");
+  lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
+  
+  lasso_node_add_child(body, lasso_node_copy(node), 0);
+  lasso_node_add_child(envelope, body, 0);
+
+  envelope_dump = lasso_node_dump(envelope, "utf-8", 1);
+  g_object_unref(envelope);
+  
+  return(envelope_dump);
+}
+
+static gchar *
 lasso_node_impl_url_encode(LassoNode   *node,
 			   guint        sign_method,
 			   const gchar *private_key_file)
@@ -691,28 +729,7 @@ lasso_node_impl_url_encode(LassoNode   *node,
   return (ret);
 }
 
-static gchar *
-lasso_node_impl_soap_envelop(LassoNode *node)
-{
-     LassoNode *envelope, *body;
-
-     g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-     envelope = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
-     lasso_node_set_name(LASSO_NODE(envelope), "Envelope");
-     lasso_node_set_ns(LASSO_NODE(envelope), lassoSoapEnvHRef, lassoSoapEnvPrefix);
-
-     body = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
-     lasso_node_set_name(LASSO_NODE(body), "Body");
-     lasso_node_set_ns(LASSO_NODE(body), lassoSoapEnvHRef, lassoSoapEnvPrefix);
-
-     lasso_node_add_child(LASSO_NODE(body), node, 0);
-     lasso_node_add_child(LASSO_NODE(envelope), LASSO_NODE(body), 0);
-
-     return(lasso_node_dump(LASSO_NODE(envelope), "iso-8859-1", 1));
-}
-
-gint
+static gint
 lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
 {
@@ -787,7 +804,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   return (ret);
 }
 
-/*** private methods *********************************************************/
+/*** private methods **********************************************************/
 
 static void
 lasso_node_impl_add_child(LassoNode *node,
@@ -922,20 +939,8 @@ lasso_node_impl_set_xmlNode(LassoNode  *node,
 }
 
 /*****************************************************************************/
-/* instance and class init functions                                         */
+/* overrided parent class methods                                            */
 /*****************************************************************************/
-
-static void
-lasso_node_instance_init(LassoNode *instance)
-{
-  LassoNode *node = LASSO_NODE(instance);
-
-  node->private = g_new (LassoNodePrivate, 1);
-  node->private->dispose_has_run = FALSE;
-  node->private->node = xmlNewNode(NULL, "no-name-set");
-}
-
-/* overrided parent class methods */
 
 static void
 lasso_node_dispose(LassoNode *node)
@@ -958,6 +963,20 @@ lasso_node_finalize(LassoNode *node)
   g_free (node->private);
 }
 
+/*****************************************************************************/
+/* instance and class init functions                                         */
+/*****************************************************************************/
+
+static void
+lasso_node_instance_init(LassoNode *instance)
+{
+  LassoNode *node = LASSO_NODE(instance);
+
+  node->private = g_new (LassoNodePrivate, 1);
+  node->private->dispose_has_run = FALSE;
+  node->private->node = xmlNewNode(NULL, "no-name-set");
+}
+
 static void
 lasso_node_class_init(LassoNodeClass *class)
 {
@@ -965,6 +984,7 @@ lasso_node_class_init(LassoNodeClass *class)
   
   /* virtual public methods */
   class->build_query      = lasso_node_impl_build_query;
+  class->copy             = lasso_node_impl_copy;
   class->dump             = lasso_node_impl_dump;
   class->get_attr         = lasso_node_impl_get_attr;
   class->get_attr_value   = lasso_node_impl_get_attr_value;
