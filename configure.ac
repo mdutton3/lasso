@@ -756,6 +756,9 @@ tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
 lasso.pc
 win32/Makefile
+win32/msvc/Makefile
+win32/msvc/php/Makefile
+win32/msvc/python/Makefile
 win32/nsis/Makefile
 win32/nsis/jlasso-lite.nsi
 win32/nsis/lasso-deps.nsi
