@@ -314,15 +314,11 @@ if test "X$PYTHON_VERSION" != X; then
     if test -f $PYTHON_H; then
             dnl Not useful unless we make a test on the python version.
             PYTHON="python$PY_VERSION"
-            PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
             PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
             PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
             PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
-            PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
-            PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
-            dnl Non pure module distribution location.
-            PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
+            PY_SITE_PACKAGES="$prefix/lib/python$PY_VERSION/site-packages"
             AC_SUBST(PYTHON)
             AC_SUBST(PY_LIB_LOC)
             AC_SUBST(PY_CFLAGS)
