@@ -788,20 +788,20 @@ class AuthenticationStatement(Node):
 ################################################################################
 # environs : high level classes
 ################################################################################
-SignatureMethodRsaSha1 = 1
-SignatureMethodDsaSha1 = 2
+signatureMethodRsaSha1 = 1
+signatureMethodDsaSha1 = 2
 
-HttpMethodGet      = 1
-HttpMethodPost     = 2
-HttpMethodRedirect = 3
-HttpMethodSoap     = 4
+httpMethodGet      = 1
+httpMethodPost     = 2
+httpMethodRedirect = 3
+httpMethodSoap     = 4
 
-MessageTypeNone          = 0
-MessageTypeAuthnRequest  = 1
-MessageTypeAuthnResponse = 2
-MessageTypeRequest       = 3
-MessageTypeResponse      = 4
-MessageTypeArtifact      = 5
+messageTypeNone          = 0
+messageTypeAuthnRequest  = 1
+messageTypeAuthnResponse = 2
+messageTypeRequest       = 3
+messageTypeResponse      = 4
+messageTypeArtifact      = 5
 
 class Server:
     """\brief Short desc
@@ -849,7 +849,7 @@ class Login:
         if ret is None:
             raise AttributeError, name
         if name == "request":
-            if lassomod.login_getattr(self, "request_type") == MessageTypeAuthnRequest:
+            if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
                 ret = AuthnRequest(None, _obj=ret)
             # TODO
         if name == "response":

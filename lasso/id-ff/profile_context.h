@@ -104,7 +104,7 @@ LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(La
 									      gchar               *providerID);
 
 LASSO_EXPORT void                 lasso_profile_context_set_response_status  (LassoProfileContext *ctx,
-									      const xmlChar       *statusCodeValue);
+									      const gchar         *statusCodeValue);
 
 #ifdef __cplusplus
 }

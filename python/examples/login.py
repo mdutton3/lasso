@@ -14,7 +14,7 @@ lasso.init()
 ####################
 server = lasso.Server.new("../../examples/sp.xml",
                           "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                          lasso.SignatureMethodRsaSha1)
+                          lasso.signatureMethodRsaSha1)
 
 server.add_provider("../../examples/idp.xml", None, None)
 
@@ -38,7 +38,7 @@ print "message url =", splogin.msg_url
 #####################
 server = lasso.Server.new("../../examples/idp.xml",
                           None, "../../examples/rsakey.pem", "../../examples/rootcert.pem",
-                          lasso.SignatureMethodRsaSha1)
+                          lasso.signatureMethodRsaSha1)
 
 server.add_provider("../../examples/sp.xml",
                     "../../examples/rsapub.pem", "../../examples/rsacert.pem")
@@ -49,7 +49,7 @@ idplogin = lasso.Login.new(server, None)
 # get query part in msg_url
 authn_request_msg = string.split(splogin.msg_url, '?')[1]
 ret = idplogin.init_from_authn_request_msg(authn_request_msg,
-                                           lasso.HttpMethodRedirect);
+                                           lasso.httpMethodRedirect);
 
 print "ProtocolProfile =", idplogin.protocolProfile
 
@@ -60,7 +60,7 @@ if idplogin.protocolProfile == 1:
     ret = idplogin.build_artifact_msg(1,
                                       lasso.samlAuthenticationMethodPassword,
                                       "",
-                                      lasso.HttpMethodRedirect)
+                                      lasso.httpMethodRedirect)
     print "ret = %d, msg_url = %s" % (ret, idplogin.msg_url)
 
 ####################
@@ -68,7 +68,7 @@ if idplogin.protocolProfile == 1:
 ####################
 server = lasso.Server.new("../../examples/sp.xml",
                           "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-                          lasso.SignatureMethodRsaSha1)
+                          lasso.signatureMethodRsaSha1)
 
 server.add_provider("../../examples/idp.xml", None, None)
 
@@ -77,7 +77,7 @@ splogin = lasso.Login.new(server, None)
 
 response_msg = string.split(idplogin.msg_url, '?')[1]
 ret = splogin.init_request(response_msg,
-                           lasso.HttpMethodRedirect,
+                           lasso.httpMethodRedirect,
                            "https://identity-provider:2003/liberty-alliance/metadata")
 
 ret = splogin.build_request_msg()
@@ -88,7 +88,7 @@ print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.m
 #####################
 server = lasso.Server.new("../../examples/idp.xml",
                           None, "../../examples/rsakey.pem", "../../examples/rootcert.pem",
-                          lasso.SignatureMethodRsaSha1)
+                          lasso.signatureMethodRsaSha1)
 
 server.add_provider("../../examples/sp.xml",
                     "../../examples/rsapub.pem", "../../examples/rsacert.pem")

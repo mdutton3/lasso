@@ -66,17 +66,18 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 					  ctx->remote_providerID, FALSE);
   }
 
-/*   if (ctx->msg_url != NULL) { */
+  if (ctx->msg_url != NULL) {
 /*     doc   = xmlNewDoc("1.0"); */
 /*     data  = xmlNewNode(NULL, "data"); */
 /*     xmlNewNs(data, lassoLibHRef, NULL); */
 /*     cdata = xmlNewCDataBlock(doc, ctx->msg_url, strlen(ctx->msg_url)); */
 /*     xmlAddChild(data, cdata); */
 /*     xmlAddChild(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node), data); */
-/*   } */
-/*   if (ctx->msg_body != NULL) { */
-/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE); */
-/*   } */
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_url", lasso_str_escape(ctx->msg_url), FALSE);
+  }
+  if (ctx->msg_body != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE);
+  }
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
@@ -99,7 +100,7 @@ lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 
 void
 lasso_profile_context_set_response_status(LassoProfileContext *ctx,
-					  const xmlChar       *statusCodeValue)
+					  const gchar         *statusCodeValue)
 {
   LassoNode *status, *status_code;
 

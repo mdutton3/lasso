@@ -1,4 +1,4 @@
-/* $Id$
+ /* $Id$
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -322,15 +322,15 @@ lasso_login_dump(LassoLogin *login)
     g_free(str);
   }
 
-/*   if (login->assertionArtifact != NULL) { */
-/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE); */
-/*   } */
-/*   if (login->response_dump != NULL) { */
-/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE); */
-/*   } */
-/*   if (login->msg_relayState != NULL) { */
-/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE); */
-/*   } */
+  if (login->assertionArtifact != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE);
+  }
+  if (login->response_dump != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE);
+  }
+  if (login->msg_relayState != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE);
+  }
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);

@@ -1095,7 +1095,7 @@ lasso_node_impl_new_child(LassoNode     *node,
     xmlNodeSetContent(old_child, content);
   }
   else {
-    xmlNewChild(node->private->node, NULL, name, content);
+    xmlNewTextChild(node->private->node, NULL, name, content);
   }
 }
 
