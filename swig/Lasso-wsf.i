@@ -1423,7 +1423,7 @@ typedef struct {
 	char *ServiceType;
 
 #ifndef SWIGPHP4
-	%rename(ProviderID) ProviderID;
+	%rename(providerId) ProviderID;
 #endif
 	char *ProviderID;
 } LassoDiscoServiceInstance;
