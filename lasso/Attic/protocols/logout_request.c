@@ -105,16 +105,18 @@ lasso_logout_request_new(gchar               *providerID,
 						(const xmlChar *)time);
   xmlFree(time);
 
-  class = LASSO_NODE_GET_CLASS(request);
-
-  doc = xmlNewDoc("1.0");
-  xmlNode = class->get_xmlNode(request);
-  id_attr = lasso_node_get_attr(request, "RequestID", NULL);
-  if (id_attr != NULL) {
-    id_value = xmlNodeListGetString(doc, id_attr->children, 1);
-    id = xmlAddID(NULL, doc, id_value, id_attr);
-    xmlFree(id_value);
-  }
+/*   class = LASSO_NODE_GET_CLASS(request); */
+/*   doc = xmlNewDoc("1.0"); */
+/*   xmlNode = class->get_xmlNode(request); */
+/*   xmlAddChild((xmlNodePtr)doc, xmlNode); */
+/*   id_attr = lasso_node_get_attr(request, "RequestID", NULL); */
+/*   if (id_attr != NULL) { */
+/*     printf("Request id found %s, get his value and set ID\n", xmlNode->name); */
+/*     id_value = xmlNodeListGetString(doc, id_attr->children, 1); */
+/*     id = xmlAddID(NULL, doc, id_value, id_attr); */
+/*     printf("id from xmlAddID() %s\n", id->value); */
+/*     xmlFree(id_value); */
+/*   } */
 
   /* set the signature template */
   if (sign_type != lassoSignatureTypeNone) {

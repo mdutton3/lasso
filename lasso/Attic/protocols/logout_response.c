@@ -126,7 +126,7 @@ lasso_logout_response_new(gchar               *providerID,
 
   /* set the signature template */
   if (sign_type != lassoSignatureTypeNone) {
-    lasso_samlp_response_abstract_set_signature_tmpl(LASSO_SAMLP_RESPONSE_ABSTRACT(request),
+    lasso_samlp_response_abstract_set_signature_tmpl(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						     sign_type,
 						     sign_method);
   }
