@@ -640,11 +640,6 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 							 "NameIdentifier",
 							 NULL, NULL);
 
-  /* Set the RelayState */
-  profile->msg_relayState = lasso_node_get_child_content(profile->request,
-							 "RelayState",
-							 NULL, NULL);
-
   done:
   if (remote_providerID != NULL ) {
     xmlFree(remote_providerID);
@@ -752,8 +747,11 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   /* LogoutResponse status code value is ok, so remove assertion */
   profile->remote_providerID = lasso_node_get_child_content(profile->response,
 							    "ProviderID",
-							    NULL,
+							    lassoLibHRef,
 							    NULL);
+
+  /* set the msg_relayState */
+  profile->msg_relayState = lasso_node_get_child_content(profile->request, "RelayState", lassoLibHRef, NULL);
 
   /* Only if SOAP method, then remove assertion */
   if (response_method == lassoHttpMethodSoap) {
