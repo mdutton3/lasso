@@ -630,7 +630,6 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 			return -1; /* XXX */
 		}
 
-		/* alloc msg_url (+2 for the ? and \0) */
 		LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?%s", url, query);
 		LASSO_PROFILE(login)->msg_body = NULL;
 		g_free(query);
