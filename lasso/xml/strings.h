@@ -123,6 +123,14 @@
 #define LASSO_PP_HREF   "urn:liberty:pp:2003-08"
 #define LASSO_PP_PREFIX "pp"
 
+#define LASSO_IS_HREF "urn:liberty:is:2003-08"
+#define LASSO_IS_PREFIX "is"
+
+/* Interaction Service (interact attribute of is:UserInteraction element ) */
+#define LASSO_IS_INTERACT_ATTR_INTERACT_IF_NEEDED "is:interactIfNeeded"
+#define LASSO_IS_INTERACT_ATTR_DO_NOT_INTERACT "is:doNotInteract"
+#define LASSO_IS_INTERACT_ATTR_DO_NOT_INTERACT_FOR_DATA "is:doNotInteractForData"
+
 /* status code */
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
