@@ -52,7 +52,7 @@ struct _LassoLibIDPEntries{
 	LassoNode parent;
 	
 	/* <xs:element ref="IDPEntry" maxOccurs="unbounded"/> */
-	LassoLibIDPEntry *IDPEntry; /* XXX: should actually be a GList */
+	GList *IDPEntry;
 };
 
 struct _LassoLibIDPEntriesClass {

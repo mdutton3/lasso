@@ -70,40 +70,41 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static struct QuerySnippet query_snippets[] = {
+	{ "RequestID", NULL },
+	{ "MajorVersion", NULL },
+	{ "MinorVersion", NULL },
+	{ "IssueInstant", NULL },
+	{ "ProviderID", NULL },
+	{ "NameIdentifier/NameQualifier", "NameQualifier" },
+	{ "NameIdentifier/Format", "NameFormat" },
+	{ "NameIdentifier/content", "NameIdentifier" },
+	{ "consent", NULL },
+	{ NULL, NULL }
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
 build_query(LassoNode *node)
 {
-	char *str, *t;
-	GString *s;
 	LassoLibFederationTerminationNotification *request;
-	
+	char *s, *query;
+	xmlChar *t;
+
 	request = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
 
-	str = parent_class->build_query(node);
-	s = g_string_new(str);
-	g_free(str);
+	query = lasso_node_build_query_from_snippets(node);
 
-	if (request->ProviderID) {
-		t = xmlURIEscapeStr(request->ProviderID, NULL);
-		g_string_append_printf(s, "&ProviderID=%s", t);
+	if (request->RelayState) {
+		t = xmlURIEscapeStr(request->RelayState, NULL);
+		s = g_strdup_printf(t, "%s&RelayState=%s", query, request->RelayState);
 		xmlFree(t);
+		g_free(query);
+		query = s;
 	}
-	if (request->NameIdentifier) {
-		t = lasso_node_build_query(LASSO_NODE(request->NameIdentifier));
-		g_string_append_printf(s, "&%s", t);
-		g_free(t);
-	}
-	if (request->consent)
-		g_string_append_printf(s, "&consent=%s", request->consent);
-	if (request->RelayState)
-		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
 
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
+	return query;
 }
 
 static gboolean
@@ -118,31 +119,15 @@ init_from_query(LassoNode *node, char **query_fields)
 	request->NameIdentifier = lasso_saml_name_identifier_new();
 	
 	for (i=0; (t=query_fields[i]); i++) {
-		if (g_str_has_prefix(t, "ProviderID=")) {
-			request->ProviderID = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "consent=")) {
-			request->consent = g_strdup(t+8);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameIdentifier=")) {
-			request->NameIdentifier->content = g_strdup(t+15);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameFormat=")) {
-			request->NameIdentifier->Format = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameQualifier=")) {
-			request->NameIdentifier->NameQualifier = g_strdup(t+14);
-			continue;
-		}
+		/* RelayState is not part of <lib:FederationTerminationNotification>
+		 * but can exists nevertheless */
 		if (g_str_has_prefix(t, "RelayState=")) {
 			request->RelayState = g_strdup(t+11);
 			continue;
 		}
 	}
+
+	lasso_node_init_from_query_fields(node, query_fields);
 
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier->content == NULL ||
@@ -153,7 +138,7 @@ init_from_query(LassoNode *node, char **query_fields)
 		return FALSE;
 	}
 	
-	return parent_class->init_from_query(node, query_fields);
+	return TRUE;
 }
 
 
@@ -184,6 +169,7 @@ class_init(LassoLibFederationTerminationNotificationClass *klass)
 	lasso_node_class_set_nodename(nclass, "FederationTerminationNotification");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_node_class_add_query_snippets(nclass, query_snippets);
 }
 
 GType

@@ -50,10 +50,51 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static gchar*
+build_query(LassoNode *node)
+{
+	LassoSamlpStatusCode *code = LASSO_SAMLP_STATUS(node)->StatusCode;
+	GString *s;
+	char *t;
+
+	s = g_string_sized_new(200);
+	while (code) {
+		if (s->len)
+			g_string_append(s, " ");
+		g_string_append(s, code->Value);
+		code = code->StatusCode;
+	}
+
+	t = s->str;
+	g_string_free(s, FALSE);
+	return t;
+}
+
+static gboolean
+init_from_query(LassoNode *node, char **query_fields)
+{
+	char **values;
+	LassoSamlpStatusCode *code;
+	int i;
+
+	code = lasso_samlp_status_code_new();
+	LASSO_SAMLP_STATUS(node)->StatusCode = code;
+	values = g_strsplit(*query_fields, " ", 0);
+	for (i = 0; values[i]; i++) {
+		code->Value = g_strdup(values[i]);
+		if (values[i+1]) {
+			code->StatusCode = lasso_samlp_status_code_new();
+			code = code->StatusCode;
+		}
+	}
+
+	g_strfreev(values);
+	return TRUE;
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
-
 
 static void
 instance_init(LassoSamlpStatus *node)
@@ -67,6 +108,8 @@ class_init(LassoSamlpStatusClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Status");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);

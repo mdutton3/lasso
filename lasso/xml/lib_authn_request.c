@@ -41,7 +41,7 @@
  *       <xs:sequence>
  *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
  *         <xs:element ref="ProviderID"/>
- * 	<xs:element ref="AffiliationID" minOccurs="0"/>
+ *         <xs:element ref="AffiliationID" minOccurs="0"/>
  *         <xs:element ref="NameIDPolicy" minOccurs="0"/>
  *         <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/>
  *         <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/>
@@ -106,92 +106,48 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static struct QuerySnippet query_snippets[] = {
+	{ "RequestID", NULL },
+	{ "MajorVersion", NULL },
+	{ "MinorVersion", NULL },
+	{ "IssueInstant", NULL },
+	{ "ProviderID", NULL },
+	{ "AffiliationID", NULL },
+	{ "ForceAuthn", NULL },
+	{ "IsPassive", NULL },
+	{ "NameIDPolicy", NULL },
+	{ "ProtocolProfile", NULL },
+	{ "RequestAuthnContext/AuthnContextStatementRef", "AuthnContextStatementRef" },
+	{ "RequestAuthnContext/AuthnContextClassRef", "AuthnContextClassRef" },
+	{ "RequestAuthnContext/AuthnContextComparison", "AuthnContextComparison" },
+	{ "RelayState", NULL },
+	{ "Scoping/ProxyCount", "ProxyCount" },
+	{ "Scoping/IDPList/IDPEntries", "IDPEntries" },
+	{ "Scoping/IDPList/GetComplete", "GetComplete" },
+	{ "consent", NULL },
+	{ NULL, NULL }
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
 build_query(LassoNode *node)
 {
-	char *str, *t;
-	GString *s;
-	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
-
-	str = parent_class->build_query(node);
-	s = g_string_new(str);
-	g_free(str);
-
-	if (request->ProviderID) {
-		t = xmlURIEscapeStr(request->ProviderID, NULL);
-		g_string_append_printf(s, "&ProviderID=%s", t);
-		xmlFree(t);
-	}
-	if (request->AffiliationID)
-		g_string_append_printf(s, "&AffiliationID=%s", request->AffiliationID);
-	if (request->NameIDPolicy)
-		g_string_append_printf(s, "&NameIDPolicy=%s", request->NameIDPolicy);
-	if (request->ProtocolProfile) {
-		t = xmlURIEscapeStr(request->ProtocolProfile, NULL);
-		g_string_append_printf(s, "&ProtocolProfile=%s", t);
-		xmlFree(t);
-	}
-	if (request->RelayState)
-		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
-	if (request->consent)
-		g_string_append_printf(s, "&consent=%s", request->consent);
-	g_string_append_printf(s, "&ForceAuthn=%s", request->ForceAuthn ? "true" : "false");
-	g_string_append_printf(s, "&IsPassive=%s", request->IsPassive ? "true" : "false");
-
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
+	return lasso_node_build_query_from_snippets(node);
 }
 
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
-	int i;
-	char *t;
 	
-	for (i=0; (t=query_fields[i]); i++) {
-		if (strncmp(t, "ProviderID=", 11) == 0) {
-			request->ProviderID = g_strdup(t+11);
-			continue;
-		}
-		if (strncmp(t, "AffiliationID=", 14) == 0) {
-			request->AffiliationID = g_strdup(t+14);
-			continue;
-		}
-		if (strncmp(t, "NameIDPolicy=", 13) == 0) {
-			request->NameIDPolicy = g_strdup(t+13);
-			continue;
-		}
-		if (strncmp(t, "ProtocolProfile=", 16) == 0) {
-			request->ProtocolProfile = g_strdup(t+16);
-			continue;
-		}
-		if (strncmp(t, "RelayState=", 11) == 0) {
-			request->RelayState = g_strdup(t+11);
-			continue;
-		}
-		if (strncmp(t, "consent=", 8) == 0) {
-			request->consent =g_strdup(t+8);
-			continue;
-		}
-		if (strncmp(t, "ForceAuthn=", 11) == 0) {
-			request->ForceAuthn = (strcmp(t+11, "true") == 0);
-			continue;
-		}
-		if (strncmp(t, "IsPassive=", 10) == 0) {
-			request->IsPassive = (strcmp(t+10, "true") == 0);
-			continue;
-		}
-	}
+	/* XXX needs code for Scoping, IDPList, IDPEntries... */
+	lasso_node_init_from_query_fields(node, query_fields);
 
 	if (request->ProviderID == NULL)
 		return FALSE;
 	
-	return parent_class->init_from_query(node, query_fields);
+	return TRUE;
 }
 
 
@@ -227,6 +183,7 @@ class_init(LassoLibAuthnRequestClass *klass)
 	lasso_node_class_set_nodename(nclass, "AuthnRequest");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_node_class_add_query_snippets(nclass, query_snippets);
 }
 
 GType

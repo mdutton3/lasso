@@ -42,7 +42,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "IDPEntry", SNIPPET_NODE,
+	{ "IDPEntry", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoLibIDPEntries, IDPEntry) },
 	{ NULL, 0, 0}
 };

@@ -72,7 +72,7 @@ void lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *sni
 void lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnippet *snippets);
 
 gchar* lasso_node_build_query_from_snippets(LassoNode *node);
-void lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
+gboolean lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
 
 #ifdef __cplusplus
 }

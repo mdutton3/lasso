@@ -73,21 +73,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gchar*
-build_query(LassoNode *node)
-{
-	char *str;
-
-	str = g_strdup_printf("ResponseID=%s&MajorVersion=%d&MinorVersion=%d&IssueInstant=%s",
-			LASSO_SAMLP_RESPONSE_ABSTRACT(node)->ResponseID,
-			LASSO_SAMLP_RESPONSE_ABSTRACT(node)->MajorVersion,
-			LASSO_SAMLP_RESPONSE_ABSTRACT(node)->MinorVersion,
-			LASSO_SAMLP_RESPONSE_ABSTRACT(node)->IssueInstant);
-	/* XXX: & Recipient & InResponseTo*/
-	return str;
-}
-
-
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
@@ -133,47 +118,6 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 } 
 
-static gboolean
-init_from_query(LassoNode *node, char **query_fields)
-{
-	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
-	int i;
-	char *t;
-
-	for (i=0; (t=query_fields[i]); i++) {
-		if (strncmp(t, "ResponseID=", 10) == 0) {
-			response->ResponseID = g_strdup(t+10);
-			continue;
-		}
-		if (strncmp(t, "MajorVersion=", 13) == 0) {
-			response->MajorVersion = atoi(t+13);
-			continue;
-		}
-		if (strncmp(t, "MinorVersion=", 13) == 0) {
-			response->MinorVersion = atoi(t+13);
-			continue;
-		}
-		if (strncmp(t, "IssueInstant=", 13) == 0) {
-			response->IssueInstant = g_strdup(t+13);
-			continue;
-		}
-		if (strncmp(t, "Recipient=", 9) == 0) {
-			response->Recipient = g_strdup(t+9);
-			continue;
-		}
-		if (strncmp(t, "InResponseTo=", 13) == 0) {
-			response->InResponseTo = g_strdup(t+13);
-			continue;
-		}
-	}
-
-	if (response->ResponseID == NULL || response->IssueInstant == NULL ||
-			response->MajorVersion == 0)
-		return FALSE;
-	
-	return TRUE;
-}
-
 static char*
 get_sign_attr_name()
 {
@@ -205,8 +149,6 @@ class_init(LassoSamlpResponseAbstractClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->get_xmlNode = get_xmlNode;
-	nclass->build_query = build_query;
-	nclass->init_from_query = init_from_query;
 	nclass->get_sign_attr_name = get_sign_attr_name;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ResponseAbstract");

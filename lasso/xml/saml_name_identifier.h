@@ -66,9 +66,6 @@ LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new(void);
 
 LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new_from_xmlNode(xmlNode*);
 
-LASSO_EXPORT char* lasso_saml_name_identifier_build_query(
-		LassoSamlNameIdentifier *identifier, char *prefix, char *prefix_content);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

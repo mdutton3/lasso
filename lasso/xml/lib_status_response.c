@@ -66,69 +66,37 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static struct QuerySnippet query_snippets[] = {
+	{ "ResponseID", NULL },
+	{ "MajorVersion", NULL },
+	{ "MinorVersion", NULL },
+	{ "IssueInstant", NULL },
+	{ "Recipient", NULL },
+	{ "ProviderID", NULL },
+	{ "Status", "Value" },
+	{ "RelayState", NULL },
+	{ NULL, NULL }
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
 build_query(LassoNode *node)
 {
-	char *str, *t;
-	GString *s;
-	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
-
-	str = parent_class->build_query(node);
-	s = g_string_new(str);
-	g_free(str);
-
-	if (response->ProviderID) {
-		t = xmlURIEscapeStr(response->ProviderID, NULL);
-		g_string_append_printf(s, "&ProviderID=%s", t);
-		xmlFree(t);
-	}
-	if (response->RelayState) {
-		t = xmlURIEscapeStr(response->RelayState, NULL);
-		g_string_append_printf(s, "&RelayState=%s", t);
-		xmlFree(t);
-	}
-	if (response->Status) {
-		t = xmlURIEscapeStr(response->Status->StatusCode->Value, NULL);
-		g_string_append_printf(s, "&Value=%s", t);
-		xmlFree(t);
-	}
-
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
+	return lasso_node_build_query_from_snippets(node);
 }
 
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
-	int i;
-	char *t;
 
-	for (i=0; (t=query_fields[i]); i++) {
-		if (g_str_has_prefix(t, "ProviderID=")) {
-			response->ProviderID = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "RelayState=")) {
-			response->RelayState = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "Value=")) {
-			response->Status = lasso_samlp_status_new();
-			response->Status->StatusCode = lasso_samlp_status_code_new();
-			response->Status->StatusCode->Value = g_strdup(t+6);
-			continue;
-		}
-	}
-
+	response->Status = lasso_samlp_status_new();
+	lasso_node_init_from_query_fields(node, query_fields);
 	if (response->ProviderID == NULL || response->Status == NULL)
 		return FALSE;
 	
-	return parent_class->init_from_query(node, query_fields);
+	return TRUE;
 }
 
 
@@ -157,6 +125,7 @@ class_init(LassoLibStatusResponseClass *klass)
 	lasso_node_class_set_nodename(nclass, "StatusResponse");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_node_class_add_query_snippets(nclass, query_snippets);
 }
 
 GType

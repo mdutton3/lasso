@@ -95,7 +95,7 @@ static struct QuerySnippet query_snippets[] = {
 	{ "OldProvidedNameIdentifier/Format", "OldNameFormat"},
 	{ "OldProvidedNameIdentifier/content", "OldProvidedNameIdentifier"},
 	{ "RelayState", NULL },
-	{ NULL }
+	{ NULL, NULL }
 };
 
 static LassoNodeClass *parent_class = NULL;

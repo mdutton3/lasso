@@ -70,81 +70,39 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static struct QuerySnippet query_snippets[] = {
+	{ "RequestID", NULL },
+	{ "MajorVersion", NULL },
+	{ "MinorVersion", NULL },
+	{ "IssueInstant", NULL },
+	{ "ProviderID", NULL },
+	{ "NameIdentifier/NameQualifier", "NameQualifier" },
+	{ "NameIdentifier/Format", "NameFormat" },
+	{ "NameIdentifier/content", "NameIdentifier" },
+	{ "SessionIndex", NULL },
+	{ "RelayState", NULL },
+	{ "consent", NULL },
+	{ NULL, NULL }
+};
+
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
 build_query(LassoNode *node)
 {
-	char *str, *t;
-	GString *s;
-	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
-
-	str = parent_class->build_query(node);
-	s = g_string_new(str);
-	g_free(str);
-
-	if (request->ProviderID) {
-		t = xmlURIEscapeStr(request->ProviderID, NULL);
-		g_string_append_printf(s, "&ProviderID=%s", t);
-		xmlFree(t);
-	}
-	if (request->NameIdentifier) {
-		t = lasso_node_build_query(LASSO_NODE(request->NameIdentifier));
-		g_string_append_printf(s, "&%s", t);
-		g_free(t);
-	}
-	if (request->SessionIndex)
-		g_string_append_printf(s, "&SessionIndex=%s", request->SessionIndex);
-	if (request->RelayState)
-		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
-	if (request->consent)
-		g_string_append_printf(s, "&consent=%s", request->consent);
-
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
+	return lasso_node_build_query_from_snippets(node);
 }
 
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
-	int i;
-	char *t;
 
 	request->NameIdentifier = lasso_saml_name_identifier_new();
+
+	lasso_node_init_from_query_fields(node, query_fields);
 	
-	for (i=0; (t=query_fields[i]); i++) {
-		if (g_str_has_prefix(t, "ProviderID=")) {
-			request->ProviderID = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "SessionIndex=")) {
-			request->SessionIndex = g_strdup(t+16);
-			continue;
-		}
-		if (g_str_has_prefix(t, "RelayState=")) {
-			request->RelayState = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "consent=")) {
-			request->consent = g_strdup(t+8);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameIdentifier=")) {
-			request->NameIdentifier->content = g_strdup(t+15);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameFormat=")) {
-			request->NameIdentifier->Format = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "NameQualifier=")) {
-			request->NameIdentifier->NameQualifier = g_strdup(t+14);
-			continue;
-		}
-	}
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier->content == NULL ||
 			request->NameIdentifier->Format == NULL ||
@@ -154,7 +112,7 @@ init_from_query(LassoNode *node, char **query_fields)
 		return FALSE;
 	}
 	
-	return parent_class->init_from_query(node, query_fields);
+	return TRUE;
 }
 
 /*****************************************************************************/
@@ -183,6 +141,7 @@ class_init(LassoLibLogoutRequestClass *klass)
 	lasso_node_class_set_nodename(nclass, "LogoutRequest");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_node_class_add_query_snippets(nclass, query_snippets);
 }
 
 GType

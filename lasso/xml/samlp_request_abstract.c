@@ -67,20 +67,6 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
-static gchar*
-build_query(LassoNode *node)
-{
-	char *str;
-
-	str = g_strdup_printf("RequestID=%s&MajorVersion=%d&MinorVersion=%d&IssueInstant=%s",
-			LASSO_SAMLP_REQUEST_ABSTRACT(node)->RequestID,
-			LASSO_SAMLP_REQUEST_ABSTRACT(node)->MajorVersion,
-			LASSO_SAMLP_REQUEST_ABSTRACT(node)->MinorVersion,
-			LASSO_SAMLP_REQUEST_ABSTRACT(node)->IssueInstant);
-	return str;
-}
-
-
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
@@ -125,39 +111,6 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 } 
 
-static gboolean
-init_from_query(LassoNode *node, char **query_fields)
-{
-	LassoSamlpRequestAbstract *request = LASSO_SAMLP_REQUEST_ABSTRACT(node);
-	int i;
-	char *t;
-
-	for (i=0; (t=query_fields[i]); i++) {
-		if (strncmp(t, "RequestID=", 10) == 0) {
-			request->RequestID = g_strdup(t+10);
-			continue;
-		}
-		if (strncmp(t, "MajorVersion=", 13) == 0) {
-			request->MajorVersion = atoi(t+13);
-			continue;
-		}
-		if (strncmp(t, "MinorVersion=", 13) == 0) {
-			request->MinorVersion = atoi(t+13);
-			continue;
-		}
-		if (strncmp(t, "IssueInstant=", 13) == 0) {
-			request->IssueInstant = g_strdup(t+13);
-			continue;
-		}
-	}
-
-	if (request->RequestID == NULL || request->IssueInstant == NULL ||
-			request->MajorVersion == 0)
-		return FALSE;
-	
-	return TRUE;
-}
-
 static char*
 get_sign_attr_name()
 {
@@ -186,9 +139,7 @@ class_init(LassoSamlpRequestAbstractClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nclass->build_query = build_query;
 	nclass->get_xmlNode = get_xmlNode;
-	nclass->init_from_query = init_from_query;
 	nclass->get_sign_attr_name = get_sign_attr_name;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "RequestAbstract");

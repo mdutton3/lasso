@@ -41,41 +41,6 @@
  */
 
 /*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
-
-gchar*
-lasso_saml_name_identifier_build_query(LassoSamlNameIdentifier *identifier,
-		char *prefix, char *prefix_content)
-{
-	GString *s;
-	char *str;
-	xmlChar *t;
-
-	s = g_string_new("");
-	if (identifier->NameQualifier) {
-		t = xmlURIEscapeStr(identifier->NameQualifier, NULL);
-		g_string_append_printf(s, "&%sNameQualifier=%s", prefix, t);
-		xmlFree(t);
-	}
-	if (identifier->Format) {
-		t = xmlURIEscapeStr(identifier->Format, NULL);
-		g_string_append_printf(s, "&%sNameFormat=%s", prefix, t);
-		xmlFree(t);
-	}
-	if (identifier->content) {
-		t = xmlURIEscapeStr(identifier->content, NULL);
-		g_string_append_printf(s, "&%sNameIdentifier=%s", prefix_content, t);
-		xmlFree(t);
-	}
-
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
-}
-
-/*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
@@ -86,12 +51,6 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "content", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoSamlNameIdentifier, content) },
 	{ NULL, 0, 0 }
 };
-
-static gchar*
-build_query(LassoNode *node)
-{
-	return lasso_saml_name_identifier_build_query(LASSO_SAML_NAME_IDENTIFIER(node), "", "");
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -110,7 +69,6 @@ class_init(LassoSamlNameIdentifierClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	LASSO_NODE_CLASS(klass)->build_query = build_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "NameIdentifier");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
