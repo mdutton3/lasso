@@ -477,7 +477,7 @@ lasso_node_rename_prop(LassoNode     *node,
  * @public_key_file: a public key (or a certificate) file
  * @ca_cert_chain_file: a CA certificate chain file
  * 
- * Verifys the node signature of @node.
+ * Verifies the node signature of @node.
  * 
  * Return value: 0 if signature is valid
  * a positive value if signature was not found or is invalid

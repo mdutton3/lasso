@@ -458,7 +458,7 @@ lasso_query_to_dict(const gchar *query)
  * @sender_public_key_file: the sender public key
  * @recipient_private_key_file: the recipient private key
  * 
- * Verifys the query signature.
+ * Verifies the query signature.
  * 
  * Return value: 0 if signature is valid
  * a positive value if signature was not found or is invalid
