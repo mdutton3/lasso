@@ -179,7 +179,7 @@ class Node:
         #self._o = lassomod.(size)
         if self._o is None: raise Error('lasso_node_new() failed')
     def dump(self, encoding, format):
-        lassomod.node_dump(self, encoding, format)
+        return lassomod.node_dump(self, encoding, format)
     def destroy(self):
         lassomod.node_unref(self)
     def get_attr_value(self, name):

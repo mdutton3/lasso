@@ -46,6 +46,7 @@ PyObject *node_dump(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   xmlChar *encoding;
   int format;
+  xmlChar *ret;
 
   if (CheckArgs(args, "OSI:node_dump")) {
     if(!PyArg_ParseTuple(args, (char *) "Osi:node_dump",
@@ -54,10 +55,9 @@ PyObject *node_dump(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  lasso_node_dump(LassoNode_get(node_obj), encoding, format);
+  ret = lasso_node_dump(LassoNode_get(node_obj), encoding, format);
 
-  Py_INCREF(Py_None);
-  return (Py_None);
+  return (xmlCharPtr_wrap(ret));
 }
 
 PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
