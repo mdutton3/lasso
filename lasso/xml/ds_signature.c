@@ -70,11 +70,6 @@ void lasso_ds_signature_sign(LassoDsSignature *node,
 static void
 lasso_ds_signature_instance_init(LassoDsSignature *instance)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-
-  //class->new_ns(node, "http: //www.w3.org/2000/09/xmldsig#", "ds");
-  //class->set_name(node, "Signature");
 }
 
 static void
