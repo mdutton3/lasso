@@ -186,6 +186,8 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
   LassoProfileContext *profileContext;
   LassoIdentity *identity;
   LassoNode *nameIdentifier, *assertion;
+  LassoNode *statusCode;
+  LassoNodeClass *statusCode_class;
   xmlChar *remote_providerID;
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
@@ -216,8 +218,12 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
 						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
 
+  statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
+  statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
+
   nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
   if(nameIdentifier==NULL){
+    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-2);
   }
 
@@ -226,16 +232,19 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
+    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-3);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
+    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-4);
   }
 
   /* verify authentication (if ok, delete assertion) */
   assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
   if(assertion==NULL){
+    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
     return(-5);
   }
 
