@@ -150,7 +150,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
     /* temporary vars */
     gchar *url, *query;
-    const gchar *separator = "?";
 
     /* build and optionaly sign the logout request QUERY message */
     url = lasso_provider_get_singleLogoutServiceURL(provider, remote_provider_type, NULL);
