@@ -56,20 +56,20 @@ PyObject *federation_termination_getattr(PyObject *self, PyObject *args) {
   federation_termination = LassoFederationTermination_get(federation_termination_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[sssss]", "user", "msg_url", "msg_body",
+    return Py_BuildValue("[sssss]", "identity", "msg_url", "msg_body",
 			 "msg_relayState",
 			 "nameIdentifier");
 
-  if (!strcmp(attr, "user"))
-    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->user));
+  if (!strcmp(attr, "identity"))
+    return (LassoIdentity_wrap(LASSO_PROFILE(federation_termination)->identity));
   if (!strcmp(attr, "msg_url"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_url));
+    return (charPtrConst_wrap(LASSO_PROFILE(federation_termination)->msg_url));
   if (!strcmp(attr, "msg_body"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_body));
+    return (charPtrConst_wrap(LASSO_PROFILE(federation_termination)->msg_body));
   if (!strcmp(attr, "msg_relayState"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_relayState));
+    return (charPtrConst_wrap(LASSO_PROFILE(federation_termination)->msg_relayState));
   if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->nameIdentifier));
+    return (charPtrConst_wrap(LASSO_PROFILE(federation_termination)->nameIdentifier));
 
   Py_INCREF(Py_None);
   return (Py_None);

@@ -29,7 +29,7 @@
 #include <lasso/environs/logout.h>
 
 #include "py_server.h"
-#include "py_user.h"
+#include "py_identity.h"
 
 typedef struct {
     PyObject_HEAD

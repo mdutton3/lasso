@@ -56,31 +56,31 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssssssssssss]", "user", "request", "response",
+    return Py_BuildValue("[ssssssssssss]", "identity", "session", "request", "response",
 			 "request_type", "response_type", "nameIdentifier",
 			 "provider_type",
 			 "msg_url", "msg_body", "msg_relayState", "response_dump",
 			 "protocolProfile", "assertionArtifact");
-  if (!strcmp(attr, "user"))
-    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(login)->user));
+  if (!strcmp(attr, "identity"))
+    return (LassoIdentity_wrap(LASSO_PROFILE(login)->identity));
   if (!strcmp(attr, "request"))
-    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
+    return (LassoNode_wrap(LASSO_PROFILE(login)->request));
   if (!strcmp(attr, "response"))
-    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->response));
+    return (LassoNode_wrap(LASSO_PROFILE(login)->response));
   if (!strcmp(attr, "request_type"))
-    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
+    return (int_wrap(LASSO_PROFILE(login)->request_type));
   if (!strcmp(attr, "response_type"))
-    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->response_type));
+    return (int_wrap(LASSO_PROFILE(login)->response_type));
   if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->nameIdentifier));
+    return (charPtrConst_wrap(LASSO_PROFILE(login)->nameIdentifier));
   if (!strcmp(attr, "provider_type"))
-    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->provider_type));
+    return (int_wrap(LASSO_PROFILE(login)->provider_type));
   if (!strcmp(attr, "msg_url"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
+    return (charPtrConst_wrap(LASSO_PROFILE(login)->msg_url));
   if (!strcmp(attr, "msg_body"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_body));
+    return (charPtrConst_wrap(LASSO_PROFILE(login)->msg_body));
   if (!strcmp(attr, "msg_relayState"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_relayState));
+    return (charPtrConst_wrap(LASSO_PROFILE(login)->msg_relayState));
   if (!strcmp(attr, "response_dump"))
     return (charPtrConst_wrap(login->response_dump));
   if (!strcmp(attr, "protocolProfile"))
@@ -110,24 +110,24 @@ PyObject *login_new(PyObject *self, PyObject *args) {
 }
 
 PyObject *login_new_from_dump(PyObject *self, PyObject *args) {
-  PyObject *server_obj, *user_obj;
+  PyObject *server_obj, *identity_obj;
   LassoLogin *login;
   LassoServer *server;
-  LassoUser   *user = NULL;
+  LassoIdentity *identity = NULL;
   gchar       *dump;
 
   if (CheckArgs(args, "OoS:login_new_from_dump")) {
     if(!PyArg_ParseTuple(args, (char *) "OOs:login_new_from_dump", &server_obj,
-			 &user_obj, &dump))
+			 &identity_obj, &dump))
       return NULL;
   }
   else return NULL;
 
   server = LassoServer_get(server_obj);
-  if (user_obj != Py_None) {
-    user = LassoUser_get(user_obj);
+  if (identity_obj != Py_None) {
+    identity = LassoIdentity_get(identity_obj);
   }
-  login = lasso_login_new_from_dump(server, user, dump);
+  login = lasso_login_new_from_dump(server, identity, dump);
 
   return (LassoLogin_wrap(login));
 }
@@ -213,20 +213,18 @@ PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
   return (int_wrap(ret));
 }
 
-PyObject *login_create_user(PyObject *self, PyObject *args) {
+PyObject *login_accespt_sso(PyObject *self, PyObject *args) {
   PyObject *login_obj;
-  gchar *user_dump = NULL;
   gint ret;
 
-  if (CheckArgs(args, "Os:login_create_user")) {
-    if(!PyArg_ParseTuple(args, (char *) "Oz:login_create_user",
-			 &login_obj, &user_dump))
+  if (CheckArgs(args, "O:login_accespt_sso")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_accespt_sso",
+			 &login_obj))
       return NULL;
   }
   else return NULL;
 
-  ret = lasso_login_create_user(LassoLogin_get(login_obj),
-				user_dump);
+  ret = lasso_login_accept_sso(LassoLogin_get(login_obj));
 
   return (int_wrap(ret));
 }

@@ -55,12 +55,12 @@ PyObject *lecp_getattr(PyObject *self, PyObject *args) {
   lecp = LassoLecp_get(lecp_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
+    return Py_BuildValue("[ssss]", "identity", "msg_url", "msg_body",
 			 "msg_relayState");
   if (!strcmp(attr, "msg_url"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(lecp)->msg_url));
+    return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_url));
   if (!strcmp(attr, "msg_body"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(lecp)->msg_body));
+    return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_body));
 
   Py_INCREF(Py_None);
   return (Py_None);
