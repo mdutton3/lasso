@@ -469,19 +469,28 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
   profile->msg_url  = NULL;
   profile->msg_body = NULL;
   if (profile->http_request_method == lassoHttpMethodRedirect) {
+    /* temporary vars */
+    gchar *url, *query;
+
     provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
     if (provider == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
       ret = -1;
       goto done;
     }
-    profile->msg_url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
-										profile->provider_type,
-										NULL);
-    if (profile->msg_url) {
-      message(G_LOG_LEVEL_CRITICAL, "Federation termination service return url not found\n");
-      ret = -1;
-      goto done;
+
+    /* build the QUERY and the url */
+    url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
+								   profile->provider_type,
+								   NULL);
+
+    if (profile->msg_relayState != NULL) {
+      profile->msg_url = g_new(gchar, strlen(url)+strlen("RelayState=")+strlen(profile->msg_relayState)+1+1);
+      g_sprintf(profile->msg_url, "%s?RelayState=%s", url, profile->msg_relayState);
+      xmlFree(url);
+    }
+    else {
+      profile->msg_url = url;
     }
   }
 
