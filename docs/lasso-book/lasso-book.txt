@@ -1,32 +1,30 @@
-==============
+##############
 The Lasso Book
-==============
+##############
 
 
-~~~~~~~~~~~~~~~~~
+=================
 Table of Contents
-~~~~~~~~~~~~~~~~~
+=================
 
 
 .. contents:: Lasso Book
 
 
-~~~~~~~~~~~~~~~~~~~
+===================
 General Information
-~~~~~~~~~~~~~~~~~~~
+===================
 
 
------------------
 About This Manual
------------------
+=================
 
 
 FIXME
 
 
------------------------
 Lasso Book Availability
------------------------
+=======================
 
 
 A copy of this book is distributed with each source code release of Lasso. For
@@ -40,129 +38,76 @@ http://lasso.entrouvert.org/download. This package is primary for those people
 wanting to have the book available for offline reference and for printing.
 
 
-~~~~~~~~~~~~~~
+==============
 Lasso Overview
-~~~~~~~~~~~~~~
+==============
 
 
 FIXME
 
-
-~~~~~~~~~~~~~~~
-Getting Started
-~~~~~~~~~~~~~~~
-
-
-----------------
-Installing Lasso
-----------------
-
-
-Configuring and Building
-========================
-
-Lasso uses the GNU automake and autoconf to handle system dependency checking.
-It is developed and built locally on GNU/Linux (Debian) both on x86 and PowerPC
-processors, but is also compiled via Debian infrastructure on several other
-architectures.
 
 .. include:: ../../INSTALL
 
 
---------------------
-Hello World in Lasso
---------------------
-
-
-.. include:: ../../examples/sso.c
-   :literal:
-
-
----------------------
-Compiling Hello World
----------------------
+==============================
+Servers, Identities & Sessions
+==============================
 
 
 FIXME
 
 
-------------------------------
-Servers, identities & sessions
-------------------------------
-
-
-FIXME
-
-
-----------------------------
-Stepping Through Hello World
-----------------------------
-
-
-FIXME
-
-
-~~~~~~~~~
-Moving On
-~~~~~~~~~
-
-
-----------
-Data Types
-----------
-
-
-FIXME
-
-
-~~~~~~~~~~~~~~~~~
+=================
 Profiles Overview
-~~~~~~~~~~~~~~~~~
+=================
 
 
------
+FIXME
+
+
+=====
 Login
------
+=====
 
 
 FIXME
 
 
-------
+======
 Logout
-------
+======
 
 
 FIXME
 
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===================================
 Tips For Writing Lasso Applications
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===================================
 
 
 FIXME
 
 
-~~~~~~~~~~~~~~~
+===============
 Troubleshooting
-~~~~~~~~~~~~~~~
+===============
 
 
 FIXME
 
 
-~~~~~~~~~~~~
+============
 Contributing
-~~~~~~~~~~~~
+============
 
 
 FIXME
 
 
-~~~~~~~
+=======
 Credits
-~~~~~~~
+=======
 
 
 We would like to thank the following for their contributions to this text.
@@ -174,9 +119,9 @@ And to all of you who commented on and helped refine this document.
 Thanks.
 
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================================
 Tutorial Copyright and Permissions Notice
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================================
 
 
 FIXME

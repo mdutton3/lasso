@@ -1,7 +1,17 @@
+================
+Installing Lasso
+================
+
+Configuring and Building
+========================
+
+Lasso uses the GNU automake and autoconf to handle system dependency
+checking.  It is developed and built locally on GNU/Linux (Debian) both
+on x86 and PowerPC processors, but is also compiled via Debian
+infrastructure on several other architectures.
+
 Basic Installation
 ==================
-
-These are generic installation instructions.
 
 The 'configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
