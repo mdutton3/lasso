@@ -57,6 +57,10 @@ struct _LassoSamlpResponseAbstract {
 	char *IssueInstant;
 	/* <attribute name="Recipient" type="anyURI" use="optional"/> */
 	char *Recipient;
+
+	/* ds:Signature stuffs */
+	lassoSignatureType sign_type;
+	lassoSignatureMethod sign_method;
 };
 
 struct _LassoSamlpResponseAbstractClass {

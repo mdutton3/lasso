@@ -112,12 +112,8 @@ lasso_lib_logout_response_new_full(char *providerID, const char *statusCodeValue
 			LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 			LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID,
 			request->ProviderID);
-#if 0 /* XXX: signature to do */
-	/* set the signature template */
-	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-		lasso_samlp_response_abstract_set_signature_tmpl(response, sign_type, sign_method);
-	}
-#endif
+	LASSO_SAMLP_RESPONSE_ABSTRACT(response)->sign_type = sign_type;
+	LASSO_SAMLP_RESPONSE_ABSTRACT(response)->sign_method = sign_method;
 
 	response->ProviderID = g_strdup(providerID);
 	response->RelayState = g_strdup(request->RelayState);

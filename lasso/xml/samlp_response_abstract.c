@@ -23,7 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "errors.h"
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
 
 #include <lasso/xml/samlp_response_abstract.h>
 
@@ -50,55 +51,6 @@ From oasis-sstc-saml-schema-assertion-1.0.xsd:
   <restriction base="string"/>
 </simpleType>
 */
-
-/*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
-
-#if 0
-gint
-lasso_samlp_response_abstract_set_signature(LassoSamlpResponseAbstract *node,
-		gint                        sign_method,
-		const xmlChar              *private_key_file,
-		const xmlChar              *certificate_file)
-{
-	return 0;
-}
-
-gint
-lasso_samlp_response_abstract_set_signature_tmpl(LassoSamlpResponseAbstract *node,
-		lassoSignatureType sign_type,
-		lassoSignatureMethod sign_method)
-{
-	LassoNodeClass *class;
-
-	return 0; /* FIXME: signature disabled for now */
-
-	g_return_val_if_fail(LASSO_IS_SAMLP_RESPONSE_ABSTRACT(node),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	class = LASSO_NODE_GET_CLASS(node);
-
-	return class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method, NULL);
-}
-
-gint
-lasso_samlp_response_abstract_sign_signature_tmpl(LassoSamlpResponseAbstract *node,
-		const xmlChar *private_key_file, const xmlChar *certificate_file)
-{
-	LassoNodeClass *class;
-
-	return 0; /* FIXME: signature disabled for now */
-
-	g_return_val_if_fail(LASSO_IS_SAMLP_RESPONSE_ABSTRACT(node),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	class = LASSO_NODE_GET_CLASS(node);
-
-	return class->sign_signature_tmpl(LASSO_NODE (node), private_key_file,
-			certificate_file);
-}
-#endif
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -140,6 +92,38 @@ get_xmlNode(LassoNode *node)
 		xmlSetProp(xmlnode, "InResponseTo", t);
 	if (response->Recipient)
 		xmlSetProp(xmlnode, "Recipient", t);
+
+	/* signature stuff */
+	if (response->sign_type != LASSO_SIGNATURE_TYPE_NONE) {
+		xmlDoc *doc;
+		xmlNode *signature = NULL, *reference, *key_info;
+		char *uri;
+
+		if (response->sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+			signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
+					xmlSecTransformRsaSha1Id, NULL);
+		}
+		if (response->sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+			signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					xmlSecTransformDsaSha1Id, NULL);
+		}
+		/* get out if signature == NULL ? */
+		xmlAddChild(xmlnode, signature);
+
+		uri = g_strdup_printf("#%s", response->ResponseID);
+		reference = xmlSecTmplSignatureAddReference(signature,
+				xmlSecTransformSha1Id, NULL, uri, NULL);
+		g_free(uri);
+
+		/* add enveloped transform */
+		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+		/* add <dsig:KeyInfo/> */
+		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+		if (response->sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
+			xmlSecTmplKeyInfoAddX509Data(key_info);
+		}
+	}
+
 
 	return xmlnode;
 } 
@@ -204,6 +188,13 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	}
 }
 
+static char*
+get_sign_attr_name()
+{
+	return "ResponseID";
+}
+
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -218,6 +209,7 @@ instance_init(LassoSamlpResponseAbstract *node)
 	node->IssueInstant = NULL;
 	node->InResponseTo = NULL;
 	node->Recipient = NULL;
+	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 }
 
 static void
@@ -228,6 +220,7 @@ class_init(LassoSamlpResponseAbstractClass *klass)
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 	LASSO_NODE_CLASS(klass)->build_query = build_query;
   	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
+	LASSO_NODE_CLASS(klass)->get_sign_attr_name = get_sign_attr_name;
 }
 
 GType

@@ -270,16 +270,8 @@ lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nam
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	request->IssueInstant = lasso_get_current_time();
-
-	/* set the signature template */
-	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-#if 0 /* XXX: signatures are done differently */
-		lasso_samlp_request_abstract_set_signature_tmpl(
-				request, sign_type, sign_method, NULL);
-#endif
-	}
-
-	/* ProviderID */
+	request->sign_type = sign_type;
+	request->sign_method = sign_method;
 	LASSO_LIB_LOGOUT_REQUEST(request)->ProviderID = g_strdup(providerID);
 	LASSO_LIB_LOGOUT_REQUEST(request)->NameIdentifier = g_object_ref(nameIdentifier);
 

@@ -86,16 +86,10 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
 	/* build the logout request message */
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
-#if 0 /* XXX: signatures are done differently */
-		/* sign the request message */
-		lasso_samlp_request_abstract_sign_signature_tmpl(
-				LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
-				profile->server->private_key,
-				profile->server->certificate);
-#endif
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
+		profile->msg_body = lasso_node_export_to_soap(profile->request,
+				profile->server->private_key, profile->server->certificate);
 	}
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the logout request QUERY message */
@@ -176,18 +170,9 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   /* build logout response message */
   switch (profile->http_request_method) {
   case LASSO_HTTP_METHOD_SOAP:
-    /* optionaly sign the response message */
-    if (profile->server->private_key) {
-#if 0 /* XXX: signature different now */
-      lasso_samlp_response_abstract_set_signature(LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response),
-						  profile->server->signature_method,
-						  profile->server->private_key,
-						  profile->server->certificate);
-#endif
-    }
-
     profile->msg_url = NULL;
-    profile->msg_body = lasso_node_export_to_soap(profile->response, NULL, NULL);
+    profile->msg_body = lasso_node_export_to_soap(profile->response,
+		    profile->server->private_key, profile->server->certificate);
     break;
   case LASSO_HTTP_METHOD_REDIRECT:
     url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");

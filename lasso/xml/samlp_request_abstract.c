@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "errors.h"
-
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 
@@ -174,7 +172,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 }
 
 
-char*
+static char*
 get_sign_attr_name()
 {
 	return "RequestID";
