@@ -68,7 +68,8 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
-		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
+		profile->msg_url = lasso_provider_get_metadata_one(
+				remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
 		return 0;
@@ -247,7 +248,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 			name_registration->oldNameIdentifier = g_strdup(profile->nameIdentifier);
 		} else {
 			profile->nameIdentifier = g_strdup(idpNameIdentifier->content);
-			name_registration->oldNameIdentifier = g_strdup(oldNameIdentifier->content);
+			name_registration->oldNameIdentifier = g_strdup(
+					oldNameIdentifier->content);
 		}
 	}
 

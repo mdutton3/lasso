@@ -167,7 +167,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
 			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
 		message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy: %s", nameIDPolicy);
-		/* we consider NameIDPolicy as empty (none value) if its value is unknown/invalid */
+		/* NameIDPolicy is considered empty (None value) if its value is unknown/invalid */
 		return TRUE;
 	}
 
@@ -1079,7 +1079,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 {
 	LassoProvider *remote_provider;
 	gchar *protocolProfile;
-	gchar *md_authnRequestsSigned;
+	gchar *authnRequestSigned;
 	gboolean must_verify_signature = FALSE;
 	gint ret = 0;
 	LassoLibAuthnRequest *request;
@@ -1152,11 +1152,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			LASSO_PROFILE(login)->remote_providerID);
 		if (remote_provider != NULL) {
 			/* Is authnRequest signed ? */
-			md_authnRequestsSigned = lasso_provider_get_metadata_one(
+			authnRequestSigned = lasso_provider_get_metadata_one(
 					remote_provider, "AuthnRequestsSigned");
-			if (md_authnRequestsSigned != NULL) {
-				must_verify_signature = strcmp(md_authnRequestsSigned, "true") == 0;
-				g_free(md_authnRequestsSigned);
+			if (authnRequestSigned != NULL) {
+				must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
+				g_free(authnRequestSigned);
 			} else {
 				/* AuthnRequestsSigned element is required */
 				message(G_LOG_LEVEL_CRITICAL, "XXX");

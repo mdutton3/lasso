@@ -341,7 +341,8 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 
 	/* verify signature status */
 	if (profile->signature_status != 0) {
-		lasso_profile_set_response_status(profile, LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 	}
 
 	/* Verify identity attribute of mapping object */

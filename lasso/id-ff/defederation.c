@@ -80,7 +80,8 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	/* build the federation termination notification message (SOAP or HTTP-Redirect) */
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		/* build the logout request message */
-		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
+		profile->msg_url = lasso_provider_get_metadata_one(
+				remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
 	}

@@ -43,7 +43,8 @@ extern "C" {
 #define LASSO_IS_DISCO_REMOVE_ENTRY_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_REMOVE_ENTRY))
 #define LASSO_DISCO_REMOVE_ENTRY_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_REMOVE_ENTRY, LassoDiscoRemoveEntryClass))
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_REMOVE_ENTRY, \
+				    LassoDiscoRemoveEntryClass))
 
 typedef struct _LassoDiscoRemoveEntry LassoDiscoRemoveEntry;
 typedef struct _LassoDiscoRemoveEntryClass LassoDiscoRemoveEntryClass;
