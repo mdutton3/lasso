@@ -83,7 +83,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNs *ns;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	ns = xmlNewNs(NULL, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;
