@@ -38,7 +38,7 @@
 #include <lasso/xml/saml_name_identifier.h>
 
 
-static struct XmlSnippet* lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
 static int set_value_at_path(LassoNode *node, char *path, char *query_value);
@@ -575,7 +575,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	GList *list_ns = NULL, *list_classes = NULL, *t;
-	struct XmlSnippet *snippet_signature = NULL, *tmps;
 
 	if (class->node_data == NULL)
 		return NULL;
@@ -600,17 +599,12 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	t = g_list_last(list_classes);
 	while (t) {
 		class = t->data;
-		tmps = lasso_node_build_xmlNode_from_snippets(node, xmlnode,
+		lasso_node_build_xmlNode_from_snippets(node, xmlnode,
 				class->node_data->snippets, lasso_dump);
-		if (tmps)
-			snippet_signature = tmps;
 		t = g_list_previous(t);
 	}
 
 	xmlCleanNs(xmlnode);
-
-	if (snippet_signature)
-		lasso_node_add_signature_template(node, xmlnode, snippet_signature);
 
 	return xmlnode;
 }
@@ -1004,11 +998,11 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 	klass->node_data->ns = xmlNewNs(NULL, href, prefix);
 }
 
-static struct XmlSnippet*
+static void
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump)
 {
-	struct XmlSnippet *snippet, *snippet_signature = NULL;
+	struct XmlSnippet *snippet;
 	SnippetType type;
 	xmlNode *t;
 	xmlNs *xmlns;
@@ -1086,7 +1080,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				}
 				break;
 			case SNIPPET_SIGNATURE:
-				snippet_signature = snippet;
+				lasso_node_add_signature_template(node, xmlnode, snippet);
 				break;
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
@@ -1096,8 +1090,6 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		if (snippet->type & SNIPPET_INTEGER)
 			g_free(str);
 	}
-
-	return snippet_signature;
 }
 
 static
