@@ -41,7 +41,7 @@ extern "C" {
 #define LASSO_IDENTITY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_IDENTITY, LassoIdentityClass)) 
 
 #define LASSO_IDENTITY_NODE "LassoIdentity"
-#define LASSO_IDENTITY_REMOTE_PROVIDERID_NODE "LassoRemoteProviderID"
+#define LASSO_IDENTITY_REMOTE_PROVIDERID_NODE "RemoteProviderID"
 #define LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE "LassoLocalNameIdentifier"
 #define LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE "LassoRemoteNameIdentifier"
 
