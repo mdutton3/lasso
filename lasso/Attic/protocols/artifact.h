@@ -54,7 +54,8 @@ struct _LassoArtifactClass {
 
 LASSO_EXPORT GType      lasso_artifact_get_type (void);
 
-LASSO_EXPORT LassoNode* lasso_artifact_new            (gchar *byteCode,
+LASSO_EXPORT LassoNode* lasso_artifact_new            (gchar *samlArt,
+						       gchar *byteCode,
 						       gchar *identityProviderSuccinctID,
 						       gchar *assertionHandle,
 						       gchar *relayState);
@@ -71,6 +72,8 @@ LASSO_EXPORT gint       lasso_artifact_get_byteCode                   (LassoArti
 LASSO_EXPORT xmlChar*   lasso_artifact_get_identityProviderSuccinctID (LassoArtifact *artifact);
 
 LASSO_EXPORT xmlChar*   lasso_artifact_get_relayState                 (LassoArtifact *artifact);
+
+LASSO_EXPORT xmlChar*   lasso_artifact_get_samlArt                    (LassoArtifact *artifact);
 
 #ifdef __cplusplus
 }

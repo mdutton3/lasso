@@ -71,8 +71,8 @@ const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[]                 = "lib:Un
 /* ProtocolProfile */
 const xmlChar lassoLibProtocolProfileSSOGet[]         = "http://projectliberty.org/profiles/sso-get";
 const xmlChar lassoLibProtocolProfileSSOPost[]        = "http://projectliberty.org/profiles/sso-post";
-const xmlChar lassoLibProtocolProfileArtifact[]       = "http://projectliberty.org/profiles/brws-art";
-const xmlChar lassoLibProtocolProfilePost[]           = "http://projectliberty.org/profiles/brws-post";
+const xmlChar lassoLibProtocolProfileBrwsArt[]        = "http://projectliberty.org/profiles/brws-art";
+const xmlChar lassoLibProtocolProfileBrwsPost[]       = "http://projectliberty.org/profiles/brws-post";
 const xmlChar lassoLibProtocolProfileFedTermIdpHttp[] = "http://projectliberty.org/profiles/fedterm-idp-http";
 const xmlChar lassoLibProtocolProfileFedTermIdpSoap[] = "http://projectliberty.org/profiles/fedterm-idp-soap";
 const xmlChar lassoLibProtocolProfileFedTermSpHttp[]  = "http://projectliberty.org/profiles/fedterm-sp-http";

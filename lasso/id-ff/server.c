@@ -106,7 +106,8 @@ LassoServer *
 lasso_server_new(const gchar *metadata,
 		 const gchar *public_key,
 		 const gchar *private_key,
-		 const gchar *certificate)
+		 const gchar *certificate,
+		 guint        signature_method)
 {
   LassoServer *server;
   xmlDocPtr  doc;
@@ -117,6 +118,7 @@ lasso_server_new(const gchar *metadata,
   LASSO_PROVIDER(server)->public_key  = public_key;
   LASSO_PROVIDER(server)->certificate = certificate;
   server->private_key = private_key;
+  server->signature_method = signature_method;
 
   doc = xmlParseFile(metadata);
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);

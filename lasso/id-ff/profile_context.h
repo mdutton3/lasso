@@ -46,12 +46,10 @@ typedef struct _LassoProfileContext LassoProfileContext;
 typedef struct _LassoProfileContextClass LassoProfileContextClass;
 
 typedef enum {
-  lassoProfileContextMethodGet = 1,
-  lassoProfileContextMethodRedirect,
-  lassoProfileContextMethodPost,
-  lassoProfileContextMethodSoap,
-  lassoProfileContextMethodArtifact,
-} lassoProfileContextMethods;
+  lassoHttpMethodGet = 1,
+  lassoHttpMethodPost,
+  lassoHttpMethodRedirect,
+} lassoHttpMethods;
 
 struct _LassoProfileContext {
   GObject parent;
@@ -63,8 +61,14 @@ struct _LassoProfileContext {
   LassoNode *request;
   LassoNode *response;
 
+  gint request_method;
+  gint response_method;
+
   gchar *remote_providerID;
   
+  gchar *msg_url;
+  gchar *msg_body;
+
   /*< private >*/
 };
 
@@ -75,8 +79,7 @@ struct _LassoProfileContextClass {
 LASSO_EXPORT GType                lasso_profile_context_get_type             (void);
 
 LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                  (LassoServer *server,
-									      LassoUser   *user,
-									      gchar       *remote_providerID);
+									      LassoUser   *user);
 
 LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 									      gchar               *providerID);

@@ -308,6 +308,8 @@ lasso_authn_response_new(char *providerID,
   lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response),
 					  providerID);
   
+  /* TODO RelayState */
+
   /* Status Code */
   //lasso_authn_response_set_status(response, lassoSamlStatusCodeSuccess);
   

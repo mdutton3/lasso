@@ -77,7 +77,6 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
 enum {
   LASSO_PROFILE_CONTEXT_SERVER = 1,
   LASSO_PROFILE_CONTEXT_USER,
-  LASSO_PROFILE_CONTEXT_REMOTE_PROVIDERID,
 };
 
 static void
@@ -90,7 +89,11 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->user   = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
+  
   ctx->remote_providerID = NULL;
+  
+  ctx->msg_url  = NULL;
+  ctx->msg_body = NULL;
 }
 
 static void
@@ -114,11 +117,6 @@ lasso_profile_context_set_property (GObject      *object,
       g_object_unref(self->user);
     }
     self->user = g_value_get_pointer (value);
-  }
-    break;
-  case LASSO_PROFILE_CONTEXT_REMOTE_PROVIDERID: {
-    g_free (self->remote_providerID);
-    self->remote_providerID = g_value_dup_string (value);
   }
     break;
   default:
@@ -161,15 +159,6 @@ lasso_profile_context_class_init(gpointer g_class,
   g_object_class_install_property (gobject_class,
                                    LASSO_PROFILE_CONTEXT_USER,
                                    pspec);
-
-  pspec = g_param_spec_string ("remote_providerID",
-			       "remote ProviderID",
-			       "Set remote ProviderID",
-			       NULL,
-			       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_REMOTE_PROVIDERID,
-                                   pspec);
 }
 
 GType lasso_profile_context_get_type() {
@@ -197,18 +186,15 @@ GType lasso_profile_context_get_type() {
 
 LassoProfileContext*
 lasso_profile_context_new(LassoServer *server,
-			  LassoUser   *user,
-			  gchar       *remote_providerID)
+			  LassoUser   *user)
 {
   g_return_val_if_fail(server != NULL, NULL);
-  g_return_val_if_fail(remote_providerID != NULL, NULL);
 
   LassoProfileContext *ctx;
 
   ctx = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
 					   "server", server,
 					   "user", user,
-					   "remote_providerID", remote_providerID,
 					   NULL));
 
   return (ctx);
