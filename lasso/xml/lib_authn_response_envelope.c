@@ -130,7 +130,7 @@ lasso_lib_authn_response_envelope_get_type()
 	return this_type;
 }
 
-LassoNode*
+LassoLibAuthnResponseEnvelope*
 lasso_lib_authn_response_envelope_new(LassoLibAuthnResponse *response,
 		char *assertionConsumerServiceURL)
 {
@@ -142,6 +142,6 @@ lasso_lib_authn_response_envelope_new(LassoLibAuthnResponse *response,
 		envelope->AssertionConsumerServiceURL = g_strdup(assertionConsumerServiceURL);
 	}
 
-	return LASSO_NODE(envelope);
+	return envelope;
 }
 

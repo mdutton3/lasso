@@ -54,8 +54,8 @@ struct _LassoLibAuthnResponseEnvelopeClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType      lasso_lib_authn_response_envelope_get_type (void);
-LASSO_EXPORT LassoNode* lasso_lib_authn_response_envelope_new(
+LASSO_EXPORT GType lasso_lib_authn_response_envelope_get_type (void);
+LASSO_EXPORT LassoLibAuthnResponseEnvelope* lasso_lib_authn_response_envelope_new(
 		LassoLibAuthnResponse *response,
 		char *assertionConsumerServiceURL);
 

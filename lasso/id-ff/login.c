@@ -1077,7 +1077,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 }
 
 gint
-lasso_login_process_authn_request_msg(LassoLogin *login, gchar *authn_request_msg)
+lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg)
 {
 	lassoHttpMethod authn_request_http_method; /* XXX update to current CVS code */
 	LassoProvider *remote_provider;

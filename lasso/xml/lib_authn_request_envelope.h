@@ -68,8 +68,12 @@ struct _LassoLibAuthnRequestEnvelopeClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType      lasso_lib_authn_request_envelope_get_type         (void);
-LASSO_EXPORT LassoNode* lasso_lib_authn_request_envelope_new              (void);
+LASSO_EXPORT GType lasso_lib_authn_request_envelope_get_type(void);
+LASSO_EXPORT LassoLibAuthnRequestEnvelope* lasso_lib_authn_request_envelope_new(void);
+
+LASSO_EXPORT LassoLibAuthnRequestEnvelope* lasso_lib_authn_request_envelope_new_full(
+		LassoLibAuthnRequest *authnRequest,
+		char *providerID, char *assertionConsumerServiceURL);
 
 #ifdef __cplusplus
 }

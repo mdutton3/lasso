@@ -124,8 +124,8 @@ LASSO_EXPORT gboolean    lasso_login_must_ask_for_consent       (LassoLogin *log
 
 LASSO_EXPORT gboolean    lasso_login_must_authenticate          (LassoLogin *login);
 
-LASSO_EXPORT gint        lasso_login_process_authn_request_msg  (LassoLogin      *login,
-								 gchar           *authn_request_msg);
+LASSO_EXPORT int        lasso_login_process_authn_request_msg  (LassoLogin *login,
+								const char *authn_request_msg);
 
 LASSO_EXPORT gint        lasso_login_process_authn_response_msg (LassoLogin *login,
 								 gchar      *authn_response_msg);

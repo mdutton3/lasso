@@ -48,53 +48,50 @@ typedef struct _LassoLecp LassoLecp;
 typedef struct _LassoLecpClass LassoLecpClass;
 
 struct _LassoLecp {
-  LassoLogin parent;
+	LassoLogin parent;
 
-  /*< public >*/
-  LassoNode *authnRequestEnvelope;
-  LassoNode *authnResponseEnvelope;
+	LassoLibAuthnRequestEnvelope *authnRequestEnvelope;
+	LassoLibAuthnResponseEnvelope *authnResponseEnvelope;
 
-  gchar *assertionConsumerServiceURL;
-
-  /*< private >*/
+	char *assertionConsumerServiceURL;
 };
 
 struct _LassoLecpClass {
-  LassoLoginClass parent_class;
+	LassoLoginClass parent_class;
 };
 
-LASSO_EXPORT GType      lasso_lecp_get_type                            (void);
+LASSO_EXPORT GType lasso_lecp_get_type(void);
 
-LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (LassoServer *server);
+LASSO_EXPORT LassoLecp* lasso_lecp_new(LassoServer *server);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
+LASSO_EXPORT int lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp   *lecp,
-									const gchar *remote_providerID);
+LASSO_EXPORT int lasso_lecp_build_authn_request_msg(LassoLecp *lecp,
+		const char *remote_providerID);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp *lecp);
+LASSO_EXPORT int lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
 
-LASSO_EXPORT gint lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
-		gint authentication_result,
-		gboolean     is_consent_obtained,
+LASSO_EXPORT int  lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
+		int authentication_result,
+		gboolean is_consent_obtained,
 		const char *authenticationMethod,
 		const char *authenticationInstant,
 		const char *reauthenticateOnOrAfter,
 		const char *notBefore,
 		const char *notOnOrAfter);
 
-LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
+LASSO_EXPORT void lasso_lecp_destroy(LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp *lecp);
+LASSO_EXPORT int lasso_lecp_init_authn_request(LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_process_authn_request_msg           (LassoLecp       *lecp,
-									gchar           *authn_request_msg);
+LASSO_EXPORT int lasso_lecp_process_authn_request_msg(LassoLecp *lecp,
+		const char *authn_request_msg);
 
-LASSO_EXPORT gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
-									gchar     *request_msg);
-  
-LASSO_EXPORT gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
-									gchar     *response_msg);
+LASSO_EXPORT int lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
+		const char *request_msg);
+
+LASSO_EXPORT int lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
+		const char *response_msg);
 
 
 #ifdef __cplusplus
