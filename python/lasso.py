@@ -77,7 +77,7 @@ class Node:
 ##         #self._o = lassomod.(size)
 ##         if self._o is None: raise Error('lasso_node_new() failed')
 
-    def dump(self, encoding = "utf8", format = 1):
+    def dump(self, encoding="utf8", format=1):
         return lassomod.node_dump(self, encoding, format)
 
     def destroy(self):
@@ -96,46 +96,26 @@ class Node:
         return lassomod.node_verify_signature(self, certificate_file)
 
 
-class AuthnRequest:
-    def __init__(self, providerID, nameIDPolicy, forceAuthn, isPassive,
-                 protocolProfile, assertionConsumerServiceID,
-                 authnContextClassRefs, authnContextStatementRefs,
-                 authnContextComparison, relayState, proxyCount, idpList,
-                 consent, _obj=None):
+class AuthnRequest(Node):
+    def __init__(self, providerID, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.authn_request_create(providerID,
-                                                nameIDPolicy,
-                                                forceAuthn,
-                                                isPassive,
-                                                protocolProfile,
-                                                assertionConsumerServiceID,
-                                                authnContextClassRefs,
-                                                authnContextStatementRefs,
-                                                authnContextComparison,
-                                                relayState,
-                                                proxyCount,
-                                                idpList,
-                                                consent)
-        if self._o is None: raise Error('lasso_authn_request_create() failed')
+        self._o = lassomod.authn_request_new(providerID)
+        if self._o is None: raise Error('lasso_authn_request_new() failed')
+    
+    def set_requestAuthnContext(self, authnContextClassRefs=None,
+                                authnContextStatementRefs=None,
+                                authnContextComparison=None):
+        lassomod.authn_request_set_requestAuthnContext(self,
+                                                       authnContextClassRefs,
+                                                       authnContextStatementRefs,
+                                                       authnContextComparison)
 
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.authn_request_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+    def set_scoping(self, proxyCount):
+        lassomod.authn_request_set_scoping(self, proxyCount)
 
 
 class AuthnResponse:
@@ -356,6 +336,7 @@ class RegisterNameIdentifierRequest(Node):
     def changeAttributeNamesIdentifiers(self):
         lassomod.register_name_identifier_request_change_attribute_names_identifiers(self);
 
+
 class RegisterNameIdentifierResponse(Node):
     def __init__(self,
                  providerID,
@@ -386,6 +367,7 @@ class RegisterNameIdentifierResponse(Node):
         if name == "node":
             ret = Node(_obj=ret)
         return ret
+
 
 class FederationTerminationNotification(Node):
     def __init__(self,
@@ -453,6 +435,7 @@ class NameIdentifierMappingRequest(Node):
         if name == "node":
             ret = Node(_obj=ret)
         return ret
+
 
 class NameIdentifierMappingResponse(Node):
     def __init__(self,

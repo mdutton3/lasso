@@ -26,6 +26,7 @@
 
 #include "py_lasso.h"
 #include "xml/py_xml.h"
+#include "protocols/py_authn_request.h"
 #include "protocols/py_logout_request.h"
 #include "protocols/py_logout_response.h"
 #include "protocols/py_register_name_identifier_request.h"
@@ -64,19 +65,23 @@ static PyMethodDef lasso_methods[] = {
   {"logout_response_getattr", logout_response_getattr, METH_VARARGS},
   {"logout_response",         logout_response,         METH_VARARGS},
 
-  /* py_register_name_identifier.h */
-  {"register_name_identifier_request_getattr", register_name_identifier_request_getattr, METH_VARARGS},
-  {"register_name_identifier_request",  register_name_identifier_request,  METH_VARARGS},
+  /* py_register_name_identifier_request.h */
+  {"register_name_identifier_request_getattr",        register_name_identifier_request_getattr,        METH_VARARGS},
+  {"register_name_identifier_request",                register_name_identifier_request,                METH_VARARGS},
   {"register_name_identifier_request_change_attribute_names_identifiers",
-       register_name_identifier_request_change_attribute_names_identifiers,  METH_VARARGS},
+       register_name_identifier_request_change_attribute_names_identifiers, METH_VARARGS},
   {"register_name_identifier_request_set_relayState", register_name_identifier_request_set_relayState, METH_VARARGS},
 
+  /* py_register_name_identifier_response.h */
   {"register_name_identifier_response_getattr", register_name_identifier_response_getattr, METH_VARARGS},
-  {"register_name_identifier_response",  register_name_identifier_response,  METH_VARARGS},
+  {"register_name_identifier_response",         register_name_identifier_response,         METH_VARARGS},
 
-/*   /\* py_single_sign_on_and_federation.h *\/ */
-/*   {"authn_request_getattr", authn_request_getattr, METH_VARARGS}, */
-/*   {"authn_request_create",  authn_request_create,  METH_VARARGS}, */
+  /* py_authn_request.h */
+  {"authn_request_new",                     authn_request_new,                     METH_VARARGS},
+  {"authn_request_set_requestAuthnContext", authn_request_set_requestAuthnContext, METH_VARARGS},
+  {"authn_request_set_scoping",             authn_request_set_scoping,             METH_VARARGS},
+
+  /* py_authn_response.h */
 /*   {"authn_response_getattr",       authn_response_getattr,       METH_VARARGS}, */
 /*   {"authn_response_create",        authn_response_create,        METH_VARARGS}, */
 /*   {"authn_response_init",          authn_response_init,          METH_VARARGS}, */
