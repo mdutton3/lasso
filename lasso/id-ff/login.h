@@ -127,11 +127,11 @@ LASSO_EXPORT gint        lasso_login_process_request_msg         (LassoLogin *lo
 LASSO_EXPORT gint        lasso_login_process_response_msg        (LassoLogin  *login,
 								  gchar       *response_msg);
 
-LASSO_EXPORT gint        lasso_logint_set_assertion              (LassoLogin     *login,
-								  LassoAssertion *assertion);
+LASSO_EXPORT gint        lasso_login_set_assertion              (LassoLogin     *login,
+								 LassoAssertion *assertion);
 
-LASSO_EXPORT gint        lasso_logint_set_assertion_from_dump    (LassoLogin *login,
-								  gchar      *assertion_dump);
+LASSO_EXPORT gint        lasso_login_set_assertion_from_dump    (LassoLogin *login,
+								 gchar      *assertion_dump);
 
 #ifdef __cplusplus
 }
