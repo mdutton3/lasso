@@ -903,26 +903,22 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			LassoSamlAssertion *assertion;
 			LassoSamlpStatus *status;
 
+			status = lasso_session_get_status(profile->session, remote_providerID);
 			assertion = lasso_session_get_assertion(profile->session,
 					profile->remote_providerID);
-			if (assertion) {
+			if (status) {
+				lasso_node_destroy(LASSO_NODE(LASSO_SAMLP_RESPONSE(
+								profile->response)->Status));
+				LASSO_SAMLP_RESPONSE(profile->response)->Status =
+					g_object_ref(status);
+				lasso_session_remove_status(profile->session,
+						remote_providerID);
+			} else if (assertion) {
 				LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
 					g_list_append(NULL, g_object_ref(assertion));
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 				lasso_session_remove_status(profile->session, remote_providerID);
-			} else {
-				/* no assertion, get back status code */
-				status = lasso_session_get_status(profile->session,
-						remote_providerID);
-				if (status) {
-					lasso_node_destroy(LASSO_NODE(LASSO_SAMLP_RESPONSE(
-								profile->response)->Status));
-					LASSO_SAMLP_RESPONSE(profile->response)->Status =
-						g_object_ref(status);
-					lasso_session_remove_status(profile->session,
-							remote_providerID);
-				}
 			}
 		}
 	} else {
