@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Liberty Alliance Single Sign On and all dependencies"
-!define PRODUCT_VERSION "0.4.1"
+!define PRODUCT_VERSION "0.4.1-2"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://www.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -48,7 +48,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-full-0_4_1.exe"
+OutFile "Install-full-0_4_1-2.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -57,7 +57,7 @@ Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
-Section "glib" SEC01
+Section "GLIB: Low-level core library that forms the basis for projects such as GTK+ and GNOME." SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "..\..\..\..\..\usr\local\lib\libglib-2.0-0.dll"
@@ -66,35 +66,39 @@ Section "glib" SEC01
   File "..\..\..\..\..\usr\local\lib\libgthread-2.0-0.dll"
 SectionEnd
 
-Section "libxml2" SEC02
+Section "LIBXML2: XML C parser and toolkit." SEC02
   File "..\..\..\..\..\usr\local\lib\libxml2.dll"
 SectionEnd
 
-Section "libxslt" SEC03
+Section "LIBXSLT: The XSLT C library." SEC03
   File "..\..\..\..\..\usr\local\lib\libxslt.dll"
   File "..\..\..\..\..\usr\local\lib\libexslt.dll"
 SectionEnd
 
-Section "libxmlsec" SEC04
+Section "LIBXMLSEC: XML Security Library C library based on LibXML2." SEC04
   File "..\..\..\..\..\usr\local\lib\libxmlsec.dll"
   File "..\..\..\..\..\usr\local\lib\libxmlsec-mscrypto.dll"
   File "..\..\..\..\..\usr\local\lib\libxmlsec-openssl.dll"
 SectionEnd
 
-Section "libopenssl" SEC05
+Section "LIBOPENSSL: A  full-strength general purpose cryptography library." SEC05
   File "..\..\..\..\..\usr\local\lib\libeay32.dll"
   File "..\..\..\..\..\usr\local\lib\libssleay32.dll"
 SectionEnd
 
-Section "zlib" SEC06
+Section "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library." SEC06
   File "..\..\..\..\..\usr\local\lib\libz.dll"
 SectionEnd
 
-Section "iconv" SEC07
+Section "LIBICONV: Free iconv() implementation." SEC07
   File "..\..\..\..\..\usr\local\lib\libiconv.dll"
 SectionEnd
 
-Section "L.A.S.S.O." SEC08
+Section "LIBINTL: Library for native language support." SEC08
+  File "..\..\..\..\..\usr\local\lib\intl.dll"
+SectionEnd
+
+Section "L.A.S.S.O." SEC09
   File  "..\..\lasso\.libs\liblasso-1.dll"
 SectionEnd
 
@@ -116,14 +120,15 @@ SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Glib DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "lixml2 DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "libxslt1 DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "libxmlsec1 DLL with openssl and mscrypto module"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "OpenSSL DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Zlib DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "iconv DLL"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Free implementation of the Liberty Alliance specifications."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "GLIB: Low-level core library that forms the basis for projects such as GTK+ and GNOME."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "LIBXML2: XML C parser and toolkit." 
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "LIBXSLT: The XSLT C library."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "LIBXMLSEC: XML Security Library C library based on LibXML2 with openssl and mscrypto modules."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "LIBOPENSSL: A  full-strength general purpose cryptography library."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "LIBICONV: Free iconv() implementation."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "LIBINTL: Library for native language support."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "LIBLASSO: Free implementation of the Liberty Alliance specifications."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -156,6 +161,7 @@ Section Uninstall
   Delete "$INSTDIR\libgmodule-2.0-0.dll"
   Delete "$INSTDIR\libgobject-2.0-0.dll"
   Delete "$INSTDIR\libglib-2.0-0.dll"
+  Delete "$INSTDIR\intl.dll"
 
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Uninstall.lnk"
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Website.lnk"
