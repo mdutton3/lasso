@@ -1597,6 +1597,11 @@ typedef struct {
 		THROW_ERROR
 		void processResponseMsg(gchar *responseMsg);
 		END_THROW_ERROR
+
+		THROW_ERROR
+		void processWithoutAuthnRequestMsg(gchar *remoteProviderID = NULL,
+						   gchar *relayState = NULL);
+		END_THROW_ERROR
 	}
 } LassoLogin;
 
@@ -1757,6 +1762,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
+#define LassoLogin_processWithoutAuthnRequestMsg lasso_login_process_without_authn_request_msg
 
 %}
 
