@@ -9,8 +9,7 @@ Lasso Projects Basics
 
 Lasso functions are defined in several header files typically located in
 ``/usr/include/lasso/`` or ``/usr/local/include/lasso/``.  It is possible to
-include individual files but in most case it is enough to include the main
-``lasso.h``.
+include individual files even if the main lasso.h is sufficient most often.
 
 The first thing to do is then to call ``lasso_init()``.  Similarly the last
 thing will be to call ``lasso_shutdown()``.  The smallest and useless Lasso
@@ -40,6 +39,9 @@ compilation and linking.
  -llasso -lxmlsec1-openssl -lxmlsec1 -lssl -lcrypto -ldl -lgobject-2.0 -lxslt -lxml2
  -lpthread -lz -lm -lglib-2.0
 
+
+Creating an executable from the previous sample *will then be* a simple
+matter of calling gcc with the right flags
 
 Creating an executable from the previous sample would then a simple matter of
 calling ``gcc`` with the right flags.  But there is currently in bug in
@@ -82,14 +84,14 @@ A ``LassoServer`` object may be created as follows:
 - ``idp-metadata.xml`` is the Liberty metadata file for the identity provider
 - ``sp-private-key.pem`` is the service provider private key; used to sign
   documents
-- ``sp-crt.pem`` is the service provider certificate; sent inside signed
+- ``sp-crt.pem`` is the service provider certificate; sent within signed
   documents
 - ``idp-public-key.pem`` is the identity provider public key; used to verify
   signature in documents sent by the identity provider
 - ``ca-crt.pem`` is the certificate of the certification authority used by the
   identity provider.
 
-It is of course possible to have several calls so ``lasso_server_add_provider``
+It is of course possible to have several calls to ``lasso_server_add_provider``
 if there are more than one identity provider.
 
 LassoProfile
@@ -149,10 +151,10 @@ serialized into XML files.  Example with a ``LassoServer``::
   g_free(dump);
 
 .. note:: ``lasso_server_dump`` (and other Lasso dump functions) allocates
-          memory through GLib.  ``g_free`` is then the function to use instead
+          memory through GLib.  ``g_free`` is the function to use instead
 	  of ``free`` to release memory.
 
-It is then really easy to get back properly constructed objects::
+It is then really easy to have properly constructed objects returned::
 
   LassoServer *server;
   gchar *dump;

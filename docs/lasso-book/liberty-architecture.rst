@@ -15,7 +15,26 @@ detailed and implemented in the next chapters.
 Single Sign-On and Federation
 =============================
 
-A few paragraphs; what does single sign-on and federation really mean...
+The Single Sign On process allows a user to log in once to an identity provider
+(IdP), and to be then transparently loged in to the required service providers
+(SP) belonging to the IP "circle of trust".  Subordinating different identities
+of the same user within a circle of trust to a unique IP is called "Identity
+Federation".  The liberty Alliance specifications allows, thanks to this
+federation, strong and unique authentication coupled with control by the user
+of his personnal informations. The explicit user agreement is necessary before
+proceeding to Identity Federation.
+
+The different SPs can't communicate directly together about users informations.
+They're only able to exchange informations about a user with the IP. This
+assure :
+
+- private life respect;
+- increased security (an unveiled identity for one of the SPs won't
+  endanger the others).
+
+To insure the integrity and the non-revocability of the exchange, a trusted
+third part releases a security token which identify only the session and not
+the user.
 
 
 Artifact Profile

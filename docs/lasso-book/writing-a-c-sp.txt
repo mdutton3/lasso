@@ -177,7 +177,7 @@ login URL; the service provider must then respond with an HTTP 302 Redirect
 response, pointing the user browser to the identity provider single sign on
 service.
 
-.. note:: the login URL is not normative; any name will go.
+.. note:: the login URL is not normative; any name will do.
 
 
 ``server`` is a ``LassoServer`` as seen earlier and ``idpProviderId`` is a
@@ -252,10 +252,9 @@ object.
   lasso_login_accept_sso(login);
 
 After ``lasso_login_accept_sso`` the session and the identity are updated (or
-created) and should then be saved.  If the identity was not known to the
-service provider an account will most probably need to be created on the
-service provider; this is a good opportunity to ask the user for more
-information.
+created) and should then be saved.  If the identity has not regnogized by the
+service provider an account will probably have to be created on the service
+provider; this is a good opportunity to ask the user for more information.
 
 You can get respective dumps like this::
 
@@ -345,7 +344,7 @@ Database Considerations
 =======================
 
 Lasso has been designed to let the service provider keep on using existing
-databases.  Typically there is already a table describing users; just add a
+databases.  Typically there is already a table describing users; just add an
 identity dump column to the existing table:
 
 =======    ========================================    ==============
