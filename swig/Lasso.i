@@ -47,6 +47,9 @@
 
 #include <lasso/lasso_config.h>
 #include <lasso/lasso.h>
+/* FIXME: IMHO, Lasso errors should not be defined in lasso/xml/ */
+/*        and should be included in lasso.h. */
+#include <lasso/xml/errors.h>
 
 
 /* 
@@ -116,25 +119,6 @@
 
 %typemap(newfree) gchar * "g_free($1);";
 %typemap(newfree) xmlChar * "xmlFree($1);";
-
-/* Generate a language independant exception from Lasso function result. */
-
-%define THROW_ERROR
-%exception {
-	int errorCode;
-	errorCode = $action
-	if (errorCode) {
-		char errorMessage[256];
-		sprintf(errorMessage, "%d (Lasso error)", errorCode);
-		SWIG_exception(SWIG_UnknownError, errorMessage);
-	}
-}
-%enddef
-
-%define END_THROW_ERROR
-%exception;
-%enddef
-
 
 /* Functions */
 
@@ -297,7 +281,11 @@ typedef enum {
 } lassoSignatureMethod;
 
 
-/* Errors */
+/***********************************************************************
+ * Errors
+ ***********************************************************************/
+
+
 %rename(XML_ERROR_NODE_NOT_FOUND) LASSO_XML_ERROR_NODE_NOT_FOUND;
 #define LASSO_XML_ERROR_NODE_NOT_FOUND -10
 %rename(XML_ERROR_NODE_CONTENT_NOT_FOUND) LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND;
@@ -350,6 +338,38 @@ typedef enum {
 
 %rename(ERROR_UNDEFINED) LASSO_ERROR_UNDEFINED;
 #define LASSO_ERROR_UNDEFINED -999
+
+/* Generate a language independant exception from Lasso error codes. */
+
+%{
+
+int get_exception_type(int errorCode)
+{
+	if (errorCode == LASSO_PROFILE_ERROR_INVALID_QUERY) 
+		return SWIG_SyntaxError;
+	else
+		return SWIG_UnknownError;
+}
+
+%}
+
+/* Wrappers for Lasso functions that return an error code. */
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		char errorMessage[256];
+		sprintf(errorMessage, "%d / Lasso Error", errorCode);
+		SWIG_exception(get_exception_type(errorCode), errorMessage);
+	}
+}
+%enddef
+
+%define END_THROW_ERROR
+%exception;
+%enddef
 
 
 /***********************************************************************

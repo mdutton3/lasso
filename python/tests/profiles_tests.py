@@ -151,8 +151,8 @@ class DefederationTestCase(unittest.TestCase):
         # The process_notification_msg should failt but not abort.
         try:
             defederation.process_notification_msg('nonLibertyQuery=1', lasso.httpMethodRedirect)
-        except RuntimeError, error:
-            errorCode = int(error.args[0].split(' ', 1)[0])
+        except SyntaxError:
+            pass
         else:
             self.fail('Defederation process_notification_msg should have failed.')
 
