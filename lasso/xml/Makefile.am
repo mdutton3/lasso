@@ -11,9 +11,14 @@ noinst_LTLIBRARIES = liblasso-xml.la
 liblasso_xml_la_SOURCES = \
 	tools.c \
 	xml.c \
+	disco_authenticate_requester.c \
+	disco_authenticate_session_context.c \
+	disco_authorize_requester.c \
 	disco_credentials.c \
 	disco_description.c \
+	disco_encrypt_resource_id.c \
 	disco_encrypted_resource_id.c \
+	disco_generate_bearer_token.c \
 	disco_insert_entry.c \
 	disco_modify.c \
 	disco_modify_response.c \
@@ -24,6 +29,7 @@ liblasso_xml_la_SOURCES = \
 	disco_requested_service_type.c \
 	disco_resource_id.c \
 	disco_resource_offering.c \
+	disco_send_single_logout.c \
 	disco_service_instance.c \
 	dst_data.c \
 	dst_modification.c \
@@ -104,10 +110,15 @@ liblasso_xml_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	strings.h \
-	xml.h	\
+	xml.h \
+	disco_authenticate_requester.h \
+	disco_authenticate_session_context.h \
+	disco_authorize_requester.h \
 	disco_credentials.h \
 	disco_description.h \
+	disco_encrypt_resource_id.h \
 	disco_encrypted_resource_id.h \
+	disco_generate_bearer_token.h \
 	disco_insert_entry.h \
 	disco_modify.h \
 	disco_modify_response.h \
@@ -118,6 +129,7 @@ liblassoinclude_HEADERS = \
 	disco_requested_service_type.h \
 	disco_resource_id.h \
 	disco_resource_offering.h \
+	disco_send_single_logout.h \
 	disco_service_instance.h \
 	dst_data.h \
 	dst_modification.h \

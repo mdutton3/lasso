@@ -29,6 +29,12 @@
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/interaction_profile_service.h>
 #include <lasso/id-wsf/profile_service.h>
+#include <lasso/xml/disco_authenticate_requester.h>
+#include <lasso/xml/disco_authorize_requester.h>
+#include <lasso/xml/disco_authenticate_session_context.h>
+#include <lasso/xml/disco_encrypt_resource_id.h>
+#include <lasso/xml/disco_send_single_logout.h>
+#include <lasso/xml/disco_generate_bearer_token.h>
 #include <lasso/xml/dst_new_data.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
@@ -82,6 +88,13 @@
 
 /* WSF status code */
 #ifndef SWIGPHP4
+%rename(DISCO_STATUS_CODE_OK) LASSO_DISCO_STATUS_CODE_OK;
+%rename(DISCO_STATUS_CODE_FAILED) LASSO_DISCO_STATUS_CODE_FAILED;
+%rename(DISCO_STATUS_CODE_REMOVE_ENTRY) LASSO_DISCO_STATUS_CODE_REMOVE_ENTRY;
+%rename(DISCO_STATUS_CODE_FORBIDDEN) LASSO_DISCO_STATUS_CODE_FORBIDDEN;
+%rename(DISCO_STATUS_CODE_NO_RESULTS) LASSO_DISCO_STATUS_CODE_NO_RESULTS;
+%rename(DISCO_STATUS_CODE_DIRECTIVES) LASSO_DISCO_STATUS_CODE_DIRECTIVES;
+
 %rename(DST_STATUS_CODE_ACTION_NOT_AUTHORIZED) LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED;
 %rename(DST_STATUS_CODE_ACTION_NOT_SUPPORTED) LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED;
 %rename(DST_STATUS_CODE_ALL_RETURNED) LASSO_DST_STATUS_CODE_ALL_RETURNED;
@@ -109,6 +122,13 @@
 %rename(SA_STATUS_CODE_ABORT) LASSO_SA_STATUS_CODE_ABORT;
 %rename(SA_STATUS_CODE_OK) LASSO_SA_STATUS_CODE_OK;
 #endif
+#define LASSO_DISCO_STATUS_CODE_OK "OK"
+#define LASSO_DISCO_STATUS_CODE_FAILED "Failed"
+#define LASSO_DISCO_STATUS_CODE_REMOVE_ENTRY "RemoveEntry"
+#define LASSO_DISCO_STATUS_CODE_FORBIDDEN "Forbidden"
+#define LASSO_DISCO_STATUS_CODE_NO_RESULTS "NoResults"
+#define LASSO_DISCO_STATUS_CODE_DIRECTIVES "Directive"
+
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
 #define LASSO_DST_STATUS_CODE_ALL_RETURNED "AllReturned"
@@ -154,6 +174,287 @@ typedef enum {
  * XML Elements in Discovery Namespace
  ***********************************************************************
  ***********************************************************************/
+
+/***********************************************************************
+ * disco:AuthenticateRequester
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoAuthenticateRequester) LassoDiscoAuthenticateRequester;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoAuthenticateRequester;
+%extend LassoDiscoAuthenticateRequester {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoAuthenticateRequester();
+
+	~LassoDiscoAuthenticateRequester();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoAuthenticateRequester lasso_disco_authenticate_requester_new
+#define delete_LassoDiscoAuthenticateRequester(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoAuthenticateRequester_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * disco:AuthorizeRequester
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoAuthorizeRequester) LassoDiscoAuthorizeRequester;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoAuthorizeRequester;
+%extend LassoDiscoAuthorizeRequester {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoAuthorizeRequester();
+
+	~LassoDiscoAuthorizeRequester();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoAuthorizeRequester lasso_disco_authorize_requester_new
+#define delete_LassoDiscoAuthorizeRequester(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoAuthorizeRequester_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * disco:AuthenticateSessionContext
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoAuthenticateSessionContext) LassoDiscoAuthenticateSessionContext;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoAuthenticateSessionContext;
+%extend LassoDiscoAuthenticateSessionContext {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoAuthenticateSessionContext();
+
+	~LassoDiscoAuthenticateSessionContext();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoAuthenticateSessionContext lasso_disco_authenticate_session_context_new
+#define delete_LassoDiscoAuthenticateSessionContext(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoAuthenticateSessionContext_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * disco:EncryptResourceID
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoEncryptResourceID) LassoDiscoEncryptResourceID;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoEncryptResourceID;
+%extend LassoDiscoEncryptResourceID {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoEncryptResourceID();
+
+	~LassoDiscoEncryptResourceID();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoEncryptResourceID lasso_disco_encrypt_resource_id_new
+#define delete_LassoDiscoEncryptResourceID(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoEncryptResourceID_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * disco:SendSingleLogout
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoSendSingleLogout) LassoDiscoSendSingleLogout;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoSendSingleLogout;
+%extend LassoDiscoSendSingleLogout {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoSendSingleLogout();
+
+	~LassoDiscoSendSingleLogout();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoSendSingleLogout lasso_disco_send_single_logout_new
+#define delete_LassoDiscoSendSingleLogout(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoSendSingleLogout_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * disco:GenerateBearerToken
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DiscoGenerateBearerToken) LassoDiscoGenerateBearerToken;
+#endif
+typedef struct {
+
+#ifndef SWIGPHP4
+	%rename(descriptionIdRefs) descriptionIDRefs;
+#endif
+	char *descriptionIDRefs;
+
+} LassoDiscoGenerateBearerToken;
+%extend LassoDiscoGenerateBearerToken {
+	/* Attributes */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoGenerateBearerToken();
+
+	~LassoDiscoGenerateBearerToken();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDiscoGenerateBearerToken lasso_disco_generate_bearer_token_new
+#define delete_LassoDiscoGenerateBearerToken(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoGenerateBearerToken_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
 
 
 /***********************************************************************
@@ -309,13 +610,9 @@ typedef struct {
 %extend LassoDiscoEncryptedResourceID {
 	/* Attributes */
 
-	/* FIXME: Missing from Lasso. */
-/* 	LassoXencEncryptedData *EncryptedData; */
-/* 	LassoXencEncryptedKey *EncryptedKey; */
-
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDiscoEncryptedResourceID();
+	LassoDiscoEncryptedResourceID(char *content, char *key_file);
 
 	~LassoDiscoEncryptedResourceID();
 
@@ -420,12 +717,6 @@ typedef struct {
 	/* Attributes */
 
 #ifndef SWIGPHP4
-	%rename(encryptedResourceId) EncryptedResourceID;
-#endif
-	%newobject EncryptedResourceID_get;
-	LassoDiscoEncryptedResourceID *EncryptedResourceID;
-
-#ifndef SWIGPHP4
 	%rename(insertEntry) InsertEntry;
 #endif
 	%newobject InsertEntry_get;
@@ -437,11 +728,8 @@ typedef struct {
 	%newobject RemoveEntry_get;
 	LassoNodeList *RemoveEntry;
 
-#ifndef SWIGPHP4
-	%rename(resourceId) ResourceID;
-#endif
-	%newobject ResourceID_get;
-	LassoDiscoResourceID *ResourceID;
+	%newobject resourceId_get;
+	LassoNode *resourceId;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -459,12 +747,6 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* EncryptedResourceID */
-#define LassoDiscoModify_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
-#define LassoDiscoModify_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
-#define LassoDiscoModify_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
-#define LassoDiscoModify_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
-
 /* InsertEntry */
 #define LassoDiscoModify_get_InsertEntry(self) get_node_list((self)->InsertEntry)
 #define LassoDiscoModify_InsertEntry_get(self) get_node_list((self)->InsertEntry)
@@ -477,11 +759,11 @@ typedef struct {
 #define LassoDiscoModify_set_RemoveEntry(self, value) set_node_list(&(self)->RemoveEntry, (value))
 #define LassoDiscoModify_RemoveEntry_set(self, value) set_node_list(&(self)->RemoveEntry, (value))
 
-/* ResourceID */
-#define LassoDiscoModify_get_ResourceID(self) get_node((self)->ResourceID)
-#define LassoDiscoModify_ResourceID_get(self) get_node((self)->ResourceID)
-#define LassoDiscoModify_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
-#define LassoDiscoModify_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+/* resourceId */
+#define LassoDiscoModify_get_resourceId(self) get_node((self)->resourceId)
+#define LassoDiscoModify_resourceId_get(self) get_node((self)->resourceId)
+#define LassoDiscoModify_set_resourceId(self, value) set_node((gpointer *) &(self)->resourceId, (value))
+#define LassoDiscoModify_resourceId_set(self, value) set_node((gpointer *) &(self)->resourceId, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3036,7 +3318,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	LassoDiscoRequestedServiceType *addRequestedServiceType(char *serviceType,
-								char *option);
+								char *option = NULL);
 
 	THROW_ERROR
 	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
@@ -3407,6 +3689,46 @@ gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
 
 %}
 
+/***********************************************************************
+ * Cyrus SASL sasl_conn_t binding
+ ***********************************************************************/
+
+/***********************************************************************
+ * Cyrus SASL sasl_callback_t binding
+ ***********************************************************************/
+
+/*
+ * Extensible type for a client/server callbacks
+ *  id      -- identifies callback type
+ *  proc    -- procedure call arguments vary based on id
+ *  context -- context passed to procedure
+ *
+ * Note that any memory that is allocated by the callback needs to be
+ * freed by the application, be it via function call or interaction.
+ *
+ * It may be freed after sasl_*_step returns SASL_OK.  if the mechanism
+ * requires this information to persist (for a security layer, for example)
+ * it must maintain a private copy.
+ *
+ * typedef struct sasl_callback {
+ *      Identifies the type of the callback function.
+ *      Mechanisms must ignore callbacks with id's they don't recognize.
+ *
+ *     unsigned long id;
+ *     int (*proc)();
+ *             Callback function.  Types of arguments vary by 'id'
+ *     void *context;
+ * } sasl_callback_t; */
+
+#ifndef SWIGPHP4
+%rename(SaslCallback) sasl_callback_t;
+#endif
+typedef struct {
+	int (*proc)();
+	unsigned long id;
+	void *context;
+
+} sasl_callback_t;
 
 /***********************************************************************
  * lasso:Authentication
@@ -3417,6 +3739,7 @@ gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
 %rename(Authentication) LassoAuthentication;
 #endif
 typedef struct {
+
 } LassoAuthentication;
 %extend LassoAuthentication {
 	/* Attributes inherited from WsfProfile */
@@ -3426,9 +3749,6 @@ typedef struct {
 
 	%immutable msgUrl;
 	char *msgUrl;
-
-	%newobject connection;
-	sasl_conn_t *connection;
 
 	%newobject soap_envelope_request_get;
 	LassoSoapEnvelope *soap_envelope_request;
@@ -3486,7 +3806,6 @@ typedef struct {
 %{
 
 /* Attributes inherited from WsfProfile implementations */
-
 /* msgBody */
 #define LassoAuthentication_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
 #define LassoAuthentication_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
@@ -3494,12 +3813,6 @@ typedef struct {
 /* msgUrl */
 #define LassoAuthentication_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
 #define LassoAuthentication_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
-
-/* sasl connection */
-#define LassoAuthentication_get_connection(self) get_node(self->connection)
-#define LassoAuthentication_connection_get(self) get_node(self->connection)
-#define LassoAuthentication_set_connection(self, value) set_node((gpointer *) &self->connection, (value))
-#define LassoAuthentication_connection_set(self, value) set_node((gpointer *) &self->connection, (value))
 
 /* soap envelope request */
 #define LassoAuthentication_get_soap_envelope_request(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_request)
