@@ -34,20 +34,20 @@ extern "C" {
 
 #define LASSO_TYPE_SA_SASL_REQUEST (lasso_sa_sasl_request_get_type())
 #define LASSO_SA_SASL_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_SA_SASL_REQUEST, LassoSaSaslRequest))
+			LASSO_TYPE_SA_SASL_REQUEST, LassoSaSASLRequest))
 #define LASSO_SA_SASL_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_SA_SASL_REQUEST, LassoSaSaslRequestClass))
+			LASSO_TYPE_SA_SASL_REQUEST, LassoSaSASLRequestClass))
 #define LASSO_IS_SA_SASL_REQUEST(obj) \
 			(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SA_SASL_REQUEST))
 #define LASSO_IS_SA_SASL_REQUEST_CLASS(klass) \
 	(G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_SA_SASL_REQUEST))
 #define LASSO_SA_SASL_REQUEST_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SA_SASL_REQUEST, LassoSaSaslRequestClass)) 
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SA_SASL_REQUEST, LassoSaSASLRequestClass)) 
 
-typedef struct _LassoSaSaslRequest LassoSaSaslRequest;
-typedef struct _LassoSaSaslRequestClass LassoSaSaslRequestClass;
+typedef struct _LassoSaSASLRequest LassoSaSASLRequest;
+typedef struct _LassoSaSASLRequestClass LassoSaSASLRequestClass;
 
-struct _LassoSaSaslRequest {
+struct _LassoSaSASLRequest {
 	LassoNode parent;
 
 	GList *Data;
@@ -59,15 +59,15 @@ struct _LassoSaSaslRequest {
 	char *id;
 };
 
-struct _LassoSaSaslRequestClass {
+struct _LassoSaSASLRequestClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_sa_sasl_request_get_type(void);
 
-LASSO_EXPORT LassoSaSaslRequest* lasso_sa_sasl_request_new(const char *mechanism);
+LASSO_EXPORT LassoSaSASLRequest* lasso_sa_sasl_request_new(const char *mechanism);
 
-LASSO_EXPORT LassoSaSaslRequest* lasso_sa_sasl_request_new_from_message(const gchar *message);
+LASSO_EXPORT LassoSaSASLRequest* lasso_sa_sasl_request_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

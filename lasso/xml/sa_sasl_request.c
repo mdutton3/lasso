@@ -53,17 +53,17 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Data", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, Data) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, Data) },
 	{ "RequestAuthnContext", SNIPPET_NODE,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, RequestAuthnContext) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, RequestAuthnContext) },
 	{ "mechanism", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, mechanism) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, mechanism) },
 	{ "authzID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, authzID) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, authzID) },
 	{ "advisoryAuthnID", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, advisoryAuthnID) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, advisoryAuthnID) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslRequest, id) },
+	  G_STRUCT_OFFSET(LassoSaSASLRequest, id) },
 	{ NULL, 0, 0}
 };
 
@@ -72,7 +72,7 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoSaSaslRequest *node)
+instance_init(LassoSaSASLRequest *node)
 {
 	node->Data = NULL;
 	node->RequestAuthnContext = NULL;
@@ -84,7 +84,7 @@ instance_init(LassoSaSaslRequest *node)
 }
 
 static void
-class_init(LassoSaSaslRequestClass *klass)
+class_init(LassoSaSASLRequestClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
@@ -101,27 +101,27 @@ lasso_sa_sasl_request_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSaSaslRequestClass),
+			sizeof (LassoSaSASLRequestClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSaSaslRequest),
+			sizeof(LassoSaSASLRequest),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 		
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSaSaslRequest", &this_info, 0);
+				"LassoSaSASLRequest", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoSaSaslRequest*
-lasso_sa_sasl_request_new(const char *mechanism)
+LassoSaSASLRequest*
+lasso_sa_sasl_request_new(const gchar *mechanism)
 {
-	LassoSaSaslRequest *node;
+	LassoSaSASLRequest *node;
 
 	g_return_val_if_fail(mechanism != NULL, NULL);
 
@@ -131,10 +131,10 @@ lasso_sa_sasl_request_new(const char *mechanism)
 	return node;
 }
 
-LassoSaSaslRequest*
+LassoSaSASLRequest*
 lasso_sa_sasl_request_new_from_message(const gchar *message)
 {
-	LassoSaSaslRequest *node;
+	LassoSaSASLRequest *node;
 
 	g_return_val_if_fail(message != NULL, NULL);
 

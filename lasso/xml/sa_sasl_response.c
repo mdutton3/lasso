@@ -60,18 +60,18 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSaSaslResponse, Status) },
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSaSASLResponse, Status) },
 	{ "PasswordTransforms", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSaSaslResponse, PasswordTransforms) },
+	  G_STRUCT_OFFSET(LassoSaSASLResponse, PasswordTransforms) },
 	{ "Data", SNIPPET_LIST_CONTENT,
-	  G_STRUCT_OFFSET(LassoSaSaslResponse, Data) },
+	  G_STRUCT_OFFSET(LassoSaSASLResponse, Data) },
 	{ "ResourceOffering", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSaSaslResponse, ResourceOffering) },
+	  G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering) },
 	/* TODO : Credentials */
 	{ "serverMechanism", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslResponse, serverMechanism) },
+	  G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism) },
 	{ "id", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSaSaslResponse, id) },
+	  G_STRUCT_OFFSET(LassoSaSASLResponse, id) },
 	{ NULL, 0, 0}
 };
 
@@ -108,7 +108,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 /*****************************************************************************/
 
 static void
-instance_init(LassoSaSaslResponse *node)
+instance_init(LassoSaSASLResponse *node)
 {
 	node->Status = NULL;
 	node->PasswordTransforms = NULL;
@@ -121,7 +121,7 @@ instance_init(LassoSaSaslResponse *node)
 }
 
 static void
-class_init(LassoSaSaslResponseClass *klass)
+class_init(LassoSaSASLResponseClass *klass)
 {
 	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
 
@@ -139,27 +139,27 @@ lasso_sa_sasl_response_get_type()
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSaSaslResponseClass),
+			sizeof (LassoSaSASLResponseClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSaSaslResponse),
+			sizeof(LassoSaSASLResponse),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSaSaslResponse", &this_info, 0);
+				"LassoSaSASLResponse", &this_info, 0);
 	}
 	return this_type;
 }
 
-LassoSaSaslResponse*
+LassoSaSASLResponse*
 lasso_sa_sasl_response_new(LassoUtilityStatus *status)
 {
-	LassoSaSaslResponse *node;
+	LassoSaSASLResponse *node;
 
 	node = g_object_new(LASSO_TYPE_SA_SASL_RESPONSE, NULL);
 
@@ -168,10 +168,10 @@ lasso_sa_sasl_response_new(LassoUtilityStatus *status)
 	return node;
 }
 
-LassoSaSaslResponse*
+LassoSaSASLResponse*
 lasso_sa_sasl_response_new_from_message(const gchar *message)
 {
-	LassoSaSaslResponse *node;
+	LassoSaSASLResponse *node;
 
 	g_return_val_if_fail(message != NULL, NULL);
 

@@ -35,20 +35,20 @@ extern "C" {
 
 #define LASSO_TYPE_SA_SASL_RESPONSE (lasso_sa_sasl_response_get_type())
 #define LASSO_SA_SASL_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSaslResponse))
+			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSASLResponse))
 #define LASSO_SA_SASL_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSaslResponseClass))
+			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSASLResponseClass))
 #define LASSO_IS_SA_SASL_RESPONSE(obj) \
 			(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SA_SASL_RESPONSE))
 #define LASSO_IS_SA_SASL_RESPONSE_CLASS(klass) \
 			(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SA_SASL_RESPONSE))
 #define LASSO_SA_SASL_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSaslResponseClass)) 
+			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSASLResponseClass)) 
 
-typedef struct _LassoSaSaslResponse LassoSaSaslResponse;
-typedef struct _LassoSaSaslResponseClass LassoSaSaslResponseClass;
+typedef struct _LassoSaSASLResponse LassoSaSASLResponse;
+typedef struct _LassoSaSASLResponseClass LassoSaSASLResponseClass;
 
-struct _LassoSaSaslResponse {
+struct _LassoSaSASLResponse {
 	LassoNode parent;
 
 	/*< public >*/
@@ -59,19 +59,19 @@ struct _LassoSaSaslResponse {
 	GList *Credentials;
 	GList *any;
 
-	char *serverMechanism;
-	char *id;
+	gchar *serverMechanism;
+	gchar *id;
 };
 
-struct _LassoSaSaslResponseClass {
+struct _LassoSaSASLResponseClass {
 	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_sa_sasl_response_get_type(void);
 
-LASSO_EXPORT LassoSaSaslResponse* lasso_sa_sasl_response_new(LassoUtilityStatus *status);
+LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new(LassoUtilityStatus *status);
 
-LASSO_EXPORT LassoSaSaslResponse* lasso_sa_sasl_response_new_from_message(const gchar *message);
+LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }
