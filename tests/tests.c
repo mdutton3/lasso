@@ -28,10 +28,13 @@
 #include <check.h>
 #include <lasso.h>
 
+extern Suite* basic_suite();
 extern Suite* login_suite();
+
 typedef Suite* (*SuiteFunction) ();
 
 SuiteFunction suites[] = {
+	basic_suite,
 	login_suite,
 	NULL
 };
@@ -57,6 +60,7 @@ main(int argc, char *argv[])
 	i = 1;
 	while (suites[i]) {
 		srunner_add_suite(sr, suites[i]());
+		i++;
 	}
 
 	if (dont_fork) {
