@@ -180,8 +180,9 @@ service.
 .. note:: the login URL is not normative; any name will go.
 
 
-``server`` is a ``LassoServer`` and ``idpProviderId`` is a string with the
-identity provider Id (defined in metadata).
+``server`` is a ``LassoServer`` as seen earlier and ``idpProviderId`` is a
+string with the identity provider Id (the string must match a providerID
+defined in the metadata file).
 
 ::
 
