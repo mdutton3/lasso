@@ -30,27 +30,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/xml/lib_authn_request.h>
-#include <lasso/xml/lib_authn_response.h>
-#include <lasso/xml/lib_federation_termination_notification.h>
-#include <lasso/xml/lib_logout_request.h>
-#include <lasso/xml/lib_logout_response.h>
-#include <lasso/xml/lib_register_name_identifier_request.h>
-#include <lasso/xml/lib_register_name_identifier_response.h>
-
-typedef struct _lassoAuthnRequestCtx lassoAuthnRequestCtx;
-struct _lassoAuthnRequestCtx {
-  gboolean  must_authenticate;
-  gboolean  signature_is_valid;
-};
-
-LASSO_EXPORT gint lasso_authn_request_signature_verify(xmlChar *query,
-						       const xmlChar *public_key_file,
-						       const xmlChar *private_key_file);
-
-LASSO_EXPORT gboolean lasso_authn_request_must_authenticate(xmlChar  *query,
-							    gboolean  is_authenticated);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
