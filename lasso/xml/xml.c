@@ -38,6 +38,7 @@
 #include <lasso/xml/saml_name_identifier.h>
 
 
+static char* lasso_node_build_query(LassoNode *node);
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
@@ -397,7 +398,7 @@ done:
 /* virtual private methods                                                   */
 /*****************************************************************************/
 
-char*
+static char*
 lasso_node_build_query(LassoNode *node)
 {
 	LassoNodeClass *class;
