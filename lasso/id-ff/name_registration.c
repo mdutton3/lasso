@@ -531,22 +531,21 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "OldNameIdentifier", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoNameRegistration, oldNameIdentifier) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoNameRegistration *name_registration = LASSO_NAME_REGISTRATION(node);
 
 	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "NameRegistration");
 	xmlSetProp(xmlnode, "NameRegistrationDumpVersion", "2");
-
-	if (name_registration->oldNameIdentifier) {
-		xmlNewTextChild(xmlnode, NULL, "OldNameIdentifier",
-				name_registration->oldNameIdentifier);
-	}
 
 	return xmlnode;
 }
@@ -554,35 +553,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoNameRegistration *name_registration = LASSO_NAME_REGISTRATION(node);
-	xmlNode *t;
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "OldNameIdentifier") == 0)
-			name_registration->oldNameIdentifier = xmlNodeGetContent(t);
-
-		t = t->next;
-	}
-	return 0;
-}
-
-/*****************************************************************************/
-/* overridden parent class methods                                            */
-/*****************************************************************************/
-
-static void
-finalize(GObject *object)
-{  
-	debug("Register Name Identifier object 0x%x finalized ...");
-	G_OBJECT_CLASS(parent_class)->finalize(object);
+	return parent_class->init_from_xml(node, xmlnode);
 }
 
 /*****************************************************************************/
@@ -598,12 +569,14 @@ instance_init(LassoNameRegistration *name_registration)
 static void
 class_init(LassoNameRegistrationClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-
-	G_OBJECT_CLASS(klass)->finalize = finalize;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Login");
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
