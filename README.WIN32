@@ -9,12 +9,9 @@ Launch:
 
 ::
 
-./autogen.sh --disable-tests --host=i686-pc-mingw32 --with-pkg-config-path=/usr/local/lib/pkgconfig
+./autogen.sh --host=i686-pc-mingw32 --with-pkg-config-path=/usr/local/lib/pkgconfig
 
-and next ``make`` ;)
-
-.. note:: The ``--disable-tests`` is mandatory for Win32, because C tests use a software named
-          "Check" that requires a POSIX OS.
+and next ``make``.
 
 
 Know bugs
@@ -45,4 +42,4 @@ The dll is not copied to his destination directory.
 Fix
 ---
 
-Manualy copy the dll (lasso/.lib/liblasso-0.dll) to his destination directory.
+Manualy copy the dll (lasso/.lib/liblasso-3.dll) to his destination directory.
