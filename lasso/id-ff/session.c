@@ -218,7 +218,7 @@ lasso_session_get_authentication_method(LassoSession *session,
   GError *err = NULL;
 
   if (providerID == NULL) {
-    providerID = lasso_session_get_next_providerID(session);
+    providerID = lasso_session_get_first_providerID(session);
   }
   assertion = lasso_session_get_assertion(session, providerID);
   if (providerID == NULL) {
