@@ -1174,8 +1174,8 @@ class Login(Profile):
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_artifact_msg')
 
-    def build_authn_request_msg(self):
-        errorCode = lassomod.login_build_authn_request_msg(self)
+    def build_authn_request_msg(self, remote_providerID):
+        errorCode = lassomod.login_build_authn_request_msg(self, remote_providerID)
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_authn_request_msg')
 
@@ -1194,8 +1194,8 @@ class Login(Profile):
     def dump(self):
         return lassomod.login_dump(self)
 
-    def init_authn_request(self, remote_providerID):
-        errorCode = lassomod.login_init_authn_request(self, remote_providerID)
+    def init_authn_request(self):
+        errorCode = lassomod.login_init_authn_request(self)
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_authn_request')
 
@@ -1475,13 +1475,18 @@ class Lecp(Login):
         if errorCode:
             raise newError(errorCode, 'lasso_lecp_build_authn_request_envelope_msg')
 
-    def build_authn_response_envelope_msg(self):
-        errorCode = lassomod.lecp_build_authn_response_envelope_msg(self)
+    def build_authn_response_envelope_msg(self, authentication_result,
+                                          authenticationMethod,
+                                          reauthenticateOnOrAfter):
+        errorCode = lassomod.lecp_build_authn_response_envelope_msg(self,
+                                                                    authentication_result,
+                                                                    authenticationMethod,
+                                                                    reauthenticateOnOrAfter)
         if errorCode:
             raise newError(errorCode, 'lasso_lecp_build_authn_response_envelope_msg')
 
-    def build_authn_request_msg(self):
-        errorCode = lassomod.lecp_build_authn_request_msg(self)
+    def build_authn_request_msg(self, remote_providerID):
+        errorCode = lassomod.lecp_build_authn_request_msg(self, remote_providerID)
         if errorCode:
             raise newError(errorCode, 'lasso_lecp_build_authn_request_msg')
 
@@ -1493,8 +1498,8 @@ class Lecp(Login):
     def destroy(self):
         lassomod.lecp_destroy(self)
 
-    def init_authn_request(self, remote_providerID):
-        errorCode = lassomod.lecp_init_authn_request(self, remote_providerID)
+    def init_authn_request(self):
+        errorCode = lassomod.lecp_init_authn_request(self)
         if errorCode:
             raise newError(errorCode, 'lasso_lecp_init_authn_request')
 
