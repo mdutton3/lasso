@@ -25,6 +25,9 @@
 
 #include <lasso/id-ff/defederation.h>
 
+#include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/sessionprivate.h>
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/

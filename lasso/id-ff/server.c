@@ -26,6 +26,8 @@
 #include <xmlsec/base64.h>
 #include <lasso/id-ff/server.h>
 
+#include <lasso/id-ff/providerprivate.h>
+
 struct _LassoServerPrivate
 {
 	gboolean dispose_has_run;

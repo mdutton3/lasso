@@ -31,6 +31,7 @@
 #include <xmlsec/xmltree.h>
 
 #include <lasso/id-ff/provider.h>
+#include <lasso/id-ff/providerprivate.h>
 
 struct _LassoProviderPrivate
 {
@@ -615,6 +616,15 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	return provider;
 }
 
+/**
+ * lasso_provider_new_from_dump:
+ * @server: the #LassoServer
+ * @dump: XML provider dump
+ *
+ * Restores the @dump to a new #LassoProivder.
+ *
+ * Return value: a newly created #LassoProivder; or NULL if an error occured.
+ **/
 LassoProvider*
 lasso_provider_new_from_dump(const gchar *dump)
 {

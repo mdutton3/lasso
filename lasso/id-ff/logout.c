@@ -24,6 +24,8 @@
  */
 
 #include <lasso/id-ff/logout.h>
+
+#include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
 
 struct _LassoLogoutPrivate
