@@ -1,8 +1,8 @@
-lasso (0.4.0-0.pre20040821.0) unstable; urgency=low
+lasso (0.4.0-0.pre20040831.0) unstable; urgency=low
 
   * CVS snapshot.
 
- -- Frederic Peters <fpeters@debian.org>  Sat, 21 Aug 2004 17:29:24 +0200
+ -- Frederic Peters <fpeters@debian.org>  Tue, 31 Aug 2004 13:33:43 +0200
 
 lasso (0.3.0-4) unstable; urgency=low
 
