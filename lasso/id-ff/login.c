@@ -86,6 +86,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   LassoNode *assertion, *status, *statusCode;
   LassoProvider *idp;
   gchar *statusCode_value;
+  xmlChar *ni, *idp_ni;
 
   /* verify signature */
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
@@ -122,6 +123,22 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   else {
     return (-4);
   }
+
+  /* store NameIdentifier */
+  ni = lasso_node_get_child_content(LASSO_NODE(assertion), "NameIdentifier", NULL);
+  idp_ni = lasso_node_get_child_content(LASSO_NODE(assertion), "IDPProvidedNameIdentifier", NULL);
+  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
+    login->nameIdentifier = idp_ni;
+    xmlFree(ni);
+  }
+  else {
+    login->nameIdentifier = ni;
+    xmlFree(idp_ni);
+    if (ni == NULL) {
+      return (-5);
+    }
+  }
+
   return (0);
 }
 
@@ -147,7 +164,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
   ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "NameIdentifier", NULL);
   idp_ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "IDPProvidedNameIdentifier", NULL);
   /* store NameIdentifier */
-  if (xmlStrEqual(ni, idp_ni)) {
+  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
     login->nameIdentifier = idp_ni;
     xmlFree(ni);
   }
@@ -155,12 +172,9 @@ lasso_login_add_response_assertion(LassoLogin    *login,
     login->nameIdentifier = ni;
     xmlFree(idp_ni);
   }
-  printf("Start add_authenticationStatement 0x%x, 0x%x\n", assertion, authentication_statement);
-  printf("%s\n", lasso_node_export(assertion));
-  printf("%s\n", lasso_node_export(authentication_statement));
+
   lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
-  printf("Finish add_authenticationStatement\n");
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
