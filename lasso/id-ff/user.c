@@ -275,8 +275,9 @@ lasso_user_get_assertion(LassoUser *user,
 
   assertion = (LassoNode *)g_hash_table_lookup(user->assertions,
 					       remote_providerID);
-  if (assertion == NULL)
-	  return NULL;
+  if (assertion == NULL) {
+    return NULL;
+  }
 
   return(lasso_node_copy(assertion));
 }
@@ -306,8 +307,8 @@ lasso_user_get_authentication_method(LassoUser *user,
   }
 
  done:
-  lasso_node_destroy(assertion);
   lasso_node_destroy(as);
+  lasso_node_destroy(assertion);
   return (authentication_method);
 }
 
