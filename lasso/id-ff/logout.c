@@ -24,6 +24,7 @@
  */
 
 #include <lasso/environs/logout.h>
+#include <string.h>
 
 #define LASSO_LOGOUT_NODE            "LassoLogout"
 #define LASSO_REMOTE_PROVIDERID_NODE "RemoteProviderID"
@@ -851,7 +852,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
 	goto done;
       }
 
-      /* FIXME : get an HTTP method in metadata */
+      /* FIXME : verify the IDP support a HTTP method */
 
       /* Build and optionaly sign the logout request QUERY message */
       url = lasso_provider_get_singleLogoutServiceURL(provider, lassoProviderTypeIdp, NULL);
