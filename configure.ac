@@ -212,7 +212,6 @@ fi
 AC_SUBST(SWIG_PYTHON_ARGS)
 
 dnl Detect available languages binding.
-languages=
 languages_available=
 
 dnl Java(tm)
@@ -238,9 +237,7 @@ fi
 changequote([, ])dnl
 if test "X$JAVA_VERSION" != X; then
   languages_available="$languages_available java($JAVA_VERSION)"
-  if test "x$with_java" = "xyes"; then
-    languages="$languages java"
-  fi
+  AM_CONDITIONAL([JAVA_ENABLED],[test "x$with_java" = "xyes"])
 fi
 AC_MSG_RESULT($with_java)
 if test "X$JAVA" = "Xgij"; then
@@ -269,14 +266,15 @@ PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
 changequote([, ])dnl
 if test "X$PYTHON_VERSION" != X; then
   if test $with_python = yes; then
-        PY_PREFIX=`python -c 'import sys ; print sys.prefix'`
-        PY_EXEC_PREFIX=`python -c 'import sys ; print sys.exec_prefix'`
+        PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
+        PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
         changequote(<<, >>)dnl
-        PY_VERSION=`python -c 'import sys ; print sys.version[0:3]'`
+        PY_VERSION=`$PYTHON -c 'import sys ; print sys.version[0:3]'`
         changequote([, ])dnl
         PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
         LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
 	if test -f $PYTHON_H; then
+                dnl Not useful unless we make a test on the python version.
                 PYTHON="python$PY_VERSION"
                 PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
                 PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
@@ -285,7 +283,8 @@ if test "X$PYTHON_VERSION" != X; then
                 PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
                 PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
                 PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
-		PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
+		dnl Non pure module distribution location.
+                PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
                 AC_SUBST(PYTHON)
                 AC_SUBST(PY_LIB_LOC)
                 AC_SUBST(PY_CFLAGS)
@@ -294,7 +293,7 @@ if test "X$PYTHON_VERSION" != X; then
                 AC_SUBST(PY_LIB_A)
 		AC_SUBST(PY_SITE_PACKAGES)
                 languages_available="$languages_available python($PYTHON_VERSION)"
-                languages="$languages python"
+                AM_CONDITIONAL([PYTHON_ENABLED],[test "x$with_python" = "xyes"])
         else
 		with_python=false
 	fi
@@ -303,8 +302,6 @@ fi
 AC_MSG_RESULT($with_python)
 AC_SUBST(PYTHON_VERSION)
 
-SD_LANG="$languages"
-AC_SUBST(SD_LANG)
 
 dnl ==========================================================================
 dnl Test suite (requires check)

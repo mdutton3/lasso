@@ -1,4 +1,11 @@
-SUBDIRS		= lasso docs @SD_LANG@ tests
+if PYTHON_ENABLED
+    PYTHON_SD = python
+endif
+if JAVA_ENABLED
+    JAVA_SD = java
+endif
+
+SUBDIRS		= lasso docs $(PYTHON_SD) $(JAVA_SD) tests
 
 ABS_BUILDDIR	= $(shell pwd)
 
