@@ -2,7 +2,7 @@ SUBDIRS = environs tests xml
 
 PHP_PACKAGE=lasso
 
-liblasso_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/lasso/.libs $(PHP_LDFLAGS)
+lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version -L$(top_builddir)/lasso/.libs $(PHP_LDFLAGS)
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -16,17 +16,20 @@ INCLUDES = \
 
 mylibs = $(top_builddir)/lasso/liblasso.la
 
-LASSOSOURCES = lasso.c lasso.h php_lasso.h
+LASSOSOURCES = \
+			   lasso.c \
+			   lasso.h \
+			   php_lasso.h
 
-lib_LTLIBRARIES = liblasso.la \
+lib_LTLIBRARIES = lasso.la \
 				  $(NULL)
-
+		
 prefix=@PHP_PREFIX@
 libdir=@PHP_EXTENSION_DIR@
 				  
-liblasso_la_SOURCES = $(LASSOSOURCES)
-liblasso_la_LIBADD = $(mylibs) \
-				  ./environs/libenvirons.a \
-				  ./xml/libxml.a \
-				  $(PHP_LIBS) \
+lasso_la_SOURCES = $(LASSOSOURCES)
+lasso_la_LIBADD = $(mylibs) \
+				  $(LASSO_LIBS) \
+                  ./environs/libenvirons.a \
+                  ./xml/libxml.a \
 				  $(NULL)
