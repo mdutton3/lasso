@@ -17,17 +17,20 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h
-BUILT_SOURCES = types.c
+BUILT_SOURCES = types.c symbols.sym
 
 liblasso_la_SOURCES = lasso.c
 
 types.c:
 	python extract_types.py
 
-clean-local:
-	-rm types.c
+symbols.sym:
+	python extract_symbols.py > symbols.sym
 
-EXTRA_DIST = extract_types.py
+clean-local:
+	-rm types.c symbols.sym
+
+EXTRA_DIST = extract_types.py extract_symbols.py
 
 if MINGW
 liblasso_la_LIBADD = \
@@ -50,7 +53,7 @@ liblasso_la_LIBADD = \
 # Just make damn sure the ABI stays the same between
 # upgrades.
 # Obviously if you don't, fixing the situation up again can be painful. 
-liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@
+liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@ \
+	-export-symbols symbols.sym
 endif
-
 

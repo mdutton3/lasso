@@ -123,8 +123,6 @@ AC_PATH_PROGS(PHP_PATH, php)
 AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
 AC_CHECK_PROGS(SWIG, swig)
 
-LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[^_].*"'
-
 dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES
 test "z$U" != "z" && AC_MSG_ERROR(Compiler not ANSI compliant)

@@ -9,4 +9,5 @@ version.h
 .libs
 .deps
 types.c
+symbols.Sym
 
