@@ -785,6 +785,7 @@ win32/nsis/jlasso-lite.nsi
 win32/nsis/lasso-deps.nsi
 win32/nsis/lasso-full.nsi
 win32/nsis/lasso-lite.nsi
+win32/nsis/python.nsi
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
