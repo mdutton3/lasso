@@ -46,6 +46,8 @@
 <!ENTITY LassoLecp SYSTEM "sgml/lecp.sgml">
 <!ENTITY LassoProvider SYSTEM "sgml/provider.sgml">
 <!ENTITY LassoDefederation SYSTEM "sgml/defederation.sgml">
+<!ENTITY LassoNameRegistration SYSTEM "sgml/name_registration.sgml">
+<!ENTITY LassoNameIdentifierMapping SYSTEM "sgml/name_identifier_mapping.sgml">
 <!ENTITY LassoIdentity SYSTEM "sgml/identity.sgml">
 <!ENTITY LassoLogin SYSTEM "sgml/login.sgml">
 <!ENTITY LassoLogout SYSTEM "sgml/logout.sgml">
@@ -78,6 +80,7 @@ implement Liberty Alliance specifications.
     &LassoServer;
     &LassoIdentity;
     &LassoSession;
+    &LassoFederation;
   </chapter>
     
   <chapter id="idff">
@@ -85,10 +88,11 @@ implement Liberty Alliance specifications.
 
     &LassoProfile;
     &LassoLogin;
-    &LassoFederation;
     &LassoLecp;
     &LassoLogout;
     &LassoDefederation;
+    &LassoNameRegistration;
+    &LassoNameIdentifierMapping;
 
   </chapter>
 
