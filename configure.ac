@@ -318,7 +318,7 @@ if test "X$PYTHON_VERSION" != X; then
             PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
             PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
             PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
-            PY_SITE_PACKAGES="$prefix/lib/python$PY_VERSION/site-packages"
+            PY_SITE_PACKAGES="\${prefix}/lib/python$PY_VERSION/site-packages"
             AC_SUBST(PYTHON)
             AC_SUBST(PY_LIB_LOC)
             AC_SUBST(PY_CFLAGS)
