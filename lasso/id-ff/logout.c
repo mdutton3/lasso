@@ -747,8 +747,6 @@ lasso_logout_validate_request(LassoLogout *logout)
 		}
 	}
 
-	/* FIXME : set the status code in response */
-
 	/* authentication is ok, federation is ok, propagation support is ok, remove federation */
 	lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 
