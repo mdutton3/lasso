@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/xmlsec.h>
+#include <xmlsec/crypto.h>
+
 #include "lasso.h"
 
 #if defined _MSC_VER
