@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_setassertionC
     (*env)->ReleaseStringUTFChars(env, _value, value);
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_setContent
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_setConsent
 (JNIEnv * env, jobject this, jstring _value){
     LassoAuthnRequest * request;
     char * value;

@@ -30,6 +30,15 @@ public class Lasso { // Lasso
         System.loadLibrary("jlasso");
     }
 
+    /* NameIDPolicyType */
+    static final public String libNameIdPolicyTypeNone = "none";
+    static final public String libNameIdPolicyTypeOneTime = "onetime";
+    static final public String libNameIdPolicyTypeFederated = "federated";
+    static final public String libNameIdPolicyTypeAny = "any";
+
+    static final public int signatureMethodRsaSha1 = 1;
+    static final public int signatureMethodDsaSha1 = 2;
+
     native static public int init();
     native static public int shutdown();
 

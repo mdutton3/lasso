@@ -1,11 +1,11 @@
-/* $Id$
- *
+/*
  * JLasso -- Java bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.labs.libre-entreprise.org
+ * http://lasso.entrouvert.com
  *
  * Authors: Benjamin Poussin <poussin@codelutin.com>
+ *          Emmanuel Raviart <eraviart@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

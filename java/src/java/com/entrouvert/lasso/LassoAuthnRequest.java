@@ -36,7 +36,7 @@ public class LassoAuthnRequest extends LassoNode { // LassoAuthnRequest
 
     native public void setAffiliationID(String affiliationId);
     native public void setassertionConsumerServiceID(String assertionConsumerServiceID);
-    native public void setContent(String content);
+    native public void setConsent(String consent);
     native public void setForceAuthn(boolean val);
     native public void setPassive(boolean val);
     native public void setNameIdPolicy(String val);

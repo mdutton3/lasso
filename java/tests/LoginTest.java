@@ -2,7 +2,7 @@
  * JLasso -- Java bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.labs.libre-entreprise.org
+ * http://lasso.entrouvert.org
  *
  * Authors: Benjamin Poussin <poussin@codelutin.com>
  *          Emmanuel Raviart <eraviart@entrouvert.com>
@@ -24,29 +24,32 @@
 
 // To run it:
 // $ export LD_LIBRARY_PATH=../target/
-// $ javac -classpath /usr/share/java/junit.jar:../target/lasso.jar:.:/ LoginTest.java
-// $ java -classpath /usr/share/java/junit.jar:../target/lasso.jar:.:/ LoginTest
+// $ javac -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest.java
+// $ java -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest
+// or for gcj:
+// $ export LD_LIBRARY_PATH=../target/
+// $ gcj -C -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest.java
+// $ gij -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest
 
 import junit.framework.TestCase;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import com.entrouvert.lasso.Lasso;
-import com.entrouvert.lasso.LassoServer;
+import com.entrouvert.lasso.*;
 
 
 public class LoginTest extends TestCase {
     public String generateIdentityProviderContextDump() {
 	LassoServer serverContext = new LassoServer(
             "../../examples/data/idp-metadata.xml",
-            "../../examples/idp-public-key.pem",
-            "../../examples/idp-private-key.pem",
-            "../../examples/idp-crt.pem",
-            1); // FIXME: Replace with lasso.signatureMethodRsaSha1
+            "../../examples/data/idp-public-key.pem",
+            "../../examples/data/idp-private-key.pem",
+            "../../examples/data/idp-crt.pem",
+           Lasso.signatureMethodRsaSha1);
         serverContext.addProvider(
             "../../examples/data/sp-metadata.xml",
-            "../../examples/sp-public-key.pem",
-            "../../examples/ca-crt.pem");
+            "../../examples/data/sp-public-key.pem",
+            "../../examples/data/ca-crt.pem");
 	String serverContextDump = serverContext.dump();
         return serverContextDump;
     }
@@ -54,23 +57,38 @@ public class LoginTest extends TestCase {
     public String generateServiceProviderContextDump() {
         LassoServer serverContext = new LassoServer(
             "../../examples/data/sp-metadata.xml",
-            "../../examples/sp-public-key.pem",
-            "../../examples/sp-private-key.pem",
-            "../../examples/sp-crt.pem",
-            1); // FIXME: Replace with lasso.signatureMethodRsaSha1
+            "../../examples/data/sp-public-key.pem",
+            "../../examples/data/sp-private-key.pem",
+            "../../examples/data/sp-crt.pem",
+            Lasso.signatureMethodRsaSha1);
         serverContext.addProvider(
             "../../examples/data/idp-metadata.xml",
-            "../../examples/idp-public-key.pem",
-            "../../examples/ca-crt.pem");
+            "../../examples/data/idp-public-key.pem",
+            "../../examples/data/ca-crt.pem");
         String serverContextDump = serverContext.dump();
         return serverContextDump;
     }
 
-    public void testSimpleAdd() {
+    public void test01_generateServersContextDumps() {
         String identityProviderContextDump = generateIdentityProviderContextDump();
         assertNotNull(identityProviderContextDump);
         String serviceProviderContextDump = generateServiceProviderContextDump();
         assertNotNull(serviceProviderContextDump);
+    }
+
+    public void test02_serviceProviderLogin() {
+        String spContextDump = generateServiceProviderContextDump();
+	assertNotNull(spContextDump);
+        LassoServer spContext = new LassoServer(spContextDump);
+        LassoLogin spLoginContext = new LassoLogin(spContext, null);
+        assertEquals(spLoginContext.initAuthnRequest(
+	    "https://identity-provider:1998/liberty-alliance/metadata"), 0);
+	LassoAuthnRequest authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
+        authnRequest.setPassive(false);
+        authnRequest.setNameIdPolicy(Lasso.libNameIdPolicyTypeFederated);
+        // FIXME authnRequest.setConsent(Lasso.libConsentObtained);
+        authnRequest.setRelayState("fake");
+        assertEquals(spLoginContext.buildAuthnRequestMsg(), 0);
     }
 
     public static Test suite() { 
