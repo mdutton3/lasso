@@ -114,9 +114,6 @@ LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, co
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
-LASSO_EXPORT gint lasso_node_verify_signature(LassoNode *node,
-		const char *public_key_file, const char *ca_cert_chain_file);
-
 #ifdef LASSO_INTERNALS
 #include <lasso/xml/private.h>
 #endif

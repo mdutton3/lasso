@@ -700,7 +700,6 @@ lasso_node_get_xmlNode
 lasso_node_init_from_message
 lasso_node_init_from_query
 lasso_node_init_from_xml
-lasso_node_verify_signature
 <SUBSECTION Standard>
 LASSO_NODE
 LASSO_IS_NODE

@@ -334,12 +334,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		if (idp == NULL)
 			return LASSO_ERROR_UNDEFINED;
 
-		/* verify signature */
-		/* FIXME detect X509Data ? */
-		ret = lasso_node_verify_signature(LASSO_NODE(response->Assertion),
-					idp->public_key, idp->ca_cert_chain);
-		if (ret < 0)
-			return ret;
+		/* FIXME: verify assertion signature */
 
 		/* store NameIdentifier */
 		if (response->Assertion->AuthenticationStatement == NULL) {
