@@ -52,7 +52,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	LibRegisterNameIdentifierRequest.cs \
 	LibRegisterNameIdentifierResponse.cs LibStatusResponse.cs Login.cs \
 	Logout.cs NameIdentifierMapping.cs NameRegistration.cs Node.cs \
-	NodeArray.cs Options.cs PPMsgContact.cs PersonalProfileService.cs \
+	NodeList.cs Options.cs PPMsgContact.cs PersonalProfileService.cs \
 	Provider.cs QueryItem.cs RemoveEntry.cs ResourceID.cs \
 	ResourceOffering.cs SWIGTYPE_p_LassoDiscoEncryptedResourceID.cs \
 	SWIGTYPE_p_LassoDiscoRequestedServiceType.cs \
@@ -63,7 +63,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SamlNameIdentifier.cs SamlSubject.cs SamlSubjectConfirmation.cs \
 	SamlSubjectLocality.cs SamlSubjectStatement.cs SamlpRequest.cs \
 	SamlpResponse.cs SamlpStatus.cs SamlpStatusCode.cs Server.cs \
-	ServiceInstance.cs Session.cs Status.cs StringArray.cs \
+	ServiceInstance.cs Session.cs Status.cs StringList.cs \
 	lassoPINVOKE.cs
 
 

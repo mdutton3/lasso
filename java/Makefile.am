@@ -37,7 +37,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	LibLogoutResponse.java LibRegisterNameIdentifierRequest.java \
 	LibRegisterNameIdentifierResponse.java LibStatusResponse.java \
 	Login.java Logout.java NameIdentifierMapping.java \
-	NameRegistration.java Node.java NodeArray.java Options.java \
+	NameRegistration.java Node.java NodeList.java Options.java \
 	PPMsgContact.java PersonalProfileService.java Provider.java \
 	QueryItem.java RemoveEntry.java ResourceID.java ResourceOffering.java \
 	SWIGTYPE_p_LassoDiscoEncryptedResourceID.java \
@@ -50,7 +50,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	SamlSubjectConfirmation.java SamlSubjectLocality.java \
 	SamlSubjectStatement.java SamlpRequest.java SamlpResponse.java \
 	SamlpStatus.java SamlpStatusCode.java Server.java \
-	ServiceInstance.java Session.java Status.java StringArray.java \
+	ServiceInstance.java Session.java Status.java StringList.java \
 	lasso.java lassoConstants.java lassoJNI.java
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
