@@ -200,9 +200,11 @@ int lasso_shutdown(void);
 %rename(VERSION_MINOR) LASSO_VERSION_MINOR;
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
 #endif
-#define LASSO_VERSION_MAJOR 0
+/* Useless because some lines before, we explicitly tell to include lasso_config
+ * in the generated wrap C source code.
+ * #define LASSO_VERSION_MAJOR 0
 #define LASSO_VERSION_MINOR 4
-#define LASSO_VERSION_SUBMINOR 0
+#define LASSO_VERSION_SUBMINOR 0*/
 
 
 /* HttpMethod */
