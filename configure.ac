@@ -520,7 +520,7 @@ AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
 
 
 dnl pkg-config path
-AC_ARG_WITH(pkg-config-path, [  --with-pkg-config-path=PATH set pkg-config metadata search path.],
+AC_ARG_WITH(pkg-config, [  --with-pkg-config=PATH set pkg-config metadata search path.],
             PKG_CONFIG_PATH="${withval}", PKG_CONFIG_PATH="")
 if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
