@@ -203,11 +203,9 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
 
   /* set the remote provider id */
   if (remote_providerID == NULL) {
-    debug("No remote provider id, get the remote provider id of the first federation\n");
-    profile->remote_providerID = lasso_identity_get_next_federation_remote_providerID(profile->identity);
+    profile->remote_providerID = lasso_identity_get_first_providerID(profile->identity);
   }
   else {
-    debug("A remote provider id for defederation notification : %s\n", remote_providerID);
     profile->remote_providerID = g_strdup(remote_providerID);
   }
   if (profile->remote_providerID == NULL) {
