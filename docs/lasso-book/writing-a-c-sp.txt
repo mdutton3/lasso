@@ -310,7 +310,7 @@ Identity and session dumps should be restored to prepare the logout request.
       lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump);
   }
   
-  lasso_logout_init_request(logout, NULL);
+  lasso_logout_init_request(logout, NULL, lassoHttpMethodSoap);
   lasso_logout_build_request_msg(logout);
 
 
