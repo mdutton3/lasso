@@ -148,6 +148,8 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		} else {
 			type =LASSO_REQUEST_TYPE_DST_MODIFY;	
 		}
+	} else if (strcmp(name, "SASLRequest") == 0) {
+		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
 	} else {
 		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
 	}
@@ -297,7 +299,7 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 
 	if (LASSO_IS_SAMLP_RESPONSE(profile->response)) {
 		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(profile->response);
-		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
+/* 		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status)); */
 		response->Status = status;
 		return;
 	}
