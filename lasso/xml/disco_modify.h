@@ -50,8 +50,8 @@ typedef struct _LassoDiscoModifyClass LassoDiscoModifyClass;
 struct _LassoDiscoModify {
 	LassoNode parent;
 
-	LassoDiscoResourceID *ResourceID;
-	LassoDiscoEncryptedResourceID *EncryptedResourceID;
+	/* must be either LassoResourceID or LassoEncryptedResourceID */
+	LassoNode *resourceId;
 
 	GList *InsertEntry;
 	GList *RemoveEntry;
