@@ -2,6 +2,10 @@ SUBDIRS = nsis
 
 EXTRA_DIST = lasso.rc
 
+.PHONY = all dll install-dll
+
+all: dll
+
 dll:
 	/usr/bin/windres -i lasso.rc -o lasso.rc.o
 	mkdir -p .libs
