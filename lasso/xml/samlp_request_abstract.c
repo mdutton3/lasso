@@ -132,7 +132,7 @@ lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract *node,
   LassoNodeClass *class;
 
   g_return_val_if_fail(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node),
-		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
 
@@ -151,7 +151,7 @@ lasso_samlp_request_abstract_set_signature_tmpl(LassoSamlpRequestAbstract *node,
   LassoNodeClass *class;
 
   g_return_val_if_fail(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node),
-		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
 
@@ -166,7 +166,7 @@ lasso_samlp_request_abstract_sign_signature_tmpl(LassoSamlpRequestAbstract *node
   LassoNodeClass *class;
 
   g_return_val_if_fail(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node),
-		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
 

@@ -75,14 +75,14 @@ lasso_artifact_get_assertionHandle(LassoArtifact  *artifact,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
   }
 
@@ -115,17 +115,17 @@ lasso_artifact_get_byteCode(LassoArtifact  *artifact,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL,
-			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
+			  LASSO_PARAM_ERROR_CHECK_FAILED);
   }
   if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact),
-			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+			 LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   }
 
   byteCode = lasso_node_get_child_content(LASSO_NODE(artifact),
@@ -150,14 +150,14 @@ lasso_artifact_get_b64IdentityProviderSuccinctID(LassoArtifact  *artifact,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
   }
 
@@ -180,14 +180,14 @@ lasso_artifact_get_relayState(LassoArtifact  *artifact,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
   }
 
@@ -209,14 +209,14 @@ lasso_artifact_get_samlArt(LassoArtifact  *artifact,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
   }
 

@@ -266,7 +266,7 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
   LassoNodeClass *class;
 
   g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
-		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
 

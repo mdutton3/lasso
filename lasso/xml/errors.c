@@ -33,13 +33,13 @@ lasso_strerror(int error_code)
   char msg[256];
 
   switch (error_code) {
-  case LASSO_XML_ERROR_NODE_NOTFOUND:
+  case LASSO_XML_ERROR_NODE_NOT_FOUND:
     return "Unable to get '%s' child of '%s' element.\n";
-  case LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND:
+  case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
     return "Unable to get content of '%s' element.\n";
-  case LASSO_XML_ERROR_ATTR_NOTFOUND:
+  case LASSO_XML_ERROR_ATTR_NOT_FOUND:
     return "Unable to get '%s' attribute of '%s' element.\n";
-  case LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND:
+  case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
     return "Unable to get '%s' attribute value of '%s' element.\n";
 
   case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
@@ -52,7 +52,7 @@ lasso_strerror(int error_code)
     return "Failed to load certificate %s.\n";
   case LASSO_DS_ERROR_SIGNATURE_FAILED:
     return "Failed to sign the node %s.\n";
-  case LASSO_DS_ERROR_SIGNATURE_NOTFOUND:
+  case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
     return "Signature element not found in %s.\n";
   case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
     return "Failed to create keys manager.\n";
@@ -63,7 +63,7 @@ lasso_strerror(int error_code)
   case LASSO_DS_ERROR_INVALID_SIGNATURE:
     return "The signature of %s is invalid.\n";
 
-  case LASSO_SERVER_ERROR_PROVIDER_NOTFOUND:
+  case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
     return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
 
   case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
@@ -72,11 +72,11 @@ lasso_strerror(int error_code)
   case LASSO_PROFILE_ERROR_INVALID_QUERY:
     return "Error while parsing query message\n";
 
-  case LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ:
+  case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
     return "An object type provided as parameter is invalid or object is NULL.\n";
   case LASSO_PARAM_ERROR_INVALID_VALUE:
     return "A parameter value is invalid.\n";
-  case LASSO_PARAM_ERROR_ERR_CHECK_FAILED:
+  case LASSO_PARAM_ERROR_CHECK_FAILED:
     return "The error return location should be either NULL or contains a NULL error.\n";
 
   default:

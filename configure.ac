@@ -338,7 +338,7 @@ AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
 AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
 
-dnl Check if python is explicitly disabled.
+dnl Check if php is explicitly disabled.
 AC_ARG_ENABLE(php, [  --disable-php           disable the PHP bindings],,
               enable_php="yes")
 
@@ -356,7 +356,7 @@ if test "X$PHP_CONFIG" != X ; then
   PHP_UNPREFIXED_EXTENSION_DIR=`$PHP_CONFIG --extension-dir | $SED 's/\/usr//g'`
   PHP_PREFIX=`$PHP_CONFIG --prefix`
 else
-  # This allows 'make clean' in the python directory to work when
+  # This allows 'make clean' in the php directory to work when
   # php isn't available
   PHP=:
   PHP_INCLUDES=
@@ -618,7 +618,7 @@ dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
 LASSO_CORE_CFLAGS="$LASSO_DEFINES" 
-dnl -I${includedir}"
+dnl -I${includedir}
 if test $MINGW -eq 1; then 
 LASSO_CORE_LIBS="-llasso-0"
 else

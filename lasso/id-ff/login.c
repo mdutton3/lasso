@@ -72,9 +72,9 @@ lasso_login_add_response_assertion(LassoLogin      *login,
   GError *err = NULL;
   gint ret = 0;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail (LASSO_IS_FEDERATION(federation),
-			LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* get RequestID to build Assertion */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
@@ -137,7 +137,7 @@ lasso_login_process_federation(LassoLogin *login)
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* verify if an identity exists else create it */
   if (LASSO_PROFILE(login)->identity == NULL) {
@@ -222,7 +222,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
@@ -325,7 +325,7 @@ lasso_login_accept_sso(LassoLogin *login)
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   if(LASSO_PROFILE(login)->identity == NULL) {
     LASSO_PROFILE(login)->identity = lasso_identity_new();    
@@ -430,7 +430,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   xmlChar *assertionHandle, *identityProviderSuccinctID;
   gint i;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL,
 		       LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -539,7 +539,7 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
@@ -657,7 +657,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   LassoProvider *remote_provider;
   LassoFederation *federation;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* ProtocolProfile must be BrwsPost */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsPost) {
@@ -703,7 +703,7 @@ lasso_login_build_request_msg(LassoLogin *login)
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* sign request */
   ret= lasso_samlp_request_abstract_sign_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
@@ -771,7 +771,7 @@ gint
 lasso_login_init_authn_request(LassoLogin      *login,
 			       lassoHttpMethod  http_method)
 {
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it must be REDIRECT or POST\n.");
     return (LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -812,7 +812,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   if (authn_request_http_method != lassoHttpMethodRedirect && \
@@ -926,13 +926,13 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
     }
     
     /* Modify StatusCode if signature is not OK */
-    if (ret == LASSO_DS_ERROR_INVALID_SIGNATURE || ret == LASSO_DS_ERROR_SIGNATURE_NOTFOUND) {
+    if (ret == LASSO_DS_ERROR_INVALID_SIGNATURE || ret == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
       switch (ret) {
       case LASSO_DS_ERROR_INVALID_SIGNATURE:
 	lasso_profile_set_response_status(LASSO_PROFILE(login),
 					  lassoLibStatusCodeInvalidSignature);
 	break;
-      case LASSO_DS_ERROR_SIGNATURE_NOTFOUND: /* Unsigned AuthnRequest */
+      case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND: /* Unsigned AuthnRequest */
 	lasso_profile_set_response_status(LASSO_PROFILE(login),
 					  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
@@ -953,7 +953,7 @@ lasso_login_init_request(LassoLogin      *login,
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   if (response_http_method != lassoHttpMethodRedirect && \
@@ -1013,7 +1013,7 @@ lasso_login_must_authenticate(LassoLogin *login)
   gboolean  forceAuthn = FALSE;
   gchar    *str;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* verify if the user must be authenticated or not */
   str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
@@ -1052,7 +1052,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login,
   gint ret1 = 0, ret2 = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   LASSO_PROFILE(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
@@ -1086,7 +1086,7 @@ lasso_login_process_request_msg(LassoLogin *login,
   gint ret = 0;
   GError *err = NULL;
 
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   /* rebuild samlp:Request with request_msg */
@@ -1115,7 +1115,7 @@ gint
 lasso_login_process_response_msg(LassoLogin  *login,
 				 gchar       *response_msg)
 {
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   /* rebuild samlp:Response with response_msg */

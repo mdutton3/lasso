@@ -70,7 +70,7 @@ lasso_server_add_provider(LassoServer *server,
 {
   LassoProvider *provider;
 
-  g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(metadata != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
@@ -199,8 +199,8 @@ lasso_server_get_provider(LassoServer  *server,
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
 
@@ -227,14 +227,14 @@ lasso_server_get_provider_ref(LassoServer  *server,
   
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
     g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_SERVER(server) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
     g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   }
   if (providerID == NULL) {
@@ -260,8 +260,8 @@ lasso_server_get_provider_ref(LassoServer  *server,
 
   /* no provider was found */
   g_set_error(err, g_quark_from_string("Lasso"),
-	      LASSO_SERVER_ERROR_PROVIDER_NOTFOUND,
-	      lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOTFOUND),
+	      LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+	      lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND),
 	      providerID);
   /* print error msg here so that caller just check err->code */
   message(G_LOG_LEVEL_CRITICAL, err[0]->message);
