@@ -201,7 +201,7 @@ int lasso_shutdown(void);
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
 #endif
 #define LASSO_VERSION_MAJOR 0
-#define LASSO_VERSION_MINOR 3
+#define LASSO_VERSION_MINOR 4
 #define LASSO_VERSION_SUBMINOR 0
 
 
