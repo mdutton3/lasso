@@ -83,17 +83,17 @@ PyObject *server_add_provider(PyObject *self, PyObject *args) {
   PyObject *server_obj;
   gchar       *metadata;
   gchar       *public_key = NULL;
-  gchar       *certificat = NULL;
+  gchar       *ca_certificat = NULL;
 
   if (CheckArgs(args, "OSss:server_add_provider")) {
     if(!PyArg_ParseTuple(args, (char *) "Oszz:server_add_provider",
-			 &server_obj, &metadata, &public_key, &certificat))
+			 &server_obj, &metadata, &public_key, &ca_certificat))
       return NULL;
   }
   else return NULL;
   
   lasso_server_add_provider(LassoServer_get(server_obj),
-			    metadata, public_key, certificat);
+			    metadata, public_key, ca_certificat);
 
   Py_INCREF(Py_None);
   return (Py_None);

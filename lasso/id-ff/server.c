@@ -147,14 +147,24 @@ lasso_server_get_provider(LassoServer *server,
 /*****************************************************************************/
 
 static void
+lasso_server_dispose(LassoServer *server)
+{
+  debug(INFO, "Server object 0x%x finalized ...\n", server);
+
+  /* TODO destroy the providers */
+
+  parent_class->dispose(LASSO_PROVIDER(server));
+}
+
+static void
 lasso_server_finalize(LassoServer *server)
 {
-  parent_class->finalize(LASSO_PROVIDER(server));
-  /* TODO destroy the providers */
+  debug(INFO, "Server object 0x%x finalized ...\n", server);
+
   g_free(server->private_key);
   g_free(server->certificate);
-  
-  debug(INFO, "Server object 0x%x finalized ...\n", server);
+
+  parent_class->finalize(LASSO_PROVIDER(server));
 }
 
 /*****************************************************************************/
@@ -176,6 +186,7 @@ lasso_server_class_init(LassoServerClass *class) {
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_server_dispose;
   gobject_class->finalize = (void *)lasso_server_finalize;
 }
 

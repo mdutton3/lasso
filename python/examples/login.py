@@ -26,7 +26,7 @@ splogin = lasso.Login.new(server, None)
 ret = splogin.init_authn_request("https://identity-provider:2003/liberty-alliance/metadata")
 splogin.request.set_isPassive(0)
 splogin.request.set_forceAuthn(1)
-#splogin.request.set_nameIDPolicy(lasso.LibNameIDPolicyTypeFederated)
+splogin.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 splogin.request.set_relayState("fake")
 splogin.request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
 

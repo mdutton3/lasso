@@ -24,7 +24,6 @@
  */
 
 #include <lasso/protocols/authn_response.h>
-#include <lasso/protocols/authn_request.h>
 
 static void
 lasso_authn_response_set_status(LassoAuthnResponse *response,

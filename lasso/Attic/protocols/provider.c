@@ -29,6 +29,8 @@ struct _LassoProviderPrivate
   gboolean dispose_has_run;
 };
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -161,9 +163,13 @@ lasso_provider_dispose(LassoProvider *provider)
   }
   provider->private->dispose_has_run = TRUE;
 
+  debug(INFO, "Provider object 0x%x disposed ...\n", provider);
+
   /* unref reference counted objects */
   /* we don't have any here */
-  debug(INFO, "Provider object 0x%x disposed ...\n", provider);
+  lasso_node_destroy(provider->metadata);
+
+  parent_class->dispose(G_OBJECT(provider));
 }
 
 static void
@@ -171,10 +177,11 @@ lasso_provider_finalize(LassoProvider *provider)
 {
   debug(INFO, "Provider object 0x%x finalized ...\n", provider);
 
-  lasso_node_destroy(provider->metadata);
   g_free(provider->public_key);
   g_free(provider->ca_certificate);
   g_free(provider->private);
+
+  parent_class->finalize(G_OBJECT(provider));
 }
 
 /*****************************************************************************/
@@ -195,6 +202,7 @@ static void
 lasso_provider_class_init(LassoProviderClass *class) {
   GObjectClass *gobject_class = G_OBJECT_CLASS(class);
   
+  parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
   gobject_class->dispose  = (void *)lasso_provider_dispose;
   gobject_class->finalize = (void *)lasso_provider_finalize;
