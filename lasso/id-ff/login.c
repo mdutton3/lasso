@@ -82,6 +82,9 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	profile = LASSO_PROFILE(login);
 
+	if (profile->identity == NULL)
+		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
+
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	
