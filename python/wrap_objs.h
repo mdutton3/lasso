@@ -4,12 +4,7 @@
 #undef _POSIX_C_SOURCE
 #include <Python.h>
 
-#include <libxml/xpath.h>
-#include <libxml/xmlmemory.h>
-
-#include <xmlsec/xmlsec.h>
-
-#include <lasso/protocols/protocols.h>
+#include <lasso/lasso.h>
 
 typedef struct {
     PyObject_HEAD
