@@ -597,7 +597,7 @@ Python binding:
 PHP binding:
     ${with_php}
 
-Build Java binding:
+Java binding:
     ${with_java}
         
 C API references:
