@@ -114,7 +114,7 @@ GType lasso_saml_name_identifier_get_type() {
  * 
  * Return value: the new @LassoSamlNameIdentifier
  **/
-LassoNode* lasso_saml_name_identifier_new(xmlChar *content)
+LassoNode* lasso_saml_name_identifier_new(const xmlChar *content)
 {
   LassoNode *node;
 

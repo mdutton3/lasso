@@ -71,7 +71,7 @@ GType lasso_lib_idp_provided_name_identifier_get_type() {
   return this_type;
 }
 
-LassoNode* lasso_lib_idp_provided_name_identifier_new(xmlChar *content) {
+LassoNode* lasso_lib_idp_provided_name_identifier_new(const xmlChar *content) {
   LassoNode *node;
 
   g_assert(content != NULL);
