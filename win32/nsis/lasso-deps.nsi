@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "LASSO dependencies"
-!define PRODUCT_VERSION "0.5.0a"
+!define PRODUCT_VERSION "0.6.0"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://lasso.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -48,7 +48,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-deps-0_5a.exe"
+OutFile "Install-deps-0_6_0.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -66,11 +66,11 @@ Section "GLIB: Low-level core library that forms the basis for projects such as 
   File "c:\cygwin\usr\local\lib\libgthread-2.0-0.dll"
 SectionEnd
 
-Section "LIBXML2: XML C parser and toolkit version 2.6.15." SEC02
+Section "LIBXML2: XML C parser and toolkit version 2.6.17." SEC02
   File "c:\cygwin\usr\local\lib\libxml2.dll"
 SectionEnd
 
-Section "LIBXSLT: The XSLT C library version 1.2.6." SEC03
+Section "LIBXSLT: The XSLT C library version 1.2.12+." SEC03
   File "c:\cygwin\usr\local\lib\libxslt.dll"
   File "c:\cygwin\usr\local\lib\libexslt.dll"
 SectionEnd
@@ -91,7 +91,7 @@ Section "ZLIB: A free, general-purpose, legally unencumbered -- that is, not cov
   File "c:\cygwin\usr\local\lib\zlib1.dll"
 SectionEnd
 
-Section "LIBICONV: Free iconv() implementation." SEC07
+Section "LIBICONV: Free iconv() implementation version 1.9.1." SEC07
   File "c:\cygwin\usr\local\lib\iconv.dll"
 SectionEnd
 
