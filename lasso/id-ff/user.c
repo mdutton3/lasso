@@ -227,8 +227,8 @@ static void
 lasso_user_instance_init(LassoUser *user)
 {
   user->assertion_providerIDs = g_ptr_array_new();
-  user->identities = g_hash_table_new(g_str_hash,  g_str_equal);
-  user->assertions = g_hash_table_new(g_str_hash,  g_str_equal);
+  user->identities = g_hash_table_new(g_str_hash, g_str_equal);
+  user->assertions = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 static void
@@ -313,7 +313,7 @@ lasso_user_new_from_dump(gchar *dump)
 	/* assertion node */
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
 	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE);
-	lasso_user_add_assertion(user, remote_providerID, assertion_node);
+	lasso_user_add_assertion(user, remote_providerID, lasso_node_copy(assertion_node));
 	g_free(remote_providerID);
 	lasso_node_destroy(assertion_node);
       }
@@ -342,7 +342,7 @@ lasso_user_new_from_dump(gchar *dump)
 	local_nameIdentifier_node = lasso_node_get_child(identity_node, LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE, NULL);
 	if (local_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier", NULL);
-	  lasso_identity_set_local_nameIdentifier(identity, nameIdentifier_node);
+	  lasso_identity_set_local_nameIdentifier(identity, lasso_node_copy(nameIdentifier_node));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(local_nameIdentifier_node);
 	}
@@ -351,7 +351,7 @@ lasso_user_new_from_dump(gchar *dump)
 	remote_nameIdentifier_node = lasso_node_get_child(identity_node, LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE, NULL);
 	if (remote_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier", NULL);
-	  lasso_identity_set_remote_nameIdentifier(identity, nameIdentifier_node);
+	  lasso_identity_set_remote_nameIdentifier(identity, lasso_node_copy(nameIdentifier_node));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(remote_nameIdentifier_node);
 	}
