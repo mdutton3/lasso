@@ -52,13 +52,12 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	SamlpStatus.java SamlpStatusCode.java Server.java \
 	ServiceInstance.java Session.java Status.java StringList.java \
 	lasso.java lassoConstants.java lassoJNI.java \
-	LibRequestAuthnContext.java NodeArray.java \
+	LibRequestAuthnContext.java \
 	SamlAttributeDesignator.java SamlAttribute.java \
 	SamlAudienceRestrictionCondition.java \
 	SamlAuthorityBinding.java SamlConditionAbstract.java \
 	SamlpRequestAbstract.java SamlpResponseAbstract.java \
-	SamlStatementAbstract.java SamlSubjectStatementAbstract.java \
-	StringArray.java
+	SamlStatementAbstract.java SamlSubjectStatementAbstract.java
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
 
