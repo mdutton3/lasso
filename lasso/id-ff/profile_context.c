@@ -144,11 +144,15 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
 static void
 lasso_profile_context_finalize(LassoProfileContext *ctx)
 {
+  if (ctx->private->dispose_has_run) {
+    return;
+  }
   debug(INFO, "ProfileContext object 0x%x finalized ...\n", ctx);
 
-  lasso_server_destroy(ctx->server);
-  // TODO lasso_user_destroy(ctx->user);
+  /* server and user shouldn't be destroyed */
+  printf("toto\n");
   lasso_node_destroy(ctx->request);
+  printf("toto2\n");
   lasso_node_destroy(ctx->response);
   g_free(ctx->remote_providerID);
   
@@ -183,6 +187,7 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->response = NULL;
   ctx->request_type  = lassoMessageTypeNone;
   ctx->response_type = lassoMessageTypeNone;
+  // TODO ctx->provider_type = lassoMachinTrucNone;
   
   ctx->remote_providerID = NULL;
   

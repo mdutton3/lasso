@@ -27,6 +27,8 @@
 #include <lasso/protocols/artifact.h>
 #include <lasso/protocols/provider.h>
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* functions                                                                 */
 /*****************************************************************************/
@@ -303,6 +305,12 @@ lasso_login_build_request_msg(LassoLogin *login)
   LASSO_PROFILE_CONTEXT(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->request);
   LASSO_PROFILE_CONTEXT(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider);
   return (0);
+}
+
+void
+lasso_login_destroy(LassoLogin *login)
+{
+  g_object_unref(G_OBJECT(login));
 }
 
 gchar*
@@ -588,6 +596,23 @@ lasso_login_must_authenticate(LassoLogin *login)
 }
 
 /*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_login_finalize(LassoLogin *login)
+{
+  parent_class->finalize(LASSO_PROFILE_CONTEXT(login));
+
+  g_free(login->assertionArtifact);
+  g_free(login->nameIdentifier);
+  g_free(login->response_dump);
+  g_free(login->msg_relayState);
+  
+  debug(INFO, "Login object 0x%x finalized ...\n", login);
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
@@ -604,6 +629,11 @@ lasso_login_instance_init(LassoLogin *login)
 static void
 lasso_login_class_init(LassoLoginClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
+  
+  parent_class = g_type_class_peek_parent(class);
+  /* override parent class methods */
+  gobject_class->finalize = (void *)lasso_login_finalize;
 }
 
 GType lasso_login_get_type() {

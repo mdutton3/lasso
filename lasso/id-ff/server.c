@@ -152,6 +152,7 @@ lasso_server_finalize(LassoServer *server)
   parent_class->finalize(LASSO_PROVIDER(server));
   /* TODO destroy the providers */
   g_free(server->private_key);
+  g_free(server->certificate);
   
   debug(INFO, "Server object 0x%x finalized ...\n", server);
 }

@@ -18,7 +18,7 @@ server = lasso.Server.new("../../examples/sp.xml",
 
 server.add_provider("../../examples/idp.xml", None, None)
 server_dump = server.dump()
-print server_dump
+server.destroy()
 
 # create AuthnRequest
 server = lasso.Server.new_from_dump(server_dump)

@@ -229,6 +229,7 @@ static PyMethodDef lasso_methods[] = {
   {"server_new",           server_new,           METH_VARARGS},
   {"server_new_from_dump", server_new_from_dump, METH_VARARGS},
   {"server_add_provider",  server_add_provider,  METH_VARARGS},
+  {"server_destroy",       server_destroy,       METH_VARARGS},
   {"server_dump",          server_dump,          METH_VARARGS},
   
   /* py_user.h */

@@ -832,6 +832,9 @@ class Server:
     def dump(self):
         return lassomod.server_dump(self)
 
+    def destroy(self):
+        lassomod.server_destroy(self)
+
 
 class Login:
     """\brief Short desc

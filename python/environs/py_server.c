@@ -99,6 +99,22 @@ PyObject *server_add_provider(PyObject *self, PyObject *args) {
   return (Py_None);
 }
 
+PyObject *server_destroy(PyObject *self, PyObject *args) {
+  PyObject *server_obj;
+
+  if (CheckArgs(args, "O:server_destroy")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:server_destroy",
+			 &server_obj))
+      return NULL;
+  }
+  else return NULL;
+  
+  lasso_server_destroy(LassoServer_get(server_obj));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *server_dump(PyObject *self, PyObject *args) {
   PyObject *server_obj;
   gchar *ret;

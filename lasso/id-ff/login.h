@@ -57,7 +57,7 @@ struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
   lassoLoginProtocolProfiles  protocolProfile;
-  gchar                      *nameIdentifier;
+  gchar                      *nameIdentifier; /* rename this ??? */
 
   gchar                      *assertionArtifact;
   gchar                      *response_dump;
@@ -93,6 +93,8 @@ LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (Lasso
 									   const gchar *reauthenticateOnOrAfter);
 
 LASSO_EXPORT gint                 lasso_login_build_request_msg           (LassoLogin *login);
+
+LASSO_EXPORT void                 lasso_login_destroy                     (LassoLogin *login);
 
 LASSO_EXPORT gchar*               lasso_login_dump                        (LassoLogin *login);
 
