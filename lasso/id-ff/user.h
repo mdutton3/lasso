@@ -32,6 +32,7 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 #include <lasso/protocols/identity.h>
+#include <lasso/protocols/response.h>
 #include <lasso/protocols/elements/assertion.h>
 
 #define LASSO_TYPE_USER (lasso_user_get_type())
@@ -50,7 +51,7 @@ struct _LassoUser {
   /*< public >*/
   GHashTable *assertions;          /* hash for assertions with nameIdentifier as key */
   GHashTable *identities;          /* hash for identities with remote ProviderID as key */
-  GHashTable *assertion_artifacts; /* has for temporary assertions with AssertionArtifact as key */
+  GHashTable *assertion_artifacts; /* hash for temporary assertions with AssertionArtifact as key */
 
   /*< private >*/
 };

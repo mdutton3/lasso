@@ -63,7 +63,7 @@ lasso_user_node_identity_add(xmlChar *key, LassoIdentity *identity, LassoNode *u
 xmlChar *
 lasso_user_export(LassoUser *user)
 {
-  LassoNode *user_node, identities, *assertions, *assertion_artifacts;
+  LassoNode *user_node, *identities, *assertions, *assertion_artifacts;
   LassoNodeClass *class;
 
   /* set the user node  */
@@ -99,7 +99,7 @@ lasso_user_store_response(LassoUser     *user,
 {
   g_hash_table_insert(user->assertion_artifacts,
 		      g_strdup(assertionArtifact),
-		      lasso_node_copy(response));
+		      lasso_node_copy(LASSO_NODE(response)));
 }
 
 LassoNode *lasso_user_get_assertionArtifact(LassoUser *user,
