@@ -383,6 +383,10 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation,
   case lassoHttpMethodRedirect:
     debug("Build a federation termination notification from query msg\n");
     profile->request = lasso_federation_termination_notification_new_from_export(notification_msg, lassoNodeExportTypeQuery);
+    if (LASSO_IS_FEDERATION_TERMINATION_NOTIFICATON(profile->request) == FALSE) {
+      ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
+      goto done;
+    }
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid notification method\n");
@@ -459,7 +463,9 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
     goto done;
   }
 
-  /* if HTTP-Redirect protocol profile, set the federation termination service return url */
+  /* If SOAP notification, then msg_url and msg_body are NULL */
+  /* if HTTP-Redirect notification, set msg_url with the federation termination service return url,
+   and set msg_body to NULL */
   profile->msg_url  = NULL;
   profile->msg_body = NULL;
   if (profile->http_request_method == lassoHttpMethodRedirect) {
