@@ -66,8 +66,6 @@ PHP_FUNCTION(lasso_server_new) {
 
 	server = lasso_server_new(sp, rsapub, rsakey, rsacert, signaturemethod);
 
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 	ZEND_REGISTER_RESOURCE(return_value, server, le_lassoserver);
 }
 /* }}} */
@@ -98,8 +96,6 @@ PHP_FUNCTION(lasso_server_add_provider) {
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &param, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 	lasso_server_add_provider(server, idp, a, b);
 
 
@@ -126,8 +122,6 @@ PHP_FUNCTION(lasso_server_dump) {
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &param, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 	server_dump = lasso_server_dump(server);
 
 	RETURN_STRING(server_dump, 1);
@@ -153,8 +147,6 @@ PHP_FUNCTION(lasso_server_destroy) {
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &param, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 	lasso_server_destroy(server);
 
 	zend_list_delete(Z_RESVAL_PP(&param));

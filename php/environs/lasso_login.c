@@ -52,8 +52,6 @@ PHP_FUNCTION(lasso_login_new) {
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &param, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
   	login = lasso_login_new(server);
 
 	ZEND_REGISTER_RESOURCE(return_value, login, le_lassologin);
@@ -82,8 +80,6 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &param, -1, 
 			le_lassologin_name, le_lassologin);
 	
-	zend_printf("DEBUG: login at 0x%p\n", login);
-
 	ret = lasso_login_init_authn_request(login);
 
 	(ret) ? (RETURN_FALSE) : (RETURN_TRUE);
@@ -111,8 +107,6 @@ PHP_FUNCTION(lasso_login_destroy) {
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &param, -1, le_lassologin_name, le_lassologin);
 	
-	zend_printf("DEBUG: login at 0x%p\n", login);
-
 	lasso_login_destroy(login);
 
 	zend_list_delete(Z_RESVAL_PP(&param));
@@ -143,8 +137,6 @@ PHP_FUNCTION(lasso_login_new_from_dump) {
 
 	ZEND_FETCH_RESOURCE(server, LassoServer *, &parm_server, -1, le_lassoserver_name, le_lassoserver);
 	
-	zend_printf("DEBUG: server at 0x%p\n", server);
-
 
 	login = lasso_login_new_from_dump(server, dump);
 
@@ -174,8 +166,6 @@ PHP_FUNCTION(lasso_login_build_request_msg) {
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
 	
-	zend_printf("DEBUG: login at 0x%p\n", login);
-
 	lasso_login_build_request_msg(login);
 }
 /* }}} */
@@ -204,8 +194,6 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
 	
-	zend_printf("DEBUG: login at 0x%p\n", login);
-
 	lasso_login_build_authn_request_msg(login, remote_providerID);
 }
 /* }}} */

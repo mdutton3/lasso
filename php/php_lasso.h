@@ -76,7 +76,7 @@ PHP_FUNCTION(lasso_login_build_request_msg);
 PHP_FUNCTION(lasso_login_destroy);
 PHP_FUNCTION(lasso_login_build_authn_request_msg);
 
-/* lasso_user.c */
+/* lasso_identity.c */
 PHP_FUNCTION(lasso_identity_new);	
 PHP_FUNCTION(lasso_identity_dump);	
 PHP_FUNCTION(lasso_identity_destroy);	
