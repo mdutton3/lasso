@@ -19,6 +19,7 @@
 #undef PACKAGE_BUGREPORT
 #endif
 
+
 #include <lasso_config.h>
 #include <lasso.h>
 
@@ -48,6 +49,9 @@
     lasso_init();
 %}*/
 
+#if defined(SWIGPYTHON)
+%typemap(in,parse="z") char *, char [ANY] "";
+#endif
 /* lasso.h */
 int lasso_shutdown(void);
 int lasso_init(void);
@@ -164,15 +168,12 @@ gint           lasso_node_verify_signature (LassoNode    *node,
 /*#define LASSO_FEDERATION_TERMINATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_FEDERATION_TERMINATION, LassoFederationTerminationClass)) */
 
-typedef struct _LassoFederationTermination LassoFederationTermination;
-/*typedef struct _LassoFederationTerminationClass
- * LassoFederationTerminationClass;*/
 
-struct _LassoFederationTermination {
+typedef struct _LassoFederationTermination {
   LassoProfile parent;
 
   /*< private >*/
-};
+} LassoFederationTermination;
 
 /*struct _LassoFederationTerminationClass {
   LassoProfileClass parent;
@@ -211,11 +212,11 @@ gint lasso_federation_termination_validate_notification    (LassoFederationTermi
 /*#define LASSO_IDENTITY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_IDENTITY, LassoIdentityClass)) */
 
-typedef struct _LassoIdentity LassoIdentity;
+/*typedef struct _LassoIdentity LassoIdentity;*/
 /*typedef struct _LassoIdentityClass LassoIdentityClass;*/
 typedef struct _LassoIdentityPrivate LassoIdentityPrivate;
 
-struct _LassoIdentity {
+typedef struct _LassoIdentity {
   GObject parent;
 
   /*< public >*/
@@ -226,7 +227,7 @@ struct _LassoIdentity {
 
   /*< private >*/
   LassoIdentityPrivate *private;
-};
+} LassoIdentity;
 
 /*struct _LassoIdentityClass {
   GObjectClass parent;
@@ -268,10 +269,9 @@ gint             lasso_identity_remove_federation                     (LassoIden
 /*#define LASSO_LECP_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LECP, LassoLecpClass)) */
 
-typedef struct _LassoLecp LassoLecp;
 /*typedef struct _LassoLecpClass LassoLecpClass;*/
 
-struct _LassoLecp {
+typedef struct _LassoLecp {
   LassoLogin parent;
 
   /*< public >*/
@@ -281,7 +281,7 @@ struct _LassoLecp {
   gchar *assertionConsumerServiceURL;
 
   /*< private >*/
-};
+} LassoLecp;
 
 /*struct _LassoLecpClass {
   LassoLoginClass parent_class;
@@ -330,7 +330,6 @@ gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
 /*#define LASSO_LOGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LOGIN, LassoLoginClass)) */
 
-typedef struct _LassoLogin LassoLogin;
 /*typedef struct _LassoLoginClass LassoLoginClass;*/
 typedef struct _LassoLoginPrivate LassoLoginPrivate;
 
@@ -339,7 +338,7 @@ typedef enum {
   lassoLoginProtocolProfileBrwsPost,
 } lassoLoginProtocolProfiles;
 
-struct _LassoLogin {
+typedef struct _LassoLogin {
   LassoProfile parent;
   /*< public >*/
   lassoLoginProtocolProfiles  protocolProfile;
@@ -348,7 +347,7 @@ struct _LassoLogin {
   gchar                      *response_dump;
   /*< private >*/
   LassoLoginPrivate *private;
-};
+} LassoLogin;
 
 /*struct _LassoLoginClass {
   LassoProfileClass parent;
@@ -416,11 +415,10 @@ gint                 lasso_login_process_response_msg        (LassoLogin  *login
 /*#define LASSO_LOGOUT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LOGOUT, LassoLogoutClass)) */
 
-typedef struct _LassoLogout LassoLogout;
 /*typedef struct _LassoLogoutClass LassoLogoutClass;*/
 typedef struct _LassoLogoutPrivate LassoLogoutPrivate;
 
-struct _LassoLogout {
+typedef struct _LassoLogout {
   LassoProfile parent;
   
   /*< public >*/
@@ -430,7 +428,7 @@ struct _LassoLogout {
 
   /*< private >*/
   LassoLogoutPrivate *private;
-};
+} LassoLogout;
 
 /*struct _LassoLogoutClass {
   LassoProfileClass parent;
@@ -477,15 +475,14 @@ gint         lasso_logout_process_response_msg (LassoLogout     *logout,
  * ((o), LASSO_TYPE_NAME_IDENTIFIER_MAPPING, LassoNameIdentifierMappingClass))
  * */
 
-typedef struct _LassoNameIdentifierMapping LassoNameIdentifierMapping;
 /*typedef struct _LassoNameIdentifierMappingClass
  * LassoNameIdentifierMappingClass;*/
 
-struct _LassoNameIdentifierMapping {
+typedef struct _LassoNameIdentifierMapping {
   LassoProfile parent;
 
   /*< private >*/
-};
+} LassoNameIdentifierMapping;
 
 /*struct _LassoNameIdentifierMappingClass {
   LassoProfileClass parent;
@@ -525,7 +522,6 @@ gint                        lasso_name_identifier_mapping_process_response_msg (
 /*#define LASSO_PROFILE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_PROFILE, LassoProfileClass)) */
 
-typedef struct _LassoProfile LassoProfile;
 /*typedef struct _LassoProfileClass LassoProfileClass;*/
 typedef struct _LassoProfilePrivate LassoProfilePrivate;
 
@@ -556,7 +552,7 @@ typedef enum {
   lassoMessageTypeArtifact
 } lassoMessageType;
 
-struct _LassoProfile {
+typedef struct _LassoProfile {
   GObject parent;
 
   /*< public >*/
@@ -582,7 +578,7 @@ struct _LassoProfile {
   lassoProviderType provider_type;
 
   LassoProfilePrivate *private;
-};
+} LassoProfile;
 
 /*struct _LassoProfileClass {
   GObjectClass parent;
@@ -640,15 +636,14 @@ gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
  * ((o), LASSO_TYPE_REGISTER_NAME_IDENTIFIER, LassoRegisterNameIdentifierClass))
  * */
 
-typedef struct _LassoRegisterNameIdentifier LassoRegisterNameIdentifier;
 /*typedef struct _LassoRegisterNameIdentifierClass
  * LassoRegisterNameIdentifierClass;*/
 
-struct _LassoRegisterNameIdentifier {
+typedef struct _LassoRegisterNameIdentifier {
   LassoProfile parent;
 
   /*< private >*/
-};
+} LassoRegisterNameIdentifier;
 
 /*struct _LassoRegisterNameIdentifierClass {
   LassoProfileClass parent;
@@ -691,11 +686,10 @@ gint            lasso_register_name_identifier_process_response_msg  (LassoRegis
 /*#define LASSO_SERVER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SERVER, LassoServerClass)) */
 
-typedef struct _LassoServer LassoServer;
 /*typedef struct _LassoServerClass LassoServerClass;*/
 typedef struct _LassoServerPrivate LassoServerPrivate;
 
-struct _LassoServer {
+typedef struct _LassoServer {
   LassoProvider parent;
 
   GPtrArray *providers;
@@ -706,7 +700,7 @@ struct _LassoServer {
   guint  signature_method;
   /*< private >*/
   LassoServerPrivate *private;
-};
+} LassoServer;
 
 /*struct _LassoServerClass {
   LassoProviderClass parent;
@@ -756,11 +750,10 @@ gchar*         lasso_server_get_providerID_from_hash (LassoServer *server,
 /*#define LASSO_SESSION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SESSION, LassoSessionClass)) */
 
-typedef struct _LassoSession LassoSession;
 /*typedef struct _LassoSessionClass LassoSessionClass;*/
 typedef struct _LassoSessionPrivate LassoSessionPrivate;
 
-struct _LassoSession {
+typedef struct _LassoSession {
   GObject parent;
 
   /*< public >*/
@@ -771,7 +764,7 @@ struct _LassoSession {
 
   /*< private >*/
   LassoSessionPrivate *private;
-};
+} LassoSession;
 
 /*struct _LassoSessionClass {
   GObjectClass parent;
@@ -830,14 +823,13 @@ int lasso_check_version_ext(int major,
 /*#define LASSO_AUTHN_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_AUTHN_REQUEST, LassoAuthnRequestClass)) */
 
-typedef struct _LassoAuthnRequest LassoAuthnRequest;
 /*typedef struct _LassoAuthnRequestClass LassoAuthnRequestClass;*/
 
-struct _LassoAuthnRequest {
+typedef struct _LassoAuthnRequest {
   LassoLibAuthnRequest parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoAuthnRequest;
 
 /*struct _LassoAuthnRequestClass {
   LassoLibAuthnRequestClass parent;
@@ -874,15 +866,14 @@ void       lasso_authn_request_set_scoping             (LassoAuthnRequest *reque
 /*#define LASSO_AUTHN_REQUEST_ENVELOPE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_AUTHN_REQUEST_ENVELOPE, LassoAuthnRequestEnvelopeClass)) */
 
-typedef struct _LassoAuthnRequestEnvelope LassoAuthnRequestEnvelope;
 /*typedef struct _LassoAuthnRequestEnvelopeClass
  * LassoAuthnRequestEnvelopeClass;*/
 
-struct _LassoAuthnRequestEnvelope {
+typedef struct _LassoAuthnRequestEnvelope {
   LassoLibAuthnRequestEnvelope parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoAuthnRequestEnvelope;
 
 /*struct _LassoAuthnRequestEnvelopeClass {
   LassoLibAuthnRequestEnvelopeClass parent;
@@ -911,14 +902,13 @@ LassoNode* lasso_authn_request_envelope_new_from_export  (gchar               *b
 /*#define LASSO_AUTHN_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_AUTHN_RESPONSE, LassoAuthnResponseClass)) */
 
-typedef struct _LassoAuthnResponse LassoAuthnResponse;
 /*typedef struct _LassoAuthnResponseClass LassoAuthnResponseClass;*/
 
-struct _LassoAuthnResponse {
+typedef struct _LassoAuthnResponse {
   LassoLibAuthnResponse parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoAuthnResponse;
 
 /*struct _LassoAuthnResponseClass {
   LassoLibAuthnResponseClass parent;
@@ -948,15 +938,14 @@ xmlChar*   lasso_authn_response_get_status                    (LassoAuthnRespons
  * ((o), LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, LassoAuthnResponseEnvelopeClass))
  * */
 
-typedef struct _LassoAuthnResponseEnvelope LassoAuthnResponseEnvelope;
 /*typedef struct _LassoAuthnResponseEnvelopeClass
  * LassoAuthnResponseEnvelopeClass;*/
 
-struct _LassoAuthnResponseEnvelope {
+typedef struct _LassoAuthnResponseEnvelope {
   LassoLibAuthnResponseEnvelope parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoAuthnResponseEnvelope;
 
 /*struct _LassoAuthnResponseEnvelopeClass {
   LassoLibAuthnResponseEnvelopeClass parent;
@@ -990,11 +979,10 @@ LassoNode* lasso_authn_response_envelope_new_from_export                 (gchar 
 #define LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE "LocalNameIdentifier"
 #define LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE "RemoteNameIdentifier"
 
-typedef struct _LassoFederation LassoFederation;
 /*typedef struct _LassoFederationClass LassoFederationClass;*/
 typedef struct _LassoFederationPrivate LassoFederationPrivate;
 
-struct _LassoFederation {
+typedef struct _LassoFederation {
   GObject parent;
   
   gchar *remote_providerID;
@@ -1004,7 +992,7 @@ struct _LassoFederation {
 
   /*< private >*/
   LassoFederationPrivate *private;
-};
+} LassoFederation;
 
 /*struct _LassoFederationClass {
   GObjectClass parent;
@@ -1054,15 +1042,14 @@ gboolean         lasso_federation_verify_nameIdentifier        (LassoFederation 
  * LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION,
  * LassoFederationTerminationNotificationClass)) */
 
-typedef struct _LassoFederationTerminationNotification LassoFederationTerminationNotification;
 /*typedef struct _LassoFederationTerminationNotificationClass
  * LassoFederationTerminationNotificationClass;*/
 
-struct _LassoFederationTerminationNotification {
+typedef struct _LassoFederationTerminationNotification {
   LassoLibFederationTerminationNotification parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoFederationTerminationNotification;
 
 /*struct _LassoFederationTerminationNotificationClass {
   LassoLibFederationTerminationNotificationClass parent;
@@ -1089,14 +1076,13 @@ LassoNode* lasso_federation_termination_notification_new_from_export   (const xm
 /*#define LASSO_LOGOUT_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LOGOUT_REQUEST, LassoLogoutRequestClass)) */
 
-typedef struct _LassoLogoutRequest LassoLogoutRequest;
 /*typedef struct _LassoLogoutRequestClass LassoLogoutRequestClass;*/
 
-struct _LassoLogoutRequest {
+typedef struct _LassoLogoutRequest {
   LassoLibLogoutRequest parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoLogoutRequest;
 
 /*struct _LassoLogoutRequestClass {
   LassoLibLogoutRequestClass parent;
@@ -1123,14 +1109,13 @@ LassoNode* lasso_logout_request_new_from_export (gchar               *buffer,
 /*#define LASSO_LOGOUT_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LOGOUT_RESPONSE, LassoLogoutResponseClass)) */
 
-typedef struct _LassoLogoutResponse LassoLogoutResponse;
 /*typedef struct _LassoLogoutResponseClass LassoLogoutResponseClass;*/
 
-struct _LassoLogoutResponse {
+typedef struct _LassoLogoutResponse {
   LassoLibLogoutResponse parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoLogoutResponse;
 
 /*struct _LassoLogoutResponseClass {
   LassoLibLogoutResponseClass parent;
@@ -1163,15 +1148,14 @@ LassoNode* lasso_logout_response_new_from_request_export (gchar               *b
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST,
  * LassoNameIdentifierMappingRequestClass)) */
 
-typedef struct _LassoNameIdentifierMappingRequest LassoNameIdentifierMappingRequest;
 /*typedef struct _LassoNameIdentifierMappingRequestClass
  * LassoNameIdentifierMappingRequestClass;*/
 
-struct _LassoNameIdentifierMappingRequest {
+typedef struct _LassoNameIdentifierMappingRequest {
   LassoLibNameIdentifierMappingRequest parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoNameIdentifierMappingRequest;
 
 /*struct _LassoNameIdentifierMappingRequestClass {
   LassoLibNameIdentifierMappingRequestClass parent;
@@ -1202,15 +1186,14 @@ LassoNode *lasso_name_identifier_mapping_request_new_from_soap     (const xmlCha
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE,
  * LassoNameIdentifierMappingResponseClass)) */
 
-typedef struct _LassoNameIdentifierMappingResponse LassoNameIdentifierMappingResponse;
 /*typedef struct _LassoNameIdentifierMappingResponseClass
  * LassoNameIdentifierMappingResponseClass;*/
 
-struct _LassoNameIdentifierMappingResponse {
+typedef struct _LassoNameIdentifierMappingResponse {
   LassoLibNameIdentifierMappingResponse parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoNameIdentifierMappingResponse;
 
 /*struct _LassoNameIdentifierMappingResponseClass {
   LassoLibNameIdentifierMappingResponseClass parent;
@@ -1246,7 +1229,6 @@ LassoNode *lasso_name_identifier_mapping_response_new_from_request_query (const 
 #define LASSO_PROVIDER_PUBLIC_KEY_NODE     "PublicKey"
 #define LASSO_PROVIDER_CA_CERTIFICATE_NODE "CaCertificate"
 
-typedef struct _LassoProvider LassoProvider;
 /*typedef struct _LassoProviderClass LassoProviderClass;*/
 typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
@@ -1256,7 +1238,7 @@ typedef enum {
   lassoProviderTypeIdp
 } lassoProviderType;
 
-struct _LassoProvider {
+typedef struct _LassoProvider {
   GObject parent;
 
   LassoNode *metadata;
@@ -1266,7 +1248,7 @@ struct _LassoProvider {
 
   /*< private >*/
   LassoProviderPrivate *private;
-};
+} LassoProvider;
 
 /*struct _LassoProviderClass {
   GObjectClass parent;
@@ -1363,15 +1345,14 @@ void           lasso_provider_set_ca_certificate                                
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_REGISTER_NAME_IDENTIFIER_REQUEST,
  * LassoRegisterNameIdentifierRequestClass)) */
 
-typedef struct _LassoRegisterNameIdentifierRequest LassoRegisterNameIdentifierRequest;
 /*typedef struct _LassoRegisterNameIdentifierRequestClass
  * LassoRegisterNameIdentifierRequestClass;*/
 
-struct _LassoRegisterNameIdentifierRequest {
+typedef struct _LassoRegisterNameIdentifierRequest {
   LassoLibRegisterNameIdentifierRequest parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoRegisterNameIdentifierRequest;
 
 /*struct _LassoRegisterNameIdentifierRequestClass {
   LassoLibRegisterNameIdentifierRequestClass parent;
@@ -1411,15 +1392,14 @@ void lasso_register_name_identifier_request_rename_attributes_for_query (LassoRe
  * LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE,
  * LassoRegisterNameIdentifierResponseClass)) */
 
-typedef struct _LassoRegisterNameIdentifierResponse LassoRegisterNameIdentifierResponse;
 /*typedef struct _LassoRegisterNameIdentifierResponseClass
  * LassoRegisterNameIdentifierResponseClass;*/
 
-struct _LassoRegisterNameIdentifierResponse {
+typedef struct _LassoRegisterNameIdentifierResponse {
   LassoLibRegisterNameIdentifierResponse parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoRegisterNameIdentifierResponse;
 
 /*struct _LassoRegisterNameIdentifierResponseClass {
   LassoLibRegisterNameIdentifierResponseClass parent;
@@ -1450,14 +1430,13 @@ LassoNode*  lasso_register_name_identifier_response_new_from_request_export (gch
 /*#define LASSO_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_REQUEST, LassoRequestClass)) */
 
-typedef struct _LassoRequest LassoRequest;
 /*typedef struct _LassoRequestClass LassoRequestClass;*/
 
-struct _LassoRequest {
+typedef struct _LassoRequest {
   LassoSamlpRequest parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoRequest;
 
 /*struct _LassoRequestClass {
   LassoSamlpRequestClass parent;
@@ -1481,14 +1460,13 @@ LassoNode* lasso_request_new_from_export (gchar               *buffer,
 /*#define LASSO_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_RESPONSE, LassoResponseClass)) */
 
-typedef struct _LassoResponse LassoResponse;
 /*typedef struct _LassoResponseClass LassoResponseClass;*/
 
-struct _LassoResponse {
+typedef struct _LassoResponse {
   LassoSamlpResponse parent;
   /*< public >*/
   /*< private >*/
-};
+} LassoResponse;
 
 /*struct _LassoResponseClass {
   LassoSamlpResponseClass parent;
@@ -1513,13 +1491,12 @@ LassoNode* lasso_response_new_from_export (xmlChar             *buffer,
 /*#define LASSO_DS_SIGNATURE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_DS_SIGNATURE, LassoDsSignatureClass)) */
 
-typedef struct _LassoDsSignature LassoDsSignature;
 /*typedef struct _LassoDsSignatureClass LassoDsSignatureClass;*/
 
-struct _LassoDsSignature {
+typedef struct _LassoDsSignature {
   LassoNode parent;
   /*< private >*/
-};
+} LassoDsSignature;
 
 /*struct _LassoDsSignatureClass {
   LassoNodeClass parent;
@@ -1572,13 +1549,12 @@ gint lasso_ds_signature_sign (LassoDsSignature  *node,
 /*#define LASSO_LIB_ASSERTION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_ASSERTION, LassoLibAssertionClass)) */
 
-typedef struct _LassoLibAssertion LassoLibAssertion;
 /*typedef struct _LassoLibAssertionClass LassoLibAssertionClass;*/
 
-struct _LassoLibAssertion {
+typedef struct _LassoLibAssertion {
   LassoSamlAssertion parent;
   /*< private >*/
-};
+} LassoLibAssertion;
 
 /*struct _LassoLibAssertionClass {
   LassoSamlAssertionClass parent;
@@ -1604,14 +1580,13 @@ void lasso_lib_assertion_set_inResponseTo (LassoLibAssertion *,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT,
  * LassoLibAuthenticationStatementClass)) */
 
-typedef struct _LassoLibAuthenticationStatement LassoLibAuthenticationStatement;
 /*typedef struct _LassoLibAuthenticationStatementClass
  * LassoLibAuthenticationStatementClass;*/
 
-struct _LassoLibAuthenticationStatement {
+typedef struct _LassoLibAuthenticationStatement {
   LassoSamlAuthenticationStatement parent;
   /*< private >*/
-};
+} LassoLibAuthenticationStatement;
 
 /*struct _LassoLibAuthenticationStatementClass {
   LassoSamlAuthenticationStatementClass parent;
@@ -1641,13 +1616,12 @@ void lasso_lib_authentication_statement_set_sessionIndex            (LassoLibAut
 /*#define LASSO_LIB_AUTHN_CONTEXT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_AUTHN_CONTEXT, LassoLibAuthnContextClass)) */
 
-typedef struct _LassoLibAuthnContext LassoLibAuthnContext;
 /*typedef struct _LassoLibAuthnContextClass LassoLibAuthnContextClass;*/
 
-struct _LassoLibAuthnContext {
+typedef struct _LassoLibAuthnContext {
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibAuthnContext;
 
 /*struct _LassoLibAuthnContextClass {
   LassoNodeClass parent;
@@ -1674,13 +1648,12 @@ void lasso_lib_authn_context_set_authnContextStatementRef (LassoLibAuthnContext 
 /*#define LASSO_LIB_AUTHN_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_AUTHN_REQUEST, LassoLibAuthnRequestClass)) */
 
-typedef struct _LassoLibAuthnRequest LassoLibAuthnRequest;
 /*typedef struct _LassoLibAuthnRequestClass LassoLibAuthnRequestClass;*/
 
-struct _LassoLibAuthnRequest {
+typedef struct _LassoLibAuthnRequest {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoLibAuthnRequest;
 
 /*struct _LassoLibAuthnRequestClass {
   LassoSamlpRequestAbstractClass parent;
@@ -1736,15 +1709,14 @@ void lasso_lib_authn_request_set_scoping                    (LassoLibAuthnReques
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE,
  * LassoLibAuthnRequestEnvelopeClass)) */
 
-typedef struct _LassoLibAuthnRequestEnvelope LassoLibAuthnRequestEnvelope;
 /*typedef struct _LassoLibAuthnRequestEnvelopeClass
  * LassoLibAuthnRequestEnvelopeClass;*/
 
-struct _LassoLibAuthnRequestEnvelope {
+typedef struct _LassoLibAuthnRequestEnvelope {
   LassoNode parent;
 
   /*< private >*/
-};
+} LassoLibAuthnRequestEnvelope;
 
 /*struct _LassoLibAuthnRequestEnvelopeClass {
   LassoNodeClass parent;
@@ -1787,13 +1759,12 @@ void       lasso_lib_authn_request_envelope_set_isPassive    (LassoLibAuthnReque
 /*#define LASSO_LIB_AUTHN_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponseClass)) */
 
-typedef struct _LassoLibAuthnResponse LassoLibAuthnResponse;
 /*typedef struct _LassoLibAuthnResponseClass LassoLibAuthnResponseClass;*/
 
-struct _LassoLibAuthnResponse {
+typedef struct _LassoLibAuthnResponse {
   LassoSamlpResponse parent;
   /*< private >*/
-};
+} LassoLibAuthnResponse;
 
 /*struct _LassoLibAuthnResponseClass {
   LassoSamlpResponseClass parent;
@@ -1824,14 +1795,13 @@ void lasso_lib_authn_response_set_relayState (LassoLibAuthnResponse *,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE,
  * LassoLibAuthnResponseEnvelopeClass)) */
 
-typedef struct _LassoLibAuthnResponseEnvelope LassoLibAuthnResponseEnvelope;
 /*typedef struct _LassoLibAuthnResponseEnvelopeClass
  * LassoLibAuthnResponseEnvelopeClass;*/
 
-struct _LassoLibAuthnResponseEnvelope {
+typedef struct _LassoLibAuthnResponseEnvelope {
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibAuthnResponseEnvelope;
 
 /*struct _LassoLibAuthnResponseEnvelopeClass {
   LassoNodeClass parent;
@@ -1867,14 +1837,13 @@ void       lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL (La
  * LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION,
  * LassoLibFederationTerminationNotificationClass)) */
 
-typedef struct _LassoLibFederationTerminationNotification LassoLibFederationTerminationNotification;
 /*typedef struct _LassoLibFederationTerminationNotificationClass
  * LassoLibFederationTerminationNotificationClass;*/
 
-struct _LassoLibFederationTerminationNotification {
+typedef struct _LassoLibFederationTerminationNotification {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoLibFederationTerminationNotification;
 
 /*struct _LassoLibFederationTerminationNotificationClass {
   LassoSamlpRequestAbstractClass parent;
@@ -1904,13 +1873,12 @@ void lasso_lib_federation_termination_notification_set_nameIdentifier (LassoLibF
 /*#define LASSO_LIB_IDP_ENTRIES_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_IDP_ENTRIES, LassoLibIDPEntriesClass)) */
 
-typedef struct _LassoLibIDPEntries LassoLibIDPEntries;
 /*typedef struct _LassoLibIDPEntriesClass LassoLibIDPEntriesClass;*/
 
-struct _LassoLibIDPEntries{
+typedef struct _LassoLibIDPEntries{
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibIDPEntries;
 
 /*struct _LassoLibIDPEntriesClass {
   LassoNodeClass parent;
@@ -1932,13 +1900,12 @@ void lasso_lib_idp_entries_add_idpEntry (LassoLibIDPEntries *node,
 /*#define LASSO_LIB_IDP_ENTRY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_IDP_ENTRY, LassoLibIDPEntryClass)) */
 
-typedef struct _LassoLibIDPEntry LassoLibIDPEntry;
 /*typedef struct _LassoLibIDPEntryClass LassoLibIDPEntryClass;*/
 
-struct _LassoLibIDPEntry{
+typedef struct _LassoLibIDPEntry{
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibIDPEntry;
 
 /*struct _LassoLibIDPEntryClass {
   LassoNodeClass parent;
@@ -1967,13 +1934,12 @@ void lasso_lib_idp_entry_set_loc          (LassoLibIDPEntry *node,
 #define LASSO_IS_LIB_IDP_LIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_IDP_LIST))
 #define LASSO_LIB_IDP_LIST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_IDP_LIST, LassoLibIDPListClass)) 
 
-typedef struct _LassoLibIDPList LassoLibIDPList;
 /*typedef struct _LassoLibIDPListClass LassoLibIDPListClass;*/
 
-struct _LassoLibIDPList {
+typedef struct _LassoLibIDPList {
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibIDPList;
 
 /*struct _LassoLibIDPListClass {
   LassoNodeClass parent;
@@ -2002,14 +1968,13 @@ void lasso_lib_idp_list_set_idpEntries  (LassoLibIDPList *node,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_IDP_PROVIDED_NAME_IDENTIFIER,
  * LassoLibIDPProvidedNameIdentifierClass))*/
 
-typedef struct _LassoLibIDPProvidedNameIdentifier LassoLibIDPProvidedNameIdentifier;
 /*typedef struct _LassoLibIDPProvidedNameIdentifierClass
  * LassoLibIDPProvidedNameIdentifierClass;*/
 
-struct _LassoLibIDPProvidedNameIdentifier {
+typedef struct _LassoLibIDPProvidedNameIdentifier {
   LassoSamlNameIdentifier parent;
   /*< private >*/
-};
+} LassoLibIDPProvidedNameIdentifier;
 
 /*struct _LassoLibIDPProvidedNameIdentifierClass {
   LassoSamlNameIdentifierClass parent;
@@ -2031,13 +1996,12 @@ LassoNode* lasso_lib_idp_provided_name_identifier_new(const xmlChar *content);
 /*#define LASSO_LIB_LOGOUT_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_LOGOUT_REQUEST, LassoLibLogoutRequestClass)) */
 
-typedef struct _LassoLibLogoutRequest LassoLibLogoutRequest;
 /*typedef struct _LassoLibLogoutRequestClass LassoLibLogoutRequestClass;*/
 
-struct _LassoLibLogoutRequest {
+typedef struct _LassoLibLogoutRequest {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoLibLogoutRequest;
 
 /*struct _LassoLibLogoutRequestClass {
   LassoSamlpRequestAbstractClass parent;
@@ -2074,13 +2038,12 @@ void lasso_lib_logout_request_set_sessionIndex   (LassoLibLogoutRequest *,
 /*#define LASSO_LIB_LOGOUT_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_LIB_LOGOUT_RESPONSE, LassoLibLogoutResponseClass)) */
 
-typedef struct _LassoLibLogoutResponse LassoLibLogoutResponse;
 /*typedef struct _LassoLibLogoutResponseClass LassoLibLogoutResponseClass;*/
 
-struct _LassoLibLogoutResponse {
+typedef struct _LassoLibLogoutResponse {
   LassoLibStatusResponse parent;
   /*< private >*/
-};
+} LassoLibLogoutResponse;
 
 /*struct _LassoLibLogoutResponseClass {
   LassoLibStatusResponseClass parent;
@@ -2105,14 +2068,13 @@ LassoNode* lasso_lib_logout_response_new(void);
  * LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_REQUEST,
  * LassoLibNameIdentifierMappingRequestClass)) */
 
-typedef struct _LassoLibNameIdentifierMappingRequest LassoLibNameIdentifierMappingRequest;
 /*typedef struct _LassoLibNameIdentifierMappingRequestClass
  * LassoLibNameIdentifierMappingRequestClass;*/
 
-struct _LassoLibNameIdentifierMappingRequest {
+typedef struct _LassoLibNameIdentifierMappingRequest {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoLibNameIdentifierMappingRequest;
 
 /*struct _LassoLibNameIdentifierMappingRequestClass {
   LassoSamlpRequestAbstractClass parent;
@@ -2145,14 +2107,13 @@ void lasso_lib_name_identifier_mapping_request_set_nameIdentifier (LassoLibNameI
  * LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE,
  * LassoLibNameIdentifierMappingResponseClass)) */
 
-typedef struct _LassoLibNameIdentifierMappingResponse LassoLibNameIdentifierMappingResponse;
 /*typedef struct _LassoLibNameIdentifierMappingResponseClass
  * LassoLibNameIdentifierMappingResponseClass;*/
 
-struct _LassoLibNameIdentifierMappingResponse {
+typedef struct _LassoLibNameIdentifierMappingResponse {
   LassoSamlpResponseAbstract parent;
   /*< private >*/
-};
+} LassoLibNameIdentifierMappingResponse;
 
 /*struct _LassoLibNameIdentifierMappingResponseClass {
   LassoSamlpResponseAbstractClass parent;
@@ -2183,14 +2144,13 @@ void lasso_lib_name_identifier_mapping_response_set_status         (LassoLibName
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_OLD_PROVIDED_NAME_IDENTIFIER,
  * LassoLibOLDProvidedNameIdentifierClass))*/
 
-typedef struct _LassoLibOLDProvidedNameIdentifier LassoLibOLDProvidedNameIdentifier;
 /*typedef struct _LassoLibOLDProvidedNameIdentifierClass
  * LassoLibOLDProvidedNameIdentifierClass;*/
 
-struct _LassoLibOLDProvidedNameIdentifier {
+typedef struct _LassoLibOLDProvidedNameIdentifier {
   LassoSamlNameIdentifier parent;
   /*< private >*/
-};
+} LassoLibOLDProvidedNameIdentifier;
 
 /*struct _LassoLibOLDProvidedNameIdentifierClass {
   LassoSamlNameIdentifierClass parent;
@@ -2214,14 +2174,13 @@ LassoNode* lasso_lib_old_provided_name_identifier_new(const xmlChar *content);
  * LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST,
  * LassoLibRegisterNameIdentifierRequestClass)) */
 
-typedef struct _LassoLibRegisterNameIdentifierRequest LassoLibRegisterNameIdentifierRequest;
 /*typedef struct _LassoLibRegisterNameIdentifierRequestClass
  * LassoLibRegisterNameIdentifierRequestClass;*/
 
-struct _LassoLibRegisterNameIdentifierRequest {
+typedef struct _LassoLibRegisterNameIdentifierRequest {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoLibRegisterNameIdentifierRequest;
 
 /*struct _LassoLibRegisterNameIdentifierRequestClass {
   LassoSamlpRequestAbstractClass parent;
@@ -2260,14 +2219,13 @@ void lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier  (L
  * LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE,
  * LassoLibRegisterNameIdentifierResponseClass)) */
 
-typedef struct _LassoLibRegisterNameIdentifierResponse LassoLibRegisterNameIdentifierResponse;
 /*typedef struct _LassoLibRegisterNameIdentifierResponseClass
  * LassoLibRegisterNameIdentifierResponseClass;*/
 
-struct _LassoLibRegisterNameIdentifierResponse {
+typedef struct _LassoLibRegisterNameIdentifierResponse {
   LassoLibStatusResponse parent;
   /*< private >*/
-};
+} LassoLibRegisterNameIdentifierResponse;
 
 /*struct _LassoLibRegisterNameIdentifierResponseClass {
   LassoLibStatusResponseClass parent;
@@ -2290,14 +2248,13 @@ LassoNode* lasso_lib_register_name_identifier_response_new(void);
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT,
  * LassoLibRequestAuthnContextClass)) */
 
-typedef struct _LassoLibRequestAuthnContext LassoLibRequestAuthnContext;
 /*typedef struct _LassoLibRequestAuthnContextClass
  * LassoLibRequestAuthnContextClass;*/
 
-struct _LassoLibRequestAuthnContext {
+typedef struct _LassoLibRequestAuthnContext {
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibRequestAuthnContext;
 
 /*struct _LassoLibRequestAuthnContextClass {
   LassoNodeClass parent;
@@ -2329,13 +2286,12 @@ void lasso_lib_request_authn_context_set_authnContextComparison   (LassoLibReque
 /*#define LASSO_LIB_SCOPING_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_SCOPING, LassoLibScopingClass)) */
 
-typedef struct _LassoLibScoping LassoLibScoping;
 /*typedef struct _LassoLibScopingClass LassoLibScopingClass;*/
 
-struct _LassoLibScoping {
+typedef struct _LassoLibScoping {
   LassoNode parent;
   /*< private >*/
-};
+} LassoLibScoping;
 
 /*struct _LassoLibScopingClass {
   LassoNodeClass parent;
@@ -2364,14 +2320,13 @@ void lasso_lib_scoping_set_idpList    (LassoLibScoping *node,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_LIB_SP_PROVIDED_NAME_IDENTIFIER,
  * LassoLibSPProvidedNameIdentifierClass))*/
 
-typedef struct _LassoLibSPProvidedNameIdentifier LassoLibSPProvidedNameIdentifier;
 /*typedef struct _LassoLibSPProvidedNameIdentifierClass
  * LassoLibSPProvidedNameIdentifierClass;*/
 
-struct _LassoLibSPProvidedNameIdentifier {
+typedef struct _LassoLibSPProvidedNameIdentifier {
   LassoSamlNameIdentifier parent;
   /*< private >*/
-};
+} LassoLibSPProvidedNameIdentifier;
 
 /*struct _LassoLibSPProvidedNameIdentifierClass {
   LassoSamlNameIdentifierClass parent;
@@ -2392,13 +2347,12 @@ LassoNode* lasso_lib_sp_provided_name_identifier_new(const xmlChar *content);
 /*#define LASSO_LIB_STATUS_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_LIB_STATUS_RESPONSE, LassoLibStatusResponseClass)) */
 
-typedef struct _LassoLibStatusResponse LassoLibStatusResponse;
 /*typedef struct _LassoLibStatusResponseClass LassoLibStatusResponseClass;*/
 
-struct _LassoLibStatusResponse {
+typedef struct _LassoLibStatusResponse {
   LassoSamlpResponseAbstract parent;
   /*< private >*/
-};
+} LassoLibStatusResponse;
 
 /*struct _LassoLibStatusResponseClass {
   LassoSamlpResponseAbstractClass parent;
@@ -2428,13 +2382,12 @@ void lasso_lib_status_response_set_status     (LassoLibStatusResponse *node,
 /*#define LASSO_LIB_SUBJECT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_LIB_SUBJECT, LassoLibSubjectClass)) */
 
-typedef struct _LassoLibSubject LassoLibSubject;
 /*typedef struct _LassoLibSubjectClass LassoLibSubjectClass;*/
 
-struct _LassoLibSubject {
+typedef struct _LassoLibSubject {
   LassoSamlSubject parent;
   /*< private >*/
-};
+} LassoLibSubject;
 
 /*struct _LassoLibSubjectClass {
   LassoSamlSubjectClass parent;
@@ -2458,13 +2411,12 @@ void lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 /*#define LASSO_SAMLP_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAMLP_REQUEST, LassoSamlpRequestClass)) */
 
-typedef struct _LassoSamlpRequest LassoSamlpRequest;
 /*typedef struct _LassoSamlpRequestClass LassoSamlpRequestClass;*/
 
-struct _LassoSamlpRequest {
+typedef struct _LassoSamlpRequest {
   LassoSamlpRequestAbstract parent;
   /*< private >*/
-};
+} LassoSamlpRequest;
 
 /*struct _LassoSamlpRequestClass {
   LassoSamlpRequestAbstractClass parent;
@@ -2489,14 +2441,13 @@ void lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
 /*#define LASSO_SAMLP_REQUEST_ABSTRACT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_SAMLP_REQUEST_ABSTRACT, LassoSamlpRequestAbstractClass)) */
 
-typedef struct _LassoSamlpRequestAbstract LassoSamlpRequestAbstract;
 /*typedef struct _LassoSamlpRequestAbstractClass
  * LassoSamlpRequestAbstractClass;*/
 
-struct _LassoSamlpRequestAbstract {
+typedef struct _LassoSamlpRequestAbstract {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlpRequestAbstract;
 
 /*struct _LassoSamlpRequestAbstractClass {
   LassoNodeClass parent;
@@ -2538,13 +2489,12 @@ gint lasso_samlp_request_abstract_set_signature    (LassoSamlpRequestAbstract  *
 /*#define LASSO_SAMLP_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass)) */
 
-typedef struct _LassoSamlpResponse LassoSamlpResponse;
 /*typedef struct _LassoSamlpResponseClass LassoSamlpResponseClass;*/
 
-struct _LassoSamlpResponse {
+typedef struct _LassoSamlpResponse {
   LassoSamlpResponseAbstract parent;
   /*< private >*/
-};
+} LassoSamlpResponse;
 
 /*struct _LassoSamlpResponseClass {
   LassoSamlpResponseAbstractClass parent;
@@ -2573,14 +2523,13 @@ void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
  * ((o), LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT, LassoSamlpResponseAbstractClass))
  * */
 
-typedef struct _LassoSamlpResponseAbstract LassoSamlpResponseAbstract;
 /*typedef struct _LassoSamlpResponseAbstractClass
  * LassoSamlpResponseAbstractClass;*/
 
-struct _LassoSamlpResponseAbstract {
+typedef struct _LassoSamlpResponseAbstract {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlpResponseAbstract;
 
 /*struct _LassoSamlpResponseAbstractClass {
   LassoNodeClass parent;
@@ -2625,13 +2574,12 @@ gint lasso_samlp_response_abstract_set_signature    (LassoSamlpResponseAbstract 
 /*#define LASSO_SAMLP_STATUS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatusClass)) */
 
-typedef struct _LassoSamlpStatus LassoSamlpStatus;
 /*typedef struct _LassoSamlpStatusClass LassoSamlpStatusClass;*/
 
-struct _LassoSamlpStatus {
+typedef struct _LassoSamlpStatus {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlpStatus;
 
 /*struct _LassoSamlpStatusClass {
   LassoNodeClass parent;
@@ -2662,13 +2610,12 @@ void lasso_samlp_status_set_statusMessage  (LassoSamlpStatus *node,
 /*#define LASSO_SAMLP_STATUS_CODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAMLP_STATUS_CODE, LassoSamlpStatusCodeClass)) */
 
-typedef struct _LassoSamlpStatusCode LassoSamlpStatusCode;
 /*typedef struct _LassoSamlpStatusCodeClass LassoSamlpStatusCodeClass;*/
 
-struct _LassoSamlpStatusCode {
+typedef struct _LassoSamlpStatusCode {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlpStatusCode;
 
 /*struct _LassoSamlpStatusCodeClass {
   LassoNodeClass parent;
@@ -2692,13 +2639,12 @@ void lasso_samlp_status_code_set_value (LassoSamlpStatusCode *node,
 /*#define LASSO_SAML_ADVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAML_ADVICE, LassoSamlAdviceClass)) */
 
-typedef struct _LassoSamlAdvice LassoSamlAdvice;
 /*typedef struct _LassoSamlAdviceClass LassoSamlAdviceClass;*/
 
-struct _LassoSamlAdvice {
+typedef struct _LassoSamlAdvice {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlAdvice;
 
 /*struct _LassoSamlAdviceClass {
   LassoNodeClass parent;
@@ -2725,13 +2671,12 @@ void lasso_saml_advice_add_assertion            (LassoSamlAdvice *node,
 /*#define LASSO_SAML_ASSERTION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAML_ASSERTION, LassoSamlAssertionClass)) */
 
-typedef struct _LassoSamlAssertion LassoSamlAssertion;
 /*typedef struct _LassoSamlAssertionClass LassoSamlAssertionClass;*/
 
-struct _LassoSamlAssertion {
+typedef struct _LassoSamlAssertion {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlAssertion;
 
 /*struct _LassoSamlAssertionClass {
   LassoNodeClass parent;
@@ -2792,14 +2737,13 @@ gint lasso_saml_assertion_set_signature               (LassoSamlAssertion  *node
  * LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION,
  * LassoSamlAudienceRestrictionConditionClass)) */
 
-typedef struct _LassoSamlAudienceRestrictionCondition LassoSamlAudienceRestrictionCondition;
 /*typedef struct _LassoSamlAudienceRestrictionConditionClass
  * LassoSamlAudienceRestrictionConditionClass;*/
 
-struct _LassoSamlAudienceRestrictionCondition {
+typedef struct _LassoSamlAudienceRestrictionCondition {
   LassoSamlConditionAbstract parent;
   /*< private >*/
-};
+} LassoSamlAudienceRestrictionCondition;
 
 /*struct _LassoSamlAudienceRestrictionConditionClass {
   LassoSamlConditionAbstractClass parent;
@@ -2824,14 +2768,13 @@ void lasso_saml_audience_restriction_condition_add_audience (LassoSamlAudienceRe
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT,
  * LassoSamlAuthenticationStatementClass)) */
 
-typedef struct _LassoSamlAuthenticationStatement LassoSamlAuthenticationStatement;
 /*typedef struct _LassoSamlAuthenticationStatementClass
  * LassoSamlAuthenticationStatementClass;*/
 
-struct _LassoSamlAuthenticationStatement {
+typedef struct _LassoSamlAuthenticationStatement {
   LassoSamlSubjectStatementAbstract parent;
   /*< private >*/
-};
+} LassoSamlAuthenticationStatement;
 
 /*struct _LassoSamlAuthenticationStatementClass {
   LassoSamlSubjectStatementAbstractClass parent;
@@ -2864,14 +2807,13 @@ void lasso_saml_authentication_statement_set_subjectLocality       (LassoSamlAut
 /*#define LASSO_SAML_AUTHORITY_BINDING_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_SAML_AUTHORITY_BINDING, LassoSamlAuthorityBindingClass)) */
 
-typedef struct _LassoSamlAuthorityBinding LassoSamlAuthorityBinding;
 /*typedef struct _LassoSamlAuthorityBindingClass
  * LassoSamlAuthorityBindingClass;*/
 
-struct _LassoSamlAuthorityBinding {
+typedef struct _LassoSamlAuthorityBinding {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlAuthorityBinding;
 
 /*struct _LassoSamlAuthorityBindingClass {
   LassoNodeClass parent;
@@ -2901,13 +2843,12 @@ void lasso_saml_authority_binding_set_location      (LassoSamlAuthorityBinding *
 /*#define LASSO_SAML_CONDITIONS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAML_CONDITIONS, LassoSamlConditionsClass)) */
 
-typedef struct _LassoSamlConditions LassoSamlConditions;
 /*typedef struct _LassoSamlConditionsClass LassoSamlConditionsClass;*/
 
-struct _LassoSamlConditions {
+typedef struct _LassoSamlConditions {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlConditions;
 
 /*struct _LassoSamlConditionsClass {
   LassoNodeClass parent;
@@ -2941,14 +2882,13 @@ void lasso_saml_conditions_set_notOnOrAfter (LassoSamlConditions *node,
  * ((o), LASSO_TYPE_SAML_CONDITION_ABSTRACT, LassoSamlConditionAbstractClass))
  * */
 
-typedef struct _LassoSamlConditionAbstract LassoSamlConditionAbstract;
 /*typedef struct _LassoSamlConditionAbstractClass
  * LassoSamlConditionAbstractClass;*/
 
-struct _LassoSamlConditionAbstract {
+typedef struct _LassoSamlConditionAbstract {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlConditionAbstract;
 
 /*struct _LassoSamlConditionAbstractClass {
   LassoNodeClass parent;
@@ -2969,13 +2909,12 @@ LassoNode* lasso_saml_condition_abstract_new(const xmlChar *name);
 /*#define LASSO_SAML_NAME_IDENTIFIER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_SAML_NAME_IDENTIFIER, LassoSamlNameIdentifierClass)) */
 
-typedef struct _LassoSamlNameIdentifier LassoSamlNameIdentifier;
 /*typedef struct _LassoSamlNameIdentifierClass LassoSamlNameIdentifierClass;*/
 
-struct _LassoSamlNameIdentifier {
+typedef struct _LassoSamlNameIdentifier {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlNameIdentifier;
 
 /*struct _LassoSamlNameIdentifierClass {
   LassoNodeClass parent;
@@ -3004,14 +2943,13 @@ void lasso_saml_name_identifier_set_nameQualifier (LassoSamlNameIdentifier *node
  * ((o), LASSO_TYPE_SAML_STATEMENT_ABSTRACT, LassoSamlStatementAbstractClass))
  * */
 
-typedef struct _LassoSamlStatementAbstract LassoSamlStatementAbstract;
 /*typedef struct _LassoSamlStatementAbstractClass
  * LassoSamlStatementAbstractClass;*/
 
-struct _LassoSamlStatementAbstract {
+typedef struct _LassoSamlStatementAbstract {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlStatementAbstract;
 
 /*struct _LassoSamlStatementAbstractClass {
   LassoNodeClass parent;
@@ -3032,13 +2970,12 @@ LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass)*/
 /*#define LASSO_SAML_SUBJECT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
  * LASSO_TYPE_SAML_SUBJECT, LassoSamlSubjectClass)) */
 
-typedef struct _LassoSamlSubject LassoSamlSubject;
 /*typedef struct _LassoSamlSubjectClass LassoSamlSubjectClass;*/
 
-struct _LassoSamlSubject {
+typedef struct _LassoSamlSubject {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlSubject;
 
 /*struct _LassoSamlSubjectClass {
   LassoNodeClass parent;
@@ -3067,14 +3004,13 @@ void lasso_saml_subject_set_subjectConfirmation (LassoSamlSubject *node,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT_CONFIRMATION,
  * LassoSamlSubjectConfirmationClass)) */
 
-typedef struct _LassoSamlSubjectConfirmation LassoSamlSubjectConfirmation;
 /*typedef struct _LassoSamlSubjectConfirmationClass
  * LassoSamlSubjectConfirmationClass;*/
 
-struct _LassoSamlSubjectConfirmation {
+typedef struct _LassoSamlSubjectConfirmation {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlSubjectConfirmation;
 
 /*struct _LassoSamlSubjectConfirmationClass {
   LassoNodeClass parent;
@@ -3101,13 +3037,12 @@ void lasso_saml_subject_confirmation_set_subjectConfirmationMethod (LassoSamlSub
 /*#define LASSO_SAML_SUBJECT_LOCALITY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS
  * ((o), LASSO_TYPE_SAML_SUBJECT_LOCALITY, LassoSamlSubjectLocalityClass)) */
 
-typedef struct _LassoSamlSubjectLocality LassoSamlSubjectLocality;
 /*typedef struct _LassoSamlSubjectLocalityClass LassoSamlSubjectLocalityClass;*/
 
-struct _LassoSamlSubjectLocality {
+typedef struct _LassoSamlSubjectLocality {
   LassoNode parent;
   /*< private >*/
-};
+} LassoSamlSubjectLocality;
 
 /*struct _LassoSamlSubjectLocalityClass {
   LassoNodeClass parent;
@@ -3136,14 +3071,13 @@ void lasso_saml_subject_locality_set_ipAddress  (LassoSamlSubjectLocality *node,
  * (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,
  * LassoSamlSubjectStatementAbstractClass)) */
 
-typedef struct _LassoSamlSubjectStatementAbstract LassoSamlSubjectStatementAbstract;
 /*typedef struct _LassoSamlSubjectStatementAbstractClass
  * LassoSamlSubjectStatementAbstractClass;*/
 
-struct _LassoSamlSubjectStatementAbstract {
+typedef struct _LassoSamlSubjectStatementAbstract {
   LassoSamlStatementAbstract parent;
   /*< private >*/
-};
+} LassoSamlSubjectStatementAbstract;
 
 /*struct _LassoSamlSubjectStatementAbstractClass {
   LassoSamlStatementAbstractClass parent;
@@ -3347,7 +3281,6 @@ typedef enum {
 
 typedef struct _xmlAttr LassoAttr;
 
-typedef struct _LassoNode LassoNode;
 /*typedef struct _LassoNodeClass LassoNodeClass;*/
 typedef struct _LassoNodePrivate LassoNodePrivate;
 
@@ -3356,11 +3289,11 @@ typedef struct _LassoNodePrivate LassoNodePrivate;
  * @parent: the parent object
  * @private: private pointer structure
  **/
-struct _LassoNode {
+typedef struct _LassoNode {
   GObject parent;
   /*< private >*/
   LassoNodePrivate *private;
-};
+} LassoNode;
 
 /*struct _LassoNodeClass {
   GObjectClass parent_class;
