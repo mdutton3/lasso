@@ -57,7 +57,7 @@
 #include "environs/py_federation_termination.h"
 #include "environs/py_login.h"
 #include "environs/py_logout.h"
-/* #include "environs/py_profile_context.h" */
+#include "environs/py_profile_context.h"
 #include "environs/py_register_name_identifier.h"
 #include "environs/py_server.h"
 #include "environs/py_user.h"
@@ -201,7 +201,7 @@ static PyMethodDef lasso_methods[] = {
   {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
 
   /* environs */
-/*   {"profile_context_get_request_type_from_soap_msg",  profile_context_get_request_type_from_soap_msg,  METH_VARARGS}, */
+  {"profile_context_get_request_type_from_soap_msg",  profile_context_get_request_type_from_soap_msg,  METH_VARARGS},
 
   /* py_federation_termination.h */
   {"federation_termination_getattr",                  federation_termination_getattr,                  METH_VARARGS},
