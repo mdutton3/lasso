@@ -46,11 +46,9 @@ extern "C" {
 
 typedef struct _LassoDefederation LassoDefederation;
 typedef struct _LassoDefederationClass LassoDefederationClass;
-typedef struct _LassoDefederationPrivate LassoDefederationPrivate;
 
 struct _LassoDefederation {
 	LassoProfile parent;
-	LassoDefederationPrivate *private_data;
 };
 
 struct _LassoDefederationClass {

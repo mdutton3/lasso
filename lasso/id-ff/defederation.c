@@ -25,11 +25,6 @@
 
 #include <lasso/id-ff/defederation.h>
 
-struct _LassoDefederationPrivate
-{
-	gboolean dispose_has_run;
-};
-
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -425,57 +420,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
-/*****************************************************************************/
-
-static LassoNodeClass *parent_class = NULL;
-
-static void
-dispose(GObject *object)
-{
-	LassoDefederation *defederation = LASSO_DEFEDERATION(object);
-	if (defederation->private_data->dispose_has_run == TRUE) {
-		return;
-	}
-	defederation->private_data->dispose_has_run = TRUE;
-	debug("Defederation object 0x%x disposed ...", defederation);
-
-	G_OBJECT_CLASS(parent_class)->dispose(object);
-}
-
-static void
-finalize(GObject *object)
-{
-	LassoDefederation *defederation = LASSO_DEFEDERATION(object);
-	debug("Defederation object 0x%x finalized ...", defederation);
-	g_free(defederation->private_data);
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
-
-/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
-
-static void
-instance_init(LassoDefederation *defederation)
-{
-	defederation->private_data = g_new(LassoDefederationPrivate, 1);
-	defederation->private_data->dispose_has_run = FALSE;
-}
-
-static void
-class_init(LassoDefederationClass *klass)
-{
-	parent_class = g_type_class_peek_parent(klass);
-
-	/* no dump needed
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-	*/
-
-	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
-}
 
 GType
 lasso_defederation_get_type()
@@ -485,14 +431,10 @@ lasso_defederation_get_type()
 	if (!this_type) {
 		static const GTypeInfo this_info = {
 			sizeof (LassoDefederationClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) class_init,
-			NULL,
-			NULL,
+			NULL, NULL, NULL, NULL, NULL,
 			sizeof(LassoDefederation),
 			0,
-			(GInstanceInitFunc) instance_init,
+			NULL,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,
