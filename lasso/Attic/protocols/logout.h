@@ -3,18 +3,15 @@
 
 #include <lasso/lasso.h>
 
-xmlChar *lasso_build_url_encoded_message_logoutRequest(LassoNode *);
+LassoNode *lasso_build_logoutRequest(const xmlChar *providerID,
+				     LassoNode     *nameIdentifier,
+				     const xmlChar *sessionIndex,
+				     const xmlChar *relayState,
+				     const xmlChar *consent);
 
-LassoNode *lasso_build_logoutRequest(const char *metadata,
-									 LassoNode  *nameIdentifier,
-									 const char *sessionIndex,
-									 const char *relayState,
-									 const char *consent);
-
-xmlChar *lasso_build_url_encoded_message_logoutResponse(LassoNode *);
-
-LassoNode *lasso_build_logoutResponse(LassoNode *request,
-									  const char*codeValue,
-									  const char*relayState);
+LassoNode *lasso_build_logoutResponse(LassoNode     *request,
+				      const xmlChar *providerID,
+				      const xmlChar *codeValue,
+				      const xmlChar *relayState);
 
 #endif /* __LOGOUT_H__ */

@@ -2,8 +2,7 @@
 #define SINGLE_SIGN_ON_AND_FEDERATION_H
 
 #include <lasso/lasso.h>
-
-xmlChar *lasso_build_url_encoded_message_authnRequest(LassoNode *);
+#include <glib.h>
 
 LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *nameIDPolicy,
@@ -18,4 +17,9 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar **idpList,
 				    const xmlChar *consent);
 
+LassoNode *lasso_build_authnResponse(LassoNode *request,
+				     const xmlChar *providerID);
+
+LassoNode *lasso_build_response(LassoNode *request,
+				const xmlChar *providerID);
 #endif

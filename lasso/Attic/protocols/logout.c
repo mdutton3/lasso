@@ -1,41 +1,38 @@
 #include <lasso/protocols/logout.h>
 
-xmlChar *lasso_build_url_encoded_message_logoutRequest(LassoNode *request)
-{
-	 
-}
-
-LassoNode *lasso_build_logoutRequest(const char *metadata,
-									 LassoNode  *nameIdentifier,
-									 const char *sessionIndex,
-									 const char *relayState,
-									 const char *consent)
+LassoNode *lasso_build_logoutRequest(const xmlChar *providerID,
+				     LassoNode  *nameIdentifier,
+				     const xmlChar *sessionIndex,
+				     const xmlChar *relayState,
+				     const xmlChar *consent)
 {
 	 LassoNode *request;
 
 	 request = lasso_lib_logout_request_new();
 	 
 	 lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-												(const xmlChar *)lasso_build_unique_id(32));
+						    (const xmlChar *)lasso_build_unique_id(32));
 	 lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-												   lassoLibMinorVersion);
+						       lassoLibMinorVersion);
 	 lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-													lasso_get_current_time());
+							lasso_get_current_time());
 	 lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-												   lassoLibMajorVersion);
+						       lassoLibMajorVersion);
 
 	 lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request),
-											 "badproviderid.com"); // FIXME
+						 providerID);
 
-	 lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), nameIdentifier);
+	 lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
+						     nameIdentifier);
 
 	 if(sessionIndex){
-		  lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request), sessionIndex);
+		  lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request),
+							    sessionIndex);
 	 }
 
 	 if(relayState){
 		  lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(request),
-												  relayState);
+							  relayState);
 	 }
 
 	 if(consent){
@@ -46,31 +43,26 @@ LassoNode *lasso_build_logoutRequest(const char *metadata,
 
 }
 
-
-xmlChar *lasso_build_url_encoded_message_logoutResponse(LassoNode *response)
-{
-
-}
-
 LassoNode *lasso_build_logoutResponse(LassoNode *request,
-									  const char *statusCodeValue,
-									  const char *relayState)
+				      const xmlChar *providerID,
+				      const xmlChar *statusCodeValue,
+				      const xmlChar *relayState)
 {
 	 LassoNode *response, *ss, *ssc;
 
 	 response = lasso_lib_logout_response_new();
 
 	 lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-												  (const xmlChar *)lasso_build_unique_id(32));
+						      (const xmlChar *)lasso_build_unique_id(32));
 	 lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-													lassoLibMinorVersion);
+							lassoLibMinorVersion);
 	 lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-													lassoLibMajorVersion);
+							lassoLibMajorVersion);
 	 lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-													 lasso_get_current_time());
+							 lasso_get_current_time());
 
 	 lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
-											  "badproviderid.com"); // FIXME
+						  providerID);
  
 	 ss = lasso_samlp_status_new();
 	 ssc = lasso_samlp_status_code_new();
@@ -79,7 +71,8 @@ LassoNode *lasso_build_logoutResponse(LassoNode *request,
 	 lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response), LASSO_SAMLP_STATUS(ss));
 
 	 if(relayState){
-		 lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response), relayState); 
+		 lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
+							  relayState); 
 	 }
 
 	 return(response);
