@@ -83,6 +83,12 @@ LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloSpSoap[];
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpHttp[];
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpSoap[];
 
+/* NameIdentifier formats */
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatFederated[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatOneTime[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEncrypted[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEntityID[];
+
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
@@ -108,10 +114,10 @@ LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSecureRemotePassword
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodHardwareToken[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSmartcardPki[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSoftwarePki[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPGP[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPgp[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSPki[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXkms[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXmlSign[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXmlDSig[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodUnspecified[];
 
 /* ConfirmationMethods */

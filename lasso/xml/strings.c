@@ -75,6 +75,12 @@ const xmlChar lassoLibProtocolProfileSloSpSoap[]      = "http://projectliberty.o
 const xmlChar lassoLibProtocolProfileSloIdpHttp[]     = "http://projectliberty.org/profiles/slo-idp-http";
 const xmlChar lassoLibProtocolProfileSloIdpSoap[]     = "http://projectliberty.org/profiles/slo-idp-soap";
 
+/* NameIdentifier formats */
+const xmlChar lassoLibNameIdentifierFormatFederated[] = "urn:liberty:iff:nameid:federated";
+const xmlChar lassoLibNameIdentifierFormatOneTime[]   = "urn:liberty:iff:nameid:one-time";
+const xmlChar lassoLibNameIdentifierFormatEncrypted[] = "urn:liberty:iff:nameid:encrypted";
+const xmlChar lassoLibNameIdentifierFormatEntityID[]  = "urn:liberty:iff:nameid:entityID";
+
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
@@ -87,7 +93,7 @@ const xmlChar lassoSamlProtocolPrefix[]  = "samlp";
 
 /* Versioning */
 const xmlChar lassoSamlMajorVersion[] = "1";
-const xmlChar lassoSamlMinorVersion[] = "0";
+const xmlChar lassoSamlMinorVersion[] = "1";
 
 /* StatusCodes */
 const xmlChar lassoSamlStatusCodeRequestDenied[] = "Samlp:RequestDenied";
@@ -100,15 +106,15 @@ const xmlChar lassoSamlAuthenticationMethodSecureRemotePassword[] = "urn:ietf:rf
 const xmlChar lassoSamlAuthenticationMethodHardwareToken[]        = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
 const xmlChar lassoSamlAuthenticationMethodSmartcardPki[]         = "urn:ietf:rfc:2246";
 const xmlChar lassoSamlAuthenticationMethodSoftwarePki[]          = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
-const xmlChar lassoSamlAuthenticationMethodPGP[]                  = "urn:oasis:names:tc:SAML:1.0:am:PGP";
+const xmlChar lassoSamlAuthenticationMethodPgp[]                  = "urn:oasis:names:tc:SAML:1.0:am:PGP";
 const xmlChar lassoSamlAuthenticationMethodSPki[]                 = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
 const xmlChar lassoSamlAuthenticationMethodXkms[]                 = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
-const xmlChar lassoSamlAuthenticationMethodXmlSign[]              = "urn:ietf:rfc:3075";
+const xmlChar lassoSamlAuthenticationMethodXmlDSig[]              = "urn:ietf:rfc:3075";
 const xmlChar lassoSamlAuthenticationMethodUnspecified[]          = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 
 /* ConfirmationMethods */
 const xmlChar lassoSamlConfirmationMethodArtifact01[]    = "urn:oasis:names:tc:SAML:1.0:cm:artifact-01";
-const xmlChar lassoSamlConfirmationMethodBearer[]        = "urn:oasis:names:tc:SAML:1.1:cm:bearer";
+const xmlChar lassoSamlConfirmationMethodBearer[]        = "urn:oasis:names:tc:SAML:1.0:cm:bearer";
 const xmlChar lassoSamlConfirmationMethodHolderOfKey[]   = "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key";
 const xmlChar lassoSamlConfirmationMethodSenderVouches[] = "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches";
 
