@@ -208,9 +208,6 @@ init_from_query(LassoNode *node, char **query_fields)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	xmlNode *t, *n;
-	char *s;
-	int rc;
 	snippets();
 	
 	if (parent_class->init_from_xml(node, xmlnode))
