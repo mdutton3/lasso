@@ -109,26 +109,6 @@ lasso_build_unique_id(guint8 size)
 }
 
 /**
- * lasso_g_ptr_array_index:
- * @a: a GPtrArray
- * @i: the index
- * 
- * Gets the pointer at the given index @i of the pointer array.
- * 
- * Return value: the pointer at the given index.
- **/
-xmlChar*
-lasso_g_ptr_array_index(GPtrArray *a, guint i)
-{
-  if (a != NULL) {
-    return g_ptr_array_index(a, i);
-  }
-  else {
-    return NULL;
-  }
-}
-
-/**
  * lasso_get_current_time:
  * 
  * Returns the current time, format is "yyyy-mm-ddThh:mm:ssZ".

@@ -56,9 +56,6 @@ LASSO_EXPORT xmlChar*          lasso_build_random_sequence                (guint
 
 LASSO_EXPORT xmlChar*          lasso_build_unique_id                      (guint8 size);
 
-LASSO_EXPORT xmlChar*          lasso_g_ptr_array_index                    (GPtrArray *a,
-									   guint      i);
-
 LASSO_EXPORT gchar*            lasso_get_current_time                     (void);
 
 LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const gchar *pem_file);
