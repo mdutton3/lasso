@@ -1165,7 +1165,7 @@ static void free_node_list_item(gpointer node, gpointer unused)
 static void free_string_list_item(char *string, gpointer unused)
 {
 	if (string != NULL)
-		free(string);
+		g_free(string);
 }
 
 static void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
@@ -1243,7 +1243,7 @@ static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
 static void set_string(char **pointer, char *value)
 {
 	if (*pointer != NULL)
-		free(*pointer);
+		g_free(*pointer);
 	*pointer = value == NULL ? NULL : strdup(value);
 }
 
@@ -1573,7 +1573,7 @@ typedef struct {
 		void setItem(int index, char *item) {
 			char **itemPointer = (char **) &g_ptr_array_index(self, index);
 			if (*itemPointer != NULL)
-				free(*itemPointer);
+				g_free(*itemPointer);
 			if (item == NULL)
 				*itemPointer = NULL;
 			else
