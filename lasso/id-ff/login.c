@@ -47,25 +47,24 @@ struct _LassoLoginPrivate
 /*****************************************************************************/
 
 /**
- * lasso_login_add_response_assertion:
+ * lasso_login_build_assertion:
  * @login: a Login
  * @federation: a Federation
  * @authenticationMethod: the authentication method
  * @reauthenticateOnOrAfter: the reauthenticate on or after time
  * 
- * Adds an assertion into the samlp:Response.
- * Assertion is also stored in session property. If session property
- * is NULL, a new session is build before.
- * The NameIdentifier of the assertion is stored into nameIdentifier
- * proprerty.
+ * Builds an assertion.
+ * Assertion is stored in session property. If session property is NULL, a new
+ * session is build before.
+ * The NameIdentifier of the assertion is stored into nameIdentifier proprerty.
  * 
  * Return value: 0 on success or a negative value otherwise.
  **/
 static gint
-lasso_login_add_response_assertion(LassoLogin      *login,
-				   LassoFederation *federation,
-				   const gchar     *authenticationMethod,
-				   const gchar     *reauthenticateOnOrAfter)
+lasso_login_build_assertion(LassoLogin      *login,
+			    LassoFederation *federation,
+			    const gchar     *authenticationMethod,
+			    const gchar     *reauthenticateOnOrAfter)
 {
   LassoNode *assertion = NULL, *as;
   xmlChar *requestID;
@@ -73,8 +72,8 @@ lasso_login_add_response_assertion(LassoLogin      *login,
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail (LASSO_IS_FEDERATION(federation),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(LASSO_IS_FEDERATION(federation),
+		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* get RequestID to build Assertion */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
@@ -109,9 +108,11 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 					   LASSO_PROFILE(login)->server->private_key,
 					   LASSO_PROFILE(login)->server->certificate);
   if (ret == 0) {
-    lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
-				       assertion);
-  
+    if (login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
+      /* only add assertion if response is an AuthnResponse */
+      lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
+					 assertion);
+    }
     /* store assertion in session object */
     if (LASSO_PROFILE(login)->session == NULL) {
       LASSO_PROFILE(login)->session = lasso_session_new();
@@ -209,13 +210,11 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   status = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				"Status", lassoSamlProtocolHRef, &err);
   if (status == NULL) {
-    /* nico : return an error code error if status code not found */
     ret = -1;
     goto done;
   }
   statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, &err);
   if (statusCode == NULL) {
-    /* nico : return a code error if status code not found */
     ret = -1;
     goto done;
   }
@@ -223,13 +222,11 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   if (statusCode_value != NULL) {
     if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
       ret = -7;
-      /* nico : go to done */
       goto done;
     }
   }
 
   /* check assertion */
-  /* nico : removed ref on err pointer */
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
 				   NULL, /* lassoLibHRef, FIXME changed for SourceID */
@@ -410,11 +407,6 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   xmlSecByte samlArt[42], *b64_samlArt, *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
 
-  /* nico */
-  LassoNodeClass *assertion_class;
-  LassoNode *assertion_node;
-  xmlNodePtr assertion_xmlNode;
-
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL,
 		       LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -441,29 +433,12 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 					       LASSO_PROFILE(login)->remote_providerID);
     /* fill the response with the assertion */
     if (federation != NULL) {
-      lasso_login_add_response_assertion(login,
-					 federation,
-					 authenticationMethod,
-					 reauthenticateOnOrAfter);
+      lasso_login_build_assertion(login,
+				  federation,
+				  authenticationMethod,
+				  reauthenticateOnOrAfter);
       lasso_federation_destroy(federation);
     }
-  }
-
-  /* store the assertion */
-  login->assertion = NULL;
-  assertion_node = lasso_node_get_child(LASSO_PROFILE(login)->response, "Assertion", NULL, NULL);
-  if (assertion_node != NULL) {
-    login->assertion = g_object_new(LASSO_TYPE_ASSERTION,
-				    "use_xsitype", TRUE,
-				    NULL);
-
-    assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
-    assertion_xmlNode = xmlCopyNode(assertion_class->get_xmlNode(LASSO_NODE(assertion_node)), 1);
-
-    assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
-    assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
-
-    lasso_node_destroy(assertion_node);
   }
 
   /* build artifact infos */
@@ -504,6 +479,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   default:
     break;
   }
+  LASSO_PROFILE(login)->response_type = lassoMessageTypeArtifact;
   login->assertionArtifact = g_strdup(b64_samlArt);
   xmlFree(url);
   xmlFree(b64_samlArt);
@@ -660,6 +636,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 {
   LassoProvider *remote_provider;
   LassoFederation *federation;
+  gint ret= 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -668,22 +645,45 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
     message(G_LOG_LEVEL_CRITICAL, "Failed to build AuthnResponse message, an Artifact is required by ProtocolProfile.\n");
     return -1;
   }
+
+  /* create LibAuthnResponse */
+  LASSO_PROFILE(login)->response = lasso_authn_response_new(LASSO_PROFILE(login)->server->providerID,
+							    LASSO_PROFILE(login)->request);
+  LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
+
+  /* modify AuthnResponse StatusCode if signature is not OK */
+  if (login->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE ||
+      login->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+    switch (login->signature_status) {
+    case LASSO_DS_ERROR_INVALID_SIGNATURE:
+      lasso_profile_set_response_status(LASSO_PROFILE(login),
+					lassoLibStatusCodeInvalidSignature);
+      break;
+    case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND: /* Unsigned AuthnRequest */
+      lasso_profile_set_response_status(LASSO_PROFILE(login),
+					lassoLibStatusCodeUnsignedAuthnRequest);
+      break;
+    }
+    ret = -1;
+  }
   
+  /* modify AuthnResponse StatusCode if user authentication is not OK */
   if (authentication_result == 0) {
     lasso_profile_set_response_status(LASSO_PROFILE(login),
 				      lassoSamlStatusCodeRequestDenied);
   }
-  else {
-    /* federation */
+
+  if (login->signature_status == 0 && authentication_result == TRUE) {
+    /* process federation */
     lasso_login_process_federation(login);
     federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
 					       LASSO_PROFILE(login)->remote_providerID);
     /* fill the response with the assertion */
     if (federation != NULL) {
-      lasso_login_add_response_assertion(login,
-					 federation,
-					 authenticationMethod,
-					 reauthenticateOnOrAfter);
+      lasso_login_build_assertion(login,
+				  federation,
+				  authenticationMethod,
+				  reauthenticateOnOrAfter);
       lasso_federation_destroy(federation);
     }
   }
@@ -697,7 +697,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 										  lassoProviderTypeSp,
 										  NULL);
 
-  return 0;
+  return ret;
 }
 
 gint
@@ -737,41 +737,53 @@ lasso_login_build_request_msg(LassoLogin *login)
 }
 
 gint
-lasso_login_build_response_msg(LassoLogin *login)
+lasso_login_build_response_msg(LassoLogin *login,
+			       gchar      *remote_providerID)
 {
-  LassoNode *status, *status_code;
-  LassoNode *response, *assertion;
-  LassoNodeClass *class;
+  LassoProvider *remote_provider;
+  LassoNode *assertion;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
 
-  response = lasso_response_new();
+  LASSO_PROFILE(login)->response = lasso_response_new();
 
-  /* set status code */
-  status = lasso_samlp_status_new();
-  status_code = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-				    lassoSamlStatusCodeSuccess);
-
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
-				    LASSO_SAMLP_STATUS_CODE(status_code));
-
-  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
-				  LASSO_SAMLP_STATUS(status));
-  lasso_node_destroy(status_code);
-  lasso_node_destroy(status);
-
-  /* add assertion */
-  if (LASSO_IS_ASSERTION(login->assertion) == TRUE) {
-    assertion = lasso_node_copy(LASSO_NODE(login->assertion));
+  if (remote_providerID != NULL) {
+    LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+    remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						    LASSO_PROFILE(login)->remote_providerID,
+						    NULL);
+    /* verify the SOAP request signature */
+    ret = lasso_node_verify_x509_signature(LASSO_PROFILE(login)->request,
+					   remote_provider->ca_certificate);
+    /* changed status code into RequestDenied
+       if signature is invalid or not found
+       if an error occurs during verification */
+    if (ret != 0) {
+      lasso_profile_set_response_status(LASSO_PROFILE(login),
+					lassoSamlStatusCodeRequestDenied);
+    }
     
-    class = LASSO_NODE_GET_CLASS(response);
-    class->add_child(LASSO_NODE(response), assertion, TRUE);
+    /* get assertion in session and add it in response */
+    assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
+					    LASSO_PROFILE(login)->remote_providerID);
+    if (assertion != NULL) {
+      lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
+					 assertion);
+      lasso_node_destroy(assertion);
+    }
+    else {
+      message(G_LOG_LEVEL_CRITICAL, "");
+    }
+  }
+  else {
+    lasso_profile_set_response_status(LASSO_PROFILE(login),
+				      lassoSamlStatusCodeRequestDenied);
   }
 
-  LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(response);
+  LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->response);
 
-  return 0;
+  return ret;
 }
 
 void
@@ -785,7 +797,7 @@ lasso_login_dump(LassoLogin *login)
 {
   LassoNode *node;
   gchar *parent_dump, *dump;
-  gchar protocolProfile[6];
+  gchar protocolProfile[6], http_method[6];
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), NULL);
 
@@ -796,48 +808,14 @@ lasso_login_dump(LassoLogin *login)
   g_snprintf(protocolProfile, 6, "%d", login->protocolProfile);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);
 
-  /* nico : Added dump of assertion */
-  if (login->assertion != NULL) {
-    LASSO_NODE_GET_CLASS(node)->add_child(node, LASSO_NODE(login->assertion), FALSE);
-  }
-
   if (login->assertionArtifact != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "AssertionArtifact", login->assertionArtifact, FALSE);
-  }
-  if (login->response_dump != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseDump", login->response_dump, FALSE);
   }
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
 
   return dump;
-}
-
-LassoAssertion*
-lasso_login_get_assertion(LassoLogin *login)
-{
-  LassoNodeClass *class;
-  LassoAssertion *assertion;
-  xmlNodePtr      assertion_xmlNode;
-
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), NULL);
-
-  if (LASSO_IS_ASSERTION(login->assertion) == FALSE) {
-    return NULL;
-  }
-
-  assertion = g_object_new(LASSO_TYPE_ASSERTION,
-			   "use_xsitype", TRUE,
-			   NULL);
-
-  class = LASSO_NODE_GET_CLASS(login->assertion);
-  assertion_xmlNode = xmlCopyNode(class->get_xmlNode(login->assertion), 1);
-
-  class = LASSO_NODE_GET_CLASS(assertion);
-  class->set_xmlNode(LASSO_NODE(assertion), assertion_xmlNode);
-
-  return assertion;
 }
 
 gint
@@ -869,157 +847,6 @@ lasso_login_init_authn_request(LassoLogin      *login,
 
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
-  return 0;
-}
-
-gint
-lasso_login_init_from_authn_request_msg(LassoLogin      *login,
-					gchar           *authn_request_msg,
-					lassoHttpMethod  authn_request_http_method)
-{
-  LassoServer *server;
-  LassoProvider *remote_provider;
-  gchar *protocolProfile;
-  xmlChar *md_authnRequestsSigned;
-  gboolean must_verify_signature = FALSE;
-  gint ret = 0;
-  GError *err = NULL;
-
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-  if (authn_request_http_method != lassoHttpMethodRedirect && \
-      authn_request_http_method != lassoHttpMethodPost && \
-      authn_request_http_method != lassoHttpMethodSoap) {
-    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
-    return -2;
-  }
-
-  server = LASSO_PROFILE(login)->server;
-
-  /* rebuild request */
-  switch (authn_request_http_method) {
-  case lassoHttpMethodRedirect:
-    /* LibAuthnRequest send by method GET */
-    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
-									lassoNodeExportTypeQuery);
-    break;
-  case lassoHttpMethodPost:
-    /* LibAuthnRequest send by method POST */
-    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
-									lassoNodeExportTypeBase64);
-    break;
-  case lassoHttpMethodSoap:
-    /* LibAuthnRequest send by method SOAP - useful only for LECP */
-    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
-									lassoNodeExportTypeSoap);
-    break;
-  default:
-    break;
-  }
-  /* verify login>-request is an AuthnRequest object */
-  if ( LASSO_IS_AUTHN_REQUEST(LASSO_PROFILE(login)->request) == FALSE ) {
-    message(G_LOG_LEVEL_CRITICAL, "Message is not an AuthnRequest\n");
-    return -1;
-  }
-
-  LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
-
-  /* get ProtocolProfile in lib:AuthnRequest */
-  protocolProfile = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-						 "ProtocolProfile", NULL, NULL);
-  if (protocolProfile == NULL) {
-    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
-  }
-  else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsArt)) {
-    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
-  }
-  else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsPost)) {
-    login->protocolProfile = lassoLoginProtocolProfileBrwsPost;
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Unknown ProtocolProfile : %s\n", protocolProfile);
-    return -2;
-  }
-  xmlFree(protocolProfile);
-
-  /* build response */
-  switch (login->protocolProfile) {
-  case lassoLoginProtocolProfileBrwsPost:
-    /* create LibAuthnResponse */
-    LASSO_PROFILE(login)->response = lasso_authn_response_new(LASSO_PROFILE(login)->server->providerID,
-							      LASSO_PROFILE(login)->request);
-    LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
-    break;
-  case lassoLoginProtocolProfileBrwsArt:
-    /* create SamlpResponse */
-    LASSO_PROFILE(login)->response = lasso_response_new();
-    LASSO_PROFILE(login)->response_type = lassoMessageTypeResponse;
-    break;
-  }
-
-  /* get remote ProviderID */
-  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-									 "ProviderID", NULL, NULL);
-
-  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID,
-						  &err);
-  if (remote_provider != NULL) {
-    /* Is authnRequest signed ? */
-    md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
-    if (md_authnRequestsSigned != NULL) {
-      must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
-      xmlFree(md_authnRequestsSigned);
-    }
-    else {
-      message(G_LOG_LEVEL_CRITICAL, err->message);
-      ret = err->code;
-      g_error_free(err);
-      return ret;
-    }
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
-    return ret;
-  }
-
-  /* verify request signature */
-  if (must_verify_signature) {
-    switch (authn_request_http_method) {
-    case lassoHttpMethodGet:
-    case lassoHttpMethodRedirect:
-      ret = lasso_query_verify_signature(authn_request_msg,
-					 remote_provider->public_key,
-					 LASSO_PROFILE(login)->server->private_key);
-      break;
-    case lassoHttpMethodPost:
-      /* FIXME detect X509Data ? */
-      ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
-					remote_provider->public_key);
-      break;
-    default:
-      ret = 0;
-      break;
-    }
-    
-    /* Modify StatusCode if signature is not OK */
-    if (ret == LASSO_DS_ERROR_INVALID_SIGNATURE || ret == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-      switch (ret) {
-      case LASSO_DS_ERROR_INVALID_SIGNATURE:
-	lasso_profile_set_response_status(LASSO_PROFILE(login),
-					  lassoLibStatusCodeInvalidSignature);
-	break;
-      case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND: /* Unsigned AuthnRequest */
-	lasso_profile_set_response_status(LASSO_PROFILE(login),
-					  lassoLibStatusCodeUnsignedAuthnRequest);
-	break;
-      }
-      return -3;
-    }
-  }
   return 0;
 }
 
@@ -1128,6 +955,122 @@ lasso_login_must_authenticate(LassoLogin *login)
 }
 
 gint
+lasso_login_process_authn_request_msg(LassoLogin      *login,
+				      gchar           *authn_request_msg,
+				      lassoHttpMethod  authn_request_http_method)
+{
+  LassoProvider *remote_provider;
+  gchar *protocolProfile;
+  xmlChar *md_authnRequestsSigned;
+  gboolean must_verify_signature = FALSE;
+  gint ret = 0;
+  GError *err = NULL;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+  if (authn_request_http_method != lassoHttpMethodRedirect && \
+      authn_request_http_method != lassoHttpMethodPost && \
+      authn_request_http_method != lassoHttpMethodSoap) {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
+    return LASSO_PARAM_ERROR_INVALID_VALUE;
+  }
+
+  /* rebuild request */
+  switch (authn_request_http_method) {
+  case lassoHttpMethodRedirect:
+    /* LibAuthnRequest send by method GET */
+    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+									lassoNodeExportTypeQuery);
+    break;
+  case lassoHttpMethodPost:
+    /* LibAuthnRequest send by method POST */
+    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+									lassoNodeExportTypeBase64);
+    break;
+  case lassoHttpMethodSoap:
+    /* LibAuthnRequest send by method SOAP - useful only for LECP */
+    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+									lassoNodeExportTypeSoap);
+    break;
+  default:
+    break;
+  }
+  if (LASSO_PROFILE(login)->request == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Message isn't an AuthnRequest\n");
+    return -1;
+  }
+
+  LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
+
+  /* get ProtocolProfile in lib:AuthnRequest */
+  protocolProfile = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
+						 "ProtocolProfile", NULL, NULL);
+  if (protocolProfile == NULL) {
+    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
+  }
+  else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsArt)) {
+    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
+  }
+  else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsPost)) {
+    login->protocolProfile = lassoLoginProtocolProfileBrwsPost;
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Unknown protocol profile : %s\n", protocolProfile);
+    return -2;
+  }
+  xmlFree(protocolProfile);
+
+  /* get remote ProviderID */
+  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
+									 "ProviderID", NULL, NULL);
+
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID,
+						  &err);
+  if (remote_provider != NULL) {
+    /* Is authnRequest signed ? */
+    md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
+    if (md_authnRequestsSigned != NULL) {
+      must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
+      xmlFree(md_authnRequestsSigned);
+    }
+    else {
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_error_free(err);
+      return ret;
+    }
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return ret;
+  }
+
+  /* verify request signature */
+  if (must_verify_signature) {
+    switch (authn_request_http_method) {
+    case lassoHttpMethodRedirect:
+      ret = lasso_query_verify_signature(authn_request_msg,
+					 remote_provider->public_key,
+					 LASSO_PROFILE(login)->server->private_key);
+      break;
+    case lassoHttpMethodPost:
+    case lassoHttpMethodSoap:
+      /* FIXME detect X509Data ? */
+      ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
+					remote_provider->public_key);
+      break;
+    }
+    login->signature_status = ret;
+  }
+
+  return ret;
+}
+
+gint
 lasso_login_process_authn_response_msg(LassoLogin *login,
 				       gchar      *authn_response_msg)
 {
@@ -1165,7 +1108,6 @@ gint
 lasso_login_process_request_msg(LassoLogin *login,
 				gchar      *request_msg)
 {
-/*   LassoProvider *remote_provider; */
   gint ret = 0;
   GError *err = NULL;
 
@@ -1180,16 +1122,6 @@ lasso_login_process_request_msg(LassoLogin *login,
     return LASSO_ERROR_UNDEFINED;
   }
   LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
-
-  /* TODO : verify signature */
-/*   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server, */
-/* 						  LASSO_PROFILE(login)->remote_providerID, */
-/* 						  NULL); */
-/*   ret = lasso_node_verify_x509_signature(LASSO_PROFILE(login)->request, */
-/* 					 remote_provider->ca_certificate); */
-/*   if (ret < 0) { */
-/*     return ret; */
-/*   } */
 
   /* get AssertionArtifact */
   login->assertionArtifact = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
@@ -1223,50 +1155,6 @@ lasso_login_process_response_msg(LassoLogin  *login,
   return lasso_login_process_response_status_and_assertion(login);
 }
 
-gint
-lasso_login_set_assertion(LassoLogin     *login,
-			  LassoAssertion *assertion)
-{
-  LassoNodeClass *assertion_class;
-  xmlNodePtr      assertion_xmlNode;
-
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
-  g_return_val_if_fail(LASSO_IS_ASSERTION(assertion), -1);
-
-  login->assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION,
-					     "use_xsitype", TRUE,
-					     NULL));
-
-  assertion_xmlNode = xmlCopyNode(LASSO_NODE_GET_CLASS(assertion)->get_xmlNode(LASSO_NODE(assertion)), 1);
-  assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
-  assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
-
-  return 0;
-}
-
-gint
-lasso_login_set_assertion_from_dump(LassoLogin  *login,
-				     gchar       *assertion_dump)
-{
-  LassoNodeClass *assertion_class;
-  LassoNode      *assertion_node;
-  xmlNodePtr      assertion_xmlNode;
-
-  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
-  g_return_val_if_fail(assertion_dump != NULL, -1);
-
-  login->assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION,
-					     "use_xsitype", TRUE,
-					     NULL));
-  
-  assertion_node = lasso_node_new_from_dump(assertion_dump);
-  assertion_xmlNode = xmlCopyNode(LASSO_NODE_GET_CLASS(assertion_node)->get_xmlNode(LASSO_NODE(assertion_node)), 1);
-  assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
-  assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
-
-  return 0;
-}
-
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
@@ -1292,7 +1180,6 @@ lasso_login_finalize(LassoLogin *login)
   debug("Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
-  g_free(login->response_dump);
 
   g_free (login->private);
 
@@ -1314,7 +1201,7 @@ lasso_login_instance_init(GTypeInstance   *instance,
 
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
-  login->response_dump     = NULL;
+  login->signature_status = TRUE;
 }
 
 static void
@@ -1372,11 +1259,6 @@ lasso_login_new_from_dump(LassoServer *server,
   LassoLogin *login;
   LassoNode *node_dump, *request_node = NULL, *response_node = NULL;
   gchar *protocolProfile, *export, *type;
-
-  /* nico : assertion vars */
-  LassoNode      *assertion_node;
-  LassoNodeClass *assertion_class;
-  xmlNodePtr      assertion_xmlNode;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(dump != NULL, NULL);
@@ -1454,30 +1336,14 @@ lasso_login_new_from_dump(LassoServer *server,
   xmlFree(type);
 
   /* login attributes */
-  /* nico : get the assertion */
-  assertion_node = lasso_node_get_child(node_dump, "Assertion", NULL, NULL);
-  if (assertion_node != NULL) {
-    login->assertion = g_object_new(LASSO_TYPE_ASSERTION,
-				    "use_xsitype", TRUE,
-				    NULL);
-
-    assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
-    assertion_xmlNode = xmlCopyNode(assertion_class->get_xmlNode(LASSO_NODE(assertion_node)), 1);
-
-    assertion_class = LASSO_NODE_GET_CLASS(login->assertion);
-    assertion_class->set_xmlNode(LASSO_NODE(login->assertion), assertion_xmlNode);
-    lasso_node_destroy(assertion_node);
-  }
-
   protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile",
 						 lassoLassoHRef, NULL);
   if (protocolProfile != NULL) {
     login->protocolProfile = atoi(protocolProfile);
     xmlFree(protocolProfile);
   }
+
   login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact",
-							  lassoLassoHRef, NULL);
-  login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump",
 							  lassoLassoHRef, NULL);
 
   lasso_node_destroy(node_dump);
