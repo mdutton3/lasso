@@ -24,6 +24,14 @@
 
 #include <lasso/lasso.h>
 
+/*****************************************************************************/
+/* Liberty Alliance                                                          */
+/*****************************************************************************/
+
+/* Versioning */
+const gchar lassoLibMajorVersion[] = "1";
+const gchar lassoLibMinorVersion[] = "2";
+
 /* NameIDPolicyType */
 const gchar lassoLibNameIDPolicyTypeNone[]      = "none";
 const gchar lassoLibNameIDPolicyTypeOneTime[]   = "onetime";
@@ -35,11 +43,17 @@ const gchar lassoLibAuthnContextComparisonExact[]   = "exact";
 const gchar lassoLibAuthnContextComparisonMinimum[] = "minimum";
 const gchar lassoLibAuthnContextComparisonBetter[]  = "better";
 
-/* Lib versioning */
-const gchar lassoLibMajorVersion[] = "1";
-const gchar lassoLibMinorVersion[] = "2";
+/* StatusCodes */
+const gchar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
+const gchar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
+const gchar lassoLibStatusCodeRequestDenied[]          = "lib:RequestDenied";
+const gchar lassoLibStatusCodeSuccess[]                = "lib:Success";
 
-/* Saml versioning */
+/*****************************************************************************/
+/* SAML                                                                      */
+/*****************************************************************************/
+
+/* Versioning */
 const gchar lassoSamlMajorVersion[] = "1";
 const gchar lassoSamlMinorVersion[] = "0";
 

@@ -77,11 +77,28 @@ lasso_node_get_children(LassoNode *node)
   return (class->get_children(node));
 }
 
+/**
+ * lasso_node_get_content:
+ * @node: the LassoNode
+ * 
+ * Read the value of a node, this can be either the text carried directly by
+ * this node if it's a TEXT node or the aggregate string of the values carried
+ * by this node child's (TEXT and ENTITY_REF). Entity references are
+ * substituted.
+ * 
+ * Return value: a new xmlChar * or NULL if no content is available.
+ * It's up to the caller to free the memory with xmlFree().
+ **/
 xmlChar *
 lasso_node_get_content(LassoNode *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_content(node));
+  if (node != NULL) {
+    LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+    return (class->get_content(node));
+  }
+  else {
+    return (NULL);
+  }
 }
 
 xmlChar *

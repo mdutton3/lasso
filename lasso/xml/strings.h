@@ -32,6 +32,14 @@ extern "C" {
 #include <lasso/export.h>
 #include <glib-object.h>
 
+/*****************************************************************************/
+/* Liberty Alliance                                                          */
+/*****************************************************************************/
+
+/* Versioning */
+LASSO_EXPORT_VAR const gchar lassoLibMajorVersion[];
+LASSO_EXPORT_VAR const gchar lassoLibMinorVersion[];
+
 /* NameIDPolicyType */
 LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeNone[];
 LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeOneTime[];
@@ -41,13 +49,19 @@ LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeAny[];
 /* AuthnContextComparison */
 LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonExact[];
 LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonMinimum[];
-LASSO_EXPORT_VAR const gchar lassLibAuthnContextComparisonBetter[];
+LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonBetter[];
 
-/* Lib versioning */
-LASSO_EXPORT_VAR const gchar lassoLibMajorVersion[];
-LASSO_EXPORT_VAR const gchar lassoLibMinorVersion[];
+/* StatusCodes */
+LASSO_EXPORT_VAR const gchar lassoLibStatusCodeFederationDoesNotExist[];
+LASSO_EXPORT_VAR const gchar lassoLibStatusCodeNoPassive[];
+LASSO_EXPORT_VAR const gchar lassoLibStatusCodeRequestDenied[];
+LASSO_EXPORT_VAR const gchar lassoLibStatusCodeSuccess[];
 
-/* Saml versioning */
+/*****************************************************************************/
+/* SAML                                                                      */
+/*****************************************************************************/
+
+/* Versioning */
 LASSO_EXPORT_VAR const gchar lassoSamlMajorVersion[];
 LASSO_EXPORT_VAR const gchar lassoSamlMinorVersion[];
 
