@@ -34,7 +34,7 @@ extern "C" {
    Windows platform with MSVC compiler. */
 
 #if !defined LASSO_EXPORT
-#  if defined _MSC_VER
+#  if (defined _MSC_VER || defined MINGW32)
      /* if we compile libxmlsec itself: */
 #    if defined(IN_LASSO)
 #      if !defined(LASSO_STATIC)
@@ -58,7 +58,7 @@ extern "C" {
 #endif
 
 #if !defined LASSO_EXPORT_VAR
-#  if defined _MSC_VER
+#  if (defined _MSC_VER || defined MINGW32)
      /* if we compile libxmlsec itself: */
 #    if defined(IN_LASSO)
 #      if !defined(LASSO_STATIC)

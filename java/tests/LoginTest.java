@@ -215,7 +215,8 @@ public class LoginTest extends TestCase {
     }
 
     public static void main(String args[]) { 
-	Lasso.init();
+        System.out.println(System.mapLibraryName("jlasso"));
+        Lasso.init();
 	junit.textui.TestRunner.run(suite());
 	Lasso.shutdown();
     }

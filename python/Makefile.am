@@ -2,7 +2,6 @@ SUBDIRS = doc environs examples protocols tests xml
 
 lassomod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/lasso/.libs
 
-if WITH_PYTHON
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-I$(top_srcdir) \
@@ -23,7 +22,6 @@ lassomod_la_LIBADD = $(mylibs) \
 	./protocols/libprotocols.a \
 	./xml/libxml.a \
 	./environs/libenvirons.a
-endif
 
 EXTRA_DIST = lassomod.h  py_lasso.h  utils.h  wrap_objs.h \
 		generator_lasso_strings.py  lasso.py  lasso_strings.py \

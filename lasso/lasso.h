@@ -29,11 +29,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
-#if defined _MSC_VER
+    
+#if (defined _MSC_VER || defined MINGW32)
 #   include <windows.h>
 #endif
 
-#include <lasso/version.h>
+/*#include <lasso/version.h>*/
+#include <lasso/lasso_config.h>
 #include <lasso/export.h>
 
 #include <lasso/environs/login.h>
