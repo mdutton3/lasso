@@ -166,7 +166,7 @@ lasso_samlp_response_new()
 	/* Add Status */
 	status = LASSO_SAMLP_STATUS(lasso_samlp_status_new());
 	status_code = LASSO_SAMLP_STATUS_CODE(lasso_samlp_status_code_new());
-	status_code->Value = LASSO_SAML_STATUS_CODE_REQUEST_DENIED;
+	status_code->Value = g_strdup(LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 	status->StatusCode = status_code;
 	LASSO_SAMLP_RESPONSE(response)->Status = status;
 
