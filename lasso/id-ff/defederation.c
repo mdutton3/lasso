@@ -66,7 +66,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -106,8 +106,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	}
 
 	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	return 0;
@@ -164,7 +163,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -197,8 +196,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 					LASSO_MD_PROTOCOL_TYPE_FEDERATION_TERMINATION,
 					http_method,
 					TRUE) == FALSE) {
-			message(G_LOG_LEVEL_CRITICAL, "This provider can't initiate this profile");
-			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+			return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 		}
 	}
 
@@ -279,7 +277,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	profile->request = lasso_lib_federation_termination_notification_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	profile->remote_providerID = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
@@ -287,7 +285,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -352,8 +350,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
 		if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-			return error_code(G_LOG_LEVEL_CRITICAL,
-					LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 					profile->remote_providerID);
 		}
 

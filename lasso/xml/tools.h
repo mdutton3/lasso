@@ -80,6 +80,8 @@ int error_code(GLogLevelFlags level, int error, ...);
 #define message(level, format, args...) \
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
 
+#define critical_error(args...) error_code(G_LOG_LEVEL_CRITICAL, ##args)
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

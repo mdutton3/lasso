@@ -60,15 +60,15 @@ lasso_strerror(int error_code)
 			return "Failed to verify signature of %s.";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
+
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
 			return "Failed to get LassoProvider object "\
 				"with providerID %s in LassoServer object.";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
 			return "Failed to add new provider.";
+
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported logout protocol profile";
-		case LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
-			return "Unsupported protocol profile";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
@@ -81,6 +81,12 @@ lasso_strerror(int error_code)
 			return "Invalid HTTP method";
 		case LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
 			return "Invalid protocol profile";
+		case LASSO_PROFILE_ERROR_INVALID_MSG:
+			return "Invalid message";
+		case LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID:
+			return "ProviderID not found";
+		case LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
+			return "Unsupported protocol profile";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\

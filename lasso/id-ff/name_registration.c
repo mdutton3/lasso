@@ -63,7 +63,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -100,7 +100,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		return 0;
 	}
 
-	return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
 gint
@@ -117,7 +117,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -152,7 +152,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 		return 0;
 	}
 
-	return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
 void
@@ -189,7 +189,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -303,13 +303,13 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	profile->request = lasso_lib_register_name_identifier_request_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
 					profile->request)->ProviderID);
 	}
@@ -327,7 +327,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 				remote_provider,
 				LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,
 				profile->http_request_method, FALSE) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
+		return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 	}
 
 	nameIdentifier = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
@@ -378,7 +378,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	profile->response = lasso_lib_register_name_identifier_response_new();
 	format = lasso_node_init_from_message(profile->response, response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)
 		response_method = LASSO_HTTP_METHOD_SOAP;
@@ -388,7 +388,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -418,7 +418,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 
@@ -506,7 +506,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 

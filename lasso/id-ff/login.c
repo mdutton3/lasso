@@ -263,8 +263,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
 			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "unknown nameidpolicy");
-		return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
+		return critical_error(LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY, nameIDPolicy);
 	}
 
 	/* consent is necessary, it should be obtained via consent attribute
@@ -481,13 +480,12 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
-		return error_code(G_LOG_LEVEL_CRITICAL,
-				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* process federation and build assertion only if signature is OK */
@@ -582,7 +580,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				LASSO_PROFILE(login)->remote_providerID);
 	}
 
@@ -698,8 +696,7 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 
 	/* ProtocolProfile must be BrwsPost */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-		return error_code(G_LOG_LEVEL_CRITICAL,
-				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* create LibAuthnResponse */
@@ -790,7 +787,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
@@ -884,7 +881,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	if (remote_providerID != NULL) {
@@ -936,7 +933,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	if (response_http_method != LASSO_HTTP_METHOD_REDIRECT &&
 			response_http_method != LASSO_HTTP_METHOD_POST) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	/* rebuild response (artifact) */
@@ -1102,8 +1099,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	if (authn_request_msg == NULL) {
 		if (LASSO_PROFILE(login)->request == NULL) {
-			return error_code(G_LOG_LEVEL_CRITICAL,
-					LASSO_PROFILE_ERROR_MISSING_REQUEST);
+			return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
 		}
 
 		/* LibAuthnRequest already set by lasso_login_init_idp_initiated_authn_request() */
@@ -1120,7 +1116,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		format = lasso_node_init_from_message(LASSO_NODE(request), authn_request_msg);
 		if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
 				format == LASSO_MESSAGE_FORMAT_ERROR) {
-			return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 		
 		LASSO_PROFILE(login)->request = LASSO_NODE(request);
@@ -1137,8 +1133,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 	} else {
-		return error_code(G_LOG_LEVEL_CRITICAL,
-				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* check if requested single sign on protocol profile is supported */
@@ -1147,7 +1142,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				LASSO_PROVIDER(LASSO_PROFILE(login)->server),
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
 				protocolProfile) == FALSE) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
+		return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 	}
 
 	/* get remote ProviderID */
@@ -1200,14 +1195,14 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(NULL, NULL);
 	format = lasso_node_init_from_message(LASSO_PROFILE(login)->response, authn_response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	LASSO_PROFILE(login)->remote_providerID = g_strdup(
 			LASSO_LIB_AUTHN_RESPONSE(LASSO_PROFILE(login)->response)->ProviderID);
 
 	if (LASSO_PROFILE(login)->remote_providerID == NULL) {
-		ret1 = error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		ret1 = critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
