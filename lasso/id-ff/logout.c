@@ -46,7 +46,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   LassoProvider *provider;
   xmlChar *protocolProfile;
 
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
@@ -54,13 +54,13 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
     debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
-    return(-1);
+    return(-2);
   }
 
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
   if(protocolProfile==NULL){
     debug(ERROR, "Single Logout Protocol profile not found\n");
-    return(-2);
+    return(-3);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
