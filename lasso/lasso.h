@@ -41,7 +41,7 @@ extern "C" {
 #include <lasso/protocols/protocols.h>
 
 LASSO_EXPORT int lasso_init(void);
-LASSO_EXPORT void lasso_shutdown(void);
+LASSO_EXPORT int lasso_shutdown(void);
 
 /**
  * lassoCheckVersionMode:

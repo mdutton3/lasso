@@ -29,7 +29,7 @@
  *
  * Initializes Lasso library
  *
- * Returns 0 on success or a negative value otherwise.
+ * Return value: 0 on success or a negative value otherwise.
  */
 int lasso_init()
 {
@@ -81,7 +81,14 @@ int lasso_init()
   return 0;
 }
 
-void lasso_shutdown()
+/**
+ * lasso_shutdown:
+ * 
+ * Clean ups the Lasso Library.
+ * 
+ * Return value: 0 on success or a negative value otherwise.
+ **/
+int lasso_shutdown()
 {
   /* Shutdown xmlsec-crypto library */
   xmlSecCryptoShutdown();
@@ -97,6 +104,7 @@ void lasso_shutdown()
   xsltCleanupGlobals();            
 #endif /* XMLSEC_NO_XSLT */
   xmlCleanupParser();
+  return (0);
 }
 
 /** 
