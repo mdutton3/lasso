@@ -624,10 +624,10 @@ lasso_node_new_from_soap(const char *soap)
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
 
-	xmlnode = xpathObj->nodesetval->nodeTab[0];
-
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
 		node = lasso_node_new_from_xmlNode(xmlnode);
+	}
 
 	xmlFreeDoc(doc);
 	xmlXPathFreeContext(xpathCtx);
