@@ -1384,7 +1384,7 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 	/* modify AuthnResponse StatusCode if user authentication is not OK */
 	if (authentication_result == FALSE) {
 		lasso_profile_set_response_status(profile,
-				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
+				LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
 		return LASSO_LOGIN_ERROR_REQUEST_DENIED;
 	}
 
