@@ -52,6 +52,8 @@
 <?php
   $form->display();
 ?>
+<br>
+<p>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
 </html>
 <?php

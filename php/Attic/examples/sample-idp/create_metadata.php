@@ -86,7 +86,17 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<body onLoad="window.close()">
+<script type="text/javascript">
+<!--
+  function set_and_close()
+  {
+	opener.document.frm.metadata.value = '<?php echo $form->exportValue('filename'); ?>';
+	window.close();
+  }
+// -->
+</script>
+</head>
+<body onLoad="set_and_close()">
 </body>
 </html>
 <?php

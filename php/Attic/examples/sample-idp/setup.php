@@ -377,6 +377,8 @@
 <form name='frm' action='<?php echo $PHP_SELF ?>' method='POST'>
 
 <p align='center'>Lasso Identity Provider Setup</p>
+<br>
+<hr>
 <p>
 <table>
 <caption>Database Configuration</caption>
@@ -385,6 +387,21 @@
 </tr>
 <tr>
   <td>Server XML Dump:</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
+</tr>
+</table>
+</p>
+<hr>
+<p>
+<table>
+<caption>Authentification Configuration</caption>
+<tr>
+  <td>Authentification type :</td>
+  <td>
+  <select name='auth_type'>
+	<option value="auth_form">HTML Login/Password Form</option>
+	<option value="auth_basic">HTTP Auth Basic</option>
+  </select>
+  </td><td>&nbsp;</td>
 </tr>
 </table>
 </p>
