@@ -62,3 +62,23 @@ if idplogin.protocolProfile == 1:
                                       "",
                                       lasso.HttpMethodRedirect)
     print "ret = %d, msg_url = %s" % (ret, idplogin.msg_url)
+
+####################
+# Service provider #
+####################
+server = lasso.Server.new("../../examples/sp.xml",
+                          "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+                          lasso.SignatureMethodRsaSha1)
+
+server.add_provider("../../examples/idp.xml", None, None)
+
+# create Request OR finish (if an authnResponse was received)
+splogin = lasso.Login.new(server, None)
+
+response_msg = string.split(idplogin.msg_url, '?')[1]
+ret = splogin.init_request(response_msg,
+                           lasso.HttpMethodRedirect,
+                           "https://identity-provider:2003/liberty-alliance/metadata")
+
+ret = splogin.build_request_msg()
+print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.msg_body)

@@ -871,12 +871,19 @@ class Login:
     def build_authn_request_msg(self):
         return lassomod.login_build_authn_request_msg(self)
 
+    def build_request_msg(self):
+        return lassomod.login_build_request_msg(self)
+
     def init_authn_request(self, remote_providerID):
         return lassomod.login_init_authn_request(self, remote_providerID)
 
     def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
         return lassomod.login_init_from_authn_request_msg(self, authn_request_msg,
                                                           authn_request_method)
+
+    def init_request(self, response_msg, response_method, remote_providerID):
+        return lassomod.login_init_request(self, response_msg,
+                                           response_method, remote_providerID)
 
     def must_authenticate(self):
         return lassomod.login_must_authenticate(self)

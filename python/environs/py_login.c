@@ -56,8 +56,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[sssss]", "request", "response", "request_type",
-			 "msg_url", "protocolProfile");
+    return Py_BuildValue("[ssssss]", "request", "response", "request_type",
+			 "msg_url", "msg_body", "protocolProfile");
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
   if (!strcmp(attr, "response"))
@@ -66,6 +66,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
+  if (!strcmp(attr, "msg_body"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_body));
   if (!strcmp(attr, "protocolProfile"))
     return (int_wrap(login->protocolProfile));
 
@@ -161,6 +163,22 @@ PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args) {
   return (int_wrap(ret));
 }
 
+PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gint ret;
+
+  if (CheckArgs(args, "O:login_build_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_build_request_msg",
+			 &login_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_build_request_msg(LassoLogin_get(login_obj));
+
+  return (int_wrap(ret));
+}
+
 PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gchar *remote_providerID;
@@ -195,6 +213,29 @@ PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args) {
   ret = lasso_login_init_from_authn_request_msg(LassoLogin_get(login_obj),
 						authn_request_msg,
 						authn_request_method);
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_init_request(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar            *response_msg;
+  lassoHttpMethods  response_method;
+  const gchar      *remote_providerID;
+  gint ret;
+
+  if (CheckArgs(args, "OSIS:login_init_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osis:login_init_request",
+			 &login_obj, &response_msg,
+			 &response_method, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_init_request(LassoLogin_get(login_obj),
+				 response_msg,
+				 response_method,
+				 remote_providerID);
 
   return (int_wrap(ret));
 }
