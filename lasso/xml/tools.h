@@ -67,9 +67,6 @@ LASSO_EXPORT xmlChar*   lasso_sha1                   (xmlChar *str);
 
 LASSO_EXPORT xmlChar*   lasso_str_escape             (xmlChar *str);
 
-LASSO_EXPORT xmlChar*   lasso_str_hash               (xmlChar    *str,
-						      const char *private_key_file);
-
 LASSO_EXPORT xmlDocPtr  lasso_str_sign               (xmlChar              *str,
 						      lassoSignatureMethod  sign_method,
 						      const char           *private_key_file);

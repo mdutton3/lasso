@@ -81,7 +81,7 @@ lasso_build_unique_id(guint8 size)
   g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
 
   int i, val;
-  xmlChar *id, *enc_id;
+  xmlChar *id; /* , *enc_id; */
 
   if (size == 0) size = 32;
   id = g_malloc(size+1);
@@ -97,10 +97,11 @@ lasso_build_unique_id(guint8 size)
   id[size] = '\0';
 
   /* base64 encoding of build string */
-  enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0);
+  /* enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0); */
 
-  g_free(id);
-  return (enc_id);
+  /* g_free(id); */
+  /* return (enc_id); */
+  return (id);
 }
 
 /**
@@ -355,12 +356,25 @@ lasso_query_verify_signature(const gchar   *query,
   return (ret);
 }
 
+/**
+ * lasso_sha1:
+ * @str: a string
+ * 
+ * Builds the SHA-1 message digest (cryptographic hash) of @str
+ * 
+ * Return value: a 20 bytes length string
+ **/
 xmlChar*
 lasso_sha1(xmlChar *str)
 {
-  unsigned char *md = xmlMalloc(20);
+  unsigned char *md;
 
-  return(SHA1(str, strlen(str), md));
+  if (str != NULL) {
+    md = xmlMalloc(20);
+    return(SHA1(str, strlen(str), md));
+  }
+  
+  return (NULL);
 }
 
 /**
