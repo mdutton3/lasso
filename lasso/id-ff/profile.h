@@ -51,14 +51,14 @@ typedef struct _LassoProfilePrivate LassoProfilePrivate;
 
 /* Request types (used by SOAP endpoint) */
 typedef enum {
-  lassoRequestTypeInvalid = 0,
-  lassoRequestTypeLogin = 1,
-  lassoRequestTypeLogout = 2,
-  lassoRequestTypeDefederation = 3,
-  lassoRequestTypeNameRegistration = 4,
-  lassoRequestTypeRegisterNameIdentifier = 4, /* obsolete keep API compatible */
-  lassoRequestTypeNameIdentifierMapping = 5,
-  lassoRequestTypeLecp = 6
+  lassoRequestTypeInvalid,
+  lassoRequestTypeLogin,
+  lassoRequestTypeLogout,
+  lassoRequestTypeDefederation,
+  lassoRequestTypeRegisterNameIdentifier,
+  lassoRequestTypeNameIdentifierMapping,
+  lassoRequestTypeLecp,
+  lassoRequestTypeNameRegistration
 } lassoRequestType;
 
 typedef enum {
