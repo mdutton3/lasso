@@ -33,10 +33,9 @@ typedef struct {
     LassoRegisterNameIdentifierResponse *obj;
 } LassoRegisterNameIdentifierResponse_object;
 
-#define lassoRegisterNameIdentifierResponse_get(v) (((v) == Py_None) ? NULL : (((LassoRegisterNameIdentifierResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierResponse *response);
+#define LassoRegisterNameIdentifierResponse_get(v) (((v) == Py_None) ? NULL : (((LassoRegisterNameIdentifierResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierResponse *response);
 
-PyObject *register_name_identifier_response_getattr(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_response(PyObject *self, PyObject *args);
+PyObject *register_name_identifier_response_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_REGISTER_NAME_IDENTIFIER_RESPONSE_H__ */

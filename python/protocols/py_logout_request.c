@@ -25,11 +25,9 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_logout_request.h"
 
-
-PyObject *lassoLogoutRequest_wrap(LassoLogoutRequest *request) {
+PyObject *LassoLogoutRequest_wrap(LassoLogoutRequest *request) {
   PyObject *ret;
 
   if (request == NULL) {
@@ -41,83 +39,25 @@ PyObject *lassoLogoutRequest_wrap(LassoLogoutRequest *request) {
   return (ret);
 }
 
-PyObject *logout_request_getattr(PyObject *self, PyObject *args) {
-  PyObject *request_obj;
-  LassoLogoutRequest *request;
-  const char *attr;
+/******************************************************************************/
 
-  if (CheckArgs(args, "OS:logout_request_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:logout_request_get_attr", &request_obj, &attr))
+PyObject *logout_request_new(PyObject *self, PyObject *args) {
+  const xmlChar *providerID;
+  const xmlChar *nameIdentifier;
+  const xmlChar *nameQualifier = NULL;
+  const xmlChar *format = NULL;
+
+  LassoNode *request;
+
+  if (CheckArgs(args, "SSss:logout_request_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "sszz:logout_request_new",
+			 &providerID, &nameIdentifier, &nameQualifier, &format))
       return NULL;
   }
   else return NULL;
 
-  request = lassoLogoutRequest_get(request_obj);
+  request = lasso_logout_request_new(providerID, nameIdentifier,
+				     nameQualifier, format);
 
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *logout_request(PyObject *self, PyObject *args) {
-  const xmlChar *providerID;
-  const xmlChar *nameIdentifier;
-  const xmlChar *nameQualifier;
-  const xmlChar *format;
-
-  LassoLogoutRequest *request;
-
-  if(!PyArg_ParseTuple(args, (char *) "ssss:logout_request",
-		       &providerID,
-		       &nameIdentifier, &nameQualifier, &format))
-    return NULL;
-
-  request = (LassoLogoutRequest *)lasso_logout_request_new(providerID,
-							   nameIdentifier,
-							   nameQualifier,
-							   format);
-
-  return (lassoLogoutRequest_wrap(request));
-}
-
-PyObject *logout_request_set_sessionIndex(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *sessionIndex;
-
-     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_sessionIndex",
-			  &request_obj, &sessionIndex))
-	  return NULL;
-
-     lasso_lib_logout_request_set_sessionIndex(lassoLogoutRequest_get(request_obj),
-					       sessionIndex);
-     
-     return (int_wrap(1));
-}
-
-PyObject *logout_request_set_relayState(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *relayState;
-
-     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_relayState",
-			  &request_obj, &relayState))
-	  return NULL;
-
-     lasso_lib_logout_request_set_relayState(lassoLogoutRequest_get(request_obj),
-					     relayState);
-     
-     return (int_wrap(1));
-}
-
-PyObject *logout_request_set_consent(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *consent;
-     
-
-     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_consent",
-			  &request_obj, &consent))
-	  return NULL;
-
-     lasso_lib_logout_request_set_consent(lassoLogoutRequest_get(request_obj),
-					  consent);
-     
-     return (int_wrap(1));
+  return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
 }

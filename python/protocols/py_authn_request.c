@@ -5,7 +5,8 @@
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.labs.libre-entreprise.org
  * 
- * Author: Valery Febvre <vfebvre@easter-eggs.com>
+ * Authors: Valery Febvre <vfebvre@easter-eggs.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +25,7 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_authn_request.h"
-
-/******************************************************************************/
-/* LassoAuthnRequest                                                          */
-/******************************************************************************/
 
 PyObject *LassoAuthnRequest_wrap(LassoAuthnRequest *request) {
   PyObject *ret;
@@ -97,4 +93,19 @@ PyObject *authn_request_set_scoping(PyObject *self, PyObject *args) {
 
   Py_INCREF(Py_None);
   return (Py_None);
+}
+
+/******************************************************************************/
+
+PyObject *authn_request_get_protocolProfile(PyObject *self, PyObject *args) {
+  xmlChar *query;
+  xmlChar *protocolProfile;
+
+  if(!PyArg_ParseTuple(args, (char *) "s:authn_request_get_protocolProfile",
+		       &query))
+    return NULL;
+
+  protocolProfile = lasso_authn_request_get_protocolProfile(query);
+
+  return (xmlCharPtr_wrap(protocolProfile));
 }

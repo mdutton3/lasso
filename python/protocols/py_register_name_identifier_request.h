@@ -33,12 +33,10 @@ typedef struct {
     LassoRegisterNameIdentifierRequest *obj;
 } LassoRegisterNameIdentifierRequest_object;
 
-#define lassoRegisterNameIdentifierRequest_get(v) (((v) == Py_None) ? NULL : (((LassoRegisterNameIdentifierRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierRequest *request);
+#define LassoRegisterNameIdentifierRequest_get(v) (((v) == Py_None) ? NULL : (((LassoRegisterNameIdentifierRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierRequest *request);
 
-PyObject *register_name_identifier_request_getattr(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_request(PyObject *self, PyObject *args);
+PyObject *register_name_identifier_request_new(PyObject *self, PyObject *args);
 PyObject *register_name_identifier_request_change_attribute_names_identifiers(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_request_set_relayState(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_REGISTER_NAME_IDENTIFIER_REQUEST_H__ */

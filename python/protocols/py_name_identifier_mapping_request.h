@@ -27,21 +27,15 @@
 #define __PYLASSO_PY_NAME_IDENTIFIER_MAPPING_REQUEST_H__
 
 #include <lasso/protocols/name_identifier_mapping_request.h>
-#include <lasso/xml/lib_name_identifier_mapping_request.h>
 
 typedef struct {
     PyObject_HEAD
     LassoNameIdentifierMappingRequest *obj;
 } LassoNameIdentifierMappingRequest_object;
 
-#define lassoNameIdentifierMappingRequest_get(v) (((v) == Py_None) ? NULL : (((LassoNameIdentifierMappingRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingRequest *request);
+#define LassoNameIdentifierMappingRequest_get(v) (((v) == Py_None) ? NULL : (((LassoNameIdentifierMappingRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingRequest *request);
 
-PyObject *name_identifier_mapping_request_getattr(PyObject *self, PyObject *args);
-PyObject *name_identifier_mapping_request(PyObject *self, PyObject *args);
-
-PyObject *name_identifier_mapping_request_set_sessionIndex(PyObject *self, PyObject *args);
-PyObject *name_identifier_mapping_request_set_relayState(PyObject *self, PyObject *args);
-PyObject *name_identifier_mapping_request_set_consent(PyObject *self, PyObject *args);
+PyObject *name_identifier_mapping_request_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_NAME_IDENTIFIER_MAPPING_REQUEST_H__ */

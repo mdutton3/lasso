@@ -34,14 +34,10 @@ typedef struct {
     LassoLogoutRequest *obj;
 } LassoLogoutRequest_object;
 
-#define lassoLogoutRequest_get(v) (((v) == Py_None) ? NULL : (((LassoLogoutRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoLogoutRequest_wrap(LassoLogoutRequest *request);
+#define LassoLogoutRequest_get(v) (((v) == Py_None) ? NULL : (((LassoLogoutRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoLogoutRequest_wrap(LassoLogoutRequest *request);
 
 PyObject *logout_request_getattr(PyObject *self, PyObject *args);
-PyObject *logout_request(PyObject *self, PyObject *args);
-
-PyObject *logout_request_set_sessionIndex(PyObject *self, PyObject *args);
-PyObject *logout_request_set_relayState(PyObject *self, PyObject *args);
-PyObject *logout_request_set_consent(PyObject *self, PyObject *args);
+PyObject *logout_request_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_REQUEST_H__ */

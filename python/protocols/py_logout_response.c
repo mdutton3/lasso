@@ -25,12 +25,10 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
-#include "py_logout_request.h"
 #include "py_logout_response.h"
+#include "py_logout_request.h"
 
-
-PyObject *lassoLogoutResponse_wrap(LassoLogoutResponse *response) {
+PyObject *LassoLogoutResponse_wrap(LassoLogoutResponse *response) {
   PyObject *ret;
 
   if (response == NULL) {
@@ -42,39 +40,26 @@ PyObject *lassoLogoutResponse_wrap(LassoLogoutResponse *response) {
   return (ret);
 }
 
+/******************************************************************************/
 
-PyObject *logout_response_getattr(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  LassoLogoutResponse *response;
-  const char *attr;
+PyObject *logout_response_new(PyObject *self, PyObject *args) {
+  const xmlChar *providerID;
+  const xmlChar *statusCodeValue;
+  PyObject      *request_obj;
 
-  if (CheckArgs(args, "OS:logout_response_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:logout_response_get_attr", &response_obj, &attr))
+  LassoNode *response;
+
+  if (CheckArgs(args, "SSO:logout_response_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssO:logout_response_new",
+			 &providerID,
+			 &statusCodeValue, &request_obj))
       return NULL;
   }
   else return NULL;
 
-  response = lassoLogoutResponse_get(response_obj);
+  response = lasso_logout_response_new(providerID,
+				       statusCodeValue,
+				       LassoLogoutRequest_get(request_obj));
 
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *logout_response(PyObject *self, PyObject *args) {
-  const xmlChar      *providerID;
-  const xmlChar      *statusCodeValue;
-  PyObject           *request_obj;
-
-  LassoLogoutResponse *response;
-
-  if(!PyArg_ParseTuple(args, (char *) "ssO:logout_response",
-		       &providerID,
-		       &statusCodeValue, &request_obj))
-    return NULL;
-
-  response = (LassoLogoutResponse *)lasso_logout_response_new(providerID,
-							      statusCodeValue,
-							      lassoLogoutRequest_get(request_obj));
-
-  return (lassoLogoutResponse_wrap(response));
+  return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
 }

@@ -33,11 +33,9 @@ typedef struct {
     LassoFederationTerminationNotification *obj;
 } LassoFederationTerminationNotification_object;
 
-#define lassoFederationTerminationNotification_get(v) (((v) == Py_None) ? NULL : (((LassoFederationTerminationNotification_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoFederationTerminationNotification_wrap(LassoFederationTerminationNotification *notification);
+#define LassoFederationTerminationNotification_get(v) (((v) == Py_None) ? NULL : (((LassoFederationTerminationNotification_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoFederationTerminationNotification_wrap(LassoFederationTerminationNotification *notification);
 
-PyObject *federation_termination_notification_getattr(PyObject *self, PyObject *args);
-PyObject *federation_termination_notification(PyObject *self, PyObject *args);
-PyObject *federation_termination_notification_set_consent(PyObject *self, PyObject *args);
+PyObject *federation_termination_notification_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_FEDERATION_TERMINATION_NOTIFICATION_H__ */

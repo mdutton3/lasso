@@ -25,11 +25,9 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_federation_termination_notification.h"
 
-
-PyObject *lassoFederationTerminationNotification_wrap(LassoFederationTerminationNotification *notification) {
+PyObject *LassoFederationTerminationNotification_wrap(LassoFederationTerminationNotification *notification) {
   PyObject *ret;
 
   if (notification == NULL) {
@@ -41,54 +39,28 @@ PyObject *lassoFederationTerminationNotification_wrap(LassoFederationTermination
   return (ret);
 }
 
-PyObject *federation_termination_notification_getattr(PyObject *self, PyObject *args) {
-  PyObject *notification_obj;
-  LassoFederationTerminationNotification *notification;
-  const char *attr;
+/******************************************************************************/
 
-  if (CheckArgs(args, "OS:federation_termination_notification_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:federation_termination_notification_get_attr", &notification_obj, &attr))
+PyObject *federation_termination_notification_new(PyObject *self, PyObject *args) {
+  const xmlChar *providerID;
+  const xmlChar *nameIdentifier;
+  const xmlChar *nameQualifier = NULL;
+  const xmlChar *format = NULL;
+
+  LassoNode *notification;
+
+  if (CheckArgs(args, "SSss:federation_termination_notification_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "sszz:federation_termination_notification_new",
+			 &providerID, &nameIdentifier,
+			 &nameQualifier, &format))
       return NULL;
   }
   else return NULL;
 
-  notification = lassoFederationTerminationNotification_get(notification_obj);
+  notification = lasso_federation_termination_notification_new(providerID,
+							       nameIdentifier,
+							       nameQualifier,
+							       format);
 
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *federation_termination_notification(PyObject *self, PyObject *args) {
-  const xmlChar *providerID;
-  const xmlChar *nameIdentifier;
-  const xmlChar *nameQualifier;
-  const xmlChar *format;
-
-  LassoFederationTerminationNotification *notification;
-
-  if(!PyArg_ParseTuple(args, (char *) "ssss:federation_termination_notification",
-		       &providerID,
-		       &nameIdentifier, &nameQualifier, &format))
-    return NULL;
-
-  notification = (LassoFederationTerminationNotification *)lasso_federation_termination_notification_new(providerID,
-												    nameIdentifier,
-												    nameQualifier,
-												    format);
-
-  return (lassoFederationTerminationNotification_wrap(notification));
-}
-
-PyObject *federation_termination_notification_set_consent(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *consent;
-     
-     if(!PyArg_ParseTuple(args, (char *) "Os:federation_termination_notification_set_consent",
-			  &request_obj, &consent))
-	  return NULL;
-
-     lasso_lib_federation_termination_notification_set_consent(lassoFederationTerminationNotification_get(request_obj),
-							       consent);
-     
-     return (int_wrap(1));
+  return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
 }

@@ -25,11 +25,10 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
-#include "py_name_identifier_mapping_request.h"
 #include "py_name_identifier_mapping_response.h"
+#include "py_name_identifier_mapping_request.h"
 
-PyObject *lassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResponse *response) {
+PyObject *LassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResponse *response) {
   PyObject *ret;
 
   if (response == NULL) {
@@ -41,38 +40,26 @@ PyObject *lassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResp
   return (ret);
 }
 
-PyObject *name_identifier_mapping_response_getattr(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  LassoNameIdentifierMappingResponse *response;
-  const char *attr;
+/******************************************************************************/
 
-  if (CheckArgs(args, "OS:name_identifier_mapping_response_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:name_identifier_mapping_response_get_attr", &response_obj, &attr))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lassoNameIdentifierMappingResponse_get(response_obj);
-
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *name_identifier_mapping_response(PyObject *self, PyObject *args) {
+PyObject *name_identifier_mapping_response_new(PyObject *self, PyObject *args) {
   const xmlChar      *providerID;
   const xmlChar      *statusCodeValue;
   PyObject           *request_obj;
 
-  LassoNameIdentifierMappingResponse *response;
+  LassoNode *response;
 
-  if(!PyArg_ParseTuple(args, (char *) "ssO:name_identifier_mapping_response",
-		       &providerID,
-		       &statusCodeValue, &request_obj))
-    return NULL;
+  if (CheckArgs(args, "SSO:name_identifier_mapping_response_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssO:name_identifier_mapping_response_new",
+			 &providerID,
+			 &statusCodeValue, &request_obj))
+      return NULL;
+  }
+  else return NULL;
 
-  response = (LassoNameIdentifierMappingResponse *)lasso_name_identifier_mapping_response_new(providerID,
-							      statusCodeValue,
-							      lassoNameIdentifierMappingRequest_get(request_obj));
+  response = lasso_name_identifier_mapping_response_new(providerID,
+							statusCodeValue,
+							LassoNameIdentifierMappingRequest_get(request_obj));
 
-  return (lassoNameIdentifierMappingResponse_wrap(response));
+  return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
 }

@@ -25,10 +25,9 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_register_name_identifier_request.h"
 
-PyObject *lassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierRequest *request) {
+PyObject *LassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierRequest *request) {
   PyObject *ret;
 
   if (request == NULL) {
@@ -40,24 +39,9 @@ PyObject *lassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierReq
   return (ret);
 }
 
-PyObject *register_name_identifier_request_getattr(PyObject *self, PyObject *args) {
-  PyObject *request_obj;
-  LassoRegisterNameIdentifierRequest *request;
-  const char *attr;
+/******************************************************************************/
 
-  if (CheckArgs(args, "OS:register_name_identifier_request_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:register_name_identifier_request_get_attr", &request_obj, &attr))
-      return NULL;
-  }
-  else return NULL;
-
-  request = lassoRegisterNameIdentifierRequest_get(request_obj);
-
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *register_name_identifier_request(PyObject *self, PyObject *args) {
+PyObject *register_name_identifier_request_new(PyObject *self, PyObject *args) {
   const xmlChar *providerID;
 
   const xmlChar *idpNameIdentifier;
@@ -72,51 +56,44 @@ PyObject *register_name_identifier_request(PyObject *self, PyObject *args) {
   const xmlChar *oldNameQualifier;
   const xmlChar *oldFormat;
 
-  LassoRegisterNameIdentifierRequest *request;
+  LassoNode *request;
 
-  if(!PyArg_ParseTuple(args, (char *) "ssssssssss:register_name_identifier_request",
-		       &providerID,
-		       &idpNameIdentifier, &idpNameQualifier, &idpFormat,
-		       &spNameIdentifier, &spNameQualifier, &spFormat,
-		       &oldNameIdentifier, &oldNameQualifier, &oldFormat))
-    return NULL;
+  if (CheckArgs(args, "SSSSSSSSSS:register_name_identifier_request_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssssssssss:register_name_identifier_request_new",
+			 &providerID,
+			 &idpNameIdentifier, &idpNameQualifier, &idpFormat,
+			 &spNameIdentifier,  &spNameQualifier,  &spFormat,
+			 &oldNameIdentifier, &oldNameQualifier, &oldFormat))
+      return NULL;
+  }
+  else return NULL;
 
-  request = (LassoRegisterNameIdentifierRequest *)lasso_register_name_identifier_request_new(providerID,
-											     idpNameIdentifier,
-											     idpNameQualifier,
-											     idpFormat,
-											     spNameIdentifier,
-											     spNameQualifier,
-											     spFormat,
-											     oldNameIdentifier,
-											     oldNameQualifier,
-											     oldFormat);
+  request = lasso_register_name_identifier_request_new(providerID,
+						       idpNameIdentifier,
+						       idpNameQualifier,
+						       idpFormat,
+						       spNameIdentifier,
+						       spNameQualifier,
+						       spFormat,
+						       oldNameIdentifier,
+						       oldNameQualifier,
+						       oldFormat);
 
-  return (lassoRegisterNameIdentifierRequest_wrap(request));
+  return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
 }
 
 PyObject *register_name_identifier_request_change_attribute_names_identifiers(PyObject *self, PyObject *args){
-     PyObject *request_obj;
+  PyObject *request_obj;
 
-     if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_request",
-		       &request_obj))
-	  return NULL;
+  if (CheckArgs(args, "O:register_name_identifier_request_change_attribute_names_identifiers")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_request_change_attribute_names_identifiers",
+			 &request_obj))
+      return NULL;
+  }
+  else return NULL;
      
-     lasso_register_name_identifier_change_attribute_names_identifiers(lassoRegisterNameIdentifierRequest_get(request_obj));
-
-     return (int_wrap(1));
-}
-
-PyObject *register_name_identifier_request_set_relayState(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *relayState;
-
-     if(!PyArg_ParseTuple(args, (char *) "Os:register_name_identifier_request_set_relayState",
-			  &request_obj, &relayState))
-	  return NULL;
-
-     lasso_lib_register_name_identifier_request_set_relayState(lassoRegisterNameIdentifierRequest_get(request_obj),
-							       relayState);
-     
-     return (int_wrap(1));
+  lasso_register_name_identifier_change_attribute_names_identifiers(LassoRegisterNameIdentifierRequest_get(request_obj));
+  
+  Py_INCREF(Py_None);
+  return (Py_None);
 }

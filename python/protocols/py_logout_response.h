@@ -32,10 +32,9 @@ typedef struct {
     LassoLogoutResponse *obj;
 } LassoLogoutResponse_object;
 
-#define lassoLogoutResponse_get(v) (((v) == Py_None) ? NULL : (((LassoLogoutResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoLogoutResponse_wrap(LassoLogoutResponse *response);
+#define LassoLogoutResponse_get(v) (((v) == Py_None) ? NULL : (((LassoLogoutResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoLogoutResponse_wrap(LassoLogoutResponse *response);
 
-PyObject *logout_response_getattr(PyObject *self, PyObject *args);
-PyObject *logout_response(PyObject *self, PyObject *args);
+PyObject *logout_response_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_RESPONSE_H__ */

@@ -25,12 +25,10 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_register_name_identifier_request.h"
 #include "py_register_name_identifier_response.h"
 
-
-PyObject *lassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierResponse *response) {
+PyObject *LassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierResponse *response) {
   PyObject *ret;
 
   if (response == NULL) {
@@ -42,39 +40,25 @@ PyObject *lassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierRe
   return (ret);
 }
 
+/******************************************************************************/
 
-PyObject *register_name_identifier_response_getattr(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  LassoRegisterNameIdentifierResponse *response;
-  const char *attr;
+PyObject *register_name_identifier_response_new(PyObject *self, PyObject *args) {
+  const xmlChar *providerID;
+  const xmlChar *statusCodeValue;
+  PyObject      *request_obj;
+  LassoNode     *response;
 
-  if (CheckArgs(args, "OS:register_name_identifier_response_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:register_name_identifier_response_get_attr", &response_obj, &attr))
+  if (CheckArgs(args, "SSO:register_name_identifier_response_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssO:register_name_identifier_response_new",
+			 &providerID,
+			 &statusCodeValue, &request_obj))
       return NULL;
   }
   else return NULL;
 
-  response = lassoRegisterNameIdentifierResponse_get(response_obj);
+  response = lasso_register_name_identifier_response_new(providerID,
+							 statusCodeValue,
+							 LassoRegisterNameIdentifierRequest_get(request_obj));
 
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *register_name_identifier_response(PyObject *self, PyObject *args) {
-  const xmlChar      *providerID;
-  const xmlChar      *statusCodeValue;
-  PyObject           *request_obj;
-
-  LassoRegisterNameIdentifierResponse *response;
-
-  if(!PyArg_ParseTuple(args, (char *) "ssO:register_name_identifier_response",
-		       &providerID,
-		       &statusCodeValue, &request_obj))
-    return NULL;
-
-  response = (LassoRegisterNameIdentifierResponse *)lasso_register_name_identifier_response_new(providerID,
-							      statusCodeValue,
-							      lassoRegisterNameIdentifierRequest_get(request_obj));
-
-  return (lassoRegisterNameIdentifierResponse_wrap(response));
+  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
 }

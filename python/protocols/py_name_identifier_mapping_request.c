@@ -25,10 +25,9 @@
 
 #include "../lassomod.h"
 
-#include "../xml/py_xml.h"
 #include "py_name_identifier_mapping_request.h"
 
-PyObject *lassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingRequest *request) {
+PyObject *LassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingRequest *request) {
   PyObject *ret;
 
   if (request == NULL) {
@@ -40,54 +39,26 @@ PyObject *lassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingReque
   return (ret);
 }
 
-PyObject *name_identifier_mapping_request_getattr(PyObject *self, PyObject *args) {
-  PyObject *request_obj;
-  LassoNameIdentifierMappingRequest *request;
-  const char *attr;
+/******************************************************************************/
 
-  if (CheckArgs(args, "OS:name_identifier_mapping_request_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:name_identifier_mapping_request_get_attr", &request_obj, &attr))
+PyObject *name_identifier_mapping_request_new(PyObject *self, PyObject *args) {
+  const xmlChar *providerID;
+  const xmlChar *nameIdentifier;
+  const xmlChar *nameQualifier = NULL;
+  const xmlChar *format = NULL;
+
+  LassoNode *request;
+
+  if (CheckArgs(args, "SSss:name_identifier_mapping_request_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "sszz:name_identifier_mapping_request_new",
+			 &providerID, &nameIdentifier,
+			 &nameQualifier, &format))
       return NULL;
   }
   else return NULL;
 
-  request = lassoNameIdentifierMappingRequest_get(request_obj);
+  request = lasso_name_identifier_mapping_request_new(providerID, nameIdentifier,
+						      nameQualifier, format);
 
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *name_identifier_mapping_request(PyObject *self, PyObject *args) {
-  const xmlChar *providerID;
-  const xmlChar *nameIdentifier;
-  const xmlChar *nameQualifier;
-  const xmlChar *format;
-
-  LassoNameIdentifierMappingRequest *request;
-
-  if(!PyArg_ParseTuple(args, (char *) "ssss:name_identifier_mapping_request",
-		       &providerID,
-		       &nameIdentifier, &nameQualifier, &format))
-    return NULL;
-
-  request = (LassoNameIdentifierMappingRequest *)lasso_name_identifier_mapping_request_new(providerID,
-							   nameIdentifier,
-							   nameQualifier,
-							   format);
-
-  return (lassoNameIdentifierMappingRequest_wrap(request));
-}
-
-PyObject *name_identifier_mapping_request_set_consent(PyObject *self, PyObject *args){
-     PyObject      *request_obj;
-     const xmlChar *consent;
-     
-     if(!PyArg_ParseTuple(args, (char *) "Os:name_identifier_mapping_request_set_consent",
-			  &request_obj, &consent))
-	  return NULL;
-
-     lasso_lib_name_identifier_mapping_request_set_consent(lassoNameIdentifierMappingRequest_get(request_obj),
-					  consent);
-     
-     return (int_wrap(1));
+  return (LassoNameIdentifierMappingRequest_wrap(LASSO_NAME_IDENTIFIER_MAPPING_REQUEST(request)));
 }

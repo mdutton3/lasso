@@ -32,10 +32,9 @@ typedef struct {
     LassoNameIdentifierMappingResponse *obj;
 } LassoNameIdentifierMappingResponse_object;
 
-#define lassoNameIdentifierMappingResponse_get(v) (((v) == Py_None) ? NULL : (((LassoNameIdentifierMappingResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *lassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResponse *response);
+#define LassoNameIdentifierMappingResponse_get(v) (((v) == Py_None) ? NULL : (((LassoNameIdentifierMappingResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResponse *response);
 
-PyObject *name_identifier_mapping_response_getattr(PyObject *self, PyObject *args);
-PyObject *name_identifier_mapping_response(PyObject *self, PyObject *args);
+PyObject *name_identifier_mapping_response_new(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_NAME_IDENTIFIER_MAPPING_RESPONSE_H__ */
