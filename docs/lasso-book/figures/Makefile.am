@@ -23,7 +23,7 @@ figures_DATA = $(FIGURES_PNG_FILES)
 CLEANFILES = $(FIGURES_PNG_FILES) $(FIGURES_SVG_FILES)
 
 %.svg:
-	xsltproc --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` step.xsl \
+	xsltproc --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` $(srcdir)/step.xsl \
 		$< > $@
 
 %.png: %.svg
