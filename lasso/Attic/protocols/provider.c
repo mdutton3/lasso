@@ -294,7 +294,7 @@ lasso_provider_new_metadata_filename(gchar *metadata_filename)
   
   provider->metadata = lasso_node_new();
   LASSO_NODE_GET_CLASS(provider->metadata)->set_xmlNode(provider->metadata, root);
-  //provider->metadata = lasso_node_new_from_xmlNode(root);
+  /*provider->metadata = lasso_node_new_from_xmlNode(root); */
 
   return(provider);
 }
