@@ -6,7 +6,7 @@
  * http://lasso.entrouvert.org
  * 
  * Authors: Nicolas Clapies <nclapies@entrouvert.com>
- * Valery Febvre <vfebvre@easter-eggs.com>
+ *          Valery Febvre <vfebvre@easter-eggs.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
