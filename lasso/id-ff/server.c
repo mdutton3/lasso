@@ -241,7 +241,7 @@ lasso_server_new_from_dump(gchar *dump)
   LASSO_PROVIDER(server)->public_key = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE);
 
   /* cetificate */
-  LASSO_PROVIDER(server)->public_key = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_CERTIFICATE_NODE);
+  LASSO_PROVIDER(server)->certificate = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_CERTIFICATE_NODE);
 
   /* providers */
   providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, NULL);
