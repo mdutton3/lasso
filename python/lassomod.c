@@ -28,6 +28,7 @@
 #include "xml/py_xml.h"
 #include "protocols/py_logout.h"
 #include "protocols/py_single_sign_on_and_federation.h"
+#include "protocols/py_register_name_identifier.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -73,6 +74,10 @@ static PyMethodDef lasso_methods[] = {
   {"response_getattr", response_getattr, METH_VARARGS},
   {"response_init", response_init, METH_VARARGS},
   {"response_add_assertion", response_add_assertion, METH_VARARGS},
+
+  /* py_register_name_identifier.h */
+  {"register_name_identifier_request_getattr", register_name_identifier_request_getattr, METH_VARARGS},
+  {"register_name_identifier_request_create",  register_name_identifier_request_create,  METH_VARARGS}, 
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
