@@ -25,6 +25,7 @@
 
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
+#include <libxslt/xslt.h>
 
 #include "lasso.h"
 
