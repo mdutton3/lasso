@@ -68,9 +68,10 @@ GType lasso_name_identifier_mapping_response_get_type() {
 
 LassoNode*
 lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
-			  const xmlChar *statusCodeValue,
-			  LassoNode     *request)
+					   const xmlChar *statusCodeValue,
+					   LassoNode     *request)
 {
+  /* FIXME : change request type */
   LassoNode *response, *ss, *ssc;
   xmlChar *inResponseTo, *recipient, *relayState;
 
@@ -109,7 +110,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
 				    LASSO_SAMLP_STATUS_CODE(ssc));
 
-  lasso_lib_name_identifier_mapping_response_set_status(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+  lasso_lib_name_identifier_mapping_response_set_status(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
 							LASSO_SAMLP_STATUS(ss));
 
   return (response);
