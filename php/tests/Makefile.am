@@ -1,0 +1,1 @@
+EXTRA_DIST = 001.phpt
