@@ -359,13 +359,14 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
  *    If it is a SOAP notification method then it builds the federation termination object
  *    from the SOAP message and optionaly verify the signature.
  *
- *    if it is a HTTP-Redirect notification method the nit builds the federation termination notication
- *    object from the QUERY message and optionaly verify the signature
+ *    if it is a HTTP-Redirect notification method then it builds the federation termination notication
+ *    object from the QUERY message and optionaly verify the signature. If an error occurs,
+ *    then it returns the code error LASSO_PROFILE_ERROR_INVALID_QUERY.
  * 
  * Set the msg_nameIdentifier attribute with the NameIdentifier content of the notification object and
  * optionaly set the msg_relayState attribute with the RelayState content of the notifcation object
  *
- * Return value: 0 if OK else < 0
+ * Return value: 0 if OK else LASSO_PROFILE_ERROR_INVALID_QUERY or < 0
  **/
 gint
 lasso_defederation_process_notification_msg(LassoDefederation *defederation,
