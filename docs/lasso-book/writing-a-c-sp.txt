@@ -132,6 +132,8 @@ It is then really easy to get back properly constructed objects::
   /* restore dump from file, database, whatever */
   server = lasso_server_new_from_dump(dump);
 
+.. warning:: The server dump only contains the filenames; not the actual file
+             contents.  Files should not be moved afterwards.
 
 
 
