@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  include "config.php.inc";  
+  $config = unserialize(file_get_contents('config.inc'));
   
   require_once 'DB.php';
   
@@ -35,7 +35,7 @@
 
   lasso_init();
 
-  $server_dump = file_get_contents($server_dump_filename);
+  $server_dump = file_get_contents($config['server_dump_filename']);
 
   $server = lasso_server_new_from_dump($server_dump);
 
@@ -81,7 +81,7 @@
   $options = array(
     	'debug'       => 2,
   );
-  $db = &DB::connect($dsn, $options);
+  $db = &DB::connect($config['dsn'], $options);
 
   if (DB::isError($db)) 
 	  die($db->getMessage());

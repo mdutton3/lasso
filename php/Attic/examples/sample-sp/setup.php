@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?php
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 	if ($ret == FALSE)
@@ -37,11 +39,43 @@
 
 	require_once 'DB.php';
 
-	$config = unserialize(file_get_contents('config.inc'));
-
-	switch($_POST['action'])
+	# default config
+	if (!file_exists('config.inc'))
 	{
-	  case 'setup' :
+	  $cwd = getcwd();
+	  $config = array(
+	  'dsn' => "pgsql://sp:sp@localhost/sp",
+	  'server_dump_filename' => "lasso_server_dump.xml",
+	  'sp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/metadata.xml",
+	  'sp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/public-key.pem",
+	  'sp-private_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/private-key-raw.pem",
+	  'sp-ca' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/certificate.pem",
+	  'idp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/metadata.xml",
+	  'idp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/public-key.pem",
+	  'idp-ca' => "/home/cnowicki/mcvs/lasso/tests/data/ca1-la/certificate.pem",
+	  );
+
+	  $config_ser = serialize($config);
+
+	  if (($fd = fopen(getcwd()."/config.inc", "w")))
+		{
+		  fwrite($fd, $config_ser);
+		  fclose($fd);
+		}
+	  else
+		die("Could not write default config file");
+	}
+	else 
+	{
+	  $config = unserialize(file_get_contents('config.inc'));
+	}
+
+	if ($_POST['action'] == 'setup') 
+	{
+		ob_start();
+		
+		$setup = FALSE;
+		
 		print "<b>Lasso Service Provider Setup</b><br>";
 
 		unset($_POST['action']);
@@ -83,6 +117,7 @@
 		  identity_dump   text,
 		  first_name   	  varchar(50),
 		  last_name   	  varchar(50),
+		  last_login	  timestamp,
 		  created		  timestamp)";
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
@@ -131,8 +166,7 @@
 
 		if (empty($server))
 		{
-		  print "Failed";
-		  break;
+		  die("Failed");
 		} 
 		else
 		  print "OK";
@@ -161,9 +195,11 @@
 		  print "OK";
 		}
 		else
-		  print "Failed";
+		  die("Failed");
 
 		lasso_shutdown();
+
+		print "<br>Save configuration file : ";
 
 		# Save configuration file
 		$config_ser = serialize($config);
@@ -171,13 +207,39 @@
 		{
 		  fwrite($fd, $config_ser);
 		  fclose($fd);
+		  print "OK";
+		} 
+		else
+		{
+		  print("Failed");
+		  break;
 		}
-
-		break;
-	  default:
+		$setup = TRUE;
+	}
+		ob_start();
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Setup script for Lasso (Liberty Alliance Single Sign On)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
+<?php
+  if ($setup == TRUE) {
+?>
+<meta http-equiv="Refresh" CONTENT="3; URL=index.php">
+<?php } ?>
+</head>
+<body>
+<?php
+  ob_end_flush();
+  ob_end_flush();
+  ?>
+</body>
+</html>
+<?php
+  	if (empty($setup))
+	{
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Setup script for Lasso (Liberty Alliance Single Sign On)</title>
@@ -188,16 +250,64 @@
 <table>
 <caption>Lasso Service Provider Setup</caption>
 <tr>
-  <td>DSN:</td><td><input type='text' name='dsn' value='<?php echo $config['dsn']; ?>' maxlength='100'></td>
+  <td colspan='3' align='center'>Database Configuration</td>
 </tr>
 <tr>
-  <td>Server XML Dump:</td><td><input type='text' name='server_dump_filename' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td>
+  <td>DSN (Data Source Name) :</td><td><input type='text' name='dsn' size='50' value='<?php echo $config['dsn']; ?>' maxlength='100'></td><td><a href='http://pear.php.net/manual/en/package.database.db.intro-dsn.php' target='_new'>Help</a></td>
 </tr>
 <tr>
-  <td><input type='hidden' name='action' value='setup'></td>
-  <td><input type='submit' value='setup'></td>
+  <td>Server XML Dump:</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
+
+</tr>
+<tr>
+  <td colspan='3' align='center'>Service Provider</td>
+</tr>
+
+<tr>
+  <td>Metadata</td><td><input type='text' name='sp-metadata' size='50' value='<?php echo $config['sp-metadata']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+
+<tr>
+  <td>Public Key</td><td><input type='text' name='sp-public_key' size='50' value='<?php echo $config['sp-public_key']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+
+<tr>
+  <td>Private Key</td><td><input type='text' name='sp-private_key' size='50' value='<?php echo $config['sp-private_key']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+
+<tr>
+  <td>Certificate</td><td><input type='text' name='sp-ca' size='50' value='<?php echo $config['sp-ca']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+
+<tr>
+  <td colspan='3' align='center'>Identity Provider</td>
+</tr>
+
+<tr>
+  <td>Metadata</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+<tr>
+  <td>Public Key</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
+
+</tr>
+<tr>
+  <td>Certificate</td><td><input type='text' name='idp-ca' size='50' value='<?php echo $config['idp-ca']; ?>'></td><td>&nbsp;</td>
+</tr>
+
+<tr>
+  <td colspan='3'>&nbsp;</td>
+</tr>
+
+<tr>
+  <td align='center' colspan='3'><input type='submit' value='setup'></td>
 </tr>
 </table>
+<input type='hidden' name='action' value='setup'>
 </form>
 </body>
 </html>

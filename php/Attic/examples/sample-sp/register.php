@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  include "config.php.inc"; 
-
+  $config = unserialize(file_get_contents('config.inc'));
+  
   require_once 'DB.php';
   
   session_start();
@@ -35,7 +35,7 @@
 
 	switch($_POST['action']) {
 	  case "submit":
-		$db = &DB::connect($dsn);
+		$db = &DB::connect($config['dsn']);
 
 		if (DB::isError($db)) 
 		  die($db->getMessage());

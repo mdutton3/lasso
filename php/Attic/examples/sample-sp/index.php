@@ -26,15 +26,28 @@
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 	if ($ret == FALSE)
 	{
-		print "<p align='center'><b>The Lasso Extension is not available</b><br>";
-		print "Please check your PHP extensions<br>";
-		print "You can get more informations about <b>Lasso</b> at <br>";
-		print "<a href='http://lasso.entrouvert.org/'>http://lasso.entrouvert.org/</a></p>";
-		exit();
+?>
+<p align='center'><b>The Lasso Extension is not available</b><br>
+Please check your PHP extensions<br>
+You can get more informations about <b>Lasso</b> at <br>
+<a href='http://lasso.entrouvert.org/'>http://lasso.entrouvert.org/</a></p>
+<?php
+	exit();
 	}
  }
- 
- include 'config.php.inc';
+
+ if (!file_exists('config.inc'))
+  {
+?>
+<p align='center'><b>Service Provider Configuration file is not available</b><br>
+Please run the setup script :<br>
+<a href='setup.php'>Lasso Service Provider Setup</a><br>
+You can get more informations about <b>Lasso</b> at <br>
+<a href='http://lasso.entrouvert.org/'>http://lasso.entrouvert.org/</a></p>
+<?php
+  }
+
+ $config = unserialize(file_get_contents('config.inc'));
 
  require_once 'DB.php';
 
@@ -56,22 +69,15 @@
 <tr>
   <td><b>Service Provider Administration</b></td>
 </tr>
-<?php
-  if (!file_exists($server_dump_filename)) {
-?>
 <tr>
   <td><a href="setup.php">Setup</a></td>
 </tr>
-</table>
-<?php 
-} else {
-?>
 <tr>
   <td><a href="admin_user.php">Users Management</a></td>
 </tr>
-<tr>
+<!--<tr>
   <td><a href="admin_fed.php">Federation Administration</a></td>
-</tr>
+</tr> -->
 <tr>
   <td><b>Serice Provider Fonctionnality</b></td>
 </tr>
@@ -109,7 +115,7 @@
 	<td><b>UserID:</b></td><td><?php echo $_SESSION["user_id"]; ?></td>
 </tr>
 <?php
-  $db = &DB::connect($dsn);
+  $db = &DB::connect($config['dsn']);
 
   if (DB::isError($db)) 
 	die($db->getMessage());
@@ -144,9 +150,6 @@
 </tr>
 </table>
 </p>
-<?php
-}
-?>
 <p>Lasso Version : <?php echo lasso_version(); ?></p>
 
 <br>
