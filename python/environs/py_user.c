@@ -120,6 +120,10 @@ PyObject *user_get_next_providerID(PyObject *self, PyObject *args) {
   else return NULL;
 
   remote_providerID = lasso_user_get_next_providerID(LassoUser_get(user_obj));
+  if(remote_providerID==NULL){
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
 
   return (charPtr_wrap(remote_providerID));
 }

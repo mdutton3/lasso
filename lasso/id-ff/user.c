@@ -54,12 +54,16 @@ lasso_user_add_assertion(LassoUser *user,
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i)))
       found = TRUE;
   }
-  if(found==FALSE){
-    g_ptr_array_add(user->assertion_providerIDs, g_strdup(remote_providerID));
+  if(found==TRUE){
+    debug(ERROR, "A provider id already exists\n");
+    return(-4);
   }
 
+  debug(DEBUG, "add provider id %s\n", remote_providerID);
+  g_ptr_array_add(user->assertion_providerIDs, g_strdup(remote_providerID));
+
   /* add the assertion */
-  debug(DEBUG, "add an assertion for %s\n", remote_providerID);
+  debug(DEBUG, "Add an assertion for %s\n", remote_providerID);
   g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
 
   return(0);
@@ -160,19 +164,22 @@ lasso_user_get_assertion(LassoUser *user,
 {
   g_return_val_if_fail(user!=NULL, NULL);
   g_return_val_if_fail(remote_providerID!=NULL, NULL);
-
   return(g_hash_table_lookup(user->assertions, remote_providerID));
 }
 
 gchar*
 lasso_user_get_next_providerID(LassoUser *user)
 {
+  gchar *remote_providerID;
+
   g_return_val_if_fail(user!=NULL, NULL);
 
   if(user->assertion_providerIDs->len==0)
     return(NULL);
 
-  return(g_ptr_array_index(user->assertion_providerIDs, 0));
+  remote_providerID = g_strdup(g_ptr_array_index(user->assertion_providerIDs, 0));
+
+  return(remote_providerID);
 }
 
 LassoIdentity*
@@ -201,8 +208,9 @@ lasso_user_remove_assertion(LassoUser     *user,
 
   /* remove the remote provider id */
   for(i = 0; i<user->assertion_providerIDs->len; i++){
+    printf("%s %s\n", remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i));
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i))){
-      debug(INFO, "Remove assertion for %s\n", remote_providerID);
+      debug(DEBUG, "Remove assertion of %s\n", remote_providerID);
       g_ptr_array_remove_index(user->assertion_providerIDs, i);
       break;
     }
