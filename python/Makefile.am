@@ -19,8 +19,21 @@ endif
 lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
 		$(top_srcdir)/swig/inheritance.h
 	$(SWIG) -v -python -module lasso -o lasso_wrap.c $(top_srcdir)/swig/Lasso.i
+	cp lasso_wrap.c lasso_wrap.c.bak
+	sed -e 's/free(result)/g_free(result)/' \
+			< lasso_wrap.c.bak > lasso_wrap.c
+	cp lasso_wrap.c lasso_wrap.c.bak.1
+	sed -e 's/^  int res = 0;$//' \
+			< lasso_wrap.c.bak.1 > lasso_wrap.c
+	cp lasso_wrap.c lasso_wrap.c.bak.2
+	sed -e 's/\/\*  if (val) \*val = PyObject_IsTrue(obj); return 1; \*\//int res = 0;/' \
+			< lasso_wrap.c.bak.2 > lasso_wrap.c
+			
 
 SWIG_OUTPUTS = lasso_wrap.c lasso.py
+
+clean-local:
+	-rm lasso_wrap.c.bak
 
 # In distribution, swig generated files are present.
 EXTRA_DIST = $(SWIG_OUTPUTS)
