@@ -243,7 +243,7 @@ lasso_saml_assertion_set_minorVersion(LassoSamlAssertion *node,
   class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
 }
 
-void
+gint
 lasso_saml_assertion_set_signature(LassoSamlAssertion *node,
 				   gint                sign_method,
 				   const xmlChar      *private_key_file,
@@ -254,8 +254,8 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion *node,
   g_assert(certificate_file != NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->add_signature(LASSO_NODE (node), sign_method,
-		       private_key_file, certificate_file);
+  return (class->add_signature(LASSO_NODE (node), sign_method,
+			       private_key_file, certificate_file));
 }
 
 /*****************************************************************************/
