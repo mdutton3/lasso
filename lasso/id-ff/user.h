@@ -60,39 +60,42 @@ struct _LassoUserClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT GType          lasso_user_get_type              (void);
+LASSO_EXPORT GType          lasso_user_get_type                             (void);
 
-LASSO_EXPORT LassoUser     *lasso_user_new                   (void);
+LASSO_EXPORT LassoUser*     lasso_user_new                                  (void);
 
-LASSO_EXPORT LassoUser     *lasso_user_new_from_dump         (gchar *dump);
+LASSO_EXPORT LassoUser*     lasso_user_new_from_dump                        (gchar *dump);
 
-LASSO_EXPORT gint           lasso_user_add_assertion         (LassoUser *user,
-							      gchar     *remote_providerID,
-							      LassoNode *assertion);
+LASSO_EXPORT gint           lasso_user_add_assertion                        (LassoUser *user,
+									     gchar     *remote_providerID,
+									     LassoNode *assertion);
+  
+LASSO_EXPORT gint           lasso_user_add_identity                         (LassoUser     *user,
+									     gchar         *remote_providerID,
+									     LassoIdentity *identity);
 
-LASSO_EXPORT gint           lasso_user_add_identity          (LassoUser     *user,
-							      gchar         *remote_providerID,
-							      LassoIdentity *identity);
+LASSO_EXPORT void           lasso_user_destroy                              (LassoUser *user);
 
-LASSO_EXPORT void           lasso_user_destroy               (LassoUser *user);
+LASSO_EXPORT gchar*         lasso_user_dump                                 (LassoUser *user);
 
-LASSO_EXPORT gchar         *lasso_user_dump                  (LassoUser *user);
+LASSO_EXPORT LassoNode*     lasso_user_get_assertion                        (LassoUser *user,
+									     gchar     *remote_providerID);
 
-LASSO_EXPORT LassoNode     *lasso_user_get_assertion         (LassoUser *user,
-							      gchar     *remote_providerID);
+LASSO_EXPORT gchar*         lasso_user_get_authentication_method            (LassoUser *user,
+									     gchar     *remote_providerID);
 
-LASSO_EXPORT LassoIdentity *lasso_user_get_identity          (LassoUser *user,
-							      gchar     *remote_providerID);
+LASSO_EXPORT LassoIdentity* lasso_user_get_identity                         (LassoUser *user,
+									     gchar     *remote_providerID);
 
-LASSO_EXPORT gchar         *lasso_user_get_next_assertion_remote_providerID   (LassoUser *user);
+LASSO_EXPORT gchar*         lasso_user_get_next_assertion_remote_providerID (LassoUser *user);
 
-LASSO_EXPORT gchar         *lasso_user_get_next_identity_remote_providerID   (LassoUser *user);
+LASSO_EXPORT gchar*         lasso_user_get_next_identity_remote_providerID  (LassoUser *user);
 
-LASSO_EXPORT gint           lasso_user_remove_assertion      (LassoUser *user,
-							      gchar     *remote_providerID);
+LASSO_EXPORT gint           lasso_user_remove_assertion                     (LassoUser *user,
+									     gchar     *remote_providerID);
 
-LASSO_EXPORT gint           lasso_user_remove_identity       (LassoUser *user,
-							      gchar     *remote_providerID);
+LASSO_EXPORT gint           lasso_user_remove_identity                      (LassoUser *user,
+									     gchar     *remote_providerID);
 
 #ifdef __cplusplus
 }

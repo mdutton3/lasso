@@ -116,14 +116,34 @@ PyObject *user_get_assertion(PyObject *self, PyObject *args) {
   gchar     *remote_providerID;
 
   if (CheckArgs(args, "OS:user_get_assertion")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:user_get_assertion", &user_obj, &remote_providerID))
+    if(!PyArg_ParseTuple(args, (char *) "Os:user_get_assertion", &user_obj,
+			 &remote_providerID))
       return NULL;
   }
   else return NULL;
 
-  assertion_node = lasso_user_get_assertion(LassoUser_get(user_obj), remote_providerID);
+  assertion_node = lasso_user_get_assertion(LassoUser_get(user_obj),
+					    remote_providerID);
 
   return (LassoNode_wrap(assertion_node));
+}
+
+PyObject *user_get_authentication_method(PyObject *self, PyObject *args) {
+  PyObject *user_obj;
+  gchar    *remote_providerID;
+  gchar    *authentication_method;
+
+  if (CheckArgs(args, "Os:user_get_authentication_method")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oz:user_get_authentication_method",
+			 &user_obj, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  authentication_method = lasso_user_get_authentication_method(LassoUser_get(user_obj),
+							       remote_providerID);
+
+  return (charPtrConst_wrap(authentication_method));
 }
 
 PyObject *user_get_next_assertion_remote_providerID(PyObject *self, PyObject *args) {
@@ -131,18 +151,15 @@ PyObject *user_get_next_assertion_remote_providerID(PyObject *self, PyObject *ar
   gchar     *remote_providerID;
 
   if (CheckArgs(args, "O:user_get_next_assertion_remote_providerID")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_assertion_remote_providerID", &user_obj))
+    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_assertion_remote_providerID",
+			 &user_obj))
       return NULL;
   }
   else return NULL;
 
   remote_providerID = lasso_user_get_next_assertion_remote_providerID(LassoUser_get(user_obj));
-  if(remote_providerID==NULL){
-    Py_INCREF(Py_None);
-    return (Py_None);
-  }
 
-  return (charPtr_wrap(remote_providerID));
+  return (charPtrConst_wrap(remote_providerID));
 }
 
 PyObject *user_remove_assertion(PyObject *self, PyObject *args) {
@@ -151,7 +168,8 @@ PyObject *user_remove_assertion(PyObject *self, PyObject *args) {
   int       code;
 
   if (CheckArgs(args, "OS:user_remove_assertion")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:user_remove_assertion", &user_obj, &remote_providerID))
+    if(!PyArg_ParseTuple(args, (char *) "Os:user_remove_assertion", &user_obj,
+			 &remote_providerID))
       return NULL;
   }
   else return NULL;

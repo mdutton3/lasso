@@ -268,6 +268,7 @@ static PyMethodDef lasso_methods[] = {
   {"user_destroy",                              user_destroy,                              METH_VARARGS},
   {"user_dump",                                 user_dump,                                 METH_VARARGS},
   {"user_get_assertion",                        user_get_assertion,                        METH_VARARGS},
+  {"user_get_authentication_method",            user_get_authentication_method,            METH_VARARGS},
   {"user_get_next_assertion_remote_providerID", user_get_next_assertion_remote_providerID, METH_VARARGS},
   {"user_remove_assertion",                     user_remove_assertion,                     METH_VARARGS},
 

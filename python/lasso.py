@@ -871,14 +871,17 @@ class User:
     def destroy(self):
 	lassomod.user_destroy(self)
 
-    def get_assertion(self, providerID):
-	return Node(lassomod.user_get_assertion(self, providerID))
+    def get_assertion(self, remote_providerID):
+	return Node(lassomod.user_get_assertion(self, remote_providerID))
+
+    def get_authentication_method(self, remote_providerID):
+	return lassomod.user_get_authentication_method(self, remote_providerID)
 
     def get_next_assertion_remote_providerID(self):
 	return lassomod.user_get_next_assertion_remote_providerID(self)
 
-    def remove_assertion(self, providerID):
-	lassomod.user_remove_assertion(self, providerID)
+    def remove_assertion(self, remote_providerID):
+	lassomod.user_remove_assertion(self, remote_providerID)
 
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2

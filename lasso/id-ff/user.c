@@ -188,9 +188,36 @@ LassoNode*
 lasso_user_get_assertion(LassoUser *user,
 			 gchar     *remote_providerID)
 {
-  g_return_val_if_fail(user!=NULL, NULL);
-  g_return_val_if_fail(remote_providerID!=NULL, NULL);
+  g_return_val_if_fail(user != NULL, NULL);
+  g_return_val_if_fail(remote_providerID != NULL, NULL);
   return(g_hash_table_lookup(user->assertions, remote_providerID));
+}
+
+gchar*
+lasso_user_get_authentication_method(LassoUser *user,
+				     gchar     *remote_providerID)
+{
+  LassoNode *assertion, *as;
+  gchar *providerID = remote_providerID;
+  gchar *authentication_method;
+  GError *err = NULL;
+
+  if (remote_providerID == NULL) {
+    providerID = lasso_user_get_next_assertion_remote_providerID(user);
+  }
+  assertion = lasso_user_get_assertion(user, providerID);
+  as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL);
+  authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
+  if (authentication_method == NULL) {
+    debug(ERROR, err->message);
+    g_error_free(err);
+    goto done;
+  }
+
+ done:
+  lasso_node_destroy(assertion);
+  lasso_node_destroy(as);
+  return (authentication_method);
 }
 
 gchar*
