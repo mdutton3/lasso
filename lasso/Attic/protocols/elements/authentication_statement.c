@@ -92,10 +92,18 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 
   subject = lasso_lib_subject_new();
   if (identifier == NULL) {
-    identifier = lasso_saml_name_identifier_new(lasso_node_get_content(LASSO_NODE(idp_identifier)));
+    /* create a new NameIdentifier and use idp_identifier datas to fill it */
+    str = lasso_node_get_content(LASSO_NODE(idp_identifier));
+    identifier = lasso_saml_name_identifier_new(str);
+    xmlFree(str);
     str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier");
     if (str != NULL) {
       lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+      xmlFree(str);
+    }
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format");
+    if (str != NULL) {
+      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
       xmlFree(str);
     }
   }
