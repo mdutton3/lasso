@@ -25,38 +25,42 @@
 
 #include <lasso/xml/lib_authn_request_envelope.h>
 
-/*     <xs:element name="AuthnRequestEnvelope" type="AuthnRequestEnvelopeType"/> */
-/*     <xs:complexType name="AuthnRequestEnvelopeType"> */
-/*         <xs:complexContent> */
-/*             <xs:extension base="RequestEnvelopeType"> */
-/*                 <xs:sequence> */
-/*                     <xs:element ref="AuthnRequest"/> */
-/*                     <xs:element ref="ProviderID"/> */
-/*                     <xs:element name="ProviderName" type="xs:string" minOccurs="0"/> */
-/*                     <xs:element name="AssertionConsumerServiceURL" type="xs:anyURI"/> */
-/*                     <xs:element ref="IDPList" minOccurs="0"/> */
-/*                     <xs:element name="IsPassive" type="xs:boolean" minOccurs="0"/> */
-/*                 </xs:sequence> */
-/*             </xs:extension> */
-/*         </xs:complexContent> */
-/*     </xs:complexType> */
-/*     <xs:complexType name="RequestEnvelopeType"> */
-/*         <xs:sequence> */
-/*             <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-/*         </xs:sequence> */
-/*     </xs:complexType> */
-/*     <xs:element name="IDPList" type="IDPListType"/> */
-/*     <xs:complexType name="IDPListType"> */
-/*         <xs:sequence> */
-/*             <xs:element ref="IDPEntries"/> */
-/*             <xs:element ref="GetComplete" minOccurs="0"/> */
-/*         </xs:sequence> */
-/*     </xs:complexType> */
-/*     <xs:complexType name="ResponseEnvelopeType"> */
-/*         <xs:sequence> */
-/*             <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-/*         </xs:sequence> */
-
+/*
+ * Schema:
+ *
+ * <xs:element name="AuthnRequestEnvelope" type="AuthnRequestEnvelopeType"/>
+ * <xs:complexType name="AuthnRequestEnvelopeType">
+ *   <xs:complexContent>
+ *     <xs:extension base="RequestEnvelopeType">
+ *       <xs:sequence>
+ *         <xs:element ref="AuthnRequest"/>
+ *         <xs:element ref="ProviderID"/>
+ *         <xs:element name="ProviderName" type="xs:string" minOccurs="0"/>
+ *         <xs:element name="AssertionConsumerServiceURL" type="xs:anyURI"/>
+ *         <xs:element ref="IDPList" minOccurs="0"/>
+ *         <xs:element name="IsPassive" type="xs:boolean" minOccurs="0"/>
+ *       </xs:sequence>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * <xs:complexType name="RequestEnvelopeType">
+ *   <xs:sequence>
+ *     <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ * <xs:element name="IDPList" type="IDPListType"/>
+ * <xs:complexType name="IDPListType">
+ *   <xs:sequence>
+ *     <xs:element ref="IDPEntries"/>
+ *     <xs:element ref="GetComplete" minOccurs="0"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ * <xs:complexType name="ResponseEnvelopeType">
+ *   <xs:sequence>
+ *     <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

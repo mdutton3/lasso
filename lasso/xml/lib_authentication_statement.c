@@ -42,7 +42,7 @@
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
-*/
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
