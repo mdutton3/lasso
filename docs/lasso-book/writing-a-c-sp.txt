@@ -9,13 +9,56 @@ Writing a Liberty Alliance service provider in C
 :copyright: Copyright © 2004 Entr'ouvert
 
 
-Introduction to Lasso profiles
-==============================
 
-.. warning:: The source code presented in this document has for sole purpose
-             to explain the different steps necessary to implement Liberty
-	     Alliance profiles; they notably lack proper error checking.
+Lasso Projects Basics
+=====================
 
+Lasso functions are defined in several header files typically located in
+``/usr/include/lasso/`` or ``/usr/local/include/lasso/``.  It is possible to
+include individual files but in most case it is enough to include the main
+``lasso.h``.
+
+The first thing to do is then to call ``lasso_init()``.  Similarly the last
+thing will be to call ``lasso_shutdown()``.  The smallest and useless Lasso
+project will therefore be::
+
+  #include <lasso/lasso.h>
+
+  int main(int argc, char *argv[])
+  {
+      lasso_init();
+      printf("Hello world.\n");
+      lasso_shutdown();
+      return 0;
+  }
+
+Lasso uses a tool called ``pkg-config`` to know the necessary flags for
+compilation and linking.
+
+::
+
+  $ pkg-config lasso --cflags
+ -DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__
+ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1
+ -I/usr/include/lasso -I/usr/include/libxml2 -I/usr/include/xmlsec1 -I/usr/include/glib-2.0
+ -I/usr/lib/glib-2.0/include
+  $ pkg-config lasso --libs
+ -llasso -lxmlsec1-openssl -lxmlsec1 -lssl -lcrypto -ldl -lgobject-2.0 -lxslt -lxml2
+ -lpthread -lz -lm -lglib-2.0
+
+
+Creating an executable from the previous sample is then a simple matter of
+calling ``gcc``::
+
+  $ gcc hello.c -o hello `pkg-config lasso --cflags --libs`
+  $ ./hello
+ Hello world.
+  $
+
+
+
+Liberty and Lasso profiles
+==========================
 
 Lasso provides the necessary functions to implement Liberty Alliance profiles,
 as defined in the `Liberty ID-FF Bindings and Profiles Specification`_.  They
@@ -58,6 +101,11 @@ if there are more than one identity provider.
 
 Single Sign-On and Federation Profile
 =====================================
+
+.. warning:: The source code presented in this section has for sole purpose
+             to explain the different steps necessary to implement this
+	     profile; they notably lack proper error checking.
+
 
 .. note:: It may be helpful to look at figure 2 in the previously referred
           Binding and Profiles specification document.
@@ -103,8 +151,8 @@ passed in the query parameter.
   LassoLogin *login;
   
   login = lasso_login_new(server);
-  login_init_request(login, query_string, lassoHttpMethodRedirect);
-  login_build_request_msg(login);
+  lasso_login_init_request(login, query_string, lassoHttpMethodRedirect);
+  lasso_login_build_request_msg(login);
 
 The service provider must check this artifact using a SOAP request to the
 identity provider.  The URL is ``login->msg_url`` while the request is
@@ -112,7 +160,7 @@ identity provider.  The URL is ``login->msg_url`` while the request is
 let's consider its content is put in the ``answer``, the next statement would
 be::
 
-  login_process_response_msg(login, answer);
+  lasso_login_process_response_msg(login, answer);
 
 The users are defined by a ``nameIdentifier``.  Those typically map to users
 and sessions in some database on the service provider.  If existing; the
@@ -126,10 +174,10 @@ object.
 ::
 
   if (session_dump != NULL) {
-      login_set_session_from_dump(login, session_dump);
+      lasso_login_set_session_from_dump(login, session_dump);
   }
   if (identity_dump != NULL) {
-      login_set_identity_from_dump(login, identity_dump);
+      lasso_login_set_identity_from_dump(login, identity_dump);
   }
   lasso_login_accept_sso(login);
 
@@ -187,23 +235,40 @@ Identity and session dumps should be restored to prepare the logout request.
 ::
 
   if (session_dump != NULL) {
-      login_set_session_from_dump(login, session_dump);
+      lasso_logout_set_session_from_dump(login, session_dump);
   }
   if (identity_dump != NULL) {
-      login_set_identity_from_dump(login, identity_dump);
+      lasso_logout_set_identity_from_dump(login, identity_dump);
   }
   
-  logout_init_request(logout);
-  logout_build_request_msg(logout);
+  lasso_logout_init_request(logout);
+  lasso_logout_build_request_msg(logout);
 
 
 The service provider must then make a SOAP request to the identity provider;
 ``msg_url`` and ``msg_body``.  You should then pass the answer to Lasso::
 
-  logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
+  lasso_logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
 
 And save back session and user dump; the process is similar as the one at the
 end of the single sign on profile.
+
+
+Proper Error Checking
+=====================
+
+Most Lasso functions returns 0 on success and a negative number on failure.  It
+is strongly advised to check this return code on each call.
+
+::
+
+  int rc;
+
+  rc = lasso_logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
+  if (rc) {
+      fprintf(stderr, "Lasso Error: %d\n", rc);
+      /* handling error; most probably bailing out */
+  }
 
 
 Database Considerations
