@@ -32,9 +32,9 @@ class Provider(WebSite):
     httpResponseHeaders.update({
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
         })
-    serverDump = None
-    webUserIdsByNameIdentifier = None
-    webSessionIdsByNameIdentifier = None
+    lassoServerDump = None
+    sessionTokensByNameIdentifier = None
+    userIdsByNameIdentifier = None
 
-    def getServer(self):
-        return lasso.Server.new_from_dump(self.serverDump)
+    def getLassoServer(self):
+        return lasso.Server.new_from_dump(self.lassoServerDump)

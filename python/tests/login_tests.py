@@ -46,68 +46,62 @@ class LoginTestCase(unittest.TestCase):
         site = IdentityProvider(internet, 'https://identity-provider/')
         site.providerId = 'https://identity-provider/metadata'
 
-        server = lasso.Server.new(
+        lassoServer = lasso.Server.new(
             '../../examples/data/idp-metadata.xml',
             '../../examples/data/idp-public-key.pem',
             '../../examples/data/idp-private-key.pem',
             '../../examples/data/idp-crt.pem',
             lasso.signatureMethodRsaSha1)
-        server.add_provider(
+        lassoServer.add_provider(
             '../../examples/data/sp-metadata.xml',
             '../../examples/data/sp-public-key.pem',
             '../../examples/data/ca-crt.pem')
-        site.serverDump = server.dump()
-        failUnless(site.serverDump)
-        server.destroy()
+        site.lassoServerDump = lassoServer.dump()
+        failUnless(site.lassoServerDump)
+        lassoServer.destroy()
 
-        site.addWebUser('Chantereau')
-        site.addWebUser('Clapies')
-        site.addWebUser('Febvre')
-        site.addWebUser('Nowicki')
+        site.addUser('Chantereau')
+        site.addUser('Clapies')
+        site.addUser('Febvre')
+        site.addUser('Nowicki')
         # Frederic Peters has no account on identity provider.
         return site
 
     def generateLibertyEnabledClient(self, internet):
         client = LibertyEnabledClient(internet)
-        # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
-        # metadata, instead of using 'singleSignOnServiceUrl'.
-##         server = lasso.Server.new(
-##             None, # A LECP has no metadata.
-##             '../../examples/data/client-public-key.pem',
-##             '../../examples/data/client-private-key.pem',
-##             '../../examples/data/client-crt.pem',
-##             lasso.signatureMethodRsaSha1)
-##         server.add_provider(
-##             '../../examples/data/idp-metadata.xml',
-##             '../../examples/data/idp-public-key.pem',
-##             '../../examples/data/ca-crt.pem')
-##         client.server = server
-        client.idpSingleSignOnServiceUrl = 'https://identity-provider/singleSignOn'
+        lassoServer = lasso.Server.new()
+        lassoServer.add_provider(
+            '../../examples/data/idp-metadata.xml',
+            '../../examples/data/idp-public-key.pem',
+            '../../examples/data/ca-crt.pem')
+        client.lassoServerDump = lassoServer.dump()
+        failUnless(client.lassoServerDump)
+        lassoServer.destroy()
         return client
         
     def generateSpSite(self, internet):
         site = ServiceProvider(internet, 'https://service-provider/')
         site.providerId = 'https://service-provider/metadata'
 
-        server = lasso.Server.new(
+        lassoServer = lasso.Server.new(
             '../../examples/data/sp-metadata.xml',
             '../../examples/data/sp-public-key.pem',
             '../../examples/data/sp-private-key.pem',
             '../../examples/data/sp-crt.pem',
             lasso.signatureMethodRsaSha1)
-        server.add_provider(
+        lassoServer.add_provider(
             '../../examples/data/idp-metadata.xml',
             '../../examples/data/idp-public-key.pem',
             '../../examples/data/ca-crt.pem')
-        site.serverDump = server.dump()
-        failUnless(site.serverDump)
-        server.destroy()
+        site.lassoServerDump = lassoServer.dump()
+        failUnless(site.lassoServerDump)
+        lassoServer.destroy()
 
-        site.addWebUser('Nicolas')
-        site.addWebUser('Romain')
-        site.addWebUser('Valery')
+        site.addUser('Nicolas')
+        site.addUser('Romain')
+        site.addUser('Valery')
         # Christophe Nowicki has no account on service provider.
-        site.addWebUser('Frederic')
+        site.addUser('Frederic')
         return site
 
     def setUp(self):
@@ -119,19 +113,6 @@ class LoginTestCase(unittest.TestCase):
         for name in ('fail', 'failIf', 'failIfAlmostEqual', 'failIfEqual', 'failUnless',
                      'failUnlessAlmostEqual', 'failUnlessRaises', 'failUnlessEqual'):
             builtins.delete(name)
-
-    def test00(self):
-        """LECP login."""
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        lec = self.generateLibertyEnabledClient(internet)
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-        httpResponse = lec.login(principal, spSite, '/login')
-        raise str((httpResponse.headers['Content-Type'], httpResponse.body))
 
     def test01(self):
         """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP."""
@@ -148,8 +129,8 @@ class LoginTestCase(unittest.TestCase):
         failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         failUnlessEqual(httpResponse.statusCode, 200)
-        failIf(spSite.webSessions)
-        failIf(idpSite.webSessions)
+        failIf(spSite.sessions)
+        failIf(idpSite.sessions)
 
     def test02(self):
         """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done three times."""
@@ -264,20 +245,19 @@ class LoginTestCase(unittest.TestCase):
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
         failUnlessEqual(httpResponse.statusCode, 401)
 
-##     def test06(self):
-##         """Service provider LECP login."""
-
-##         # LECP has asked service provider for login.
-##         spServer = self.getServer()
-
-##         # FIXME: Why doesn't lasso.Lecp.new have spServer as argument?
-##         # spLecp = lasso.Lecp.new(spServer)
-##         spLecp = lasso.Lecp.new()
-##         spLecp.init_authn_request_envelope(sp, )
-##         lasso_lecp_init_authn_request_envelope(sp_lecp, spserver, authnRequest);
-##         lasso_lecp_build_authn_request_envelope_msg(sp_lecp);
-##         msg = g_strdup(sp_lecp->msg_body);
-##         lasso_lecp_destroy(sp_lecp);
+    def test07(self):
+        """LECP login."""
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        lec = self.generateLibertyEnabledClient(internet)
+        lec.idpSite = idpSite
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
+        httpResponse = lec.login(principal, spSite, '/login')
+        raise str((httpResponse.statusCode, httpResponse.statusMessage, httpResponse.headers['Content-Type'], httpResponse.body))
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')

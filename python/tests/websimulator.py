@@ -23,7 +23,7 @@
 
 
 # FIXME: Replace principal with client in most methods.
-# FIXME: Rename webUser to userAccount.
+# FIXME: Rename user to userAccount.
 
 
 import abstractweb
@@ -48,11 +48,9 @@ class HttpRequest(abstractweb.HttpRequestMixin, object):
         if form:
             self.form = form
 
-    def getFormField(self, name, default = 'none'):
-        if self.form and name in self.form:
-            return self.form[name]
-        if default == 'none':
-            raise KeyError(name)
+    def getFormField(self, name, default = None):
+        if self.form is not None:
+            return self.form.get(name, default)
         return default
 
     def getPath(self):
@@ -76,6 +74,11 @@ class HttpRequest(abstractweb.HttpRequestMixin, object):
     def getScheme(self):
         return self.url.split(':', 1)[0].lower()
 
+    def hasFormField(self, name):
+        if self.form is None:
+            return False
+        return name in self.form
+
     def send(self):
         webSite = self.client.internet.getWebSite(self.url)
         return webSite.handleHttpRequest(self)
@@ -94,12 +97,17 @@ class HttpResponse(abstractweb.HttpResponseMixin, object):
 class HttpRequestHandler(abstractweb.HttpRequestHandlerMixin, object):
     HttpResponse = HttpResponse # Class
 
-    def __init__(self, webServer, httpRequest):
-        self.webServer = webServer
+    def __init__(self, site, httpRequest):
+        self.site = site
         self.httpRequest = httpRequest
 
+    def getSession(self):
+        return self.site.getSessionFromPrincipal(self.httpRequest.client)
+        
     def respondRedirectTemporarily(self, url):
         return self.httpRequest.client.redirect(url)
+
+    session = property(getSession)
 
 
 class Internet(object):
@@ -125,13 +133,13 @@ class WebClient(object):
         'User-Agent': 'LassoSimulator/0.0.0',
         'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html',
         }
-    webSessionIds = None # Simulate the cookies, stored in user's navigator, and containing the
+    sessionTokens = None # Simulate the cookies, stored in user's navigator, and containing the
                          # IDs of sessions already opened by the user.
 
     def __init__(self, internet):
         self.internet = internet
         self.keyring = {}
-        self.webSessionIds = {}
+        self.sessionTokens = {}
 
     def redirect(self, url):
         return self.sendHttpRequest('GET', url)
@@ -169,104 +177,99 @@ class Principal(WebClient):
         self.name = name
 
 
-class WebSession(object):
+class WebSession(abstractweb.WebSessionMixin, object):
     """Simulation of session of a web site"""
 
     expirationTime = None # A sample session variable
+    isDirty = True
     loginDump = None # Used only by some identity providers
-    uniqueId = None # The session number
-    sessionDump = None
-    webUserId = None # ID of logged user. 
+    lassoSessionDump = None
+    userId = None # ID of logged user. 
 
-    def __init__(self, uniqueId):
-        self.uniqueId = uniqueId
+    def __init__(self, token):
+        self.token = token
 
-
-class WebUser(object):
-    """Simulation of user of a web site"""
-
-    identityDump = None
-    language = 'fr' # A sample user variable
-    uniqueId = None # The user name is used as an ID in this simulation.
-
-    def __init__(self, uniqueId):
-        self.uniqueId = uniqueId
+    def save(self):
+        pass
 
 
-class WebSite(WebClient):
+class WebSite(abstractweb.WebSiteMixin, WebClient):
     """Simulation of a web site"""
 
     httpResponseHeaders = {
         'Server': 'Lasso Simulator Web Server',
         }
-    lastWebSessionId = 0
+    lastSessionToken = 0
     providerId = None # The Liberty providerID of this web site
     url = None # The main URL of web site
-    webUsers = None
-    webSessions = None
+    users = None
+    sessions = None
 
     def __init__(self, internet, url):
         WebClient.__init__(self, internet)
         self.url = url
-        self.webUserIdsByNameIdentifier = {}
-        self.webUsers = {}
-        self.webSessionIdsByNameIdentifier = {}
-        self.webSessions = {}
+        self.userIdsByNameIdentifier = {}
+        self.users = {}
+        self.sessionTokensByNameIdentifier = {}
+        self.sessions = {}
         self.internet.addWebSite(self)
 
-    def addWebUser(self, name):
-        self.webUsers[name] = WebUser(name)
+    def addUser(self, name):
+        self.users[name] = WebUser(name)
 
-    def createWebSession(self, client):
-        self.lastWebSessionId += 1
-        webSession = WebSession(self.lastWebSessionId)
-        self.webSessions[self.lastWebSessionId] = webSession
-        client.webSessionIds[self.url] = self.lastWebSessionId
-        return webSession
+    def createSession(self, client):
+        self.lastSessionToken += 1
+        session = WebSession(self.lastSessionToken)
+        self.sessions[self.lastSessionToken] = session
+        client.sessionTokens[self.url] = self.lastSessionToken
+        return session
 
     def getIdentityDump(self, principal):
-        webSession = self.getWebSession(principal)
-        webUser = self.getWebUserFromWebSession(webSession)
-        if webUser is None:
+        session = self.getSessionFromPrincipal(principal)
+        user = self.getUserFromSession(session)
+        if user is None:
             return None
-        return webUser.identityDump
+        return user.lassoIdentityDump
 
-    def getSessionDump(self, principal):
-        webSession = self.getWebSession(principal)
-        if webSession is None:
+    def getLassoSessionDump(self, principal):
+        session = self.getSessionFromPrincipal(principal)
+        if session is None:
             return None
-        return webSession.sessionDump
+        return session.lassoSessionDump
 
-    def getWebSession(self, principal):
-        webSessionId = principal.webSessionIds.get(self.url, None)
-        if webSessionId is None:
-            # The user has no web session opened on this site.
-            return None
-        return self.webSessions.get(webSessionId, None)
-
-    def getWebSessionFromNameIdentifier(self, nameIdentifier):
-        webSessionId = self.webSessionIdsByNameIdentifier.get(nameIdentifier, None)
-        if webSessionId is None:
+    def getSessionFromNameIdentifier(self, nameIdentifier):
+        sessionToken = self.sessionTokensByNameIdentifier.get(nameIdentifier, None)
+        if sessionToken is None:
             # The user has no federation on this site or has no authentication assertion for this
             # federation.
             return None
-        return self.webSessions.get(webSessionId, None)
+        return self.sessions.get(sessionToken, None)
 
-    def getWebUserFromNameIdentifier(self, nameIdentifier):
-        webUserId = self.webUserIdsByNameIdentifier.get(nameIdentifier, None)
-        if webUserId is None:
+    def getSessionFromPrincipal(self, principal):
+        sessionToken = principal.sessionTokens.get(self.url, None)
+        return self.getSessionFromToken(sessionToken)
+
+    def getSessionFromToken(self, sessionToken):
+        if sessionToken is None:
+            # The user has no web session opened on this site.
+            return None
+        return self.sessions.get(sessionToken, None)
+
+    def getUserFromNameIdentifier(self, nameIdentifier):
+        userId = self.userIdsByNameIdentifier.get(nameIdentifier, None)
+        if userId is None:
             # The user has no federation on this site.
             return None
-        return self.webUsers.get(webUserId, None)
+        return self.users.get(userId, None)
 
-    def getWebUserFromWebSession(self, webSession):
-        if webSession is None:
+    def getUserFromSession(self, session):
+        if session is None:
             return None
-        webUserId = webSession.webUserId
-        if webUserId is None:
+        userId = session.userId
+        if userId is None:
             # The user has no account on this site.
             return None
-        return self.webUsers.get(webUserId, None)
+        return self.users.get(userId, None)
 
     def handleHttpRequest(self, httpRequest):
         httpRequestHandler = HttpRequestHandler(self, httpRequest)
@@ -280,3 +283,14 @@ class WebSite(WebClient):
             return httpRequestHandler.respond(
                 404, 'Path "%s" Not Found.' % httpRequestHandler.httpRequest.path)
         return method(httpRequestHandler)
+
+
+class WebUser(abstractweb.WebUserMixin, object):
+    """Simulation of user of a web site"""
+
+    lassoIdentityDump = None
+    language = 'fr' # A sample user variable
+    uniqueId = None # The user name is used as an ID in this simulation.
+
+    def __init__(self, uniqueId):
+        self.uniqueId = uniqueId

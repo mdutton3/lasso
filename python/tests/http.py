@@ -274,7 +274,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
 #    requestline = None # Strange
 #    request_version = None # Strange
     server_version = 'HttpRequestHandlerMixin/1.0'
-    webServer = None # Class variable.
+    site = None # Class variable.
 
     def handle(self):
         """Handle multiple requests if necessary."""
@@ -313,11 +313,186 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
             return
         logger.info(self.raw_requestline.strip())
         logger.debug(str(self.headers))
-##         if hasattr(self.connection, 'get_peer_certificate'):
-##             peerCertificate = self.connection.get_peer_certificate()
+
+###############
+
+        session = None
+        sessionToken = None
+        user = None
+
+        # Handle X.509 certificate authentication.
+        if hasattr(self.connection, 'get_peer_certificate'):
+            clientCertificate = self.connection.get_peer_certificate()
+            if clientCertificate:
+                user = self.site.authenticateX509User(clientCertificate)
+                if user is None:
+                    logger.info('Unknown certificate (serial number = %s)'
+                                % clientCertificate.get_serial_number())
+                else:
+                    sessionToken = user.sessionToken
+                    if sessionToken:
+                        session = self.site.getSessionFromToken(sessionToken)
+                        if session is None:
+                            sessionToken = None
+                            del user.sessionToken
+                            # Don't call user.getDocument().save() now, because the session
+                            # will be retrieved (from cookie or sessionToken query field)
+                            # or created. So user/@sessionToken will be updated.
+                        else:
+                            # For security reasons, we want to minimize the publication of
+                            # session token (it is better not to store it in a cookie or in
+                            # URLs). The client need to send the certificate each time, for the
+                            # session to continue.
+                            if session.publishToken:
+                                del session.publishToken
+
+        # Handle HTTP authentication.
+        authorization = self.httpRequest.headers.get('authorization')
+        if self.httpRequest.hasQueryField('login') and not authorization \
+               and rootDataHolder.getConfigBoolean('yep:useHttpAuthentication', default = False):
+            # Ask for HTTP authentication.
+            return self.outputErrorUnauthorized(httpPath)
+        if self.httpRequest.hasQueryField('logout') and authorization:
+            # Since HTTP authentication provides no way to logout,  we send a status
+            # Unauthorized to force the user to press the cancel button. But instead of
+            # sending an error page immediately, we send the real page, so the user will see
+            # the page instead of an error message.
+            authorization = None
+            self.httpAuthenticationLogoutTrick = True
+        if authorization:
+            try:
+                authenticationScheme, credentials = authorization.split(None, 1)
+            except ValueError:
+                return self.outputErrorUnauthorized(httpPath)
+            authenticationScheme = authenticationScheme.lower()
+            if authenticationScheme == 'basic':
+                loginAndPassword = base64.decodestring(credentials)
+                try:
+                    login, password = loginAndPassword.split(':', 1)
+                except:
+                    login = loginAndPassword
+                    password = ''
+                logs.debug('Basic authentication: login = "%s" / password = "%s"' % (
+                    login, password))
+                if password:
+                    user = self.site.authenticateLoginPasswordUser(login, password)
+                    if user is None:
+                        logger.info('Unknown user (login = "%s" / password = "%s")' % (
+                            login, password))
+                        return self.outputErrorUnauthorized(httpPath)
+                    else:
+                        sessionToken = user.sessionToken
+                    if sessionToken:
+                        session = sessions.retrieveSession(sessionToken)
+                        if session is None:
+                            sessionToken = None
+                            user.deleteSessionToken()
+                            # Don't call user.getDocument().save() now, because the session
+                            # will be retrieved (from cookie or sessionToken query field)
+                            # or created. So user/@sessionToken will be updated.
+                        else:
+                            # For security reasons, we want to minimize the publication of
+                            # session token (it is better not to store it in a cookie or in
+                            # URLs).
+                            if session.publishToken:
+                                del session.publishToken
+                elif login:
+                    # No password was given. Assume login contains a session token.
+                    # TODO: sanity chek on login
+                    session = sessions.retrieveSession(login)
+                    if session is not None:
+                        account = session.getAccount()
+                        if account is not None:
+                            user = account.getUser()
+                            if user is not None \
+                                   and user.getSessionToken() != session.getToken():
+                                # Sanity check.
+                                user.setSessionToken(session.getToken())
+                                user.getDocument().save()
+            else:
+                logs.info('Unknown authentication scheme = %s' % authenticationScheme)
+                return self.outputErrorUnauthorized(httpPath)
+
+        # Handle use of cookies, session and user.
+        cookie = None
+        cookieContent = {}
+        if self.httpRequest.headers.has_key('Cookie'):
+            logs.debug('Cookie received:')
+            cookie = Cookie.SimpleCookie(
+                self.httpRequest.headers['Cookie'])
+            for k, v in cookie.items():
+                cookieContent[k] = v.value
+                logs.debug('  %s = %s' % (k, cookieContent[k]))
+        self.cookie = cookie
+
+        sessionToken = None
+        sessionTokenInCookie = False
+        if self.httpRequest.hasQueryField('sessionToken'):
+            sessionToken = self.httpRequest.getQueryField('sessionToken')
+            if not sessionToken:
+                sessionToken = None
+            if session is not None and sessionToken != session.token:
+                sessionToken = None
+        if cookieContent.has_key('sessionToken'):
+            cookieSessionToken = cookieContent['sessionToken']
+            if cookieSessionToken:
+                if session is None or cookieSessionToken == session.token:
+                    if sessionToken is None:
+                        sessionToken = cookieSessionToken
+                    if cookieSessionToken == sessionToken:
+                        sessionTokenInCookie = True
+        canUseCookie = True
+        if session is None and sessionToken is not None:
+            session = sessions.retrieveSession(sessionToken)
+            if session is None:
+                sessionToken = None
+                sessionTokenInCookie = False
+            else:
+                if user is None:
+                    # import expression.modules.passwordaccounts as passwordaccounts
+                    account = session.getAccount(acceptOnlyAccount = False)
+                    if account is not None:
+                        user = account.getUser()
+                        if user is not None and user.getSessionToken() != sessionToken:
+                            # Sanity check.
+                            user.setSessionToken(session.getToken())
+                            user.getDocument().save()
+                else:
+                    # The user has been authenticated (using HTTP authentication), but the
+                    # associated session didn't exist (or was too old, or...). So, update
+                    # its sessionToken.
+                    user.setSessionToken(session.getToken())
+                    user.getDocument().save()
+                    # For security reasons, we want to minimize the publication of session
+                    # token (it is better not to store it in a cookie or in URLs).
+                    if session.publishToken:
+                        del session.publishToken
+        if session is None and user is not None:
+            # The user has been authenticated (using HTTP authentication), but the session
+            # doesn't exist yet (or was too old, or...). Create a new session.
+            session = sessions.getOrCreateSession()
+            # For security reasons, we want to minimize the publication of session
+            # token (it is better not to store it in a cookie or in URLs).
+            # session.publishToken = False # False is the default value.
+            session.setAccountAbsolutePath(account.getAbsolutePath())
+            user.setSessionToken(session.getToken())
+            user.getDocument().save()
+        self.user = user
+        if user is not None:
+            logs.debug('User: %s' % user.simpleLabel)
+        self.session = session
+        if session is not None:
+            if not sessionTokenInCookie:
+                # The sessionToken is valid but is not stored in the cookie. So, don't try to
+                # use cookie.
+                canUseCookie = False
+            logs.debug('Session: %s' % session.token)
+        self.canUseCookie = canUseCookie
+
+###############
 
         try:
-            self.webServer.handleHttpRequestHandler(self)
+            self.site.handleHttpRequestHandler(self)
         except IOError:
             logger.exception('An exception occured:')
             path = self.path.split('?')[0]
@@ -332,146 +507,146 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         logger.info('%s - - [%s] %s' % (
             self.address_string(), self.log_date_time_string(), format % arguments))
 
-    def outputAlert(self, data, title = None, url = None):
-        import html
-        if title is None:
-            title = N_('Alert')
-        # FIXME: Handle XSLT template.
-        if url:
-            buttonsBar = html.div(class_ = 'buttons-bar')
-            actionButtonsBar = html.span(class_ = 'action-buttons-bar')
-            buttonsBar.append(actionButtonsBar)
-            actionButtonsBar.append(html.a(_('OK'), class_ = 'button', href = url))
-        else:
-            buttonsBar = None
-        layout = html.html(
-            html.head(html.title(_(title))),
-            html.body(
-                html.p(_(data), class_ = 'alert'),
-                buttonsBar,
-                ),
-            )
-        self.outputData(layout.serialize(), contentLocation = None, mimeType = 'text/html')
+##     def outputAlert(self, data, title = None, url = None):
+##         import html
+##         if title is None:
+##             title = N_('Alert')
+##         # FIXME: Handle XSLT template.
+##         if url:
+##             buttonsBar = html.div(class_ = 'buttons-bar')
+##             actionButtonsBar = html.span(class_ = 'action-buttons-bar')
+##             buttonsBar.append(actionButtonsBar)
+##             actionButtonsBar.append(html.a(_('OK'), class_ = 'button', href = url))
+##         else:
+##             buttonsBar = None
+##         layout = html.html(
+##             html.head(html.title(_(title))),
+##             html.body(
+##                 html.p(_(data), class_ = 'alert'),
+##                 buttonsBar,
+##                 ),
+##             )
+##         self.outputData(layout.serialize(), contentLocation = None, mimeType = 'text/html')
 
-    def outputData(self, data, contentLocation = None, headers = None, mimeType = None,
-                   modificationTime = None, successCode = 200):
-        # Session must be saved before responding. Otherwise, when the server is multitasked or
-        # multithreaded, it may receive a new HTTP request before the session is saved.
-        if self.session is not None and self.session.isDirty:
-            self.session.save()
+##     def outputData(self, data, contentLocation = None, headers = None, mimeType = None,
+##                    modificationTime = None, successCode = 200):
+##         # Session must be saved before responding. Otherwise, when the server is multitasked or
+##         # multithreaded, it may receive a new HTTP request before the session is saved.
+##         if self.session is not None and self.session.isDirty:
+##             self.session.save()
 
-        if isinstance(data, basestring):
-            dataFile = None
-            dataSize = len(data)
-        else:
-            dataFile = data
-            data = ''
-            if hasattr(dataFile, 'fileno'):
-                dataSize = os.fstat(dataFile.fileno())[6]
-            else:
-                # For StringIO and cStringIO classes.
-                dataSize = len(dataFile.getvalue())
+##         if isinstance(data, basestring):
+##             dataFile = None
+##             dataSize = len(data)
+##         else:
+##             dataFile = data
+##             data = ''
+##             if hasattr(dataFile, 'fileno'):
+##                 dataSize = os.fstat(dataFile.fileno())[6]
+##             else:
+##                 # For StringIO and cStringIO classes.
+##                 dataSize = len(dataFile.getvalue())
 
-        if headers is None:
-            headers = {}
-        if time.time() > self.socketCreationTime + 300:
-            headers['Connection'] = 'close'
-        elif not self.close_connection:
-            headers['Connection'] = 'Keep-Alive'
-        if contentLocation is not None:
-            headers['Content-Location'] = contentLocation
-        if mimeType:
-            headers['Content-Type'] = '%s; charset=utf-8' % mimeType
-        if modificationTime:
-            headers['Last-Modified'] = time.strftime('%a, %d %b %Y %H:%M:%S GMT', modificationTime)
-        # TODO: Could also output Content-MD5.
-        ifModifiedSince = self.headers.get('If-Modified-Since')
-        if modificationTime and ifModifiedSince:
-            # We don't want to use bandwith if the file was not modified.
-            try:
-                ifModifiedSinceTime = time.strptime(ifModifiedSince[:25], '%a, %d %b %Y %H:%M:%S')
-                if modificationTime[:8] <= ifModifiedSinceTime[:8]:
-                    self.send_response(304, 'Not Modified.')
-                    for key in ('Connection', 'Content-Location'):
-                        if key in headers:
-                            self.send_header(key, headers[key])
-                    self.setCookie()
-                    self.end_headers()
-                    return
-            except (ValueError, KeyError):
-                pass
-        if dataFile is not None:
-            assert not data
-            data = dataFile.read(1048576) # Read first MB chunk
-        if mimeType == 'text/html' and data.startswith('<?xml'):
-            # Internet Explorer 6 renders the page differently when they start with <?xml...>, so
-            # skip it.
-            i = data.find('\n')
-            if i > 0:
-                data = data[i + 1:]
-            else:
-                i = data.find('>')
-                if i > 0:
-                    data = data[i + 1:]
-            dataSize -= i + 1
-        # Compress data if possible and if data is not too big.
-        acceptEncoding = self.headers.get('Accept-Encoding', '')
-        if 0 < dataSize < 1048576 and 'gzip' in acceptEncoding \
-               and 'gzip;q=0' not in acceptEncoding:
-            # Since dataSize < 1 MB, the data is fully contained in string.
-            zbuf = cStringIO.StringIO()
-            zfile = gzip.GzipFile(mode = 'wb',  fileobj = zbuf)
-            zfile.write(data)
-            zfile.close()
-            data = zbuf.getvalue()
-            dataSize = len(data)
-            headers['Content-Encoding'] = 'gzip'
-        headers['Content-Length'] = '%d' % dataSize
-        successMessages = {
-            200: 'OK',
-            207: 'Multi-Status',
-            }
-        assert successCode in successMessages, 'Unknown success code %d.' % successCode
-        if self.httpAuthenticationLogoutTrick and successCode == 200:
-            successCode = 401
-            successMessage = 'Access Unauthorized'
-            headers['WWW-Authenticate'] = 'Basic realm="%s"' % self.realm
-        else:
-            successMessage = successMessages[successCode]
-        self.send_response(successCode, successMessage)
-        for key, value in headers.items():
-            self.send_header(key, value)
-        self.setCookie()
-        self.end_headers()
-        if self.httpRequest.method != 'HEAD' and dataSize > 0:
-            outputFile = self.wfile
-            if data:
-                outputFile.write(data)
-            if dataFile is not None:
-                while True:
-                    chunk = dataFile.read(1048576) # 1 MB chunk
-                    if not chunk:
-                        break
-                    outputFile.write(chunk)
-        return
+##         if headers is None:
+##             headers = {}
+##         if time.time() > self.socketCreationTime + 300:
+##             headers['Connection'] = 'close'
+##         elif not self.close_connection:
+##             headers['Connection'] = 'Keep-Alive'
+##         if contentLocation is not None:
+##             headers['Content-Location'] = contentLocation
+##         if mimeType:
+##             headers['Content-Type'] = '%s; charset=utf-8' % mimeType
+##         if modificationTime:
+##             headers['Last-Modified'] = time.strftime('%a, %d %b %Y %H:%M:%S GMT', modificationTime)
+##         # TODO: Could also output Content-MD5.
+##         ifModifiedSince = self.headers.get('If-Modified-Since')
+##         if modificationTime and ifModifiedSince:
+##             # We don't want to use bandwith if the file was not modified.
+##             try:
+##                 ifModifiedSinceTime = time.strptime(ifModifiedSince[:25], '%a, %d %b %Y %H:%M:%S')
+##                 if modificationTime[:8] <= ifModifiedSinceTime[:8]:
+##                     self.send_response(304, 'Not Modified.')
+##                     for key in ('Connection', 'Content-Location'):
+##                         if key in headers:
+##                             self.send_header(key, headers[key])
+##                     self.setCookie()
+##                     self.end_headers()
+##                     return
+##             except (ValueError, KeyError):
+##                 pass
+##         if dataFile is not None:
+##             assert not data
+##             data = dataFile.read(1048576) # Read first MB chunk
+##         if mimeType == 'text/html' and data.startswith('<?xml'):
+##             # Internet Explorer 6 renders the page differently when they start with <?xml...>, so
+##             # skip it.
+##             i = data.find('\n')
+##             if i > 0:
+##                 data = data[i + 1:]
+##             else:
+##                 i = data.find('>')
+##                 if i > 0:
+##                     data = data[i + 1:]
+##             dataSize -= i + 1
+##         # Compress data if possible and if data is not too big.
+##         acceptEncoding = self.headers.get('Accept-Encoding', '')
+##         if 0 < dataSize < 1048576 and 'gzip' in acceptEncoding \
+##                and 'gzip;q=0' not in acceptEncoding:
+##             # Since dataSize < 1 MB, the data is fully contained in string.
+##             zbuf = cStringIO.StringIO()
+##             zfile = gzip.GzipFile(mode = 'wb',  fileobj = zbuf)
+##             zfile.write(data)
+##             zfile.close()
+##             data = zbuf.getvalue()
+##             dataSize = len(data)
+##             headers['Content-Encoding'] = 'gzip'
+##         headers['Content-Length'] = '%d' % dataSize
+##         successMessages = {
+##             200: 'OK',
+##             207: 'Multi-Status',
+##             }
+##         assert successCode in successMessages, 'Unknown success code %d.' % successCode
+##         if self.httpAuthenticationLogoutTrick and successCode == 200:
+##             successCode = 401
+##             successMessage = 'Access Unauthorized'
+##             headers['WWW-Authenticate'] = 'Basic realm="%s"' % self.realm
+##         else:
+##             successMessage = successMessages[successCode]
+##         self.send_response(successCode, successMessage)
+##         for key, value in headers.items():
+##             self.send_header(key, value)
+##         self.setCookie()
+##         self.end_headers()
+##         if self.httpRequest.method != 'HEAD' and dataSize > 0:
+##             outputFile = self.wfile
+##             if data:
+##                 outputFile.write(data)
+##             if dataFile is not None:
+##                 while True:
+##                     chunk = dataFile.read(1048576) # 1 MB chunk
+##                     if not chunk:
+##                         break
+##                     outputFile.write(chunk)
+##         return
 
-    def outputErrorAccessForbidden(self, filePath):
-        if filePath is None:
-            message = 'Access Forbidden'
-        else:
-            message = 'Access to "%s" Forbidden.' % filePath
-        logger.info(message)
-        data = '<html><body>%s</body></html>' % message
-        return self.send_error(403, message, data, setCookie = True)
+##     def outputErrorAccessForbidden(self, filePath):
+##         if filePath is None:
+##             message = 'Access Forbidden'
+##         else:
+##             message = 'Access to "%s" Forbidden.' % filePath
+##         logger.info(message)
+##         data = '<html><body>%s</body></html>' % message
+##         return self.send_error(403, message, data, setCookie = True)
 
-    def outputErrorBadRequest(self, reason):
-        if reason:
-            message = 'Bad Request: %s' % reason
-        else:
-            message = 'Bad Request'
-        logger.info(message)
-        data = '<html><body>%s</body></html>' % message
-        return self.send_error(400, message, data)
+##     def outputErrorBadRequest(self, reason):
+##         if reason:
+##             message = 'Bad Request: %s' % reason
+##         else:
+##             message = 'Bad Request'
+##         logger.info(message)
+##         data = '<html><body>%s</body></html>' % message
+##         return self.send_error(400, message, data)
 
     def outputErrorInternalServer(self):
         message = 'Internal Server Error'
@@ -479,71 +654,71 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         data = '<html><body>%s</body></html>' % message
         return self.send_error(500, message, data)
 
-    def outputErrorMethodNotAllowed(self, reason):
-        if reason:
-            message = 'Method Not Allowed: %s' % reason
-        else:
-            message = 'Method Not Allowed'
-        logger.info(message)
-        data = '<html><body>%s</body></html>' % message
-        # This error doesn't need a pretty interface.
-        # FIXME: Add an 'Allow' header containing a list of valid methods for the requested
-        # resource.
-        return self.send_error(405, message, data)
+##     def outputErrorMethodNotAllowed(self, reason):
+##         if reason:
+##             message = 'Method Not Allowed: %s' % reason
+##         else:
+##             message = 'Method Not Allowed'
+##         logger.info(message)
+##         data = '<html><body>%s</body></html>' % message
+##         # This error doesn't need a pretty interface.
+##         # FIXME: Add an 'Allow' header containing a list of valid methods for the requested
+##         # resource.
+##         return self.send_error(405, message, data)
 
-    def outputErrorNotFound(self, filePath):
-        if filePath is None:
-            message = 'Not Found'
-        else:
-            message = 'Path "%s" Not Found.' % filePath
-        logger.info(message)
-        data = '<html><body>%s</body></html>' % message
-        return self.send_error(404, message, data, setCookie = True)
+##     def outputErrorNotFound(self, filePath):
+##         if filePath is None:
+##             message = 'Not Found'
+##         else:
+##             message = 'Path "%s" Not Found.' % filePath
+##         logger.info(message)
+##         data = '<html><body>%s</body></html>' % message
+##         return self.send_error(404, message, data, setCookie = True)
 
-    def outputErrorUnauthorized(self, filePath):
-        if filePath is None:
-            message = 'Access Unauthorized'
-        else:
-            message = 'Access to "%s" Unauthorized.' % filePath
-        logger.info(message)
-        data = '<html><body>%s</body></html>' % message
-        headers = {}
-        return self.send_error(401, message, data, headers, setCookie = True)
+##     def outputErrorUnauthorized(self, filePath):
+##         if filePath is None:
+##             message = 'Access Unauthorized'
+##         else:
+##             message = 'Access to "%s" Unauthorized.' % filePath
+##         logger.info(message)
+##         data = '<html><body>%s</body></html>' % message
+##         headers = {}
+##         return self.send_error(401, message, data, headers, setCookie = True)
 
-    def outputInformationContinue(self):
-        message = 'Continue'
-        logger.debug(message)
-        self.send_response(100, message)
+##     def outputInformationContinue(self):
+##         message = 'Continue'
+##         logger.debug(message)
+##         self.send_response(100, message)
 
-    def outputSuccessCreated(self, filePath):
-        if filePath is None:
-            message = 'Created'
-        else:
-            message = 'File "%s" Created.' % filePath
-        logger.debug(message)
-        data = '<html><body>%s</body></html>' % message
-        self.send_response(201, message)
-        if time.time() > self.socketCreationTime + 300:
-            self.send_header('Connection', 'close')
-        elif not self.close_connection:
-            self.send_header('Connection', 'Keep-Alive')
-        self.send_header('Content-Type', 'text/html; charset=utf-8')
-        self.send_header('Content-Length', '%d' % len(data))
-        self.setCookie()
-        self.end_headers()
-        if self.httpRequest.method != 'HEAD':
-            self.wfile.write(data)
+##     def outputSuccessCreated(self, filePath):
+##         if filePath is None:
+##             message = 'Created'
+##         else:
+##             message = 'File "%s" Created.' % filePath
+##         logger.debug(message)
+##         data = '<html><body>%s</body></html>' % message
+##         self.send_response(201, message)
+##         if time.time() > self.socketCreationTime + 300:
+##             self.send_header('Connection', 'close')
+##         elif not self.close_connection:
+##             self.send_header('Connection', 'Keep-Alive')
+##         self.send_header('Content-Type', 'text/html; charset=utf-8')
+##         self.send_header('Content-Length', '%d' % len(data))
+##         self.setCookie()
+##         self.end_headers()
+##         if self.httpRequest.method != 'HEAD':
+##             self.wfile.write(data)
 
-    def outputSuccessNoContent(self):
-        message = 'No Content'
-        logger.debug(message)
-        self.send_response(204, message)
-        if time.time() > self.socketCreationTime + 300:
-            self.send_header('Connection', 'close')
-        elif not self.close_connection:
-            self.send_header('Connection', 'Keep-Alive')
-        self.setCookie()
-        self.end_headers()
+##     def outputSuccessNoContent(self):
+##         message = 'No Content'
+##         logger.debug(message)
+##         self.send_response(204, message)
+##         if time.time() > self.socketCreationTime + 300:
+##             self.send_header('Connection', 'close')
+##         elif not self.close_connection:
+##             self.send_header('Connection', 'Keep-Alive')
+##         self.setCookie()
+##         self.end_headers()
 
     def outputUnknownException(self):
         import traceback, cStringIO
@@ -704,10 +879,7 @@ class HttpsRequestHandler(HttpRequestHandlerMixin, BaseHTTPSRequestHandler):
 # not enough for a web server.
 
 class HttpServer(SocketServer.ForkingMixIn, BaseHTTPServer.HTTPServer):
-    uriScheme = 'http'
-    webServer = None
-
+    pass
 
 class HttpsServer(SocketServer.ForkingMixIn, BaseHTTPSServer):
-    uriScheme = 'https' # Ob
-    webServer = None
+    pass

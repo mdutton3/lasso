@@ -35,27 +35,34 @@ class HttpRequestMixin:
     query = None
     scheme = None # 'http' or 'https'
 
-    def getFormField(self, name, default = 'none'):
+    def getFormField(self, name, default = None):
         raise NotImplementedError
 
-    def getQueryBoolean(self, name, default = 'none'):
-        try:
-            fieldValue = self.getQueryField(name)
-        except KeyError:
-            if default == 'none':
-                raise
+    def getQueryBoolean(self, name, default = None):
+        fieldValue = self.getQueryField(name, 'none')
+        if fieldValue == 'none':
             return default
-        return fieldValue.lower not in ('', '0', 'false')
+        else:
+            return fieldValue.lower not in ('', '0', 'false')
 
-    def getQueryField(self, name, default = 'none'):
+    def getQueryField(self, name, default = None):
         if self.query:
             for field in self.query.split('&'):
                 fieldName, fieldValue = field.split('=')
                 if name == fieldName:
                     return fieldValue
-        if default == 'none':
-            raise KeyError(name)
         return default
+
+    def hasFormField(self, name):
+        raise NotImplementedError
+
+    def hasQueryField(self, name):
+        if self.query:
+            for field in self.query.split('&'):
+                fieldName, fieldValue = field.split('=')
+                if name == fieldName:
+                    return True
+        return False
 
 
 class HttpResponseMixin:
@@ -113,7 +120,7 @@ class HttpResponseMixin:
             self.statusMessage = statusMessage
         else:
             self.statusMessage = self.defaultStatusMessages.get(statusCode)
-        httpResponseHeaders = httpRequestHandler.webServer.httpResponseHeaders
+        httpResponseHeaders = httpRequestHandler.site.httpResponseHeaders
         if headers:
             httpResponseHeaders = httpResponseHeaders.copy()
             for name, value in headers.iteritems():
@@ -133,7 +140,7 @@ class HttpRequestHandlerMixin:
     httpResponse = None
     session = None
     user = None
-    webServer = None # The web server, which can then redirect to several virtual hosts
+    site = None # The virtual host
 
     def respond(self, statusCode = 200, statusMessage = None, headers = None, body = None):
         # Session must be saved before responding. Otherwise, when the server is multitasked or
@@ -154,3 +161,23 @@ class HttpRequestHandlerMixin:
 
     def respondRedirectTemporarily(self, url):
         raise NotImplementedError
+
+
+class WebSessionMixin:
+    publishToken = False
+    token = None
+
+
+class WebSiteMixin:
+    def authenticateX509User(self, clientCertificate):
+        # We should check certificate (for example clientCertificate.get_serial_number()
+        # and return the user if one matches, or None otherwise.
+        return None
+
+    def authenticateLoginPasswordUser(self, login, password):
+        # We should check login & password and return the user if one matches or None otherwise.
+        return None
+
+
+class WebUserMixin:
+    sessionToken = None

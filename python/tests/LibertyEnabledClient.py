@@ -69,29 +69,32 @@ class LibertyEnabledClient(WebClient):
         #     'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1'))
         'Accept': ','.join((httpRequestHeaders['Accept'], 'application/vnd.liberty-request+xml'))
         })
-    # FIXME: Lasso should provide a way for Liberty-enabled client to create a "server" without
-    # metadata, instead of using 'singleSignOnServiceUrl'.
+    # FIXME: Lasso should provide a way for Liberty-enabled client to create a "lassoServer"
+    # without metadata, instead of using 'singleSignOnServiceUrl'.
     idpSingleSignOnServiceUrl = None
+    lassoServerDump = None
 
     def __init__(self, internet):
         WebClient.__init__(self, internet)
+
+    def getLassoServer(self):
+        return lasso.Server.new_from_dump(self.lassoServerDump)
 
     def login(self, principal, site, path):
         httpResponse = self.sendHttpRequestToSite(site, 'GET', path)
         failUnlessEqual(
             httpResponse.headers['Content-Type'], 'application/vnd.liberty-request+xml')
-        lecp = lasso.Lecp.new(None)
+        lassoServer = self.getLassoServer()
+        lecp = lasso.Lecp.new(lassoServer)
         authnRequestEnvelope = httpResponse.body
-        # FIXME: I don't understand why authnRequestEnvelopeMsg is base64 encoded. I think this
-        # is an error.
-        import base64
-        authnRequestEnvelope = base64.encodestring(authnRequestEnvelope)
         lecp.process_authn_request_envelope_msg(authnRequestEnvelope)
-        lecp.build_authn_request_msg()
         # FIXME: The service provider could return an IDPList in authnRequestEnvelope, so that
         # we verify that self.idpSingleSignOnServiceUrl belongs to one of them
+        lecp.build_authn_request_msg(self.idpSite.providerId)
+        failUnless(lecp.msg_url)
+        failUnless(lecp.msg_body)
         httpResponse = self.sendHttpRequest(
-            'POST', self.idpSingleSignOnServiceUrl, headers = {'Content-Type': 'text/xml'},
+            'POST', lecp.msg_url, headers = {'Content-Type': 'text/xml'},
             body = lecp.msg_body)
         failUnlessEqual(
             httpResponse.headers.get('Content-Type', None), 'application/vnd.liberty-response+xml')
