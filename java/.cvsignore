@@ -26,3 +26,17 @@ lassoJNI.java
 lasso_wrap.c
 libjlasso.la
 libjlasso_la-lasso_wrap.lo
+LibAuthnResponse.java
+LibFederationTerminationNotification.java
+LibLogoutRequest.java
+LibRegisterNameIdentifierRequest.java
+NameIdentifierMapping.java
+NameRegistration.java
+Node.java
+Provider.java
+ProviderIds.java
+RegisterNameIdentifierResponse.java
+SWIGTYPE_p_void.java
+SamlpRequest.java
+SamlpResponse.java
+
