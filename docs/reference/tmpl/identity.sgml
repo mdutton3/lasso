@@ -22,13 +22,6 @@ Principal Identity
 @federations: 
 @is_dirty: 
 
-<!-- ##### STRUCT LassoIdentityClass ##### -->
-<para>
-
-</para>
-
-@parent: 
-
 <!-- ##### FUNCTION lasso_identity_new ##### -->
 <para>
 

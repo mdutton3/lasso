@@ -3,9 +3,9 @@
                "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
 <!ENTITY LassoLibAssertion SYSTEM "sgml/lib_assertion.xml">
 <!ENTITY LassoLibAuthnRequest SYSTEM "sgml/lib_authn_request.xml">
-<!ENTITY lasso-LassoLibAuthnRequestEnvelope SYSTEM "sgml/lib_authn_request_envelope.xml">
+<!ENTITY LassoLibAuthnRequestEnvelope SYSTEM "sgml/lib_authn_request_envelope.xml">
 <!ENTITY LassoLibAuthnResponse SYSTEM "sgml/lib_authn_response.xml">
-<!ENTITY lasso-LassoLibAuthnResponseEnvelope SYSTEM "sgml/lib_authn_response_envelope.xml">
+<!ENTITY LassoLibAuthnResponseEnvelope SYSTEM "sgml/lib_authn_response_envelope.xml">
 <!ENTITY LassoLibIDPEntries SYSTEM "sgml/lib_idp_entries.xml">
 <!ENTITY LassoLibIDPEntry SYSTEM "sgml/lib_idp_entry.xml">
 <!ENTITY LassoLibIDPList SYSTEM "sgml/lib_idp_list.xml">
@@ -56,6 +56,7 @@
 <!ENTITY LassoProfile SYSTEM "sgml/profile.xml">
 <!ENTITY LassoServer SYSTEM "sgml/server.xml">
 <!ENTITY LassoSession SYSTEM "sgml/session.xml">
+<!ENTITY LassoStrings SYSTEM "sgml/strings.xml">
 
 <!ENTITY version SYSTEM "version.xml">
 ]>
@@ -138,9 +139,9 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoLibAuthenticationStatement;
     &LassoLibAuthnContext;
     &LassoLibAuthnRequest;
-    &lasso-LassoLibAuthnRequestEnvelope;
+    &LassoLibAuthnRequestEnvelope;
     &LassoLibAuthnResponse;
-    &lasso-LassoLibAuthnResponseEnvelope;
+    &LassoLibAuthnResponseEnvelope;
     &LassoLibFederationTerminationNotification;
     &LassoLibIDPEntries;
     &LassoLibIDPEntry;
@@ -180,6 +181,7 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     <title>Misc</title>
 
     &lasso-lasso;
+    &LassoStrings;
     &lasso-version;
   </chapter>
 

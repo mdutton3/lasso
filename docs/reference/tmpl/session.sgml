@@ -20,13 +20,6 @@ Principal Session
 </para>
 
 
-<!-- ##### STRUCT LassoSessionClass ##### -->
-<para>
-
-</para>
-
-@parent: 
-
 <!-- ##### FUNCTION lasso_session_new ##### -->
 <para>
 

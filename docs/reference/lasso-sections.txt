@@ -54,7 +54,6 @@ LASSO_SERVER_GET_CLASS
 <FILE>identity</FILE>
 <TITLE>LassoIdentity</TITLE>
 LassoIdentity
-LassoIdentityClass
 lasso_identity_new
 lasso_identity_new_from_dump
 lasso_identity_destroy
@@ -76,7 +75,6 @@ LASSO_IDENTITY_GET_CLASS
 <FILE>session</FILE>
 <TITLE>LassoSession</TITLE>
 LassoSession
-LassoSessionClass
 lasso_session_new
 lasso_session_new_from_dump
 lasso_session_add_assertion
@@ -179,7 +177,6 @@ LASSO_LOGIN_GET_CLASS
 <FILE>logout</FILE>
 <TITLE>LassoLogout</TITLE>
 LassoLogout
-LassoLogoutClass
 lasso_logout_new
 lasso_logout_new_from_dump
 lasso_logout_build_request_msg
@@ -271,9 +268,8 @@ LASSO_NAME_IDENTIFIER_MAPPING_GET_CLASS
 <FILE>lib_assertion</FILE>
 <TITLE>LassoLibAssertion</TITLE>
 LassoLibAssertion
-LassoLibAssertionClass
 lasso_lib_assertion_new
-lasso_lib_assertion_set_inResponseTo
+lasso_lib_assertion_new_full
 <SUBSECTION Standard>
 LASSO_LIB_ASSERTION
 LASSO_IS_LIB_ASSERTION
@@ -288,19 +284,7 @@ LASSO_LIB_ASSERTION_GET_CLASS
 <FILE>lib_authn_request</FILE>
 <TITLE>LassoLibAuthnRequest</TITLE>
 LassoLibAuthnRequest
-LassoLibAuthnRequestClass
 lasso_lib_authn_request_new
-lasso_lib_authn_request_set_affiliationID
-lasso_lib_authn_request_set_assertionConsumerServiceID
-lasso_lib_authn_request_set_consent
-lasso_lib_authn_request_set_forceAuthn
-lasso_lib_authn_request_set_isPassive
-lasso_lib_authn_request_set_nameIDPolicy
-lasso_lib_authn_request_set_protocolProfile
-lasso_lib_authn_request_set_providerID
-lasso_lib_authn_request_set_relayState
-lasso_lib_authn_request_set_requestAuthnContext
-lasso_lib_authn_request_set_scoping
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_REQUEST
 LASSO_IS_LIB_AUTHN_REQUEST
@@ -315,15 +299,7 @@ LASSO_LIB_AUTHN_REQUEST_GET_CLASS
 <FILE>lib_authn_request_envelope</FILE>
 <TITLE>LassoLibAuthnRequestEnvelope</TITLE>
 LassoLibAuthnRequestEnvelope
-LassoLibAuthnRequestEnvelopeClass
 lasso_lib_authn_request_envelope_new
-lasso_lib_authn_request_envelope_set_extension
-lasso_lib_authn_request_envelope_set_authnRequest
-lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL
-lasso_lib_authn_request_envelope_set_providerID
-lasso_lib_authn_request_envelope_set_providerName
-lasso_lib_authn_request_envelope_set_idpList
-lasso_lib_authn_request_envelope_set_isPassive
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_REQUEST_ENVELOPE
 LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE
@@ -338,11 +314,7 @@ LASSO_LIB_AUTHN_REQUEST_ENVELOPE_GET_CLASS
 <FILE>lib_authn_response</FILE>
 <TITLE>LassoLibAuthnResponse</TITLE>
 LassoLibAuthnResponse
-LassoLibAuthnResponseClass
 lasso_lib_authn_response_new
-lasso_lib_authn_response_set_consent
-lasso_lib_authn_response_set_providerID
-lasso_lib_authn_response_set_relayState
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_RESPONSE
 LASSO_IS_LIB_AUTHN_RESPONSE
@@ -357,11 +329,7 @@ LASSO_LIB_AUTHN_RESPONSE_GET_CLASS
 <FILE>lib_authn_response_envelope</FILE>
 <TITLE>LassoLibAuthnResponseEnvelope</TITLE>
 LassoLibAuthnResponseEnvelope
-LassoLibAuthnResponseEnvelopeClass
 lasso_lib_authn_response_envelope_new
-lasso_lib_authn_response_envelope_set_extension
-lasso_lib_authn_response_envelope_set_authnResponse
-lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_RESPONSE_ENVELOPE
 LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE
@@ -376,9 +344,7 @@ LASSO_LIB_AUTHN_RESPONSE_ENVELOPE_GET_CLASS
 <FILE>lib_idp_entries</FILE>
 <TITLE>LassoLibIDPEntries</TITLE>
 LassoLibIDPEntries
-LassoLibIDPEntriesClass
 lasso_lib_idp_entries_new
-lasso_lib_idp_entries_add_idpEntry
 <SUBSECTION Standard>
 LASSO_LIB_IDP_ENTRIES
 LASSO_IS_LIB_IDP_ENTRIES
@@ -393,11 +359,7 @@ LASSO_LIB_IDP_ENTRIES_GET_CLASS
 <FILE>lib_idp_entry</FILE>
 <TITLE>LassoLibIDPEntry</TITLE>
 LassoLibIDPEntry
-LassoLibIDPEntryClass
 lasso_lib_idp_entry_new
-lasso_lib_idp_entry_set_providerID
-lasso_lib_idp_entry_set_providerName
-lasso_lib_idp_entry_set_loc
 <SUBSECTION Standard>
 LASSO_LIB_IDP_ENTRY
 LASSO_IS_LIB_IDP_ENTRY
@@ -412,10 +374,7 @@ LASSO_LIB_IDP_ENTRY_GET_CLASS
 <FILE>lib_idp_list</FILE>
 <TITLE>LassoLibIDPList</TITLE>
 LassoLibIDPList
-LassoLibIDPListClass
 lasso_lib_idp_list_new
-lasso_lib_idp_list_set_getComplete
-lasso_lib_idp_list_set_idpEntries
 <SUBSECTION Standard>
 LASSO_LIB_IDP_LIST
 LASSO_IS_LIB_IDP_LIST
@@ -430,11 +389,7 @@ LASSO_LIB_IDP_LIST_GET_CLASS
 <FILE>lib_request_authn_context</FILE>
 <TITLE>LassoLibRequestAuthnContext</TITLE>
 LassoLibRequestAuthnContext
-LassoLibRequestAuthnContextClass
 lasso_lib_request_authn_context_new
-lasso_lib_request_authn_context_add_authnContextClassRef
-lasso_lib_request_authn_context_add_authnContextStatementRef
-lasso_lib_request_authn_context_set_authnContextComparison
 <SUBSECTION Standard>
 LASSO_LIB_REQUEST_AUTHN_CONTEXT
 LASSO_IS_LIB_REQUEST_AUTHN_CONTEXT
@@ -449,10 +404,7 @@ LASSO_LIB_REQUEST_AUTHN_CONTEXT_GET_CLASS
 <FILE>lib_scoping</FILE>
 <TITLE>LassoLibScoping</TITLE>
 LassoLibScoping
-LassoLibScopingClass
 lasso_lib_scoping_new
-lasso_lib_scoping_set_proxyCount
-lasso_lib_scoping_set_idpList
 <SUBSECTION Standard>
 LASSO_LIB_SCOPING
 LASSO_IS_LIB_SCOPING
@@ -467,10 +419,7 @@ LASSO_LIB_SCOPING_GET_CLASS
 <FILE>saml_advice</FILE>
 <TITLE>LassoSamlAdvice</TITLE>
 LassoSamlAdvice
-LassoSamlAdviceClass
 lasso_saml_advice_new
-lasso_saml_advice_add_assertionIDReference
-lasso_saml_advice_add_assertion
 <SUBSECTION Standard>
 LASSO_SAML_ADVICE
 LASSO_IS_SAML_ADVICE
@@ -485,19 +434,7 @@ LASSO_SAML_ADVICE_GET_CLASS
 <FILE>saml_assertion</FILE>
 <TITLE>LassoSamlAssertion</TITLE>
 LassoSamlAssertion
-LassoSamlAssertionClass
 lasso_saml_assertion_new
-lasso_saml_assertion_add_authenticationStatement
-lasso_saml_assertion_add_statement
-lasso_saml_assertion_add_subjectStatement
-lasso_saml_assertion_set_advice
-lasso_saml_assertion_set_assertionID
-lasso_saml_assertion_set_conditions
-lasso_saml_assertion_set_issueInstant
-lasso_saml_assertion_set_issuer
-lasso_saml_assertion_set_majorVersion
-lasso_saml_assertion_set_minorVersion
-lasso_saml_assertion_set_signature
 <SUBSECTION Standard>
 LASSO_SAML_ASSERTION
 LASSO_IS_SAML_ASSERTION
@@ -512,9 +449,7 @@ LASSO_SAML_ASSERTION_GET_CLASS
 <FILE>saml_audience_restriction_condition</FILE>
 <TITLE>LassoSamlAudienceRestrictionCondition</TITLE>
 LassoSamlAudienceRestrictionCondition
-LassoSamlAudienceRestrictionConditionClass
 lasso_saml_audience_restriction_condition_new
-lasso_saml_audience_restriction_condition_add_audience
 <SUBSECTION Standard>
 LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION
 LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION
@@ -529,12 +464,7 @@ LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION_GET_CLASS
 <FILE>saml_authentication_statement</FILE>
 <TITLE>LassoSamlAuthenticationStatement</TITLE>
 LassoSamlAuthenticationStatement
-LassoSamlAuthenticationStatementClass
 lasso_saml_authentication_statement_new
-lasso_saml_authentication_statement_add_authorityBinding
-lasso_saml_authentication_statement_set_authenticationInstant
-lasso_saml_authentication_statement_set_authenticationMethod
-lasso_saml_authentication_statement_set_subjectLocality
 <SUBSECTION Standard>
 LASSO_SAML_AUTHENTICATION_STATEMENT
 LASSO_IS_SAML_AUTHENTICATION_STATEMENT
@@ -549,11 +479,7 @@ LASSO_SAML_AUTHENTICATION_STATEMENT_GET_CLASS
 <FILE>saml_authority_binding</FILE>
 <TITLE>LassoSamlAuthorityBinding</TITLE>
 LassoSamlAuthorityBinding
-LassoSamlAuthorityBindingClass
 lasso_saml_authority_binding_new
-lasso_saml_authority_binding_set_authorityKind
-lasso_saml_authority_binding_set_binding
-lasso_saml_authority_binding_set_location
 <SUBSECTION Standard>
 LASSO_SAML_AUTHORITY_BINDING
 LASSO_IS_SAML_AUTHORITY_BINDING
@@ -568,8 +494,6 @@ LASSO_SAML_AUTHORITY_BINDING_GET_CLASS
 <FILE>saml_condition_abstract</FILE>
 <TITLE>LassoSamlConditionAbstract</TITLE>
 LassoSamlConditionAbstract
-LassoSamlConditionAbstractClass
-lasso_saml_condition_abstract_new
 <SUBSECTION Standard>
 LASSO_SAML_CONDITION_ABSTRACT
 LASSO_IS_SAML_CONDITION_ABSTRACT
@@ -584,12 +508,7 @@ LASSO_SAML_CONDITION_ABSTRACT_GET_CLASS
 <FILE>saml_conditions</FILE>
 <TITLE>LassoSamlConditions</TITLE>
 LassoSamlConditions
-LassoSamlConditionsClass
 lasso_saml_conditions_new
-lasso_saml_conditions_add_condition
-lasso_saml_conditions_add_audienceRestrictionCondition
-lasso_saml_conditions_set_notBefore
-lasso_saml_conditions_set_notOnOrAfter
 <SUBSECTION Standard>
 LASSO_SAML_CONDITIONS
 LASSO_IS_SAML_CONDITIONS
@@ -604,10 +523,7 @@ LASSO_SAML_CONDITIONS_GET_CLASS
 <FILE>saml_name_identifier</FILE>
 <TITLE>LassoSamlNameIdentifier</TITLE>
 LassoSamlNameIdentifier
-LassoSamlNameIdentifierClass
 lasso_saml_name_identifier_new
-lasso_saml_name_identifier_set_nameQualifier
-lasso_saml_name_identifier_set_format
 <SUBSECTION Standard>
 LASSO_SAML_NAME_IDENTIFIER
 LASSO_IS_SAML_NAME_IDENTIFIER
@@ -622,8 +538,6 @@ LASSO_SAML_NAME_IDENTIFIER_GET_CLASS
 <FILE>saml_statement_abstract</FILE>
 <TITLE>LassoSamlStatementAbstract</TITLE>
 LassoSamlStatementAbstract
-LassoSamlStatementAbstractClass
-lasso_saml_statement_abstract_new
 <SUBSECTION Standard>
 LASSO_SAML_STATEMENT_ABSTRACT
 LASSO_IS_SAML_STATEMENT_ABSTRACT
@@ -638,10 +552,7 @@ LASSO_SAML_STATEMENT_ABSTRACT_GET_CLASS
 <FILE>saml_subject</FILE>
 <TITLE>LassoSamlSubject</TITLE>
 LassoSamlSubject
-LassoSamlSubjectClass
 lasso_saml_subject_new
-lasso_saml_subject_set_nameIdentifier
-lasso_saml_subject_set_subjectConfirmation
 <SUBSECTION Standard>
 LASSO_SAML_SUBJECT
 LASSO_IS_SAML_SUBJECT
@@ -656,10 +567,7 @@ LASSO_SAML_SUBJECT_GET_CLASS
 <FILE>saml_subject_confirmation</FILE>
 <TITLE>LassoSamlSubjectConfirmation</TITLE>
 LassoSamlSubjectConfirmation
-LassoSamlSubjectConfirmationClass
 lasso_saml_subject_confirmation_new
-lasso_saml_subject_confirmation_add_confirmationMethod
-lasso_saml_subject_confirmation_set_subjectConfirmationMethod
 <SUBSECTION Standard>
 LASSO_SAML_SUBJECT_CONFIRMATION
 LASSO_IS_SAML_SUBJECT_CONFIRMATION
@@ -674,10 +582,7 @@ LASSO_SAML_SUBJECT_CONFIRMATION_GET_CLASS
 <FILE>saml_subject_locality</FILE>
 <TITLE>LassoSamlSubjectLocality</TITLE>
 LassoSamlSubjectLocality
-LassoSamlSubjectLocalityClass
 lasso_saml_subject_locality_new
-lasso_saml_subject_locality_set_dnsAddress
-lasso_saml_subject_locality_set_ipAddress
 <SUBSECTION Standard>
 LASSO_SAML_SUBJECT_LOCALITY
 LASSO_IS_SAML_SUBJECT_LOCALITY
@@ -692,9 +597,6 @@ LASSO_SAML_SUBJECT_LOCALITY_GET_CLASS
 <FILE>saml_subject_statement_abstract</FILE>
 <TITLE>LassoSamlSubjectStatementAbstract</TITLE>
 LassoSamlSubjectStatementAbstract
-LassoSamlSubjectStatementAbstractClass
-lasso_saml_subject_statement_abstract_new
-lasso_saml_subject_statement_abstract_set_subject
 <SUBSECTION Standard>
 LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT
 LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT
@@ -709,16 +611,6 @@ LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT_GET_CLASS
 <FILE>samlp_request_abstract</FILE>
 <TITLE>LassoSamlpRequestAbstract</TITLE>
 LassoSamlpRequestAbstract
-LassoSamlpRequestAbstractClass
-lasso_samlp_request_abstract_new
-lasso_samlp_request_abstract_add_respondWith
-lasso_samlp_request_abstract_set_issueInstant
-lasso_samlp_request_abstract_set_majorVersion
-lasso_samlp_request_abstract_set_minorVersion
-lasso_samlp_request_abstract_set_requestID
-lasso_samlp_request_abstract_set_signature
-lasso_samlp_request_abstract_set_signature_tmpl
-lasso_samlp_request_abstract_sign_signature_tmpl
 <SUBSECTION Standard>
 LASSO_SAMLP_REQUEST_ABSTRACT
 LASSO_IS_SAMLP_REQUEST_ABSTRACT
@@ -733,10 +625,7 @@ LASSO_SAMLP_REQUEST_ABSTRACT_GET_CLASS
 <FILE>samlp_response</FILE>
 <TITLE>LassoSamlpResponse</TITLE>
 LassoSamlpResponse
-LassoSamlpResponseClass
 lasso_samlp_response_new
-lasso_samlp_response_add_assertion
-lasso_samlp_response_set_status
 <SUBSECTION Standard>
 LASSO_SAMLP_RESPONSE
 LASSO_IS_SAMLP_RESPONSE
@@ -751,17 +640,6 @@ LASSO_SAMLP_RESPONSE_GET_CLASS
 <FILE>samlp_response_abstract</FILE>
 <TITLE>LassoSamlpResponseAbstract</TITLE>
 LassoSamlpResponseAbstract
-LassoSamlpResponseAbstractClass
-lasso_samlp_response_abstract_new
-lasso_samlp_response_abstract_set_inResponseTo
-lasso_samlp_response_abstract_set_issueInstant
-lasso_samlp_response_abstract_set_majorVersion
-lasso_samlp_response_abstract_set_minorVersion
-lasso_samlp_response_abstract_set_recipient
-lasso_samlp_response_abstract_set_responseID
-lasso_samlp_response_abstract_set_signature
-lasso_samlp_response_abstract_set_signature_tmpl
-lasso_samlp_response_abstract_sign_signature_tmpl
 <SUBSECTION Standard>
 LASSO_SAMLP_RESPONSE_ABSTRACT
 LASSO_IS_SAMLP_RESPONSE_ABSTRACT
@@ -776,10 +654,7 @@ LASSO_SAMLP_RESPONSE_ABSTRACT_GET_CLASS
 <FILE>samlp_status</FILE>
 <TITLE>LassoSamlpStatus</TITLE>
 LassoSamlpStatus
-LassoSamlpStatusClass
 lasso_samlp_status_new
-lasso_samlp_status_set_statusCode
-lasso_samlp_status_set_statusMessage
 <SUBSECTION Standard>
 LASSO_SAMLP_STATUS
 LASSO_IS_SAMLP_STATUS
@@ -794,9 +669,7 @@ LASSO_SAMLP_STATUS_GET_CLASS
 <FILE>samlp_status_code</FILE>
 <TITLE>LassoSamlpStatusCode</TITLE>
 LassoSamlpStatusCode
-LassoSamlpStatusCodeClass
 lasso_samlp_status_code_new
-lasso_samlp_status_code_set_value
 <SUBSECTION Standard>
 LASSO_SAMLP_STATUS_CODE
 LASSO_IS_SAMLP_STATUS_CODE
@@ -809,34 +682,20 @@ LASSO_SAMLP_STATUS_CODE_GET_CLASS
 
 <SECTION>
 <FILE>node</FILE>
-lassoNodeExportType
 <TITLE>LassoNode</TITLE>
-lassoSignatureMethod
 LassoNode
-LassoNodeClass
+LassoMessageFormat
+lassoSignatureType
+lassoSignatureMethod
 lasso_node_new
 lasso_node_new_from_dump
 lasso_node_new_from_xmlNode
-lasso_node_copy
 lasso_node_destroy
 lasso_node_dump
-lasso_node_export
 lasso_node_export_to_base64
 lasso_node_export_to_query
 lasso_node_export_to_soap
-lasso_node_get_attr
-lasso_node_get_attr_value
-lasso_node_get_attrs
-lasso_node_get_child
-lasso_node_get_child_content
-lasso_node_get_children
-lasso_node_get_content
-lasso_node_get_name
-lasso_node_import
-lasso_node_import_from_node
-lasso_node_rename_prop
 lasso_node_verify_signature
-lasso_node_verify_x509_signature
 <SUBSECTION Standard>
 LASSO_NODE
 LASSO_IS_NODE
@@ -851,13 +710,7 @@ LASSO_NODE_GET_CLASS
 <FILE>lib_logout_request</FILE>
 <TITLE>LassoLibLogoutRequest</TITLE>
 LassoLibLogoutRequest
-LassoLibLogoutRequestClass
 lasso_lib_logout_request_new
-lasso_lib_logout_request_set_consent
-lasso_lib_logout_request_set_providerID
-lasso_lib_logout_request_set_relayState
-lasso_lib_logout_request_set_sessionIndex
-lasso_lib_logout_request_set_nameIdentifier
 <SUBSECTION Standard>
 LASSO_LIB_LOGOUT_REQUEST
 LASSO_IS_LIB_LOGOUT_REQUEST
@@ -872,11 +725,7 @@ LASSO_LIB_LOGOUT_REQUEST_GET_CLASS
 <FILE>lib_federation_termination_notification</FILE>
 <TITLE>LassoLibFederationTerminationNotification</TITLE>
 LassoLibFederationTerminationNotification
-LassoLibFederationTerminationNotificationClass
 lasso_lib_federation_termination_notification_new
-lasso_lib_federation_termination_notification_set_consent
-lasso_lib_federation_termination_notification_set_providerID
-lasso_lib_federation_termination_notification_set_nameIdentifier
 <SUBSECTION Standard>
 LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION
 LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION
@@ -891,7 +740,6 @@ LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS
 <FILE>lib_logout_response</FILE>
 <TITLE>LassoLibLogoutResponse</TITLE>
 LassoLibLogoutResponse
-LassoLibLogoutResponseClass
 lasso_lib_logout_response_new
 <SUBSECTION Standard>
 LASSO_LIB_LOGOUT_RESPONSE
@@ -907,11 +755,7 @@ LASSO_LIB_LOGOUT_RESPONSE_GET_CLASS
 <FILE>lib_name_identifier_mapping_request</FILE>
 <TITLE>LassoLibNameIdentifierMappingRequest</TITLE>
 LassoLibNameIdentifierMappingRequest
-LassoLibNameIdentifierMappingRequestClass
 lasso_lib_name_identifier_mapping_request_new
-lasso_lib_name_identifier_mapping_request_set_consent
-lasso_lib_name_identifier_mapping_request_set_providerID
-lasso_lib_name_identifier_mapping_request_set_nameIdentifier
 <SUBSECTION Standard>
 LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST
 LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST
@@ -926,11 +770,7 @@ LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST_GET_CLASS
 <FILE>lib_name_identifier_mapping_response</FILE>
 <TITLE>LassoLibNameIdentifierMappingResponse</TITLE>
 LassoLibNameIdentifierMappingResponse
-LassoLibNameIdentifierMappingResponseClass
 lasso_lib_name_identifier_mapping_response_new
-lasso_lib_name_identifier_mapping_response_set_nameIdentifier
-lasso_lib_name_identifier_mapping_response_set_providerID
-lasso_lib_name_identifier_mapping_response_set_status
 <SUBSECTION Standard>
 LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE
 LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE
@@ -945,13 +785,7 @@ LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE_GET_CLASS
 <FILE>lib_register_name_identifier_request</FILE>
 <TITLE>LassoLibRegisterNameIdentifierRequest</TITLE>
 LassoLibRegisterNameIdentifierRequest
-LassoLibRegisterNameIdentifierRequestClass
 lasso_lib_register_name_identifier_request_new
-lasso_lib_register_name_identifier_request_set_relayState
-lasso_lib_register_name_identifier_request_set_providerID
-lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier
-lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier
-lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier
 <SUBSECTION Standard>
 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST
 LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST
@@ -966,7 +800,6 @@ LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST_GET_CLASS
 <FILE>lib_register_name_identifier_response</FILE>
 <TITLE>LassoLibRegisterNameIdentifierResponse</TITLE>
 LassoLibRegisterNameIdentifierResponse
-LassoLibRegisterNameIdentifierResponseClass
 lasso_lib_register_name_identifier_response_new
 <SUBSECTION Standard>
 LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE
@@ -982,11 +815,7 @@ LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE_GET_CLASS
 <FILE>lib_status_response</FILE>
 <TITLE>LassoLibStatusResponse</TITLE>
 LassoLibStatusResponse
-LassoLibStatusResponseClass
 lasso_lib_status_response_new
-lasso_lib_status_response_set_providerID
-lasso_lib_status_response_set_relayState
-lasso_lib_status_response_set_status
 <SUBSECTION Standard>
 LASSO_LIB_STATUS_RESPONSE
 LASSO_IS_LIB_STATUS_RESPONSE
@@ -1001,9 +830,7 @@ LASSO_LIB_STATUS_RESPONSE_GET_CLASS
 <FILE>lib_subject</FILE>
 <TITLE>LassoLibSubject</TITLE>
 LassoLibSubject
-LassoLibSubjectClass
 lasso_lib_subject_new
-lasso_lib_subject_set_idpProvidedNameIdentifier
 <SUBSECTION Standard>
 LASSO_LIB_SUBJECT
 LASSO_IS_LIB_SUBJECT
@@ -1018,9 +845,7 @@ LASSO_LIB_SUBJECT_GET_CLASS
 <FILE>samlp_request</FILE>
 <TITLE>LassoSamlpRequest</TITLE>
 LassoSamlpRequest
-LassoSamlpRequestClass
 lasso_samlp_request_new
-lasso_samlp_request_set_assertionArtifact
 <SUBSECTION Standard>
 LASSO_SAMLP_REQUEST
 LASSO_IS_SAMLP_REQUEST
@@ -1035,10 +860,7 @@ LASSO_SAMLP_REQUEST_GET_CLASS
 <FILE>lib_authn_context</FILE>
 <TITLE>LassoLibAuthnContext</TITLE>
 LassoLibAuthnContext
-LassoLibAuthnContextClass
 lasso_lib_authn_context_new
-lasso_lib_authn_context_set_authnContextClassRef
-lasso_lib_authn_context_set_authnContextStatementRef
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_CONTEXT
 LASSO_IS_LIB_AUTHN_CONTEXT
@@ -1053,11 +875,7 @@ LASSO_LIB_AUTHN_CONTEXT_GET_CLASS
 <FILE>lib_authentication_statement</FILE>
 <TITLE>LassoLibAuthenticationStatement</TITLE>
 LassoLibAuthenticationStatement
-LassoLibAuthenticationStatementClass
 lasso_lib_authentication_statement_new
-lasso_lib_authentication_statement_set_authnContext
-lasso_lib_authentication_statement_set_reauthenticateOnOrAfter
-lasso_lib_authentication_statement_set_sessionIndex
 <SUBSECTION Standard>
 LASSO_LIB_AUTHENTICATION_STATEMENT
 LASSO_IS_LIB_AUTHENTICATION_STATEMENT
@@ -1080,18 +898,15 @@ lasso_check_version_ext
 
 <SECTION>
 <FILE>version</FILE>
-LASSO_VERSION
 LASSO_VERSION_MAJOR
 LASSO_VERSION_MINOR
 LASSO_VERSION_SUBMINOR
-LASSO_VERSION_INFO
 </SECTION>
 
 <SECTION>
 <FILE>lecp</FILE>
 <TITLE>LassoLecp</TITLE>
 LassoLecp
-LassoLecpClass
 lasso_lecp_new
 lasso_lecp_build_authn_request_envelope_msg
 lasso_lecp_build_authn_request_msg
@@ -1115,5 +930,9 @@ LASSO_LECP_GET_CLASS
 
 <SECTION>
 <FILE>strings</FILE>
+LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED
+LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME
+LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED
+LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID
 </SECTION>
 

@@ -20,13 +20,6 @@ Single Logout Profile
 </para>
 
 
-<!-- ##### STRUCT LassoLogoutClass ##### -->
-<para>
-
-</para>
-
-@parent: 
-
 <!-- ##### FUNCTION lasso_logout_new ##### -->
 <para>
 
