@@ -73,7 +73,7 @@ lasso_federation_set_local_name_identifier(LassoFederation *federation,
 		LassoSamlNameIdentifier *name_identifier)
 {
 	if (federation->local_nameIdentifier)
-		g_object_unref(federation->local_nameIdentifier);
+		lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
 	federation->local_nameIdentifier = g_object_ref(name_identifier);
 }
 void
@@ -81,14 +81,14 @@ lasso_federation_set_remote_name_identifier(LassoFederation *federation,
 		LassoSamlNameIdentifier *name_identifier)
 {
 	if (federation->remote_nameIdentifier)
-		g_object_unref(federation->remote_nameIdentifier);
+		lasso_node_destroy(LASSO_NODE(federation->remote_nameIdentifier));
 	federation->remote_nameIdentifier = g_object_ref(name_identifier);
 }
 
 void
 lasso_federation_destroy(LassoFederation *federation)
 {
-	g_object_unref(G_OBJECT(federation));
+	lasso_node_destroy(LASSO_NODE(federation));
 }
 
 gboolean
@@ -126,32 +126,25 @@ lasso_federation_verify_nameIdentifier(LassoFederation *federation,
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "LocalNameIdentifier", SNIPPET_NODE_IN_CHILD,
+		G_STRUCT_OFFSET(LassoFederation, local_nameIdentifier) },
+	{ "RemoteNameIdentifier", SNIPPET_NODE_IN_CHILD,
+		G_STRUCT_OFFSET(LassoFederation, remote_nameIdentifier) },
+	{ "RemoteProviderID", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoFederation, remote_providerID) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
-	xmlNode *xmlnode, *t;
-	LassoFederation *federation = LASSO_FEDERATION(node);
+	xmlNode *xmlnode;
 
-	xmlnode = xmlNewNode(NULL, "Federation");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
-	xmlSetProp(xmlnode, "Version", "2");
-
-	if (federation->remote_providerID)
-		xmlSetProp(xmlnode, "RemoteProviderID", federation->remote_providerID);
-
-	if (federation->local_nameIdentifier) {
-		t = xmlNewTextChild(xmlnode, NULL, "LocalNameIdentifier", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(
-					LASSO_NODE(federation->local_nameIdentifier)));
-	}
-
-	if (federation->remote_nameIdentifier) {
-		t = xmlNewTextChild(xmlnode, NULL, "RemoteNameIdentifier", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(
-					LASSO_NODE(federation->remote_nameIdentifier)));
-	}
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlSetProp(xmlnode, "FederationDumpVersion", "2");
 
 	return xmlnode;
 }
@@ -159,37 +152,7 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoFederation *federation = LASSO_FEDERATION(node);
-	xmlNode *t, *n;
-
-	federation->remote_providerID = xmlGetProp(xmlnode, "RemoteProviderID");
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-
-		if (strcmp(t->name, "LocalNameIdentifier") == 0) {
-			n = t->children;
-			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
-			if (n) {
-				federation->local_nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-						lasso_node_new_from_xmlNode(n));
-			}
-		}
-
-		if (strcmp(t->name, "RemoteNameIdentifier") == 0) {
-			n = t->children;
-			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
-			if (n) {
-				federation->remote_nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-						lasso_node_new_from_xmlNode(n));
-			}
-		}
-		t = t->next;
-	}
-	return 0;
+	return parent_class->init_from_xml(node, xmlnode);
 }
 
 /*****************************************************************************/
@@ -207,10 +170,6 @@ dispose(GObject *object)
 
 	debug("Federation object 0x%x disposed ...", federation);
 
-	/* unref reference counted objects */
-	lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
-	lasso_node_destroy(LASSO_NODE(federation->remote_nameIdentifier));
-
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -220,7 +179,6 @@ finalize(GObject *object)
 	LassoFederation *federation = LASSO_FEDERATION(object);
 	debug("Federation object 0x%x finalized ...", federation);
 
-	g_free(federation->remote_providerID);
 	g_free(federation->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
@@ -244,10 +202,14 @@ instance_init(LassoFederation *federation)
 static void
 class_init(LassoFederationClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Federation");
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
