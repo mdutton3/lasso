@@ -51,6 +51,11 @@ typedef enum {
   lassoHttpMethodRedirect,
 } lassoHttpMethods;
 
+typedef enum {
+  lassoProfileContextServiceProviderType = 1,
+  lassoProfileContextIdentityProviderType
+} lassoProfileContextProviderTypes;
+
 struct _LassoProfileContext {
   GObject parent;
 
