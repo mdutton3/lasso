@@ -22,8 +22,7 @@ LASSOSOURCES = \
 
 lib_LTLIBRARIES = lasso.la
 		
-prefix=@PHP_PREFIX@
-libdir=@PHP_EXTENSION_DIR@
+libdir=${prefix}@PHP_UNPREFIXED_EXTENSION_DIR@
 				  
 lasso_la_SOURCES = $(LASSOSOURCES)
 lasso_la_LIBADD = $(mylibs) $(LASSO_LIBS) ./environs/libenvirons.a ./xml/libxml.a
