@@ -28,6 +28,13 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+gchar *
+lasso_logout_dump(LassoLogout *logout)
+{
+  LassoProfileContext *profileContext;
+  gchar *dump;
+}
+
 int
 lasso_logout_build_request_msg(LassoLogout *logout)
 {
@@ -40,13 +47,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   /* get the prototocol profile of the logout */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    printf("provider not found\n");
     return(-1);
   }
 
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
   if(protocolProfile==NULL){
-    printf("No protocol profile for logout request message\n");
     return(-2);
   }
 
@@ -67,7 +72,6 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  /* get the prototocol profile of the logout */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
     return(-1);
@@ -88,7 +92,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 gint
 lasso_logout_init_request(LassoLogout *logout,
-			  xmlChar     *remote_providerID)
+			  gchar       *remote_providerID)
 {
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
@@ -101,8 +105,8 @@ lasso_logout_init_request(LassoLogout *logout,
 
   /* get identity */
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(!identity)
-    return(1);
+  if(identity==NULL)
+    return(-1);
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(logout->provider_type){
@@ -120,8 +124,7 @@ lasso_logout_init_request(LassoLogout *logout,
   }
   
   if(!nameIdentifier){
-    printf("error, name identifier not found\n");
-    return(2);
+    return(-2);
   }
 
   /* build the request */
@@ -137,11 +140,14 @@ lasso_logout_init_request(LassoLogout *logout,
 }
 
 gint
-lasso_logout_handle_request(LassoLogout *logout, xmlChar *request_msg, gint request_method)
+lasso_logout_handle_request_msg(LassoLogout      *logout,
+				gchar            *request_msg,
+				lassoHttpMethods  request_method)
 {
   LassoProfileContext *profileContext;
-  xmlChar *statusCodeValue = lassoSamlStatusCodeSuccess;
-  LassoNode *nameIdentifier;
+  LassoIdentity *identity;
+  LassoNode *nameIdentifier, *assertion;
+  xmlChar *remote_providerID;
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
@@ -150,40 +156,56 @@ lasso_logout_handle_request(LassoLogout *logout, xmlChar *request_msg, gint requ
     profileContext->request = lasso_logout_request_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
-    printf("TODO, implement the redirect method\n");
+    profileContext->request = lasso_logout_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
     printf("TODO, implement the get method\n");
     break;
   default:
     printf("error while parsing the request\n");
-    return(0);
+    return(-1);
   }
 
   /* set LogoutResponse */
   profileContext->response = lasso_logout_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-						       statusCodeValue,
+						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
 
-  /* Verify federation and */
-  nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
-  if(lasso_user_verify_federation(profileContext->user, nameIdentifier)==FALSE){
-    // TODO : implement a simple method to set the status code value
-    
+  nameIdentifier = lasso_logout_request_get_nameIdentifier(profileContext->response);
+  if(nameIdentifier==NULL){
+    return(-2);
+  }
+
+  remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
+
+  /* Verify federation */
+  identity = lasso_user_get_identity(profileContext->user, remote_providerID);
+  if(identity==NULL){
+    return(-3);
+  }
+
+  if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
+    return(-4);
   }
 
   /* verify authentication (if ok, delete assertion) */
-  if(lasso_user_verify_authentication(profileContext->user, nameIdentifier)==FALSE){
-    // TODO : implement verify authentication
+  assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
+  if(assertion==NULL){
+    return(-5);
   }
 
-  return(1);
+  /* TODO : verify the name identifier */
+
+  return(0);
 }
 
 gint
-lasso_logout_handle_response(LassoLogout *logout, xmlChar *response_msg, gint response_method)
+lasso_logout_handle_response_msg(LassoLogout *logout,
+				 gchar *response_msg,
+				 lassoHttpMethods response_method)
 {
   LassoProfileContext *profileContext;
+  xmlChar *statusCodeValue;
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
@@ -193,11 +215,11 @@ lasso_logout_handle_response(LassoLogout *logout, xmlChar *response_msg, gint re
     profileContext->response = lasso_logout_response_new_from_soap(response_msg);
   }
     
-  /* verify status code value */
-  // TODO : do the developer needs to get the value of the status code with the level 2 of lasso ?
-  // node = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
-  // statusCodeValue = lasso_node_get_attr_value(node, "Value");
-  
+  statusCodeValue = lasso_logout_response_get_statusCodeValue(profileContext->response);
+  if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
+    return(-1);
+  }
+
   return(0);
 }
 
