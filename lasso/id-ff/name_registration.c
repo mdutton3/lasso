@@ -578,6 +578,9 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
   lasso_node_destroy(nameIdentifier_node);
 
+  /* set the relay state */
+  profile->msg_relayState = lasso_node_get_child_content(profile->response, "RelayState", NULL, NULL);
+
   done:
 
   return ret;
@@ -680,6 +683,9 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
   /* set the new name identifier */
   profile->nameIdentifier = lasso_node_get_content(nameIdentifier, NULL);
+
+  /* Set the relay state */
+  profile->msg_relayState = lasso_node_get_child_content(profile->request, "RelayState", NULL, NULL);
 
   done:
 
