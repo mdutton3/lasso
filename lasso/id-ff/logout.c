@@ -275,7 +275,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	/* get the remote provider id
 	   If remote_providerID is NULL, then get the first remote provider id in session */
 	if (remote_providerID == NULL) {
-		profile->remote_providerID = lasso_session_get_first_providerID(profile->session);
+		profile->remote_providerID = lasso_session_get_provider_index(profile->session, 0);
 	} else {
 		profile->remote_providerID = g_strdup(remote_providerID);
 	}

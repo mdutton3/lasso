@@ -83,8 +83,6 @@ lasso_session_add_assertion
 lasso_session_destroy
 lasso_session_dump
 lasso_session_get_assertion
-lasso_session_get_authentication_method
-lasso_session_get_first_providerID
 lasso_session_get_provider_index
 lasso_session_remove_assertion
 <SUBSECTION Standard>

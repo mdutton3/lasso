@@ -1319,9 +1319,6 @@ typedef struct {
 
 		%newobject dump;
 		gchar *dump();
-
-		%newobject getAuthenticationMethod;
-		gchar *getAuthenticationMethod(gchar *remoteProviderId = NULL);
 	}
 } LassoSession;
 
@@ -1356,7 +1353,6 @@ LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
 /* Methods implementations */
 
 #define LassoSession_dump lasso_session_dump
-#define LassoSession_getAuthenticationMethod lasso_session_get_authentication_method
 
 %}
 

@@ -35,6 +35,16 @@ struct _LassoSessionPrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_session_add_assertion:
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ * @assertion: the assertion
+ *
+ * Adds @assertion to the principal session.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAssertion *assertion)
 {
@@ -49,27 +59,21 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAs
 	return 0;
 }
 
+/**
+ * lasso_session_get_assertion
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ *
+ * Gets the assertion for the given @providerID.
+ *
+ * Return value: the assertion or NULL if it didn't exist.  This
+ *      #LassoSamlAssertion is internally allocated and must not be freed by
+ *      the caller.
+ **/
 LassoSamlAssertion*
 lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 {
 	return g_hash_table_lookup(session->assertions, providerID);
-}
-
-gchar*
-lasso_session_get_authentication_method(LassoSession *session, gchar *remote_providerID)
-{
-	/* XXX: somewhere in
-	 * session/Assertion[remote_providerID]/AuthenticationStatement
-	 */
-
-	g_assert_not_reached();
-	return NULL;
-}
-
-gchar*
-lasso_session_get_first_providerID(LassoSession *session)
-{
-	return lasso_session_get_provider_index(session, 0);
 }
 
 static void
@@ -79,6 +83,16 @@ add_providerID(gchar *key, LassoLibAssertion *assertion, LassoSession *session)
 			session->private_data->providerIDs, key);
 }
 
+/**
+ * lasso_session_get_provider_index:
+ * @session: a #LassoSession
+ * @index: index of requested provider
+ *
+ * Looks up and returns the nth provider id.
+ *
+ * Return value: the provider id; or NULL if there were no nth provider.  This
+ *      string must be freed by the caller.
+ **/
 gchar*
 lasso_session_get_provider_index(LassoSession *session, gint index)
 {
@@ -101,6 +115,15 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 	return g_strdup(element->data);
 }
 
+/**
+ * lasso_session_remove_assertion:
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ *
+ * Removes assertion for @providerID from @session.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 {
@@ -268,12 +291,27 @@ lasso_session_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_session_new:
+ *
+ * Creates a new #LassoSession.
+ *
+ * Return value: a newly created #LassoSession
+ **/
 LassoSession*
 lasso_session_new()
 {
 	return g_object_new(LASSO_TYPE_SESSION, NULL);
 }
 
+/**
+ * lasso_session_new_from_dump:
+ * @dump: XML server dump
+ *
+ * Restores the @dump to a new #LassoSession.
+ *
+ * Return value: a newly created #LassoSession; or NULL if an error occured
+ **/
 LassoSession*
 lasso_session_new_from_dump(const gchar *dump)
 {
@@ -288,6 +326,14 @@ lasso_session_new_from_dump(const gchar *dump)
 	return session;
 }
 
+/**
+ * lasso_session_dump:
+ * @session: a #LassoSession
+ *
+ * Dumps @session content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
+ **/
 gchar*
 lasso_session_dump(LassoSession *session)
 {
@@ -297,7 +343,12 @@ lasso_session_dump(LassoSession *session)
 	return lasso_node_dump(LASSO_NODE(session), NULL, 1);
 }
 
-
+/**
+ * lasso_session_destroy:
+ * @session: a #LassoSession
+ *
+ * Destroys a session.
+ **/
 void lasso_session_destroy(LassoSession *session)
 {
 	lasso_node_destroy(LASSO_NODE(session));
