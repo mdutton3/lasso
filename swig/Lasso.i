@@ -200,7 +200,20 @@ typedef struct node_info {
 	swig_type_info *swig;
 } node_info;
 
-static node_info node_infos[100]; /* FIXME: Size should be computed */
+static node_info node_infos[100]; /* FIXME: Size should be computed *
+
+/* Cast a LassoNode into the appropriate derivated class. */
+static swig_type_info *dynamic_cast_node(void **nodePointer) {
+	node_info *info;
+	char *name;
+
+	name = (char *) G_OBJECT_TYPE_NAME(*nodePointer);
+	for (info = node_infos; info->swig; info++) {
+		if (strcmp(info->name, name) == 0)
+			return info->swig;
+	}
+	return NULL;
+}
 
 static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig) {
 	node_info *super;
@@ -317,26 +330,38 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 %}
 
 /* Accept any GObject class derivated from LassoNode as a LassoNode */
-%typemap(in) LassoNode * {
-	node_info *info;
+%typemap(in) LassoNode *, LassoSamlpRequestAbstract *, LassoSamlpResponseAbstract * {
+	node_info *info, *super;
 #ifdef SWIGPERL5
-	for (info = node_infos; info->swig; info++)
-		if (SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) < 0)
+	for (info = node_infos; info->swig; info++) {
+		for (super = info; super; super = super->super)
+			if (super->swig == $1_descriptor)
+				break;
+		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) < 0)
 			break;
+	}
 	if (! info->swig)
 		SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle");
 #else
 #ifdef SWIGPHP4
-	for (info = node_infos; info->swig; info++)
-		if (SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) < 0)
+	for (info = node_infos; info->swig; info++) {
+		for (super = info; super; super = super->super)
+			if (super->swig == $1_descriptor)
+				break;
+		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig) < 0)
 			break;
+	}
 	if (! info->swig)
 		zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
 			   $argnum-argbase, $1_descriptor->name);
 #else /* SWIGPYTHON */
-	for (info = node_infos; info->swig; info++)
-		if (SWIG_ConvertPtr($input, (void **) &$1, info->swig, $disown) != -1)
+	for (info = node_infos; info->swig; info++) {
+		for (super = info; super; super = super->super)
+			if (super->swig == $1_descriptor)
+				break;
+		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig, $disown) != -1)
 			break;
+	}
 	if (! info->swig) {
 		/* Display error message. */
 		SWIG_ConvertPtr($input, (void **) &$1, $1_descriptor,
@@ -347,25 +372,13 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 #endif
 }
 
-%apply SWIGTYPE *DYNAMIC { LassoNode * };
+%apply SWIGTYPE *DYNAMIC { LassoNode *, LassoSamlpRequestAbstract *,
+		LassoSamlpResponseAbstract * };
 
-/* Cast a LassoNode into the appropriate derivated class. */
-%{
-static swig_type_info *LassoNode_dynamic(void **nodePointer) {
-	node_info *info;
-	char *name;
-
-	name = (char *) G_OBJECT_TYPE_NAME(*nodePointer);
-	for (info = node_infos; info->swig; info++) {
-		if (strcmp(info->name, name) == 0)
-			return info->swig;
-	}
-	return NULL;
-}
-%}
-
-/* Register the above casting function. */
-DYNAMIC_CAST(SWIGTYPE_p_LassoNode, LassoNode_dynamic);
+/* Register dynamic casting for abstract nodes. */
+DYNAMIC_CAST(SWIGTYPE_p_LassoNode, dynamic_cast_node);
+DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpRequestAbstract, dynamic_cast_node);
+DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
 #endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
@@ -4918,12 +4931,6 @@ typedef struct {
 %extend LassoLogin {
 	/* Attributes inherited from Profile */
 
-	%immutable authnRequest;
-	LassoLibAuthnRequest *authnRequest;
-
-	%immutable authnResponse;
-	LassoLibAuthnResponse *authnResponse;
-
 	%newobject identity_get;
 	LassoIdentity *identity;
 
@@ -4948,10 +4955,10 @@ typedef struct {
 	char *remoteProviderId;
 
 	%immutable request;
-	LassoSamlpRequest *request;
+	LassoSamlpRequestAbstract *request;
 
 	%immutable response;
-	LassoSamlpResponse *response;
+	LassoSamlpResponseAbstract *response;
 
 	char *responseStatus;
 
@@ -5055,24 +5062,6 @@ typedef struct {
 
 /* Attributes inherited from Profile implementations */
 
-/* authnRequest */
-#define LassoLogin_get_authnRequest LassoLogin_authnRequest_get
-LassoLibAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
-		return LASSO_LIB_AUTHN_REQUEST(g_object_ref(profile->request));
-	return NULL;
-}
-
-/* authnResponse */
-#define LassoLogin_get_authnResponse LassoLogin_authnResponse_get
-LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
-		return LASSO_LIB_AUTHN_RESPONSE(g_object_ref(profile->response));
-	return NULL;
-}
-
 /* identity */
 #define LassoLogin_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLogin_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5112,22 +5101,12 @@ LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 #define LassoLogin_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
 /* request */
-#define LassoLogin_get_request LassoLogin_request_get
-LassoSamlpRequest *LassoLogin_request_get(LassoLogin *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_SAMLP_REQUEST(profile->request))
-		return LASSO_SAMLP_REQUEST(g_object_ref(profile->request));
-	return NULL;
-}
+#define LassoLogin_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLogin_request_get(self) get_node(LASSO_PROFILE(self)->request)
 
 /* response */
-#define LassoLogin_get_response LassoLogin_response_get
-LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
-		return LASSO_SAMLP_RESPONSE(g_object_ref(profile->response));
-	return NULL;
-}
+#define LassoLogin_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoLogin_response_get(self) get_node(LASSO_PROFILE(self)->response)
 
 /* responseStatus */
 #define LassoLogin_get_responseStatus(self) NULL /* FIXME: no set */
@@ -5402,12 +5381,6 @@ typedef struct {
 %extend LassoLecp {
 	/* Attributes inherited from Profile */
 
-	%immutable authnRequest;
-	LassoLibAuthnRequest *authnRequest;
-
-	%immutable authnResponse;
-	LassoLibAuthnResponse *authnResponse;
-
 	%newobject identity_get;
 	LassoIdentity *identity;
 
@@ -5432,10 +5405,10 @@ typedef struct {
 	char *remoteProviderId;
 
 	%immutable request;
-	LassoSamlpRequest *request;
+	LassoSamlpRequestAbstract *request;
 
 	%immutable response;
-	LassoSamlpResponse *response;
+	LassoSamlpResponseAbstract *response;
 
 	char *responseStatus;
 
@@ -5509,24 +5482,6 @@ typedef struct {
 
 /* Attributes inherited from Profile implementations */
 
-/* authnRequest */
-#define LassoLecp_get_authnRequest LassoLecp_authnRequest_get
-LassoLibAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
-		return LASSO_LIB_AUTHN_REQUEST(g_object_ref(profile->request));
-	return NULL;
-}
-
-/* authnResponse */
-#define LassoLecp_get_authnResponse LassoLecp_authnResponse_get
-LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
-		return LASSO_LIB_AUTHN_RESPONSE(g_object_ref(profile->response));
-	return NULL;
-}
-
 /* identity */
 #define LassoLecp_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLecp_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5566,22 +5521,12 @@ LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 #define LassoLecp_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
 
 /* request */
-#define LassoLecp_get_request LassoLecp_request_get
-LassoSamlpRequest *LassoLecp_request_get(LassoLecp *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_SAMLP_REQUEST(profile->request))
-		return LASSO_SAMLP_REQUEST(g_object_ref(profile->request));
-	return NULL;
-}
+#define LassoLecp_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoLecp_request_get(self) get_node(LASSO_PROFILE(self)->request)
 
 /* response */
-#define LassoLecp_get_response LassoLecp_response_get
-LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
-	LassoProfile *profile = LASSO_PROFILE(self);
-	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
-		return LASSO_SAMLP_RESPONSE(g_object_ref(profile->response));
-	return NULL;
-}
+#define LassoLecp_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoLecp_response_get(self) get_node(LASSO_PROFILE(self)->response)
 
 /* responseStatus */
 #define LassoLecp_get_responseStatus(self) NULL /* FIXME: no set */

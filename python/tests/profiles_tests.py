@@ -89,8 +89,9 @@ class LoginTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(lassoServer)
         login.initAuthnRequest()
-        login.authnRequest
-        login.authnRequest.protocolProfile = lasso.libProtocolProfileBrwsArt
+        login.request
+        login.request.protocolProfile = lasso.libProtocolProfileBrwsArt
+        self.failUnlessEqual(login.request.protocolProfile, lasso.libProtocolProfileBrwsArt)
 
 
 class LogoutTestCase(unittest.TestCase):
