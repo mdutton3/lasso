@@ -100,12 +100,7 @@ lasso_lib_scoping_get_type()
  *
  * Creates a new lib:Scoping node object.
  *
- * Specifies any preferences on the number and specific identifiers of
- * additional identity providers through which the authentication request may
- * be proxied. The requester may also choose not to include this element, in
- * which case, the recipient of the message MAY act as a proxy.
- * 
- * Return value: a new @LassoLibScoping
+ * Return value: a new #LassoLibScoping
  **/
 LassoLibScoping*
 lasso_lib_scoping_new()
