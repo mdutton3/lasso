@@ -50,6 +50,11 @@ def shutdown():
 ################################################################################
 # xml : low level classes
 ################################################################################
+# Export types
+NodeExportTypeXml    = 1
+NodeExportTypeBase64 = 2
+NodeExportTypeQuery  = 3
+NodeExportTypeSoap   = 4
 
 class Node:
     """\brief The base class of the Lasso hierarchy.
@@ -486,47 +491,10 @@ class AuthnResponse(SamlpResponse):
         self._o = _obj
         SamlpResponse.__init__(self, _obj=_obj)
 
-    def new_from_dump(cls, buffer):
-        obj = lassomod.authn_response_new_from_dump(buffer)
-        return AuthnResponse(obj)
-    new_from_dump = classmethod(new_from_dump)
-
     def new_from_export(cls, buffer, type=0):
         obj = lassomod.authn_response_new_from_export(buffer, type)
         return AuthnResponse(obj)
     new_from_export = classmethod(new_from_export)
-
-    def new_from_request_query(cls, query, providerID):
-        obj = lassomod.authn_response_new_from_request_query(query, providerID)
-        return AuthnResponse(obj)
-    new_from_request_query = classmethod(new_from_request_query)
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.authn_response_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "request":
-            ret = AuthnRequest(None, _obj=ret)
-        return ret
-
-    def must_authenticate(self, is_authenticated):
-        return lassomod.authn_response_must_authenticate(self,
-                                                         is_authenticated)
-
-    def process_authentication_result(self, authentication_result):
-        lassomod.authn_response_process_authentication_result(self,
-                                                              authentication_result)
-
-    def verify_signature(self, public_key_file, private_key_file):
-        return lassomod.authn_response_verify_signature(self, public_key_file,
-                                                        private_key_file)
 
 
 class FederationTerminationNotification(LibFederationTerminationNotification):
@@ -822,7 +790,7 @@ class AuthenticationStatement(Node):
 ################################################################################
 SignatureMethodRsaSha1 = 1
 SignatureMethodDsaSha1 = 2
-class Login:
+class Server:
     """\brief Short desc
 
     Long desc
@@ -833,14 +801,15 @@ class Login:
         """
         self._o = _obj
 
-    def new(cls, server, user=None):
-        obj = lassomod.login_new(server, user)
-        return Login(obj)
+    def new(cls, metadata, public_key, private_key, certificate, signature_method):
+        obj = lassomod.server_new(metadata, public_key, private_key,
+                                  certificate, signature_method)
+        return Server(obj)
     new = classmethod(new)
 
     def add_provider(self, metadata, public_key=None, certificate=None):
-        lassomod.lasso_server_add_provider(self, metadata,
-                                           public_key, certificate)
+        lassomod.server_add_provider(self, metadata,
+                                     public_key, certificate)
 
 
 class Logout:
