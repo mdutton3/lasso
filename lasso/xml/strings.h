@@ -57,7 +57,15 @@ LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonBetter[];
 
 /* StatusCodes */
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeFederationDoesNotExist[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeInvalidAssertionConsumerServiceIndex[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeInvalidSignature[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoAuthnContext[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoAvailableIDP[];
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoPassive[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoSupportedIDP[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeProxyCountExceeded[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnknownPrincipal[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[];
 
 /* ProtocolProfile */
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileArtifact[];

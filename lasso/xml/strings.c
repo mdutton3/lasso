@@ -48,8 +48,16 @@ const xmlChar lassoLibAuthnContextComparisonMinimum[] = "minimum";
 const xmlChar lassoLibAuthnContextComparisonBetter[]  = "better";
 
 /* StatusCodes */
-const xmlChar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
-const xmlChar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
+const xmlChar lassoLibStatusCodeFederationDoesNotExist[]               = "lib:FederationDoesNotExist";
+const xmlChar lassoLibStatusCodeInvalidAssertionConsumerServiceIndex[] = "lib:InvalidAssertionConsumerServiceIndex";
+const xmlChar lassoLibStatusCodeInvalidSignature[]                     = "lib:InvalidSignature";
+const xmlChar lassoLibStatusCodeNoAuthnContext[]                       = "lib:NoAuthnContext";
+const xmlChar lassoLibStatusCodeNoAvailableIDP[]                       = "lib:NoAvailableIDP";
+const xmlChar lassoLibStatusCodeNoPassive[]                            = "lib:NoPassive";
+const xmlChar lassoLibStatusCodeNoSupportedIDP[]                       = "lib:NoSupportedIDP";
+const xmlChar lassoLibStatusCodeProxyCountExceeded[]                   = "lib:ProxyCountExceeded";
+const xmlChar lassoLibStatusCodeUnknownPrincipal[]                     = "lib:UnknownPrincipal";
+const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[]                 = "lib:UnsignedAuthnRequest";
 
 /* ProtocolProfile */
 const xmlChar lassoLibProtocolProfileArtifact[]       = "http://projectliberty.org/profiles/brws-art";
