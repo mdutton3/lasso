@@ -6,3 +6,9 @@ Makefile
 Makefile.in
 *.la
 *.lo
+Makefile.perl
+blib
+build-perl-stamp
+lasso.bs
+pm_to_blib
+
