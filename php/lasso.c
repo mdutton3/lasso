@@ -71,6 +71,8 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_login_destroy,	NULL)
 	PHP_FE(lasso_login_build_request_msg,	NULL)
 	PHP_FE(lasso_login_build_authn_request_msg,	NULL)
+	PHP_FE(lasso_login_init_request,	NULL)
+	PHP_FE(lasso_login_process_response_msg,	NULL)
 
 	/* lasso_user.c */
 	PHP_FE(lasso_identity_new,	NULL)
@@ -97,6 +99,7 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_lib_authn_request_set_nameidpolicy,	NULL)
 	PHP_FE(lasso_lib_authn_request_set_relaystate,	NULL)
 	PHP_FE(lasso_lib_authn_request_set_protocolprofile,	NULL)
+	PHP_FE(lasso_lib_authn_response_set_consent,	NULL)
 
 	/* lasso_identity */
 	PHP_FE(lasso_federation_new,	NULL)
@@ -227,6 +230,11 @@ PHP_MINIT_FUNCTION(lasso)
 	REGISTER_STRING_CONSTANT("lassoLibNameIDPolicyTypeFederated", (char *)lassoLibNameIDPolicyTypeFederated, CONST_CS | CONST_PERSISTENT);
 	REGISTER_STRING_CONSTANT("lassoLibProtocolProfileBrwsArt", (char *) lassoLibProtocolProfileBrwsArt, CONST_CS | CONST_PERSISTENT);
 
+	/* lassoHttpMethod */
+	REGISTER_LONG_CONSTANT("lassoHttpMethodGet", 1, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("lassoHttpMethodPost", 2, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("lassoHttpMethodRedirect", 3, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("lassoHttpMethodSoap", 4, CONST_CS | CONST_PERSISTENT);
 		
 	return SUCCESS;
 }

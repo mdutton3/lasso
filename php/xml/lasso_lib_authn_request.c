@@ -87,14 +87,13 @@ PHP_FUNCTION(lasso_lib_authn_request_set_consent)
 }
 /* }}} */
 
-
-
-/* {{{ proto lasso_lib_authn_request_set_ispassive(resource lib_authn_request, string consent) */
-PHP_FUNCTION(lasso_lib_authn_request_set_ispassive)
+/* {{{ proto lasso_lib_authn_response_set_consent(resource lib_authn_request, string consent) */
+PHP_FUNCTION(lasso_lib_authn_response_set_consent)
 {
   LassoLibAuthnRequest   	*lib_authn_request;  
   zval *param;
-  unsigned int isPassive;
+  char *consent;
+  int consent_len;
   int num_args;
 
   
@@ -102,14 +101,40 @@ PHP_FUNCTION(lasso_lib_authn_request_set_ispassive)
   if ((num_args = ZEND_NUM_ARGS()) != 2) 
 	WRONG_PARAM_COUNT
 
-  if (zend_parse_parameters(num_args TSRMLS_CC, "zb", &param, &isPassive) == FAILURE) {
+  if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &param, 
+		&consent, &consent_len) == FAILURE) {
+	return;
+  }
+
+  ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
+	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
+	
+  lasso_lib_authn_response_set_consent(lib_authn_request, consent);
+}
+/* }}} */
+
+
+/* {{{ proto lasso_lib_authn_request_set_ispassive(resource lib_authn_request, string consent) */
+PHP_FUNCTION(lasso_lib_authn_request_set_ispassive)
+{
+  LassoLibAuthnRequest   	*lib_authn_request;  
+  zval *param;
+  zend_bool ispassive = 1;
+  int num_args;
+
+  
+
+  if ((num_args = ZEND_NUM_ARGS()) != 2) 
+	WRONG_PARAM_COUNT
+
+  if (zend_parse_parameters(num_args TSRMLS_CC, "zb", &param, &ispassive) == FAILURE) {
 	return;
   }
 
   ZEND_FETCH_RESOURCE(lib_authn_request, LassoLibAuthnRequest *, &param, -1, 
 	  le_lassolibauthnrequest_name, le_lassolibauthnrequest);
 
-  lasso_lib_authn_request_set_isPassive(lib_authn_request, isPassive - 137311488);
+  lasso_lib_authn_request_set_isPassive(lib_authn_request, ispassive);
 }
 /* }}} */
 

@@ -129,6 +129,11 @@ PHP_FUNCTION(lasso_cast_to_profile)
 	
 	ctx = LASSO_PROFILE(login);
 
+	/* zend_printf("ctx %p, login %p\n", ctx, login);
+
+	zend_printf("msg_url %s\n",  ctx->msg_url);
+	zend_printf("msg_body %s\n",  ctx->msg_body); */
+
 	ZEND_REGISTER_RESOURCE(return_value, ctx, le_lassoprofile);
 }
 /* }}} */

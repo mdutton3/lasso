@@ -72,9 +72,11 @@ PHP_FUNCTION(lasso_server_new_from_dump);
 PHP_FUNCTION(lasso_login_new);	
 PHP_FUNCTION(lasso_login_new_from_dump);
 PHP_FUNCTION(lasso_login_init_authn_request);
-PHP_FUNCTION(lasso_login_build_request_msg);
 PHP_FUNCTION(lasso_login_destroy);
 PHP_FUNCTION(lasso_login_build_authn_request_msg);
+PHP_FUNCTION(lasso_login_init_request);
+PHP_FUNCTION(lasso_login_build_request_msg);
+PHP_FUNCTION(lasso_login_process_response_msg);
 
 /* lasso_identity.c */
 PHP_FUNCTION(lasso_identity_new);	
@@ -105,6 +107,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_forceauthn);
 PHP_FUNCTION(lasso_lib_authn_request_set_nameidpolicy);
 PHP_FUNCTION(lasso_lib_authn_request_set_relaystate);
 PHP_FUNCTION(lasso_lib_authn_request_set_protocolprofile);
+PHP_FUNCTION(lasso_lib_authn_response_set_consent);
 
 /* GLOBALS */
 ZEND_BEGIN_MODULE_GLOBALS(lasso)
