@@ -127,8 +127,11 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
-    profile->msg_url = g_strjoin(separator, url, query);
+
+    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+    g_sprintf(profile->msg_url, "%s?%s", url, query);
     profile->msg_body = NULL;
+
     xmlFree(url);
     xmlFree(query);
   }
