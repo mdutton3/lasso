@@ -116,6 +116,7 @@ static struct QuerySnippet query_snippets[] = {
 	{ "IsPassive", NULL },
 	{ "NameIDPolicy", NULL },
 	{ "ProtocolProfile", NULL },
+	{ "AssertionConsumerServiceID", NULL },
 	{ "RequestAuthnContext/AuthnContextStatementRef", "AuthnContextStatementRef" },
 	{ "RequestAuthnContext/AuthnContextClassRef", "AuthnContextClassRef" },
 	{ "RequestAuthnContext/AuthnContextComparison", "AuthnContextComparison" },
