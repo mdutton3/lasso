@@ -1,0 +1,63 @@
+<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!ENTITY LibAssertion SYSTEM "sgml/lib_assertion.sgml">
+<!ENTITY LibAuthnRequest SYSTEM "sgml/lib_authn_request.sgml">
+<!ENTITY LibAuthnResponse SYSTEM "sgml/lib_authn_response.sgml">
+<!ENTITY LibIDPEntries SYSTEM "sgml/lib_idp_entries.sgml">
+<!ENTITY LibIDPEntry SYSTEM "sgml/lib_idp_entry.sgml">
+<!ENTITY LibIDPList SYSTEM "sgml/lib_idp_list.sgml">
+<!ENTITY LibRequestAuthnContext SYSTEM "sgml/lib_request_authn_context.sgml">
+<!ENTITY LibScoping SYSTEM "sgml/lib_scoping.sgml">
+<!ENTITY SamlAdvice SYSTEM "sgml/saml_advice.sgml">
+<!ENTITY SamlAssertion SYSTEM "sgml/saml_assertion.sgml">
+<!ENTITY SamlNameIdentifier SYSTEM "sgml/saml_name_identifier.sgml">
+<!ENTITY SamlStatementAbstract SYSTEM "sgml/saml_statement_abstract.sgml">
+<!ENTITY SamlSubject SYSTEM "sgml/saml_subject.sgml">
+<!ENTITY SamlSubjectConfirmation SYSTEM "sgml/saml_subject_confirmation.sgml">
+<!ENTITY SamlSubjectStatementAbstract SYSTEM "sgml/saml_subject_statement_abstract.sgml">
+<!ENTITY SamlpRequestAbstract SYSTEM "sgml/samlp_request_abstract.sgml">
+<!ENTITY SamlpResponse SYSTEM "sgml/samlp_response.sgml">
+<!ENTITY SamlpResponseAbstract SYSTEM "sgml/samlp_response_abstract.sgml">
+<!ENTITY SamlpStatus SYSTEM "sgml/samlp_status.sgml">
+<!ENTITY SamlpStatusCode SYSTEM "sgml/samlp_status_code.sgml">
+<!ENTITY LassoNode SYSTEM "sgml/xml.sgml">
+<!ENTITY lasso-export SYSTEM "sgml/export.sgml">
+<!ENTITY lasso-lasso SYSTEM "sgml/lasso.sgml">
+<!ENTITY lasso-version SYSTEM "sgml/version.sgml">
+]>
+<book id="index">
+  <bookinfo>
+    <title>Lasso Library Reference Manual</title>
+  </bookinfo>
+
+  <chapter>
+    <title>Liberty Alliance</title>
+    &LibAssertion;
+    &LibAuthnRequest;
+    &LibAuthnResponse;
+    &LibIDPEntries;
+    &LibIDPEntry;
+    &LibIDPList;
+    &LibRequestAuthnContext;
+    &LibScoping;
+
+    &LassoNode;
+    &lasso-lasso;
+    &lasso-version;
+  </chapter>
+
+  <chapter>
+    <title>Saml</title>
+    &SamlAdvice;
+    &SamlAssertion;
+    &SamlNameIdentifier;
+    &SamlStatementAbstract;
+    &SamlSubject;
+    &SamlSubjectConfirmation;
+    &SamlSubjectStatementAbstract;
+    &SamlpRequestAbstract;
+    &SamlpResponse;
+    &SamlpResponseAbstract;
+    &SamlpStatus;
+    &SamlpStatusCode;
+  </chapter>
+</book>
