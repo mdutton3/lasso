@@ -6,7 +6,7 @@
 # PyLasso - Python bindings for Lasso Library
 #
 # Copyright (C) 2003-2004 Easter-eggs, Valery Febvre
-# http://lasso.labs.libre-entreprise.org
+# http://lasso.entrouvert.org
 #
 # Author: Valery Febvre <vfebvre@easter-eggs.com>
 #

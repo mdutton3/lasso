@@ -6,7 +6,7 @@
 # PyLasso - Python bindings for Lasso library
 #
 # Copyright (C) 2004 Entr'ouvert
-# http://lasso.labs.libre-entreprise.org
+# http://lasso.entrouvert.org
 #
 # Author: Valéry Febvre <vfebvre@easter-eggs.com>
 #
@@ -240,7 +240,7 @@ setup(name = "pylasso",
       author_email = "vfebvre@easter-eggs.com",
       license = "GNU GPL",
       platforms = ["any"],
-      url = "http://lasso.labs.libre-entreprise.org",
+      url = "http://lasso.entrouvert.org",
       ext_modules = [em],
       py_modules = ["lasso", "lasso_strings"]
 )

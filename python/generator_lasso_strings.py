@@ -6,7 +6,7 @@
 # Automatic generation of lasso_strings.py with lasso/xml/strings.c
 #
 # Copyright (C) 2004 Entr'ouvert
-# http://lasso.labs.libre-entreprise.org
+# http://lasso.entrouvert.org
 #
 # Author: Valery Febvre <vfebvre@easter-eggs.com>
 #
@@ -35,7 +35,7 @@ header = """# $%s$
 # PyLasso - Python bindings for Lasso library
 #
 # Copyright (C) 2004 Entr'ouvert
-# http://lasso.labs.libre-entreprise.org
+# http://lasso.entrouvert.org
 #
 # Author: Valery Febvre <vfebvre@easter-eggs.com>
 #
