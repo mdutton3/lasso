@@ -1004,11 +1004,17 @@ providerTypeNone = 0
 providerTypeSp   = 1
 providerTypeIdp  = 2
 
-class Logout:
+class Logout(ProfileContext):
     """\brief Short desc
 
     Long desc
     """
+    def __init__(self, _obj):
+        """
+        The constructor
+        """
+        self._o = _obj
+        ProfileContext.__init__(self, _obj=_obj)
 
     def __isprivate(self, name):
         return name == '_o'
@@ -1028,12 +1034,6 @@ class Logout:
         if name == "response":
             ret = LogoutResponse(_obj=ret)
         return ret
-
-    def __init__(self, _obj):
-        """
-        The constructor
-        """
-        self._o = _obj
 
     def new(cls, server, provider_type):
         obj = lassomod.logout_new(server, provider_type)
