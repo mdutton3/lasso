@@ -22,14 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/disco_modify.h>
-#include <lasso/xml/disco_modify_response.h>
-#include <lasso/xml/disco_query.h>
-#include <lasso/xml/disco_query_response.h>
-
-#include <lasso/xml/disco_insert_entry.h>
-#include <lasso/xml/disco_remove_entry.h>
-
 #include <lasso/id-wsf/discovery.h>
 
 struct _LassoDiscoveryPrivate
@@ -99,41 +91,33 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 }
 
 LassoDiscoInsertEntry*
-lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
-				 const gchar                   *serviceType,
-				 const gchar                   *providerID,
-				 LassoDiscoDescription         *description,
-				 LassoDiscoResourceID          *resourceID,
-				 LassoDiscoEncryptedResourceID *encryptedResourceID)
+lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
+				 LassoDiscoServiceInstance *serviceInstance,
+				 LassoDiscoResourceID *resourceId)
 {
-	LassoDiscoInsertEntry *entry;
 	LassoDiscoModify *modify;
-	LassoDiscoResourceOffering *resource;
-	LassoDiscoServiceInstance *service;
+	LassoDiscoInsertEntry *insertEntry;
+	LassoDiscoResourceOffering *resourceOffering;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
-	g_return_val_if_fail(serviceType!= NULL, NULL);
-	g_return_val_if_fail(providerID != NULL, NULL);
-	/* resourceID/encryptedResourceID and option are optional */
-	g_return_val_if_fail((resourceID == NULL && encryptedResourceID == NULL) || \
-			     (LASSO_IS_DISCO_RESOURCE_ID(resourceID) ^ \
-			      LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceID)), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_ID(resourceId), NULL);
 
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
-	service = lasso_disco_service_instance_new(serviceType, providerID, description);
+	/* ResourceOffering elements being inserted MUST NOT contain entryID attributes. */
+	serviceInstance = serviceInstance ? g_object_ref(serviceInstance) : serviceInstance;
+	resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
 
-	resource = lasso_disco_resource_offering_new(service);
-	/* ResourceID and EncryptedResourceID are owned by the method caller,
-	 so increment reference count */
-	resource->ResourceID = resourceID;
-	resource->EncryptedResourceID = encryptedResourceID;
+	resourceId = resourceId ? g_object_ref(resourceId) : resourceId;
+	resourceOffering->ResourceID = resourceId;
 
-	entry = lasso_disco_insert_entry_new();
-	entry->ResourceOffering = resource;
-	modify->InsertEntry = g_list_append(modify->InsertEntry, (gpointer)entry);
+	insertEntry = lasso_disco_insert_entry_new();
+	insertEntry->ResourceOffering = resourceOffering;
 
-	return entry;
+	modify->InsertEntry = g_list_append(modify->InsertEntry, insertEntry);
+
+	return insertEntry;
 }
 
 gint

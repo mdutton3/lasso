@@ -3414,11 +3414,8 @@ typedef struct {
 
 	/* Methods */
 
-	LassoDiscoInsertEntry* addInsertEntry(char *serviceType,
-					      char *providerID,
-					      LassoDiscoDescription *description,
-					      LassoDiscoResourceID *resourceID = NULL,
-					      LassoDiscoEncryptedResourceID *encryptedResourceID = NULL);
+	LassoDiscoInsertEntry* addInsertEntry(LassoDiscoServiceInstance *serviceInstance,
+					      LassoDiscoResourceID *resourceID);
 
 	THROW_ERROR
 	int addRemoveEntry(char *entryID);
