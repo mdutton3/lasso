@@ -157,7 +157,7 @@ LassoNode *
 lasso_logout_response_new_from_query(gchar *query)
 {
   LassoNode *response;
-  xmlChar *relayState, *consent;
+  xmlChar *relayState;
   GData *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
