@@ -102,7 +102,7 @@ PHP_FUNCTION(lasso_server_add_provider) {
 }
 /* }}} */
 
-/* {{{ proto string lasso_server_new(resource server) */
+/* {{{ proto string lasso_server_dump(resource server) */
 PHP_FUNCTION(lasso_server_dump) {
 
 	LassoServer  *server;
@@ -176,5 +176,3 @@ PHP_FUNCTION(lasso_server_new_from_dump) {
 	ZEND_REGISTER_RESOURCE(return_value, server, le_lassoserver);
 }
 /* }}} */
-
-

@@ -244,7 +244,7 @@ PHP_FUNCTION(lasso_profile_get_msg_relaystate) {
 /* }}} */
 
 
-/* {{{ proto string lasso_profile_get_identity(resource ctx) */
+/* {{{ proto resource lasso_profile_get_identity(resource ctx) */
 PHP_FUNCTION(lasso_profile_get_identity) {
 	LassoProfile	*ctx;  
 	LassoIdentity 	*identity;
@@ -264,12 +264,14 @@ PHP_FUNCTION(lasso_profile_get_identity) {
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 
 	identity = lasso_profile_get_identity(ctx);
+
+	// zend_printf("value of %p\n", identity);
 	
 	ZEND_REGISTER_RESOURCE(return_value, identity, le_lassoidentity);	
 }
 /* }}} */
 
-/* {{{ proto string lasso_profile_is_identity_dirty(resource ctx) */
+/* {{{ proto bool lasso_profile_is_identity_dirty(resource ctx) */
 PHP_FUNCTION(lasso_profile_is_identity_dirty) {
 	LassoProfile	*ctx;  
 
@@ -293,7 +295,7 @@ PHP_FUNCTION(lasso_profile_is_identity_dirty) {
 }
 /* }}} */
 
-/* {{{ proto string lasso_profile_get_session(resource ctx) */
+/* {{{ proto lasso_profile_get_session(resource ctx) */
 PHP_FUNCTION(lasso_profile_get_session) {
 	LassoProfile	*ctx;  
 	LassoSession 	*session;
@@ -318,7 +320,7 @@ PHP_FUNCTION(lasso_profile_get_session) {
 }
 /* }}} */
 
-/* {{{ proto string lasso_profile_is_session_dirty(resource ctx) */
+/* {{{ proto bool lasso_profile_is_session_dirty(resource ctx) */
 PHP_FUNCTION(lasso_profile_is_session_dirty) {
 	LassoProfile	*ctx;  
 
@@ -339,5 +341,30 @@ PHP_FUNCTION(lasso_profile_is_session_dirty) {
 	ret = lasso_profile_is_session_dirty(ctx);
 
 	RETURN_BOOL(ret);
+}
+/* }}} */
+
+
+/* {{{ proto string lasso_profile_get_nameidentifier(resource ctx) */
+PHP_FUNCTION(lasso_profile_get_nameidentifier) {
+	LassoProfile	*ctx;  
+  	
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+	
+	if (ctx->nameIdentifier)
+	  RETURN_STRING(ctx->nameIdentifier, 1);
 }
 /* }}} */
