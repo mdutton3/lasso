@@ -1020,7 +1020,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 			artifact_b64 = g_strdup(query_fields[i]+8);
 			xmlFree(query_fields[i]);
 		}
-		free(query_fields);
+		g_free(query_fields);
 	}
 	if (response_http_method == LASSO_HTTP_METHOD_POST) {
 		artifact_b64 = g_strdup(response_msg);

@@ -237,7 +237,7 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 	for (i=0; query_fields[i]; i++) {
 		xmlFree(query_fields[i]);
 	}
-	free(query_fields);
+	g_free(query_fields);
 	return rc;
 }
 

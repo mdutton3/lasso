@@ -90,7 +90,7 @@ lasso_build_unique_id(unsigned int size)
 
 	g_assert(size >= 32);
 
-	result = malloc(size+2); /* trailing \0 and leading _ */
+	result = g_ malloc(size+2); /* trailing \0 and leading _ */
 	result[0] = '_';
 	lasso_build_random_sequence(result+1, size);
 	result[size+1] = 0;
@@ -111,7 +111,7 @@ lasso_get_current_time()
 	struct tm *tm;
 	char *ret;
 
-	ret = malloc(21);
+	ret = g_malloc(21);
 	now = time(NULL);
 	tm = gmtime(&now);
 	strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
@@ -531,7 +531,8 @@ lasso_sha1(const char *str)
 	return SHA1(str, strlen(str), md);
 }
 
-char** urlencoded_to_strings(const char *str)
+char**
+urlencoded_to_strings(const char *str)
 {
 	int i, n=1;
 	char *st, *st2;
@@ -543,7 +544,7 @@ char** urlencoded_to_strings(const char *str)
 		n++;
 	}
 
-	result = malloc(sizeof(char*)*n+2);
+	result = g_malloc(sizeof(char*)*n+2);
 	result[n] = NULL;
 
 	st = (char*)str;
