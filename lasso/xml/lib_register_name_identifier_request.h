@@ -56,8 +56,6 @@ typedef struct _LassoLibRegisterNameIdentifierRequestClass \
 struct _LassoLibRegisterNameIdentifierRequest {
 	LassoSamlpRequestAbstract parent;
 
-	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	LassoNode *Extension; /* TODO */
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="IDPProvidedNameIdentifier"/> */

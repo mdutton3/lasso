@@ -92,13 +92,14 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoLibAuthnRequest, ProtocolProfile) },
 	{ "AssertionConsumerServiceID", SNIPPET_CONTENT, 
 		G_STRUCT_OFFSET(LassoLibAuthnRequest, AssertionConsumerServiceID) },
-	/* XXX: RequestAuthnContext */
+	{ "RequestAuthnContext", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, RequestAuthnContext) },
 	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, RelayState) },
 	{ "ForceAuthn", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
 		G_STRUCT_OFFSET(LassoLibAuthnRequest, ForceAuthn) },
 	{ "IsPassive", SNIPPET_CONTENT | SNIPPET_BOOLEAN,
 		G_STRUCT_OFFSET(LassoLibAuthnRequest, IsPassive) },
-	/* XXX: Scoping */
+	{ "Scoping", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibAuthnRequest, Scoping) },
 	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnRequest, consent) },
 	{ NULL, 0, 0}
 };

@@ -61,6 +61,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+ 	/* TODO: <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, ProviderID) },
 	{ "NameIdentifier", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibLogoutRequest, NameIdentifier) },
 	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex) },
@@ -81,8 +82,6 @@ build_query(LassoNode *node)
 	str = parent_class->build_query(node);
 	s = g_string_new(str);
 	g_free(str);
-
-	/* XXX Extension */
 
 	if (request->ProviderID) {
 		t = xmlURIEscapeStr(request->ProviderID, NULL);
@@ -165,7 +164,6 @@ init_from_query(LassoNode *node, char **query_fields)
 static void
 instance_init(LassoLibLogoutRequest *node)
 {
-	node->Extension = NULL;
 	node->ProviderID = NULL;
 	node->NameIdentifier = NULL;
 	node->SessionIndex = NULL;

@@ -64,6 +64,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	/* TODO: <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	{ "ProviderID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, ProviderID) },
 	{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
@@ -91,8 +92,6 @@ build_query(LassoNode *node)
 	str = parent_class->build_query(node);
 	s = g_string_new(str);
 	g_free(str);
-
-	/* XXX Extension */
 
 	if (request->ProviderID) {
 		t = xmlURIEscapeStr(request->ProviderID, NULL);

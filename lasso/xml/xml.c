@@ -742,8 +742,6 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	char *xsitype;
 	int rc;
 
-	/* XXX I'm not sure I can access ->ns like this */
-
 	if (xmlnode == NULL || xmlnode->ns == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Impossible to build LassoNode from xml node");
 		return NULL;
