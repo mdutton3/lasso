@@ -53,10 +53,10 @@ struct _LassoSamlConditions {
 	LassoNode parent;
 
 	/*< public >*/
-	/* <element ref="saml:Condition"/> XXX: unbounded */
-	/* LassoSamlCondition *Condition;  XXX missing from lasso */ 
-	/* <element ref="saml:AudienceRestrictionCondition"/> XXX: unbounded */
-	LassoSamlAudienceRestrictionCondition *AudienceRestrictionCondition;
+	/* <element ref="saml:Condition"/> */
+	GList *Condition; /* LassoSamlCondition (XXX missing from lasso) */
+	/* <element ref="saml:AudienceRestrictionCondition"/> */
+	GList *AudienceRestrictionCondition; /* LassoSamlAudienceRestrictionCondition */
 	/* <attribute name="NotBefore" type="dateTime" use="optional"/> */
 	char *NotBefore;
 	/* <attribute name="NotOnOrAfter" type="dateTime" use="optional"/> */

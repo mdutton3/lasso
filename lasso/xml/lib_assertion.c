@@ -153,8 +153,8 @@ lasso_lib_assertion_new_full(const char *issuer, const char *requestID,
 	assertion->Conditions->NotBefore = g_strdup(notBefore);
 	assertion->Conditions->NotOnOrAfter = g_strdup(notOnOrAfter);
 	if (audience) {
-		assertion->Conditions->AudienceRestrictionCondition = 
-			lasso_saml_audience_restriction_condition_new_full(audience);
+		assertion->Conditions->AudienceRestrictionCondition = g_list_append(NULL,
+			lasso_saml_audience_restriction_condition_new_full(audience));
 	}
 
 	return LASSO_LIB_ASSERTION(assertion);

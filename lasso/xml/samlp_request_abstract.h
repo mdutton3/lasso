@@ -55,7 +55,7 @@ struct _LassoSamlpRequestAbstract {
 
 	/*< public >*/
 	/* <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/> */
-	char *RespondWith; /* XXX: turn into a GList */
+	GList *RespondWith; /* of char* */
 	/* <attribute name="RequestID" type="saml:IDType" use="required"/> */
 	char *RequestID;
 	/* <attribute name="MajorVersion" type="integer" use="required"/> */

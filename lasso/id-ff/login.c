@@ -126,8 +126,8 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
-			LASSO_SAML_ASSERTION(assertion);
+		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL,
+			LASSO_SAML_ASSERTION(assertion));
 	}
 	/* store assertion in session object */
 	if (profile->session == NULL) {
@@ -329,6 +329,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 	if (response->Assertion) {
 		LassoProfile *profile = LASSO_PROFILE(login);
+		LassoSamlAssertion *assertion = response->Assertion->data;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL)
 			return LASSO_ERROR_UNDEFINED;
@@ -336,12 +337,13 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		/* FIXME: verify assertion signature */
 
 		/* store NameIdentifier */
-		if (response->Assertion->AuthenticationStatement == NULL) {
+		if (assertion->AuthenticationStatement == NULL) {
 			return LASSO_ERROR_UNDEFINED;
 		}
 
-		profile->nameIdentifier = g_object_ref(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-					response->Assertion->AuthenticationStatement
+		profile->nameIdentifier = g_object_ref(
+				LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
+					assertion->AuthenticationStatement
 					)->Subject->NameIdentifier);
 
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
@@ -388,7 +390,10 @@ lasso_login_accept_sso(LassoLogin *login)
 	if (profile->response == NULL)
 		return LASSO_ERROR_UNDEFINED;
 
-	assertion = LASSO_SAMLP_RESPONSE(profile->response)->Assertion;
+	if (LASSO_SAMLP_RESPONSE(profile->response)->Assertion == NULL)
+		return LASSO_ERROR_UNDEFINED;
+
+	assertion = LASSO_SAMLP_RESPONSE(profile->response)->Assertion->data;
 	if (assertion == NULL)
 		return LASSO_ERROR_UNDEFINED;
 
@@ -396,8 +401,7 @@ lasso_login_accept_sso(LassoLogin *login)
 			g_object_ref(assertion));
 
 	authentication_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-			LASSO_SAMLP_RESPONSE(profile->response
-				)->Assertion->AuthenticationStatement);
+			assertion->AuthenticationStatement);
 	ni = authentication_statement->Subject->NameIdentifier;
 
 	if (ni == NULL)
@@ -751,7 +755,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					profile->remote_providerID);
 			if (assertion) {
 				LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
-					g_object_ref(assertion);
+					g_list_append(NULL, g_object_ref(assertion));
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 				lasso_session_remove_status(profile->session, remote_providerID);

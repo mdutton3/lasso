@@ -56,7 +56,7 @@ struct _LassoSamlpResponse {
 	/* <element ref="samlp:Status"/> */
 	LassoSamlpStatus *Status;
 	/* <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/> */
-	LassoSamlAssertion *Assertion; /* XXX: GList */
+	GList *Assertion; /* of LassoSamlAssertion* */
 };
 
 struct _LassoSamlpResponseClass {

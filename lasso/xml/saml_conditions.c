@@ -44,7 +44,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "AudienceRestrictionCondition", SNIPPET_NODE,
+	{ "AudienceRestrictionCondition", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoSamlConditions, AudienceRestrictionCondition) },
 	{ "NotBefore", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlConditions, NotBefore) },
@@ -60,6 +60,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoSamlConditions *node)
 {
+	node->Condition = NULL;
 	node->AudienceRestrictionCondition = NULL;
 	node->NotBefore = NULL;
 	node->NotOnOrAfter = NULL;

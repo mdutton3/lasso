@@ -55,6 +55,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "RespondWith", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RespondWith) },
 	{ "Signature", SNIPPET_SIGNATURE,
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
 	{ "RequestID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
