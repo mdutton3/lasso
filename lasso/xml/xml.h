@@ -156,11 +156,11 @@ LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode *node,
 LASSO_EXPORT GData*         lasso_node_serialize        (LassoNode *node,
 							 GData     *gd);
 
+LASSO_EXPORT gchar*         lasso_node_soap_envelop     (LassoNode *node);
+
 LASSO_EXPORT gchar*         lasso_node_url_encode       (LassoNode *node,
 							 guint sign_method,
 							 const gchar *private_key_file);
-
-LASSO_EXPORT gchar*         lasso_node_soap_envelop     (LassoNode *node);
 
 LASSO_EXPORT gint           lasso_node_verify_signature (LassoNode *node,
 							 const gchar *certificate_file);

@@ -174,6 +174,15 @@ lasso_node_serialize(LassoNode *node,
 }
 
 gchar *
+lasso_node_soap_envelop(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->soap_envelop(node));
+}
+
+gchar *
 lasso_node_url_encode(LassoNode   *node,
 		      guint        sign_method,
 		      const gchar *private_key_file)
@@ -182,15 +191,6 @@ lasso_node_url_encode(LassoNode   *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   return (class->url_encode(node, sign_method, private_key_file));
-}
-
-gchar *
-lasso_node_soap_envelop(LassoNode *node)
-{
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->soap_envelop(node));
 }
 
 gint
@@ -996,8 +996,8 @@ lasso_node_class_init(LassoNodeClass *class)
   class->parse_memory     = lasso_node_impl_parse_memory;
   class->rename_prop      = lasso_node_impl_rename_prop;
   class->serialize        = lasso_node_impl_serialize;
-  class->url_encode       = lasso_node_impl_url_encode;
   class->soap_envelop     = lasso_node_impl_soap_envelop;
+  class->url_encode       = lasso_node_impl_url_encode;
   class->verify_signature = lasso_node_impl_verify_signature;
   /* virtual private methods */
   class->add_child   = lasso_node_impl_add_child;
