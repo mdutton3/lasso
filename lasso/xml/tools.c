@@ -357,6 +357,28 @@ lasso_str_escape(xmlChar *str)
   return (xmlURIEscapeStr((const xmlChar *)str, NULL));
 }
 
+xmlChar *
+lasso_str_hash(xmlChar    *str,
+	       const char *private_key_file)
+{
+  xmlDocPtr doc;
+  xmlChar *b64_digest, *digest = g_new0(xmlChar, 21);
+  gint i;
+
+  doc = lasso_str_sign(str,
+		       lassoSignatureMethodRsaSha1,
+		       private_key_file);
+  b64_digest = xmlNodeGetContent(xmlSecFindNode(xmlDocGetRootElement(doc),
+						xmlSecNodeDigestValue,
+						xmlSecDSigNs));
+  i = xmlSecBase64Decode(b64_digest, digest, 21);
+  //printf("Decoded string %s lenght is %d\n", digest, i);
+  xmlFree(b64_digest);
+  xmlFreeDoc(doc);
+  /* value returned must be xmlFree() */
+  return (digest);
+}
+
 /**
  * lasso_str_sign:
  * @str: 
