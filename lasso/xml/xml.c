@@ -28,8 +28,8 @@
 struct _LassoNodePrivate
 {
   gboolean   dispose_has_run;
+  gboolean   node_is_weak_ref;
   xmlNodePtr node;
-  GPtrArray  *children;
 };
 
 /*****************************************************************************/
@@ -134,12 +134,13 @@ lasso_node_get_attrs(LassoNode *node)
 
 LassoNode *
 lasso_node_get_child(LassoNode     *node,
-		     const xmlChar *name)
+		     const xmlChar *name,
+		     const xmlChar *href)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_child(node, name));
+  return (class->get_child(node, name, href));
 }
 
 GPtrArray *
@@ -340,7 +341,11 @@ lasso_node_set_xmlNode(LassoNode *node,
 static LassoNode *
 lasso_node_impl_copy(LassoNode *node)
 {
-  return (lasso_node_new_from_xmlNode(xmlCopyNode(lasso_node_get_xmlNode(node), 1)));
+  LassoNode *copy;
+
+  copy = lasso_node_new_from_xmlNode(xmlCopyNode(node->private->node, 1));
+  copy->private->node_is_weak_ref = FALSE;
+  return (copy);
 }
 
 static void
@@ -472,11 +477,14 @@ lasso_node_impl_export_to_soap(LassoNode *node)
   lasso_node_set_name(body, "Body");
   lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
   
-  lasso_node_add_child(body, lasso_node_copy(node), 0);
-  lasso_node_add_child(envelope, body, 0);
+  lasso_node_add_child(body, node, FALSE);
+  lasso_node_add_child(envelope, body, FALSE);
 
   buffer = lasso_node_export(envelope);
-  g_object_unref(G_OBJECT(envelope));
+
+  lasso_node_destroy(node);
+  lasso_node_destroy(body);
+  lasso_node_destroy(envelope);
   
   return(buffer);
 }
@@ -533,8 +541,12 @@ lasso_node_impl_get_attrs(LassoNode *node)
 
 static LassoNode *
 lasso_node_impl_get_child(LassoNode     *node,
-			  const xmlChar *name)
+			  const xmlChar *name,
+			  const xmlChar *href)
 {
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+
   /*   /\* No recurssive version *\/ */
   /*   xmlNodePtr cur; */
   
@@ -549,28 +561,45 @@ lasso_node_impl_get_child(LassoNode     *node,
   /*   } */
   /*   return (NULL); */
 
-  /* Recurssive version */
-  xmlNodePtr cur;
-  LassoNode *ret;
+  /*   /\* Recurssive version *\/ */
+  /*   xmlNodePtr cur; */
+  /*   LassoNode *ret, *child; */
+  
+  /*   cur = node->private->node; */
+  /*   while (cur != NULL) { */
+  /*     if ((cur->type == XML_ELEMENT_NODE) && xmlStrEqual(cur->name, name)) { */
+  /*       return (lasso_node_new_from_xmlNode(cur)); */
+  /*     } */
+  /*     if (cur->children != NULL) { */
+  /*       child = lasso_node_new_from_xmlNode(cur->children); */
+  /*       ret = lasso_node_get_child(child, name); */
+  /*       if (ret != NULL) { */
+  /* 	return (ret); */
+  /*       } */
+  /*     } */
+  /*     cur = cur->next; */
+  /*   } */
+  /*   return (NULL); */
 
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-        
-  cur = node->private->node;
-  while (cur != NULL) {
-    if ((cur->type == XML_ELEMENT_NODE) && xmlStrEqual(cur->name, name)) {
-      return (lasso_node_new_from_xmlNode(cur));
-    }
-    if (cur->children != NULL) {
-      ret = lasso_node_get_child(lasso_node_new_from_xmlNode(cur->children),
-				 name);
-      if (ret != NULL) {
-	return (ret);
-      }
-    }
-    cur = cur->next;
+  xmlNodePtr child;
+
+  if (href != NULL)
+    child = xmlSecFindNode(node->private->node, name, href);
+  else {
+    child = xmlSecFindNode(node->private->node, name, href);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoLibHRef);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoSamlAssertionHRef);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoSamlProtocolHRef);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoSoapEnvHRef);
   }
-  return (NULL);
+  if (child != NULL)
+    return (lasso_node_new_from_xmlNode(child));
+  else
+    return (NULL);
 }
 
 static GPtrArray *
@@ -730,7 +759,7 @@ lasso_node_impl_add_child(LassoNode *node,
 			  LassoNode *child,
 			  gboolean   unbounded)
 {
-  xmlNodePtr old_child;
+  xmlNodePtr old_child = NULL;
   LassoNode *search_child = NULL;
   gint i;
 
@@ -740,28 +769,19 @@ lasso_node_impl_add_child(LassoNode *node,
   /* if child is not unbounded, we search it */
   if (!unbounded) {
     old_child = xmlSecFindNode(node->private->node,
-			       child->private->node->name, NULL);
+			       child->private->node->name,
+			       child->private->node->ns->href);
   }
 
   if (!unbounded && old_child != NULL) {
-    /* old child removed in array children and freed */
-    for(i=0;i<node->private->children->len;i++) {
-      search_child = LASSO_NODE(g_ptr_array_index(node->private->children, i));
-      if (search_child->private->node == old_child) {
-	g_ptr_array_remove_index(node->private->children, i);
-	break;
-      }
-    }
     /* child replace old child */
     xmlReplaceNode(old_child, child->private->node);
-    g_object_unref(G_OBJECT(search_child));
   }
   else {
     /* else child is added */
     xmlAddChild(node->private->node, child->private->node);
   }
-  /* child added in childrens' array */
-  g_ptr_array_add(node->private->children, (gpointer)child);
+  child->private->node_is_weak_ref = TRUE;
 }
 
 static void
@@ -866,18 +886,22 @@ lasso_node_impl_new_child(LassoNode     *node,
 			  const xmlChar *content,
 			  gboolean       unbounded)
 {
-  LassoNode *old_child = NULL;
+  //LassoNode *old_child = NULL;
+  xmlNodePtr old_child = NULL;
 
   g_return_if_fail (LASSO_IS_NODE(node));
   g_return_if_fail (name != NULL);
   g_return_if_fail (content != NULL);
   
   if (!unbounded) {
-    old_child = lasso_node_get_child(node, name);
+    old_child = xmlSecFindNode(node->private->node, name,
+			       node->private->node->ns->href);
+    //old_child = lasso_node_get_child(node, name);
   }
 
   if (!unbounded && old_child != NULL) {
-    xmlNodeSetContent(old_child->private->node, content);
+    //xmlNodeSetContent(old_child->private->node, content);
+    xmlNodeSetContent(old_child, content);
   }
   else {
     xmlNewChild(node->private->node, NULL, name, content);
@@ -955,6 +979,7 @@ lasso_node_impl_serialize(LassoNode *node,
 	}
 	break;
       }
+      lasso_node_destroy((LassoNode *)g_ptr_array_index(children, i));
     }
     g_ptr_array_free(children, TRUE);
   }
@@ -1048,16 +1073,11 @@ lasso_node_finalize(LassoNode *node)
   LassoNode *child;
 
   g_print("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
-
-  for(i=0; i<node->private->children->len; i++) {
-    child = LASSO_NODE(g_ptr_array_index(node->private->children, i));
-    g_ptr_array_remove_index(node->private->children, i);
-    g_object_unref(G_OBJECT(child));
+  
+  if (node->private->node_is_weak_ref == FALSE) {
+    xmlUnlinkNode(node->private->node);
+    xmlFreeNode(node->private->node);
   }
-  g_ptr_array_free(node->private->children, TRUE);
-
-  xmlUnlinkNode(node->private->node);
-  xmlFreeNode(node->private->node);
 
   g_free (node->private);
 }
@@ -1072,9 +1092,9 @@ lasso_node_instance_init(LassoNode *instance)
   LassoNode *node = LASSO_NODE(instance);
 
   node->private = g_new (LassoNodePrivate, 1);
-  node->private->dispose_has_run = FALSE;
-  node->private->node            = xmlNewNode(NULL, "no-name-set");
-  node->private->children        = g_ptr_array_new();
+  node->private->dispose_has_run  = FALSE;
+  node->private->node_is_weak_ref = FALSE;
+  node->private->node             = xmlNewNode(NULL, "no-name-set");
 }
 
 static void
@@ -1159,7 +1179,7 @@ lasso_node_new_from_dump(const xmlChar *buffer)
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   lasso_node_set_xmlNode(node, root);
   /* free doc */
-  //xmlFreeDoc(doc);
+  xmlFreeDoc(doc);
 
   return (node);
 }
@@ -1173,6 +1193,7 @@ lasso_node_new_from_xmlNode(xmlNodePtr node)
 
   lasso_node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
   lasso_node_set_xmlNode(lasso_node, node);
+  lasso_node->private->node_is_weak_ref = TRUE;
 
   return (lasso_node);
 }

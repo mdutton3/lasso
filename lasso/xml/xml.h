@@ -27,7 +27,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
@@ -77,7 +77,8 @@ struct _LassoNodeClass {
 				       const xmlChar *name);
   GPtrArray*     (* get_attrs)        (LassoNode     *node);
   LassoNode*     (* get_child)        (LassoNode     *node,
-				       const xmlChar *name);
+				       const xmlChar *name,
+				       const xmlChar *href);
   GPtrArray*     (* get_children)     (LassoNode     *node);
   xmlChar*       (* get_content)      (LassoNode     *node);
   const xmlChar* (* get_name)         (LassoNode     *node);
@@ -154,7 +155,8 @@ LASSO_EXPORT xmlChar*       lasso_node_get_attr_value   (LassoNode *node,
 LASSO_EXPORT GPtrArray*     lasso_node_get_attrs        (LassoNode *node);
 
 LASSO_EXPORT LassoNode*     lasso_node_get_child        (LassoNode *node,
-							 const xmlChar *name);
+							 const xmlChar *name,
+							 const xmlChar *href);
 
 LASSO_EXPORT GPtrArray*     lasso_node_get_children     (LassoNode *node);
 
