@@ -4681,12 +4681,12 @@ typedef struct {
 	/* Methods */
 
         THROW_ERROR
-	void addProvider(LassoProviderRole role, char *metadata, char *publicKey = NULL,
+	int addProvider(LassoProviderRole role, char *metadata, char *publicKey = NULL,
 			char *caCertChain = NULL);
 	END_THROW_ERROR
 
         THROW_ERROR
-	void addService(char *service_type, char *service_endpoint);
+	int addService(char *service_type, char *service_endpoint);
 	END_THROW_ERROR
 
 	%newobject dump;
@@ -4880,7 +4880,7 @@ typedef struct {
 	/* Methods */
 
         THROW_ERROR
-	void addFederation(LassoFederation *federation);
+	int addFederation(LassoFederation *federation);
 	END_THROW_ERROR
 
 	%newobject dump;
@@ -4889,7 +4889,7 @@ typedef struct {
 	LassoFederation *getFederation(char *providerId);
 
         THROW_ERROR
-	void removeFederation(char *providerId);
+	int removeFederation(char *providerId);
 	END_THROW_ERROR
 }
 
@@ -5070,30 +5070,30 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods */
 
 	THROW_ERROR
-	void buildNotificationMsg();
+	int buildNotificationMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initNotification(char *remoteProviderId = NULL,
+	int initNotification(char *remoteProviderId = NULL,
 			      LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processNotificationMsg(char *notificationMsg);
+	int processNotificationMsg(char *notificationMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void validateNotification();
+	int validateNotification();
 	END_THROW_ERROR
 }
 
@@ -5246,21 +5246,21 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods */
 
 	THROW_ERROR
-	void acceptSso();
+	int acceptSso();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildArtifactMsg(LassoHttpMethod httpMethod);
+	int buildArtifactMsg(LassoHttpMethod httpMethod);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -5270,36 +5270,36 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildAuthnRequestMsg();
+	int buildAuthnRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildAuthnResponseMsg();
+	int buildAuthnResponseMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildRequestMsg();
+	int buildRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildResponseMsg(char *remoteProviderId);
+	int buildResponseMsg(char *remoteProviderId);
 	END_THROW_ERROR
 
 	%newobject dump;
 	char *dump();
 
 	THROW_ERROR
-	void initAuthnRequest(char *remoteProviderId = NULL,
+	int initAuthnRequest(char *remoteProviderId = NULL,
 			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initRequest(char *responseMsg,
+	int initRequest(char *responseMsg,
 			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initIdpInitiatedAuthnRequest(char *remoteProviderID = NULL);
+	int initIdpInitiatedAuthnRequest(char *remoteProviderID = NULL);
 	END_THROW_ERROR
 
 	gboolean mustAskForConsent();
@@ -5307,19 +5307,19 @@ typedef struct {
 	gboolean mustAuthenticate();
 
 	THROW_ERROR
-	void processAuthnRequestMsg(char *authnrequestMsg);
+	int processAuthnRequestMsg(char *authnrequestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processAuthnResponseMsg(char *authnResponseMsg);
+	int processAuthnResponseMsg(char *authnResponseMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processRequestMsg(char *requestMsg);
+	int processRequestMsg(char *requestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processResponseMsg(char *responseMsg);
+	int processResponseMsg(char *responseMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -5488,21 +5488,21 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods */
 
 	THROW_ERROR
-	void buildRequestMsg();
+	int buildRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildResponseMsg();
+	int buildResponseMsg();
 	END_THROW_ERROR
 
 	%newobject dump;
@@ -5512,24 +5512,24 @@ typedef struct {
 	char *getNextProviderId();
 
 	THROW_ERROR
-	void initRequest(char *remoteProviderId = NULL,
+	int initRequest(char *remoteProviderId = NULL,
 			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processRequestMsg(char *requestMsg);
+	int processRequestMsg(char *requestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processResponseMsg(char *responseMsg);
+	int processResponseMsg(char *responseMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void resetProviderIdIndex();
+	int resetProviderIdIndex();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void validateRequest();
+	int validateRequest();
 	END_THROW_ERROR
 }
 
@@ -5685,11 +5685,11 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods inherited from Login */
@@ -5707,35 +5707,35 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	void buildAuthnRequestEnvelopeMsg();
+	int buildAuthnRequestEnvelopeMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildAuthnRequestMsg();
+	int buildAuthnRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildAuthnResponseEnvelopeMsg();
+	int buildAuthnResponseEnvelopeMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildAuthnResponseMsg();
+	int buildAuthnResponseMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initAuthnRequest(char *remoteProviderId = NULL);
+	int initAuthnRequest(char *remoteProviderId = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processAuthnRequestEnvelopeMsg(char *requestMsg);
+	int processAuthnRequestEnvelopeMsg(char *requestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processAuthnRequestMsg(char *authnRequestMsg);
+	int processAuthnRequestMsg(char *authnRequestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processAuthnResponseEnvelopeMsg(char *responseMsg);
+	int processAuthnResponseEnvelopeMsg(char *responseMsg);
 	END_THROW_ERROR
 }
 
@@ -5896,40 +5896,40 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods */
 
 	THROW_ERROR
-	void buildRequestMsg();
+	int buildRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildResponseMsg();
+	int buildResponseMsg();
 	END_THROW_ERROR
 
 	%newobject dump;
 	char *dump();
 
 	THROW_ERROR
-	void initRequest(char *targetNamespace, char *remoteProviderId = NULL);
+	int initRequest(char *targetNamespace, char *remoteProviderId = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processRequestMsg(char *requestMsg);
+	int processRequestMsg(char *requestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processResponseMsg(char *responseMsg);
+	int processResponseMsg(char *responseMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void validateRequest();
+	int validateRequest();
 	END_THROW_ERROR
 }
 
@@ -6085,41 +6085,41 @@ typedef struct {
 	/* Methods inherited from Profile */
 
         THROW_ERROR
-	void setIdentityFromDump(char *dump);
+	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void setSessionFromDump(char *dump);
+	int setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
 	/* Methods */
 
 	THROW_ERROR
-	void buildRequestMsg();
+	int buildRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildResponseMsg();
+	int buildResponseMsg();
 	END_THROW_ERROR
 
 	%newobject dump;
 	char *dump();
 
 	THROW_ERROR
-	void initRequest(char *remoteProviderId,
+	int initRequest(char *remoteProviderId,
 			LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processRequestMsg(char *requestMsg);
+	int processRequestMsg(char *requestMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processResponseMsg(char *responseMsg);
+	int processResponseMsg(char *responseMsg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void validateRequest();
+	int validateRequest();
 	END_THROW_ERROR
 }
 
