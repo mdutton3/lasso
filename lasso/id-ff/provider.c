@@ -235,7 +235,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Provider");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
-	xmlSetProp(xmlnode, "Version", "2");
+	xmlSetProp(xmlnode, "ProviderDumpVersion", "2");
 	if (provider->role)
 		xmlSetProp(xmlnode, "ProviderRole", roles[provider->role]);
 	xmlSetProp(xmlnode, "ProviderID", provider->ProviderID);
