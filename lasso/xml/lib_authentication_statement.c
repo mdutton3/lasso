@@ -52,6 +52,9 @@
 	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node); \
 	struct XmlSnippet snippets[] = { \
 		{ "AuthnContext", 'n', (void**)&(statement->AuthnContext) }, \
+		{ "ReauthenticateOnOrAfter", 'a', \
+			(void**)&(statement->ReauthenticateOnOrAfter) }, \
+		{ "SessionIndex", 'a', (void**)&(statement->SessionIndex) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -78,8 +81,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 
-	statement->ReauthenticateOnOrAfter = xmlGetProp(xmlnode, "ReauthenticateOnOrAfter");
-	statement->SessionIndex = xmlGetProp(xmlnode, "SessionIndex");
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
