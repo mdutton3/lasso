@@ -298,14 +298,12 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 			assertion->AuthenticationStatement)->Subject->NameIdentifier;
 	if (strcmp(nameIdentifier->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0) {
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-			message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
 		federation = g_hash_table_lookup(profile->identity->federations,
 				profile->remote_providerID);
 		if (federation == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 		}
 
 		nameIdentifier = lasso_profile_get_nameIdentifier(profile);
@@ -706,18 +704,16 @@ lasso_logout_validate_request(LassoLogout *logout)
 	/* If name identifier is federated, then verify federation */
 	if (strcmp(nameIdentifier->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED) == 0) {
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-			message(G_LOG_LEVEL_CRITICAL, "Identity not found");
 			lasso_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
 		federation = g_hash_table_lookup(profile->identity->federations,
 				profile->remote_providerID);
 		if (LASSO_IS_FEDERATION(federation) == FALSE) {
-			message(G_LOG_LEVEL_CRITICAL, "Federation not found");
 			lasso_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 		}
 
 		if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {

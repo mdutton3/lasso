@@ -1124,9 +1124,7 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	/* rebuild samlp:Request with request_msg */
 	profile->request = lasso_node_new_from_soap(request_msg);
 	if (profile->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL,
-				"Failed to rebuild samlp:Request with request message.");
-		return LASSO_ERROR_UNDEFINED;
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 	/* get AssertionArtifact */
 	login->assertionArtifact = g_strdup(
@@ -1149,9 +1147,9 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	/* rebuild samlp:Response with response_msg */
 	LASSO_PROFILE(login)->response = lasso_node_new_from_soap(response_msg);
 	if (! LASSO_IS_SAMLP_RESPONSE(LASSO_PROFILE(login)->response) ) {
+		lasso_node_destroy(LASSO_PROFILE(login)->response);
 		LASSO_PROFILE(login)->response = NULL;
-		message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Response from message.");
-		return LASSO_ERROR_UNDEFINED;
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	return lasso_login_process_response_status_and_assertion(login);

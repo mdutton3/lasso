@@ -126,8 +126,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
 	/* verify if the identity exists */
 	if (profile->identity == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
 	/* set the remote provider id */
@@ -150,9 +149,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	/* get federation */
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
-	if(federation == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+	if (federation == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	/* name identifier */
@@ -343,8 +341,7 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 
 	/* Verify identity attribute of mapping object */
 	if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
 	/* verify federation of the SP request */
@@ -353,8 +350,7 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 	nameIdentifier = federation->remote_nameIdentifier;
 	if (nameIdentifier == NULL)

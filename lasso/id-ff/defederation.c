@@ -171,9 +171,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (federation == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found for %s",
-				profile->remote_providerID);
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	/* get the nameIdentifier to send the federation termination notification */
@@ -225,8 +223,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 
 	/* remove federation with remote provider id */
 	if (profile->identity == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 	lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
 
@@ -383,15 +380,13 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 
 	/* Verify federation */
 	if (profile->identity == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (federation == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {

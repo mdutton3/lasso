@@ -174,8 +174,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
 	/* verify if the identity and session exist */
 	if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
 	/* set the remote provider id */
@@ -195,8 +194,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	/* FIXME : depending on the requester provider type, verify the format
@@ -266,8 +264,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 					LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,
 					http_method,
 					TRUE) == FALSE) {
-			message(G_LOG_LEVEL_CRITICAL, "unsupported profile!");
-			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+			return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 		}
 	}
 
@@ -402,15 +399,13 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	/* Update federation with the nameIdentifier attribute. NameQualifier
 	 * is local ProviderID and format is Federated type */
 	if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Identity not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 	}
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -486,8 +481,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
 	if (request->OldProvidedNameIdentifier == NULL) {
