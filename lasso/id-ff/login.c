@@ -35,8 +35,6 @@
 
 #include <lasso/environs/login.h>
 
-#include <lasso/lasso_config.h>
-
 static GObjectClass *parent_class = NULL;
 
 struct _LassoLoginPrivate
@@ -823,9 +821,6 @@ lasso_login_dump(LassoLogin *login)
   parent_dump = lasso_profile_dump(LASSO_PROFILE(login), "Login");
   node = lasso_node_new_from_dump(parent_dump);
   g_free(parent_dump);
-
-  /* Add lasso version in the xml node */
-  LASSO_NODE_GET_CLASS(node)->set_prop(LASSO_NODE(node), "version", PACKAGE_VERSION);
 
   g_sprintf(protocolProfile, "%d", login->protocolProfile);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);

@@ -32,6 +32,8 @@
 #include <lasso/protocols/authn_response.h>
 #include <lasso/environs/profile.h>
 
+#include <lasso/lasso_config.h>
+
 struct _LassoProfilePrivate
 {
   gboolean dispose_has_run;
@@ -119,6 +121,9 @@ lasso_profile_dump(LassoProfile *ctx,
     LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfile");
   }
   LASSO_NODE_GET_CLASS(node)->set_ns(node, lassoLassoHRef, NULL);
+
+  /* Add lasso version in the xml node */
+  LASSO_NODE_GET_CLASS(node)->set_prop(LASSO_NODE(node), "version", PACKAGE_VERSION);
 
   if (ctx->request != NULL) {
     request = lasso_node_copy(ctx->request);
