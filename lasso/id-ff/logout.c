@@ -967,7 +967,6 @@ lasso_logout_validate_request(LassoLogout *logout)
 
       /* if protocolProfile is SOAP continue else break */
       protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider, lassoProviderTypeSp, NULL);
-      printf("protocol profile : %s\n", protocolProfile);
       if (protocolProfile == NULL || !xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap)) {
 	all_http_soap = FALSE;
 	break;
