@@ -42,7 +42,7 @@ MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(top_srcdir)/swig/Lasso.i
 	here=`pwd`; \
-	$(SWIG) -v -java -noproxy -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
+	$(SWIG) -v -java -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
 	if test -r $(JAVA_MODULE)JNI.java; then \
 	  echo "Fixing SWIG 1.3.15+ broken Java API"; \
 	  rm -f $(JAVA_MODULE).java SWIGTYPE_*; \
