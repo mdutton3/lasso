@@ -18,7 +18,7 @@ if not account:
 else:
     user_dump = [...] # Retrieve string user_dump from account.
     if not user_dump:
-        logout.response_status = lasso.libStatusCodes['unknownPrincipal']		
+        logout.response_status = lasso.libStatusCodes['unknownPrincipal']
     else:
         user = lasso.User.new_from_dump(user_dump)
         del user.authn_assertion

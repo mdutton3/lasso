@@ -8,14 +8,14 @@ lasso.init()
 
 # servers :
 spserver = lasso.Server.new("../../examples/sp.xml",
-			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-			    lasso.signatureMethodRsaSha1)
+    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+    lasso.signatureMethodRsaSha1)
 
 spserver.add_provider("../../examples/idp.xml", None, None)
 
 idpserver = lasso.Server.new("../../examples/idp.xml",
-			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-			    lasso.signatureMethodRsaSha1)
+    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+    lasso.signatureMethodRsaSha1)
 
 spserver.add_provider("../../examples/sp.xml", None, None)
 

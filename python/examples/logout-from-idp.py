@@ -9,8 +9,8 @@ lasso.init()
 
 # server :
 server = lasso.Server.new("../../examples/idp.xml",
-			  "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
-			  lasso.signatureMethodRsaSha1)
+    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+    lasso.signatureMethodRsaSha1)
 server.add_provider("../../examples/sp1.xml", None, None)
 server.add_provider("../../examples/sp2.xml", None, None)
 server.add_provider("../../examples/sp3.xml", None, None)
