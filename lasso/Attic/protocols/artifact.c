@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <lasso/xml/errors.h>
 #include <lasso/protocols/artifact.h>
 #include <xmlsec/base64.h>
 
@@ -72,6 +73,19 @@ lasso_artifact_get_assertionHandle(LassoArtifact  *artifact,
   xmlChar *assertionHandle;
   GError *tmp_err = NULL;
 
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
+  }
+
   assertionHandle = lasso_node_get_child_content(LASSO_NODE(artifact),
 						 "AssertionHandle",
 						 NULL, &tmp_err);
@@ -82,6 +96,15 @@ lasso_artifact_get_assertionHandle(LassoArtifact  *artifact,
   return (assertionHandle);
 }
 
+/**
+ * lasso_artifact_get_byteCode:
+ * @artifact: an LassoArtifact
+ * @err: return location for an allocated GError, or NULL to ignore errors
+ * 
+ * Gets the ByteCode of the artifact
+ * 
+ * Return value: the ByteCode or a negative integer if an error occurs.
+ **/
 gint
 lasso_artifact_get_byteCode(LassoArtifact  *artifact,
 			    GError        **err)
@@ -89,6 +112,21 @@ lasso_artifact_get_byteCode(LassoArtifact  *artifact,
   xmlChar *byteCode;
   gint ret;
   GError *tmp_err = NULL;
+
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL,
+			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
+  }
+  if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact),
+			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  }
 
   byteCode = lasso_node_get_child_content(LASSO_NODE(artifact),
 					  "ByteCode", NULL, &tmp_err);
@@ -110,6 +148,19 @@ lasso_artifact_get_b64IdentityProviderSuccinctID(LassoArtifact  *artifact,
   xmlChar *b64_identityProviderSuccinctID;
   GError *tmp_err = NULL;
 
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
+  }
+
   b64_identityProviderSuccinctID = lasso_node_get_child_content(LASSO_NODE(artifact),
 								"B64IdentityProviderSuccinctID",
 								NULL, &tmp_err);
@@ -127,6 +178,19 @@ lasso_artifact_get_relayState(LassoArtifact  *artifact,
   xmlChar *relayState;
   GError *tmp_err = NULL;
 
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
+  }
+
   relayState = lasso_node_get_child_content(LASSO_NODE(artifact),
 					    "RelayState", NULL, &tmp_err);
   if (relayState == NULL) {
@@ -142,6 +206,19 @@ lasso_artifact_get_samlArt(LassoArtifact  *artifact,
 {
   xmlChar *samlArt;
   GError *tmp_err = NULL;
+
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  if (LASSO_IS_ARTIFACT(artifact) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_ARTIFACT(artifact), NULL);
+  }
 
   samlArt = lasso_node_get_child_content(LASSO_NODE(artifact),
 					 "SAMLart", NULL, &tmp_err);

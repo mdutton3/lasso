@@ -256,10 +256,20 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
   gint ret;
   GError *tmp_err = NULL;
 
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(private_key_file != NULL);
-  g_assert(certificate_file != NULL);
-  g_return_val_if_fail (err == NULL || *err == NULL, LASSO_ERR_ERROR_CHECK_FAILED);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL,
+			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
+  }
+  if (LASSO_IS_SAML_ASSERTION(node) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
+			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  }
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 
