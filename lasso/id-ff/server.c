@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/base64.h>
+
 #include <lasso/xml/errors.h>
 #include <lasso/environs/server.h>
 
