@@ -55,7 +55,7 @@ LASSO_EXPORT int lasso_shutdown(void);
  * @LASSO_CHECK_VERSION_NUMERIC: version should be at least that number
  *
  * Lasso library version check mode.
- */
+ **/
 typedef enum {
 	LASSO_CHECK_VERSION_EXACT = 0,
 	LASSO_CHECK_VERSIONABI_COMPATIBLE,
