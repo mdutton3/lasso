@@ -612,27 +612,21 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     }
     break;
   case lassoHttpMethodRedirect:
-    debug("Build a logout request from query msg\n");
     profile->request = lasso_logout_request_new_from_export(request_msg,
 							    lassoNodeExportTypeQuery);
-
-    /* verify the message is a LogoutRequest */
+    /* if problem while rebuilding the response, then return invalid query code error */
     if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
-      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutRequest\n");
-      ret = -1;
+      ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
       goto done;
     }
 
-    break;
-  case lassoHttpMethodGet:
-    debug("TODO, implement the get method\n");
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
     ret = -1;
     goto done;
   }
-  if(profile->request == NULL) {
+  if(LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the request from msg\n");
     ret = -1;
     goto done;
@@ -694,6 +688,11 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     break;
   case lassoHttpMethodRedirect:
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
+    /* if problem while rebuilding the response, then return invalid query code error */
+    if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+      ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
+      goto done;
+    }
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
@@ -706,13 +705,13 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     goto done;
   }
 
+  /* get the status code */
   statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   if (statusCode == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "StatusCode node not found\n");
     ret = -1;
     goto done;
   }
-
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
 
   if (!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
