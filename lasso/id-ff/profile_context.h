@@ -83,6 +83,8 @@ struct _LassoProfileContext {
   LassoNode *request;
   LassoNode *response;
 
+  gchar *nameIdentifier;
+
   gchar *remote_providerID;
 
   gchar *msg_url;

@@ -87,6 +87,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
     else{
       message(G_LOG_LEVEL_ERROR, "Unkown node name : %s\n", name);
     }
+    xmlFree(name);
   }
 
   return(type);
@@ -127,16 +128,20 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
     lasso_node_destroy(response);
   }
 
+  if (ctx->nameIdentifier != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "NameIdentifier", ctx->nameIdentifier, FALSE);
+  }
+
   if (ctx->remote_providerID != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "RemoteProviderID",
 					  ctx->remote_providerID, FALSE);
   }
 
   if (ctx->msg_url != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgUrl", lasso_str_escape(ctx->msg_url), FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgUrl", ctx->msg_url, FALSE);
   }
   if (ctx->msg_body != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", lasso_str_escape(ctx->msg_body), FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", ctx->msg_body, FALSE);
   }
   if (ctx->msg_relayState != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", ctx->msg_relayState, FALSE);
@@ -216,6 +221,7 @@ lasso_profile_context_finalize(LassoProfileContext *ctx)
 {
   debug("ProfileContext object 0x%x finalized ...\n", ctx);
 
+  g_free(ctx->nameIdentifier);
   g_free(ctx->remote_providerID);
   g_free(ctx->msg_url);
   g_free(ctx->msg_body);
@@ -249,6 +255,7 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->user   = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
+  ctx->nameIdentifier = NULL;
   ctx->request_type  = lassoMessageTypeNone;
   ctx->response_type = lassoMessageTypeNone;
   ctx->provider_type = lassoProviderTypeNone;

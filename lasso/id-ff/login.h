@@ -57,7 +57,6 @@ struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
   lassoLoginProtocolProfiles  protocolProfile;
-  gchar                      *nameIdentifier; /* rename this ??? */
 
   gchar                      *assertionArtifact;
   gchar                      *response_dump;

@@ -103,7 +103,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
     return(-3);
   }
   /* store NameIdentifier */
-  login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+  LASSO_PROFILE_CONTEXT(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
 
   ret = lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 					   LASSO_PROFILE_CONTEXT(login)->server->signature_method,
@@ -130,7 +130,7 @@ lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
   LassoNode *nameIdentifier;
-  xmlChar *nameIDPolicy;
+  xmlChar *id, *nameIDPolicy;
 
   /* verify if a user context exists else create it */
   if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
@@ -152,7 +152,9 @@ lasso_login_process_federation(LassoLogin *login)
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
       /* set local NameIdentifier in identity */
-      nameIdentifier = lasso_saml_name_identifier_new(lasso_build_unique_id(32));
+      id = lasso_build_unique_id(32);
+      nameIdentifier = lasso_saml_name_identifier_new(id);
+      xmlFree(id);
       lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
 						   LASSO_PROFILE_CONTEXT(login)->server->providerID);
       lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
@@ -203,8 +205,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     }
 
     /* store NameIdentifier */
-    login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
-    if (login->nameIdentifier == NULL) {
+    LASSO_PROFILE_CONTEXT(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+    if (LASSO_PROFILE_CONTEXT(login)->nameIdentifier == NULL) {
       message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in Assertion.\n");
       ret = -4;
       goto done;
@@ -300,7 +302,6 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   }
   /* save response dump */
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
-  debug("SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
 
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
@@ -593,9 +594,6 @@ lasso_login_dump(LassoLogin *login)
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);
   g_free(protocolProfile);
 
-  if (login->nameIdentifier != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "NameIdentifier", login->nameIdentifier, FALSE);
-  }
   if (login->assertionArtifact != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "AssertionArtifact", login->assertionArtifact, FALSE);
   }
@@ -858,7 +856,6 @@ lasso_login_finalize(LassoLogin *login)
   debug("Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
-  g_free(login->nameIdentifier);
   g_free(login->response_dump);
 
   parent_class->finalize(G_OBJECT(login));
@@ -873,7 +870,6 @@ lasso_login_instance_init(LassoLogin *login)
 {
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
-  login->nameIdentifier    = NULL;
   login->response_dump     = NULL;
 }
 
@@ -941,6 +937,7 @@ lasso_login_new_from_dump(LassoServer *server,
   node_dump = lasso_node_new_from_dump(dump);
 
   /* profile context attributes */
+  LASSO_PROFILE_CONTEXT(login)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", NULL);
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL);
   LASSO_PROFILE_CONTEXT(login)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl", NULL);
   LASSO_PROFILE_CONTEXT(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", NULL);
@@ -989,7 +986,6 @@ lasso_login_new_from_dump(LassoServer *server,
   if (protocolProfile != NULL) {
     login->protocolProfile   = atoi(protocolProfile);
   }
-  login->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", NULL);
   login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL);
   login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump", NULL);
 
