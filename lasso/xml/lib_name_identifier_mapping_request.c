@@ -64,6 +64,7 @@
 		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
 		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) }, \
 		{ "TargetNamespace", 'c', (void**)&(request->TargetNamespace) }, \
+		{ "consent", 'a', (void**)&(request->consent) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -82,9 +83,6 @@ get_xmlNode(LassoNode *node)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (request->consent)
-		xmlSetProp(xmlnode, "consent", request->consent);
-
 	return xmlnode;
 }
 
@@ -96,7 +94,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);
-	request->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }
 
