@@ -227,6 +227,7 @@ lasso_login_process_federation(LassoLogin *login)
   }
 
  done:
+  lasso_federation_destroy(federation);
   xmlFree(nameIDPolicy);
   xmlFree(consent);
 
@@ -335,7 +336,7 @@ lasso_login_accept_sso(LassoLogin *login)
     assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				     "Assertion", lassoLibHRef, NULL);
     if (assertion == NULL) {
-      message(G_LOG_LEVEL_ERROR, "Assertion element not found in response.\n");
+      message(G_LOG_LEVEL_CRITICAL, "Assertion element not found in response.\n");
       ret = -2;
       goto done;
     }
@@ -349,7 +350,7 @@ lasso_login_accept_sso(LassoLogin *login)
     nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier",
 					  lassoSamlAssertionHRef, NULL);
     if (nameIdentifier == NULL) {
-      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in assertion.\n");
+      message(G_LOG_LEVEL_CRITICAL, "NameIdentifier element not found in assertion.\n");
       ret = -3;
       goto done;
     }
@@ -357,7 +358,7 @@ lasso_login_accept_sso(LassoLogin *login)
     idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier",
 						     lassoLibHRef, NULL);
     if (idpProvidedNameIdentifier == NULL) {
-      message(G_LOG_LEVEL_ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
+      message(G_LOG_LEVEL_CRITICAL, "IDPProvidedNameIdentifier element not found in assertion.\n");
       ret = -4;
       goto done;
     }
@@ -376,9 +377,10 @@ lasso_login_accept_sso(LassoLogin *login)
     lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
 				  LASSO_PROFILE(login)->remote_providerID,
 				  federation);
+    lasso_federation_destroy(federation);
   }
   else {
-    message(G_LOG_LEVEL_ERROR, "response attribute is empty.\n");
+    message(G_LOG_LEVEL_CRITICAL, "response attribute is empty.\n");
   }
   
  done:
@@ -406,13 +408,13 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL, -1);
 
   if (method != lassoHttpMethodRedirect && method != lassoHttpMethodPost) {
-    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
     return (-2);
   }
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
-    message(G_LOG_LEVEL_ERROR, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
     return (-3);
   }
 
@@ -431,6 +433,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 					 federation,
 					 authenticationMethod,
 					 reauthenticateOnOrAfter);
+      lasso_federation_destroy(federation);
     }
   }
   /* save response dump */
@@ -586,7 +589,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 
   /* ProtocolProfile must be BrwsPost */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsPost) {
-    message(G_LOG_LEVEL_ERROR, "Failed to build AuthnResponse message, an Artifact is required by ProtocolProfile.\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to build AuthnResponse message, an Artifact is required by ProtocolProfile.\n");
     return (-1);
   }
   
@@ -605,6 +608,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 					 federation,
 					 authenticationMethod,
 					 reauthenticateOnOrAfter);
+      lasso_federation_destroy(federation);
     }
   }
   
@@ -700,7 +704,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   if (authn_request_method != lassoHttpMethodRedirect && \
       authn_request_method != lassoHttpMethodPost && \
       authn_request_method != lassoHttpMethodSoap) {
-    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
     return (-1);
   }
 
@@ -815,10 +819,15 @@ lasso_login_init_request(LassoLogin      *login,
 {
   LassoNode *response = NULL;
   xmlChar *artifact, *identityProviderSuccinctID;
+  gint ret = 0;
+  GError *err = NULL;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+  g_return_val_if_fail(response_msg != NULL, -1);
 
   if (response_method != lassoHttpMethodRedirect && \
       response_method != lassoHttpMethodPost) {
-    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
     return (-1);
   }
 
@@ -834,21 +843,35 @@ lasso_login_init_request(LassoLogin      *login,
     break;
   }
   LASSO_PROFILE(login)->response = response;
-  /* get remote identityProviderSuccinctID */
-  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(LASSO_ARTIFACT(response));
-  LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE(login)->server,
-										  identityProviderSuccinctID);
-  xmlFree(identityProviderSuccinctID);
-  
   LASSO_PROFILE(login)->response_type = lassoMessageTypeArtifact;
 
+  /* get remote identityProviderSuccinctID */
+  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(LASSO_ARTIFACT(response), &err);
+  if (identityProviderSuccinctID != NULL) {
+    LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE(login)->server,
+										    identityProviderSuccinctID);
+    xmlFree(identityProviderSuccinctID);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_clear_error(&err);
+  }
+  
   /* create SamlpRequest */
-  artifact = lasso_artifact_get_samlArt(LASSO_ARTIFACT(LASSO_PROFILE(login)->response));
-  LASSO_PROFILE(login)->request = lasso_request_new(artifact);
-  LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
-  xmlFree(artifact);
+  artifact = lasso_artifact_get_samlArt(LASSO_ARTIFACT(LASSO_PROFILE(login)->response), &err);
+  if (artifact != NULL) {
+    LASSO_PROFILE(login)->request = lasso_request_new(artifact);
+    LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
+    xmlFree(artifact);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_clear_error(&err);
+  }
 
-  return (0);
+  return (ret);
 }
 
 gboolean

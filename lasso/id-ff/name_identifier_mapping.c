@@ -181,7 +181,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
     message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
     return(-4);
   }
-  
+  lasso_federation_destroy(federation);
+
   if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "Name identifier not found\n");
     return(-5);
@@ -272,6 +273,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-7);
   }
+  lasso_federation_destroy(federation);
 
   return(0);
 }

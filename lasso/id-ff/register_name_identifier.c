@@ -243,6 +243,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type (%d)\n", profile->provider_type);
     return(-5);
   }
+  lasso_federation_destroy(federation);
 
   debug("old name identifier : %s, old name qualifier : %s, old format : %s\n", oldNameIdentifier, oldNameQualifier, oldFormat);
   debug("sp name identifier : %s, sp name qualifier : %s, sp format : %s\n",    spNameIdentifier,  spNameQualifier,  spFormat);
@@ -367,6 +368,7 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-8);
   }
+  lasso_federation_destroy(federation);
 
   /* verify authentication (if ok, delete assertion) */
   assertion = lasso_session_get_assertion(profile->session, remote_providerID);

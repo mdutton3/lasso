@@ -153,7 +153,8 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
   }
-  
+  lasso_federation_destroy(federation);
+
   if(!nameIdentifier) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s\n", profile->remote_providerID);
     codeError = -1;
@@ -272,6 +273,7 @@ lasso_federation_termination_process_notification(LassoFederationTermination *de
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", profile->remote_providerID);
     return(-1);
   }
+  lasso_federation_destroy(federation);
 
   /* remove federation of the remote provider */
   lasso_identity_remove_federation(profile->identity, profile->remote_providerID);

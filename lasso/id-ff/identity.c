@@ -80,18 +80,18 @@ lasso_identity_add_federation(LassoIdentity   *identity,
   gboolean found = FALSE;
   int i;
 
-  g_return_val_if_fail(identity != NULL, -1);
+  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
   g_return_val_if_fail(remote_providerID != NULL, -2);
-  g_return_val_if_fail(federation != NULL, -3);
+  g_return_val_if_fail(LASSO_IS_FEDERATION(federation), -3);
 
   /* add the remote provider id if not already saved */
-  for(i = 0; i<identity->providerIDs->len; i++) {
+  for (i = 0; i<identity->providerIDs->len; i++) {
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
       found = TRUE;
       break;
     }
   }
-  if(found == TRUE) {
+  if (found == TRUE) {
     debug("A federation existed already for this providerID, it was replaced by the new one.\n");
   }
   else {
@@ -99,7 +99,8 @@ lasso_identity_add_federation(LassoIdentity   *identity,
   }
 
   /* add the federation, replace if one already exists */
-  g_hash_table_insert(identity->federations, g_strdup(remote_providerID), federation);
+  g_hash_table_insert(identity->federations, g_strdup(remote_providerID),
+		      lasso_federation_copy(federation));
 
   identity->is_dirty = TRUE;
 
@@ -185,10 +186,10 @@ lasso_identity_get_federation(LassoIdentity *identity,
 						      remote_providerID);
   if (federation == NULL) {
     debug("No Federation found with remote ProviderID = %s\n", remote_providerID);
+    return (NULL);
   }
 
-  /* FIXME: federation should be a copy (fix lasso_identity_add_federation too) */
-  return(federation);
+  return(lasso_federation_copy(federation));
 }
 
 gchar*
@@ -198,7 +199,7 @@ lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
 
   g_return_val_if_fail(identity!=NULL, NULL);
 
-  if(identity->providerIDs->len == 0) {
+  if (identity->providerIDs->len == 0) {
     return(NULL);
   }
 
@@ -221,14 +222,15 @@ lasso_identity_remove_federation(LassoIdentity *identity,
   federation = lasso_identity_get_federation(identity, remote_providerID);
   if (federation != NULL) {
     g_hash_table_remove(identity->federations, remote_providerID);
+    lasso_federation_destroy(federation);
   }
   else {
     debug("Failed to remove federation for remote Provider %s\n", remote_providerID);
   }
 
   /* remove the federation remote provider id */
-  for(i = 0; i<identity->providerIDs->len; i++) {
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
+  for (i = 0; i<identity->providerIDs->len; i++) {
+    if (xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
       debug("Remove federation of %s\n", remote_providerID);
       g_ptr_array_remove_index(identity->providerIDs, i);
       break;
@@ -388,7 +390,7 @@ lasso_identity_new_from_dump(gchar *dump)
 	federation_node = lasso_node_new_from_xmlNode(federation_xmlNode);
 	remote_providerID = lasso_node_get_attr_value(federation_node,
 						      LASSO_FEDERATION_REMOTE_PROVIDERID_NODE, &err);
-	if(remote_providerID==NULL){
+	if (remote_providerID == NULL) {
 	  message(G_LOG_LEVEL_WARNING, err->message);
 	  g_error_free(err);
 	  lasso_node_destroy(federation_node);
@@ -466,6 +468,7 @@ lasso_identity_new_from_dump(gchar *dump)
 
 	xmlFree(remote_providerID);
 	lasso_node_destroy(federation_node);
+	lasso_federation_destroy(federation);
       }
 
       federation_xmlNode = federation_xmlNode->next;

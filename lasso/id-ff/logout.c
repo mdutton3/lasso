@@ -256,7 +256,8 @@ lasso_logout_init_request(LassoLogout *logout,
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
     return(-4);
   }
-  
+  lasso_federation_destroy(federation);
+
   if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s\n",
 	    profile->remote_providerID);
@@ -418,6 +419,7 @@ lasso_logout_validate_request(LassoLogout *logout)
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-10);
   }
+  lasso_federation_destroy(federation);
 
   /* verification is ok, save name identifier in logout object */
   lasso_session_remove_assertion(profile->session, profile->remote_providerID);
