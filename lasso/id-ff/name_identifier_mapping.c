@@ -448,7 +448,7 @@ lasso_name_identifier_mapping_new(LassoServer *server)
 }
 
 LassoNameIdentifierMapping*
-lasso_name_identifier_mapping_new_from_dump(LassoServer *server, gchar *dump)
+lasso_name_identifier_mapping_new_from_dump(LassoServer *server, const char *dump)
 {
 	g_assert_not_reached();
 	return NULL;
