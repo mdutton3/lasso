@@ -30,9 +30,8 @@ PyObject *init(PyObject *self, PyObject *args) {
   return (int_wrap(lasso_init()));
 }
 
-PyObject *shutdown(PyObject *self, PyObject *args) {
-  //return (int_wrap(lasso_shutdown()));
-  return (int_wrap(0));
+PyObject *shutdown2(PyObject *self, PyObject *args) {
+  return (int_wrap(lasso_shutdown()));
 }
 
 PyObject *check_version_exact(PyObject *self, PyObject *args) {

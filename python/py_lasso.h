@@ -26,7 +26,7 @@
 #define __PYLASSO_PY_LASSO_H__
 
 PyObject *init(PyObject *self, PyObject *args);
-PyObject *shutdown(PyObject *self, PyObject *args);
+PyObject *shutdown2(PyObject *self, PyObject *args);
 PyObject *check_version_exact(PyObject *self, PyObject *args);
 PyObject *check_version(PyObject *self, PyObject *args);
 PyObject *check_version_ext(PyObject *self, PyObject *args);

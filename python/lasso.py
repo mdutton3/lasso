@@ -46,34 +46,17 @@ def shutdown():
     """
     return lassomod.shutdown()
 
-def assertion_build(response, issuer):
-    return Node(_obj=lassomod.assertion_build(response, issuer))
-
-def assertion_add_authenticationStatement(assertion, statement):
-    return lassomod.assertion_add_authenticationStatement(assertion, statement)
-
-def authentication_statement_build(authenticationMethod, sessionIndex,
-                                   reauthenticateOnOrAfter,
-                                   nameIdentifier, nameQualifier,
-                                   format, idp_nameIdentifier,
-                                   idp_nameQualifier, idp_format,
-                                   confirmationMethod):
-    return Node(_obj=lassomod.authentication_statement_build(
-        authenticationMethod, sessionIndex,
-        reauthenticateOnOrAfter,
-        nameIdentifier, nameQualifier,
-        format, idp_nameIdentifier,
-        idp_nameQualifier, idp_format,
-        confirmationMethod))
-
+################################################################################
+# xml : low level classes
+################################################################################
 
 class Node:
     def __init__(self, _obj=None):
         """
         """
-##         if _obj != None:
-##             self._o = _obj
-##             return
+        if _obj != None:
+            self._o = _obj
+            return
 ##         #self._o = lassomod.(size)
 ##         if self._o is None: raise Error('lasso_node_new() failed')
 
@@ -96,15 +79,147 @@ class Node:
         return lassomod.node_verify_signature(self, certificate_file)
 
 
-class AuthnRequest(Node):
+class LibAuthnRequest(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_authn_request_new()
+        if _obj is None: raise Error('lasso_lib_authn_request_new() failed')
+        Node.__init__(self, _obj=_obj)
+        
+    def set_forceAuthn(self, forceAuthn):
+        lassomod.lib_authn_request_set_forceAuthn(self, forceAuthn)
+
+    def set_isPassive(self, isPassive):
+        lassomod.lib_authn_request_set_isPassive(self, isPassive)
+
+    def set_protocolProfile(self, protocolProfile):
+        lassomod.lib_authn_request_set_protocolProfile(self, protocolProfile)
+
+
+class LibFederationTerminationNotification(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_federation_termination_notification_new()
+        if _obj is None:
+            raise Error('lasso_lib_federation_termination_notification_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def set_consent(self, consent):
+        lassomod.lib_federation_termination_notification_set_consent(self, consent)
+
+
+class LibLogoutRequest(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_logout_request_new()
+        if _obj is None: raise Error('lasso_lib_logout_request_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def set_consent(self, consent):
+        lassomod.lib_logout_request_set_consent(self, consent)
+
+    def set_nameIdentifier(self, nameIdentifier):
+        lassomod.lib_logout_request_set_nameIdentifier(self, nameIdentifier)
+
+    def set_providerID(self, providerID):
+        lassomod.lib_logout_request_set_providerID(self, providerID)
+
+    def set_relayState(self, relayState):
+        lassomod.lib_logout_request_set_relayState(self, relayState)
+
+    def set_sessionIndex(self, sessionIndex):
+        lassomod.lib_logout_request_set_sessionIndex(self, sessionIndex)
+
+
+class LibNameIdentifierMappingRequest(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_name_identifier_mapping_request_new()
+        if _obj is None:
+            raise Error('lasso_lib_name_identifier_mapping_request_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def set_consent(self, consent):
+        lassomod.lib_name_identifier_mapping_request_set_consent(self, consent)
+
+
+class SamlAssertion(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_assertion_new()
+        if _obj is None: raise Error('lasso_saml_assertion_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def add_authenticationStatement(self, authenticationStatement):
+        lassomod.saml_assertion_add_authenticationStatement(self,
+                                                            authenticationStatement)
+
+
+class SamlAuthenticationStatement(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_authentication_statement_new()
+        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+
+class SamlNameIdentifier(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_name_identifier_new()
+        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def set_format(self, format):
+        lassomod.saml_name_identifier_set_format(self, format)
+    
+    def set_nameQualifier(self, nameQualifier):
+        lassomod.saml_name_identifier_set_nameQualifier(self, nameQualifier)
+
+################################################################################
+# protocols : high level classes
+################################################################################
+
+def authn_request_get_protocolProfile(query):
+    return lassomod.authn_request_get_protocolProfile(query)
+class AuthnRequest(LibAuthnRequest):
     def __init__(self, providerID, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.authn_request_new(providerID)
-        if self._o is None: raise Error('lasso_authn_request_new() failed')
+        _obj = lassomod.authn_request_new(providerID)
+        if _obj is None: raise Error('lasso_authn_request_new() failed')
+        LibAuthnRequest.__init__(self, _obj=_obj)
     
     def set_requestAuthnContext(self, authnContextClassRefs=None,
                                 authnContextStatementRefs=None,
@@ -118,22 +233,16 @@ class AuthnRequest(Node):
         lassomod.authn_request_set_scoping(self, proxyCount)
 
 
-class AuthnResponse:
-    def __init__(self, query, verify_signature, public_key_file,
-                 private_key_file, certificate_file, is_authenticated,
-                 _obj=None):
+class AuthnResponse(Node):
+    def __init__(self, query, providerID, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.authn_response_create(query,
-                                                 verify_signature,
-                                                 public_key_file,
-                                                 private_key_file,
-                                                 certificate_file,
-                                                 is_authenticated)
-        if self._o is None: raise Error('lasso_authn_response_create() failed')
+        _obj = lassomod.authn_response_new(query, providerID)
+        if _obj is None: raise Error('lasso_authn_response_new() failed')
+        Node.__init__(self, _obj=_obj)
 
     def __isprivate(self, name):
         return name == '_o'
@@ -146,154 +255,102 @@ class AuthnResponse:
         ret = lassomod.authn_response_getattr(self, name)
         if ret is None:
             raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
         return ret
 
-    def init(self, providerID, authentication_result):
-        return lassomod.authn_response_init(self, providerID,
-                                            authentication_result)
-    def add_assertion(self, assertion):
-        return lassomod.authn_response_add_assertion(self, assertion)
+    def add_assertion(self, assertion, private_key_file, certificate_file):
+        lassomod.authn_response_add_assertion(self, assertion,
+                                              private_key_file,
+                                              certificate_file)
+
+    def must_authenticate(self, is_authenticated):
+        return lassomod.authn_response_must_authenticate(self,
+                                                         is_authenticated)
+
+    def process_authentication_result(self, authentication_result):
+        lassomod.authn_response_process_authentication_result(self,
+                                                              authentication_result)
+
+    def verify_signature(self, public_key_file, private_key_file):
+        return lassomod.authn_response_verify_signature(self, public_key_file,
+                                                        private_key_file)
 
 
-class Request:
-    def __init__(self, assertionArtifact, _obj=None):
+class FederationTerminationNotification(LibFederationTerminationNotification):
+    def __init__(self, providerID, nameIdentifier,
+                 nameQualifier=None, format=None, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.request_create(assertionArtifact)
-        if self._o is None: raise Error('lasso_request_create() failed')
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.request_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+        self._o = lassomod.federation_termination_notification_new(providerID,
+                                                                   nameIdentifier,
+                                                                   nameQualifier,
+                                                                   format)
+        if self._o is None:
+            raise Error('lasso_federation_termination_notification_new() failed')
+        LibFederationTerminationNotification.__init__(self, _obj=_obj)
 
 
-class Response:
-    def __init__(self,
-                 serialized_request,
-                 verify_signature,
-                 public_key_file, private_key_file, certificate_file,
-                 _obj=None):
+class LogoutRequest(LibLogoutRequest):
+    def __init__(self, providerID, nameIdentifier,
+                 nameQualifier=None, format=None, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.response_create(serialized_request,
-                                           verify_signature,
-                                           public_key_file, private_key_file, certificate_file)
-        if self._o is None: raise Error('lasso_response_create() failed')
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.response_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        elif name == "request_node":
-            ret = Node(_obj=ret)
-        return ret
-
-    def init(self, authentication_result):
-        return lassomod.response_init(self, authentication_result)
-
-    def add_assertion(self, assertion):
-        return lassomod.response_add_assertion(self, assertion)
-
-class LogoutRequest(Node):
-    def __init__(self,
-                 providerID,
-		 nameIdentifier, nameQualifier, format,
-                 sessionIndex = None, relayState = None, consent = None,
-                 _obj=None):
-        """
-        """
-        if _obj != None:
-            self._o = _obj
-            return
-        self._o = lassomod.logout_request(providerID,
-                                          nameIdentifier,
-                                          nameQualifier,
-                                          format)
-        if self._o is None: raise Error('lasso_logout_request() failed')
-
-        if sessionIndex:
-            lassomod.logout_request_set_sessionIndex(self, sessionIndex)
-
-        if relayState:
-            lassomod.logout_request_set_relayState(self, relayState)
-
-        if consent:
-            lassomod.logout_request_set_consent(self, consent)
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.logout_request_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+        _obj = lassomod.logout_request_new(providerID,
+                                           nameIdentifier,
+                                           nameQualifier,
+                                           format)
+        if _obj is None: raise Error('lasso_logout_request_new() failed')
+        LibLogoutRequest.__init__(self, _obj=_obj)
 
 
 class LogoutResponse(Node):
-    def __init__(self,
-                 providerID,
-                 statusCodeValue,
-                 request,
-                 _obj=None):
+    def __init__(self, providerID, statusCodeValue, request, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.logout_response(providerID,
-                                           statusCodeValue,
-                                           request)
-        if self._o is None: raise Error('lasso_logout_response() failed')
+        _obj = lassomod.logout_response_new(providerID, statusCodeValue,
+                                            request)
+        if _obj is None: raise Error('lasso_logout_response_new() failed')
+        Node.__init__(self, _obj=_obj)
 
-    def __isprivate(self, name):
-        return name == '_o'
 
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.logout_response_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret   
+class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
+    def __init__(self, providerID, nameIdentifier,
+                 nameQualifier=None, format=None, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.name_identifier_mapping_request_new(providerID,
+                                                            nameIdentifier,
+                                                            nameQualifier,
+                                                            format)
+        if _obj is None:
+            raise Error('lasso_name_identifier_mapping_request_new() failed')
+        LibNameIdentifierMappingRequest.__init__(self, _obj=_obj)
+
+
+class NameIdentifierMappingResponse(Node):
+    def __init__(self, providerID, statusCodeValue, request, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.name_identifier_mapping_response_new(providerID,
+                                                             statusCodeValue,
+                                                             request)
+        if _obj is None:
+            raise Error('lasso_name_identifier_mapping_response_new() failed')
+        Node.__init__(self, _obj=_obj)
 
 
 class RegisterNameIdentifierRequest(Node):
@@ -302,36 +359,19 @@ class RegisterNameIdentifierRequest(Node):
                  idpNameIdentifier, idpNameQualifier, idpFormat,
                  spNameIdentifier,  spNameQualifier,  spFormat,
                  oldNameIdentifier, oldNameQualifier, oldFormat,
-                 relayState = None,
 		 _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.register_name_identifier_request(providerID,
-                                                            idpNameIdentifier, idpNameQualifier, idpFormat,
-                                                            spNameIdentifier,  spNameQualifier,  spFormat,
-                                                            oldNameIdentifier, oldNameQualifier, oldFormat)
-        if self._o is None: raise Error('lasso_register_name_identifier_request() failed')
-
-        if relayState:
-            lassomod.register_name_identifier_request_set_relayState(self, relayState)
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.register_name_identifier_request_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+        _obj = lassomod.register_name_identifier_request_new(providerID,
+                                                             idpNameIdentifier, idpNameQualifier, idpFormat,
+                                                             spNameIdentifier,  spNameQualifier,  spFormat,
+                                                             oldNameIdentifier, oldNameQualifier, oldFormat)
+        if _obj is None:
+            raise Error('lasso_register_name_identifier_request_new() failed')
+        Node.__init__(self, _obj=_obj)
 
     def changeAttributeNamesIdentifiers(self):
         lassomod.register_name_identifier_request_change_attribute_names_identifiers(self);
@@ -348,122 +388,57 @@ class RegisterNameIdentifierResponse(Node):
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.register_name_identifier_response(providerID,
-                                           statusCodeValue,
-                                           request)
-        if self._o is None: raise Error('lasso_register_name_identifier_response() failed')
+        _obj = lassomod.register_name_identifier_response_new(providerID,
+                                                              statusCodeValue,
+                                                              request)
+        if _obj is None:
+            raise Error('lasso_register_name_identifier_response_new() failed')
+        Node.__init__(self, _obj=_obj)
 
-    def __isprivate(self, name):
-        return name == '_o'
+################################################################################
+# elements
+################################################################################
 
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.register_name_identifier_response_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
-
-
-class FederationTerminationNotification(Node):
-    def __init__(self,
-                 providerID,
-                 nameIdentifier, nameQualifier, format,
-                 consent = None,
-		 _obj=None):
+class Assertion(SamlAssertion):
+    def __init__(self, issuer, requestID, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.federation_termination_notification(providerID,
-                                                               nameIdentifier, nameQualifier, format)
-        if self._o is None: raise Error('lasso_federation_termination_notification() failed')
-
-        if consent:
-            lassomod.federation_termination_notification_set_consent(self, consent)
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.federation_termination_notification_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+        _obj = lassomod.assertion_new(issuer, requestID)
+        if _obj is None: raise Error('lasso_assertion_new() failed')
+        SamlAssertion.__init__(self, _obj=_obj)
 
 
-class NameIdentifierMappingRequest(Node):
+class AuthenticationStatement(Node):
     def __init__(self,
-                 providerID,
-                 nameIdentifier, nameQualifier, format,
-                 consent = None,
-		 _obj=None):
-        """
-        """
-        if _obj != None:
-            self._o = _obj
-            return
-        self._o = lassomod.name_identifier_mapping_request(providerID,
-                                                           nameIdentifier, nameQualifier, format)
-        if self._o is None: raise Error('lasso_name_identifier_mapping_request() failed')
-
-        if consent:
-            lassomod.name_identifier_mapping_request_set_consent(self, consent)
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.name_identifier_mapping_request_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
-
-
-class NameIdentifierMappingResponse(Node):
-    def __init__(self,
-                 providerID,
-                 statusCodeValue,
-                 request,
+                 authenticationMethod,
+                 sessionIndex,
+                 reauthenticateOnOrAfter,
+                 nameIdentifier,
+                 nameQualifier,
+                 format,
+                 idp_nameIdentifier,
+                 idp_nameQualifier,
+                 idp_format,
+                 confirmationMethod,
                  _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        self._o = lassomod.name_identifier_mapping_response(providerID,
-                                           statusCodeValue,
-                                           request)
-        if self._o is None: raise Error('lasso_name_identifier_mapping_response() failed')
-
-    def __isprivate(self, name):
-        return name == '_o'
-
-    def __getattr__(self, name):
-        if self.__isprivate(name):
-            return self.__dict__[name]
-        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
-            raise AttributeError, name
-        ret = lassomod.name_identifier_mapping_response_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "node":
-            ret = Node(_obj=ret)
-        return ret
+        _obj = lassomod.authentication_statement_new(authenticationMethod,
+                                                     sessionIndex,
+                                                     reauthenticateOnOrAfter,
+                                                     nameIdentifier,
+                                                     nameQualifier,
+                                                     format,
+                                                     idp_nameIdentifier,
+                                                     idp_nameQualifier,
+                                                     idp_format,
+                                                     confirmationMethod)
+        if _obj is None:
+            raise Error('lasso_authentication_statement_new() failed')
+        Node.__init__(self, _obj=_obj)

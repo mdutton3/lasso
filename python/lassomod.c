@@ -25,20 +25,34 @@
 #include "lassomod.h"
 
 #include "py_lasso.h"
+
 #include "xml/py_xml.h"
+#include "xml/py_lib_authn_request.h"
+#include "xml/py_lib_federation_termination_notification.h"
+#include "xml/py_lib_logout_request.h"
+#include "xml/py_lib_name_identifier_mapping_request.h"
+#include "xml/py_lib_register_name_identifier_request.h"
+#include "xml/py_saml_assertion.h"
+#include "xml/py_saml_authentication_statement.h"
+#include "xml/py_saml_name_identifier.h"
+
 #include "protocols/py_authn_request.h"
+#include "protocols/py_authn_response.h"
+#include "protocols/py_federation_termination_notification.h"
 #include "protocols/py_logout_request.h"
 #include "protocols/py_logout_response.h"
-#include "protocols/py_register_name_identifier_request.h"
-#include "protocols/py_register_name_identifier_response.h"
-#include "protocols/py_federation_termination_notification.h"
 #include "protocols/py_name_identifier_mapping_request.h"
 #include "protocols/py_name_identifier_mapping_response.h"
+#include "protocols/py_register_name_identifier_request.h"
+#include "protocols/py_register_name_identifier_response.h"
+
+#include "protocols/elements/py_assertion.h"
+#include "protocols/elements/py_authentication_statement.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
   {"init",                init,                METH_VARARGS},
-  {"shutdown",            shutdown,            METH_VARARGS},
+  {"shutdown",            shutdown2,           METH_VARARGS},
   {"check_version_exact", check_version_exact, METH_VARARGS},
   {"check_version",       check_version,       METH_VARARGS},
   {"check_version_ext",   check_version_ext,   METH_VARARGS},
@@ -52,65 +66,98 @@ static PyMethodDef lasso_methods[] = {
   {"node_url_encode",       node_url_encode,       METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
+  /* py_lib_authn_request.h */
+  {"lib_authn_request_new",                 lib_authn_request_new,                 METH_VARARGS},
+  {"lib_authn_request_set_forceAuthn",      lib_authn_request_set_forceAuthn,      METH_VARARGS},
+  {"lib_authn_request_set_isPassive",       lib_authn_request_set_isPassive,       METH_VARARGS},
+  {"lib_authn_request_set_protocolProfile", lib_authn_request_set_protocolProfile, METH_VARARGS},
+
+  /* py_lib_federation_termination_notification.h */
+  {"lib_federation_termination_notification_new",         lib_federation_termination_notification_new,         METH_VARARGS},
+  {"lib_federation_termination_notification_set_consent", lib_federation_termination_notification_set_consent, METH_VARARGS},
+
+  /* py_lib_logout_request.h */
+  {"lib_logout_request_new",                lib_logout_request_new,                METH_VARARGS},
+  {"lib_logout_request_set_consent",        lib_logout_request_set_consent,        METH_VARARGS},
+  {"lib_logout_request_set_nameIdentifier", lib_logout_request_set_nameIdentifier, METH_VARARGS},
+  {"lib_logout_request_set_providerID",     lib_logout_request_set_providerID,     METH_VARARGS},
+  {"lib_logout_request_set_relayState",     lib_logout_request_set_relayState,     METH_VARARGS},
+  {"lib_logout_request_set_sessionIndex",   lib_logout_request_set_sessionIndex,   METH_VARARGS},
+
+  /* py_lib_name_identifier_mapping_request.h */
+  {"lib_name_identifier_mapping_request_new",         lib_name_identifier_mapping_request_new,         METH_VARARGS},
+  {"lib_name_identifier_mapping_request_set_consent", lib_name_identifier_mapping_request_set_consent, METH_VARARGS},
+
+  /* py_lib_register_name_identifier_request.h */
+  {"lib_register_name_identifier_request_new",            lib_register_name_identifier_request_new,            METH_VARARGS},
+  {"lib_register_name_identifier_request_set_relayState", lib_register_name_identifier_request_set_relayState, METH_VARARGS},
+
+  /* py_saml_assertion.h */
+  {"saml_assertion_new",                         saml_assertion_new,                         METH_VARARGS},
+  {"saml_assertion_add_authenticationStatement", saml_assertion_add_authenticationStatement, METH_VARARGS},
+
+  /* py_saml_authentication_statement.h */
+  {"saml_authentication_statement_new", saml_authentication_statement_new, METH_VARARGS},
+
+  /* py_saml_name_identifier.h */
+  {"saml_name_identifier_new",               saml_name_identifier_new,               METH_VARARGS},
+  {"saml_name_identifier_set_format",        saml_name_identifier_set_format,        METH_VARARGS},
+  {"saml_name_identifier_set_nameQualifier", saml_name_identifier_set_nameQualifier, METH_VARARGS},
+
   /* protocols */
-  /* py_logout_request.h */
-  {"logout_request_getattr",      logout_request_getattr,      METH_VARARGS},
-  {"logout_request",              logout_request,              METH_VARARGS},
-
-  {"logout_request_set_sessionIndex", logout_request_set_sessionIndex, METH_VARARGS},
-  {"logout_request_set_relayState",   logout_request_set_relayState,   METH_VARARGS},
-  {"logout_request_set_consent",      logout_request_set_consent,      METH_VARARGS},
-
-  /* py_logout_response.h */
-  {"logout_response_getattr", logout_response_getattr, METH_VARARGS},
-  {"logout_response",         logout_response,         METH_VARARGS},
-
-  /* py_register_name_identifier_request.h */
-  {"register_name_identifier_request_getattr",        register_name_identifier_request_getattr,        METH_VARARGS},
-  {"register_name_identifier_request",                register_name_identifier_request,                METH_VARARGS},
-  {"register_name_identifier_request_change_attribute_names_identifiers",
-       register_name_identifier_request_change_attribute_names_identifiers, METH_VARARGS},
-  {"register_name_identifier_request_set_relayState", register_name_identifier_request_set_relayState, METH_VARARGS},
-
-  /* py_register_name_identifier_response.h */
-  {"register_name_identifier_response_getattr", register_name_identifier_response_getattr, METH_VARARGS},
-  {"register_name_identifier_response",         register_name_identifier_response,         METH_VARARGS},
-
   /* py_authn_request.h */
   {"authn_request_new",                     authn_request_new,                     METH_VARARGS},
   {"authn_request_set_requestAuthnContext", authn_request_set_requestAuthnContext, METH_VARARGS},
   {"authn_request_set_scoping",             authn_request_set_scoping,             METH_VARARGS},
+  {"authn_request_get_protocolProfile", authn_request_get_protocolProfile, METH_VARARGS},
 
   /* py_authn_response.h */
-/*   {"authn_response_getattr",       authn_response_getattr,       METH_VARARGS}, */
-/*   {"authn_response_create",        authn_response_create,        METH_VARARGS}, */
-/*   {"authn_response_init",          authn_response_init,          METH_VARARGS}, */
-/*   {"authn_response_add_assertion", authn_response_add_assertion, METH_VARARGS}, */
-/*   {"assertion_build",                       assertion_build,                       METH_VARARGS}, */
-/*   {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS}, */
-/*   {"authentication_statement_build", authentication_statement_build, METH_VARARGS}, */
+  {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
+  {"authn_response_new",                           authn_response_new,                           METH_VARARGS},
+  {"authn_response_add_assertion",                 authn_response_add_assertion,                 METH_VARARGS},
+  {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
+  {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},
+  {"authn_response_verify_signature",              authn_response_verify_signature,              METH_VARARGS},
 
+  /* py_federation_termination_notification.h */
+  {"federation_termination_notification_new", federation_termination_notification_new, METH_VARARGS},
+
+  /* py_logout_request.h */
+  {"logout_request_new", logout_request_new, METH_VARARGS},
+
+  /* py_logout_response.h */
+  {"logout_response_new", logout_response_new, METH_VARARGS},
+
+  /* py_name_identifier_mapping_request.h */
+  {"name_identifier_mapping_request_new", name_identifier_mapping_request_new, METH_VARARGS},
+
+  /* py_name_identifier_mapping_response.h */
+  {"name_identifier_mapping_response_new", name_identifier_mapping_response_new, METH_VARARGS},
+
+  /* py_register_name_identifier_request.h */
+  {"register_name_identifier_request_new", register_name_identifier_request_new, METH_VARARGS},
+  {"register_name_identifier_request_change_attribute_names_identifiers",
+       register_name_identifier_request_change_attribute_names_identifiers, METH_VARARGS},
+
+  /* py_register_name_identifier_response.h */
+  {"register_name_identifier_response_new", register_name_identifier_response_new, METH_VARARGS},
+
+  /* py_request.h */
 /*   {"request_create", request_create, METH_VARARGS}, */
 /*   {"request_getattr", request_getattr, METH_VARARGS}, */
 
+  /* py_response.h */
 /*   {"response_create", response_create, METH_VARARGS}, */
 /*   {"response_getattr", response_getattr, METH_VARARGS}, */
 /*   {"response_init", response_init, METH_VARARGS}, */
 /*   {"response_add_assertion", response_add_assertion, METH_VARARGS}, */
 
-  /* py_federation_termination_notification.h */
-  {"federation_termination_notification_getattr", federation_termination_notification_getattr, METH_VARARGS},
-  {"federation_termination_notification",  federation_termination_notification,  METH_VARARGS},
-  {"federation_termination_notification_set_consent",  federation_termination_notification_set_consent,  METH_VARARGS},
+  /* protocols/elements */
+  /* assertion.h */
+  {"assertion_new", assertion_new, METH_VARARGS},
 
-  /* py_name_identifier_mapping_request.h */
-  {"name_identifier_mapping_request_getattr", name_identifier_mapping_request_getattr, METH_VARARGS},
-  {"name_identifier_mapping_request",  name_identifier_mapping_request,  METH_VARARGS},
-  {"name_identifier_mapping_request_set_consent",  name_identifier_mapping_request_set_consent,  METH_VARARGS},
-
-  {"name_identifier_mapping_response_getattr", name_identifier_mapping_response_getattr, METH_VARARGS},
-  {"name_identifier_mapping_response",  name_identifier_mapping_response,  METH_VARARGS},
-
+  /* authentication_statement.h */
+  {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
