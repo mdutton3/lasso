@@ -53,7 +53,9 @@
 #include "protocols/elements/py_assertion.h"
 #include "protocols/elements/py_authentication_statement.h"
 
+#include "environs/py_login.h"
 #include "environs/py_server.h"
+#include "environs/py_user.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -141,7 +143,7 @@ static PyMethodDef lasso_methods[] = {
   {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
   {"authn_response_new_from_dump",                 authn_response_new_from_dump,                 METH_VARARGS},
   {"authn_response_new_from_export",               authn_response_new_from_export,               METH_VARARGS},
-  {"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
+  //{"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
   {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
   {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},
   {"authn_response_verify_signature",              authn_response_verify_signature,              METH_VARARGS},
@@ -186,7 +188,6 @@ static PyMethodDef lasso_methods[] = {
   {"register_name_identifier_response_new_from_request_query", register_name_identifier_response_new_from_request_query, METH_VARARGS},
   {"register_name_identifier_response_new_from_query",         register_name_identifier_response_new_from_query,         METH_VARARGS},
 
-
   /* py_request.h */
 /*   {"request_create", request_create, METH_VARARGS}, */
 /*   {"request_getattr", request_getattr, METH_VARARGS}, */
@@ -205,9 +206,17 @@ static PyMethodDef lasso_methods[] = {
   {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
 
   /* environs */
+  /* py_login.h */
+  {"login_new",           login_new,           METH_VARARGS},
+  {"login_new_from_dump", login_new_from_dump, METH_VARARGS},
+
   /* py_server.h */
   {"server_new",          server_new,          METH_VARARGS},
   {"server_add_provider", server_add_provider, METH_VARARGS},
+
+  /* py_user.h */
+  {"user_new",           user_new,           METH_VARARGS},
+  {"user_new_from_dump", user_new_from_dump, METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };

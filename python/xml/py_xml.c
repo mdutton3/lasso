@@ -112,8 +112,8 @@ PyObject *node_export_to_query(PyObject *self, PyObject *args) {
   const gchar *private_key_file;
   gchar *ret;
 
-  if (CheckArgs(args, "OIS:node_export_to_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "Ois:node_export_to_query",
+  if (CheckArgs(args, "Ois:node_export_to_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oiz:node_export_to_query",
 			 &node_obj, &sign_method, &private_key_file))
       return NULL;
   }

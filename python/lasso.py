@@ -441,7 +441,7 @@ class LibRegisterNameIdentifierResponse(Node):
         Node.__init__(self, _obj=_obj)
 
 ################################################################################
-# protocols : high level classes
+# protocols : middle level classes
 ################################################################################
 
 def authn_request_get_protocolProfile(query):
@@ -816,3 +816,28 @@ class AuthenticationStatement(Node):
         if _obj is None:
             raise Error('lasso_authentication_statement_new() failed')
         Node.__init__(self, _obj=_obj)
+
+################################################################################
+# environs : high level classes
+################################################################################
+SignatureMethodRsaSha1 = 1
+SignatureMethodDsaSha1 = 2
+class Login:
+    """\brief Short desc
+
+    Long desc
+    """
+    def __init__(self, _obj):
+        """
+        The constructor
+        """
+        self._o = _obj
+
+    def new(cls, server, user=None):
+        obj = lassomod.login_new(server, user)
+        return Login(obj)
+    new = classmethod(new)
+
+    def add_provider(self, metadata, public_key=None, certificate=None):
+        lassomod.lasso_server_add_provider(self, metadata,
+                                           public_key, certificate)

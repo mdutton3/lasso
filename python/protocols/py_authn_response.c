@@ -47,32 +47,6 @@ PyObject *LassoAuthnResponse_wrap(LassoAuthnResponse *response) {
 
 /******************************************************************************/
 
-PyObject *authn_response_getattr(PyObject *self, PyObject *args) {
-  PyObject *reponse_obj;
-  LassoAuthnResponse *reponse;
-  const char *attr;
-
-  if (CheckArgs(args, "OS:authn_response_get_attr")) {
-    if (!PyArg_ParseTuple(args, "Os:authn_response_get_attr", &reponse_obj, &attr))
-      return NULL;
-  }
-  else return NULL;
-
-  reponse = LassoAuthnResponse_get(reponse_obj);
-
-  if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ss]", "request", "query");
-  if (!strcmp(attr, "request"))
-    return (LassoAuthnRequest_wrap(LASSO_AUTHN_REQUEST(reponse->request)));
-  if (!strcmp(attr, "query"))
-    return (xmlCharPtr_wrap(reponse->query));
-
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-/******************************************************************************/
-
 PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args) {
   xmlChar   *buffer;
   LassoNode *response;
