@@ -29,26 +29,26 @@
 /*****************************************************************************/
 
 gchar *
-lasso_register_name_identifier_dump(LassoRegisterNameIdentifier *register_name_identifier)
+lasso_register_name_identifier_dump(LassoRegisterNameIdentifier *registration)
 {
   LassoProfileContext *profileContext;
   gchar *dump;
 
-  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), NULL);
+  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(registration), NULL);
 
   return(dump);
 }
 
 gint
-lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *register_name_identifier)
+lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *registration)
 {
   LassoProfileContext *profileContext;
   LassoProvider       *provider;
   xmlChar             *protocolProfile;
 
-  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
+  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(registration), -1);
   
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+  profileContext = LASSO_PROFILE_CONTEXT(registration);
 
   /* get the prototocol profile of the register_name_identifier */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
@@ -64,13 +64,13 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniIdpSoap)){
-    debug(DEBUG, "building a soap request message\n");
+    debug(DEBUG, "Building a register name identifier request soap message\n");
     profileContext->request_type = lassoHttpMethodSoap;
     profileContext->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp)){
-    debug(DEBUG, "building a http get request message\n");
+    debug(DEBUG, "building a register name identifier request http redirect message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
     lasso_register_name_identifier_rename_attributes_for_query(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(profileContext->request));
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
@@ -83,15 +83,15 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
 }
 
 gint
-lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *register_name_identifier)
+lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *registration)
 {
   LassoProfileContext *profileContext;
   LassoProvider       *provider;
   xmlChar             *protocolProfile;
   
-  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
+  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(registration), -1);
 
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+  profileContext = LASSO_PROFILE_CONTEXT(registration);
 
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
@@ -106,12 +106,12 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniIdpSoap)){
-    debug(DEBUG, "building a soap response message\n");
+    debug(DEBUG, "Building a register name identifier request soap message\n");
     profileContext->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp)){
-    debug(DEBUG, "building a http get response message\n");
+    debug(DEBUG, "building a register name identifier request HTTP redirect message\n");
     profileContext->response_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->response,
 							 profileContext->server->signature_method,
@@ -123,7 +123,7 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
 }
 
 gint
-lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *register_name_identifier,
+lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registration,
 					    gchar                       *remote_providerID)
 {
   LassoProfileContext                 *profileContext;
@@ -137,11 +137,11 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 
   xmlChar *providerID;
 
-  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
+  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(registration), -1);
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server));
 
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+  profileContext = LASSO_PROFILE_CONTEXT(registration);
   profileContext->remote_providerID = remote_providerID;
 
   /* TODO : implement the setting of the request */
@@ -189,7 +189,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     spFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format");
     break;
   default:
-    debug(ERROR, "Unknown provider type\n");
+    debug(ERROR, "Unknown provider type (%d)\n", profileContext->provider_type);
   }
 
   lasso_register_name_identifier_request_new(providerID,
@@ -207,26 +207,26 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 }
 
 gint
-lasso_register_name_identifier_handle_request_msg(LassoRegisterNameIdentifier      *register_name_identifier,
-				gchar            *request_msg,
-				lassoHttpMethods  request_method)
+lasso_register_name_identifier_handle_request_msg(LassoRegisterNameIdentifier *registration,
+						  gchar                       *request_msg,
+						  lassoHttpMethods             request_method)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity *identity;
-  LassoNode *nameIdentifier, *assertion;
-  LassoNode *statusCode;
-  LassoNodeClass *statusCode_class;
-  xmlChar *remote_providerID;
+  LassoIdentity       *identity;
+  LassoNode           *nameIdentifier, *assertion;
+  LassoNode           *statusCode;
+  LassoNodeClass      *statusCode_class;
+  xmlChar             *remote_providerID;
 
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+  profileContext = LASSO_PROFILE_CONTEXT(registration);
 
   switch(request_method){
   case lassoHttpMethodSoap:
-    debug(DEBUG, "build a register_name_identifier request from soap msg\n");
+    debug(DEBUG, "Build a register name identifier request from soap message\n");
     profileContext->request = lasso_register_name_identifier_request_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
-    debug(DEBUG, "build a register_name_identifier request from query msg\n");
+    debug(DEBUG, "build a register name identifier request from query message\n");
     profileContext->request = lasso_register_name_identifier_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
@@ -258,12 +258,11 @@ lasso_register_name_identifier_handle_request_msg(LassoRegisterNameIdentifier   
 
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
 
-
   return(0);
 }
 
 gint
-lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *register_name_identifier,
+lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *registration,
 						   gchar                       *response_msg,
 						   lassoHttpMethods             response_method)
 {
@@ -271,14 +270,16 @@ lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *
   xmlChar   *statusCodeValue;
   LassoNode *statusCode;
 
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+  profileContext = LASSO_PROFILE_CONTEXT(registration);
 
   /* parse RegisterNameIdentifierResponse */
   switch(response_method){
   case lassoHttpMethodSoap:
     profileContext->response = lasso_register_name_identifier_response_new_from_soap(response_msg);
+  case lassoHttpMethodRedirect:
+    profileContext->response = lasso_register_name_identifier_response_new_from_query(response_msg);
   default:
-    debug(ERROR, "Unkown response method\n");
+    debug(ERROR, "Unkown response method (%d)\n", response_method);
   }
  
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
@@ -334,20 +335,16 @@ lasso_register_name_identifier_new(LassoServer *server,
 				   LassoUser   *user,
 				   gint         provider_type)
 {
-  LassoRegisterNameIdentifier *register_name_identifier;
-  LassoProfileContext         *profileContext;
+  LassoRegisterNameIdentifier *registration;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the register_name_identifier object */
-  register_name_identifier = g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER, NULL);
-
-  /* set the properties */
-  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
-  profileContext->user = user;
-  profileContext->server = server;
-  profileContext->provider_type = provider_type;
-
-  return(register_name_identifier);
+  registration = g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER,
+			      "server", server,
+			      "user", user,
+			      "provider_type", provider_type,
+			      NULL);
+  return(registration);
 }
