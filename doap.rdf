@@ -37,6 +37,12 @@
         <foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com"/>
       </foaf:Person>
     </maintainer>
+    <maintainer>
+      <foaf:Person>
+        <foaf:name>Frédéric Péters</foaf:name>
+        <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
+      </foaf:Person>
+    </maintainer>
     <repository>
       <CVSRepository>
         <anon-root>:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso</anon-root>

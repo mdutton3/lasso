@@ -2,7 +2,7 @@
 /*  
  * Service Provider Example -- Logout
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: Christophe Nowicki <cnowicki@easter-eggs.com>

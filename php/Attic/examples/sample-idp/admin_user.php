@@ -2,7 +2,7 @@
 /*  
  * Identity Provider Example -- User Administration 
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: Christophe Nowicki <cnowicki@easter-eggs.com>
@@ -296,7 +296,7 @@
 </p>
 
 <br>
-<p>Copyright &copy; 2004 Entr'ouvert</p>
+<p>Copyright &copy; 2004, 2005 Entr'ouvert</p>
 
 </body>
 

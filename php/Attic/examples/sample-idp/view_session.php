@@ -2,7 +2,7 @@
 /*  
  * Service Provider Example -- Online User Viewer
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: Christophe Nowicki <cnowicki@easter-eggs.com>
@@ -115,7 +115,7 @@ You can get more informations about <b>Lasso</b> at <br>
 <p align='center'><a href='index.php'>Index</a>
 </p>
 <br>
-<p align='center'>Copyright &copy; 2004 Entr'ouvert</p>
+<p align='center'>Copyright &copy; 2004, 2005 Entr'ouvert</p>
 
 </body>
 </html>

@@ -3,7 +3,7 @@
  *
  * Service Provider Example -- Installation Script
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: Christophe Nowicki <cnowicki@easter-eggs.com>
@@ -411,7 +411,7 @@
 </form>
 <p align='center'><a href='index.php'>Index</a>
 </p>
-<p>Copyright &copy; 2004 Entr'ouvert</p>
+<p>Copyright &copy; 2004, 2005 Entr'ouvert</p>
 </body>
 </html>
 <?php

@@ -7,7 +7,7 @@
 # Copyright (C) 2004, 2005 Entr'ouvert
 # http://lasso.entrouvert.org
 #
-# Authors: See AUTHORS file.
+# Authors: See AUTHORS file in top-level directory.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
