@@ -38,7 +38,7 @@ lasso_service_dump(LassoService *service)
 void
 lasso_service_destroy(LassoService *service)
 {
-	/* XXX do nothing */
+	lasso_node_destroy(LASSO_NODE(service));
 }
 
 /*****************************************************************************/
@@ -49,7 +49,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "type", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoService, type) },
 	{ "endpoint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoService, endpoint) },
 	{ "ServiceDumpVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
-	  G_STRUCT_OFFSET(LassoService, ServiceDumpVersion) },
+		G_STRUCT_OFFSET(LassoService, ServiceDumpVersion) },
 	{ NULL, 0, 0}
 };
 
