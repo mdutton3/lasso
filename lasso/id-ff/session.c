@@ -29,6 +29,7 @@ struct _LassoSessionPrivate
 {
 	gboolean dispose_has_run;
 	GList *providerIDs;
+	GHashTable *status; /* hold temporary response status for sso-art */
 };
 
 /*****************************************************************************/
@@ -60,6 +61,32 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAs
 }
 
 /**
+ * lasso_session_add_status:
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ * @status: the status
+ *
+ * Adds @status to the principal session.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_session_add_status(LassoSession *session, char *providerID, LassoSamlpStatus *status)
+{
+	g_return_val_if_fail(session != NULL, -1);
+	g_return_val_if_fail(providerID != NULL, -2);
+	g_return_val_if_fail(status != NULL, -3);
+
+	g_hash_table_insert(session->private_data->status, g_strdup(providerID), status);
+
+	session->is_dirty = TRUE;
+
+	return 0;
+}
+
+
+
+/**
  * lasso_session_get_assertion
  * @session: a #LassoSession
  * @providerID: the provider ID
@@ -74,6 +101,22 @@ LassoSamlAssertion*
 lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 {
 	return g_hash_table_lookup(session->assertions, providerID);
+}
+
+/**
+ * lasso_session_get_status
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ *
+ * Gets the status for the given @providerID.
+ *
+ * Return value: the status or NULL if it didn't exist.  This #LassoSamlpStatus
+ *      is internally allocated and must not be freed by the caller.
+ **/
+LassoSamlpStatus*
+lasso_session_get_status(LassoSession *session, gchar *providerID)
+{
+	return g_hash_table_lookup(session->private_data->status, providerID);
 }
 
 static void
@@ -116,6 +159,27 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 }
 
 /**
+ * lasso_session_is_empty:
+ * @session: a #LassoSession
+ *
+ * Returns %TRUE if session is empty.
+ *
+ * Return value: %TRUE if empty
+ **/
+gboolean
+lasso_session_is_empty(LassoSession *session)
+{
+	if (session == NULL) return TRUE;
+
+	if (g_hash_table_size(session->assertions))
+		return FALSE;
+	if (g_hash_table_size(session->private_data->status))
+		return FALSE;
+
+	return TRUE;
+}
+
+/**
  * lasso_session_remove_assertion:
  * @session: a #LassoSession
  * @providerID: the provider ID
@@ -135,6 +199,26 @@ lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 	return LASSO_ERROR_UNDEFINED; /* assertion not found */
 }
 
+/**
+ * lasso_session_remove_status:
+ * @session: a #LassoSession
+ * @providerID: the provider ID
+ *
+ * Removes status for @providerID from @session.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_session_remove_status(LassoSession *session, gchar *providerID)
+{
+	if (g_hash_table_remove(session->private_data->status, providerID)) {
+		session->is_dirty = TRUE;
+		return 0;
+	}
+
+	return LASSO_ERROR_UNDEFINED; /* status not found */
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -146,6 +230,15 @@ add_assertion_childnode(gchar *key, LassoLibAssertion *value, xmlNode *xmlnode)
 {
 	xmlNode *t;
 	t = xmlNewTextChild(xmlnode, NULL, "Assertion", NULL);
+	xmlSetProp(t, "RemoteProviderID", key);
+	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
+}
+
+static void
+add_status_childnode(gchar *key, LassoSamlpStatus *value, xmlNode *xmlnode)
+{
+	xmlNode *t;
+	t = xmlNewTextChild(xmlnode, NULL, "Status", NULL);
 	xmlSetProp(t, "RemoteProviderID", key);
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
@@ -163,6 +256,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	if (g_hash_table_size(session->assertions))
 		g_hash_table_foreach(session->assertions,
 				(GHFunc)add_assertion_childnode, xmlnode);
+	if (g_hash_table_size(session->private_data->status))
+		g_hash_table_foreach(session->private_data->status,
+				(GHFunc)add_status_childnode, xmlnode);
 
 	return xmlnode;
 }
@@ -187,10 +283,19 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			if (n) {
 				LassoLibAssertion *assertion;
 				assertion = LASSO_LIB_ASSERTION(lasso_node_new_from_xmlNode(n));
-				g_hash_table_insert(
-						session->assertions,
-						xmlGetProp(t, "RemoteProviderID"),
-						assertion);
+				g_hash_table_insert(session->assertions,
+						xmlGetProp(t, "RemoteProviderID"), assertion);
+			}
+		}
+		if (strcmp(t->name, "Status") == 0) {
+			n = t->children;
+			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
+			
+			if (n) {
+				LassoSamlpStatus *status;
+				status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(n));
+				g_hash_table_insert(session->private_data->status,
+						xmlGetProp(t, "RemoteProviderID"), status);
 			}
 		}
 		t = t->next;
@@ -248,6 +353,9 @@ instance_init(LassoSession *session)
 	session->private_data = g_new (LassoSessionPrivate, 1);
 	session->private_data->dispose_has_run = FALSE;
 	session->private_data->providerIDs = NULL;
+	session->private_data->status = g_hash_table_new_full(g_str_hash, g_str_equal,
+			(GDestroyNotify)g_free,
+			(GDestroyNotify)lasso_node_destroy);
 
 	session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify)g_free,
@@ -337,7 +445,7 @@ lasso_session_new_from_dump(const gchar *dump)
 gchar*
 lasso_session_dump(LassoSession *session)
 {
-	if (g_hash_table_size(session->assertions) == 0)
+	if (lasso_session_is_empty(session))
 		return g_strdup("");
 
 	return lasso_node_dump(LASSO_NODE(session), NULL, 1);

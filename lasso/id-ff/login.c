@@ -27,6 +27,7 @@
 
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
+#include <lasso/xml/samlp_response.h>
 
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
@@ -248,10 +249,8 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 			/* if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
 			 * set StatusCode to FederationDoesNotExist in lib:AuthnResponse
 			 */
-			if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-				lasso_profile_set_response_status(LASSO_PROFILE(login),
-						LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			}
+			lasso_profile_set_response_status(LASSO_PROFILE(login),
+					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 		}
 
@@ -283,10 +282,8 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 		 * set StatusCode to FederationDoesNotExist in lib:AuthnResponse
 		 */
 		/* FIXME : is it the correct value for the StatusCode ? */
-		if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-			lasso_profile_set_response_status(LASSO_PROFILE(login),
-					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-		}
+		lasso_profile_set_response_status(LASSO_PROFILE(login),
+				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 		return LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED;
 	}
 
@@ -514,6 +511,11 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 	xmlFree(url);
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
+
+	if (profile->session == NULL)
+		profile->session = lasso_session_new();
+	lasso_session_add_status(profile->session, profile->remote_providerID,
+			g_object_ref(LASSO_SAMLP_RESPONSE(profile->response)->Status));
 
 	return ret;
 }
@@ -747,9 +749,19 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 				lasso_profile_set_response_status(profile,
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 			} else {
-				/* FIXME should this message output by
-				 * lasso_session_get_assertion () ? */
-				message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session");
+				LassoSamlpStatus *status;
+				/* no assertion, get back status code */
+				status = lasso_session_get_status(profile->session,
+						remote_providerID);
+				if (status) {
+					lasso_node_destroy(LASSO_NODE(LASSO_SAMLP_RESPONSE(
+								profile->response)->Status));
+					LASSO_SAMLP_RESPONSE(profile->response)->Status =
+						g_object_ref(status);
+					lasso_session_remove_status(profile->session,
+							remote_providerID);
+				}
+				
 			}
 		}
 	} else {

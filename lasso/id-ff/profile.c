@@ -177,9 +177,13 @@ lasso_profile_get_identity(LassoProfile *profile)
 LassoSession*
 lasso_profile_get_session(LassoProfile *profile)
 {
-	if (profile->session && g_hash_table_size(profile->session->assertions))
-		return profile->session;
-	return NULL;
+	if (profile->session == NULL)
+		return NULL;
+
+	if (lasso_session_is_empty(profile->session))
+		return NULL;
+
+	return profile->session;
 }
 
 gboolean

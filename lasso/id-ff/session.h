@@ -32,6 +32,7 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/lib_assertion.h>
+#include <lasso/xml/samlp_status.h>
 
 #define LASSO_TYPE_SESSION (lasso_session_get_type())
 #define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
@@ -80,6 +81,12 @@ LASSO_EXPORT gint lasso_session_remove_assertion(LassoSession *session, gchar *p
 
 LASSO_EXPORT void lasso_session_destroy(LassoSession *session);
 
+gint lasso_session_add_status(LassoSession *session,
+		char *providerID, LassoSamlpStatus *authn_response);
+LassoSamlpStatus* lasso_session_get_status(LassoSession *session, gchar *providerID);
+gint lasso_session_remove_status(LassoSession *session, gchar *providerID);
+
+LASSO_EXPORT gboolean lasso_session_is_empty(LassoSession *session);
 
 #ifdef __cplusplus
 }
