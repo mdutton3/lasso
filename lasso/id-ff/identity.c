@@ -129,7 +129,7 @@ lasso_identity_copy(LassoIdentity *identity)
   copy->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 					    (GDestroyNotify)g_free,
 					    (GDestroyNotify)lasso_node_destroy);
-  g_hash_table_foreach(copy->federations, (GHFunc)lasso_identity_copy_federation,
+  g_hash_table_foreach(identity->federations, (GHFunc)lasso_identity_copy_federation,
 		       (gpointer)copy->federations);
   copy->is_dirty = identity->is_dirty;
 

@@ -136,7 +136,7 @@ lasso_session_copy(LassoSession *session)
   copy->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					   (GDestroyNotify)g_free,
 					   (GDestroyNotify)lasso_node_destroy);
-  g_hash_table_foreach(copy->assertions, (GHFunc)lasso_session_copy_assertion,
+  g_hash_table_foreach(session->assertions, (GHFunc)lasso_session_copy_assertion,
 		       (gpointer)copy->assertions);
   copy->is_dirty = session->is_dirty;
 
