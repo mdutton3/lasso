@@ -193,39 +193,42 @@ lasso_login_build_artifact_msg(LassoLogin  *login,
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+  /* build artifact infos */
+  /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
+  url = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
+  samlArt = g_new(gchar, 2+20+20+1);
+  identityProviderSuccinctID = lasso_str_hash(providerID,
+					      LASSO_PROFILE_CONTEXT(login)->server->private_key);
+  xmlFree(providerID);
+  assertionHandle = lasso_build_random_sequence(20);
+  sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
+  g_free(assertionHandle);
+  xmlFree(identityProviderSuccinctID);
+  b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+  g_free(samlArt);
+  relayState = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
+					    "RelayState", NULL);
+
   switch (method) {
   case lassoHttpMethodRedirect:
-    url = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
-    /* return query (base64 encoded) */
-    /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
-    samlArt = g_new(gchar, 2+20+20+1);
-    identityProviderSuccinctID = lasso_str_hash(providerID,
-						LASSO_PROFILE_CONTEXT(login)->server->private_key);
-    assertionHandle = lasso_build_random_sequence(20);
-    sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
-    //printf("%s\n", identityProviderSuccinctID);
-    //printf("%s\n", assertionHandle);
-    g_free(assertionHandle);
-    xmlFree(identityProviderSuccinctID);
-    b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
-    g_free(samlArt);
     LASSO_PROFILE_CONTEXT(login)->msg_url = g_new(gchar, 1024+1);
     sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?SAMLArt=%s", url, b64_samlArt);
-    xmlFree(url);
-    xmlFree(b64_samlArt);
-    relayState = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
-					      "RelayState", NULL);
     if (relayState != NULL) {
       sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s&RelayState=%s",
 	      LASSO_PROFILE_CONTEXT(login)->msg_url, relayState);
-      xmlFree(relayState);
     }
     break;
   case lassoHttpMethodPost:
-    /* TODO: return a formular */
+    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
+    LASSO_PROFILE_CONTEXT(login)->msg_body = g_strdup(b64_samlArt);
+    if (relayState != NULL) {
+      login->msg_relayState = g_strdup(relayState);
+    }
     break;
   }
-  xmlFree(providerID);
+  xmlFree(url);
+  xmlFree(b64_samlArt);
+  xmlFree(relayState);
   
   return (0);
 }
@@ -236,12 +239,16 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 				     const gchar *authenticationMethod,
 				     const gchar *reauthenticateOnOrAfter)
 {
+  LassoProvider *remote_provider;
   LassoIdentity *identity;
 
   /* ProtocolProfile must be BrwsPost */
   if (login->protocolProfile != lassoLoginProtocolPorfileBrwsPost) {
     return (-1);
   }
+  
+  remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
+					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
   /* federation */
   lasso_login_process_federation(login);
@@ -266,7 +273,8 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   
   /* return an authnResponse (base64 encoded) */
   LASSO_PROFILE_CONTEXT(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->response);
-  
+  LASSO_PROFILE_CONTEXT(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
+
   return (0);
 }
 
@@ -517,6 +525,10 @@ lasso_login_must_authenticate(LassoLogin *login)
 static void
 lasso_login_instance_init(LassoLogin *login)
 {
+  login->protocolProfile = 0;
+  login->assertionArtifact = NULL;
+  login->msg_relayState    = NULL;
+  login->response_dump     = NULL;
 }
 
 static void
