@@ -15,7 +15,6 @@ liblasso_xml_la_SOURCES = \
 	debug.c \
 	errors.c \
 	xml.c \
-	ds_signature.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -70,7 +69,6 @@ liblassoinclude_HEADERS = \
 	lib.h \
 	saml.h \
 	xml.h	\
-	ds_signature.h	\
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
