@@ -70,7 +70,8 @@ GNU Emacs
     (interactive)
     (c-mode)
     (c-set-style "K&R")
-    (setq tab-width    (setq indent-tabs-mode t)
+    (setq tab-width 8)
+    (setq indent-tabs-mode t)
     (setq c-basic-offset 8))
 
 This will define the M-x lasso-c-mode command.  It can be switched on
