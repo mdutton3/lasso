@@ -336,7 +336,102 @@ typedef struct _LassoLibAuthnResponse {
 %nodefault _LassoAuthnRequest;
 typedef struct _LassoAuthnRequest {
 	LassoLibAuthnRequest parent;
+
+	%extend {
+		/* Attributes inherited from LassoLibAuthnRequest */
+
+		xmlChar *affiliationID;
+		xmlChar *assertionConsumerServiceID;
+		xmlChar *consent;
+		gboolean forceAuthn;
+		gboolean isPassive;
+		xmlChar *nameIDPolicy;
+		xmlChar *protocolProfile;
+		xmlChar *providerID;
+		xmlChar *relayState;
+	}
 } LassoAuthnRequest;
+
+/* Attributes Implementations */
+
+%{
+
+/* affiliationID */
+xmlChar *LassoAuthnRequest_affiliationID_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_affiliationID_set(LassoAuthnRequest *self, xmlChar *affiliationID) {
+	 lasso_lib_authn_request_set_affiliationID(LASSO_LIB_AUTHN_REQUEST(self), affiliationID);
+}
+
+/* assertionConsumerServiceID */
+xmlChar *LassoAuthnRequest_assertionConsumerServiceID_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_assertionConsumerServiceID_set(LassoAuthnRequest *self,
+						      xmlChar *assertionConsumerServiceID) {
+	lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(self),
+							       assertionConsumerServiceID);
+}
+
+/* consent */
+xmlChar *LassoAuthnRequest_consent_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_consent_set(LassoAuthnRequest *self, xmlChar *consent) {
+	 lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(self), consent);
+}
+
+/* forceAuthn */
+gboolean LassoAuthnRequest_forceAuthn_get(LassoAuthnRequest *self) {
+	return 0; /* FIXME */
+}
+void LassoAuthnRequest_forceAuthn_set(LassoAuthnRequest *self, gboolean forceAuthn) {
+	 lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(self), forceAuthn);
+}
+
+/* isPassive */
+gboolean LassoAuthnRequest_isPassive_get(LassoAuthnRequest *self) {
+	return 0; /* FIXME */
+}
+void LassoAuthnRequest_isPassive_set(LassoAuthnRequest *self, gboolean isPassive) {
+	 lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(self), isPassive);
+}
+
+/* nameIDPolicy */
+xmlChar *LassoAuthnRequest_nameIDPolicy_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_nameIDPolicy_set(LassoAuthnRequest *self, xmlChar *nameIDPolicy) {
+	 lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(self), nameIDPolicy);
+}
+
+/* protocolProfile */
+xmlChar *LassoAuthnRequest_protocolProfile_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_protocolProfile_set(LassoAuthnRequest *self, xmlChar *protocolProfile) {
+	 lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(self),
+						     protocolProfile);
+}
+
+/* providerID */
+xmlChar *LassoAuthnRequest_providerID_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_providerID_set(LassoAuthnRequest *self, xmlChar *providerID) {
+	 lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(self), providerID);
+}
+
+/* relayState */
+xmlChar *LassoAuthnRequest_relayState_get(LassoAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+void LassoAuthnRequest_relayState_set(LassoAuthnRequest *self, xmlChar *relayState) {
+	 lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(self), relayState);
+}
+
+%}
 
 
 /***********************************************************************
@@ -554,36 +649,42 @@ typedef struct _LassoProfile {
 	}
 } LassoProfile;
 
-/* Implementations */
+/* Attributes Implementations */
 
 %{
-	LassoAuthnRequestPtr LassoProfile_authn_request_get(LassoProfile *profile) {
-		if (profile->request_type == lassoMessageTypeAuthnRequest)
-			return LASSO_AUTHN_REQUEST(profile->request);
-		else
-			return NULL;
-	}
 
-	LassoAuthnResponsePtr LassoProfile_authn_response_get(LassoProfile *profile) {
-		if (profile->response_type == lassoMessageTypeAuthnResponse)
-			return LASSO_AUTHN_RESPONSE(profile->response);
-		else
-			return NULL;
-	}
+/* authn_request */
+LassoAuthnRequestPtr LassoProfile_authn_request_get(LassoProfile *profile) {
+	if (profile->request_type == lassoMessageTypeAuthnRequest)
+		return LASSO_AUTHN_REQUEST(profile->request);
+	else
+		return NULL;
+}
 
-	LassoRequestPtr LassoProfile_request_get(LassoProfile *profile) {
-		if (profile->request_type == lassoMessageTypeRequest)
-			return LASSO_REQUEST(profile->request);
-		else
-			return NULL;
-	}
+/* authn_response */
+LassoAuthnResponsePtr LassoProfile_authn_response_get(LassoProfile *profile) {
+	if (profile->response_type == lassoMessageTypeAuthnResponse)
+		return LASSO_AUTHN_RESPONSE(profile->response);
+	else
+		return NULL;
+}
 
-	LassoResponsePtr LassoProfile_response_get(LassoProfile *profile) {
-		if (profile->response_type == lassoMessageTypeResponse)
-			return LASSO_RESPONSE(profile->response);
-		else
-			return NULL;
-	}
+/* request */
+LassoRequestPtr LassoProfile_request_get(LassoProfile *profile) {
+	if (profile->request_type == lassoMessageTypeRequest)
+		return LASSO_REQUEST(profile->request);
+	else
+		return NULL;
+}
+
+/* response */
+LassoResponsePtr LassoProfile_response_get(LassoProfile *profile) {
+	if (profile->response_type == lassoMessageTypeResponse)
+		return LASSO_RESPONSE(profile->response);
+	else
+		return NULL;
+}
+
 %}
 
 /* Methods */

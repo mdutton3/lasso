@@ -60,12 +60,12 @@ class LoginTestCase(unittest.TestCase):
         login.init_authn_request(lasso.httpMethodRedirect)
         self.failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
         login.authn_request
-        login.authn_request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
+        login.authn_request.protocolProfile = lasso.libProtocolProfileBrwsArt
 
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
-        """SP logout without session and indentity; testing init_request."""
+        """SP logout without session and identity; testing init_request."""
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),

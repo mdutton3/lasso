@@ -221,45 +221,6 @@ class AuthnRequest(_ObjectMixin, lassomod.LassoAuthnRequest):
 
     lassomodClass = lassomod.LassoAuthnRequest
 
-    # Attributes
-
-    def set_affiliationID(self, affiliationID):
-        lassomod.lasso_lib_authn_request_set_affiliationID(self.parent, affiliationID)
-    affiliationID = property(None, set_affiliationID)
-
-    def set_assertionConsumerServiceID(self, assertionConsumerServiceID):
-        lassomod.lasso_lib_authn_request_set_assertionConsumerServiceID(
-            self.parent, assertionConsumerServiceID)
-    assertionConsumerServiceID = property(None, set_assertionConsumerServiceID)
-
-    def set_consent(self, consent):
-        lassomod.lasso_lib_authn_request_set_consent(self.parent, consent)
-    consent = property(None, set_consent)
-
-    def set_forceAuthn(self, forceAuthn):
-        lassomod.lasso_lib_authn_request_set_forceAuthn(self.parent, forceAuthn)
-    forceAuthn = property(None, set_forceAuthn)
-
-    def set_isPassive(self, isPassive):
-        lassomod.lasso_lib_authn_request_set_isPassive(self.parent, isPassive)
-    isPassive = property(None, set_isPassive)
-
-    def set_nameIDPolicy(self, nameIDPolicy):
-        lassomod.lasso_lib_authn_request_set_nameIDPolicy(self.parent, nameIDPolicy)
-    nameIDPolicy = property(None, set_nameIDPolicy)
-
-    def set_protocolProfile(self, protocolProfile):
-        lassomod.lasso_lib_authn_request_set_protocolProfile(self.parent, protocolProfile)
-    protocolProfile = property(None, set_protocolProfile)
-
-    def set_providerID(self, providerID):
-        lassomod.lasso_lib_authn_request_set_providerID(self.parent, providerID)
-    providerID = property(None, set_providerID)
-
-    def set_relayState(self, relayState):
-        lassomod.lasso_lib_authn_request_set_relayState(self.parent, relayState)
-    relayState = property(None, set_relayState)
-
 registerClass(AuthnRequest)
 
 
