@@ -61,6 +61,8 @@ static PyMethodDef lasso_methods[] = {
   /* py_register_name_identifier.h */
   {"register_name_identifier_request_getattr", register_name_identifier_request_getattr, METH_VARARGS},
   {"register_name_identifier_request",  register_name_identifier_request,  METH_VARARGS},
+  {"register_name_identifier_request_change_attribute_names_identifiers",
+       register_name_identifier_request_change_attribute_names_identifiers,  METH_VARARGS},
 
   {"register_name_identifier_response_getattr", register_name_identifier_response_getattr, METH_VARARGS},
   {"register_name_identifier_response",  register_name_identifier_response,  METH_VARARGS},

@@ -339,6 +339,9 @@ class RegisterNameIdentifierRequest(Node):
             ret = Node(_obj=ret)
         return ret
 
+    def changeAttributeNamesIdentifiers(self):
+        lassomod.register_name_identifier_request_change_attribute_names_identifiers(self);
+
 class RegisterNameIdentifierResponse(Node):
     def __init__(self,
                  providerID,

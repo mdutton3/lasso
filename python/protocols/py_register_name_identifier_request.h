@@ -38,5 +38,6 @@ PyObject *lassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierReq
 
 PyObject *register_name_identifier_request_getattr(PyObject *self, PyObject *args);
 PyObject *register_name_identifier_request(PyObject *self, PyObject *args);
+PyObject *register_name_identifier_request_change_attribute_names_identifiers(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_REGISTER_NAME_IDENTIFIER_REQUEST_H__ */

@@ -26,6 +26,30 @@
 #include <lasso/protocols/register_name_identifier_request.h>
 
 /*****************************************************************************/
+/* public methods                                                            */
+/*****************************************************************************/
+
+void
+lasso_register_name_identifier_change_attribute_names_identifiers(LassoRegisterNameIdentifierRequest *request)
+{
+  LassoNode *idpidentifier, *spidentifier, *oldidentifier;
+
+  g_return_if_fail (LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST(request));
+
+  idpidentifier = lasso_node_get_child(LASSO_NODE(request), "IDPProvidedNameIdentifier");
+  lasso_node_rename_prop(idpidentifier, "NameQualifier", "IDPNameQualifier");
+  lasso_node_rename_prop(idpidentifier, "Format", "IDPFormat");
+
+  spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier");
+  lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
+  lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
+
+  oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier");
+  lasso_node_rename_prop(oldidentifier, "NameQualifier", "OldNameQualifier");
+  lasso_node_rename_prop(oldidentifier, "Format", "OldFormat");
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 

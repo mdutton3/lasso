@@ -94,3 +94,15 @@ PyObject *register_name_identifier_request(PyObject *self, PyObject *args) {
 
   return (lassoRegisterNameIdentifierRequest_wrap(request));
 }
+
+PyObject *register_name_identifier_request_change_attribute_names_identifiers(PyObject *self, PyObject *args){
+     PyObject *request_obj;
+
+     if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_request",
+		       &request_obj))
+	  return NULL;
+     
+     lasso_register_name_identifier_change_attribute_names_identifiers(lassoRegisterNameIdentifierRequest_get(request_obj));
+
+     return (int_wrap(1));
+}
