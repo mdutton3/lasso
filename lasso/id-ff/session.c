@@ -454,7 +454,7 @@ lasso_session_dump(LassoSession *session)
 	if (lasso_session_is_empty(session))
 		return g_strdup("");
 
-	return lasso_node_dump(LASSO_NODE(session), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(session));
 }
 
 /**

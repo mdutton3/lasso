@@ -659,5 +659,5 @@ lasso_name_registration_new_from_dump(LassoServer *server, const char *dump)
 gchar *
 lasso_name_registration_dump(LassoNameRegistration *name_registration)
 {
-	return lasso_node_dump(LASSO_NODE(name_registration), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(name_registration));
 }

@@ -476,5 +476,5 @@ lasso_server_new_from_dump(const gchar *dump)
 gchar*
 lasso_server_dump(LassoServer *server)
 {
-	return lasso_node_dump(LASSO_NODE(server), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(server));
 }

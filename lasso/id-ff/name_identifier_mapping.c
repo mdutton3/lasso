@@ -462,6 +462,6 @@ char*
 lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
 {
 	g_assert_not_reached();
-	return lasso_node_dump(LASSO_NODE(mapping), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(mapping));
 }
 

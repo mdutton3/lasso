@@ -60,9 +60,6 @@ static void xmlCleanNs(xmlNode *root_node);
 /**
  * lasso_node_dump:
  * @node: a #LassoNode
- * @encoding: the name of character set encoding to use or NULL for default
- *      (UTF-8).
- * @format: whether formatting is allowed
  * 
  * Dumps @node.  All datas in object are dumped in an XML format.
  * 
@@ -70,34 +67,24 @@ static void xmlCleanNs(xmlNode *root_node);
  *     caller.
  **/
 char*
-lasso_node_dump(LassoNode *node, const char *encoding, int format)
+lasso_node_dump(LassoNode *node)
 {
 	xmlNode *xmlnode;
 	char *ret;
-	xmlOutputBufferPtr buf;
-	xmlCharEncodingHandlerPtr handler = NULL;
+	xmlOutputBuffer *buf;
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-	/* encoding is optional */
-	g_return_val_if_fail (format == 0 || format == 1, NULL);
 
-	if (encoding != NULL) {
-		handler = xmlFindCharEncodingHandler(encoding);
-		if (handler == NULL) {
-			return NULL;
-		}
-	}
-	buf = xmlAllocOutputBuffer(handler);
+	buf = xmlAllocOutputBuffer(NULL);
 	if (buf == NULL) {
 		return NULL;
 	}
 	xmlnode = lasso_node_get_xmlNode(node, TRUE);
-	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, format, encoding);
+	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 	xmlOutputBufferFlush(buf);
 	if (buf->conv != NULL) {
 		ret = g_strdup(buf->conv->content);
-	}
-	else {
+	} else {
 		ret = g_strdup(buf->buffer->content);
 	}
 	xmlOutputBufferClose(buf);
@@ -105,7 +92,6 @@ lasso_node_dump(LassoNode *node, const char *encoding, int format)
 	xmlFreeNode(xmlnode);
 
 	return ret;
-
 }
 
 /**

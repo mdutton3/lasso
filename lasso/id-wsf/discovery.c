@@ -487,6 +487,6 @@ lasso_discovery_new_from_dump(LassoServer *server, const gchar *dump)
 gchar*
 lasso_discovery_dump(LassoDiscovery *discovery)
 {
-	return lasso_node_dump(LASSO_NODE(discovery), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(discovery));
 }
 

@@ -1001,5 +1001,5 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 gchar*
 lasso_logout_dump(LassoLogout *logout)
 {
-	return lasso_node_dump(LASSO_NODE(logout), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(logout));
 }

@@ -32,7 +32,7 @@
 gchar*
 lasso_service_dump(LassoService *service)
 {
-	return lasso_node_dump(LASSO_NODE(service), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(service));
 }
 
 void

@@ -1454,7 +1454,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 gchar*
 lasso_login_dump(LassoLogin *login)
 {
-	return lasso_node_dump(LASSO_NODE(login), NULL, 1);
+	return lasso_node_dump(LASSO_NODE(login));
 }
 
 

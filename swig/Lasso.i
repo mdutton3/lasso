@@ -712,7 +712,7 @@ typedef struct {
 	/* Methods */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -724,7 +724,7 @@ typedef struct {
 
 /* Methods implementations */
 
-#define LassoNode_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoNode_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -812,7 +812,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -824,7 +824,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlAssertion_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlAssertion_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -862,7 +862,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -874,7 +874,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlNameIdentifier_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlNameIdentifier_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -912,7 +912,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -924,7 +924,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlpRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlpRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -958,7 +958,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -978,7 +978,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlpResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlpResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1016,7 +1016,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1036,7 +1036,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlpStatus_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlpStatus_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1074,7 +1074,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1094,7 +1094,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoSamlpStatusCode_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoSamlpStatusCode_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1148,7 +1148,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1168,7 +1168,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibAssertion_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibAssertion_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1247,7 +1247,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1300,7 +1300,7 @@ void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringA
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibAuthnRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibAuthnRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1352,7 +1352,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1372,7 +1372,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibAuthnResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibAuthnResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1424,7 +1424,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1444,7 +1444,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibFederationTerminationNotification_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibFederationTerminationNotification_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1506,7 +1506,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1526,7 +1526,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibLogoutRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibLogoutRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1576,7 +1576,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1608,7 +1608,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibLogoutResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibLogoutResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1671,7 +1671,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1703,7 +1703,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibRegisterNameIdentifierRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibRegisterNameIdentifierRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1753,7 +1753,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1785,7 +1785,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibRegisterNameIdentifierResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibRegisterNameIdentifierResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1833,7 +1833,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 }
 
 %{
@@ -1853,7 +1853,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoLibStatusResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoLibStatusResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1910,7 +1910,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 
 	/* Methods */
 
@@ -1949,7 +1949,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoProvider_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoProvider_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
@@ -2172,7 +2172,7 @@ typedef struct {
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
-	char *dump(char *encoding = NULL, int format = 1);
+	char *dump();
 
 	/* Methods */
 
@@ -2204,7 +2204,7 @@ typedef struct {
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoFederation_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+#define LassoFederation_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Methods implementations */
 
