@@ -405,10 +405,10 @@ lasso_str_sign(xmlChar              *str,
   xmlDocPtr  doc = xmlNewDoc("1.0");
   xmlNodePtr envelope = xmlNewNode(NULL, "Envelope");
   xmlNodePtr cdata, data = xmlNewNode(NULL, "Data");
-  xmlNodePtr signNode;
-  xmlNodePtr refNode;
-  xmlNodePtr keyInfoNode;
-  xmlSecDSigCtxPtr dsigCtx;
+  xmlNodePtr signNode = NULL;
+  xmlNodePtr refNode = NULL;
+  xmlNodePtr keyInfoNode = NULL;
+  xmlSecDSigCtxPtr dsigCtx = NULL;
 
   /* create doc */
   xmlNewNs(envelope, "urn:envelope", NULL);
