@@ -961,7 +961,28 @@ void LassoLibAuthnRequest_relayState_set(LassoLibAuthnRequest *self, gchar *rela
 #endif
 %nodefault LassoLibAuthnResponse;
 typedef struct {
+	%extend {
+		/* Attributes inherited from LassoSamlpResponse */
+		LassoSamlpStatus *Status;
+		// FIXME: LassoSamlAssertion *Assertion;
+	}
 } LassoLibAuthnResponse;
+
+%{
+
+/* Attributes inherited from LassoSamlpResponse implementations */
+
+/* Status */
+#define LassoLibAuthnResponse_get_Status LassoLibAuthnResponse_Status_get
+LassoSamlpStatus *LassoLibAuthnResponse_Status_get(LassoLibAuthnResponse *self) {
+	return LASSO_SAMLP_RESPONSE(self)->Status;
+}
+#define LassoLibAuthnResponse_set_Status LassoLibAuthnResponse_Status_set
+void LassoLibAuthnResponse_Status_set(LassoLibAuthnResponse *self, LassoSamlpStatus *Status) {
+	 LASSO_SAMLP_RESPONSE(self)->Status = Status;
+}
+
+%}
 
 
 /***********************************************************************
@@ -989,14 +1010,14 @@ typedef struct {
 %nodefault LassoLibLogoutRequest;
 typedef struct {
 	%extend {
-		/* Attributes inherited from LassoLibLogoutRequest */
+		/* Attributes */
 		char *relayState;
 	}
 } LassoLibLogoutRequest;
 
 %{
 
-/* Attributes Implementations */
+/* Attributes */
 
 /* relayState */
 #define LassoLibLogoutRequest_get_relayState LassoLibLogoutRequest_relayState_get
@@ -1004,11 +1025,9 @@ gchar *LassoLibLogoutRequest_relayState_get(LassoLibLogoutRequest *self) {
 	return g_strdup(self->RelayState);
 }
 #define LassoLibLogoutRequest_set_relayState LassoLibLogoutRequest_relayState_set
-void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, char *relayState) {
+void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, gchar *relayState) {
 	 self->RelayState = g_strdup(relayState);
 }
-
-
 
 %}
 
