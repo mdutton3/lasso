@@ -41,19 +41,19 @@ from websimulator import *
 
 class LoginTestCase(unittest.TestCase):
     def generateIdpSite(self, internet):
-        site = IdentityProvider(internet, 'https://identity-provider/')
-        site.providerId = 'https://identity-provider/metadata'
+        site = IdentityProvider(internet, 'https://idp1')
+        site.providerId = 'https://idp1/metadata'
 
         lassoServer = lasso.Server.new(
-            '../../examples/data/idp-metadata.xml',
-            None, # '../../examples/data/idp-public-key.pem' is no more used
-            '../../examples/data/idp-private-key.pem',
-            '../../examples/data/idp-crt.pem',
+            '../../tests/data/idp1-la/metadata.xml',
+            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
+            '../../tests/data/idp1-la/private-key-raw.pem',
+            '../../tests/data/idp1-la/certificate.pem',
             lasso.signatureMethodRsaSha1)
         lassoServer.add_provider(
-            '../../examples/data/sp-metadata.xml',
-            '../../examples/data/sp-public-key.pem',
-            '../../examples/data/ca-crt.pem')
+            '../../tests/data/sp1-la/metadata.xml',
+            '../../tests/data/sp1-la/public-key.pem',
+            '../../tests/data/ca1-la/certificate.pem')
         site.lassoServerDump = lassoServer.dump()
         failUnless(site.lassoServerDump)
         lassoServer.destroy()
@@ -69,28 +69,28 @@ class LoginTestCase(unittest.TestCase):
         clientProxy = LibertyEnabledClientProxy(internet)
         lassoServer = lasso.Server.new()
         lassoServer.add_provider(
-            '../../examples/data/idp-metadata.xml',
-            '../../examples/data/idp-public-key.pem',
-            '../../examples/data/ca-crt.pem')
+            '../../tests/data/idp1-la/metadata.xml',
+            '../../tests/data/idp1-la/public-key.pem',
+            '../../tests/data/ca1-la/certificate.pem')
         clientProxy.lassoServerDump = lassoServer.dump()
         failUnless(clientProxy.lassoServerDump)
         lassoServer.destroy()
         return clientProxy
         
     def generateSpSite(self, internet):
-        site = ServiceProvider(internet, 'https://service-provider/')
+        site = ServiceProvider(internet, 'https://sp1')
         site.providerId = 'https://service-provider/metadata'
 
         lassoServer = lasso.Server.new(
-            '../../examples/data/sp-metadata.xml',
-            None, # '../../examples/data/sp-public-key.pem' is no more used.
-            '../../examples/data/sp-private-key.pem',
-            '../../examples/data/sp-crt.pem',
+            '../../tests/data/sp1-la/metadata.xml',
+            None, # '../../tests/data/sp1-la/public-key.pem' is no more used
+            '../../tests/data/sp1-la/private-key-raw.pem',
+            '../../tests/data/sp1-la/certificate.pem',
             lasso.signatureMethodRsaSha1)
         lassoServer.add_provider(
-            '../../examples/data/idp-metadata.xml',
-            '../../examples/data/idp-public-key.pem',
-            '../../examples/data/ca-crt.pem')
+            '../../tests/data/idp1-la/metadata.xml',
+            '../../tests/data/idp1-la/public-key.pem',
+            '../../tests/data/ca1-la/certificate.pem')
         site.lassoServerDump = lassoServer.dump()
         failUnless(site.lassoServerDump)
         lassoServer.destroy()
@@ -275,8 +275,7 @@ class LoginTestCase(unittest.TestCase):
         lecp = self.generateLibertyEnabledClientProxy(internet)
         lecp.idpSite = idpSite
 
-        # Try LECP, but the principal is not authenticated on identity-provider. So, LECP must
-        # fail.
+        # Try LECP, but the principal is not authenticated on idp1. So, LECP must fail.
         httpResponse = lecp.login(principal, spSite, '/login')
         failUnlessEqual(httpResponse.statusCode, 401)
 

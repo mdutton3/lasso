@@ -35,16 +35,16 @@ generateIdentityProviderContextDump()
 	LassoServer *serverContext;
 	
 	serverContext = lasso_server_new(
-			"../examples/data/idp-metadata.xml",
-			"../examples/data/idp-public-key.pem",
-			"../examples/data/idp-private-key.pem",
-			"../examples/data/idp-crt.pem",
+			"../tests/data/idp1-la/metadata.xml",
+			NULL, /* "../tests/data/idp1-la/public-key.pem" is no more used */
+			"../tests/data/idp1-la/private-key-raw.pem",
+			"../tests/data/idp1-la/certificate.pem",
 			lassoSignatureMethodRsaSha1);
 	lasso_server_add_provider(
 			serverContext,
-			"../examples/data/sp-metadata.xml",
-			"../examples/data/sp-public-key.pem",
-			"../examples/data/ca-crt.pem");
+			"../tests/data/sp1-la/metadata.xml",
+			"../tests/data/sp1-la/public-key.pem",
+			"../tests/data/ca1-la/certificate.pem");
 	return lasso_server_dump(serverContext);
 }
 
@@ -54,16 +54,16 @@ generateServiceProviderContextDump()
 	LassoServer *serverContext;
 	
 	serverContext = lasso_server_new(
-			"../examples/data/sp-metadata.xml",
-			"../examples/data/sp-public-key.pem",
-			"../examples/data/sp-private-key.pem",
-			"../examples/data/sp-crt.pem",
+			"../tests/data/sp1-la/metadata.xml",
+			NULL, /* "../tests/data/sp1-la/public-key.pem" is no more used */
+			"../tests/data/sp1-la/private-key-raw.pem",
+			"../tests/data/sp1-la/certificate.pem",
 			lassoSignatureMethodRsaSha1);
 	lasso_server_add_provider(
 			serverContext,
-			"../examples/data/idp-metadata.xml",
-			"../examples/data/idp-public-key.pem",
-			"../examples/data/ca-crt.pem");
+			"../tests/data/idp1-la/metadata.xml",
+			"../tests/data/idp1-la/public-key.pem",
+			"../tests/data/ca1-la/certificate.pem");
 	return lasso_server_dump(serverContext);
 }
 
@@ -114,8 +114,7 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_lib_authn_request_set_consent(request, lassoLibConsentObtained);
 	relayState = "fake";
 	lasso_lib_authn_request_set_relayState(request, "fake");
-	rc = lasso_login_build_authn_request_msg(spLoginContext,
-			"https://identity-provider:1998/liberty-alliance/metadata");
+	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata");
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<EntityDescriptor
+    providerID="https://sp4/metadata"
+    xmlns="urn:liberty:metadata:2003-08">
+ <SPDescriptor>
+
+  <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">https://sp4:2012/assertionConsumer</AssertionConsumerServiceURL>
+
+  <SingleLogoutServiceURL>https://sp4:2012/singleLogout</SingleLogoutServiceURL>
+  <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+
+  <RegisterNameIdentifierServiceURL>https://sp4:2012/registerNameIdentifier</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-soap</RegisterNameIdentifierProtocolProfile>
+
+  <SoapEndpoint>https://sp4:2012/soapEndpoint</SoapEndpoint>
+
+  <AuthnRequestsSigned>true</AuthnRequestsSigned>
+
+ </SPDescriptor>
+</EntityDescriptor>
