@@ -52,9 +52,12 @@ struct _LassoRequestClass {
   LassoSamlpRequestClass parent;
 };
 
-LASSO_EXPORT GType      lasso_request_get_type (void);
+LASSO_EXPORT GType      lasso_request_get_type        (void);
 
-LASSO_EXPORT LassoNode* lasso_request_new      (const xmlChar *assertionArtifact);
+LASSO_EXPORT LassoNode* lasso_request_new             (const xmlChar *assertionArtifact);
+
+LASSO_EXPORT LassoNode* lasso_request_new_from_export (gchar                *buffer,
+						       lassoNodeExportTypes  export_type);
 
 #ifdef __cplusplus
 }

@@ -102,3 +102,32 @@ lasso_request_new(const xmlChar *assertionArtifact)
   
   return (request);
 }
+
+LassoNode*
+lasso_request_new_from_export(gchar                *buffer,
+			      lassoNodeExportTypes  export_type)
+{
+  LassoNode *request=NULL, *soap_node, *request_node;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  request = LASSO_NODE(g_object_new(LASSO_TYPE_REQUEST, NULL));
+
+  switch (export_type) {
+  case lassoNodeExportTypeXml:
+    lasso_node_import(request, buffer);
+    break;
+  case lassoNodeExportTypeQuery:
+  case lassoNodeExportTypeBase64:
+    break;
+  case lassoNodeExportTypeSoap:
+    soap_node = lasso_node_new_from_dump(buffer);
+    request_node = lasso_node_get_child(soap_node, "Request", lassoSamlProtocolHRef);
+    lasso_node_import(request, lasso_node_export(request_node));
+    lasso_node_destroy(request_node);
+    lasso_node_destroy(soap_node);
+    break;
+  }
+
+  return (request);
+}
