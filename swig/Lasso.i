@@ -2156,39 +2156,37 @@ LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 %rename(Session) LassoSession;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
+	/* Attributes */
 
-		%immutable isDirty;
-		gboolean isDirty;
-
-		%immutable providerIds;
-		%newobject providerIds_get;
-		LassoStringArray *providerIds;
-
-		/* Constructor, destructor & static methods */
-
-		LassoSession();
-
-		~LassoSession();
-
-		%newobject newFromDump;
-		static LassoSession *newFromDump(char *dump);
-
-		/* Methods */
-
-		%newobject dump;
-		char *dump();
-	}
+	%rename(isDirty) is_dirty;
+	%immutable is_dirty;
+	gboolean is_dirty;
 } LassoSession;
+%extend LassoSession {
+	/* Attributes */
+
+	%immutable providerIds;
+	%newobject providerIds_get;
+	LassoStringArray *providerIds;
+
+	/* Constructor, destructor & static methods */
+
+	LassoSession();
+
+	~LassoSession();
+
+	%newobject newFromDump;
+	static LassoSession *newFromDump(char *dump);
+
+	/* Methods */
+
+	%newobject dump;
+	char *dump();
+}
 
 %{
 
 /* Attributes implementations */
-
-/* isDirty */
-#define LassoSession_get_isDirty(self) (self)->is_dirty
-#define LassoSession_isDirty_get(self) (self)->is_dirty
 
 /* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
@@ -2407,149 +2405,149 @@ int LassoDefederation_setSessionFromDump(LassoDefederation *self, char *dump) {
 %rename(Login) LassoLogin;
 #endif
 typedef struct {
+	// FIXME: LassoSamlAssertion *assertion;
+
 	%immutable assertionArtifact;
 	char *assertionArtifact;
 
 	%immutable protocolProfile;
 	LassoLoginProtocolProfile protocolProfile;
-
-	%extend {
-		/* Attributes inherited from LassoProfile */
-
-		%immutable authnRequest;
-		LassoLibAuthnRequest *authnRequest;
-
-		%immutable authnResponse;
-		LassoLibAuthnResponse *authnResponse;
-
-		%newobject identity_get;
-		LassoIdentity *identity;
-
-		%immutable isIdentityDirty;
-		gboolean isIdentityDirty;
-
-		%immutable isSessionDirty;
-		gboolean isSessionDirty;
-
-		%immutable msgBody;
-		char *msgBody;
-
-		%immutable msgRelayState;
-		char *msgRelayState;
-
-		%immutable msgUrl;
-		char *msgUrl;
-
-		LassoSamlNameIdentifier *nameIdentifier;
-
-		%newobject remoteProviderId_get;
-		char *remoteProviderId;
-
-		%immutable request;
-		LassoSamlpRequest *request;
-
-		%immutable response;
-		LassoSamlpResponse *response;
-
-		char *responseStatus;
-
-		%newobject session_get;
-		LassoSession *session;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoLogin(LassoServer *server);
-
-		~LassoLogin();
-
-		%newobject newFromDump;
-		static LassoLogin *newFromDump(LassoServer *server, char *dump);
-
-		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setIdentityFromDump(char *dump);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void setSessionFromDump(char *dump);
-		END_THROW_ERROR
-
-		/* Methods */
-
-		THROW_ERROR
-		void acceptSso();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildArtifactMsg(LassoHttpMethod httpMethod);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		int buildAssertion(char *authenticationMethod, char *authenticationInstant,
-				char *reauthenticateOnOrAfter,
-				char *notBefore, char *notOnOrAfter);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildAuthnRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildAuthnResponseMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildResponseMsg(char *remoteProviderId);
-		END_THROW_ERROR
-
-		%newobject dump;
-		char *dump();
-
-		THROW_ERROR
-		void initAuthnRequest(char *remoteProviderId = NULL,
-				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void initRequest(char *responseMsg,
-				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void initIdpInitiatedAuthnRequest(char *remoteProviderID = NULL);
-		END_THROW_ERROR
-
-		gboolean mustAskForConsent();
-
-		gboolean mustAuthenticate();
-
-		THROW_ERROR
-		void processAuthnRequestMsg(char *authnrequestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processAuthnResponseMsg(char *authnResponseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processRequestMsg(char *requestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processResponseMsg(char *responseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
-		END_THROW_ERROR
-
-	}
 } LassoLogin;
+%extend LassoLogin {
+	/* Attributes inherited from LassoProfile */
+
+	%immutable authnRequest;
+	LassoLibAuthnRequest *authnRequest;
+
+	%immutable authnResponse;
+	LassoLibAuthnResponse *authnResponse;
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	LassoSamlNameIdentifier *nameIdentifier;
+
+	%newobject remoteProviderId_get;
+	char *remoteProviderId;
+
+	%immutable request;
+	LassoSamlpRequest *request;
+
+	%immutable response;
+	LassoSamlpResponse *response;
+
+	char *responseStatus;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLogin(LassoServer *server);
+
+	~LassoLogin();
+
+	%newobject newFromDump;
+	static LassoLogin *newFromDump(LassoServer *server, char *dump);
+
+	/* Methods inherited from LassoProfile */
+
+        THROW_ERROR
+	void setIdentityFromDump(char *dump);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void setSessionFromDump(char *dump);
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	void acceptSso();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildArtifactMsg(LassoHttpMethod httpMethod);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildAssertion(char *authenticationMethod, char *authenticationInstant,
+			char *reauthenticateOnOrAfter,
+			char *notBefore, char *notOnOrAfter);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildAuthnRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildAuthnResponseMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildResponseMsg(char *remoteProviderId);
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	THROW_ERROR
+	void initAuthnRequest(char *remoteProviderId = NULL,
+			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void initRequest(char *responseMsg,
+			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void initIdpInitiatedAuthnRequest(char *remoteProviderID = NULL);
+	END_THROW_ERROR
+
+	gboolean mustAskForConsent();
+
+	gboolean mustAuthenticate();
+
+	THROW_ERROR
+	void processAuthnRequestMsg(char *authnrequestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processAuthnResponseMsg(char *authnResponseMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processRequestMsg(char *requestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processResponseMsg(char *responseMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
+	END_THROW_ERROR
+}
 
 %{
 
@@ -2694,100 +2692,100 @@ int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
 %rename(Logout) LassoLogout;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoProfile */
-
-		%newobject identity_get;
-		LassoIdentity *identity;
-
-		%immutable isIdentityDirty;
-		gboolean isIdentityDirty;
-
-		%immutable isSessionDirty;
-		gboolean isSessionDirty;
-
-		%immutable msgBody;
-		char *msgBody;
-
-		%immutable msgRelayState;
-		char *msgRelayState;
-
-		%immutable msgUrl;
-		char *msgUrl;
-
-		LassoSamlNameIdentifier *nameIdentifier;
-
-		%newobject remoteProviderId_get;
-		char *remoteProviderId;
-
-		%immutable request;
-		LassoLibLogoutRequest *request;
-
-		%immutable response;
-		LassoLibLogoutResponse *response;
-
-		char *responseStatus;
-
-		%newobject session_get;
-		LassoSession *session;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoLogout(LassoServer *server);
-
-		~LassoLogout();
-
-		%newobject newFromDump;
-		static LassoLogout *newFromDump(LassoServer *server, char *dump);
-
-		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setIdentityFromDump(char *dump);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void setSessionFromDump(char *dump);
-		END_THROW_ERROR
-
-		/* Methods */
-
-		THROW_ERROR
-		void buildRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildResponseMsg();
-		END_THROW_ERROR
-
-		%newobject dump;
-		char *dump();
-
-		%newobject getNextProviderId;
-		char *getNextProviderId();
-
-		THROW_ERROR
-		void initRequest(char *remoteProviderId = NULL,
-				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processRequestMsg(char *requestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processResponseMsg(char *responseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void resetProviderIdIndex();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void validateRequest();
-		END_THROW_ERROR
-	}
 } LassoLogout;
+%extend LassoLogout {
+	/* Attributes inherited from LassoProfile */
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	LassoSamlNameIdentifier *nameIdentifier;
+
+	%newobject remoteProviderId_get;
+	char *remoteProviderId;
+
+	%immutable request;
+	LassoLibLogoutRequest *request;
+
+	%immutable response;
+	LassoLibLogoutResponse *response;
+
+	char *responseStatus;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLogout(LassoServer *server);
+
+	~LassoLogout();
+
+	%newobject newFromDump;
+	static LassoLogout *newFromDump(LassoServer *server, char *dump);
+
+	/* Methods inherited from LassoProfile */
+
+        THROW_ERROR
+	void setIdentityFromDump(char *dump);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void setSessionFromDump(char *dump);
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	void buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildResponseMsg();
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	%newobject getNextProviderId;
+	char *getNextProviderId();
+
+	THROW_ERROR
+	void initRequest(char *remoteProviderId = NULL,
+			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processRequestMsg(char *requestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processResponseMsg(char *responseMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void resetProviderIdIndex();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void validateRequest();
+	END_THROW_ERROR
+}
 
 %{
 
@@ -2895,113 +2893,115 @@ int LassoLogout_setSessionFromDump(LassoLogout *self, char *dump) {
 %rename(Lecp) LassoLecp;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoProfile */
-
-		%immutable authnRequest;
-		LassoLibAuthnRequest *authnRequest;
-
-		%immutable authnResponse;
-		LassoLibAuthnResponse *authnResponse;
-
-		%newobject identity_get;
-		LassoIdentity *identity;
-
-		%immutable isIdentityDirty;
-		gboolean isIdentityDirty;
-
-		%immutable isSessionDirty;
-		gboolean isSessionDirty;
-
-		%immutable msgBody;
-		char *msgBody;
-
-		%immutable msgRelayState;
-		char *msgRelayState;
-
-		%immutable msgUrl;
-		char *msgUrl;
-
-		LassoSamlNameIdentifier *nameIdentifier;
-
-		%newobject remoteProviderId_get;
-		char *remoteProviderId;
-
-		%immutable request;
-		LassoSamlpRequest *request;
-
-		%immutable response;
-		LassoSamlpResponse *response;
-
-		char *responseStatus;
-
-		%newobject session_get;
-		LassoSession *session;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoLecp(LassoServer *server);
-
-		~LassoLecp();
-
-		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setIdentityFromDump(char *dump);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void setSessionFromDump(char *dump);
-		END_THROW_ERROR
-
-		/* Methods inherited from LassoLogin */
-
-		THROW_ERROR
-		int buildAssertion(char *authenticationMethod, char *authenticationInstant,
-				char *reauthenticateOnOrAfter,
-				char *notBefore, char *notOnOrAfter);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
-		END_THROW_ERROR
-
-		/* Methods */
-
-		THROW_ERROR
-		void buildAuthnRequestEnvelopeMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildAuthnRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildAuthnResponseEnvelopeMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildAuthnResponseMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void initAuthnRequest(char *remoteProviderId = NULL);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processAuthnRequestEnvelopeMsg(char *requestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processAuthnRequestMsg(char *authnRequestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processAuthnResponseEnvelopeMsg(char *responseMsg);
-		END_THROW_ERROR
-
-	}
+	// FIXME: char *assertionConsumerServiceURL;
+	// FIXME: LassoLibAuthnRequestEnvelope *authnRequestEnvelope;
+	// FIXME: LassoLibAuthnResponseEnvelope *authnResponseEnvelope;
 } LassoLecp;
+%extend LassoLecp {
+	/* Attributes inherited from LassoProfile */
+
+	%immutable authnRequest;
+	LassoLibAuthnRequest *authnRequest;
+
+	%immutable authnResponse;
+	LassoLibAuthnResponse *authnResponse;
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	LassoSamlNameIdentifier *nameIdentifier;
+
+	%newobject remoteProviderId_get;
+	char *remoteProviderId;
+
+	%immutable request;
+	LassoSamlpRequest *request;
+
+	%immutable response;
+	LassoSamlpResponse *response;
+
+	char *responseStatus;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLecp(LassoServer *server);
+
+	~LassoLecp();
+
+	/* Methods inherited from LassoProfile */
+
+        THROW_ERROR
+	void setIdentityFromDump(char *dump);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void setSessionFromDump(char *dump);
+	END_THROW_ERROR
+
+	/* Methods inherited from LassoLogin */
+
+	THROW_ERROR
+	int buildAssertion(char *authenticationMethod, char *authenticationInstant,
+			char *reauthenticateOnOrAfter,
+			char *notBefore, char *notOnOrAfter);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	void buildAuthnRequestEnvelopeMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildAuthnRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildAuthnResponseEnvelopeMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildAuthnResponseMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void initAuthnRequest(char *remoteProviderId = NULL);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processAuthnRequestEnvelopeMsg(char *requestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processAuthnRequestMsg(char *authnRequestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processAuthnResponseEnvelopeMsg(char *responseMsg);
+	END_THROW_ERROR
+}
 
 %{
 
@@ -3147,79 +3147,78 @@ int LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult,
 typedef struct {
 	%immutable targetNameIdentifier;
 	char *targetNameIdentifier;
-
-	%extend {
-		/* Attributes inherited from LassoProfile */
-
-		%newobject identity_get;
-		LassoIdentity *identity;
-
-		%immutable isIdentityDirty;
-		gboolean isIdentityDirty;
-
-		%immutable isSessionDirty;
-		gboolean isSessionDirty;
-
-		%immutable msgBody;
-		char *msgBody;
-
-		%immutable msgUrl;
-		char *msgUrl;
-
-		LassoSamlNameIdentifier *nameIdentifier;
-
-		%newobject remoteProviderId_get;
-		char *remoteProviderId;
-
-		%newobject session_get;
-		LassoSession *session;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoNameIdentifierMapping(LassoServer *server);
-
-		~LassoNameIdentifierMapping();
-
-		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setIdentityFromDump(char *dump);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void setSessionFromDump(char *dump);
-		END_THROW_ERROR
-
-		/* Methods */
-
-		THROW_ERROR
-		void buildRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildResponseMsg();
-		END_THROW_ERROR
-
-		%newobject dump;
-		char *dump();
-
-		THROW_ERROR
-		void initRequest(char *targetNamespace, char *remoteProviderId = NULL);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processRequestMsg(char *requestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processResponseMsg(char *responseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void validateRequest();
-		END_THROW_ERROR
-	}
 } LassoNameIdentifierMapping;
+%extend LassoNameIdentifierMapping {
+	/* Attributes inherited from LassoProfile */
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	LassoSamlNameIdentifier *nameIdentifier;
+
+	%newobject remoteProviderId_get;
+	char *remoteProviderId;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoNameIdentifierMapping(LassoServer *server);
+
+	~LassoNameIdentifierMapping();
+
+	/* Methods inherited from LassoProfile */
+
+        THROW_ERROR
+	void setIdentityFromDump(char *dump);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void setSessionFromDump(char *dump);
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	void buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildResponseMsg();
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	THROW_ERROR
+	void initRequest(char *targetNamespace, char *remoteProviderId = NULL);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processRequestMsg(char *requestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processResponseMsg(char *responseMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void validateRequest();
+	END_THROW_ERROR
+}
 
 %{
 
@@ -3308,95 +3307,95 @@ int LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *se
 %rename(NameRegistration) LassoNameRegistration;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoProfile */
-
-		%newobject identity_get;
-		LassoIdentity *identity;
-
-		%immutable isIdentityDirty;
-		gboolean isIdentityDirty;
-
-		%immutable isSessionDirty;
-		gboolean isSessionDirty;
-
-		%immutable msgBody;
-		char *msgBody;
-
-		%immutable msgRelayState;
-		char *msgRelayState;
-
-		%immutable msgUrl;
-		char *msgUrl;
-
-		LassoSamlNameIdentifier *nameIdentifier;
-
-		%newobject remoteProviderId_get;
-		char *remoteProviderId;
-
-		%immutable request;
-		LassoLibRegisterNameIdentifierRequest *request;
-
-		%immutable response;
-		LassoLibRegisterNameIdentifierResponse *response;
-
-		%newobject session_get;
-		LassoSession *session;
-
-		/* Attributes */
-
-		LassoSamlNameIdentifier *oldNameIdentifier;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoNameRegistration(LassoServer *server);
-
-		~LassoNameRegistration();
-
-		%newobject newFromDump;
-		static LassoNameRegistration *newFromDump(LassoServer *server, char *dump);
-
-		/* Methods inherited from LassoProfile */
-
-	        THROW_ERROR
-		void setIdentityFromDump(char *dump);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void setSessionFromDump(char *dump);
-		END_THROW_ERROR
-
-		/* Methods */
-
-		THROW_ERROR
-		void buildRequestMsg();
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void buildResponseMsg();
-		END_THROW_ERROR
-
-		%newobject dump;
-		char *dump();
-
-		THROW_ERROR
-		void initRequest(char *remoteProviderId,
-				LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processRequestMsg(char *requestMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processResponseMsg(char *responseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void validateRequest();
-		END_THROW_ERROR
-	}
 } LassoNameRegistration;
+%extend LassoNameRegistration {
+	/* Attributes inherited from LassoProfile */
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	LassoSamlNameIdentifier *nameIdentifier;
+
+	%newobject remoteProviderId_get;
+	char *remoteProviderId;
+
+	%immutable request;
+	LassoLibRegisterNameIdentifierRequest *request;
+
+	%immutable response;
+	LassoLibRegisterNameIdentifierResponse *response;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Attributes */
+
+	LassoSamlNameIdentifier *oldNameIdentifier;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoNameRegistration(LassoServer *server);
+
+	~LassoNameRegistration();
+
+	%newobject newFromDump;
+	static LassoNameRegistration *newFromDump(LassoServer *server, char *dump);
+
+	/* Methods inherited from LassoProfile */
+
+        THROW_ERROR
+	void setIdentityFromDump(char *dump);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void setSessionFromDump(char *dump);
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	void buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void buildResponseMsg();
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	THROW_ERROR
+	void initRequest(char *remoteProviderId,
+			LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processRequestMsg(char *requestMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void processResponseMsg(char *responseMsg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	void validateRequest();
+	END_THROW_ERROR
+}
 
 %{
 
