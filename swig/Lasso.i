@@ -204,7 +204,10 @@ gpointer get_object(gpointer value)
 void set_object(gpointer *pointer, gpointer value)
 {
 	if (*pointer != NULL)
-		g_object_unref(*pointer);
+		if (LASSO_IS_NODE(*pointer))
+			lasso_node_destroy(LASSO_NODE(*pointer));
+		else
+			g_object_unref(*pointer);
 	*pointer = value == NULL ? NULL : g_object_ref(value);
 }
 
@@ -1964,7 +1967,7 @@ LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoServer lasso_server_new
-#define delete_LassoServer lasso_server_destroy
+#define delete_LassoServer(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoServer_newFromDump lasso_server_new_from_dump
 #else
@@ -2054,7 +2057,7 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoFederation lasso_federation_new
-#define delete_LassoFederation lasso_federation_destroy
+#define delete_LassoFederation(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -2133,7 +2136,7 @@ LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoIdentity lasso_identity_new
-#define delete_LassoIdentity lasso_identity_destroy
+#define delete_LassoIdentity(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoIdentity_newFromDump lasso_identity_new_from_dump
 #else
@@ -2204,7 +2207,7 @@ LassoStringArray *LassoSession_providerIds_get(LassoSession *self) {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoSession lasso_session_new
-#define delete_LassoSession lasso_session_destroy
+#define delete_LassoSession(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoSession_newFromDump lasso_session_new_from_dump
 #else
@@ -2379,7 +2382,7 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoDefederation lasso_defederation_new
-#define delete_LassoDefederation lasso_defederation_destroy
+#define delete_LassoDefederation(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Methods inherited from LassoProfile implementations */
 
@@ -2647,7 +2650,7 @@ LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoLogin lasso_login_new
-#define delete_LassoLogin lasso_login_destroy
+#define delete_LassoLogin(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoLogin_newFromDump lasso_login_new_from_dump
 #else
@@ -2857,7 +2860,7 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoLogout lasso_logout_new
-#define delete_LassoLogout lasso_logout_destroy
+#define delete_LassoLogout(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoLogout_newFromDump lasso_logout_new_from_dump
 #else
@@ -3099,7 +3102,7 @@ LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoLecp lasso_lecp_new
-#define delete_LassoLecp lasso_lecp_destroy
+#define delete_LassoLecp(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Methods inherited from LassoProfile implementations */
 
@@ -3277,7 +3280,7 @@ LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping 
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoNameIdentifierMapping lasso_name_identifier_mapping_new
-#define delete_LassoNameIdentifierMapping lasso_name_identifier_mapping_destroy
+#define delete_LassoNameIdentifierMapping(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Methods inherited from LassoProfile implementations */
 
@@ -3468,7 +3471,7 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoNameRegistration lasso_name_registration_new
-#define delete_LassoNameRegistration lasso_name_registration_destroy
+#define delete_LassoNameRegistration(self) lasso_node_destroy(LASSO_NODE(self))
 #ifdef PHP_VERSION
 #define LassoNameRegistration_newFromDump lasso_name_registration_new_from_dump
 #else
