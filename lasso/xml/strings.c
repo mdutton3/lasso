@@ -91,6 +91,11 @@ const xmlChar lassoLibNameIdentifierFormatOneTime[]   = "urn:liberty:iff:nameid:
 const xmlChar lassoLibNameIdentifierFormatEncrypted[] = "urn:liberty:iff:nameid:encrypted";
 const xmlChar lassoLibNameIdentifierFormatEntityID[]  = "urn:liberty:iff:nameid:entityID";
 
+/* Consent */
+const xmlChar lassoLibConsentObtained[]     = "urn:liberty:consent:obtained";
+const xmlChar lassoLibConsentUnavailable[]  = "urn:liberty:consent:unavailable";
+const xmlChar lassoLibConsentInapplicable[] = "urn:liberty:consent:inapplicable";
+
 /*****************************************************************************/
 /* METADATA                                                                  */
 /*****************************************************************************/

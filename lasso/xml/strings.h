@@ -99,6 +99,11 @@ LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatOneTime[];
 LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEncrypted[];
 LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEntityID[];
 
+/* Consent */
+LASSO_EXPORT_VAR const xmlChar lassoLibConsentObtained[];
+LASSO_EXPORT_VAR const xmlChar lassoLibConsentUnavailable[];
+LASSO_EXPORT_VAR const xmlChar lassoLibConsentInapplicable[];
+
 /*****************************************************************************/
 /* METADATA                                                                  */
 /*****************************************************************************/
