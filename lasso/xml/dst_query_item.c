@@ -108,15 +108,14 @@ lasso_dst_query_item_get_type()
 }
 
 LassoDstQueryItem*
-lasso_dst_query_item_new(const char *Select,
-			 const char *itemID)
+lasso_dst_query_item_new(const char *Select)
 {
 	LassoDstQueryItem *node;
 
 	node = g_object_new(LASSO_TYPE_DST_QUERY_ITEM, NULL);
 
 	node->Select = g_strdup(Select);
-	node->itemID = g_strdup(itemID);
+	node->includeCommonAttributes = FALSE;
 
 	return node;
 }
