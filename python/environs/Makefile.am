@@ -10,8 +10,8 @@ INCLUDES = \
 
 ENVSOURCES = py_federation_termination.c py_lecp.c py_login.c py_logout.c py_profile.c py_register_name_identifier.c py_server.c py_session.c py_identity.c
 
-noinst_LIBRARIES = libenvirons.a
-libenvirons_a_SOURCES = $(ENVSOURCES)
+noinst_LTLIBRARIES = libenvirons.la
+libenvirons_la_SOURCES = $(ENVSOURCES)
 
 EXTRA_DIST = $(ENVSOURCES) py_federation_termination.h py_lecp.h py_login.h py_logout.h py_profile.h py_register_name_identifier.h py_server.h py_session.h py_identity.h
 

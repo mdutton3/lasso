@@ -13,8 +13,8 @@ XMLSOURCES = \
 	py_samlp_response.c \
 	py_xml.c
 
-noinst_LIBRARIES = libxml.a
-libxml_a_SOURCES = $(XMLSOURCES)
+noinst_LTLIBRARIES = libxml.la
+libxml_la_SOURCES = $(XMLSOURCES)
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \

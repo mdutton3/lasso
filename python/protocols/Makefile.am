@@ -21,8 +21,8 @@ PROTSOURCES = \
 	py_register_name_identifier_response.c
 
 
-libprotocols_a_SOURCES = $(PROTSOURCES)
-noinst_LIBRARIES = libprotocols.a
+libprotocols_la_SOURCES = $(PROTSOURCES)
+noinst_LTLIBRARIES = libprotocols.la
 
 EXTRA_DIST = \
 	$(PROTSOURCES) \

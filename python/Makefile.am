@@ -18,10 +18,10 @@ mylibs = $(top_builddir)/lasso/liblasso.la
 
 lassomod_la_SOURCES = lassomod.c  py_lasso.c  utils.c  wrap_objs.c
 lassomod_la_LIBADD = $(mylibs) \
-	./protocols/elements/libelements.a \
-	./protocols/libprotocols.a \
-	./xml/libxml.a \
-	./environs/libenvirons.a
+	./protocols/elements/libelements.la \
+	./protocols/libprotocols.la \
+	./xml/libxml.la \
+	./environs/libenvirons.la
 
 EXTRA_DIST = lassomod.h  py_lasso.h  utils.h  wrap_objs.h \
 		generator_lasso_strings.py  lasso.py  lasso_strings.py \

@@ -1,7 +1,7 @@
 ELEMSOURCES = py_assertion.c py_authentication_statement.c
 
-noinst_LIBRARIES = libelements.a
-libelements_a_SOURCES = $(ELEMSOURCES)
+noinst_LTLIBRARIES = libelements.la
+libelements_la_SOURCES = $(ELEMSOURCES)
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
