@@ -1,9 +1,10 @@
 NULL=
 TOP=$(top_srcdir)
 MODULE=lasso
+DOC_MAIN_SGML_FILE=$(MODULE).sgml
 SOURCE_DIR=$(TOP)/lasso
 INCLUDE_DIR=$(TOP)/lasso
-SGML_CATALOG_FILES=/usr/share/sgml/docbook/sgml-dtd-3.0-1.0-8/catalog:/usr/share/sgml/openjade-1.3.1/catalog:/usr/share/sgml/docbook/dsssl-stylesheets/catalog
+##SGML_CATALOG_FILES=/usr/share/sgml/docbook/sgml-dtd-3.0-1.0-8/catalog:/usr/share/sgml/openjade-1.3.1/catalog:/usr/share/sgml/docbook/dsssl-stylesheets/catalog
 
 EXTRA_DIST = \
 	chapters \
@@ -19,21 +20,24 @@ SCANOBJ_OPTIONS=
 #
 DOC_SOURCE_DIR=./code
 DOC_SOURCE_FILES=\
-	$(shell find $(SOURCE_DIR) -name '*.c' -print )  \
-	 $(shell find $(INCLUDE_DIR) -name '*.h' -print )
+	$(shell find $(SOURCE_DIR) -name '*.c' -print ) \
+	$(shell find $(INCLUDE_DIR) -name '*.h' -print )
 
 # do nothing for all
 all:
 
-docs: sgml html clean-sources
+#docs: sgml html clean-sources
+docs: sgml html
 
-html: sgml lasso.sgml lasso-index
-	gtkdoc-mkhtml lasso lasso.sgml
+html: sgml $(DOC_MAIN_SGML_FILE) lasso-index
+	@echo '*** Building HTML ***'
+	test -d $(srcdir)/html || mkdir $(srcdir)/html
+	cd $(srcdir)/html && gtkdoc-mkhtml $(MODULE) ../$(DOC_MAIN_SGML_FILE)
 
-SCANOBJ_FILES = 		 \
+SCANOBJ_FILES = 		\
 	$(MODULE).hierarchy	\
-	$(MODULE).signals \
-	$(MODULE).interfaces \
+	$(MODULE).signals 	\
+	$(MODULE).interfaces 	\
 	$(MODULE).prerequisites \
 	$(MODULE).args
 
@@ -44,9 +48,10 @@ SCANOBJ_FILES = 		 \
 # targets to make more references
 #
 sgml: templates
+	@echo '*** Building SGML ***'
 	-@gtkdoc-mkdb --module=lasso \
-		    --main-sgml-file=lasso.sgml \
-		    --source-dir=$(DOC_SOURCE_DIR)/lasso/base
+		    --main-sgml-file=$(DOC_MAIN_SGML_FILE) \
+		    --source-dir=$(DOC_SOURCE_DIR)/lasso
 	-@(for i in `find sgml -name "*.sgml" -print` ; do \
 	    cat $$i | \
 		sed 's!\(&lt;dsig:\)\([^/]*\)\(\/&gt;\)!<ulink URL=\"http://www.w3.org/TR/xmldsig-core/#sec-\2\">\1\2\3</ulink>!g' | \
@@ -57,7 +62,8 @@ sgml: templates
 	done);
 
 templates: scan
-	-@gtkdoc-mktmpl --module=lasso
+	@echo '*** Building TMPL ***'
+	-@gtkdoc-mktmpl --module=$(MODULE)
 
 # CFLAGS and LDFLAGS for compiling scan program.
 GTKDOC_CFLAGS = 		\
@@ -78,24 +84,27 @@ GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)
 GTKDOC_LD=$(LIBTOOL) --mode=link $(CC)
 
 scan: doc_sources
+	@echo '*** Scan sources ***'
 	if grep -l '^..*$$' $(MODULE).types > /dev/null ; then \
-	    CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=$(MODULE) --output-dir=$(srcdir) ; \
+		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=$(MODULE) --output-dir=$(srcdir) ; \
 	else \
-	    for i in $(SCANOBJ_FILES) ; do \
-               test -f $$i || touch $$i ; \
-	    done \
+		cd $(srcdir) ; \
+		for i in $(SCANOBJ_FILES) ; do \
+			test -f $$i || touch $$i ; \
+		done \
 	fi
 	-@gtkdoc-scan --module=$(MODULE) \
-		    --source-dir=$(DOC_SOURCE_DIR)/lasso/base
+		    --source-dir=$(DOC_SOURCE_DIR)/lasso/
 
 $(MODULE)-decl.txt $(SCANOBJ_FILES): scan
 	@true
 
 #
 # Prepare source files by coping them to "code" folder and 
-# removing LASSO_EXPORT_* stuff that makes gtkdoc crazy
+# removing LASSO_EXPORT* stuff that makes gtkdoc crazy
 #
 doc_sources: $(DOC_SOURCE_FILES)
+	@echo '*** Prepare sources ***'
 	@(for i in $(DOC_SOURCE_FILES) ; do \
 	    folder_name=`echo $$i | sed 's#$(TOP)/##' | sed 's#/[^/]*$$##'`; \
 	    file_name=`echo $$i | sed 's#.*/##'`; \
@@ -108,14 +117,15 @@ doc_sources: $(DOC_SOURCE_FILES)
 		sed 's/LASSO_EXPORT//' > \
 		$(DOC_SOURCE_DIR)/$$folder_name/$$file_name; \
 	done);
-	-@mkdir -p $(DOC_SOURCE_DIR)/lasso/base
-	-@mv -f $(DOC_SOURCE_DIR)/lasso/*.c $(DOC_SOURCE_DIR)/lasso/base
+#	-@mkdir -p $(DOC_SOURCE_DIR)/lasso
+#	-@mv -f $(DOC_SOURCE_DIR)/lasso/*.c $(DOC_SOURCE_DIR)/lasso/base
 
 #
 # Create index for all functions. For macros and defines need to add -CAPS suffix
 #
 lasso-index: scan 
-	@grep -h '<NAME>.*</NAME>' lasso-*decl.txt | \
+	@echo '*** Create functions index ***'
+	@grep -h '<NAME>.*</NAME>' $(MODULE)-*decl.txt | \
 		grep -v '<NAME>extern</NAME>' | \
 		sort -u | \
 		sed 's#_#-#g' | \
