@@ -471,6 +471,9 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 			LASSO_PROFILE(login)->remote_providerID);
 	/* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
 	url = lasso_provider_get_metadata_one(remote_provider, "AssertionConsumerServiceURL");
+	if (url == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+	}
 	identityProviderSuccinctID = lasso_sha1(
 			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
 
@@ -579,7 +582,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 		/* get SingleSignOnServiceURL metadata */
 		url = lasso_provider_get_metadata_one(remote_provider, "SingleSignOnServiceURL");
 		if (url == NULL) {
-			return -1; /* XXX */
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 
 		LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?%s", url, query);

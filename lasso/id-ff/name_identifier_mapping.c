@@ -54,8 +54,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Name identifier mapping url not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 
 	profile->msg_body = lasso_node_export_to_soap(profile->request,

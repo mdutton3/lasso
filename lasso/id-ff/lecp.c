@@ -42,8 +42,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	assertionConsumerServiceURL = lasso_provider_get_metadata_one(
 			LASSO_PROVIDER(profile->server), "AssertionConsumerServiceURL");
 	if (assertionConsumerServiceURL == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 
 	if (profile->request == NULL) {
@@ -154,8 +153,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	assertionConsumerServiceURL = lasso_provider_get_metadata_one(
 			provider, "AssertionConsumerServiceURL");
 	if (assertionConsumerServiceURL == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 
 	if (LASSO_PROFILE(lecp)->msg_body)

@@ -81,8 +81,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"RegisterNameIdentifierServiceURL");
 		if (url == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Unknown profile service URL");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->request,
 				profile->server->signature_method,
@@ -132,8 +131,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"RegisterNameIdentifierServiceReturnURL");
 		if (url == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Unknown profile service URL");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->response,
 				profile->server->signature_method,

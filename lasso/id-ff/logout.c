@@ -94,8 +94,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"SingleLogoutServiceURL");
 		if (url == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Unknown profile service URL");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->request,
 				profile->server->signature_method,
@@ -166,7 +165,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");
 		if (url == NULL) {
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->response,
 				profile->server->signature_method,
@@ -525,6 +524,9 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			/* Build and optionaly sign the logout request QUERY message */
 			url = lasso_provider_get_metadata_one(remote_provider,
 					"SingleLogoutServiceURL");
+			if (url == NULL) {
+				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+			}
 			query = lasso_node_export_to_query(profile->request,
 					profile->server->signature_method,
 					profile->server->private_key);

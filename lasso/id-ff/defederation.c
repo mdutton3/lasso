@@ -79,15 +79,17 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 				remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
+
+		return 0;
 	}
+
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the query message and build the
 		 * federation termination notification url */
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"FederationTerminationServiceURL");
 		if (url == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Unknown profile service URL");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->request,
 				profile->server->signature_method,
@@ -100,16 +102,14 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		}
 
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_body = NULL;
 		g_free(url);
 		g_free(query);
-		profile->msg_body = NULL;
+
+		return 0;
 	}
 
-	if (profile->msg_url == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
-	}
-
-	return 0;
+	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
 /**
@@ -360,8 +360,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
 				"FederationTerminationServiceReturnURL");
 		if (profile->msg_url == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Unknown profile service return URL");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 
 		/* if a relay state, then build the query part */
