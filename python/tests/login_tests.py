@@ -34,50 +34,14 @@ if not '../.libs' in sys.path:
 
 import lasso
 
-import builtins
-from libertysimulator import *
-from websimulator import *
-
 
 class LoginTestCase(unittest.TestCase):
-    def generateIdpSite(self, internet):
-        site = IdentityProvider(internet, 'https://idp1')
-        site.providerId = 'https://idp1/metadata'
+    pass
 
-        lassoServer = lasso.Server(
-            '../../tests/data/idp1-la/metadata.xml',
-            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
-            '../../tests/data/idp1-la/private-key-raw.pem',
-            '../../tests/data/idp1-la/certificate.pem',
-            lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
-            '../../tests/data/sp1-la/metadata.xml',
-            '../../tests/data/sp1-la/public-key.pem',
-            '../../tests/data/ca1-la/certificate.pem')
-        site.lassoServerDump = lassoServer.dump()
-        failUnless(site.lassoServerDump)
 
-        site.newUser('Chantereau')
-        site.newUser('Clapies')
-        site.newUser('Febvre')
-        site.newUser('Nowicki')
-        # Frederic Peters has no account on identity provider.
-        return site
-
-    def generateLibertyEnabledClientProxy(self, internet):
-        clientProxy = LibertyEnabledClientProxy(internet)
-        lassoServer = lasso.Server()
-        lassoServer.add_provider(
-            '../../tests/data/idp1-la/metadata.xml',
-            '../../tests/data/idp1-la/public-key.pem',
-            '../../tests/data/ca1-la/certificate.pem')
-        clientProxy.lassoServerDump = lassoServer.dump()
-        failUnless(clientProxy.lassoServerDump)
-        return clientProxy
-        
-    def generateSpSite(self, internet):
-        site = ServiceProvider(internet, 'https://sp1')
-        site.providerId = 'https://service-provider/metadata'
+class LogoutTestCase(unittest.TestCase):
+    def test01(self):
+        """SP logout without session and indentity; testing init_request."""
 
         lassoServer = lasso.Server(
             '../../tests/data/sp1-la/metadata.xml',
@@ -89,203 +53,36 @@ class LoginTestCase(unittest.TestCase):
             '../../tests/data/idp1-la/metadata.xml',
             '../../tests/data/idp1-la/public-key.pem',
             '../../tests/data/ca1-la/certificate.pem')
-        site.lassoServerDump = lassoServer.dump()
-        failUnless(site.lassoServerDump)
-
-        site.newUser('Nicolas')
-        site.newUser('Romain')
-        site.newUser('Valery')
-        # Christophe Nowicki has no account on service provider.
-        site.newUser('Frederic')
-        return site
-
-    def setUp(self):
-        for name in ('fail', 'failIf', 'failIfAlmostEqual', 'failIfEqual', 'failUnless',
-                     'failUnlessAlmostEqual', 'failUnlessRaises', 'failUnlessEqual'):
-            builtins.set(name, getattr(self, name))
-
-    def tearDown(self):
-        for name in ('fail', 'failIf', 'failIfAlmostEqual', 'failIfEqual', 'failUnless',
-                     'failUnlessAlmostEqual', 'failUnlessRaises', 'failUnlessEqual'):
-            builtins.delete(name)
-
-    def test01(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        failIf(spSite.sessions)
-        failIf(idpSite.sessions)
-
-    def test01_withRelayState(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Checking RelayState."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-
-        httpResponse = principal.sendHttpRequestToSite(
-            spSite, 'GET', '/login?RelayState=a_sample_relay_state')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        failIf(spSite.sessions)
-        failIf(idpSite.sessions)
+        logout = lasso.Logout(lassoServer, lasso.providerTypeSp)
+        try:
+            logout.init_request()
+        except lasso.Error, error:
+            if error.code != -1:
+                raise
+        else:
+            self.fail('logout.init_request without having set identity before should fail')
 
     def test02(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done three times."""
+        """IDP logout without session and identity; testing logout.get_next_providerID."""
 
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-
-        # Once again. Now the principal already has a federation between spSite and idpSite.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-
-        # Once again. Do a new passive login between normal login and logout.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        del principal.keyring[idpSite.url] # Ensure identity provider will be really passive.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-
-        # Once again, with isPassive and the user having no web session.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-    def test03(self):
-        """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider. Then logout, with same problem."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Frederic Peters')
-        # Frederic Peters has no account on identity provider.
-        principal.keyring[spSite.url] = 'Frederic'
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-    def test04(self):
-        """Service provider initiated login using HTTP redirect, but user has no account on service
-        provider and doesn't create one."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Christophe Nowicki')
-        principal.keyring[idpSite.url] = 'Nowicki'
-        # Christophe Nowicki has no account on service provider.
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-    def test05(self):
-        """Service provider initiated login using HTTP redirect with isPassive for a user without federation yet."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?isPassive=1')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-    def test06(self):
-        """Testing forceAuthn flag."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-
-        # Ask user to reauthenticate while he is already logged.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        del principal.keyring[idpSite.url] # Ensure user can't authenticate.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 200)
-
-        # Force authentication, but user won't authenticate.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login?forceAuthn=1')
-        failUnlessEqual(httpResponse.statusCode, 401)
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logout')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-    def test07(self):
-        """LECP login."""
-
-        internet = Internet()
-        idpSite = self.generateIdpSite(internet)
-        spSite = self.generateSpSite(internet)
-        spSite.idpSite = idpSite
-        principal = Principal(internet, 'Romain Chantereau')
-        principal.keyring[idpSite.url] = 'Chantereau'
-        principal.keyring[spSite.url] = 'Romain'
-        lecp = self.generateLibertyEnabledClientProxy(internet)
-        lecp.idpSite = idpSite
-
-        # Try LECP, but the principal is not authenticated on idp1. So, LECP must fail.
-        httpResponse = lecp.login(principal, spSite, '/login')
-        failUnlessEqual(httpResponse.statusCode, 401)
-
-        # Now authenticate principal, before testing LECP. So, LECP must succeed.
-        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
-        httpResponse = lecp.login(principal, spSite, '/login')
-        failUnlessEqual(httpResponse.statusCode, 200)
+        lassoServer = lasso.Server(
+            '../../tests/data/idp1-la/metadata.xml',
+            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
+            '../../tests/data/idp1-la/private-key-raw.pem',
+            '../../tests/data/idp1-la/certificate.pem',
+            lasso.signatureMethodRsaSha1)
+        lassoServer.add_provider(
+            '../../tests/data/sp1-la/metadata.xml',
+            '../../tests/data/sp1-la/public-key.pem',
+            '../../tests/data/ca1-la/certificate.pem')
+        logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
+        self.failIf(logout.get_next_providerID())
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
+suite2 = unittest.makeSuite(LogoutTestCase, 'test')
 
-allTests = unittest.TestSuite((suite1,))
+allTests = unittest.TestSuite((suite1, suite2))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
