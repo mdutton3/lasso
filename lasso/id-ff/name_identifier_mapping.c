@@ -43,8 +43,8 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Provider %s not found", profile->remote_providerID);
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
@@ -82,8 +82,8 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Provider %s not found", profile->remote_providerID);
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_SP) {
@@ -141,8 +141,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
 		message(G_LOG_LEVEL_CRITICAL, "Init request method is forbidden for an IDP");
@@ -269,8 +269,8 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response)->ProviderID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* verify signature */

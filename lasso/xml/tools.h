@@ -65,19 +65,21 @@ LASSO_EXPORT char* lasso_sha1(const char *str);
 char** urlencoded_to_strings(const char *str);
 
 
-void _debug(GLogLevelFlags level, const char *filename, int line,
+int _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
 
 #if defined LASSO_DEBUG
 # define debug(format, args...) \
-	_debug(G_LOG_LEVEL_DEBUG, __FILE__, __LINE__,__FUNCTION__, format, ##args);
+	_debug(G_LOG_LEVEL_DEBUG, __FILE__, __LINE__,__FUNCTION__, format, ##args)
 #else
-# define debug(format, ...);
+# define debug(format, ...)
 #endif
 
 #define message(level, format, args...) \
-	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args);
+	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
 
+#define error_code(level, errorcode, args...) \
+	(message(level, lasso_strerror(errorcode), ##args) || errorcode);
 
 #ifdef __cplusplus
 }

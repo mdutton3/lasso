@@ -586,7 +586,8 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 	if (remote_provider == NULL) {
-		return -1; /* XXX */
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				LASSO_PROFILE(login)->remote_providerID);
 	}
 
 	protocolProfile = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProtocolProfile;
@@ -789,8 +790,8 @@ lasso_login_build_request_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 	return 0;
@@ -1004,8 +1005,7 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 	if (remote_providerID == NULL) {
 		first_providerID = lasso_server_get_first_providerID(LASSO_PROFILE(login)->server);
 		LASSO_PROFILE(login)->remote_providerID = first_providerID;
-	}
-	else {
+	} else {
 		LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
 	}
 

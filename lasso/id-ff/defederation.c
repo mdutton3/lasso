@@ -161,12 +161,11 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		return -1;
 	}
 
-
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* get federation */
@@ -354,8 +353,9 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
 		if (remote_provider == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Provider not found");
-			return -1;
+			return error_code(G_LOG_LEVEL_CRITICAL,
+					LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+					profile->remote_providerID);
 		}
 
 		/* build the QUERY and the url. Dont need to sign the query,

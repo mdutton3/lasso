@@ -63,8 +63,8 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
@@ -118,8 +118,8 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
@@ -190,8 +190,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* Get federation */
@@ -386,8 +386,8 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* verify signature */
@@ -416,8 +416,8 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
@@ -503,8 +503,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* update name identifier in federation */

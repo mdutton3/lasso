@@ -75,8 +75,8 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* build the logout request message */
@@ -322,8 +322,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
 	if (remote_provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* before setting profile->request, verify if it is already set */
@@ -654,8 +654,10 @@ lasso_logout_validate_request(LassoLogout *logout)
 	/* get the provider */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL)
-		return -1;
+	if (remote_provider == NULL) {
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
+	}
 
 	/* Set LogoutResponse */
 	profile->response = NULL;

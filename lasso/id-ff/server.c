@@ -57,8 +57,7 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 
 	provider = lasso_provider_new(role, metadata, public_key, ca_cert_chain);
 	if (provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.");
-		return LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
 	}
 
 	g_hash_table_insert(server->providers, g_strdup(provider->ProviderID), provider);

@@ -559,7 +559,7 @@ char** urlencoded_to_strings(const char *str)
 	return result;
 }
 
-void
+int
 _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...) 
 {
@@ -581,4 +581,9 @@ _debug(GLogLevelFlags level, const char *filename, int line,
 	} else {
 		g_log("Lasso", level, "%s\t%s", date, debug_string);
 	}
+
+	/* returns 0 so it can be chained to another value (with ||) in
+	 * error_code macro
+	 */
+	return 0;
 }
