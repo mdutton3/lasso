@@ -50,8 +50,10 @@ binary-c: ${LASSO.SO}
 ${C_OBJECT}: ${C_SOURCE}
 	${MAKE} -C ${C_SOURCE_DIR}
 
+mylibs = ../lasso/.libs/liblasso.so
+
 ${LASSO.SO}: generate-header ${C_OBJECT}
-	$(CC) -shared -lgobject-2.0 -lglib-2.0 -llasso ${C_OBJECT} -o $@
+	$(CC) -shared -lgobject-2.0 -lglib-2.0 $(mylibs) ${C_OBJECT} -o $@
 
 clean:
 	${MAKE} -C ${C_SOURCE_DIR} clean
