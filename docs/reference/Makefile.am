@@ -12,6 +12,8 @@ DOC_SOURCE_FILES = \
 	$(shell find $(top_srcdir)/lasso -name '*.c' -print ) \
 	$(shell find $(top_srcdir)/lasso -name '*.h' -print )
 
+IGNORE_HFILES = lasso_config.h
+
 # do nothing for all
 all: docs
 
@@ -78,8 +80,10 @@ scan: doc_sources
 			test -f $$i || touch $$i ; \
 		done \
 	fi
-	gtkdoc-scan --module=lasso --source-dir=$(DOC_SOURCE_DIR)/lasso/ --output-dir=build/
-
+	gtkdoc-scan --module=lasso \
+		--source-dir=$(DOC_SOURCE_DIR)/lasso/ \
+		--output-dir=build/ \
+		--ignore-headers="$(IGNORE_HFILES)"
 
 #
 # Prepare source files by coping them to "code" folder and 

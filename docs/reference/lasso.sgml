@@ -43,7 +43,6 @@
 <!ENTITY LassoLibAuthnContext SYSTEM "sgml/lib_authn_context.xml">
 <!ENTITY LassoLibAuthenticationStatement SYSTEM "sgml/lib_authentication_statement.xml">
 <!ENTITY lasso-lasso SYSTEM "sgml/lasso.xml">
-<!ENTITY lasso-version SYSTEM "sgml/version.xml">
 <!ENTITY LassoFederation SYSTEM "sgml/federation.xml">
 <!ENTITY LassoLecp SYSTEM "sgml/lecp.xml">
 <!ENTITY LassoProvider SYSTEM "sgml/provider.xml">
@@ -182,7 +181,6 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
 
     &lasso-lasso;
     &LassoStrings;
-    &lasso-version;
   </chapter>
 
 </book>
