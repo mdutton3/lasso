@@ -4,8 +4,7 @@ dnl configure.ac - top level autoconf file for Lasso
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
 dnl 
-dnl See COPYING at the top of this package for the
-dnl full license terms.
+dnl See COPYING at the top of this package for the dnl full license terms.
 dnl 
 dnl 
 
@@ -143,7 +142,7 @@ fi
 dnl
 dnl Check for programs
 dnl
-AC_PROG_CC_STDC
+AC_PROG_CC
 LT_AC_PROG_RC
 AC_EXEEXT
 AC_PROG_CC_C_O
@@ -156,7 +155,6 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
-AC_PROG_INSTALL
 AC_SUBST(LIBTOOL_DEPS)
 
 dnl Find tar command for make dist
@@ -229,7 +227,7 @@ dnl ==========================================================================
 dnl Check if java is explicitly disabled.
 AC_ARG_ENABLE(java, [  --disable-java          Disable the java API.],,
               enable_java="yes")
-AC_MSG_CHECKING(Enable Java API)
+AC_MSG_CHECKING(for Java)
 JAVAC_FLAGS=
 JAVAH_FLAGS=
 dnl need to change quotes to allow square brackets
@@ -269,7 +267,7 @@ AC_ARG_ENABLE(python, [  --disable-python        Enable the Python interface],,
 dnl Check if user passed a specific python program.
 AC_ARG_WITH(python,
             [  --with-python=(PYTHON)  Set the full path to the python program to use.])
-AC_MSG_CHECKING(Enable Python API)
+AC_MSG_CHECKING(for Python development files)
 
 dnl specific program passed, set PYTHON to it.
 if test "X$with_python" != X; then
@@ -351,7 +349,7 @@ AC_SUBST(PHP_LDFLAGS)
 AC_SUBST(PHP_LIBS)
 AC_SUBST(PHP_EXTENSION_DIR)
 
-AC_MSG_CHECKING(Enable PHP API)
+AC_MSG_CHECKING(for PHP development files)
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 dnl Check if we were be able to extract a good version number.
 if test "X$PHP_VERSION" != X; then
@@ -438,8 +436,8 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 dnl Checks for header files.
-C_HEADER_STDC
-AC_CHECK_HEADERS(xmlsec/xmlsec.h xmlsec/crypto.h string.h libxml/uri.h glib/gprintf.h)
+AC_HEADER_STDC
+AC_CHECK_HEADERS(string.h)
 
 
 dnl Debug 
