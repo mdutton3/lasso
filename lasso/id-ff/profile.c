@@ -68,11 +68,10 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
     request_node = g_ptr_array_index(children, 0);
     name = lasso_node_get_name(request_node);
 
-    if(xmlStrEqual(name, "Request")) {
-      debug("A Request node found\n");
+    if(xmlStrEqual(name, "Request")){
       type = lassoRequestTypeLogin;
     }
-    else if(xmlStrEqual(name, "LogoutRequest")) {
+    else if(xmlStrEqual(name, "LogoutRequest")){
       type = lassoRequestTypeLogout;
     }
     else if(xmlStrEqual(name, "FederationTerminationNotification")){
@@ -83,6 +82,9 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
     }
     else if(xmlStrEqual(name, "NameIdentifierMappingRequest")){
       type = lassoRequestTypeNameIdentifierMapping;
+    }
+    else if(xmlStrEqual(name, "AuthnRequest")){
+      type = lassoRequestTypeLecp;
     }
     else{
       message(G_LOG_LEVEL_ERROR, "Unkown node name : %s\n", name);

@@ -56,6 +56,7 @@ typedef enum {
   lassoRequestTypeFederationTermination,
   lassoRequestTypeRegisterNameIdentifier,
   lassoRequestTypeNameIdentifierMapping,
+  lassoRequestTypeLecp,
 } lassoRequestTypes;
 
 typedef enum {

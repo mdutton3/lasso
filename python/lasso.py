@@ -317,6 +317,24 @@ class LibAuthnRequest(Node):
         lassomod.lib_authn_request_set_relayState(self, relayState)
 
 
+class LibAuthnResponse(SamlpResponse):
+    """\brief Blabla
+
+    Bla bla
+    """
+
+    def __init__(self, _obj=None):
+        """
+        The constructor
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_authn_response_new()
+        if _obj is None: raise Error('lasso_lib_authn_response_new() failed')
+        SamlpResponse.__init__(self, _obj=_obj)
+
+
 class LibFederationTerminationNotification(Node):
     """\brief Blabla
 
@@ -493,7 +511,7 @@ class AuthnRequest(LibAuthnRequest):
         lassomod.authn_request_set_scoping(self, proxyCount)
 
 
-class AuthnResponse(SamlpResponse):
+class AuthnResponse(LibAuthnResponse):
     """\brief Blabla
 
     Bla bla
@@ -503,7 +521,7 @@ class AuthnResponse(SamlpResponse):
         The constructor
         """
         self._o = _obj
-        SamlpResponse.__init__(self, _obj=_obj)
+        LibAuthnResponse.__init__(self, _obj=_obj)
 
     def new_from_export(cls, buffer, type=0):
         obj = lassomod.authn_response_new_from_export(buffer, type)
@@ -886,6 +904,7 @@ requestTypeLogout                 = 2
 requestTypeFederationTermination  = 3
 requestTypeRegisterNameIdentifier = 4
 requestTypeNameIdentifierMapping  = 5
+requestTypeLecp                   = 6
 
 def get_request_type_from_soap_msg(soap_buffer):
     return lassomod.profile_get_request_type_from_soap_msg(soap_buffer);
@@ -1093,11 +1112,11 @@ class Logout(Profile):
     def init_request(self, remote_providerID = None):
         return lassomod.logout_init_request(self, remote_providerID);
 
-    def load_request_msg(self, request_msg, request_method):
-        return lassomod.logout_load_request_msg(self, request_msg, request_method);
+    def process_request_msg(self, request_msg, request_method):
+        return lassomod.logout_process_request_msg(self, request_msg, request_method);
 
-    def process_request(self):
-        return lassomod.logout_process_request(self);
+    def validate_request(self):
+        return lassomod.logout_validate_request(self);
 
     def process_response_msg(self, response_msg, response_method):
         return lassomod.logout_process_response_msg(self, response_msg, response_method);
