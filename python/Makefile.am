@@ -19,7 +19,7 @@ _lassomod_la_LIBADD =	$(top_builddir)/lasso/liblasso.la \
 _lassomod_la_LDFLAGS =	-no-undefined \
 			-module -avoid-version
 
-$(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py: $(srcdir)/../swig/Lasso.i
+$(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py: $(top_srcdir)/swig/Lasso.i
 	$(SWIG) -v -python -module $(PYTHON_PACKAGE) -o $(PYTHON_PACKAGE)_wrap.c $<
 
 # Dirty hack, another better way ?
