@@ -52,7 +52,7 @@ struct _LassoLogout {
   LassoNode      *initial_request;
   LassoNode      *initial_response;
   gchar          *initial_remote_providerID;
-  lassoHttpMethod request_method;
+
   /*< private >*/
   LassoLogoutPrivate *private;
 };
