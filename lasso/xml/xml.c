@@ -27,9 +27,9 @@
 
 struct _LassoNodePrivate
 {
-  gboolean    dispose_has_run;
-  gchar      *type_name;
-  xmlNodePtr  node;
+  gboolean   dispose_has_run;
+  gchar     *type_name;
+  xmlNodePtr node;
 };
 
 /*****************************************************************************/
@@ -256,8 +256,8 @@ lasso_node_set_name(LassoNode     *node,
 }
 
 static void
-lasso_node_set_node(LassoNode  *node,
-		    xmlNodePtr  libxml_node)
+lasso_node_set_node(LassoNode *node,
+		    xmlNodePtr libxml_node)
 {
   g_return_if_fail(LASSO_IS_NODE(node));
 
@@ -877,6 +877,7 @@ lasso_node_impl_set_ns(LassoNode     *node,
   /*   } */
 
   new_ns = xmlNewNs(node->private->node, href, prefix);
+  xmlFreeNs(node->private->node->ns);
   xmlSetNs(node->private->node, new_ns);
   node->private->node->nsDef = new_ns;
 }
@@ -929,6 +930,7 @@ lasso_node_finalize(LassoNode *node)
   g_print("%s 0x%x finalized ...\n", node->private->type_name, node);
   g_free (node->private->type_name);
   xmlFreeNode(node->private->node);
+  g_free (node->private);
 }
 
 static void
