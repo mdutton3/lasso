@@ -132,7 +132,7 @@ class LogoutTestCase(unittest.TestCase):
         logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
         self.failIf(logout.getNextProviderId())
 
-    def test01(self):
+    def test03(self):
         """IDP logout; testing processRequestMsg with non Liberty query."""
 
         lassoServer = lasso.Server(
@@ -146,13 +146,35 @@ class LogoutTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
-        # The processRequestMsg should failt but not abort.
+        # The processRequestMsg should fail but not abort.
         try:
             logout.processRequestMsg('passport=0&lasso=1', lasso.httpMethodRedirect)
         except SyntaxError:
             pass
         else:
             self.fail('Logout processRequestMsg should have failed.')
+
+    def test04(self):
+        """IDP logout; testing processResponseMsg with non Liberty query."""
+
+        lassoServer = lasso.Server(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'),
+            lasso.signatureMethodRsaSha1)
+        lassoServer.addProvider(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/public-key.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
+        # The processResponseMsg should fail but not abort.
+        try:
+            logout.processResponseMsg('liberty=&alliance', lasso.httpMethodRedirect)
+        except SyntaxError:
+            pass
+        else:
+            self.fail('Logout processResponseMsg should have failed.')
 
 
 class DefederationTestCase(unittest.TestCase):
@@ -170,7 +192,7 @@ class DefederationTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         defederation = lasso.Defederation(lassoServer, lasso.providerTypeIdp)
-        # The processNotificationMsg should failt but not abort.
+        # The processNotificationMsg should fail but not abort.
         try:
             defederation.processNotificationMsg('nonLibertyQuery=1', lasso.httpMethodRedirect)
         except SyntaxError:
