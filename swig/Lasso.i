@@ -219,6 +219,37 @@ Warning = _lasso.Warning
 
 #else
 
+#ifdef SWIGPHP4
+%{
+
+static void throw_exception_msg(int errorCode) {
+	char errorMsg[256];
+	if (errorCode > 0)
+        {
+	    sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+            zend_error(E_WARNING, errorMsg);
+        }
+	else
+        {
+	    sprintf(errorMsg, "%d / Lasso Error", errorCode);
+            zend_error(E_ERROR, errorMsg);
+        }
+}
+
+%}
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		throw_exception_msg(errorCode);
+	}
+}
+%enddef
+
+#else /* If SWIGPHP4 and SWIGPYTHON not defined.*/
+
 %{
 
 static void build_exception_msg(int errorCode, char *errorMsg) {
@@ -241,8 +272,8 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 	}
 }
 %enddef
-
-#endif
+#endif /* Ifdef SWIGPHP4. */
+#endif /* Ifdef SWIGPYTHON.*/
 
 %define END_THROW_ERROR
 %exception;
