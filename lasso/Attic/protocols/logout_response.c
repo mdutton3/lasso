@@ -180,8 +180,8 @@ lasso_logout_response_new_from_dump(gchar *buffer)
 LassoNode *
 lasso_logout_response_new_from_query(gchar *query)
 {
-  LassoNode *response;
-  xmlChar *relayState;
+  LassoNode *response, *ss, *ssc;
+  xmlChar *relayState, *statusCodeValue;
   GData *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
@@ -216,6 +216,20 @@ lasso_logout_response_new_from_query(gchar *query)
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
   
+  /* StatusCode */
+  statusCodeValue = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Value"), 0);
+  ss = lasso_samlp_status_new();
+  ssc = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+				    statusCodeValue);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
+				    LASSO_SAMLP_STATUS_CODE(ssc));
+  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
+				       LASSO_SAMLP_STATUS(ss));
+  lasso_node_destroy(ssc);
+  lasso_node_destroy(ss);
+
+
   /* RelayState */
   relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
   if (relayState != NULL)
