@@ -315,7 +315,7 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
 	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
 	      logout->initial_remote_providerID,
 	      current_provider_id);
-	xmlFree(current_provider_id);
+	g_free(current_provider_id);
 	continue;
       }
     }
