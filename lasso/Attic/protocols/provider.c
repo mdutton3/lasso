@@ -24,10 +24,6 @@
 
 #include <lasso/protocols/provider.h>
 
-#define LASSO_PROVIDER_NODE                "LassoProvider"
-#define LASSO_PROVIDER_PUBLIC_KEY_NODE     "PublicKey"
-#define LASSO_PROVIDER_CA_CERTIFICATE_NODE "CaCertificate"
-
 struct _LassoProviderPrivate
 {
   gboolean dispose_has_run;

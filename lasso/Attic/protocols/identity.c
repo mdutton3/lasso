@@ -24,11 +24,6 @@
 
 #include <lasso/protocols/identity.h>
 
-#define LASSO_IDENTITY_NODE "LassoIdentity"
-#define LASSO_IDENTITY_REMOTE_PROVIDERID_NODE "RemoteProviderID"
-#define LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE "LassoLocalNameIdentifier"
-#define LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE "LassoRemoteNameIdentifier"
-
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
