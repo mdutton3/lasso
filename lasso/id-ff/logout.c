@@ -41,24 +41,27 @@ static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile
  * lasso_logout_build_request_msg:
  * @logout: the logout object
  * 
- * This method builds the logout request message.
+ * Builds the logout request message.
  *
- * It gets the http method retrieved to send the request and :
- *
- * - if it is a SOAP method, then it builds the logout request SOAP message,
+ * It gets the HTTP method retrieved to send the request and:
+ * <itemizedlist>
+ * <listitem><para>
+ *   if it is a SOAP method, then it builds the logout request SOAP message,
  *   sets the msg_body attribute, gets the single logout service url and sets
  *   the msg_url attribute of the logout object.
- *
- * - if it is a HTTP-Redirect method, then it builds the logout request QUERY
+ * </para></listitem>
+ * <listitem><para>
+ *   if it is a HTTP-Redirect method, then it builds the logout request QUERY
  *   message, builds the logout request url, sets the msg_url to the logout
- *   request url, sets the msg_body to NULL
+ *   request url, sets the msg_body to NULL.
+ * </para></listitem>
+ * </itemizedlist>
  *
- * Optionaly (if private key and certificates paths are set in server object)
- * it signs the message (with X509 if a SOAP message, else with simple
- * signature if a QUERY message)
+ * If private key and certificate are set in server object it will also signs
+ * the message (either with X509 if SOAP or with a simple signature for query
+ * strings).
  * 
- * Return value: 0 if ok, else return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD
- * if the http method is invalid, else returns -1
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_logout_build_request_msg(LassoLogout *logout)
@@ -119,22 +122,27 @@ lasso_logout_build_request_msg(LassoLogout *logout)
  * lasso_logout_build_response_msg:
  * @logout: the logout object
  * 
- * This method builds the logout response message.
+ * Builds the logout response message.
  *
- * It gets the request message method and :
+ * It gets the request message method and:
+ * <itemizedlist>
+ * <listitem><para>
  *    if it is a SOAP method, then it builds the logout response SOAP message,
  *    sets the msg_body attribute, gets the single logout service return url
  *    and sets the msg_url attribute of the logout object.
- *
+ * </para></listitem>
+ * <listitem><para>
  *    if it is a HTTP-Redirect method, then it builds the logout response QUERY message,
  *    builds the logout response url, sets the msg_url with the logout response url,
  *    sets the msg_body with NULL
+ * </para></listitem>
+ * </itemizedlist>
  *
- * Optionaly ( if private key and certificates paths are set in server object )
- *    it signs the message (with X509 if a SOAP message,
- *    else with simple signature if a QUERY message )
+ * If private key and certificate are set in server object it will also signs
+ * the message (either with X509 if SOAP or with a simple signature for query
+ * strings).
  * 
- * Return value: 0 if ok, else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_logout_build_response_msg(LassoLogout *logout)
@@ -186,9 +194,9 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 /**
  * lasso_logout_destroy:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  *
- * destroy the logout object
+ * Destroys a logout object
  * 
  **/
 void
@@ -199,17 +207,11 @@ lasso_logout_destroy(LassoLogout *logout)
 
 /**
  * lasso_logout_get_next_providerID:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * 
- * This method returns the provider id from providerID_index in list of
- * providerIDs in session object.
+ * Returns the provider id from providerID_index in list of providerIDs in
+ * principal session with the exception of initial service provider ID.
  *
- * excepted the initial service provider id :
- *    It gets the remote provider id in session from the logout provider index
- *
- *    If it is the initial remote provider id, then it asks the next provider
- *    id from providerID_index + 1;
- * 
  * Return value: a newly allocated string or NULL
  **/
 gchar*
@@ -238,19 +240,15 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
 
 /**
  * lasso_logout_init_request:
- * @logout: 
- * @remote_providerID: the providerID of the identity provider. When NULL, the first
- *                     identity provider is used.
+ * @logout: a #LassoLogout
+ * @remote_providerID: the providerID of the identity provider.  If NULL the
+ *     first identity provider is used.
  * @request_method: if set, then it get the protocol profile in metadata
- *                  corresponding of this HTTP request method.
+ *     corresponding of this HTTP request method.
  *
- * First it verifies session and identity are set.
- * Next, gets federation with the remote provider and gets the name identifier for the request.
- *       gets the protocol profile and build the logout request object.
- * If the local provider is a Service Provider and if the protocol profile
- * is a HTTP Redirect / GET method, then removes the assertion.
+ * Initializes a new lib:LogoutRequest.
  * 
- * Return value: 0 if ok, else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
@@ -377,20 +375,24 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 /**
  * lasso_logout_process_request_msg:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * @request_msg: the logout request message
  * 
- * Processes a logout request.
+ * Processes a lib:LogoutRequest message.
+ *
+ * <itemizedlist>
+ * <listitem><para>
  *    if it is a SOAP request method then it builds the logout request object
- *    from the SOAP message and optionaly verifies the signature of the logout request.
- * 
- *    if it is a HTTP-Redirect request method then it builds the logout request object
- *    from the QUERY message and verify the signature.
+ *    from the SOAP message and optionaly verifies the signature of the logout
+ *    request.
+ * </para></listitem>
+ * <listitem><para>
+ *    if it is a HTTP-Redirect request method then it builds the logout request
+ *    object from the QUERY message and verify the signature.
+ * </para></listitem>
+ * </itemizedlist>
  *
- *    Saves the HTTP request method.
- *    Saves the name identifier.
- *
- * Return value: 0 on success or a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 {
@@ -434,25 +436,24 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 
 /**
  * lasso_logout_process_response_msg:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * @response_msg: the response message
  * 
  * Parses the response message and builds the response object.
- * Get the status code value :
- *     if it is not success, then if the local provider is a Service Provider and response method
- *     is SOAP, then builds a new logout request message for HTTP Redirect / GET method and returns
- *     the code error LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE and exits.
  *
- * Sets the remote provider id.
- * Sets the relay state.
- * 
- * if it is a SOAP method or, IDP provider type and http method is Redirect / GET,
+ * Checks the status code value and if it is not success, then if the local
+ * provider is a Service Provider and response method is SOAP, then builds a
+ * new logout request message for HTTP Redirect / GET method and returns the
+ * error code LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE.
+ *
+ * If it is a SOAP method or, IDP type and http method is Redirect/GET,
  * then removes assertion.
  * 
  * If local server is an Identity Provider and if there is no more assertion
- * (Identity Provider has logged out every Service Providers),
- *     then restores the initial response.
- * Return value: 0 if OK else LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE or < 0
+ * (Identity Provider has logged out every Service Providers), then restores
+ * the initial response.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
@@ -611,11 +612,11 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 
 /**
  * lasso_logout_reset_providerID_index:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * 
  * Reset the providerID_index attribute (set to 0).
  * 
- * Return value: 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 {
@@ -626,21 +627,30 @@ gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 
 /**
  * lasso_logout_validate_request:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * 
- * - Sets the remote provider id
- * - Sets a logout response with status code value to success.
- * - Verifies federation and authentication.
- * - If the request http method is a SOAP method, then verifies every other
+ * <itemizedlist>
+ * <listitem>
+ *   Sets the remote provider id
+ * </listitem><listitem>
+ *   Sets a logout response with status code value to success.
+ * </listitem><listitem>
+ *   Verifies federation and authentication.
+ * </listitem><listitem>
+ *   If the request http method is a SOAP method, then verifies every other
  *   Service Providers supports SOAP method : if not, then sets status code
  *   value to UnsupportedProfile and returns a code error with
  *   LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE.
- * - Every tests are ok, then removes assertion.
- * - If local server is an Identity Provider and if there is more than one
+ * </listitem><listitem>
+ *   Every tests are ok, then removes assertion.
+ * </listitem><listitem>
+ *   If local server is an Identity Provider and if there is more than one
  *   Service Provider (except the initial Service Provider), then saves the
  *   initial request, response and remote provider id.
+ * </listitem>
+ * </itemizedlist>
  *
- * Return value: O if OK else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_logout_validate_request(LassoLogout *logout)
@@ -935,11 +945,12 @@ lasso_logout_get_type()
 
 /**
  * lasso_logout_new:
- * @server: the logout object
+ * @server: the #LassoServer
  * 
- * initialises a new logout object
+ * Creates a new #LassoLogout.
  * 
- * Return value: a new instance of logout object or NULL
+ * Return value: a newly created #LassoLogout object; or NULL if an error
+ *     occured
  **/
 LassoLogout*
 lasso_logout_new(LassoServer *server)
@@ -954,6 +965,15 @@ lasso_logout_new(LassoServer *server)
 	return logout;
 }
 
+/**
+ * lasso_logout_new_from_dump:
+ * @server: the #LassoServer
+ * @dump: XML logout dump
+ *
+ * Restores the @dump to a new #LassoLogout.
+ *
+ * Return value: a newly created #LassoLogout; or NULL if an error occured
+ **/
 LassoLogout*
 lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 {
@@ -969,18 +989,14 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 
 /**
  * lasso_logout_dump:
- * @logout: the logout object
- * 
- * This method dumps the logout object in string a xml message.
- * it first adds profile informations.
- * Next, it adds his logout informations (initial_request, initial_response,
- * initial_remote_providerID and providerID_index).
- * 
- * Return value: a newly allocated string or NULL
+ * @logout: a #LassoLogout
+ *
+ * Dumps @logout content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
  **/
-gchar *
+gchar*
 lasso_logout_dump(LassoLogout *logout)
 {
 	return lasso_node_dump(LASSO_NODE(logout), NULL, 1);
 }
-

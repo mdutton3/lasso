@@ -82,25 +82,6 @@ Principal Session
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_session_get_authentication_method ##### -->
-<para>
-
-</para>
-
-@session: 
-@providerID: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_session_get_first_providerID ##### -->
-<para>
-
-</para>
-
-@session: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_session_get_provider_index ##### -->
 <para>
 
