@@ -284,7 +284,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 {
   LassoProfile    *profile;
   LassoFederation *federation;
-  LassoNode       *nameIdentifier_node = NULL, *local_nameIdentifier_node = NULL;
+  LassoNode       *remote_nameIdentifier_node = NULL, *local_nameIdentifier_node = NULL;
   GError          *err = NULL;
   LassoProvider   *provider = NULL;
 
@@ -300,7 +300,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
   profile = LASSO_PROFILE(name_registration);
 
   /* verify if the identity and session exist */
-  if (profile->identity == NULL) {
+  if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
     ret = -1;
     goto done;
@@ -322,7 +322,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
   /* Get federation */
   federation = lasso_identity_get_federation_ref(profile->identity, profile->remote_providerID);
-  if (federation == NULL) {
+  if (LASSO_IS_FEDERATION(federation) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
     ret = -1;
     goto done;
@@ -339,32 +339,30 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
     /* save the new name identifier in profile->nameIdentifier */
     profile->nameIdentifier = g_strdup(spNameIdentifier);
-    printf("\nAt SP, new name identifier %s\n", profile->nameIdentifier);
 
     /* idp name identifier */
-    nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
-    if (nameIdentifier_node == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Remote NameIdentifier for service provider not found\n");
+    remote_nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
+    if (remote_nameIdentifier_node == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Remote NameIdentifier not found\n");
       ret = -1;
       goto done;
     }
-    idpNameIdentifier   = lasso_node_get_content(nameIdentifier_node, NULL);
-    idpNameQualifier    = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
-    idpFormat           = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
-    lasso_node_destroy(nameIdentifier_node);
+    idpNameIdentifier   = lasso_node_get_content(remote_nameIdentifier_node, NULL);
+    idpNameQualifier    = lasso_node_get_attr_value(remote_nameIdentifier_node, "NameQualifier", NULL);
+    idpFormat           = lasso_node_get_attr_value(remote_nameIdentifier_node, "Format", NULL);
+    lasso_node_destroy(remote_nameIdentifier_node);
 
     /* set the old name identifier */
-    nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
-    if (nameIdentifier_node != NULL) {
-      oldNameIdentifier = lasso_node_get_content(nameIdentifier_node, NULL);
-      oldNameQualifier  = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
-      oldFormat         = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
+    local_nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
+    if (local_nameIdentifier_node != NULL) {
+      oldNameIdentifier = lasso_node_get_content(local_nameIdentifier_node, NULL);
+      oldNameQualifier  = lasso_node_get_attr_value(local_nameIdentifier_node, "NameQualifier", NULL);
+      oldFormat         = lasso_node_get_attr_value(local_nameIdentifier_node, "Format", NULL);
 
       /* old name identifier is from SP, name_registration->oldNameIdentifier must be from SP */
       name_registration->oldNameIdentifier = g_strdup(oldNameIdentifier);
-      printf("At SP, old name identifier %s\n", name_registration->oldNameIdentifier);
     }
-    lasso_node_destroy(nameIdentifier_node);
+    lasso_node_destroy(local_nameIdentifier_node);
 
     /* oldNameIdentifier is none, no local name identifier at SP, old is IDP */
     if (oldNameIdentifier == NULL) {
@@ -374,9 +372,14 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
       /* old name identifier is from IDP, name_registration->oldNameQualifier must be from IDP */
       name_registration->oldNameIdentifier = g_strdup(idpNameIdentifier);
-      printf("At SP, old name identifier %s\n", name_registration->oldNameIdentifier);
     }
 
+    /* save federation */
+    lasso_federation_build_local_nameIdentifier(federation,
+						spNameQualifier,
+						lassoLibNameIdentifierFormatFederated,
+						spNameIdentifier);
+    profile->identity->is_dirty = TRUE;
     break;
 
   case lassoProviderTypeIdp:
@@ -388,22 +391,27 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
     profile->nameIdentifier = g_strdup(idpNameIdentifier);
 
     /* set old provided name identifier */
-    nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
-    oldNameIdentifier   = lasso_node_get_content(nameIdentifier_node, NULL);
-    oldNameQualifier    = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
-    oldFormat           = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
-    lasso_node_destroy(nameIdentifier_node);
+    local_nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
+    if (local_nameIdentifier_node == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found\n");
+      ret = -1;
+      goto done;
+    }
+    oldNameIdentifier   = lasso_node_get_content(local_nameIdentifier_node, NULL);
+    oldNameQualifier    = lasso_node_get_attr_value(local_nameIdentifier_node, "NameQualifier", NULL);
+    oldFormat           = lasso_node_get_attr_value(local_nameIdentifier_node, "Format", NULL);
+    lasso_node_destroy(local_nameIdentifier_node);
 
     /* set sp provided name identifier */
     spNameIdentifier = NULL;
     spNameQualifier  = NULL;
     spFormat         = NULL;
-    nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
-    if (nameIdentifier_node != NULL) {
-      spNameIdentifier = lasso_node_get_content(nameIdentifier_node, NULL);
-      spNameQualifier  = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
-      spFormat         = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
-      lasso_node_destroy(nameIdentifier_node);
+    remote_nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
+    if (remote_nameIdentifier_node != NULL) {
+      spNameIdentifier = lasso_node_get_content(remote_nameIdentifier_node, NULL);
+      spNameQualifier  = lasso_node_get_attr_value(remote_nameIdentifier_node, "NameQualifier", NULL);
+      spFormat         = lasso_node_get_attr_value(remote_nameIdentifier_node, "Format", NULL);
+      lasso_node_destroy(remote_nameIdentifier_node);
 
       /* name identifier from SP exists, oldNameIdentifier must be from SP */
       name_registration->oldNameIdentifier = NULL;
@@ -415,6 +423,12 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
       name_registration->oldNameIdentifier = g_strdup(oldNameIdentifier);
     }
 
+    /* save federation */
+    lasso_federation_build_local_nameIdentifier(federation,
+						idpNameQualifier,
+						lassoLibNameIdentifierFormatFederated,
+						idpNameIdentifier);
+    profile->identity->is_dirty = TRUE;
     break;
 
   default:
@@ -523,17 +537,18 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
     /* no sp provided name identifier, only IDP provide name identifier, set nameIdentifier and oldNameIdentifier attributes */
     spNameIdentifier = lasso_node_get_child_content(profile->request, "SPProvidedNameIdentifier", NULL, NULL);
     if (spNameIdentifier == NULL) {
-      name_registration->oldNameIdentifier = lasso_node_get_child_content(profile->request, "OldProvidedNameIdentifier", NULL, NULL);
       profile->nameIdentifier = lasso_node_get_child_content(profile->request, "IDPProvidedNameIdentifier", NULL, NULL);
+      name_registration->oldNameIdentifier = lasso_node_get_child_content(profile->request, "OldProvidedNameIdentifier", NULL, NULL);
     }
-
+    else {
+      name_registration->oldNameIdentifier = spNameIdentifier;
+    }
     break;
 
   case lassoProviderTypeIdp:
     /* default, SP modified provided name identifier, set nameIdentifier, oldNameIdentifier */
     profile->nameIdentifier = lasso_node_get_child_content(profile->request, "SPProvidedNameIdentifier", NULL, NULL);
     name_registration->oldNameIdentifier = lasso_node_get_child_content(profile->request, "OldProvidedNameIdentifier", NULL, NULL);
-
     break;
     
   default:
@@ -554,7 +569,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
   LassoProfile    *profile;
   LassoFederation *federation;
   xmlChar         *statusCodeValue;
-  LassoNode       *statusCode, *nameIdentifier_node;
+  LassoNode       *statusCode;
   gint             ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
@@ -607,19 +622,13 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
     goto done;
   }
   
-  if (profile->nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "NameIdentifier in NameRegistration object not found\n");
-    ret = -1;
-    goto done;
-  }
-  nameIdentifier_node = LASSO_NODE(lasso_saml_name_identifier_new(profile->nameIdentifier));
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_node), profile->server->providerID);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_node), lassoLibNameIdentifierFormatFederated);
-  lasso_federation_set_local_nameIdentifier(federation, nameIdentifier_node);
+  /* Save new name identifier in federation */
   /* FIXME : use a proper way to set the identity dirty */
-  profile->identity->is_dirty = TRUE;
-
-  lasso_node_destroy(nameIdentifier_node);
+/*   if (profile->nameIdentifier == NULL) { */
+/*     message(G_LOG_LEVEL_CRITICAL, "NameIdentifier in NameRegistration object not found\n"); */
+/*     ret = -1; */
+/*     goto done; */
+/*   } */
 
   /* set the relay state */
   profile->msg_relayState = lasso_node_get_child_content(profile->response, "RelayState", NULL, NULL);
@@ -634,7 +643,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 {
   LassoProfile    *profile;
   LassoFederation *federation = NULL;
-  LassoNode       *oldProvidedNameIdentifier, *nameIdentifier;
+  LassoNode       *oldProvidedNameIdentifier_node, *providedNameIdentifier_node;
+  gchar           *content, *format, *qualifier;
   gint             remote_provider_type;
   gint             ret = 0;
 
@@ -682,15 +692,20 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
   /* verify federation */
   federation = lasso_identity_get_federation_ref(profile->identity, profile->remote_providerID);
+  if (LASSO_IS_FEDERATION(federation) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
+    ret = -1;
+    goto done;
+  }
 
-  oldProvidedNameIdentifier = lasso_node_get_child(profile->request, "OldProvidedNameIdentifier", NULL, NULL);
-  if (oldProvidedNameIdentifier == NULL) {
+  oldProvidedNameIdentifier_node = lasso_node_get_child(profile->request, "OldProvidedNameIdentifier", NULL, NULL);
+  if (oldProvidedNameIdentifier_node == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Old provided name identifier not found\n");
     ret = -1;
     goto done;
   }
 
-  if (lasso_federation_verify_nameIdentifier(federation, oldProvidedNameIdentifier) == FALSE) {
+  if (lasso_federation_verify_nameIdentifier(federation, oldProvidedNameIdentifier_node) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "No name identifier\n");
     ret = -1;
     goto done;
@@ -699,8 +714,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
   /* update name identifier in federation */
   switch (remote_provider_type) {
     case lassoProviderTypeSp:
-    nameIdentifier = lasso_node_get_child(profile->request, "SPProvidedNameIdentifier", NULL, NULL);
-    if (nameIdentifier == NULL) {
+    providedNameIdentifier_node = lasso_node_get_child(profile->request, "SPProvidedNameIdentifier", NULL, NULL);
+    if (providedNameIdentifier_node == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Sp provided name identifier not found\n");
       ret = -1;
       goto done;
@@ -708,8 +723,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
     break;
 
     case lassoProviderTypeIdp:
-    nameIdentifier = lasso_node_get_child(profile->request, "IDPProvidedNameIdentifier", NULL, NULL);
-    if (nameIdentifier == NULL) {
+    providedNameIdentifier_node = lasso_node_get_child(profile->request, "IDPProvidedNameIdentifier", NULL, NULL);
+    if (providedNameIdentifier_node == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Idp provided name identifier not found\n");
       ret = -1;
       goto done;
@@ -721,7 +736,15 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
     ret = -1;
     goto done;
   }
-  lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier);
+  content = lasso_node_get_content(providedNameIdentifier_node, NULL);
+  qualifier = lasso_node_get_attr_value(providedNameIdentifier_node, "NameQualifier", NULL);
+  format = lasso_node_get_attr_value(providedNameIdentifier_node, "Format", NULL);
+  if (content == NULL || qualifier == NULL || format == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Missing value in name identifier\n");
+    ret = -1;
+    goto done;
+  }
+  lasso_federation_build_remote_nameIdentifier(federation, qualifier, format, content);
   profile->identity->is_dirty = TRUE;
 
   /* Set the relay state */
