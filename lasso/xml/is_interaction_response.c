@@ -113,3 +113,14 @@ lasso_is_interaction_response_new(LassoUtilityStatus *status)
 
 	return node;
 }
+
+LassoIsInteractionResponse*
+lasso_is_interaction_response_new_from_message(const gchar *message)
+{
+	LassoIsInteractionResponse *node;
+
+	node = g_object_new(LASSO_TYPE_IS_INTERACTION_RESPONSE, NULL);
+	lasso_node_init_from_message(LASSO_NODE(node), message);
+
+	return node;
+}

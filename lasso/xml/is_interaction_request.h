@@ -76,6 +76,9 @@ LASSO_EXPORT GType lasso_is_interaction_request_get_type(void);
 
 LASSO_EXPORT LassoIsInteractionRequest* lasso_is_interaction_request_new(void);
 
+LASSO_EXPORT LassoIsInteractionRequest* lasso_is_interaction_request_new_from_message(
+	const char *msg);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
