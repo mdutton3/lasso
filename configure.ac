@@ -586,8 +586,6 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
-
-
 dnl Check if wsf is explicitly disabled.
 AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 		enable_wsf="yes", enable_wsf="no")
@@ -599,14 +597,8 @@ if test "x$enable_wsf" = "xyes"; then
 	LASSO_WSF_SUPPORT=1
 fi
 AC_SUBST(LASSO_WSF_SUPPORT)
-
-AC_CHECK_LIB(sasl2, sasl_server_init, enable_wsf="yes", enable_wsf="no")
-if test "x$enable_wsf" = xyes ; then
-    SASL_CFLAGS="-I/usr/include/sasl"
-    LDFLAGS="${LDFLAGS} -lsasl2"
-    AC_SUBST(SASL_CFLAGS)
-fi
-
+AM_CONDITIONAL([WSF_ENABLED], [test "x$enable_wsf" = "xyes"])
+AM_CONDITIONAL([WSF_AUTH_ENABLED], [test "x$enable_wsf" = "xyes"])
 
 dnl ==========================================================================
 dnl User specific option.
@@ -640,6 +632,21 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
 fi
 
 PKG_CHECK_MODULES(LASSO, glib-2.0 >= 2.4.0 gobject-2.0 >= 2.4.0 libxml-2.0 libxslt xmlsec1 >= 1.2.6 xmlsec1-openssl >= 1.2.6 openssl)
+
+AC_ARG_WITH(sasl2, [  --with-sasl2[=PFX]         Use Cyrus SASL library version 2 for WSF-Auth])
+if test "x$enable_wsf" = "xyes"; then
+	if test "$with_sasl2" != "no" && test "$with_sasl2" != "yes"
+	then
+		CPPFLAGS="$CPPFLAGS -I$with_sasl2/include"
+		LDFLAGS="$LDFLAGS -L$with_sasl2/lib"
+	fi
+		
+	saved_LIBS="$LIBS"
+	AC_CHECK_LIB(sasl2, sasl_server_init,,
+		AC_MSG_ERROR([libsasl must be installed for WSF support]),)
+	LIBS="$saved_LIBS"
+	LASSO_LIBS="$LASSO_LIBS -lsasl2"
+fi
 
 dnl Let people disable the gtk-doc stuff.
 AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc       disable documentation build],,

@@ -4,7 +4,12 @@ import glob
 import re
 import sys
 
-if len(sys.argv) == 2:
+enable_wsf = 0
+
+if '-wsf' in sys.argv:
+    enable_wsf = 1
+
+if len(sys.argv) == 2+enable_wsf:
     srcdir = sys.argv[1]
 else:
     srcdir = '.'
@@ -16,7 +21,11 @@ print >> fd, ""
 print >> fd, "typedef GType (*type_function) (void);"
 print >> fd, ""
 
+header_files = []
 for header_file in glob.glob('%s/*/*.h' % srcdir):
+    if not enable_wsf and 'id-wsf' in header_file:
+        continue
+    header_files.append(header_file)
     try:
         type = re.findall('lasso_.*get_type', open(header_file).read())[0]
     except IndexError:
@@ -25,7 +34,7 @@ for header_file in glob.glob('%s/*/*.h' % srcdir):
 
 print >> fd, ""
 print >> fd, "type_function functions[] = {"
-for header_file in glob.glob('%s/*/*.h' % srcdir):
+for header_file in header_files:
     try:
         type = re.findall('lasso_.*get_type', open(header_file).read())[0]
     except IndexError:
