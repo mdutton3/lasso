@@ -39,11 +39,13 @@ typedef struct {
 #define LassoLogout_get(v) (((v) == Py_None) ? NULL : (((LassoLogout_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoLogout_wrap(LassoLogout *logout);
 
-PyObject *logout_new(PyObject *self, PyObject *args);
+PyObject *logout_getattr(PyObject *self, PyObject *args);
+
 PyObject *logout_build_request_msg(PyObject *self, PyObject *args);
 PyObject *logout_build_response_msg(PyObject *self, PyObject *args);
 PyObject *logout_destroy(PyObject *self, PyObject *args);
 PyObject *logout_init_request(PyObject *self, PyObject *args);
+PyObject *logout_new(PyObject *self, PyObject *args);
 PyObject *logout_process_request_msg(PyObject *self, PyObject *args);
 PyObject *logout_process_response_msg(PyObject *self, PyObject *args);
 

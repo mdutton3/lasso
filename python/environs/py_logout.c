@@ -41,6 +41,36 @@ PyObject *LassoLogout_wrap(LassoLogout *logout) {
 
 /******************************************************************************/
 
+PyObject *logout_getattr(PyObject *self, PyObject *args) {
+  PyObject *logout_obj;
+  LassoLogout *logout;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:logout_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:logout_get_attr", &logout_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  logout = LassoLogout_get(logout_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
+			 "msg_relayState");
+  if (!strcmp(attr, "user"))
+    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(logout)->user));
+  if (!strcmp(attr, "msg_url"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_url));
+  if (!strcmp(attr, "msg_body"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_body));
+  if (!strcmp(attr, "msg_relayState"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_relayState));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+
 PyObject *logout_new(PyObject *self, PyObject *args) {
   PyObject    *server_obj, *user_obj;
   LassoLogout *logout;
