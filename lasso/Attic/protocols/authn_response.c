@@ -53,11 +53,12 @@ xmlChar *
 lasso_authn_response_get_status(LassoAuthnResponse *response) {
   LassoNode *status_code;
 
-  status_code = lasso_node_get_child(response, "StatusCode", NULL);
+  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
   if (status_code != NULL) {
     return lasso_node_get_attr_value(status_code, "Value");
   }
   else {
+    debug(ERROR, "No StatusCode element found in AuthnResponse.\n");
     return (NULL);
   }
 }
@@ -143,7 +144,7 @@ lasso_authn_response_new(char *providerID,
   }
 
   /* Status Code */
-  lasso_authn_response_set_status(response, lassoSamlStatusCodeSuccess);
+  lasso_authn_response_set_status(LASSO_AUTHN_RESPONSE(response), lassoSamlStatusCodeSuccess);
   
   return(response);
 }
