@@ -52,11 +52,11 @@ struct _LassoLogoutRequestClass {
   LassoLibLogoutRequestClass parent;
 };
 
-LASSO_EXPORT GType      lasso_logout_request_get_type          (void);
-LASSO_EXPORT LassoNode* lasso_logout_request_new               (const xmlChar *providerID,
-								const xmlChar *nameIdentifier,
-								const xmlChar *nameQualifier,
-								const xmlChar *format);
+LASSO_EXPORT GType      lasso_logout_request_get_type     (void);
+LASSO_EXPORT LassoNode* lasso_logout_request_new          (const xmlChar *providerID,
+							   const xmlChar *nameIdentifier,
+							   const xmlChar *nameQualifier,
+							   const xmlChar *format);
 
 #ifdef __cplusplus
 }
