@@ -76,6 +76,8 @@ LASSO_EXPORT gint         lasso_logout_build_response_msg     (LassoLogout *logo
 
 LASSO_EXPORT void         lasso_logout_destroy                (LassoLogout *logout);
 
+LASSO_EXPORT gchar*       lasso_logout_dump                   (LassoLogout *logout);
+
 LASSO_EXPORT gchar*       lasso_logout_get_next_providerID    (LassoLogout *logout);
 
 LASSO_EXPORT gint         lasso_logout_init_request           (LassoLogout    *logout,
