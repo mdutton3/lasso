@@ -5,6 +5,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
 	$(LASSO_CFLAGS) \
+	-DLASSO_INTERNALS \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 noinst_LTLIBRARIES = liblasso-id-ff.la

@@ -246,86 +246,19 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, request) },
+	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, response) },
+	{ "NameIdentifier", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, nameIdentifier) },
+	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID) },
+	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url) },
+	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body) },
+	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState) },
+	{ NULL, 0, 0}
+};
+
+
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode, *t;
-	LassoProfile *profile = LASSO_PROFILE(node);
-
-	xmlnode = xmlNewNode(NULL, "Profile");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
-	xmlSetProp(xmlnode, "Version", "2");
-
-	if (profile->request) {
-		t = xmlNewTextChild(xmlnode, NULL, "Request", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(profile->request));
-	}
-	if (profile->response) {
-		t = xmlNewTextChild(xmlnode, NULL, "Response", NULL);
-		xmlAddChild(t, lasso_node_get_xmlNode(profile->response));
-	}
-	if (profile->nameIdentifier)
-		xmlNewTextChild(xmlnode, NULL, "NameIdentifier", profile->nameIdentifier);
-	if (profile->remote_providerID)
-		xmlNewTextChild(xmlnode, NULL, "RemoteProviderID", profile->remote_providerID);
-	if (profile->msg_url)
-		xmlNewTextChild(xmlnode, NULL, "MsgUrl", profile->msg_url);
-	if (profile->msg_body)
-		xmlNewTextChild(xmlnode, NULL, "MsgBody", profile->msg_body);
-	if (profile->msg_relayState)
-		xmlNewTextChild(xmlnode, NULL, "MsgRelayState", profile->msg_relayState);
-	/* XXX: save signature status ? */
-	
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	LassoProfile *profile = LASSO_PROFILE(node);
-	xmlNode *t;
-
-	if (xmlnode == NULL)
-		return -1;
-
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "NameIdentifier") == 0)
-			profile->nameIdentifier = xmlNodeGetContent(t);
-		if (strcmp(t->name, "RemoteProviderID") == 0)
-			profile->remote_providerID = xmlNodeGetContent(t);
-		if (strcmp(t->name, "MsgUrl") == 0)
-			profile->msg_url = xmlNodeGetContent(t);
-		if (strcmp(t->name, "MsgBody") == 0)
-			profile->msg_body = xmlNodeGetContent(t);
-		if (strcmp(t->name, "MsgRelayState") == 0)
-			profile->msg_relayState = xmlNodeGetContent(t);
-
-		if (strcmp(t->name, "Request") == 0) {
-			xmlNode *t2 = t->children;
-			while (t2 && t2->type != XML_ELEMENT_NODE)
-				t2 = t2->next;
-			if (t2)
-				profile->request = lasso_node_new_from_xmlNode(t2);
-		}
-		if (strcmp(t->name, "Response") == 0) {
-			xmlNode *t2 = t->children;
-			while (t2 && t2->type != XML_ELEMENT_NODE)
-				t2 = t2->next;
-			if (t2)
-				profile->response = lasso_node_new_from_xmlNode(t2);
-		}
-		t = t->next;
-	}
-	return 0;
-}
-
 
 /*****************************************************************************/
 /* overridden parent class methods                                            */
@@ -362,12 +295,6 @@ finalize(GObject *object)
 
 	debug("Profile object 0x%x finalized ...", object);
 
-	g_free(profile->nameIdentifier);
-	g_free(profile->remote_providerID);
-	g_free(profile->msg_url);
-	g_free(profile->msg_body);
-	g_free(profile->msg_relayState);
-
 	g_free(profile->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
@@ -400,10 +327,13 @@ instance_init(LassoProfile *profile)
 static void
 class_init(LassoProfileClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Profile");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
