@@ -31,12 +31,16 @@
   if (DB::isError($db)) 
 	  die($db->getMessage());
 
-  if (!empty($_GET['dump'])) 
+  // Show XML dump
+  if (!empty($_GET['dump']) && !empty($_GET['type'])) 
   {
-  	$query = "SELECT identity_dump FROM users WHERE user_id='" . $_GET['dump'] . "'";
+	
+  	$query = "SELECT " . ($_GET['type'] == 'user' ? 'user' : 'session') . 
+	$query .= "_dump FROM users WHERE user_id='" . $_GET['dump'] . "'";
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
-	  print $res->getMessage(). "\n";
+	  die($res->getMessage());
+	  
 	$row = $res->fetchRow();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -44,7 +48,7 @@
 <html>
 <body>
 <table>
-<caption>Identity Dump</caption>
+<caption><?php echo ($_GET['type'] == 'user' ? 'Identity' : 'Session'); ?> Dump</caption>
 <tr>
   <td>
   <textarea rows="15" cols="50"><?php echo htmlentities($row[0], ENT_QUOTES); ?></textarea>
@@ -86,6 +90,7 @@
 <html>
 <head>
 <title>Lasso Service Provider Example : Users Management</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
 <script language="JavaScript" type="text/javascript">
 <!-- 
 
@@ -146,10 +151,12 @@
 	<?php 
 	  switch ($tableinfo[$i]['name']) 
 	  {
-		case "identity_dump":
-  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "')>view</a>";
+		case "user_dump":
+  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=user')>view</a>";
 		  break;
-		  
+	    case "session_dump":
+  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=session')>view</a>";
+		  break;
 		default:
 		  echo (empty($row[$i])) ? "&nbsp;" : $row[$i];
 	  }

@@ -52,13 +52,9 @@ You can get more informations about <b>Lasso</b> at <br>
 
  require_once 'DB.php';
 
- if (!empty($_GET['SID'])) 
-  session_start($_GET['SID']);
- else
-  session_start();
+ session_start();
 
  lasso_init();
- 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -82,12 +78,53 @@ You can get more informations about <b>Lasso</b> at <br>
 <tr>
   <td><b>Identity Provider Fonctionnality</b></td>
 </tr>
+<?php
+  if (!isset($_SESSION["user_id"])) {  
+  ?>
 <tr>
-  <td><a href="login.php">Login</a></td>
+  <td><a href="login.php">Local Login</a></td>
 </tr>
+<?php } else { ?>
+<tr>
+  <td><a href="federate.php">Create federation</a></td>
+</tr>
+<tr>
+  <td><a href="defederate.php">Destroy federation</a></td>
+</tr>
+<tr>
+  <td><a href="logout.php">Local Logout</a></td>
+</tr>
+<?php } ?>
 </table>
 </p>
-<!-- <p>Lasso Version : <?php // echo lasso_version(); ?></p> -->
+
+<p>
+<table border="1" frame="above">
+<caption><b>Status</b></caption>
+<tr>
+  <?php 
+	if (!isset($_SESSION["user_id"]))
+	{
+	  echo "<td>User is <b>not</b> logged in!</td>";
+	}
+	else 
+	{ 
+	  ?>
+	<td colspan='2' align="center">User <b>is</b> logged in!</td>
+</tr>
+<tr>
+	<td><b>UserID:</b></td><td><?php echo $_SESSION["user_id"]; ?></td>
+</tr>
+<tr>
+	<td><b>User Name:</b></td><td><?php echo $_SESSION["username"]; ?></td>
+</tr>
+<tr>
+	<td><b>PHP Session ID:</b></td><td><?php echo session_id(); ?></td>
+</tr>
+<?php
+  }
+?>
+</table>
 
 <br>
 <p>Copyright &copy; 2004 Entr'ouvert</p>

@@ -1,1 +1,27 @@
-TODO ;0)
+Lasso PHP Identity Provider Exemple
+---------------------------------- 
+
+SOFTWARE
+  This directory include a Liberty Alliance Identity Provider written in PHP
+  with the Lasso extension. 
+
+INSTALLATION
+ You need the fallowing components :
+ - The Apache Web Server with PHP4 version 4.3 with OpenSSL support enabled
+ - The Lasso Extension for PHP
+ - The PostgreSQL database server
+ - PHP Pear modules : DB, HTML_QuickForm
+
+ Under Debian GNU/Linux you can install thoses package with apt-get or aptitude:
+ apache, php4, php4-lasso, postgresql, pear.
+
+ You can download pear modules with the pear commande :
+
+ # pear install DB HTML_Common HTML_Form HTML_QuickForm
+
+CONFIGURATION
+  For the Apache web server you need to add in the httpd.conf file:
+  
+  RewriteEngine on
+  RewriteRule ^/(soapEndpoint|singleSignOn)(.*)$ /$1.php$2
+

@@ -363,6 +363,15 @@
 <head>
 <title>Setup script for Lasso (Liberty Alliance Single Sign On)</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
+<script language="JavaScript" type="text/javascript">
+<!-- 
+
+  function openpopup(popurl)
+  {
+	var winpops=window.open(popurl,"","width=600,height=400")
+  }
+//-->
+</script>
 </head>
 <body>
 <form name='frm' action='<?php echo $PHP_SELF ?>' method='POST'>
@@ -447,7 +456,8 @@
 </tr>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='metadata' size='50'></td><td>&nbsp;</td>
+  <td>Metadata</td><td><input type='text' name='metadata' size='50'></td>
+  <td><a href="javascript:openpopup('create_metadata.php')">Create Metadata</a></td>
 </tr>
 
 <tr>
@@ -471,6 +481,8 @@
   <input type='submit' name='setup' value='setup'>
 </p>
 </form>
+<br>
+<p>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
 </html>
 <?php
