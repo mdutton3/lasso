@@ -45,6 +45,8 @@ typedef struct _LassoIdentityClass LassoIdentityClass;
 struct _LassoIdentity {
   LassoNode parent;
   
+  gchar *peer_providerID;
+
   LassoNode *local_nameIdentifier;
   LassoNode *peer_nameIdentifier;
 
@@ -56,10 +58,10 @@ struct _LassoIdentityClass {
 };
 
 LASSO_EXPORT GType          lasso_identity_get_type(void);
-LASSO_EXPORT LassoIdentity *lasso_identity_new(char *security_domain);
+LASSO_EXPORT LassoIdentity *lasso_identity_new(char *peer_providerID);
 
-LASSO_EXPORT char *lasso_identity_get_alias(LassoIdentity *identity);
-LASSO_EXPORT char *lasso_identity_get_name(LassoIdentity *identity);
+LASSO_EXPORT int lasso_identity_set_local_name_identifier(LassoIdentity *identity, LassoNode *nameIdentifier);
+LASSO_EXPORT int lasso_identity_set_peer_nameIdentifier(LassoIdentity *identity, LassoNode *nameIdentifier);
 
 #ifdef __cplusplus
 }

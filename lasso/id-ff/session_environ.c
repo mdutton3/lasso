@@ -154,7 +154,7 @@ gboolean lasso_session_environ_process_authnRequest(LassoSessionEnviron *session
      response_protocol_profile = lasso_node_get_child_content(session->request, "ProtocolProfile", NULL);
      if(!response_protocol_profile || !strcmp(response_protocol_profile, lassoLibProtocolProfileArtifact)){
 	  session->response_protocol_profile = lasso_protocol_profile_type_artifact;
-	  printf("TODO - lasso_session_session_process_authnRequest() - implement the artifact response\n");
+	  printf("TODO - lasso_session_environ_process_authnRequest() - implement the artifact response\n");
      }
      else if(!strcmp(response_protocol_profile, lassoLibProtocolProfilePost)){
 	  session->response_protocol_profile = lasso_protocol_profile_type_post;
@@ -188,40 +188,43 @@ char *lasso_session_environ_process_authentication(LassoSessionEnviron *session,
 						   gboolean             isAuthenticated,
 						   const char          *authentication_method){
      LassoUserEnviron *user;
-     LassoIdentity    *identity;
-     char             *str, *nameIDPolicy, *nameIdentifier, *idpProvidedNameIdentifier;
-     LassoNode        *assertion, *authentication_statement;
+     char             *str, *nameIDPolicy;
+     LassoNode        *assertion, *authentication_statement, *idpProvidedNameIdentifier;
+
+     LassoIdentity *identity;
 
      /* process the federation policy */
      /* TODO : implement a get identity */
-     //identity = lasso_user_environ_find_identity(session->user, session->peer_providerID);
-     identity = NULL;
+
+     printf("process authentication\n");
+     /* verify if a user environ exists */
+     if(!session->user){
+	  session->user = lasso_user_environ_new();
+     }
+
+     identity = lasso_user_environ_find_identity(session->user, session->peer_providerID);
      nameIDPolicy = lasso_node_get_child_content(session->request, "NameIDPolicy", NULL);
+     printf("NameIDPolicy %s\n", nameIDPolicy);
      if(!nameIDPolicy || !strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeNone)){
 	  if(!identity){
 	       printf("TODO - set the StatusCode value with lassoLibStatusCodeFederationDoesNotExist\n");
 	  }
      }
      else if(!strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)){
+	  printf("DEBUG - NameIDPolicy is federated\n");
 	  if(!identity){
-	       //identity = lasso_user_environ_new_identity(session->user, session->peer_providerID);
+	       identity = lasso_identity_new(session->peer_providerID);
+	       idpProvidedNameIdentifier = LASSO_NODE(lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32)));
+	       lasso_identity_set_local_name_identifier(identity, idpProvidedNameIdentifier);
 	  }
-
      }
      else if(!strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)){
 	  
      }
 
-     printf("plop\n");
-
      /* fill the response with the assertion */
      if(identity){
-	  printf("no identity\n");
-	  idpProvidedNameIdentifier = lasso_identity_get_alias(identity);
-	  nameIdentifier = lasso_identity_get_name(identity);
-	  if(!nameIdentifier)
-	       nameIdentifier = idpProvidedNameIdentifier;
-
+	  printf("DEBUG - an identity found, so build an assertion\n");
 	  //assertion = lasso_assertion_new(session->local_providerID, lasso_node_get_attr_value(LASSO_NODE(session->request),
 	  //									       "RequestID"));
 	  //authentication_statement = lasso_authentication_statement_new(authentication_method,
@@ -238,6 +241,7 @@ char *lasso_session_environ_process_authentication(LassoSessionEnviron *session,
      }
 
      /* return a response message */
+     str = NULL;
      if(session->response_protocol_profile==lasso_protocol_profile_type_post){
 	  printf("DEBUG - return a post message\n");
 	  str = lasso_node_export_to_base64(session->response);

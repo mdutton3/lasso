@@ -69,9 +69,13 @@ int lasso_server_environ_set_security(char *private_key, char *public_key, char 
 /*****************************************************************************/
 
 static void
-lasso_server_environ_instance_init(LassoServerEnviron *env)
+lasso_server_environ_instance_init(LassoServerEnviron *server)
 {
+  server->providers = g_ptr_array_new();
 
+  server->private_key = NULL;
+  server->public_key = NULL;
+  server->certificate = NULL;
 }
 
 static void
@@ -106,12 +110,6 @@ LassoServerEnviron *lasso_server_environ_new()
   LassoServerEnviron *server;
 
   server = g_object_new(LASSO_TYPE_SERVER_ENVIRON, NULL);
-
-  server->providers = g_ptr_array_new();
-
-  server->private_key = NULL;
-  server->public_key = NULL;
-  server->certificate = NULL;
 
   return(server);
 

@@ -42,9 +42,8 @@ int lasso_identity_set_peer_nameIdentifier(LassoIdentity *identity, LassoNode *n
 
 static void
 lasso_identity_instance_init(LassoIdentity *identity){
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(identity));
-
-  class->set_name(LASSO_NODE(identity), "Identity");
+     identity->local_nameIdentifier = NULL;
+     identity->peer_nameIdentifier = NULL;
 }
 
 static void
@@ -75,31 +74,14 @@ GType lasso_identity_get_type() {
 }
 
 LassoIdentity*
-lasso_identity_new(char *security_domain)
+lasso_identity_new(gchar *peer_providerID)
 {
   LassoIdentity *identity;
-  LassoNodeClass *class;
 
-  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
+  identity = g_object_new(LASSO_TYPE_IDENTITY, NULL);
 
-  class = LASSO_NODE_GET_CLASS(identity);
-  class->set_prop(LASSO_NODE(identity), "SecurityDomain", security_domain);
-  class->set_prop(LASSO_NODE(identity), "Alias", lasso_build_unique_id(32));
+  identity->peer_providerID = (char *)malloc(strlen(peer_providerID)+1);
+  sprintf(identity->peer_providerID, "%s", peer_providerID);
 
-  return(LASSO_IDENTITY(identity));
-}
-
-LassoIdentity*
-lasso_identity_new_from_name(char *security_domain, char *name)
-{
-  LassoIdentity *identity;
-  LassoNodeClass *class;
-
-  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
-
-  class = LASSO_NODE_GET_CLASS(identity);
-  class->set_prop(LASSO_NODE(identity), "SecurityDomain", security_domain);
-  class->set_prop(LASSO_NODE(identity), "Name", name);
-
-  return(LASSO_IDENTITY(identity));
+  return(identity);
 }

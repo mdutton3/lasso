@@ -28,12 +28,30 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+LassoIdentity *lasso_user_environ_find_identity(LassoUserEnviron *user, char *peer_providerID){
+     LassoIdentity *identity;
+     int index;
+
+     printf("nb identity %d\n", user->identities->len);
+     for(index = 0; index<user->identities->len; index++){
+	  identity = g_ptr_array_index(user->identities, index);
+	  printf("provider id : %s\n", identity->peer_providerID);
+	  if(!strcmp(identity->peer_providerID, peer_providerID)){
+	       return(identity);
+	  }
+     }
+     
+     return(NULL);
+}
+
 int lasso_user_environ_add_assertion(){
 
 }
 
-int lasso_user_environ_add_identity(){
+int lasso_user_environ_add_identity(LassoUserEnviron *user, LassoIdentity *identity){
+     g_ptr_array_add(user->identities, identity);
 
+     return(1);
 }
 
 /*****************************************************************************/
@@ -42,8 +60,8 @@ int lasso_user_environ_add_identity(){
 
 static void
 lasso_user_environ_instance_init(LassoUserEnviron *user){
-    LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(user));
-    class->set_name(LASSO_NODE(user), "UserEnviron");
+     user->identities = g_ptr_array_new();
+     user->assertions = g_ptr_array_new();
 }
 
 static void
@@ -66,7 +84,7 @@ GType lasso_user_environ_get_type() {
       (GInstanceInitFunc) lasso_user_environ_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
+    this_type = g_type_register_static(LASSO_TYPE_ENVIRON,
 				       "LassoUserEnviron",
 				       &this_info, 0);
   }

@@ -61,12 +61,7 @@ struct _LassoUserEnvironClass {
 LASSO_EXPORT GType             lasso_user_environ_get_type           (void);
 LASSO_EXPORT LassoUserEnviron* lasso_user_environ_new                (void);
 
-LASSO_EXPORT char             *lasso_user_environ_identity_get_alias (LassoUserEnviron *user, char *securityDomain);
-LASSO_EXPORT char             *lasso_user_environ_identity_get_name  (LassoUserEnviron *user, char *securityDomain);
-LASSO_EXPORT int               lasso_user_environ_identity_new       (LassoUserEnviron *user, char *securityDomain);
-LASSO_EXPORT char             *lasso_user_environ_identity_new_alias (LassoUserEnviron *user, char *securityDomain);
-LASSO_EXPORT int               lasso_user_environ_identity_set_name  (LassoUserEnviron *user, char *securityDomain, char *name);
-
+LASSO_EXPORT LassoIdentity    *lasso_user_environ_find_identity      (LassoUserEnviron *user, gchar *peer_providerID);
 
 #ifdef __cplusplus
 }
