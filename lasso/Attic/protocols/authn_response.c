@@ -44,16 +44,16 @@ lasso_authn_response_add_assertion(LassoAuthnResponse *response,
   /* FIXME : Signature */
   doc = xmlNewDoc("1.0"); // <---
   xmlAddChild((xmlNodePtr)doc,
-	      LASSO_NODE_GET_CLASS(response)->get_xmlNode(LASSO_NODE(response)));
+  	      LASSO_NODE_GET_CLASS(assertion)->get_xmlNode(LASSO_NODE(assertion)));
 
   signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 				     LASSO_DS_SIGNATURE(signature)); 
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(response),
-				     LASSO_LIB_ASSERTION(assertion));
   lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
 			  private_key_file,
 			  certificate_file);
+  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(response),
+				     LASSO_LIB_ASSERTION(assertion));
 }
 
 void
