@@ -90,6 +90,10 @@ Logout
 FIXME
 
 
+.. _README.WIN32:
+.. include:: ../../README.WIN32
+
+
 ===================================
 Tips For Writing Lasso Applications
 ===================================

@@ -59,7 +59,7 @@ The simplest way to compile this package is:
      with the distribution.
 
 Creating 'configure' Program
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If there is no 'configure' program, you can create it by running the
 'autogen.sh' script, as long as you have the 'automake' and 'autoconf'

@@ -1,3 +1,7 @@
+======================
+Using Lasso Win32 Port
+======================
+
 Compile
 =======
 
@@ -15,6 +19,7 @@ Windows 9x/ME
 
 Description
 -----------
+
 Some problem with link definition.
 
 Fix
