@@ -1680,9 +1680,10 @@ lasso_node_new_from_dump(const gchar *buffer)
 
   g_return_val_if_fail (buffer != NULL, NULL);
 
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
   doc = xmlParseMemory(buffer, strlen(buffer));
+  g_return_val_if_fail (doc != NULL, NULL);
   /* get root element of doc and duplicate it */
+  node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   lasso_node_set_xmlNode(node, root);
   /* free doc */
