@@ -215,8 +215,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     xmlFree(query);
   }
 
-  // printf("%s send a logout request to %s\n", profile->server->providerID, profile->remote_providerID);
-
   return ret;
 }
 
@@ -317,8 +315,6 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   if (query != NULL) {
     xmlFree(query);
   }
-
-  // printf("%s send a logout response to %s\n", profile->server->providerID, profile->remote_providerID);
 
   return ret;
 }
