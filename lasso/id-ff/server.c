@@ -28,7 +28,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-xmlChar *
+gchar *
 lasso_server_dump(LassoServer *server)
 {
   LassoProvider  *provider;
@@ -72,7 +72,7 @@ lasso_server_dump(LassoServer *server)
 }
 
 void
-lasso_server_add_lasso_provider(LassoServer *server,
+lasso_server_add_lasso_provider(LassoServer   *server,
 				LassoProvider *provider)
 {
   g_ptr_array_add(server->providers, provider);
@@ -108,7 +108,7 @@ lasso_server_get_provider(LassoServer *server,
       return(provider);
     }
   }
-  
+
   return(NULL);
 }
 
@@ -177,7 +177,7 @@ lasso_server_new(gchar *metadata,
 }
 
 LassoServer *
-lasso_server_new_from_dump(xmlChar *dump)
+lasso_server_new_from_dump(gchar *dump)
 {
   LassoNodeClass *server_class, *providers_class;
   LassoNode      *server_node, *providers_node, *metadata;
@@ -225,7 +225,7 @@ lasso_server_new_from_dump(xmlChar *dump)
 	}
 	public_key  = xmlGetProp(provider_xmlNode, LASSO_PROVIDER_PUBLIC_KEY_NODE);
 	certificate = xmlGetProp(provider_xmlNode, LASSO_PROVIDER_CERTIFICATE_NODE);
-	
+
 	/* add a new provider */
 	provider = lasso_provider_new_metadata_xmlNode(metadata);
 	if(public_key){

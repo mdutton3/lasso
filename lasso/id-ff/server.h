@@ -62,20 +62,20 @@ struct _LassoServerClass {
 
 LASSO_EXPORT GType          lasso_server_get_type               (void);
 
-LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar *metadata,
-								 gchar *public_key,
-								 gchar *private_key,
-								 gchar *certificate,
-								 guint  signature_method);
+LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar       *metadata,
+								 gchar       *public_key,
+								 gchar       *private_key,
+								 gchar       *certificate,
+								 guint       signature_method);
 
-LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (xmlChar     *dump);
+LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (gchar       *dump);
 
-LASSO_EXPORT void           lasso_server_add_provider           (LassoServer   *server,
-								 gchar         *metadata_filename,
-								 gchar         *public_key,
-								 gchar         *certificate);
+LASSO_EXPORT void           lasso_server_add_provider           (LassoServer *server,
+								 gchar       *metadata_filename,
+								 gchar       *public_key,
+								 gchar       *certificate);
 
-LASSO_EXPORT xmlChar       *lasso_server_dump                   (LassoServer *server);
+LASSO_EXPORT gchar         *lasso_server_dump                   (LassoServer *server);
 
 LASSO_EXPORT LassoProvider* lasso_server_get_provider           (LassoServer *server,
 								 gchar       *providerID);
