@@ -627,3 +627,29 @@ lasso_response_init(lassoResponse *lares,
 
   return (1);
 }
+
+gint
+lasso_response_add_assertion(lassoResponse *lares,
+			     LassoNode *assertion)
+{
+  xmlDocPtr doc;
+  LassoNode *signature;
+
+  /* FIXME : Signature */
+  doc = xmlNewDoc("1.0"); // <---
+  xmlAddChild((xmlNodePtr)doc, LASSO_NODE_GET_CLASS(lares->node)->get_xmlNode(lares->node));
+
+  signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
+  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
+				     LASSO_DS_SIGNATURE(signature)); 
+  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(lares->node),
+				     LASSO_SAML_ASSERTION(assertion));
+  lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
+			  lares->private_key,
+			  lares->certificate);
+
+/*   lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(lares->node), */
+/* 				     LASSO_LIB_ASSERTION(assertion)); */
+
+  return (0);
+}

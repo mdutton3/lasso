@@ -128,6 +128,8 @@ lassoResponse *lasso_response_create(const xmlChar *serialized_request,
 gint lasso_response_init(lassoResponse *lares,
 			 gboolean       authentication_result);
 
+gint lasso_response_add_assertion(lassoResponse *lares,
+				  LassoNode     *assertion);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
