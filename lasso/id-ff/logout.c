@@ -146,7 +146,7 @@ lasso_logout_init_request(LassoLogout *logout,
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
-  switch(logout->provider_type){
+  switch(profileContext->provider_type){
   case lassoProfileContextServiceProviderType:
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
@@ -318,19 +318,16 @@ lasso_logout_new(LassoServer *server,
 		 gint         provider_type)
 {
   LassoLogout *logout;
-  LassoProfileContext *profileContext;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the logout object */
-  logout = g_object_new(LASSO_TYPE_LOGOUT, NULL);
-  logout->provider_type = provider_type;
-
-  /* set the properties */
-  profileContext = LASSO_PROFILE_CONTEXT(logout);
-  profileContext->user = user;
-  profileContext->server = server;
+  logout = g_object_new(LASSO_TYPE_LOGOUT,
+			"server", server,
+			"user", user,
+			"provider_type", provider_type,
+			NULL);
 
   return(logout);
 }
