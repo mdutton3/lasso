@@ -50,12 +50,11 @@ class TestCase(unittest.TestCase):
             "../../examples/data/idp-crt.pem",
             lasso.signatureMethodRsaSha1)
         self.failUnless(idpServer)
-        self.failUnlessEqual(
-            idpServer.add_provider(
-                "../../examples/data/sp-metadata.xml",
-                "../../examples/data/sp-public-key.pem",
-                "../../examples/data/ca-crt.pem"),
-            0)
+        errorCode = idpServer.add_provider(
+            "../../examples/data/sp-metadata.xml",
+            "../../examples/data/sp-public-key.pem",
+            "../../examples/data/ca-crt.pem")
+        self.failUnlessEqual(errorCode, 0)
         idpServerDump = idpServer.dump()
         self.failUnless(idpServerDump)
         idpServer.destroy()
@@ -74,12 +73,11 @@ class TestCase(unittest.TestCase):
             "../../examples/data/sp-crt.pem",
             lasso.signatureMethodRsaSha1)
         self.failUnless(spServer)
-        self.failUnlessEqual(
-            spServer.add_provider(
-                "../../examples/data/idp-metadata.xml",
-                "../../examples/data/idp-public-key.pem",
-                "../../examples/data/ca-crt.pem"),
-            0)
+        errorCode = spServer.add_provider(
+            "../../examples/data/idp-metadata.xml",
+            "../../examples/data/idp-public-key.pem",
+            "../../examples/data/ca-crt.pem")
+        self.failUnlessEqual(errorCode, 0)
         spServerDump = spServer.dump()
         self.failUnless(spServerDump)
         spServer.destroy()
@@ -93,58 +91,102 @@ class TestCase(unittest.TestCase):
 
 
 class LoginTestCase(TestCase):
-    def test01_generateServers(self):
-        """Generate identity and service provider server contexts"""
-        self.generateIdpServer()
-        self.generateSpServer()
+    def idpSingleSignOnUsingRedirect(self, authnRequestQuery, identityDump, sessionDump):
+        idpServer = self.generateIdpServer()
+        idpLogin = lasso.Login.new(idpServer)
+        if identityDump is not None:
+            idpLogin.set_identity_from_dump(identityDump)
+        if sessionDump is not None:
+            idpLogin.set_session_from_dump(sessionDump)
+        self.failUnless(idpLogin)
+        errorCode = idpLogin.init_from_authn_request_msg(
+            authnRequestQuery, lasso.httpMethodRedirect)
+        self.failUnlessEqual(errorCode, 0)
+        return idpLogin
 
-    def test02_spLogin(self):
-        """Service provider initiated login"""
+    def idpSingleSignOn_part2UsingArtifactRedirect(
+            self, idpLogin, userAuthenticated, authenticationMethod):
+        errorCode = idpLogin.build_artifact_msg(
+            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
+            lasso.httpMethodRedirect)
+        self.failUnlessEqual(errorCode, 0)
+        idpIdentityDump = idpLogin.get_identity().dump()
+        self.failUnless(idpIdentityDump)
+        self.failUnless(idpLogin.is_session_dirty())
+        idpSessionDump = idpLogin.get_session().dump()
+        self.failUnless(idpSessionDump)
+        nameIdentifier = idpLogin.nameIdentifier
+        self.failUnless(nameIdentifier)
+        responseUrl = idpLogin.msg_url
+        self.failUnless(responseUrl)
+        artifact = idpLogin.assertionArtifact
+        self.failUnless(artifact)
+        soapResponseMsg = idpLogin.response_dump
+        self.failUnless(soapResponseMsg)
+        return idpIdentityDump, idpSessionDump, nameIdentifier, responseUrl, artifact, \
+               soapResponseMsg
 
-        # Service provider login using HTTP redirect.
+    def spLoginUsingRedirect(self):
         spServer = self.generateSpServer()
         spLogin = lasso.Login.new(spServer)
-        self.failUnlessEqual(spLogin.init_authn_request(
-            "https://identity-provider:1998/liberty-alliance/metadata"), 0)
+        self.failUnless(spLogin)
+        errorCode = spLogin.init_authn_request(
+            "https://identity-provider:1998/liberty-alliance/metadata")
+        self.failUnlessEqual(errorCode, 0)
         self.failUnlessEqual(spLogin.request_type, lasso.messageTypeAuthnRequest)
         spLogin.request.set_isPassive(False)
         spLogin.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         spLogin.request.set_consent(lasso.libConsentObtained)
         relayState = "fake"
         spLogin.request.set_relayState(relayState)
-        self.failUnlessEqual(spLogin.build_authn_request_msg(), 0)
+        errorCode = spLogin.build_authn_request_msg()
+        self.failUnlessEqual(errorCode, 0)
         authnRequestUrl = spLogin.msg_url
-        authnRequestQuery = authnRequestUrl.split("?", 1)[1]
-        method = lasso.httpMethodRedirect
+        self.failUnless(authnRequestUrl)
+        return authnRequestUrl
+        
+    def test01_generateServers(self):
+        """Generate identity and service provider server contexts"""
+        self.generateIdpServer()
+        self.generateSpServer()
 
-        # Identity provider singleSignOn, for a user having no federation.
-        idpServer = self.generateIdpServer()
-        idpLogin = lasso.Login.new(idpServer)
-        self.failUnlessEqual(
-            idpLogin.init_from_authn_request_msg(authnRequestQuery, method), 0)
+    def test02_spLogin(self):
+        """Service provider initiated login using HTTP redirect"""
+
+        authnRequestUrl = self.spLoginUsingRedirect()
+        # A real service provider would issue a HTTP redirect to authnRequestUrl.
+
+        # Identity provider single sign-on, for a user having no federation.
+        authnRequestQuery = authnRequestUrl.split("?", 1)[1]
+        idpLogin = self.idpSingleSignOnUsingRedirect(authnRequestQuery, None, None)
         self.failUnless(idpLogin.must_authenticate())
+        idpLoginDump = idpLogin.dump()
+        # A real identity provider using a HTML form to ask user's login & password should store
+        # idpLoginDump in a session variable and display the HTML login form.
 
         userAuthenticated = True
         authenticationMethod = lasso.samlAuthenticationMethodPassword
+        idpServer = self.generateIdpServer()
+        idpLogin = lasso.Login.new_from_dump(idpServer, idpLoginDump)
+        self.failUnless(idpLogin)
         self.failUnlessEqual(idpLogin.protocolProfile, lasso.loginProtocolProfileBrwsArt)
-        self.failUnlessEqual(idpLogin.build_artifact_msg(
-            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
-            lasso.httpMethodRedirect), 0)
-        idpIdentityDump = idpLogin.get_identity().dump()
-        self.failUnless(idpIdentityDump)
-        idpSessionDump = idpLogin.get_session().dump()
-        self.failUnless(idpSessionDump)
-        responseUrl = idpLogin.msg_url
+        idpIdentityDump, idpSessionDump, nameIdentifier, responseUrl, artifact, soapResponseMsg \
+            = self.idpSingleSignOn_part2UsingArtifactRedirect(
+                idpLogin, userAuthenticated, authenticationMethod)
+        # A reald IDP should store idpIdentityDump in user record and store idpSessionDump in
+        # session variables or user record.
+        # It should then index its user record and its session using nameIdentifier.
+        # It should also store soapResponseMsg and index it using artifact.
+
+        # Service provider assertion consumer.
         responseQuery = responseUrl.split("?", 1)[1]
-        soapResponseMsg = idpLogin.response_dump
-        artifact = idpLogin.assertionArtifact
-        nameIdentifier = idpLogin.nameIdentifier
-        method = lasso.httpMethodRedirect
+
+        # FIXME: TODO.
 
         # Service provider assertion consumer.
         spServer = self.generateSpServer()
         spLogin = lasso.Login.new(spServer)
-        self.failUnlessEqual(spLogin.init_request(responseQuery, method), 0)
+        self.failUnlessEqual(spLogin.init_request(responseQuery, lasso.httpMethodRedirect), 0)
         self.failUnlessEqual(spLogin.build_request_msg(), 0)
         soapEndpoint = spLogin.msg_url
         soapRequestMsg = spLogin.msg_body
