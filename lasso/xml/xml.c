@@ -502,6 +502,7 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 			for (snippet = class->node_data->snippets;
 					snippet && snippet->name; snippet++) {
+				void *tmp = NULL;
 				type = snippet->type & 0xff;
 				value = G_STRUCT_MEMBER_P(node, snippet->offset);
 
@@ -509,19 +510,17 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					continue;
 
 				if (type == SNIPPET_NODE) {
-					(*(LassoNode**)value) = lasso_node_new_from_xmlNode(t);
+					tmp = lasso_node_new_from_xmlNode(t);
 				} else if (type == SNIPPET_NODE_IN_CHILD) {
 					xmlNode *t2 = t->children;
 					while (t2 && t2->type != XML_ELEMENT_NODE)
 						t2 = t2->next;
 					if (t2)
-						(*(LassoNode**)value) =
-							lasso_node_new_from_xmlNode(t2);
+						tmp = lasso_node_new_from_xmlNode(t2);
 				} else if (type == SNIPPET_CONTENT)
-					(*(char**)value) = xmlNodeGetContent(t);
+					tmp = xmlNodeGetContent(t);
 				else if (type == SNIPPET_NAME_IDENTIFIER)
-					(*(LassoSamlNameIdentifier**)value) =
-						lasso_saml_name_identifier_new_from_xmlNode(t);
+					tmp = lasso_saml_name_identifier_new_from_xmlNode(t);
 				else if (type == SNIPPET_LIST_NODES) {
 					GList **location = value;
 					LassoNode *n = lasso_node_new_from_xmlNode(t);
@@ -531,35 +530,49 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					xmlChar *s = xmlNodeGetContent(t);
 					*location = g_list_append(*location, s);
 				}
+
+				if (tmp == NULL)
+					break;
+
+				if (snippet->type & SNIPPET_INTEGER) {
+					int val = atoi(tmp);
+					(*(int*)value) = val;
+					xmlFree(tmp);
+				} else if (snippet->type & SNIPPET_BOOLEAN) {
+					int val = (strcmp((char*)tmp, "true") == 0);
+					(*(int*)value) = val;
+					xmlFree(tmp);
+				} else {
+					(*(void**)value) = tmp;
+				}
+
 				break;
 			}
 		}
 
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
+			void *tmp = NULL;
 			type = snippet->type & 0xff;
 			value = G_STRUCT_MEMBER_P(node, snippet->offset);
 			if (type == SNIPPET_ATTRIBUTE)
-				(*(char**)value) = xmlGetProp(xmlnode, snippet->name);
+				tmp = xmlGetProp(xmlnode, snippet->name);
 			if (type == SNIPPET_TEXT_CHILD)
-				(*(char**)value) = xmlNodeGetContent(xmlnode);
-		}
+				tmp = xmlNodeGetContent(xmlnode);
+			if (tmp == NULL)
+				continue;
 
-		/* last turn; fixup types */
-		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
-			value = G_STRUCT_MEMBER_P(node, snippet->offset);
 			if (snippet->type & SNIPPET_INTEGER) {
-				char *s = *(char**)value;
-				int val = atoi(s);
-				xmlFree(s);
-				(*(void**)value) = GINT_TO_POINTER(val);
+				int val = atoi(tmp);
+				(*(int*)value) = val;
+				xmlFree(tmp);
+			} else if (snippet->type & SNIPPET_BOOLEAN) {
+				int val = (strcmp((char*)tmp, "true") == 0);
+				(*(int*)value) = val;
+				xmlFree(tmp);
+			} else {
+				(*(char**)value) = tmp;
 			}
 
-			if (snippet->type & SNIPPET_BOOLEAN) {
-				char *s = *(char**)value;
-				int val = (strcmp(s, "true") == 0);
-				(*(void**)value) = GINT_TO_POINTER(val);
-				xmlFree(s);
-			}
 		}
 
 		class = g_type_class_peek_parent(class);
