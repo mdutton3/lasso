@@ -235,6 +235,31 @@ lasso_authn_response_new_from_dump(xmlChar *buffer)
 }
 
 LassoNode*
+lasso_authn_response_new_from_export(xmlChar *buffer,
+				     gint     type)
+{
+  xmlChar *buffer_decoded = xmlMalloc(strlen(buffer));
+  LassoNode *response, *node;
+  xmlNodePtr xmlNode_response;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
+
+  node = lasso_node_new_from_dump(buffer_decoded);
+  xmlNode_response = xmlCopyNode(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node), 1);
+  LASSO_NODE_GET_CLASS(response)->set_xmlNode(response, xmlNode_response);
+
+  LASSO_AUTHN_RESPONSE(response)->request = NULL;
+  LASSO_AUTHN_RESPONSE(response)->query = NULL;
+  g_object_unref(node);
+
+  return (response);
+}
+
+LassoNode*
 lasso_authn_response_new_from_request_query(gchar         *query,
 					    const xmlChar *providerID)
 {

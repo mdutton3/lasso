@@ -59,6 +59,9 @@ LASSO_EXPORT GType      lasso_authn_response_get_type                      (void
 
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlChar *buffer);
 
+LASSO_EXPORT LassoNode* lasso_authn_response_new_from_export               (xmlChar *buffer,
+									    gint     type);
+
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_request_query        (gchar         *query,
 									    const xmlChar *providerID);
 
