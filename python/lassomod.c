@@ -56,6 +56,7 @@
 #include "environs/py_federation_termination.h"
 #include "environs/py_login.h"
 #include "environs/py_logout.h"
+#include "environs/py_register_name_identifier.h"
 #include "environs/py_server.h"
 #include "environs/py_user.h"
 
@@ -241,6 +242,18 @@ static PyMethodDef lasso_methods[] = {
   {"logout_process_request_msg",  logout_process_request_msg,  METH_VARARGS},
   {"logout_process_response_msg", logout_process_response_msg, METH_VARARGS},
 
+  /* py_register_name_identifier.h */
+  {"register_name_identifier_getattr",              register_name_identifier_getattr,              METH_VARARGS},
+
+  {"register_name_identifier_new",                  register_name_identifier_new,                  METH_VARARGS},
+  {"register_name_identifier_build_request_msg",    register_name_identifier_build_request_msg,    METH_VARARGS},
+  {"register_name_identifier_build_response_msg",   register_name_identifier_build_response_msg,   METH_VARARGS},
+  {"register_name_identifier_destroy",              register_name_identifier_destroy,              METH_VARARGS},
+  {"register_name_identifier_init_request",         register_name_identifier_init_request,         METH_VARARGS},
+  {"register_name_identifier_process_request_msg",  register_name_identifier_process_request_msg,  METH_VARARGS},
+  {"register_name_identifier_process_response_msg", register_name_identifier_process_response_msg, METH_VARARGS},
+
+
   /* py_server.h */
   {"server_new",           server_new,           METH_VARARGS},
   {"server_new_from_dump", server_new_from_dump, METH_VARARGS},
@@ -251,6 +264,7 @@ static PyMethodDef lasso_methods[] = {
   /* py_user.h */
   {"user_new",                 user_new,                 METH_VARARGS},
   {"user_new_from_dump",       user_new_from_dump,       METH_VARARGS},
+  {"user_add_assertion",       user_add_assertion,       METH_VARARGS},
   {"user_destroy",             user_destroy,             METH_VARARGS},
   {"user_dump",                user_dump,                METH_VARARGS},
   {"user_get_assertion",       user_get_assertion,       METH_VARARGS},

@@ -854,6 +854,9 @@ class User:
 	return User(obj)
     new_from_dump = classmethod(new_from_dump)
 
+    def add_assertion(self, remote_providerID, assertion):
+	lassomod.user_add_assertion(self, remote_providerID, assertion)
+
     def dump(self):
 	return lassomod.user_dump(self)
 
@@ -1049,6 +1052,9 @@ class FederationTermination:
 	return FederationTermination(obj)
     new = classmethod(new)
 
+    def add_assertion(self, remote_providerID, assertion):
+	lassmod.user_add_assertion(remote_providerID, assertion);
+
     def build_notification_msg(self):
 	return lassomod.federation_termination_build_notification_msg(self)
 
@@ -1060,3 +1066,54 @@ class FederationTermination:
 
     def process_notification_msg(self, notification_msg, notification_method):
 	return lassomod.federation_termination_process_notification_msg(self, notification_msg, notification_method);
+
+
+class RegisterNameIdentifier:
+    """\brief Short desc
+
+    Long desc
+    """
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __init__(self, _obj):
+	"""
+	The constructor
+	"""
+	self._o = _obj
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.register_name_identifier_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "user":
+            ret = User(_obj=ret)
+        return ret
+
+    def new(cls, server, user, provider_type):
+	obj = lassomod.register_name_identifier_new(server, user, provider_type)
+	return RegisterNameIdentifier(obj)
+    new = classmethod(new)
+
+    def build_request_msg(self):
+	return lassomod.register_name_identifier_build_request_msg(self)
+
+    def build_response_msg(self):
+	return lassomod.register_name_identifier_build_response_msg(self)
+
+    def destroy(self):
+	pass
+
+    def init_request(self, remote_providerID):
+	return lassomod.register_name_identifier_init_request(self, remote_providerID);
+
+    def process_request_msg(self, request_msg, request_method):
+	return lassomod.register_name_identifier_process_request_msg(self, request_msg, request_method);
+
+    def process_response_msg(self, response_msg, response_method):
+	return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method);
