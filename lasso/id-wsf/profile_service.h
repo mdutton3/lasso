@@ -57,10 +57,6 @@ typedef struct _LassoProfileServicePrivate LassoProfileServicePrivate;
 struct _LassoProfileService {
 	LassoWsfProfile parent;
 
-	/* ResourceID / EncryptedResourceID being used when processing request message */
-/* 	LassoDiscoResourceID *ResourceID; */
-/* 	LassoDiscoEncryptedResourceID *EncryptedResourceID; */
-
 };
 
 struct _LassoProfileServiceClass {
