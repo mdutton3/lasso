@@ -4,7 +4,9 @@ AC_INIT(lasso/lasso.c)
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_HOST
 
-
+dnl ==========================================================================
+dnl Version
+dnl ==========================================================================
 LASSO_PACKAGE=lasso
 LASSO_VERSION_MAJOR=0
 LASSO_VERSION_MINOR=1
@@ -310,7 +312,7 @@ dnl find xmlsec1
 dnl ==========================================================================
 if test "z$XMLSEC1_FOUND" = "zno" ; then
     XMLSEC1_MIN_VERSION="1.2.4"
-    XMLSEC1_CONFIG="xmlsec1-config --prefix=/usr/local"
+    XMLSEC1_CONFIG="xmlsec1-config"
     XMLSEC1_CFLAGS=""
     XMLSEC1_LIBS=""
     AC_ARG_WITH(xmlsec1, [  --with-xmlsec1=[PFX]       xmlsec1 location])
@@ -337,10 +339,27 @@ if test "z$XMLSEC1_FOUND" = "zno" ; then
     if test "$vers" -ge "$minvers" ; then
         XMLSEC1_LIBS="`$XMLSEC1_CONFIG --libs`"
         XMLSEC1_CFLAGS="`$XMLSEC1_CONFIG --cflags`"
+        XMLSEC1_VERSION="`$XMLSEC1_CONFIG --version`"
 	XMLSEC1_FOUND="yes"
         AC_MSG_RESULT(yes ('$XMLSEC1_VERSION'))
     else
         AC_MSG_ERROR(You need at least xmlsec1 $XMLSEC1_MIN_VERSION for this version of $PACKAGE)
+    fi
+fi
+
+dnl find xmlsec crypto library (openssl)
+if test "z$XMLSEC1_FOUND" = "zyes" ; then
+    AC_MSG_CHECKING(for xmlsec1 OpenSSL crypto library)
+    XMLSEC1_DEFAULT_CRYPTO_LIB=`$XMLSEC1_CONFIG --crypto`
+    if test "$XMLSEC1_DEFAULT_CRYPTO_LIB" = "openssl" ; then
+	prefix=`$XMLSEC1_CONFIG --prefix`
+        if test -e $prefix/lib/libxmlsec1-openssl.so ; then
+	    AC_MSG_RESULT(yes)
+        else
+	    AC_MSG_ERROR(Could not find xmlsec1 OpenSSL crypto library)
+        fi
+    else
+        AC_MSG_ERROR(Bad default crypto library ($XMLSEC1_DEFAULT_CRYPTO_LIB) detected, must be OpenSSL)
     fi
 fi
 
