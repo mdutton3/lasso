@@ -18,5 +18,5 @@ tests_LDADD = \
 	$(CHECK_LIBS)
 endif
 
-EXTRA_DIST = tests.c login_tests.c basic_Tests.c
+EXTRA_DIST = tests.c login_tests.c basic_tests.c
 
