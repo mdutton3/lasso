@@ -173,7 +173,7 @@
 
 		print "<br>Add provider : ";
 
-		$ret = $server->add_provider($server, $config['idp-metadata'], 
+		$ret = $server->addProvider($config['idp-metadata'], 
 		  $config['idp-public_key'], $config['idp-ca']);
 
 		/*if ($ret != TRUE)
