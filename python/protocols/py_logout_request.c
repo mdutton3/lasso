@@ -75,6 +75,10 @@ PyObject *logout_request_new_from_export(PyObject *self, PyObject *args) {
   else return NULL;
 
   request = lasso_logout_request_new_from_export(buffer, type);
+  if(request==NULL){
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
 
   return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
 }

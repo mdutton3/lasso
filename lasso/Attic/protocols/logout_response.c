@@ -236,7 +236,7 @@ lasso_logout_response_new_from_request_export(gchar                *buffer,
     request = lasso_logout_request_new_from_export(buffer, export_type);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unkown export type\n");
+    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
     return(NULL);
   }
 
@@ -295,7 +295,7 @@ lasso_logout_response_new_from_export(gchar                *buffer,
     response = lasso_logout_response_new_from_soap(buffer);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unknown export type\n");
+    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
     return(NULL);
   }
 
