@@ -175,6 +175,15 @@ lasso_node_url_encode(LassoNode   *node,
   return (class->url_encode(node, sign_method, private_key_file));
 }
 
+gchar *
+lasso_node_soap_envelop(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->soap_envelop(node));
+}
+
 gint
 lasso_node_verify_signature(LassoNode   *node,
 			    const gchar *certificate_file)
@@ -682,6 +691,27 @@ lasso_node_impl_url_encode(LassoNode   *node,
   return (ret);
 }
 
+static gchar *
+lasso_node_impl_soap_envelop(LassoNode *node)
+{
+     LassoNode *envelope, *body;
+
+     g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+     envelope = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
+     lasso_node_set_name(LASSO_NODE(envelope), "Envelope");
+     lasso_node_set_ns(LASSO_NODE(envelope), lassoSoapEnvHRef, lassoSoapEnvPrefix);
+
+     body = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
+     lasso_node_set_name(LASSO_NODE(body), "Body");
+     lasso_node_set_ns(LASSO_NODE(body), lassoSoapEnvHRef, lassoSoapEnvPrefix);
+
+     lasso_node_add_child(LASSO_NODE(body), node, 0);
+     lasso_node_add_child(LASSO_NODE(envelope), LASSO_NODE(body), 0);
+
+     return(lasso_node_dump(LASSO_NODE(envelope), "iso-8859-1", 1));
+}
+
 gint
 lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
@@ -947,6 +977,7 @@ lasso_node_class_init(LassoNodeClass *class)
   class->rename_prop      = lasso_node_impl_rename_prop;
   class->serialize        = lasso_node_impl_serialize;
   class->url_encode       = lasso_node_impl_url_encode;
+  class->soap_envelop     = lasso_node_impl_soap_envelop;
   class->verify_signature = lasso_node_impl_verify_signature;
   /* virtual private methods */
   class->add_child   = lasso_node_impl_add_child;
