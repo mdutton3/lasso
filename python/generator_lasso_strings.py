@@ -24,7 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import re, sys
+import re, sys, string
 
 MATCH_BLANK   = re.compile(r'^\s*\n$')
 MATCH_COMMENT = re.compile(r'^[ /]+(?P<text>.*)\n$')
@@ -66,8 +66,10 @@ line  = fd_in.readline()
 while line:
     match = MATCH_CONST.search(line)
     if match:
-        fd_out.write("%s = %s\n" % (match.group('name')[5:],
-                                    match.group('value')[:-1]))
+        name = match.group('name')[5:]
+        name = string.lower(name[0]) + name[1:]
+        value = match.group('value')[:-1]
+        fd_out.write("%s = %s\n" % (name, value))
     else:
         match = MATCH_COMMENT.search(line)
         if match:

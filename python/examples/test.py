@@ -14,7 +14,7 @@ req = lasso.AuthnRequest("providerid.com",
                          "3",
                          ["test"],
                          None,
-                         lasso.LibAuthnContextComparisonExact, # None
+                         lasso.libAuthnContextComparisonExact, # None
                          "encoded_RelayState", # None
                          0,
                          None,
