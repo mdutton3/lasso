@@ -57,9 +57,9 @@ PyObject *authn_request_getattr(PyObject *self, PyObject *args) {
   lareq = LassoAuthnRequest_get(lareq_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[s]", "request");
+    return Py_BuildValue("[s]", "node");
   if (!strcmp(attr, "request"))
-    return (LassoNode_wrap(lareq->request));
+    return (LassoNode_wrap(lareq->node));
 
   Py_INCREF(Py_None);
   return (Py_None);

@@ -35,17 +35,17 @@ extern "C" {
 typedef struct _LassoAuthnRequest LassoAuthnRequest;
 
 struct _LassoAuthnRequest {
-  LassoNode  *request;
+  LassoNode  *node;
 };
 
 typedef struct _LassoAuthnResponse LassoAuthnResponse;
 
 struct _LassoAuthnResponse {
-  LassoNode     *response;
+  LassoNode     *node;
   xmlChar       *request_query;
-  LassoNode     *request;
-  const xmlChar *rsapub;
-  const xmlChar *rsakey;
+  LassoNode     *request_node;
+  const xmlChar *public_key;
+  const xmlChar *private_key;
 };
 
 LassoAuthnRequest *lasso_authn_request_build(const xmlChar *providerID,
