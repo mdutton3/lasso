@@ -425,7 +425,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 
 
 /*****************************************************************************/
-/* overrided parent class methods                                            */
+/* overridden parent class methods                                            */
 /*****************************************************************************/
 
 static LassoNodeClass *parent_class = NULL;

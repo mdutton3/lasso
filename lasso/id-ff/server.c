@@ -231,7 +231,7 @@ lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)
 }
 
 /*****************************************************************************/
-/* overrided parent class methods                                            */
+/* overridden parent class methods                                            */
 /*****************************************************************************/
 
 static void

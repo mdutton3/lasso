@@ -573,7 +573,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 }
 
 /*****************************************************************************/
-/* overrided parent class methods                                            */
+/* overridden parent class methods                                            */
 /*****************************************************************************/
 
 static void
