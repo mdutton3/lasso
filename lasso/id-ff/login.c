@@ -1063,6 +1063,11 @@ lasso_login_process_authn_response_msg(LassoLogin *login,
     g_error_free(err);
   }
 
+  LASSO_PROFILE(login)->msg_relayState = lasso_node_get_child_content(LASSO_PROFILE(login)->response,
+								      "RelayState",
+								      lassoLibHRef,
+								      NULL);
+
   ret2 = lasso_login_process_response_status_and_assertion(login);
 
   return (ret2 == 0 ? ret1 : ret2);
