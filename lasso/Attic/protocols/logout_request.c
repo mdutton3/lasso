@@ -214,6 +214,7 @@ lasso_logout_request_new_from_export(gchar                *buffer,
     request = lasso_logout_request_new_from_soap(buffer);
     break;
   default:
+    break;
   }
 
   return(request);
