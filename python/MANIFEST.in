@@ -1,5 +1,0 @@
-recursive-include doc *
-recursive-include examples *
-include MANIFEST.in
-include generator_lasso_strings.py
-include INSTALL
