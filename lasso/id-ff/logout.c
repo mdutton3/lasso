@@ -274,7 +274,18 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     profile->msg_body = lasso_node_export_to_soap(profile->response);
     break;
   case lassoHttpMethodRedirect:
-    url = lasso_provider_get_singleLogoutServiceReturnURL(provider, profile->provider_type, NULL);
+    if (profile->provider_type == lassoProviderTypeSp) {
+      url = lasso_provider_get_singleLogoutServiceReturnURL(provider, lassoProviderTypeIdp, NULL);
+    }
+    else if (profile->provider_type == lassoProviderTypeIdp) {
+      url = lasso_provider_get_singleLogoutServiceReturnURL(provider, lassoProviderTypeSp, NULL);
+    }
+    else {
+      message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+      ret = -1;
+      goto done;
+    }
+
     if (url == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Single logout service return url not found\n");
       ret = -1;
