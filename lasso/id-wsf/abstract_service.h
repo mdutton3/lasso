@@ -31,9 +31,10 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
+#include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_resource_offering.h>
 #include <lasso/xml/dst_query_item.h>
-#include <lasso/id-wsf/wsf_profile.h>
+#include <lasso/xml/disco_resource_id_group.h>
 
 #define LASSO_TYPE_ABSTRACT_SERVICE (lasso_abstract_service_get_type())
 #define LASSO_ABSTRACT_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -56,8 +57,7 @@ struct _LassoAbstractService {
 
 	LassoDiscoResourceOffering *ResourceOffering;
 
-	char *ResourceID;
-	gboolean is_encrypted;
+	LassoDiscoResourceIDGroup *ResourceIDGroup;
 
 	GList *Data;
 	GList *QueryItem;

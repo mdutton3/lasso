@@ -23,10 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/id-wsf/personal_profile_service.h>
+#include <lasso/xml/disco_resource_id_group.h>
 #include <lasso/xml/dst_data.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
+#include <lasso/id-wsf/personal_profile_service.h>
 
 struct _LassoPersonalProfileServicePrivate
 {
@@ -55,14 +56,9 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
   LASSO_DST_QUERY(profile->request)->prefixServiceType = LASSO_PP_PREFIX;
   LASSO_DST_QUERY(profile->request)->hrefServiceType = LASSO_PP_HREF;
 
-  /* set ResourceID (encrypted or not) */
-/*   if (ResourceOffering != NULL) { */
-/* 	  service->ResourceOffering = ResourceOffering; */
-/* 	  LASSO_DST_QUERY(profile->request)->ResourceID = \ */
-/* 		  g_strdup(ResourceOffering->ResourceID); */
-/* 	  LASSO_DST_QUERY(profile->request)->EncryptedResourceID = \ */
-/* 		  g_strdup(ResourceOffering->EncryptedResourceID); */
-/*   } */
+  /* set ResourceIDGroup  */
+  service->ResourceOffering = ResourceOffering;
+  LASSO_DST_QUERY(profile->request)->ResourceIDGroup = ResourceOffering->ResourceIDGroup;
 
   return 0;
 }
@@ -96,15 +92,9 @@ lasso_personal_profile_service_process_request_msg(LassoPersonalProfileService *
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 	lasso_node_init_from_message(LASSO_NODE(query), query_soap_msg);
 
-	/* get ResourceID / EncryptedResourceID */
-	if (query->ResourceID != NULL) {
-		LASSO_ABSTRACT_SERVICE(pp)->ResourceID = g_strdup(query->ResourceID);
-		LASSO_ABSTRACT_SERVICE(pp)->is_encrypted = FALSE;
-	}
-	else {
-		LASSO_ABSTRACT_SERVICE(pp)->ResourceID = g_strdup(query->EncryptedResourceID);
-		LASSO_ABSTRACT_SERVICE(pp)->is_encrypted = TRUE;
-	}
+	/* get ResourceIDGroup */
+	LASSO_ABSTRACT_SERVICE(pp)->ResourceIDGroup = query->ResourceIDGroup;
+
 	/* get QueryItems */
 	LASSO_ABSTRACT_SERVICE(pp)->QueryItem = query->QueryItem;
 

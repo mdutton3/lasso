@@ -53,9 +53,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
-	{ "EncryptedResourceID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDstQuery, EncryptedResourceID) },
+	{ "ResourceIDGroup", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery, ResourceIDGroup) },
 	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
 	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
@@ -104,8 +102,7 @@ get_xmlNode(LassoNode *node)
 static void
 instance_init(LassoDstQuery *node)
 {
-	node->ResourceID = NULL;
-	node->EncryptedResourceID = NULL;
+	node->ResourceIDGroup = NULL;
 	node->QueryItem = NULL;
 	node->id = NULL;
 	node->itemID = NULL;
