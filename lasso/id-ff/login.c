@@ -94,8 +94,9 @@ lasso_login_build_assertion(LassoLogin *login,
 		/* if NameIDPolicy is 'onetime', don't use a federation */
 		nameIdentifier = lasso_saml_name_identifier_new();
 		nameIdentifier->content = lasso_build_unique_id(32);
-		nameIdentifier->NameQualifier = LASSO_PROVIDER(profile->server)->ProviderID;
-		nameIdentifier->Format = LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME;
+		nameIdentifier->NameQualifier = g_strdup(
+				LASSO_PROVIDER(profile->server)->ProviderID);
+		nameIdentifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME);
 
 		as = lasso_lib_authentication_statement_new_full(authenticationMethod,
 				authenticationInstant, reauthenticateOnOrAfter,
