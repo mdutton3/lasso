@@ -751,7 +751,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
 							    NULL);
 
   /* set the msg_relayState */
-  profile->msg_relayState = lasso_node_get_child_content(profile->request, "RelayState", lassoLibHRef, NULL);
+  profile->msg_relayState = lasso_node_get_child_content(profile->response, "RelayState", lassoLibHRef, NULL);
 
   /* Only if SOAP method, then remove assertion */
   if (response_method == lassoHttpMethodSoap) {
