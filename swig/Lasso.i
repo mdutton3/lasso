@@ -30,6 +30,10 @@
 
 %include exception.i       
 %include typemaps.i
+
+#ifndef SWIGPHP4
+%rename(WSF_SUPPORT) LASSO_WSF_SUPPORT;
+#endif
 %include wsf-support.i
 
 #if LASSO_WSF_SUPPORT == 1
