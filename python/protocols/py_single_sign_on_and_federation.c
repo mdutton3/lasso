@@ -78,8 +78,8 @@ PyObject *authn_request_create(PyObject *self, PyObject *args) {
   const xmlChar *isPassive;
   const xmlChar *protocolProfile;
   const xmlChar *assertionConsumerServiceID;
-  GPtrArray     *authnContextClassRefs = NULL;
-  GPtrArray     *authnContextStatementRefs = NULL;
+  //GPtrArray     *authnContextClassRefs = NULL;
+  //GPtrArray     *authnContextStatementRefs = NULL;
   const xmlChar *authnContextComparison;
   const xmlChar *relayState;
   gint           proxyCount;
@@ -91,9 +91,9 @@ PyObject *authn_request_create(PyObject *self, PyObject *args) {
   if(!PyArg_ParseTuple(args, (char *) "ssssssOOssiOs:authn_request_create",
 		       &providerID, &nameIDPolicy, &forceAuthn, &isPassive,
 		       &protocolProfile, &assertionConsumerServiceID,
-		       &authnContextClassRefs, &authnContextStatementRefs,
+		       &authnContextClassRefs_obj, &authnContextStatementRefs_obj,
 		       &authnContextComparison, &relayState, &proxyCount,
-		       &idpList, &consent))
+		       &idpList_obj, &consent))
     return NULL;
 
   request = lasso_authn_request_create(providerID,
@@ -102,8 +102,8 @@ PyObject *authn_request_create(PyObject *self, PyObject *args) {
 				       isPassive,
 				       protocolProfile,
 				       assertionConsumerServiceID,
-				       NULL,
-				       NULL,
+				       PythonStringList2_get(authnContextClassRefs_obj),
+				       PythonStringList2_get(authnContextStatementRefs_obj),
 				       authnContextComparison,
 				       relayState,
 				       proxyCount,
@@ -145,9 +145,13 @@ PyObject *authn_response_getattr(PyObject *self, PyObject *args) {
   reponse = lassoAuthnResponse_get(reponse_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[s]", "node");
+    return Py_BuildValue("[sss]", "node", "isPassive", "mustAuthenticate");
   if (!strcmp(attr, "node"))
     return (LassoNode_wrap(reponse->node));
+  if (!strcmp(attr, "isPassive"))
+    return (int_wrap(reponse->isPassive));
+  if (!strcmp(attr, "mustAuthenticate"))
+    return (int_wrap(reponse->mustAuthenticate));
 
   Py_INCREF(Py_None);
   return (Py_None);

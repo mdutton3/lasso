@@ -68,8 +68,6 @@ LibAuthnContextComparisonBetter = "better"
 # * StatusCodes */
 LibStatusCodeFederationDoesNotExist = "lib:FederationDoesNotExist"
 LibStatusCodeNoPassive = "lib:NoPassive"
-LibStatusCodeRequestDenied = "lib:RequestDenied"
-LibStatusCodeSuccess = "lib:Success"
 
 # *****************************************************************************/
 # * SAML                                                                      */
@@ -78,4 +76,21 @@ LibStatusCodeSuccess = "lib:Success"
 # * Versioning */
 SamlMajorVersion = "1"
 SamlMinorVersion = "0"
+
+# * StatusCodes */
+SamlStatusCodeRequestDenied = "Samlp:RequestDenied"
+SamlStatusCodeSuccess = "Samlp:Success"
+
+# * AuthenticationMethods */
+SamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password"
+SamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510"
+SamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
+SamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+SamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
+SamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+SamlAuthenticationMethodPGP = "urn:oasis:names:tc:SAML:1.0:am:PGP"
+SamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+SamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+SamlAuthenticationMethodXmlSign = "urn:ietf:rfc:3075"
+SamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 

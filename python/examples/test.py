@@ -12,9 +12,9 @@ req = lasso.AuthnRequest("providerid.com",
                          "true",
                          "pp", # None
                          "3",
-                         None,
-                         None,
-                         "", # None
+                         ["test"],
+                         [],
+                         "1", # None
                          "encoded_RelayState", # None
                          0,
                          None,
@@ -23,6 +23,8 @@ req = lasso.AuthnRequest("providerid.com",
 req.node.dump("iso-8859-1", 1)
 
 query = req.node.url_encode(1, "../../examples/rsakey.pem")
+
+print query
 
 res = lasso.AuthnResponse(query, 1,
                           "../../examples/rsapub.pem",
