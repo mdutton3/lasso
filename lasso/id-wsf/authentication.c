@@ -26,19 +26,137 @@
 #include <lasso/xml/sa_sasl_request.h>
 #include <lasso/xml/sa_sasl_response.h>
 
+struct _LassoAuthenticationPrivate
+{
+	gboolean dispose_has_run;
+};
+
+gint
+lasso_authentication_client_start(LassoAuthentication *authentication)
+{
+	LassoSaSaslRequest *request;
+	int res;
+	const char *mechusing;
+	const char *out;
+	int outlen = 0;
+
+	xmlChar *outbase64;
+
+	/* Liberty part */
+	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
+
+	/* sasl part */
+	res = sasl_client_start(authentication->connection, /* same context from above */
+				request->mechanism, /* list of mechanisms from the server */
+				NULL, /* filled in if an interaction is needed */
+				&out, /* filled in on success */
+				&outlen, /* filled in on success */
+				&mechusing);
+
+	/* mechusing is th resulting best mech to use, so copy it in SASLRequest element */
+	if (mechusing != NULL) {
+		g_free(request->mechanism);
+		request->mechanism = g_strdup(mechusing);
+	}
+       
+	if (outlen > 0) {
+		outbase64 = xmlSecBase64Encode(out, outlen, 0);
+		request->Data = g_list_append(request->Data, outbase64);
+	}
+
+	return res;
+}
+
+gint
+lasso_authentication_client_step(LassoAuthentication *authentication)
+{
+	LassoSaSaslRequest *request;
+	LassoSaSaslResponse *response;
+	int res;
+	char *in = NULL;
+	int inlen = 0;
+	xmlChar *inbase64 = NULL;
+
+	xmlChar *outbase64;
+	const char *out;
+	int outlen = 0;
+
+	/* Liberty part */
+	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
+	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
+
+	/* sasl part */
+	if (response->Data != NULL) {
+		inbase64 = response->Data->data;
+		in = g_malloc(strlen(inbase64));
+		xmlSecBase64Decode(inbase64, in, strlen(inbase64));
+	}
+
+	res = sasl_client_step(authentication->connection, /* our context */
+			       in,    /* the data from the server */
+			       inlen, /* it's length */
+			       NULL,  /* this should be unallocated and NULL */
+			       &out,     /* filled in on success */
+			       &outlen); /* filled in on success */
+
+	if (strlen(out) > 0) {
+		outbase64 = xmlSecBase64Encode(out, outlen, 0);
+		request->Data = g_list_append(request->Data, outbase64);
+	}
+
+	return res;
+}
+
+void
+lasso_authentication_destroy(LassoAuthentication *authentication)
+{
+	g_object_unref(G_OBJECT(authentication));
+}
+
+char*
+lasso_authentication_get_mechanism_list(LassoAuthentication *authentication)
+{
+	int res;
+	const char *result_string;
+	int string_length = 0;
+	unsigned number_of_mechanisms;
+
+	if (authentication->connection == NULL) {
+		return NULL;
+	}
+
+	res = sasl_listmech(authentication->connection,  /* The context for this connection */
+			    NULL,  /* not supported */
+			    "",   /* What to prepend the string with */
+			    " ",  /* What to separate mechanisms with */
+			    "",   /* What to append to the string */
+			    &result_string, /* The produced string. */
+			    &string_length, /* length of the string */
+			    &number_of_mechanisms); /* Number of mechanisms in
+						       the string */
+	if (result_string == NULL)
+		return NULL;
+
+	return g_strdup(result_string);
+}
+
 gint
 lasso_authentication_init_request(LassoAuthentication *authentication,
 				  LassoDiscoDescription *description,
-				  const gchar *mechanism)
+				  const char *mechanisms,
+				  sasl_callback_t *callbacks)
 {
+	int res;
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(mechanism != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(mechanisms != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+	/* Liberty part : init request, set url SOAP end point */
 	LASSO_WSF_PROFILE(authentication)->request = \
-		LASSO_NODE(lasso_sa_sasl_request_new(mechanism));
+		LASSO_NODE(lasso_sa_sasl_request_new(mechanisms));
 
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(authentication)->msg_url = g_strdup(description->Endpoint);
@@ -47,7 +165,21 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 		/* TODO: get Endpoint at WsdlURI */
 	}
 
-	return 0;
+	/* sasl client new connection */
+	res = sasl_client_init(callbacks);
+	if (res != SASL_OK) {
+		return res;
+	}
+
+	res = sasl_client_new(LASSO_SA_SASL_SERVICE_NAME,
+			      NULL,
+			      NULL,
+			      NULL,
+			      NULL,
+			      0,
+			      &authentication->connection);
+
+	return res;
 }
 
 gint
@@ -58,6 +190,11 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	LassoSaSaslResponse *response;
 	LassoUtilityStatus *status;
 
+	int res = 0;
+	
+	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -65,35 +202,170 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	request = lasso_sa_sasl_request_new_from_message(soap_msg);
 	LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(request);
 
+	/* Liberty part : init response  */
 	status = lasso_utility_status_new(LASSO_SA_STATUS_CODE_OK);
 	response = lasso_sa_sasl_response_new(status);
 	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(response);
 
-	return 0;
+	/* Sasl part : init sasl server connection only for the first time */
+	if (authentication->connection == NULL) {
+		res = sasl_server_init(NULL, "Lasso"); /* FIXME : should be a param */
+		res = sasl_server_new(LASSO_SA_SASL_SERVICE_NAME,
+				      NULL,
+				      NULL,
+				      NULL,
+				      NULL,
+				      NULL,
+				      0,
+				      &authentication->connection);
+	}
+
+	return res;
 }
 
 gint
 lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 					  const gchar *soap_msg)
 {
+	LassoSaSaslRequest *request;
+	LassoSaSaslResponse *response;
+
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+	response = lasso_sa_sasl_response_new_from_message(soap_msg);
+	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(response);
+
+	/* if continue, init another request */
+	if (g_str_equal(response->Status->code, LASSO_SA_STATUS_CODE_CONTINUE) == TRUE) {
+		if (LASSO_IS_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request) == TRUE) {
+			lasso_node_destroy(LASSO_WSF_PROFILE(authentication)->request);
+		}
+
+		request = lasso_sa_sasl_request_new(g_strdup(response->serverMechanism));
+		LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(request);
+	}
+
 	return 0;
 }
 
-
-struct _LassoAuthenticationPrivate
+gint
+lasso_authentication_server_start(LassoAuthentication *authentication)
 {
-	gboolean dispose_has_run;
-};
+	LassoSaSaslRequest *request;
+	LassoSaSaslResponse *response;
 
-void
-lasso_authentication_destroy(LassoAuthentication *authentication)
-{
-	g_object_unref(G_OBJECT(authentication));
+	int res;
+
+	char *clientin = NULL;
+	int clientinlen = 0;
+
+	const char *out;
+	int outlen = 0;
+	xmlChar *outbase64;
+
+	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	/* Liberty part */
+	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
+	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
+
+	if (request->Data != NULL) {
+		clientin = request->Data->data;
+		clientinlen = strlen(clientin);
+	}
+
+	res = sasl_server_start(authentication->connection, /* context */
+				request->mechanism,
+				clientin,    /* the optional string the client gave us */
+				clientinlen, /* and it's length */
+				&out, /* The output of the library. Might not be NULL terminated */
+				&outlen);
+
+	/* set status code in SASLResponse message */
+	if (res != SASL_OK) {
+		g_free(response->Status->code);
+		if (res == SASL_CONTINUE) {
+			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_CONTINUE);
+		}
+		else {
+			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+		}
+	}
+
+	/* Liberty part : */
+	response->serverMechanism = g_strdup(request->mechanism);
+
+	/* base64 encode out and add in Data element of SASLResponse */
+	if (outlen > 0) {
+		outbase64 = xmlSecBase64Encode(out, outlen, 0);
+		response->Data = g_list_append(response->Data, outbase64);
+	}
+
+	return res;
 }
+
+gint
+lasso_authentication_server_step(LassoAuthentication *authentication)
+{
+	LassoSaSaslRequest *request;
+	LassoSaSaslResponse *response;
+
+	int res;
+
+	char *in = NULL;
+	int inlen = 0;
+	xmlChar *inbase64;
+
+	const char *out;
+	int outlen = 0;
+	xmlChar *outbase64;
+	
+	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	/* Liberty part */
+	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
+	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
+
+	if (request->Data != NULL) {
+		inbase64 = request->Data->data;
+		in = g_malloc(strlen(inbase64));
+		xmlSecBase64Decode(inbase64, in, strlen(inbase64));
+		inlen = strlen(in);
+	}
+
+	/* sasl part */
+	res = sasl_server_step(authentication->connection,
+			       in,      /* what the client gave */
+			       inlen,   /* it's length */
+			       &out,          /* Might not be NULL terminated */
+			       &outlen);
+
+	if (res != SASL_OK) {
+		g_free(response->Status->code);
+		if (res == SASL_CONTINUE) {
+			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+		}
+		else  {
+			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+		}
+	}
+
+	/* Liberty part : base64 encode out and add in Data element of SASLResponse */
+	printf("outlen : %d\n", outlen);
+	if (outlen > 0) {
+		printf("out : %c\n", out[0]);
+		outbase64 = xmlSecBase64Encode(out, outlen, 0);
+		printf("outbase64 : %s\n", outbase64);
+		response->Data = g_list_append(response->Data, outbase64);
+	}
+
+	return res;
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */
