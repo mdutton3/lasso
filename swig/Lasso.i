@@ -4,7 +4,7 @@
  *
  * SWIG bindings for Lasso Library
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  *
  * Authors: Romain Chantereau <rchantereau@entrouvert.com>
@@ -1427,7 +1427,7 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* NameIdentifier */
+/* nameIdentifier */
 #define LassoLibLogoutRequest_get_NameIdentifier(self) get_object((self)->NameIdentifier)
 #define LassoLibLogoutRequest_NameIdentifier_get(self) get_object((self)->NameIdentifier)
 #define LassoLibLogoutRequest_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
@@ -1870,10 +1870,9 @@ typedef struct {
 
 	/* Attributes */
 
-	%rename(providerIds) ProviderIDs;
-	%immutable ProviderIDs;
-	%newobject ProviderIDs_get;
-	LassoStringArray *ProviderIDs;
+	%immutable providerIds;
+	%newobject providerIds_get;
+	LassoStringArray *providerIds;
 
 	/* Constructor, destructor & static methods */
 
@@ -1955,8 +1954,8 @@ typedef struct {
 /* Attributes implementations */
 
 /* providerIds */
-#define LassoServer_get_ProviderIDs LassoServer_ProviderIDs_get
-LassoStringArray *LassoServer_ProviderIDs_get(LassoServer *self) {
+#define LassoServer_get_providerIds LassoServer_providerIds_get
+LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
 	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -1992,6 +1991,86 @@ LassoStringArray *LassoServer_ProviderIDs_get(LassoServer *self) {
 
 
 /***********************************************************************
+ * lasso:Federation
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Federation) LassoFederation;
+#endif
+typedef struct {
+	/* Attributes */
+
+	%rename(remoteProviderId) remote_providerID;
+	gchar *remote_providerID;
+} LassoFederation;
+%extend LassoFederation {
+	/* Attributes */
+
+	%rename(localNameIdentifier) local_nameIdentifier;
+	LassoSamlNameIdentifier *local_nameIdentifier;
+
+	%rename(remoteNameIdentifier) remote_nameIdentifier;
+	LassoSamlNameIdentifier *remote_nameIdentifier;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoFederation(char *remoteProviderId);
+
+	~LassoFederation();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
+
+	/* Methods */
+
+	void buildLocalNameIdentifier(char *nameQualifier, char *format, char *content);
+
+	void setLocalNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
+
+	void setRemoteNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
+
+	gboolean verifyNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
+}
+
+%{
+
+/* Attributes implementations */
+
+/* localNameIdentifier */
+#define LassoFederation_get_local_nameIdentifier(self) get_object((self)->local_nameIdentifier)
+#define LassoFederation_local_nameIdentifier_get(self) get_object((self)->local_nameIdentifier)
+#define LassoFederation_set_local_nameIdentifier(self, value) set_object((gpointer *) &(self)->local_nameIdentifier, (value))
+#define LassoFederation_local_nameIdentifier_set(self, value) set_object((gpointer *) &(self)->local_nameIdentifier, (value))
+
+/* remoteNameIdentifier */
+#define LassoFederation_get_remote_nameIdentifier(self) get_object((self)->remote_nameIdentifier)
+#define LassoFederation_remote_nameIdentifier_get(self) get_object((self)->remote_nameIdentifier)
+#define LassoFederation_set_remote_nameIdentifier(self, value) set_object((gpointer *) &(self)->remote_nameIdentifier, (value))
+#define LassoFederation_remote_nameIdentifier_set(self, value) set_object((gpointer *) &(self)->remote_nameIdentifier, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoFederation lasso_federation_new
+#define delete_LassoFederation lasso_federation_destroy
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoFederation_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
+/* Methods implementations */
+
+#define LassoFederation_buildLocalNameIdentifier lasso_federation_build_local_name_identifier
+#define LassoFederation_setLocalNameIdentifier lasso_federation_set_local_name_identifier
+#define LassoFederation_setRemoteNameIdentifier lasso_federation_set_remote_name_identifier
+#define LassoFederation_verifyNameIdentifier lasso_federation_verify_name_identifier
+
+%}
+
+
+/***********************************************************************
  * lasso:Identity
  ***********************************************************************/
 
@@ -2000,39 +2079,47 @@ LassoStringArray *LassoServer_ProviderIDs_get(LassoServer *self) {
 %rename(Identity) LassoIdentity;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
+	/* Attributes */
 
-		%immutable isDirty;
-		gboolean isDirty;
-
-		%immutable providerIds;
-		%newobject providerIds_get;
-		LassoStringArray *providerIds;
-
-		/* Constructor, Destructor & Static Methods */
-
-		LassoIdentity();
-
-		~LassoIdentity();
-
-		%newobject newFromDump;
-		static LassoIdentity *newFromDump(char *dump);
-
-		/* Methods */
-
-		%newobject dump;
-		char *dump();
-	}
+	%rename(isDirty) is_dirty;
+	%immutable is_dirty;
+	gboolean is_dirty;
 } LassoIdentity;
+%extend LassoIdentity {
+	/* Attributes */
+
+	%immutable providerIds;
+	%newobject providerIds_get;
+	LassoStringArray *providerIds;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIdentity();
+
+	~LassoIdentity();
+
+	%newobject newFromDump;
+	static LassoIdentity *newFromDump(char *dump);
+
+	/* Methods */
+
+        THROW_ERROR
+	void addFederation(LassoFederation *federation);
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	LassoFederation *getFederation(char *providerId);
+
+        THROW_ERROR
+	void removeFederation(char *providerId);
+	END_THROW_ERROR
+}
 
 %{
 
 /* Attributes implementations */
-
-/* isDirty */
-#define LassoIdentity_get_isDirty(self) (self)->is_dirty
-#define LassoIdentity_isDirty_get(self) (self)->is_dirty
 
 /* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
@@ -2055,7 +2142,10 @@ LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 /* Methods implementations */
 
+#define LassoIdentity_addFederation lasso_identity_add_federation
 #define LassoIdentity_dump lasso_identity_dump
+#define LassoIdentity_getFederation lasso_identity_get_federation
+#define LassoIdentity_removeFederation lasso_identity_remove_federation
 
 %}
 
