@@ -162,7 +162,7 @@ class LogoutRequest:
             return self.__dict__[name]
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name
-        ret = lassomod.authn_logout_getattr(self, name)
+        ret = lassomod.logout_request_getattr(self, name)
         if ret is None:
             raise AttributeError, name
         if name == "node":
