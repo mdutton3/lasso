@@ -57,8 +57,8 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
   LASSO_DST_QUERY(profile->request)->hrefServiceType = LASSO_PP_HREF;
 
   /* set ResourceIDGroup  */
-  service->ResourceOffering = ResourceOffering;
-  LASSO_DST_QUERY(profile->request)->ResourceIDGroup = ResourceOffering->ResourceIDGroup;
+/*   service->ResourceOffering = ResourceOffering; */
+/*   LASSO_DST_QUERY(profile->request)->ResourceIDGroup = ResourceOffering->ResourceIDGroup; */
 
   return 0;
 }
