@@ -74,19 +74,15 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
     }
     else if(xmlStrEqual(name, "LogoutRequest")){
       type = lassoRequestTypeLogout;
-      debug(INFO, "A LogoutRequest node found\n");
     }
     else if(xmlStrEqual(name, "FederationTerminationNotification")){
       type = lassoRequestTypeFederationTermination;
-      debug(INFO, "A FederationTerminationNotification node found\n");
     }
     else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")){
       type = lassoRequestTypeRegisterNameIdentifier;
-      debug(INFO, "A RegisterNameIdentifierRequest node found\n");
     }
     else if(xmlStrEqual(name, "NameIdentifierMappingRequest")){
       type = lassoRequestTypeNameIdentifierMapping;
-      debug(INFO, "A NameIdentifierMappingRequest node found\n");
     }
     else{
       debug(ERROR, "Unkown node name : %s\n", name);
