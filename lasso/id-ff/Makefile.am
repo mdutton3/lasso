@@ -16,12 +16,14 @@ noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
 	login.c \
+	logout.c \
 	profile_context.c \
 	server.c \
 	user.c
 
 liblassoinclude_HEADERS = \
 	login.h \
+	logout.h \
 	profile_context.h \
 	server.h \
 	user.h
