@@ -111,7 +111,7 @@ static gint
 lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
-  LassoNode *idpProvidedNameIdentifier;
+  LassoNode *nameIdentifier;
   xmlChar *nameIDPolicy, *providerID;
   gint ret = 0;
 
@@ -133,8 +133,9 @@ lasso_login_process_federation(LassoLogin *login)
     debug(DEBUG, "NameIDPolicy is federated\n");
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-      idpProvidedNameIdentifier = lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32));
-      /* set NameQualifier and Format */
+
+      /* set local NameIdentifier in identity */
+      nameIdentifier = saml_name_identifier_new(lasso_build_unique_id(32));
       providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
       /*
       if (providerID == NULL) {
@@ -142,13 +143,14 @@ lasso_login_process_federation(LassoLogin *login)
 	debug(ERROR, lasso_error_msg(ret));
       }
       */
-      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpProvidedNameIdentifier),
+      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
 						   providerID);
       xmlFree(providerID);
-      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpProvidedNameIdentifier),
+      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
 					    lassoLibNameIdentifierFormatFederated);
-      lasso_identity_set_local_nameIdentifier(identity, idpProvidedNameIdentifier);
-      lasso_node_destroy(idpProvidedNameIdentifier);
+      lasso_identity_set_local_nameIdentifier(identity, nameIdentifier);
+      lasso_node_destroy(nameIdentifier);
+
       lasso_user_add_identity(LASSO_PROFILE_CONTEXT(login)->user,
 			      LASSO_PROFILE_CONTEXT(login)->remote_providerID,
 			      identity);
@@ -700,17 +702,25 @@ lasso_login_must_authenticate(LassoLogin *login)
   gboolean  must_authenticate = FALSE;
   gboolean  isPassive = TRUE;
   gboolean  forceAuthn = FALSE;
+  gchar    *str;
 
   /* verify if the user must be authenticated or not */
-  if (xmlStrEqual(lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request, "IsPassive", NULL), "false")) {
-    isPassive = FALSE;
+  str = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request, "IsPassive", NULL);
+  if (str != NULL) {
+    if (xmlStrEqual(str, "false")) {
+      isPassive = FALSE;
+    }
+    xmlFree(str);
   }
 
-  if (xmlStrEqual(lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request, "ForceAuthn", NULL), "true")) {
-    forceAuthn = TRUE;
+  str = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request, "ForceAuthn", NULL);
+  if (str != NULL) {
+    if (xmlStrEqual(str, "true")) {
+      forceAuthn = TRUE;
+    }
+    xmlFree(str);
   }
 
-  /* complex test to login process */
   if ((forceAuthn == TRUE || LASSO_PROFILE_CONTEXT(login)->user == NULL) && isPassive == FALSE) {
     must_authenticate = TRUE;
   }
