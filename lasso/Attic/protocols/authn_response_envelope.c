@@ -24,6 +24,7 @@
  */
 
 #include <string.h>
+#include <xmlsec/base64.h>
 #include <lasso/protocols/authn_response_envelope.h>
 
 /*****************************************************************************/
