@@ -27,8 +27,8 @@
 
 LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *nameIDPolicy,
-				    const xmlChar *isPassive,
 				    const xmlChar *forceAuthn,
+				    const xmlChar *isPassive,
 				    const xmlChar *assertionConsumerServiceID,
 				    const xmlChar **authnContextClassRefs,
 				    const xmlChar **authnContextStatementRefs,
@@ -38,18 +38,81 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar **idpList,
 				    const xmlChar *consent)
 {
+  lasso_build_full_authnRequest(NULL,
+				NULL,
+				NULL,
+				NULL,
+				providerID,
+				nameIDPolicy,
+				forceAuthn,
+				isPassive,
+				assertionConsumerServiceID,
+				authnContextClassRefs,
+				authnContextStatementRefs,
+				authnContextComparison,
+				relayState,
+				proxyCount,
+				idpList,
+				consent);
+}
+
+LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
+					 const xmlChar *majorVersion,
+					 const xmlChar *minorVersion,
+					 const xmlChar *issueInstant,
+					 const xmlChar *providerID,
+					 const xmlChar *nameIDPolicy,
+					 const xmlChar *forceAuthn,
+					 const xmlChar *isPassive,
+					 const xmlChar *assertionConsumerServiceID,
+					 const xmlChar **authnContextClassRefs,
+					 const xmlChar **authnContextStatementRefs,
+					 const xmlChar *authnContextComparison,
+					 const xmlChar *relayState,
+					 const xmlChar *proxyCount,
+					 const xmlChar **idpList,
+					 const xmlChar *consent)
+{
   LassoNode  *request;
 
   // build AuthnRequest class
   request = lasso_lib_authn_request_new();
-  lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)lasso_build_unique_id(32));
-  lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-						lassoLibMinorVersion);
-  lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						 lasso_get_current_time());
-  lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						lassoLibMajorVersion);
+
+  if (requestID != NULL) {
+    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+					       requestID);
+  }
+  else {
+    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+					       (const xmlChar *)lasso_build_unique_id(32));
+  }
+
+  if (majorVersion != NULL) {
+    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						  majorVersion);
+  }
+  else {
+    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						  lassoLibMajorVersion);
+  }
+
+  if (minorVersion != NULL) {
+    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
+						  minorVersion);
+  }
+  else {
+    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
+						  lassoLibMinorVersion);
+  }
+
+  if (issueInstant != NULL) {
+    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   issueInstant);
+  }
+  else {
+    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   lasso_get_current_time());
+  }
 
   lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
 					 providerID);
@@ -58,12 +121,12 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
     lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request), nameIDPolicy);
   }
   
-  if(isPassive != NULL) {
-    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
-  }
-  
   if(forceAuthn != NULL) {
     lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), forceAuthn);
+  }
+  
+  if(isPassive != NULL) {
+    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
   }
   
   if(assertionConsumerServiceID != NULL) {
