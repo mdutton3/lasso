@@ -144,7 +144,7 @@ PyObject *logout_init_request(PyObject *self, PyObject *args) {
   gint      codeError;
 
   if (CheckArgs(args, "Os:logout_init_request")) {
-    if(!PyArg_ParseTuple(args, (char *) "O|s:logout_init_request",
+    if(!PyArg_ParseTuple(args, (char *) "Oz:logout_init_request",
 			 &logout_obj, &remote_providerID))
       return NULL;
   }

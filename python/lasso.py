@@ -1056,7 +1056,7 @@ class FederationTermination:
     def destroy(self):
 	pass
 
-    def init_notification(self, remote_providerID):
+    def init_notification(self, remote_providerID = None):
 	return lassomod.federation_termination_init_notification(self, remote_providerID);
 
     def process_notification_msg(self, notification_msg, notification_method):
