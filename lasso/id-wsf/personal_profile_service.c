@@ -56,13 +56,13 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
   LASSO_DST_QUERY(profile->request)->hrefServiceType = LASSO_PP_HREF;
 
   /* set ResourceID (encrypted or not) */
-  if (ResourceOffering != NULL) {
-	  service->ResourceOffering = ResourceOffering;
-	  LASSO_DST_QUERY(profile->request)->ResourceID = \
-		  g_strdup(ResourceOffering->ResourceID);
-	  LASSO_DST_QUERY(profile->request)->EncryptedResourceID = \
-		  g_strdup(ResourceOffering->EncryptedResourceID);
-  }
+/*   if (ResourceOffering != NULL) { */
+/* 	  service->ResourceOffering = ResourceOffering; */
+/* 	  LASSO_DST_QUERY(profile->request)->ResourceID = \ */
+/* 		  g_strdup(ResourceOffering->ResourceID); */
+/* 	  LASSO_DST_QUERY(profile->request)->EncryptedResourceID = \ */
+/* 		  g_strdup(ResourceOffering->EncryptedResourceID); */
+/*   } */
 
   return 0;
 }
