@@ -547,7 +547,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
-	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
 	xpathObj = xmlXPathEvalExpression("/md:EntityDescriptor", xpathCtx);
 	/* if empty: not a ID-FF 1.2 metadata file -> bails out */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {

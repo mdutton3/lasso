@@ -297,6 +297,7 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 	doc = xmlParseMemory(request_msg, strlen(request_msg));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
+	/* TODO: will need to use another href for id-ff 1.1 support */
 	xpathObj = xmlXPathEvalExpression("//lib:AuthnRequest", xpathCtx);
 
 	if (xpathObj == NULL)
