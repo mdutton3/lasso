@@ -350,7 +350,7 @@ lasso_identity_new_from_dump(gchar *dump)
 {
   LassoNode *identity_node;
   LassoNode *federations_node, *federation_node;
-  LassoNode *nameIdentifier_node, *local_nameIdentifier_node, *remote_nameIdentifier_node;
+  LassoNode *nis, *ni, *nameIdentifier;
 
   LassoNodeClass *federations_class;
 
@@ -360,7 +360,7 @@ lasso_identity_new_from_dump(gchar *dump)
 
   LassoFederation  *federation;
 
-  xmlChar *remote_providerID;
+  xmlChar *str, *remote_providerID;
 
   GError *err = NULL;
 
@@ -403,30 +403,67 @@ lasso_identity_new_from_dump(gchar *dump)
 	federation = lasso_federation_new(remote_providerID);
 
 	/* local name identifier */
-	local_nameIdentifier_node = lasso_node_get_child(federation_node,
-							 LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE,
-							 NULL, NULL);
-	if (local_nameIdentifier_node != NULL) {
-	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier",
-						     NULL, NULL);
-	  lasso_federation_set_local_nameIdentifier(federation, nameIdentifier_node);
-	  debug("  ... add local name identifier %s\n", lasso_node_get_content(nameIdentifier_node, NULL));
-	  lasso_node_destroy(nameIdentifier_node);
-	  lasso_node_destroy(local_nameIdentifier_node);
+	nis = lasso_node_get_child(federation_node,
+				   LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE,
+				   NULL, NULL);
+	if (nis != NULL) {
+	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
+	  if (ni != NULL) {
+	    /* content */
+	    str = lasso_node_get_content(ni, NULL);
+	    nameIdentifier = lasso_saml_name_identifier_new(str);
+	    xmlFree(str);
+	    /* NameQualifier */
+	    str = lasso_node_get_attr_value(ni, "NameQualifier", NULL);
+	    if (str != NULL) {
+	      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
+	      xmlFree(str);
+	    }
+	    /* format */
+	    str = lasso_node_get_attr_value(ni, "Format", NULL);
+	    if (str != NULL) {
+	      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
+	      xmlFree(str);
+	    }
+	    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
+	    debug("  ... add local name identifier %s\n", lasso_node_get_content(ni, NULL));
+	    lasso_node_destroy(ni);
+	    lasso_node_destroy(nameIdentifier);
+	  }
+	  lasso_node_destroy(nis);
 	}
 
 	/* remote name identifier */
-	remote_nameIdentifier_node = lasso_node_get_child(federation_node,
-							  LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE,
-							  NULL, NULL);
-	if (remote_nameIdentifier_node != NULL) {
-	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier",
-						     NULL, NULL);
-	  lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier_node);
-	  debug("  ... add remote name identifier %s\n", lasso_node_get_content(nameIdentifier_node, NULL));
-	  lasso_node_destroy(nameIdentifier_node);
-	  lasso_node_destroy(remote_nameIdentifier_node);
+	nis = lasso_node_get_child(federation_node,
+				   LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE,
+				   NULL, NULL);
+	if (nis != NULL) {
+	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
+	  if (ni != NULL) {
+	    /* content */
+	    str = lasso_node_get_content(ni, NULL);
+	    nameIdentifier = lasso_saml_name_identifier_new(str);
+	    xmlFree(str);
+	    /* NameQualifier */
+	    str = lasso_node_get_attr_value(ni, "NameQualifier", NULL);
+	    if (str != NULL) {
+	      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
+	      xmlFree(str);
+	    }
+	    /* format */
+	    str = lasso_node_get_attr_value(ni, "Format", NULL);
+	    if (str != NULL) {
+	      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
+	      xmlFree(str);
+	    }
+	    lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier);
+	    debug("  ... add local name identifier %s\n", lasso_node_get_content(ni, NULL));
+	    lasso_node_destroy(ni);
+	    lasso_node_destroy(nameIdentifier);
+	  }
+	  lasso_node_destroy(nis);
 	}
+
 	debug("Add federation for %s\n", remote_providerID);
 	lasso_identity_add_federation(identity, remote_providerID, federation);
 
