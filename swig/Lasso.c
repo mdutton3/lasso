@@ -43,9 +43,9 @@
 
 
 LassoServer *new_LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
-			     gchar *certificate, guint signature_method)
+			     gchar *certificate, lassoSignatureMethod signature_method)
 {
-	return lasso_server_new(metadata, public_key, private_key, certificate,signature_method);
+	return lasso_server_new(metadata, public_key, private_key, certificate, signature_method);
 }
 
 void delete_LassoServer(LassoServer *server)

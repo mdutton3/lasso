@@ -366,7 +366,7 @@ typedef struct {
 
 	%extend {
 		LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
-			    gchar *certificate, guint signature_method);
+			    gchar *certificate, lassoSignatureMethod signature_method);
 		~LassoServer();
 	}
 } LassoServer;
@@ -375,7 +375,7 @@ typedef struct {
 
 %newobject lasso_server_new;
 LassoServer* lasso_server_new(gchar *metadata, gchar *public_key, gchar *private_key,
-			      gchar *certificate, guint signature_method);
+			      gchar *certificate, lassoSignatureMethod signature_method);
 
 %newobject lasso_server_new_from_dump;
 LassoServer* lasso_server_new_from_dump(gchar *dump);
