@@ -29,6 +29,8 @@
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
 
+#include <lasso/xml/lib_authentication_statement.h>
+
 struct _LassoLogoutPrivate
 {
 	gboolean dispose_has_run;
@@ -265,20 +267,23 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	LassoSamlAssertion *assertion;
 	LassoFederation   *federation = NULL;
 	gboolean           is_http_redirect_get_method = FALSE;
+	LassoSession *session;
+	char *session_index = NULL;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(logout);
 
 	/* verify if session exists */
-	if (profile->session == NULL) {
+	session = lasso_profile_get_session(profile);
+	if (session == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	}
 
 	/* get the remote provider id
 	   If remote_providerID is NULL, then get the first remote provider id in session */
 	if (remote_providerID == NULL) {
-		profile->remote_providerID = lasso_session_get_provider_index(profile->session, 0);
+		profile->remote_providerID = lasso_session_get_provider_index(session, 0);
 	} else {
 		profile->remote_providerID = g_strdup(remote_providerID);
 	}
@@ -287,11 +292,20 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	}
 
 	/* get assertion */
-	assertion = lasso_session_get_assertion(profile->session, profile->remote_providerID);
+	assertion = lasso_session_get_assertion(session, profile->remote_providerID);
 	if (LASSO_IS_SAML_ASSERTION(assertion) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Assertion not found");
 		return LASSO_ERROR_UNDEFINED;
 	}
+
+	if (assertion->AuthenticationStatement && LASSO_IS_LIB_AUTHENTICATION_STATEMENT(
+				assertion->AuthenticationStatement)) {
+		LassoLibAuthenticationStatement *as = 
+			LASSO_LIB_AUTHENTICATION_STATEMENT(assertion->AuthenticationStatement);
+		if (as->SessionIndex)
+			session_index = g_strdup(as->SessionIndex);
+	}
+
 
 	/* if format is one time, then get name identifier from assertion,
 	   else get name identifier from federation */
@@ -360,6 +374,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
 	}
+	if (session_index)
+		LASSO_LIB_LOGOUT_REQUEST(profile->request)->SessionIndex = session_index;
 	if (profile->msg_relayState)
 		LASSO_LIB_LOGOUT_REQUEST(profile->request)->RelayState =
 			g_strdup(profile->msg_relayState);
