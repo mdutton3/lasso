@@ -6,8 +6,6 @@ SOURCE_DIR=$(TOP)/lasso
 INCLUDE_DIR=$(TOP)/lasso
 
 EXTRA_DIST = \
-	chapters \
-	images \
 	$(NULL)
 
 # Extra options to pass to gtkdoc-scangobj.
@@ -129,8 +127,8 @@ lasso-index: scan
 		sed 's#<NAME>\([^<]*\)</NAME>#<listitem><para><link linkend=\"\1\">\1</link></para></listitem>#g' > \
 		lasso-index.sgml
 
-dist-hook:
-	@cp -p $(srcdir)/html/*.html $(srcdir)/images/*.png $(srcdir)/*.sgml $(distdir)
+#dist-hook:
+#	@cp -p $(srcdir)/html/*.html $(srcdir)/images/*.png $(srcdir)/*.sgml $(distdir)
 
 clean: clean-sources clean-local
 	-@rm -rf $(DOC_SOURCE_DIR)
