@@ -1620,10 +1620,13 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildArtifactMsg(gboolean authenticationResult, gboolean isConsentObtained,
-				char *authenticationMethod, char *authenticationInstant,
-				char *reauthenticateOnOrAfter, char *notBefore,
-				char *notOnOrAfter, lassoHttpMethod httpMethod);
+		void buildArtifactMsg(lassoHttpMethod httpMethod);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		int buildAssertion(char *authenticationMethod, char *authenticationInstant,
+				char *reauthenticateOnOrAfter,
+				char *notBefore, char *notOnOrAfter);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1631,10 +1634,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnResponseMsg(gint authenticationResult, gboolean isConsentObtained,
-				char *authenticationMethod, char *authenticationInstant,
-				char *reauthenticateOnOrAfter, char *notBefore,
-				char *notOnOrAfter);
+		void buildAuthnResponseMsg();
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1681,6 +1681,11 @@ typedef struct {
 		THROW_ERROR
 		void processResponseMsg(gchar *responseMsg);
 		END_THROW_ERROR
+
+		THROW_ERROR
+		int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
+		END_THROW_ERROR
+
 	}
 } LassoLogin;
 
@@ -1825,6 +1830,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 /* Methods implementations */
 
 #define LassoLogin_acceptSso lasso_login_accept_sso
+#define LassoLogin_buildAssertion lasso_login_build_assertion
 #define LassoLogin_buildArtifactMsg lasso_login_build_artifact_msg
 #define LassoLogin_buildAuthnRequestMsg lasso_login_build_authn_request_msg
 #define LassoLogin_buildAuthnResponseMsg lasso_login_build_authn_response_msg
@@ -1840,6 +1846,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
+#define LassoLogin_validateRequestMsg lasso_login_validate_request_msg
 
 %}
 
@@ -2147,6 +2154,18 @@ typedef struct {
 		void setSessionFromDump(gchar *dump);
 		END_THROW_ERROR
 
+		/* Methods inherited from LassoLogin */
+
+		THROW_ERROR
+		int buildAssertion(char *authenticationMethod, char *authenticationInstant,
+				char *reauthenticateOnOrAfter,
+				char *notBefore, char *notOnOrAfter);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
+		END_THROW_ERROR
+
 		/* Methods */
 
 		THROW_ERROR
@@ -2158,10 +2177,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnResponseEnvelopeMsg(gboolean authenticationResult,
-				gboolean isConsentObtained, char *authenticationMethod,
-				char *authenticationInstant, char *reauthenticateOnOrAfter,
-				char *notBefore, char *notOnOrAfter);
+		void buildAuthnResponseEnvelopeMsg();
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2183,6 +2199,7 @@ typedef struct {
 		THROW_ERROR
 		void processAuthnResponseEnvelopeMsg(gchar *responseMsg);
 		END_THROW_ERROR
+
 	}
 } LassoLecp;
 
@@ -2321,6 +2338,7 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 
 /* Methods implementations */
 
+#define LassoLecp_buildAssertion lasso_login_build_assertion
 #define LassoLecp_buildAuthnRequestEnvelopeMsg lasso_lecp_build_authn_request_envelope_msg
 #define LassoLecp_buildAuthnRequestMsg lasso_lecp_build_authn_request_msg
 #define LassoLecp_buildAuthnResponseEnvelopeMsg lasso_lecp_build_authn_response_envelope_msg
@@ -2329,6 +2347,7 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 #define LassoLecp_processAuthnRequestEnvelopeMsg lasso_lecp_process_authn_request_envelope_msg
 #define LassoLecp_processAuthnRequestMsg lasso_lecp_process_authn_request_msg
 #define LassoLecp_processAuthnResponseEnvelopeMsg lasso_lecp_process_authn_response_envelope_msg
+#define LassoLecp_validateRequestMsg lasso_login_validate_request_msg
 
 %}
 

@@ -44,7 +44,6 @@ struct _LassoLoginPrivate
 /**
  * lasso_login_build_assertion:
  * @login: a Login
- * @federation: a federation or NULL
  * @authenticationMethod: the authentication method.
  * @authenticationInstant: the time at which the authentication took place or NULL.
  * @reauthenticateOnOrAfter: the time at, or after which the service provider
@@ -61,9 +60,8 @@ struct _LassoLoginPrivate
  *
  * Return value: 0 on success or a negative value otherwise.
  **/
-static gint
+int
 lasso_login_build_assertion(LassoLogin *login,
-		LassoFederation *federation,
 		const char *authenticationMethod,
 		const char *authenticationInstant,
 		const char *reauthenticateOnOrAfter,
@@ -74,12 +72,15 @@ lasso_login_build_assertion(LassoLogin *login,
 	LassoLibAuthenticationStatement *as;
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoProfile *profile;
-	gint ret = 0;
+	LassoFederation *federation;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	/* federation MAY be NULL */
 
 	profile = LASSO_PROFILE(login);
+
+	federation = g_hash_table_lookup(profile->identity->federations,
+			profile->remote_providerID);
 	
 	/*
 	 get RequestID to build Assertion
@@ -111,21 +112,18 @@ lasso_login_build_assertion(LassoLogin *login,
 				federation->local_nameIdentifier);
 	}
 
-	if (as == NULL) {
-		return -1;
-	}
-
 	LASSO_SAML_ASSERTION(assertion)->AuthenticationStatement = 
 				LASSO_SAML_AUTHENTICATION_STATEMENT(as);
 
 	/* FIXME : How to know if the assertion must be signed or unsigned ? */
-	/* signature should be added at end */
+#if 0
+	/* signature should be added at end (i.e. move this to
+	 * build_response_msg and build_authn_response_msg) */
 	ret = lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 			profile->server->signature_method,
 			profile->server->private_key,
 			profile->server->certificate);
-	if (ret)
-		return ret;
+#endif
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
@@ -136,6 +134,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
 	}
+	login->assertion = LASSO_SAML_ASSERTION(assertion);
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_SAML_ASSERTION(assertion));
 	return 0;
@@ -436,41 +435,17 @@ lasso_login_accept_sso(LassoLogin *login)
 /**
  * lasso_login_build_artifact_msg:
  * @login: a LassoLogin
- * @authentication_result: whether the principal is authenticated.  
- * @is_consent_obtained: whether the principal consents to be federated.
- * @authenticationMethod: the authentication method
- * @authenticationInstant: the time at which the authentication took place
- * @reauthenticateOnOrAfter: the time at, or after which the service provider
- *   reauthenticates the Principal with the identity provider or NULL
- * @notBefore: the earliest time instant at which the assertion is valid
- * @notOnOrAfter: the time instant at which the assertion has expired
- *
  * @http_method: the HTTP method to send the artifact (REDIRECT or POST)
  * 
  * Builds an artifact. Depending of the HTTP method, the data for the sending of
  * the artifact are stored in msg_url (REDIRECT) or msg_url, msg_body and
  * msg_relayState (POST).
  *
- * @authenticationMethod, @authenticationInstant, @reauthenticateOnOrAfter,
- * @notBefore, @notOnOrAfter should be NULL if @authentication_result is FALSE.
- * If @authenticationInstant is NULL, the current time will be set.
- *
- * Time values must be encoded in UTC.
- * 
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
-lasso_login_build_artifact_msg(LassoLogin *login,
-		gboolean authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter,
-		lassoHttpMethod http_method)
+lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 {
-	LassoFederation *federation = NULL;
 	LassoProvider *remote_provider;
 	gchar *url;
 	xmlSecByte samlArt[42], *b64_samlArt, *relayState;
@@ -486,23 +461,6 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
-	}
-
-	/* process federation and build assertion only if signature is OK */
-	if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
-		ret = lasso_login_process_federation(login, is_consent_obtained);
-		if (ret < 0)
-			return ret;
-
-		/* fill the response with the assertion */
-		if (ret == 0) {
-			federation = g_hash_table_lookup(
-					LASSO_PROFILE(login)->identity->federations,
-					LASSO_PROFILE(login)->remote_providerID);
-			lasso_login_build_assertion(login, federation, authenticationMethod,
-					authenticationInstant, reauthenticateOnOrAfter,
-					notBefore, notOnOrAfter);
-		}
 	}
 
 	if (LASSO_PROFILE(login)->remote_providerID == NULL)
@@ -655,40 +613,17 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 /**
  * lasso_login_build_authn_response_msg:
  * @login: a LassoLogin
- * @authentication_result: whether the principal is authenticated
- * @is_consent_obtained: whether the principal consents to be federated
- * @authenticationMethod: the method used to authenticate the principal
- * @authenticationInstant: the time at which the authentication took place
- * @reauthenticateOnOrAfter: the time at, or after which the service provider
- *   reauthenticates the Principal with the identity provider 
- * @notBefore: the earliest time instant at which the assertion is valid
- * @notOnOrAfter: the time instant at which the assertion has expired
  * 
  * Builds an authentication response. The data for the sending of the response
  * are stored in msg_url and msg_body.
  *
- * @authenticationMethod, @authenticationInstant, @reauthenticateOnOrAfter,
- * @notBefore, @notOnOrAfter should be NULL if @authentication_result is FALSE.
- * If @authenticationInstant is NULL, the current time will be set.
- *
- * Time values must be encoded in UTC.
- * 
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
-lasso_login_build_authn_response_msg(LassoLogin *login,
-		gboolean authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter)
+lasso_login_build_authn_response_msg(LassoLogin *login)
 {
-	LassoProfile *profile;
 	LassoProvider *remote_provider;
-	LassoFederation *federation;
-	gint ret = 0;
+	LassoProfile *profile;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -699,55 +634,6 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	/* create LibAuthnResponse */
-	profile->response = lasso_lib_authn_response_new(
-			LASSO_PROVIDER(profile->server)->ProviderID,
-			LASSO_LIB_AUTHN_REQUEST(profile->request));
-
-	/* modify AuthnResponse StatusCode if user authentication is not OK */
-	if (authentication_result == FALSE) {
-		lasso_profile_set_response_status(profile,
-				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
-	}
-
-	/* if signature is not OK => modify AuthnResponse StatusCode */
-	if (profile->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE) {
-		lasso_profile_set_response_status(profile,
-				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-	}
-
-	if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		/* Unsigned AuthnRequest */
-		lasso_profile_set_response_status(profile,
-				LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST);
-	}
-
-	if (profile->signature_status == 0 && authentication_result == TRUE) {
-		/* process federation */
-		ret = lasso_login_process_federation(login, is_consent_obtained);
-		if (ret < 0)
-			return ret;
-
-		/* fill the response with the assertion */
-		if (ret == 0) {
-			federation = g_hash_table_lookup(
-					profile->identity->federations,
-					profile->remote_providerID);
-			lasso_login_build_assertion(login, federation,
-					authenticationMethod, authenticationInstant,
-					reauthenticateOnOrAfter,
-					notBefore, notOnOrAfter);
-		}
-	}
-
-	if (LASSO_SAMLP_RESPONSE(profile->response)->Status == NULL) {
-		lasso_profile_set_response_status(profile,
-				LASSO_SAML_STATUS_CODE_SUCCESS);
-	}
-
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			profile->remote_providerID);
-
 	/* XXX: not sure this was signed in Lasso 0.5.0 */
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
@@ -756,10 +642,13 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 	/* build an lib:AuthnResponse base64 encoded */
 	profile->msg_body = lasso_node_export_to_base64(profile->response,
 			profile->server->private_key, profile->server->certificate);
+
+	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
+			LASSO_PROFILE(login)->remote_providerID);
 	profile->msg_url = lasso_provider_get_metadata_one(
 			remote_provider, "AssertionConsumerServiceURL");
 
-	return ret;
+	return 0;
 }
 
 /**
@@ -1272,6 +1161,7 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 static struct XmlSnippet schema_snippets[] = {
 	{ "AssertionArtifact", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, assertionArtifact) },
 	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, nameIDPolicy) },
+	{ "Assertion", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoLogin, assertion) },
 	{ NULL, 0, 0}
 };
 
@@ -1432,5 +1322,58 @@ gchar*
 lasso_login_dump(LassoLogin *login)
 {
 	return lasso_node_dump(LASSO_NODE(login), NULL, 1);
+}
+
+
+int
+lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_result,
+		gboolean is_consent_obtained)
+{
+	LassoProfile *profile;
+	gint ret = 0;
+
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	profile = LASSO_PROFILE(login);
+
+	/* create LibAuthnResponse */
+	profile->response = lasso_lib_authn_response_new(
+			LASSO_PROVIDER(profile->server)->ProviderID,
+			LASSO_LIB_AUTHN_REQUEST(profile->request));
+
+	/* modify AuthnResponse StatusCode if user authentication is not OK */
+	if (authentication_result == FALSE) {
+		lasso_profile_set_response_status(profile,
+				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
+		return LASSO_LOGIN_ERROR_REQUEST_DENIED;
+	}
+
+	/* if signature is not OK => modify AuthnResponse StatusCode */
+	if (profile->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE) {
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+		return LASSO_LOGIN_ERROR_INVALID_SIGNATURE;
+	}
+
+	if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+		/* Unsigned AuthnRequest */
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST);
+		return LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST;
+	}
+
+	if (profile->signature_status == 0 && authentication_result == TRUE) {
+		/* process federation */
+		ret = lasso_login_process_federation(login, is_consent_obtained);
+		if (ret < 0)
+			return ret;
+
+		/* XXX: what should be done if ret was > 0 ?  I would return
+		 * that code */
+	}
+
+	lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_SUCCESS);
+
+	return ret;
 }
 

@@ -136,15 +136,18 @@ START_TEST(test02_serviceProviderLogin)
 			"protocoleProfile should be ProfileBrwsArt");
 	fail_unless(! lasso_login_must_ask_for_consent(idpLoginContext),
 			"lasso_login_must_ask_for_consent() should be FALSE");
-	rc = lasso_login_build_artifact_msg(idpLoginContext,
+	rc = lasso_login_validate_request_msg(idpLoginContext,
 			1, /* authentication_result */
-		        0, /* is_consent_obtained */
+		        0 /* is_consent_obtained */
+			);
+
+	rc = lasso_login_build_assertion(idpLoginContext,
 			LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD,
 			"FIXME: authenticationInstant",
 			"FIXME: reauthenticateOnOrAfter",
 			"FIXME: notBefore",
-			"FIXME: notOnOrAfter",
-			LASSO_HTTP_METHOD_REDIRECT);
+			"FIXME: notOnOrAfter");
+	rc = lasso_login_build_artifact_msg(idpLoginContext, LASSO_HTTP_METHOD_REDIRECT);
 	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
 
 	idpIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(idpLoginContext)->identity);

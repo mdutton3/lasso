@@ -127,14 +127,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 }
 
 gint
-lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
-		gint authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter)
+lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 {
 	LassoProfile  *profile;
 	LassoProvider *provider;
@@ -156,10 +149,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
 	}
 
 	/* build lib:AuthnResponse */
-	lasso_login_build_authn_response_msg(LASSO_LOGIN(lecp),
-			authentication_result, is_consent_obtained,
-			authenticationMethod, authenticationInstant, reauthenticateOnOrAfter,
-			notBefore, notOnOrAfter);
+	lasso_login_build_authn_response_msg(LASSO_LOGIN(lecp));
 
 	assertionConsumerServiceURL = lasso_provider_get_metadata_one(
 			provider, "AssertionConsumerServiceURL");

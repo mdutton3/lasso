@@ -89,37 +89,17 @@ Single Sign-On and Federation
                    # unserialize with lasso_login_new_from_dump(dump)
                    consentObtained = TRUE # or FALSE if user didn't give its consent
 
-            authenticationMethod = LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD
-                # or LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI or others
-                # (see ...)
-                # this is how the user has been authenticated
+            IF lasso_login_validate_request_msg(login, userAuthenticated, consentObtained) == 0:
+                # build and fill assertion
+                lasso_login_build_assertion(login, authenticationMethod,
+                        authenticationInstant, reauthenticationTime
+                        assertionIsNotBefore, assertionIsNotOnOrAfter)
+                # any other change to the assertion can take place here
 
-            authenticationInstant = "2004-03-01T00:00:00Z"
-                # this is when the authentication occured; when NULL Lasso will put current time
-
-            assertionIsNotBefore = "2004-03-01T00:00:00Z"
-                # this is when assertion starts to be valid; NULL when not used
-
-            assertionIsNotOnOrAfter = "2004-04-01T00:00:00Z"
-                # this is when assertion stops to be valid; NULL when not used
-
-            reauthenticationTime = "2004-04-01T00:00:00Z"
-                # this is when the user will have to be reauthenticated; NULL when not used
-
-            IF login->protocolProfile IS lassoLoginProtocolProfileBrwsArt
-                lasso_login_build_artifact_msg(login, userAuthenticated,
-                    consentObtained,
-                    authenticationMethod,
-                    authenticationInstant, reauthenticationTime,
-                    assertionIsNotBefore, assertionIsNotOnOrAfter,
-                    lassoHttpMethodRedirect)
+            IF login->protocolProfile IS LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART
+                lasso_login_build_artifact_msg(login, LASSO_HTTP_METHOD_REDIRECT)
             ELSE # IF login->protocolProfile IS lassoLoginProtocolProfileBrwsPost
-                lasso_login_build_authn_response_msg(login, userAuthenticated,
-                    consentObtained,
-                    authenticationMethod,
-                    authenticationInstant, reauthenticationTime,
-                    assertionIsNotBefore, assertionIsNotOnOrAfter,
-                    reauthenticationTime)
+                lasso_login_build_authn_response_msg(login)
 
             # map LASSO_PROFILE(login)->nameIdentifier to user and session
             # (write this down in a database)

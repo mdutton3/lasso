@@ -61,6 +61,7 @@ struct _LassoLogin {
 
 	lassoLoginProtocolProfile protocolProfile;
 	gchar *assertionArtifact;
+	LassoSamlAssertion *assertion;
 
 	/*< private >*/
 	gchar *nameIDPolicy;
@@ -78,26 +79,11 @@ LASSO_EXPORT LassoLogin* lasso_login_new(LassoServer *server);
 LASSO_EXPORT LassoLogin* lasso_login_new_from_dump(LassoServer *server, const gchar *dump);
 LASSO_EXPORT gint lasso_login_accept_sso(LassoLogin *login);
 
-LASSO_EXPORT gint lasso_login_build_artifact_msg(LassoLogin *login,
-		gboolean authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter,
-		lassoHttpMethod http_method);
+LASSO_EXPORT gint lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method);
 
 LASSO_EXPORT gint lasso_login_build_authn_request_msg(LassoLogin *login);
 
-LASSO_EXPORT gint lasso_login_build_authn_response_msg(LassoLogin *login,
-		gboolean authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter);
+LASSO_EXPORT gint lasso_login_build_authn_response_msg(LassoLogin *login);
 
 LASSO_EXPORT gint lasso_login_build_request_msg(LassoLogin *login);
 LASSO_EXPORT gint lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID);
@@ -123,6 +109,14 @@ LASSO_EXPORT gint lasso_login_process_authn_response_msg(LassoLogin *login,
 
 LASSO_EXPORT gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
 LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg);
+
+LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
+		gboolean authentication_result, gboolean is_consent_obtained);
+
+LASSO_EXPORT int lasso_login_build_assertion(LassoLogin *login,
+		const char *authenticationMethod, const char *authenticationInstant,
+		const char *reauthenticateOnOrAfter,
+		const char *notBefore, const char *notOnOrAfter);
 
 #ifdef __cplusplus
 }

@@ -70,14 +70,7 @@ LASSO_EXPORT int lasso_lecp_build_authn_request_msg(LassoLecp *lecp);
 
 LASSO_EXPORT int lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
 
-LASSO_EXPORT int  lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
-		int authentication_result,
-		gboolean is_consent_obtained,
-		const char *authenticationMethod,
-		const char *authenticationInstant,
-		const char *reauthenticateOnOrAfter,
-		const char *notBefore,
-		const char *notOnOrAfter);
+LASSO_EXPORT int  lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp);
 
 LASSO_EXPORT void lasso_lecp_destroy(LassoLecp *lecp);
 
