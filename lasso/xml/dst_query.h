@@ -56,6 +56,9 @@ struct _LassoDstQuery {
 
 	char *id;
 	char *itemID;
+
+	char *prefixServiceType;
+	char *hrefServiceType;
 };
 
 struct _LassoDstQueryClass {
