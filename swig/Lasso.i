@@ -1881,7 +1881,11 @@ typedef struct {
 %extend LassoSamlpResponse {
 	/* Attributes */
 
-	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
+#ifndef SWIGPHP4
+	%rename(assertion) Assertion;
+#endif
+	%newobject Assertion_get;
+	LassoNodeArray *Assertion;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -1904,6 +1908,12 @@ typedef struct {
 %{
 
 /* Attributes Implementations */
+
+/* Assertion */
+#define LassoSamlAttribute_get_Assertion(self) get_node_list((self)->Assertion)
+#define LassoSamlAttribute_Assertion_get(self) get_node_list((self)->Assertion)
+#define LassoSamlAttribute_set_Assertion(self, value) set_node_list(&(self)->Assertion, (value))
+#define LassoSamlAttribute_Assertion_set(self, value) set_node_list(&(self)->Assertion, (value))
 
 /* Status */
 #define LassoSamlpResponse_get_Status(self) get_node((self)->Status)
