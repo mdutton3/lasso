@@ -35,6 +35,7 @@
 #include <xmlsec/templates.h>
 
 #include <lasso/xml/tools.h>
+#include <lasso/xml/errors.h>
 
 xmlChar *
 lasso_build_random_sequence(guint8 size)
@@ -164,53 +165,6 @@ lasso_get_current_time()
 }
 
 /**
- * lasso_get_pubkey_from_pem_certificate:
- * @pem_cert_file: an X509 pem certificate file
- * 
- * Gets the public key in an X509 pem certificate file.
- * 
- * Return value: a public key or NULL if an error occurs.
- **/
-xmlSecKeyPtr
-lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
-{
-  FILE *fd;
-  X509 *pem_cert;
-  xmlSecKeyDataPtr data;
-  xmlSecKeyPtr key = NULL;
-
-  /* load pem certificate from file */
-  fd = fopen(pem_cert_file, "r");
-  if (fd == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file\n",
-	    pem_cert_file);
-    return NULL;
-  }
-  /* read the pem X509 certificate */
-  pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
-  fclose(fd);
-  if (pem_cert == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate\n");
-    return NULL;
-  }
-
-  /* get public key value in certificate */
-  data = xmlSecOpenSSLX509CertGetKey(pem_cert);
-  if (data != NULL) {
-    /* create key and set key value */
-    key = xmlSecKeyCreate();
-    xmlSecKeySetValue(key, data);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL,
-	    "Failed to get the public key in the X509 certificate\n");
-  }
-  X509_free(pem_cert);
-
-  return key;
-}
-
-/**
  * lasso_get_pem_file_type:
  * @pem_file: a pem file
  * 
@@ -257,6 +211,53 @@ lasso_get_pem_file_type(const gchar *pem_file)
   BIO_free(bio);
 
   return type;
+}
+
+/**
+ * lasso_get_public_key_from_pem_cert_file:
+ * @pem_cert_file: an X509 pem certificate file
+ * 
+ * Gets the public key in an X509 pem certificate file.
+ * 
+ * Return value: a public key or NULL if an error occurs.
+ **/
+xmlSecKeyPtr
+lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
+{
+  FILE *fd;
+  X509 *pem_cert;
+  xmlSecKeyDataPtr data;
+  xmlSecKeyPtr key = NULL;
+
+  /* load pem certificate from file */
+  fd = fopen(pem_cert_file, "r");
+  if (fd == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file\n",
+	    pem_cert_file);
+    return NULL;
+  }
+  /* read the pem X509 certificate */
+  pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
+  fclose(fd);
+  if (pem_cert == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate\n");
+    return NULL;
+  }
+
+  /* get public key value in certificate */
+  data = xmlSecOpenSSLX509CertGetKey(pem_cert);
+  if (data != NULL) {
+    /* create key and set key value */
+    key = xmlSecKeyCreate();
+    xmlSecKeySetValue(key, data);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL,
+	    "Failed to get the public key in the X509 certificate\n");
+  }
+  X509_free(pem_cert);
+
+  return key;
 }
 
 /**
@@ -370,8 +371,9 @@ lasso_query_to_dict(const gchar *query)
  * 
  * Verifys the query's signature.
  * 
- * Return value: 1 if signature is valid, 0 if invalid, 2 if no signature found
- * and -1 if an error occurs.
+ * Return value: 0 if signature is valid
+ * a positive value if signature was not found or is invalid
+ * a negative value if an error occurs during verification
  **/
 int
 lasso_query_verify_signature(const gchar   *query,
@@ -383,19 +385,14 @@ lasso_query_verify_signature(const gchar   *query,
   xmlSecDSigCtxPtr dsigCtx;
   xmlChar *str_unescaped;
   gchar **str_split;
-  /*
-     0: signature invalid
-     1: signature ok
-     2: signature not found
-    -1: error during verification
-  */
-  gint ret = -1;
+  gint ret = 0;
 
   /* split query, signature (must be last param) */
   str_split = g_strsplit(query, "&Signature=", 0);
   if (str_split[1] == NULL)
     return 2;
-  /* re-create doc to verify (signed + enrypted) */
+
+  /* re-create doc to verify (signed + encrypted) */
   doc = lasso_str_sign(str_split[0],
 		       lassoSignatureMethodRsaSha1,
 		       recipient_private_key_file);
@@ -406,17 +403,25 @@ lasso_query_verify_signature(const gchar   *query,
   str_unescaped = lasso_str_unescape(str_split[1]);
   xmlNodeSetContent(sigValNode, str_unescaped);
   xmlFree(str_unescaped);
-
   g_strfreev(str_split);
 
   /* find start node */
   sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 			   xmlSecNodeSignature, xmlSecDSigNs);
-  
+  if (sigNode == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOT_FOUND),
+	    "");
+    ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+    goto done;	
+  }
+
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
   if(dsigCtx == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature context\n");
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
+    ret = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
     goto done;
   }
   
@@ -425,24 +430,31 @@ lasso_query_verify_signature(const gchar   *query,
 					    xmlSecKeyDataFormatPem,
 					    NULL, NULL, NULL);
   if(dsigCtx->signKey == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to load public pem key from \"%s\"\n",
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
 	    sender_public_key_file);
+    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
     goto done;
   }
   
   /* verify signature */
   if(xmlSecDSigCtxVerify(dsigCtx, sigNode) < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to verify signature\n");
-    ret = 0;
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED),
+	    "");
+    ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
     goto done;
   }
   
   /* print verification result to stdout and return */
   if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    ret = 1;
+    ret = 0;
   }
   else {
-    ret = 0;
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
+	    "");
+    ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
   }
   
  done:
