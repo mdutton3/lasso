@@ -54,6 +54,8 @@ echo "Running automake..."
 automake --add-missing
 echo "Running autoconf..."
 autoconf
+echo "Running autoheader..."
+autoheader
 
 cd $THEDIR
 
