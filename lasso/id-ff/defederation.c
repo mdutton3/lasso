@@ -313,6 +313,14 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
   /* set the nameIdentifier attribute, dont free content variable ! */
   profile->nameIdentifier = content;
 
+  /* remove federation with remote provider id */
+  lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
+
+  /* remove assertion from session */
+  if (profile->session != NULL) {
+    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+  }
+
   done:
   if (federation!=NULL) {
     lasso_federation_destroy(federation);
