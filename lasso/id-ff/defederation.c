@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include <glib/gprintf.h>
+
 #include <lasso/environs/defederation.h>
 #include <lasso/xml/errors.h>
 
