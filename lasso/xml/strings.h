@@ -43,8 +43,6 @@
 #define LASSO_LIB_PREFIX	 "lib"
 
 /* Versioning */
-#define LASSO_LIB_MAJOR_VERSION	 "1"
-#define LASSO_LIB_MINOR_VERSION	 "2"
 #define LASSO_LIB_MAJOR_VERSION_N	 1
 #define LASSO_LIB_MINOR_VERSION_N	 2
 
@@ -122,8 +120,6 @@
 #define LASSO_SAML_PROTOCOL_PREFIX	 "samlp"
 
 /* Versioning */
-#define LASSO_SAML_MAJOR_VERSION	 "1"
-#define LASSO_SAML_MINOR_VERSION	 "1"
 #define LASSO_SAML_MAJOR_VERSION_N	 1
 #define LASSO_SAML_MINOR_VERSION_N	 1
 
