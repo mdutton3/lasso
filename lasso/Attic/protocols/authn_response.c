@@ -140,10 +140,10 @@ lasso_authn_response_new(char *providerID,
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
 						 lassoLibMinorVersion);
 
-  /* IssueInstance */
+  /* IssueInstant */
   time = lasso_get_current_time();
-  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)time);
+  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 (const xmlChar *)time);
   xmlFree(time);
   
   /* ProviderID */

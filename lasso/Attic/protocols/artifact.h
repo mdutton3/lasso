@@ -52,33 +52,33 @@ struct _LassoArtifactClass {
   LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType      lasso_artifact_get_type (void);
+LASSO_EXPORT GType      lasso_artifact_get_type                          (void);
 
-LASSO_EXPORT LassoNode* lasso_artifact_new            (gchar *samlArt,
-						       gchar *byteCode,
-						       gchar *identityProviderSuccinctID,
-						       gchar *assertionHandle,
-						       gchar *relayState);
+LASSO_EXPORT LassoNode* lasso_artifact_new                               (gchar *samlArt,
+									  gchar *byteCode,
+									  gchar *identityProviderSuccinctID,
+									  gchar *assertionHandle,
+									  gchar *relayState);
 
-LASSO_EXPORT LassoNode* lasso_artifact_new_from_query (const xmlChar *query);
+LASSO_EXPORT LassoNode* lasso_artifact_new_from_query                    (const xmlChar *query);
 
-LASSO_EXPORT LassoNode* lasso_artifact_new_from_lares (const xmlChar *lares,
-						       const xmlChar *relayState);
+LASSO_EXPORT LassoNode* lasso_artifact_new_from_lares                    (const xmlChar *lares,
+									  const xmlChar *relayState);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_assertionHandle            (LassoArtifact  *artifact,
-								       GError        **err);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_assertionHandle               (LassoArtifact  *artifact,
+									  GError        **err);
 
-LASSO_EXPORT gint       lasso_artifact_get_byteCode                   (LassoArtifact  *artifact,
-								       GError        **err);
+LASSO_EXPORT gint       lasso_artifact_get_byteCode                      (LassoArtifact  *artifact,
+									  GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_identityProviderSuccinctID (LassoArtifact  *artifact,
-								       GError        **err);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_b64IdentityProviderSuccinctID (LassoArtifact  *artifact,
+									  GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_relayState                 (LassoArtifact  *artifact,
-								       GError        **err);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_relayState                    (LassoArtifact  *artifact,
+									  GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_samlArt                    (LassoArtifact  *artifact,
-								       GError        **err);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_samlArt                       (LassoArtifact  *artifact,
+									  GError        **err);
 
 #ifdef __cplusplus
 }

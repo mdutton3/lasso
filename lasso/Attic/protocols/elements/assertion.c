@@ -86,8 +86,8 @@ lasso_assertion_new(const xmlChar *issuer,
   lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
 					lassoLibMinorVersion);
   time = lasso_get_current_time();
-  lasso_saml_assertion_set_issueInstance(LASSO_SAML_ASSERTION(assertion),
-					 (const xmlChar *)time);
+  lasso_saml_assertion_set_issueInstant(LASSO_SAML_ASSERTION(assertion),
+					(const xmlChar *)time);
   xmlFree(time);
 
   lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion), issuer);

@@ -92,8 +92,8 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 						 lassoLibMinorVersion);
   /* IssueInstant */
   time = lasso_get_current_time();
-  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)time);
+  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 (const xmlChar *)time);
   xmlFree(time);
   /* ProviderID */
   lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
@@ -159,8 +159,8 @@ lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
 						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
   
   /* IssueInstant */
-  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0));
+  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0));
   
   /* InResponseTo */
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),

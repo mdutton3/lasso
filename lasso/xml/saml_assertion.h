@@ -78,8 +78,8 @@ LASSO_EXPORT void lasso_saml_assertion_set_assertionID             (LassoSamlAss
 LASSO_EXPORT void lasso_saml_assertion_set_conditions              (LassoSamlAssertion *node,
 								    LassoSamlConditions *conditions);
 
-LASSO_EXPORT void lasso_saml_assertion_set_issueInstance           (LassoSamlAssertion *node,
-								    const xmlChar *issueInstance);
+LASSO_EXPORT void lasso_saml_assertion_set_issueInstant            (LassoSamlAssertion *node,
+								    const xmlChar *issueInstant);
 
 LASSO_EXPORT void lasso_saml_assertion_set_issuer                  (LassoSamlAssertion *node,
 								    const xmlChar *issuer);

@@ -93,8 +93,8 @@ lasso_request_new(const xmlChar *assertionArtifact)
 						lassoLibMinorVersion);
   /* IssueInstant */
   time = lasso_get_current_time();
-  lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						 (const xmlChar *)time);
+  lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						(const xmlChar *)time);
   xmlFree(time);
   
   /* AssertionArtifact */

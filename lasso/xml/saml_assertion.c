@@ -159,24 +159,24 @@ lasso_saml_assertion_set_conditions(LassoSamlAssertion *node,
 }
 
 /**
- * lasso_saml_assertion_set_issueInstance:
+ * lasso_saml_assertion_set_issueInstant:
  * @node: the <saml:Assertion> node object
- * @issueInstance: the value of "IssueInstance" attribute
+ * @issueInstant: the value of "IssueInstant" attribute
  * 
- * Sets the "IssueInstance" attribute [required].
+ * Sets the "IssueInstant" attribute [required].
  *
  * The time instant of issue in UTC as described in Section 1.2.2
  * (oasis-sstc-saml-core-1.0.pdf).
  **/
 void
-lasso_saml_assertion_set_issueInstance(LassoSamlAssertion *node,
-				       const xmlChar *issueInstance)
+lasso_saml_assertion_set_issueInstant(LassoSamlAssertion *node,
+				      const xmlChar *issueInstant)
 {
   g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(issueInstance != NULL);
+  g_assert(issueInstant != NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "IssueInstance", issueInstance);
+  class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
 }
 
 /**

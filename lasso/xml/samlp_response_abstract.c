@@ -67,14 +67,14 @@ lasso_samlp_response_abstract_set_inResponseTo(LassoSamlpResponseAbstract *node,
 }
 
 void
-lasso_samlp_response_abstract_set_issueInstance(LassoSamlpResponseAbstract *node,
-						const xmlChar *issueInstance)
+lasso_samlp_response_abstract_set_issueInstant(LassoSamlpResponseAbstract *node,
+					       const xmlChar *issueInstant)
 {
   g_assert(LASSO_IS_SAMLP_RESPONSE_ABSTRACT(node));
-  g_assert(issueInstance != NULL);
+  g_assert(issueInstant != NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "IssueInstance", issueInstance);
+  class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
 }
 
 void

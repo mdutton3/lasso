@@ -92,8 +92,8 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
 						lassoLibMinorVersion);
   /* IssueInstant */
   time = lasso_get_current_time();
-  lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						 (const xmlChar *)time);
+  lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						(const xmlChar *)time);
   xmlFree(time);
   /* ProviderID */
   lasso_lib_federation_termination_notification_set_providerID(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request),
@@ -134,8 +134,8 @@ lasso_federation_termination_notification_new_from_query(const xmlChar *query)
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
   
   /* IssueInstant */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0);
-  lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0);
+  lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
   
   /* ProviderID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
