@@ -113,8 +113,9 @@ class LoginTestCase(unittest.TestCase):
         except lasso.Error, error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
+
     def test03(self):
-        """Conversion of a lib:AuthnRequest into a query and back."""
+        """Conversion of a lib:AuthnRequest with an AuthnContext into a query and back."""
 
         sp = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
@@ -155,6 +156,53 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(len(authnContextClassRefsList), 1)
         self.failUnlessEqual(authnContextClassRefsList[0],
                              lasso.LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD)
+
+    def test04(self):
+        """Conversion of a lib:AuthnRequest with extensions into a query and back."""
+
+        sp = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        sp.addProvider(
+            lasso.PROVIDER_ROLE_IDP,
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        spLogin = lasso.Login(sp)
+        spLogin.initAuthnRequest()
+        requestAuthnContext = lasso.LibRequestAuthnContext()
+        extensionList = lasso.StringList()
+        for extension in (
+                '<action>do</action>',
+                '<action2>do action 2</action2><action3>do action 3</action3>'):
+            extensionList.append(
+                '<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">%s</lib:Extension>'
+                % extension)
+        spLogin.request.extension = extensionList
+        spLogin.request.protocolProfile = lasso.LIB_PROTOCOL_PROFILE_BRWS_ART
+        spLogin.buildAuthnRequestMsg()
+        authnRequestUrl = spLogin.msgUrl
+        authnRequestQuery = spLogin.msgUrl[spLogin.msgUrl.index('?') + 1:]
+        idp = lasso.Server(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        idp.addProvider(
+            lasso.PROVIDER_ROLE_SP,
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/public-key.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        idpLogin = lasso.Login(idp)
+        idpLogin.processAuthnRequestMsg(authnRequestQuery)
+        self.failUnless(idpLogin.request.extension)
+        extensionsList = idpLogin.request.extension
+        self.failUnlessEqual(len(extensionsList), 2)
+        self.failUnless('<action>do</action>' in extensionsList[0])
+        self.failUnless('<action2>do action 2</action2>' in extensionsList[1])
+        self.failUnless('<action3>do action 3</action3>' in extensionsList[1])
         
 
 class LogoutTestCase(unittest.TestCase):
