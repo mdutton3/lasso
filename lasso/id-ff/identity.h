@@ -80,6 +80,9 @@ LASSO_EXPORT gchar*           lasso_identity_dump                               
 LASSO_EXPORT LassoFederation* lasso_identity_get_federation                        (LassoIdentity *identity,
 										    gchar         *remote_providerID);
 
+LASSO_EXPORT LassoFederation* lasso_identity_get_federation_ref                    (LassoIdentity *identity,
+										    gchar         *remote_providerID);
+
 LASSO_EXPORT gchar*           lasso_identity_get_first_providerID                  (LassoIdentity *identity);
 
 LASSO_EXPORT gchar*           lasso_identity_get_next_federation_remote_providerID (LassoIdentity *identity);
