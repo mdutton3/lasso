@@ -269,10 +269,11 @@ lasso_lib_register_name_identifier_request_new()
 }
 
 LassoNode*
-lasso_lib_register_name_identifier_request_new_full(char *providerID,
+lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 		LassoSamlNameIdentifier *idpNameIdentifier,
 		LassoSamlNameIdentifier *spNameIdentifier,
-		LassoSamlNameIdentifier *oldNameIdentifier)
+		LassoSamlNameIdentifier *oldNameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
 {
 	LassoLibRegisterNameIdentifierRequest *request;
 	LassoSamlpRequestAbstract *request_base;
@@ -284,6 +285,8 @@ lasso_lib_register_name_identifier_request_new_full(char *providerID,
 	request_base->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request_base->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	request_base->IssueInstant = lasso_get_current_time();
+	request_base->sign_type = sign_type;
+	request_base->sign_method = sign_method;
 
 	request->ProviderID = g_strdup(providerID);
 	request->IDPProvidedNameIdentifier = idpNameIdentifier;

@@ -87,8 +87,9 @@ lasso_lib_register_name_identifier_response_new()
 }
 
 LassoNode*
-lasso_lib_register_name_identifier_response_new_full(char *providerID,
-		const char *statusCodeValue, LassoLibRegisterNameIdentifierRequest *request)
+lasso_lib_register_name_identifier_response_new_full(const char *providerID,
+		const char *statusCodeValue, LassoLibRegisterNameIdentifierRequest *request,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
 {
 	LassoLibStatusResponse *response;
 	
@@ -99,6 +100,8 @@ lasso_lib_register_name_identifier_response_new_full(char *providerID,
 			LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 			LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID,
 			request->ProviderID);
+	LASSO_SAMLP_RESPONSE_ABSTRACT(response)->sign_type = sign_type;
+	LASSO_SAMLP_RESPONSE_ABSTRACT(response)->sign_method = sign_method;
 
 	response->RelayState = g_strdup(request->RelayState);
 	response->Status = lasso_samlp_status_new();

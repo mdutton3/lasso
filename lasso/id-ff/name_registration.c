@@ -123,7 +123,8 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = NULL; /* XXX ??? */
-		profile->msg_body = lasso_node_export_to_soap(profile->response, NULL, NULL);
+		profile->msg_body = lasso_node_export_to_soap(profile->response,
+				profile->server->private_key, profile->server->certificate);
 		return 0;
 	}
 
@@ -274,7 +275,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
 	profile->request = lasso_lib_register_name_identifier_request_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
-			idpNameIdentifier, spNameIdentifier, oldNameIdentifier);
+			idpNameIdentifier, spNameIdentifier, oldNameIdentifier,
+			LASSO_SIGNATURE_TYPE_WITHX509, LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (profile->request == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Error creating the request");
 		return -1;
@@ -312,6 +314,10 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 					profile->request)->ProviderID);
 	}
 
+	/* verify signatures */
+	profile->signature_status = lasso_provider_verify_signature(
+			remote_provider, request_msg, "RequestID", format);
+
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)
 		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
@@ -347,7 +353,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	}
 
 
-	return 0;
+	return profile->signature_status;
 }
 
 gint
@@ -436,7 +442,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	profile->msg_relayState = g_strdup(
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->RelayState);
 
-	return 0;
+	return rc;
 }
 
 gint
@@ -471,7 +477,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	profile->response = lasso_lib_register_name_identifier_response_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			LASSO_SAML_STATUS_CODE_SUCCESS, 
-			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request));
+			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request),
+			LASSO_SIGNATURE_TYPE_WITHX509, LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(profile->response) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Error building response");
 		return -1;

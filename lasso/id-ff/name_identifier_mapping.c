@@ -285,7 +285,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	mapping->targetNameIdentifier = g_strdup(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
 			profile->request)->NameIdentifier->content);
 
-	return 0;
+	return rc;
 }
 
 gint

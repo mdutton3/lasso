@@ -307,7 +307,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	LassoProvider *idp;
 	LassoSamlpResponse *response;
 	char *status_value;
-	int ret;
+	int ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -353,7 +353,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_ERROR_UNDEFINED;
 	}
 
-	return 0;
+	return ret;
 }
 
 /*****************************************************************************/

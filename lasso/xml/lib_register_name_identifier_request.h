@@ -76,10 +76,11 @@ struct _LassoLibRegisterNameIdentifierRequestClass {
 LASSO_EXPORT GType lasso_lib_register_name_identifier_request_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_request_new(void);
 LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_request_new_full(
-		char *providerID,
+		const char *providerID,
 		LassoSamlNameIdentifier *idpNameIdentifier,
 		LassoSamlNameIdentifier *spNameIdentifier,
-		LassoSamlNameIdentifier *oldNameIdentifier);
+		LassoSamlNameIdentifier *oldNameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }
