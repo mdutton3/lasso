@@ -102,6 +102,7 @@ Single Logout Profile
 =====================
 
 ::
+
   LassoLogout *logout;
 
   logout = lasso_logout_new(lassoServer, lassoProviderTypeSp);
