@@ -37,6 +37,11 @@
 
 static GObjectClass *parent_class = NULL;
 
+struct _LassoLoginPrivate
+{
+  gboolean dispose_has_run;
+};
+
 /*****************************************************************************/
 /* functions                                                                 */
 /*****************************************************************************/
@@ -851,12 +856,29 @@ lasso_login_process_response_msg(LassoLogin  *login,
 /*****************************************************************************/
 
 static void
+lasso_login_dispose(LassoLogin *login)
+{
+  if (login->private->dispose_has_run) {
+    return;
+  }
+  login->private->dispose_has_run = TRUE;
+
+  debug("ProfileContext object 0x%x disposed ...\n", login);
+
+  /* unref reference counted objects */
+
+  parent_class->dispose(G_OBJECT(login));
+}
+
+static void
 lasso_login_finalize(LassoLogin *login)
 {  
   debug("Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
   g_free(login->response_dump);
+
+  g_free (login->private);
 
   parent_class->finalize(G_OBJECT(login));
 }
@@ -866,8 +888,14 @@ lasso_login_finalize(LassoLogin *login)
 /*****************************************************************************/
 
 static void
-lasso_login_instance_init(LassoLogin *login)
+lasso_login_instance_init(GTypeInstance   *instance,
+			  gpointer         g_class)
 {
+  LassoLogin *login = LASSO_LOGIN(instance);
+
+  login->private = g_new (LassoLoginPrivate, 1);
+  login->private->dispose_has_run = FALSE;
+
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
   login->response_dump     = NULL;
@@ -880,6 +908,7 @@ lasso_login_class_init(LassoLoginClass *class)
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_login_dispose;
   gobject_class->finalize = (void *)lasso_login_finalize;
 }
 

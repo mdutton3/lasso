@@ -47,6 +47,7 @@ extern "C" {
 
 typedef struct _LassoLogin LassoLogin;
 typedef struct _LassoLoginClass LassoLoginClass;
+typedef struct _LassoLoginPrivate LassoLoginPrivate;
 
 typedef enum {
   lassoLoginProtocolProfileBrwsArt = 1,
@@ -61,6 +62,7 @@ struct _LassoLogin {
   gchar                      *assertionArtifact;
   gchar                      *response_dump;
   /*< private >*/
+  LassoLoginPrivate *private;
 };
 
 struct _LassoLoginClass {

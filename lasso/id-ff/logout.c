@@ -27,6 +27,11 @@
 
 static GObjectClass *parent_class = NULL;
 
+struct _LassoLogoutPrivate
+{
+  gboolean dispose_has_run;
+};
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -489,9 +494,30 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
 /*****************************************************************************/
 
 static void
+lasso_logout_dispose(LassoLogout *logout)
+{
+  if (logout->private->dispose_has_run) {
+    return;
+  }
+  logout->private->dispose_has_run = TRUE;
+
+  debug("ProfileContext object 0x%x disposed ...\n", logout);
+
+  /* unref reference counted objects */
+  lasso_node_destroy(logout->first_request);
+  lasso_node_destroy(logout->first_response);
+
+  parent_class->dispose(G_OBJECT(logout));
+}
+
+static void
 lasso_logout_finalize(LassoLogout *logout)
 {  
   debug("Logout object 0x%x finalized ...\n", logout);
+
+  g_free(logout->first_remote_providerID);
+
+  g_free(logout->private);
 
   parent_class->finalize(G_OBJECT(logout));
 }
@@ -501,8 +527,14 @@ lasso_logout_finalize(LassoLogout *logout)
 /*****************************************************************************/
 
 static void
-lasso_logout_instance_init(LassoLogout *logout)
+lasso_logout_instance_init(GTypeInstance   *instance,
+			   gpointer         g_class)
 {
+  LassoLogout *logout = LASSO_LOGOUT(instance);
+
+  logout->private = g_new (LassoLogoutPrivate, 1);
+  logout->private->dispose_has_run = FALSE;
+
   logout->first_request = NULL;
   logout->first_response = NULL;
   logout->first_remote_providerID = NULL;
@@ -515,6 +547,7 @@ lasso_logout_class_init(LassoLogoutClass *class)
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_logout_dispose;
   gobject_class->finalize = (void *)lasso_logout_finalize;
 }
 

@@ -44,6 +44,7 @@ extern "C" {
 
 typedef struct _LassoLogout LassoLogout;
 typedef struct _LassoLogoutClass LassoLogoutClass;
+typedef struct _LassoLogoutPrivate LassoLogoutPrivate;
 
 struct _LassoLogout {
   LassoProfileContext parent;
@@ -54,6 +55,7 @@ struct _LassoLogout {
   gchar     *first_remote_providerID;
 
   /*< private >*/
+  LassoLogoutPrivate *private;
 };
 
 struct _LassoLogoutClass {
