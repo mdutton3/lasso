@@ -67,7 +67,7 @@ struct _LassoDstModifyResponseClass {
 
 LASSO_EXPORT GType lasso_dst_modify_response_get_type(void);
 
-LASSO_EXPORT LassoDstModifyResponse* lasso_dst_modify_response_new(void);
+LASSO_EXPORT LassoDstModifyResponse* lasso_dst_modify_response_new(LassoUtilityStatus *status);
 
 #ifdef __cplusplus
 }

@@ -58,6 +58,24 @@ lasso_personal_profile_service_add_data(LassoPersonalProfileService *pp, LassoNo
 	return 0;
 }
 
+LassoDstModification*
+lasso_personal_profile_service_add_modification(LassoPersonalProfileService *pp, const char *select)
+{
+	LassoWsfProfile *profile;
+	LassoDstModification *modification;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
+	g_return_val_if_fail(select != NULL, NULL);
+
+	profile = LASSO_WSF_PROFILE(pp);
+
+	modification = lasso_dst_modification_new(select);
+	LASSO_DST_MODIFY(profile->request)->Modification = g_list_append(
+		LASSO_DST_MODIFY(profile->request)->Modification, (gpointer)modification);
+
+	return modification;
+}
+
 LassoDstQueryItem*
 lasso_personal_profile_service_add_query_item(LassoPersonalProfileService *pp, const char *select)
 {
@@ -76,16 +94,54 @@ lasso_personal_profile_service_add_query_item(LassoPersonalProfileService *pp, c
 	return query_item;
 }
 
+LassoDstModification*
+lasso_personal_profile_service_init_modify(LassoPersonalProfileService *pp,
+					   LassoDiscoResourceOffering *resourceOffering,
+					   LassoDiscoDescription *description,
+					   const char *select)
+{
+	LassoDstModification *modification;
+	LassoWsfProfile *profile;
+	LassoAbstractService *service;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
+	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
+
+	profile = LASSO_WSF_PROFILE(pp);
+
+	/* init Modify */
+	modification = lasso_dst_modification_new(select);
+	profile->request = LASSO_NODE(lasso_dst_modify_new(modification));
+
+	/* get ResourceID / EncryptedResourceID */
+	if (resourceOffering->ResourceID != NULL) {
+		LASSO_DST_MODIFY(profile->request)->ResourceID = resourceOffering->ResourceID;
+	}
+	else {
+	  LASSO_DST_MODIFY(profile->request)->EncryptedResourceID = \
+		  resourceOffering->EncryptedResourceID;
+	}
+	
+	/* set msg_url */
+	/* TODO : implement WSDLRef */
+	if (description->Endpoint) {
+		profile->msg_url = g_strdup(description->Endpoint);
+	}
+
+	return modification;
+}
+
 LassoDstQueryItem*
 lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
 					  LassoDiscoResourceOffering *resourceOffering,
 					  LassoDiscoDescription *description,
 					  const char *select)
 {
+	GList *l_desc;
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
 	LassoAbstractService *service;
-	GList *l_desc;
 
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
@@ -112,10 +168,6 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
 	
 	/* set msg_url */
 	/* TODO : implement WSDLRef */
-	l_desc = resourceOffering->ServiceInstance->Description;
-	while (l_desc != NULL) {
-		l_desc = l_desc->next;
-	}
 	if (description->Endpoint) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	}
@@ -124,8 +176,46 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
 }
 
 gint
-lasso_personal_profile_service_process_request_msg(LassoPersonalProfileService *pp,
-						   const char *query_soap_msg)
+lasso_personal_profile_service_process_modify_msg(LassoPersonalProfileService *pp,
+						  const char *modify_soap_msg)
+{
+	LassoDstModify *modify;
+	LassoDstModification *modification;
+	LassoDstModifyResponse *modification_response;
+	LassoWsfProfile *profile;
+	LassoUtilityStatus *status;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
+	g_return_val_if_fail(modify_soap_msg != NULL, -1);
+
+	profile = LASSO_WSF_PROFILE(pp);
+
+	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
+	lasso_node_init_from_message(LASSO_NODE(modify), modify_soap_msg);
+
+	/* get ResourceIDGroup */
+	if (modify->ResourceID) {
+		LASSO_ABSTRACT_SERVICE(pp)->ResourceID = modify->ResourceID;
+	}
+	else {
+		LASSO_ABSTRACT_SERVICE(pp)->EncryptedResourceID = modify->EncryptedResourceID;
+	}
+
+	/* get QueryItems */
+	LASSO_ABSTRACT_SERVICE(pp)->modification = modify->Modification;
+
+	/* init QueryResponse */
+	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
+	LASSO_WSF_PROFILE(pp)->response = LASSO_NODE(lasso_dst_modify_response_new(status));
+	LASSO_DST_MODIFY_RESPONSE(profile->response)->prefixServiceType = LASSO_PP_PREFIX;
+	LASSO_DST_MODIFY_RESPONSE(profile->response)->hrefServiceType = LASSO_PP_HREF;
+
+	return 0;
+}
+
+gint
+lasso_personal_profile_service_process_query_msg(LassoPersonalProfileService *pp,
+						 const char *query_soap_msg)
 {
 	LassoDstQuery *query;
 	LassoDstQueryItem *query_item;
@@ -162,8 +252,8 @@ lasso_personal_profile_service_process_request_msg(LassoPersonalProfileService *
 }
 
 gint
-lasso_personal_profile_service_process_response_msg(LassoPersonalProfileService *pp,
-						    const char *query_response_soap_msg)
+lasso_personal_profile_service_process_query_response_msg(LassoPersonalProfileService *pp,
+							  const char *query_response_soap_msg)
 {
 	LassoDstQueryResponse *query_response;
 	GList *Data;
@@ -177,6 +267,24 @@ lasso_personal_profile_service_process_response_msg(LassoPersonalProfileService 
 	LASSO_WSF_PROFILE(pp)->response = LASSO_NODE(query_response);
 
 	LASSO_ABSTRACT_SERVICE(pp)->data = query_response->Data;
+
+	return 0;
+}
+
+gint
+lasso_personal_profile_service_process_modify_response_msg(LassoPersonalProfileService *pp,
+							   const char *modify_response_soap_msg)
+{
+	LassoDstModifyResponse *modify_response;
+	GList *Data;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
+	g_return_val_if_fail(modify_response_soap_msg != NULL, -1);
+
+	modify_response = g_object_new(LASSO_TYPE_DST_MODIFY_RESPONSE, NULL);
+	lasso_node_init_from_message(LASSO_NODE(modify_response), modify_response_soap_msg);
+
+	LASSO_WSF_PROFILE(pp)->response = LASSO_NODE(modify_response);
 
 	return 0;
 }

@@ -64,7 +64,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModify, ResourceID) },
 	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModify,
 							       EncryptedResourceID) },
-	{ "Modification", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModify,
+	{ "Modification", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstModify,
 							Modification) },
 	/* FIXME : implement Extension element */
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModify, id) },
@@ -155,11 +155,15 @@ lasso_dst_modify_get_type()
 }
 
 LassoDstModify*
-lasso_dst_modify_new()
+lasso_dst_modify_new(LassoDstModification *modification)
 {
 	LassoDstModify *modify;
 
+	g_return_val_if_fail(LASSO_IS_DST_MODIFICATION(modification) == TRUE, NULL);
+
 	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
+
+	modify->Modification = g_list_append(modify->Modification, modification);
 
 	return modify;
 }

@@ -61,8 +61,11 @@ struct _LassoAbstractService {
 	/* Data being used when processing a query response message */
 	GList *data;
 	
-	/* QueryItem being used when processing a query request message */
+	/* QueryItems being used when processing a query request message */
 	GList *queryItem;
+
+	/* Modifications being used when processing a modify request message */
+	GList *modification;
 
 };
 

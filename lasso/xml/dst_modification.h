@@ -52,7 +52,7 @@ struct _LassoDstModification {
 	LassoNode parent;
 
 	char *Select;
-	LassoDstNewData *NewData;
+	GList *NewData;
 
 	char *id;
 	char *notChangedSince;

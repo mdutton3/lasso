@@ -53,7 +53,7 @@ struct _LassoDstModify {
 
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
-	LassoDstModification *Modification;
+	GList *Modification;
 	/* FIXME : implement Extension element */
 
 	char *id;
@@ -69,7 +69,7 @@ struct _LassoDstModifyClass {
 
 LASSO_EXPORT GType lasso_dst_modify_get_type(void);
 
-LASSO_EXPORT LassoDstModify* lasso_dst_modify_new(void);
+LASSO_EXPORT LassoDstModify* lasso_dst_modify_new(LassoDstModification *modification);
 
 #ifdef __cplusplus
 }

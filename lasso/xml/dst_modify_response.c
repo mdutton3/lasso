@@ -136,11 +136,15 @@ lasso_dst_modify_response_get_type()
 }
 
 LassoDstModifyResponse*
-lasso_dst_modify_response_new()
+lasso_dst_modify_response_new(LassoUtilityStatus *status)
 {
 	LassoDstModifyResponse *modify_response;
 
+	g_return_val_if_fail(LASSO_IS_UTILITY_STATUS(status) == TRUE, NULL);
+
 	modify_response = g_object_new(LASSO_TYPE_DST_MODIFY_RESPONSE, NULL);
+
+	modify_response->Status = status;
 
 	return modify_response;
 }
