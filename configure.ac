@@ -161,7 +161,7 @@ dnl find glib
 dnl ==========================================================================
 if test "$GLIB_FOUND" = "no"; then
     GLIB_MIN_VERSION="2.2.3"
-    GLIB_CONFIG="glib-config --prefix=/usr/local"
+    GLIB_CONFIG="glib-config"
     GLIB_CFLAGS=""
     GLIB_LIBS=""
     AC_ARG_WITH(glib, [  --with-glib=[PFX]       glib location])
@@ -205,7 +205,7 @@ dnl find libxml
 dnl ==========================================================================
 if test "z$LIBXML_FOUND" = "zno" ; then
     LIBXML_MIN_VERSION="2.4.2"
-    LIBXML_CONFIG="xml2-config --prefix=/usr/local"
+    LIBXML_CONFIG="xml2-config"
     LIBXML_CFLAGS=""
     LIBXML_LIBS=""
     AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
@@ -256,7 +256,7 @@ dnl ==========================================================================
 LASSO_NO_LIBXSLT="1"
 if test "z$LIBXSLT_FOUND" = "zno" ; then
     LIBXSLT_MIN_VERSION=1.0.20
-    LIBXSLT_CONFIG="xslt-config --prefix=/usr/local"
+    LIBXSLT_CONFIG="xslt-config"
     LIBXSLT_CFLAGS=""
     LIBXSLT_LIBS=""
     AC_ARG_WITH(libxslt, [  --with-libxslt=[PFX]      libxslt location])
