@@ -607,7 +607,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 	xmlNode *xmlnode;
 	xmlNs *ns;
-	GList *list_ns = NULL, *t;
+	GList *list_ns = NULL, *list_classes = NULL, *t;
 
 	if (class->node_data == NULL)
 		return NULL;
@@ -616,8 +616,15 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		if (class->node_data->ns)
 			list_ns = g_list_append(list_ns, class->node_data->ns);
-		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
+		list_classes = g_list_append(list_classes, class);
 		class = g_type_class_peek_parent(class);
+	}
+
+	t = g_list_last(list_classes);
+	while (t) {
+		class = t->data;
+		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
+		t = g_list_previous(t);
 	}
 
 	t = g_list_first(list_ns);
