@@ -38,7 +38,7 @@ _initialized = False
 
 
 class Error(Exception):
-    code = None # Use negative error codes for binding specific errors.
+    code = None # Use positive error codes for binding specific errors.
     functionName = None
 
     def __init__(self, functionName):
@@ -58,17 +58,17 @@ class ErrorUnknown(Error):
 
 
 class ErrorLassoAlreadyInitialized(Error):
-    code = -1
+    code = 1
     msg = 'Lasso already initialized'
 
 
 class ErrorLassoNotInitialized(Error):
-    code = -2
+    code = 2
     msg = 'Lasso not initialized or already shotdown'
 
     
 class ErrorInstanceCreationFailed(Error):
-    code = -3
+    code = 3
 
     def __str__(self, functionName):
         return 'Instance creation failed in Lasso function %s()' % self.functionName
