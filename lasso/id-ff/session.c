@@ -423,7 +423,8 @@ lasso_session_new_from_dump(gchar *dump)
 						      &err);
 	if (remote_providerID != NULL) {
 	  assertion = lasso_node_get_child(assertion_node,
-					   "Assertion", lassoLibHRef,
+					   "Assertion",
+					   NULL, /* lassoLibHRef, FIXME changed for SourceID */
 					   &err);
 	  if (assertion != NULL) {
 	    lasso_session_add_assertion(session, remote_providerID, assertion);
