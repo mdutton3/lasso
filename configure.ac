@@ -37,6 +37,7 @@ dnl Perform host specific configuration
 dnl ==========================================================================
 NULL=
 MINGW=0
+DARWIN=0
 dnl For java sun environment automagic include subdir guessing. (dirty ? No...)
 SUN_EXTRA_INCLUDE=
 case "${host}" in
@@ -80,6 +81,9 @@ dnl         fi
         ;;
     *linux*)
         SUN_EXTRA_INCLUDE="linux"
+        ;;
+    *Darwin*)
+        DARWIN=1
         ;;
 esac
 
@@ -619,9 +623,9 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-dnl Temporaly
+dnl Dirty system often means dirty hacks...
 AM_CONDITIONAL(MINGW, test $MINGW == 1)
-AM_CONDITIONAL(WITH_PYTHON, test 1 -eq 0)
+AM_CONDITIONAL(DARWIN, test $DARWIN == 1)
 
 
 dnl ==========================================================================

@@ -7,8 +7,11 @@ python_LTLIBRARIES = _lasso.la
 _lasso_la_SOURCES = lasso_wrap.c
 _lasso_la_CFLAGS = $(LASSO_CFLAGS) -DSWIG_COBJECT_TYPES $(PY_CFLAGS)
 _lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
+if DARWIN
+_lasso_la_LDFLAGS = -no-undefined -module -avoid-version -Wl,-F. -Wl,-F. -bundle -framework Python 
+else
 _lasso_la_LDFLAGS = -no-undefined -module -avoid-version
-
+endif
 lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i
 	$(SWIG) -v -python -module lasso -o lasso_wrap.c $<
 
