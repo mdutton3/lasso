@@ -196,12 +196,33 @@ lasso_lib_federation_termination_notification_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_federation_termination_notification_new:
+ *
+ * Creates a new #LassoLibFederationTerminationNotification object.
+ *
+ * Return value: a newly created #LassoLibFederationTerminationNotification
+ *     object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_federation_termination_notification_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, NULL);
 }
 
+
+/**
+ * lasso_lib_federation_termination_notification_new_full:
+ * @providerID: the provider ID doing the notification
+ * @nameIdentifier: the name identifier for the federation to terminate.
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibFederationTerminationNotification object.
+ *
+ * Return value: a newly created #LassoLibFederationTerminationNotification
+ *     object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_federation_termination_notification_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier,

@@ -103,13 +103,12 @@ lasso_saml_conditions_get_type()
 /**
  * lasso_saml_conditions_new:
  * 
- * Creates a new saml:Conditions node object.
+ * Creates a new #LassoSamlConditions object.
  *
- * Return value: the new @LassoSamlConditions
+ * Return value: a newly created #LassoSamlConditions object
  **/
 LassoSamlConditions*
 lasso_saml_conditions_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_CONDITIONS, NULL);
 }
-

@@ -101,12 +101,11 @@ lasso_saml_subject_get_type()
 /**
  * lasso_saml_subject_new:
  * 
- * Creates a new saml:Subject node object.
+ * Creates a new #LassoSamlSubject object.
  *
- * Return value: the new @LassoSamlSubject
+ * Return value: a newly created #LassoSamlSubject object
  **/
 LassoNode* lasso_saml_subject_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_SUBJECT, NULL);
 }
-

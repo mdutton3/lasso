@@ -81,13 +81,12 @@ lasso_saml_subject_statement_get_type()
 /**
  * lasso_saml_subject_statement_new:
  * 
- * Creates a new saml:SubjectStatement node object.
+ * Creates a new #LassoSamlSubjectStatement object.
  * 
- * Return value: the new @LassoSamlSubjectStatement
+ * Return value: a newly created #LassoSamlSubjectStatement object
  **/
 LassoNode*
 lasso_saml_subject_statement_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT, NULL);
 }
-

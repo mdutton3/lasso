@@ -113,6 +113,16 @@ lasso_lib_authn_response_get_type()
 	return authn_response_type;
 }
 
+
+/**
+ * lasso_lib_authn_response_new:
+ * @providerID: the identity provider ID
+ * @request: the #LassoLibAuthnRequest it is a response to
+ *
+ * Creates a new #LassoLibAuthnResponse object.
+ *
+ * Return value: a newly created #LassoLibAuthnResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 {
@@ -131,4 +141,3 @@ lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 
 	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
-

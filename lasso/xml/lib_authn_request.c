@@ -211,9 +211,15 @@ lasso_lib_authn_request_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_authn_request_new:
+ *
+ * Creates a new #LassoLibAuthnRequest object.
+ *
+ * Return value: a newly created #LassoLibAuthnRequest object
+ **/
 LassoLibAuthnRequest*
 lasso_lib_authn_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST, NULL);
 }
-

@@ -105,12 +105,32 @@ lasso_lib_authentication_statement_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_authentication_statement_new:
+ *
+ * Creates a new #LassoLibAuthenticationStatement object.
+ *
+ * Return value: a newly created #LassoLibAuthenticationStatement object
+ **/
 LassoLibAuthenticationStatement*
 lasso_lib_authentication_statement_new(void)
 {
 	return g_object_new(LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, NULL);
 }
 
+/**
+ * lasso_lib_authentication_statement_new_full:
+ * @authenticationMethod:
+ * @authenticationInstant: AuthenticationInstant (NULL to get current time)
+ * @reauthenticateOnOrAfter:
+ * @sp_identifier:
+ * @idp_identifier:
+ *
+ * Creates a new #LassoLibAuthenticationStatement object and initializes it
+ * with the parameters.
+ *
+ * Return value: a newly created #LassoLibAuthenticationStatement object
+ **/
 LassoLibAuthenticationStatement*
 lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 		const char *authenticationInstant,

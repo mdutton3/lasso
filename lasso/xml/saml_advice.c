@@ -104,13 +104,12 @@ lasso_saml_advice_get_type()
 /**
  * lasso_saml_advice_new:
  * 
- * Creates a new saml:Advice node object.
+ * Creates a new #LassoSamlAdvice object.
  *
- * Return value: the new #LassoSamlAdvice
+ * Return value: a newly created #LassoSamlAdvice
  **/
 LassoNode*
 lasso_saml_advice_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ADVICE, NULL);
 }
-

@@ -96,13 +96,12 @@ lasso_saml_attribute_designator_get_type()
 /**
  * lasso_saml_attribute_designator_new:
  * 
- * Creates a new saml:AttributeDesignator node object.
+ * Creates a new #LassoSamlAttributeDesignator object.
  * 
- * Return value: the new @LassoSamlAttributeDesignator
+ * Return value: a newly created #LassoSamlAttributeDesignator object
  **/
 LassoNode*
 lasso_saml_attribute_designator_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ATTRIBUTE_DESIGNATOR, NULL);
 }
-

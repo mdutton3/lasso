@@ -100,9 +100,9 @@ lasso_lib_idp_entry_get_type()
 /**
  * lasso_lib_idp_entry_new:
  *
- * Creates a new lib:IDPEntry node object.
+ * Creates a new #LassoLibIDPEntry object.
  * 
- * Return value: the new @LassoLibIDPEntry
+ * Return value: a newly created @LassoLibIDPEntry object
  **/
 LassoNode*
 lasso_lib_idp_entry_new()

@@ -110,8 +110,14 @@ lasso_lib_authn_context_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_authn_context_new:
+ *
+ * Creates a new #LassoLibAuthnContext object.
+ *
+ * Return value: a newly created #LassoLibAuthnContext object
+ **/
 LassoNode*
 lasso_lib_authn_context_new() {
 	return g_object_new(LASSO_TYPE_LIB_AUTHN_CONTEXT, NULL);
 }
-

@@ -102,9 +102,9 @@ lasso_saml_name_identifier_get_type()
 /**
  * lasso_saml_name_identifier_new:
  * 
- * Creates a new saml:NameIdentifier node object.
+ * Creates a new #LassoSamlNameIdentifier object.
  * 
- * Return value: the new @LassoSamlNameIdentifier
+ * Return value: a newly created #LassoSamlNameIdentifier object
  **/
 LassoSamlNameIdentifier*
 lasso_saml_name_identifier_new()
@@ -122,4 +122,3 @@ lasso_saml_name_identifier_new_from_xmlNode(xmlNode *xmlnode)
 	lasso_node_init_from_xml(node, xmlnode);
 	return LASSO_SAML_NAME_IDENTIFIER(node);
 }
-

@@ -86,6 +86,17 @@ lasso_lib_authn_response_envelope_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_authn_response_envelope_new_full:
+ * @authnResponse: the #LassoLibAuthnResponse to envelop
+ * @assertionConsumerServiceURL: assertion consumer service URL on the service
+ *      provider
+ *
+ * Creates a new #LassoLibAuthnResponseEnvelope object and initializes it with
+ * the parameters.
+ *
+ * Return value: a newly created #LassoLibAuthnResponseEnvelope object
+ **/
 LassoLibAuthnResponseEnvelope*
 lasso_lib_authn_response_envelope_new(LassoLibAuthnResponse *response,
 		char *assertionConsumerServiceURL)
@@ -100,4 +111,3 @@ lasso_lib_authn_response_envelope_new(LassoLibAuthnResponse *response,
 
 	return envelope;
 }
-

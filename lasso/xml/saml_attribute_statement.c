@@ -99,13 +99,12 @@ lasso_saml_attribute_statement_get_type()
 /**
  * lasso_saml_attribute_statement_new:
  * 
- * Creates a new saml:AttributeStatement node object.
+ * Creates a new #LassoSamlAttributeStatement object.
  * 
- * Return value: the new @LassoSamlAttributeStatement
+ * Return value: a newly created #LassoSamlAttributeStatement object
  **/
 LassoNode*
 lasso_saml_attribute_statement_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ATTRIBUTE_STATEMENT, NULL);
 }
-

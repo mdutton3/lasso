@@ -100,9 +100,9 @@ lasso_saml_subject_confirmation_get_type()
 /**
  * lasso_saml_subject_confirmation_new:
  * 
- * Creates a new saml:SubjectConfirmation node object.
+ * Creates a new #LassoSamlSubjectConfirmation object.
  * 
- * Return value: the new @LassoSamlSubjectConfirmation
+ * Return value: a newly created #LassoSamlSubjectConfirmation object
  **/
 LassoSamlSubjectConfirmation*
 lasso_saml_subject_confirmation_new()

@@ -202,13 +202,12 @@ lasso_saml_assertion_get_type()
 /**
  * lasso_saml_assertion_new:
  * 
- * Creates a new saml:Assertion node object.
+ * Creates a new #LassoSamlAssertion object.
  * 
- * Return value: the new @LassoSamlAssertion
+ * Return value: a newly created #LassoSamlAssertion object
  **/
 LassoSamlAssertion*
 lasso_saml_assertion_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ASSERTION, NULL);
 }
-

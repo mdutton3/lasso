@@ -100,13 +100,12 @@ lasso_saml_audience_restriction_condition_get_type()
 /**
  * lasso_saml_audience_restriction_condition_new:
  * 
- * Creates a new saml:AudienceRestrictionCondition node object.
+ * Creates a new #LassoSamlAudienceRestrictionCondition object.
  * 
- * Return value: the new @LassoSamlAudienceRestrictionCondition
+ * Return value: a newly created #LassoSamlAudienceRestrictionCondition
  **/
 LassoSamlAudienceRestrictionCondition*
 lasso_saml_audience_restriction_condition_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, NULL);
 }
-

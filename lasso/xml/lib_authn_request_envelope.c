@@ -135,12 +135,33 @@ lasso_lib_authn_request_envelope_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_lib_authn_request_envelope_new:
+ *
+ * Creates a new #LassoLibAuthnRequestEnvelope object.
+ *
+ * Return value: a newly created #LassoLibAuthnRequestEnvelope object
+ **/
 LassoLibAuthnRequestEnvelope*
 lasso_lib_authn_request_envelope_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE, NULL);
 }
 
+
+/**
+ * lasso_lib_authn_request_envelope_new_full:
+ * @authnRequest: the #LassoLibAuthnRequest to envelop
+ * @providerID: service provider ID
+ * @assertionConsumerServiceURL: assertion consumer service URL on the service
+ *      provider
+ *
+ * Creates a new #LassoLibAuthnRequestEnvelope object and initializes it with
+ * the parameters.
+ *
+ * Return value: a newly created #LassoLibAuthnRequestEnvelope object
+ **/
 LassoLibAuthnRequestEnvelope*
 lasso_lib_authn_request_envelope_new_full(LassoLibAuthnRequest *authnRequest,
 		char *providerID, char *assertionConsumerServiceURL)
@@ -154,4 +175,3 @@ lasso_lib_authn_request_envelope_new_full(LassoLibAuthnRequest *authnRequest,
 
 	return request;
 }
-

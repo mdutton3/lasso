@@ -152,8 +152,14 @@ lasso_lib_status_response_get_type()
 	return status_response_type;
 }
 
+/**
+ * lasso_lib_status_response_new:
+ *
+ * Creates a new #LassoLibStatusResponse object.
+ *
+ * Return value: a newly created #LassoLibStatusResponse object
+ **/
 LassoNode* lasso_lib_status_response_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_STATUS_RESPONSE, NULL);
 }
-

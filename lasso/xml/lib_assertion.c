@@ -105,12 +105,32 @@ lasso_lib_assertion_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_assertion_new:
+ *
+ * Creates a new #LassoLibAssertion object.
+ *
+ * Return value: a newly created #LassoLibAssertion object
+ **/
 LassoLibAssertion*
 lasso_lib_assertion_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_ASSERTION, NULL);
 }
 
+/**
+ * lasso_lib_assertion_new_full:
+ * @issuer:
+ * @requestID:
+ * @audience:
+ * @notBefore:
+ * @notOnOrAfter:
+ *
+ * Creates a new #LassoLibAssertion object and initializes it with the
+ * parameters.
+ *
+ * Return value: a newly created #LassoLibAssertion object
+ **/
 LassoLibAssertion*
 lasso_lib_assertion_new_full(const char *issuer, const char *requestID,
 		const char *audience, const char *notBefore, const char *notOnOrAfter)
@@ -140,4 +160,3 @@ lasso_lib_assertion_new_full(const char *issuer, const char *requestID,
 
 	return LASSO_LIB_ASSERTION(assertion);
 }
-

@@ -95,9 +95,15 @@ lasso_lib_subject_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_subject_new:
+ *
+ * Creates a new #LassoLibSubject object.
+ *
+ * Return value: a newly created #LassoLibSubject object
+ **/
 LassoLibSubject*
 lasso_lib_subject_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_SUBJECT, NULL);
 }
-

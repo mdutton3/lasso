@@ -100,13 +100,12 @@ lasso_saml_authority_binding_get_type()
 /**
  * lasso_saml_authority_binding_new:
  * 
- * Creates a new saml:AuthorityBinding node object.
+ * Creates a new #LassoSamlAuthorityBinding object.
  * 
- * Return value: the new @LassoSamlAuthorityBinding
+ * Return value: a newly created #LassoSamlAuthorityBinding object
  **/
 LassoNode*
 lasso_saml_authority_binding_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_AUTHORITY_BINDING, NULL);
 }
-

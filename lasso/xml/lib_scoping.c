@@ -98,13 +98,12 @@ lasso_lib_scoping_get_type()
 /**
  * lasso_lib_scoping_new:
  *
- * Creates a new lib:Scoping node object.
+ * Creates a new #LassoLibScoping object.
  *
- * Return value: a new #LassoLibScoping
+ * Return value: a newly created #LassoLibScoping object
  **/
 LassoLibScoping*
 lasso_lib_scoping_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_SCOPING, NULL);
 }
-
