@@ -32,36 +32,6 @@ static GObjectClass *parent_class = NULL;
 /* public methods                                                            */
 /*****************************************************************************/
 
-void
-lasso_authn_response_add_assertion(LassoAuthnResponse *response,
-				   LassoAssertion     *assertion,
-				   const xmlChar      *private_key_file,
-				   const xmlChar      *certificate_file)
-{
-  xmlDocPtr doc;
-  LassoNode *signature;
-
-  /* FIXME : Signature */
-  doc = xmlNewDoc("1.0"); // <---
-  xmlAddChild((xmlNodePtr)doc,
-  	      LASSO_NODE_GET_CLASS(assertion)->get_xmlNode(LASSO_NODE(assertion)));
-
-  signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
-  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
-				     LASSO_DS_SIGNATURE(signature)); 
-  lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
-			  private_key_file,
-			  certificate_file);
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(response),
-				     LASSO_LIB_ASSERTION(assertion));
-}
-
-void
-lasso_authn_response_get_requestID(LassoAuthnResponse *response)
-{
-
-}
-
 gboolean
 lasso_authn_response_must_authenticate(LassoAuthnResponse *response,
 				       gboolean            is_authenticated)
@@ -211,7 +181,7 @@ lasso_authn_response_class_init(LassoAuthnResponseClass *class)
   /* override parent classes methods */
   gobject_class->dispose  = (void *)lasso_authn_response_dispose;
   gobject_class->finalize = (void *)lasso_authn_response_finalize;
-  lasso_node_class->dump  = (xmlChar *)lasso_authn_response_dump;
+  lasso_node_class->dump  = lasso_authn_response_dump;
 }
 
 GType lasso_authn_response_get_type() {

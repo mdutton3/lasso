@@ -57,15 +57,15 @@ struct _LassoAuthnResponseClass {
 
 LASSO_EXPORT GType      lasso_authn_response_get_type                      (void);
 
+LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlChar *buffer);
+
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_request_query        (gchar         *query,
 									    const xmlChar *providerID);
 
-LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlChar *buffer);
-
-LASSO_EXPORT void       lasso_authn_response_add_assertion                 (LassoAuthnResponse *response,
-									    LassoAssertion     *assertion,
-									    const xmlChar      *private_key_file,
-									    const xmlChar      *certificate_file);
+/* LASSO_EXPORT void       lasso_authn_response_add_assertion                 (LassoAuthnResponse *response, */
+/* 									    LassoAssertion     *assertion, */
+/* 									    const xmlChar      *private_key_file, */
+/* 									    const xmlChar      *certificate_file); */
 
 LASSO_EXPORT gboolean   lasso_authn_response_must_authenticate             (LassoAuthnResponse *response,
 									    gboolean            is_authenticated);
