@@ -256,8 +256,7 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
 
 gint
 lasso_name_registration_init_request(LassoNameRegistration *name_registration,
-				     gchar                 *remote_providerID,
-				     lassoHttpMethod        request_method)
+				     gchar                 *remote_providerID)
 {
   LassoProfile    *profile;
   LassoNode       *nameIdentifier_node;
