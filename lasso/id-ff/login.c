@@ -1719,7 +1719,7 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		/* process federation */
 		ret = lasso_login_process_federation(login, is_consent_obtained);
-		if (ret < 0)
+		if (ret != 0)
 			return ret;
 	}
 
