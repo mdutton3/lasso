@@ -48,6 +48,8 @@ typedef struct _LassoNameIdentifierMappingClass LassoNameIdentifierMappingClass;
 struct _LassoNameIdentifierMapping {
   LassoProfile parent;
 
+  gchar *targetNameIdentifier;
+
   /*< private >*/
 };
 
@@ -58,8 +60,9 @@ struct _LassoNameIdentifierMappingClass {
 
 LASSO_EXPORT GType                       lasso_name_identifier_mapping_get_type             (void);
 
-LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new                  (LassoServer       *server);
- 
+LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new                  (LassoServer       *server,
+											     lassoProviderType  provider_type);
+
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_request_msg    (LassoNameIdentifierMapping *mapping);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_response_msg   (LassoNameIdentifierMapping *mapping);

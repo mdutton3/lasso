@@ -54,42 +54,60 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
   
   profile = LASSO_PROFILE(mapping);
 
-  /* get the prototocol profile of the name_identifier_mapping */
+  /* verify the provider type is a service provider type */
+  if (profile->provider_type != lassoProviderTypeSp) {
+    message(G_LOG_LEVEL_CRITICAL, "Build request msg method is forbidden for an IDP\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* get provider object */
   provider = lasso_server_get_provider_ref(profile->server,
 					   profile->remote_providerID,
 					   NULL);
-  if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
-    return -2;
+  if (provider == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
+    ret = -1;
+    goto done;
   }
 
+  /* get the prototocol profile of the name identifier mapping request */
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
 									    lassoProviderTypeIdp,
-									    &err);
-  if(err != NULL){
-    message(G_LOG_LEVEL_ERROR, err->message);
-    ret = err->code;
-    g_error_free(err);
-    return ret;
+									    NULL);
+  if (protocolProfile == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier mapping protocol profile not found\n");
+    ret = -1;
+    goto done;
   }
 
-  if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
-     xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
-    debug("building a soap request message\n");
-    profile->request_type = lassoHttpMethodSoap;
+  /* Build the name identifier mapping request message (SOAP or QUERY type) */
+  if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileNimSpHttp)) {
+    profile->msg_url = lasso_provider_get_soapEndpoint(provider,
+						       lassoProviderTypeIdp,
+						       NULL);
+    if (profile->msg_url == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Name identifier mapping url not found\n");
+      ret = -1;
+      goto done;
+    }
+
     profile->msg_body = lasso_node_export_to_soap(profile->request);
+    if (profile->msg_body == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Error while building name identifier mapping request SOAP message\n");
+      ret = -1;
+      goto done;
+    }
   }
-  else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
-	  xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    debug("building a http get request message\n");
-    profile->request_type = lassoHttpMethodRedirect;
-    profile->msg_url = lasso_node_export_to_query(profile->request,
-						  profile->server->signature_method,
-						  profile->server->private_key);
-    profile->msg_body = NULL;
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid protocol profile\n");
+    ret = -1;
+    goto done;
   }
 
-  return 0;
+  done:
+
+  return ret;
 }
 
 gint
@@ -105,40 +123,34 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 
   profile = LASSO_PROFILE(mapping);
 
-  provider = lasso_server_get_provider_ref(profile->server,
-					   profile->remote_providerID,
-					   NULL);
-  if(provider == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
-    return -2;
+  /* verify the provider type is a service provider type */
+  if (profile->provider_type != lassoProviderTypeIdp) {
+    message(G_LOG_LEVEL_CRITICAL, "Build request msg method is forbidden for an SP\n");
+    ret = -1;
+    goto done;
   }
 
-  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
-									    lassoProviderTypeSp,
-									    &err);
-  if(err != NULL) {
-    message(G_LOG_LEVEL_ERROR, err->message);
-    ret = err->code;
-    g_error_free(err);
-    return ret;
-  }
-
-  if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
-     xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
-    debug("building a soap response message\n");
+  /* build name identifier mapping response msg */
+  switch (profile->http_request_method) {
+  case lassoHttpMethodSoap:
+    profile->msg_url = NULL;
     profile->msg_body = lasso_node_export_to_soap(profile->response);
-  }
-  else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
-	  xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    debug("building a http get response message\n");
-    profile->response_type = lassoHttpMethodRedirect;
+    break;
+  case lassoHttpMethodRedirect:
     profile->msg_url = lasso_node_export_to_query(profile->response,
 						  profile->server->signature_method,
 						  profile->server->private_key);
-    profile->msg_body = NULL;
+    profile->msg_body = NULL;    
+    break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid http request method\n");
+    ret = -1;
+    goto done;
   }
 
-  return 0;
+  done:
+
+  return ret;
 }
 
 void
@@ -164,6 +176,13 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
   profile = LASSO_PROFILE(mapping);
 
+  /* verify the provider type is a service provider type */
+  if (profile->provider_type != lassoProviderTypeSp) {
+    message(G_LOG_LEVEL_CRITICAL, "Init request method is forbidden for an IDP\n");
+    ret = -1;
+    goto done;
+  }
+
   /* verify if the identity exists */
   if (profile->identity == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
@@ -183,26 +202,24 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
     ret = -1;
     goto done;
   }
-
+  
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if(federation == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Federation not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
     ret = -1;
     goto done;
   }
-
   /* get the name identifier */
   nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
   if(nameIdentifier == NULL) {
     nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
   }
-  if (nameIdentifier != NULL) {
+  if (nameIdentifier == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found\n");
     ret = -1;
     goto done;
   }
-
   lasso_federation_destroy(federation);
 
   /* get content and attributes of name identifier */
@@ -224,7 +241,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   }
 
   nameIdentifierMappingProtocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
-												 lassoProviderTypeSp,
+												 lassoProviderTypeIdp,
 												 NULL);
   if (nameIdentifierMappingProtocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier mapping protocol profile not found\n");
@@ -233,7 +250,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   }
 
   /* build the request */
-  if (xmlStrEqual(nameIdentifierMappingProtocolProfile, lassoLibProtocolProfileNimSpSoap)) {
+  if (xmlStrEqual(nameIdentifierMappingProtocolProfile, lassoLibProtocolProfileNimSpHttp)) {
     profile->request = lasso_name_identifier_mapping_request_new(profile->server->providerID,
 								 content,
 								 nameQualifier,
@@ -242,17 +259,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 								 lassoSignatureTypeWithX509,
 								 lassoSignatureMethodRsaSha1);
   }
-  else if (xmlStrEqual(nameIdentifierMappingProtocolProfile, lassoLibProtocolProfileNimSpHttp)) {
-    profile->request = lasso_name_identifier_mapping_request_new(profile->server->providerID,
-								 content,
-								 nameQualifier,
-								 format,
-								 targetNameSpace,
-								 lassoSignatureTypeNone,
-								 0);
-  }
   else {
-    message(G_LOG_LEVEL_CRITICAL, "Invalid federation termination notification protocol profile\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid name identifier mapping protocol profile\n");
     ret = -1;
     goto done;
   }
@@ -276,11 +284,15 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   gint             ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
-  g_return_val_if_fail(request_msg!=NULL, -1);
+  g_return_val_if_fail(request_msg != NULL, -1);
 
   profile = LASSO_PROFILE(mapping);
 
   switch(request_method){
+  case lassoHttpMethodRedirect:
+    ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
+    goto done;
+    break;
   case lassoHttpMethodSoap:
     profile->request = lasso_name_identifier_mapping_request_new_from_export(request_msg, lassoNodeExportTypeSoap);
     if (LASSO_IS_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
@@ -289,15 +301,8 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
       goto done;
     }
     break;
-  case lassoHttpMethodRedirect:
-    profile->request = lasso_name_identifier_mapping_request_new_from_export(request_msg, lassoNodeExportTypeQuery);
-    if (LASSO_IS_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
-      ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
-      goto done;
-    }
-    break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid request method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
     ret = -1;
     goto done;
   }
@@ -333,39 +338,57 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
   switch(response_method){
   case lassoHttpMethodSoap:
     profile->response = lasso_name_identifier_mapping_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
-  case lassoHttpMethodRedirect:
-    profile->response = lasso_name_identifier_mapping_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
+    break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid response method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
     ret = -1;
     goto done;
   }
- 
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
-  if (err == NULL) {
-    if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
-      ret = -1;
-      goto done;
-    }
-  }
-  else {
-    message(G_LOG_LEVEL_ERROR, err->message);
-    ret = err->code;
-    g_error_free(err);
+  if (LASSO_IS_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Error while building NameIdentifierMappingResponse message\n");
+    ret = -1;
     goto done;
   }
 
+  /* Verify the status code value */
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
+  if (statusCode == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Status code not found\n");
+    ret = -1;
+    goto done;
+  }
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
+  if (statusCodeValue == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Status code value not found\n");
+    ret = -1;
+    goto done;
+  }
+  if (xmlStrEqual(statusCodeValue, lassoLibStatusCodeFederationDoesNotExist)) {
+    message(G_LOG_LEVEL_CRITICAL, "Status code : Federation does not exists\n");
+    ret = -1;
+    goto done;
+  }
+  else if (xmlStrEqual(statusCodeValue, lassoLibStatusCodeUnknownPrincipal)) {
+    message(G_LOG_LEVEL_CRITICAL, "Status code : Unknown Principal\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* Set the target name identifier */
+  mapping->targetNameIdentifier = lasso_node_get_child_content(profile->response, "NameIdentifier", NULL, NULL);
+
   done:
 
-  return 0;
+  return ret;
 }
 
 gint
 lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mapping)
 {
-  LassoProfile    *profile;
-  LassoFederation *federation;
+  LassoProfile    *profile = NULL;
+  LassoFederation *federation = NULL;
+  LassoNode       *nameIdentifier = NULL, *targetNameIdentifier = NULL;
+  gchar           *remote_providerID = NULL, *targetNameSpace = NULL;
   gint             ret = 0;
   gint             remote_provider_type;
 
@@ -373,9 +396,36 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 
   profile = LASSO_PROFILE(mapping);
 
-  /* verify the name identifier mapping request */
+  /* verify the provider type is a service provider type */
+  if (profile->provider_type != lassoProviderTypeIdp) {
+    message(G_LOG_LEVEL_CRITICAL, "Build request msg method is forbidden for an SP\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* verify request attribute of mapping is a name identifier mapping request */
   if (LASSO_IS_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid NameIdentifierMappingRequest\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* set the name identifier mapping response object */
+  switch (profile->http_request_method) {
+    case lassoHttpMethodSoap:
+      profile->response = lasso_name_identifier_mapping_response_new(profile->server->providerID,
+								     (gchar *)lassoSamlStatusCodeSuccess,
+								     profile->request,
+								     lassoSignatureTypeWithX509,
+								     lassoSignatureMethodRsaSha1);
+      break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP request method\n");
+    ret = -1;
+    goto done;
+  }
+  if (LASSO_IS_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Error while building NameIdentifierMappingResponse\n");
     ret = -1;
     goto done;
   }
@@ -391,22 +441,71 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
     goto done;
   }
 
-  /* get the remote provider type */
-  if (profile->provider_type == lassoProviderTypeSp) {
-    remote_provider_type = lassoProviderTypeIdp;
-  }
-  else if (profile->provider_type == lassoProviderTypeIdp) {
-    remote_provider_type = lassoProviderTypeSp;
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "invalid provider type\n");
+  /* Verify identity attribute of mapping object */
+  if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
     ret = -1;
     goto done;
   }
 
+  /* verify federation of the SP request */
+  federation = lasso_identity_get_federation_ref(profile->identity, profile->remote_providerID);
+  if (LASSO_IS_FEDERATION(federation) == FALSE) {
+    lasso_name_identifier_mapping_response_set_status_code_value(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response),
+								 lassoLibStatusCodeUnknownPrincipal);
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
+    ret = -1;
+    goto done;
+  }
+  nameIdentifier = lasso_federation_get_remote_nameIdentifier(federation);
+  if (nameIdentifier == NULL) {
+    nameIdentifier = lasso_federation_get_local_nameIdentifier(federation);
+  }
+  if (nameIdentifier == NULL) {
+    lasso_name_identifier_mapping_response_set_status_code_value(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response),
+								 lassoLibStatusCodeUnknownPrincipal);
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier of federation not found\n");
+    ret = -1;
+    goto done;
+  }
+  lasso_node_destroy(nameIdentifier);
 
+  /* get the federation of the target name space and his name identifier */
+  targetNameSpace = lasso_node_get_child_content(profile->request, "TargetNameSpace", NULL, NULL);
+  if (targetNameSpace == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Target name space not found\n");
+    ret = -1;
+    goto done;
+  }
+  federation = lasso_identity_get_federation_ref(profile->identity, targetNameSpace);
+  if (LASSO_IS_FEDERATION(federation) == FALSE) {
+    lasso_name_identifier_mapping_response_set_status_code_value(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response),
+								 lassoLibStatusCodeFederationDoesNotExist);
+    message(G_LOG_LEVEL_CRITICAL, "Target name space federation not found\n");
+    ret = -1;
+    goto done;    
+  }
+  targetNameIdentifier = lasso_federation_get_remote_nameIdentifier(federation);
+  if (targetNameIdentifier == NULL) {
+    targetNameIdentifier = lasso_federation_get_local_nameIdentifier(federation);
+  }
+  if (targetNameIdentifier == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier for target name space federation not found\n");
+    lasso_name_identifier_mapping_response_set_status_code_value(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response),
+								 lassoLibStatusCodeFederationDoesNotExist);
+    ret = -1;
+    goto done;
+  }
+  lasso_lib_name_identifier_mapping_response_set_nameIdentifier(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response),
+								LASSO_SAML_NAME_IDENTIFIER(targetNameIdentifier));
 
   done:
+  if (nameIdentifier != NULL) {
+    lasso_node_destroy(nameIdentifier);
+  }
+  if (targetNameIdentifier != NULL) {
+    lasso_node_destroy(targetNameIdentifier);
+  }
 
   return ret;
 }
@@ -449,15 +548,18 @@ GType lasso_name_identifier_mapping_get_type() {
 }
 
 LassoNameIdentifierMapping *
-lasso_name_identifier_mapping_new(LassoServer       *server)
+lasso_name_identifier_mapping_new(LassoServer      *server,
+				  lassoProviderType provider_type)
 {
   LassoNameIdentifierMapping *mapping;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail((provider_type == lassoProviderTypeSp) || (provider_type == lassoProviderTypeIdp), NULL);
 
   /* set the name_identifier_mapping object */
   mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING,
 			 "server", lasso_server_copy(server),
+			 "provider_type", provider_type,
 			 NULL);
   return mapping;
 }
