@@ -42,7 +42,9 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   
   profile = LASSO_PROFILE(defederation);
 
-  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server,
+					   profile->remote_providerID,
+					   NULL);
   if (provider == NULL) {
     debug("Provider %s not found\n", profile->remote_providerID);
     ret = -1;

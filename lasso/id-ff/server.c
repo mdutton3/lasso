@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <lasso/xml/errors.h>
 #include <lasso/environs/server.h>
 
 #define LASSO_SERVER_NODE                  "Server"
@@ -137,15 +138,15 @@ lasso_server_dump(LassoServer *server)
   g_free(signature_method_str);
 
   /* providerID */
-  if (server->providerID) {
+  if (server->providerID != NULL) {
     server_class->set_prop(server_node, LASSO_SERVER_PROVIDERID_NODE, server->providerID);
   }
   /* private key */
-  if (server->private_key) {
+  if (server->private_key != NULL) {
     server_class->set_prop(server_node, LASSO_SERVER_PRIVATE_KEY_NODE, server->private_key);
   }
   /* certificate */
-  if (server->certificate) {
+  if (server->certificate != NULL) {
     server_class->set_prop(server_node, LASSO_SERVER_CERTIFICATE_NODE, server->certificate);
   }
   /* metadata */
@@ -156,11 +157,11 @@ lasso_server_dump(LassoServer *server)
     lasso_node_destroy(metadata_copy);
   }
   /* public key */
-  if (provider->public_key) {
+  if (provider->public_key != NULL) {
     server_class->set_prop(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
   }
   /* ca_certificate */
-  if (provider->ca_certificate) {
+  if (provider->ca_certificate != NULL) {
     server_class->set_prop(server_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
   }
   /* providers */
@@ -184,45 +185,76 @@ lasso_server_dump(LassoServer *server)
 }
 
 LassoProvider*
-lasso_server_get_provider(LassoServer *server,
-			  gchar       *providerID)
+lasso_server_get_provider(LassoServer  *server,
+			  gchar        *providerID,
+			  GError      **err)
 {
   LassoProvider *provider;
-  
-  provider = lasso_server_get_provider_ref(server, providerID);
+  GError *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  provider = lasso_server_get_provider_ref(server, providerID, &tmp_err);
 
   if (provider != NULL) {
     return (lasso_provider_copy(provider));
   }
   else {
-    return (NULL);
+    g_propagate_error (err, tmp_err);
   }
+
+  return (NULL);
 }
 
 LassoProvider*
-lasso_server_get_provider_ref(LassoServer *server,
-			      gchar       *providerID)
+lasso_server_get_provider_ref(LassoServer  *server,
+			      gchar        *providerID,
+			      GError      **err)
 {
   LassoProvider *provider;
   xmlChar *id;
   int index, len;
   
-  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(providerID != NULL, NULL);
-
-  /* debug(INFO, "Get information of provider id %s\n", providerID); */
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  if (LASSO_IS_SERVER(server) == FALSE) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
+		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
+    g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  }
+  if (providerID == NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_INVALID_VALUE,
+		lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
+    g_return_val_if_fail(providerID != NULL, NULL);
+  }
 
   len = server->providers->len;
   for (index = 0; index<len; index++) {
     provider = g_ptr_array_index(server->providers, index);
-    
-    id = lasso_provider_get_providerID(provider, NULL);
-    if (xmlStrEqual(providerID, id)) {
+
+    id = lasso_provider_get_providerID(provider);
+    if (id != NULL) {
+      if (xmlStrEqual(providerID, id)) {
+	xmlFree(id);
+	return(provider);
+      }
       xmlFree(id);
-      return(provider);
     }
-    xmlFree(id);
   }
+
+  /* no provider was found */
+  g_set_error(err, g_quark_from_string("Lasso"),
+	      LASSO_SERVER_ERROR_PROVIDER_NOTFOUND,
+	      lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOTFOUND),
+	      providerID);
+  /* print error msg here so that caller just check err->code */
+  message(G_LOG_LEVEL_CRITICAL, err[0]->message);
 
   return(NULL);
 }
@@ -238,7 +270,7 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
 
   for (i=0; i<server->providers->len; i++) {
     provider = g_ptr_array_index(server->providers, i);
-    providerID = lasso_provider_get_providerID(provider, NULL);
+    providerID = lasso_provider_get_providerID(provider);
     /* hash_providerID = lasso_str_hash(providerID, server->private_key); */
     hash_providerID = lasso_sha1(providerID);
     b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
@@ -370,7 +402,7 @@ lasso_server_new(gchar *metadata,
     LASSO_NODE_GET_CLASS(md_node)->set_xmlNode(md_node, root);
  
     /* get ProviderID in metadata */
-    providerID = lasso_node_get_attr_value(md_node, "ProviderID", &err);
+    providerID = lasso_node_get_attr_value(md_node, "providerID", &err);
     if (providerID == NULL) {
       message(G_LOG_LEVEL_ERROR, err->message);
       g_error_free(err);

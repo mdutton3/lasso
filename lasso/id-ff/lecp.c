@@ -84,7 +84,8 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
  
   LASSO_PROFILE(lecp)->remote_providerID = g_strdup(remote_providerID);
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(lecp)->server,
-						  LASSO_PROFILE(lecp)->remote_providerID);
+						  LASSO_PROFILE(lecp)->remote_providerID,
+						  NULL);
 
   profile->msg_url  = lasso_provider_get_singleSignOnServiceURL(remote_provider, NULL);
   profile->msg_body = lasso_node_export_to_soap(profile->request);
@@ -137,7 +138,9 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
     return(-1);
   }
 
-  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server,
+					   profile->remote_providerID,
+					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-1);

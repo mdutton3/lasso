@@ -71,7 +71,9 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   
   profile = LASSO_PROFILE(logout);
 
-  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server,
+					   profile->remote_providerID,
+					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
@@ -134,7 +136,9 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   
   profile = LASSO_PROFILE(logout);
 
-  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server,
+					   profile->remote_providerID,
+					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider not found %s\n", profile->remote_providerID);
     return(-2);
@@ -316,7 +320,9 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       ret = -1;
       goto done;
     }
-    provider = lasso_server_get_provider(profile->server, remote_providerID);
+    provider = lasso_server_get_provider_ref(profile->server,
+					     remote_providerID,
+					     NULL);
     if (provider == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", remote_providerID);
       ret = -1;
@@ -361,9 +367,6 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 							 NULL, NULL);
 
   done:
-  if (provider != NULL) {
-    lasso_provider_destroy(provider);
-  }
   if (remote_providerID != NULL ) {
     xmlFree(remote_providerID);
   }
