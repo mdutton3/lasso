@@ -141,7 +141,7 @@ lasso_logout_request_new_from_query(const xmlChar *query)
 {
      LassoNode *request, *identifier;
 
-     xmlChar *relayState, *sessionIndex, *consent;
+     xmlChar *str;
 
      GData *gd;
 
@@ -150,49 +150,49 @@ lasso_logout_request_new_from_query(const xmlChar *query)
      gd = lasso_query_to_dict(query);
 
      /* RequestID */
-     lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
+     lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
 
      /* MajorVersion */
-     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
 
      /* MinorVersion */
-     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
+     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
 
      /* IssueInstant */
-     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0);
+     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
      
      /* ProviderID */
-     lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request),
-					     lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+     lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request), str);
   
      /* NameIdentifier */
-     identifier = lasso_saml_name_identifier_new(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0));
-     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
-						  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0));
-
-     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
-					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0));
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0);
+     identifier = lasso_saml_name_identifier_new(str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0);
+     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
+     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
      
      lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), identifier);
 
      /* RelayState */
-     relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
-     if(relayState!=NULL)
-	  lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(request), relayState);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
+     if(str!=NULL)
+	  lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(request), str);
 
      /* SessionIndex */
-     sessionIndex = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0);
-     if(sessionIndex!=NULL)
-	  lasso_lib_logout_request_set_sessionIndex(LASSO_SAML_NAME_IDENTIFIER(identifier), sessionIndex);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0);
+     if(str!=NULL)
+	  lasso_lib_logout_request_set_sessionIndex(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
 
      /* consent */
-     consent = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);
-     if(consent!=NULL)
-	  lasso_lib_logout_request_set_consent(LASSO_LIB_LOGOUT_REQUEST(request), consent);     
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);
+     if(str!=NULL)
+	  lasso_lib_logout_request_set_consent(LASSO_LIB_LOGOUT_REQUEST(request), str);
 
      return(request);
 }
