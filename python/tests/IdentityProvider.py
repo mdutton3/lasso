@@ -233,7 +233,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
                 failUnless(soapEndpoint)
                 soapRequestMsg = logout.msg_body
                 failUnless(soapRequestMsg)
-                httpResponse = sendHttpRequest(
+                httpResponse = self.sendHttpRequest(
                     'POST', soapEndpoint, headers = {'Content-Type': 'text/xml'},
                     body = soapRequestMsg)
                 failUnlessEqual(httpResponse.statusCode, 200)
