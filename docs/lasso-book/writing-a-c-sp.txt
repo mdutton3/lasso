@@ -220,6 +220,20 @@ User Id    existing data (name, address...)            Identity dump
 2          ...                                         <Identity> ...
 =======    ========================================    ==============
 
+Mapping between existing users and name identifiers sent by the identity
+provider can be done with a simple table.
+
+===============    =======
+Name Identifier    User Id
+===============    =======
+AQWWRRS...         1
+CGFASDE...         2
+YYSSSDS...         1
+===============    =======
+
+.. note:: A separate table is needed because one user Id could map
+          to several name identifiers; in case there are several identity
+	  providers.
 
 Sessions are also commonly stored in databases; just add a session dump column
 to the existing session table:
@@ -231,6 +245,13 @@ Session Id    misc session data    Session dump
 3338824       ...                  <Session> ...
 ==========    =================    =============
 
+Like users; sessions should be mapped to name identifiers.
+
+===============    ==========
+Name Identifier    Session Id
+===============    ==========
+AQWWRRS...         3338824
+===============    ==========
 
 
 
