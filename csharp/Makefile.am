@@ -61,7 +61,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	Server.cs Session.cs StringList.cs SWIGTYPE_p_LassoMdProtocolType.cs \
 	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs \
 	HttpMethod.cs ProviderRole.cs SignatureMethod.cs LoginProtocolProfile.cs \
-	RequestType.cs
+	RequestType.cs MessageType.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
