@@ -24,10 +24,39 @@
 
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_modify.h>
+#include <lasso/xml/soap_binding_correlation.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
+
+LassoSoapEnvelope*
+lasso_wsf_profile_build_soap_envelope(const char *refToMessageId)
+{
+	LassoSoapEnvelope *envelope;
+	LassoSoapHeader *header;
+	LassoSoapBody *body;
+	LassoSoapBindingCorrelation *correlation;
+	gchar *messageId, *timestamp;
+
+	/* set Body */
+	body = lasso_soap_body_new();
+	envelope = lasso_soap_envelope_new(body);
+
+	/* set Header */
+	header = lasso_soap_header_new();
+	envelope->Header = header;
+
+	/* set Correlation */
+	messageId = lasso_build_unique_id(32);
+	timestamp = lasso_get_current_time();
+	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+	if (refToMessageId != NULL)
+		correlation->refToMessageID = g_strdup(refToMessageId);
+	header->Other = g_list_append(header->Other, correlation);
+
+	return envelope;
+}
 
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
@@ -62,6 +91,7 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 
 	return 0;
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

@@ -68,6 +68,7 @@ struct _LassoWsfProfileClass {
 	LassoNodeClass parent;
 };
 
+LASSO_EXPORT LassoSoapEnvelope *lasso_wsf_profile_build_soap_envelope(const char *refToMessageId);
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
