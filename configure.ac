@@ -159,7 +159,7 @@ dnl - interfaces removed -> AGE = 0
 # m = a
 # r = r
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
-LASSO_VERSION_INFO="1:0:0"
+LASSO_VERSION_INFO="1:0:1"
 AC_SUBST(LASSO_VERSION_INFO)
 
 dnl ==========================================================================
@@ -642,6 +642,8 @@ lasso/protocols/elements/Makefile
 lasso/protocols/Makefile
 lasso/xml/Makefile
 php/Makefile
+php/examples/Makefile
+php/examples/sample-sp/Makefile
 python/Makefile
 swig/Makefile
 tests/Makefile
