@@ -102,8 +102,6 @@ lasso_federation_verify_name_identifier(LassoFederation *federation,
 		LassoSamlNameIdentifier *name_identifier)
 {
 	char *s;
-	/* XXX: verify_name_identifier only checks content; what about Format
-	 * and NameQualifier ? */
 
 	g_return_val_if_fail(LASSO_IS_FEDERATION(federation), FALSE);
 	g_return_val_if_fail(LASSO_IS_NODE(name_identifier), FALSE);
