@@ -46,6 +46,7 @@ lasso_server_dump(LassoServer *server)
     server_class->set_prop(server_node, LASSO_SERVER_PRIVATE_KEY_NODE, server->private_key);
 
   /* TODO : add the signature method in the dump */
+  
 
   /* set public key, certificate, metadata */
   provider = LASSO_PROVIDER(server);
@@ -186,6 +187,8 @@ lasso_server_new_from_dump(gchar *dump)
   xmlNodePtr      xmlNode, providers_xmlNode, provider_xmlNode, entity_xmlNode;
   xmlChar        *content, *public_key, *certificate;
 
+  LassoNode      *server_metadata_node;
+
   server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
 
   server_node  = lasso_node_new_from_dump(dump);
@@ -207,6 +210,10 @@ lasso_server_new_from_dump(gchar *dump)
     server->signature_method = atoi(content);
   }
 
+  /* set public key, certificate and metadata */
+  server_metadata_node = lasso_node_get_child(server_node, "EntityDescriptor", NULL);
+  LASSO_PROVIDER(server)->metadata = server_metadata_node;
+
   /* set providers */
   providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, NULL);
   providers_class = LASSO_NODE_GET_CLASS(providers_node);
@@ -227,7 +234,7 @@ lasso_server_new_from_dump(gchar *dump)
 	certificate = xmlGetProp(provider_xmlNode, LASSO_PROVIDER_CERTIFICATE_NODE);
 
 	/* add a new provider */
-	provider = lasso_provider_new_metadata_xmlNode(metadata);
+	provider = lasso_provider_new_metadata_xmlNode(entity_xmlNode);
 	if(public_key){
 	  lasso_provider_set_public_key(provider, public_key);
 	}

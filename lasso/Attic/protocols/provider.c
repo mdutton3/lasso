@@ -38,12 +38,12 @@ lasso_provider_dump(LassoProvider *provider)
 
   /* set the public key, certificate, metadata */
   provider_class = LASSO_NODE_GET_CLASS(provider_node);
-  provider_class->set_name(provider_node, "Provider");
+  provider_class->set_name(provider_node, LASSO_PROVIDER_NODE);
   provider_class->add_child(provider_node, provider->metadata, FALSE);
   if(provider->public_key)
-    provider_class->set_prop(provider_node, "PublicKey", provider->public_key);
+    provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
   if(provider->certificate)
-    provider_class->set_prop(provider_node, "Certificate", provider->certificate);
+    provider_class->set_prop(provider_node, LASSO_PROVIDER_CERTIFICATE_NODE, provider->certificate);
 
   return(lasso_node_export(provider_node));
 }
