@@ -16,7 +16,7 @@ install-dll:
 	-mkdir -p /usr/local/include/lasso/xml
 	-cp -f lasso/xml/*.h /usr/local/include/lasso/xml
 
-SUBDIRS		= lasso docs python
+SUBDIRS		= lasso docs python win32
 
 ABS_BUILDDIR	= $(shell pwd)
 
