@@ -16,10 +16,10 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 
 lib_LTLIBRARIES = liblasso.la
 
-liblassoinclude_HEADERS = export.h lasso.h lasso_config.h
+liblassoinclude_HEADERS = export.h lasso.h lasso_config.h errors.h
 BUILT_SOURCES = types.c symbols.sym
 
-liblasso_la_SOURCES = lasso.c
+liblasso_la_SOURCES = lasso.c errors.c
 
 types.c:
 	python $(srcdir)/extract_types.py $(srcdir)

@@ -911,9 +911,9 @@ typedef enum {
 #endif
 %ignore lasso_strerror;
 
-%include "../lasso/xml/errors.h"
+%include "../lasso/errors.h"
 %{
-#include <lasso/xml/errors.h>
+#include <lasso/errors.h>
 %}
 
 

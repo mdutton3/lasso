@@ -40,7 +40,7 @@ extern "C" {
 #include <libxml/tree.h>
 
 #include <lasso/export.h>
-#include <lasso/xml/errors.h>
+#include <lasso/errors.h>
 #include <lasso/xml/strings.h>
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())

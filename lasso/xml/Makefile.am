@@ -10,7 +10,6 @@ noinst_LTLIBRARIES = liblasso-xml.la
 
 liblasso_xml_la_SOURCES = \
 	tools.c \
-	errors.c \
 	xml.c \
 	disco_credentials.c \
 	disco_description.c \
@@ -83,7 +82,6 @@ liblasso_xml_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	strings.h \
-	errors.h \
 	xml.h	\
 	disco_credentials.h \
 	disco_description.h \
