@@ -111,7 +111,7 @@ class LogoutTestCase(unittest.TestCase):
         try:
             logout.initRequest()
         except lasso.Error, error:
-            if error[0] != -1:
+            if error[0] != lasso.PROFILE_ERROR_SESSION_NOT_FOUND:
                 raise
         else:
             self.fail('logout.initRequest without having set identity before should fail')
