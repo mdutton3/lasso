@@ -144,7 +144,7 @@ PyObject *node_export_to_soap(PyObject *self, PyObject *args) {
 PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   const xmlChar *name;
-  xmlChar *ret;
+  xmlChar *ret = NULL;
 
   if (CheckArgs(args, "OS:node_get_attr_value")) {
     if(!PyArg_ParseTuple(args, (char *) "Os:node_get_attr_value",
