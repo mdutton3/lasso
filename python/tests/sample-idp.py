@@ -97,30 +97,30 @@ def main():
     logger.setLevel(logging._levelNames[options.logLevel.upper()])
     builtins.set('logger', logger)
 
-    site = liberty.IdentityProvider('https://identity-provider/')
-    site.providerId = 'https://identity-provider/metadata'
+    site = liberty.IdentityProvider('https://idp1:1998/')
+    site.providerId = 'https://idp1/metadata'
 
     lassoServer = lasso.Server.new(
-        '../../examples/data/idp-metadata.xml',
-        None, # '../../examples/data/idp-public-key.pem' is no more used.
-        '../../examples/data/idp-private-key.pem',
-        '../../examples/data/idp-crt.pem',
+        '../../tests/data/idp1-la/metadata.xml',
+        None, # '../../tests/data/idp1-la/public-key.pem' is no more used
+        '../../tests/data/idp1-la/private-key-raw.pem',
+        '../../tests/data/idp1-la/certificate.pem',
         lasso.signatureMethodRsaSha1)
     lassoServer.add_provider(
-        '../../examples/data/sp-metadata.xml',
-        '../../examples/data/sp-public-key.pem',
-        '../../examples/data/ca-crt.pem')
+        '../../tests/data/sp1-la/metadata.xml',
+        '../../tests/data/sp1-la/public-key.pem',
+        '../../tests/data/ca1-la/certificate.pem')
     lassoServer.add_provider(
-        '../../examples/data/lep-metadata.xml',
-        '../../examples/data/idp-public-key.pem',
-        '../../examples/data/ca-crt.pem')
+        '../../tests/data/lecp1-la/metadata.xml',
+        '../../tests/data/lecp1-la/public-key.pem',
+        '../../tests/data/ca1-la/certificate.pem')
     site.lassoServerDump = lassoServer.dump()
     failUnless(site.lassoServerDump)
     lassoServer.destroy()
 
-    site.certificateAbsolutePath = '../../examples/data/idp-ssl-crt.pem'
-    site.privateKeyAbsolutePath = '../../examples/data/idp-ssl-private-key.pem'
-    site.peerCaCertificateAbsolutePath = '../../examples/data/ca-ssl-crt.pem'
+    site.certificateAbsolutePath = '../../tests/data/idp1-ssl/certificate.pem'
+    site.privateKeyAbsolutePath = '../../tests/data/idp1-ssl/private-key-raw.pem'
+    site.peerCaCertificateAbsolutePath = '../../tests/data/ca1-ssl/certificate.pem'
 
     site.newUser('Chantereau')
     site.newUser('Clapies')
@@ -129,14 +129,14 @@ def main():
     # Frederic Peters has no account on identity provider.
 
     HttpRequestHandlerMixin.site = site # Directly a site, not a server => no virtual host.
-##     httpServer = http.HttpServer(('127.0.0.2', 80), HttpRequestHandler)
+##     httpServer = http.HttpServer(('idp1', 1997), HttpRequestHandler)
 ##     logger.info('Serving HTTP on %s port %s...' % httpServer.socket.getsockname())
     httpServer = http.HttpsServer(
-        ('127.0.0.2', 443),
+        ('idp1', 1998),
         HttpsRequestHandler,
-        '../../examples/data/idp-ssl-private-key.pem', # Server private key
-        '../../examples/data/idp-ssl-crt.pem', # Server certificate
-        '../../examples/data/ca-ssl-crt.pem', # Clients certification authority certificate
+        site.privateKeyAbsolutePath, # Server private key
+        site.certificateAbsolutePath, # Server certificate
+        site.peerCaCertificateAbsolutePath, # Clients certification authority certificate
         None, # sslCertificateChainFile see mod_ssl, ssl_engine_init.c, line 852
         None, # sslVerifyClient http://www.modssl.org/docs/2.1/ssl_reference.html#ToC13
         )
