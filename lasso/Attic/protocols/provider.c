@@ -57,14 +57,15 @@ lasso_provider_dump(LassoProvider *provider)
   provider_class = LASSO_NODE_GET_CLASS(provider_node);
   provider_class->set_name(provider_node, LASSO_PROVIDER_NODE);
   provider_class->add_child(provider_node, metadata_node, FALSE);
-  if(provider->public_key)
+  lasso_node_destroy(metadata_node);
+  if(provider->public_key != NULL) {
     provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
-  if(provider->ca_certificate)
+  }
+  if(provider->ca_certificate != NULL) {
     provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
-
+  }
   provider_dump = lasso_node_export(provider_node);
 
-  lasso_node_destroy(metadata_node);
   lasso_node_destroy(provider_node);
 
   return(provider_dump);
@@ -235,11 +236,16 @@ static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider,
 						      const gchar *name)
 {
   LassoNode *node;
-  
+  xmlChar *content;
+
   node = lasso_node_get_child(LASSO_NODE(provider), name, NULL);
-  if(!node)
+  if(node == NULL) {
     return(NULL);
-  return(lasso_node_get_content(node));
+  }
+  content = lasso_node_get_content(node);
+  lasso_node_destroy(node);
+
+  return(content);
 }
 
 /*****************************************************************************/

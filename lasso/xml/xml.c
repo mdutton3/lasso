@@ -1029,8 +1029,8 @@ lasso_node_impl_add_child(LassoNode *node,
       href = node->private->node->ns->href;
     }
     old_child = xmlSecFindNode(node->private->node,
-				           child->private->node->name,
-				           href);
+			       child->private->node->name,
+			       href);
   }
 
   if (!unbounded && old_child != NULL) {
@@ -1290,9 +1290,9 @@ lasso_node_impl_set_ns(LassoNode     *node,
   /*   } */
 
   new_ns = xmlNewNs(node->private->node, href, prefix);
-  //xmlFreeNs(node->private->node->ns);
+  xmlFreeNs(node->private->node->ns);
   xmlSetNs(node->private->node, new_ns);
-  //node->private->node->nsDef = new_ns;
+  node->private->node->nsDef = new_ns;
 }
 
 static void
@@ -1325,17 +1325,13 @@ lasso_node_impl_set_xmlNode(LassoNode  *node,
 static void
 lasso_node_dispose(LassoNode *node)
 {
-  xmlChar *name;
-
   if (node->private->dispose_has_run == TRUE) {
     return;
   }
   node->private->dispose_has_run = TRUE;
 
-  name = lasso_node_get_name(node);
-  if (name != NULL) {
-    debug("%s 0x%x disposed ...\n", name, node);
-    xmlFree(name);
+  if (node->private->node->name != NULL) {
+    debug("%s 0x%x disposed ...\n", node->private->node->name, node);
   }
   /* unref reference counted objects */
   /* we don't have any here */
@@ -1346,11 +1342,8 @@ lasso_node_dispose(LassoNode *node)
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  xmlChar *name = lasso_node_get_name(node);
-
-  if (name != NULL) {
-    debug("%s 0x%x finalized ...\n", name, node);
-    xmlFree(name);
+  if (node->private->node->name != NULL) {
+    debug("%s 0x%x finalized ...\n", node->private->node->name, node);
   }
 
   if (node->private->node_is_weak_ref == FALSE) {

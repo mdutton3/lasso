@@ -139,6 +139,7 @@ lasso_identity_verify_nameIdentifier(LassoIdentity *identity,
   if(identity->local_nameIdentifier){
     identity_content = lasso_node_get_content(identity->local_nameIdentifier);
     if(xmlStrEqual(identity_content, nameIdentifier_content)){
+      xmlFree(identity_content);
       return(TRUE);
     }
     xmlFree(identity_content);
@@ -146,6 +147,7 @@ lasso_identity_verify_nameIdentifier(LassoIdentity *identity,
   if(identity->remote_nameIdentifier){
     identity_content = lasso_node_get_content(identity->remote_nameIdentifier);
     if(xmlStrEqual(identity_content, nameIdentifier_content)){
+      xmlFree(identity_content);
       return(TRUE);
     }
     xmlFree(identity_content);
@@ -182,8 +184,7 @@ lasso_identity_finalize(LassoIdentity *identity)
   debug("Identity object 0x%x finalized ...\n", identity);
 
   g_free(identity->remote_providerID);
-
-  g_free (identity->private);
+  g_free(identity->private);
 
   parent_class->finalize(G_OBJECT(identity));
 }

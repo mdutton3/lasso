@@ -539,7 +539,7 @@ lasso_user_new_from_dump(gchar *dump)
         debug("avant add identity\n");
 	lasso_user_add_identity(user, remote_providerID, identity);
 
-	g_free(remote_providerID);
+	xmlFree(remote_providerID);
 	lasso_node_destroy(identity_node);
       }
 
