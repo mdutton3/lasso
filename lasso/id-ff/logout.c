@@ -160,25 +160,25 @@ lasso_logout_init_request(LassoLogout *logout,
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  profileContext->remote_providerID = remote_providerID;
+  if(){
+    profileContext->remote_providerID = remote_providerID;
+  }
 
   /* get identity */
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
   if(identity==NULL){
-    debug(ERROR, "error, identity not found\n");
+    debug(ERROR, "Identity not found\n");
     return(-3);
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
-    printf("service provider\n");
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
       nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     break;
   case lassoProviderTypeIdp:
-    printf("identity provider\n");
     /* get the next assertion ( next authenticated service provider ) */
     nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     if(!nameIdentifier)
@@ -190,10 +190,10 @@ lasso_logout_init_request(LassoLogout *logout,
   }
   
   if(!nameIdentifier){
-    debug(ERROR, "error, name identifier not found\n");
+    debug(ERROR, "Name identifier not found\n");
     return(-5);
   }
-  debug(DEBUG, "name identifier : %s\n", lasso_node_export(nameIdentifier));
+  debug(DEBUG, "Name identifier : %s\n", lasso_node_export(nameIdentifier));
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
@@ -231,11 +231,11 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
 
   switch(request_method){
   case lassoHttpMethodSoap:
-    debug(DEBUG, "build a logout request from soap msg\n");
+    debug(DEBUG, "Build a logout request from soap msg\n");
     profileContext->request = lasso_logout_request_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
-    debug(DEBUG, "build a logout request from query msg\n");
+    debug(DEBUG, "Build a logout request from query msg\n");
     profileContext->request = lasso_logout_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
@@ -265,14 +265,14 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
 
   nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
   if(nameIdentifier==NULL){
-    debug(ERROR, "No name identifier found in logout request\n");
+    debug(ERROR, "Name identifier not found in logout request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-5);
   }
 
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
   if(remote_providerID==NULL){
-    debug(ERROR, "No provider id found in logout request\n");
+    debug(ERROR, "Provider id not found in logout request\n");
     return(-6);
   }
 
@@ -407,7 +407,6 @@ lasso_logout_new(LassoServer        *server,
 			"user", user,
 			"provider_type", provider_type,
 			NULL);
-
 
   return(logout);
 }
