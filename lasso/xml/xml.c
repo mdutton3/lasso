@@ -260,7 +260,17 @@ lasso_node_build_query(LassoNode *node)
 	return class->build_query(node);
 }
 
-xmlNodePtr
+
+/**
+ * lasso_node_get_xmlNode:
+ * @node: a #LassoNode
+ * @lasso_dump: whether to include lasso-specific nodes
+ *
+ * Builds an XML representation of @node.
+ *
+ * Return value: a new xmlNode.  It must be freed by the caller.
+ **/
+xmlNode*
 lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class;
