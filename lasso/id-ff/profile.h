@@ -130,17 +130,17 @@ LASSO_EXPORT gint           lasso_profile_set_remote_providerID          (LassoP
 LASSO_EXPORT void           lasso_profile_set_response_status            (LassoProfile *ctx,
 									  const gchar  *statusCodeValue);
 
-LASSO_EXPORT gint           lasso_profile_set_session                    (LassoProfile *ctx,
-									 LassoSession  *session);
-
-LASSO_EXPORT gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
-									 const gchar   *dump);
-
 LASSO_EXPORT gint           lasso_profile_set_identity                   (LassoProfile *ctx,
-									 LassoIdentity *identity);
+									  LassoIdentity *identity);
 
 LASSO_EXPORT gint           lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
-									 const gchar   *dump);
+									  const gchar   *dump);
+
+LASSO_EXPORT gint           lasso_profile_set_session                    (LassoProfile *ctx,
+									  LassoSession  *session);
+
+LASSO_EXPORT gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
+									  const gchar   *dump);
 
 #ifdef __cplusplus
 }

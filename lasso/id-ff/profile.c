@@ -219,32 +219,6 @@ lasso_profile_set_response_status(LassoProfile *ctx,
 }
 
 gint
-lasso_profile_set_session(LassoProfile *ctx,
-			  LassoSession *session)
-{
-  g_return_val_if_fail(LASSO_IS_SESSION(session), -1);
-
-  ctx->session = lasso_session_copy(session);
-  ctx->session->is_dirty = FALSE;
-
-  return(0);
-}
-
-gint
-lasso_profile_set_session_from_dump(LassoProfile *ctx,
-				    const gchar  *dump)
-{
-  ctx->session = lasso_session_new_from_dump((gchar *)dump);
-  if (ctx->session == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to create the session from the session dump\n");
-    return(-1);
-  }
-  ctx->session->is_dirty = FALSE;
-
-  return(0);
-}
-
-gint
 lasso_profile_set_identity(LassoProfile  *ctx,
 			   LassoIdentity *identity)
 {
@@ -266,6 +240,32 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx,
     return(-1);
   }
   ctx->identity->is_dirty = FALSE;
+
+  return(0);
+}
+
+gint
+lasso_profile_set_session(LassoProfile *ctx,
+			  LassoSession *session)
+{
+  g_return_val_if_fail(LASSO_IS_SESSION(session), -1);
+
+  ctx->session = lasso_session_copy(session);
+  ctx->session->is_dirty = FALSE;
+
+  return(0);
+}
+
+gint
+lasso_profile_set_session_from_dump(LassoProfile *ctx,
+				    const gchar  *dump)
+{
+  ctx->session = lasso_session_new_from_dump((gchar *)dump);
+  if (ctx->session == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Failed to create the session from the session dump\n");
+    return(-1);
+  }
+  ctx->session->is_dirty = FALSE;
 
   return(0);
 }
