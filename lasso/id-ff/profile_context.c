@@ -147,6 +147,7 @@ lasso_profile_context_finalize(LassoProfileContext *ctx)
   g_free(ctx->remote_providerID);
   g_free(ctx->msg_url);
   g_free(ctx->msg_body);
+  g_free(ctx->msg_relayState);
 
   g_free (ctx->private);
 
@@ -182,8 +183,9 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   
   ctx->remote_providerID = NULL;
   
-  ctx->msg_url  = NULL;
-  ctx->msg_body = NULL;
+  ctx->msg_url        = NULL;
+  ctx->msg_body       = NULL;
+  ctx->msg_relayState = NULL;
 }
 
 static void

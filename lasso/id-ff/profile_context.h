@@ -84,6 +84,7 @@ struct _LassoProfileContext {
 
   gchar *msg_url;
   gchar *msg_body;
+  gchar *msg_relayState;
 
   /*< private >*/
   LassoProfileContextPrivate *private;
