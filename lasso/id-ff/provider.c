@@ -190,6 +190,23 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
 	return TRUE;
 }
 
+/**
+ * lasso_provider_get_base64_succint_id
+ * @provider: #LassoProvider
+ *
+ * Computes and returns the base64-encoded provider succint ID.
+ */
+char*
+lasso_provider_get_base64_succint_id(LassoProvider *provider)
+{
+	char *succint_id, *base64_succint_id;
+
+	succint_id = lasso_sha1(provider->ProviderID);
+	base64_succint_id = xmlSecBase64Encode(succint_id, 20, 0);
+	free(succint_id);
+	return base64_succint_id;
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */

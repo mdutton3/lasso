@@ -109,6 +109,8 @@ LASSO_EXPORT gboolean lasso_provider_accept_http_method(LassoProvider *provider,
 LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provider,
 		lassoMdProtocolType protocol_type, const char *protocol_profile);
 
+LASSO_EXPORT gchar* lasso_provider_get_base64_succint_id(LassoProvider *provider);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
