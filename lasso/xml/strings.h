@@ -31,7 +31,7 @@
 /*****************************************************************************/
 
 /* prefix & href */
-#define LASSO_LASSO_HREF	 "http://www.entrouvert.org/namespaces/lasso/0.0"
+#define LASSO_LASSO_HREF   "http://www.entrouvert.org/namespaces/lasso/0.0"
 #define LASSO_LASSO_PREFIX "lasso"
 
 /*****************************************************************************/
@@ -62,18 +62,18 @@
 #define LASSO_LIB_AUTHN_CONTEXT_COMPARISON_BETTER	 "better"
 
 /* StatusCodes */
-#define LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST	       "lib:FederationDoesNotExist"
+#define LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST    "lib:FederationDoesNotExist"
 #define LASSO_LIB_STATUS_CODE_INVALID_ASSERTION_CONSUMER_SERVICE_INDEX \
 	"lib:InvalidAssertionConsumerServiceIndex"
-#define LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE	               "lib:InvalidSignature"
-#define LASSO_LIB_STATUS_CODE_NO_AUTHN_CONTEXT	               "lib:NoAuthnContext"
-#define LASSO_LIB_STATUS_CODE_NO_AVAILABLEIDP	               "lib:NoAvailableIDP"
-#define LASSO_LIB_STATUS_CODE_NO_PASSIVE	                       "lib:NoPassive"
-#define LASSO_LIB_STATUS_CODE_NO_SUPPORTEDIDP	               "lib:NoSupportedIDP"
-#define LASSO_LIB_STATUS_CODE_PROXY_COUNT_EXCEEDED	               "lib:ProxyCountExceeded"
-#define LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL	               "lib:UnknownPrincipal"
-#define LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST	               "lib:UnsignedAuthnRequest"
-#define LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE	               "lib:UnsupportedProfile"
+#define LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE            "lib:InvalidSignature"
+#define LASSO_LIB_STATUS_CODE_NO_AUTHN_CONTEXT             "lib:NoAuthnContext"
+#define LASSO_LIB_STATUS_CODE_NO_AVAILABLEIDP              "lib:NoAvailableIDP"
+#define LASSO_LIB_STATUS_CODE_NO_PASSIVE                   "lib:NoPassive"
+#define LASSO_LIB_STATUS_CODE_NO_SUPPORTEDIDP              "lib:NoSupportedIDP"
+#define LASSO_LIB_STATUS_CODE_PROXY_COUNT_EXCEEDED         "lib:ProxyCountExceeded"
+#define LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL            "lib:UnknownPrincipal"
+#define LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST       "lib:UnsignedAuthnRequest"
+#define LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE          "lib:UnsupportedProfile"
 
 /* ProtocolProfile */
 #define LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART	\
@@ -90,28 +90,28 @@
 	"http://projectliberty.org/profiles/fedterm-sp-soap"
 #define LASSO_LIB_PROTOCOL_PROFILE_NIM_SP_HTTP	\
 	"http://projectliberty.org/profiles/nim-sp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_HTTP	 "http://projectliberty.org/profiles/rni-idp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_SOAP	 "http://projectliberty.org/profiles/rni-idp-soap"
-#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_HTTP	 "http://projectliberty.org/profiles/rni-sp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_SOAP	 "http://projectliberty.org/profiles/rni-sp-soap"
-#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_HTTP	 "http://projectliberty.org/profiles/slo-sp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_SOAP	 "http://projectliberty.org/profiles/slo-sp-soap"
-#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_HTTP	 "http://projectliberty.org/profiles/slo-idp-http"
-#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_SOAP	 "http://projectliberty.org/profiles/slo-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_HTTP "http://projectliberty.org/profiles/rni-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_SOAP "http://projectliberty.org/profiles/rni-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_HTTP  "http://projectliberty.org/profiles/rni-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_SOAP  "http://projectliberty.org/profiles/rni-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_HTTP  "http://projectliberty.org/profiles/slo-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_SOAP  "http://projectliberty.org/profiles/slo-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_HTTP "http://projectliberty.org/profiles/slo-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_SOAP "http://projectliberty.org/profiles/slo-idp-soap"
 
 /* NameIdentifier formats */
-#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED	 "urn:liberty:iff:nameid:federated"
-#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME	 "urn:liberty:iff:nameid:one-time"
-#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED	 "urn:liberty:iff:nameid:encrypted"
-#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID	 "urn:liberty:iff:nameid:entityID"
+#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED "urn:liberty:iff:nameid:federated"
+#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME  "urn:liberty:iff:nameid:one-time"
+#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED "urn:liberty:iff:nameid:encrypted"
+#define LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID  "urn:liberty:iff:nameid:entityID"
 
 /* Consent */
-#define LASSO_LIB_CONSENT_OBTAINED	               "urn:liberty:consent:obtained"
-#define LASSO_LIB_CONSENT_OBTAINED_PRIOR           "urn:liberty:consent:obtained:prior"
+#define LASSO_LIB_CONSENT_OBTAINED                  "urn:liberty:consent:obtained"
+#define LASSO_LIB_CONSENT_OBTAINED_PRIOR            "urn:liberty:consent:obtained:prior"
 #define LASSO_LIB_CONSENT_OBTAINED_CURRENT_IMPLICIT "urn:liberty:consent:obtained:current:implicit"
 #define LASSO_LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT "urn:liberty:consent:obtained:current:explicit"
-#define LASSO_LIB_CONSENT_UNAVAILABLE	       "urn:liberty:consent:unavailable"
-#define LASSO_LIB_CONSENT_INAPPLICABLE	       "urn:liberty:consent:inapplicable"
+#define LASSO_LIB_CONSENT_UNAVAILABLE               "urn:liberty:consent:unavailable"
+#define LASSO_LIB_CONSENT_INAPPLICABLE              "urn:liberty:consent:inapplicable"
 
 /*****************************************************************************/
 /* METADATA                                                                  */
@@ -153,12 +153,12 @@
 #define LASSO_SAML_AUTHENTICATION_METHOD_SECURE_REMOTE_PASSWORD	 "urn:ietf:rfc:2945"
 #define LASSO_SAML_AUTHENTICATION_METHOD_HARDWARE_TOKEN		\
 	"urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
-#define LASSO_SAML_AUTHENTICATION_METHOD_SMARTCARD_PKI	 "urn:ietf:rfc:2246"
-#define LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI	 "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
-#define LASSO_SAML_AUTHENTICATION_METHOD_PGP	 "urn:oasis:names:tc:SAML:1.0:am:PGP"
-#define LASSO_SAML_AUTHENTICATION_METHODS_PKI	 "urn:oasis:names:tc:SAML:1.0:am:SPKI"
-#define LASSO_SAML_AUTHENTICATION_METHOD_XKMS	 "urn:oasis:names:tc:SAML:1.0:am:XKMS"
-#define LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG	 "urn:ietf:rfc:3075"
+#define LASSO_SAML_AUTHENTICATION_METHOD_SMARTCARD_PKI  "urn:ietf:rfc:2246"
+#define LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI   "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+#define LASSO_SAML_AUTHENTICATION_METHOD_PGP            "urn:oasis:names:tc:SAML:1.0:am:PGP"
+#define LASSO_SAML_AUTHENTICATION_METHODS_PKI           "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+#define LASSO_SAML_AUTHENTICATION_METHOD_XKMS           "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+#define LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG       "urn:ietf:rfc:3075"
 #define LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED	\
 	"urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
