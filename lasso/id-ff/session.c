@@ -446,8 +446,14 @@ lasso_session_new_from_dump(const gchar *dump)
 	LassoSession *session;
 	xmlDoc *doc;
 
+	if (dump == NULL)
+		return NULL;
+
 	session = lasso_session_new();
 	doc = xmlParseMemory(dump, strlen(dump));
+	if (doc == NULL)
+		return NULL;
+
 	init_from_xml(LASSO_NODE(session), xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 

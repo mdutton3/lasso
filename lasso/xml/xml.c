@@ -626,7 +626,13 @@ lasso_node_new_from_dump(const char *dump)
 	LassoNode *node;
 	xmlDoc *doc;
 
+	if (dump == NULL)
+		return NULL;
+
 	doc = xmlParseMemory(dump, strlen(dump));
+	if (doc == NULL)
+		return NULL;
+
 	node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 	return node;

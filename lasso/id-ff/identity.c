@@ -273,8 +273,14 @@ lasso_identity_new_from_dump(const gchar *dump)
 	LassoIdentity *identity;
 	xmlDoc *doc;
 
+	if (dump == NULL)
+		return NULL;
+
 	identity = lasso_identity_new();
 	doc = xmlParseMemory(dump, strlen(dump));
+	if (doc == NULL)
+		return NULL;
+
 	init_from_xml(LASSO_NODE(identity), xmlDocGetRootElement(doc));
 	xmlFreeDoc(doc);
 
