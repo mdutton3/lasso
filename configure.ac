@@ -4,7 +4,7 @@ dnl configure.ac - top level autoconf file for Lasso
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
 dnl 
-dnl See COPYING at the top of this package for the dnl full license terms.
+dnl See COPYING at the top of this package for the full license terms.
 dnl 
 dnl 
 
@@ -562,41 +562,27 @@ dnl ==========================================================================
 dnl Writing result files
 dnl ==========================================================================
 AC_OUTPUT(
-dnl [lasso/version.h]
 [Makefile
-lasso/Makefile
-lasso/xml/Makefile
-lasso/protocols/Makefile
-lasso/protocols/elements/Makefile
-lasso/environs/Makefile
 docs/Makefile
+docs/lasso-book/Makefile
 docs/reference/Makefile
 docs/tutorial/Makefile
-docs/lasso-book/Makefile
-python/Makefile]
-dnl [python/doc/Makefile
-dnl python/doc/tutorial/Makefile
-dnl python/environs/Makefile
-dnl python/examples/Makefile
-dnl python/protocols/Makefile
-dnl python/protocols/elements/Makefile
-dnl python/tests/Makefile
-dnl python/xml/Makefile]
-[php/Makefile
+java/Makefile
+lasso/Makefile
+lasso/environs/Makefile
+lasso/protocols/elements/Makefile
+lasso/protocols/Makefile
+lasso/xml/Makefile
+php/Makefile
 php/run-tests.php
 php/environs/Makefile
-php/xml/Makefile
 php/tests/Makefile
+php/xml/Makefile
+python/Makefile
+swig/Makefile
 tests/Makefile
-java/Makefile]
-dnl [java/coldfusion/Makefile]
-dnl [java/src/Makefile
-dnl java/src/java/Makefile
-dnl java/src/c/Makefile]
-[lasso.pc:lasso.pc.in]
-dnl [lasso-config:lasso-config.in]
-dnl [lasso.spec:lasso.spec.in]
-)
+lasso.pc
+])
 AC_MSG_RESULT([
 =============
 Configuration

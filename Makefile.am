@@ -14,11 +14,12 @@ endif
 SUBDIRS		= lasso \
 		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) \
 		  tests \
+		  swig \
 		  $(GTK_DOC_SD)
 
 ABS_BUILDDIR	= $(shell pwd)
 
-EXTRA_DIST	= TODO COPYING lasso.pc.in swig
+EXTRA_DIST	= TODO COPYING lasso.pc.in
 
 pkgconfig_DATA	= lasso.pc
 pkgconfigdir	= $(libdir)/pkgconfig
