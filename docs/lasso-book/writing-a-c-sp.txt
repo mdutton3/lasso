@@ -1,0 +1,131 @@
+================================================
+Writing a Liberty Alliance service provider in C
+================================================
+
+:Author: Frederic Peters
+:Contact: fpeters@entrouvert.com
+:date: $Date$
+:revision: $Revision$
+:copyright: Copyright © 2004 Entr'ouvert
+
+
+Introduction to Lasso objects
+=============================
+
+
+(how to create the LassoServer object)
+
+
+
+Single Sign-On and Federation Profile
+=====================================
+
+.. note:: imagine the schema on liberty alliance, binding and profiles, figure
+          2, page 20.
+
+
+In step 1 the user points its browser to the service provider to the login URL;
+the service provider must response with an HTTP 302 Redirect response, pointing 
+the user browser to the identity provider single sign on service.
+
+
+``server`` is a ``LassoServer*`` and ``idpProviderId`` is a string with the
+identity provider Id (defined in metadata).
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  lasso_login_init_authn_request(login);
+  
+  lasso_lib_authn_request_set_forceAuthn(
+      LASSO_LIB_AUTHN_REQUEST(login->request), 1);
+  
+  lasso_lib_authn_request_set_nameIDPolicy(
+      LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibNameIDPolicyTypeFederated);
+  lasso_lib_authn_response_set_consent(
+      LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibConsentObtained);
+  lasso_login_build_authn_request_msg(idpProviderId);
+
+
+You can now redirect the user to the URL defined in ``login->msg_url``; for
+example, in a CGI::
+  
+  printf("Location: %s\n", login.msg_url);
+
+
+The user then logs in on the identity provider which ultimately redirects back
+to the service provider; to the assertion consumer URL.  A SAML artifact is
+passed in the query parameter.
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  login_init_request(login, query_string, lassoHttpMethodRedirect);
+  login_build_request_msg(login);
+
+The service provider must check this artifact using a SOAP request to the
+identity provider.  The URL is ``login.msg_url`` while the request is
+``login.msg_body``.  The request must succeed with an HTTP 200 status code;
+its content is put in the ``answer``.
+
+::
+
+  login_process_response_msg(login, answer);
+
+The users are defined by a ``nameIdentifier``.  Those typically map to users
+and sessions on the service provider.  If existing; the session should probably
+contains a ``session_dump`` element and the user a ``identity_dump`` element.
+
+.. note:: include sample database schema here ?
+
+::
+
+  if (session_dump != NULL) {
+      login_set_session_from_dump(login, session_dump);
+  }
+  if (identity_dump != NULL) {
+      login_set_identity_from_dump(login, identity_dump);
+  }
+  lasso_login_accept_sso(login);
+
+After ``lasso_login_accept_sso`` the session and the identity are updated (or
+created) and should then be saved.
+
+A success page can then be displayed.
+
+
+Single Logout Profile
+=====================
+
+::
+  LassoLogout *logout;
+
+  logout = lasso_logout_new(lassoServer, lassoProviderTypeSp);
+
+
+Identity and session dumps should be restored to prepare the logout request.
+
+::
+
+  if (session_dump != NULL) {
+      login_set_session_from_dump(login, session_dump);
+  }
+  if (identity_dump != NULL) {
+      login_set_identity_from_dump(login, identity_dump);
+  }
+  
+  logout_init_request(logout);
+  logout_build_request_msg(logout);
+
+
+The service provider must then make a SOAP request to the identity provider;
+``msg_url`` and ``msg_body``.  You should then pass the answer to Lasso::
+
+  logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
+
+And save back session and user dump.
+
