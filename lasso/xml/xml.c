@@ -864,8 +864,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		if (lasso_dump == FALSE && snippet->type & SNIPPET_LASSO_DUMP)
 			continue;
 
-		if (value == NULL && ! (snippet->type & SNIPPET_BOOLEAN ||
-					snippet->type & SNIPPET_INTEGER) )
+		if (value == NULL && (!(snippet->type & SNIPPET_BOOLEAN ||
+					snippet->type & SNIPPET_INTEGER) ||
+					snippet->type & SNIPPET_OPTIONAL))
 			continue;
 
 		/* XXX: not sure it is 64-bits clean */
@@ -933,6 +934,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
 			case SNIPPET_LASSO_DUMP:
+			case SNIPPET_OPTIONAL:
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)
