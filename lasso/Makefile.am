@@ -4,7 +4,6 @@ liblassoincludedir = $(includedir)/lasso
 
 INCLUDES = \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
 	$(LASSO_CFLAGS)
 
@@ -14,7 +13,7 @@ LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \
          sed -e 's/-I/--include-dir /g;s/-D/--define /g'`
 
 ## Added to activate libtool 1.5.6 windows resources partial support
-lasso.rc.lo: ../win32/lasso.rc
+lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 	$(LTRCCOMPILE) -i $< -o $@
 
 
