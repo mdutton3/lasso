@@ -24,14 +24,17 @@
 
 #include <xmlsec/base64.h>
 
-#include <lasso/xml/disco_description.h>
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/disco_service_instance.h>
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
 #include <lasso/xml/saml_attribute.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/samlp_response.h>
+
+#ifdef LASSO_WSF_ENABLED
+#include <lasso/xml/disco_description.h>
+#include <lasso/xml/disco_resource_offering.h>
+#include <lasso/xml/disco_service_instance.h>
+#endif
 
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
@@ -45,8 +48,10 @@
 struct _LassoLoginPrivate
 {
 	char *soap_request_msg;
+#ifdef LASSO_WSF_ENABLED
 	LassoDiscoResourceID *resourceId;
 	LassoDiscoEncryptedResourceID *encryptedResourceId;
+#endif
 };
 
 
@@ -69,6 +74,7 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 static void
 lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
 {
+#ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
 	LassoDiscoServiceInstance *serviceInstance;
@@ -94,6 +100,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 
 		assertion->AttributeStatement = attributeStatement;
 	}
+#endif
 }
 
 
@@ -844,8 +851,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 	profile->response = lasso_samlp_response_new();
 	profile->response->InResponseTo = g_strdup(profile->request->RequestID);
-	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 1) {
-		/* pre-saml 1.1, move accordingly */
+	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion == 0) {
+		/* this is a SAML 1.0 request, must create SAML 1.0 response */
 		profile->response->MinorVersion = 0;
 	}
 
@@ -1433,11 +1440,13 @@ int
 lasso_login_set_encryptedResourceId(LassoLogin *login,
 				    LassoDiscoEncryptedResourceID *encryptedResourceId)
 {
+#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
 			     LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	login->private_data->encryptedResourceId = g_object_ref(encryptedResourceId);
+#endif
 
 	return 0;
 }
@@ -1455,11 +1464,12 @@ lasso_login_set_encryptedResourceId(LassoLogin *login,
 int
 lasso_login_set_resourceId(LassoLogin *login, const char *content)
 {
+#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(content != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	login->private_data->resourceId = lasso_disco_resource_id_new(content);
-
+#endif
 	return 0;
 }
 

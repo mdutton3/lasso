@@ -56,8 +56,10 @@
 #include <lasso/xml/lib_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
 
+#ifdef LASSO_WSF_ENABLED
 #include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/disco_encrypted_resource_id.h>
+#endif
 
 %}
 

@@ -20,8 +20,9 @@ symbols = []
 for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir):
     symbols.extend(regex.findall(file(header_file).read().replace('\\\n', '')))
 
-wsf = ['lasso_disco', 'lasso_dst', 'lasso_is', 'lasso_profile_service',
-        'lasso_discovery', 'lasso_wsf', 'lasso_interaction', 'lasso_utility' ]
+wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service',
+        'lasso_discovery', 'lasso_wsf', 'lasso_interaction', 'lasso_utility',
+        'lasso_sa_', 'lasso_soap_', 'lasso_authentication' ]
 if enable_wsf:
     wsf = []
 

@@ -29,7 +29,11 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#ifdef LASSO_WSF_ENABLED
 #include <lasso/xml/disco_service_instance.h>
+#else
+typedef void LassoDiscoServiceInstance;
+#endif
 #include <lasso/id-ff/provider.h>
 
 

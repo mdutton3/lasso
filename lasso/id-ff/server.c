@@ -81,12 +81,14 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 gint
 lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service)
 {
+#ifdef LASSO_WSF_ENABLED
 	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(service),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	g_hash_table_insert(server->services, g_strdup(service->ServiceType),
 			g_object_ref(service));
+#endif
 
 	return 0;
 }
@@ -186,8 +188,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	t = xmlnode->children;
 	while (t) {
 		xmlNode *t2 = t->children;
-		LassoProvider *p;
-		LassoDiscoServiceInstance *s;
 
 		if (t->type != XML_ELEMENT_NODE) {
 			t = t->next;
@@ -196,6 +196,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		if (strcmp(t->name, "Providers") == 0) {
 			while (t2) {
+				LassoProvider *p;
 				if (t2->type != XML_ELEMENT_NODE) {
 					t2 = t2->next;
 					continue;
@@ -207,8 +208,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			}
 		}
 		
+#ifdef LASSO_WSF_ENABLED
 		if (strcmp(t->name, "Services") == 0) {
 			while (t2) {
+				LassoDiscoServiceInstance *s;
 				if (t2->type != XML_ELEMENT_NODE) {
 					t2 = t2->next;
 					continue;
@@ -219,6 +222,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				t2 = t2->next;
 			}
 		}
+#endif
 
 		t = t->next;
 	}

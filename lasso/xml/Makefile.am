@@ -8,9 +8,8 @@ INCLUDES = \
 
 noinst_LTLIBRARIES = liblasso-xml.la
 
-liblasso_xml_la_SOURCES = \
-	tools.c \
-	xml.c \
+if WSF_ENABLED
+WSF_C_FILES = \
 	disco_authenticate_requester.c \
 	disco_authenticate_session_context.c \
 	disco_authorize_requester.c \
@@ -51,57 +50,12 @@ liblasso_xml_la_SOURCES = \
 	is_select.c \
 	is_text.c \
 	is_user_interaction.c \
-	lib_assertion.c	\
-	lib_authentication_statement.c \
-	lib_authn_context.c	\
-	lib_authn_request.c	\
-	lib_authn_request_envelope.c	\
-	lib_authn_response.c \
-	lib_authn_response_envelope.c \
-	lib_federation_termination_notification.c \
-	lib_idp_entries.c	\
-	lib_idp_entry.c	\
-	lib_idp_list.c	\
-	lib_logout_request.c \
-	lib_logout_response.c \
-	lib_name_identifier_mapping_request.c \
-	lib_name_identifier_mapping_response.c \
-	lib_register_name_identifier_request.c \
-	lib_register_name_identifier_response.c \
-	lib_request_authn_context.c	\
-	lib_scoping.c \
-	lib_status_response.c \
-	lib_subject.c \
 	sa_credentials.c \
 	sa_parameter.c \
 	sa_password_transforms.c \
 	sa_transform.c \
 	sa_sasl_request.c \
 	sa_sasl_response.c \
-	saml_advice.c \
-	saml_assertion.c \
-	saml_attribute.c \
-	saml_attribute_designator.c \
-	saml_attribute_statement.c \
-	saml_attribute_value.c \
-	saml_audience_restriction_condition.c \
-	saml_authentication_statement.c \
-	saml_authority_binding.c \
-	saml_condition_abstract.c \
-	saml_conditions.c \
-	saml_name_identifier.c \
-	saml_statement_abstract.c \
-	saml_subject.c \
-	saml_subject_confirmation.c \
-	saml_subject_locality.c \
-	saml_subject_statement.c \
-	saml_subject_statement_abstract.c \
-	samlp_request.c \
-	samlp_request_abstract.c \
-	samlp_response.c \
-	samlp_response_abstract.c \
-	samlp_status.c \
-	samlp_status_code.c \
 	soap_binding_consent.c \
 	soap_binding_correlation.c \
 	soap_binding_processing_context.c \
@@ -116,9 +70,7 @@ liblasso_xml_la_SOURCES = \
 	soap_header.c \
 	utility_status.c
 
-liblassoinclude_HEADERS = \
-	strings.h \
-	xml.h \
+WSF_H_FILES = \
 	disco_authenticate_requester.h \
 	disco_authenticate_session_context.h \
 	disco_authorize_requester.h \
@@ -159,6 +111,80 @@ liblassoinclude_HEADERS = \
 	is_select.h \
 	is_text.h \
 	is_user_interaction.h \
+	sa_credentials.h \
+	sa_parameter.h \
+	sa_password_transforms.h \
+	sa_transform.h \
+	sa_sasl_request.h \
+	sa_sasl_response.h \
+	soap_binding_consent.h \
+	soap_binding_correlation.h \
+	soap_binding_processing_context.h \
+	soap_binding_provider.h \
+	soap_binding_usage_directive.h \
+	soap_binding_ext_credential.h \
+	soap_binding_ext_credentials_context.h \
+	soap_binding_ext_service_instance_update.h \
+	soap_binding_ext_timeout.h \
+	soap_body.h \
+	soap_envelope.h \
+	soap_header.h \
+	utility_status.h
+endif
+
+liblasso_xml_la_SOURCES = \
+	tools.c \
+	xml.c \
+	lib_assertion.c	\
+	lib_authentication_statement.c \
+	lib_authn_context.c	\
+	lib_authn_request.c	\
+	lib_authn_request_envelope.c	\
+	lib_authn_response.c \
+	lib_authn_response_envelope.c \
+	lib_federation_termination_notification.c \
+	lib_idp_entries.c	\
+	lib_idp_entry.c	\
+	lib_idp_list.c	\
+	lib_logout_request.c \
+	lib_logout_response.c \
+	lib_name_identifier_mapping_request.c \
+	lib_name_identifier_mapping_response.c \
+	lib_register_name_identifier_request.c \
+	lib_register_name_identifier_response.c \
+	lib_request_authn_context.c	\
+	lib_scoping.c \
+	lib_status_response.c \
+	lib_subject.c \
+	saml_advice.c \
+	saml_assertion.c \
+	saml_attribute.c \
+	saml_attribute_designator.c \
+	saml_attribute_statement.c \
+	saml_attribute_value.c \
+	saml_audience_restriction_condition.c \
+	saml_authentication_statement.c \
+	saml_authority_binding.c \
+	saml_condition_abstract.c \
+	saml_conditions.c \
+	saml_name_identifier.c \
+	saml_statement_abstract.c \
+	saml_subject.c \
+	saml_subject_confirmation.c \
+	saml_subject_locality.c \
+	saml_subject_statement.c \
+	saml_subject_statement_abstract.c \
+	samlp_request.c \
+	samlp_request_abstract.c \
+	samlp_response.c \
+	samlp_response_abstract.c \
+	samlp_status.c \
+	samlp_status_code.c \
+	$(WSF_C_FILES)
+
+liblassoinclude_HEADERS = \
+	strings.h \
+	xml.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
@@ -180,12 +206,6 @@ liblassoinclude_HEADERS = \
 	lib_scoping.h \
 	lib_status_response.h \
 	lib_subject.h \
-	sa_credentials.h \
-	sa_parameter.h \
-	sa_password_transforms.h \
-	sa_transform.h \
-	sa_sasl_request.h \
-	sa_sasl_response.h \
 	saml_advice.h \
 	saml_assertion.h \
 	saml_attribute.h \
@@ -210,19 +230,7 @@ liblassoinclude_HEADERS = \
 	samlp_response_abstract.h \
 	samlp_status.h \
 	samlp_status_code.h \
-	soap_binding_consent.h \
-	soap_binding_correlation.h \
-	soap_binding_processing_context.h \
-	soap_binding_provider.h \
-	soap_binding_usage_directive.h \
-	soap_binding_ext_credential.h \
-	soap_binding_ext_credentials_context.h \
-	soap_binding_ext_service_instance_update.h \
-	soap_binding_ext_timeout.h \
-	soap_body.h \
-	soap_envelope.h \
-	soap_header.h \
-	utility_status.h
+	$(WSF_H_FILES)
 
 lasso_private_h_sources = \
 	private.h
