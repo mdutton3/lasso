@@ -46,8 +46,8 @@ struct _LassoProvider {
 
   LassoNode *metadata;
 
-  char *public_key;
-  char *certificate;
+  gchar *public_key;
+  gchar *certificate;
 
   /*< private >*/
 };
@@ -60,8 +60,6 @@ LASSO_EXPORT GType          lasso_provider_get_type                         (voi
 LASSO_EXPORT LassoProvider* lasso_provider_new                              (gchar       *metadata,
 									     const gchar *public_key,
 									     const gchar *certificate);
-
-LASSO_EXPORT LassoProvider *lasso_provider_new_from_filename                (char *filename);
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                   (LassoProvider *provider);
 

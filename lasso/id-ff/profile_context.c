@@ -37,19 +37,6 @@
 /*****************************************************************************/
 
 gint
-lasso_profile_context_set_local_providerID(LassoProfileContext *ctx,
-					   gchar               *providerID)
-{
-  if (ctx->local_providerID) {
-    free(ctx->local_providerID);
-  }
-  ctx->local_providerID = (char *)malloc(strlen(providerID)+1);
-  strcpy(ctx->local_providerID, providerID);
-  
-  return (1);
-}
-
-gint
 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 					    gchar               *providerID)
 {
@@ -90,7 +77,6 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
 enum {
   LASSO_PROFILE_CONTEXT_SERVER = 1,
   LASSO_PROFILE_CONTEXT_USER,
-  LASSO_PROFILE_CONTEXT_LOCAL_PROVIDERID,
   LASSO_PROFILE_CONTEXT_REMOTE_PROVIDERID,
 };
 
@@ -104,7 +90,6 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->user   = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
-  ctx->local_providerID  = NULL;
   ctx->remote_providerID = NULL;
 }
 
@@ -129,11 +114,6 @@ lasso_profile_context_set_property (GObject      *object,
       g_object_unref(self->user);
     }
     self->user = g_value_get_pointer (value);
-  }
-    break;
-  case LASSO_PROFILE_CONTEXT_LOCAL_PROVIDERID: {
-    g_free (self->local_providerID);
-    self->local_providerID = g_value_dup_string (value);
   }
     break;
   case LASSO_PROFILE_CONTEXT_REMOTE_PROVIDERID: {
@@ -182,15 +162,6 @@ lasso_profile_context_class_init(gpointer g_class,
                                    LASSO_PROFILE_CONTEXT_USER,
                                    pspec);
 
-  pspec = g_param_spec_string ("local_providerID",
-			       "local ProviderID",
-			       "Set local ProviderID",
-			       NULL,
-			       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_LOCAL_PROVIDERID,
-                                   pspec);
-
   pspec = g_param_spec_string ("remote_providerID",
 			       "remote ProviderID",
 			       "Set remote ProviderID",
@@ -227,11 +198,9 @@ GType lasso_profile_context_get_type() {
 LassoProfileContext*
 lasso_profile_context_new(LassoServer *server,
 			  LassoUser   *user,
-			  gchar       *local_providerID,
 			  gchar       *remote_providerID)
 {
   g_return_val_if_fail(server != NULL, NULL);
-  g_return_val_if_fail(local_providerID != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
 
   LassoProfileContext *ctx;
@@ -239,7 +208,6 @@ lasso_profile_context_new(LassoServer *server,
   ctx = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
 					   "server", server,
 					   "user", user,
-					   "local_providerID", local_providerID,
 					   "remote_providerID", remote_providerID,
 					   NULL));
 

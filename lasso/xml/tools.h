@@ -44,6 +44,8 @@ typedef enum {
   lassoSignatureMethodDsaSha1
 } lassoSignatureMethod;
 
+LASSO_EXPORT xmlChar*   lasso_build_random_sequence  (guint8 size);
+
 LASSO_EXPORT xmlChar*   lasso_build_unique_id        (guint8 size);
 
 LASSO_EXPORT xmlChar*   lasso_doc_get_node_content   (xmlDocPtr      doc,

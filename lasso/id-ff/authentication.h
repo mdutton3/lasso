@@ -64,7 +64,6 @@ LASSO_EXPORT GType                lasso_authentication_get_type               (v
 
 LASSO_EXPORT LassoProfileContext* lasso_authentication_new                    (LassoServer *server,
 									       LassoUser   *user,
-									       gchar       *local_providerID,
 									       gchar       *remote_providerID,
 									       gchar       *request_msg,
 									       gint         request_method,

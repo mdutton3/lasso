@@ -63,7 +63,6 @@ struct _LassoProfileContext {
   LassoNode *request;
   LassoNode *response;
 
-  gchar *local_providerID;
   gchar *remote_providerID;
   
   /*< private >*/
@@ -77,11 +76,7 @@ LASSO_EXPORT GType                lasso_profile_context_get_type             (vo
 
 LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                  (LassoServer *server,
 									      LassoUser   *user,
-									      gchar       *local_providerID,
 									      gchar       *remote_providerID);
-
-LASSO_EXPORT gint                 lasso_profile_context_set_local_providerID (LassoProfileContext *ctx,
-									      gchar               *providerID);
 
 LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 									      gchar               *providerID);

@@ -24,6 +24,28 @@
 
 #include <lasso/xml/tools.h>
 
+xmlChar *
+lasso_build_random_sequence(guint8 size)
+{
+  g_return_val_if_fail(size > 0, NULL);
+
+  int i, val;
+  xmlChar *seq;
+
+  seq = g_malloc(size+1);
+
+  for (i=0; i<size; i++) {
+    val = g_random_int_range(0, 16);
+    if (val < 10)
+      seq[i] = 48 + val;
+    else
+      seq[i] = 65 + val-10;
+  }
+  seq[size] = '\0';
+
+  return (seq);
+}
+
 /**
  * lasso_build_unique_id:
  * @size: the ID's lenght (between 32 and 40)

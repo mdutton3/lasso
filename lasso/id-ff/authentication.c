@@ -44,11 +44,7 @@ lasso_authentication_build_request_msg(LassoAuthentication *authn)
   gchar *msg;
   gboolean must_sign;
   
-  provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(authn)->server,
-				       LASSO_PROFILE_CONTEXT(authn)->local_providerID);
-  if (provider == NULL) {
-    return (NULL);
-  }  
+  provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server);
   must_sign = xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true");
   
   /* export request depending on the request ProtocolProfile */
@@ -81,8 +77,10 @@ static void
 lasso_authentication_process_request(LassoAuthentication *authn,
 				     gchar               *request_msg)
 {
-  LassoProvider *sp;
+  LassoProvider *provider, *sp;
   gboolean  must_verify_signature, signature_status;
+
+  provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server);
 
   /* rebuild request */
   switch (authn->request_method) {
@@ -115,7 +113,7 @@ lasso_authentication_process_request(LassoAuthentication *authn,
   /* build response */
   if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfilePost)) {
     /* create LibAuthnResponse */
-    LASSO_PROFILE_CONTEXT(authn)->response = lasso_authn_response_new(LASSO_PROFILE_CONTEXT(authn)->local_providerID,
+    LASSO_PROFILE_CONTEXT(authn)->response = lasso_authn_response_new(lasso_provider_get_providerID(provider),
 								      LASSO_PROFILE_CONTEXT(authn)->request);
   }
   else if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfileArtifact)) {
@@ -191,7 +189,7 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
 {
   LassoUser *user;
   gchar     *msg;
-  xmlChar   *nameIDPolicy, *protocolProfile;
+  xmlChar   *nameIDPolicy, *protocolProfile, *assertionHandle;
   LassoNode *assertion, *authentication_statement, *idpProvidedNameIdentifier;
   
   LassoIdentity *identity;
@@ -231,15 +229,18 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
     /* fill the response with the assertion */
     if (identity != NULL && authentication_result == 1) {
       printf("DEBUG - an identity found, so build an assertion\n");
-      assertion = lasso_assertion_new(LASSO_PROFILE_CONTEXT(authn)->local_providerID,
+      assertion = lasso_assertion_new(lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server)),
 				      lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(authn)->request), "RequestID"));
       authentication_statement = lasso_authentication_statement_new(authenticationMethod,
 								    reauthenticateOnOrAfter,
 								    identity->remote_nameIdentifier,
 								    identity->local_nameIdentifier);
-      lasso_saml_assertion_add_authenticationStatement(assertion,
-      						       authentication_statement);
-      printf(lasso_node_export(assertion));
+      lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
+      						       LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+      lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
+					 lassoSignatureMethodRsaSha1,
+					 LASSO_PROFILE_CONTEXT(authn)->server->private_key,
+					 LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server)->certificate);
       lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(authn)->response),
 					 assertion);
     }
@@ -256,8 +257,9 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
 	/* return query (base64 encoded) */
 	/* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
 	msg = g_new(gchar, 2+20+20+1);
-	sprintf(msg, "%c%c%s%s", 0, 3, "01234567890123456789", "01234567890123456789");
-	msg = xmlSecBase64Encode(msg, 42, 0);
+	assertionHandle = lasso_build_random_sequence(20);
+	sprintf(msg, "%c%c%s%s", 1, 3, "01234567890123456789", assertionHandle);
+	//msg = xmlSecBase64Encode(msg, 42, 0);
 	break;
       case lassoProfileContextMethodPost:
 	/* return a formular */
@@ -281,7 +283,7 @@ lasso_authentication_process_artifact(LassoAuthentication *authn,
   return (lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(authn)->request));
 }
 
-gboolean
+static gboolean
 lasso_authentication_process_response(LassoAuthentication *authn,
 				      xmlChar             *response_msg)
 {
@@ -346,14 +348,12 @@ GType lasso_authentication_get_type() {
 LassoProfileContext*
 lasso_authentication_new(LassoServer *server,
 			 LassoUser   *user,
-			 gchar       *local_providerID,
 			 gchar       *remote_providerID,
 			 gchar       *request_msg,
 			 gint         request_method,
 			 gchar       *response_msg,
 			 gint         response_method)
 {
-  g_return_val_if_fail(local_providerID != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
 
   LassoProfileContext *authn;
@@ -361,7 +361,6 @@ lasso_authentication_new(LassoServer *server,
   authn = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_AUTHENTICATION,
 					     "server", server,
 					     "user", user,
-					     "local_providerID", local_providerID,
 					     "remote_providerID", remote_providerID,
 					     NULL));
 
@@ -370,7 +369,7 @@ lasso_authentication_new(LassoServer *server,
 
   if (request_msg == NULL && response_msg == NULL) {
     /* build the request object */
-    authn->request = lasso_authn_request_new(authn->local_providerID);
+    authn->request = lasso_authn_request_new(lasso_provider_get_providerID(LASSO_PROVIDER(server)));
   }
   else if (request_msg != NULL) {
     lasso_authentication_process_request(LASSO_AUTHENTICATION(authn), request_msg);

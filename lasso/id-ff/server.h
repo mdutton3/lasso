@@ -30,7 +30,6 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
 #include <lasso/protocols/provider.h>
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
@@ -44,23 +43,21 @@ typedef struct _LassoServer LassoServer;
 typedef struct _LassoServerClass LassoServerClass;
 
 struct _LassoServer {
-  GObject parent;
+  LassoProvider parent;
 
   GPtrArray *providers;
-
-  gchar *public_key;
-  gchar *private_key;
-  gchar *certificate;
+  gchar     *private_key;
 
   /*< private >*/
 };
 
 struct _LassoServerClass {
-  GObjectClass parent;
+  LassoProviderClass parent;
 };
 
 LASSO_EXPORT GType          lasso_server_get_type               (void);
-LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *public_key,
+LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *metadata,
+								 const gchar *public_key,
 								 const gchar *private_key,
 								 const gchar *certificate);
 

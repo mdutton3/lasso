@@ -63,17 +63,6 @@ lasso_server_get_provider(LassoServer *server,
   return(NULL);
 }
 
-gint
-lasso_server_set_security(gchar *private_key,
-			  gchar *public_key,
-			  gchar *certificate)
-{
-  g_return_if_fail(private_key);
-  g_return_if_fail(public_key);
-  g_return_if_fail(certificate);
-
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -83,9 +72,7 @@ lasso_server_instance_init(LassoServer *server)
 {
   server->providers = g_ptr_array_new();
 
-  server->public_key  = NULL;
   server->private_key = NULL;
-  server->certificate = NULL;
 }
 
 static void
@@ -108,7 +95,7 @@ GType lasso_server_get_type() {
       (GInstanceInitFunc) lasso_server_instance_init,
     };
     
-    this_type = g_type_register_static(G_TYPE_OBJECT,
+    this_type = g_type_register_static(LASSO_TYPE_PROVIDER,
 				       "LassoServer",
 				       &this_info, 0);
   }
@@ -116,17 +103,27 @@ GType lasso_server_get_type() {
 }
 
 LassoServer *
-lasso_server_new(const gchar *public_key,
+lasso_server_new(const gchar *metadata,
+		 const gchar *public_key,
 		 const gchar *private_key,
 		 const gchar *certificate)
 {
   LassoServer *server;
+  xmlDocPtr  doc;
+  xmlNodePtr root;
 
   server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
 
-  server->public_key  = public_key;
+  LASSO_PROVIDER(server)->public_key  = public_key;
+  LASSO_PROVIDER(server)->certificate = certificate;
   server->private_key = private_key;
-  server->certificate = certificate;
+
+  doc = xmlParseFile(metadata);
+  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+  xmlFreeDoc(doc);
+  //LASSO_PROVIDER(server)->metadata = lasso_node_new();
+  //LASSO_NODE_CLASS(LASSO_PROVIDER(server)->metadata)->set_xmlNode(LASSO_PROVIDER(server)->metadata, root); 
+  LASSO_PROVIDER(server)->metadata = lasso_node_new_from_xmlNode(root);
 
   return(server);
 }
