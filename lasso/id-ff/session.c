@@ -161,8 +161,8 @@ lasso_session_dump(LassoSession *session)
 {
   LassoNode      *session_node, *assertions_node;
   LassoNodeClass *session_class, *assertions_class;
-  int table_size;
-  gchar *dump;
+  int             table_size;
+  gchar          *index_str, *dump;
 
   g_return_val_if_fail(session != NULL, NULL);
 
@@ -182,6 +182,10 @@ lasso_session_dump(LassoSession *session)
     session_class->add_child(session_node, assertions_node, FALSE);
     lasso_node_destroy(assertions_node);
   }
+
+  index_str = g_new(gchar, 5 + 1); /* length of gint in a string + end if line*/
+  g_sprintf(index_str, "%d", session->index_providerID);
+  session_class->new_child(session_node, "IndexProviderID", index_str, FALSE);
 
   dump = lasso_node_export(session_node);
 
@@ -442,7 +446,7 @@ lasso_session_new_from_dump(gchar *dump)
   LassoNode      *session_node;
   LassoNode      *assertions_node, *assertion_node, *assertion;
   xmlNodePtr      assertions_xmlNode, assertion_xmlNode;
-  xmlChar        *providerID;
+  xmlChar        *providerID, *index_providerID;
   GError         *err = NULL;
 
   g_return_val_if_fail(dump != NULL, NULL);
@@ -497,6 +501,18 @@ lasso_session_new_from_dump(gchar *dump)
       assertion_xmlNode = assertion_xmlNode->next;
     }
   }
+
+  /* set the index providerID */
+  printf("At session new from dump()\n");
+  index_providerID = lasso_node_get_child_content(session_node, "IndexProviderID", NULL, NULL);
+  if (index_providerID != NULL) {
+    session->index_providerID = atoi(index_providerID);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Index providerID not found\n");
+  }
+
+  /* free temporary nodes */
   lasso_node_destroy(assertions_node);
   lasso_node_destroy(session_node);
 
