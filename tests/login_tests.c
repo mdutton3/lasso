@@ -96,7 +96,7 @@ START_TEST(test02_serviceProviderLogin)
 	char *responseUrl, *responseQuery;
 	char *idpUserContextDump;
 	char *soapResponseMsg;
-	char *spUserContextDump;
+	char *spUserContextDump, *spUserContextDumpTemp;
 	int requestType;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
@@ -197,15 +197,28 @@ START_TEST(test02_serviceProviderLogin)
 	spLogoutContext = lasso_logout_new(lassoProviderTypeSp,
 			spContext, spUserContext);
 	fail_unless(spLogoutContext != NULL, "spLogoutContext should not be NULL");
+	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
+	fail_unless(spUserContextDump != NULL, "spUserContextDump should not be NULL");
 	rc = lasso_logout_init_request(spLogoutContext, NULL);
 	fail_unless(rc == 0, "lasso_logout_init_request failed");
 	rc = lasso_logout_build_request_msg(spLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_build_request_msg failed");
+	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
 
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
+
+	/* XXX  the problem lies here (how did lasso_server_destroy(idpContext) changed
+	 *      the spLogoutContext->user ?) */
+	spUserContextDumpTemp = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
+	fail_unless(spUserContextDumpTemp != NULL,
+			"spUserContextDumpTemp should not be NULL");
+	fail_unless(strcmp(spUserContextDumpTemp, spUserContextDump) == 0,
+			"spUserContextDumpTemp should not have diverted from spUserContextDump");
+
 	requestType = lasso_profile_context_get_request_type_from_soap_msg(
 			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body);
+
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLogoutContext = lasso_logout_new(lassoProviderTypeIdp, idpContext, NULL);
 	fail_unless(idpLogoutContext != NULL, "lasso_logout_new failed");
@@ -220,7 +233,8 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_logout_process_request failed");
 	fail_unless(lasso_logout_get_next_providerID(idpLogoutContext) == NULL,
 			"lasso_logout_get_next_providerID failed");
-	lasso_logout_build_response_msg(idpLogoutContext);
+	rc = lasso_logout_build_response_msg(idpLogoutContext);
+	fail_unless(rc == 0, "lasso_logout_build_response_msg failed");
 	soapResponseMsg = LASSO_PROFILE_CONTEXT(idpLogoutContext)->msg_body;
 
 	/* Service provider logout (step 2: process SOAP response) */
