@@ -7,6 +7,7 @@ INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
+	-DTESTSDATADIR=\"$(srcdir)/data/\" \
 	$(LASSO_DEFINES) \
 	$(LASSO_CFLAGS) \
 	$(CHECK_CFLAGS)
@@ -19,4 +20,6 @@ tests_LDADD = \
 endif
 
 EXTRA_DIST = tests.c login_tests.c basic_tests.c
+
+SUBDIRS = data
 

@@ -581,6 +581,11 @@ php/xml/Makefile
 python/Makefile
 swig/Makefile
 tests/Makefile
+tests/data/Makefile
+tests/data/ca1-la/Makefile
+tests/data/idp1-la/Makefile
+tests/data/lecp1-la/Makefile
+tests/data/sp1-la/Makefile
 lasso.pc
 ])
 AC_MSG_RESULT([
