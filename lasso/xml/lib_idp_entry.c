@@ -110,13 +110,12 @@ lasso_lib_idp_entry_set_loc(LassoLibIDPEntry *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_idp_entry_instance_init(LassoLibIDPEntry *instance)
+lasso_lib_idp_entry_instance_init(LassoLibIDPEntry *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "IDPEntry");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "IDPEntry");
 }
 
 static void

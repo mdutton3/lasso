@@ -83,13 +83,12 @@ lasso_lib_authentication_statement_set_sessionIndex(LassoLibAuthenticationStatem
 /*****************************************************************************/
 
 static void
-lasso_lib_authentication_statement_instance_init(LassoLibAuthenticationStatement *instance)
+lasso_lib_authentication_statement_instance_init(LassoLibAuthenticationStatement *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_name(node, "AuthenticationStatement");
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
+  class->set_name(LASSO_NODE(node), "AuthenticationStatement");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
 }
 
 static void

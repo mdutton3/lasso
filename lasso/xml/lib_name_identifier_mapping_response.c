@@ -86,13 +86,12 @@ void lasso_lib_name_identifier_mapping_response_set_status(LassoLibNameIdentifie
 /*****************************************************************************/
 
 static void
-lasso_lib_name_identifier_mapping_response_instance_init(LassoLibNameIdentifierMappingResponse *instance)
+lasso_lib_name_identifier_mapping_response_instance_init(LassoLibNameIdentifierMappingResponse *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "NameIdentifierMappingResponse");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "NameIdentifierMappingResponse");
 }
 
 static void

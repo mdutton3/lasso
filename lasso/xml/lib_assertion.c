@@ -70,13 +70,12 @@ lasso_lib_assertion_set_inResponseTo(LassoLibAssertion *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_assertion_instance_init(LassoLibAssertion *instance,
-				  LassoLibAssertionClass *klass) {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+lasso_lib_assertion_instance_init(LassoLibAssertion *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "Assertion");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "Assertion");
 }
 
 static void

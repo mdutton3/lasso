@@ -77,13 +77,13 @@ lasso_samlp_status_set_statusMessage(LassoSamlpStatus *node,
 /*****************************************************************************/
 
 static void
-lasso_samlp_status_instance_init(LassoSamlpStatus *instance)
+lasso_samlp_status_instance_init(LassoSamlpStatus *node)
 {
-  LassoNode *node = (LassoNode *)instance;
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:protocol", "samlp");
-  class->set_name(node, "Status");
+  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
+		lassoSamlProtocolPrefix);
+  class->set_name(LASSO_NODE(node), "Status");
 }
 
 static void

@@ -72,13 +72,13 @@ lasso_saml_audience_restriction_condition_add_audience(LassoSamlAudienceRestrict
 /*****************************************************************************/
 
 static void
-lasso_saml_audience_restriction_condition_instance_init(LassoSamlAudienceRestrictionCondition *instance)
+lasso_saml_audience_restriction_condition_instance_init(LassoSamlAudienceRestrictionCondition *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "AudienceRestrictionCondition");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "AudienceRestrictionCondition");
 }
 
 static void

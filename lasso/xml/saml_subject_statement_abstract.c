@@ -59,14 +59,12 @@ lasso_saml_subject_statement_abstract_set_subject(LassoSamlSubjectStatementAbstr
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_statement_abstract_instance_init(LassoSamlSubjectStatementAbstract *instance)
+lasso_saml_subject_statement_abstract_instance_init(LassoSamlSubjectStatementAbstract *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  // namespace is herited from StatementAbstract
-  //class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "SubjectStatementAbstract");
+  // namespace herited from StatementAbstract
+  class->set_name(LASSO_NODE(node), "SubjectStatementAbstract");
 }
 
 static void

@@ -127,20 +127,22 @@ lasso_saml_conditions_set_notOnOrAfter(LassoSamlConditions *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_conditions_instance_init(LassoSamlConditions *instance,
-				    LassoSamlConditionsClass *klass) {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+lasso_saml_conditions_instance_init(LassoSamlConditions *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "Conditions");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "Conditions");
 }
 
 static void
-lasso_saml_conditions_class_init(LassoSamlConditionsClass *klass) {
+lasso_saml_conditions_class_init(LassoSamlConditionsClass *klass)
+{
 }
 
-GType lasso_saml_conditions_get_type() {
+GType lasso_saml_conditions_get_type()
+{
   static GType this_type = 0;
 
   if (!this_type) {

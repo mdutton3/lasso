@@ -65,13 +65,13 @@ lasso_saml_subject_locality_set_ipAddress(LassoSamlSubjectLocality *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_locality_instance_init(LassoSamlSubjectLocality *instance)
+lasso_saml_subject_locality_instance_init(LassoSamlSubjectLocality *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "SubjectLocality");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "SubjectLocality");
 }
 
 static void

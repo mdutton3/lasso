@@ -115,13 +115,13 @@ lasso_samlp_request_abstract_set_requestID(LassoSamlpRequestAbstract *node,
 /*****************************************************************************/
 
 static void
-lasso_samlp_request_abstract_instance_init(LassoSamlpRequestAbstract *instance,
-					   LassoSamlpRequestAbstractClass *klass) {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+lasso_samlp_request_abstract_instance_init(LassoSamlpRequestAbstract *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, NULL, "samlp");
-  class->set_name(node, "RequestAbstract");
+  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
+		lassoSamlProtocolPrefix);
+  class->set_name(LASSO_NODE(node), "RequestAbstract");
 }
 
 static void

@@ -70,13 +70,13 @@ lasso_saml_subject_set_subjectConfirmation(LassoSamlSubject *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_instance_init(LassoSamlSubject *instance,
-				 LassoSamlSubjectClass *klass) {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+lasso_saml_subject_instance_init(LassoSamlSubject *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "Subject");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "Subject");
 }
 
 static void

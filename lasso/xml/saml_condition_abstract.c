@@ -36,13 +36,13 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /*****************************************************************************/
 
 static void
-lasso_saml_condition_abstract_instance_init(LassoSamlConditionAbstract *instance)
+lasso_saml_condition_abstract_instance_init(LassoSamlConditionAbstract *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "ConditionAbstract");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "ConditionAbstract");
 }
 
 static void

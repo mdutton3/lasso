@@ -82,12 +82,12 @@ lasso_lib_authn_context_set_authnContextStatementRef(LassoLibAuthnContext *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_authn_context_instance_init(LassoLibAuthnContext *authnContext)
+lasso_lib_authn_context_instance_init(LassoLibAuthnContext *node)
 {
-  LassoNodeClass *object_class = LASSO_NODE_GET_CLASS(authnContext);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  object_class->new_ns(LASSO_NODE(authnContext), "urn:liberty:iff:2003-08", "lib");
-  object_class->set_name(LASSO_NODE(authnContext), "AuthnContext");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "AuthnContext");
 }
 
 static void

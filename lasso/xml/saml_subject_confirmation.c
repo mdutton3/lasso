@@ -74,13 +74,13 @@ lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LassoSamlSubjectCo
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_confirmation_instance_init(LassoSamlSubjectConfirmation *instance)
+lasso_saml_subject_confirmation_instance_init(LassoSamlSubjectConfirmation *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "SubjectConfirmation");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "SubjectConfirmation");
 }
 
 static void

@@ -85,13 +85,12 @@ lasso_lib_request_authn_context_set_authnContextComparison(LassoLibRequestAuthnC
 /*****************************************************************************/
 
 static void
-lasso_lib_request_authn_context_instance_init(LassoLibRequestAuthnContext *instance)
+lasso_lib_request_authn_context_instance_init(LassoLibRequestAuthnContext *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "RequestAuthnContext");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "RequestAuthnContext");
 }
 
 static void

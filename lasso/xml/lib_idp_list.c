@@ -88,13 +88,12 @@ lasso_lib_idp_list_set_idpEntries(LassoLibIDPList *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_idp_list_instance_init(LassoLibIDPList *instance)
+lasso_lib_idp_list_instance_init(LassoLibIDPList *node)
 {
-  LassoNode *node = (LassoNode *)instance;
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "IDPList");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "IDPList");
 }
 
 static void

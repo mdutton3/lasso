@@ -116,12 +116,12 @@ lasso_lib_logout_request_set_nameIdentifier(LassoLibLogoutRequest *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_logout_request_instance_init(LassoLibLogoutRequest *logoutRequest)
+lasso_lib_logout_request_instance_init(LassoLibLogoutRequest *node)
 {
-  LassoNodeClass *object_class = LASSO_NODE_GET_CLASS(logoutRequest);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  object_class->new_ns(LASSO_NODE(logoutRequest), "urn:liberty:iff:2003-08", "lib");
-  object_class->set_name(LASSO_NODE(logoutRequest), "LogoutRequest");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "LogoutRequest");
 }
 
 static void

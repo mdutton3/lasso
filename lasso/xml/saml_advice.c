@@ -76,13 +76,13 @@ lasso_saml_advice_add_assertion(LassoSamlAdvice *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_advice_instance_init(LassoSamlAdvice *instance,
-				LassoSamlAdviceClass *klass) {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+lasso_saml_advice_instance_init(LassoSamlAdvice *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, NULL, "saml");
-  class->set_name(node, "Advice");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "Advice");
 }
 
 static void

@@ -56,13 +56,13 @@ lasso_samlp_status_code_set_value(LassoSamlpStatusCode *node,
 /*****************************************************************************/
 
 static void
-lasso_samlp_status_code_instance_init(LassoSamlpStatusCode *instance)
+lasso_samlp_status_code_instance_init(LassoSamlpStatusCode *node)
 {
-  LassoNode *node = (LassoNode *)instance;
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, NULL, "samlp");
-  class->set_name(node, "StatusCode");
+  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
+		lassoSamlProtocolPrefix);
+  class->set_name(LASSO_NODE(node), "StatusCode");
 }
 
 static void

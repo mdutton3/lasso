@@ -95,14 +95,12 @@ lasso_saml_authentication_statement_set_subjectLocality(LassoSamlAuthenticationS
 /*****************************************************************************/
 
 static void
-lasso_saml_authentication_statement_instance_init(LassoSamlAuthenticationStatement *instance)
+lasso_saml_authentication_statement_instance_init(LassoSamlAuthenticationStatement *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  // namespace is herited from SubjectStatementAbstract -> StatementAbstract
-  //class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "AuthenticationStatement");
+  // namespace herited from SubjectStatementAbstract -> StatementAbstract
+  class->set_name(LASSO_NODE(node), "AuthenticationStatement");
 }
 
 static void

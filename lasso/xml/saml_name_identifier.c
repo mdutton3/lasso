@@ -69,13 +69,13 @@ lasso_saml_name_identifier_set_format(LassoSamlNameIdentifier *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_name_identifier_instance_init(LassoSamlNameIdentifier *instance)
+lasso_saml_name_identifier_instance_init(LassoSamlNameIdentifier *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "NameIdentifier");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "NameIdentifier");
 }
 
 static void

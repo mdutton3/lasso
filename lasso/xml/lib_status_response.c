@@ -95,13 +95,12 @@ lasso_lib_status_response_set_status(LassoLibStatusResponse *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_status_response_instance_init(LassoLibStatusResponse *instance)
+lasso_lib_status_response_instance_init(LassoLibStatusResponse *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "StatusResponse");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "StatusResponse");
 }
 
 static void

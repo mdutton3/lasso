@@ -36,13 +36,12 @@ The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 /*****************************************************************************/
 
 static void
-lasso_lib_sp_provided_name_identifier_instance_init(LassoLibSPProvidedNameIdentifier *instance)
+lasso_lib_sp_provided_name_identifier_instance_init(LassoLibSPProvidedNameIdentifier *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:liberty:iff:2003-08", "lib");
-  class->set_name(node, "SPProvidedNameIdentifier");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "SPProvidedNameIdentifier");
 }
 
 static void

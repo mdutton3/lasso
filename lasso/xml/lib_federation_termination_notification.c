@@ -96,14 +96,12 @@ lasso_lib_federation_termination_notification_set_nameIdentifier(LassoLibFederat
 /*****************************************************************************/
 
 static void
-lasso_lib_federation_termination_notification_instance_init(LassoLibFederationTerminationNotification *federationTerminationNotification)
+lasso_lib_federation_termination_notification_instance_init(LassoLibFederationTerminationNotification *node)
 {
-  LassoNodeClass *object_class = LASSO_NODE_GET_CLASS(federationTerminationNotification);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  object_class->new_ns(LASSO_NODE(federationTerminationNotification),
-		       "urn:liberty:iff:2003-08", "lib");
-  object_class->set_name(LASSO_NODE(federationTerminationNotification),
-			 "FederationTerminationNotification");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "FederationTerminationNotification");
 }
 
 static void

@@ -78,13 +78,13 @@ lasso_saml_authority_binding_set_location(LassoSamlAuthorityBinding *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_authority_binding_instance_init(LassoSamlAuthorityBinding *instance)
+lasso_saml_authority_binding_instance_init(LassoSamlAuthorityBinding *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "AuthorityBinding");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "AuthorityBinding");
 }
 
 static void

@@ -259,13 +259,13 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_assertion_instance_init(LassoSamlAssertion *instance)
+lasso_saml_assertion_instance_init(LassoSamlAssertion *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, "urn:oasis:names:tc:SAML:1.0:assertion", "saml");
-  class->set_name(node, "Assertion");
+  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
+		lassoSamlAssertionPrefix);
+  class->set_name(LASSO_NODE(node), "Assertion");
 }
 
 static void

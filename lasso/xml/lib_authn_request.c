@@ -234,12 +234,12 @@ lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_authn_request_instance_init(LassoLibAuthnRequest *authnRequest)
+lasso_lib_authn_request_instance_init(LassoLibAuthnRequest *node)
 {
-  LassoNodeClass *object_class = LASSO_NODE_GET_CLASS(authnRequest);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  object_class->new_ns(LASSO_NODE(authnRequest), "urn:liberty:iff:2003-08", "lib");
-  object_class->set_name(LASSO_NODE(authnRequest), "AuthnRequest");
+  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
+  class->set_name(LASSO_NODE(node), "AuthnRequest");
 }
 
 static void

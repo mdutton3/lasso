@@ -63,12 +63,13 @@ lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
 /*****************************************************************************/
 
 static void
-lasso_samlp_request_instance_init(LassoSamlpRequest *request)
+lasso_samlp_request_instance_init(LassoSamlpRequest *node)
 {
-  LassoNodeClass *object_class = LASSO_NODE_GET_CLASS(request);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  object_class->new_ns(LASSO_NODE(request), "urn:oasis:names:tc:SAML:1.0:protocol", "samlp");
-  object_class->set_name(LASSO_NODE(request), "Request");
+  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
+		lassoSamlProtocolPrefix);
+  class->set_name(LASSO_NODE(node), "Request");
 }
 
 static void

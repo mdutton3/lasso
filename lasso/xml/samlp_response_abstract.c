@@ -137,13 +137,13 @@ lasso_samlp_response_abstract_set_responseID(LassoSamlpResponseAbstract *node,
 /*****************************************************************************/
 
 static void
-lasso_samlp_response_abstract_instance_init(LassoSamlpResponseAbstract *instance)
+lasso_samlp_response_abstract_instance_init(LassoSamlpResponseAbstract *node)
 {
-  LassoNode *node = LASSO_NODE(instance);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->new_ns(node, NULL, "samlp");
-  class->set_name(node, "ResponseAbstract");
+  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
+		lassoSamlProtocolPrefix);
+  class->set_name(LASSO_NODE(node), "ResponseAbstract");
 }
 
 static void
