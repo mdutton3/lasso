@@ -455,8 +455,8 @@ lasso_assertion_build(gpointer lares,
 					   content);
     }
     else {
-      lasso_samlp_response_abstract_(LASSO_LIB_ASSERTION(assertion),
-				     content);
+      lasso_samlp_response_abstract_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
+						     content);
     }
   }
   xmlFree(content);

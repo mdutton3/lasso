@@ -119,6 +119,9 @@ void
 lasso_node_parse_memory(LassoNode *node,
 			const char *buffer)
 {
+  g_assert(LASSO_IS_NODE(node) && node != NULL); 
+  g_assert(buffer != NULL); 
+
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->parse_memory(node, buffer);
 }
