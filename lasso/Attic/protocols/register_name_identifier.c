@@ -1,17 +1,23 @@
 #include <lasso/protocols/register_name_identifier.h>
 
-LassoNode *
-lasso_build_full_registerNameIdentifierRequest(const xmlChar *requestID,
-					       const xmlChar *majorVersion,
-					       const xmlChar *minorVersion,
-					       const xmlChar *issueInstant,
-					       const xmlChar *providerID,
-					       LassoNode     *idpProvidedNameIdentifer,
-					       LassoNode     *spProvidedNameIdentifier,
-					       LassoNode     *oldProvidedNameIdentifier,
-					       const xmlChar *relayState)
+static LassoNode *
+lasso_register_name_identifier_request_build_full(const xmlChar *requestID,
+						  const xmlChar *majorVersion,
+						  const xmlChar *minorVersion,
+						  const xmlChar *issueInstant,
+						  const xmlChar *providerID,
+						  const xmlChar *idpNameIdentifier,
+						  const xmlChar *idpNameQualifier,
+						  const xmlChar *idpFormat,
+						  const xmlChar *spNameIdentifier,
+						  const xmlChar *spNameQualifier,
+						  const xmlChar *spFormat,
+						  const xmlChar *oldNameIdentifier,
+						  const xmlChar *oldNameQualifier,
+						  const xmlChar *oldFormat,
+						  const xmlChar *relayState)
 {
-  LassoNode *request;
+  LassoNode *request, *idpIdentifierNode, *spIdentifierNode, *oldIdentifierNode;
   
   request = lasso_lib_register_name_identifier_request_new();
   
@@ -54,15 +60,24 @@ lasso_build_full_registerNameIdentifierRequest(const xmlChar *requestID,
   
   lasso_lib_register_name_identifier_request_set_providerID(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 							    providerID);
-  
+ 
+  idpIdentifierNode = lasso_lib_idp_provided_name_identifier_new(idpNameIdentifier);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpIdentifierNode), idpNameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpIdentifierNode), idpFormat);
   lasso_lib_register_name_identifier_request_set_idp_provided_name_identifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
-									      idpProvidedNameIdentifer);
+									      idpIdentifierNode);
   
+  spIdentifierNode = lasso_lib_sp_provided_name_identifier_new(spNameIdentifier);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spIdentifierNode), spNameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spIdentifierNode), spFormat);
   lasso_lib_register_name_identifier_request_set_sp_provided_name_identifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
-									     spProvidedNameIdentifier);
+									     spIdentifierNode);
   
+  oldIdentifierNode = lasso_lib_old_provided_name_identifier_new(oldNameIdentifier);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldIdentifierNode), oldNameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldIdentifierNode), oldFormat);
   lasso_lib_register_name_identifier_request_set_old_provided_name_identifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
-									      oldProvidedNameIdentifier);
+									      oldIdentifierNode);
 	 
   if (relayState != NULL) {
     lasso_lib_register_name_identifier_request_set_relayState(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
@@ -72,29 +87,42 @@ lasso_build_full_registerNameIdentifierRequest(const xmlChar *requestID,
   return (request);
 }
 
-LassoNode *
-lasso_build_registerNameIdentifierRequest(const xmlChar *providerID,
-					  LassoNode     *idpProvidedNameIdentifer,
-					  LassoNode     *spProvidedNameIdentifier,
-					  LassoNode     *oldProvidedNameIdentifier,
-					  const xmlChar *relayState)
+lassoRegisterNameIdentifierRequest *
+lasso_register_name_identifier_request_create(const xmlChar *providerID,
+					      const xmlChar *idpNameIdentifier,
+					      const xmlChar *idpNameQualifier,
+					      const xmlChar *idpFormat,
+					      const xmlChar *spNameIdentifier,
+					      const xmlChar *spNameQualifier,
+					      const xmlChar *spFormat,
+					      const xmlChar *oldNameIdentifier,
+					      const xmlChar *oldNameQualifier,
+					      const xmlChar *oldFormat,
+					      const xmlChar *relayState)
 {
-  LassoNode *request;
+  lassoRegisterNameIdentifierRequest *lareq;
 
-  request = lasso_build_full_registerNameIdentifierRequest(NULL,
-							   NULL,
-							   NULL,
-							   NULL,
-							   providerID,
-							   idpProvidedNameIdentifer,
-							   spProvidedNameIdentifier,
-							   oldProvidedNameIdentifier,
-							   relayState);
-  return (request);
+  lareq = g_malloc(sizeof(lassoRegisterNameIdentifierRequest));
+  lareq->node = lasso_register_name_identifier_request_build_full(NULL,
+								  NULL,
+								  NULL,
+								  NULL,
+								  providerID,
+								  idpNameIdentifier,
+								  idpNameQualifier,
+								  idpFormat,
+								  spNameIdentifier,
+								  spNameQualifier,
+								  spFormat,
+								  oldNameIdentifier,
+								  oldNameQualifier,
+								  oldFormat,
+								  relayState);
+  return (lareq);
 }
 
-LassoNode *
-lasso_build_full_registerNameIdentifierResponse(const xmlChar *responseID,
+static LassoNode *
+lasso_registerNameIdentifierResponse_build_full(const xmlChar *responseID,
 						const xmlChar *majorVersion,
 						const xmlChar *minorVersion,
 						const xmlChar *issueInstant,
@@ -164,24 +192,4 @@ lasso_build_full_registerNameIdentifierResponse(const xmlChar *responseID,
   }
   
   return (response);
-}
-
-LassoNode *lasso_build_registerNameIdentifierResponse(LassoNode     *request,
-						      const xmlChar *providerID,
-						      const xmlChar *statusCodeValue,
-						      const xmlChar *relayState)
-{
-     LassoNode *response;
-
-     response = lasso_build_full_registerNameIdentifierResponse(NULL,
-								NULL,
-								NULL,
-								NULL,
-								NULL,
-								NULL,
-								providerID,
-								statusCodeValue,
-								relayState);
-
-     return(response);
 }

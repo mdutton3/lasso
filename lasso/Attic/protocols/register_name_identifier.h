@@ -32,36 +32,24 @@ extern "C" {
 
 #include <lasso/protocols/protocols.h>
 
-LassoNode *lasso_build_full_registerNameIdentifierRequest(const xmlChar *requestID,
-							  const xmlChar *majorVersion,
-							  const xmlChar *minorVersion,
-							  const xmlChar *issueInstant,
-							  const xmlChar *providerID,
-							  LassoNode     *idpProvidedNameIdentifer,
-							  LassoNode     *spProvidedNameIdentifier,
-							  LassoNode     *oldProvidedNameIdentifier,
-							  const xmlChar *relayState);
+typedef struct _lassoRegisterNameIdentifierRequest lassoRegisterNameIdentifierRequest;
 
-LassoNode *lasso_build_registerNameIdentifierRequest(const xmlChar *providerID,
-						     LassoNode     *idpProvidedNameIdentifer,
-						     LassoNode     *spProvidedNameIdentifier,
-						     LassoNode     *oldProvidedNameIdentifier,
-						     const xmlChar *relayState);
+struct _lassoRegisterNameIdentifierRequest{
+  LassoNode  *node;
+};
 
-LassoNode *lasso_build_full_registerNameIdentifierResponse(const xmlChar *responseID,
-							   const xmlChar *majorVersion,
-							   const xmlChar *minorVersion,
-							   const xmlChar *issueInstant,
-							   const xmlChar *inResponseTo,
-							   const xmlChar *recipient,
-							   const xmlChar *providerID,
-							   const xmlChar *statusCodeValue,
-							   const xmlChar *relayState);
-
-LassoNode *lasso_build_registerNameIdentifierResponse(LassoNode     *request,
-						      const xmlChar *providerID,
-						      const xmlChar *statusCodeValue,
-						      const xmlChar *relayState);
+lassoRegisterNameIdentifierRequest *
+lasso_register_name_identifier_request_create(const xmlChar *providerID,
+					      const xmlChar *idpNameIdentifier,
+					      const xmlChar *idpNameQualifier,
+					      const xmlChar *idpFormat,
+					      const xmlChar *spNameIdentifier,
+					      const xmlChar *spNameQualifier,
+					      const xmlChar *spFormat,
+					      const xmlChar *oldNameIdentifier,
+					      const xmlChar *oldNameQualifier,
+					      const xmlChar *oldFormat,
+					      const xmlChar *relayState);
 
 #ifdef __cplusplus
 }
