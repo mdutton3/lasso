@@ -61,6 +61,41 @@ PyObject *node_dump(PyObject *self, PyObject *args) {
   return (xmlCharPtr_wrap(ret));
 }
 
+PyObject *node_export_to_query(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  guint sign_method;
+  const gchar *private_key_file;
+  gchar *ret;
+
+  if (CheckArgs(args, "OIS:node_export_to_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "Ois:node_export_to_query",
+			 &node_obj, &sign_method, &private_key_file))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_export_to_query(LassoNode_get(node_obj),
+				   sign_method, private_key_file);
+
+  return (charPtr_wrap(ret));
+}
+
+PyObject *node_export_to_soap(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  gchar *ret;
+
+  if (CheckArgs(args, "O:node_export_to_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_export_to_soap",
+			 &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_export_to_soap(LassoNode_get(node_obj));
+
+  return (xmlCharPtr_wrap(ret));
+}
+
 PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   const xmlChar *name;
@@ -125,41 +160,6 @@ PyObject *node_unref(PyObject *self, PyObject *args) {
 
   Py_INCREF(Py_None);
   return (Py_None);
-}
-
-PyObject *node_url_encode(PyObject *self, PyObject *args) {
-  PyObject *node_obj;
-  guint sign_method;
-  const gchar *private_key_file;
-  gchar *ret;
-
-  if (CheckArgs(args, "OIS:node_unref")) {
-    if(!PyArg_ParseTuple(args, (char *) "Ois:node_url_encode",
-			 &node_obj, &sign_method, &private_key_file))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_node_url_encode(LassoNode_get(node_obj),
-			      sign_method, private_key_file);
-
-  return (charPtr_wrap(ret));
-}
-
-PyObject *node_soap_envelop(PyObject *self, PyObject *args) {
-  PyObject *node_obj;
-  gchar *ret;
-
-  if (CheckArgs(args, "O:node_unref")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:node_url_encode",
-			 &node_obj))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_node_soap_envelop(LassoNode_get(node_obj));
-
-  return (charPtr_wrap(ret));
 }
 
 PyObject *node_verify_signature(PyObject *self, PyObject *args) {
