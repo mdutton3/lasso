@@ -46,7 +46,7 @@ class LoginTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server.new(
             '../../examples/data/idp-metadata.xml',
-            '../../examples/data/idp-public-key.pem',
+            None, # '../../examples/data/idp-public-key.pem' is no more used
             '../../examples/data/idp-private-key.pem',
             '../../examples/data/idp-crt.pem',
             lasso.signatureMethodRsaSha1)
@@ -83,7 +83,7 @@ class LoginTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server.new(
             '../../examples/data/sp-metadata.xml',
-            '../../examples/data/sp-public-key.pem',
+            None, # '../../examples/data/sp-public-key.pem' is no more used.
             '../../examples/data/sp-private-key.pem',
             '../../examples/data/sp-crt.pem',
             lasso.signatureMethodRsaSha1)

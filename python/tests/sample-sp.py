@@ -103,7 +103,7 @@ def main():
 
     lassoServer = lasso.Server.new(
         '../../examples/data/sp-metadata.xml',
-        '../../examples/data/sp-public-key.pem',
+        None, # '../../examples/data/sp-public-key.pem' is no more used.
         '../../examples/data/sp-private-key.pem',
         '../../examples/data/sp-crt.pem',
         lasso.signatureMethodRsaSha1)
