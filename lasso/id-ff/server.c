@@ -396,11 +396,11 @@ GType lasso_server_get_type() {
 }
 
 LassoServer *
-lasso_server_new(gchar *metadata,
-		 gchar *public_key,
-		 gchar *private_key,
-		 gchar *certificate,
-		 guint  signature_method)
+lasso_server_new(gchar                *metadata,
+		 gchar                *public_key,
+		 gchar                *private_key,
+		 gchar                *certificate,
+		 lassoSignatureMethod  signature_method)
 {
   LassoServer *server;
   xmlDocPtr    doc;

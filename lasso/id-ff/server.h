@@ -51,7 +51,7 @@ struct _LassoServer {
   gchar *providerID;   
   gchar *private_key;
   gchar *certificate;
-  guint  signature_method;
+  lassoSignatureMethod signature_method;
   /*< private >*/
   LassoServerPrivate *private;
 };
@@ -62,11 +62,11 @@ struct _LassoServerClass {
 
 LASSO_EXPORT GType          lasso_server_get_type                 (void);
 
-LASSO_EXPORT LassoServer*   lasso_server_new                      (gchar       *metadata,
-								   gchar       *public_key,
-								   gchar       *private_key,
-								   gchar       *certificate,
-								   guint       signature_method);
+LASSO_EXPORT LassoServer*   lasso_server_new                      (gchar                *metadata,
+								   gchar                *public_key,
+								   gchar                *private_key,
+								   gchar                *certificate,
+								   lassoSignatureMethod  signature_method);
 
 LASSO_EXPORT LassoServer*   lasso_server_new_from_dump            (gchar       *dump);
 
