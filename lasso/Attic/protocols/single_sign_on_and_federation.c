@@ -536,7 +536,9 @@ lassoRequest *
 lasso_request_create(const xmlChar *assertionArtifact)
 {
      lassoRequest *lareq;
-     LassoNode *request;
+     LassoNode *request = NULL;
+
+     lareq = g_malloc(sizeof(lassoRequest));
 
      request = lasso_samlp_request_new();
 
@@ -600,17 +602,16 @@ lasso_response_init(lassoResponse *lares,
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoSamlMinorVersion);
 
-/*   lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response), */
-/* 						  lasso_get_current_time()); */
-
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  lasso_get_current_time());
   
-  /* InResponseTo */
-/*   content = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(lares->request_node, "RequestID")); */
-/*   if (content != NULL) { */
-/*     lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response), */
-/* 						   content); */
-/*   } */
-/*   xmlFree(content); */
+  // InResponseTo
+  content = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(lares->request_node, "RequestID"));
+  if (content != NULL) {
+    lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						   content);
+  }
+  xmlFree(content);
 
   /* Add Status */
   status = lasso_samlp_status_new();
