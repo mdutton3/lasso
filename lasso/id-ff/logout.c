@@ -969,7 +969,7 @@ lasso_logout_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	logout = g_object_new(LASSO_TYPE_LOGOUT, NULL);
-	LASSO_PROFILE(logout)->server = server;
+	LASSO_PROFILE(logout)->server = g_object_ref(server);
 
 	return logout;
 }
@@ -989,7 +989,7 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 	LassoLogout *logout;
 	xmlDoc *doc;
 
-	logout = lasso_logout_new(server);
+	logout = lasso_logout_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(logout), xmlDocGetRootElement(doc)); 
 

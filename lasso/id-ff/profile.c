@@ -362,14 +362,14 @@ dispose(GObject *object)
 
 	debug("Profile object 0x%p disposed ...", profile);
 
-	/* XXX unref reference counted objects */
-	/* lasso_server_destroy(profile->server);
+	lasso_server_destroy(profile->server);
 	lasso_identity_destroy(profile->identity);
 	lasso_session_destroy(profile->session);
 
-	lasso_node_destroy(profile->request);
-	lasso_node_destroy(profile->response);
-	*/
+	if (profile->request != NULL)
+		lasso_node_destroy(LASSO_NODE(profile->request));
+	if (profile->response != NULL)
+		lasso_node_destroy(LASSO_NODE(profile->response));
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }

@@ -1356,7 +1356,7 @@ lasso_login_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
-	LASSO_PROFILE(login)->server = server;
+	LASSO_PROFILE(login)->server = g_object_ref(server);
 
 	return login;
 }
@@ -1379,7 +1379,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc)); 
-	LASSO_PROFILE(login)->server = server;
+	LASSO_PROFILE(login)->server = g_object_ref(server);
 
 	return login;
 }

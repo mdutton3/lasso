@@ -103,6 +103,8 @@ lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID
 void
 lasso_identity_destroy(LassoIdentity *identity)
 {
+	if (identity == NULL)
+		return;
 	lasso_node_destroy(LASSO_NODE(identity));
 }
 

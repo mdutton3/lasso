@@ -460,5 +460,7 @@ lasso_session_dump(LassoSession *session)
  **/
 void lasso_session_destroy(LassoSession *session)
 {
+	if (session == NULL)
+		return;
 	lasso_node_destroy(LASSO_NODE(session));
 }
