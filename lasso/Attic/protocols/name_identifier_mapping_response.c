@@ -67,9 +67,14 @@ GType lasso_name_identifier_mapping_response_get_type() {
 }
 
 LassoNode*
-lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
-					   const xmlChar *statusCodeValue,
-					   LassoNode     *request)
+lasso_name_identifier_mapping_response_new(const xmlChar       *providerID,
+					   const xmlChar       *statusCodeValue,
+					   LassoNode           *request,
+					   xmlChar             *content,
+					   xmlChar             *nameQualifier,
+					   xmlChar             *format,
+					   lassoSignatureType   sign_type,
+					   lassoSignatureMethod sign_method)
 {
   /* FIXME : change request type */
   LassoNode *response, *ss, *ssc;
@@ -125,18 +130,6 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 }
 
 LassoNode *
-lasso_name_identifier_mapping_response_new_from_dump(const gchar *buffer)
-{
-  LassoNode *response;
-  
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
-  lasso_node_import(response, buffer);
-  
-  return response;
-}
-
-/* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse */
-LassoNode *
 lasso_name_identifier_mapping_response_new_from_query(const gchar *query)
 {
   LassoNode *response;
@@ -180,24 +173,6 @@ lasso_name_identifier_mapping_response_new_from_query(const gchar *query)
   return response;
 }
 
-/* build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest */
-LassoNode *
-lasso_name_identifier_mapping_response_new_from_request_soap(const gchar   *buffer,
-							     const xmlChar *providerID,
-							     const xmlChar *statusCodeValue)
-{
-  LassoNode *request, *response;
-
-  request = lasso_name_identifier_mapping_request_new_from_soap(buffer);
-
-  response = lasso_name_identifier_mapping_response_new(providerID,
-							statusCodeValue,
-							request);
-  lasso_node_destroy(request);
-
-  return response;
-}
-
 LassoNode *
 lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
 {
@@ -223,20 +198,49 @@ lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
   return response;
 }
 
-/* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest */
-LassoNode *
-lasso_name_identifier_mapping_response_new_from_request_query(const gchar   *query,
-							      const xmlChar *providerID,
-							      const xmlChar *statusCodeValue)
-{
-  LassoNode *request, *response;
 
-  request = lasso_name_identifier_mapping_request_new_from_query(query);
+static LassoNode *
+lasso_name_identifier_mapping_response_new_from_xml(gchar *buffer)
+{
+  LassoNode *response;
+  LassoNode *lassoNode_response;
+  xmlNodePtr xmlNode_response;
+  LassoNodeClass *class;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+
+  lassoNode_response = lasso_node_new_from_dump(buffer);
+  class = LASSO_NODE_GET_CLASS(lassoNode_response);
+  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
+  class = LASSO_NODE_GET_CLASS(response);
+  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
+  lasso_node_destroy(lassoNode_response);
   
-  response = lasso_name_identifier_mapping_response_new(providerID,
-							statusCodeValue,
-							request);
-  lasso_node_destroy(request);
+  return response;
+}
+
+LassoNode*
+lasso_name_identifier_mapping_response_new_from_export(gchar               *buffer,
+						       lassoNodeExportType  export_type)
+{
+  LassoNode *response;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    response = lasso_name_identifier_mapping_response_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    response = lasso_name_identifier_mapping_response_new_from_soap(buffer);
+    break;
+  case lassoNodeExportTypeXml:
+    response = lasso_name_identifier_mapping_response_new_from_xml(buffer);
+    break;
+  default:
+    message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
+    return NULL;
+  }
 
   return response;
 }

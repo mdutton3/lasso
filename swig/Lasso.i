@@ -2214,6 +2214,180 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 
 %}
 
+/***********************************************************************
+ * NameIdentifierMapping
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(NameIdentifierMapping) LassoNameIdentifierMapping;
+#endif
+typedef struct {
+	%extend {
+		/* Attributes inherited from LassoProfile */
+
+		%newobject identity_get;
+		LassoIdentity *identity;
+
+		%immutable isIdentityDirty;
+		gboolean isIdentityDirty;
+
+		%immutable isSessionDirty;
+		gboolean isSessionDirty;
+
+		%immutable msgBody;
+		gchar *msgBody;
+
+		%immutable msgUrl;
+		gchar *msgUrl;
+
+		%immutable nameIdentifier;
+		gchar *nameIdentifier;
+
+		%newobject remoteProviderId_get;
+		gchar *remoteProviderId;
+
+		%newobject session_get;
+		LassoSession *session;
+
+		/* Constructor, Destructor & Static Methods */
+
+		LassoNameIdentifierMapping(LassoServer *server);
+
+		~LassoNameIdentifierMapping();
+
+		/* Methods inherited from LassoProfile */
+
+	        THROW_ERROR
+		void setIdentityFromDump(gchar *dump);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void setSessionFromDump(gchar *dump);
+		END_THROW_ERROR
+
+		/* Methods */
+
+		THROW_ERROR
+		void buildRequestMsg();
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void buildResponseMsg();
+		END_THROW_ERROR
+
+		%newobject dump;
+		gchar *dump();
+
+		THROW_ERROR
+		void initRequest(gchar *targetNameSpace, gchar *remoteProviderId = NULL);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void processRequestMsg(gchar *requestMsg, lassoHttpMethod httpMethod);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void processResponseMsg(gchar *responseMsg, lassoHttpMethod httpMethod);
+		END_THROW_ERROR
+
+		THROW_ERROR
+		void validateRequest();
+		END_THROW_ERROR
+	}
+} LassoNameIdentifierMapping;
+
+%{
+
+/* Attributes inherited from LassoProfile implementations */
+
+/* identity */
+#define LassoNameIdentifierMapping_get_identity LassoNameIdentifierMapping_identity_get
+LassoIdentity *LassoNameIdentifierMapping_identity_get(LassoNameIdentifierMapping *self) {
+	return lasso_profile_get_identity(LASSO_PROFILE(self));
+}
+#define LassoNameIdentifierMapping_set_identity LassoNameIdentifierMapping_identity_set
+gint LassoNameIdentifierMapping_identity_set(LassoNameIdentifierMapping *self, LassoIdentity *identity) {
+	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+}
+
+/* isIdentityDirty */
+#define LassoNameIdentifierMapping_get_isIdentityDirty LassoNameIdentifierMapping_isIdentityDirty_get
+gboolean LassoNameIdentifierMapping_isIdentityDirty_get(LassoNameIdentifierMapping *self) {
+	return lasso_profile_is_identity_dirty(LASSO_PROFILE(self));
+}
+
+/* isSessionDirty */
+#define LassoNameIdentifierMapping_get_isSessionDirty LassoNameIdentifierMapping_isSessionDirty_get
+gboolean LassoNameIdentifierMapping_isSessionDirty_get(LassoNameIdentifierMapping *self) {
+	return lasso_profile_is_session_dirty(LASSO_PROFILE(self));
+}
+
+/* msgBody */
+#define LassoNameIdentifierMapping_get_msgBody LassoNameIdentifierMapping_msgBody_get
+gchar *LassoNameIdentifierMapping_msgBody_get(LassoNameIdentifierMapping *self) {
+	return LASSO_PROFILE(self)->msg_body;
+}
+
+/* msgUrl */
+#define LassoNameIdentifierMapping_get_msgUrl LassoNameIdentifierMapping_msgUrl_get
+gchar *LassoNameIdentifierMapping_msgUrl_get(LassoNameIdentifierMapping *self) {
+	return LASSO_PROFILE(self)->msg_url;
+}
+
+/* nameIdentifier */
+#define LassoNameIdentifierMapping_get_nameIdentifier LassoNameIdentifierMapping_nameIdentifier_get
+gchar *LassoNameIdentifierMapping_nameIdentifier_get(LassoNameIdentifierMapping *self) {
+	return LASSO_PROFILE(self)->nameIdentifier;
+}
+
+/* remoteProviderId */
+#define LassoNameIdentifierMapping_get_remoteProviderId LassoNameIdentifierMapping_remoteProviderId_get
+gchar *LassoNameIdentifierMapping_remoteProviderId_get(LassoNameIdentifierMapping *self) {
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+}
+#define LassoNameIdentifierMapping_set_remoteProviderId LassoNameIdentifierMapping_remoteProviderId_set
+void LassoNameIdentifierMapping_remoteProviderId_set(LassoNameIdentifierMapping *self, gchar *remoteProviderId) {
+	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+}
+
+/* session */
+#define LassoNameIdentifierMapping_get_session LassoNameIdentifierMapping_session_get
+LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping *self) {
+	return lasso_profile_get_session(LASSO_PROFILE(self));
+}
+#define LassoNameIdentifierMapping_set_session LassoNameIdentifierMapping_session_set
+gint LassoNameIdentifierMapping_session_set(LassoNameIdentifierMapping *self, LassoSession *session) {
+	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+}
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNameIdentifierMapping lasso_name_identifier_mapping_new
+#define delete_LassoNameIdentifierMapping lasso_name_identifier_mapping_destroy
+
+/* Methods inherited from LassoProfile implementations */
+
+gint LassoNameIdentifierMapping_setIdentityFromDump(LassoNameIdentifierMapping *self, gchar *dump) {
+	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
+}
+
+gint LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *self, gchar *dump) {
+	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
+}
+
+/* Methods implementations */
+
+#define LassoNameIdentifierMapping_buildRequestMsg lasso_name_identifier_mapping_build_request_msg
+#define LassoNameIdentifierMapping_buildResponseMsg lasso_name_identifier_mapping_build_response_msg
+#define LassoNameIdentifierMapping_dump lasso_name_identifier_mapping_dump
+#define LassoNameIdentifierMapping_initRequest lasso_name_identifier_mapping_init_request
+#define LassoNameIdentifierMapping_processRequestMsg lasso_name_identifier_mapping_process_request_msg
+#define LassoNameIdentifierMapping_processResponseMsg lasso_name_identifier_mapping_process_response_msg
+#define LassoNameIdentifierMapping_validateRequest lasso_name_identifier_mapping_validate_request
+
+%}
+
 
 /***********************************************************************
  * NameRegistration

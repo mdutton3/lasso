@@ -55,24 +55,17 @@ struct _LassoNameIdentifierMappingResponseClass {
 
 LASSO_EXPORT GType      lasso_name_identifier_mapping_response_get_type               (void);
 
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new                    (const xmlChar *providerID,
-										       const xmlChar *statusCodeValue,
-										       LassoNode     *request);
+LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new                    (const xmlChar       *providerID,
+										       const xmlChar       *statusCodeValue,
+										       LassoNode           *request,
+										       xmlChar             *content,
+										       xmlChar             *qualifier,
+										       xmlChar             *format,
+										       lassoSignatureType   sign_type,
+										       lassoSignatureMethod sign_method);
 
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_dump          (const gchar *buffer);
-
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_query         (const gchar *query);
-
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_request_soap  (const gchar   *buffer,
-										       const xmlChar *providerID,
-										       const xmlChar *statusCodeValue);
-
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_soap          (const gchar *buffer);
-
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_request_query (const gchar   *query,
-										       const xmlChar *providerID,
-										       const xmlChar *statusCodeValue);
-
+LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_response_new_from_export        (gchar               *buffer,
+										       lassoNodeExportType  export_type);
 
 #ifdef __cplusplus
 }
