@@ -98,8 +98,8 @@ PyObject *authn_request_set_scoping(PyObject *self, PyObject *args) {
 /******************************************************************************/
 
 PyObject *authn_request_get_protocolProfile(PyObject *self, PyObject *args) {
-  xmlChar *query;
-  xmlChar *protocolProfile;
+  gchar *query;
+  gchar *protocolProfile;
 
   if(!PyArg_ParseTuple(args, (char *) "s:authn_request_get_protocolProfile",
 		       &query))

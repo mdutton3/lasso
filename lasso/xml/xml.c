@@ -35,7 +35,7 @@ struct _LassoNodePrivate
 /* virtual public methods                                                    */
 /*****************************************************************************/
 
-GString *
+gchar *
 lasso_node_build_query(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -318,7 +318,7 @@ static void gdata_build_query_foreach_func(GQuark   key_id,
   g_ptr_array_add((GPtrArray *)user_data, array);
 }
 
-static GString *
+static gchar *
 lasso_node_impl_build_query(LassoNode *node)
 {
   guint i, j;
@@ -326,6 +326,7 @@ lasso_node_impl_build_query(LassoNode *node)
   GPtrArray *a, *aa;
   GString *query;
   xmlChar *str_escaped;
+  gchar   *ret;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
@@ -356,7 +357,10 @@ lasso_node_impl_build_query(LassoNode *node)
   g_ptr_array_free(a, TRUE);
   g_datalist_clear(&gd);
 
-  return (query);
+  ret = g_strdup(query->str);
+  g_string_free(query, TRUE);
+  
+  return (ret);
 }
 
 static LassoNode *
@@ -679,41 +683,43 @@ lasso_node_impl_url_encode(LassoNode   *node,
 			   guint        sign_method,
 			   const gchar *private_key_file)
 {
-  GString *msg;
+  GString *url;
   xmlDocPtr doc;
   xmlChar *str1, *str2, *str_escaped;
-  gchar *ret;
+  gchar *unsigned_query, *ret;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  msg = lasso_node_build_query(node);
-
+  unsigned_query = lasso_node_build_query(node);
+  url = g_string_new(unsigned_query);
+  g_free(unsigned_query);
+  
   if (sign_method > 0 && private_key_file != NULL) {
-    msg = g_string_append(msg, "&SigAlg=");
+    url = g_string_append(url, "&SigAlg=");
     switch (sign_method) {
     case lassoUrlEncodeRsaSha1:
       str_escaped = lasso_str_escape(xmlSecHrefRsaSha1);
-      msg = g_string_append(msg, str_escaped);
-      doc = lasso_str_sign(msg->str, xmlSecTransformRsaSha1Id, private_key_file);
+      url = g_string_append(url, str_escaped);
+      doc = lasso_str_sign(url->str, xmlSecTransformRsaSha1Id, private_key_file);
       break;
     case lassoUrlEncodeDsaSha1:
       str_escaped = lasso_str_escape(xmlSecHrefDsaSha1);
-      msg = g_string_append(msg, str_escaped);
-      doc = lasso_str_sign(msg->str, xmlSecTransformDsaSha1Id, private_key_file);
+      url = g_string_append(url, str_escaped);
+      doc = lasso_str_sign(url->str, xmlSecTransformDsaSha1Id, private_key_file);
       break;
     }
     xmlFree(str_escaped);
-    msg = g_string_append(msg, "&Signature=");
+    url = g_string_append(url, "&Signature=");
     str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
     str2 = lasso_str_escape(str1);
     xmlFree(str1);
-    msg = g_string_append(msg, str2);
+    url = g_string_append(url, str2);
     xmlFree(str2);
     xmlFreeDoc(doc);
   }
 
-  ret = g_strdup(msg->str);
-  g_string_free(msg, TRUE);
+  ret = g_strdup(url->str);
+  g_string_free(url, TRUE);
   return (ret);
 }
 
@@ -773,11 +779,9 @@ lasso_node_impl_verify_signature(LassoNode   *node,
 
   /* print verification result to stdout */
   if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    fprintf(stdout, "Signature is OK\n");
     ret = 1;
   }
   else {
-    fprintf(stdout, "Signature is INVALID\n");
     ret = 0;
   }
 

@@ -60,7 +60,7 @@ struct _LassoNodeClass {
   GObjectClass parent_class;
   /*< vtable >*/
   /*< public >*/
-  GString*       (* build_query)      (LassoNode     *node);
+  gchar*         (* build_query)      (LassoNode     *node);
   LassoNode*     (* copy)             (LassoNode     *node);
   xmlChar*       (* dump)             (LassoNode     *node,
 				       const xmlChar *encoding,
@@ -73,19 +73,19 @@ struct _LassoNodeClass {
   LassoNode*     (* get_child)        (LassoNode     *,
 				       const xmlChar *);
   GPtrArray*     (* get_children)     (LassoNode     *);
-  xmlChar *      (* get_content)      (LassoNode     *);
+  xmlChar*       (* get_content)      (LassoNode     *);
   const xmlChar* (* get_name)         (LassoNode     *);
   void           (* load_from_buffer) (LassoNode     *node,
                                        const char    *buffer);
   void           (* rename_prop)      (LassoNode     *node,
 				       const xmlChar *old_name,
 				       const xmlChar *new_name);
-  GData *        (* serialize)        (LassoNode     *,
+  GData*         (* serialize)        (LassoNode     *,
 				       GData         *);
-  gchar *        (* url_encode)       (LassoNode     *node,
+  gchar*         (* url_encode)       (LassoNode     *node,
 				       guint          sign_method,
 				       const gchar   *private_key_file);
-  gchar *        (* soap_envelop)     (LassoNode     *node);
+  gchar*         (* soap_envelop)     (LassoNode     *node);
   gint           (* verify_signature) (LassoNode     *node,
 				       const gchar   *certificate_file);
   /*< private >*/
@@ -120,7 +120,7 @@ LASSO_EXPORT LassoNode*     lasso_node_new              (void);
 LASSO_EXPORT LassoNode*     lasso_node_new_from_dump    (xmlChar *buffer);
 LASSO_EXPORT LassoNode*     lasso_node_new_from_xmlNode (xmlNodePtr node);
 
-LASSO_EXPORT GString*       lasso_node_build_query      (LassoNode *node);
+LASSO_EXPORT gchar*         lasso_node_build_query      (LassoNode *node);
 
 LASSO_EXPORT LassoNode*     lasso_node_copy             (LassoNode *node);
 

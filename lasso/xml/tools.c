@@ -53,7 +53,7 @@ lasso_build_unique_id(guint8 size)
   /* base64 encoding of build string */
   enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0);
 
-  g_free(id);
+  xmlFree(id);
   return (enc_id);
 }
 
@@ -97,7 +97,7 @@ lasso_get_current_time()
 }
 
 GPtrArray *
-lasso_query_get_value(xmlChar       *query,
+lasso_query_get_value(const gchar   *query,
 		      const xmlChar *param)
 {
   gint i;
@@ -140,7 +140,7 @@ gdata_query_to_dict_destroy_notify(gpointer data)
  * Return value: a dictonary
  **/
 GData *
-lasso_query_to_dict(const xmlChar *query)
+lasso_query_to_dict(const gchar *query)
 {
   GData *gd = NULL;
   gchar **sa1, **sa2, **sa3;
@@ -179,7 +179,7 @@ lasso_query_to_dict(const xmlChar *query)
 }
 
 int
-lasso_query_verify_signature(xmlChar *query,
+lasso_query_verify_signature(const gchar   *query,
 			     const xmlChar *sender_public_key_file,
 			     const xmlChar *recipient_private_key_file)
 {
@@ -196,7 +196,7 @@ lasso_query_verify_signature(xmlChar *query,
   gint ret = -1;
 
   /* split query, signature (must be last param) */
-  str_split = g_strsplit((const gchar *)query, "&Signature=", 0);
+  str_split = g_strsplit(query, "&Signature=", 0);
   if (str_split[1] == NULL)
     return (2);
   /* re-create doc to verify (signed + enrypted) */
@@ -238,11 +238,9 @@ lasso_query_verify_signature(xmlChar *query,
   
   /* print verification result to stdout and return */
   if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    fprintf(stdout, "Signature is OK\n");
     ret = 1;
   }
   else {
-    fprintf(stdout, "Signature is INVALID\n");
     ret = 0;
   }
   

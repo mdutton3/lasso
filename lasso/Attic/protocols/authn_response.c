@@ -154,7 +154,7 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 static void
 lasso_authn_response_dispose(LassoAuthnResponse *response)
 {
-  parent_class->dispose(LASSO_NODE(response));
+  parent_class->dispose(G_OBJECT(response));
 }
 
 /* override lasso_node_dump() method */
@@ -169,7 +169,7 @@ lasso_authn_response_dump(LassoAuthnResponse *response,
   response_dump = lasso_node_new();
   LASSO_NODE_GET_CLASS(response_dump)->set_name(response_dump, "LassoDumpAuthnResponse");
   LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
-						 lasso_node_copy(response), 0);
+						 lasso_node_copy(LASSO_NODE(response)), 0);
   if (response->query != NULL)
     LASSO_NODE_GET_CLASS(response_dump)->add_child(response_dump,
 						   lasso_authn_request_new_from_query(response->query), 0);
@@ -185,10 +185,11 @@ lasso_authn_response_dump(LassoAuthnResponse *response,
 static void
 lasso_authn_response_finalize(LassoAuthnResponse *response)
 {
-  xmlFree(response->query);
+  if (response->query != NULL)
+    g_free(response->query);
   if (response->request != NULL)
     g_object_unref(response->request);
-  parent_class->finalize(LASSO_NODE(response));
+  parent_class->finalize(G_OBJECT(response));
 }
 
 /*****************************************************************************/
@@ -210,7 +211,7 @@ lasso_authn_response_class_init(LassoAuthnResponseClass *class)
   /* override parent classes methods */
   gobject_class->dispose  = (void *)lasso_authn_response_dispose;
   gobject_class->finalize = (void *)lasso_authn_response_finalize;
-  lasso_node_class->dump  = lasso_authn_response_dump;
+  lasso_node_class->dump  = (xmlChar *)lasso_authn_response_dump;
 }
 
 GType lasso_authn_response_get_type() {
@@ -264,11 +265,11 @@ lasso_authn_response_new_from_dump(xmlChar *buffer)
 }
 
 LassoNode*
-lasso_authn_response_new_from_request_query(xmlChar       *query,
+lasso_authn_response_new_from_request_query(gchar         *query,
 					    const xmlChar *providerID)
 {
-  GData         *gd;
-  LassoNode     *response, *status, *status_code;
+  GData      *gd;
+  LassoNode  *response, *status, *status_code;
 
   g_return_val_if_fail(query != NULL, NULL);
   g_return_val_if_fail(providerID != NULL, NULL);
@@ -277,7 +278,7 @@ lasso_authn_response_new_from_request_query(xmlChar       *query,
 
   gd = lasso_query_to_dict(query);
   /* store query - need to verify signature */
-  LASSO_AUTHN_RESPONSE(response)->query = query;
+  LASSO_AUTHN_RESPONSE(response)->query   = g_strdup(query);
   LASSO_AUTHN_RESPONSE(response)->request = NULL;
 
   /* ResponseID */

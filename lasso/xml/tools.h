@@ -49,12 +49,12 @@ LASSO_EXPORT xmlChar*   lasso_g_ptr_array_index      (GPtrArray *a,
 
 LASSO_EXPORT xmlChar*   lasso_get_current_time       (void);
 
-LASSO_EXPORT GPtrArray* lasso_query_get_value        (xmlChar       *query,
+LASSO_EXPORT GPtrArray* lasso_query_get_value        (const gchar   *query,
 						      const xmlChar *param);
 
-LASSO_EXPORT GData*     lasso_query_to_dict          (const xmlChar *query);
+LASSO_EXPORT GData*     lasso_query_to_dict          (const gchar *query);
 
-LASSO_EXPORT int        lasso_query_verify_signature (xmlChar       *str,
+LASSO_EXPORT int        lasso_query_verify_signature (const gchar   *query,
 						      const xmlChar *sender_public_key_file,
 						      const xmlChar *recipient_private_key_file);
 

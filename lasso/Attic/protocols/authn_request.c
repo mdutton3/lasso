@@ -29,10 +29,10 @@
 /* functions                                                                 */
 /*****************************************************************************/
 
-xmlChar *
-lasso_authn_request_get_protocolProfile(xmlChar *query)
+gchar *
+lasso_authn_request_get_protocolProfile(gchar *query)
 {
-  xmlChar *protocolProfile;
+  gchar *protocolProfile;
 
   protocolProfile = lasso_g_ptr_array_index(lasso_query_get_value(query, "ProtocolProfile"), 0);
   if (protocolProfile == NULL)
@@ -174,7 +174,7 @@ lasso_authn_request_new(const xmlChar *providerID)
 }
 
 LassoNode*
-lasso_authn_request_new_from_query(xmlChar *query)
+lasso_authn_request_new_from_query(gchar *query)
 {
   LassoNode *request, *authn_context = NULL, *scoping;
   GData     *gd;
