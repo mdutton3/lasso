@@ -32,40 +32,58 @@ extern "C" {
 
 #include <lasso/lasso.h>
 
-LassoNode *lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
-						      xmlChar       *query,
-						      const xmlChar *rsapub,
-						      const xmlChar *rsakey,
-						      gboolean       isAuthenticated,
-						      gboolean      *isPassive,
-						      gboolean      *mustAuthenticate,
-						      GPtrArray     *authenticationMethods,
-						      xmlChar       *authnContextComparison);
+typedef struct _LassoAuthnRequest LassoAuthnRequest;
 
-LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
-				    const xmlChar *nameIDPolicy,
-				    const xmlChar *forceAuthn,
-				    const xmlChar *isPassive,
-				    const xmlChar *protocolProfile,
-				    const xmlChar *assertionConsumerServiceID,
-				    GPtrArray     *authnContextClassRefs,
-				    GPtrArray     *authnContextStatementRefs,
-				    const xmlChar *authnContextComparison,
-				    const xmlChar *relayState,
-				    gint           proxyCount,
-				    GPtrArray     *idpList,
-				    const xmlChar *consent);
+struct _LassoAuthnRequest {
+  LassoNode  *request;
+};
 
-LassoNode *lasso_build_full_authnResponse(LassoNode     *request,
-					  const xmlChar *providerID);
+typedef struct _LassoAuthnResponse LassoAuthnResponse;
 
-LassoNode *lasso_build_full_response(LassoNode     *request,
+struct _LassoAuthnResponse {
+  LassoNode     *response;
+  xmlChar       *request_query;
+  LassoNode     *request;
+  const xmlChar *rsapub;
+  const xmlChar *rsakey;
+};
+
+LassoAuthnRequest *lasso_authn_request_build(const xmlChar *providerID,
+					     const xmlChar *nameIDPolicy,
+					     const xmlChar *forceAuthn,
+					     const xmlChar *isPassive,
+					     const xmlChar *protocolProfile,
+					     const xmlChar *assertionConsumerServiceID,
+					     GPtrArray     *authnContextClassRefs,
+					     GPtrArray     *authnContextStatementRefs,
+					     const xmlChar *authnContextComparison,
+					     const xmlChar *relayState,
+					     gint           proxyCount,
+					     GPtrArray     *idpList,
+					     const xmlChar *consent);
+
+LassoAuthnResponse *lasso_authn_response_create(xmlChar       *query,
+						gboolean       verifySignature,
+						const xmlChar *public_key,
+						const xmlChar *private_key,
+						gboolean       isAuthenticated,
+						gboolean      *isPassive,
+						gboolean      *mustAuthenticate,
+						GPtrArray     *authenticationMethods,
+						xmlChar       *authnContextComparison);
+
+gint lasso_authn_response_build(LassoAuthnResponse *lares,
+				const xmlChar *providerID,
+				gboolean       authentication_result,
+				GPtrArray     *nameIdentifiers);
+
+LassoNode *lasso_response_build_full(LassoNode     *request,
 				     const xmlChar *providerID);
 
-LassoNode *lasso_build_assertion(const xmlChar *inResponseTo,
+LassoNode *lasso_assertion_build(const xmlChar *inResponseTo,
 				 const xmlChar *issuer);
 
-LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
+LassoNode *lasso_authenticationStatement_build(const xmlChar *authenticationMethod,
 					       LassoNode     *nameIdentifier,
 					       LassoNode     *idpProvidedNameIdentifier);
 

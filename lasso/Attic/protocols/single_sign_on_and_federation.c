@@ -25,8 +25,12 @@
 
 #include <lasso/protocols/single_sign_on_and_federation.h>
 
+/*****************************************************************************/
+/* AuthnRequest                                                              */
+/*****************************************************************************/
+
 static LassoNode *
-lasso_build_full_authnRequest(const xmlChar *requestID,
+lasso_authnRequest_build_full(const xmlChar *requestID,
 			      const xmlChar *majorVersion,
 			      const xmlChar *minorVersion,
 			      const xmlChar *issueInstant,
@@ -168,24 +172,69 @@ lasso_build_full_authnRequest(const xmlChar *requestID,
   return (request);
 }
 
-LassoNode *
-lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
-					   xmlChar       *query,
-					   const xmlChar *rsapub,
-					   const xmlChar *rsakey,
-					   gboolean       isAuthenticated,
-					   gboolean      *isPassive,
-					   gboolean      *mustAuthenticate,
-					   GPtrArray     *authenticationMethods,
-					   xmlChar       *authnContextComparison)
+LassoAuthnRequest *
+lasso_authn_request_build(const xmlChar *providerID,
+			  const xmlChar *nameIDPolicy,
+			  const xmlChar *forceAuthn,
+			  const xmlChar *isPassive,
+			  const xmlChar *protocolProfile,
+			  const xmlChar *assertionConsumerServiceID,
+			  GPtrArray     *authnContextClassRefs,
+			  GPtrArray     *authnContextStatementRefs,
+			  const xmlChar *authnContextComparison,
+			  const xmlChar *relayState,
+			  gint           proxyCount,
+			  GPtrArray     *idpList,
+			  const xmlChar *consent)
 {
-  LassoNode *req;
+  LassoAuthnRequest *lareq;
+
+  lareq = g_malloc(sizeof(LassoAuthnRequest));
+  lareq->request = lasso_authnRequest_build_full(NULL,
+						 NULL,
+						 NULL,
+						 NULL,
+						 providerID,
+						 nameIDPolicy,
+						 forceAuthn,
+						 isPassive,
+						 protocolProfile,
+						 assertionConsumerServiceID,
+						 authnContextClassRefs,
+						 authnContextStatementRefs,
+						 authnContextComparison,
+						 relayState,
+						 proxyCount,
+						 idpList,
+						 consent);
+  return (lareq);
+}
+
+/*****************************************************************************/
+/* AuthnResponse                                                             */
+/*****************************************************************************/
+
+LassoAuthnResponse *
+lasso_authn_response_create(xmlChar       *query,
+			    gboolean       verifySignature,
+			    const xmlChar *public_key,
+			    const xmlChar *private_key,
+			    gboolean       isAuthenticated,
+			    gboolean      *isPassive,
+			    gboolean      *mustAuthenticate,
+			    GPtrArray     *authenticationMethods,
+			    xmlChar       *authnContextComparison)
+{
+  LassoAuthnResponse *lares;
   GData     *gd;
   gboolean   forceAuthn = FALSE;
   gint       proxyCount = 0;
 
-  if (verifySignature == TRUE){
-    if (lasso_str_verify(query, rsapub, rsakey) != 1) {
+  lares = g_malloc(sizeof(LassoAuthnResponse));
+  lares->request_query = query;
+
+  if (verifySignature == TRUE) {
+    if (lasso_str_verify(query, public_key, private_key) != 1) {
       return (NULL);
     }
   }
@@ -193,37 +242,36 @@ lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
   gd = lasso_query_to_dict(query);
 
   if (gd != NULL) {
-    /* if ProxyCount exists, convert into integer */
+    /* if ProxyCount exists, convert it into integer */
     if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0) != NULL) {
       proxyCount = atoi(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0));
     }
-    req = lasso_build_full_authnRequest(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProtocolProfile"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AssertionConsumerServiceID"), 0),
-					(GPtrArray *)g_datalist_get_data(&gd, "AuthnContextClassRef"),
-					(GPtrArray *)g_datalist_get_data(&gd, "AuthnContextStatementRef"),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
-					proxyCount,
-					(GPtrArray *)g_datalist_get_data(&gd, "IDPList"),
-					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
-    g_datalist_clear(&gd);
+    lares->request = lasso_authnRequest_build_full(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProtocolProfile"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AssertionConsumerServiceID"), 0),
+						   (GPtrArray *)g_datalist_get_data(&gd, "AuthnContextClassRef"),
+						   (GPtrArray *)g_datalist_get_data(&gd, "AuthnContextStatementRef"),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
+						   proxyCount,
+						   (GPtrArray *)g_datalist_get_data(&gd, "IDPList"),
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
   }
+  
+  lasso_node_dump(lares->request, "iso-8859-1", 1);
 
-  lasso_node_dump(req, "iso-8859-1", 1);
-
-  if (req == NULL) {
+  if (lares->request == NULL) {
     return (NULL);
   }
 
-  if (xmlStrEqual(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0), "true")) {
+  if (xmlStrEqual((xmlChar *)lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0), "true")) {
     *isPassive = TRUE;
   }
   else {
@@ -236,54 +284,27 @@ lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
   else {
     forceAuthn = FALSE;
   }
+  /* we can freed gd */
+  g_datalist_clear(&gd);
 
   *mustAuthenticate = FALSE;
-  if ((forceAuthn == TRUE) || (isAuthenticated == TRUE)) {
+  //if ((forceAuthn == TRUE) || (isAuthenticated == TRUE)) {
+  if (forceAuthn == TRUE && isAuthenticated == TRUE && *isPassive != TRUE) {
     *mustAuthenticate = TRUE;
   }
 
-  return (req);
+  return (lares);
 }
 
-LassoNode *
-lasso_build_authnRequest(const xmlChar *providerID,
-			 const xmlChar *nameIDPolicy,
-			 const xmlChar *forceAuthn,
-			 const xmlChar *isPassive,
-			 const xmlChar *protocolProfile,
-			 const xmlChar *assertionConsumerServiceID,
-			 GPtrArray     *authnContextClassRefs,
-			 GPtrArray     *authnContextStatementRefs,
-			 const xmlChar *authnContextComparison,
-			 const xmlChar *relayState,
-			 gint           proxyCount,
-			 GPtrArray     *idpList,
-			 const xmlChar *consent)
-{
-  return (lasso_build_full_authnRequest(NULL,
-					NULL,
-					NULL,
-					NULL,
-					providerID,
-					nameIDPolicy,
-					forceAuthn,
-					isPassive,
-					protocolProfile,
-					assertionConsumerServiceID,
-					authnContextClassRefs,
-					authnContextStatementRefs,
-					authnContextComparison,
-					relayState,
-					proxyCount,
-					idpList,
-					consent));
-}
-
-LassoNode *
-lasso_build_full_authnResponse(LassoNode     *request,
-			       const xmlChar *providerID)
+gint
+lasso_authn_response_build(LassoAuthnResponse *lares,
+			   const xmlChar      *providerID,
+			   gboolean            authentication_result,
+			   GPtrArray          *nameIdentifiers)
 {
   LassoNode *response;
+  xmlChar *content;
+  gint status_code = 0;
 
   response = lasso_lib_authn_response_new();
   
@@ -298,11 +319,30 @@ lasso_build_full_authnResponse(LassoNode     *request,
   
   lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response), providerID);
   
-  return(response);
+  if (authentication_result == TRUE) {
+    content = lasso_node_get_content(lasso_node_get_child(lares->request, "NameIDPolicy"));
+    if (content == NULL) {
+      printf("Pas de NameIDPolicy\n");
+      status_code = 1;
+    }
+    else
+      printf("NameIDPolicy = %s\n", content);
+    xmlFree(content);
+  }
+  else
+    status_code = 0;
+
+  content = lasso_node_get_content(lasso_node_get_child(lares->request, "RelayState"));
+  if (content != NULL) {
+    lasso_lib_authn_response_set_relayState(LASSO_LIB_AUTHN_RESPONSE(response), content);
+  }
+  xmlFree(content);
+
+  lares->response = response;
 }
 
 LassoNode *
-lasso_build_full_response(LassoNode     *request,
+lasso_response_build_full(LassoNode     *request,
 			  const xmlChar *providerID)
 {
   LassoNode *response;
@@ -322,7 +362,7 @@ lasso_build_full_response(LassoNode     *request,
 }
 
 LassoNode *
-lasso_build_assertion(const xmlChar *inResponseTo,
+lasso_assertion_build(const xmlChar *inResponseTo,
 		      const xmlChar *issuer)
 {
   LassoNode *assertion, *subject;
@@ -348,7 +388,7 @@ lasso_build_assertion(const xmlChar *inResponseTo,
 }
 
 LassoNode *
-lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
+lasso_authenticationStatement_build(const xmlChar *authenticationMethod,
 				    LassoNode     *nameIdentifier,
 				    LassoNode     *idpProvidedNameIdentifier)
 {
