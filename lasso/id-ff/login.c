@@ -1437,8 +1437,6 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
   request = lasso_authn_request_new(LASSO_PROFILE(login)->remote_providerID,
 				    lassoSignatureTypeNone, 0);
 
-  lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request),
-				      lassoLibConsentObtained);
   lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), FALSE);
   lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request),
 					   lassoLibNameIDPolicyTypeAny);
