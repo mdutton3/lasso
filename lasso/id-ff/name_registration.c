@@ -506,8 +506,8 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
   case lassoHttpMethodSoap:
     profile->request = lasso_register_name_identifier_request_new_from_export(request_msg, lassoNodeExportTypeSoap);
     if (LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request) == FALSE) {
-      message(G_LOG_LEVEL_CRITICAL, "Message is not a RegisterNameIdentifierRequest\n");
-      ret = -1;
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
+      ret = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
       goto done;
     }
     break;
@@ -519,8 +519,8 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
     }
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+    ret = LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
     goto done;
   }
 

@@ -611,8 +611,8 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 
     /* verify requets is a LogoutRequest */
     if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
-      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutRequest\n");
-      ret = -1;
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
+      ret = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
       goto done;
     }
 
@@ -646,8 +646,8 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid request method\n");
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+    ret = LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
     goto done;
   }
 

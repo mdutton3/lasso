@@ -390,6 +390,11 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation,
   case lassoHttpMethodSoap:
     debug("Build a federation termination notification from soap msg\n");
     profile->request = lasso_federation_termination_notification_new_from_export(notification_msg, lassoNodeExportTypeSoap);
+    if (LASSO_IS_FEDERATION_TERMINATION_NOTIFICATION(profile->request) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
+      ret = LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+      goto done;
+    }
     break;
   case lassoHttpMethodRedirect:
     debug("Build a federation termination notification from query msg\n");
@@ -400,13 +405,8 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation,
     }
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid notification method\n");
-    ret = -1;
-    goto done;
-  }
-  if (profile->request==NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Error while building the notification from msg\n");
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+    ret = LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
     goto done;
   }
 

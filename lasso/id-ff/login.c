@@ -1206,36 +1206,36 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  if (authn_request_http_method != lassoHttpMethodRedirect && \
-      authn_request_http_method != lassoHttpMethodPost && \
-      authn_request_http_method != lassoHttpMethodSoap) {
-    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
-    return LASSO_PARAM_ERROR_INVALID_VALUE;
-  }
-
   /* rebuild request */
   switch (authn_request_http_method) {
   case lassoHttpMethodRedirect:
     /* LibAuthnRequest send by method GET */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeQuery);
+    if (LASSO_PROFILE(login)->request == NULL) {
+      return LASSO_PROFILE_ERROR_INVALID_QUERY;
+    }
     break;
   case lassoHttpMethodPost:
     /* LibAuthnRequest send by method POST */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeBase64);
+    if (LASSO_PROFILE(login)->request == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_POST_MSG));
+      return LASSO_PROFILE_ERROR_INVALID_POST_MSG;
+    }
     break;
   case lassoHttpMethodSoap:
     /* LibAuthnRequest send by method SOAP - useful only for LECP */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeSoap);
-    break;
+    if (LASSO_PROFILE(login)->request == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_SOAP_MSG));
+      return LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
+    }
   default:
-    break;
-  }
-  if (LASSO_PROFILE(login)->request == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
-    return LASSO_PROFILE_ERROR_INVALID_QUERY;
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+    return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
   }
 
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
