@@ -74,7 +74,6 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_login_init_request,	NULL)
 	PHP_FE(lasso_login_process_response_msg,	NULL)
 	PHP_FE(lasso_login_accept_sso,	NULL)
-	PHP_FE(lasso_login_set_identity_from_dump,	NULL)
 
 	/* lasso_user.c */
 	PHP_FE(lasso_identity_new,	NULL)
@@ -98,6 +97,7 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_profile_get_session,	NULL)
 	PHP_FE(lasso_profile_is_session_dirty,	NULL)
 	PHP_FE(lasso_profile_get_nameidentifier,	NULL)
+	PHP_FE(lasso_profile_set_identity_from_dump,	NULL)
 	
 	/* lasso_lib_authn_request.c */
 	PHP_FE(lasso_cast_to_lib_authn_request,	NULL)

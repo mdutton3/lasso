@@ -368,3 +368,29 @@ PHP_FUNCTION(lasso_profile_get_nameidentifier) {
 	  RETURN_STRING(ctx->nameIdentifier, 1);
 }
 /* }}} */
+
+/* {{{ proto lasso_profile_set_identity_from_dump(resource login, string dump) */
+PHP_FUNCTION(lasso_profile_set_identity_from_dump) {
+
+  	LassoProfile   *ctx;  
+	char *dump;
+	int dump_len;
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 2) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
+		  &dump, &dump_len) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	lasso_profile_set_identity_from_dump(ctx, dump);
+}
+/* }}} */

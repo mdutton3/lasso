@@ -271,28 +271,4 @@ PHP_FUNCTION(lasso_login_accept_sso) {
 /* }}} */
 
 
-/* {{{ proto lasso_login_set_identity_from_dump(resource login, string dump) */
-PHP_FUNCTION(lasso_login_set_identity_from_dump) {
 
-  	LassoLogin   *login;  
-	char *dump;
-	int dump_len;
-
-	zval *parm;
-
-	int num_args;
-	int ret;
-
-	if ((num_args = ZEND_NUM_ARGS()) != 2) 
-		WRONG_PARAM_COUNT
-
-	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
-		  &dump, &dump_len) == FAILURE) {
-		return;
-	}
-
-	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
-
-	lasso_login_set_identity_from_dump(login, dump);
-}
-/* }}} */
