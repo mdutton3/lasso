@@ -126,7 +126,6 @@ AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of 
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
 LASSO_VERSION_INFO="$current:$VERSION_RELEASE:$VERSION_MINOR"
 AC_SUBST(LASSO_VERSION_INFO)
-AC_MSG_RESULT([Setup version.])
 
 # OSX Fink
 if test -d /sw/bin ; then
@@ -237,8 +236,10 @@ fi
 changequote([, ])dnl
 if test "X$JAVA_VERSION" != X; then
   languages_available="$languages_available java($JAVA_VERSION)"
-  AM_CONDITIONAL([JAVA_ENABLED],[test "x$with_java" = "xyes"])
+else
+  with_java=no
 fi
+AM_CONDITIONAL([JAVA_ENABLED],[test "x$with_java" = "xyes"])
 AC_MSG_RESULT($with_java)
 if test "X$JAVA" = "Xgij"; then
     JAVAC_FLAGS="-C"
@@ -293,12 +294,12 @@ if test "X$PYTHON_VERSION" != X; then
                 AC_SUBST(PY_LIB_A)
 		AC_SUBST(PY_SITE_PACKAGES)
                 languages_available="$languages_available python($PYTHON_VERSION)"
-                AM_CONDITIONAL([PYTHON_ENABLED],[test "x$with_python" = "xyes"])
         else
 		with_python=false
 	fi
     fi
 fi
+AM_CONDITIONAL([PYTHON_ENABLED],[test "x$with_python" = "xyes"])
 AC_MSG_RESULT($with_python)
 AC_SUBST(PYTHON_VERSION)
 
