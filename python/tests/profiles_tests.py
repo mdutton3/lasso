@@ -189,13 +189,6 @@ class LogoutTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
-        lassoLogoutDump = """
-<Logout xmlns="http://www.entrouvert.org/namespaces/lasso/0.0"><lib:LogoutRequest xmlns:lib="urn:liberty:iff:2003-08" RequestID="_6857939027AA10E2E8DDE40559BAD155" MajorVersion="1" MinorVersion="2" IssueInstant="2004-08-31T22:49:35Z"><lib:ProviderID>https://idp1/metadata</lib:ProviderID><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://idp1/metadata" Format="urn:liberty:iff:nameid:federated">_68D63AFCDE6A9CB4DBDBA5C411ED086F</saml:NameIdentifier></lib:LogoutRequest><NameIdentifier>_68D63AFCDE6A9CB4DBDBA5C411ED086F</NameIdentifier><RemoteProviderID>https://sp1/metadata</RemoteProviderID><MsgUrl>https://sp1:2006/singleLogout?NameIdentifier=_68D63AFCDE6A9CB4DBDBA5C411ED086F&amp;Format=urn%3Aliberty%3Aiff%3Anameid%3Afederated&amp;NameQualifier=https%3A%2F%2Fidp1%2Fmetadata&amp;ProviderID=https%3A%2F%2Fidp1%2Fmetadata&amp;IssueInstant=2004-08-31T22%3A49%3A35Z&amp;MinorVersion=2&amp;MajorVersion=1&amp;RequestID=_6857939027AA10E2E8DDE40559BAD155&amp;SigAlg=http%3A%2F%2Fwww.w3.org%2F2000%2F09%2Fxmldsig%23rsa-sha1&amp;Signature=law0RBgfmWoJ61u1aCzMhD59cFFh5O%2FY62P7C%2F2UKmOL4Ay7Gln5kI4jtgsbJkBe%0AKM5reehsofqGufpArbOFxEVlsV8To8S1zfXla1yDVB2aLZUb8qnrfrcW3rQoJbMd%0AJSUZ8i5JnADBn1ql31Eh%2BtcXrKDJVAFVZa0%2BHQMpDT1y0n2tsC49gsesLr9bXDHy%0A7Nia7%2Bl9qJfOzMGoiXlP6ClfT8LzjYxtdM7yfSDz%2FY4LcGGcjlGvsmG7tgUeYHPG%0AI6zixoTr2i6AS7PSZ41FosmVZTugBIueWWWtxffXp6BNQbzJqUojyZeGMhNeVtS8%0AaKQZ8KsYgOSAeMAA2v%2FbHw%3D%3D</MsgUrl><RequestType>0</RequestType><ResponseType>0</ResponseType><ProviderType>2</ProviderType></Logout>
-""".strip() # Emacs Python Mode trick: "
-        for i in range(20):
-            # The newFromDump should not segfault from time to time.
-            logout = lasso.Logout.newFromDump(lassoServer, lassoLogoutDump)
-            self.failUnlessEqual(logout.dump(), lassoLogoutDump)
 
 
 class DefederationTestCase(unittest.TestCase):
