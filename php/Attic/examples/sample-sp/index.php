@@ -26,7 +26,6 @@
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 	if ($ret == FALSE)
 	{
-	  
 		print "<p align='center'><b>The Lasso Extension is not available</b><br>";
 		print "Please check your PHP extensions<br>";
 		print "You can get more informations about <b>Lasso</b> at <br>";
@@ -44,16 +43,16 @@
  lasso_init();
  
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Lasso Service Provider Example</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
 </head>
 
 <body>
-<br><br>
-<table border="1" align="center" frame="above">
+<p>
+<table border="1" frame="above">
 <tr>
   <td><b>Service Provider Administration</b></td>
 </tr>
@@ -88,8 +87,9 @@
 </tr>
 <?php } ?>
 </table>
-
-<table border="1" align="center" frame="above">
+</p>
+<p>
+<table border="1" frame="above">
 <caption><b>Status</b></caption>
 <tr>
   <?php 
@@ -140,13 +140,14 @@
 	?>
 </tr>
 </table>
+</p>
 <?php
 }
 ?>
 <p>Lasso Version : <?php echo lasso_version(); ?></p>
 
 <br>
-<p align="right">Copyright &copy; 2004 Entr'ouvert</p>
+<p>Copyright &copy; 2004 Entr'ouvert</p>
 
 </body>
 

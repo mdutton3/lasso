@@ -109,6 +109,7 @@ PHP_FUNCTION(lasso_profile_get_session);
 PHP_FUNCTION(lasso_profile_is_session_dirty);	
 PHP_FUNCTION(lasso_profile_get_nameidentifier);	
 PHP_FUNCTION(lasso_profile_set_identity_from_dump);
+PHP_FUNCTION(lasso_profile_set_session_from_dump);
 
 /* lasso_lib_authn_request.c */
 PHP_FUNCTION(lasso_cast_to_lib_authn_request);

@@ -70,53 +70,54 @@ PHP_FUNCTION(lasso_profile_new)
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_dump() */
+/* TODO {{{ proto lasso_profile_dump() */
 PHP_FUNCTION(lasso_profile_dump) 
 {
   
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_set_remote_providerid() */
+/* TODO {{{ proto lasso_profile_set_remote_providerid() */
 PHP_FUNCTION(lasso_profile_set_remote_providerid) 
 {
   
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_set_response_status() */
+/* TODO {{{ proto lasso_profile_set_response_status() */
 PHP_FUNCTION(lasso_profile_set_response_status) 
 {
   
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_user_from_dump() */
+/* TODO {{{ proto lasso_profile_user_from_dump() */
 PHP_FUNCTION(lasso_profile_user_from_dump) 
 {
   
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_get_request_type_from_soap_msg() */
+/* TODO {{{ proto lasso_profile_get_request_type_from_soap_msg() */
 PHP_FUNCTION(lasso_profile_get_request_type_from_soap_msg) 
 {
   
 }
 /* }}} */
 
-/* {{{ proto resource lasso_cast_to_profile(resource login) */
+/* {{{ proto resource lasso_cast_to_profile(resource login|logout) */
 PHP_FUNCTION(lasso_cast_to_profile) 
 {
   	LassoProfile	*ctx;  
-  	LassoLogin   		*login;  
-
-  	
+  	LassoLogin   	*login;  
+  	LassoLogout   	*logout;  
 
 	zval *parm;
-
+	char *typename;
 	int num_args;
 	int ret;
+
+	ctx = 0;
 
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT
@@ -125,16 +126,25 @@ PHP_FUNCTION(lasso_cast_to_profile)
 		return;
 	}
 
-	ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
-	
-	ctx = LASSO_PROFILE(login);
+	typename = zend_rsrc_list_get_rsrc_type(Z_LVAL_P(parm) TSRMLS_CC);
 
-	/* zend_printf("ctx %p, login %p\n", ctx, login);
+	if (strcmp(typename, le_lassologin_name) == 0)
+	{
+	  ZEND_FETCH_RESOURCE(login, LassoLogin *, &parm, -1, le_lassologin_name, le_lassologin);
+	  ctx = LASSO_PROFILE(login);
+	} 
+	else if (strcmp(typename, le_lassologout_name) == 0) 
+	{
+	  ZEND_FETCH_RESOURCE(logout, LassoLogout *, &parm, -1, le_lassologout_name, le_lassologout);
+	  ctx = LASSO_PROFILE(logout);
+	}
+	else
+	{
+	  zend_error(E_ERROR, "Can not cast %s to LassoProfile", typename);
+	}
 
-	zend_printf("msg_url %s\n",  ctx->msg_url);
-	zend_printf("msg_body %s\n",  ctx->msg_body); */
-
-	ZEND_REGISTER_RESOURCE(return_value, ctx, le_lassoprofile);
+	if (ctx)
+	  ZEND_REGISTER_RESOURCE(return_value, ctx, le_lassoprofile);
 }
 /* }}} */
 
@@ -369,7 +379,7 @@ PHP_FUNCTION(lasso_profile_get_nameidentifier) {
 }
 /* }}} */
 
-/* {{{ proto lasso_profile_set_identity_from_dump(resource login, string dump) */
+/* {{{ proto lasso_profile_set_identity_from_dump(resource profile, string dump) */
 PHP_FUNCTION(lasso_profile_set_identity_from_dump) {
 
   	LassoProfile   *ctx;  
@@ -392,5 +402,31 @@ PHP_FUNCTION(lasso_profile_set_identity_from_dump) {
 	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
 
 	lasso_profile_set_identity_from_dump(ctx, dump);
+}
+/* }}} */
+
+/* {{{ proto lasso_profile_set_session_from_dump(resource profile, string dump) */
+PHP_FUNCTION(lasso_profile_set_session_from_dump) {
+
+  	LassoProfile   *ctx;  
+	char *dump;
+	int dump_len;
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 2) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
+		  &dump, &dump_len) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	lasso_profile_set_session_from_dump(ctx, dump);
 }
 /* }}} */

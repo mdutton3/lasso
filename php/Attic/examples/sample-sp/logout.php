@@ -1,6 +1,6 @@
 <?php
 /*  
- * Service Provider Example -- AssertionConsumer
+ * Service Provider Example -- Logout
  *
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
@@ -23,6 +23,9 @@
  */
 
   include "config.php.inc";  
+
+ require_once 'DB.php';
+
   
   session_start();
 
@@ -32,6 +35,11 @@
 	}
 
   lasso_init();
+  
+  $db = &DB::connect($dsn);
+
+  if (DB::isError($db)) 
+	die($db->getMessage());
 
   $server_dump = file_get_contents($server_dump_filename);
   
@@ -39,7 +47,27 @@
 
   $logout = lasso_logout_new($server, lassoProviderTypeSp);
 
-  // $profile = lasso_cast_to_profile($logout);
+  $profile = lasso_cast_to_profile($logout);
+
+  lasso_profile_set_session_from_dump($profile, $_SESSION['session_dump']);
+
+  $query = "SELECT identity_dump FROM users WHERE user_id='" . $_SESSION['user_id'] . "'";
+
+  $res =& $db->query($query);
+  
+  if (DB::isError($res)) 
+	print $res->getMessage(). "\n";
+ 
+  $row = $res->fetchRow();
+  $identity_dump = $row[0];
+
+  lasso_profile_set_identity_from_dump($profile, $identity_dump);
+
+  lasso_logout_init_request($logout, "");
+  lasso_logout_build_request_msg($logout); 
+
+  $db->disconnect();
+
 
   lasso_shutdown();
 ?>

@@ -99,6 +99,7 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_profile_is_session_dirty,	NULL)
 	PHP_FE(lasso_profile_get_nameidentifier,	NULL)
 	PHP_FE(lasso_profile_set_identity_from_dump,	NULL)
+	PHP_FE(lasso_profile_set_session_from_dump,	NULL)
 	
 	/* lasso_lib_authn_request.c */
 	PHP_FE(lasso_cast_to_lib_authn_request,	NULL)
