@@ -74,18 +74,18 @@ lasso_login_build_assertion(LassoLogin      *login,
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   /* federation MAY be NULL */
 
-  /* get RequestID to build Assertion */
+  /*
+    get RequestID to build Assertion
+    it may be NULL when the Identity provider initiates SSO.
+    in this case, no InResponseTo will be added in assertion
+  */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
-					"RequestID", &err);
-  if (requestID == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
-    return ret;
-  }
+					"RequestID", NULL);
   assertion = lasso_assertion_new(LASSO_PROFILE(login)->server->providerID,
 				  requestID);
-  xmlFree(requestID);
+  if (requestID != NULL) {
+    xmlFree(requestID);
+  }
 
   if (xmlStrEqual(login->nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
     /* if NameIDPolicy is 'onetime', don't use a federation */
@@ -906,8 +906,9 @@ lasso_login_build_request_msg(LassoLogin *login)
  * Builds a SOAP response message. The data for the sending of the response
  * are stored in msg_body.
  * 
- * Return value: 0 on success and a negative value otherwise.
- **/gint
+ * Return value: 0 on success or a negative value if an 
+ **/
+gint
 lasso_login_build_response_msg(LassoLogin *login,
 			       gchar      *remote_providerID)
 {
@@ -961,12 +962,26 @@ lasso_login_build_response_msg(LassoLogin *login,
   return ret;
 }
 
+/**
+ * lasso_login_destroy:
+ * @login: a LassoLogin
+ * 
+ * Destroys LassoLogin objects created with lasso_login_new() or lasso_login_new_from_dump().
+ **/
 void
 lasso_login_destroy(LassoLogin *login)
 {
   g_object_unref(G_OBJECT(login));
 }
 
+/**
+ * lasso_login_dump:
+ * @login: a login object
+ * 
+ * Dumps the login object in an XML string.
+ * 
+ * Return value: a newly allocated string orgative value if an error occurs.
+ **/
 gchar*
 lasso_login_dump(LassoLogin *login)
 {
@@ -1383,7 +1398,7 @@ lasso_login_process_response_msg(LassoLogin  *login,
 /**
  * lasso_login_process_without_authn_request_msg:
  * @login: a LassoLogin.
- * @remote_providerID: the ProviderID of the remote provider (may be NULL).
+ * @remote_providerID: the providerID of the remote service provider (may be NULL).
  * @relayState: the value understood by mutual agreement between the identity provider and service
  * provider so that the service provider knows how to handle subsequent interactions with the
  * Principal after SSO. This MAY be the URL of a resource at the service provider (may be NULL).
@@ -1422,9 +1437,14 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
     lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(request),
 					   relayState);
   }
+
+  /* remove RequestID attribute else it would be used in response assertion */
+  xmlRemoveProp((xmlAttrPtr)lasso_node_get_attr(request, "RequestID", NULL));
+
   LASSO_PROFILE(login)->request = request;
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
+  /* store providerID of the service provider */
   if (remote_providerID == NULL) {
     first_providerID = lasso_session_get_first_providerID(LASSO_PROFILE(login)->session);
     LASSO_PROFILE(login)->remote_providerID = first_providerID;
