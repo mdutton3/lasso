@@ -273,6 +273,7 @@ if test "X$JAVA_VERSION" != X && test "X$JAR" != X; then
   languages_available="$languages_available $JAVA($JAVA_VERSION)"
 else
   enable_java=no
+  JAVA_VERSION=""
 fi
 
 dnl Conditional java sub dir test.
