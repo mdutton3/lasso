@@ -1675,8 +1675,8 @@ typedef struct {
 	/* Methods */
 
 	gboolean acceptHttpMethod(
-			LassoProvider *remote_provider, lassoMdProtocolType protocol_type,
-			lassoHttpMethod http_method, gboolean initiate_profile);
+			LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+			LassoHttpMethod http_method, gboolean initiate_profile);
 
 	%newobject getAssertionConsumerServiceUrl;
 	char* getAssertionConsumerServiceUrl(char *service_id);
@@ -1684,15 +1684,15 @@ typedef struct {
 	%newobject getBase64SuccinctId;
 	char* getBase64SuccinctId();
 
-	lassoHttpMethod getFirstHttpMethod(
-			LassoProvider *remote_provider, lassoMdProtocolType protocol_type);
+	LassoHttpMethod getFirstHttpMethod(
+			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
 	// FIXME: GList* lasso_provider_get_metadata_list(char *name);
 
 	%newobject getMetadataOne;
 	char* getMetadataOne(char *name);
 
-	gboolean hasProtocolProfile(lassoMdProtocolType protocol_type, char *protocol_profile);
+	gboolean hasProtocolProfile(LassoMdProtocolType protocol_type, char *protocol_profile);
 }
 
 %{
