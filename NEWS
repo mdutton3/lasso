@@ -1,6 +1,15 @@
 NEWS
 ====
 
+0.6.1 - February 22nd 2005
+--------------------------
+
+Completed <lib:Extension> support, added full bidirectional query string support
+for AuthnContextStatementRef, AuthnContextClassRef and AuthnContextComparison,
+fixed a crasher-bug in a rare case of single sign on profile, tested and
+shipped with Microsoft Visual Studio project files.
+
+
 0.6.0 - January 27th 2005
 -------------------------
 
