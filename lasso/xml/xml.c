@@ -24,9 +24,6 @@
  */
 
 #include <ctype.h>
-#include <string.h>
-
-#include <glib/gprintf.h>
 
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>

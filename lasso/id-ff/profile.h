@@ -31,11 +31,8 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/strings.h>
-#include <lasso/xml/tools.h>
-
-#include <lasso/id-ff/server.h>
 #include <lasso/id-ff/identity.h>
+#include <lasso/id-ff/server.h>
 #include <lasso/id-ff/session.h>
 
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())

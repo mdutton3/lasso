@@ -23,10 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "errors.h"
-#include <stdio.h>
-#include <string.h>
 #include <glib/gstrfuncs.h>
+#include <lasso/xml/errors.h>
 
 const char*
 lasso_strerror(int error_code)
