@@ -132,7 +132,6 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
   debug(INFO, "ProfileContext object 0x%x disposed ...\n", ctx);
 
   /* unref reference counted objects */
-  /* we don't have any here */
   lasso_node_destroy(ctx->request);
   lasso_node_destroy(ctx->response);
   /* BEWARE: server and user shouldn't be destroyed */

@@ -32,6 +32,8 @@ struct _LassoNodePrivate
   xmlNodePtr node;
 };
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* virtual public methods                                                    */
 /*****************************************************************************/
@@ -1255,17 +1257,17 @@ lasso_node_dispose(LassoNode *node)
   }
   node->private->dispose_has_run = TRUE;
 
+  debug(INFO, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
+
   /* unref reference counted objects */
   /* we don't have any here */
-  debug(INFO, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
+
+  parent_class->dispose(G_OBJECT(node));
 }
 
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  gint i;
-  LassoNode *child;
-
   debug(INFO, "%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   
   if (node->private->node_is_weak_ref == FALSE) {
@@ -1274,6 +1276,8 @@ lasso_node_finalize(LassoNode *node)
   }
 
   g_free (node->private);
+
+  parent_class->finalize(G_OBJECT(node));
 }
 
 /*****************************************************************************/
@@ -1296,6 +1300,7 @@ lasso_node_class_init(LassoNodeClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS(class);
   
+  parent_class = g_type_class_peek_parent(class);
   /* virtual public methods */
   class->copy              = lasso_node_impl_copy;
   class->destroy           = lasso_node_impl_destroy;

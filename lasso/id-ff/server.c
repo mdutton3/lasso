@@ -149,6 +149,12 @@ lasso_server_get_provider(LassoServer *server,
 static void
 lasso_server_dispose(LassoServer *server)
 {
+/*   /\* No idea how to access to ->private->dispose_has_run *\/ */
+/*   if (server->private->dispose_has_run) { */
+/*     return; */
+/*   } */
+/*   server->private->dispose_has_run = TRUE; */
+
   debug(INFO, "Server object 0x%x finalized ...\n", server);
 
   /* TODO destroy the providers */
@@ -186,7 +192,7 @@ lasso_server_class_init(LassoServerClass *class) {
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
-  gobject_class->dispose  = (void *)lasso_server_dispose;
+  //gobject_class->dispose  = (void *)lasso_server_dispose;
   gobject_class->finalize = (void *)lasso_server_finalize;
 }
 

@@ -166,7 +166,6 @@ lasso_provider_dispose(LassoProvider *provider)
   debug(INFO, "Provider object 0x%x disposed ...\n", provider);
 
   /* unref reference counted objects */
-  /* we don't have any here */
   lasso_node_destroy(provider->metadata);
 
   parent_class->dispose(G_OBJECT(provider));
