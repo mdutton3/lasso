@@ -19,10 +19,10 @@ C_BUILD_DIR=${C_SOURCE_DIR}
 C_SOURCE=${wildcard ${C_SOURCE_DIR}/*.c}
 C_OBJECT=${C_SOURCE:.c=.o}
 if MINGW
-    LDFLAGS=-L/usr/local/lib -lgobject-2.0-0 -lglib-2.0-0 -llasso 
+# JAVA_LDFLAGS=-L/usr/local/lib -lgobject-2.0-0 -lglib-2.0-0 -llasso 
     LASSO_DLL=${TARGET}/jlasso.dll
 else
-    LDFLAGS=-lgobject-2.0 -lglib-2.0 -llasso 
+# JAVA_LDFLAGS=-lgobject-2.0 -lglib-2.0 -llasso 
     LASSO_SO=${TARGET}/libjlasso.so
 endif
 
