@@ -34,11 +34,8 @@ extern "C" {
 
 #include <lasso/protocols/authn_request_envelope.h>
 #include <lasso/protocols/authn_response_envelope.h>
-#include <lasso/protocols/authn_request.h>
-#include <lasso/protocols/authn_response.h>
 
-#include <lasso/environs/server.h>
-#include <lasso/environs/profile.h>
+#include <lasso/environs/login.h>
 
 #define LASSO_TYPE_LECP (lasso_lecp_get_type())
 #define LASSO_LECP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LECP, LassoLecp))
@@ -51,15 +48,11 @@ typedef struct _LassoLecp LassoLecp;
 typedef struct _LassoLecpClass LassoLecpClass;
 
 struct _LassoLecp {
-  GObject parent;
+  LassoLogin parent;
 
   /*< public >*/
-  LassoNode *request, *authnRequest;
-  LassoNode *response, *authnResponse;
-
-  LassoServer *server;
-
-  gchar *msg_body;
+  LassoNode *authnRequestEnvelope;
+  LassoNode *authnResponseEnvelope;
 
   gchar *assertionConsumerServiceURL;
 
@@ -67,39 +60,33 @@ struct _LassoLecp {
 };
 
 struct _LassoLecpClass {
-  GObjectClass parent_class;
+  LassoLoginClass parent_class;
 };
 
 LASSO_EXPORT GType      lasso_lecp_get_type                            (void);
 
 LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (LassoServer *server);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
-
 LASSO_EXPORT gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
+
+LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp   *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp *lecp);
 
-LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp   *lecp,
+									const gchar *remote_providerID);
 
-LASSO_EXPORT gint       lasso_lecp_init_authn_request_envelope         (LassoLecp         *lecp,
-									LassoAuthnRequest *authnRequest);
-
-LASSO_EXPORT gint       lasso_lecp_init_authn_response_envelope        (LassoLecp          *lecp,
-									LassoAuthnRequest  *authnRequest,
-									LassoAuthnResponse *authnResponse);
+LASSO_EXPORT gint       lasso_lecp_init_from_authn_request_msg         (LassoLecp       *lecp,
+									gchar           *authn_request_msg,
+									lassoHttpMethod  authn_request_method);
 
 LASSO_EXPORT gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
 									gchar     *request_msg);
-
+  
 LASSO_EXPORT gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
 									gchar     *response_msg);
-
-
-
-
 
 
 #ifdef __cplusplus
