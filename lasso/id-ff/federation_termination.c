@@ -244,10 +244,16 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     goto done;
   }
 
-  /* build the request */
+  /* get the content, name qualifier and the format of the name identifier */
   content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
+
+  if (content == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "NameIdentifier has no content\n");
+    ret = -1;
+    goto done;
+  }
 
   /* get the protocol profile and set a new federation termination notification object */
   provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
@@ -279,6 +285,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     goto done;
   }
 
+  /* build the request */
   if (xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermSpSoap) || \
       xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermIdpSoap)) {
     profile->request = lasso_federation_termination_notification_new(profile->server->providerID,
@@ -317,7 +324,6 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     lasso_federation_destroy(federation);
   }
 
-  /* destroy allocated objects */
   xmlFree(nameQualifier);
   xmlFree(format);
   lasso_node_destroy(nameIdentifier);
