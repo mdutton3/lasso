@@ -13,9 +13,10 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-xml.la
 
 liblasso_xml_la_SOURCES = \
-	xml.c \
 	strings.c \
 	tools.c \
+	debug.c \
+	xml.c \
 	ds_signature.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
@@ -62,10 +63,11 @@ liblasso_xml_la_SOURCES = \
 	soap-env_body.c
 
 liblassoinclude_HEADERS = \
-	lib.h \
-	saml.h \
 	strings.h \
 	tools.h \
+	debug.h \
+	lib.h \
+	saml.h \
 	xml.h	\
 	ds_signature.h	\
 	lib_assertion.h	\

@@ -38,6 +38,7 @@ extern "C" {
 #include <xmlsec/crypto.h>
 
 #include <lasso/export.h>
+#include <lasso/xml/debug.h>
 
 typedef enum {
   lassoSignatureMethodRsaSha1 = 1,
