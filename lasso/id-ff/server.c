@@ -194,7 +194,7 @@ lasso_server_dispose(LassoServer *server)
 
   /* TODO destroy the providers */
 
-  parent_class->dispose(LASSO_PROVIDER(server));
+  parent_class->dispose(G_OBJECT(server));
 }
 
 static void
@@ -205,7 +205,7 @@ lasso_server_finalize(LassoServer *server)
   g_free(server->private_key);
   g_free(server->certificate);
 
-  parent_class->finalize(LASSO_PROVIDER(server));
+  parent_class->finalize(G_OBJECT(server));
 }
 
 /*****************************************************************************/

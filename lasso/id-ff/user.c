@@ -167,7 +167,7 @@ lasso_user_dump(LassoUser *user)
     assertions_node = lasso_node_new();
     assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
     assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
-    g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
+    g_hash_table_foreach(user->assertions, (GHFunc)lasso_user_dump_assertion, assertions_node);
     user_class->add_child(user_node, assertions_node, FALSE);
   }
   
@@ -177,7 +177,7 @@ lasso_user_dump(LassoUser *user)
     identities_node = lasso_node_new();
     identities_class = LASSO_NODE_GET_CLASS(identities_node);
     identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
-    g_hash_table_foreach(user->identities, lasso_user_dump_identity, identities_node);
+    g_hash_table_foreach(user->identities, (GHFunc)lasso_user_dump_identity, identities_node);
     user_class->add_child(user_node, identities_node, FALSE);
   }
 

@@ -44,7 +44,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
 {
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
-  xmlChar * name;
+  const xmlChar * name;
   int type;
   int i;
 

@@ -354,7 +354,7 @@ lasso_register_name_identifier_finalize(LassoRegisterNameIdentifier *register_na
 {  
   debug(INFO, "Register Name Identifier object 0x%x finalized ...\n", register_name_identifier);
 
-  parent_class->finalize(LASSO_PROFILE_CONTEXT(register_name_identifier));
+  parent_class->finalize(G_OBJECT(register_name_identifier));
 }
 
 /*****************************************************************************/
