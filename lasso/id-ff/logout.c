@@ -354,6 +354,10 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
 
   provider_id = lasso_session_get_next_providerID(profile->session);
+  /* if initial provider id, then get a next provider id */
+  if (xmlStrEqual(logout->initial_remote_providerID, provider_id)) {
+    provider_id = lasso_session_get_next_providerID(profile->session);
+  }
   
   return(provider_id);
 }
@@ -373,7 +377,7 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
 gint
 lasso_logout_init_request(LassoLogout    *logout,
 			  gchar          *remote_providerID,
-			  lassoHttpMethod request_method)
+			  lassoHttpMethod request_method) /* FIXME : support this param to allow the user to choose the request method */
 {
   LassoProfile      *profile        = NULL;
   LassoProvider     *provider       = NULL;
@@ -385,7 +389,7 @@ lasso_logout_init_request(LassoLogout    *logout,
   lassoSignatureType signature_type = lassoSignatureTypeNone;
   gint               ret = 0;
 
-  gboolean           http_redirect_get_type = FALSE; /* tell if the logout protocol profile is HTTP Redirect / GET */
+  gboolean           is_http_redirect_get_method = FALSE; /* tell if the logout protocol profile is HTTP Redirect / GET */
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
 
@@ -499,7 +503,7 @@ lasso_logout_init_request(LassoLogout    *logout,
   else if (xmlStrEqual(singleLogoutProtocolProfile, lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(singleLogoutProtocolProfile, lassoLibProtocolProfileSloIdpHttp)) {
     /* later tell it is a HTTP Redirect / GET method */
-    http_redirect_get_type = TRUE;
+    is_http_redirect_get_method = TRUE;
     profile->request = lasso_logout_request_new(profile->server->providerID,
 						content,
 						nameQualifier,
@@ -522,14 +526,11 @@ lasso_logout_init_request(LassoLogout    *logout,
   profile->nameIdentifier = content;
 
   /* if logout request from a SP and if an HTTP Redirect / GET method, then remove assertion */
-  if (profile->provider_type == lassoProviderTypeSp) {
-    if (http_redirect_get_type == TRUE) {
-      lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-    }
+  if ( (profile->provider_type == lassoProviderTypeSp) && (is_http_redirect_get_method == TRUE) ) {
+    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   }
 
   done:
-  debug("Init request done\n");
   if (federation != NULL) {
     lasso_federation_destroy(federation);
   }
@@ -756,9 +757,15 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   }
 
   /* LogoutResponse status code value is ok, so remove assertion */
-  profile->remote_providerID = lasso_node_get_child_content(profile->response, "ProviderID",
-							    NULL, NULL);
-  lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+  profile->remote_providerID = lasso_node_get_child_content(profile->response,
+							    "ProviderID",
+							    NULL,
+							    NULL);
+
+  /* Only if SOAP method, then remove assertion */
+  if (response_method == lassoHttpMethodSoap) {
+    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+  }
 
   switch (profile->provider_type) {
   case lassoProviderTypeSp:
