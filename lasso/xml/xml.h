@@ -105,7 +105,7 @@ struct _LassoNodeClass {
   void       (* add_child)     (LassoNode     *node,
 				LassoNode     *child,
 				gboolean       unbounded);
-  void       (* add_signature) (LassoNode     *node,
+  gint       (* add_signature) (LassoNode     *node,
 				gint           sign_method,
 				const xmlChar *private_key_file,
 				const xmlChar *certificate_file);

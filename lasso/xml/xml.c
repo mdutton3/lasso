@@ -406,7 +406,7 @@ lasso_node_add_child(LassoNode *node,
   class->add_child(node, child, unbounded);
 }
 
-static void
+static gint
 lasso_node_add_signature(LassoNode         *node,
 			 gint               sign_method,
 			 const xmlChar     *private_key_file,
@@ -415,7 +415,7 @@ lasso_node_add_signature(LassoNode         *node,
   g_return_if_fail(LASSO_IS_NODE(node));
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->add_signature(node, sign_method, private_key_file, certificate_file);
+  return (class->add_signature(node, sign_method, private_key_file, certificate_file));
 }
 
 static gchar *
@@ -1022,13 +1022,14 @@ lasso_node_impl_add_child(LassoNode *node,
   child->private->node_is_weak_ref = TRUE;
 }
 
-static void
+static gint
 lasso_node_impl_add_signature(LassoNode     *node,
 			      gint           sign_method,
 			      const xmlChar *private_key_file,
 			      const xmlChar *certificate_file)
 {
   LassoNode *signature;
+  gint ret = 0;
 
   switch (sign_method) {
   case lassoSignatureMethodRsaSha1:
@@ -1039,10 +1040,12 @@ lasso_node_impl_add_signature(LassoNode     *node,
     break;
   }
   lasso_node_add_child(node, signature, TRUE);
-  lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
-			  private_key_file,
-			  certificate_file);
+  ret = lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
+				private_key_file,
+				certificate_file);
   lasso_node_destroy(signature);
+
+  return (ret);
 }
 
 static void gdata_build_query_foreach_func(GQuark   key_id,
