@@ -4749,10 +4749,6 @@ typedef struct {
 			char *caCertChain = NULL);
 	END_THROW_ERROR
 
-        THROW_ERROR
-	int addService(char *service_type, char *service_endpoint);
-	END_THROW_ERROR
-
 	%newobject dump;
 	char *dump();
 
@@ -4819,7 +4815,6 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 /* Methods implementations */
 
 #define LassoServer_addProvider lasso_server_add_provider
-#define LassoServer_addService lasso_server_add_service
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
 

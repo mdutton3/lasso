@@ -20,7 +20,6 @@ liblasso_id_ff_la_SOURCES = \
 	profile.c \
 	provider.c \
 	server.c \
-	service.c \
 	session.c
 
 lasso_private_h_sources = \
@@ -41,7 +40,6 @@ liblassoinclude_HEADERS = \
 	profile.h \
 	provider.h \
 	server.h \
-	service.h \
 	session.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

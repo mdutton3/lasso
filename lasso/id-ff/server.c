@@ -68,32 +68,6 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 	return 0;
 }
 
-gint
-lasso_server_add_service(LassoServer *server,
-			 const gchar *service_type,
-			 const gchar *service_endpoint)
-{
-	LassoService *service;
-	GList *service_type_list;
-
-	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(service_type != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(service_endpoint != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	/* create a new LassoService */
-	service = lasso_service_new(service_type, service_endpoint);
-	
-	/* search an existing GList for key type */
-	service_type_list = (GList *)g_hash_table_lookup(server->services,
-							 (gconstpointer)service_type);
-	/* append new service */
-	service_type_list = g_list_append(service_type_list, service);
-	g_hash_table_replace(server->services,
-			     (gpointer)g_strdup(service_type), (gpointer)service_type_list);
-
-	return 0;
-}
-
 /**
  * lasso_server_destroy:
  * @server: a #LassoServer
@@ -126,15 +100,6 @@ add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
-static void
-add_service_childnode(gchar *key, GList *value, xmlNode *xmlnode)
-{
-	while (value != NULL) {
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value->data), TRUE));
-		value = g_list_next(value);
-	}
-}
-
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
@@ -152,13 +117,6 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		t = xmlNewTextChild(xmlnode, NULL, "Providers", NULL);
 		g_hash_table_foreach(server->providers,
 				(GHFunc)add_provider_childnode, t);
-	}
-	/* Services */
-	if (g_hash_table_size(server->services)) {
-		xmlNode *t;
-		t = xmlNewTextChild(xmlnode, NULL, "Services", NULL);
-		g_hash_table_foreach(server->services,
-				(GHFunc)add_service_childnode, t);
 	}
 
 	xmlCleanNs(xmlnode);
@@ -312,8 +270,6 @@ dispose(GObject *object)
 	/* free allocated memory for hash tables */
 	g_hash_table_destroy(server->providers);
 	server->providers = NULL;
-	g_hash_table_destroy(server->services);
-	server->services = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(server));
 }
@@ -348,10 +304,6 @@ instance_init(LassoServer *server)
 	server->secret_key = NULL;
 	server->certificate = NULL;
 	server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-
-	/* FIXME: set the value_destroy_func */
-	server->services = g_hash_table_new_full(g_str_hash, g_str_equal,
-						 (GDestroyNotify)g_free, NULL);
 }
 
 static void
