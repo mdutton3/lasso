@@ -36,6 +36,21 @@ static GObjectClass *parent_class = NULL;
 /* public methods                                                            */
 /*****************************************************************************/
 
+LassoIdentity*
+lasso_identity_copy(LassoIdentity *identity)
+{
+  LassoIdentity *copy;
+
+  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
+
+  copy = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
+  copy->remote_providerID = g_strdup(identity->remote_providerID);
+  copy->local_nameIdentifier = lasso_node_copy(identity->local_nameIdentifier);
+  copy->remote_nameIdentifier = lasso_node_copy(identity->remote_nameIdentifier);
+
+  return(copy);
+}
+
 void
 lasso_identity_destroy(LassoIdentity *identity)
 {
