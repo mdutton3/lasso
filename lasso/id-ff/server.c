@@ -96,7 +96,7 @@ lasso_server_add_lasso_provider(LassoServer   *server,
   g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
   g_return_val_if_fail(LASSO_IS_PROVIDER(provider), -2);
 
-  debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider));
+/*   debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider)); */
   g_ptr_array_add(server->providers, provider);
 }
 
@@ -114,7 +114,7 @@ lasso_server_add_provider(LassoServer *server,
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
   g_return_val_if_fail(provider!=NULL, -5);
 
-  debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider));
+  /* debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider)); */
   g_ptr_array_add(server->providers, provider);
 
   return(0);
@@ -137,7 +137,7 @@ lasso_server_get_provider(LassoServer *server,
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(providerID!=NULL, NULL);
 
-  debug(INFO, "Get information of provider id %s\n", providerID);
+/*   debug(INFO, "Get information of provider id %s\n", providerID); */
 
   len = server->providers->len;
   for(index = 0; index<len; index++) {
@@ -302,7 +302,7 @@ lasso_server_new_from_dump(gchar *dump)
 
   server_node  = lasso_node_new_from_dump(dump);
   if(server_node==NULL){
-    debug(ERROR, "Error while loading Server dump\n");
+    debug(ERROR, "Error while loading server dump\n");
     return(NULL);
   }
   server_class = LASSO_NODE_GET_CLASS(server_node);

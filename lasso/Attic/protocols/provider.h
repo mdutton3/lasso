@@ -72,15 +72,15 @@ LASSO_EXPORT LassoProvider *lasso_provider_new_from_metadata_node               
 
 LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename                                (gchar *metadata_filename);
 
+LASSO_EXPORT gchar         *lasso_provider_dump                                                 (LassoProvider *provider);
+
 LASSO_EXPORT gchar         *lasso_provider_get_assertionConsumerServiceURL                      (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationNotificationProtocolProfile (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider *provider);
 
-LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationNotificationServiceURL      (LassoProvider *provider);
-
-LASSO_EXPORT gchar         *lasso_provider_dump                                                 (LassoProvider *provider);
+LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationServiceURL                  (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_get_nameIdentifierMappingProtocolProfile             (LassoProvider *provider);
 

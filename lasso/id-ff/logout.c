@@ -59,17 +59,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   /* get the prototocol profile of the logout request */
-  singleLogoutServiceURL = lasso_provider_get_singleLogoutServiceURL(provider);
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
 
   if(protocolProfile==NULL){
     debug(ERROR, "Single Logout Protocol profile not found\n");
     return(-3);
-  }
-
-  if(singleLogoutServiceURL==NULL){
-    debug(ERROR, "Single Logout Service URL not found\n");
-    return(-4);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
@@ -82,12 +76,13 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 					       profileContext->server->private_key,
 					       profileContext->server->certificate);
     
-    profileContext->msg_url  = singleLogoutServiceURL;
+    profileContext->msg_url  = lasso_provider_get_soapEndpoint(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
     debug(DEBUG, "Building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
+    profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
 							 profileContext->server->signature_method,
 							 profileContext->server->private_key);
@@ -164,7 +159,7 @@ lasso_logout_init_request(LassoLogout *logout,
 
   if(remote_providerID==NULL){
     debug(INFO, "No remote provider id, get the next assertion peer provider id\n");
-    profileContext->remote_providerID = lasso_user_get_next_providerID(profileContext->user);
+    profileContext->remote_providerID = lasso_user_get_next_assertion_remote_providerID(profileContext->user);
   }
   else{
     debug(INFO, "A remote provider id for logout request : %s\n", remote_providerID);
@@ -286,6 +281,19 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     return(-6);
   }
 
+  /* verify authentication (if ok, delete assertion) */
+  if(profileContext->user==NULL){
+    debug(WARNING, "User environ not found\n");
+    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+  }
+
+  assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
+  if(assertion==NULL){
+    debug(WARNING, "%s has no assertion\n", remote_providerID);
+    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+    return(-9);
+  }
+
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
@@ -298,14 +306,6 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     debug(WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-8);
-  }
-
-  /* verify authentication (if ok, delete assertion) */
-  assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
-  if(assertion==NULL){
-    debug(WARNING, "%s has no assertion\n", remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
-    return(-9);
   }
 
   return(0);
