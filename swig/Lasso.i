@@ -1272,6 +1272,7 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
 		%immutable request;
@@ -1370,7 +1371,7 @@ gchar *LassoDefederation_nameIdentifier_get(LassoDefederation *self) {
 /* remoteProviderId */
 #define LassoDefederation_get_remoteProviderId LassoDefederation_remoteProviderId_get
 gchar *LassoDefederation_remoteProviderId_get(LassoDefederation *self) {
-	return NULL; /* FIXME */
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
 }
 #define LassoDefederation_set_remoteProviderId LassoDefederation_remoteProviderId_set
 void LassoDefederation_remoteProviderId_set(LassoDefederation *self, gchar *remoteProviderId) {
@@ -1473,6 +1474,7 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
 		%immutable request;
@@ -1540,7 +1542,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildResponseMsg();
+		void buildResponseMsg(gchar *remoteProviderId);
 		END_THROW_ERROR
 
 		%newobject dump;
@@ -1551,15 +1553,15 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void initFromAuthnRequestMsg(gchar *authnrequestMsg, lassoHttpMethod httpMethod);
-		END_THROW_ERROR
-
-		THROW_ERROR
 		void initRequest(gchar *responseMsg,
 				 lassoHttpMethod httpMethod = lassoHttpMethodRedirect);
 		END_THROW_ERROR
 
 		gboolean mustAuthenticate();
+
+		THROW_ERROR
+		void processAuthnRequestMsg(gchar *authnrequestMsg, lassoHttpMethod httpMethod);
+		END_THROW_ERROR
 
 		THROW_ERROR
 		void processAuthnResponseMsg(gchar *authnResponseMsg);
@@ -1648,7 +1650,7 @@ gchar *LassoLogin_nameIdentifier_get(LassoLogin *self) {
 /* remoteProviderId */
 #define LassoLogin_get_remoteProviderId LassoLogin_remoteProviderId_get
 gchar *LassoLogin_remoteProviderId_get(LassoLogin *self) {
-	return NULL; /* FIXME */
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
 }
 #define LassoLogin_set_remoteProviderId LassoLogin_remoteProviderId_set
 void LassoLogin_remoteProviderId_set(LassoLogin *self, gchar *remoteProviderId) {
@@ -1744,9 +1746,9 @@ gint LassoLogin_setAssertionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_buildResponseMsg lasso_login_build_response_msg
 #define LassoLogin_dump lasso_login_dump
 #define LassoLogin_initAuthnRequest lasso_login_init_authn_request
-#define LassoLogin_initFromAuthnRequestMsg lasso_login_init_from_authn_request_msg
 #define LassoLogin_initRequest lasso_login_init_request
 #define LassoLogin_mustAuthenticate lasso_login_must_authenticate
+#define LassoLogin_processAuthnRequestMsg lasso_login_process_authn_request_msg
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
@@ -1787,6 +1789,7 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
 		%immutable request;
@@ -1911,7 +1914,7 @@ gchar *LassoLogout_nameIdentifier_get(LassoLogout *self) {
 /* remoteProviderId */
 #define LassoLogout_get_remoteProviderId LassoLogout_remoteProviderId_get
 gchar *LassoLogout_remoteProviderId_get(LassoLogout *self) {
-	return NULL; /* FIXME */
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
 }
 #define LassoLogout_set_remoteProviderId LassoLogout_remoteProviderId_set
 void LassoLogout_remoteProviderId_set(LassoLogout *self, gchar *remoteProviderId) {
@@ -2024,6 +2027,7 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
 		%immutable request;
@@ -2078,11 +2082,11 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void initFromAuthnRequestMsg(gchar *authnRequestMsg, lassoHttpMethod httpMethod);
+		void processAuthnRequestEnvelopeMsg(gchar *requestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processAuthnRequestEnvelopeMsg(gchar *requestMsg);
+		void processAuthnRequestMsg(gchar *authnRequestMsg, lassoHttpMethod httpMethod);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2164,7 +2168,7 @@ gchar *LassoLecp_nameIdentifier_get(LassoLecp *self) {
 /* remoteProviderId */
 #define LassoLecp_get_remoteProviderId LassoLecp_remoteProviderId_get
 gchar *LassoLecp_remoteProviderId_get(LassoLecp *self) {
-	return NULL; /* FIXME */
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
 }
 #define LassoLecp_set_remoteProviderId LassoLecp_remoteProviderId_set
 void LassoLecp_remoteProviderId_set(LassoLecp *self, gchar *remoteProviderId) {
@@ -2233,8 +2237,8 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 #define LassoLecp_buildAuthnResponseEnvelopeMsg lasso_lecp_build_authn_response_envelope_msg
 #define LassoLecp_buildAuthnResponseMsg lasso_lecp_build_authn_response_msg
 #define LassoLecp_initAuthnRequest lasso_lecp_init_authn_request
-#define LassoLecp_initFromAuthnRequestMsg lasso_lecp_init_from_authn_request_msg
 #define LassoLecp_processAuthnRequestEnvelopeMsg lasso_lecp_process_authn_request_envelope_msg
+#define LassoLecp_processAuthnRequestMsg lasso_lecp_process_authn_request_msg
 #define LassoLecp_processAuthnResponseEnvelopeMsg lasso_lecp_process_authn_response_envelope_msg
 
 %}
@@ -2273,6 +2277,7 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
 		%newobject session_get;
@@ -2378,7 +2383,7 @@ gchar *LassoNameRegistration_nameIdentifier_get(LassoNameRegistration *self) {
 /* remoteProviderId */
 #define LassoNameRegistration_get_remoteProviderId LassoNameRegistration_remoteProviderId_get
 gchar *LassoNameRegistration_remoteProviderId_get(LassoNameRegistration *self) {
-	return NULL; /* FIXME */
+	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
 }
 #define LassoNameRegistration_set_remoteProviderId LassoNameRegistration_remoteProviderId_set
 void LassoNameRegistration_remoteProviderId_set(LassoNameRegistration *self, gchar *remoteProviderId) {
