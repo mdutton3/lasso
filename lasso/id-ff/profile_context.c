@@ -33,6 +33,8 @@ struct _LassoProfileContextPrivate
   gboolean dispose_has_run;
 };
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* functions                                                                 */
 /*****************************************************************************/
@@ -46,8 +48,6 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 			   const gchar         *name)
 {
   LassoNode *node;
-/*   xmlDocPtr  doc = NULL; */
-/*   xmlNodePtr cdata, data; */
   gchar *child_dump, *dump = NULL;
 
   node = lasso_node_new();
@@ -57,13 +57,12 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   else {
     LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfileContext");
   }
-  //LASSO_NODE_GET_CLASS(node)->set_ns(node, lassoLibHRef, lassoLibPrefix);
 
   if (ctx->request != NULL) {
-    LASSO_NODE_GET_CLASS(node)->add_child(node, ctx->request, FALSE);
+    LASSO_NODE_GET_CLASS(node)->add_child(node, lasso_node_copy(ctx->request), FALSE);
   }
   if (ctx->response != NULL) {
-    LASSO_NODE_GET_CLASS(node)->add_child(node, ctx->response, FALSE);
+    LASSO_NODE_GET_CLASS(node)->add_child(node, lasso_node_copy(ctx->response), FALSE);
   }
 
   if (ctx->remote_providerID != NULL) {
@@ -72,12 +71,6 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   }
 
   if (ctx->msg_url != NULL) {
-/*     doc   = xmlNewDoc("1.0"); */
-/*     data  = xmlNewNode(NULL, "data"); */
-/*     xmlNewNs(data, lassoLibHRef, NULL); */
-/*     cdata = xmlNewCDataBlock(doc, ctx->msg_url, strlen(ctx->msg_url)); */
-/*     xmlAddChild(data, cdata); */
-/*     xmlAddChild(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node), data); */
     LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgUrl", lasso_str_escape(ctx->msg_url), FALSE);
   }
   if (ctx->msg_body != NULL) {
@@ -136,30 +129,27 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
   }
   ctx->private->dispose_has_run = TRUE;
 
+  debug(INFO, "ProfileContext object 0x%x disposed ...\n", ctx);
   /* unref reference counted objects */
   /* we don't have any here */
-  debug(INFO, "ProfileContext object 0x%x disposed ...\n", ctx);
+  lasso_node_destroy(ctx->request);
+  lasso_node_destroy(ctx->response);
+  /* BEWARE: server and user shouldn't be destroyed */
+  parent_class->dispose(G_OBJECT(ctx));
 }
 
 static void
 lasso_profile_context_finalize(LassoProfileContext *ctx)
 {
-  if (ctx->private->dispose_has_run) {
-    return;
-  }
   debug(INFO, "ProfileContext object 0x%x finalized ...\n", ctx);
 
-  /* server and user shouldn't be destroyed */
-  printf("toto\n");
-  lasso_node_destroy(ctx->request);
-  printf("toto2\n");
-  lasso_node_destroy(ctx->response);
   g_free(ctx->remote_providerID);
   
   g_free(ctx->msg_url);
   g_free(ctx->msg_body);
 
   g_free (ctx->private);
+  parent_class->finalize(G_OBJECT(ctx));
 }
 
 /*****************************************************************************/
@@ -187,7 +177,7 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->response = NULL;
   ctx->request_type  = lassoMessageTypeNone;
   ctx->response_type = lassoMessageTypeNone;
-  // TODO ctx->provider_type = lassoMachinTrucNone;
+  ctx->provider_type = lassoProviderTypeNone;
   
   ctx->remote_providerID = NULL;
   
@@ -244,6 +234,8 @@ lasso_profile_context_class_init(gpointer g_class,
   GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
   GParamSpec *pspec;
 
+  parent_class = g_type_class_peek_parent(g_class);
+  /* override parent class methods */
   gobject_class->set_property = lasso_profile_context_set_property;
   gobject_class->get_property = lasso_profile_context_get_property;
 

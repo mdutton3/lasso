@@ -107,12 +107,12 @@ lasso_federation_termination_init_request(LassoFederationTermination *notificati
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
-  case lassoProfileContextServiceProviderType:
+  case lassoProviderTypeSp:
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
       nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     break;
-  case lassoProfileContextIdentityProviderType:
+  case lassoProviderTypeIdp:
     /* get the next assertion ( next authenticated service provider ) */
     nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     if(!nameIdentifier)

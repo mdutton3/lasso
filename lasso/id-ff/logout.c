@@ -148,13 +148,13 @@ lasso_logout_init_request(LassoLogout *logout,
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
-  case lassoProfileContextServiceProviderType:
+  case lassoProviderTypeSp:
     printf("service provider\n");
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
       nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     break;
-  case lassoProfileContextIdentityProviderType:
+  case lassoProviderTypeIdp:
     printf("identity provider\n");
     /* get the next assertion ( next authenticated service provider ) */
     nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));

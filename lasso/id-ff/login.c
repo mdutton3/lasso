@@ -601,15 +601,15 @@ lasso_login_must_authenticate(LassoLogin *login)
 
 static void
 lasso_login_finalize(LassoLogin *login)
-{
-  parent_class->finalize(LASSO_PROFILE_CONTEXT(login));
+{  
+  debug(INFO, "Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
   g_free(login->nameIdentifier);
   g_free(login->response_dump);
   g_free(login->msg_relayState);
-  
-  debug(INFO, "Login object 0x%x finalized ...\n", login);
+
+  parent_class->finalize(LASSO_PROFILE_CONTEXT(login));
 }
 
 /*****************************************************************************/

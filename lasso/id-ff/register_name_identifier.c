@@ -146,7 +146,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 
   /* TODO : implement the setting of the request */
   switch(profileContext->provider_type){
-  case lassoProfileContextServiceProviderType:
+  case lassoProviderTypeSp:
     /* generate a new local name identifier */
     spNameIdentifier = lasso_build_unique_id(32);
     spNameQualifier  = providerID;
@@ -168,7 +168,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     idpNameQualifier = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier");
     idpFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format");
     break;
-  case lassoProfileContextIdentityProviderType:
+  case lassoProviderTypeIdp:
     /* generate a new local name identifier */
     idpNameIdentifier = lasso_build_unique_id(32);
     idpNameQualifier  = providerID;

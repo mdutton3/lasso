@@ -56,9 +56,10 @@ typedef enum {
 } lassoHttpMethods;
 
 typedef enum {
-  lassoProfileContextServiceProviderType = 1,
-  lassoProfileContextIdentityProviderType
-} lassoProfileContextProviderTypes;
+  lassoProviderTypeNone = 0,
+  lassoProviderTypeSp,
+  lassoProviderTypeIdp
+} lassoProviderTypes;
 
 typedef enum {
   lassoMessageTypeNone = 0,
@@ -84,12 +85,11 @@ struct _LassoProfileContext {
   gchar *msg_url;
   gchar *msg_body;
 
-  int provider_type;
-
   /*< private >*/
   LassoProfileContextPrivate *private;
-  lassoMessageTypes request_type;
-  lassoMessageTypes response_type;
+  lassoMessageTypes  request_type;
+  lassoMessageTypes  response_type;
+  lassoProviderTypes provider_type;
 };
 
 struct _LassoProfileContextClass {
