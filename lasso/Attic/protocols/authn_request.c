@@ -36,7 +36,7 @@ lasso_authn_request_get_protocolProfile(gchar *query)
 
   protocolProfile = lasso_g_ptr_array_index(lasso_query_get_value(query, "ProtocolProfile"), 0);
   if (protocolProfile == NULL)
-    protocolProfile = lassoLibProtocolProfileArtifact;
+    protocolProfile = (gchar *)lassoLibProtocolProfileArtifact;
 
   return (protocolProfile);
 }
