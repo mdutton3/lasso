@@ -64,6 +64,8 @@ LASSO_EXPORT LassoIdentity* lasso_identity_new(void);
 
 LASSO_EXPORT gint lasso_identity_add_federation(LassoIdentity *identity,
 		LassoFederation *federation);
+LASSO_EXPORT LassoFederation* lasso_identity_get_federation(
+		LassoIdentity *identity, gchar *providerID);
 LASSO_EXPORT gint lasso_identity_remove_federation(LassoIdentity *identity,
 		char *remote_providerID);
 

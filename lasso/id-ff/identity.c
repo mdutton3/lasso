@@ -48,6 +48,12 @@ lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federati
 	return 0;
 }
 
+LassoFederation*
+lasso_identity_get_federation(LassoIdentity *identity, gchar *providerID)
+{
+	return g_hash_table_lookup(identity->federations, providerID);
+}
+
 gint
 lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerID)
 {

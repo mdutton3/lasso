@@ -209,6 +209,17 @@ int lasso_init(void);
 #endif
 int lasso_shutdown(void);
 
+/* Utilities */
+
+%{
+
+void add_key_to_array(gchar *key, gpointer pointer, GPtrArray *array)
+{
+        g_ptr_array_add(array, g_strdup(key));
+}
+
+%}
+
 
 /***********************************************************************
  * Constants
@@ -615,6 +626,7 @@ typedef struct {
 #if defined(SWIGPYTHON)
 		%rename(__getitem__) getitem;
 #endif
+		%newobject getitem;
 		%exception getitem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
@@ -624,7 +636,7 @@ typedef struct {
 			$action
 		}
 		gchar *getitem(int index) {
-			return g_ptr_array_index(self, index);
+			return g_strdup(g_ptr_array_index(self, index));
 		}
 		%exception getitem;
 
@@ -1138,17 +1150,10 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 }
 
 /* providerIds */
-void LassoServer_add_providerId_to_array(
-		gchar *key, LassoProvider *provider, LassoProviderIds *providerIds)
-{
-        g_ptr_array_add(providerIds, g_strdup(provider->ProviderID));
-}
 #define LassoServer_get_providerIds LassoServer_providerIds_get
 LassoProviderIds *LassoServer_providerIds_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
-	g_hash_table_foreach(
-			self->providers, (GHFunc) LassoServer_add_providerId_to_array,
-			providerIds);
+	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
 }
 
@@ -1187,6 +1192,7 @@ typedef struct {
 		gboolean isDirty;
 
 		%immutable providerIds;
+		%newobject providerIds_get;
 		LassoProviderIds *providerIds;
 
 		/* Constructor, Destructor & Static Methods */
@@ -1218,8 +1224,9 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 /* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
 LassoProviderIds *LassoIdentity_providerIds_get(LassoIdentity *self) {
-	return NULL;
-	/* return self->providerIDs; */
+	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->federations));
+	g_hash_table_foreach(self->federations, (GHFunc) add_key_to_array, providerIds);
+	return providerIds;
 }
 
 
@@ -1256,6 +1263,7 @@ typedef struct {
 		gboolean isDirty;
 
 		%immutable providerIds;
+		%newobject providerIds_get;
 		LassoProviderIds *providerIds;
 
 		/* Constructor, destructor & static methods */
@@ -1290,8 +1298,9 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 /* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
 LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
-	return NULL; /* XXX */
-	/* return self->providerIDs; */
+	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->assertions));
+	g_hash_table_foreach(self->assertions, (GHFunc) add_key_to_array, providerIds);
+	return providerIds;
 }
 
 /* Constructors, destructors & static methods implementations */
