@@ -323,7 +323,7 @@ lasso_node_get_content(LassoNode *node)
  * 
  * Return value: the name of the node
  **/
-const xmlChar *
+xmlChar *
 lasso_node_get_name(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -873,7 +873,7 @@ lasso_node_impl_get_content(LassoNode *node)
   return (xmlNodeGetContent(node->private->node));
 }
 
-static const xmlChar *
+static xmlChar *
 lasso_node_impl_get_name(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -1193,7 +1193,7 @@ lasso_node_impl_serialize(LassoNode *node,
 {
   GPtrArray *attrs, *children;
   GPtrArray *values;
-  const xmlChar *name;
+  xmlChar *name;
   xmlChar *val;
   int i;
 
@@ -1349,9 +1349,11 @@ lasso_node_finalize(LassoNode *node)
   if (node->private->node_is_weak_ref == FALSE) {
     xmlUnlinkNode(node->private->node);
     xmlFreeNode(node->private->node);
+    node->private->node = NULL;
   }
 
   g_free (node->private);
+  node->private = NULL;
 
   parent_class->finalize(G_OBJECT(node));
 }
