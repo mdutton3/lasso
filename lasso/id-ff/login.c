@@ -307,7 +307,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
-    message(G_LOG_LEVEL_WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
     return (-3);
   }
 
@@ -322,7 +322,6 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 				       LASSO_PROFILE_CONTEXT(login)->remote_providerID);
     /* fill the response with the assertion */
     if (identity != NULL) {
-      debug("An identity found, so build an assertion.\n");
       lasso_login_add_response_assertion(login,
 					 identity,
 					 authenticationMethod,
@@ -476,33 +475,30 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 
   /* ProtocolProfile must be BrwsPost */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsPost) {
+    message(G_LOG_LEVEL_ERROR, "Failed to build AuthnResponse message, an Artifact is required by ProtocolProfile.\n");
     return (-1);
+  }
+  
+  if (authentication_result == 0) {
+    lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
+					      lassoSamlStatusCodeRequestDenied);
+  }
+  else {
+    /* federation */
+    lasso_login_process_federation(login);
+    identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
+				       LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+    /* fill the response with the assertion */
+    if (identity != NULL) {
+      lasso_login_add_response_assertion(login,
+					 identity,
+					 authenticationMethod,
+					 reauthenticateOnOrAfter);
+    }
   }
   
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-
-  /* federation */
-  lasso_login_process_federation(login);
-  identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
-				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-
-  /* fill the response with the assertion */
-  if (identity != NULL && authentication_result == 1) {
-    debug("An identity found, so build an assertion\n");
-    lasso_login_add_response_assertion(login,
-				       identity,
-				       authenticationMethod,
-				       reauthenticateOnOrAfter);
-  }
-  else {
-    debug("No identity or login failed !!!\n");
-    if (authentication_result == 0) {
-      lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
-						lassoSamlStatusCodeRequestDenied);
-    }
-  }
-  
   /* return an authnResponse (base64 encoded) */
   LASSO_PROFILE_CONTEXT(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->response);
   LASSO_PROFILE_CONTEXT(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
@@ -978,7 +974,7 @@ lasso_login_new_from_dump(LassoServer *server,
 {
   LassoLogin *login;
   LassoNode *node_dump, *request_node, *response_node;
-  gchar *protocolProfile;
+  gchar *protocolProfile, *export, *type;
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
 				   "server", lasso_server_copy(server),
@@ -994,48 +990,61 @@ lasso_login_new_from_dump(LassoServer *server,
   LASSO_PROFILE_CONTEXT(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", NULL);
   LASSO_PROFILE_CONTEXT(login)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState", NULL);
 
-  LASSO_PROFILE_CONTEXT(login)->request_type = atoi(lasso_node_get_child_content(node_dump, "RequestType", NULL));
+  type = lasso_node_get_child_content(node_dump, "RequestType", NULL);
+  LASSO_PROFILE_CONTEXT(login)->request_type = atoi(type);
+  xmlFree(type);
+
   request_node = lasso_node_get_child(node_dump, "Request", NULL);
   if (request_node != NULL) {
+    export = lasso_node_export(request_node);
     switch (LASSO_PROFILE_CONTEXT(login)->request_type) {
     case lassoMessageTypeAuthnRequest:
-      LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new_from_export(lasso_node_export(request_node),
+      LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new_from_export(export,
 										  lassoNodeExportTypeXml);
       break;
     case lassoMessageTypeRequest:
-      LASSO_PROFILE_CONTEXT(login)->request = lasso_request_new_from_export(lasso_node_export(request_node),
+      LASSO_PROFILE_CONTEXT(login)->request = lasso_request_new_from_export(export,
 									    lassoNodeExportTypeXml);
       break;
     default:
       break; /* XXX */
     }
+    xmlFree(export);
     lasso_node_destroy(request_node);
   }
 
-  LASSO_PROFILE_CONTEXT(login)->response_type = atoi(lasso_node_get_child_content(node_dump, "ResponseType", NULL));
+  type = lasso_node_get_child_content(node_dump, "ResponseType", NULL);
+  LASSO_PROFILE_CONTEXT(login)->response_type = atoi(type);
+  xmlFree(type);
+
   response_node = lasso_node_get_child(node_dump, "Response", NULL);
   if (response_node != NULL) {
+    export = lasso_node_export(response_node);
     switch (LASSO_PROFILE_CONTEXT(login)->response_type) {
     case lassoMessageTypeAuthnResponse:
-      LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(lasso_node_export(response_node),
+      LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(export,
 										    lassoNodeExportTypeXml);
       break;
     case lassoMessageTypeRequest:
-      LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(lasso_node_export(response_node),
+      LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(export,
 									      lassoNodeExportTypeXml);
       break;
     default:
       break; /* XXX */
     }
+    xmlFree(export);
     lasso_node_destroy(response_node);
   }
 
-  LASSO_PROFILE_CONTEXT(login)->provider_type = atoi(lasso_node_get_child_content(node_dump, "ProviderType", NULL));
+  type = lasso_node_get_child_content(node_dump, "ProviderType", NULL);
+  LASSO_PROFILE_CONTEXT(login)->provider_type = atoi(type);
+  xmlFree(type);
 
   /* login attributes */
   protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile", NULL);
   if (protocolProfile != NULL) {
     login->protocolProfile   = atoi(protocolProfile);
+    xmlFree(protocolProfile);
   }
   login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL);
   login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump", NULL);
