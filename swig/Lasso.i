@@ -101,7 +101,7 @@
  ***********************************************************************/
 
 
-#if defined(SWIGPYTHON)
+#ifdef SWIGPYTHON
 %typemap(in,parse="z") char * "";
 #endif
 
@@ -111,7 +111,7 @@
  ***********************************************************************/
 
 
-#if defined(SWIGPHP4)
+#ifdef SWIGPHP4
 
 %{
 /* ZVAL_STRING segfault when s is null */
@@ -159,13 +159,45 @@
 	}
 %}
 
-#endif /* if defined(SWIGPHP4) */
+#endif /* ifdef SWIGPHP4 */
 
 
 /***********************************************************************
  * Exceptions Generation From Lasso Error Codes
  ***********************************************************************/
 
+
+#ifdef SWIGPHP4
+
+%{
+
+static void throw_exception_msg(int errorCode) {
+	char errorMsg[256];
+	if (errorCode > 0)
+        {
+	    sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+            zend_error(E_WARNING, errorMsg);
+        }
+	else
+        {
+	    sprintf(errorMsg, "%d / Lasso Error", errorCode);
+            zend_error(E_ERROR, errorMsg);
+        }
+}
+
+%}
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		throw_exception_msg(errorCode);
+	}
+}
+%enddef
+
+#else /* ifdef SWIGPHP4 */
 
 #ifdef SWIGPYTHON
 
@@ -217,38 +249,7 @@ Warning = _lasso.Warning
 }
 %enddef
 
-#else
-
-#ifdef SWIGPHP4
-%{
-
-static void throw_exception_msg(int errorCode) {
-	char errorMsg[256];
-	if (errorCode > 0)
-        {
-	    sprintf(errorMsg, "%d / Lasso Warning", errorCode);
-            zend_error(E_WARNING, errorMsg);
-        }
-	else
-        {
-	    sprintf(errorMsg, "%d / Lasso Error", errorCode);
-            zend_error(E_ERROR, errorMsg);
-        }
-}
-
-%}
-
-%define THROW_ERROR
-%exception {
-	int errorCode;
-	errorCode = $action
-	if (errorCode) {
-		throw_exception_msg(errorCode);
-	}
-}
-%enddef
-
-#else /* If SWIGPHP4 and SWIGPYTHON not defined.*/
+#else /* ifdef SWIGPYTHON */
 
 %{
 
@@ -272,8 +273,9 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 	}
 }
 %enddef
-#endif /* Ifdef SWIGPHP4. */
-#endif /* Ifdef SWIGPYTHON.*/
+
+#endif /* ifdef SWIGPYTHON.*/
+#endif /* ifdef SWIGPHP4 */
 
 %define END_THROW_ERROR
 %exception;
@@ -377,7 +379,7 @@ DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNo
 %apply NODE_SUPERCLASS * {LassoNode *, LassoSamlpRequestAbstract *,
 		LassoSamlpResponseAbstract *};
 
-#else /* ifndef SWIGCSHARP */
+#else /* ifdef SWIGCSHARP */
 
 
 /***********************************************************************
@@ -474,7 +476,7 @@ DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNo
  ***********************************************************************/
 
 
-#else /* ifndef SWIGJAVA */
+#else /* ifdef SWIGJAVA */
 
 %{
 
@@ -598,8 +600,8 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoNode, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpRequestAbstract, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
-#endif /* ifndef SWIGJAVA */
-#endif /* ifndef SWIGCSHARP */
+#endif /* ifdef SWIGJAVA */
+#endif /* ifdef SWIGCSHARP */
 
 
 /***********************************************************************
@@ -619,7 +621,7 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 
-#else /* ifndef SWIGCSHARP */
+#else /* ifdef SWIGCSHARP */
 
 #ifdef SWIGJAVA
 
@@ -633,7 +635,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 
-#else /* ifndef SWIGJAVA */
+#else /* ifdef SWIGJAVA */
 
 %init %{
 { /* Brace needed for pre-C99 compilers */
@@ -659,8 +661,8 @@ SET_NODE_INFO(Node, DowncastableNode)
 }
 %}
 
-#endif /* ifndef SWIGJAVA */
-#endif /* ifndef SWIGCSHARP */
+#endif /* ifdef SWIGJAVA */
+#endif /* ifdef SWIGCSHARP */
 
 
 /***********************************************************************
@@ -1204,7 +1206,7 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 /*     init(); */
 /*   } */
 %}
-#else /* ifndef SWIGCSHARP */
+#else /* ifdef SWIGCSHARP */
 #ifdef SWIGJAVA
 #if SWIG_VERSION >= 0x010322
   %include "enumsimple.swg"
@@ -1227,7 +1229,7 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
     init();
   }
 %}
-#else
+#else /* ifdef SWIGJAVA */
 
 /* Apache fails when lasso_init is called too early in PHP binding. */
 /* FIXME: To investigate. */
@@ -1236,8 +1238,8 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 	lasso_init();
 %}
 #endif
-#endif /* ifndef SWIGJAVA */
-#endif /* ifndef SWIGCSHARP */
+#endif /* ifdef SWIGJAVA */
+#endif /* ifdef SWIGCSHARP */
 
 
 /***********************************************************************
