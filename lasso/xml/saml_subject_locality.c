@@ -39,20 +39,25 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlSubjectLocality *locality = LASSO_SAML_SUBJECT_LOCALITY(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "IPAddress", 'a', (void**)&(locality->IPAddress) }, \
+		{ "DNSAddress", 'a', (void**)&(locality->DNSAddress) }, \
+		{ NULL, 0, NULL} \
+	};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlSubjectLocality *locality = LASSO_SAML_SUBJECT_LOCALITY(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "SubjectLocality");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	if (locality->IPAddress)
-		xmlSetProp(xmlnode, "IPADdress", locality->IPAddress);
-	if (locality->DNSAddress)
-		xmlSetProp(xmlnode, "DNSAddress", locality->DNSAddress);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -60,12 +65,12 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlSubjectLocality *locality = LASSO_SAML_SUBJECT_LOCALITY(node);
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	locality->IPAddress = xmlGetProp(xmlnode, "IPAddress");
-	locality->DNSAddress = xmlGetProp(xmlnode, "DNSAddress");
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+
 	return 0;
 }
 
