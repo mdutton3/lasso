@@ -3,8 +3,6 @@ dnl
 dnl configure.ac - top level autoconf file for Lasso
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl $Id$
-dnl
 dnl 
 dnl See COPYING at the top of this package for the
 dnl full license terms.
