@@ -280,11 +280,14 @@
 /* SOAP                                                                      */
 /*****************************************************************************/
 
-#define LASSO_SOAP_ENV_HREF	 "http://schemas.xmlsoap.org/soap/envelope/"
-#define LASSO_SOAP_ENV_PREFIX	 "soap-env"
+#define LASSO_SOAP_ENV_HREF   "http://schemas.xmlsoap.org/soap/envelope/"
+#define LASSO_SOAP_ENV_PREFIX "soap-env"
 
 #define LASSO_SOAP_BINDING_HREF   "urn:liberty:sb:2003-08"
 #define LASSO_SOAP_BINDING_PREFIX "soap-binding"
+
+#define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
+#define LASSO_SOAP_BINDING_EXT_PREFIX "soap-binding-ext"
 
 /*****************************************************************************/
 /* Others                                                                    */
