@@ -468,6 +468,9 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	/* build artifact infos */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
+	if (remote_provider == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+
 	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 	if (url == NULL) {
