@@ -25,6 +25,7 @@
 package com.entrouvert.lasso;
 
 public class LassoAuthnResponse { // LassoAuthnResponse
+    private LassoAuthnResponse() {}
 
     public LassoAuthnResponse(String providerID, LassoNode request){
         init(providerID, request);

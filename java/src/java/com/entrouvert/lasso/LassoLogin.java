@@ -71,8 +71,6 @@ public class LassoLogin extends LassoProfileContext { // LassoLogin
 
     native public String getAssertionArtifact();
 
-    native public String getNameIdentifier();
-
     native public int getProtocolProfile();
 
     native public String getResponseDump();

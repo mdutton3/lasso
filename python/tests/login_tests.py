@@ -91,6 +91,7 @@ class LoginTestCase(unittest.TestCase):
         spLoginContext = lasso.Login.new(spContext)
         self.failUnlessEqual(spLoginContext.init_authn_request(
             "https://identity-provider:1998/liberty-alliance/metadata"), 0)
+        self.failUnlessEqual(spLoginContext.request_type, lasso.messageTypeAuthnRequest)
         spLoginContext.request.set_isPassive(False)
         spLoginContext.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         spLoginContext.request.set_consent(lasso.libConsentObtained)

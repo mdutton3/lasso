@@ -30,6 +30,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_init
 (JNIEnv * env, jobject this, jstring _providerID){
     LassoNode * request;
     char * providerID;
+
     providerID = (char*)(*env)->GetStringUTFChars(env, _providerID, NULL);
 
     request = lasso_authn_request_new(providerID);

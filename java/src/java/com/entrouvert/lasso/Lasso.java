@@ -51,6 +51,14 @@ public class Lasso { // Lasso
     static final public int loginProtocolProfileBrwsArt = 1;
     static final public int loginProtocolProfileBrwsPost = 2;
 
+    /* Message types */
+    static final public int messageTypeNone = 0;
+    static final public int messageTypeAuthnRequest = 1;
+    static final public int messageTypeAuthnResponse = 2;
+    static final public int messageTypeRequest = 3;
+    static final public int messageTypeResponse = 4;
+    static final public int messageTypeArtifact = 5;
+
     /* Provider types */
     static final public int providerTypeSp  = 1;
     static final public int providerTypeIdp = 2;

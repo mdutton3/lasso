@@ -25,11 +25,42 @@
 package com.entrouvert.lasso;
 
 public abstract class LassoProfileContext extends LassoObject { // LassoProfileContext
-
-    protected LassoServer server = null;
-    protected LassoUser user = null;
     protected LassoNode request = null;
     protected LassoNode response = null;
+    protected LassoServer server = null;
+    protected LassoUser user = null;
+
+    native protected void initRequestField();
+
+    native protected void initResponseField();
+
+    native protected void initServerField();
+
+    native protected void initUserField();
+
+    native public String getMsgBody();
+
+    native public String getMsgRelayState();
+
+    native public String getNameIdentifier();
+
+    native public String getMsgUrl();
+
+    native public String getProviderID();
+
+    public LassoNode getRequest(){
+        initRequestField();
+        return request;
+    }
+
+    native public int getRequestType();
+
+    public LassoNode getResponse(){
+        initResponseField();
+        return response;
+    }
+
+    native public int gettResponseType();
 
     public LassoServer getServer(){
         initServerField();
@@ -40,25 +71,5 @@ public abstract class LassoProfileContext extends LassoObject { // LassoProfileC
         initUserField();
         return user;
     }
-
-    public LassoNode getRequest(){
-        initRequestField();
-        return request;
-    }
-    public LassoNode getResponse(){
-        initResponseField();
-        return response;
-    }
-
-    native public String getProviderID();
-
-    native public String getMsgUrl();
-    native public String getMsgBody();
-    native public String getMsgRelayState();
-
-    native protected void initServerField();
-    native protected void initUserField();
-    native protected void initRequestField();
-    native protected void initResponseField();
 
 } // LassoProfileContext

@@ -25,6 +25,7 @@
 package com.entrouvert.lasso;
 
 public class LassoRequest extends LassoNode { // LassoRequest
+    private LassoRequest() {}
 
     public LassoRequest(String assertionArtifact){
         init(assertionArtifact);

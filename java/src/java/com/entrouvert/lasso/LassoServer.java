@@ -25,7 +25,6 @@
 package com.entrouvert.lasso;
 
 public class LassoServer extends LassoProvider { // LassoServer
-
     public LassoServer(String metadataFilePath,
                        String publicKeyFilePath,
                        String privateKeyFilePath,

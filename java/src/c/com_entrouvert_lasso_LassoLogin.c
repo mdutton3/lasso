@@ -293,18 +293,6 @@ JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_getAssertionArtif
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_getNameIdentifier
-(JNIEnv * env, jobject this){
-    LassoLogin * login;
-    char *result;
-
-    login = getCObject(env, this);
-
-    result = login->nameIdentifier;
-
-    return (*env)->NewStringUTF(env, result);
-}
-
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_getProtocolProfile
 (JNIEnv * env, jobject this){
     LassoLogin * login;

@@ -96,6 +96,7 @@ public class LoginTest extends TestCase {
         spLoginContext = new LassoLogin(spContext, null);
         assertEquals(0, spLoginContext.initAuthnRequest(
             "https://identity-provider:1998/liberty-alliance/metadata"));
+        assertEquals(Lasso.messageTypeAuthnRequest, spLoginContext.getRequestType());
 	authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
         authnRequest.setPassive(false);
         authnRequest.setNameIdPolicy(Lasso.libNameIdPolicyTypeFederated);
@@ -164,7 +165,7 @@ public class LoginTest extends TestCase {
         assertNotNull(spUserContextDump);
         spUserContext = new LassoUser(spUserContextDump);
         assertNotNull(spUserContext);
-        spLogoutContext = new LassoLogout(spContext, spUserContext, Lasso.providerTypeSp);
+        spLogoutContext = new LassoLogout(Lasso.providerTypeSp, spContext, spUserContext);
         assertEquals(0, spLogoutContext.initRequest(null));
         assertEquals(0, spLogoutContext.buildRequestMsg());
         soapEndpoint = spLogoutContext.getMsgUrl();
@@ -177,11 +178,12 @@ public class LoginTest extends TestCase {
         assertNotNull(idpContextDump);
         idpContext = new LassoServer(idpContextDump);
         assertNotNull(idpContext);
-        idpLogoutContext = new LassoLogout(idpContext, null, Lasso.providerTypeIdp);
-	assertEquals(0, idpLogoutContext.processRequestMsg(soapRequestMsg, Lasso.httpMethodSoap));
+        idpLogoutContext = new LassoLogout(Lasso.providerTypeIdp, idpContext, null);
+	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.httpMethodSoap));
         assertEquals(nameIdentifier, idpLogoutContext.getNameIdentifier());
         assertNotNull(idpUserContextDump);
-        assertEquals(0, idpLogoutContext.createUser(idpUserContextDump));
+        assertEquals(0, idpLogoutContext.loadUserDump(idpUserContextDump));
+	assertEquals(0, idpLogoutContext.processRequest());
         idpUserContext = idpLogoutContext.getUser();
         assertNotNull(idpUserContext);
         idpUserContextDump = idpUserContext.dump();

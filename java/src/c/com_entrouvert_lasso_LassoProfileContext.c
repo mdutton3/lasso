@@ -26,30 +26,6 @@
 #include <lasso/lasso.h>
 #include <com_entrouvert_lasso_LassoProfileContext.h>
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getProviderID
-(JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
-    char * result;
-
-    profileContext = getCObject(env, this);
-
-    result = profileContext->remote_providerID;
-
-    return (*env)->NewStringUTF(env, result);
-}
-
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgUrl
-(JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
-    char * result;
-
-    profileContext = getCObject(env, this);
-
-    result = profileContext->msg_url;
-
-    return (*env)->NewStringUTF(env, result);
-}
-
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgBody
 (JNIEnv * env, jobject this){
     LassoProfileContext * profileContext;
@@ -72,6 +48,106 @@ JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgRe
     result = profileContext->msg_relayState;
 
     return (*env)->NewStringUTF(env, result);
+}
+
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgUrl
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * result;
+
+    profileContext = getCObject(env, this);
+
+    result = profileContext->msg_url;
+
+    return (*env)->NewStringUTF(env, result);
+}
+
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getNameIdentifier
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char *result;
+
+    profileContext = getCObject(env, this);
+
+    result = profileContext->nameIdentifier;
+    if (result == NULL)
+        return NULL;
+    return (*env)->NewStringUTF(env, result);
+}
+
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getProviderID
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * result;
+
+    profileContext = getCObject(env, this);
+
+    result = profileContext->remote_providerID;
+
+    return (*env)->NewStringUTF(env, result);
+}
+
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getRequestType
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * result;
+
+    profileContext = getCObject(env, this);
+
+    return profileContext->request_type;
+}
+
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getResponseType
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * result;
+
+    profileContext = getCObject(env, this);
+
+    return profileContext->response_type;
+}
+
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRequestField
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * fieldName = "request";
+    char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
+    char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
+    LassoNode *cObject;
+
+    profileContext = getCObject(env, this);
+    cObject = profileContext->request;
+
+    if (profileContext->request_type == lassoMessageTypeAuthnRequest) {
+        javaObjectClassName = "com/entrouvert/lasso/LassoAuthnRequest";
+    } else if(profileContext->request_type == lassoMessageTypeRequest) {
+        javaObjectClassName = "com/entrouvert/lasso/LassoRequest";
+    } else {
+        /* FIXME: Throw error */
+    }
+    checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
+}
+
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initResponseField
+(JNIEnv * env, jobject this){
+    LassoProfileContext * profileContext;
+    char * fieldName = "response";
+    char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
+    char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
+    LassoNode *cObject;
+
+    profileContext = getCObject(env, this);
+    cObject = profileContext->response;
+
+    if(profileContext->response_type == lassoMessageTypeAuthnResponse){
+        javaObjectClassName = "com/entrouvert/lasso/LassoAuthnResponse";
+    }else if(profileContext->response_type == lassoMessageTypeResponse){
+        javaObjectClassName = "com/entrouvert/lasso/LassoResponse";
+    }else{
+        /* FIXME: Throw error */
+    }
+
+    checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initServerField
@@ -98,50 +174,6 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initUserFie
 
     profileContext = getCObject(env, this);
     cObject = profileContext->user;
-
-    checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
-}
-
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRequestField
-(JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
-    char * fieldName = "request";
-    char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
-    char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
-    LassoNode *cObject;
-
-    profileContext = getCObject(env, this);
-    cObject = profileContext->request;
-
-    if(profileContext->request_type == lassoMessageTypeAuthnRequest){
-        javaObjectClassName = "com/entrouvert/lasso/LassoAuthnRequest";
-    }else if(profileContext->request_type == lassoMessageTypeRequest){
-        javaObjectClassName = "com/entrouvert/lasso/LassoRequest";
-    }else{
-        /* FIXME: Throw error */
-    }
-
-    checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
-}
-
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initResponseField
-(JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
-    char * fieldName = "response";
-    char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
-    char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
-    LassoNode *cObject;
-
-    profileContext = getCObject(env, this);
-    cObject = profileContext->response;
-
-    if(profileContext->response_type == lassoMessageTypeAuthnResponse){
-        javaObjectClassName = "com/entrouvert/lasso/LassoAuthnResponse";
-    }else if(profileContext->response_type == lassoMessageTypeResponse){
-        javaObjectClassName = "com/entrouvert/lasso/LassoResponse";
-    }else{
-        /* FIXME: Throw error */
-    }
 
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
