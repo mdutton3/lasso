@@ -25,6 +25,7 @@
 
 #include "../../lassomod.h"
 
+#include "../../xml/py_saml_name_identifier.h"
 #include "py_authentication_statement.h"
 
 PyObject *LassoAuthenticationStatement_wrap(LassoAuthenticationStatement *statement) {
@@ -42,30 +43,29 @@ PyObject *LassoAuthenticationStatement_wrap(LassoAuthenticationStatement *statem
 /******************************************************************************/
 
 PyObject *authentication_statement_new(PyObject *self, PyObject *args) {
+  PyObject *identifier_obj, *idp_identifier_obj;
   const xmlChar *authenticationMethod;
   const xmlChar *reauthenticateOnOrAfter;
-  xmlChar       *nameIdentifier;
-  const xmlChar *nameQualifier;
-  const xmlChar *format;
-  xmlChar       *idp_nameIdentifier;
-  const xmlChar *idp_nameQualifier;
-  const xmlChar *idp_format;
+  LassoSamlNameIdentifier *identifier=NULL, *idp_identifier;
   LassoNode *statement;
 
-  if(!PyArg_ParseTuple(args, (char *) "ssssssss:authentication_statement_new",
-		       &authenticationMethod, &reauthenticateOnOrAfter,
-		       &nameIdentifier, &nameQualifier, &format,
-		       &idp_nameIdentifier, &idp_nameQualifier, &idp_format))
-    return NULL;
+  if (CheckArgs(args, "SSoO:authentication_statement_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssOO:authentication_statement_new",
+			 &authenticationMethod, &reauthenticateOnOrAfter,
+			 &identifier_obj, &idp_identifier_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  if (identifier_obj != Py_None) {
+    identifier = LassoSamlNameIdentifier_get(identifier_obj);
+  }
+  idp_identifier = LassoSamlNameIdentifier_get(idp_identifier_obj);
 
   statement = lasso_authentication_statement_new(authenticationMethod,
 						 reauthenticateOnOrAfter,
-						 nameIdentifier,
-						 nameQualifier,
-						 format,
-						 idp_nameIdentifier,
-						 idp_nameQualifier,
-						 idp_format);
+						 identifier,
+						 idp_identifier);
 
   return (LassoAuthenticationStatement_wrap(LASSO_AUTHENTICATION_STATEMENT(statement)));
 }

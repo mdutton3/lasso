@@ -51,6 +51,7 @@ typedef enum {
   lassoHttpMethodGet = 1,
   lassoHttpMethodPost,
   lassoHttpMethodRedirect,
+  lassoHttpMethodSoap,
 } lassoHttpMethods;
 
 typedef enum {

@@ -27,7 +27,6 @@
 #define __PYLASSO_PY_AUTHN_RESPONSE_H__
 
 #include <lasso/protocols/authn_response.h>
-#include "elements/py_assertion.h"
 
 typedef struct {
   PyObject_HEAD
@@ -37,12 +36,6 @@ typedef struct {
 #define LassoAuthnResponse_get(v) (((v) == Py_None) ? NULL : (((LassoAuthnResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoAuthnResponse_wrap(LassoAuthnResponse *response);
 
-PyObject *authn_response_getattr(PyObject *self, PyObject *args);
-PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args);
 PyObject *authn_response_new_from_export(PyObject *self, PyObject *args);
-//PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args);
-PyObject *authn_response_must_authenticate(PyObject *self, PyObject *args);
-PyObject *authn_response_process_authentication_result(PyObject *self, PyObject *args);
-PyObject *authn_response_verify_signature(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_AUTHN_RESPONSE_H__ */

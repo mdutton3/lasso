@@ -22,13 +22,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/protocols/request.h>
-#include <lasso/protocols/response.h>
-#include <lasso/protocols/artifact.h>
-#include <lasso/protocols/authn_response.h>
-#include <lasso/protocols/provider.h>
-
 #include <lasso/environs/login.h>
+
+#include <lasso/protocols/artifact.h>
+#include <lasso/protocols/provider.h>
 
 /*****************************************************************************/
 /* functions                                                                 */
@@ -83,6 +80,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 {
   xmlChar *providerID;
   LassoNode *assertion=NULL, *authentication_statement;
+  xmlChar *ni, *idp_ni;
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   assertion = lasso_assertion_new(providerID,
@@ -91,6 +89,17 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 								reauthenticateOnOrAfter,
 								identity->remote_nameIdentifier,
 								identity->local_nameIdentifier);
+  ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "NameIdentifier", NULL);
+  idp_ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "IDPProvidedNameIdentifier", NULL);
+  /* store NameIdentifier */
+  if (xmlStrEqual(ni, idp_ni)) {
+    login->nameIdentifier = idp_ni;
+    xmlFree(ni);
+  }
+  else {
+    login->nameIdentifier = ni;
+    xmlFree(idp_ni);
+  }
   lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
@@ -313,15 +322,15 @@ lasso_login_dump(LassoLogin *login)
     g_free(str);
   }
 
-  if (login->assertionArtifact != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE);
-  }
-  if (login->response_dump != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE);
-  }
-  if (login->msg_relayState != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE);
-  }
+/*   if (login->assertionArtifact != NULL) { */
+/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE); */
+/*   } */
+/*   if (login->response_dump != NULL) { */
+/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE); */
+/*   } */
+/*   if (login->msg_relayState != NULL) { */
+/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE); */
+/*   } */
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
@@ -478,7 +487,8 @@ lasso_login_handle_authn_response_msg(LassoLogin *login,
   LassoProvider *idp;
   gchar *statusCode_value;
 
-  LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg, 0);
+  LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
+										lassoNodeExportTypeBase64);
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				   "Assertion",
 				   lassoLibHRef);
@@ -566,8 +576,9 @@ lasso_login_instance_init(LassoLogin *login)
 {
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
-  login->msg_relayState    = NULL;
+  login->nameIdentifier    = NULL;
   login->response_dump     = NULL;
+  login->msg_relayState    = NULL;
 }
 
 static void
@@ -609,5 +620,27 @@ lasso_login_new(LassoServer *server,
 					     "user", user,
 					     NULL));
   
+  return (login);
+}
+
+LassoProfileContext*
+lasso_login_new_from_dump(LassoServer *server,
+			  LassoUser   *user,
+			  gchar       *dump)
+{
+  LassoProfileContext *login;
+  LassoNode *node_dump;
+
+  login = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_LOGIN,
+					     "server", server,
+					     "user", user,
+					     NULL));
+  
+  node_dump = lasso_node_new_from_dump(dump);
+  login->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL);
+  login->request = NULL;
+
+  lasso_node_destroy(node_dump);
+
   return (login);
 }

@@ -41,6 +41,8 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 			   const gchar         *name)
 {
   LassoNode *node;
+/*   xmlDocPtr  doc = NULL; */
+/*   xmlNodePtr cdata, data; */
   gchar *child_dump, *dump = NULL;
 
   node = lasso_node_new();
@@ -50,6 +52,7 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   else {
     LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfileContext");
   }
+  //LASSO_NODE_GET_CLASS(node)->set_ns(node, lassoLibHRef, lassoLibPrefix);
 
   if (ctx->request != NULL) {
     LASSO_NODE_GET_CLASS(node)->add_child(node, ctx->request, FALSE);
@@ -59,15 +62,21 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   }
 
   if (ctx->remote_providerID != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "remote_providerID", ctx->remote_providerID, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "RemoteProviderID",
+					  ctx->remote_providerID, FALSE);
   }
 
-  if (ctx->msg_url != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_url", lasso_str_escape(ctx->msg_url), FALSE);
-  }
-  if (ctx->msg_body != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE);
-  }
+/*   if (ctx->msg_url != NULL) { */
+/*     doc   = xmlNewDoc("1.0"); */
+/*     data  = xmlNewNode(NULL, "data"); */
+/*     xmlNewNs(data, lassoLibHRef, NULL); */
+/*     cdata = xmlNewCDataBlock(doc, ctx->msg_url, strlen(ctx->msg_url)); */
+/*     xmlAddChild(data, cdata); */
+/*     xmlAddChild(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node), data); */
+/*   } */
+/*   if (ctx->msg_body != NULL) { */
+/*     LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE); */
+/*   } */
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);

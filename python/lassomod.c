@@ -141,13 +141,7 @@ static PyMethodDef lasso_methods[] = {
   {"authn_request_get_protocolProfile", authn_request_get_protocolProfile, METH_VARARGS},
 
   /* py_authn_response.h */
-  {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
-  {"authn_response_new_from_dump",                 authn_response_new_from_dump,                 METH_VARARGS},
   {"authn_response_new_from_export",               authn_response_new_from_export,               METH_VARARGS},
-  //{"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
-  {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
-  {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},
-  {"authn_response_verify_signature",              authn_response_verify_signature,              METH_VARARGS},
 
   /* py_federation_termination_notification.h */
   {"federation_termination_notification_new", federation_termination_notification_new, METH_VARARGS},
@@ -216,8 +210,8 @@ static PyMethodDef lasso_methods[] = {
   {"logout_build_request_msg",  logout_build_request_msg,  METH_VARARGS},
   {"logout_build_response_msg", logout_build_response_msg, METH_VARARGS},
   {"logout_init_request",       logout_init_request,       METH_VARARGS},
-  {"logout_handle_request",     logout_handle_request,     METH_VARARGS},
-  {"logout_handle_response",    logout_handle_response,    METH_VARARGS},
+  {"logout_handle_request_msg",     logout_handle_request_msg,     METH_VARARGS},
+  {"logout_handle_response_msg",    logout_handle_response_msg,    METH_VARARGS},
 
   /* py_server.h */
   {"server_new",          server_new,          METH_VARARGS},

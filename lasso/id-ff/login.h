@@ -56,12 +56,13 @@ typedef enum {
 struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
-  gint   protocolProfile;
-  gchar *assertionArtifact;
+  lassoLoginProtocolProfiles  protocolProfile;
+  gchar                      *assertionArtifact;
+  gchar                      *nameIdentifier;
 
-  gchar *response_dump;
+  gchar                      *response_dump;
 
-  gchar *msg_relayState;
+  gchar                      *msg_relayState;
   /*< private >*/
 };
 
@@ -73,6 +74,10 @@ LASSO_EXPORT GType                lasso_login_get_type                    (void)
 
 LASSO_EXPORT LassoProfileContext* lasso_login_new                         (LassoServer *server,
 									   LassoUser   *user);
+
+LASSO_EXPORT LassoProfileContext* lasso_login_new_from_dump               (LassoServer *server,
+									   LassoUser   *user,
+									   gchar       *dump);
 
 LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (LassoLogin       *login,
 									   gint              authentication_result,

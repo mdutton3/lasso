@@ -28,6 +28,9 @@
 
 #include <lasso/environs/logout.h>
 
+#include "py_server.h"
+#include "py_user.h"
+
 typedef struct {
     PyObject_HEAD
     LassoLogout *obj;
@@ -40,7 +43,7 @@ PyObject *logout_new(PyObject *self, PyObject *args);
 PyObject *logout_build_request_msg(PyObject *self, PyObject *args);
 PyObject *logout_build_response_msg(PyObject *self, PyObject *args);
 PyObject *logout_init_request(PyObject *self, PyObject *args);
-PyObject *logout_handle_request(PyObject *self, PyObject *args)
-PyObject *logout_handle_response(PyObject *self, PyObject *args);
+PyObject *logout_handle_request_msg(PyObject *self, PyObject *args);
+PyObject *logout_handle_response_msg(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_H__ */

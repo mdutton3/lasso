@@ -27,7 +27,6 @@
 
 #include "../xml/py_xml.h"
 #include "py_authn_response.h"
-#include "py_authn_request.h"
 
 /******************************************************************************/
 /* LassoAuthnResponse                                                          */
@@ -47,28 +46,12 @@ PyObject *LassoAuthnResponse_wrap(LassoAuthnResponse *response) {
 
 /******************************************************************************/
 
-PyObject *authn_response_new_from_dump(PyObject *self, PyObject *args) {
-  xmlChar   *buffer;
-  LassoNode *response;
-
-  if (CheckArgs(args, "S:authn_response_new_from_dump")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:authn_response_new_from_dump",
-			 &buffer))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lasso_authn_response_new_from_dump(buffer);
-
-  return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
-}
-
 PyObject *authn_response_new_from_export(PyObject *self, PyObject *args) {
   xmlChar   *buffer;
   gint       type;
   LassoNode *response;
 
-  if (CheckArgs(args, "Si:authn_response_new_from_export")) {
+  if (CheckArgs(args, "SI:authn_response_new_from_export")) {
     if(!PyArg_ParseTuple(args, (char *) "si:authn_response_new_from_export",
 			 &buffer, &type))
       return NULL;
@@ -78,76 +61,4 @@ PyObject *authn_response_new_from_export(PyObject *self, PyObject *args) {
   response = lasso_authn_response_new_from_export(buffer, type);
 
   return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
-}
-
-PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args) {
-  xmlChar       *query = NULL;
-  const xmlChar *providerID = NULL;
-  LassoNode     *response;
-
-  if (CheckArgs(args, "ss:authn_response_new_from_request_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "zz:authn_response_new_from_request_query",
-			 &query, &providerID))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lasso_authn_response_new_from_request_query(query, providerID);
-
-  return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
-}
-
-PyObject *authn_response_must_authenticate(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  gboolean is_authenticated;
-  gboolean ret;
-
-  if (CheckArgs(args, "OI:authn_response_must_authenticate")) {
-    if(!PyArg_ParseTuple(args, (char *) "Oi:authn_response_must_authenticate",
-			 &response_obj, &is_authenticated))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_authn_response_must_authenticate(LassoAuthnResponse_get(response_obj),
-					       is_authenticated);
-
-  return (int_wrap(ret));
-}
-
-PyObject *authn_response_process_authentication_result(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  gboolean authentication_result;
-
-  if (CheckArgs(args, "OI:authn_response_process_authentication_result")) {
-    if(!PyArg_ParseTuple(args, (char *) "Oi:authn_response_process_authentication_result",
-			 &response_obj, &authentication_result))
-      return NULL;
-  }
-  else return NULL;
-
-  lasso_authn_response_process_authentication_result(LassoAuthnResponse_get(response_obj),
-						     authentication_result);
-
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
-PyObject *authn_response_verify_signature(PyObject *self, PyObject *args) {
-  PyObject *response_obj;
-  xmlChar  *public_key_file;
-  xmlChar  *private_key_file;
-  gboolean ret;
-
-  if (CheckArgs(args, "OSS:authn_response_verify_signature")) {
-    if(!PyArg_ParseTuple(args, (char *) "Oss:authn_response_verify_signature",
-			 &response_obj, &public_key_file, &private_key_file))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_authn_response_verify_signature(LassoAuthnResponse_get(response_obj),
-					      public_key_file, private_key_file);
-
-  return (int_wrap(ret));
 }
