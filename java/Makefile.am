@@ -60,8 +60,6 @@ lib_LTLIBRARIES = \
                 libjlasso.la \
                 $(NULL)
 
-libjlassoinclude_HEADERS = $(NULL)
-
 libjlasso_la_SOURCES = $(NULL)
 
 libjlasso_la_LIBADD = \

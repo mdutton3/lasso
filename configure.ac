@@ -261,15 +261,43 @@ if test "X$with_python" != Xno; then
   with_python=yes
 fi
 
+
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
 changequote([, ])dnl
 if test "X$PYTHON_VERSION" != X; then
-  languages_available="$languages_available python($PYTHON_VERSION)"
   if test $with_python = yes; then
-    languages="$languages python"
-  fi
+        PY_PREFIX=`python -c 'import sys ; print sys.prefix'`
+        PY_EXEC_PREFIX=`python -c 'import sys ; print sys.exec_prefix'`
+        changequote(<<, >>)dnl
+        PY_VERSION=`python -c 'import sys ; print sys.version[0:3]'`
+        changequote([, ])dnl
+        PYTHON_H=$PY_PREFIX/include/python$PY_VERSION/Python.h
+        LIBPYTHON_SO=$PY_PREFIX/lib/libpython$PY_VERSION.so
+	if test -f $PYTHON_H; then
+                PYTHON="python$PY_VERSION"
+                PY_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PY_VERSION/config"
+                PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
+                PY_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/Makefile"
+                PY_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PY_MAKEFILE`
+                PY_EXTRA_LIBS="$PY_LOCALMODLIBS $PY_BASEMODLIBS $PY_OTHER_LIBS"
+                PY_DYNLOAD="$PY_EXEC_PREFIX/lib/python$PY_VERSION/lib-dynload"
+                PY_LIB_A="$PY_EXEC_PREFIX/lib/python$PY_VERSION/config/libpython$PY_VERSION.a"
+		PY_SITE_PACKAGES="$PY_EXEC_PREFIX/lib/python$PY_VERSION/site-packages"
+                AC_SUBST(PYTHON)
+                AC_SUBST(PY_LIB_LOC)
+                AC_SUBST(PY_CFLAGS)
+                AC_SUBST(PY_EXTRA_LIBS)
+                AC_SUBST(PY_DYNLOAD)
+                AC_SUBST(PY_LIB_A)
+		AC_SUBST(PY_SITE_PACKAGES)
+                languages_available="$languages_available python($PYTHON_VERSION)"
+                languages="$languages python"
+        else
+		with_python=false
+	fi
+    fi
 fi
 AC_MSG_RESULT($with_python)
 AC_SUBST(PYTHON_VERSION)
@@ -289,7 +317,6 @@ esac], tests_val=true)
 AC_DEFINE([CHECK_IS_XML], [], [Define if check available with XML support])
 if $tests_val ; then
   AM_PATH_CHECK
-  CC=gcc
   AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML)])
 fi
 
