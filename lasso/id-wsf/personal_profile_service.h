@@ -99,11 +99,12 @@ LASSO_EXPORT gint lasso_personal_profile_service_process_modify_response_msg(
 	LassoPersonalProfileService *pp,
 	const char *modify_response_soap_msg);
 
-LASSO_EXPORT gint lasso_personal_profile_process_query_msg(LassoPersonalProfileService *pp,
-							   const char *request_soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_process_query_response_msg(LassoPersonalProfileService *pp,
-								    const char *response_soap_msg);
+LASSO_EXPORT gint lasso_personal_profile_service_process_query_msg(LassoPersonalProfileService *pp,
+								   const char *request_soap_msg);
+	
+LASSO_EXPORT gint lasso_personal_profile_service_process_query_response_msg(
+	LassoPersonalProfileService *pp,
+	const char *response_soap_msg);
 
 LASSO_EXPORT gint lasso_personal_profile_service_process_request_msg(
 		LassoPersonalProfileService *pp, const char *query_soap_msg);
