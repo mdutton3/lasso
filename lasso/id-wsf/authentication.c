@@ -355,11 +355,8 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 	}
 
 	/* Liberty part : base64 encode out and add in Data element of SASLResponse */
-	printf("outlen : %d\n", outlen);
 	if (outlen > 0) {
-		printf("out : %c\n", out[0]);
 		outbase64 = xmlSecBase64Encode(out, outlen, 0);
-		printf("outbase64 : %s\n", outbase64);
 		response->Data = g_list_append(response->Data, outbase64);
 	}
 
