@@ -2,7 +2,7 @@
  * JLasso -- Java bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.entrouvert.com
+ * http://lasso.entrouvert.org
  *
  * Authors: Benjamin Poussin <poussin@codelutin.com>
  *          Emmanuel Raviart <eraviart@entrouvert.com>
