@@ -131,7 +131,10 @@ printf("Location: /\n\nRedirected to site root\n");
 
 <!-- ##### STRUCT LassoLogin ##### -->
 <para>
-
+Single sign-on profile for the current transaction; possibly an
+assertionArtifact to be used by the service provider in its
+"assertionConsumerServiceURL" and the assertion created or received for the
+principal.
 </para>
 
 @protocolProfile: 
@@ -140,7 +143,7 @@ printf("Location: /\n\nRedirected to site root\n");
 
 <!-- ##### ENUM LassoLoginProtocolProfile ##### -->
 <para>
-
+Identifies the two possible profiles for Single Sign-On and Federation.
 </para>
 
 @LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART: 

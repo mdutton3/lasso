@@ -30,6 +30,8 @@ identifiers) and
 #LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID.
 </para>
 
+@NameQualifier: 
+@Format: 
 @content: 
 
 <!-- ##### FUNCTION lasso_saml_name_identifier_new ##### -->
