@@ -6,6 +6,9 @@ SOURCE_DIR=$(TOP)/lasso
 INCLUDE_DIR=$(TOP)/lasso
 
 EXTRA_DIST = \
+	lasso-sections.txt \
+	lasso.sgml \
+	lasso.types \
 	$(NULL)
 
 # Extra options to pass to gtkdoc-scangobj.

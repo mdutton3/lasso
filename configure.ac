@@ -532,6 +532,7 @@ lasso/environs/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/tutorial/Makefile
+docs/lasso-book/Makefile
 python/Makefile
 python/doc/Makefile
 python/doc/tutorial/Makefile

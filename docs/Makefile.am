@@ -1,4 +1,4 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = reference tutorial
+SUBDIRS = lasso-book reference tutorial
 
