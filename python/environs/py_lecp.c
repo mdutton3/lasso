@@ -59,9 +59,14 @@ PyObject *lecp_getattr(PyObject *self, PyObject *args) {
   lecp = LassoLecp_get(lecp_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[s]", "msg_body");
+    return Py_BuildValue("[sss]", "assertionConsumerServiceURL",
+			 "msg_body", "msg_url");
+  if (!strcmp(attr, "assertionConsumerServiceURL"))
+    return (charPtrConst_wrap(lecp->assertionConsumerServiceURL));
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_body));
+  if (!strcmp(attr, "msg_url"))
+    return (charPtrConst_wrap(LASSO_PROFILE(lecp)->msg_url));
 
   Py_INCREF(Py_None);
   return (Py_None);
