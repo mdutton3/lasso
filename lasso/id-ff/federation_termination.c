@@ -415,9 +415,9 @@ lasso_federation_termination_validate_notification(LassoFederationTermination *d
   LassoFederation *federation;
   LassoNode       *assertion;
   LassoNode       *nameIdentifier;
-  gint             ret = 0;
-  gint             signature_check;
   GError          *err = NULL;
+  gint             signature_check;
+  gint             ret = 0;
 
   profile = LASSO_PROFILE(defederation);
 
@@ -441,13 +441,13 @@ lasso_federation_termination_validate_notification(LassoFederationTermination *d
   /* if HTTP-Redirect protocol profile, set the federation termination service return url */
   profile->msg_url  = NULL;
   profile->msg_body = NULL;
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID, NULL);
-  if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
-    ret = -1;
-    goto done;
-  }
-  if (profile->http_request_method==lassoHttpMethodRedirect) {
+  if (profile->http_request_method == lassoHttpMethodRedirect) {
+    provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
+    if (provider == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
+      ret = -1;
+      goto done;
+    }
     profile->msg_url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
 										profile->provider_type,
 										NULL);
