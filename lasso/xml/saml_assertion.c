@@ -67,6 +67,9 @@ From oasis-sstc-saml-schema-assertion-1.0.xsd:
 		{ "Advice", 'n', (void**)&(assertion->Advice) },  \
 		{ "SubjectStatement", 'n', (void**)&(assertion->SubjectStatement) },  \
 		{ "AuthenticationStatement", 'n', (void**)&(assertion->AuthenticationStatement) }, \
+		{ "AssertionID", 'a', (void**)&(assertion->AssertionID) }, \
+		{ "Issuer", 'a', (void**)&(assertion->Issuer) }, \
+		{ "IssueInstant", 'a', (void**)&(assertion->IssueInstant) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -112,17 +115,12 @@ get_xmlNode(LassoNode *node)
 	snippets();
 
 	xmlnode = xmlNewNode(NULL, "Assertion");
-	xmlSetProp(xmlnode, "AssertionID", assertion->AssertionID);
 	ns = xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
 	xmlSetNs(xmlnode, ns);
 	snprintf(s, 9, "%d", assertion->MajorVersion);
 	xmlSetProp(xmlnode, "MajorVersion", s);
 	snprintf(s, 9, "%d", assertion->MinorVersion);
 	xmlSetProp(xmlnode, "MinorVersion", s);
-	if (assertion->Issuer)
-		xmlSetProp(xmlnode, "Issuer", assertion->Issuer);
-	if (assertion->IssueInstant)
-		xmlSetProp(xmlnode, "IssueInstant", assertion->IssueInstant);
 
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 	insure_namespace(xmlnode, ns);
@@ -139,9 +137,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 
-	assertion->AssertionID = xmlGetProp(xmlnode, "AssertionID");
-	assertion->Issuer = xmlGetProp(xmlnode, "Issuer");
-	assertion->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
 	s = xmlGetProp(xmlnode, "MajorVersion");
 	if (s) {
 		assertion->MajorVersion = atoi(s);
