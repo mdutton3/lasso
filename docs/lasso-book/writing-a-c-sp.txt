@@ -245,7 +245,7 @@ Session Id    misc session data    Session dump
 3338824       ...                  <Session> ...
 ==========    =================    =============
 
-Like users; sessions should be mapped to name identifiers.
+Likewise sessions should be mapped to name identifiers.
 
 ===============    ==========
 Name Identifier    Session Id
