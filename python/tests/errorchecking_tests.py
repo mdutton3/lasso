@@ -55,10 +55,10 @@ class ErrorCheckingTestCase(unittest.TestCase):
         # This time; we got something wrong as query string; we pass it to
         # init_from_authn_request_msg; surely it shouldn't segfault
         server = lasso.Server.new(
-            '../../examples/data/idp-metadata.xml',
-            '../../examples/data/idp-public-key.pem',
-            '../../examples/data/idp-private-key.pem',
-            '../../examples/data/idp-crt.pem',
+            '../../tests/data/idp1-la/metadata.xml',
+            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
+            '../../tests/data/idp1-la/private-key-raw.pem',
+            '../../tests/data/idp1-la/certificate.pem',
             lasso.signatureMethodRsaSha1)
         login = lasso.Login.new(server)
         try:

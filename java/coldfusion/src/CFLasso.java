@@ -36,15 +36,15 @@
 public class CFLasso {
     protected com.entrouvert.lasso.LassoServer getServerContext() {
         com.entrouvert.lasso.LassoServer serverContext = new com.entrouvert.lasso.LassoServer(
-            "/home/manou/projects/lasso/lasso-devel/examples/data/sp-metadata.xml",
-            "/home/manou/projects/lasso/lasso-devel/examples/data/sp-public-key.pem",
-            "/home/manou/projects/lasso/lasso-devel/examples/data/sp-private-key.pem",
-            "/home/manou/projects/lasso/lasso-devel/examples/data/sp-crt.pem",
+            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/metadata.xml'",
+	    NULL, //"/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/public-key.pem",
+            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/private-key-raw.pem",
+            "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/certificate.pem",
             com.entrouvert.lasso.Lasso.signatureMethodRsaSha1);
         serverContext.addProvider(
-            "/home/manou/projects/lasso/lasso-devel/examples/data/idp-metadata.xml",
-            "/home/manou/projects/lasso/lasso-devel/examples/data/idp-public-key.pem",
-            "/home/manou/projects/lasso/lasso-devel/examples/data/ca-crt.pem");
+            "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/metadata.xml",
+            "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/public-key.pem",
+            "/home/manou/projects/lasso/lasso-devel/tests/data/ca1-la/certificate.pem");
 	return serverContext;
     }
 
@@ -58,7 +58,7 @@ public class CFLasso {
 
 	serverContext = getServerContext();
         loginContext = new com.entrouvert.lasso.LassoLogin(serverContext, null);
-        loginContext.initAuthnRequest("https://identity-provider:1998/liberty-alliance/metadata");
+        loginContext.initAuthnRequest("https://idp1:1998/metadata");
 	authnRequest = (com.entrouvert.lasso.LassoAuthnRequest) loginContext.getRequest();
         authnRequest.setPassive(false);
         authnRequest.setNameIdPolicy(com.entrouvert.lasso.Lasso.libNameIdPolicyTypeFederated);

@@ -41,30 +41,30 @@ import com.entrouvert.lasso.*;
 public class LoginTest extends TestCase {
     public String generateIdentityProviderContextDump() {
 	LassoServer serverContext = new LassoServer(
-            "../../examples/data/idp-metadata.xml",
-            "../../examples/data/idp-public-key.pem",
-            "../../examples/data/idp-private-key.pem",
-            "../../examples/data/idp-crt.pem",
-           Lasso.signatureMethodRsaSha1);
+            "../../tests/data/idp1-la/metadata.xml'",
+	    NULL, //"../../tests/data/idp1-la/public-key.pem",
+            "../../tests/data/idp1-la/private-key-raw.pem",
+            "../../tests/data/idp1-la/certificate.pem",
+	    Lasso.signatureMethodRsaSha1);
         serverContext.addProvider(
-            "../../examples/data/sp-metadata.xml",
-            "../../examples/data/sp-public-key.pem",
-            "../../examples/data/ca-crt.pem");
+            "../../tests/data/sp1-la/metadata.xml",
+            "../../tests/data/sp1-la/public-key.pem",
+            "../../tests/data/ca1-la/certificate.pem");
 	String serverContextDump = serverContext.dump();
         return serverContextDump;
     }
 
     public String generateServiceProviderContextDump() {
-        LassoServer serverContext = new LassoServer(
-            "../../examples/data/sp-metadata.xml",
-            "../../examples/data/sp-public-key.pem",
-            "../../examples/data/sp-private-key.pem",
-            "../../examples/data/sp-crt.pem",
-            Lasso.signatureMethodRsaSha1);
+	LassoServer serverContext = new LassoServer(
+            "../../tests/data/sp1-la/metadata.xml'",
+	    NULL, //"../../tests/data/sp1-la/public-key.pem",
+            "../../tests/data/sp1-la/private-key-raw.pem",
+            "../../tests/data/sp1-la/certificate.pem",
+	    Lasso.signatureMethodRsaSha1);
         serverContext.addProvider(
-            "../../examples/data/idp-metadata.xml",
-            "../../examples/data/idp-public-key.pem",
-            "../../examples/data/ca-crt.pem");
+            "../../tests/data/idp1-la/metadata.xml",
+            "../../tests/data/idp1-la/public-key.pem",
+            "../../tests/data/ca1-la/certificate.pem");
         String serverContextDump = serverContext.dump();
         return serverContextDump;
     }
