@@ -93,9 +93,15 @@ lasso_samlp_status_code_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_samlp_status_code_new:
+ *
+ * Creates a new #LassoSamlpStatusCode object.
+ *
+ * Return value: a newly created #LassoSamlpStatusCode object
+ **/
 LassoSamlpStatusCode*
 lasso_samlp_status_code_new()
 {
 	return g_object_new(LASSO_TYPE_SAMLP_STATUS_CODE, NULL);
 }
-

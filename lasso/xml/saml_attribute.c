@@ -109,9 +109,15 @@ lasso_saml_attribute_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_saml_attribute_new:
+ * 
+ * Creates a new #LassoSamlAttribute object.
+ * 
+ * Return value: a newly created #LassoSamlAttribute object
+ **/
 LassoNode*
 lasso_saml_attribute_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ATTRIBUTE, NULL);
 }
-

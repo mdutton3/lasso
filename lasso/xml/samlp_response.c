@@ -124,6 +124,14 @@ lasso_samlp_response_get_type()
 	return response_type;
 }
 
+
+/**
+ * lasso_samlp_response_new:
+ *
+ * Creates a new #LassoSamlpResponse object.
+ *
+ * Return value: a newly created #LassoSamlpResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_samlp_response_new()
 {
@@ -148,4 +156,3 @@ lasso_samlp_response_new()
 
 	return response;
 }
-

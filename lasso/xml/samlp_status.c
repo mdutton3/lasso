@@ -140,9 +140,15 @@ lasso_samlp_status_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_samlp_status_new:
+ *
+ * Creates a new #LassoSamlpStatus object.
+ *
+ * Return value: a newly created #LassoSamlpStatus object
+ **/
 LassoSamlpStatus*
 lasso_samlp_status_new()
 {
 	return g_object_new(LASSO_TYPE_SAMLP_STATUS, NULL);
 }
-

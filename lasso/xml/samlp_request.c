@@ -101,9 +101,16 @@ lasso_samlp_request_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_samlp_request_new:
+ *
+ * Creates a new #LassoSamlpRequest object.
+ *
+ * Return value: a newly created #LassoSamlpRequest object
+ **/
 LassoNode*
 lasso_samlp_request_new()
 {
 	return g_object_new(LASSO_TYPE_SAMLP_REQUEST, NULL);
 }
-
