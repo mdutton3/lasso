@@ -38,6 +38,7 @@ lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
   xmlChar       *nameIDPolicy;
+  xmlChar       *providerID;
   LassoNode     *idpProvidedNameIdentifier;
 
   /* verify if a user context exists else create it */
@@ -48,7 +49,6 @@ lasso_login_process_federation(LassoLogin *login)
 				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
 					      "NameIDPolicy", NULL);
-  printf("NameIDPolicy %s\n", nameIDPolicy);
   if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
     if (identity == NULL) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
@@ -60,7 +60,13 @@ lasso_login_process_federation(LassoLogin *login)
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
       idpProvidedNameIdentifier = lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32));
-      /* TODO: set nameQualifier and Format */
+      /* set NameQualifier and Format */
+      providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
+      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpProvidedNameIdentifier),
+						   providerID);
+      xmlFree(providerID);
+      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpProvidedNameIdentifier),
+					    lassoLibNameIdentifierFormatFederated);
       lasso_identity_set_local_nameIdentifier(identity, idpProvidedNameIdentifier);
       lasso_user_add_identity(LASSO_PROFILE_CONTEXT(login)->user,
 			      LASSO_PROFILE_CONTEXT(login)->remote_providerID,
@@ -70,6 +76,7 @@ lasso_login_process_federation(LassoLogin *login)
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
     // TODO
   }
+  xmlFree(nameIDPolicy);
 
   return (0);
 }
@@ -87,6 +94,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   assertion = lasso_assertion_new(providerID,
 				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
+  xmlFree(providerID);
   authentication_statement = lasso_authentication_statement_new(authenticationMethod,
 								reauthenticateOnOrAfter,
 								identity->remote_nameIdentifier,
@@ -219,7 +227,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
   /* get SingleSignOnServiceURL metadata */
   url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
-  if (url == NULL) return (-1);
+  if (url == NULL) {
+    debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider");
+    return (-1);
+  }
 
   if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
     /* GET -> query */
@@ -227,6 +238,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
       query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
 					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 					 LASSO_PROFILE_CONTEXT(login)->server->private_key);
+      if (query == NULL) {
+	debug(ERROR, "Signature failed");
+	return (-2);
+      }
     }
     else {
       query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);

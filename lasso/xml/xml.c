@@ -593,6 +593,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
   g_free(unsigned_query);
   
   if (sign_method > 0 && private_key_file != NULL) {
+    /* add SigAlg in query */
     query = g_string_append(query, "&SigAlg=");
     switch (sign_method) {
     case lassoSignatureMethodRsaSha1:
@@ -603,15 +604,25 @@ lasso_node_impl_export_to_query(LassoNode            *node,
       break;
     }
     query = g_string_append(query, str_escaped);
-    doc = lasso_str_sign(query->str, sign_method, private_key_file);
     xmlFree(str_escaped);
+
+    /* try to sign query */
+    doc = lasso_str_sign(query->str, sign_method, private_key_file);
+    if (doc != NULL) {
+      str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
+      str2 = lasso_str_escape(str1);
+      xmlFree(str1);
+      xmlFreeDoc(doc);
+    }
+    else {
+      g_string_free(query, TRUE);
+      return (NULL);
+    }
+
+    /* add signature in query */
     query = g_string_append(query, "&Signature=");
-    str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);
-    str2 = lasso_str_escape(str1);
-    xmlFree(str1);
     query = g_string_append(query, str2);
     xmlFree(str2);
-    xmlFreeDoc(doc);
   }
 
   ret = g_strdup(query->str);
