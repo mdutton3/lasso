@@ -128,6 +128,15 @@ SET_NODE_INFO(IsSelect, Node)
 SET_NODE_INFO(IsText, Node)
 SET_NODE_INFO(IsUserInteraction, Node)
 
+/* sa prefix */
+SET_NODE_INFO(SaSASLRequest, Node)
+SET_NODE_INFO(SaSASLResponse, Node)
+
+/* soap prefix */
+
+/* soap-binding prefix */
+SET_NODE_INFO(SoapBindingCorrelation, Node)
+
 /* utility prefix */
 
 SET_NODE_INFO(UtilityStatus, Node)
