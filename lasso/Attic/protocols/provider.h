@@ -71,6 +71,10 @@ LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename            (xml
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_assertionConsumerServiceURL  (LassoProvider *provider);
 
+LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *provider);
+
 LASSO_EXPORT xmlChar       *lasso_provider_dump                             (LassoProvider *provider);
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                   (LassoProvider *provider);

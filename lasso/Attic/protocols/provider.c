@@ -55,6 +55,18 @@ lasso_provider_get_assertionConsumerServiceURL(LassoProvider *provider)
 }
 
 xmlChar *
+lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL));
+}
+
+xmlChar *
+lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationServiceURL", NULL));
+}
+
+xmlChar *
 lasso_provider_get_providerID(LassoProvider *provider)
 {
   return(lasso_node_get_attr_value(provider->metadata, "ProviderID"));

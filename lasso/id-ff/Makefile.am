@@ -15,6 +15,7 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
+	federation_termination.c \
 	login.c \
 	logout.c \
 	profile_context.c \
@@ -22,6 +23,7 @@ liblasso_environs_la_SOURCES = \
 	user.c
 
 liblassoinclude_HEADERS = \
+	federation_termination.h \
 	login.h \
 	logout.h \
 	profile_context.h \
