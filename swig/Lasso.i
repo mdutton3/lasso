@@ -518,12 +518,22 @@ gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *rem
  ***********************************************************************/
 
 
+%{
+	/* Dirty hack because otherwise SWIG doesn't recognize attributes defined in extend */
+	/* below as read-only arguments. */
+	typedef LassoAuthnRequest *LassoAuthnRequestPtr;
+	typedef LassoAuthnResponse *LassoAuthnResponsePtr;
+	typedef LassoRequest *LassoRequestPtr;
+	typedef LassoResponse *LassoResponsePtr;
+%}
+
 %nodefault _LassoProfile;
 typedef struct _LassoProfile {
 	GObject parent;
 	LassoServer *server;
-	LassoNode *request;
-	LassoNode *response;
+	/* Attributes "request" & "response" are define in extend below. */
+	/* LassoNode *request; */
+	/* LassoNode *response; */
 	gchar *nameIdentifier;
 	gchar *remote_providerID;
 	gchar *msg_url;
@@ -531,44 +541,47 @@ typedef struct _LassoProfile {
 	gchar *msg_relayState;
 	lassoMessageType request_type;
 	lassoMessageType response_type;
+
+	%extend {
+		/* Read-only access to the "request" attribute */
+		const LassoAuthnRequestPtr authn_request;
+		const LassoAuthnResponsePtr authn_response;
+		/* Read-only access to the "response" attribute */
+		const LassoRequestPtr request;
+		const LassoResponsePtr response;
+	}
 } LassoProfile;
 
-/* Inline Methods */
+/* Implementations */
 
-%inline %{
+%{
+	LassoAuthnRequest* LassoProfile_authn_request_get(LassoProfile *profile) {
+		if (profile->request_type == lassoMessageTypeAuthnRequest)
+			return LASSO_AUTHN_REQUEST(profile->request);
+		else
+			return NULL;
+	}
 
-LassoAuthnRequest* lasso_profile_get_authn_request_ref(LassoProfile *profile)
-{
-	if (profile->request_type == lassoMessageTypeAuthnRequest)
-		return LASSO_AUTHN_REQUEST(profile->request);
-	else
-		return NULL;
-}
+	LassoAuthnResponse* LassoProfile_authn_response_get(LassoProfile *profile) {
+		if (profile->response_type == lassoMessageTypeAuthnResponse)
+			return LASSO_AUTHN_RESPONSE(profile->response);
+		else
+			return NULL;
+	}
 
-LassoAuthnResponse* lasso_profile_get_authn_response_ref(LassoProfile *profile)
-{
-	if (profile->response_type == lassoMessageTypeAuthnResponse)
-		return LASSO_AUTHN_RESPONSE(profile->response);
-	else
-		return NULL;
-}
+	LassoRequest* LassoProfile_request_get(LassoProfile *profile) {
+		if (profile->request_type == lassoMessageTypeRequest)
+			return LASSO_REQUEST(profile->request);
+		else
+			return NULL;
+	}
 
-LassoRequest* lasso_profile_get_request_ref(LassoProfile *profile)
-{
-	if (profile->request_type == lassoMessageTypeRequest)
-		return LASSO_REQUEST(profile->request);
-	else
-		return NULL;
-}
-
-LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile)
-{
-	if (profile->response_type == lassoMessageTypeResponse)
-		return LASSO_RESPONSE(profile->response);
-	else
-		return NULL;
-}
-
+	LassoResponse* LassoProfile_response_get(LassoProfile *profile) {
+		if (profile->response_type == lassoMessageTypeResponse)
+			return LASSO_RESPONSE(profile->response);
+		else
+			return NULL;
+	}
 %}
 
 /* Methods */

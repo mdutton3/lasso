@@ -354,6 +354,20 @@ class _ProfileChild(object):
 
     # Attributes
 
+    def get_authn_request(self):
+        authn_request = self.parent.authn_request
+        if authn_request is not None:
+            _setRegisteredClass(authn_request)
+        return authn_request
+    authn_request = property(get_authn_request)
+
+    def get_authn_response(self):
+        authn_response = self.parent.authn_response
+        if authn_response is not None:
+            _setRegisteredClass(authn_response)
+        return authn_response
+    authn_response = property(get_authn_response)
+
     def get_identity(self):
         identity = lassomod.lasso_profile_get_identity(self.parent)
         if identity is not None:
@@ -390,12 +404,13 @@ class _ProfileChild(object):
     def get_request(self):
         request_type = self.request_type
         if request_type == messageTypeAuthnRequest:
-            request = lassomod.lasso_profile_get_authn_request_ref(self.parent)
+            request = self.parent.authn_request
         elif request_type == messageTypeRequest:
-            request = lassomod.lasso_profile_get_request_ref(self.parent)
+            request = self.parent.request
         else:
-            raise ErrorUnknownRequestType('lasso_profile_get_???_request', request_type)
-        _setRegisteredClass(request)
+            raise ErrorUnknownRequestType('lasso_profile_get_request', request_type)
+        if request is not None:
+            _setRegisteredClass(request)
         return request
     request = property(get_request)
 
@@ -406,12 +421,13 @@ class _ProfileChild(object):
     def get_response(self):
         response_type = self.response_type
         if response_type == messageTypeAuthnResponse:
-            response = lassomod.lasso_profile_get_authn_response_ref(self.parent)
+            response = self.parent.authn_response
         elif response_type == messageTypeResponse:
-            response = lassomod.lasso_profile_get_response_ref(self.parent)
+            response = self.parent.response
         else:
-            raise ErrorUnknownResponseType('lasso_profile_get_???_response', response_type)
-        _setRegisteredClass(response)
+            raise ErrorUnknownResponseType('lasso_profile_get_response', response_type)
+        if response is not None:
+            _setRegisteredClass(response)
         return response
     response = property(get_response)
 
