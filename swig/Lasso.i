@@ -903,30 +903,30 @@ void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringA
 	else {
 		xmlNode *extensionList = NULL;
 		int index;
-		xmlNs *libertyNamespace;
-		libertyNamespace = xmlNewNs(NULL, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 		for (index = 0; index < extension->len; index ++) {
 			xmlDoc *doc;
+			xmlNode *node;
 			doc = xmlReadDoc(g_ptr_array_index(extension, index), NULL, NULL,
 					XML_PARSE_NONET);
-			if (doc != NULL) {
-				xmlNode *node;
-				node = xmlDocGetRootElement(doc);
-				if (node != NULL) {
-					xmlNode *extensionNode;
-					extensionNode = xmlNewNode(libertyNamespace, "Extension");
-					xmlAddChild(extensionNode, xmlCopyNode(node, 1));
-					if (extensionList == NULL)
-						extensionList = extensionNode;
-					else
-						xmlAddNextSibling(extensionList, extensionNode);
+			if (doc == NULL)
+				continue;
+			node = xmlDocGetRootElement(doc);
+			if (node != NULL) {
+				xmlNode *extensionNode;
+				xmlNs *libertyNamespace;
+				extensionNode = xmlNewNode(NULL, "Extension");
+				libertyNamespace = xmlNewNs(extensionNode, LASSO_LIB_HREF,
+						LASSO_LIB_PREFIX);
+				xmlSetNs(extensionNode, libertyNamespace);
+				xmlAddChild(extensionNode, xmlCopyNode(node, 1));
+				if (extensionList == NULL)
+					extensionList = extensionNode;
+				else
+					xmlAddNextSibling(extensionList, extensionNode);
 						
-				}
-				xmlFreeDoc(doc);
 			}
+			xmlFreeDoc(doc);
 		}
-		if (extensionList == NULL)
-			xmlFreeNs(libertyNamespace);
 		self->Extension = extensionList;
 	}
 }
