@@ -440,9 +440,6 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     goto done;
   }
 
-  /* Set the http request method */
-  logout->request_method = request_method;
-
   /* Set the NameIdentifier */
   profile->nameIdentifier = lasso_node_get_child_content(profile->request,
 							 "NameIdentifier",
