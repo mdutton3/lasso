@@ -417,6 +417,19 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /*****************************************************************************/
 
 static void
+free_string(char *string)
+{
+	g_free(string);
+}
+
+static void
+free_list_strings(gchar *key, GList *list, gpointer data)
+{
+	g_list_foreach(list, (GFunc)free_string, NULL);
+	g_list_free(list);
+}
+
+static void
 dispose(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
@@ -428,7 +441,22 @@ dispose(GObject *object)
 
 	debug("Provider object 0x%p disposed ...", provider);
 
-	/* XXX: free hash tables (here or in finalize() below) ? */
+	if (provider->private_data->IDPDescriptor) {
+		g_hash_table_foreach(provider->private_data->IDPDescriptor,
+				(GHFunc)free_list_strings, NULL);
+		g_hash_table_destroy(provider->private_data->IDPDescriptor);
+	}
+	provider->private_data->IDPDescriptor = NULL;
+
+	if (provider->private_data->SPDescriptor) {
+		g_hash_table_foreach(provider->private_data->SPDescriptor,
+				(GHFunc)free_list_strings, NULL);
+		g_hash_table_destroy(provider->private_data->SPDescriptor);
+	}
+	provider->private_data->SPDescriptor = NULL;
+
+	if (provider->private_data->default_assertion_consumer)
+		g_free(provider->private_data->default_assertion_consumer);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
@@ -441,8 +469,11 @@ finalize(GObject *object)
 	debug("Provider object 0x%p finalized ...", provider);
 
 	g_free(provider->public_key);
+	provider->public_key = NULL;
 	g_free(provider->ca_cert_chain);
+	provider->ca_cert_chain = NULL;
 	g_free(provider->private_data);
+	provider->private_data = NULL;
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(provider));
 }
@@ -450,6 +481,7 @@ finalize(GObject *object)
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
+
 
 static void
 instance_init(LassoProvider *provider)
@@ -462,6 +494,8 @@ instance_init(LassoProvider *provider)
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
+
+	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free, NULL);
 	provider->private_data->SPDescriptor = g_hash_table_new_full(
