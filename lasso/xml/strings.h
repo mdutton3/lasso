@@ -42,6 +42,10 @@
 #define LASSO_LIB_HREF	 "urn:liberty:iff:2003-08"
 #define LASSO_LIB_PREFIX	 "lib"
 
+/* disco prefix & href */
+#define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
+#define LASSO_DISCO_PREFIX "disco"
+
 /* Versioning */
 #define LASSO_LIB_MAJOR_VERSION_N	 1
 #define LASSO_LIB_MINOR_VERSION_N	 2
