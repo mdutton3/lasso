@@ -1014,11 +1014,11 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		query_fields = urlencoded_to_strings(response_msg);
 		for (i=0; query_fields[i]; i++) {
 			if (strncmp(query_fields[i], "SAMLart=", 8) != 0) {
-				free(query_fields[i]);
+				xmlFree(query_fields[i]);
 				continue;
 			}
 			artifact_b64 = g_strdup(query_fields[i]+8);
-			free(query_fields[i]);
+			xmlFree(query_fields[i]);
 		}
 		free(query_fields);
 	}

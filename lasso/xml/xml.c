@@ -235,7 +235,7 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 	query_fields = urlencoded_to_strings(query);
 	rc = class->init_from_query(node, query_fields);
 	for (i=0; query_fields[i]; i++) {
-		free(query_fields[i]);
+		xmlFree(query_fields[i]);
 	}
 	free(query_fields);
 	return rc;
