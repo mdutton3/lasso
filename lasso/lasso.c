@@ -82,10 +82,12 @@ int lasso_init()
   }
   
   /* Check loaded library version */
+#if 0 /* dubious check; disabled for now */
   if(xmlSecCheckVersion() != 1) {
     message(G_LOG_LEVEL_CRITICAL, "Loaded xmlsec library version is not compatible.\n");
     return -1;
   }
+#endif
 
   /* Load default crypto engine if we are supporting dynamic
    * loading for xmlsec-crypto libraries. Use the crypto library
