@@ -898,12 +898,11 @@ typedef struct {
 #endif
 %nodefault LassoProvider;
 typedef struct {
+	%immutable metadata;
+	LassoNode *metadata;
+
 	%extend {
 		/* Attributes */
-
-		%immutable metadata;
-		%newobject metadata;
-		LassoNode *metadata;
 
 		%immutable providerId;
 		%newobject providerId_get;
@@ -914,14 +913,6 @@ typedef struct {
 %{
 
 /* Attributes implementations */
-
-/* metadata */
-#define LassoProvider_get_metadata LassoProvider_metadata_get
-LassoNode *LassoProvider_metadata_get(LassoProvider *self) {
-	/* FIXME: The lasso_node_copy is mandatory. Otherwise metadata is not a LassoNode. Is */
-	/* it a bug? If we correct this don't forget to remove newobject above. */
-	return lasso_node_copy(self->metadata);
-}
 
 /* providerId */
 #define LassoProvider_get_providerId  LassoProvider_providerId_get
@@ -1019,7 +1010,6 @@ typedef struct {
 		/* Attributes inherited from LassoProvider */
 
 		%immutable metadata;
-		%newobject metadata;
 		LassoNode *metadata;
 
 		/* Attributes */
@@ -1060,9 +1050,7 @@ typedef struct {
 /* metadata */
 #define LassoServer_get_metadata LassoServer_metadata_get
 LassoNode *LassoServer_metadata_get(LassoServer *self) {
-	/* FIXME: The lasso_node_copy is mandatory. Otherwise metadata is not a LassoNode. Is */
-	/* it a bug? If we correct this don't forget to remove newobject above. */
-	return lasso_node_copy(LASSO_PROVIDER(self)->metadata);
+	return LASSO_PROVIDER(self)->metadata;
 }
 
 /* Attributes implementations */
@@ -1180,6 +1168,9 @@ typedef struct {
 		%immutable isDirty;
 		gboolean isDirty;
 
+		%immutable providerIds;
+		LassoProviderIds *providerIds;
+
 		/* Constructor, destructor & static methods */
 
 		LassoSession();
@@ -1207,6 +1198,12 @@ typedef struct {
 #define LassoSession_get_isDirty LassoSession_isDirty_get
 gboolean LassoSession_isDirty_get(LassoSession *self) {
 	return self->is_dirty;
+}
+
+/* providerIDs */
+#define LassoSession_get_providerIds LassoSession_providerIds_get
+LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
+	return self->providerIDs;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1530,7 +1527,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnRequestMsg(gchar *remoteProviderId);
+		void buildAuthnRequestMsg(gchar *remoteProviderId = NULL);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2063,7 +2060,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnRequestMsg(gchar *remoteProviderId);
+		void buildAuthnRequestMsg(gchar *remoteProviderId = NULL);
 		END_THROW_ERROR
 
 		THROW_ERROR

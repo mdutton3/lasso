@@ -71,6 +71,17 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
   return 0;
 }
 
+/**
+ * lasso_lecp_build_authn_request_msg:
+ * @lecp: a LassoLecp
+ * @remote_providerID: the providerID of the identity provider. When NULL, the first
+ *                     identity provider is used.
+ * 
+ * Builds an authentication request. The data for the sending of the request are
+ * stored in msg_url and msg_body (SOAP POST).
+ * 
+ * Return value: 0 on success and a negative value otherwise.
+ **/
 gint
 lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
 				   const gchar *remote_providerID)
@@ -81,10 +92,15 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
   profile = LASSO_PROFILE(lecp);
- 
-  LASSO_PROFILE(lecp)->remote_providerID = g_strdup(remote_providerID);
-  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(lecp)->server,
-						  LASSO_PROFILE(lecp)->remote_providerID,
+  if (remote_providerID == NULL) {
+/*     profile->remote_providerID = lasso_server_get_first_providerID(profile->server); */
+  }
+  else {
+    profile->remote_providerID = g_strdup(remote_providerID);
+  }
+
+  remote_provider = lasso_server_get_provider_ref(profile->server,
+						  profile->remote_providerID,
 						  NULL);
 
   profile->msg_url  = lasso_provider_get_singleSignOnServiceURL(remote_provider, NULL);

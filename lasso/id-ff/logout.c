@@ -372,7 +372,8 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
 /**
  * lasso_logout_init_request:
  * @logout: 
- * @remote_providerID: 
+ * @remote_providerID: the providerID of the identity provider. When NULL, the first
+ *                     identity provider is used.
  * @request_method: if set, then it get the protocol profile in metadata
  *                  corresponding of this HTTP request method.
  *
