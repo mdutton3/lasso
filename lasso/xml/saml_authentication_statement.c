@@ -52,6 +52,10 @@
 	struct XmlSnippet snippets[] = { \
 		{ "SubjectLocality", 'n', (void**)&(statement->SubjectLocality) }, \
 		{ "AuthorityBinding", 'n', (void**)&(statement->AuthorityBinding) }, \
+		{ "AuthenticationMethod", 'a', \
+			(void**)&(statement->AuthenticationMethod) }, \
+		{ "AuthenticationInstant", 'a', \
+			(void**)&(statement->AuthenticationInstant) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -67,11 +71,6 @@ get_xmlNode(LassoNode *node)
 	xmlNodeSetName(xmlnode, "AuthenticationStatement");
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (statement->AuthenticationMethod)
-		xmlSetProp(xmlnode, "AuthenticationMethod", statement->AuthenticationMethod);
-	if (statement->AuthenticationInstant)
-		xmlSetProp(xmlnode, "AuthenticationInstant", statement->AuthenticationInstant);
-
 	return xmlnode;
 }
 
@@ -83,8 +82,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);
-	statement->AuthenticationMethod = xmlGetProp(xmlnode, "AuthenticationMethod");
-	statement->AuthenticationInstant = xmlGetProp(xmlnode, "AuthenticationInstant");
 	return 0;
 }
 	
