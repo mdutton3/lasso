@@ -295,7 +295,6 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-  g_return_val_if_fail(remote_providerID != NULL, -1);
 
   profile = LASSO_PROFILE(name_registration);
 
@@ -307,7 +306,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
   }
 
   /* get the remote provider id */
-  /* If remote_providerID is NULL, then get the first remote provider id in session */
+  /* If remote_providerID is NULL, then get the first remote provider id in identity */
   if (remote_providerID == NULL) {
     profile->remote_providerID = lasso_identity_get_first_providerID(profile->identity);
   }
