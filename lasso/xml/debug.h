@@ -46,7 +46,7 @@ void _debug(GLogLevelFlags level, const char *format, ...);
 #define debug(format, ...);
 #endif
 
-#define message _debug
+#define message(level, format, args...) _debug(level, format, ##args);
 
 #ifdef __cplusplus
 }

@@ -29,7 +29,7 @@ const char*
 lasso_strerror(int error_code)
 {
   switch (error_code) {
-  case LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND:
+  case LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND:
     return "Unable to get '%s' attribute value in '%s' element.\n";
   default:
     return "Undefined error code !!!\n";

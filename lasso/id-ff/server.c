@@ -290,7 +290,7 @@ lasso_server_new(gchar *metadata,
   /* get ProviderID in metadata */
   providerID = lasso_node_get_attr_value(md_node, "ProviderID", &err);
   if (providerID == NULL) {
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     g_error_free(err);
     lasso_node_destroy(md_node);
     return (NULL);
@@ -326,7 +326,7 @@ lasso_server_new_from_dump(gchar *dump)
 
   server_node  = lasso_node_new_from_dump(dump);
   if(server_node==NULL){
-    debug(ERROR, "Error while loading server dump\n");
+    message(G_LOG_LEVEL_ERROR, "Error while loading server dump\n");
     return(NULL);
   }
   server_class = LASSO_NODE_GET_CLASS(server_node);

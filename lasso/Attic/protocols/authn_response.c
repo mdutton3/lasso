@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <xmlsec/base64.h>
+#include <lasso/xml/debug.h>
 #include <lasso/protocols/authn_response.h>
 
 static void
@@ -62,7 +63,7 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
     value = lasso_node_get_attr_value(status_code, "Value", &err);
     lasso_node_destroy(status_code);
     if (err != NULL) {
-      debug(ERROR, err->message);
+      message(G_LOG_LEVEL_ERROR, err->message);
       g_error_free(err);
       return (NULL);
     }
@@ -71,7 +72,7 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
     }
   }
   else {
-    debug(ERROR, "No StatusCode element found in AuthnResponse.\n");
+    message(G_LOG_LEVEL_ERROR, "No StatusCode element found in AuthnResponse.\n");
     return (NULL);
   }
 }

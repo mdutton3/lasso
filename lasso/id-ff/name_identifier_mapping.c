@@ -55,26 +55,26 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
   /* get the prototocol profile of the name_identifier_mapping */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
+    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profileContext->remote_providerID);
     return(-2);
   }
 
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
   if(err != NULL){
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
     return (ret);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a soap request message\n");
+    debug("building a soap request message\n");
     profileContext->request_type = lassoHttpMethodSoap;
     profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
-    debug(DEBUG, "building a http get request message\n");
+    debug("building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
 							 profileContext->server->signature_method,
@@ -100,25 +100,25 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
+    message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profileContext->remote_providerID);
     return(-2);
   }
 
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
   if(err != NULL){
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
     return(ret);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a soap response message\n");
+    debug("building a soap response message\n");
     profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
-    debug(DEBUG, "building a http get response message\n");
+    debug("building a http get response message\n");
     profileContext->response_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->response,
 							 profileContext->server->signature_method,
@@ -149,7 +149,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   /* get identity */
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
   if(identity==NULL){
-    debug(ERROR, "error, identity not found\n");
+    message(G_LOG_LEVEL_ERROR, "error, identity not found\n");
     return(-3);
   }
 
@@ -169,12 +169,12 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
       nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     break;
   default:
-    debug(ERROR, "Unknown provider type\n");
+    message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
     return(-4);
   }
   
   if(!nameIdentifier){
-    debug(ERROR, "Name identifier not found\n");
+    message(G_LOG_LEVEL_ERROR, "Name identifier not found\n");
     return(-5);
   }
 
@@ -211,18 +211,18 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
   switch(request_method){
   case lassoHttpMethodSoap:
-    debug(DEBUG, "build a name_identifier_mapping request from soap msg\n");
+    debug("build a name_identifier_mapping request from soap msg\n");
     profileContext->request = lasso_name_identifier_mapping_request_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
-    debug(DEBUG, "build a name_identifier_mapping request from query msg\n");
+    debug("build a name_identifier_mapping request from query msg\n");
     profileContext->request = lasso_name_identifier_mapping_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
-    debug(WARNING, "TODO, implement the get method\n");
+    message(G_LOG_LEVEL_WARNING, "TODO, implement the get method\n");
     break;
   default:
-    debug(ERROR, "Unknown request method\n");
+    message(G_LOG_LEVEL_ERROR, "Unknown request method\n");
     return(-3);
   }
 
@@ -251,13 +251,13 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
-    debug(WARNING, "No identity for %s\n", remote_providerID);
+    message(G_LOG_LEVEL_WARNING, "No identity for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-6);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
-    debug(WARNING, "No name identifier for %s\n", remote_providerID);
+    message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-7);
   }
@@ -286,7 +286,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
   case lassoHttpMethodSoap:
     profileContext->response = lasso_name_identifier_mapping_response_new_from_soap(response_msg);
   default:
-    debug(ERROR, "Unknown response method\n");
+    message(G_LOG_LEVEL_ERROR, "Unknown response method\n");
     return(-3);
   }
  
@@ -298,7 +298,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
     }
   }
   else {
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
     return (ret);

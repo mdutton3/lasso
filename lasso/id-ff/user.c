@@ -57,7 +57,7 @@ lasso_user_add_assertion(LassoUser *user,
       found = TRUE;
   }
   if(found==TRUE){
-    debug(ERROR, "A provider id already exists\n");
+    message(G_LOG_LEVEL_ERROR, "A provider id already exists\n");
     return(-4);
   }
 
@@ -209,7 +209,7 @@ lasso_user_get_authentication_method(LassoUser *user,
   as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL);
   authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
   if (authentication_method == NULL) {
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     g_error_free(err);
     goto done;
   }
@@ -312,13 +312,13 @@ lasso_user_remove_identity(LassoUser *user,
     g_hash_table_steal(user->identities, remote_providerID);
   }
   else {
-    debug(DEBUG, "Failed to remove identity for remote Provider %s\n", remote_providerID);
+    debug("Failed to remove identity for remote Provider %s\n", remote_providerID);
   }
 
   /* remove the identity remote provider id */
   for(i = 0; i<user->identity_providerIDs->len; i++){
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->identity_providerIDs, i))){
-      debug(DEBUG, "Remove assertion of %s\n", remote_providerID);
+      debug("Remove assertion of %s\n", remote_providerID);
       g_ptr_array_remove_index(user->identity_providerIDs, i);
       break;
     }
@@ -334,7 +334,7 @@ lasso_user_remove_identity(LassoUser *user,
 static void
 lasso_user_finalize(LassoUser *user)
 {  
-  debug(INFO, "User object 0x%x finalized ...\n", user);
+  message(G_LOG_LEVEL_INFO, "User object 0x%x finalized ...\n", user);
 
   parent_class->finalize(G_OBJECT(user));
 }
@@ -424,7 +424,7 @@ lasso_user_new_from_dump(gchar *dump)
   /* get user */
   user_node = lasso_node_new_from_dump(dump);
   if (user_node == NULL) {
-    debug(WARNING, "Can't create a user from dump\n");
+    message(G_LOG_LEVEL_WARNING, "Can't create a user from dump\n");
     return (NULL);
   }
 
@@ -442,7 +442,7 @@ lasso_user_new_from_dump(gchar *dump)
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
 	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE, &err);
 	if (remote_providerID == NULL) {
-	  debug(ERROR, err->message);
+	  message(G_LOG_LEVEL_ERROR, err->message);
 	  g_error_free(err);
 	  continue;
 	}

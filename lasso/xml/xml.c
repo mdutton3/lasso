@@ -731,8 +731,8 @@ lasso_node_impl_get_attr_value(LassoNode      *node,
 
   if (value == NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND,
-		lasso_strerror(LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND),
+		LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND,
+		lasso_strerror(LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND),
 		name, node->private->node->name);
   }
 
@@ -946,7 +946,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
 					 xmlSecDSigNs);
   if (signature == NULL) {
-    debug(ERROR, "Signature element not found.\n");
+    message(G_LOG_LEVEL_ERROR, "Signature element not found.\n");
     ret = -2;
     goto done;	
   }
@@ -954,12 +954,12 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   /* create simple keys mngr */
   mngr = xmlSecKeysMngrCreate();
   if (mngr == NULL) {
-    debug(ERROR, "Failed to create keys manager.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to create keys manager.\n");
     goto done;
   }
 
   if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
-    debug(ERROR, "Failed to initialize keys manager.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to initialize keys manager.\n");
     goto done;
   }
   
@@ -967,21 +967,21 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   if (xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file,
 				      xmlSecKeyDataFormatPem,
 				      xmlSecKeyDataTypeTrusted) < 0) {
-    debug(ERROR, "Failed to load pem certificate from \"%s\".\n",
-	  certificate_file);
+    message(G_LOG_LEVEL_ERROR, "Failed to load pem certificate from \"%s\".\n",
+	    certificate_file);
     goto done;
   }
 
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(mngr);
   if (dsigCtx == NULL) {
-    debug(ERROR, "Failed to create signature context.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to create signature context.\n");
     goto done;
   }
 
   /* verify signature */
   if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
-    debug(ERROR, "Failed to verify signature.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to verify signature.\n");
     goto done;
   }
 
@@ -989,7 +989,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
     ret = 0;
   }
   else {
-    debug(ERROR, "The signature of response is invalid.\n");
+    message(G_LOG_LEVEL_ERROR, "The signature of response is invalid.\n");
     ret = -1;
   }
 
@@ -1322,7 +1322,7 @@ lasso_node_dispose(LassoNode *node)
   }
   node->private->dispose_has_run = TRUE;
 
-  debug(DEBUG, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
+  debug("%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
 
   /* unref reference counted objects */
   /* we don't have any here */
@@ -1333,7 +1333,7 @@ lasso_node_dispose(LassoNode *node)
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  debug(DEBUG, "%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
+  debug("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   
   if (node->private->node_is_weak_ref == FALSE) {
     xmlUnlinkNode(node->private->node);

@@ -38,7 +38,7 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 
   lecp->msg_body = lasso_node_export_to_soap(lecp->authnRequest);
   if(lecp->msg_body==NULL){
-    debug(ERROR, "Error while exporting the AuthnRequest to soap msg\n");
+    message(G_LOG_LEVEL_ERROR, "Error while exporting the AuthnRequest to soap msg\n");
     return(-2);
   }
 
@@ -53,7 +53,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
   /* FIXME : export to base 64 or simple xml dump */
   lecp->msg_body = lasso_node_export_to_base64(lecp->request);
   if(lecp->msg_body==NULL){
-    debug(ERROR, "Error while exporting the AuthnRequestEnvelope to msg\n");
+    message(G_LOG_LEVEL_ERROR, "Error while exporting the AuthnRequestEnvelope to msg\n");
     return(-2);
   }
 
@@ -67,7 +67,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 
   lecp->msg_body = lasso_node_export_to_soap(lecp->authnResponse);
   if(lecp->msg_body==NULL){
-    debug(ERROR, "Error while exporting the AuthnResponse to soap msg\n");
+    message(G_LOG_LEVEL_ERROR, "Error while exporting the AuthnResponse to soap msg\n");
     return(-2);
   }
 
@@ -80,8 +80,8 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
   lecp->msg_body = lasso_node_export_to_soap(lecp->response);
-  if(lecp->msg_body==NULL){
-    debug(ERROR, "Error while exporting the AuthnResponseEnvelope to msg\n");
+  if (lecp->msg_body == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Error while exporting the AuthnResponseEnvelope to msg\n");
     return(-2);
   }
 
@@ -114,7 +114,7 @@ lasso_lecp_init_authn_request_envelope(LassoLecp *lecp)
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
   if(lecp->authnRequest==NULL){
-    debug(ERROR, "AuthnRequest not found\n");
+    message(G_LOG_LEVEL_ERROR, "AuthnRequest not found\n");
     return(-4);
   }
 
@@ -135,14 +135,14 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
   g_return_val_if_fail(request_msg!=NULL, -2);
 
   lecp->request = lasso_authn_request_envelope_new_from_export(request_msg, lassoNodeExportTypeBase64);
-  if(lecp->request==NULL){
-    debug(ERROR, "Error while building the authentication request envelope\n");
+  if (lecp->request == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Error while building the authentication request envelope\n");
     return(-3);
   }
 
   lecp->authnRequest = lasso_authn_request_envelope_get_authnRequest(LASSO_AUTHN_REQUEST_ENVELOPE(lecp->request));
-  if(lecp->authnRequest==NULL){
-    debug(ERROR, "AuthnRequest not found\n");
+  if (lecp->authnRequest == NULL) {
+    message(G_LOG_LEVEL_ERROR, "AuthnRequest not found\n");
     return(-4);
   }
 
@@ -157,21 +157,21 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
   g_return_val_if_fail(response_msg!=NULL, -2);
 
   lecp->response = lasso_authn_response_envelope_new_from_export(response_msg, lassoNodeExportTypeBase64);
-  if(lecp->response==NULL){
-    debug(ERROR, "Error while building the authentication response envelope\n");
+  if (lecp->response == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Error while building the authentication response envelope\n");
     return(-3);
   }
 
   lecp->authnResponse = lasso_authn_response_envelope_get_authnResponse(LASSO_AUTHN_RESPONSE_ENVELOPE(lecp->response));
-  if(lecp->authnResponse==NULL){
-    debug(ERROR, "AuthnResponse not found\n");
+  if (lecp->authnResponse == NULL) {
+    message(G_LOG_LEVEL_ERROR, "AuthnResponse not found\n");
     return(-4);
   }
 
   lecp->assertionConsumerServiceURL = lasso_authn_response_envelope_get_assertionConsumerServiceURL(
 									LASSO_AUTHN_RESPONSE_ENVELOPE(lecp->response));
-  if(lecp->assertionConsumerServiceURL){
-    debug(ERROR, "Assertion consumer service url not found\n");
+  if (lecp->assertionConsumerServiceURL == NULL){
+    message(G_LOG_LEVEL_ERROR, "Assertion consumer service URL not found\n");
     return(-5);
   }
 
@@ -185,7 +185,7 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
 static void
 lasso_lecp_finalize(LassoLecp *lecp)
 {  
-  debug(INFO, "Lecp object 0x%x finalized ...\n", lecp);
+  debug("Lecp object 0x%x finalized ...\n", lecp);
 
   parent_class->finalize(G_OBJECT(lecp));
 }

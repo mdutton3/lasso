@@ -36,6 +36,7 @@
 /* #define yellow "\033[33m" */
 /* #define blue   "\033[34m" */
 
+int  debug_type;
 int  debug_line;
 char debug_filename[512];
 char debug_function[512];
@@ -51,6 +52,7 @@ set_debug_info(int   line,
 	       char *filename,
 	       char *function)
 {
+  debug_type = 1;
   debug_line = line;
   strncpy(debug_filename, filename, 512);
   strncpy(debug_function, function, 512);
@@ -67,10 +69,10 @@ _debug(GLogLevelFlags level,
   /* char new_debug_string[2048]; */
   /* char *color = NULL; */
   
-  /*   if ((level < 0) || (level > 3)) { */
-  /*     printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n", level); */
-  /*     return; */
-  /*   } */
+  if (level == G_LOG_LEVEL_DEBUG && debug_type == 0) {
+    g_warning("message() function should not be used with G_LOG_LEVEL_DEBUG level. Use debug() function rather.");
+  }
+  debug_type = 0;
 
   va_start(args, format);
   vsnprintf(debug_string, sizeof(debug_string), format, args);

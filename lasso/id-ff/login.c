@@ -59,7 +59,7 @@ lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
       return (ni);
     }
     else {
-      debug(ERROR, "NameIdentifier value not found in AuthenticationStatement element.\n");
+      message(G_LOG_LEVEL_ERROR, "NameIdentifier value not found in AuthenticationStatement element.\n");
       return (NULL);
     }
   }
@@ -80,7 +80,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 					"RequestID", &err);
 
   if (requestID == NULL) {
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
     return(ret);
@@ -98,7 +98,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
   }
   else {
-    debug(ERROR, "Failed to build the AuthenticationStatement element of the Assertion.\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to build the AuthenticationStatement element of the Assertion.\n");
     lasso_node_destroy(assertion);
     return(-3);
   }
@@ -147,7 +147,7 @@ lasso_login_process_federation(LassoLogin *login)
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
-    debug(DEBUG, "NameIDPolicy is federated\n");
+    debug("NameIDPolicy is federated\n");
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
@@ -165,7 +165,7 @@ lasso_login_process_federation(LassoLogin *login)
 			      identity);
     }
     else {
-      debug(DEBUG, "An identity was found.\n");
+      debug("An identity was found.\n");
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
@@ -205,7 +205,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     /* store NameIdentifier */
     login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
     if (login->nameIdentifier == NULL) {
-      debug(ERROR, "NameIdentifier element not found in Assertion.\n");
+      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in Assertion.\n");
       ret = -4;
       goto done;
     }
@@ -215,14 +215,14 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				"Status", lassoSamlProtocolHRef);
   if (status == NULL) {
-    debug(ERROR, "Status element not found in response.\n");
+    message(G_LOG_LEVEL_ERROR, "Status element not found in response.\n");
     ret = -9;
     goto done;
   }
   statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef);
     
   if (statusCode == NULL) {
-    debug(ERROR, "StatusCode element not found in Status.\n");
+    message(G_LOG_LEVEL_ERROR, "StatusCode element not found in Status.\n");
     ret = -8;
     goto done;
   }
@@ -233,7 +233,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     }
   }
   else {
-    debug(ERROR, err->message);
+    message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
   }
@@ -265,15 +265,17 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   xmlChar *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
 
+  g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL, -1);
+
   if (method != lassoHttpMethodRedirect && method != lassoHttpMethodPost) {
-    debug(ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
-    return (-1);
+    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
+    return (-2);
   }
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
-    debug(WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
-    return (-2);
+    message(WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
+    return (-3);
   }
 
   /* federation */
@@ -283,14 +285,14 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 
   /* fill the response with the assertion */
   if (identity != NULL && authentication_result == 1) {
-    debug(DEBUG, "An identity found, so build an assertion.\n");
+    debug("An identity found, so build an assertion.\n");
     lasso_login_add_response_assertion(login,
 				       identity,
 				       authenticationMethod,
 				       reauthenticateOnOrAfter);
   }
   else {
-    debug(DEBUG, "No identity or login failed !!!\n");
+    debug("No identity or login failed !!!\n");
     if (authentication_result == 0) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						lassoSamlStatusCodeRequestDenied);
@@ -298,7 +300,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   }
   /* save response dump */
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
-  debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
+  debug("SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
 
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
@@ -309,7 +311,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE_CONTEXT(login)->server->providerID,
 					      LASSO_PROFILE_CONTEXT(login)->server->private_key);
   assertionHandle = lasso_build_random_sequence(20);
-  sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
+  g_sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
   g_free(assertionHandle);
   xmlFree(identityProviderSuccinctID);
   b64_samlArt = (gchar *)xmlSecBase64Encode(samlArt, 42, 0);
@@ -320,9 +322,9 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   switch (method) {
   case lassoHttpMethodRedirect:
     LASSO_PROFILE_CONTEXT(login)->msg_url = g_new(gchar, 1024+1);
-    sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?SAMLArt=%s", url, b64_samlArt);
+    g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?SAMLArt=%s", url, b64_samlArt);
     if (relayState != NULL) {
-      sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s&RelayState=%s",
+      g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s&RelayState=%s",
 	      LASSO_PROFILE_CONTEXT(login)->msg_url, relayState);
     }
     break;
@@ -367,14 +369,14 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   else {
     /* FIXME : is there a default value for AuthnRequestsSigned */
     must_sign = 0;
-    debug(WARNING, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
+    message(WARNING, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
   }
 
   /* export request depending on the request ProtocolProfile */
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
   if (request_protocolProfile == NULL) {
     /* FIXME : is there a default value for SingleSignOnProtocolProfile */
-    debug(WARNING, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
+    message(WARNING, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
     ret = -1;
   }
 
@@ -382,7 +384,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   if (ret == 0) {
     url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
     if (url == NULL) {
-      debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider.\n");
+      message(G_LOG_LEVEL_ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider.\n");
       ret = -2;
     }
   }
@@ -395,14 +397,14 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 					   LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 					   LASSO_PROFILE_CONTEXT(login)->server->private_key);
 	if (query == NULL) {
-	  debug(ERROR, "Failed to create AuthnRequest query (signed).\n");
+	  message(G_LOG_LEVEL_ERROR, "Failed to create AuthnRequest query (signed).\n");
 	  ret = -3;
 	}
       }
       else {
 	query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
 	if (query == NULL) {
-	  debug(ERROR, "Failed to create AuthnRequest query.\n");
+	  message(G_LOG_LEVEL_ERROR, "Failed to create AuthnRequest query.\n");
 	  ret = -3;
 	}
       }
@@ -422,7 +424,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
       }
       else {
-	debug(ERROR, "Failed to export AuthnRequest (Base64 encoded).\n");
+	message(G_LOG_LEVEL_ERROR, "Failed to export AuthnRequest (Base64 encoded).\n");
 	ret = -3;
       }
     }
@@ -457,14 +459,14 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 
   /* fill the response with the assertion */
   if (identity != NULL && authentication_result == 1) {
-    printf("DEBUG - an identity found, so build an assertion\n");
+    debug("An identity found, so build an assertion\n");
     lasso_login_add_response_assertion(login,
 				       identity,
 				       authenticationMethod,
 				       reauthenticateOnOrAfter);
   }
   else {
-    printf("No identity or login failed !!!\n");
+    debug("No identity or login failed !!!\n");
     if (authentication_result == 0) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						lassoSamlStatusCodeRequestDenied);
@@ -505,7 +507,7 @@ lasso_login_create_user(LassoLogin *login,
   if (user_dump != NULL) {
     LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new_from_dump(user_dump);
     if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
-      debug(ERROR, "Failed to create the user from the user dump\n");
+      message(G_LOG_LEVEL_ERROR, "Failed to create the user from the user dump\n");
       ret = -1;
       goto done;
     }
@@ -518,7 +520,7 @@ lasso_login_create_user(LassoLogin *login,
     assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				     "Assertion", lassoLibHRef);
     if (assertion == NULL) {
-      debug(ERROR, "Assertion element not found in response.\n");
+      message(G_LOG_LEVEL_ERROR, "Assertion element not found in response.\n");
       ret = -2;
       goto done;
     }
@@ -531,14 +533,14 @@ lasso_login_create_user(LassoLogin *login,
     /* put the 2 NameIdentifiers in user object */
     nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
     if (nameIdentifier == NULL) {
-      debug(ERROR, "NameIdentifier element not found in assertion.\n");
+      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in assertion.\n");
       ret = -3;
       goto done;
     }
 
     idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", lassoLibHRef);
     if (idpProvidedNameIdentifier == NULL) {
-      debug(ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
+      message(G_LOG_LEVEL_ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
       ret = -4;
       goto done;
     }
@@ -559,7 +561,7 @@ lasso_login_create_user(LassoLogin *login,
 			    identity);
   }
   else {
-    debug(ERROR, "response attribute is empty.\n");
+    message(G_LOG_LEVEL_ERROR, "response attribute is empty.\n");
   }
   
  done:
@@ -587,7 +589,7 @@ lasso_login_dump(LassoLogin *login)
   node = lasso_node_new_from_dump(parent_dump);
   g_free(parent_dump);
 
-  sprintf(protocolProfile, "%d", login->protocolProfile);
+  g_sprintf(protocolProfile, "%d", login->protocolProfile);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);
   g_free(protocolProfile);
 
@@ -637,7 +639,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   if (authn_request_method != lassoHttpMethodRedirect && \
       authn_request_method != lassoHttpMethodGet && \
       authn_request_method != lassoHttpMethodPost) {
-    debug(ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
     return (-1);
   }
 
@@ -653,7 +655,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     break;
   case lassoHttpMethodPost:
     /* TODO LibAuthnRequest send by method POST */
-    debug(ERROR, "HTTP method POST isn't implemented yet.\n");
+    message(G_LOG_LEVEL_ERROR, "HTTP method POST isn't implemented yet.\n");
     return (-2);
   }
   LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
@@ -689,7 +691,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   /* get remote ProviderID */
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
 										 "ProviderID", NULL);
-  printf("remote_providerID = %s\n", LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
   /* Is authnRequest signed ? */
@@ -700,7 +702,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     switch (authn_request_method) {
     case lassoHttpMethodGet:
     case lassoHttpMethodRedirect:
-      debug(DEBUG, "Query signature has been verified\n");
+      debug("Query signature has been verified\n");
       signature_status = lasso_query_verify_signature(authn_request_msg,
 						      remote_provider->public_key,
 						      LASSO_PROFILE_CONTEXT(login)->server->private_key);
@@ -740,7 +742,7 @@ lasso_login_init_request(LassoLogin       *login,
   if (response_method != lassoHttpMethodRedirect && \
       response_method != lassoHttpMethodGet && \
       response_method != lassoHttpMethodPost) {
-    debug(ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
     return (-1);
   }
 
@@ -853,7 +855,7 @@ lasso_login_process_response_msg(LassoLogin  *login,
 static void
 lasso_login_finalize(LassoLogin *login)
 {  
-  debug(DEBUG, "Login object 0x%x finalized ...\n", login);
+  debug("Login object 0x%x finalized ...\n", login);
 
   g_free(login->assertionArtifact);
   g_free(login->nameIdentifier);

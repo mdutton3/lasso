@@ -53,13 +53,13 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
 
   soap_node = lasso_node_new_from_dump(soap);
   if(soap_node==NULL){
-    debug(ERROR, "Error while build node from soap msg\n");
+    message(G_LOG_LEVEL_ERROR, "Error while build node from soap msg\n");
     return(-1);
   }
 
   body_node = lasso_node_get_child(soap_node, "Body", NULL);
   if(body_node==NULL){
-    debug(ERROR, "Body node not found\n");
+    message(G_LOG_LEVEL_ERROR, "Body node not found\n");
     return(-2);
   }
 
@@ -69,7 +69,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
     name = lasso_node_get_name(request_node);
 
     if(xmlStrEqual(name, "Request")){
-      debug(INFO, "A Request node found\n");
+      message(G_LOG_LEVEL_INFO, "A Request node found\n");
       type = lassoRequestTypeLogin;
     }
     else if(xmlStrEqual(name, "LogoutRequest")){
@@ -85,7 +85,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
       type = lassoRequestTypeNameIdentifierMapping;
     }
     else{
-      debug(ERROR, "Unkown node name : %s\n", name);
+      message(G_LOG_LEVEL_ERROR, "Unkown node name : %s\n", name);
     }
   }
 
@@ -201,7 +201,7 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
   }
   ctx->private->dispose_has_run = TRUE;
 
-  debug(DEBUG, "ProfileContext object 0x%x disposed ...\n", ctx);
+  debug("ProfileContext object 0x%x disposed ...\n", ctx);
 
   /* unref reference counted objects */
   lasso_node_destroy(ctx->request);
@@ -214,7 +214,7 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
 static void
 lasso_profile_context_finalize(LassoProfileContext *ctx)
 {
-  debug(DEBUG, "ProfileContext object 0x%x finalized ...\n", ctx);
+  debug("ProfileContext object 0x%x finalized ...\n", ctx);
 
   g_free(ctx->remote_providerID);
   g_free(ctx->msg_url);

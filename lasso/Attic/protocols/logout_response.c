@@ -41,7 +41,7 @@ lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
     value = lasso_node_get_attr_value(status_code, "Value", &err);
     lasso_node_destroy(status_code);
     if (err != NULL) {
-      debug(ERROR, err->message);
+      message(G_LOG_LEVEL_ERROR, err->message);
       g_error_free(err);
       return (NULL);
     }
@@ -50,7 +50,7 @@ lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
     }
   }
   else {
-    debug(ERROR, "No StatusCode element found in Response.\n");
+    message(G_LOG_LEVEL_ERROR, "No StatusCode element found in Response.\n");
     return (NULL);
   }
 }
@@ -234,7 +234,7 @@ lasso_logout_response_new_from_request_export(gchar                *buffer,
     request = lasso_logout_request_new_from_export(buffer, export_type);
     break;
   default:
-    debug(ERROR, "Unkown export type\n");
+    message(G_LOG_LEVEL_ERROR, "Unkown export type\n");
     return(NULL);
   }
 
@@ -257,13 +257,13 @@ lasso_logout_response_new_from_soap(gchar *buffer)
 
   envelope = lasso_node_new_from_dump(buffer);
   if(envelope==NULL){
-    debug(ERROR, "Error while parsing the soap msg\n");
+    message(G_LOG_LEVEL_ERROR, "Error while parsing the soap msg\n");
     return(NULL);
   }
 
   lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse", NULL);
   if(lassoNode_response==NULL){
-    debug(ERROR, "LogoutResponse node not found\n");
+    message(G_LOG_LEVEL_ERROR, "LogoutResponse node not found\n");
     return(NULL);
   }
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
@@ -293,7 +293,7 @@ lasso_logout_response_new_from_export(gchar                *buffer,
     response = lasso_logout_response_new_from_soap(buffer);
     break;
   default:
-    debug(ERROR, "Unknown export type\n");
+    message(G_LOG_LEVEL_ERROR, "Unknown export type\n");
     return(NULL);
   }
 
