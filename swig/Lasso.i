@@ -856,23 +856,23 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 
 
 /***********************************************************************
- * NodeArray
+ * NodeList
  ***********************************************************************/
 
 
 #ifndef SWIGPHP4
-%rename(NodeArray) LassoNodeArray;
+%rename(NodeList) LassoNodeList;
 #endif
 %{
-typedef GPtrArray LassoNodeArray;
+typedef GPtrArray LassoNodeList;
 %}
 typedef struct {
 	%extend {
 		/* Constructor, Destructor & Static Methods */
 
-		LassoNodeArray();
+		LassoNodeList();
 
-		~LassoNodeArray();
+		~LassoNodeList();
 
 		/* Methods */
 
@@ -886,8 +886,8 @@ typedef struct {
 			return self;
 		}
 
-		static LassoNodeArray *frompointer(GPtrArray *nodeArray) {
-			return (LassoNodeArray *) nodeArray;
+		static LassoNodeList *frompointer(GPtrArray *nodeArray) {
+			return (LassoNodeList *) nodeArray;
 		}
 
 #if defined(SWIGPYTHON)
@@ -945,15 +945,15 @@ typedef struct {
 		}
 		%exception setitem;
 	}
-} LassoNodeArray;
+} LassoNodeList;
 
 %{
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoNodeArray g_ptr_array_new
+#define new_LassoNodeList g_ptr_array_new
 
-void delete_LassoNodeArray(GPtrArray *self) {
+void delete_LassoNodeList(GPtrArray *self) {
 	g_ptr_array_foreach(self, (GFunc) free_node_array_item, NULL);
 	g_ptr_array_free(self, false);
 }
@@ -1329,7 +1329,7 @@ typedef struct {
 	%rename(attributeValue) AttributeValue;
 #endif
 	%newobject AttributeValue_get;
-	LassoNodeArray *AttributeValue;
+	LassoNodeList *AttributeValue;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1885,7 +1885,7 @@ typedef struct {
 	%rename(assertion) Assertion;
 #endif
 	%newobject Assertion_get;
-	LassoNodeArray *Assertion;
+	LassoNodeList *Assertion;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
