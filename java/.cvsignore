@@ -1,5 +1,6 @@
 .deps
 .libs
+Assertion.java
 AuthnRequest.java
 AuthnResponse.java
 Defederation.java

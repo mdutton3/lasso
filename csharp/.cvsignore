@@ -1,6 +1,7 @@
 .libs
 .deps
 AssemblyInfo.cs
+Assertion.cs
 Defederation.cs
 Identity.cs
 AuthnRequest.cs

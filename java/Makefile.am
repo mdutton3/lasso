@@ -22,7 +22,8 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Session.java        Defederation.java    Login.java    \
 	Logout.java         Lecp.java            lassoJNI.java \
 	lasso.java          lassoConstants.java  LogoutRequest.java \
-	FederationTerminationNotification.java   LogoutResponse.java
+	FederationTerminationNotification.java   LogoutResponse.java \
+	Assertion.java
 
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
