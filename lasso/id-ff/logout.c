@@ -119,6 +119,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   LassoProvider    *provider;
   xmlChar          *protocolProfile = NULL;
   GError           *err = NULL;
+  gchar            *url = NULL, *query = NULL;
   lassoProviderType remote_provider_type;
   gint              ret = 0;
 
@@ -126,7 +127,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   
   profile = LASSO_PROFILE(logout);
 
-  /* set the remote provider type and get the remote provider object */
+  /* get the remote provider type and get the remote provider object */
   if (profile->provider_type == lassoProviderTypeSp) {
     remote_provider_type = lassoProviderTypeIdp;
   }
@@ -169,35 +170,24 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 							remote_provider_type,
 							NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
-    
-    if (profile->msg_url == NULL || profile->msg_body == NULL ) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url and msg_body\n");
-      ret = -1;
-      goto done;
-    }
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    /* temporary vars */
-    gchar *url, *query;
-
     /* build and optionaly sign the logout request QUERY message */
     url = lasso_provider_get_singleLogoutServiceURL(provider, remote_provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
-    profile->msg_body = NULL;
-
-    if (profile->msg_url == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url\n");
+    if ( (url == NULL) || (query == NULL) ) {
+      message(G_LOG_LEVEL_CRITICAL, "Error while building url and query\n");
       ret = -1;
       goto done;
     }
 
-    xmlFree(url);
-    xmlFree(query);
+    /* build the msg_url */
+    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_body = NULL;
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid logout protocol profile\n");
@@ -206,9 +196,14 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   done:
-  debug("Build request msg done\n");
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
+  }
+  if (url != NULL) {
+    xmlFree(url);
+  }
+  if (query != NULL) {
+    xmlFree(query);
   }
 
   return(ret);
@@ -238,23 +233,34 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 {
   LassoProfile  *profile;
   LassoProvider *provider;
-  gchar         *url, *query;
+  gchar         *url = NULL, *query = NULL;
   GError        *err = NULL;
   gint           ret = 0;
+  gint           remote_provider_type;
 
-  if (LASSO_IS_LOGOUT(logout) == FALSE) {
-    message(G_LOG_LEVEL_CRITICAL, "Not a Logout object\n");
-    ret = -1;
-    goto done;
-  }
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   
   profile = LASSO_PROFILE(logout);
 
+  /* get the provider */
   provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
+    goto done;
+  }
+
+  /* get the remote provider type */
+  if (profile->provider_type == lassoProviderTypeSp) {
+    remote_provider_type = lassoProviderTypeIdp;
+  }
+  else if (profile->provider_type == lassoProviderTypeIdp) {
+    remote_provider_type = lassoProviderTypeSp;
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+    ret = -1;
     goto done;
   }
 
@@ -268,43 +274,25 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 						  profile->server->private_key,
 						  profile->server->certificate);
     }
-    
+
     /* build the logout response messsage */
     profile->msg_url = NULL;
     profile->msg_body = lasso_node_export_to_soap(profile->response);
     break;
   case lassoHttpMethodRedirect:
-    if (profile->provider_type == lassoProviderTypeSp) {
-      url = lasso_provider_get_singleLogoutServiceReturnURL(provider, lassoProviderTypeIdp, NULL);
-    }
-    else if (profile->provider_type == lassoProviderTypeIdp) {
-      url = lasso_provider_get_singleLogoutServiceReturnURL(provider, lassoProviderTypeSp, NULL);
-    }
-    else {
-      message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
-      ret = -1;
-      goto done;
-    }
-
-    if (url == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Single logout service return url not found\n");
-      ret = -1;
-      goto done;
-    }
-
+    url = lasso_provider_get_singleLogoutServiceReturnURL(provider, remote_provider_type, NULL);
     query = lasso_node_export_to_query(profile->response,
 				       profile->server->signature_method,
 				       profile->server->private_key);
+    if ( (url == NULL) || (query == NULL) ) {
+      message(G_LOG_LEVEL_CRITICAL, "Url %s or query %s not found\n", url, query);
+      ret = -1;
+      goto done;
+    }
 
     profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
     g_sprintf(profile->msg_url, "%s?%s", url, query);
     profile->msg_body = NULL;
-
-    if (profile->msg_url == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url\n");
-      ret = -1;
-      goto done;
-    }
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method\n");
@@ -313,6 +301,12 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   }
 
   done:
+  if (url != NULL) {
+    xmlFree(url);
+  }
+  if (query != NULL) {
+    xmlFree(query);
+  }
 
   return(ret);
 }
