@@ -88,7 +88,6 @@ START_TEST(test02_serviceProviderLogin)
 	LassoServer *spContext, *idpContext;
 	LassoLogin *spLoginContext, *idpLoginContext;
 	LassoLogout *spLogoutContext, *idpLogoutContext;
-	LassoUser *spUserContext;
 	LassoLibAuthnRequest *request;
 	int rc;
 	char *relayState;
@@ -224,7 +223,8 @@ START_TEST(test02_serviceProviderLogin)
 			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body,
 			lassoHttpMethodSoap);
 	fail_unless(rc == 0, "lasso_logout_load_request_msg failed");
-	rc = lasso_profile_context_set_user_from_dump(idpLogoutContext, idpUserContextDump);
+	rc = lasso_profile_context_set_user_from_dump(
+			LASSO_PROFILE_CONTEXT(idpLogoutContext), idpUserContextDump);
 	fail_unless(rc == 0, "lasso_profile_context_set_user_from_dump failed");
 	rc = lasso_logout_process_request(idpLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_process_request failed");
