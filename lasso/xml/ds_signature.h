@@ -30,6 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <xmlsec/xmldsig.h>
+
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_DS_SIGNATURE (lasso_ds_signature_get_type())

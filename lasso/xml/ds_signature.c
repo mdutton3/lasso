@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/templates.h>
+#include <xmlsec/crypto.h>
+
 #include <lasso/xml/ds_signature.h>
 
 /*

@@ -24,11 +24,16 @@
  */
 
 #include <string.h>
+
+#include <xmlsec/base64.h>
+#include <xmlsec/xmltree.h>
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+#include <xmlsec/crypto.h>
+
 #include <lasso/xml/errors.h>
 #include <lasso/xml/xml.h>
 #include <lasso/xml/ds_signature.h>
-#include <xmlsec/base64.h>
-#include <xmlsec/xmltree.h>
 
 struct _LassoNodePrivate
 {

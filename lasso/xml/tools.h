@@ -34,10 +34,6 @@ extern "C" {
 
 #include <libxml/tree.h>
 
-#include <xmlsec/xmldsig.h>
-#include <xmlsec/templates.h>
-#include <xmlsec/crypto.h>
-
 #include <lasso/export.h>
 #include <lasso/xml/debug.h>
 

@@ -24,10 +24,16 @@
  */
 
 #include <string.h>
-#include <lasso/xml/tools.h>
+
 #include <libxml/uri.h>
+
 #include <xmlsec/xmltree.h>
 #include <xmlsec/base64.h>
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+#include <xmlsec/crypto.h>
+
+#include <lasso/xml/tools.h>
 
 xmlChar *
 lasso_build_random_sequence(guint8 size)
