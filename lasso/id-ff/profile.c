@@ -75,7 +75,7 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
       type = lassoRequestTypeLogout;
     }
     else if(xmlStrEqual(name, "FederationTerminationNotification")) {
-      type = lassoRequestTypeFederationTermination;
+      type = lassoRequestTypeDefederation;
     }
     else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
       type = lassoRequestTypeRegisterNameIdentifier;
