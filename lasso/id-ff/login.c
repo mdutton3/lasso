@@ -713,6 +713,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	profile = LASSO_PROFILE(login);
 
 	profile->response = lasso_samlp_response_new();
+	/* XXX: should set status code to what we would have set in
+	 * lib:AuthnResponse in lasso_login_validate_request() */
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -742,6 +744,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			if (assertion) {
 				LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
 					g_object_ref(assertion);
+				lasso_profile_set_response_status(profile,
+						LASSO_SAML_STATUS_CODE_SUCCESS);
 			} else {
 				/* FIXME should this message output by
 				 * lasso_session_get_assertion () ? */
