@@ -33,3 +33,26 @@
 
 #include "lasso.h"
 
+/* {{{ proto string lasso_session_dump(resource server) */
+PHP_FUNCTION(lasso_session_dump) {
+
+	LassoSession  *session;
+	zval *param;
+	char *session_dump;
+	
+	int num_args;
+	
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &param) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(session, LassoSession *, &param, -1, le_lassosession_name, le_lassosession);
+	
+	session_dump = lasso_session_dump(session);
+
+	RETURN_STRING(session_dump, 1);
+}
+/* }}} */
