@@ -171,7 +171,7 @@ identity provider Id (defined in metadata).
   lasso_login_build_authn_request_msg(login, idpProviderId);
 
 
-You can now redirect the user to the URL defined in ``login->msg_url``; for
+You can now redirect the user to the URL defined in ``LASSO_PROFILE(login)->msg_url``; for
 example, in a CGI::
   
   printf("Location: %s\n", LASSO_PROFILE(login)->msg_url);
