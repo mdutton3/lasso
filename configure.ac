@@ -256,7 +256,7 @@ if test "x$JAVAC" = "xgcj"; then
     dnl JNI compatible header files. (not used with SWIG.)
     dnl JAVAH_FLAGS="-jni"
     dnl Checking for jni.h if gcj is the java interpreter.
-    AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=$(NULL)])
+    AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=""])
 fi
 
 dnl Now transform JDK_INCLUDE in CFLAG option if applicable.
