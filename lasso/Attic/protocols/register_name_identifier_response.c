@@ -37,41 +37,84 @@ static LassoNode*
 lasso_register_name_identifier_response_new_from_query(gchar *query)
 {
   LassoNode *response;
-  xmlChar *relayState;
-  GData *gd;
+  xmlChar   *relayState;
+  xmlChar   *str;
+  GData     *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
 
   gd = lasso_query_to_dict(query);
   
   /* ResponseID */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
+					       str);
   
   /* MajorVersion */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
+						 str);
   
   /* MinorVersion */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
+						 str);
   
   /* IssueInstant */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0));
+						 str);
   
   /* InResponseTo */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
+						 str);
   
   /* Recipient */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
+					      str);
   
   /* ProviderID */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
-					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
-  
+					   str);
+
   /* RelayState */
   relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
   if (relayState != NULL)
