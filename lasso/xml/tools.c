@@ -158,123 +158,10 @@ lasso_query_to_dict(const xmlChar *query)
   return (gd);
 }
 
-xmlChar *
-lasso_str_escape(xmlChar *str)
-{
-  /* value returned must be xmlFree() */
-  return (xmlURIEscapeStr((const xmlChar *)str, NULL));
-}
-
-xmlDocPtr
-lasso_str_sign(xmlChar *str,
-	       xmlSecTransformId signMethodId,
-	       const char* key_file)
-{
-  xmlDocPtr  doc = xmlNewDoc("1.0");
-  xmlNodePtr envelope = xmlNewNode(NULL, "Envelope");
-  xmlNodePtr cdata, data = xmlNewNode(NULL, "Data");
-  xmlNodePtr signNode;
-  xmlNodePtr refNode;
-  xmlNodePtr keyInfoNode;
-  xmlSecDSigCtxPtr dsigCtx;
-
-  /* create doc */
-  xmlNewNs(envelope, "urn:envelope", NULL);
-  cdata = xmlNewCDataBlock(doc, str, strlen(str));
-  xmlAddChild(envelope, data);
-  xmlAddChild(data, cdata);
-  xmlAddChild((xmlNodePtr)doc, envelope);
-
-  /* create signature template for enveloped signature */
-  signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-				       signMethodId, NULL);
-  if (signNode == NULL) {
-    fprintf(stderr, "Error: failed to create signature template\n");
-    goto done;		
-  }
-  
-  /* add <dsig:Signature/> node to the doc */
-  xmlAddChild(xmlDocGetRootElement(doc), signNode);
-  
-  /* add reference */
-  refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha1Id,
-					    NULL, NULL, NULL);
-  if (refNode == NULL) {
-    fprintf(stderr, "Error: failed to add reference to signature template\n");
-    goto done;		
-  }
-  
-  /* add enveloped transform */
-  if (xmlSecTmplReferenceAddTransform(refNode, xmlSecTransformEnvelopedId) == NULL) {
-    fprintf(stderr, "Error: failed to add enveloped transform to reference\n");
-    goto done;		
-  }
-  
-  /* add <dsig:KeyInfo/> and <dsig:KeyName/> nodes to put key name in the
-     signed document */
-  keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
-  if (keyInfoNode == NULL) {
-    fprintf(stderr, "Error: failed to add key info\n");
-    goto done;		
-  }
-  
-  if (xmlSecTmplKeyInfoAddKeyName(keyInfoNode, NULL) == NULL) {
-    fprintf(stderr, "Error: failed to add key name\n");
-    goto done;		
-  }
-  
-  /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(NULL);
-  if (dsigCtx == NULL) {
-    fprintf(stderr,"Error: failed to create signature context\n");
-    goto done;
-  }
-
-  /* load private key */
-  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(key_file, xmlSecKeyDataFormatPem,
-					    NULL, NULL, NULL);
-  if (dsigCtx->signKey == NULL) {
-    fprintf(stderr,"Error: failed to load private pem key from \"%s\"\n", key_file);
-    goto done;
-  }
-
-  /* sign the template */
-  if (xmlSecDSigCtxSign(dsigCtx, signNode) < 0) {
-    fprintf(stderr,"Error: signature failed\n");
-    goto done;
-  }
-  
-  //xmlDocDump(stdout, doc);
-  xmlSecDSigCtxDestroy(dsigCtx);
-  /* doc must be freed be caller */
-  return (doc);
-
- done:    
-  /* cleanup */
-  if (dsigCtx != NULL) {
-    xmlSecDSigCtxDestroy(dsigCtx);
-  }
-  
-  if (doc != NULL) {
-    xmlFreeDoc(doc); 
-  }
-  return (NULL);
-}
-
-xmlChar *
-lasso_str_unescape(xmlChar *str)
-{
-  xmlChar *ret;
-
-  ret = g_malloc(strlen(str) * 2);
-  xmlURIUnescapeString((const char *)str, 0, ret);
-  return (ret);
-}
-
 int
-lasso_str_verify(xmlChar *str,
-		 const xmlChar *sender_public_key_file,
-		 const xmlChar *recipient_private_key_file)
+lasso_query_verify_signature(xmlChar *str,
+			     const xmlChar *sender_public_key_file,
+			     const xmlChar *recipient_private_key_file)
 {
   xmlDocPtr doc;
   xmlNodePtr sigNode, sigValNode;
@@ -339,5 +226,123 @@ lasso_str_verify(xmlChar *str,
   if(doc != NULL) {
     xmlFreeDoc(doc);
   }
+  return (ret);
+}
+
+xmlChar *
+lasso_str_escape(xmlChar *str)
+{
+  /* value returned must be xmlFree() */
+  return (xmlURIEscapeStr((const xmlChar *)str, NULL));
+}
+
+xmlDocPtr
+lasso_str_sign(xmlChar *str,
+	       xmlSecTransformId signMethodId,
+	       const char* private_key_file)
+{
+  /* FIXME : renamed fct into lasso_query_add_signature
+     SHOULD returned a query (xmlChar) instead of xmlDoc */
+  xmlDocPtr  doc = xmlNewDoc("1.0");
+  xmlNodePtr envelope = xmlNewNode(NULL, "Envelope");
+  xmlNodePtr cdata, data = xmlNewNode(NULL, "Data");
+  xmlNodePtr signNode;
+  xmlNodePtr refNode;
+  xmlNodePtr keyInfoNode;
+  xmlSecDSigCtxPtr dsigCtx;
+
+  /* create doc */
+  xmlNewNs(envelope, "urn:envelope", NULL);
+  cdata = xmlNewCDataBlock(doc, str, strlen(str));
+  xmlAddChild(envelope, data);
+  xmlAddChild(data, cdata);
+  xmlAddChild((xmlNodePtr)doc, envelope);
+
+  /* create signature template for enveloped signature */
+  signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+				       signMethodId, NULL);
+  if (signNode == NULL) {
+    fprintf(stderr, "Error: failed to create signature template\n");
+    goto done;		
+  }
+  
+  /* add <dsig:Signature/> node to the doc */
+  xmlAddChild(xmlDocGetRootElement(doc), signNode);
+  
+  /* add reference */
+  refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha1Id,
+					    NULL, NULL, NULL);
+  if (refNode == NULL) {
+    fprintf(stderr, "Error: failed to add reference to signature template\n");
+    goto done;		
+  }
+  
+  /* add enveloped transform */
+  if (xmlSecTmplReferenceAddTransform(refNode,
+				      xmlSecTransformEnvelopedId) == NULL) {
+    fprintf(stderr, "Error: failed to add enveloped transform to reference\n");
+    goto done;		
+  }
+  
+  /* add <dsig:KeyInfo/> and <dsig:KeyName/> nodes to put key name in the
+     signed document */
+  keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
+  if (keyInfoNode == NULL) {
+    fprintf(stderr, "Error: failed to add key info\n");
+    goto done;		
+  }
+  
+  if (xmlSecTmplKeyInfoAddKeyName(keyInfoNode, NULL) == NULL) {
+    fprintf(stderr, "Error: failed to add key name\n");
+    goto done;		
+  }
+  
+  /* create signature context */
+  dsigCtx = xmlSecDSigCtxCreate(NULL);
+  if (dsigCtx == NULL) {
+    fprintf(stderr,"Error: failed to create signature context\n");
+    goto done;
+  }
+
+  /* load private key */
+  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+					    xmlSecKeyDataFormatPem,
+					    NULL, NULL, NULL);
+  if (dsigCtx->signKey == NULL) {
+    fprintf(stderr,"Error: failed to load private pem key from \"%s\"\n",
+	    private_key_file);
+    goto done;
+  }
+
+  /* sign the template */
+  if (xmlSecDSigCtxSign(dsigCtx, signNode) < 0) {
+    fprintf(stderr,"Error: signature failed\n");
+    goto done;
+  }
+  
+  //xmlDocDump(stdout, doc);
+  xmlSecDSigCtxDestroy(dsigCtx);
+  /* doc must be freed be caller */
+  return (doc);
+
+ done:    
+  /* cleanup */
+  if (dsigCtx != NULL) {
+    xmlSecDSigCtxDestroy(dsigCtx);
+  }
+  
+  if (doc != NULL) {
+    xmlFreeDoc(doc); 
+  }
+  return (NULL);
+}
+
+xmlChar *
+lasso_str_unescape(xmlChar *str)
+{
+  xmlChar *ret;
+
+  ret = g_malloc(strlen(str) * 2);
+  xmlURIUnescapeString((const char *)str, 0, ret);
   return (ret);
 }
