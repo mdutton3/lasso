@@ -383,7 +383,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation,
   case lassoHttpMethodRedirect:
     debug("Build a federation termination notification from query msg\n");
     profile->request = lasso_federation_termination_notification_new_from_export(notification_msg, lassoNodeExportTypeQuery);
-    if (LASSO_IS_FEDERATION_TERMINATION_NOTIFICATON(profile->request) == FALSE) {
+    if (LASSO_IS_FEDERATION_TERMINATION_NOTIFICATION(profile->request) == FALSE) {
       ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
       goto done;
     }
