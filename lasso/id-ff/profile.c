@@ -166,13 +166,13 @@ lasso_profile_dump(LassoProfile *ctx,
 LassoIdentity*
 lasso_profile_get_identity(LassoProfile *ctx)
 {
-  return (ctx->identity);
+  return (lasso_identity_copy(ctx->identity));
 }
 
 LassoSession*
 lasso_profile_get_session(LassoProfile *ctx)
 {
-  return (ctx->session);
+  return (lasso_session_copy(ctx->session));
 }
 
 gboolean
