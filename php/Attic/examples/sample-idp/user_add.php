@@ -64,7 +64,7 @@
 	  { 
 		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_ERR);
 		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-		die("username exist!");
+		die("Username exist!");
 	  }
 	  
     	  $logger->log("Create User '" . $form->exportValue('username') . "'", PEAR_LOG_NOTICE);

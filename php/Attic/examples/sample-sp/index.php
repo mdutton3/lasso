@@ -64,7 +64,11 @@ You can get more informations about <b>Lasso</b> at <br>
 
   session_start();
 
+
   lasso_init();
+
+  $server_dump = file_get_contents($config['server_dump_filename']);
+  $server = LassoServer::newFromDump($server_dump);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -104,11 +108,48 @@ You can get more informations about <b>Lasso</b> at <br>
   <td><?php echo $config['providerID']; ?></td>
   <td><a href="login.php?profile=post">post</a> | <a href="login.php?profile=artifact">artifact</a></td>
 </tr>
-<?php } else { ?>
+<?php } else { 
+        // User is federated with an Service Provider
+	if (isset($_SESSION['identity_dump']))
+	{
+		$login = new LassoLogin($server);
+		$login->setIdentityFromDump($_SESSION['identity_dump']);
+		if (!empty($_SESSION['session_dump']))
+			$login->setSessionFromDump($_SESSION['session_dump']);
+		$identity = $login->identity;
+		$providerIDs = $identity->providerIds;
+
+		if ($providerIDs->length())
+		{
+?>
 <tr>
-  <td colspan="2">Single Logout</td>
+	<td align='center' colspan='2'>Cancel a Federation with :</td>
+</tr>
 <tr>
-  <td colspan="2"><a href="logout.php">Logout!</a></td>
+	<td align='center'>Identity Provider</td><td align='center'>Profile</td>
+</tr>
+<?php
+			for($i = 0; $i <  $providerIDs->length() ; $i++)
+			{
+				$providerID = $providerIDs->getItem($i);
+?>
+<tr>
+	<td align='center'><?php echo $providerID; ?></td>
+	<td align='center'>
+		<a href="cancel_federation.php?profile=redirect&with=<?php echo $providerID; ?>">Redirect</a> |
+		<a href="cancel_federation.php?profile=soap&with=<?php echo $providerID; ?>">SOAP</a>
+	</td>
+</tr>
+<tr>
+	<td colspan='2'>&nbsp;</td>
+</tr>
+<?php
+			}
+		}
+	}
+?>
+<tr>
+  <td>Single Logout using </td><td><a href="logout.php?profile=soap">SOAP</a></td>
 </tr>
 <?php } ?>
 </table>

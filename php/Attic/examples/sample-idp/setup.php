@@ -222,6 +222,16 @@
 
 		print "OK";
 
+		print "<br>Insert user 'test' into 'users' : ";
+		
+		$query = "INSERT INTO users(user_id, username, password, created) ";
+		$query .= "VALUES (nextval('user_id_seq'), 'test', 'test', NOW())";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+		print "OK";
+
 		print "<br>Create table 'nameidentifiers' : ";
 
 		$query = "DROP TABLE nameidentifiers CASCADE";

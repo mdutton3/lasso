@@ -108,16 +108,10 @@
                 $is_first_sso = (isset($array['identity_dump']) ? FALSE : TRUE);
 
                 if (!$is_first_sso)
-		{
 			$login->setIdentityFromDump($array['identity_dump']); 
-			$logger->log("Update Identity dump for user '$user_id' :" . $array['identity_dump'], PEAR_LOG_DEBUG);
-		}
 
 		if (!empty($array['session_dump']))
-		{
 			$login->setSessionFromDump($array['session_dump']);
-			$logger->log("Update Session dump for user '$user_id' :" . $array['session_dump'], PEAR_LOG_DEBUG);
-		}
 
                 doneSingleSignOn($db, $login, $user_id, $is_first_sso);
             }
@@ -166,7 +160,7 @@
 	if (DB::isError($res)) 
         {
             $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
             die("Internal Server Error");
         }
         $logger->log("Update user '$user_id' identity dump in the database : $identity_dump", PEAR_LOG_DEBUG);

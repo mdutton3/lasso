@@ -255,18 +255,16 @@
         if (!empty($identity_dump))
         {
             $login->setIdentityFromDump($identity_dump);
-
             $identity = $login->identity;
-	    // FIXME : providerIds is empty
-            // var_dump($identity->providerIds);
+            $providerIDs = $identity->providerIds;
 ?>
 <table width="100%">
 <?php
-            for($i = count($providerIDs); $i > 0; $i--)
-            {
+           for($i = 0; $i <  $providerIDs->length() ; $i++)
+           {
 ?>
 <tr>
-    <td align='center'><?php echo print $providerIDs[$i - 1]; ?></td>
+    <td align='center'><?php echo  $providerIDs->getItem($i); ?></td>
     <td align='right'><a href="">cancel federation</a></td>
 </tr>
 <?php

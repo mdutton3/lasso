@@ -4,14 +4,18 @@
     xmlns="urn:liberty:metadata:2003-08">
  <IDPDescriptor>
 
-  <SingleSignOnServiceURL>https://idp1:1998/singleSignOn.php</SingleSignOnServiceURL>
+  <SingleSignOnServiceURL>https://idp1:1998/singleSignOn</SingleSignOnServiceURL>
   <SingleSignOnProtocolProfile>http://projectliberty.org/profiles/sso-get</SingleSignOnProtocolProfile>
 
-  <SingleLogoutServiceURL>https://idp1:1998/singleLogout.php</SingleLogoutServiceURL>
+  <SingleLogoutServiceURL>https://idp1:1998/singleLogout</SingleLogoutServiceURL>
   <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
 
-  <RegisterNameIdentifierServiceURL>https://idp1:1998/registerNameIdentifier.php</RegisterNameIdentifierServiceURL>
+  <RegisterNameIdentifierServiceURL>https://idp1:1998/registerNameIdentifier</RegisterNameIdentifierServiceURL>
   <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-http</RegisterNameIdentifierProtocolProfile>
+   <FederationTerminationServiceURL>https://idp1:1998/federationTermination</FederationTerminationServiceURL>
+  <FederationTerminationServiceReturnURL>https://idp1:1998/federationTerminationReturn</FederationTerminationServiceReturnURL>
+  <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-sp-soap</FederationTerminationNotificationProtocolProfile>
+
 
   <SoapEndpoint>https://idp1:1998/soapEndpoint.php</SoapEndpoint>
 

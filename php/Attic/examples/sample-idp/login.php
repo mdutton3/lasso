@@ -57,6 +57,40 @@
     $logger->log("User from '" . $_SERVER['REMOTE_ADDR'] . "' pressed the cancel button during HTTP basic authentication request", PEAR_LOG_NOTICE);
   }
 
+  function startLocalSession($user_id, $username)
+  {
+	global $db, $logger;
+
+	$_SESSION['user_id'] = $user_id;
+	$_SESSION['username'] = $username;
+	    
+	$query = "SELECT identity_dump,session_dump FROM users WHERE user_id='$user_id'";
+
+	$res =& $db->query($query);
+
+	if (DB::isError($res)) 
+	{
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
+		die("Could not fetch identity and session dump");
+	}
+	if ($res->numRows()) 
+	{
+		$row = $res->fetchRow();
+		if (!empty($row[0]))
+			$_SESSION['identity_dump'] = $row[0];
+		if (!empty($row[1]))
+			$_SESSION['session_dump'] = $row[1];
+	} 
+
+	$logger->log("User '$username' ($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
+
+	$url = 'index.php';
+	header("Request-URI: $url");
+	header("Content-Location: $url");
+	header("Location: $url\r\n\r\n");
+	exit;
+  }
 
   /*
    * This function authentificate the user against the Users Database
@@ -71,8 +105,8 @@
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
     {
-        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
         die("Internal Server Error");
     } 
 
@@ -96,41 +130,13 @@
         // Check Login and Password
         if (!($user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])))
         {
-            $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_WARNING);
+            $logger->warning("Authentication failure with login '". $_SERVER['PHP_AUTH_USER'] . " password '"
+	    . $_SERVER['PHP_AUTH_PW'] ."' IP " . $_SERVER['REMOTE_ADDR']);
             sendHTTPBasicAuth();
             exit;
         }
         else
-        {
-		$_SESSION['user_id'] = $user_id;
-		$_SESSION['username'] = $_SERVER['PHP_AUTH_USER'];
-	    
-		$logger->log("User '".$_SERVER['PHP_AUTH_USER']."' ($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
-
-
-            /* TODO : load identity and session dump 
-            $query = "SELECT identity_dump,session_dump FROM users WHERE identity_dump";
-            $query .= " IS NOT NULL AND session_dump IS NOT NULL AND user_id='$user_id'";
-
-            $res =& $db->query($query);
-
-            if (DB::isError($res)) 
-                die($res->getMessage());
-
-            if ($res->numRows()) 
-            {
-                $row = $res->fetchRow();
-    
-                $_SESSION['identity_dump'] = $row[0];
-                $_SESSION['session_dump'] = $row[1];
-            } */
-            
-            $url = 'index.php';
-            header("Request-URI: $url");
-            header("Content-Location: $url");
-            header("Location: $url\r\n\r\n");
-            exit;
-        }
+		startLocalSession($user_id, $_SERVER['PHP_AUTH_USER']);
     }
   }
   else if ($config['auth_type'] == 'auth_form')
@@ -151,17 +157,8 @@
   {
       if (($user_id = authentificateUser($db, $form->exportValue('username'), $form->exportValue('password'))))
       {
-		$_SESSION['user_id'] = $user_id;
-		$_SESSION['username'] = $form->exportValue('username');
-
-		$logger->log("User '".$form->exportValue('username')."'($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
-
-		$url = 'index.php';
-		header("Request-URI: $url");
-		header("Content-Location: $url");
-		header("Location: $url\r\n\r\n");
-        exit;
-	  }
+		startLocalSession($user_id, $form->exportValue('username'));
+	}
       else
         $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
   }

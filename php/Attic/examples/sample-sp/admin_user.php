@@ -24,13 +24,18 @@
 
   $config = unserialize(file_get_contents('config.inc'));
 
+  require_once 'Log.php';
   require_once 'DB.php';
-
-
+  
+  // connect to the data base
   $db = &DB::connect($config['dsn']);
-
   if (DB::isError($db)) 
-	  die($db->getMessage());
+	die($db->getMessage());
+
+  // create logger 
+  $conf['db'] = $db;
+  $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
 
   if (!empty($_GET['dump'])) {
   	$query = "SELECT identity_dump FROM users WHERE user_id=".$db->quoteSmart($_GET['dump']);
@@ -38,6 +43,7 @@
 	if (DB::isError($res)) 
 	  print $res->getMessage(). "\n";
 	$row = $res->fetchRow();
+	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -78,6 +84,15 @@
 	  die($res->getMessage());
   }
 	
+  lasso_init();
+
+  // Create Lasso Server
+  $server_dump = file_get_contents($config['server_dump_filename']);
+  $server = LassoServer::newFromDump($server_dump);
+
+  // Lasso User
+  $login = new LassoLogin($server);
+  
   $query = "SELECT * FROM users";
   $res =& $db->query($query);
   if (DB::isError($res)) 
@@ -107,7 +122,7 @@
 <thead>
 <tr align="center"><?php
   for ($i = 0; $i < $num_col; $i++) {
-	echo "<td>" . $tableinfo[$i]['name'] ."</td>";
+	echo "<td><b>" . $tableinfo[$i]['name'] ."</b></td>";
   }
 ?><td>&nbsp;</td>
 </tr>
@@ -127,6 +142,7 @@
 	  {
 		case "identity_dump":
   		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "')>view</a>";
+		  $identity_dump = $row[$i];
 		  break;
 		  
 		default:
@@ -137,9 +153,29 @@
 	<?php
   }
   ?>
-  <td>
-  <a href="<?php echo $PHP_SELF . '?del=' . $row[0]; ?>">delete</a>
-  </td>
+  <td rowspan='2'><a href="<?php echo $PHP_SELF . '?del=' . $row[0]; ?>">delete</a></td>
+</tr>
+<tr>
+	<td colspan='<?php echo $num_col; ?>' align='center'>
+<?
+	// get all federations for this user
+        if (!empty($identity_dump))
+        {
+            $login->setIdentityFromDump($identity_dump);
+            $identity = $login->identity;
+            $providerIDs = $identity->providerIds;
+	    
+	    for($i = 0; $i <  $providerIDs->length() ; $i++)
+	    {
+		if ($i)
+			echo "<br>";
+		echo  $providerIDs->getItem($i);
+	    }
+	}
+	else
+            echo "Not Federated with an Service Provider.";
+?>
+	</td>
 </tr>
 <?php
 }
@@ -165,4 +201,5 @@
 </html>
 <?php
   $db->disconnect();
+  lasso_shutdown();
 ?>

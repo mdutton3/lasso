@@ -25,6 +25,7 @@
   require_once 'Log.php';
   require_once 'DB.php';
   require_once 'session.php';
+  require_once 'misc.php';
 
   $config = unserialize(file_get_contents('config.inc'));
 
@@ -55,7 +56,7 @@
 
   $login = new LassoLogin($server);
 
-  $logger->log('Request from ' . $_SERVER['REMOTE_ADDR'], PEAR_LOG_INFO);
+  $logger->info('Request from ' . $_SERVER['REMOTE_ADDR']);
   $login->initRequest($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
   $login->buildRequestMsg();
 
@@ -72,36 +73,8 @@
   $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));
   socket_set_timeout($fp, 10);
   fwrite($fp, $soap);
-
-  // header
-  do $header .= fread($fp, 1); while (!preg_match('/\\r\\n\\r\\n$/',$header));
-
-  // chunked encoding
-  if (preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/',$header))
-  {
-	do {
-	  $byte = '';
-	  $chunk_size = '';
-	  
-	  do {
-		$chunk_size .= $byte;
-		$byte = fread($fp, 1);
-	  } while ($byte != "\\r");     
-	  
-	  fread($fp, 1);    
-	  $chunk_size = hexdec($chunk_size); 
-  	  $response .= fread($fp, $chunk_size);
-	  fread($fp, 2);          
-  	} while ($chunk_size);        
-  }
-  else
-  {
-	if (preg_match('/Content\\-Length:\\s+([0-9]+)\\r\\n/', $header, $matches))
-	  $response = @fread($fp, $matches[1]);
-	else 
-	  while (!feof($fp)) $response .= fread($fp, 1024);
-  }
-  fclose($fp);
+  
+  read_http_response($fp, $header, $response);
 
   $logger->log('SOAP Response Header : ' . $header, PEAR_LOG_DEBUG);
   $logger->log('SOAP Response Body : ' . $response, PEAR_LOG_DEBUG);
@@ -151,8 +124,10 @@
 	$login->acceptSso();
 	
 	$session = $login->session; 
+	$identity = $login->identity; 
   
         $_SESSION['nameidentifier'] = $login->nameIdentifier;
+        $_SESSION['identity_dump'] = $identity->dump();
         $_SESSION['session_dump'] = $session->dump();
         $_SESSION['user_id'] = $user_id;
 
@@ -209,6 +184,7 @@
 
 	
 	$_SESSION['nameidentifier'] = $login->nameIdentifier;
+        $_SESSION['identity_dump'] = $identity->dump();
         $_SESSION['session_dump'] = $session->dump();
         $_SESSION['user_id'] = $user_id;
 

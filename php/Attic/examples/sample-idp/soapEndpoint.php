@@ -124,7 +124,7 @@
 	  }
 	  break;
 	case lassoRequestTypeLogout:
-		$logger->log("SOAP Logout Request from " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_INFO);
+		$logger->info("SOAP Logout Request from " . $_SERVER['REMOTE_ADDR']);
 
 		// Logout
 		$logout = new LassoLogout($server, lassoProviderTypeIdp);
@@ -135,7 +135,7 @@
 		if (empty($nameIdentifier))
 		{
 			header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("Name Identifier is empty", PEAR_LOG_ERR);
+			$logger->err("Name Identifier is empty");
 			exit;
 		}
       
@@ -235,7 +235,7 @@
 		} 
 
 	  
-		/* TODO : try multiple sp logout
+		// TODO : try multiple sp logout
 		while(($providerID = $logout->getNextProviderId()))
 		{
 			$logout->initRequest($providerID, lassoHttpMethodAny); // FIXME
@@ -258,34 +258,9 @@
 				continue;
 			}
 			fwrite($fp, $soap);
-		
-			// header
-			do $header .= fread($fp, 1); while (!preg_match('/\\r\\n\\r\\n$/',$header));
 
-			// chunked encoding
-			if (preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/',$header))
-			{
-				do {
-					$byte = '';
-					$chunk_size = '';
-					do {
-						$chunk_size .= $byte;
-						$byte = fread($fp, 1);
-					} while ($byte != "\\r");     
-					fread($fp, 1);    
-					$chunk_size = hexdec($chunk_size); 
-					$response .= fread($fp, $chunk_size);
-					fread($fp, 2);          
-				} while ($chunk_size);        
-			}
-			else
-			{
-				if (preg_match('/Content\\-Length:\\s+([0-9]+)\\r\\n/', $header, $matches))
-					$response = fread($fp, $matches[1]);
-				else 
-					while (!feof($fp)) $response .= fread($fp, 1024);
-			}
-			fclose($fp);
+			read_http_response($fp, $header, $response);
+		
 			$logger->log('SOAP Response Header : ' . $header, PEAR_LOG_DEBUG);
 			$logger->log('SOAP Response Body : ' . $response, PEAR_LOG_DEBUG);
 
@@ -295,7 +270,7 @@
 				continue;
 			}
 			$logout->processResponseMsg($response, lassoHttpMethodSoap);
-		} */
+		} 
 
 		$logout->buildResponseMsg();
 
@@ -337,10 +312,81 @@
 		echo $logout->msgBody;
 		break;
 	case lassoRequestTypeDefederation:
+		$logger->info("SOAP Defederation Request from " . $_SERVER['REMOTE_ADDR']);
+
+		$defederation = new LassoDefederation($server, lassoProviderTypeSp);
+		$defederation->processNotificationMsg($HTTP_RAW_POST_DATA, lassoHttpMethodSoap);
+
+		$nameIdentifier = $defederation->nameIdentifier; 
+		if (empty($nameIdentifier))
+		{
+			header("HTTP/1.0 500 Internal Server Error");
+			$logger->err("Name Identifier is empty");
+			exit;
+		}
+
+		$query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameIdentifier'";
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		{
+			header("HTTP/1.0 500 Internal Server Error");
+			$logger->crit("DB Error :" . $res->getMessage());
+			$logger->debug("DB Error :" . $res->getDebugInfo());
+			exit;
+		}
+		if (!$res->numRows())
+		{
+			header("HTTP/1.0 500 Internal Server Error");
+			$logger->err("Name identifier '$nameIdentifier' doesn't correspond to any user");
+			exit;
+		}
+
+		$row = $res->fetchRow();
+		$user_id = $row[0];
+		$logger->debug("UserID is '$user_id");
+		
+		$query = "SELECT identity_dump,session_dump FROM users WHERE user_id='$user_id'";
+		$res =& $db->query($query);
+		
+		if (DB::isError($res)) 
+		{
+			header("HTTP/1.0 500 Internal Server Error");
+			$logger->crit("DB Error :" . $res->getMessage());
+			$logger->debug("DB Error :" . $res->getDebugInfo());
+			exit;
+		}
+		
+		if (!$res->numRows())
+		{
+			header("HTTP/1.0 500 Internal Server Error");
+			$logger->err("User is not federated.");
+			exit;
+		}
+		$row = $res->fetchRow();
+		$identity_dump = $row[0];
+		$session_dump = $row[1];
+
+		$defederation->setIdentityFromDump($identity_dump);
+		if (!empty($session_dump))
+			$defederation->setSessionFromDump($identity_dump);
+
+		$defederation->validateNotification();
+
+		if (empty($defederation->msgUrl)):
+			header("HTTP/1.0 204 No Content");
+		else
+		{
+		  	$url = $defederation->msgUrl;
+
+			header("Request-URI: $url");
+			header("Content-Location: $url");
+			header("Location: $url\n\n");
+		}
+		break;
 
 	default:
 		header("HTTP/1.0 500 Internal Server Error");
-		$logger->log("Unknown or unsupported SOAP request", PEAR_LOG_CRIT);
+		$logger->crit("Unknown or unsupported SOAP request");
   }
   
   lasso_shutdown();

@@ -284,6 +284,7 @@
   ob_end_flush();
   ob_end_flush();
   ?>
+<p><a href='index.php'>Back to Index</a></p>  
 </body>
 </html>
 <?php

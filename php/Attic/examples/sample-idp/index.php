@@ -65,6 +65,10 @@ You can get more informations about <b>Lasso</b> at <br>
  session_start();
 
  lasso_init();
+
+ // Create Lasso Server
+ $server_dump = file_get_contents($config['server_dump_filename']);
+ $server = LassoServer::newFromDump($server_dump);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -85,19 +89,70 @@ You can get more informations about <b>Lasso</b> at <br>
 <?php } ?>
 </p>
 <p align='center'>
-  <b>Identity Provider Fonctionnality</b><br>
+  <b>Identity Provider Fonctionnality</b>
+</p>
 <?php
   if (!isset($_SESSION["user_id"])) {  
   ?>
-  <a href="login.php">Local Login</a><br>
-<?php } else { ?>
-<!--
-  <td><a href="federate.php">Create federation</a></td>
-  <td><a href="defederate.php">Destroy federation</a></td>
--->
-  <a href="logout.php">Local Logout</a>
-<?php } ?>
+<p align='center'>
+  <a href="login.php">Local Login</a></p>
+<?php 
+  } 
+  else
+  { 
+	if (isset($_SESSION['identity_dump']))
+	{
+		$login = new LassoLogin($server);
+		$login->setIdentityFromDump($_SESSION['identity_dump']);
+		if (!empty($_SESSION['session_dump']))
+			$login->setSessionFromDump($_SESSION['sesion_dump']);
+		$identity = $login->identity;
+		$providerIDs = $identity->providerIds;
+
+		if ($providerIDs->length())
+		{
+?>
+<p align='center'>Cancel a Federation with :</p>
+<p align='center'>
+<table align='center'>
+<thead>
+<tr>
+	<td align='center'>Service Provider</td>
+	<td align='center'>Profile</td>
+</tr>
+</thead>
+<tbody>
+<?php
+			for($i = 0; $i <  $providerIDs->length() ; $i++)
+			{
+				$providerID = $providerIDs->getItem($i);
+?>
+<tr>
+	<td align='center'><?php echo $providerID; ?></td>
+	<td align='center'>
+		<a href="cancel_federation.php?profile=redirect&with=<?php echo $providerID; ?>">Redirect</a> |
+		<a href="cancel_federation.php?profile=soap&with=<?php echo $providerID; ?>">SOAP</a>
+	</td>
+</tr>
+<?php
+			}
+?>
+</tbody>
+</table>
 </p>
+<?php
+		}
+		else
+		{
+?>
+<p align='center'>Your are not Federated with an Service Provider.</p>
+<?php
+		}
+	}
+?>
+<p align='center'>
+<a href="logout.php">Local Logout</a></p>
+<?php } ?>
 
 <p align='center'>
 <table align='center'>

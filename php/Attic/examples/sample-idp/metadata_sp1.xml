@@ -15,9 +15,8 @@
   <FederationTerminationServiceURL>https://sp1:2006/federationTermination</FederationTerminationServiceURL>
   <FederationTerminationServiceReturnURL>https://sp1:2006/federationTerminationReturn</FederationTerminationServiceReturnURL>
   <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-sp-soap</FederationTerminationNotificationProtocolProfile>
-  <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-sp-http</FederationTerminationNotificationProtocolProfile>
 
-  <SoapEndpoint>https://sp1:2006/soapEndpoint</SoapEndpoint>
+  <SoapEndpoint>https://sp1:2006/soapEndpoint.php</SoapEndpoint>
 
   <AuthnRequestsSigned>true</AuthnRequestsSigned>
 
