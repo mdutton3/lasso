@@ -37,9 +37,9 @@ int lasso_init()
 
   /* Init libxml and libxslt libraries */
   xmlInitParser();
-  //LIBXML_TEST_VERSION
-  //  xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
-  //xmlSubstituteEntitiesDefault(1);
+  /*LIBXML_TEST_VERSION*/
+  /* xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS; */
+  /* xmlSubstituteEntitiesDefault(1); */
 
   /* Init xmlsec library */
   if(xmlSecInit() < 0) {

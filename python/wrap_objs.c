@@ -79,7 +79,7 @@ PyObject *xmlCharPtr_wrap(xmlChar *str) {
   }
   ret = PyString_FromString((char *) str);
   /* deallocation */
-  //xmlFree(str);
+  /* xmlFree(str); */
   return (ret);
 }
 

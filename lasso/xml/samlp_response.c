@@ -50,7 +50,7 @@ lasso_samlp_response_add_assertion(LassoSamlpResponse *node,
 				   gpointer assertion)
 {
   g_assert(LASSO_IS_SAMLP_RESPONSE(node));
-  //g_assert(LASSO_IS_SAML_ASSERTION(assertion));
+  /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(assertion), TRUE);

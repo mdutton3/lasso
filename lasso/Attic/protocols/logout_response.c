@@ -153,7 +153,7 @@ lasso_logout_response_new_from_dump(const xmlChar *buffer)
   return (response);
 }
 
-// build a LogoutResponse from a query form LogoutResponse
+/* build a LogoutResponse from a query form LogoutResponse */
 LassoNode *
 lasso_logout_response_new_from_query(const xmlChar *query)
 {
@@ -203,7 +203,7 @@ lasso_logout_response_new_from_query(const xmlChar *query)
   return(response);
 }
 
-// build a LogoutResponse from a query form LogoutRequest
+/* build a LogoutResponse from a query form LogoutRequest */
 LassoNode *
 lasso_logout_response_new_from_request_query(const xmlChar *query,
 					     const xmlChar *providerID,
@@ -221,7 +221,7 @@ lasso_logout_response_new_from_request_query(const xmlChar *query,
   return(response);
 }
 
-// build a LogoutRespose from a soap form LogoutRequest
+/* build a LogoutRespose from a soap form LogoutRequest */
 LassoNode *
 lasso_logout_response_new_from_request_soap(const xmlChar *buffer,
 					    const xmlChar *providerID,

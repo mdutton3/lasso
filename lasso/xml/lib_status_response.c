@@ -62,7 +62,7 @@ lasso_lib_status_response_set_providerID(LassoLibStatusResponse *node,
 {
   g_assert(LASSO_IS_LIB_STATUS_RESPONSE(node));
   g_assert(providerID != NULL);
-  // FIXME : providerID lenght SHOULD be <= 1024
+  /* FIXME : providerID lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);

@@ -135,7 +135,7 @@ lasso_name_identifier_mapping_response_new_from_dump(const xmlChar *buffer)
   return (response);
 }
 
-// build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse
+/* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse */
 LassoNode *
 lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
 {
@@ -181,7 +181,7 @@ lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
   return(response);
 }
 
-// build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest
+/* build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest */
 LassoNode *
 lasso_name_identifier_mapping_response_new_from_request_soap(const xmlChar *buffer,
 							     const xmlChar *providerID,
@@ -224,7 +224,7 @@ lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
   return(response);
 }
 
-// build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest
+/* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest */
 LassoNode *
 lasso_name_identifier_mapping_response_new_from_request_query(const xmlChar *query,
 							      const xmlChar *providerID,

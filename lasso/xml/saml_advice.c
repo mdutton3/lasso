@@ -65,7 +65,7 @@ lasso_saml_advice_add_assertion(LassoSamlAdvice *node,
 				gpointer *assertion)
 {
   g_assert(LASSO_IS_SAML_ADVICE(node));
-  //g_assert(LASSO_IS_SAML_ASSERTION(assertion));
+  /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (assertion), TRUE);

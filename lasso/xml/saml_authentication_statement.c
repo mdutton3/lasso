@@ -99,7 +99,7 @@ lasso_saml_authentication_statement_instance_init(LassoSamlAuthenticationStateme
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  // namespace herited from SubjectStatementAbstract -> StatementAbstract
+  /* namespace herited from SubjectStatementAbstract -> StatementAbstract */
   class->set_name(LASSO_NODE(node), "AuthenticationStatement");
 }
 

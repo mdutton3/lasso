@@ -85,7 +85,7 @@ lasso_lib_logout_request_set_providerID(LassoLibLogoutRequest *node,
 {
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(providerID != NULL);
-  // FIXME : providerID lenght SHOULD be <= 1024
+  /* FIXME : providerID lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);

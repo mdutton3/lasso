@@ -74,7 +74,7 @@ lasso_lib_federation_termination_notification_set_providerID(LassoLibFederationT
 {
   g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
   g_assert(providerID != NULL);
-  // FIXME : providerId lenght SHOULD be <= 1024
+  /* FIXME : providerId lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);

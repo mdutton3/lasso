@@ -73,7 +73,7 @@ lasso_lib_name_identifier_mapping_request_set_providerID(LassoLibNameIdentifierM
 {
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node));
   g_assert(providerID != NULL);
-  // FIXME : providerId lenght SHOULD be <= 1024
+  /* FIXME : providerId lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);

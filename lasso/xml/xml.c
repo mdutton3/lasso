@@ -1083,7 +1083,7 @@ lasso_node_impl_new_child(LassoNode     *node,
 			  const xmlChar *content,
 			  gboolean       unbounded)
 {
-  //LassoNode *old_child = NULL;
+  /* LassoNode *old_child = NULL; */
   xmlNodePtr old_child = NULL;
   xmlChar   *href = NULL;
 
@@ -1097,11 +1097,11 @@ lasso_node_impl_new_child(LassoNode     *node,
     }
     old_child = xmlSecFindNode(node->private->node, name,
 			       href);
-    //old_child = lasso_node_get_child(node, name);
+    /* old_child = lasso_node_get_child(node, name); */
   }
 
   if (!unbounded && old_child != NULL) {
-    //xmlNodeSetContent(old_child->private->node, content);
+    /* xmlNodeSetContent(old_child->private->node, content); */
     xmlNodeSetContent(old_child, content);
   }
   else {

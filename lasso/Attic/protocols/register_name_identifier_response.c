@@ -142,7 +142,7 @@ lasso_register_name_identifier_response_new_from_dump(const xmlChar *buffer)
   return (response);
 }
 
-// build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierResponse
+/* build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierResponse */
 LassoNode *
 lasso_register_name_identifier_response_new_from_query(const xmlChar *query)
 {
@@ -192,7 +192,7 @@ lasso_register_name_identifier_response_new_from_query(const xmlChar *query)
   return(response);
 }
 
-// build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierRequest
+/* build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierRequest */
 LassoNode *
 lasso_register_name_identifier_response_new_from_request_query(const xmlChar *query,
 							       const xmlChar *providerID,
@@ -210,7 +210,7 @@ lasso_register_name_identifier_response_new_from_request_query(const xmlChar *qu
   return(response);
 }
 
-// build a RegisterNameIdentifierRespose from a soap form RegisterNameIdentifierRequest
+/* build a RegisterNameIdentifierRespose from a soap form RegisterNameIdentifierRequest */
 LassoNode *
 lasso_register_name_identifier_response_new_from_request_soap(const xmlChar *buffer,
 							      const xmlChar *providerID,

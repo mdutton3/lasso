@@ -198,7 +198,7 @@ lasso_server_class_init(LassoServerClass *class) {
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
-  //gobject_class->dispose  = (void *)lasso_server_dispose;
+  /* object_class->dispose  = (void *)lasso_server_dispose; */
   gobject_class->finalize = (void *)lasso_server_finalize;
 }
 

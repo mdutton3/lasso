@@ -87,7 +87,7 @@ lasso_lib_authn_request_set_affiliationID(LassoLibAuthnRequest *node,
 					  const xmlChar *affiliationID) {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
   g_assert(affiliationID != NULL);
-  // FIXME : affiliationID lenght SHOULD be <= 1024
+  /* FIXME : affiliationID lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "AffiliationID", affiliationID, FALSE);
@@ -182,7 +182,7 @@ lasso_lib_authn_request_set_providerID(LassoLibAuthnRequest *node,
 {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
   g_assert(providerID != NULL);
-  // FIXME : providerID lenght SHOULD be <= 1024
+  /* FIXME : providerID lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
@@ -193,7 +193,7 @@ lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest *node,
 				       const xmlChar *relayState) {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
   g_assert(relayState != NULL);
-  // FIXME : RelayState lenght SHOULD be <= 80
+  /* FIXME : RelayState lenght SHOULD be <= 80 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);

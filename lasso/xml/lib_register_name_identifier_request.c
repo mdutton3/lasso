@@ -94,7 +94,7 @@ lasso_lib_register_name_identifier_request_set_providerID(LassoLibRegisterNameId
 {
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(providerID != NULL);
-  // FIXME : providerID lenght SHOULD be <= 1024
+  /* FIXME : providerID lenght SHOULD be <= 1024 */
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);

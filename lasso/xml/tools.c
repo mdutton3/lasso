@@ -223,7 +223,7 @@ lasso_query_to_dict(const gchar *query)
   while (sa1[i++] != NULL) {
     /* split of key=value to get (key, value) sub-strings */
     sa2 = g_strsplit(sa1[i-1], "=", 0);
-    //printf("%s => ", sa2[0]);
+    /* printf("%s => ", sa2[0]); */
     /* split of value to get mutli values sub-strings separated by SPACE char */
     str_unescaped = lasso_str_unescape(sa2[1]);
     sa3 = g_strsplit(str_unescaped, " ", 0);
@@ -232,9 +232,9 @@ lasso_query_to_dict(const gchar *query)
     j = 0;
     while (sa3[j++] != NULL) {
       g_ptr_array_add(gpa, g_strdup(sa3[j-1]));
-      //printf("%s, ", sa3[j-1]);
+      /* printf("%s, ", sa3[j-1]); */
     }
-    //printf("\n");
+    /* printf("\n"); */
     /* add key => values in dict */
     g_datalist_set_data_full(&gd, sa2[0], gpa,
 			     gdata_query_to_dict_destroy_notify);
@@ -292,7 +292,7 @@ lasso_query_verify_signature(const gchar   *query,
   xmlFree(str_unescaped);
 
   g_strfreev(str_split);
-  //xmlDocDump(stdout, doc);
+  /*xmlDocDump(stdout, doc);*/
 
   /* find start node */
   sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
@@ -372,7 +372,7 @@ lasso_str_hash(xmlChar    *str,
 						xmlSecNodeDigestValue,
 						xmlSecDSigNs));
   i = xmlSecBase64Decode(b64_digest, digest, 21);
-  //printf("Decoded string %s lenght is %d\n", digest, i);
+  /* printf("Decoded string %s lenght is %d\n", digest, i); */
   xmlFree(b64_digest);
   xmlFreeDoc(doc);
   /* value returned must be xmlFree() */
@@ -482,7 +482,7 @@ lasso_str_sign(xmlChar              *str,
     goto done;
   }
   
-  //xmlDocDump(stdout, doc);
+  /* xmlDocDump(stdout, doc); */
   xmlSecDSigCtxDestroy(dsigCtx);
   /* doc must be freed be caller */
   return (doc);

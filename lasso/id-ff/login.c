@@ -74,7 +74,7 @@ lasso_login_process_federation(LassoLogin *login)
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
-    // TODO
+    /* TODO */
   }
   xmlFree(nameIDPolicy);
 
@@ -233,7 +233,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   }
   /* save response dump */
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
-  //segfault ??? debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
+  /* segfault ??? debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump); */
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
@@ -538,11 +538,11 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     /* Modify StatusCode if signature is not OK */
     if (signature_status == 0 || signature_status == 2) {
       switch (signature_status) {
-      case 0: // Invalid Signature
+      case 0: /* Invalid Signature */
 	lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						  lassoLibStatusCodeInvalidSignature);
 	break;
-      case 2: // Unsigned AuthnRequest
+      case 2: /* Unsigned AuthnRequest */
 	lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
@@ -638,7 +638,7 @@ lasso_login_process_request_msg(LassoLogin *login,
 
   node = lasso_node_new_from_dump(request_msg);
  
-  // TODO : rebuild request in login->request and set login->request_type
+  /* TODO : rebuild request in login->request and set login->request_type */
   login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
   lasso_node_destroy(node);
 
