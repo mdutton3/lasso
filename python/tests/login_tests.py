@@ -288,5 +288,5 @@ suite1 = unittest.makeSuite(LoginTestCase, 'test')
 allTests = unittest.TestSuite((suite1,))
 
 if __name__ == '__main__':
-    sys.exit(not unittest.TextTestRunner(verbosity=2).run(allTests).wasSuccessful())
+    sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
 

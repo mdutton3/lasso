@@ -48,8 +48,7 @@
 
   var_dump($spsession);
 
-  lasso_login_init_authn_request($spsession, 
-  "https://identity-provider:2003/liberty-alliance/metadata");
+  lasso_login_init_authn_request($spsession, lassoHttpMethodRedirect);
 
 
 
@@ -72,9 +71,10 @@
   lasso_lib_authn_request_set_relaystate($lib_authn_request, "fake");
   lasso_lib_authn_request_set_protocolprofile($lib_authn_request, lassoLibProtocolProfileBrwsArt);
   
-  lasso_login_build_authn_request_msg($spsession, lassoHttpMethodRedirect);
+  lasso_login_build_authn_request_msg($spsession,
+	  "https://identity-provider:2003/liberty-alliance/metadata");
 
-  $ret = lasso_login_init_authn_request($spsession, "https://identity-provider:1998/liberty-alliance/metadata");
+  $ret = lasso_login_init_authn_request($spsession, lassoHttpMethodRedirect);
   if (!$ret) {
 	print("lasso_login_init_authn_request failed");
   }

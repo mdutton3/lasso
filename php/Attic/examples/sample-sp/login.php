@@ -34,7 +34,7 @@
 
   $login = lasso_login_new($server);
 
-  lasso_login_init_authn_request($login);
+  lasso_login_init_authn_request($login, lassoHttpMethodRedirect);
 
   $profile = lasso_cast_to_profile($login);
 
@@ -47,7 +47,7 @@
   lasso_lib_authn_request_set_nameidpolicy($lib_authn_request, lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_request_set_consent($lib_authn_request, lassoLibConsentObtained); 
 
-  lasso_login_build_authn_request_msg($login, "https://idp1/metadata", lassoHttpMethodRedirect);
+  lasso_login_build_authn_request_msg($login, "https://idp1/metadata");
 
   
   $url = lasso_profile_get_msg_url($profile);

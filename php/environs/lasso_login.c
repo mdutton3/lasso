@@ -62,23 +62,25 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	zval *param;
 	char *meta;
 	int meta_len;
+	long http_method;
 
-	
+
 
 	int num_args;
 	int ret;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+	if ((num_args = ZEND_NUM_ARGS()) != 2) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &param) == FAILURE) {
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zl", &param,
+				  &http_method) == FAILURE) {
 		return;
 	}
 
 	ZEND_FETCH_RESOURCE(login, LassoLogin *, &param, -1, 
 			le_lassologin_name, le_lassologin);
 	
-	ret = lasso_login_init_authn_request(login);
+	ret = lasso_login_init_authn_request(login, http_method);
 
 	(ret) ? (RETURN_FALSE) : (RETURN_TRUE);
 }
@@ -174,19 +176,17 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg) {
   	LassoLogin   *login;  
 	char *remote_providerID;
 	int remote_providerID_len;
-	long http_method;
 
 	zval *parm;
 
 	int num_args;
 	int ret;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 3) 
+	if ((num_args = ZEND_NUM_ARGS()) != 2) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "zsl", &parm,
-		  &remote_providerID, &remote_providerID_len,
-		  &http_method) == FAILURE) {
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
+		  &remote_providerID, &remote_providerID_len) == FAILURE) {
 		return;
 	}
 

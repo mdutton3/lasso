@@ -189,7 +189,7 @@ defined in the metadata file).
   LassoLogin *login;
   
   login = lasso_login_new(server);
-  lasso_login_init_authn_request(login);
+  lasso_login_init_authn_request(login, lassoHttpMethodRedirect);
   
   lasso_lib_authn_request_set_forceAuthn(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
@@ -198,7 +198,7 @@ defined in the metadata file).
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_request_set_consent(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
-  lasso_login_build_authn_request_msg(login, idpProviderId, lassoHttpMethodRedirect);
+  lasso_login_build_authn_request_msg(login, idpProviderId);
 
 
 You can now redirect the user to the URL defined in ``LASSO_PROFILE(login)->msg_url``; for
