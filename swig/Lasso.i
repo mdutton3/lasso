@@ -411,16 +411,20 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle");
 #else
 #ifdef SWIGPHP4
-	for (info = node_infos; info->swig; info++) {
-		for (super = info; super; super = super->super)
-			if (super->swig == $1_descriptor)
+	if ((*$input)->type == IS_NULL)
+		$1=0;
+	else {
+		for (info = node_infos; info->swig; info++) {
+			for (super = info; super; super = super->super)
+				if (super->swig == $1_descriptor)
+					break;
+			if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) >= 0)
 				break;
-		if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) >= 0)
-			break;
+		}
+		if (! info->swig)
+			zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
+				   $argnum-argbase, $1_descriptor->name);
 	}
-	if (! info->swig)
-		zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
-			   $argnum-argbase, $1_descriptor->name);
 #else /* SWIGPYTHON */
 	for (info = node_infos; info->swig; info++) {
 		for (super = info; super; super = super->super)

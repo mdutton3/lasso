@@ -189,11 +189,98 @@ function test04()
 	print ".. OK\n";
 }
 
+function test05()
+{
+ 	print "Get & set attributes of nodes of type XML list.";
+
+        $authnRequest = new LassoLibAuthnRequest();
+
+        assert($authnRequest->extension == NULL);
+
+        $actionString1 = '<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 1</action>
+</lib:Extension>';
+        $actionString2 = '<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 2</action>
+</lib:Extension>';
+        $actionString3 = '<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 3</action>
+</lib:Extension>';
+        $extension = new LassoStringList();
+        assert($extension->length() == 0);
+        $extension->append($actionString1);
+        assert($extension->length() == 1);
+        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getitem(0) == $actionString1);
+        $extension->append($actionString2);
+        assert($extension->length() == 2);
+        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getitem(1) == $actionString2);
+        $extension->append($actionString3);
+        assert($extension->length() == 3);
+        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getitem(1) == $actionString2);
+        assert($extension->getitem(2) == $actionString3);
+        $authnRequest->extension = $extension;
+	# $authnRequest->extension->getitem(0) doesnt work. It raises:
+	# Fatal error: Class 'lassolibauthnrequest' does not support overloaded method calls
+	$authnRequestExtension = $authnRequest->extension;
+        assert($authnRequestExtension->getitem(0) == $actionString1);
+        assert($authnRequestExtension->getitem(1) == $actionString2);
+        assert($authnRequestExtension->getitem(2) == $actionString3);
+        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getitem(1) == $actionString2);
+        assert($extension->getitem(2) == $actionString3);
+        $extension = NULL;
+        assert($authnRequestExtension->getitem(0) == $actionString1);
+        assert($authnRequestExtension->getitem(1) == $actionString2);
+        assert($authnRequestExtension->getitem(2) == $actionString3);
+        $extension = $authnRequest->extension;
+        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getitem(1) == $actionString2);
+        assert($extension->getitem(2) == $actionString3);
+        $extension = NULL;
+        assert($authnRequestExtension->getitem(0) == $actionString1);
+        assert($authnRequestExtension->getitem(1) == $actionString2);
+        assert($authnRequestExtension->getitem(2) == $actionString3);
+	$authnRequestExtension = NULL;
+        $authnRequest->extension = NULL;
+	print_r($authnRequest->Extension);
+        assert($authnRequest->extension == NULL);
+
+	$authnRequest = NULL;
+
+	print ".. OK\n";
+}
+
+function test06()
+{
+ 	print "Get & set attributes of nodes of type node.";
+
+	$login = new LassoLogin(new LassoServer());
+
+        assert($login->request == NULL);
+        $login->request = new LassoLibAuthnRequest();
+	$loginRequest = $login->request;
+        $loginRequest->consent = LassoLibConsentObtained;
+        assert($loginRequest->consent == LassoLibConsentObtained);
+	$loginRequest = $login->request;
+        assert($loginRequest->consent == LassoLibConsentObtained);
+        $login->request = NULL;
+        assert($login->request == NULL);
+
+        $login = NULL;
+
+	print ".. OK\n";
+}
+
 lasso_init();
 test01();
 test02();
 test03();
 test04();
+test05();
+test06();
 lasso_shutdown();
 
 ?>
