@@ -470,6 +470,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				(*(int*)value) = atoi(s);
 				xmlFree(s);
 			}
+			if (snippet->type == SNIPPET_ATTRIBUTE_BOOL) {
+				xmlChar *s = xmlGetProp(xmlnode, snippet->name);
+				(*(gboolean*)value) = (strcmp(s, "true") == 0);
+				xmlFree(s);
+			}
 			if (snippet->type == SNIPPET_TEXT_CHILD)
 				(*(char**)value) = xmlNodeGetContent(xmlnode);
 		}
@@ -495,9 +500,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				else if (snippet->type == SNIPPET_CONTENT_BOOL) {
 					xmlChar *s = xmlNodeGetContent(t);
 					(*(gboolean*)value) = (strcmp(s, "true") == 0);
+					xmlFree(s);
 				} else if (snippet->type == SNIPPET_CONTENT_INT) {
 					xmlChar *s = xmlNodeGetContent(t);
 					(*(gboolean*)value) = atoi(s);
+					xmlFree(s);
 				} else if (snippet->type == SNIPPET_NAME_IDENTIFIER)
 					(*(LassoSamlNameIdentifier**)value) =
 						lasso_saml_name_identifier_new_from_xmlNode(t);
@@ -583,6 +590,7 @@ lasso_node_dispose(GObject *object)
 			if (*value == NULL)
 				continue;
 			switch (snippet->type) {
+				case SNIPPET_ATTRIBUTE_BOOL:
 				case SNIPPET_ATTRIBUTE_INT:
 				case SNIPPET_CONTENT_BOOL:
 				case SNIPPET_CONTENT_INT:
@@ -995,7 +1003,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 
 		if (value == NULL && (snippet->type != SNIPPET_ATTRIBUTE_INT &&
 					snippet->type != SNIPPET_CONTENT_BOOL &&
-					snippet->type != SNIPPET_CONTENT_INT))
+					snippet->type != SNIPPET_CONTENT_INT &&
+					snippet->type != SNIPPET_ATTRIBUTE_BOOL))
 			continue;
 
 		if (snippet->type == SNIPPET_ATTRIBUTE)
@@ -1004,6 +1013,10 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			char t[40];
 			g_snprintf(t, 40, "%d", GPOINTER_TO_INT(value));
 			xmlSetProp(xmlnode, snippet->name, t);
+		} else if (snippet->type == SNIPPET_ATTRIBUTE_BOOL) {
+			char *s;
+			s = GPOINTER_TO_INT(value) ? "true" : "false";
+			xmlSetProp(xmlnode, snippet->name, s);
 		} else if (snippet->type == SNIPPET_TEXT_CHILD)
 			xmlAddChild(xmlnode, xmlNewText((char*)value));
 		else if (snippet->type == SNIPPET_NODE)
