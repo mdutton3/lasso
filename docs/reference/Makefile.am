@@ -54,7 +54,7 @@ sgml: templates
 		$$i.tmp; \
 		mv -f $$i.tmp $$i; \
 	done);
-	ln -s ../sgml build/sgml
+	rm -f build/sgml && $(LN_S) ../sgml build/sgml
 
 templates: scan
 	@echo '*** Building TMPL ***'
