@@ -730,7 +730,7 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 				LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST);
 	}
 
-	if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
+	if (profile->signature_status == 0 && authentication_result == TRUE) {
 		/* process federation */
 		ret = lasso_login_process_federation(login, is_consent_obtained);
 		if (ret < 0)
@@ -748,17 +748,23 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 		}
 	}
 
-	if (LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Status == NULL) {
+	if (LASSO_SAMLP_RESPONSE(profile->response)->Status == NULL) {
 		lasso_profile_set_response_status(profile,
 				LASSO_SAML_STATUS_CODE_SUCCESS);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
+
+	/* XXX: not sure this was signed in Lasso 0.5.0 */
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
+		LASSO_SIGNATURE_METHOD_RSA_SHA1;
+
 	/* build an lib:AuthnResponse base64 encoded */
-	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(profile->response,
-			NULL, NULL);
-	LASSO_PROFILE(login)->msg_url = lasso_provider_get_metadata_one(
+	profile->msg_body = lasso_node_export_to_base64(profile->response,
+			profile->server->private_key, profile->server->certificate);
+	profile->msg_url = lasso_provider_get_metadata_one(
 			remote_provider, "AssertionConsumerServiceURL");
 
 	return ret;
@@ -1111,8 +1117,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		format = lasso_node_init_from_message(LASSO_NODE(request), authn_request_msg);
 		if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
 				format == LASSO_MESSAGE_FORMAT_ERROR) {
-			message(G_LOG_LEVEL_CRITICAL, "XXX");
-			return LASSO_PROFILE_ERROR_INVALID_MSG;
+			return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 		
 		LASSO_PROFILE(login)->request = LASSO_NODE(request);
@@ -1195,8 +1200,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(NULL, NULL);
 	format = lasso_node_init_from_message(LASSO_PROFILE(login)->response, authn_response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return LASSO_PROFILE_ERROR_INVALID_MSG;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	LASSO_PROFILE(login)->remote_providerID = g_strdup(
@@ -1212,13 +1216,8 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	LASSO_PROFILE(login)->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
 			LASSO_PROFILE(login)->response)->RelayState);
 
-#if 0 /* XXX: disabled signature check; not sure it must be done here */
-	rc = lasso_provider_verify_signature(remote_provider,
+	ret1 = lasso_provider_verify_signature(remote_provider,
 			authn_response_msg, "ResponseID", format);
-	if (rc)
-		return rc;
-#endif
-
 	ret2 = lasso_login_process_response_status_and_assertion(login);
 
 	return ret2 == 0 ? ret1 : ret2;
