@@ -94,6 +94,18 @@ lasso_lib_name_identifier_mapping_request_set_nameIdentifier(LassoLibNameIdentif
   class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
 }
 
+void
+lasso_lib_name_identifier_mapping_request_set_targetNameSpace(LassoLibNameIdentifierMappingRequest *node,
+							      const xmlChar *targetNameSpace)
+{
+  LassoNodeClass *class;
+  g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node));
+  g_assert(targetNameSpace != NULL);
+
+  class = LASSO_NODE_GET_CLASS(node);
+  class->new_child(LASSO_NODE (node), "TargetNameSpace", targetNameSpace, FALSE);
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/

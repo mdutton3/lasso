@@ -53,17 +53,20 @@ struct _LassoLibNameIdentifierMappingRequestClass {
 };
 
 LASSO_EXPORT GType lasso_lib_name_identifier_mapping_request_get_type(void);
+
 LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_request_new(void);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_consent        (LassoLibNameIdentifierMappingRequest *,
-										const xmlChar *);
+LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_consent         (LassoLibNameIdentifierMappingRequest *,
+										 const xmlChar *);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_providerID     (LassoLibNameIdentifierMappingRequest *,
-										const xmlChar *);
+LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_providerID      (LassoLibNameIdentifierMappingRequest *,
+										 const xmlChar *);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_nameIdentifier (LassoLibNameIdentifierMappingRequest *,
-										LassoSamlNameIdentifier *);
+LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_nameIdentifier  (LassoLibNameIdentifierMappingRequest *,
+										 LassoSamlNameIdentifier *);
 
+LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_targetNameSpace (LassoLibNameIdentifierMappingRequest *node,
+										 const xmlChar *targetNameSpace);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

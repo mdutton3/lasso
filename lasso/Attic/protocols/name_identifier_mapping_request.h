@@ -56,7 +56,8 @@ LASSO_EXPORT GType      lasso_name_identifier_mapping_request_get_type          
 LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new               (const xmlChar *providerID,
 										 const xmlChar *nameIdentifier,
 										 const xmlChar *nameQualifier,
-										 const xmlChar *format);
+										 const xmlChar *format,
+										 const xmlChar *targetNameSpace);
 
 
 LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_query    (const gchar *query);

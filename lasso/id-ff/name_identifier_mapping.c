@@ -147,7 +147,8 @@ lasso_name_identifier_mapping_destroy(LassoNameIdentifierMapping *mapping)
 
 gint
 lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
-					   gchar                      *remote_providerID)
+					   gchar                      *remote_providerID,
+					   gchar                      *targetNameSpace)
 {
   LassoProfile    *profile;
   LassoNode       *nameIdentifier;
@@ -160,7 +161,26 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
   profile = LASSO_PROFILE(mapping);
 
-  profile->remote_providerID = remote_providerID;
+  /* verify if the identity exists */
+  if (profile->identity == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* get the remote provider id */
+  /* If remote_providerID is NULL, then get the first remote provider id in session */
+  if (remote_providerID == NULL) {
+    profile->remote_providerID = lasso_identity_get_first_providerID(profile->identity);
+  }
+  else {
+    profile->remote_providerID = g_strdup(remote_providerID);
+  }
+  if (profile->remote_providerID == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "No provider id for init request\n");
+    ret = -1;
+    goto done;
+  }
 
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
@@ -170,32 +190,22 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
     goto done;
   }
 
-  /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
-  switch(profile->provider_type) {
-  case lassoProviderTypeSp:
-    nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
-    if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
-    break;
-  case lassoProviderTypeIdp:
-    /* get the next assertion (next authenticated service provider) */
+  /* get the name identifier */
+  nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
+  if(nameIdentifier == NULL) {
     nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
-    if(nameIdentifier == NULL) {
-      nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
-    }
-    break;
-  default:
-    message(G_LOG_LEVEL_ERROR, "Invalid provider type\n");
-    ret = -1;
-    goto done;
   }
-  lasso_federation_destroy(federation);
 
   if(nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Name identifier not found\n");
+    nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
+  }
+  if (nameIdentifier != NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Name identifier not found\n");
     ret = -1;
     goto done;
   }
+
+  lasso_federation_destroy(federation);
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier, NULL);
@@ -204,7 +214,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   profile->request = lasso_name_identifier_mapping_request_new(profile->server->providerID,
 							       content,
 							       nameQualifier,
-							       format);
+							       format,
+							       targetNameSpace);
 
   if (LASSO_IS_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
     ret = -1;
@@ -415,20 +426,34 @@ GType lasso_name_identifier_mapping_get_type() {
 }
 
 LassoNameIdentifierMapping *
-lasso_name_identifier_mapping_new(LassoServer       *server,
-				  LassoIdentity     *identity,
-				  lassoProviderType  provider_type)
+lasso_name_identifier_mapping_new(LassoServer       *server)
 {
   LassoNameIdentifierMapping *mapping;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
 
   /* set the name_identifier_mapping object */
   mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING,
 			 "server", lasso_server_copy(server),
-			 "identity", lasso_identity_copy(identity),
-			 "provider_type", provider_type,
 			 NULL);
+  return mapping;
+}
+
+LassoNameIdentifierMapping *
+lasso_name_identifier_mapping_new_from_dump(LassoServer *server,
+					    gchar       *dump)
+{
+  LassoNameIdentifierMapping *mapping;
+  LassoNode                  *node_dump;
+
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(dump != NULL, NULL);
+  
+  mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING,
+			 "server", lasso_server_copy(server),
+			 NULL);
+
+  node_dump = lasso_node_new_from_dump(dump);
+
   return mapping;
 }

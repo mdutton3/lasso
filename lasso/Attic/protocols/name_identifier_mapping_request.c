@@ -71,7 +71,8 @@ LassoNode*
 lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
 					  const xmlChar *nameIdentifier,
 					  const xmlChar *nameQualifier,
-					  const xmlChar *format)
+					  const xmlChar *format,
+					  const xmlChar *targetNameSpace)
 {
   LassoNode *request, *identifier;
   xmlChar *id, *time;
@@ -80,6 +81,7 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
   g_return_val_if_fail(nameIdentifier != NULL, NULL);
   g_return_val_if_fail(nameQualifier != NULL, NULL);
   g_return_val_if_fail(format != NULL, NULL);
+  g_return_val_if_fail(targetNameSpace != NULL, NULL);
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, NULL));
   
@@ -104,6 +106,7 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
   lasso_lib_name_identifier_mapping_request_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request),
 							   providerID);
 
+  /* NameIdentifier */
   identifier = lasso_saml_name_identifier_new(nameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
 					       nameQualifier);
@@ -113,6 +116,10 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
   lasso_lib_name_identifier_mapping_request_set_nameIdentifier(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request),
 							       LASSO_SAML_NAME_IDENTIFIER(identifier));
   lasso_node_destroy(identifier);
+
+  /* Target name space */
+  lasso_lib_name_identifier_mapping_request_set_targetNameSpace(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request),
+								targetNameSpace);
 
   return request;
 }
