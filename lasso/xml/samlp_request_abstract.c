@@ -95,9 +95,9 @@ lasso_samlp_request_abstract_set_minorVersion(LassoSamlpRequestAbstract *node,
 /**
  * lasso_samlp_request_abstract_impl_set_requestID:
  * @node: the pointer to <Samlp:RequestAbstract/> node
- * @requestID: the RequestID attribut
+ * @requestID: the RequestID attribute
  * 
- * Sets the RequestID attribut (unique)
+ * Sets the RequestID attribute (unique)
  **/
 void
 lasso_samlp_request_abstract_set_requestID(LassoSamlpRequestAbstract *node,

@@ -149,9 +149,9 @@ lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *node,
 /**
  * lasso_lib_authn_request_set_nameIDPolicy:
  * @node:         the pointer to <lib:AuthnRequest> node
- * @nameIDPolicy: the value of "NameIDPolicy" attribut.
+ * @nameIDPolicy: the value of "NameIDPolicy" attribute.
  * 
- * Sets the "NameIDPolicy" attribut. It's an enumeration permitting requester
+ * Sets the "NameIDPolicy" attribute. It's an enumeration permitting requester
  * influence over name identifier policy at the identity provider.
  **/
 void

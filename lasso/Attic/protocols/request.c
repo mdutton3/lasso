@@ -78,7 +78,7 @@ lasso_request_new(const xmlChar *assertionArtifact)
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_REQUEST, NULL));
   
-  /* Set ONLY required elements/attributs */
+  /* Set ONLY required elements/attributes */
   /* RequestID */
   id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),

@@ -165,11 +165,11 @@ lasso_node_export_to_soap(LassoNode *node)
 /**
  * lasso_node_get_attr:
  * @node: a LassoNode
- * @name: the attribut name
+ * @name: the attribute name
  * 
- * Gets an attribut associated with the node.
+ * Gets an attribute associated with the node.
  * 
- * Return value: the attribut or NULL if not found.
+ * Return value: the attribute or NULL if not found.
  **/
 LassoAttr *
 lasso_node_get_attr(LassoNode     *node,
@@ -184,11 +184,11 @@ lasso_node_get_attr(LassoNode     *node,
 /**
  * lasso_node_get_attr_value:
  * @node: a LassoNode
- * @name: the attribut name
+ * @name: the attribute name
  * 
- * Gets the value of an attribut associated to a node.
+ * Gets the value of an attribute associated to a node.
  * 
- * Return value: the attribut value or NULL if not found. It's up to the caller
+ * Return value: the attribute value or NULL if not found. It's up to the caller
  * to free the memory with xmlFree().
  **/
 xmlChar *
@@ -205,9 +205,9 @@ lasso_node_get_attr_value(LassoNode     *node,
  * lasso_node_get_attrs:
  * @node: a LassoNode
  * 
- * Gets attributs associated with the node.
+ * Gets attributes associated with the node.
  * 
- * Return value: an array of attributs or NULL if no attribut found. 
+ * Return value: an array of attributes or NULL if no attribute found. 
  **/
 GPtrArray *
 lasso_node_get_attrs(LassoNode *node)
@@ -336,10 +336,10 @@ lasso_node_import(LassoNode     *node,
 /**
  * lasso_node_rename_prop:
  * @node: a LassoNode
- * @old_name: the attribut name
- * @new_name: the new attribut name
+ * @old_name: the attribute name
+ * @new_name: the new attribute name
  * 
- * Renames an attribut of the node.
+ * Renames an attribute of the node.
  **/
 void
 lasso_node_rename_prop(LassoNode     *node,
@@ -686,21 +686,21 @@ lasso_node_impl_get_attr_value(LassoNode     *node,
 static GPtrArray *
 lasso_node_impl_get_attrs(LassoNode *node)
 {
-  GPtrArray *attributs = NULL;
+  GPtrArray *attributes = NULL;
   LassoAttr *prop;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   prop = node->private->node->properties;
   if (prop != NULL)
-    attributs = g_ptr_array_new();
+    attributes = g_ptr_array_new();
 
   while (prop != NULL) {
-    g_ptr_array_add(attributs, prop);
+    g_ptr_array_add(attributes, prop);
     prop = prop->next;
   }
 
-  return (attributs);
+  return (attributes);
 }
 
 static LassoNode *

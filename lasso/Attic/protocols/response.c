@@ -79,7 +79,7 @@ lasso_response_new()
 
   response = lasso_samlp_response_new();
 
-  /* Set ONLY required elements/attributs */
+  /* Set ONLY required elements/attributes */
   /* ResponseID */
   id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),

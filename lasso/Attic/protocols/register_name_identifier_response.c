@@ -78,7 +78,7 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
   
-  /* Set ONLY required elements/attributs */
+  /* Set ONLY required elements/attributes */
   /* ResponseID */
   id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),

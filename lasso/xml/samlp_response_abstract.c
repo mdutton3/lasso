@@ -110,9 +110,9 @@ lasso_samlp_response_abstract_set_recipient(LassoSamlpResponseAbstract *node,
 /**
  * lasso_samlp_response_abstract_set_responseId:
  * @node: the pointer to <Samlp:ResponseAbstract/> node
- * @responseId: the ResponseID attribut
+ * @responseId: the ResponseID attribute
  * 
- * Sets the ResponseID attribut (unique)
+ * Sets the ResponseID attribute (unique)
  **/
 void
 lasso_samlp_response_abstract_set_responseID(LassoSamlpResponseAbstract *node,

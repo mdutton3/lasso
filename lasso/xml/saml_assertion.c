@@ -116,9 +116,9 @@ lasso_saml_assertion_set_advice(LassoSamlAssertion *node,
 /**
  * lasso_saml_assertion_set_assertionID:
  * @node: the <saml:Assertion> node object
- * @assertionID: the value of "AssertionID" attribut
+ * @assertionID: the value of "AssertionID" attribute
  * 
- * Sets the "AssertionID" attribut [required].
+ * Sets the "AssertionID" attribute [required].
  *
  * The identifier for this assertion. It is of type IDType, and MUST follow the
  * requirements specified by that type for identifier uniqueness.
@@ -158,9 +158,9 @@ lasso_saml_assertion_set_conditions(LassoSamlAssertion *node,
 /**
  * lasso_saml_assertion_set_issueInstance:
  * @node: the <saml:Assertion> node object
- * @issueInstance: the value of "IssueInstance" attribut
+ * @issueInstance: the value of "IssueInstance" attribute
  * 
- * Sets the "IssueInstance" attribut [required].
+ * Sets the "IssueInstance" attribute [required].
  *
  * The time instant of issue in UTC as described in Section 1.2.2
  * (oasis-sstc-saml-core-1.0.pdf).
@@ -179,9 +179,9 @@ lasso_saml_assertion_set_issueInstance(LassoSamlAssertion *node,
 /**
  * lasso_saml_assertion_set_issuer:
  * @node: the <saml:Assertion> node object
- * @issuer: the value of "Issuer" attribut
+ * @issuer: the value of "Issuer" attribute
  * 
- * Sets the "Issuer" attribut [required].
+ * Sets the "Issuer" attribute [required].
  *
  * The issuer of the assertion. The name of the issuer is provided as a string.
  * The issuer name SHOULD be unambiguous to the intended relying parties. SAML
@@ -202,9 +202,9 @@ lasso_saml_assertion_set_issuer(LassoSamlAssertion *node,
 /**
  * lasso_saml_assertion_set_majorVersion:
  * @node: the <saml:Assertion> node object
- * @majorVersion: the value of "MajorVersion" attribut
+ * @majorVersion: the value of "MajorVersion" attribute
  * 
- * Sets the "MajorVersion" attribut [required].
+ * Sets the "MajorVersion" attribute [required].
  *
  * The major version of the assertion. The identifier for the version of SAML
  * defined in this specification is 1. Processing of this attribute is
@@ -224,9 +224,9 @@ lasso_saml_assertion_set_majorVersion(LassoSamlAssertion *node,
 /**
  * lasso_saml_assertion_set_minorVersion:
  * @node: the <saml:Assertion> node object
- * @minorVersion: the value of "MinorVersion" attribut
+ * @minorVersion: the value of "MinorVersion" attribute
  * 
- * Sets the "MinorVersion" attribut [required].
+ * Sets the "MinorVersion" attribute [required].
  *
  * The minor version of the assertion. The identifier for the version of SAML
  * defined in this specification is 0. Processing of this attribute is

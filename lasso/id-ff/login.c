@@ -358,7 +358,7 @@ lasso_login_init_authn_request(LassoLogin  *login,
   server = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
   local_providerID = lasso_provider_get_providerID(server);
   if (local_providerID == NULL) {
-    debug(ERROR, "The attribut 'ProviderID' is missing in metadata of server");
+    debug(ERROR, "The attribute 'ProviderID' is missing in metadata of server");
     return (-1);
   }
   
