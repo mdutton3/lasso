@@ -599,7 +599,21 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 	if (url == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+		/* from draft-liberty-idff-protocols-schema-1.2-errata-v2.0.pdf
+		 * paragraph starting line 768,
+		 *
+		 * If the <AssertionConsumerServiceID> element is provided,
+		 * then the identity provider MUST search for the value among
+		 * the id attributes in the <AssertionConsumerServiceURL>
+		 * elements in the provider's metadata to determine the URL
+		 * to use. If no match can be found, then the provider MUST
+		 * return an error with a second-level <samlp:StatusCode> of
+		 * lib:InvalidAssertionConsumerServiceIndex to the default URL
+		 */
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_INVALID_ASSERTION_CONSUMER_SERVICE_INDEX);
+		url = lasso_provider_get_assertion_consumer_service_url(
+				remote_provider, NULL);
 	}
 
 	/* it may have been created in lasso_login_build_assertion */
