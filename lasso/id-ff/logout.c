@@ -463,6 +463,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	char *statusCodeValue;
 	lassoHttpMethod response_method;
 	LassoMessageFormat format;
+	LassoLibStatusResponse *response;
 	int rc;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -507,7 +508,14 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	/* verify signature */
 	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
-	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
+	response = LASSO_LIB_STATUS_RESPONSE(profile->response);
+
+	if (response->Status == NULL || response->Status->StatusCode == NULL
+			|| response->Status->StatusCode->Value == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "No Status in LogoutResponse !");
+		return LASSO_ERROR_UNDEFINED;
+	}
+	statusCodeValue = response->Status->StatusCode->Value;
 
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		/* At SP, if the request method was a SOAP type, then rebuild the request
