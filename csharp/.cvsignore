@@ -122,4 +122,10 @@ IsText.cs
 IsUserInteraction.cs
 ProfileService.cs
 UtilityStatus.cs
+HttpMethod.cs
+LoginProtocolProfile.cs
+MessageType.cs
+ProviderRole.cs
+RequestType.cs
+SignatureMethod.cs
 
