@@ -373,6 +373,12 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
 	}
+
+	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
+		profile->request->MajorVersion = 1;
+		profile->request->MinorVersion = 1;
+	}
+
 	if (session_index)
 		LASSO_LIB_LOGOUT_REQUEST(profile->request)->SessionIndex = session_index;
 	if (profile->msg_relayState)

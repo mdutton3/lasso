@@ -244,6 +244,11 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
+	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
+		profile->request->MajorVersion = 1;
+		profile->request->MinorVersion = 1;
+	}
+
 	profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
 
 	return 0;

@@ -223,6 +223,11 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 			g_strdup(profile->msg_relayState);
 	}
 
+	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
+		profile->request->MajorVersion = 1;
+		profile->request->MinorVersion = 1;
+	}
+
 	/* Set the nameIdentifier attribute from content local variable */
 	profile->nameIdentifier = g_object_ref(nameIdentifier);
 

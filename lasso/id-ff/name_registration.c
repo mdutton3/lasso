@@ -324,6 +324,11 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request)->RelayState = 
 			g_strdup(profile->msg_relayState);
 
+	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
+		profile->request->MajorVersion = 1;
+		profile->request->MinorVersion = 1;
+	}
+
 	profile->http_request_method = http_method;
 
 	return 0;

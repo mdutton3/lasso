@@ -914,6 +914,10 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	profile->request->RequestID = lasso_build_unique_id(32);
 	profile->request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	profile->request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
+		profile->request->MajorVersion = 1;
+		profile->request->MinorVersion = 1;
+	}
 	profile->request->IssueInstant = lasso_get_current_time();
 	LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID = g_strdup(
 			LASSO_PROVIDER(profile->server)->ProviderID);

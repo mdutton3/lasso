@@ -35,7 +35,7 @@
 struct _LassoProviderPrivate
 {
 	gboolean dispose_has_run;
-	gboolean liberty_12_conformance; /* conformance with Liberty 1.2 specs */
+	LibertyConformanceLevel conformance;
 	GHashTable *SPDescriptor;
 	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
@@ -522,6 +522,12 @@ lasso_provider_get_type()
 	return this_type;
 }
 
+LibertyConformanceLevel
+lasso_provider_compatibility_level(LassoProvider *provider)
+{
+	return provider->private_data->conformance;
+}
+
 gboolean
 lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 {
@@ -529,7 +535,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	xmlNode *node;
-	gboolean compatibility = FALSE; /* compatibility with ID-FF 1.1 metadata files */
 	const char *xpath_idp = "/md:EntityDescriptor/md:IDPDescriptor";
 	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
 
@@ -538,6 +543,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 		return FALSE;
 
 	provider->metadata_filename = g_strdup(metadata);
+	provider->private_data->conformance = LIBERTY_1_2;
 
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
@@ -556,7 +562,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			xmlXPathFreeContext(xpathCtx);
 			return FALSE;
 		}
-		compatibility = TRUE;
+		provider->private_data->conformance = LIBERTY_1_1;
 		xpath_idp = "/md11:IDPDescriptor";
 		xpath_sp = "/md11:SPDescriptor";
 	}
@@ -567,7 +573,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->IDPDescriptor, provider);
-		if (compatibility) {
+		if (provider->private_data->conformance < LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
@@ -585,7 +591,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->SPDescriptor, provider);
-		if (compatibility) {
+		if (provider->private_data->conformance < LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
@@ -601,8 +607,6 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	xmlFreeDoc(doc);
 	xmlXPathFreeContext(xpathCtx);
-
-	provider->private_data->liberty_12_conformance = compatibility;
 
 	return TRUE;
 }

@@ -29,9 +29,16 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+typedef enum {
+	LIBERTY_1_0,
+	LIBERTY_1_1,
+	LIBERTY_1_2,
+} LibertyConformanceLevel;
+
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
+LibertyConformanceLevel lasso_provider_compatibility_level(LassoProvider *provider);
 
 #ifdef __cplusplus
 }
