@@ -53,3 +53,16 @@ function read_http_response($fp, &$header, &$response)
 			while (!feof($fp)) $response .= fread($fp, 1024);
 	}
 }
+
+function isDBError($res)
+{
+    global $logger;
+
+    if (DB::isError($res)) 
+    {
+        $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
+        die("Internal Server Error");
+    }
+}
+

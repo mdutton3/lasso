@@ -26,6 +26,7 @@
     require_once 'Log.php';
     require_once 'DB.php';
     require_once 'session.php';
+    require_once 'misc.php';
  
     $config = unserialize(file_get_contents('config.inc'));
     
@@ -154,15 +155,11 @@
         global $logger;
        
        	$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity_dump);
-	$query .= " WHERE user_id='$user_id'";
+        $query .= " WHERE user_id='$user_id'";
 
-	$res =& $db->query($query);
-	if (DB::isError($res)) 
-        {
-            $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-            $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-            die("Internal Server Error");
-        }
+        $res =& $db->query($query);
+        
+        isDBError($res);
         $logger->log("Update user '$user_id' identity dump in the database : $identity_dump", PEAR_LOG_DEBUG);
    }
 
@@ -173,16 +170,11 @@
    {
         global $logger;
 
-	$query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
-	$query .= " WHERE user_id='$user_id'";
+        $query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
+        $query .= " WHERE user_id='$user_id'";
 
-	$res =& $db->query($query);
-        if (DB::isError($res)) 
-        {
-            $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-            $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-            die("Internal Server Error");
-        }
+        $res =& $db->query($query);
+        isDBError($res);
         $logger->log("Update user '$user_id' Session dump in the database : $session_dump", PEAR_LOG_DEBUG);
    }
 
@@ -192,10 +184,6 @@
    function saveAssertionArtifact($db, $artifact, $assertion)
    {
 	global $logger;
-	/* 
-	var_dump($assertion);
-	if ($assertion->_cPtr == NULL)
-		print "null"; */
 	$assertion_dump = $assertion->dump();
 
 	if (empty($assertion_dump))
@@ -206,15 +194,10 @@
 
 	// Save assertion 
       	$query = "INSERT INTO assertions (assertion, response_dump, created) VALUES ";
-	$query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
+        $query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
 
-	$res =& $db->query($query);
-	if (DB::isError($res)) 
-	{
-		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-		die("Internal Server Error");
-	}
+        $res =& $db->query($query);
+        isDBError($res);
    }
 
   /*
@@ -248,8 +231,8 @@
 	switch ($_SERVER['REQUEST_METHOD'])
 	{
 	  case 'GET':
-		$login->initFromAuthnRequestMsg($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
-		$logger->log("initFromAuthnRequest with method GET : " . $_SERVER['QUERY_STRING'], PEAR_LOG_DEBUG);
+		$login->processAuthnRequestMsg($_SERVER['QUERY_STRING']);
+		$logger->log("processAuthnRequestMsg with method GET : " . $_SERVER['QUERY_STRING'], PEAR_LOG_DEBUG);
 		break;
 	  case 'POST':
 		if (empty($_POST['LAREQ']))
@@ -257,8 +240,8 @@
 			$logger->log("POST LARQ value is empty");
 			die("POST LARQ value is empty");
 		}
-                $login->initFromAuthnRequestMsg($_POST['LAREQ'], lassoHttpMethodPost);
-		$logger->log("initFromAuthnRequest with method POST", PEAR_LOG_DEBUG);
+        $login->processAuthnRequestMsg($_POST['LAREQ']);
+		$logger->log("processAuthnRequestMsg with method POST", PEAR_LOG_DEBUG);
 		break;
 	  default:
 		$logger->log("initFromAuthnRequest with called an unknown method", PEAR_LOG_CRIT);
@@ -300,13 +283,8 @@
   {
 	$query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameidentifier'";
 	  
-	$res =& $db->query($query);
-       	if (DB::isError($res)) 
-	{
-		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-	      	$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-		die($res->getMessage());
-	}
+    $res =& $db->query($query);
+    isDBError($res);
 		
 	// UserID not found
 	if (!$res->numRows()) 
@@ -341,95 +319,82 @@
    */
   function doneSingleSignOn($db, &$login, $user_id)
   {
-	global $logger;
+        global $logger;
 
-      	$authenticationMethod = 
-	  (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
+      	$authenticationMethod = (($_SERVER["HTTPS"] == 'on') ? LASSO_SAML_AUTHENTICATION_METHOD_SECURE_REMOTE_PASSWORD : LASSO_SAML_AUTHENTICATION_METHOD_REMOTE_PASSWORD);
 
-	  // reauth in session_cache_expire, default is 180 minutes
-	  $reauthenticateOnOrAfter = strftime("%Y-%m-%dT%H:%M:%SZ", time() + session_cache_expire() * 60);
+        // reauth in session_cache_expire, default is 180 minutes
+        $reauthenticateOnOrAfter = strftime("%Y-%m-%dT%H:%M:%SZ", time() + session_cache_expire() * 60);
 
-	  if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
-		  $login->buildArtifactMsg(TRUE, // User is authenticated 
-			$authenticationMethod, $reauthenticateOnOrAfter, lassoHttpMethodRedirect); 
-	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
-		  die("TODO : Post\n"); // TODO
-	  else
-	  {
-		$logger->log("Unknown protocol profile", PEAR_LOG_CRIT);
-		die("Unknown protocol profile\n"); 
-	  }
+        $login->validateRequestMsg(TRUE, TRUE);
+        $login->buildAssertion($authenticationMethod, 0, 
+            $reauthenticateOnOrAfter, "", "");
 
-	  $query = "SELECT * FROM nameidentifiers WHERE name_identifier='";
-	  $query .= $login->nameIdentifier."' AND user_id='$user_id'";
+        if ($login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
+            $login->buildArtifactMsg(LASSO_HTTP_METHOD_REDIRECT); 
+        else if ($login->protocolProfile == lLASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST)
+            $login->buildAuthnResponseMsg();
+        else
+        {
+            $logger->log("Unknown protocol profile", PEAR_LOG_CRIT);
+            die("Unknown protocol profile\n"); 
+        }
+    
+        $query = "SELECT * FROM nameidentifiers WHERE name_identifier='";
+        $query .= $login->nameIdentifier."' AND user_id='$user_id'";
 
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-	  {
-      		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-    		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-      		die($res->getMessage());
-	  }  
+        $res =& $db->query($query);
+        isDBError($res);
 
-	  if (!$res->numRows()) 
-	  {
-		// register new name_identifier 
-		$query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
-		$query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
-	  
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
-		{
-			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-			die($res->getMessage());
-		}  
+        if (!$res->numRows()) 
+        {
+            // register new name_identifier 
+            $query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
+            $query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
+        
+            $res =& $db->query($query);
+            isDBError($res);
     		$logger->log("Register Name Identifier '" . $login->nameIdentifier ."' for User '$user_id'", PEAR_LOG_INFO);
-	  }
+        }
 
-	  $identity = $login->identity;
-	  // do we need to update identity dump?
-	  if ($login->isIdentityDirty)
-		updateIdentityDump($db, $user_id, $identity->dump());
+        $identity = $login->identity;
+        // do we need to update identity dump?
+        if ($login->isIdentityDirty)
+            updateIdentityDump($db, $user_id, $identity->dump());
+    
+        $session = $login->session;
+        // do we need to update session dump?
+        if ($login->isSessionDirty)
+            updateSessionDump($db, $user_id, $session->dump());
 
-	  $session = $login->session;
-	  // do we need to update session dump?
-	  if ($login->isSessionDirty)
-		updateSessionDump($db, $user_id, $session->dump());
+        if (empty($login->assertionArtifact))
+        {
+            $logger->log("Assertion Artifact is empty", PEAR_LOG_CRIT);
+            die("assertion Artifact is empty");
+        }
 
-	  if (empty($login->assertionArtifact))
-	  {
-    		$logger->log("Assertion Artifact is empty", PEAR_LOG_CRIT);
-		die("assertion Artifact is empty");
-	  }
+        $logger->log("Assertion Artifact is '" . $login->assertionArtifact . "'", PEAR_LOG_DEBUG);
 
-    	  $logger->log("Assertion Artifact is '" . $login->assertionArtifact . "'", PEAR_LOG_DEBUG);
-
-	  saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
+        saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
 
 
-	  // Save PHP Session ID in the sso_session table
-	  $query = "INSERT INTO sso_sessions(name_identifier, session_id, ip)";
-	  $query .= " VALUES('" . $login->nameIdentifier . "','" . session_id() . "','";
-	  $query .= ip2long($_SERVER['REMOTE_ADDR']) . "')";
+        // Save PHP Session ID in the sso_session table
+        $query = "INSERT INTO sso_sessions(name_identifier, session_id, ip)";
+        $query .= " VALUES('" . $login->nameIdentifier . "','" . session_id() . "','";
+        $query .= ip2long($_SERVER['REMOTE_ADDR']) . "')";
 
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-	  {
-		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
-	    	$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
-	      	die($res->getMessage());
-	  }
+        $res =& $db->query($query);
+        isDBError($res);
 
-	  unset($_SESSION['login_dump']); // delete login_dump 
-	  $_SESSION['identity_dump'] = $identity->dump();
-	  $_SESSION['session_dump'] = $session->dump();
+        unset($_SESSION['login_dump']); // delete login_dump 
+        $_SESSION['identity_dump'] = $identity->dump();
+        $_SESSION['session_dump'] = $session->dump();
 
           $logger->log("New Single Sign On Session started for user '$user_id'", PEAR_LOG_INFO);
 
 	  switch($login->protocolProfile)
 	  {
-		case lassoLoginProtocolProfileBrwsArt:
+		case LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART:
 		  	$url = $login->msgUrl;
 
 			header("Request-URI: $url");
@@ -437,8 +402,9 @@
 			header("Location: $url\n\n");
 			lasso_shutdown();
 			exit;
-		case lassoLoginProtocolProfileBrwsPost:
+		case LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST:
 		  // TODO : lassoLoginProtocolProfileBrwsPost
+           die("Not yet implemented");
 		default:
 			$logger->log("Unknown Login Protocol Profile :" . $login->protocolProfile, PEAR_LOG_CRIT);
 			die("Unknown Login Protocol Profile");
