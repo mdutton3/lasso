@@ -26,9 +26,11 @@
 
 #include "py_lasso.h"
 #include "xml/py_xml.h"
-#include "protocols/py_logout.h"
-#include "protocols/py_single_sign_on_and_federation.h"
-#include "protocols/py_register_name_identifier.h"
+#include "protocols/py_logout_request.h"
+#include "protocols/py_logout_response.h"
+#include "protocols/py_register_name_identifier_request.h"
+#include "protocols/py_register_name_identifier_response.h"
+#include "protocols/py_federation_termination_notification.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -48,36 +50,44 @@ static PyMethodDef lasso_methods[] = {
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
   /* protocols */
-  /* py_logout.h */
+  /* py_logout_request.h */
   {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
-  {"logout_request_create",  logout_request_create,  METH_VARARGS},
+  {"logout_request",         logout_request,         METH_VARARGS},
 
+  /* py_logout_response.h */
   {"logout_response_getattr", logout_response_getattr, METH_VARARGS},
-  {"logout_response_create",  logout_response_create,  METH_VARARGS},
-  {"logout_response_init",    logout_response_init,  METH_VARARGS},
-
-  /* py_single_sign_on_and_federation.h */
-  {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
-  {"authn_request_create",  authn_request_create,  METH_VARARGS},
-  {"authn_response_getattr",       authn_response_getattr,       METH_VARARGS},
-  {"authn_response_create",        authn_response_create,        METH_VARARGS},
-  {"authn_response_init",          authn_response_init,          METH_VARARGS},
-  {"authn_response_add_assertion", authn_response_add_assertion, METH_VARARGS},
-  {"assertion_build",                       assertion_build,                       METH_VARARGS},
-  {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS},
-  {"authentication_statement_build", authentication_statement_build, METH_VARARGS},
-
-  {"request_create", request_create, METH_VARARGS},
-  {"request_getattr", request_getattr, METH_VARARGS},
-
-  {"response_create", response_create, METH_VARARGS},
-  {"response_getattr", response_getattr, METH_VARARGS},
-  {"response_init", response_init, METH_VARARGS},
-  {"response_add_assertion", response_add_assertion, METH_VARARGS},
+  {"logout_response",         logout_response,         METH_VARARGS},
 
   /* py_register_name_identifier.h */
   {"register_name_identifier_request_getattr", register_name_identifier_request_getattr, METH_VARARGS},
-  {"register_name_identifier_request_create",  register_name_identifier_request_create,  METH_VARARGS}, 
+  {"register_name_identifier_request",  register_name_identifier_request,  METH_VARARGS},
+
+  {"register_name_identifier_response_getattr", register_name_identifier_response_getattr, METH_VARARGS},
+  {"register_name_identifier_response",  register_name_identifier_response,  METH_VARARGS},
+
+/*   /\* py_single_sign_on_and_federation.h *\/ */
+/*   {"authn_request_getattr", authn_request_getattr, METH_VARARGS}, */
+/*   {"authn_request_create",  authn_request_create,  METH_VARARGS}, */
+/*   {"authn_response_getattr",       authn_response_getattr,       METH_VARARGS}, */
+/*   {"authn_response_create",        authn_response_create,        METH_VARARGS}, */
+/*   {"authn_response_init",          authn_response_init,          METH_VARARGS}, */
+/*   {"authn_response_add_assertion", authn_response_add_assertion, METH_VARARGS}, */
+/*   {"assertion_build",                       assertion_build,                       METH_VARARGS}, */
+/*   {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS}, */
+/*   {"authentication_statement_build", authentication_statement_build, METH_VARARGS}, */
+
+/*   {"request_create", request_create, METH_VARARGS}, */
+/*   {"request_getattr", request_getattr, METH_VARARGS}, */
+
+/*   {"response_create", response_create, METH_VARARGS}, */
+/*   {"response_getattr", response_getattr, METH_VARARGS}, */
+/*   {"response_init", response_init, METH_VARARGS}, */
+/*   {"response_add_assertion", response_add_assertion, METH_VARARGS}, */
+
+  /* py_federation_termination_notification.h */
+  {"federation_termination_notification_getattr", federation_termination_notification_getattr, METH_VARARGS},
+  {"federation_termination_notification",  federation_termination_notification,  METH_VARARGS},
+
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
