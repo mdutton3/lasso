@@ -127,7 +127,7 @@ You can get more informations about <b>Lasso</b> at <br>
   if (DB::isError($res)) 
 	print $res->getMessage(). "\n";
 
-  list($user_id, $identity_dump, $first_name, $last_name, $created, $last_login) = $res->fetchRow();
+  list($user_id, $identity_dump, $first_name, $last_name, $last_login, $created) = $res->fetchRow();
 
   ?>
 <tr>

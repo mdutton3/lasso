@@ -43,7 +43,11 @@
 		if (DB::isError($db)) 
 		  die($db->getMessage());
 
-		$query = "UPDATE users SET first_name='" . $_POST['first_name'] . "',last_name='". $_POST['last_name'] ."' WHERE user_id='".$_SESSION["user_id"]."'";
+		// Update User info
+		$query = "UPDATE users SET first_name=" . $db->quoteSmart($_POST['first_name']);
+		$query .= ",last_name=" . $db->quoteSmart($_POST['last_name']);
+		$query .= " WHERE user_id='".$_SESSION["user_id"]."'";
+
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
 		  print $res->getMessage(). "\n";
@@ -51,8 +55,8 @@
 		$url = "index.php";
 		header("Request-URI: $url");
 		header("Content-Location: $url");
-		header("Location: $url");
-		break;
+		header("Location: $url\n\n");
+		exit();
 	  default:
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

@@ -36,8 +36,8 @@
   // Show XML dump
   if (!empty($_GET['dump']) && !empty($_GET['type'])) 
   {
-  	$query = "SELECT " . ($_GET['type'] == 'user' ? 'user' : 'session') . 
-	$query .= "_dump FROM users WHERE user_id='" . $_GET['dump'] . "'";
+  	$query = "SELECT " . ($_GET['type'] == 'identity' ? 'identity' : 'session') . 
+	$query .= "_dump FROM users WHERE user_id=".$db->quoteSmart($_GET['dump']);
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	  die($res->getMessage());
@@ -67,15 +67,15 @@
   
   if (!empty($_GET['del'])) {
 
-	$query = "DELETE FROM nameidentifiers WHERE user_id='" . $_GET['del'] . "'" ;
+	$query = "DELETE FROM nameidentifiers WHERE user_id=".$db->quoteSmart($_GET['del']);
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
-	  print $res->getMessage(). "\n";
+	  die($res->getMessage());
 
-	$query = "DELETE FROM users WHERE user_id='" . $_GET['del'] . "'" ;
+	$query = "DELETE FROM users WHERE user_id=".$db->quoteSmart($_GET['del']);
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
-	  print $res->getMessage(). "\n";
+	  die($res->getMessage());
 
 	}
 	
@@ -193,8 +193,8 @@
 	<?php 
 	  switch ($tableinfo[$i]['name']) 
 	  {
-		case "user_dump":
-  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=user')>view</a>";
+		case "identity_dump":
+  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=identity')>view</a>";
 		  break;
 	    case "session_dump":
   		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=session')>view</a>";

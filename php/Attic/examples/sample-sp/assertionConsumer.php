@@ -25,7 +25,6 @@
   $config = unserialize(file_get_contents('config.inc'));
   
   require_once 'DB.php';
-  
 
   if (!$_GET['SAMLart']) {
   	exit(1);
@@ -182,6 +181,6 @@
 
   header("Request-URI: $url");
   header("Content-Location: $url");
-  header("Location: $url");
+  header("Location: $url\n\n");
   exit();
 ?>

@@ -33,7 +33,7 @@
 	  die($db->getMessage());
 
   if (!empty($_GET['dump'])) {
-  	$query = "SELECT identity_dump FROM users WHERE user_id='" . $_GET['dump'] . "'";
+  	$query = "SELECT identity_dump FROM users WHERE user_id='".$db->quoteSmart($_GET['dump']);
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	  print $res->getMessage(). "\n";
@@ -64,21 +64,20 @@
 	exit;
 	}
 
-  if (!empty($_GET['del'])) {
+  if (!empty($_GET['del'])) 
+  {
 
-	$query = "DELETE FROM nameidentifiers WHERE user_id='" . $_GET['del'] . "'" ;
+	$query = "DELETE FROM nameidentifiers WHERE user_id=".$db->quoteSmart($_GET['del']);
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
-	  print $res->getMessage(). "\n";
+	  die($res->getMessage());
 
-	$query = "DELETE FROM users WHERE user_id='" . $_GET['del'] . "'" ;
+	$query = "DELETE FROM users WHERE user_id='".$db->quoteSmart($_GET['del']);
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
-	  print $res->getMessage(). "\n";
-
-	}
+	  die($res->getMessage());
+  }
 	
-
   $query = "SELECT * FROM users";
   $res =& $db->query($query);
   if (DB::isError($res)) 

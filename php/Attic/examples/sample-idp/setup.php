@@ -210,7 +210,7 @@
 		  user_id         varchar(100) primary key,
 		  username		  varchar(255) unique,
 		  password		  varchar(255),
-		  user_dump       text,
+		  identity_dump   text,
 		  session_dump    text)";
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
