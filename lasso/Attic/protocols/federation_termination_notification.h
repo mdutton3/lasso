@@ -28,6 +28,14 @@ e Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <lasso/lasso.h>
 
+LassoNode *lasso_build_full_federationTerminationNotification(const xmlChar *requestID,
+							      const xmlChar *majorVersion,
+							      const xmlChar *minorVersion,
+							      const xmlChar *issueInstant,
+							      const xmlChar *providerID,
+							      LassoNode     *nameIdentifier,
+							      const xmlChar *consent);
+
 LassoNode *lasso_build_federationTerminationNotification(const xmlChar *providerID,
 							 LassoNode     *nameIdentifier,
 							 const xmlChar *consent);
