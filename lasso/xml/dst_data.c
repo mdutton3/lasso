@@ -32,7 +32,7 @@
 
 #define snippets() \
 	LassoDstData *data = LASSO_DST_DATA(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ NULL, 0, NULL} \
 	};
 

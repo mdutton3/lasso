@@ -43,10 +43,6 @@ extern "C" {
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
 
-#ifdef LASSO_INTERNALS
-#include <lasso/xml/internals.h>
-#endif
-
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))
 #define LASSO_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_NODE, LassoNodeClass))
@@ -71,6 +67,7 @@ typedef enum {
 
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
+typedef struct _LassoNodeClassData LassoNodeClassData;
 
 /**
  * _LassoNode:
@@ -81,6 +78,7 @@ struct _LassoNode {
 
 struct _LassoNodeClass {
 	GObjectClass parent_class;
+	LassoNodeClassData *node_data;
 
 	void     (* destroy)            (LassoNode *node);
 	char*    (* build_query)        (LassoNode *node);
@@ -117,6 +115,10 @@ LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
 LASSO_EXPORT gint lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file);
+
+#ifdef LASSO_INTERNALS
+#include <lasso/xml/internals.h>
+#endif
 
 #ifdef __cplusplus
 }

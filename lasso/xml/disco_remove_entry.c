@@ -45,7 +45,7 @@
 
 #define snippets() \
 	LassoDiscoRemoveEntry *entry = LASSO_DISCO_REMOVE_ENTRY(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "entryID", SNIPPET_ATTRIBUTE, (void**)&(entry->entryID) }, \
 		{ NULL, 0, NULL} \
 	};

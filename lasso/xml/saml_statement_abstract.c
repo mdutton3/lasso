@@ -37,18 +37,6 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	xmlnode = xmlNewNode(NULL, "StatementAbstract");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
-				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	return xmlnode;
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -61,8 +49,11 @@ instance_init(LassoSamlStatementAbstract *node)
 static void
 class_init(LassoSamlStatementAbstractClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "StatementAbstract");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
 }
 
 GType

@@ -44,28 +44,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlAttributeStatement *statement = \
-		LASSO_SAML_ATTRIBUTE_STATEMENT(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "Attribute", SNIPPET_LIST_NODES, (void**)&(statement->Attribute) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "AttributeStatement");
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "Attribute", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoSamlAttributeStatement, Attribute) },
+	{ NULL, 0, 0 }
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -80,8 +63,12 @@ instance_init(LassoSamlAttributeStatement *node)
 static void
 class_init(LassoSamlAttributeStatementClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "AttributeStatement");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

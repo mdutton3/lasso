@@ -44,7 +44,7 @@
 
 #define snippets() \
 	LassoDiscoCredentials *credentials = LASSO_DISCO_CREDENTIALS(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "", SNIPPET_LIST_NODES, (void**)&credentials->any }, \
 		{ NULL, 0, NULL} \
 	};

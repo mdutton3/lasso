@@ -60,32 +60,16 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
-		{ "NameIdentifier", SNIPPET_NODE, (void**)&(request->NameIdentifier) }, \
-		{ "SessionIndex", SNIPPET_CONTENT, (void**)&(request->SessionIndex) }, \
-		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
-		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(request->consent) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, ProviderID) },
+	{ "NameIdentifier", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibLogoutRequest, NameIdentifier) },
+	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex) },
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, RelayState) },
+	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibLogoutRequest, consent) },
+	{ NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "LogoutRequest");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
 
 static gchar*
 build_query(LassoNode *node)
@@ -174,18 +158,6 @@ init_from_query(LassoNode *node, char **query_fields)
 	return parent_class->init_from_query(node, query_fields);
 }
 
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
-}
-
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -204,11 +176,15 @@ instance_init(LassoLibLogoutRequest *node)
 static void
 class_init(LassoLibLogoutRequestClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-	LASSO_NODE_CLASS(klass)->build_query = build_query;
-	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "LogoutRequest");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

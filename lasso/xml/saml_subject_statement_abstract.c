@@ -43,40 +43,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlSubjectStatementAbstract *statement = \
-		LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "Subject", SNIPPET_NODE, (void**)&(statement->Subject) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "SubjectStatementAbstract");
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
-}
-
+static struct XmlSnippet schema_snippets[] = {
+	{ "Subject", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoSamlSubjectStatementAbstract, Subject) },
+	{ NULL, 0, 0 }
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -91,9 +62,12 @@ instance_init(LassoSamlSubjectStatementAbstract *node)
 static void
 class_init(LassoSamlSubjectStatementAbstractClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "SubjectStatementAbstract");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

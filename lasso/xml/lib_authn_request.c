@@ -1,4 +1,4 @@
-/* $Id$ 
+/* $id: lib_authn_request.c,v 1.18 2004/11/26 14:13:02 fpeters Exp $ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -85,42 +85,23 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node); \
-	char *force_authn = NULL, *is_passive = NULL; \
-	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
-		{ "NameIDPolicy", SNIPPET_CONTENT, (void**)&(request->NameIDPolicy) }, \
-		{ "ProtocolProfile", SNIPPET_CONTENT, (void**)&(request->ProtocolProfile) }, \
-		{ "AssertionConsumerServiceID", SNIPPET_CONTENT, \
-			(void**)&(request->AssertionConsumerServiceID) }, \
-		/* XXX: RequestAuthnContext */ \
-		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
-		{ "ForceAuthn", SNIPPET_CONTENT, (void**)&force_authn }, \
-		{ "IsPassive", SNIPPET_CONTENT, (void**)&is_passive }, \
-		/* XXX: Scoping */ \
-		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(request->consent) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, ProviderID) },
+	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, NameIDPolicy) },
+	{ "ProtocolProfile", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, ProtocolProfile) },
+	{ "AssertionConsumerServiceID", SNIPPET_CONTENT, 
+		G_STRUCT_OFFSET(LassoLibAuthnRequest, AssertionConsumerServiceID) },
+	/* XXX: RequestAuthnContext */
+	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibAuthnRequest, RelayState) },
+	{ "ForceAuthn", SNIPPET_CONTENT_BOOL, G_STRUCT_OFFSET(LassoLibAuthnRequest, ForceAuthn) },
+	{ "IsPassive", SNIPPET_CONTENT_BOOL, G_STRUCT_OFFSET(LassoLibAuthnRequest, IsPassive) },
+	/* XXX: Scoping */
+	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibAuthnRequest, consent) },
+	{ NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	is_passive = request->IsPassive ? "true" : "false";
-	force_authn = request->ForceAuthn ? "true" : "false";
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "AuthnRequest");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
 
 static gchar*
 build_query(LassoNode *node)
@@ -208,28 +189,6 @@ init_from_query(LassoNode *node, char **query_fields)
 	return parent_class->init_from_query(node, query_fields);
 }
 
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	if (is_passive) {
-		request->IsPassive = (strcmp(is_passive, "true") == 0);
-		xmlFree(is_passive);
-	}
-	if (force_authn) {
-		request->ForceAuthn = (strcmp(force_authn, "true") == 0);
-		xmlFree(force_authn);
-	}
-
-	return 0;
-}
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -254,13 +213,15 @@ instance_init(LassoLibAuthnRequest *node)
 static void
 class_init(LassoLibAuthnRequestClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->build_query = build_query;
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_query = init_from_query;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "AuthnRequest");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

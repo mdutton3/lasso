@@ -49,7 +49,7 @@
 
 #define snippets() \
 	LassoDiscoModifyResponse *response = LASSO_DISCO_MODIFY_RESPONSE(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
 		{ "id", SNIPPET_ATTRIBUTE, (void**)&(response->id) }, \
 		{ "newEntryIDs", SNIPPET_ATTRIBUTE, (void**)&(response->newEntryIDs) }, \

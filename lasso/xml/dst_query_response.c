@@ -32,7 +32,7 @@
 
 #define snippets() \
 	LassoDstQueryResponse *query_response = LASSO_DST_QUERY_RESPONSE(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "Status", SNIPPET_NODE, (void**)&(query_response->Status) }, \
 		{ NULL, 0, NULL } \
 	};

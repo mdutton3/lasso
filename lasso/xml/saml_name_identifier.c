@@ -79,40 +79,13 @@ lasso_saml_name_identifier_build_query(LassoSamlNameIdentifier *identifier,
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
-
-	xmlnode = xmlNewNode(NULL, "NameIdentifier");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
-				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	xmlAddChild(xmlnode, xmlNewText(identifier->content));
-	if (identifier->Format)
-		xmlSetProp(xmlnode, "Format", identifier->Format);
-	if (identifier->NameQualifier)
-		xmlSetProp(xmlnode, "NameQualifier", identifier->NameQualifier);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	identifier->content = xmlNodeGetContent(xmlnode);
-	identifier->Format = xmlGetProp(xmlnode, "Format");
-	identifier->NameQualifier = xmlGetProp(xmlnode, "NameQualifier");
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "NameQualifier", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlNameIdentifier, NameQualifier) },
+	{ "Format", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlNameIdentifier, Format) },
+	{ "", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoSamlNameIdentifier, content) },
+	{ NULL, 0, 0 }
+};
 
 static gchar*
 build_query(LassoNode *node)
@@ -135,10 +108,13 @@ instance_init(LassoSamlNameIdentifier *node)
 static void
 class_init(LassoSamlNameIdentifierClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	LASSO_NODE_CLASS(klass)->build_query = build_query;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "NameIdentifier");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

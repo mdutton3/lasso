@@ -54,7 +54,7 @@
 
 #define snippets() \
 	LassoDiscoModify *modify = LASSO_DISCO_MODIFY(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "ResourceID", SNIPPET_CONTENT, (void**)&(modify->ResourceID) }, \
 		{ "EncryptedResourceID", SNIPPET_CONTENT, \
 			(void**)&(modify->EncryptedResourceID) }, \

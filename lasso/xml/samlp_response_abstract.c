@@ -56,6 +56,21 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "ResponseID", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, ResponseID) },
+	{ "MajorVersion", SNIPPET_ATTRIBUTE_INT,
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, MajorVersion) },
+	{ "MinorVersion", SNIPPET_ATTRIBUTE_INT,
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, MinorVersion) },
+	{ "IssueInstant", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, IssueInstant) },
+	{ "InResponseTo", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlpResponseAbstract, InResponseTo) },
+	{ "Recipient", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpResponseAbstract, Recipient) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
@@ -78,20 +93,8 @@ get_xmlNode(LassoNode *node)
 { 
 	xmlNode *xmlnode;
 	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
-	char t[10];
 
-	xmlnode = xmlNewNode(NULL, "ResponseAbstract");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
-	xmlSetProp(xmlnode, "ResponseID", response->ResponseID);
-	snprintf(t, 9, "%d", response->MajorVersion);
-	xmlSetProp(xmlnode, "MajorVersion", t);
-	snprintf(t, 9, "%d", response->MinorVersion);
-	xmlSetProp(xmlnode, "MinorVersion", t);
-	xmlSetProp(xmlnode, "IssueInstant", response->IssueInstant);
-	if (response->InResponseTo)
-		xmlSetProp(xmlnode, "InResponseTo", t);
-	if (response->Recipient)
-		xmlSetProp(xmlnode, "Recipient", t);
+	xmlnode = parent_class->get_xmlNode(node);
 
 	/* signature stuff */
 	if (response->sign_type != LASSO_SIGNATURE_TYPE_NONE) {
@@ -172,32 +175,6 @@ init_from_query(LassoNode *node, char **query_fields)
 	return TRUE;
 }
 
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	char *t;
-	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	response->ResponseID = xmlGetProp(xmlnode, "ResponseID");
-	response->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
-	response->InResponseTo = xmlGetProp(xmlnode, "InResponseTo");
-	response->Recipient = xmlGetProp(xmlnode, "Recipient");
-	t = xmlGetProp(xmlnode, "MajorVersion");
-	if (t) {
-		response->MajorVersion = atoi(t);
-		xmlFree(t);
-	}
-	t = xmlGetProp(xmlnode, "MinorVersion");
-	if (t) {
-		response->MinorVersion = atoi(t);
-		xmlFree(t);
-	}
-	return 0;
-}
-
 static char*
 get_sign_attr_name()
 {
@@ -225,12 +202,17 @@ instance_init(LassoSamlpResponseAbstract *node)
 static void
 class_init(LassoSamlpResponseAbstractClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-	LASSO_NODE_CLASS(klass)->build_query = build_query;
-	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
-	LASSO_NODE_CLASS(klass)->get_sign_attr_name = get_sign_attr_name;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
+	nclass->get_sign_attr_name = get_sign_attr_name;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "ResponseAbstract");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

@@ -36,19 +36,6 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "RegisterNameIdentifierResponse");
-
-	return xmlnode;
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -61,8 +48,10 @@ instance_init(LassoLibRegisterNameIdentifierResponse *node)
 static void
 class_init(LassoLibRegisterNameIdentifierResponseClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "RegisterNameIdentifierResponse");
 }
 
 GType

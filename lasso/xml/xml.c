@@ -450,6 +450,82 @@ lasso_node_impl_destroy(LassoNode *node)
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
+	struct XmlSnippet *snippet;
+	xmlNode *t;
+	LassoNodeClass *class;
+	void *value;
+
+	class = LASSO_NODE_GET_CLASS(node);
+
+	if (class->node_data == NULL)
+		return 0;
+
+	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
+			value = G_STRUCT_MEMBER_P(node, snippet->offset);
+			if (snippet->type == SNIPPET_ATTRIBUTE)
+				(*(char**)value) = xmlGetProp(xmlnode, snippet->name);
+			if (snippet->type == SNIPPET_ATTRIBUTE_INT) {
+				xmlChar *s = xmlGetProp(xmlnode, snippet->name);
+				(*(int*)value) = atoi(s);
+				xmlFree(s);
+			}
+			if (snippet->type == SNIPPET_TEXT_CHILD)
+				(*(char**)value) = xmlNodeGetContent(xmlnode);
+		}
+
+		for (t = xmlnode->children; t; t = t->next) {
+			if (t->type != XML_ELEMENT_NODE)
+				continue;
+
+			for (snippet = class->node_data->snippets;
+					snippet && snippet->name; snippet++) {
+				value = G_STRUCT_MEMBER_P(node, snippet->offset);
+
+				if (strcmp(t->name, snippet->name) != 0)
+					continue;
+
+				if (snippet->type == SNIPPET_NODE) {
+					LassoNode **location = value;
+					LassoNode *n = lasso_node_new_from_xmlNode(t);
+					*location = n;
+				}
+				else if (snippet->type == SNIPPET_CONTENT)
+					(*(char**)value) = xmlNodeGetContent(t);
+				else if (snippet->type == SNIPPET_CONTENT_BOOL) {
+					xmlChar *s = xmlNodeGetContent(t);
+					(*(gboolean*)value) = (strcmp(s, "true") == 0);
+				} else if (snippet->type == SNIPPET_CONTENT_INT) {
+					xmlChar *s = xmlNodeGetContent(t);
+					(*(gboolean*)value) = atoi(s);
+				} else if (snippet->type == SNIPPET_NAME_IDENTIFIER)
+					(*(LassoSamlNameIdentifier**)value) =
+						lasso_saml_name_identifier_new_from_xmlNode(t);
+				else if (snippet->type == SNIPPET_LIST_NODES) {
+					xmlNode *ts;
+					GList *s = NULL;
+					for (ts = t->children; ts; ts = ts->next) {
+						if (ts->type != XML_ELEMENT_NODE)
+							continue;
+						g_list_append(s, lasso_node_new_from_xmlNode(ts));
+					}
+					(*(GList**)value) = s;
+				} else if (snippet->type == SNIPPET_LIST_CONTENT) {
+					xmlNode *ts;
+					GList *s = NULL;
+					for (ts = t->children; ts; ts = ts->next) {
+						if (ts->type != XML_ELEMENT_NODE)
+							continue;
+						g_list_append(s, xmlNodeGetContent(ts));
+					}
+					(*(GList**)value) = s;
+				}
+				break;
+			}
+		}
+		class = g_type_class_peek_parent(class);
+	}
+
 	return 0;
 }
 
@@ -462,18 +538,46 @@ lasso_node_impl_build_query(LassoNode *node)
 	return NULL;
 }
 
+static xmlNode*
+lasso_node_impl_get_xmlNode(LassoNode *node)
+{
+	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+	xmlNode *xmlnode;
+	xmlNs *firstns = NULL;
+
+	if (class->node_data == NULL)
+		return NULL;
+
+	xmlnode = xmlNewNode(NULL, class->node_data->node_name);
+	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		if (firstns == NULL) firstns = class->node_data->ns;
+		xmlSetNs(xmlnode, class->node_data->ns);
+		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
+		class = g_type_class_peek_parent(class);
+	}
+
+	class = LASSO_NODE_GET_CLASS(node);
+	xmlSetNs(xmlnode, firstns);
+
+	xmlReconciliateNs(NULL, xmlnode);
+
+	return xmlnode;
+}
+
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
 
 static void
-lasso_node_dispose(LassoNode *node)
+lasso_node_dispose(GObject *object)
 {
+	parent_class->dispose(object);
 }
 
 static void
-lasso_node_finalize(LassoNode *node)
+lasso_node_finalize(GObject *object)
 {
+	parent_class->finalize(object);
 }
 
 /*****************************************************************************/
@@ -481,7 +585,7 @@ lasso_node_finalize(LassoNode *node)
 /*****************************************************************************/
 
 static void
-instance_init(LassoNode *instance)
+instance_init(LassoNode *node)
 {
 }
 
@@ -499,10 +603,13 @@ class_init(LassoNodeClass *class)
 
 	/* virtual private methods */
 	class->build_query = lasso_node_impl_build_query;
-	class->get_xmlNode = NULL; /* nothing here */
-	/* override parent class methods */
-	gobject_class->dispose = (void *)lasso_node_dispose;
-	gobject_class->finalize = (void *)lasso_node_finalize;
+	class->get_xmlNode = lasso_node_impl_get_xmlNode;
+
+	/* override */
+	gobject_class->dispose = lasso_node_dispose;
+	gobject_class->finalize = lasso_node_finalize;
+
+	class->node_data = NULL;
 }
 
 GType
@@ -722,7 +829,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 }
 
 void
-init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
+init_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets)
 {
 	xmlNode *t;
 	int i;
@@ -771,7 +878,7 @@ init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 }
 
 void
-build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
+build_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets)
 {
 	int i;
 
@@ -806,6 +913,99 @@ build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 			GList *elem = (GList *)(*(snippets[i].value));
 			while (elem) {
 				xmlNewTextChild(node, NULL, snippets[i].name, (char*)(elem->data));
+				elem = g_list_next(elem);
+			}
+		}
+	}
+}
+
+
+/**
+ * lasso_node_class_add_snippets
+ * @klass: self
+ * @snippets: array of XmlSnippet (NULL terminated)
+ **/
+void
+lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets)
+{
+	klass->node_data->snippets = snippets;
+}
+
+
+void
+lasso_node_class_set_nodename(LassoNodeClass *klass, char *name)
+{
+	if (klass->node_data->node_name)
+		g_free(klass->node_data->node_name);
+	klass->node_data->node_name = g_strdup(name);
+}
+
+void
+lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
+{
+	if (klass->node_data->ns)
+		xmlFreeNs(klass->node_data->ns);
+	klass->node_data->ns = xmlNewNs(NULL, href, prefix);
+}
+
+
+void
+lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+		struct XmlSnippet *snippets)
+{
+	struct XmlSnippet *snippet;
+
+	if (snippets == NULL)
+		return;
+
+	for (snippet = snippets; snippet->name; snippet++) {
+		void *value = G_STRUCT_MEMBER(void*, node, snippet->offset);
+
+		if (value == NULL && (snippet->type != SNIPPET_ATTRIBUTE_INT &&
+					snippet->type != SNIPPET_CONTENT_BOOL &&
+					snippet->type != SNIPPET_CONTENT_INT))
+			continue;
+
+		if (snippet->type == SNIPPET_ATTRIBUTE)
+			xmlSetProp(xmlnode, snippet->name, (char*)value);
+		else if (snippet->type == SNIPPET_ATTRIBUTE_INT) {
+			char t[40];
+			g_snprintf(t, 40, "%d", GPOINTER_TO_INT(value));
+			xmlSetProp(xmlnode, snippet->name, t);
+		} else if (snippet->type == SNIPPET_TEXT_CHILD)
+			xmlAddChild(xmlnode, xmlNewText((char*)value));
+		else if (snippet->type == SNIPPET_NODE)
+			xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+		else if (snippet->type == SNIPPET_CONTENT)
+			xmlNewTextChild(xmlnode, NULL, snippet->name, (char*)(value));
+		else if (snippet->type == SNIPPET_CONTENT_BOOL) {
+			char *s;
+			s = GPOINTER_TO_INT(value) ? "true" : "false";
+			xmlNewTextChild(xmlnode, NULL, snippet->name, s);
+		} else if (snippet->type == SNIPPET_CONTENT_INT) {
+			char t[40];
+			g_snprintf(t, 40, "%d", GPOINTER_TO_INT(value));
+			xmlNewTextChild(xmlnode, NULL, snippet->name, t);
+		} else if (snippet->type == SNIPPET_NAME_IDENTIFIER) {
+			xmlNode *t;
+			xmlNs *xmlns;
+			xmlns = xmlNewNs(NULL, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+
+			t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+			xmlNodeSetName(t, snippet->name);
+			xmlSetNs(t, xmlns);
+		} else if (snippet->type == SNIPPET_LIST_NODES) {
+			GList *elem = (GList *)value;
+			while (elem) {
+				xmlAddChild(xmlnode,
+						lasso_node_get_xmlNode(LASSO_NODE(elem->data)));
+				elem = g_list_next(elem);
+			}
+		} else if (snippet->type == SNIPPET_LIST_CONTENT) {
+			/* sequence of simple elements (no children, no attrs, just content) */
+			GList *elem = (GList *)value;
+			while (elem) {
+				xmlNewTextChild(xmlnode, NULL, snippet->name, (char*)(elem->data));
 				elem = g_list_next(elem);
 			}
 		}

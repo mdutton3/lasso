@@ -45,7 +45,7 @@
 #define snippets() \
 	LassoDiscoRequestedServiceType *RequestedServiceType = \
 		LASSO_DISCO_REQUESTED_SERVICE_TYPE(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "ServiceType", SNIPPET_CONTENT, (void**)&RequestedServiceType->ServiceType }, \
 		{ "Options", SNIPPET_NODE, (void**)&RequestedServiceType->Options }, \
 		{ NULL, 0, NULL} \

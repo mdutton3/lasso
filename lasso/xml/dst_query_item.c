@@ -33,11 +33,11 @@
 /* FIXME : implement includeCommonAttributes attribute in snippets */
 #define snippets() \
 	LassoDstQueryItem *query_item = LASSO_DST_QUERY_ITEM(node); \
-	struct XmlSnippet snippets[] = { \
-                { "Select", SNIPPET_LIST_NODES, (void**)&(query_item->Select) }, \
-                { "id", SNIPPET_ATTRIBUTE, (void**)&(query_item->id) }, \
-                { "itemID", SNIPPET_ATTRIBUTE, (void**)&(query_item->itemID) }, \
-                { "changedSince", SNIPPET_ATTRIBUTE, (void**)&(query_item->changedSince) }, \
+	struct XmlSnippetObsolete snippets[] = { \
+		{ "Select", SNIPPET_LIST_NODES, (void**)&(query_item->Select) }, \
+		{ "id", SNIPPET_ATTRIBUTE, (void**)&(query_item->id) }, \
+		{ "itemID", SNIPPET_ATTRIBUTE, (void**)&(query_item->itemID) }, \
+		{ "changedSince", SNIPPET_ATTRIBUTE, (void**)&(query_item->changedSince) }, \
 		{ NULL, 0, NULL} \
 	};
 

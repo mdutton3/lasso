@@ -39,45 +39,13 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlAttributeDesignator *designator = \
-		LASSO_SAML_ATTRIBUTE_DESIGNATOR(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "AttributeName", SNIPPET_ATTRIBUTE, (void**)&(designator->AttributeName) }, \
-		{ "AttributeNamespace", SNIPPET_ATTRIBUTE, \
-		  (void**)&(designator->AttributeNamespace) },	\
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "AttributeDesignator");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
-				   LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "AttributeName", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlAttributeDesignator, AttributeName) },
+	{ "AttributeNamespace", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlAttributeDesignator, AttributeNamespace) },
+	{ NULL, 0, 0 }
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -93,8 +61,12 @@ instance_init(LassoSamlAttributeDesignator *node)
 static void
 class_init(LassoSamlAttributeDesignatorClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "AttributeDesignator");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

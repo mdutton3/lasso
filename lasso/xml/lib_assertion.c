@@ -54,28 +54,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlSetProp(xmlnode, "InResponseTo", LASSO_LIB_ASSERTION(node)->InResponseTo);
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	int rc = 0;
-	rc = parent_class->init_from_xml(node, xmlnode);
-	LASSO_LIB_ASSERTION(node)->InResponseTo = xmlGetProp(xmlnode, "InResponseTo");
-	return rc;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "InResponseTo", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoLibAssertion, InResponseTo) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -90,9 +73,12 @@ instance_init(LassoLibAssertion *node)
 static void
 class_init(LassoLibAssertionClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Assertion");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

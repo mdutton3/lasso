@@ -60,19 +60,24 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "Conditions", SNIPPET_NODE, (void**)&(assertion->Conditions) },  \
-		{ "Advice", SNIPPET_NODE, (void**)&(assertion->Advice) },  \
-		{ "SubjectStatement", SNIPPET_NODE, (void**)&(assertion->SubjectStatement) },  \
-		{ "AuthenticationStatement", SNIPPET_NODE, \
-			(void**)&(assertion->AuthenticationStatement) }, \
-		{ "AssertionID", SNIPPET_ATTRIBUTE, (void**)&(assertion->AssertionID) }, \
-		{ "Issuer", SNIPPET_ATTRIBUTE, (void**)&(assertion->Issuer) }, \
-		{ "IssueInstant", SNIPPET_ATTRIBUTE, (void**)&(assertion->IssueInstant) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "Conditions", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Conditions) },
+	{ "Advice", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Advice) },
+	{ "SubjectStatement", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement) },
+	{ "AuthenticationStatement", SNIPPET_NODE, 
+		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
+	{ "MajorVersion", SNIPPET_ATTRIBUTE_INT,
+		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion) },
+	{ "MinorVersion", SNIPPET_ATTRIBUTE_INT,
+		G_STRUCT_OFFSET(LassoSamlAssertion, MinorVersion) },
+	{ "AssertionID", SNIPPET_ATTRIBUTE, 
+		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
+	{ "Issuer", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, Issuer) },
+	{ "IssueInstant", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant) },
+	{ NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
 
@@ -96,7 +101,9 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 		if (xmlnode->ns && strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
 			typename = g_strdup_printf("lib:%sType", xmlnode->name);
 			xmlSetNs(xmlnode, ns);
-			xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+			if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL) {
+				xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+			}
 			g_free(typename);
 		}
 
@@ -112,48 +119,13 @@ get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
-	char s[10];
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Assertion");
-	ns = xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
-	xmlSetNs(xmlnode, ns);
-	snprintf(s, 9, "%d", assertion->MajorVersion);
-	xmlSetProp(xmlnode, "MajorVersion", s);
-	snprintf(s, 9, "%d", assertion->MinorVersion);
-	xmlSetProp(xmlnode, "MinorVersion", s);
-
-	build_xml_with_snippets(xmlnode, snippets);
+	
+	xmlnode = parent_class->get_xmlNode(node);
+	ns = xmlSearchNs(NULL, xmlnode, "saml");
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;
 }
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	char *s;
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	s = xmlGetProp(xmlnode, "MajorVersion");
-	if (s) {
-		assertion->MajorVersion = atoi(s);
-		xmlFree(s);
-	}
-	s = xmlGetProp(xmlnode, "MinorVersion");
-	if (s) {
-		assertion->MinorVersion = atoi(s);
-		xmlFree(s);
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
-
 
 gint
 lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
@@ -183,16 +155,21 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlAssertion *node)
+instance_init(LassoSamlAssertion *assertion)
 {
 }
 
 static void
 class_init(LassoSamlAssertionClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+	
 	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Assertion");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

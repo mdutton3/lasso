@@ -47,44 +47,18 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "SubjectLocality", SNIPPET_NODE, (void**)&(statement->SubjectLocality) }, \
-		{ "AuthorityBinding", SNIPPET_NODE, (void**)&(statement->AuthorityBinding) }, \
-		{ "AuthenticationMethod", SNIPPET_ATTRIBUTE, \
-			(void**)&(statement->AuthenticationMethod) }, \
-		{ "AuthenticationInstant", SNIPPET_ATTRIBUTE, \
-			(void**)&(statement->AuthenticationInstant) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "SubjectLocality", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, SubjectLocality) },
+	{ "AuthorityBinding", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthorityBinding) },
+	{ "AuthenticationMethod", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationMethod) },
+	{ "AuthenticationInstant", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationInstant) },
+	{ NULL, 0, 0}
+};
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "AuthenticationStatement");
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
-}
-	
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -101,9 +75,12 @@ instance_init(LassoSamlAuthenticationStatement *node)
 static void
 class_init(LassoSamlAuthenticationStatementClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "AuthenticationStatement");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

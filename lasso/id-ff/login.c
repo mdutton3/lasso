@@ -346,6 +346,10 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			return ret;
 
 		/* store NameIdentifier */
+		if (response->Assertion->AuthenticationStatement == NULL) {
+			return LASSO_ERROR_UNDEFINED;
+		}
+
 		profile->nameIdentifier = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 				response->Assertion->AuthenticationStatement
 				)->Subject->NameIdentifier->content;

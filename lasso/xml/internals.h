@@ -33,20 +33,43 @@ extern "C" {
 typedef enum {
 	SNIPPET_NODE,
 	SNIPPET_CONTENT,
+	SNIPPET_CONTENT_BOOL,
+	SNIPPET_CONTENT_INT,
+	SNIPPET_TEXT_CHILD,
 	SNIPPET_NAME_IDENTIFIER,
 	SNIPPET_ATTRIBUTE,
+	SNIPPET_ATTRIBUTE_INT,
 	SNIPPET_LIST_NODES,
 	SNIPPET_LIST_CONTENT,
 } SnippetType;
 
-struct XmlSnippet {
+struct XmlSnippetObsolete {
 	char *name;
-	char type;
+	SnippetType type;
 	void **value;
 };
 
-void init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
-void build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
+struct XmlSnippet {
+	char *name;
+	SnippetType type;
+	guint offset;
+};
+
+void init_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets);
+void build_xml_with_snippets(xmlNode *node, struct XmlSnippetObsolete *snippets);
+
+struct _LassoNodeClassData
+{
+	struct XmlSnippet *snippets;
+	char *node_name;
+	xmlNs *ns;
+};
+
+void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
+void lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix);
+void lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets);
+void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+		struct XmlSnippet *snippets);
 
 #ifdef __cplusplus
 }

@@ -36,20 +36,6 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "LogoutResponse");
-
-	return xmlnode;
-}
-
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -62,11 +48,10 @@ instance_init(LassoLibLogoutResponse *node)
 static void
 class_init(LassoLibLogoutResponseClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-#if 0 /* could be used to check QName */
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-#endif
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "LogoutResponse");
 }
 
 GType

@@ -46,13 +46,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "Assertion", SNIPPET_NODE, (void**)&(response->Assertion) }, \
-		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "Assertion", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlpResponse, Assertion) },
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlpResponse, Status) },
+	{ NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
 
@@ -60,11 +58,8 @@ static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
 	xmlNode *xmlnode, *t;
-	snippets();
 
 	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "Response");
-	build_xml_with_snippets(xmlnode, snippets);
 
 	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
 
@@ -72,22 +67,12 @@ get_xmlNode(LassoNode *node)
 		/* liberty nodes are not allowed in samlp nodes */
 		xmlSetNs(t, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF,
 					LASSO_SAML_ASSERTION_PREFIX));
-		xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
-				"type", "lib:AssertionType");
+		if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL)
+			xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
+					"type", "lib:AssertionType");
 	}
 
 	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
 }
 
 
@@ -105,9 +90,14 @@ instance_init(LassoSamlpResponse *node)
 static void
 class_init(LassoSamlpResponseClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Response");
+	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

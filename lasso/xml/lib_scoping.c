@@ -41,52 +41,11 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node); \
-	char *proxy_count = NULL; \
-	struct XmlSnippet snippets[] = { \
-		{ "ProxyCount", SNIPPET_CONTENT, (void**)&proxy_count }, \
-		{ "IDPList", SNIPPET_NODE, (void**)&(scoping->IDPList) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Scoping");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	if (scoping->ProxyCount) {
-		proxy_count = g_strdup_printf("%d", scoping->ProxyCount);
-	}
-	build_xml_with_snippets(xmlnode, snippets);
-
-	if (proxy_count)
-		g_free(proxy_count);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	if (proxy_count) {
-		scoping->ProxyCount = atoi(proxy_count);
-		xmlFree(proxy_count);
-	}
-
-	return 0;
-}
-
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProxyCount", SNIPPET_CONTENT_INT, G_STRUCT_OFFSET(LassoLibScoping, ProxyCount) },
+	{ "IDPList", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibScoping, IDPList) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -102,9 +61,12 @@ instance_init(LassoLibScoping *node)
 static void
 class_init(LassoLibScopingClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Scoping");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

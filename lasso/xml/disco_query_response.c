@@ -51,7 +51,7 @@
 
 #define snippets() \
 	LassoDiscoQueryResponse *query_response = LASSO_DISCO_QUERY_RESPONSE(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "Status", SNIPPET_NODE, (void**)&query_response->Status }, \
 		{ "ResourceOffering", SNIPPET_LIST_NODES, \
 			(void**)&query_response->ResourceOffering }, \

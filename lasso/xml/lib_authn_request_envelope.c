@@ -66,52 +66,20 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node); \
-	char *is_passive = NULL; \
-	struct XmlSnippet snippets[] = { \
-		/* XXX: Extension */ \
-		{ "ProviderID", SNIPPET_CONTENT, (void**)&(env->ProviderID) }, \
-		{ "ProviderName", SNIPPET_CONTENT, (void**)&(env->ProviderName) }, \
-		{ "AssertionConsumerServiceURL", SNIPPET_CONTENT, \
-			(void**)&(env->AssertionConsumerServiceURL) }, \
-		{ "IDPList", SNIPPET_NODE, (void**)&(env->IDPList) }, \
-		{ "IsPassive", SNIPPET_CONTENT, (void**)&is_passive }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProviderID", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderID) },
+	{ "ProviderName", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderName) },
+	{ "AssertionConsumerServiceURL", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AssertionConsumerServiceURL) },
+	{ "IDPList", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IDPList) },
+	{ "IsPassive", SNIPPET_CONTENT_BOOL,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, IsPassive) },
+	{ NULL, 0, 0 }
+};
 
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "AuthnRequestEnvelope");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	is_passive = env->IsPassive ? "true" : "false";
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	if (is_passive) {
-		env->IsPassive = (strcmp(is_passive, "true") == 0);
-		xmlFree(is_passive);
-	}
-	return 0;
-}
-
-		
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -131,9 +99,12 @@ instance_init(LassoLibAuthnRequestEnvelope *node)
 static void
 class_init(LassoLibAuthnRequestEnvelopeClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "AuthnRequestEnvelope");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

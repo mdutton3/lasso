@@ -60,7 +60,7 @@
 
 #define snippets() \
 	LassoDiscoQuery *query = LASSO_DISCO_QUERY(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "ResourceID", SNIPPET_CONTENT, (void**)&query->ResourceID }, \
 		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&query->EncryptedResourceID }, \
 		{ "RequestedServiceType", SNIPPET_LIST_NODES, \

@@ -32,7 +32,7 @@
 
 #define snippets() \
 	LassoDstQuery *query = LASSO_DST_QUERY(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "ResourceID", SNIPPET_CONTENT, (void**)&query->ResourceID }, \
 		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&query->EncryptedResourceID }, \
 		{ "QueryItem", SNIPPET_LIST_NODES, (void**)&query->QueryItem }, \

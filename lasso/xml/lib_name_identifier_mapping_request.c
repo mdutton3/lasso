@@ -57,45 +57,17 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibNameIdentifierMappingRequest *request = \
-		LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
-		{ "NameIdentifier", SNIPPET_NODE, (void**)&(request->NameIdentifier) }, \
-		{ "TargetNamespace", SNIPPET_CONTENT, (void**)&(request->TargetNamespace) }, \
-		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(request->consent) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-	
-	request = LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node);
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "NameIdentifierMappingRequest");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProviderID", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, ProviderID) },
+	{ "NameIdentifier", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, NameIdentifier) },
+	{ "TargetNamespace", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, TargetNamespace) },
+	{ "consent", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoLibNameIdentifierMappingRequest, consent) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -114,9 +86,12 @@ instance_init(LassoLibNameIdentifierMappingRequest *node)
 static void
 class_init(LassoLibNameIdentifierMappingRequestClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "NameIdentifierMappingRequest");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

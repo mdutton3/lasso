@@ -63,49 +63,21 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoLibRegisterNameIdentifierRequest *request = \
-		LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node); \
-	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
-		{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
-			(void**)&(request->IDPProvidedNameIdentifier) }, \
-		{ "SPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
-			(void**)&(request->SPProvidedNameIdentifier) }, \
-		{ "OldProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
-			(void**)&(request->OldProvidedNameIdentifier) }, \
-		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "ProviderID", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, ProviderID) },
+	{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, IDPProvidedNameIdentifier)},
+	{ "SPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, SPProvidedNameIdentifier) },
+	{ "OldProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER,
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, OldProvidedNameIdentifier)},
+	{ "RelayState", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibRegisterNameIdentifierRequest, RelayState) },
+	{ NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	xmlNs *xmlns;
-	snippets();
-
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "RegisterNameIdentifierRequest");
-	xmlns = xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
-	xmlSetNs(xmlnode, xmlns);
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	return 0;
-}
 
 static gchar*
 build_query(LassoNode *node)
@@ -256,11 +228,15 @@ instance_init(LassoLibRegisterNameIdentifierRequest *node)
 static void
 class_init(LassoLibRegisterNameIdentifierRequestClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-	LASSO_NODE_CLASS(klass)->build_query = build_query;
-	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "RegisterNameIdentifierRequest");
+	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

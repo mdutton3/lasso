@@ -42,7 +42,7 @@
 
 #define snippets() \
 	LassoDiscoInsertEntry *entry = LASSO_DISCO_INSERT_ENTRY(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "ResourceOffering", SNIPPET_NODE, (void**)&(entry->ResourceOffering) }, \
 		{ "any", SNIPPET_LIST_NODES, (void**)&(entry->any) }, \
 		{ NULL, 0, NULL} \

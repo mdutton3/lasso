@@ -52,7 +52,7 @@
 
 #define snippets() \
 	LassoUtilityStatus *status = LASSO_UTILITY_STATUS(node); \
-	struct XmlSnippet snippets[] = { \
+	struct XmlSnippetObsolete snippets[] = { \
 		{ "Status", SNIPPET_NODE, (void**)&(status->Status) }, \
 		{ "code", SNIPPET_ATTRIBUTE, (void**)&(status->code) }, \
 		{ "ref", SNIPPET_ATTRIBUTE, (void**)&(status->ref) }, \
