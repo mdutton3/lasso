@@ -34,6 +34,8 @@ The PHP binding of SWIG version 1.3.22 has several bugs:
 (2) It doesn't handle dynamic cast of function results well: After the C object is dynamically
     casted, it creates a statically casted PHP object.
 
+(3) It handles badly optional arguments of methods.
+
 This program corrects (1) and (2), by replacing things like:
     if (!result) {
         ZVAL_NULL(return_value);
@@ -122,6 +124,11 @@ with:
         add_property_zval(obj,"_cPtr",_cPtr);
         *return_value=*obj;
     }}
+
+This program corrects (3), by replacing things like:
+    if(arg_count > 1) {
+with:
+    if(arg_count > 1 - argbase) {
 """
 
 import sys
@@ -169,5 +176,9 @@ while i >= 0:
     segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
     wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
     i = wrap.find(begin, i + len(segment))
+
+# (3)
+for i in range(10):
+    wrap = wrap.replace('if(arg_count > %d) {' % i, 'if(arg_count > %d - argbase) {' % i)
 
 print wrap
