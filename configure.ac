@@ -283,6 +283,8 @@ if test "X$PYTHON_VERSION" != X; then
     else
             enable_python=no
     fi
+else
+	enable_python=no
 fi
 AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
 AC_MSG_RESULT($enable_python)
