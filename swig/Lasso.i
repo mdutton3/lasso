@@ -30,7 +30,7 @@
 
 %include exception.i       
 %include typemaps.i
-
+%include wsf-support.i
 
 %{
 
@@ -684,22 +684,6 @@ SET_NODE_INFO(Node, DowncastableNode)
 %include "enumsimple.swg"
 #endif
 #endif /* ifdef SWIGJAVA */
-
-
-/* Configuration Constants */
-#undef LASSO_WSF_ENABLE
-
-#ifdef LASSO_WSF_ENABLED
-%{
-#define LASSO_WSF_SUPPORT 1
-%}
-#define LASSO_WSF_SUPPORT 1
-#else
-%{
-#define LASSO_WSF_SUPPORT 0
-%}
-#define LASSO_WSF_SUPPORT 0
-#endif
 
 /* HttpMethod */
 #ifndef SWIGPHP4

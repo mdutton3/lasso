@@ -603,12 +603,12 @@ AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 		enable_wsf="yes", enable_wsf="no")
 
 AM_CONDITIONAL([WSF_ENABLED],[test "x$enable_wsf" = "xyes"])
-LASSO_WSF_ENABLE="undef LASSO_WSF_ENABLE" 
+LASSO_WSF_SUPPORT=0
 if test "x$enable_wsf" = "xyes"; then
 	AC_DEFINE(LASSO_WSF_ENABLED, [], [Define if ID-WSF support is enabled])
-        LASSO_WSF_ENABLE="define LASSO_WSF_ENABLE" 
+	LASSO_WSF_SUPPORT=1
 fi
-AC_SUBST(LASSO_WSF_ENABLE)
+AC_SUBST(LASSO_WSF_SUPPORT)
 
 
 dnl ==========================================================================
@@ -765,6 +765,7 @@ perl/Makefile
 php/Makefile
 python/Makefile
 swig/Makefile
+swig/wsf-support.i
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile
