@@ -24,6 +24,7 @@
  */
 
 #include <lasso/protocols/artifact.h>
+#include <xmlsec/base64.h>
 
 /*****************************************************************************/
 /* functions                                                                 */
