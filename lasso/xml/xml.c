@@ -133,7 +133,7 @@ lasso_node_url_encode(LassoNode *node,
   return (class->url_encode(node, sign_method, key_file));
 }
 
-gchar *
+gint
 lasso_node_verify_signature(LassoNode *node,
 			    const gchar *certificate_file)
 {
@@ -179,7 +179,7 @@ lasso_node_new_child(LassoNode *node,
 		     gboolean unbounded)
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->new_child(node, name, content, unbounded));
+  class->new_child(node, name, content, unbounded);
 }
 
 static void
@@ -494,67 +494,72 @@ gint
 lasso_node_impl_verify_signature(LassoNode *node,
 				 const gchar *certificate_file)
 {
-  xmlNodePtr *signature;
-  xmlSecKeysMngrPtr mngr;
+  xmlNodePtr signature;
+  xmlSecKeysMngrPtr mngr = NULL;
   xmlSecDSigCtxPtr dsigCtx = NULL;
-  int res = -1;
- 
+  gint ret = -1;
+
   /* find start node */
-  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, xmlSecDSigNs);
-  if(signature == NULL) {
+  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature,
+			     xmlSecDSigNs);
+  if (signature == NULL) {
     fprintf(stderr, "Error: start node not found\n");
     goto done;	
   }
 
   /* create simple keys mngr */
   mngr = xmlSecKeysMngrCreate();
-  if(mngr == NULL) {
+  if (mngr == NULL) {
     fprintf(stderr, "Error: failed to create keys manager.\n");
-    return(NULL);
+    goto done;
   }
 
-  if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
+  if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
     fprintf(stderr, "Error: failed to initialize keys manager.\n");
     goto done;
   }
   
   /* load trusted cert */
-  if(xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file, xmlSecKeyDataFormatPem,
-				     xmlSecKeyDataTypeTrusted) < 0) {
-    fprintf(stderr,"Error: failed to load pem certificate from \"%s\"\n", certificate_file);
+  if (xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file,
+				      xmlSecKeyDataFormatPem,
+				      xmlSecKeyDataTypeTrusted) < 0) {
+    fprintf(stderr, "Error: failed to load pem certificate from \"%s\"\n",
+	    certificate_file);
     goto done;
   }
 
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(mngr);
-  if(dsigCtx == NULL) {
-    fprintf(stderr,"Error: failed to create signature context\n");
+  if (dsigCtx == NULL) {
+    fprintf(stderr, "Error: failed to create signature context\n");
     goto done;
   }
 
-  /* Verify signature */
-  if(xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
-    fprintf(stderr,"Error: signature verify\n");
+  /* verify signature */
+  if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
+    fprintf(stderr, "Error: signature verify\n");
     goto done;
   }
 
   /* print verification result to stdout */
-  if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
+  if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
     fprintf(stdout, "Signature is OK\n");
-  } else {
+    ret = 1;
+  }
+  else {
     fprintf(stdout, "Signature is INVALID\n");
-  }    
-  res = 1;
+    ret = 0;
+  }
 
- done:    
+ done:
   /* cleanup */
   if(dsigCtx != NULL) {
-    //xmlSecDSigCtxDestroy(dsigCtx);
+    xmlSecDSigCtxDestroy(dsigCtx);
   }
   if(mngr != NULL) {
-    //xmlSecKeysMngrDestroy(mngr);
+    xmlSecKeysMngrDestroy(mngr);
   }
-  return (res);
+  return (ret);
 }
 
 /*****************************************************************************/

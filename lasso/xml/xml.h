@@ -111,39 +111,39 @@ typedef enum {
 LASSO_EXPORT GType lasso_node_get_type(void);
 LASSO_EXPORT LassoNode* lasso_node_new(xmlNodePtr node);
 
-LASSO_EXPORT GString*   lasso_node_build_query  (LassoNode *node);
+LASSO_EXPORT GString*   lasso_node_build_query      (LassoNode *node);
 
-LASSO_EXPORT void       lasso_node_dump         (LassoNode     *,
-						 const xmlChar *,
-						 int);
+LASSO_EXPORT void       lasso_node_dump             (LassoNode     *,
+						     const xmlChar *,
+						     int);
 
-LASSO_EXPORT LassoAttr* lasso_node_get_attr     (LassoNode *node,
-						 const xmlChar *name);
+LASSO_EXPORT LassoAttr* lasso_node_get_attr         (LassoNode *node,
+						     const xmlChar *name);
 
-LASSO_EXPORT GPtrArray* lasso_node_get_attrs    (LassoNode *node);
+LASSO_EXPORT GPtrArray* lasso_node_get_attrs        (LassoNode *node);
 
-LASSO_EXPORT LassoNode* lasso_node_get_child    (LassoNode *node,
-						 const xmlChar *name);
+LASSO_EXPORT LassoNode* lasso_node_get_child        (LassoNode *node,
+						     const xmlChar *name);
 
-LASSO_EXPORT GPtrArray* lasso_node_get_children (LassoNode *node);
+LASSO_EXPORT GPtrArray* lasso_node_get_children     (LassoNode *node);
 
-LASSO_EXPORT xmlChar*   lasso_node_get_content  (LassoNode *node);
+LASSO_EXPORT xmlChar*   lasso_node_get_content      (LassoNode *node);
 
-LASSO_EXPORT xmlChar*   lasso_node_get_name     (LassoNode *node);
+LASSO_EXPORT xmlChar*   lasso_node_get_name         (LassoNode *node);
 
-LASSO_EXPORT void       lasso_node_rename_prop  (LassoNode *node,
-						 const xmlChar *old_name,
-						 const xmlChar *new_name);
+LASSO_EXPORT void       lasso_node_rename_prop      (LassoNode *node,
+						     const xmlChar *old_name,
+						     const xmlChar *new_name);
 
-LASSO_EXPORT GData*     lasso_node_serialize    (LassoNode *node,
-						 GData     *gd);
+LASSO_EXPORT GData*     lasso_node_serialize        (LassoNode *node,
+						     GData     *gd);
 
-LASSO_EXPORT gchar*     lasso_node_url_encode   (LassoNode *node,
-						 guint sign_method,
-						 const gchar *key_file);
+LASSO_EXPORT gchar*     lasso_node_url_encode       (LassoNode *node,
+						     guint sign_method,
+						     const gchar *key_file);
 
-LASSO_EXPORT gchar*     lasso_node_verify_signature(LassoNode *node,
-						    const gchar *certificate_file);
+LASSO_EXPORT gint       lasso_node_verify_signature (LassoNode *node,
+						     const gchar *certificate_file);
 
 #ifdef __cplusplus
 }
