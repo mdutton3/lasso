@@ -25,9 +25,9 @@
 
 #include <lasso/environs/identity.h>
 
-#define LASSO_IDENTITY_NODE                   "LassoIdentity"
-#define LASSO_IDENTITY_FEDERATIONS_NODE       "LassoFederations"
-#define LASSO_IDENTITY_FEDERATION_NODE        "LassoFederation"
+#define LASSO_IDENTITY_NODE                   "Identity"
+#define LASSO_IDENTITY_FEDERATIONS_NODE       "Federations"
+#define LASSO_IDENTITY_FEDERATION_NODE        "Federation"
 #define LASSO_IDENTITY_REMOTE_PROVIDERID_ATTR "RemoteProviderID"
 
 struct _LassoIdentityPrivate
@@ -153,6 +153,7 @@ lasso_identity_dump(LassoIdentity *identity)
 
   identity_node = lasso_node_new();
   LASSO_NODE_GET_CLASS(identity_node)->set_name(identity_node, LASSO_IDENTITY_NODE);
+  LASSO_NODE_GET_CLASS(identity_node)->set_ns(identity_node, lassoLassoHRef, NULL);
 
   /* dump the federations */
   table_size = g_hash_table_size(identity->federations);
@@ -356,11 +357,8 @@ lasso_identity_new_from_dump(gchar *dump)
   xmlNodePtr federations_xmlNode, federation_xmlNode;
 
   LassoIdentity *identity;
-
   LassoFederation  *federation;
-
   xmlChar *str, *remote_providerID;
-
   GError *err = NULL;
 
   g_return_val_if_fail(dump != NULL, NULL);
@@ -378,7 +376,7 @@ lasso_identity_new_from_dump(gchar *dump)
   /* federations */
   federations_node = lasso_node_get_child(identity_node,
 					  LASSO_IDENTITY_FEDERATIONS_NODE,
-					  NULL, NULL);
+					  lassoLassoHRef, NULL);
   if (federations_node != NULL) {
     federations_class = LASSO_NODE_GET_CLASS(federations_node);
     federations_xmlNode = federations_class->get_xmlNode(federations_node);
@@ -404,7 +402,7 @@ lasso_identity_new_from_dump(gchar *dump)
 	/* local name identifier */
 	nis = lasso_node_get_child(federation_node,
 				   LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE,
-				   NULL, NULL);
+				   lassoLassoHRef, NULL);
 	if (nis != NULL) {
 	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
 	  if (ni != NULL) {
@@ -425,7 +423,6 @@ lasso_identity_new_from_dump(gchar *dump)
 	      xmlFree(str);
 	    }
 	    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-	    debug("  ... add local name identifier %s\n", lasso_node_get_content(ni, NULL));
 	    lasso_node_destroy(ni);
 	    lasso_node_destroy(nameIdentifier);
 	  }
@@ -435,7 +432,7 @@ lasso_identity_new_from_dump(gchar *dump)
 	/* remote name identifier */
 	nis = lasso_node_get_child(federation_node,
 				   LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE,
-				   NULL, NULL);
+				   lassoLassoHRef, NULL);
 	if (nis != NULL) {
 	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
 	  if (ni != NULL) {
@@ -456,7 +453,6 @@ lasso_identity_new_from_dump(gchar *dump)
 	      xmlFree(str);
 	    }
 	    lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier);
-	    debug("  ... add local name identifier %s\n", lasso_node_get_content(ni, NULL));
 	    lasso_node_destroy(ni);
 	    lasso_node_destroy(nameIdentifier);
 	  }
