@@ -61,33 +61,9 @@ typedef enum {
 	LASSO_CHECK_VERSIONABI_COMPATIBLE
 } LassoCheckVersionMode;
 
-/**
- * lasso_check_version_exact:
- *
- * Macro. Returns 1 if the loaded lasso library version exactly matches 
- * the one used to compile the caller, 0 if it does not or a negative
- * value if an error occurs.
- */
-#define lasso_check_version_exact()	\
-	lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
-			LASSO_VERSION_SUBMINOR, LASSO_CHECK_VERSION_EXACT)
 
-/**
- * lasso_check_version:
- *
- * Macro. Returns 1 if the loaded lasso library version ABI compatible with
- * the one used to compile the caller, 0 if it does not or a negative
- * value if an error occurs.
- */
-#define lasso_check_version()	\
-	lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
-			LASSO_VERSION_SUBMINOR, \
-			LASSO_CHECK_VERSIONABI_COMPATIBLE)
-
-LASSO_EXPORT int lasso_check_version_ext(int major,
-					 int minor,
-					 int subminor,
-					 LassoCheckVersionMode mode);
+LASSO_EXPORT int lasso_check_version(
+		int major, int minor, int subminor, LassoCheckVersionMode mode);
 
 #ifdef __cplusplus
 }

@@ -55,16 +55,15 @@ DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 }
 #endif
 
-
 #include "types.c"
 
 /**
  * lasso_init:
  *
- * Initializes Lasso library
+ * Initializes Lasso library.
  *
- * Return value: 0 on success or a negative value otherwise.
- */
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int lasso_init()
 {
 	int i;
@@ -119,9 +118,9 @@ int lasso_init()
 /**
  * lasso_shutdown:
  * 
- * Clean ups the Lasso Library.
+ * Clean ups Lasso library.
  * 
- * Return value: 0 on success or a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 int lasso_shutdown()
 {
@@ -140,25 +139,27 @@ int lasso_shutdown()
 #endif /* XMLSEC_NO_XSLT */
 	/* Cleanup function for the XML library */
 	xmlCleanupParser();
+#ifdef LASSO_DEBUG
 	/* this is to debug memory for regression tests */
 	xmlMemoryDump();
+#endif
 	return 0;
 }
 
 /** 
- * lasso_check_version_ext:
- * @major:	the major version number.
- * @minor:	the minor version number.
- * @subminor:	the subminor version number.
- * @mode:	the version check mode.
+ * lasso_check_version:
+ * @major: major version numbe
+ * @minor: minor version number
+ * @subminor: subminor version number
+ * @mode: version check mode
  *
  * Checks if the loaded version of Lasso library could be used.
  *
  * Returns 1 if the loaded lasso library version is OK to use
- * 0 if it is not or a negative value if an error occurs.
- */
+ *     0 if it is not; or a negative value if an error occurs.
+ **/
 int 
-lasso_check_version_ext(int major, int minor, int subminor, LassoCheckVersionMode mode)
+lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mode)
 {
 	/* we always want to have a match for major version number */
 	if (major != LASSO_VERSION_MAJOR) {
