@@ -287,11 +287,8 @@ lasso_logout_request_new_from_xml(gchar *buffer)
   lassoNode_request = lasso_node_new_from_dump(buffer);
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
-  lasso_node_destroy(lassoNode_request);
-
   class = LASSO_NODE_GET_CLASS(request);
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
-
   lasso_node_destroy(lassoNode_request);
   
   return(request);
