@@ -34,7 +34,7 @@ SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisit
 #
 sgml: templates
 	@echo '*** Building SGML ***'
-	cp $(srcdir)/*.sgml $(srcdir)/version.xml build/
+	cp $(srcdir)/*.sgml version.xml build/
 	cd build && gtkdoc-mkdb --module=lasso \
 		    --main-sgml-file=lasso.sgml \
 		    --sgml-mode \
