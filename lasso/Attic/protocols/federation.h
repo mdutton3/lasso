@@ -73,11 +73,13 @@ LASSO_EXPORT LassoFederation* lasso_federation_new_from_dump                (gch
 
 LASSO_EXPORT void             lasso_federation_build_local_nameIdentifier   (LassoFederation *federation,
 									     const gchar     *nameQualifier,
-									     const gchar     *format);
+									     const gchar     *format,
+									     const gchar     *content);
 
 LASSO_EXPORT void             lasso_federation_build_remote_nameIdentifier  (LassoFederation *federation,
 									     const gchar     *nameQualifier,
-									     const gchar     *format);
+									     const gchar     *format,
+									     const gchar     *content);
 
 LASSO_EXPORT LassoFederation* lasso_federation_copy                         (LassoFederation *federation);
 

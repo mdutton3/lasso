@@ -33,45 +33,57 @@ struct _LassoFederationPrivate
 static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
+/* static methods/functions                                                  */
+/*****************************************************************************/
+
+static LassoNode*
+lasso_federation_build_nameIdentifier(const gchar *nameQualifier,
+				      const gchar *format,
+				      const gchar *content)
+{
+  LassoNode *nameIdentifier;
+  xmlChar *id;
+
+  if (content == NULL) {
+    id = lasso_build_unique_id(32);
+    nameIdentifier = lasso_saml_name_identifier_new(id);
+    xmlFree(id);
+  }
+  else {
+    nameIdentifier = lasso_saml_name_identifier_new(content);
+  }
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					       nameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					format);
+  
+  return nameIdentifier;
+}
+
+/*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
 void
 lasso_federation_build_local_nameIdentifier(LassoFederation *federation,
 					    const gchar     *nameQualifier,
-					    const gchar     *format)
+					    const gchar     *format,
+					    const gchar     *content)
 {
-  LassoNode *nameIdentifier;
-  xmlChar *id;
-
-  id = lasso_build_unique_id(32);
-  nameIdentifier = lasso_saml_name_identifier_new(id);
-  xmlFree(id);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-					       nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-					format);
-  
-  federation->local_nameIdentifier = nameIdentifier;
+  federation->local_nameIdentifier = lasso_federation_build_nameIdentifier(nameQualifier,
+									   format,
+									   content);
 }
 
 void
 lasso_federation_build_remote_nameIdentifier(LassoFederation *federation,
 					     const gchar     *nameQualifier,
-					     const gchar     *format)
+					     const gchar     *format,
+					     const gchar     *content)
 {
-  LassoNode *nameIdentifier;
-  xmlChar *id;
-
-  id = lasso_build_unique_id(32);
-  nameIdentifier = lasso_saml_name_identifier_new(id);
-  xmlFree(id);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-					       nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-					format);
-  
-  federation->remote_nameIdentifier = nameIdentifier;
+  federation->remote_nameIdentifier = lasso_federation_build_nameIdentifier(nameQualifier,
+									    format,
+									    content);
 }
 
 LassoFederation*
