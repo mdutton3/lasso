@@ -23,3 +23,6 @@ Makefile
 Makefile.in
 Server.cs
 Session.cs
+FederationTerminationNotification.cs
+LogoutRequest.cs
+LogoutResponse.cs
