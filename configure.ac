@@ -335,6 +335,7 @@ if test "X$PHP_CONFIG" != X ; then
   PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
   PHP_LIBS=`$PHP_CONFIG --libs`
   PHP_EXTENSION_DIR=`$PHP_CONFIG --extension-dir`
+  PHP_PREFIX=`$PHP_CONFIG --prefix`
 else
   # This allows 'make clean' in the python directory to work when
   # php isn't available
@@ -343,6 +344,7 @@ else
   PHP_LDFLAGS=
   PHP_LIBS=
   PHP_EXTENSION_DIR=
+  PHP_PREFIX=
 fi
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LDFLAGS)
@@ -436,7 +438,7 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 dnl Checks for header files.
-AC_HEADER_STDC
+C_HEADER_STDC
 AC_CHECK_HEADERS(xmlsec/xmlsec.h xmlsec/crypto.h string.h libxml/uri.h glib/gprintf.h)
 
 
