@@ -98,6 +98,11 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
   lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
 				     assertion);
+  
+  /* store assertion in user object */
+  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
+			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			   lasso_node_copy(assertion));
 
   return (ret);
 }
@@ -737,9 +742,18 @@ gint
 lasso_login_process_response_msg(LassoLogin  *login,
 				 gchar       *response_msg)
 {
+  LassoNode *assertion;
+
   LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(response_msg,
 									  lassoNodeExportTypeSoap);
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
+
+  /* put response assertion in user object */
+  assertion = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->response,
+					   "Assertion", lassoLibHRef);
+  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
+			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			   assertion);
 
   return (lasso_login_process_response_status_and_assertion(login));
 }
