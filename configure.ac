@@ -203,7 +203,7 @@ if test "X$SWIG" != "X"; then
       AC_MSG_WARN(SWIG version $SWIG_MIN_VERSION from http://www.swig.org/)
     else
       AC_MSG_WARN(There are no pre-generated language interface files)
-      AC_MSG_WARN(Redland language interfaces will NOT build.)
+      AC_MSG_WARN(lasso language interfaces will NOT build.)
       AC_MSG_WARN(If you want to build them you will need)
       AC_MSG_WARN(SWIG version $SWIG_MIN_VERSION from http://www.swig.org/)
       AC_MSG_WARN(Alternatively copy the pre-generated interface)
