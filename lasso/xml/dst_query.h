@@ -30,7 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/disco_resource_id_group.h>
+#include <lasso/xml/disco_encrypted_resource_id.h>
+#include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/dst_query_item.h>
 #include <lasso/xml/xml.h>
 
@@ -50,7 +51,8 @@ typedef struct _LassoDstQueryClass LassoDstQueryClass;
 struct _LassoDstQuery {
 	LassoNode parent;
 
-	LassoDiscoResourceIDGroup *ResourceIDGroup;
+	LassoDiscoResourceID *ResourceID;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *QueryItem;
 	GList *Extension;
 

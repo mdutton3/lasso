@@ -80,7 +80,6 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 			t = t->next;
 			continue;
 		}
-		printf("set ns to %s\n", t->name);
 		xmlSetNs(xmlnode, ns);
 		insure_namespace(t, ns);
 		t = t->next;
