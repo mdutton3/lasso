@@ -1106,6 +1106,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   xmlIDPtr id;
   xmlAttrPtr id_attr;
   xmlChar *id_value;
+  lassoPemFileType public_key_file_type;
   gint ret = 0;
 
   doc = xmlNewDoc("1.0");
@@ -1135,20 +1136,18 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   x509data = xmlSecFindNode(xmlNode, xmlSecNodeX509Data,
 			    xmlSecDSigNs);
   if (x509data != NULL && ca_cert_chain_file != NULL) {
-    /* create simple keys mngr */
-    printf("verify a X509 signature \n");
+    /* create a keys manager */
     keys_mngr = lasso_load_certs_from_pem_certs_chain_file(ca_cert_chain_file);
-    dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
-  }
-  else if (public_key_file != NULL) {
-    /* create signature context */
-    printf("verify a simple signature \n");
-    dsigCtx = xmlSecDSigCtxCreate(NULL);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Impossible to verify signature");
+    if (keys_mngr == NULL) {
+      message(G_LOG_LEVEL_CRITICAL,
+	      lasso_strerror(LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED));
+      ret = LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
+      goto done;
+    }
   }
 
+  /* create signature context */
+  dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
   if (dsigCtx == NULL) {
     message(G_LOG_LEVEL_CRITICAL,
 	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
@@ -1157,11 +1156,21 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   }
 
   if (keys_mngr == NULL) {
-    /* load public key */
-    dsigCtx->signKey = xmlSecCryptoAppKeyLoad(public_key_file,
-					      xmlSecKeyDataFormatPem,
-					      NULL, NULL, NULL);
-    if(dsigCtx->signKey == NULL) {
+    if (public_key_file != NULL) {
+      /* auto-detect public_key_file type */
+      public_key_file_type = lasso_get_pem_file_type(public_key_file);
+      if (public_key_file_type == lassoPemFileTypeCert) {
+	/* public_key_file is a certificate file => get public key in it */
+	dsigCtx->signKey = lasso_get_public_key_from_pem_cert_file(public_key_file);
+      }
+      else {
+	/* load public key */
+	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(public_key_file,
+						  xmlSecKeyDataFormatPem,
+						  NULL, NULL, NULL);
+      }
+    }
+    if (dsigCtx->signKey == NULL) {
       message(G_LOG_LEVEL_CRITICAL,
 	      lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
 	      public_key_file);
