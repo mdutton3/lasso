@@ -1,7 +1,7 @@
 if WITH_TESTS
 
-TESTS = login_tests
-noinst_PROGRAMS = login_tests
+TESTS = tests
+noinst_PROGRAMS = tests
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -11,12 +11,12 @@ INCLUDES = \
 	$(LASSO_CFLAGS) \
 	$(CHECK_CFLAGS)
 
-login_tests_SOURCES = login_tests.c
-login_tests_LDADD = \
+tests_SOURCES = tests.c login_tests.c
+tests_LDADD = \
 	$(top_builddir)/lasso/liblasso.la \
 	$(LASSO_LIBS) \
 	$(CHECK_LIBS)
 endif
 
-EXTRA_DIST = login_tests.c
+EXTRA_DIST = tests.c login_tests.c
 

@@ -29,7 +29,7 @@
 #include <lasso/lasso.h>
 
 
-char*
+static char*
 generateIdentityProviderContextDump()
 {
 	LassoServer *serverContext;
@@ -48,7 +48,7 @@ generateIdentityProviderContextDump()
 	return lasso_server_dump(serverContext);
 }
 
-char*
+static char*
 generateServiceProviderContextDump()
 {
 	LassoServer *serverContext;
@@ -255,39 +255,5 @@ login_suite()
 	tcase_add_test(tc_generate, test01_generateServersContextDumps);
 	tcase_add_test(tc_spLogin, test02_serviceProviderLogin);
 	return s;
-}
-
-int
-main(int argc, char *argv[])
-{
-	int rc;
-	Suite *s;
-	SRunner *sr;
-	int i;
-	int dont_fork = 0;
-
-	for (i=1; i<argc; i++) {
-		if (strcmp(argv[i], "--dontfork") == 0) {
-			dont_fork = 1;
-		}
-	}
-
-	lasso_init();
-	
-	s = login_suite();
-	sr = srunner_create(s);
-	if (dont_fork) {
-		srunner_set_fork_status(sr, CK_NOFORK);
-	}
-	srunner_set_xml(sr, "out.xml");
-	srunner_run_all (sr, CK_VERBOSE);
-	rc = srunner_ntests_failed(sr);
-	
-	srunner_free(sr);
-	/*suite_free(s);*/
-
-	/*lasso_destroy();*/
-
-	return (rc == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
