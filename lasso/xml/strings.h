@@ -78,7 +78,6 @@
 #define lassoLibProtocolProfileFedTermSpHttp	 "http://projectliberty.org/profiles/fedterm-sp-http"
 #define lassoLibProtocolProfileFedTermSpSoap	 "http://projectliberty.org/profiles/fedterm-sp-soap"
 #define lassoLibProtocolProfileNimSpHttp         "http://projectliberty.org/profiles/nim-sp-http"
-#define lassoLibProtocolProfileNimSpSoap         "http://projectliberty.org/profiles/nim-sp-soap"
 #define lassoLibProtocolProfileRniIdpHttp	 "http://projectliberty.org/profiles/rni-idp-http"
 #define lassoLibProtocolProfileRniIdpSoap	 "http://projectliberty.org/profiles/rni-idp-soap"
 #define lassoLibProtocolProfileRniSpHttp	 "http://projectliberty.org/profiles/rni-sp-http"
