@@ -38,22 +38,22 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar **idpList,
 				    const xmlChar *consent)
 {
-  lasso_build_full_authnRequest(NULL,
-				NULL,
-				NULL,
-				NULL,
-				providerID,
-				nameIDPolicy,
-				forceAuthn,
-				isPassive,
-				assertionConsumerServiceID,
-				authnContextClassRefs,
-				authnContextStatementRefs,
-				authnContextComparison,
-				relayState,
-				proxyCount,
-				idpList,
-				consent);
+  return (lasso_build_full_authnRequest(NULL,
+					NULL,
+					NULL,
+					NULL,
+					providerID,
+					nameIDPolicy,
+					forceAuthn,
+					isPassive,
+					assertionConsumerServiceID,
+					authnContextClassRefs,
+					authnContextStatementRefs,
+					authnContextComparison,
+					relayState,
+					proxyCount,
+					idpList,
+					consent));
 }
 
 LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
@@ -142,7 +142,7 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
     lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request), consent);
   }
 
-  return(request);
+  return (request);
 }
 
 
