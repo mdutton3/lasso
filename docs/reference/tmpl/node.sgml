@@ -144,8 +144,7 @@ defined in glib.
 
 <!-- ##### ENUM LassoMessageFormat ##### -->
 <para>
-Return code for lasso_node_init_from_message; it describes the type of the
-message that was passed to that function.
+
 </para>
 
 @LASSO_MESSAGE_FORMAT_ERROR: 
