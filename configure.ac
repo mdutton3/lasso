@@ -97,7 +97,7 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 
-if test "$CWINDOWS" = "yes" ; then
+if test "$CWINDOWS" = "no" ; then
     PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
 fi
 AC_SUBST(LASSO_LIBS)
