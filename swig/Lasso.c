@@ -1,4 +1,6 @@
-/* $Id$
+/* -*- Mode: c; c-basic-offset: 8 -*-
+ *
+ * $Id$
  *
  * SWIG bindings for Lasso Library
  *
@@ -43,12 +45,12 @@
 LassoServer *new_LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
 			     gchar *certificate, guint signature_method)
 {
-    return lasso_server_new(metadata, public_key, private_key, certificate,signature_method);
+	return lasso_server_new(metadata, public_key, private_key, certificate,signature_method);
 }
 
 void delete_LassoServer(LassoServer *server)
 {
-    lasso_server_destroy(server);
+	lasso_server_destroy(server);
 }
 
 
@@ -59,12 +61,12 @@ void delete_LassoServer(LassoServer *server)
 
 LassoIdentity *new_LassoIdentity()
 {
-    return lasso_identity_new();
+	return lasso_identity_new();
 }
 
 void delete_LassoIdentity(LassoIdentity *identity)
 {
-    lasso_identity_destroy(identity);
+	lasso_identity_destroy(identity);
 }
 
 
@@ -75,12 +77,12 @@ void delete_LassoIdentity(LassoIdentity *identity)
 
 LassoSession *new_LassoSession()
 {
-    return lasso_session_new();
+	return lasso_session_new();
 }
 
 void delete_LassoSession(LassoSession *session)
 {
-    lasso_session_destroy(session);
+	lasso_session_destroy(session);
 }
 
 
@@ -91,12 +93,12 @@ void delete_LassoSession(LassoSession *session)
 
 LassoLogin *new_LassoLogin(LassoServer *server)
 {
-    return lasso_login_new(server);
+	return lasso_login_new(server);
 }
 
 void delete_LassoLogin(LassoLogin *login)
 {
-    lasso_login_destroy(login);
+	lasso_login_destroy(login);
 }
 
 
@@ -107,12 +109,12 @@ void delete_LassoLogin(LassoLogin *login)
 
 LassoLogout *new_LassoLogout(LassoServer *server, lassoProviderType provider_type)
 {
-    return lasso_logout_new(server, provider_type);
+	return lasso_logout_new(server, provider_type);
 }
 
 void delete_LassoLogout(LassoLogout *logout)
 {
-    lasso_logout_destroy(logout);
+	lasso_logout_destroy(logout);
 }
 
 
@@ -123,10 +125,10 @@ void delete_LassoLogout(LassoLogout *logout)
 
 LassoLecp *new_LassoLecp(LassoServer *server)
 {
-    return lasso_lecp_new(server);
+	return lasso_lecp_new(server);
 }
 
 void delete_LassoLecp(LassoLecp *lecp)
 {
-    lasso_lecp_destroy(lecp);
+	lasso_lecp_destroy(lecp);
 }

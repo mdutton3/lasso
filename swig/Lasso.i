@@ -1,4 +1,6 @@
-/* $Id$
+/* -*- Mode: c; c-basic-offset: 8 -*-
+ *
+ * $Id$
  *
  * SWIG bindings for Lasso Library
  *
@@ -64,7 +66,7 @@
 /* When lasso module is imported, lasso is initialized.
 %init
 %{
-    lasso_init();
+	lasso_init();
 %}*/
 
 
@@ -132,7 +134,7 @@ int lasso_shutdown(void);
 
 %nodefault _LassoSamlpRequest;
 typedef struct _LassoSamlpRequest {
-    LassoSamlpRequestAbstract parent;
+	LassoSamlpRequestAbstract parent;
 } LassoSamlpRequest;
 
 
@@ -145,7 +147,7 @@ typedef struct _LassoSamlpRequest {
 
 %nodefault _LassoLibAuthnRequest;
 typedef struct _LassoLibAuthnRequest {
-    LassoSamlpRequestAbstract parent;
+	LassoSamlpRequestAbstract parent;
 } LassoLibAuthnRequest;
 
 /* Methods */
@@ -192,7 +194,7 @@ void lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node, LassoLibSco
 
 %nodefault _LassoAuthnRequest;
 typedef struct _LassoAuthnRequest {
-    LassoLibAuthnRequest parent;
+	LassoLibAuthnRequest parent;
 } LassoAuthnRequest;
 
 
@@ -211,18 +213,18 @@ typedef struct _LassoAuthnRequest {
 /* Object */
 
 typedef struct {
-    LassoProvider parent;
-    GPtrArray *providers;
-    gchar *providerID;   
-    gchar *private_key;
-    gchar *certificate;
-    guint signature_method;
+	LassoProvider parent;
+	GPtrArray *providers;
+	gchar *providerID;   
+	gchar *private_key;
+	gchar *certificate;
+	guint signature_method;
 
-    %extend {
-	LassoServer(gchar *metadata, gchar *public_key, gchar *private_key, gchar *certificate,
-		    guint signature_method);
-	~LassoServer();
-    }
+	%extend {
+		LassoServer(gchar *metadata, gchar *public_key, gchar *private_key,
+			    gchar *certificate, guint signature_method);
+		~LassoServer();
+	}
 } LassoServer;
 
 /* Constructors */
@@ -255,15 +257,15 @@ gchar* lasso_server_dump(LassoServer *server);
 /* Object */
 
 typedef struct {
-  GObject parent;
-  GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
-  GHashTable *federations; /* hash for federations with remote ProviderID as key */
-  gboolean is_dirty;
+	GObject parent;
+	GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
+	GHashTable *federations; /* hash for federations with remote ProviderID as key */
+	gboolean is_dirty;
 
-    %extend {
-	LassoIdentity();
-	~LassoIdentity();
-    }
+	%extend {
+		LassoIdentity();
+		~LassoIdentity();
+	}
 } LassoIdentity;
 
 /* Constructors */
@@ -292,15 +294,15 @@ gchar* lasso_identity_dump(LassoIdentity *identity);
 /* Object */
 
 typedef struct {
-  GObject parent;
-  GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
-  GHashTable *assertions;  /* hash for assertions with remote providerID as key */
-  gboolean is_dirty;
+	GObject parent;
+	GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
+	GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+	gboolean is_dirty;
 
-    %extend {
-	LassoSession();
-	~LassoSession();
-    }
+	%extend {
+		LassoSession();
+		~LassoSession();
+	}
 } LassoSession;
 
 /* Constructors */
@@ -332,47 +334,47 @@ gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *rem
 /* Constants */
 
 typedef enum {
-    lassoHttpMethodGet = 1,
-    lassoHttpMethodPost,
-    lassoHttpMethodRedirect,
-    lassoHttpMethodSoap
+	lassoHttpMethodGet = 1,
+	lassoHttpMethodPost,
+	lassoHttpMethodRedirect,
+	lassoHttpMethodSoap
 } lassoHttpMethod;
 
 typedef enum {
-    lassoMessageTypeNone = 0,
-    lassoMessageTypeAuthnRequest,
-    lassoMessageTypeAuthnResponse,
-    lassoMessageTypeRequest,
-    lassoMessageTypeResponse,
-    lassoMessageTypeArtifact
+	lassoMessageTypeNone = 0,
+	lassoMessageTypeAuthnRequest,
+	lassoMessageTypeAuthnResponse,
+	lassoMessageTypeRequest,
+	lassoMessageTypeResponse,
+	lassoMessageTypeArtifact
 } lassoMessageType;
 
 /* Request types (used by SOAP endpoint) */
 typedef enum {
-    lassoRequestTypeInvalid = 0,
-    lassoRequestTypeLogin,
-    lassoRequestTypeLogout,
-    lassoRequestTypeFederationTermination,
-    lassoRequestTypeRegisterNameIdentifier,
-    lassoRequestTypeNameIdentifierMapping,
-    lassoRequestTypeLecp
+	lassoRequestTypeInvalid = 0,
+	lassoRequestTypeLogin,
+	lassoRequestTypeLogout,
+	lassoRequestTypeFederationTermination,
+	lassoRequestTypeRegisterNameIdentifier,
+	lassoRequestTypeNameIdentifierMapping,
+	lassoRequestTypeLecp
 } lassoRequestType;
 
 /* Object */
 
 %nodefault _LassoProfile;
 typedef struct _LassoProfile {
-    GObject parent;
-    LassoServer *server;
-    LassoNode *request;
-    LassoNode *response;
-    gchar *nameIdentifier;
-    gchar *remote_providerID;
-    gchar *msg_url;
-    gchar *msg_body;
-    gchar *msg_relayState;
-    lassoMessageType request_type;
-    lassoMessageType response_type;
+	GObject parent;
+	LassoServer *server;
+	LassoNode *request;
+	LassoNode *response;
+	gchar *nameIdentifier;
+	gchar *remote_providerID;
+	gchar *msg_url;
+	gchar *msg_body;
+	gchar *msg_relayState;
+	lassoMessageType request_type;
+	lassoMessageType response_type;
 } LassoProfile;
 
 /* Methods */
@@ -412,22 +414,22 @@ lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
 /* Constants */
 
 typedef enum {
-    lassoLoginProtocolProfileBrwsArt = 1,
-    lassoLoginProtocolProfileBrwsPost,
+	lassoLoginProtocolProfileBrwsArt = 1,
+	lassoLoginProtocolProfileBrwsPost,
 } lassoLoginProtocolProfiles;
 
 /* Object */
 
 typedef struct {
-    LassoProfile parent;
-    lassoLoginProtocolProfiles protocolProfile;
-    gchar *assertionArtifact;
-    gchar *response_dump;
+	LassoProfile parent;
+	lassoLoginProtocolProfiles protocolProfile;
+	gchar *assertionArtifact;
+	gchar *response_dump;
 
-    %extend {
-	LassoLogin(LassoServer *server);
-	~LassoLogin();
-    }
+	%extend {
+		LassoLogin(LassoServer *server);
+		~LassoLogin();
+	}
 } LassoLogin;
 
 /* Constructors */
@@ -486,12 +488,12 @@ gint lasso_login_process_response_msg(LassoLogin  *login, gchar *response_msg);
 /* Object */
 
 typedef struct {
-  LassoProfile parent;
+	LassoProfile parent;
 
-    %extend {
-	LassoLogout(LassoServer *server, lassoProviderType provider_type);
-	~LassoLogout();
-    }
+	%extend {
+		LassoLogout(LassoServer *server, lassoProviderType provider_type);
+		~LassoLogout();
+	}
 } LassoLogout;
 
 /* Constructors */
@@ -531,12 +533,12 @@ gint lasso_logout_validate_request(LassoLogout *logout);
 /* Object */
 
 typedef struct {
-  LassoLogin parent;
+	LassoLogin parent;
 
-    %extend {
-	LassoLecp(LassoServer *server);
-	~LassoLecp();
-    }
+	%extend {
+		LassoLecp(LassoServer *server);
+		~LassoLecp();
+	}
 } LassoLecp;
 
 /* Constructors */
@@ -569,6 +571,8 @@ gint lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, gchar *reque
   
 gint lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, gchar *response_msg);
 
+
+#ifdef 0
 
 /***********************************************************************
  ***********************************************************************
@@ -1399,13 +1403,14 @@ typedef struct _LassoDsSignature {
 };*/
 
 GType lasso_ds_signature_get_type(void);
+/*
 LassoNode* lasso_ds_signature_new(LassoNode        *node,
 					       xmlSecTransformId sign_method);
-
 gint lasso_ds_signature_sign (LassoDsSignature  *node,
 					   const xmlChar     *private_key_file,
 					   const xmlChar     *certificate_file,
 					   GError           **err);
+*/
 
 /*
  */
@@ -3220,3 +3225,4 @@ void           lasso_node_rename_prop      (LassoNode     *node,
 							 const xmlChar *old_name,
 							 const xmlChar *new_name);
 
+#endif
