@@ -749,8 +749,8 @@ lasso_login_process_response_msg(LassoLogin  *login,
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
 
   /* put response assertion in user object */
-  assertion = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->response,
-					   "Assertion", lassoLibHRef);
+  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				   "Assertion", lassoLibHRef);
   lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
 			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
 			   assertion);
