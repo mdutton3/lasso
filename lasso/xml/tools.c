@@ -164,7 +164,7 @@ lasso_get_current_time()
 
   g_get_current_time(&time_val);
   tm = localtime(&(time_val.tv_sec));
-  strftime((char *)ret, 21, "%FT%TZ", tm);
+  strftime((char *)ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
 
   return (ret);
 }
