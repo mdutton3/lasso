@@ -554,7 +554,7 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
 fi
 
-PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 gmodule-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl openssl)
+PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl openssl)
 
 dnl Let people disable the gtk-doc stuff.
 AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc       disable documentation build],,
