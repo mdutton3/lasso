@@ -31,7 +31,6 @@ lib_LTLIBRARIES = \
 liblassoinclude_HEADERS = \
 	export.h	\
 	lasso.h	\
-	version.h \
 	$(NULL)
 
 liblasso_la_SOURCES = \
