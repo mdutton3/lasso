@@ -2445,6 +2445,9 @@ typedef struct {
 
 		~LassoNameRegistration();
 
+		%newobject newFromDump;
+		static LassoNameRegistration *newFromDump(LassoServer *server, gchar *dump);
+
 		/* Methods inherited from LassoProfile */
 
 	        THROW_ERROR
@@ -2566,6 +2569,11 @@ gint LassoNameRegistration_session_set(LassoNameRegistration *self, LassoSession
 
 #define new_LassoNameRegistration lasso_name_registration_new
 #define delete_LassoNameRegistration lasso_name_registration_destroy
+#ifdef PHP_VERSION
+#define LassoNameRegistration_newFromDump lasso_name_registration_new_from_dump
+#else
+#define NameRegistration_newFromDump lasso_name_registration_new_from_dump
+#endif
 
 /* Methods inherited from LassoProfile implementations */
 

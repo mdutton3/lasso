@@ -58,16 +58,21 @@ struct _LassoNameRegistrationClass {
 
 };
 
-LASSO_EXPORT GType                        lasso_name_registration_get_type (void);
+LASSO_EXPORT GType                  lasso_name_registration_get_type      (void);
 
-LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new      (LassoServer       *server,
-								      lassoProviderType  provider_type);
+LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new           (LassoServer       *server,
+									   lassoProviderType  provider_type);
+
+LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new_from_dump (LassoServer *server,
+									   gchar       *dump);
 
 LASSO_EXPORT gint            lasso_name_registration_build_request_msg    (LassoNameRegistration *name_registration);
 
 LASSO_EXPORT gint            lasso_name_registration_build_response_msg   (LassoNameRegistration *name_registration);
 
 LASSO_EXPORT void            lasso_name_registration_destroy              (LassoNameRegistration *name_registration);
+
+LASSO_EXPORT gchar*          lasso_name_registration_dump                 (LassoNameRegistration *name_registration);
 
 LASSO_EXPORT gint            lasso_name_registration_init_request         (LassoNameRegistration *name_registration,
 									   gchar                 *remote_providerID);
