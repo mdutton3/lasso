@@ -430,7 +430,9 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 		return LASSO_ERROR_UNDEFINED;
 	}
 
-	lasso_federation_set_local_name_identifier(federation, nameIdentifier);
+	if (federation->local_nameIdentifier)
+		lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
+	federation->local_nameIdentifier = g_object_ref(nameIdentifier);
 	profile->identity->is_dirty = TRUE;
 
 	/* set the relay state */
@@ -515,7 +517,9 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 		return LASSO_ERROR_UNDEFINED;
 	}
 
-	lasso_federation_set_remote_name_identifier(federation, providedNameIdentifier);
+	if (federation->remote_nameIdentifier)
+		lasso_node_destroy(LASSO_NODE(federation->remote_nameIdentifier));
+	federation->remote_nameIdentifier = g_object_ref(providedNameIdentifier);
 	profile->identity->is_dirty = TRUE;
 
 	return 0;

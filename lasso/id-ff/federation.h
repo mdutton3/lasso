@@ -71,11 +71,6 @@ LASSO_EXPORT LassoFederation* lasso_federation_new(gchar *remote_providerID);
 LASSO_EXPORT void lasso_federation_build_local_name_identifier(LassoFederation *federation,
 		const gchar *nameQualifier, const gchar *format, const gchar *content);
 
-LASSO_EXPORT void lasso_federation_set_local_name_identifier(LassoFederation *federation,
-		LassoSamlNameIdentifier *name_identifier);
-LASSO_EXPORT void lasso_federation_set_remote_name_identifier(LassoFederation *federation,
-		LassoSamlNameIdentifier *name_identifier);
-
 LASSO_EXPORT void lasso_federation_destroy(LassoFederation *federation);
 
 LASSO_EXPORT gboolean lasso_federation_verify_name_identifier(

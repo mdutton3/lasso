@@ -97,8 +97,6 @@ LassoFederation
 lasso_federation_new
 lasso_federation_destroy
 lasso_federation_build_local_name_identifier
-lasso_federation_set_local_name_identifier
-lasso_federation_set_remote_name_identifier
 lasso_federation_verify_name_identifier
 <SUBSECTION Standard>
 LASSO_FEDERATION

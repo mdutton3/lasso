@@ -77,40 +77,6 @@ lasso_federation_build_local_name_identifier(LassoFederation *federation,
 }
 
 /**
- * lasso_federation_set_local_name_identifier:
- * @federation: a #LassoFederation
- * @name_identifier: the #LassoSamlNameIdentifier
- *
- * Sets local name identifier to @name_identifier.  Caller keeps ownership of
- * @name_identifier.
- **/
-void
-lasso_federation_set_local_name_identifier(LassoFederation *federation,
-		LassoSamlNameIdentifier *name_identifier)
-{
-	if (federation->local_nameIdentifier)
-		lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
-	federation->local_nameIdentifier = g_object_ref(name_identifier);
-}
-
-/**
- * lasso_federation_set_remote_name_identifier:
- * @federation: a #LassoFederation
- * @name_identifier: the #LassoSamlNameIdentifier
- *
- * Sets remote name identifier to @name_identifier.  Caller keeps ownership of
- * @name_identifier
- **/
-void
-lasso_federation_set_remote_name_identifier(LassoFederation *federation,
-		LassoSamlNameIdentifier *name_identifier)
-{
-	if (federation->remote_nameIdentifier)
-		lasso_node_destroy(LASSO_NODE(federation->remote_nameIdentifier));
-	federation->remote_nameIdentifier = g_object_ref(name_identifier);
-}
-
-/**
  * lasso_federation_destroy:
  * @federation: a #LassoFederation
  *
