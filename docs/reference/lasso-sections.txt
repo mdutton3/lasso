@@ -1133,7 +1133,6 @@ LassoLogoutResponse
 LassoLogoutResponseClass
 lasso_logout_response_new
 lasso_logout_response_new_from_export
-lasso_logout_response_new_from_request_export
 <SUBSECTION Standard>
 LASSO_LOGOUT_RESPONSE
 LASSO_IS_LOGOUT_RESPONSE
@@ -1302,7 +1301,6 @@ LassoDefederationClass
 lasso_defederation_new
 lasso_defederation_build_notification_msg
 lasso_defederation_destroy
-lasso_defederation_init_notification
 lasso_defederation_process_notification_msg
 lasso_defederation_validate_notification
 <SUBSECTION Standard>
@@ -1382,7 +1380,6 @@ lasso_logout_build_request_msg
 lasso_logout_build_response_msg
 lasso_logout_destroy
 lasso_logout_get_next_providerID
-lasso_logout_init_request
 lasso_logout_process_request_msg
 lasso_logout_process_response_msg
 lasso_logout_validate_request
@@ -1466,7 +1463,6 @@ lasso_session_destroy
 lasso_session_dump
 lasso_session_get_assertion
 lasso_session_get_authentication_method
-lasso_session_get_next_providerID
 lasso_session_remove_assertion
 <SUBSECTION Standard>
 LASSO_SESSION
