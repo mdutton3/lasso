@@ -23,7 +23,7 @@ AC_REVISION($Revision$)
 dnl Run many macros mostly needed by configure.ac.
 AM_INIT_AUTOMAKE(lasso, 0.3.0)
 dnl Create rules to automaticaly regenerate the config header.
-AC_CONFIG_HEADERS([lasso/lasso_config.h])
+AM_CONFIG_HEADER(lasso/lasso_config.h)
 dnl Add --enable-maintainer-mode option to configure.
 AM_MAINTAINER_MODE
 
