@@ -62,14 +62,14 @@ LASSO_EXPORT xmlChar*          lasso_g_ptr_array_index                    (GPtrA
 
 LASSO_EXPORT gchar*            lasso_get_current_time                     (void);
 
-LASSO_EXPORT GPtrArray*        lasso_query_get_value                      (const gchar   *query,
-									   const xmlChar *param);
-
 LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const gchar *pem_file);
 
 LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const gchar *pem_cert_file);
 
 LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const gchar* pem_certs_chain_file);
+
+LASSO_EXPORT GPtrArray*        lasso_query_get_value                      (const gchar   *query,
+									   const xmlChar *param);
 
 LASSO_EXPORT GData*            lasso_query_to_dict                        (const gchar *query);
 

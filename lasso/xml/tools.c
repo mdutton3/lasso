@@ -270,7 +270,7 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
  * 
  * Creates a keys manager and loads inside all the CA certificates of
  * @pem_certs_chain_file. Caller is responsible for freeing it with
- * #xmlSecKeysMngrDestroy function.
+ * xmlSecKeysMngrDestroy() function.
  * 
  * Return value: a newly allocated keys manager or NULL if an error occurs.
  **/
@@ -458,7 +458,7 @@ lasso_query_to_dict(const gchar *query)
  * @sender_public_key_file: the sender public key
  * @recipient_private_key_file: the recipient private key
  * 
- * Verifys the query's signature.
+ * Verifys the query signature.
  * 
  * Return value: 0 if signature is valid
  * a positive value if signature was not found or is invalid
@@ -469,31 +469,51 @@ lasso_query_verify_signature(const gchar   *query,
 			     const xmlChar *sender_public_key_file,
 			     const xmlChar *recipient_private_key_file)
 {
+  GData *gd;
   xmlDocPtr doc;
   xmlNodePtr sigNode, sigValNode;
   xmlSecDSigCtxPtr dsigCtx;
   xmlChar *str_unescaped;
+  xmlChar *sigAlg;
   gchar **str_split;
   gint ret = 0;
 
-  /* split query, signature (must be last param) */
+  /* split query, the signature MUST be the last param of the query */
   str_split = g_strsplit(query, "&Signature=", 0);
-  if (str_split[1] == NULL)
-    return 2;
+  if (str_split[1] == NULL) {
+    return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+  }
 
-  /* re-create doc to verify (signed + encrypted) */
-  doc = lasso_str_sign(str_split[0],
-		       lassoSignatureMethodRsaSha1,
-		       recipient_private_key_file);
+  /* get SigAlg in query (left part) */
+  gd = lasso_query_to_dict(str_split[0]);
+  sigAlg = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SigAlg"), 0);
+
+  /* sign the query (without the signature param) */
+  if (xmlStrEqual(sigAlg, xmlSecHrefRsaSha1)) {
+    doc = lasso_str_sign(str_split[0],
+			 lassoSignatureMethodRsaSha1,
+			 recipient_private_key_file);
+  }
+  else if (xmlStrEqual(sigAlg, xmlSecHrefDsaSha1)) {
+    doc = lasso_str_sign(str_split[0],
+			 lassoSignatureMethodDsaSha1,
+			 recipient_private_key_file);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_INVALID_SIGALG));
+    ret = LASSO_DS_ERROR_INVALID_SIGALG;
+    goto done;	
+  }
+
+  /* replace doc signature value by the TRUE signature value found in the query */
   sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 			      xmlSecNodeSignatureValue,
 			      xmlSecDSigNs);
-  /* set SignatureValue content */
   str_unescaped = lasso_str_unescape(str_split[1]);
   xmlNodeSetContent(sigValNode, str_unescaped);
   xmlFree(str_unescaped);
-  g_strfreev(str_split);
 
+  /* start to verify the signature */
   /* find start node */
   sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 			   xmlSecNodeSignature, xmlSecDSigNs);
@@ -535,7 +555,6 @@ lasso_query_verify_signature(const gchar   *query,
     goto done;
   }
   
-  /* print verification result to stdout and return */
   if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
     ret = 0;
   }
@@ -548,6 +567,8 @@ lasso_query_verify_signature(const gchar   *query,
   
  done:
   /* cleanup */
+  g_strfreev(str_split);
+  g_datalist_clear(&gd);
   if(dsigCtx != NULL) {
     xmlSecDSigCtxDestroy(dsigCtx);
   }
@@ -683,16 +704,10 @@ lasso_str_sign(xmlChar              *str,
     goto done;		
   }
   
-  /* add <dsig:KeyInfo/> and <dsig:KeyName/> nodes to put key name in the
-     signed document */
+  /* add <dsig:KeyInfo/> */
   keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
   if (keyInfoNode == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
-    goto done;		
-  }
-  
-  if (xmlSecTmplKeyInfoAddKeyName(keyInfoNode, NULL) == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add key name\n");
     goto done;		
   }
   
