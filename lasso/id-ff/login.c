@@ -31,11 +31,6 @@
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
 
-struct _LassoLoginPrivate
-{
-	gboolean dispose_has_run;
-};
-
 /*****************************************************************************/
 /* static methods/functions */
 /*****************************************************************************/
@@ -1266,6 +1261,12 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "AssertionArtifact", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, assertionArtifact) },
+	{ "NameIDPolicy", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLogin, nameIDPolicy) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
@@ -1275,19 +1276,12 @@ get_xmlNode(LassoNode *node)
 	LassoLogin *login = LASSO_LOGIN(node);
 
 	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "Login");
 	xmlSetProp(xmlnode, "LoginDumpVersion", "2");
-
-	if (login->assertionArtifact)
-		xmlNewTextChild(xmlnode, NULL, "AssertionArtifact", login->assertionArtifact);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
 		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", "Artifact");
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST)
 		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", "POST");
-
-	if (login->nameIDPolicy)
-		xmlNewTextChild(xmlnode, NULL, "NameIDPolicy", login->nameIDPolicy);
 
 	return xmlnode;
 }
@@ -1308,10 +1302,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			t = t->next;
 			continue;
 		}
-		if (strcmp(t->name, "AssertionArtifact") == 0)
-			login->assertionArtifact = xmlNodeGetContent(t);
-		if (strcmp(t->name, "NameIDPolicy") == 0)
-			login->nameIDPolicy = xmlNodeGetContent(t);
 		if (strcmp(t->name, "ProtocolProfile") == 0) {
 			char *s;
 			s = xmlNodeGetContent(t);
@@ -1327,61 +1317,30 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 }
 
 /*****************************************************************************/
-/* overridden parent class methods */
-/*****************************************************************************/
-
-static void
-dispose(GObject *object)
-{
-	LassoLogin *login = LASSO_LOGIN(object);
-
-	if (login->private_data->dispose_has_run == TRUE) {
-		return;
-	}
-	login->private_data->dispose_has_run = TRUE;
-
-	debug("Login object 0x%x disposed ...", login);
-
-	/* unref reference counted objects */
-
-	G_OBJECT_CLASS(parent_class)->dispose(object);
-}
-
-static void
-finalize(GObject *object)
-{ 
-	LassoLogin *login = LASSO_LOGIN(object);
-
-	debug("Login object 0x%x finalized ...", login);
-	g_free(login->assertionArtifact);
-	g_free(login->private_data);
-	G_OBJECT_CLASS(parent_class)->finalize(object);
-}
-
-/*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
 
 static void
 instance_init(LassoLogin *login)
 {
-	login->private_data = g_new(LassoLoginPrivate, 1);
-	login->private_data->dispose_has_run = FALSE;
-
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;
+	login->nameIDPolicy = NULL;
+	login->http_method = 0;
 }
 
 static void
 class_init(LassoLoginClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
 	parent_class = g_type_class_peek_parent(klass);
-
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
-
-	G_OBJECT_CLASS(klass)->dispose = dispose;
-	G_OBJECT_CLASS(klass)->finalize = finalize;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Login");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
