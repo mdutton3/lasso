@@ -316,22 +316,20 @@ dispose(GObject *object)
 {
 	LassoSession *session = LASSO_SESSION(object);
 
-	if (session->private_data->dispose_has_run == TRUE) {
+	if (session->private_data->dispose_has_run == TRUE)
 		return;
-	}
 	session->private_data->dispose_has_run = TRUE;
 
 	debug("Session object 0x%p disposed ...", session);
 
-#if 0 /* XXX: disabled; memory management problem somewhere */
 	g_hash_table_destroy(session->assertions);
 	session->assertions = NULL;
-#endif
+
 	g_hash_table_destroy(session->private_data->status);
 	session->private_data->status = NULL;
+
 	g_list_free(session->private_data->providerIDs);
 	session->private_data->providerIDs = NULL;
-
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
