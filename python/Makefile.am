@@ -16,7 +16,7 @@ else
 _lasso_la_LDFLAGS = -no-undefined -module -avoid-version
 endif
 endif
-lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i
+lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
 	$(SWIG) -v -python -module lasso -o lasso_wrap.c $<
 
 SWIG_OUTPUTS = lasso_wrap.c lasso.py

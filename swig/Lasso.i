@@ -2811,3 +2811,6 @@ gint LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, gchar
 #define LassoNameRegistration_validateRequest lasso_name_registration_validate_request
 
 %}
+
+%include Lasso-wsf.i
+

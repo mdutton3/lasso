@@ -48,7 +48,7 @@ CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
-lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i
+lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
 	$(SWIG) -v -java -module lasso -package com.entrouvert.lasso -o lasso_wrap.c $<
 
 # FIXME There must be a better way to do this with SWIG
