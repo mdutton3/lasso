@@ -5,7 +5,7 @@
 #
 # PyLasso - Python bindings for Lasso Library
 #
-# Copyright (C) 2003-2004 Easter-eggs, Valery Febvre
+# Copyright (C) 2004 Entr'ouvert
 # http://lasso.entrouvert.org
 #
 # Author: Valery Febvre <vfebvre@easter-eggs.com>
@@ -70,7 +70,7 @@ class ErrorLassoNotInitialized(Error):
 class ErrorInstanceCreationFailed(Error):
     code = 3
 
-    def __str__(self, functionName):
+    def __str__(self):
         return 'Instance creation failed in Lasso function %s()' % self.functionName
 
 
