@@ -31,6 +31,10 @@ splogout.destroy()
 print 'request url : ', msg_url
 print 'request body : ', msg_body
 
+request_type = lasso.get_request_type_from_soap_msg(msg_body)
+if request_type==lasso.RequestTypeLogout:
+    print "it's a LogoutRequest !"
+
 
 # LogoutResponse :
 idpserver = lasso.Server.new("../../examples/idp.xml",
@@ -42,15 +46,15 @@ idpuser_dump = "<LassoUser><LassoAssertions></LassoAssertions><LassoIdentities><
 idpuser = lasso.User.new_from_dump(idpuser_dump)
 
 idplogout = lasso.Logout.new(idpserver, idpuser, lasso.providerTypeIdp)
-#idplogout.process_request_msg(request_msg, lasso.httpMethodSoap)
-#idplogout.build_response_msg()
+idplogout.process_request_msg(request_msg, lasso.httpMethodSoap)
+idplogout.build_response_msg()
 
-#msg_url  = idplogout.msg_url
-#msg_body = idplogout.msg_body
-#print 'body : ', idplogout.msg_body
+msg_url  = idplogout.msg_url
+msg_body = idplogout.msg_body
+print 'body : ', idplogout.msg_body
 
 # process the response :
-#splogout = lasso.Logout.new(spserver, spuser, lasso.providerTypeSp)
-#splogout.process_response_msg(msg_body, lasso.httpMethodSoap)
+splogout = lasso.Logout.new(spserver, spuser, lasso.providerTypeSp)
+splogout.process_response_msg(msg_body, lasso.httpMethodSoap)
 
 lasso.shutdown()
