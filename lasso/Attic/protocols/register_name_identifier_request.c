@@ -97,25 +97,19 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
 
   idpidentifier = lasso_lib_idp_provided_name_identifier_new(idpProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), idpNameQualifier);
-  lasso_node_rename_prop(idpidentifier, "NameQualifier", "IDPNameQualifier");
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), idpFormat);
-  lasso_node_rename_prop(idpidentifier, "Format", "IDPFormat");
   lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
 
   spidentifier = lasso_lib_sp_provided_name_identifier_new(spProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spNameQualifier);
-  lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spFormat);
-  lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
   lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									  LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
 
   oldidentifier = lasso_lib_old_provided_name_identifier_new(oldProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldNameQualifier);
-  lasso_node_rename_prop(oldidentifier, "NameQualifier", "OldNameQualifier");
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldFormat);
-  lasso_node_rename_prop(oldidentifier, "Format", "OldFormat");
   lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
 
