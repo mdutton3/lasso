@@ -62,10 +62,6 @@ LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_relayState     
 LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_providerID                (LassoLibRegisterNameIdentifierRequest *,
 											    const xmlChar *);
 
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_update_nameIdentifiers        (LassoLibRegisterNameIdentifierRequest *);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_restore_nameIdentifiers       (LassoLibRegisterNameIdentifierRequest *);
-
 LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier (LassoLibRegisterNameIdentifierRequest *,
 											    LassoLibIDPProvidedNameIdentifier *);
 

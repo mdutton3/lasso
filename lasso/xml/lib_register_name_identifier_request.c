@@ -63,8 +63,8 @@ From liberty-metadata-v1.0.xsd:
 /*****************************************************************************/
 
 void
-lasso_lib_register_name_identifier_request_set_idp_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									    LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
+lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
+									 LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
 {
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
@@ -76,8 +76,8 @@ lasso_lib_register_name_identifier_request_set_idp_provided_name_identifier(Lass
 }
 
 void
-lasso_lib_register_name_identifier_request_set_old_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									    LassoLibOLDProvidedNameIdentifier *oldProvidedNameIdentifier)
+lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
+									 LassoLibOLDProvidedNameIdentifier *oldProvidedNameIdentifier)
 {
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldProvidedNameIdentifier));
@@ -86,36 +86,6 @@ lasso_lib_register_name_identifier_request_set_old_provided_name_identifier(Lass
   class->add_child(LASSO_NODE (node),
 		   LASSO_NODE (oldProvidedNameIdentifier),
 		   FALSE);
-}
-
-void
-lasso_lib_register_name_identifier_request_update_nameIdentifiers(LassoLibRegisterNameIdentifierRequest *node)
-{
-  // IDPProvidedNameIdentifier
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
-			 "NameQualifier", "IDPNameQualifier");
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
-			 "Format", "IDPFormat");
-  
-  // SPProvidedNameIdentifier
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
-			 "NameQualifier", "SPNameQualifier");
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
-			 "Format", "SPFormat");
-  
-  // OldProvidedNameIdentifier
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
-			 "NameQualifier", "OldNameQualifier");
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
-			 "Format", "OldFormat");
-}
-
-void
-lasso_lib_register_name_identifier_request_restore_nameIdentifiers(LassoLibRegisterNameIdentifierRequest *node)
-{
-  // IDPProvidedNameIdentifier
-  lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
-			 "NameQualifier", "IDPNameQualifier");
 }
 
 void
@@ -141,8 +111,8 @@ lasso_lib_register_name_identifier_request_set_relayState(LassoLibRegisterNameId
 }
 
 void
-lasso_lib_register_name_identifier_request_set_sp_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									   LassoLibSPProvidedNameIdentifier *spProvidedNameIdentifier)
+lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
+									LassoLibSPProvidedNameIdentifier *spProvidedNameIdentifier)
 {
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_SP_PROVIDED_NAME_IDENTIFIER(spProvidedNameIdentifier));
