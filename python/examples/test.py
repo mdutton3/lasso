@@ -6,6 +6,7 @@ import lasso
 
 lasso.init()
 
+# creation d'une AuthnRequest
 req = lasso.AuthnRequest("providerid.com",
                          "federated",
                          0,
@@ -26,6 +27,7 @@ query = req.node.url_encode(1, "../../examples/rsakey.pem")
 
 print query
 
+# creation d'une AuthnResponse
 res = lasso.AuthnResponse(query, 1,
                           "../../examples/rsapub.pem",
                           "../../examples/rsakey.pem",
@@ -48,9 +50,11 @@ lasso.assertion_add_authenticationStatement(assertion, authentication_statement)
 res.add_assertion(assertion)
 res.node.dump("iso-8859-1", 1)
 
-assertion.verify_signature("../../examples/rootcert.pem")
+# Verification de l'assertion de l'AuthnResponse
+#assertion.verify_signature("../../examples/rootcert.pem")
 res.node.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
 
+# recuperation du StatusCode
 status = res.node.get_child("Status")
 status_code = status.get_child("StatusCode")
 print status_code.get_attr_value("Value")
