@@ -67,7 +67,7 @@ GTKDOC_CFLAGS = 		\
 
 GTKDOC_LIBS = 	\
 	$(LASSO_LIBS) \
-	-L$(top_srcdir)/lasso -llasso
+	$(top_builddir)/lasso/liblasso.la
 
 GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)
 GTKDOC_LD=$(LIBTOOL) --mode=link $(CC)
