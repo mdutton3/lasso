@@ -62,7 +62,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     debug(ERROR, "Single Logout Protocol profile not found\n");
     return(-2);
   }
-  debug(DEBUG, "protocol profile : %s\n", protocolProfile);
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
     debug(DEBUG, "building a soap request message\n");
@@ -93,7 +92,6 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  printf("remote provider id : %s\n", profileContext->remote_providerID);
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
     debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
@@ -177,7 +175,6 @@ lasso_logout_init_request(LassoLogout *logout,
 						     nameQualifier,
 						     format);
 
-  debug(DEBUG, "Building the request message is ok\n");
   return(0);
 }
 
@@ -203,17 +200,16 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
     profileContext->request = lasso_logout_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
-    printf("TODO, implement the get method\n");
+    debug(WARNING, "TODO, implement the get method\n");
     break;
   default:
-    printf("error while parsing the request\n");
+    debug(ERROR, "Unknown request method\n");
     return(-1);
   }
 
   /* set the remote provider id from the request */
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
   profileContext->remote_providerID = remote_providerID;
-  debug(DEBUG, "build a response to %s\n", profileContext->remote_providerID);  
 
   /* set LogoutResponse */
   profileContext->response = lasso_logout_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
