@@ -58,16 +58,16 @@ LASSO_EXPORT xmlChar*          lasso_build_unique_id                      (guint
 
 LASSO_EXPORT char* lasso_get_current_time(void);
 
-LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const gchar *pem_file);
+LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const char *pem_file);
 
-LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const gchar *pem_cert_file);
+LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const char *pem_cert_file);
 
-LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const gchar* pem_certs_chain_file);
+LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const char* pem_certs_chain_file);
 
 LASSO_EXPORT xmlChar* lasso_query_sign(xmlChar *query,
 		lassoSignatureMethod sign_method, const char *private_key_file);
 
-LASSO_EXPORT int               lasso_query_verify_signature               (const gchar   *query,
+LASSO_EXPORT int               lasso_query_verify_signature               (const char   *query,
 									   const xmlChar *sender_public_key_file);
 
 LASSO_EXPORT xmlChar*          lasso_sha1                                 (xmlChar *str);

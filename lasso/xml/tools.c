@@ -140,7 +140,7 @@ lasso_get_current_time()
  * Return value: the pem file type
  **/
 lassoPemFileType
-lasso_get_pem_file_type(const gchar *pem_file)
+lasso_get_pem_file_type(const char *pem_file)
 {
   BIO* bio;
   EVP_PKEY *pkey;
@@ -191,7 +191,7 @@ lasso_get_pem_file_type(const gchar *pem_file)
  * Return value: a public key or NULL if an error occurs.
  **/
 xmlSecKeyPtr
-lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
+lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 {
   FILE *fd;
   X509 *pem_cert;
@@ -242,7 +242,7 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
  * Return value: a newly allocated keys manager or NULL if an error occurs.
  **/
 xmlSecKeysMngrPtr
-lasso_load_certs_from_pem_certs_chain_file(const gchar* pem_certs_chain_file)
+lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 {
   xmlSecKeysMngrPtr keys_mngr;
   GIOChannel *gioc;
@@ -438,7 +438,7 @@ lasso_query_sign(xmlChar              *query,
  * a negative value if an error occurs during verification
  **/
 int
-lasso_query_verify_signature(const gchar   *query,
+lasso_query_verify_signature(const char   *query,
 			     const xmlChar *sender_public_key_file)
 {
   BIO *bio = NULL;
@@ -548,14 +548,13 @@ lasso_query_verify_signature(const gchar   *query,
 xmlChar*
 lasso_sha1(xmlChar *str)
 {
-  xmlChar *md;
+	xmlChar *md;
 
-  if (str != NULL) {
-    md = xmlMalloc(20);
-    return SHA1(str, strlen(str), md);
-  }
-  
-  return NULL;
+	if (str == NULL)
+		return NULL;
+
+	md = xmlMalloc(20);
+	return SHA1(str, strlen(str), md);
 }
 
 char** urlencoded_to_strings(const char *str)
@@ -582,5 +581,4 @@ char** urlencoded_to_strings(const char *str)
 	}
 	return result;
 }
-
 
