@@ -962,23 +962,23 @@ void delete_LassoNodeList(GPtrArray *self) {
 
 
 /***********************************************************************
- * StringArray
+ * StringList
  ***********************************************************************/
 
 
 #ifndef SWIGPHP4
-%rename(StringArray) LassoStringArray;
+%rename(StringList) LassoStringList;
 #endif
 %{
-typedef GPtrArray LassoStringArray;
+typedef GPtrArray LassoStringList;
 %}
 typedef struct {
 	%extend {
 		/* Constructor, Destructor & Static Methods */
 
-		LassoStringArray();
+		LassoStringList();
 
-		~LassoStringArray();
+		~LassoStringList();
 
 		/* Methods */
 
@@ -992,8 +992,8 @@ typedef struct {
 			return self;
 		}
 
-		static LassoStringArray *frompointer(GPtrArray *stringArray) {
-			return (LassoStringArray *) stringArray;
+		static LassoStringList *frompointer(GPtrArray *stringArray) {
+			return (LassoStringList *) stringArray;
 		}
 
 #if defined(SWIGPYTHON)
@@ -1041,14 +1041,14 @@ typedef struct {
 		}
 		%exception setitem;
 	}
-} LassoStringArray;
+} LassoStringList;
 
 %{
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoStringArray g_ptr_array_new
-#define delete_LassoStringArray(self) g_ptr_array_free(self, true)
+#define new_LassoStringList g_ptr_array_new
+#define delete_LassoStringList(self) g_ptr_array_free(self, true)
 
 %}
 
@@ -2324,7 +2324,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
 	// FIXME: LassoLibScoping *Scoping;
@@ -2392,7 +2392,7 @@ typedef struct {
 	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -2467,7 +2467,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
@@ -2554,7 +2554,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
@@ -2618,7 +2618,7 @@ typedef struct {
 	/* Attributes inherited from LibStatusResponse */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -2716,7 +2716,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(idpProvidedNameIdentifier) IDPProvidedNameIdentifier;
@@ -2807,7 +2807,7 @@ typedef struct {
 	/* Attributes inherited from LibStatusResponse */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -2905,7 +2905,7 @@ typedef struct {
 	/* Attributes */
 
 	%newobject extension_get;
-	LassoStringArray *extension;
+	LassoStringList *extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -3111,7 +3111,7 @@ typedef struct {
 
 	%immutable providerIds;
 	%newobject providerIds_get;
-	LassoStringArray *providerIds;
+	LassoStringList *providerIds;
 
 	/* Constructor, destructor & static methods */
 
@@ -3194,7 +3194,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoServer_get_providerIds LassoServer_providerIds_get
-LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
+LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
 	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -3333,7 +3333,7 @@ typedef struct {
 
 	%immutable providerIds;
 	%newobject providerIds_get;
-	LassoStringArray *providerIds;
+	LassoStringList *providerIds;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -3366,7 +3366,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
-LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
+LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->federations));
 	g_hash_table_foreach(self->federations, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -3415,7 +3415,7 @@ typedef struct {
 
 	%immutable providerIds;
 	%newobject providerIds_get;
-	LassoStringArray *providerIds;
+	LassoStringList *providerIds;
 
 	/* Constructor, destructor & static methods */
 
@@ -3438,7 +3438,7 @@ typedef struct {
 
 /* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
-LassoStringArray *LassoSession_providerIds_get(LassoSession *self) {
+LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->assertions));
 	g_hash_table_foreach(self->assertions, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
