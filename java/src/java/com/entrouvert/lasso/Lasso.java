@@ -30,24 +30,30 @@ public class Lasso { // Lasso
         System.loadLibrary("jlasso");
     }
 
+    /* HTTP methods used by Liberty Alliance */
     static final public int httpMethodGet = 1;
     static final public int httpMethodPost = 2;
     static final public int httpMethodRedirect = 3;
     static final public int httpMethodSoap = 4;
 
-    /* Consent */
+    /* Consent types */
     static final public String libConsentObtained = "urn:liberty:consent:obtained";
     static final public String libConsentUnavailable = "urn:liberty:consent:unavailable";
     static final public String libConsentInapplicable = "urn:liberty:consent:inapplicable";
 
-    /* NameIDPolicyType */
+    /* NameIDPolicy types */
     static final public String libNameIdPolicyTypeNone = "none";
     static final public String libNameIdPolicyTypeOneTime = "onetime";
     static final public String libNameIdPolicyTypeFederated = "federated";
     static final public String libNameIdPolicyTypeAny = "any";
 
+    /* Login ProtocolProfile types */
     static final public int loginProtocolProfileBrwsArt = 1;
     static final public int loginProtocolProfileBrwsPost = 2;
+
+    /* Provider types */
+    static final public int providerTypeSp  = 1;
+    static final public int providerTypeIdp = 2;
 
     /* Request types */
     static final public int requestTypeLogin = 1;
@@ -56,7 +62,7 @@ public class Lasso { // Lasso
     static final public int requestTypeRegisterNameIdentifier = 4;
     static final public int requestTypeNameIdentifierMapping  = 5;
 
-    /* AuthenticationMethods */
+    /* AuthenticationMethod types */
     static final public String samlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password";
     static final public String samlAuthenticationMethodKerberos = "urn:ietf:rfc:1510";
     static final public String samlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945";
@@ -69,6 +75,7 @@ public class Lasso { // Lasso
     static final public String samlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075";
     static final public String samlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 
+    /* SignatureMethod types */
     static final public int signatureMethodRsaSha1 = 1;
     static final public int signatureMethodDsaSha1 = 2;
 

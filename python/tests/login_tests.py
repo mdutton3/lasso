@@ -131,12 +131,10 @@ class LoginTestCase(unittest.TestCase):
         soapRequestMsg = spLoginContext.msg_body
 
         # Identity provider SOAP endpoint.
-        idpContextDump = self.generateIdentityProviderContextDump()
-        self.failUnless(idpContextDump)
         requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
         self.failUnlessEqual(requestType, lasso.requestTypeLogin)
 
-        # Service provider assertion consumer (step 2).
+        # Service provider assertion consumer (step 2: process SOAP response).
         self.failUnlessEqual(spLoginContext.process_response_msg(soapResponseMsg), 0)
         self.failUnlessEqual(spLoginContext.nameIdentifier, nameIdentifier)
         # The user doesn't have any federation yet.
@@ -146,6 +144,43 @@ class LoginTestCase(unittest.TestCase):
         authenticationMethod = spLoginContext.response.get_child(
             "AuthenticationStatement").get_attr_value("AuthenticationMethod")
         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
+
+        # Service provider logout.
+        spContextDump = self.generateServiceProviderContextDump()
+        self.failUnless(spContextDump)
+        spContext = lasso.Server.new_from_dump(spContextDump)
+        self.failUnless(spContext)
+        self.failUnless(spUserContextDump)
+        spUserContext = lasso.User.new_from_dump(spUserContextDump)
+        self.failUnless(spUserContext)
+        spLogoutContext = lasso.Logout.new(spContext, spUserContext, lasso.providerTypeSp)
+        self.failUnlessEqual(spLogoutContext.init_request(), 0)
+        self.failUnlessEqual(spLogoutContext.build_request_msg(), 0)
+        soapEndpoint = spLogoutContext.msg_url
+        soapRequestMsg = spLogoutContext.msg_body
+
+        # Identity provider SOAP endpoint.
+        requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
+        self.failUnlessEqual(requestType, lasso.requestTypeLogout)
+        idpContextDump = self.generateIdentityProviderContextDump()
+        self.failUnless(idpContextDump)
+        idpContext = lasso.Server.new_from_dump(idpContextDump)
+        self.failUnless(idpContext)
+        self.failUnless(idpUserContextDump)
+        idpUserContext = lasso.User.new_from_dump(idpUserContextDump)
+        self.failUnless(idpUserContext)
+        idpLogoutContext = lasso.Logout.new(idpContext, idpUserContext, lasso.providerTypeIdp)
+        self.failUnlessEqual(
+            idpLogoutContext.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+        self.failUnlessEqual(idpLogoutContext.build_response_msg(), 0)
+        soapResponseMsg = idpLogoutContext.msg_body
+
+        # Service provider logout (step 2: process SOAP response).
+        self.failUnlessEqual(
+            spLogoutContext.process_response_msg(soapResponseMsg, lasso.httpMethodSoap), 0)
+        spUserContextDump = spLogoutContext.user.dump()
+        self.failUnless(spUserContextDump)
+
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 
