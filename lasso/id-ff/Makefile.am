@@ -20,6 +20,7 @@ liblasso_environs_la_SOURCES = \
 	profile_context.c \
 	register_name_identifier.c \
 	server.c \
+	session.c \
 	user.c
 
 liblassoinclude_HEADERS = \
@@ -31,4 +32,5 @@ liblassoinclude_HEADERS = \
 	profile_context.h \
 	register_name_identifier.h \
 	server.h \
+	session.h \
 	user.h
