@@ -68,8 +68,8 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 	if (resourceOffering->ResourceID != NULL) {
 		g_object_ref(resourceOffering->ResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-			LASSO_DISCO_MODIFY(profile->request)->ResourceID = \
-				resourceOffering->ResourceID;
+			LASSO_DISCO_MODIFY(profile->request)->resourceId = \
+				LASSO_NODE(resourceOffering->ResourceID);
 		}
 		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->ResourceID = \
@@ -79,8 +79,8 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 	else if (resourceOffering->EncryptedResourceID != NULL) {
 		g_object_ref(resourceOffering->EncryptedResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-			LASSO_DISCO_MODIFY(profile->request)->EncryptedResourceID = \
-				resourceOffering->EncryptedResourceID;
+			LASSO_DISCO_MODIFY(profile->request)->resourceId = \
+				LASSO_NODE(resourceOffering->EncryptedResourceID);
 		}
 		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->EncryptedResourceID = \
@@ -313,6 +313,9 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 gint
 lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
+	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	LASSO_WSF_PROFILE(discovery)->response =
 		LASSO_NODE(lasso_disco_query_response_new_from_message(message));
 
