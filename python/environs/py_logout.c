@@ -109,38 +109,38 @@ PyObject *logout_init_request(PyObject *self, PyObject *args) {
   return(int_wrap(codeError));
 }
 
-PyObject *logout_handle_request_msg(PyObject *self, PyObject *args) {
+PyObject *logout_process_request_msg(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gchar    *request_msg;
   gint      request_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:logout_handle_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_handle_request_msg",
+  if (CheckArgs(args, "OSI:logout_process_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_process_request_msg",
 			 &logout_obj, &request_msg, &request_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_logout_handle_request_msg(LassoLogout_get(logout_obj), request_msg, request_method);
+  codeError = lasso_logout_process_request_msg(LassoLogout_get(logout_obj), request_msg, request_method);
 
   return(int_wrap(codeError));
 }
 
-PyObject *logout_handle_response_msg(PyObject *self, PyObject *args) {
+PyObject *logout_process_response_msg(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gchar    *response_msg;
   gint      response_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:logout_handle_response_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_handle_response_msg",
+  if (CheckArgs(args, "OSI:logout_process_response_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_process_response_msg",
 			 &logout_obj, &response_msg, &response_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_logout_handle_response_msg(LassoLogout_get(logout_obj), response_msg, response_method);
+  codeError = lasso_logout_process_response_msg(LassoLogout_get(logout_obj), response_msg, response_method);
 
   return(int_wrap(codeError));
 }

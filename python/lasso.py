@@ -860,6 +860,7 @@ class Login:
         if ret is None:
             raise AttributeError, name
         if name == "request":
+            print "request_type =", lassomod.login_getattr(self, "request_type")
             if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
                 ret = AuthnRequest(None, _obj=ret)
             # TODO
@@ -946,8 +947,8 @@ class Logout:
     def init_request(self, remote_providerID):
 	return lassomod.logout_init_request(self, remote_providerID);
 
-    def handle_request(self, request_msg, request_method):
-	return lassomod.logout_handle_request(self, request_msg, request_method);
+    def process_request(self, request_msg, request_method):
+	return lassomod.logout_process_request(self, request_msg, request_method);
 
-    def handle_response(self, response_msg, response_method):
-	return lassomod.logout_handle_response(self, response_msg, response_method);
+    def process_response(self, response_msg, response_method):
+	return lassomod.logout_process_response(self, response_msg, response_method);

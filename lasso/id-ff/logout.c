@@ -187,9 +187,9 @@ lasso_logout_init_request(LassoLogout *logout,
 }
 
 gint
-lasso_logout_handle_request_msg(LassoLogout      *logout,
-				gchar            *request_msg,
-				lassoHttpMethods  request_method)
+lasso_logout_process_request_msg(LassoLogout      *logout,
+				 gchar            *request_msg,
+				 lassoHttpMethods  request_method)
 {
   LassoProfileContext *profileContext;
   LassoIdentity *identity;
@@ -265,9 +265,9 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
 }
 
 gint
-lasso_logout_handle_response_msg(LassoLogout      *logout,
-				 gchar            *response_msg,
-				 lassoHttpMethods  response_method)
+lasso_logout_process_response_msg(LassoLogout      *logout,
+				  gchar            *response_msg,
+				  lassoHttpMethods  response_method)
 {
   LassoProfileContext *profileContext;
   xmlChar   *statusCodeValue;

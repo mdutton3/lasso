@@ -688,7 +688,6 @@ lasso_login_new_from_dump(LassoServer *server,
   
   node_dump = lasso_node_new_from_dump(dump);
   login->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL);
-  login->request = NULL;
 
   lasso_node_destroy(node_dump);
 
