@@ -78,14 +78,14 @@ void
 lasso_identity_set_local_nameIdentifier(LassoIdentity *identity,
 					LassoNode     *nameIdentifier)
 {
-  identity->local_nameIdentifier = nameIdentifier;
+  identity->local_nameIdentifier = lasso_node_copy(nameIdentifier);
 }
 
 void
 lasso_identity_set_remote_nameIdentifier(LassoIdentity *identity,
 					 LassoNode     *nameIdentifier)
 {
-  identity->remote_nameIdentifier = nameIdentifier;
+  identity->remote_nameIdentifier = lasso_node_copy(nameIdentifier);
 }
 
 gboolean

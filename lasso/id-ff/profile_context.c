@@ -48,6 +48,7 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 			   const gchar         *name)
 {
   LassoNode *node;
+  LassoNode *request, *response;
   gchar *child_dump, *dump = NULL;
 
   node = lasso_node_new();
@@ -59,10 +60,14 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   }
 
   if (ctx->request != NULL) {
-    LASSO_NODE_GET_CLASS(node)->add_child(node, lasso_node_copy(ctx->request), FALSE);
+    request = lasso_node_copy(ctx->request);
+    LASSO_NODE_GET_CLASS(node)->add_child(node, request, FALSE);
+    lasso_node_destroy(request);
   }
   if (ctx->response != NULL) {
-    LASSO_NODE_GET_CLASS(node)->add_child(node, lasso_node_copy(ctx->response), FALSE);
+    request = lasso_node_copy(ctx->response);
+    LASSO_NODE_GET_CLASS(node)->add_child(node, response, FALSE);
+    lasso_node_destroy(response);
   }
 
   if (ctx->remote_providerID != NULL) {
@@ -87,11 +92,8 @@ gint
 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 					    gchar               *providerID)
 {
-  if (ctx->remote_providerID) {
-    free(ctx->remote_providerID);
-  }
-  ctx->remote_providerID = (char *)malloc(strlen(providerID)+1);
-  strcpy(ctx->remote_providerID, providerID);
+  g_free(ctx->remote_providerID);
+  ctx->remote_providerID = g_strdup(providerID);
   
   return (1);
 }

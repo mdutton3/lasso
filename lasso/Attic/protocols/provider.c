@@ -55,8 +55,9 @@ lasso_provider_dump(LassoProvider *provider)
     provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
 
   provider_dump = lasso_node_export(provider_node);
-  //lasso_node_destroy(metadata_node);
-  //lasso_node_destroy(provider_node);
+
+  lasso_node_destroy(metadata_node);
+  lasso_node_destroy(provider_node);
 
   return(provider_dump);
 }

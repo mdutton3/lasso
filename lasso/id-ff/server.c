@@ -167,8 +167,8 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
       return(providerID);
     }
     else{
-/*       xmlFree(providerID); */
-/*       xmlFree(hash_providerID); */
+      g_free(providerID);
+      g_free(hash_providerID);
     }
   }
 
