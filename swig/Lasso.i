@@ -237,7 +237,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 %}
 
 %init %{
-{ /* Brace needed for gcc 2.95 */
+{ /* Brace needed for pre-C99 compilers */
 	node_info *info;
 
 #define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className)
