@@ -50,7 +50,7 @@ class Error(Exception):
 
 class ErrorUnknown(Error):
     def __init__(self, code, functionName):
-        ErrorUnknown.__init__(functionName)
+        Error.__init__(self, functionName)
         self.code = code
 
     def __str__(self):
