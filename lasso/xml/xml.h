@@ -73,7 +73,12 @@ struct _LassoNodeClass {
 				    const xmlChar *);
   GPtrArray*  (* get_children)     (LassoNode     *);
   xmlChar *   (* get_content)      (LassoNode     *);
+  void        (* parse_memory)     (LassoNode     *node,
+				    const char    *buffer);
   xmlChar *   (* get_name)         (LassoNode     *);
+  void        (* rename_prop)      (LassoNode     *node,
+				    const xmlChar *old_name,
+				    const xmlChar *new_name);
   GData *     (* serialize)        (LassoNode     *,
 				    GData         *);
   gchar *     (* url_encode)       (LassoNode     *node,
@@ -93,9 +98,6 @@ struct _LassoNodeClass {
   void       (* new_ns)       (LassoNode     *,
 			       const xmlChar *,
 			       const xmlChar *);
-  void       (* rename_prop)  (LassoNode     *node,
-			       const xmlChar *old_name,
-			       const xmlChar *new_name);
   void       (* set_name)     (LassoNode     *,
 			       const xmlChar *);
   void       (* set_node)     (LassoNode     *,
@@ -122,10 +124,10 @@ LASSO_EXPORT void       lasso_node_dump             (LassoNode     *,
 LASSO_EXPORT LassoAttr* lasso_node_get_attr         (LassoNode *node,
 						     const xmlChar *name);
 
-LASSO_EXPORT GPtrArray* lasso_node_get_attrs        (LassoNode *node);
-
 LASSO_EXPORT xmlChar*   lasso_node_get_attr_value   (LassoNode *node,
 						     const xmlChar *name);
+
+LASSO_EXPORT GPtrArray* lasso_node_get_attrs        (LassoNode *node);
 
 LASSO_EXPORT LassoNode* lasso_node_get_child        (LassoNode *node,
 						     const xmlChar *name);
@@ -135,6 +137,9 @@ LASSO_EXPORT GPtrArray* lasso_node_get_children     (LassoNode *node);
 LASSO_EXPORT xmlChar*   lasso_node_get_content      (LassoNode *node);
 
 LASSO_EXPORT xmlChar*   lasso_node_get_name         (LassoNode *node);
+
+LASSO_EXPORT void       lasso_node_parse_memory     (LassoNode  *node,
+						     const char *buffer);
 
 LASSO_EXPORT void       lasso_node_rename_prop      (LassoNode *node,
 						     const xmlChar *old_name,

@@ -116,6 +116,14 @@ lasso_node_get_name(LassoNode *node)
 }
 
 void
+lasso_node_parse_memory(LassoNode *node,
+			const char *buffer)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->parse_memory(node, buffer);
+}
+
+void
 lasso_node_rename_prop(LassoNode *node,
 		       const xmlChar *old_name,
 		       const xmlChar *new_name)
@@ -284,6 +292,44 @@ lasso_node_impl_build_query(LassoNode *node)
   return (query);
 }
 
+static void
+lasso_node_impl_dump(LassoNode *node,
+		     const xmlChar *encoding,
+		     int format)
+{
+  xmlChar *ret;
+  int len;
+  xmlOutputBufferPtr buf;
+  xmlCharEncodingHandlerPtr handler = NULL;
+
+  if (encoding != NULL) {
+    handler = xmlFindCharEncodingHandler(encoding);
+    if (handler == NULL) {
+      return;
+    }
+  }
+  buf = xmlAllocOutputBuffer(handler);
+  if (buf == NULL) {
+    return;
+  }
+  xmlNodeDumpOutput(buf, node->private->node->doc, node->private->node,
+		    0, format, encoding);
+  xmlOutputBufferFlush(buf);
+  if (buf->conv != NULL) {
+    len = buf->conv->use;
+    ret = buf->conv->content;
+    buf->conv->content = NULL;
+  }
+  else {
+    len = buf->buffer->use;
+    ret = buf->buffer->content;
+    buf->buffer->content = NULL;
+  }
+  (void) xmlOutputBufferClose(buf);
+
+  printf("%s\n\n", ret);
+}
+
 static LassoAttr*
 lasso_node_impl_get_attr(LassoNode *node, const xmlChar *name)
 {
@@ -371,42 +417,32 @@ lasso_node_impl_get_name(LassoNode *node)
   return ((xmlChar *)(node->private->node->name));
 }
 
-static void
-lasso_node_impl_dump(LassoNode *node,
-		     const xmlChar *encoding,
-		     int format)
+void
+lasso_node_impl_parse_memory(LassoNode *node,
+			     const char *buffer)
 {
-  xmlChar *ret;
-  int len;
-  xmlOutputBufferPtr buf;
-  xmlCharEncodingHandlerPtr handler = NULL;
+  xmlDocPtr doc;
+  xmlNodePtr root;
 
-  if (encoding != NULL) {
-    handler = xmlFindCharEncodingHandler(encoding);
-    if (handler == NULL) {
-      return;
-    }
-  }
-  buf = xmlAllocOutputBuffer(handler);
-  if (buf == NULL) {
-    return;
-  }
-  xmlNodeDumpOutput(buf, node->private->node->doc, node->private->node,
-		    0, format, encoding);
-  xmlOutputBufferFlush(buf);
-  if (buf->conv != NULL) {
-    len = buf->conv->use;
-    ret = buf->conv->content;
-    buf->conv->content = NULL;
-  }
-  else {
-    len = buf->buffer->use;
-    ret = buf->buffer->content;
-    buf->buffer->content = NULL;
-  }
-  (void) xmlOutputBufferClose(buf);
+  doc = xmlParseMemory(buffer, streln(buffer));
+  root = xmlDocGetRootElement(doc);
+  xmlFreeNode(node->private->node);
+  node->private->node = root;
+}
 
-  printf("%s\n\n", ret);
+static void
+lasso_node_impl_rename_prop(LassoNode *node,
+			    const xmlChar *old_name,
+			    const xmlChar *new_name)
+{
+  xmlChar *value;
+  LassoAttr *prop;
+
+  value = xmlGetProp(node->private->node, old_name);
+  if (value != NULL) {
+    xmlRemoveProp(lasso_node_get_attr(node, old_name));
+    lasso_node_set_prop(node, new_name, value);
+  }
 }
 
 static GData *
@@ -575,7 +611,7 @@ lasso_node_impl_verify_signature(LassoNode *node,
   return (ret);
 }
 
-/*****************************************************************************/
+/*** private methods *********************************************************/
 
 static void
 lasso_node_impl_add_child(LassoNode *node,
@@ -631,21 +667,6 @@ lasso_node_impl_new_ns(LassoNode *node,
 {
   xmlSetNs(node->private->node,
 	   xmlNewNs(node->private->node, href, prefix));
-}
-
-static void
-lasso_node_impl_rename_prop(LassoNode *node,
-			    const xmlChar *old_name,
-			    const xmlChar *new_name)
-{
-  xmlChar *value;
-  LassoAttr *prop;
-
-  value = xmlGetProp(node->private->node, old_name);
-  if (value != NULL) {
-    xmlRemoveProp(lasso_node_get_attr(node, old_name));
-    lasso_node_set_prop(node, new_name, value);
-  }
 }
 
 static void
@@ -725,6 +746,8 @@ lasso_node_class_init(LassoNodeClass *class)
   class->get_children     = lasso_node_impl_get_children;
   class->get_content      = lasso_node_impl_get_content;
   class->get_name         = lasso_node_impl_get_name;
+  class->parse_memory     = lasso_node_impl_parse_memory;
+  class->rename_prop      = lasso_node_impl_rename_prop;
   class->serialize        = lasso_node_impl_serialize;
   class->url_encode       = lasso_node_impl_url_encode;
   class->verify_signature = lasso_node_impl_verify_signature;
@@ -733,7 +756,6 @@ lasso_node_class_init(LassoNodeClass *class)
   class->get_xmlNode  = lasso_node_impl_get_xmlNode;
   class->new_child    = lasso_node_impl_new_child;
   class->new_ns       = lasso_node_impl_new_ns;
-  class->rename_prop  = lasso_node_impl_rename_prop;
   class->set_name     = lasso_node_impl_set_name;
   class->set_node     = lasso_node_impl_set_node;
   class->set_prop     = lasso_node_impl_set_prop;
