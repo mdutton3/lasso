@@ -61,46 +61,47 @@ Section "GLIB: Low-level core library that forms the basis for projects such as 
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "c:\cygwin\usr\local\lib\libglib-2.0-0.dll"
-  File "c:\cygwin\usr\local\lib\libgobject-2.0-0.dll"
-  File "c:\cygwin\usr\local\lib\libgmodule-2.0-0.dll"
-  File "c:\cygwin\usr\local\lib\libgthread-2.0-0.dll"
+  File "H:\lasso-deps\bin\libgobject-2.0-0.dll"
+  File "H:\lasso-deps\bin\libgmodule-2.0-0.dll"
+  File "H:\lasso-deps\bin\libgthread-2.0-0.dll"
 SectionEnd
 
 Section "LIBXML2: XML C parser and toolkit version 2.6.17." SEC02
-  File "c:\cygwin\usr\local\lib\libxml2.dll"
+  File "H:\lasso-deps\bin\libxml2.dll"
 SectionEnd
 
 Section "LIBXSLT: The XSLT C library version 1.2.12+." SEC03
-  File "c:\cygwin\usr\local\lib\libxslt.dll"
-  File "c:\cygwin\usr\local\lib\libexslt.dll"
+  File "H:\lasso-deps\bin\libxslt.dll"
+  File "H:\lasso-deps\bin\libexslt.dll"
 SectionEnd
 
 Section "LIBXMLSEC: XML Security Library C library (based on LibXML2) version 1.2.6." SEC04
-  File "c:\cygwin\usr\local\lib\libxmlsec.dll"
-  File "c:\cygwin\usr\local\lib\libxmlsec-mscrypto.dll"
-  File "c:\cygwin\usr\local\lib\libxmlsec-openssl.dll"
+  File "H:\lasso-deps\bin\libxmlsec.dll"
+  File "H:\lasso-deps\bin\libxmlsec-mscrypto.dll"
+  File "H:\lasso-deps\bin\libxmlsec-openssl.dll"
 SectionEnd
 
 Section "LIBOPENSSL: A  full-strength general purpose cryptography library version 0.9.7e." SEC05
-  File "c:\cygwin\usr\local\lib\libeay32.dll"
-  File "c:\cygwin\usr\local\lib\libssl32.dll"
+  File "H:\lasso-deps\bin\libeay32.dll"
+  File "H:\lasso-deps\bin\libssl32.dll"
 SectionEnd
 
 Section "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library version 1.2.1." SEC06
-  File "c:\cygwin\usr\local\lib\zlib.dll"
-  File "c:\cygwin\usr\local\lib\zlib1.dll"
+#  File "H:\lasso-deps\bin\zlib.dll"
+  File "H:\lasso-deps\bin\zlib1.dll"
 SectionEnd
 
 Section "LIBICONV: Free iconv() implementation version 1.9.1." SEC07
-  File "c:\cygwin\usr\local\lib\iconv.dll"
+  File "H:\lasso-deps\bin\iconv.dll"
 SectionEnd
 
 Section "LIBINTL: Library for native language support." SEC08
-  File "c:\cygwin\usr\local\lib\intl.dll"
+  File "H:\lasso-deps\bin\intl.dll"
 SectionEnd
 
 Section "Lasso version @VERSION@" SEC09
-  File  "..\..\lasso\.libs\@DLL_FILENAME@"
+  File "..\msvc\Release\@DLL_FILENAME@"
+  #File  "..\..\lasso\.libs\@DLL_FILENAME@"
 SectionEnd
 
 Section -AdditionalIcons
