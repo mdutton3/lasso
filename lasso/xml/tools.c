@@ -278,7 +278,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 		} else if (cert != NULL && line != NULL && line[0] != '\0') {
 			g_string_append(cert, line);
 		} else {
-			debug("Empty line found in the CA certificate chain file")
+			debug("Empty line found in the CA certificate chain file");
 		}
 		/* free last line read */
 		if (line != NULL) {
