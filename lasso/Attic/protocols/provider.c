@@ -584,9 +584,11 @@ lasso_provider_new(gchar *metadata,
   LassoProvider *provider;
   
   provider = lasso_provider_new_metadata_filename(metadata);
-  provider->public_key = g_strdup(public_key);
-  provider->ca_certificate = g_strdup(ca_certificate);
-  
+  if (provider != NULL) {
+    provider->public_key = g_strdup(public_key);
+    provider->ca_certificate = g_strdup(ca_certificate);
+  }
+
   return(provider);
 }
 
@@ -605,19 +607,24 @@ lasso_provider_new_from_metadata_node(LassoNode *metadata_node)
 LassoProvider*
 lasso_provider_new_metadata_filename(gchar *metadata_filename)
 {
-  LassoProvider *provider;
+  LassoProvider *provider = NULL;
   xmlDocPtr  doc;
   xmlNodePtr root;
   
-  provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
-  
-  /* get root element of doc and duplicate it */
   doc = xmlParseFile(metadata_filename);
-  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-  xmlFreeDoc(doc);
-  provider->metadata = lasso_node_new();
-  LASSO_NODE_GET_CLASS(provider->metadata)->set_xmlNode(provider->metadata, root);
-  /*provider->metadata = lasso_node_new_from_xmlNode(root); */
+  if (doc != NULL) {
+    /* get root element of doc and duplicate it */
+    root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+    xmlFreeDoc(doc);
+
+    provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+    provider->metadata = lasso_node_new();
+    LASSO_NODE_GET_CLASS(provider->metadata)->set_xmlNode(provider->metadata, root);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL,
+	    "Failed to build LassoProvider: invalid metadata file.\n");
+  }
 
   return(provider);
 }

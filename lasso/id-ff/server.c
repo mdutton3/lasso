@@ -68,14 +68,17 @@ lasso_server_add_provider(LassoServer *server,
 {
   LassoProvider *provider;
 
-  g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
-  g_return_val_if_fail(metadata != NULL, -2);
+  g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(metadata != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
-  g_return_val_if_fail(provider != NULL, -5);
-
-  /* debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider)); */
-  g_ptr_array_add(server->providers, provider);
+  if (provider != NULL) {
+    g_ptr_array_add(server->providers, provider);    
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
+    return (-1);
+  }
 
   return(0);
 }
@@ -192,7 +195,12 @@ lasso_server_get_provider(LassoServer  *server,
   LassoProvider *provider;
   GError *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   provider = lasso_server_get_provider_ref(server, providerID, &tmp_err);
 
@@ -268,22 +276,30 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
   xmlChar *b64_hash_providerID;
   int i;
 
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(b64_hash != NULL, NULL);
+
   for (i=0; i<server->providers->len; i++) {
     provider = g_ptr_array_index(server->providers, i);
     providerID = lasso_provider_get_providerID(provider);
-    /* hash_providerID = lasso_str_hash(providerID, server->private_key); */
-    hash_providerID = lasso_sha1(providerID);
-    b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
-    xmlFree(hash_providerID);
-    if (xmlStrEqual(b64_hash_providerID, b64_hash)) {
-      xmlFree(b64_hash_providerID);
-      return(providerID);
-    }
-    else {
-      xmlFree(b64_hash_providerID);
-      xmlFree(providerID);
+    if (providerID != NULL) {
+      hash_providerID = lasso_sha1(providerID);
+      b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
+      xmlFree(hash_providerID);
+      if (xmlStrEqual(b64_hash_providerID, b64_hash)) {
+	xmlFree(b64_hash_providerID);
+	return(providerID);
+      }
+      else {
+	xmlFree(b64_hash_providerID);
+	xmlFree(providerID);
+      }
     }
   }
+
+  /* failed to get the providerID */
+  message(G_LOG_LEVEL_CRITICAL,
+	  "Failed to get a providerID corresponding to the hash.\n")
 
   return(NULL);
 }
