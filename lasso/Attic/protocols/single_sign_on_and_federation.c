@@ -146,8 +146,8 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
 }
 
 
-LassoNode *lasso_build_authnResponse(LassoNode *request,
-				     const xmlChar *providerID)
+LassoNode *lasso_build_full_authnResponse(LassoNode     *request,
+					  const xmlChar *providerID)
 {
      LassoNode *response;
 
@@ -155,31 +155,81 @@ LassoNode *lasso_build_authnResponse(LassoNode *request,
      
      lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						  (const xmlChar *)lasso_build_unique_id(32));
-     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(response),
+     lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						   lassoLibMajorVersion);     
-     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(response), 
+     lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
 						   lassoLibMinorVersion);
-     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(response),
+     lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						    lasso_get_current_time());
+
+     lasso_lib_authn_response_set_providerID(response, providerID);
+
+     return(response);
+}
+
+LassoNode *lasso_build_full_response(LassoNode     *request,
+				     const xmlChar *providerID)
+{
+     LassoNode *response;
+
+     response = lasso_samlp_response_new();
+
+     lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  (const xmlChar *)lasso_build_unique_id(32));
+     lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						   lassoSamlMajorVersion);     
+     lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
+						   lassoSamlMinorVersion);
+     lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						    lasso_get_current_time());
 
      return(response);
 }
 
-LassoNode *lasso_build_response(LassoNode *request,
-				const xmlChar *providerID)
+LassoNode *lasso_build_assertion(const xmlChar *inResponseTo,
+				 const xmlChar *issuer)
 {
-     LassoNode *response;
+     LassoNode *assertion, *subject;
 
-     response = lasso_samlp_response_new();
+     assertion = lasso_lib_assertion_new();
+
+     lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
+					  (const xmlChar *)lasso_build_unique_id(32));
+     lasso_saml_assertion_set_majorVersion(LASSO_SAML_ASSERTION(assertion),
+					   lassoLibMajorVersion);
+     lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
+					   lassoLibMajorVersion);
+     lasso_saml_assertion_set_issueInstance(LASSO_SAML_ASSERTION(assertion),
+					    lasso_get_current_time());
+
+     lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
+					  inResponseTo);
+
+     lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion),
+				     issuer);
+
+     return(assertion);
+}
+
+LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
+					       LassoNode     *nameIdentifier,
+					       LassoNode     *idpProvidedNameIdentifier)
+{
+     LassoNode *statement, *subject;
+
+     statement = lasso_saml_authentication_statement_new();
+
+     lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), authenticationMethod);
      
-     lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)lasso_build_unique_id(32));
-     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(response),
-						   lassoSamlMajorVersion);     
-     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(response), 
-						   lassoSamlMinorVersion);
-     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(response),
-						    lasso_get_current_time());
+     lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), lasso_get_current_time());
 
-     return(response);
+     subject = lasso_saml_subject_new();
+
+     lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
+					   LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
+
+     lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
+						       LASSO_SAML_SUBJECT(subject));
+
+     return(statement);
 }

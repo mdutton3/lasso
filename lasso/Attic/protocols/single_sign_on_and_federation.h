@@ -44,11 +44,18 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar **idpList,
 				    const xmlChar *consent);
 
-LassoNode *lasso_build_authnResponse(LassoNode *request,
+LassoNode *lasso_build_full_authnResponse(LassoNode     *request,
+					  const xmlChar *providerID);
+
+LassoNode *lasso_build_full_response(LassoNode     *request,
 				     const xmlChar *providerID);
 
-LassoNode *lasso_build_response(LassoNode *request,
-				const xmlChar *providerID);
+LassoNode *lasso_build_assertion(const xmlChar *inResponseTo,
+				 const xmlChar *issuer);
+
+LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
+					       LassoNode     *nameIdentifier,
+					       LassoNode     *idpProvidedNameIdentifier);
 
 #ifdef __cplusplus
 }
