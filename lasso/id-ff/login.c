@@ -873,8 +873,8 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	char **query_fields;
 	gint ret = 0;
 	int i;
-	char *artifact_b64 = NULL, *provider_succint_id_b64;
-	char provider_succint_id[21];
+	char *artifact_b64 = NULL, *provider_succinct_id_b64;
+	char provider_succinct_id[21];
 	char artifact[43];
 	LassoSamlpRequestAbstract *request;
 
@@ -914,14 +914,14 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		return LASSO_ERROR_UNDEFINED;
 	}
 
-	memcpy(provider_succint_id, artifact+2, 20);
-	provider_succint_id[20] = 0;
+	memcpy(provider_succinct_id, artifact+2, 20);
+	provider_succinct_id[20] = 0;
 
-	provider_succint_id_b64 = xmlSecBase64Encode(provider_succint_id, 20, 0);
+	provider_succinct_id_b64 = xmlSecBase64Encode(provider_succinct_id, 20, 0);
 
 	LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(
-			LASSO_PROFILE(login)->server, provider_succint_id_b64);
-	xmlFree(provider_succint_id_b64);
+			LASSO_PROFILE(login)->server, provider_succinct_id_b64);
+	xmlFree(provider_succinct_id_b64);
 
 	request = LASSO_SAMLP_REQUEST_ABSTRACT(lasso_samlp_request_new());
 	request->RequestID = lasso_build_unique_id(32);

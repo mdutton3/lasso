@@ -286,23 +286,23 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
 }
 
 /**
- * lasso_provider_get_base64_succint_id:
+ * lasso_provider_get_base64_succinct_id:
  * @provider: a #LassoProvider
  *
- * Computes and returns the base64-encoded provider succint ID.
+ * Computes and returns the base64-encoded provider succinct ID.
  *
- * Return value: the provider succint ID.  This string must be freed by the
+ * Return value: the provider succinct ID.  This string must be freed by the
  *      caller.
  **/
 char*
-lasso_provider_get_base64_succint_id(LassoProvider *provider)
+lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 {
-	char *succint_id, *base64_succint_id;
+	char *succinct_id, *base64_succinct_id;
 
-	succint_id = lasso_sha1(provider->ProviderID);
-	base64_succint_id = xmlSecBase64Encode(succint_id, 20, 0);
-	free(succint_id);
-	return base64_succint_id;
+	succinct_id = lasso_sha1(provider->ProviderID);
+	base64_succinct_id = xmlSecBase64Encode(succinct_id, 20, 0);
+	free(succinct_id);
+	return base64_succinct_id;
 }
 
 
