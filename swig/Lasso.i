@@ -1513,7 +1513,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildArtifactMsg(gboolean authenticationResult, gboolean is_consent_obtained,
+		void buildArtifactMsg(gboolean authenticationResult, gboolean isConsentObtained,
 				      gchar *authenticationMethod, gchar *reauthenticateOnOrAfter,
 				      lassoHttpMethod httpMethod);
 		END_THROW_ERROR
@@ -1523,7 +1523,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnResponseMsg(gint authenticationResult, gboolean is_consent_obtained,
+		void buildAuthnResponseMsg(gint authenticationResult, gboolean isConsentObtained,
 					   gchar *authenticationMethod,
 					   gchar *reauthenticateOnOrAfter);
 		END_THROW_ERROR
@@ -1547,6 +1547,8 @@ typedef struct {
 		void initRequest(gchar *responseMsg,
 				 lassoHttpMethod httpMethod = lassoHttpMethodRedirect);
 		END_THROW_ERROR
+
+		gboolean mustAskForConsent();
 
 		gboolean mustAuthenticate();
 
@@ -1719,6 +1721,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_dump lasso_login_dump
 #define LassoLogin_initAuthnRequest lasso_login_init_authn_request
 #define LassoLogin_initRequest lasso_login_init_request
+#define LassoLogin_mustAskForConsent lasso_login_must_ask_for_consent
 #define LassoLogin_mustAuthenticate lasso_login_must_authenticate
 #define LassoLogin_processAuthnRequestMsg lasso_login_process_authn_request_msg
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
