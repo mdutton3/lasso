@@ -30,9 +30,6 @@ splogin.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 splogin.request.set_relayState("fake")
 splogin.request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
 
-print "Request type =", splogin.request_type
-print splogin.request.dump()
-
 splogin.build_authn_request_msg()
 print "message url =", splogin.msg_url
 

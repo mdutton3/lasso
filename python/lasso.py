@@ -836,6 +836,9 @@ class Server:
         lassomod.server_destroy(self)
 
 
+loginProtocolPorfileBrwsArt  = 1
+loginProtocolPorfileBrwsPost = 2
+  
 class Login:
     """\brief Short desc
 
