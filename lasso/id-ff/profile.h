@@ -120,9 +120,9 @@ LASSO_EXPORT LassoIdentity* lasso_profile_get_identity                   (LassoP
 
 LASSO_EXPORT LassoSession*  lasso_profile_get_session                    (LassoProfile *ctx);
 
-LASSO_EXPORT gboolean       lasso_profile_is_identity_durty              (LassoProfile *ctx);
+LASSO_EXPORT gboolean       lasso_profile_is_identity_dirty              (LassoProfile *ctx);
 
-LASSO_EXPORT gboolean       lasso_profile_is_session_durty               (LassoProfile *ctx);
+LASSO_EXPORT gboolean       lasso_profile_is_session_dirty               (LassoProfile *ctx);
 
 LASSO_EXPORT gint           lasso_profile_set_remote_providerID          (LassoProfile *ctx,
 									  gchar        *providerID);

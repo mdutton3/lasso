@@ -111,7 +111,7 @@ lasso_session_add_assertion(LassoSession *session,
   g_hash_table_insert(session->assertions, g_strdup(remote_providerID),
 		      lasso_node_copy(assertion));
 
-  session->is_durty = TRUE;
+  session->is_dirty = TRUE;
 
   return(0);
 }
@@ -138,7 +138,7 @@ lasso_session_copy(LassoSession *session)
 					   (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->assertions, (GHFunc)lasso_session_copy_assertion,
 		       (gpointer)copy->assertions);
-  copy->is_durty = session->is_durty;
+  copy->is_dirty = session->is_dirty;
 
   return(copy);
 }
@@ -273,7 +273,7 @@ lasso_session_remove_assertion(LassoSession *session,
     }
   }
 
-  session->is_durty = TRUE;
+  session->is_dirty = TRUE;
 
   return(0);
 }
@@ -333,7 +333,7 @@ lasso_session_instance_init(LassoSession *session)
   session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      (GDestroyNotify)g_free,
 					      (GDestroyNotify)lasso_node_destroy);
-  session->is_durty = TRUE;
+  session->is_dirty = TRUE;
 }
 
 static void

@@ -176,15 +176,15 @@ lasso_profile_get_session(LassoProfile *ctx)
 }
 
 gboolean
-lasso_profile_is_identity_durty(LassoProfile *ctx)
+lasso_profile_is_identity_dirty(LassoProfile *ctx)
 {
-  return (ctx->identity->is_durty);
+  return (ctx->identity->is_dirty);
 }
 
 gboolean
-lasso_profile_is_session_durty(LassoProfile *ctx)
+lasso_profile_is_session_dirty(LassoProfile *ctx)
 {
-  return (ctx->session->is_durty);
+  return (ctx->session->is_dirty);
 }
 
 gint
@@ -225,7 +225,7 @@ lasso_profile_set_session(LassoProfile *ctx,
   g_return_val_if_fail(LASSO_IS_SESSION(session), -1);
 
   ctx->session = lasso_session_copy(session);
-  ctx->session->is_durty = FALSE;
+  ctx->session->is_dirty = FALSE;
 
   return(0);
 }
@@ -239,7 +239,7 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx,
     message(G_LOG_LEVEL_ERROR, "Failed to create the session from the session dump\n");
     return(-1);
   }
-  ctx->session->is_durty = FALSE;
+  ctx->session->is_dirty = FALSE;
 
   return(0);
 }
@@ -251,7 +251,7 @@ lasso_profile_set_identity(LassoProfile  *ctx,
   g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
 
   ctx->identity = lasso_identity_copy(identity);
-  ctx->identity->is_durty = FALSE;
+  ctx->identity->is_dirty = FALSE;
 
   return(0);
 }
@@ -265,7 +265,7 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx,
     message(G_LOG_LEVEL_ERROR, "Failed to create the identity from the identity dump\n");
     return(-1);
   }
-  ctx->identity->is_durty = FALSE;
+  ctx->identity->is_dirty = FALSE;
 
   return(0);
 }

@@ -104,7 +104,7 @@ lasso_identity_add_federation(LassoIdentity   *identity,
   }
   g_hash_table_insert(identity->federations, g_strdup(remote_providerID), federation);
 
-  identity->is_durty = TRUE;
+  identity->is_dirty = TRUE;
 
   return(0);
 }
@@ -131,7 +131,7 @@ lasso_identity_copy(LassoIdentity *identity)
 					    (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->federations, (GHFunc)lasso_identity_copy_federation,
 		       (gpointer)copy->federations);
-  copy->is_durty = identity->is_durty;
+  copy->is_dirty = identity->is_dirty;
 
   return(copy);
 }
@@ -238,7 +238,7 @@ lasso_identity_remove_federation(LassoIdentity *identity,
     }
   }
 
-  identity->is_durty = TRUE;
+  identity->is_dirty = TRUE;
 
   return(0);
 }
@@ -298,7 +298,7 @@ lasso_identity_instance_init(LassoIdentity *identity)
   identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 						(GDestroyNotify)g_free,
 						(GDestroyNotify)lasso_federation_destroy);
-  identity->is_durty = TRUE;
+  identity->is_dirty = TRUE;
 }
 
 static void
