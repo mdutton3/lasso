@@ -99,7 +99,7 @@ lasso_request_new(const xmlChar *assertionArtifact)
 
   /* Signature template with X509
      FIXME: signature method */
-  lasso_samlp_request_abstract_set_signature_tmpl(request,
+  lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						  lassoSignatureTypeWithX509,
 						  lassoSignatureMethodRsaSha1,
 						  NULL);
