@@ -1,6 +1,6 @@
 SUBDIRS = nsis
 
-EXTRA_DIST = create_lasso.def.py lasso.def lasso.rc
+EXTRA_DIST = lasso.rc
 
 dll:
 	/usr/bin/windres -i lasso.rc -o lasso.rc.o
