@@ -120,6 +120,14 @@ LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodBearer[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodHolderOfKey[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodSenderVouches[];
 
+/*****************************************************************************/
+/* SOAP                                                                      */
+/*****************************************************************************/
+
+/* prefix & href */
+LASSO_EXPORT_VAR const xmlChar lassoSoapEnvHRef[];
+LASSO_EXPORT_VAR const xmlChar lassoSoapEnvPrefix[];
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -111,3 +111,11 @@ const xmlChar lassoSamlConfirmationMethodArtifact01[]    = "urn:oasis:names:tc:S
 const xmlChar lassoSamlConfirmationMethodBearer[]        = "urn:oasis:names:tc:SAML:1.1:cm:bearer";
 const xmlChar lassoSamlConfirmationMethodHolderOfKey[]   = "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key";
 const xmlChar lassoSamlConfirmationMethodSenderVouches[] = "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches";
+
+/*****************************************************************************/
+/* SOAP                                                                      */
+/*****************************************************************************/
+
+/* prefix & href */
+const xmlChar lassoSoapEnvHRef[]   = "http://schemas.xmlsoap.org/soap/envelope/";
+const xmlChar lassoSoapEnvPrefix[] = "soap-env";
