@@ -49,26 +49,11 @@ extern "C" {
 typedef struct _LassoDstQueryResponse LassoDstQueryResponse;
 typedef struct _LassoDstQueryResponseClass LassoDstQueryResponseClass;
 
-/*
-* Schema fragment (liberty-idwsf-dst-v1.0.xsd):
-* <xs:element name="QueryResponse" type="QueryResponseType"/>
-* <xs:complexType name="QueryResponseType">
-*     <xs:sequence>
-*         <xs:element ref="Status"/>
-*         <xs:element name="Data" minOccurs="0" maxOccurs="unbounded"/>
-*         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-*     </xs:sequence>
-*     <xs:attribute name="id" type="xs:ID"/>
-*     <xs:attribute name="itemIDRef" type="IDReferenceType"/>
-*     <xs:attribute name="timeStamp" type="xs:dateTime"/>
-* </xs:complexType>
-*/
-
 struct _LassoDstQueryResponse {
 	LassoNode parent;
 
 	LassoUtilityStatus *Status;
-	LassoDstData *Data;
+	GList *Data;
 	/* FIXME : implement Extension element */
 
 	char *id;
@@ -81,10 +66,7 @@ struct _LassoDstQueryResponseClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_response_get_type(void);
-LASSO_EXPORT LassoDstQueryResponse* lasso_dst_query_response_new(LassoUtilityStatus *Status,
-								 const char *id,
-								 const char *itemIDRef,
-								 const char *timeStamp);
+LASSO_EXPORT LassoDstQueryResponse* lasso_dst_query_response_new(LassoUtilityStatus *Status);
 
 #ifdef __cplusplus
 }
