@@ -1651,9 +1651,9 @@ typedef struct {
 #endif
 typedef struct {
 	char *ProviderID;
-	gchar *ca_cert_chain;
+	char *ca_cert_chain;
 	char *metadata_filename;
-	gchar *public_key;
+	char *public_key;
 	LassoProviderRole role;
 } LassoProvider;
 %extend LassoProvider {
@@ -1697,12 +1697,6 @@ typedef struct {
 
 %{
 
-/* Attributes implementations */
-
-/* providerId */
-#define LassoProvider_get_providerId(self) (self)->ProviderID
-#define LassoProvider_providerId_get(self) (self)->ProviderID
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoProvider lasso_provider_new
@@ -1738,51 +1732,110 @@ typedef struct {
 %rename(Server) LassoServer;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-
-		%immutable providerId;
-		char *providerId;
-
-		%immutable providerIds;
-		%newobject providerIds_get;
-		LassoStringArray *providerIds;
-
-		/* Constructor, destructor & static methods */
-
-		LassoServer(char *metadata = NULL, char *privateKey = NULL,
-			    char *secretKey = NULL, char *certificate = NULL);
-
-		~LassoServer();
-
-		%newobject newFromDump;
-		static LassoServer *newFromDump(char *dump);
-
-		/* Methods */
-
-	        THROW_ERROR
-		void addProvider(LassoProviderRole role, char *metadata, char *publicKey = NULL,
-				 char *caCertChain = NULL);
-		END_THROW_ERROR
-
-		%newobject dump;
-		char *dump();
-
-		LassoProvider *getProvider(char *providerId);
-	}
+	char *certificate;
+	char *private_key;
+	char *secret_key;
+	LassoSignatureMethod signature_method;
 } LassoServer;
+%extend LassoServer {
+	/* Attributes inherited from LassoProvider */
+
+	char *ProviderID;
+
+	char *ca_cert_chain;
+
+	char *metadata_filename;
+
+	char *public_key;
+
+	/* Attributes */
+
+	%immutable ProviderIDs;
+	%newobject ProviderIDs_get;
+	LassoStringArray *ProviderIDs;
+
+	/* Constructor, destructor & static methods */
+
+	LassoServer(char *metadata = NULL, char *privateKey = NULL, char *secretKey = NULL,
+			char *certificate = NULL);
+
+	~LassoServer();
+
+	%newobject newFromDump;
+	static LassoServer *newFromDump(char *dump);
+
+	/* Methods inherited from LassoProvider */
+
+	gboolean acceptHttpMethod(
+			LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+			LassoHttpMethod http_method, gboolean initiate_profile);
+
+	%newobject getAssertionConsumerServiceUrl;
+	char* getAssertionConsumerServiceUrl(char *service_id);
+
+	%newobject getBase64SuccinctId;
+	char* getBase64SuccinctId();
+
+	LassoHttpMethod getFirstHttpMethod(
+			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+
+	// FIXME: GList* lasso_provider_get_metadata_list(char *name);
+
+	%newobject getMetadataOne;
+	char* getMetadataOne(char *name);
+
+	gboolean hasProtocolProfile(LassoMdProtocolType protocol_type, char *protocol_profile);
+
+	/* Methods */
+
+        THROW_ERROR
+	void addProvider(LassoProviderRole role, char *metadata, char *publicKey = NULL,
+			char *caCertChain = NULL);
+	END_THROW_ERROR
+
+        THROW_ERROR
+	void addService(char *service_type, char *service_endpoint);
+	END_THROW_ERROR
+
+	%newobject dump;
+	char *dump();
+
+	LassoProvider *getProvider(char *providerId);
+}
 
 %{
 
+/* Implementations of attributes inherited from LassoProvider */
+
+/* ProviderID */
+#define LassoServer_get_ProviderID(self) LASSO_PROVIDER(self)->ProviderID
+#define LassoServer_ProviderID_get(self) LASSO_PROVIDER(self)->ProviderID
+#define LassoServer_set_ProviderID(self, value) set_string(&LASSO_PROVIDER(self)->ProviderID, (value))
+#define LassoServer_ProviderID_set(self, value) set_string(&LASSO_PROVIDER(self)->ProviderID, (value))
+
+/* ca_cert_chain */
+#define LassoServer_get_ca_cert_chain(self) LASSO_PROVIDER(self)->ca_cert_chain
+#define LassoServer_ca_cert_chain_get(self) LASSO_PROVIDER(self)->ca_cert_chain
+#define LassoServer_set_ca_cert_chain(self, value) set_string(&LASSO_PROVIDER(self)->ca_cert_chain, (value))
+#define LassoServer_ca_cert_chain_set(self, value) set_string(&LASSO_PROVIDER(self)->ca_cert_chain, (value))
+
+/* metadata_filename */
+#define LassoServer_get_metadata_filename(self) LASSO_PROVIDER(self)->metadata_filename
+#define LassoServer_metadata_filename_get(self) LASSO_PROVIDER(self)->metadata_filename
+#define LassoServer_set_metadata_filename(self, value) set_string(&LASSO_PROVIDER(self)->metadata_filename, (value))
+#define LassoServer_metadata_filename_set(self, value) set_string(&LASSO_PROVIDER(self)->metadata_filename, (value))
+
+/* public_key */
+#define LassoServer_get_public_key(self) LASSO_PROVIDER(self)->public_key
+#define LassoServer_public_key_get(self) LASSO_PROVIDER(self)->public_key
+#define LassoServer_set_public_key(self, value) set_string(&LASSO_PROVIDER(self)->public_key, (value))
+#define LassoServer_public_key_set(self, value) set_string(&LASSO_PROVIDER(self)->public_key, (value))
+
 /* Attributes implementations */
 
-/* providerId */
-#define LassoServer_get_providerId(self) LASSO_PROVIDER(self)->ProviderID
-#define LassoServer_providerId_get(self) LASSO_PROVIDER(self)->ProviderID
-
-/* providerIds */
-#define LassoServer_get_providerIds LassoServer_providerIds_get
-LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
+/* ProviderIDs */
+#define LassoServer_get_ProviderIDs LassoServer_ProviderIDs_get
+LassoStringArray *LassoServer_ProviderIDs_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
 	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -1798,9 +1851,19 @@ LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 #define Server_newFromDump lasso_server_new_from_dump
 #endif
 
+/* Implementations of methods inherited from LassoProvider */
+
+#define LassoServer_acceptHttpMethod(server, remote_provider, protocol_type, http_method, initiate_profile) lasso_provider_accept_http_method(LASSO_PROVIDER(server), remote_provider, protocol_type, http_method, initiate_profile)
+#define LassoServer_getAssertionConsumerServiceUrl(server, service_id) lasso_provider_get_assertion_consumer_service_url(LASSO_PROVIDER(server), service_id)
+#define LassoServer_getBase64SuccinctId(server) lasso_provider_get_base64_succinct_id(LASSO_PROVIDER(server))
+#define LassoServer_getFirstHttpMethod(server, remote_provider, protocol_type) lasso_provider_get_first_http_method(LASSO_PROVIDER(server), remote_provider, protocol_type)
+#define LassoServer_getMetadataOne(server, name) lasso_provider_get_metadata_one(LASSO_PROVIDER(server), name)
+#define LassoServer_hasProtocolProfile(server, protocol_type, protocol_profile) lasso_provider_has_protocol_profile(LASSO_PROVIDER(server), protocol_type, protocol_profile)
+
 /* Methods implementations */
 
 #define LassoServer_addProvider lasso_server_add_provider
+#define LassoServer_addService lasso_server_add_service
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
 
