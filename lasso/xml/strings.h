@@ -186,6 +186,10 @@
 #define LASSO_DST_STATUS_CODE_TIME_OUT "TimeOut"
 #define LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR "UnexpectedError"
 
+#define LASSO_SA_STATUS_CODE_CONTINUE "sa:continue"
+#define LASSO_SA_STATUS_CODE_ABORT "sa:abort"
+#define LASSO_SA_STATUS_CODE_OK "sa:OK"
+
 /*****************************************************************************/
 /* METADATA                                                                  */
 /*****************************************************************************/
