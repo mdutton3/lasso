@@ -88,16 +88,12 @@
 	  } 
 	  else
 	  {
-		// Save name identifier
-		if (!$res->numRows())
-		{
-		  $query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
-		  $query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
-		  $res =& $db->query($query);
-		  if (DB::isError($res)) 
-  		  die($res->getMessage());
-		  $name_identifier = $login->nameIdentifier;
-		}
+		$query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
+	  	$query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
+  		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		die($res->getMessage());
+		$name_identifier = $login->nameIdentifier;
 	  }
 
 	  if ($login->isIdentityDirty)

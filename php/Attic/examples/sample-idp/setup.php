@@ -1,6 +1,5 @@
 <?php
 /*  
- *
  * Identity Provider Example -- Setup
  *
  * Copyright (C) 2004 Entr'ouvert
@@ -209,7 +208,7 @@
 
 		$query = "CREATE TABLE users (
 		  user_id         varchar(100) primary key,
-		  username		  varchar(255),
+		  username		  varchar(255) unique,
 		  password		  varchar(255),
 		  user_dump       text,
 		  session_dump    text)";
@@ -369,7 +368,7 @@
 
   function openpopup(popurl)
   {
-	var winpops=window.open(popurl,"","width=600,height=400")
+	var winpops=window.open(popurl,"","width=745,height=600")
   }
 //-->
 </script>
@@ -396,17 +395,14 @@
 
 <tr>
   <td>Metadata</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
-
 </tr>
 
 <tr>
   <td>Public Key</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
-
 </tr>
 
 <tr>
   <td>Private Key</td><td><input type='text' name='idp-private_key' size='50' value='<?php echo $config['idp-private_key']; ?>'></td><td>&nbsp;</td>
-
 </tr>
 
 <tr>
@@ -424,8 +420,8 @@
 <caption>Service Provider <b><?php echo $sp ?></caption>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='sp^<?php echo $sp; ?>^metadata' size='50' value='<?php echo $config['sp'][$sp]['metadata']; ?>'></td><td>&nbsp;</td>
-
+  <td>Metadata</td><td><input type='text' name='sp^<?php echo $sp; ?>^metadata' size='50' value='<?php echo $config['sp'][$sp]['metadata']; ?>'></td>
+  <td><a href="javascript:openpopup('edit_metadata.php?filename=<?php echo $config['sp'][$sp]['metadata']; ?>')">Edit Metadata</a></td>
 </tr>
 <tr>
   <td>Public Key</td><td><input type='text' name='sp^<?php echo $sp; ?>^public_key' size='50' value='<?php echo $config['sp'][$sp]['public_key']; ?>'></td><td>&nbsp;</td>

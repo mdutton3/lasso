@@ -22,9 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
-?>
-<?php
   require_once 'HTML/QuickForm.php';
   require_once 'DB.php';  
 
@@ -38,38 +35,52 @@
   $form->addRule('username', 'Please enter the Username', 'required', null, 'client');
   $form->addRule('password', 'Please enter the Password', 'required', null, 'client');
 
-  if ($form->validate()) {
-
-  	$config = unserialize(file_get_contents('config.inc'));
+  if ($form->validate()) 
+  {
+	  $config = unserialize(file_get_contents('config.inc'));
 	
-	$db = &DB::connect($config['dsn']);
-	if (DB::isError($db)) 
+	  $db = &DB::connect($config['dsn']);
+	  if (DB::isError($db)) 
 	  die($db->getMessage());
 
-	$query = "INSERT INTO users (user_id, username, password) VALUES(nextval('user_id_seq'),'";
-	$query .= $form->exportValue('username') . "','" . $form->exportValue('password') . "')";
+	  $query = "INSERT INTO users (user_id, username, password) VALUES(nextval('user_id_seq'),'";
+	  $query .= $form->exportValue('username') . "','" . $form->exportValue('password') . "')";
 
-	$res =& $db->query($query);
-	if (DB::isError($db)) 
-	  die($db->getMessage());
-	
-	$db->disconnect();
+	  $res =& $db->query($query);
+	  if (DB::isError($res)) 
+		die("username exist!");
+	  $db->disconnect();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<body onLoad="window.close()">
+<script type="text/javascript">
+<!--
+  function reload_and_close()
+  {
+	opener.document.location.reload();
+	window.close();
+  }
+
+// -->
+</script>
+</head>
+<body onLoad="reload_and_close();">
 </body>
 </html>
 <?php
-	exit;
-  }
+	}
+	else
+	{
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-<body>
+<head>
+  <title>Add User</title>
+</head>
+<body onLoad="window.focus();">
 <?php
   $form->display();
 ?>
@@ -77,3 +88,6 @@
 <p>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
 </html>
+<?php
+  }
+?>
