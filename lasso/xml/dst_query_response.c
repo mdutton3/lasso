@@ -26,36 +26,34 @@
 #include <lasso/xml/dst_query_response.h>
 
 /*
-* Schema fragment (liberty-idwsf-dst-v1.0.xsd):
-* <xs:element name="QueryResponse" type="QueryResponseType"/>
-* <xs:complexType name="QueryResponseType">
-*     <xs:sequence>
-*         <xs:element ref="Status"/>
-*         <xs:element name="Data" minOccurs="0" maxOccurs="unbounded"/>
-*         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-*     </xs:sequence>
-*     <xs:attribute name="id" type="xs:ID"/>
-*     <xs:attribute name="itemIDRef" type="IDReferenceType"/>
-*     <xs:attribute name="timeStamp" type="xs:dateTime"/>
-* </xs:complexType>
-*/
+ * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ * <xs:element name="QueryResponse" type="QueryResponseType"/>
+ * <xs:complexType name="QueryResponseType">
+ *   <xs:sequence>
+ *     <xs:element ref="Status"/>
+ *     <xs:element name="Data" minOccurs="0" maxOccurs="unbounded"/>
+ *     <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs:ID"/>
+ *   <xs:attribute name="itemIDRef" type="IDReferenceType"/>
+ *   <xs:attribute name="timeStamp" type="xs:dateTime"/>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-		{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQueryResponse, Status) },
-		{ "Data", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQueryResponse, Data) },
-		{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryResponse, id) },
-		{ "itemIDRef", SNIPPET_ATTRIBUTE, \
-		  G_STRUCT_OFFSET(LassoDstQueryResponse, itemIDRef) },
-		{ "timeStamp", SNIPPET_ATTRIBUTE, \
-		  G_STRUCT_OFFSET(LassoDstQueryResponse, timeStamp) },
-		{NULL, 0, 0}
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQueryResponse, Status) },
+	{ "Data", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQueryResponse, Data) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryResponse, id) },
+	{ "itemIDRef", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoDstQueryResponse, itemIDRef) },
+	{ "timeStamp", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoDstQueryResponse, timeStamp) },
+	{NULL, 0, 0}
 };
-
-static LassoNodeClass *parent_class = NULL;
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -78,7 +76,6 @@ class_init(LassoDstQueryResponseClass *klass)
 {
 	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
 	nodeClass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nodeClass, "QueryResponse");
 	lasso_node_class_add_snippets(nodeClass, schema_snippets);
