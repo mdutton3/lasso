@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/environs/profile_context.h>
+#include <lasso/environs/profile.h>
 #include <lasso/protocols/federation_termination_notification.h>
 
 #define LASSO_TYPE_FEDERATION_TERMINATION (lasso_federation_termination_get_type())
@@ -44,13 +44,13 @@ typedef struct _LassoFederationTermination LassoFederationTermination;
 typedef struct _LassoFederationTerminationClass LassoFederationTerminationClass;
 
 struct _LassoFederationTermination {
-  LassoProfileContext parent;
+  LassoProfile parent;
 
   /*< private >*/
 };
 
 struct _LassoFederationTerminationClass {
-  LassoNodeClass parent;
+  LassoProfileClass parent;
 
 };
 

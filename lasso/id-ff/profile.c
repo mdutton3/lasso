@@ -30,9 +30,9 @@
 #include <lasso/protocols/request.h>
 #include <lasso/protocols/response.h>
 #include <lasso/protocols/authn_response.h>
-#include <lasso/environs/profile_context.h>
+#include <lasso/environs/profile.h>
 
-struct _LassoProfileContextPrivate
+struct _LassoProfilePrivate
 {
   gboolean dispose_has_run;
 };
@@ -44,7 +44,7 @@ static GObjectClass *parent_class = NULL;
 /*****************************************************************************/
 
 gint
-lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
+lasso_profile_get_request_type_from_soap_msg(gchar *soap)
 {
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
@@ -99,7 +99,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
 /*****************************************************************************/
 
 gchar*
-lasso_profile_context_dump(LassoProfileContext *ctx,
+lasso_profile_dump(LassoProfile *ctx,
 			   const gchar         *name)
 {
   LassoNode *node;
@@ -114,7 +114,7 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
     LASSO_NODE_GET_CLASS(node)->set_name(node, name);
   }
   else {
-    LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfileContext");
+    LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfile");
   }
 
   if (ctx->request != NULL) {
@@ -164,8 +164,8 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 }
 
 gint
-lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
-					    gchar               *providerID)
+lasso_profile_set_remote_providerID(LassoProfile *ctx,
+				    gchar        *providerID)
 {
   g_free(ctx->remote_providerID);
   ctx->remote_providerID = g_strdup(providerID);
@@ -174,8 +174,8 @@ lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 }
 
 void
-lasso_profile_context_set_response_status(LassoProfileContext *ctx,
-					  const gchar         *statusCodeValue)
+lasso_profile_set_response_status(LassoProfile *ctx,
+				  const gchar  *statusCodeValue)
 {
   LassoNode *status, *status_code;
 
@@ -195,8 +195,8 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
 }
 
 gint
-lasso_profile_context_set_session(LassoProfileContext *ctx,
-				  LassoSession        *session)
+lasso_profile_set_session(LassoProfile *ctx,
+			  LassoSession *session)
 {
   g_return_val_if_fail(LASSO_IS_SESSION(session), -1);
 
@@ -206,8 +206,8 @@ lasso_profile_context_set_session(LassoProfileContext *ctx,
 }
 
 gint
-lasso_profile_context_set_session_from_dump(LassoProfileContext *ctx,
-					    const gchar         *dump)
+lasso_profile_set_session_from_dump(LassoProfile *ctx,
+				    const gchar  *dump)
 {
   ctx->session = lasso_session_new_from_dump((gchar *)dump);
   if (ctx->session == NULL) {
@@ -218,8 +218,8 @@ lasso_profile_context_set_session_from_dump(LassoProfileContext *ctx,
 }
 
 gint
-lasso_profile_context_set_identity(LassoProfileContext *ctx,
-				   LassoIdentity       *identity)
+lasso_profile_set_identity(LassoProfile  *ctx,
+			   LassoIdentity *identity)
 {
   g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
 
@@ -229,8 +229,8 @@ lasso_profile_context_set_identity(LassoProfileContext *ctx,
 }
 
 gint
-lasso_profile_context_set_identity_from_dump(LassoProfileContext *ctx,
-					     const gchar         *dump)
+lasso_profile_set_identity_from_dump(LassoProfile *ctx,
+				     const gchar  *dump)
 {
   ctx->identity = lasso_identity_new_from_dump((gchar *)dump);
   if (ctx->identity == NULL) {
@@ -245,14 +245,14 @@ lasso_profile_context_set_identity_from_dump(LassoProfileContext *ctx,
 /*****************************************************************************/
 
 static void
-lasso_profile_context_dispose(LassoProfileContext *ctx)
+lasso_profile_dispose(LassoProfile *ctx)
 {
   if (ctx->private->dispose_has_run) {
     return;
   }
   ctx->private->dispose_has_run = TRUE;
 
-  debug("ProfileContext object 0x%x disposed ...\n", ctx);
+  debug("Profile object 0x%x disposed ...\n", ctx);
 
   /* unref reference counted objects */
   lasso_server_destroy(ctx->server);
@@ -266,9 +266,9 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
 }
 
 static void
-lasso_profile_context_finalize(LassoProfileContext *ctx)
+lasso_profile_finalize(LassoProfile *ctx)
 {
-  debug("ProfileContext object 0x%x finalized ...\n", ctx);
+  debug("Profile object 0x%x finalized ...\n", ctx);
 
   g_free(ctx->nameIdentifier);
   g_free(ctx->remote_providerID);
@@ -286,19 +286,19 @@ lasso_profile_context_finalize(LassoProfileContext *ctx)
 /*****************************************************************************/
 
 enum {
-  LASSO_PROFILE_CONTEXT_SERVER = 1,
-  LASSO_PROFILE_CONTEXT_IDENTITY,
-  LASSO_PROFILE_CONTEXT_SESSION,
-  LASSO_PROFILE_CONTEXT_PROVIDER_TYPE
+  LASSO_PROFILE_SERVER = 1,
+  LASSO_PROFILE_IDENTITY,
+  LASSO_PROFILE_SESSION,
+  LASSO_PROFILE_PROVIDER_TYPE
 };
 
 static void
-lasso_profile_context_instance_init(GTypeInstance   *instance,
+lasso_profile_instance_init(GTypeInstance   *instance,
 				    gpointer         g_class)
 {
-  LassoProfileContext *ctx = LASSO_PROFILE_CONTEXT(instance);
+  LassoProfile *ctx = LASSO_PROFILE(instance);
 
-  ctx->private = g_new (LassoProfileContextPrivate, 1);
+  ctx->private = g_new (LassoProfilePrivate, 1);
   ctx->private->dispose_has_run = FALSE;
 
   ctx->server = NULL;
@@ -319,36 +319,36 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
 }
 
 static void
-lasso_profile_context_set_property (GObject      *object,
-				    guint         property_id,
-				    const GValue *value,
-				    GParamSpec   *pspec)
+lasso_profile_set_property (GObject      *object,
+			    guint         property_id,
+			    const GValue *value,
+			    GParamSpec   *pspec)
 {
-  LassoProfileContext *self = LASSO_PROFILE_CONTEXT(object);
+  LassoProfile *self = LASSO_PROFILE(object);
 
   switch (property_id) {
-  case LASSO_PROFILE_CONTEXT_SERVER: {
+  case LASSO_PROFILE_SERVER: {
     if (self->server) {
       g_object_unref(self->server);
     }
     self->server = g_value_get_pointer (value);
   }
     break;
-  case LASSO_PROFILE_CONTEXT_IDENTITY: {
+  case LASSO_PROFILE_IDENTITY: {
     if (self->identity) {
       g_object_unref(self->identity);
     }
     self->identity = g_value_get_pointer (value);
   }
     break;
-  case LASSO_PROFILE_CONTEXT_SESSION: {
+  case LASSO_PROFILE_SESSION: {
     if (self->session) {
       g_object_unref(self->session);
     }
     self->session = g_value_get_pointer (value);
   }
     break;
-  case LASSO_PROFILE_CONTEXT_PROVIDER_TYPE: {
+  case LASSO_PROFILE_PROVIDER_TYPE: {
     self->provider_type = g_value_get_uint (value);
   }
     break;
@@ -360,31 +360,31 @@ lasso_profile_context_set_property (GObject      *object,
 }
 
 static void
-lasso_profile_context_get_property (GObject      *object,
-				    guint         property_id,
-				    GValue       *value,
-				    GParamSpec   *pspec)
+lasso_profile_get_property (GObject    *object,
+			    guint       property_id,
+			    GValue     *value,
+			    GParamSpec *pspec)
 {
 }
 
 static void
-lasso_profile_context_class_init(gpointer g_class,
-				 gpointer g_class_data)
+lasso_profile_class_init(gpointer g_class,
+			 gpointer g_class_data)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
   GParamSpec *pspec;
 
   parent_class = g_type_class_peek_parent(g_class);
   /* override parent class methods */
-  gobject_class->set_property = lasso_profile_context_set_property;
-  gobject_class->get_property = lasso_profile_context_get_property;
+  gobject_class->set_property = lasso_profile_set_property;
+  gobject_class->get_property = lasso_profile_get_property;
 
   pspec = g_param_spec_pointer ("server",
 				"server metadata and keys/certs",
 				"Data of server",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_SERVER,
+                                   LASSO_PROFILE_SERVER,
                                    pspec);
 
   pspec = g_param_spec_pointer ("identity",
@@ -392,7 +392,7 @@ lasso_profile_context_class_init(gpointer g_class,
 				"User's federations",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_IDENTITY,
+                                   LASSO_PROFILE_IDENTITY,
                                    pspec);
 
   pspec = g_param_spec_pointer ("session",
@@ -400,7 +400,7 @@ lasso_profile_context_class_init(gpointer g_class,
 				"User's assertions",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_SESSION,
+                                   LASSO_PROFILE_SESSION,
                                    pspec);
 
   pspec = g_param_spec_uint ("provider_type",
@@ -411,50 +411,50 @@ lasso_profile_context_class_init(gpointer g_class,
 			     0,
 			     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_CONTEXT_PROVIDER_TYPE,
+                                   LASSO_PROFILE_PROVIDER_TYPE,
                                    pspec);
 
-  gobject_class->dispose  = (void *)lasso_profile_context_dispose;
-  gobject_class->finalize = (void *)lasso_profile_context_finalize;
+  gobject_class->dispose  = (void *)lasso_profile_dispose;
+  gobject_class->finalize = (void *)lasso_profile_finalize;
 }
 
-GType lasso_profile_context_get_type() {
+GType lasso_profile_get_type() {
   static GType this_type = 0;
 
   if (!this_type) {
     static const GTypeInfo this_info = {
-      sizeof (LassoProfileContextClass),
+      sizeof (LassoProfileClass),
       NULL,
       NULL,
-      (GClassInitFunc) lasso_profile_context_class_init,
+      (GClassInitFunc) lasso_profile_class_init,
       NULL,
       NULL,
-      sizeof(LassoProfileContext),
+      sizeof(LassoProfile),
       0,
-      (GInstanceInitFunc) lasso_profile_context_instance_init,
+      (GInstanceInitFunc) lasso_profile_instance_init,
     };
     
     this_type = g_type_register_static(G_TYPE_OBJECT,
-				       "LassoProfileContext",
+				       "LassoProfile",
 				       &this_info, 0);
   }
   return this_type;
 }
 
-LassoProfileContext*
-lasso_profile_context_new(LassoServer   *server,
-			  LassoIdentity *identity,
-			  LassoSession  *session)
+LassoProfile*
+lasso_profile_new(LassoServer   *server,
+		  LassoIdentity *identity,
+		  LassoSession  *session)
 {
   g_return_val_if_fail(server != NULL, NULL);
 
-  LassoProfileContext *ctx;
+  LassoProfile *ctx;
 
-  ctx = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
-					   "server", lasso_server_copy(server),
-					   "identity", lasso_identity_copy(identity),
-					   "session", lasso_session_copy(session),
-					   NULL));
+  ctx = LASSO_PROFILE(g_object_new(LASSO_TYPE_PROFILE,
+				   "server", lasso_server_copy(server),
+				   "identity", lasso_identity_copy(identity),
+				   "session", lasso_session_copy(session),
+				   NULL));
 
   return (ctx);
 }

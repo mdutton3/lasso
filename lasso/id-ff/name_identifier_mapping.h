@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/environs/profile_context.h>
+#include <lasso/environs/profile.h>
 
 #include <lasso/protocols/name_identifier_mapping_request.h>
 #include <lasso/protocols/name_identifier_mapping_response.h>
@@ -46,13 +46,13 @@ typedef struct _LassoNameIdentifierMapping LassoNameIdentifierMapping;
 typedef struct _LassoNameIdentifierMappingClass LassoNameIdentifierMappingClass;
 
 struct _LassoNameIdentifierMapping {
-  LassoProfileContext parent;
+  LassoProfile parent;
 
   /*< private >*/
 };
 
 struct _LassoNameIdentifierMappingClass {
-  LassoNodeClass parent;
+  LassoProfileClass parent;
 
 };
 

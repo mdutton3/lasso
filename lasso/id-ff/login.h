@@ -31,7 +31,7 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/environs/profile_context.h>
+#include <lasso/environs/profile.h>
 
 #include <lasso/protocols/authn_request.h>
 #include <lasso/protocols/authn_response.h>
@@ -55,7 +55,7 @@ typedef enum {
 } lassoLoginProtocolProfiles;
 
 struct _LassoLogin {
-  LassoProfileContext parent;
+  LassoProfile parent;
   /*< public >*/
   lassoLoginProtocolProfiles  protocolProfile;
 
@@ -66,7 +66,7 @@ struct _LassoLogin {
 };
 
 struct _LassoLoginClass {
-  LassoProfileContextClass parent;
+  LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType                lasso_login_get_type                    (void);
