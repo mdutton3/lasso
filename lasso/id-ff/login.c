@@ -33,7 +33,7 @@ static GObjectClass *parent_class = NULL;
 /* functions                                                                 */
 /*****************************************************************************/
 
-gint
+static gint
 lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
@@ -81,7 +81,51 @@ lasso_login_process_federation(LassoLogin *login)
   return (0);
 }
 
-gint
+static gint
+lasso_login_process_response_status_and_assertion(LassoLogin *login) {
+  LassoNode *assertion, *status, *statusCode;
+  LassoProvider *idp;
+  gchar *statusCode_value;
+
+  /* verify signature */
+  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				   "Assertion",
+				   lassoLibHRef);
+  idp = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
+				  LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+  if (assertion != NULL) {
+    lasso_node_verify_signature(assertion, idp->ca_certificate);
+  }
+  else {
+    return (-1);
+  }
+
+  /* check StatusCode value */
+  status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				"Status",
+				lassoSamlProtocolHRef);
+  if (status != NULL) {
+    statusCode = lasso_node_get_child(status,
+				  "StatusCode",
+				  lassoSamlProtocolHRef);
+    
+    if (statusCode) {
+      statusCode_value = lasso_node_get_content(statusCode);
+      if (xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
+	return (-2);
+      }
+    }
+    else {
+      return (-3);
+    }
+  }
+  else {
+    return (-4);
+  }
+  return (0);
+}
+
+static gint
 lasso_login_add_response_assertion(LassoLogin    *login,
 				   LassoIdentity *identity,
 				   const gchar   *authenticationMethod,
@@ -174,7 +218,8 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
     }
   }
   /* save response dump */
-  login->response_dump = lasso_node_export(LASSO_PROFILE_CONTEXT(login)->response);
+  login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
+  //segfault ??? debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
@@ -527,68 +572,6 @@ lasso_login_init_request(LassoLogin       *login,
   return (0);
 }
 
-gint
-lasso_login_process_authn_response_msg(LassoLogin *login,
-				       gchar      *authn_response_msg)
-{
-  LassoNode *assertion, *status, *statusCode;
-  LassoProvider *idp;
-  gchar *statusCode_value;
-
-  LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
-										lassoNodeExportTypeBase64);
-  LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
-
-  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
-				   "Assertion",
-				   lassoLibHRef);
-  idp = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
-				  LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-  if (assertion != NULL) {
-    lasso_node_verify_signature(assertion, idp->ca_certificate);
-  }
-  else {
-    return (-1);
-  }
-  status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
-				"Status",
-				lassoSamlProtocolHRef);
-  if (status != NULL) {
-    statusCode = lasso_node_get_child(status,
-				  "StatusCode",
-				  lassoSamlProtocolHRef);
-    
-    if (statusCode) {
-      statusCode_value = lasso_node_get_content(statusCode);
-      if (xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
-	return (-4);
-      }
-    }
-    else {
-      return (-3);
-    }
-  }
-  else {
-    return (-2);
-  }
-  return (0);
-}
-
-gint
-lasso_login_process_request_msg(LassoLogin *login,
-				gchar      *request_msg)
-{
-  LassoNode *node;
-
-  node = lasso_node_new_from_dump(request_msg);
- 
-  // TODO : rebuild request in login->request and set login->request_type
-  login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
-  lasso_node_destroy(node);
-
-  return (0);
-}
-
 gboolean
 lasso_login_must_authenticate(LassoLogin *login)
 {
@@ -616,6 +599,49 @@ lasso_login_must_authenticate(LassoLogin *login)
   }
 
   return (must_authenticate);
+}
+
+gint
+lasso_login_process_authn_response_msg(LassoLogin *login,
+				       gchar      *authn_response_msg)
+{
+  LassoNode *assertion, *status, *statusCode;
+  LassoProvider *idp;
+  gchar *statusCode_value;
+
+  LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
+										lassoNodeExportTypeBase64);
+  LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
+
+  return (lasso_login_process_response_status_and_assertion(login));
+}
+
+gint
+lasso_login_process_request_msg(LassoLogin *login,
+				gchar      *request_msg)
+{
+  LassoNode *node;
+
+  node = lasso_node_new_from_dump(request_msg);
+ 
+  // TODO : rebuild request in login->request and set login->request_type
+  login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
+  lasso_node_destroy(node);
+
+  return (0);
+}
+
+gint
+lasso_login_process_response_msg(LassoLogin  *login,
+				 gchar       *response_msg,
+				 const gchar *remote_providerID)
+{
+  LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(response_msg,
+									  lassoNodeExportTypeSoap);
+  LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
+  LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
+
+  return (lasso_login_process_response_status_and_assertion(login));
 }
 
 /*****************************************************************************/

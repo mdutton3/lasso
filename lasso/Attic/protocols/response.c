@@ -108,3 +108,30 @@ lasso_response_new()
 
   return (response);
 }
+
+LassoNode*
+lasso_response_new_from_export(xmlChar              *buffer,
+			       lassoNodeExportTypes  export_type)
+{
+  xmlChar *buffer_decoded = xmlMalloc(strlen(buffer));
+  LassoNode *response = NULL, *soap_node, *response_node;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_RESPONSE, NULL));
+
+  switch (export_type) {
+  case lassoNodeExportTypeBase64:
+  case lassoNodeExportTypeQuery:
+    break;
+  case lassoNodeExportTypeSoap:
+    soap_node = lasso_node_new_from_dump(buffer);
+    response_node = lasso_node_get_child(soap_node, "Response", lassoSamlProtocolHRef);
+    lasso_node_import(response, lasso_node_export(response_node));
+    lasso_node_destroy(response_node);
+    lasso_node_destroy(soap_node);
+    break;
+  }
+
+  return (response);
+}
