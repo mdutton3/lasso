@@ -32,6 +32,10 @@
 %include typemaps.i
 %include wsf-support.i
 
+#if LASSO_WSF_SUPPORT == 1
+#define LASSO_WSF_ENABLED
+#endif
+
 %{
 
 #if defined(SWIGRUBY) || defined (PHP_VERSION)
