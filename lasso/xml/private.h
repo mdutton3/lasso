@@ -119,23 +119,40 @@ void _debug(GLogLevelFlags level, const char *filename, int line,
 
 int error_code(GLogLevelFlags level, int error, ...);
 
-#if defined LASSO_DEBUG && defined __GNUC__
+#if defined(LASSO_DEBUG) && defined(__GNUC__)
 #  define debug(format, args...) \
 	_debug(G_LOG_LEVEL_DEBUG, __FILE__, __LINE__,__FUNCTION__, format, ##args)
-#else
+#elif defined(HAVE_VARIADIC_MACROS)
 #  define debug(...)     ;
+#else
+inline void debug(const char *format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+	va_end(ap);
+}
 #endif
 
 #ifndef __FUNCTION__
 #  define __FUNCTION__  ""
 #endif
 
-#if defined __GNUC__
+#if defined(__GNUC__)
 #  define message(level, format, args...) \
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
-#else
+#elif defined(HAVE_VARIADIC_MACROS)
 #  define message(level, ...) \
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+#else
+inline void message(GLogLevelFlags level, const char *format, ...)
+{
+	va_list ap;
+	char s[1024];
+	va_start(ap, format);
+	vsnprintf(s, 1024, format, args);
+	va_end(ap);
+	_debug(level, __FILE__, __LINE__, __FUNCTION__, s);
+}
 #endif
 
 #define critical_error(rc) error_code(G_LOG_LEVEL_CRITICAL, rc)
