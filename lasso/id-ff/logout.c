@@ -85,15 +85,30 @@ lasso_logout_dump(LassoLogout *logout)
 gint
 lasso_logout_build_request_msg(LassoLogout *logout)
 {
-  LassoProfile  *profile;
-  LassoProvider *provider;
-  xmlChar       *protocolProfile = NULL;
-  gint           ret = 0;
+  LassoProfile     *profile;
+  LassoProvider    *provider;
+  xmlChar          *protocolProfile = NULL;
+  lassoProviderType remote_provider_type;
+  gint              ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   
   profile = LASSO_PROFILE(logout);
 
+  /* set the remote provider type and get the remote provider object */
+  if (profile->provider_type == lassoProviderTypeSp) {
+    remote_provider_type = lassoProviderTypeIdp;
+    printf("Remote provider is IDP\n");
+  }
+  else if (profile->provider_type == lassoProviderTypeIdp) {
+    remote_provider_type = lassoProviderTypeSp;
+    printf("Remote provider is SP\n");
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+    ret = -1;
+    goto done;
+  }
   provider = lasso_server_get_provider_ref(profile->server,
 					   profile->remote_providerID,
 					   NULL);
@@ -104,22 +119,9 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   /* get the prototocol profile of the logout request */
-  if (profile->provider_type == lassoProviderTypeSp) {
-    protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
-								     lassoProviderTypeIdp,
-								     NULL);
-  }
-  else if (profile->provider_type == lassoProviderTypeIdp) {
-    protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
-								     lassoProviderTypeSp,
-								     NULL);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
-    ret = -1;
-    goto done;
-  }
-
+  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
+								   remote_provider_type,
+								   NULL);
   if (protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Single logout protocol profile not found\n");
     ret = -1;
@@ -135,7 +137,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
     /* build the logout request message */
     profile->msg_url  = lasso_provider_get_soapEndpoint(provider,
-							lassoProviderTypeIdp,
+							remote_provider_type,
 							NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
     
@@ -152,7 +154,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     const gchar *separator = "?";
 
     /* build and optionaly sign the logout request QUERY message */
-    url = lasso_provider_get_singleLogoutServiceURL(provider, profile->provider_type, NULL);
+    url = lasso_provider_get_singleLogoutServiceURL(provider, remote_provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
@@ -176,6 +178,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   done:
+  printf("Build request msg done\n");
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
   }
@@ -410,8 +413,7 @@ lasso_logout_init_request(LassoLogout *logout,
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier, NULL);
-  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier",
-					    NULL);
+  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
   
   /* get the single logout protocol profile and set a new logout request object */
@@ -463,17 +465,17 @@ lasso_logout_init_request(LassoLogout *logout,
     ret = -1;
     goto done;
   }
-
-  /* set the name identifier in logout object */
-  profile->nameIdentifier = content;
-
   if (profile->request == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Error while creating the request\n");
+    message(G_LOG_LEVEL_CRITICAL, "Error while building the request\n");
     ret = -1;
     goto done;
   }
 
+  /* set the name identifier in logout object */
+  profile->nameIdentifier = content;
+
   done:
+  printf("Init request done\n");
   if (federation != NULL) {
     lasso_federation_destroy(federation);
   }
