@@ -41,24 +41,16 @@ clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
-	Defederation.cs DiscoCredentials.cs DiscoDescription.cs \
-	DiscoEncryptedResourceID.cs DiscoInsertEntry.cs DiscoModify.cs \
-	DiscoModifyResponse.cs DiscoOptions.cs DiscoQuery.cs \
-	DiscoQueryResponse.cs DiscoRemoveEntry.cs DiscoRequestedServiceType.cs \
-	DiscoResourceID.cs DiscoResourceOffering.cs DiscoServiceInstance.cs \
-	Discovery.cs DowncastableNode.cs DstData.cs DstModification.cs \
-	DstModify.cs DstModifyResponse.cs DstNewData.cs DstQuery.cs \
-	DstQueryItem.cs DstQueryResponse.cs Federation.cs Identity.cs \
-	InteractionProfileService.cs IsHelp.cs IsInquiry.cs IsInquiryElement.cs \
-	IsInteractionRequest.cs IsInteractionResponse.cs IsInteractionStatement.cs \
-	IsItem.cs IsParameter.cs IsRedirectRequest.cs IsSelect.cs IsText.cs \
-	IsUserInteraction.cs lasso.cs lassoPINVOKE.cs Lecp.cs LibAssertion.cs \
+	Defederation.cs \
+	DowncastableNode.cs \
+	Federation.cs Identity.cs \
+	lasso.cs lassoPINVOKE.cs Lecp.cs LibAssertion.cs \
 	LibAuthnRequest.cs \
 	LibAuthnResponse.cs LibFederationTerminationNotification.cs \
 	LibLogoutRequest.cs LibLogoutResponse.cs LibRegisterNameIdentifierRequest.cs \
 	LibRegisterNameIdentifierResponse.cs LibRequestAuthnContext.cs \
 	LibStatusResponse.cs Login.cs Logout.cs NameIdentifierMapping.cs \
-	NameRegistration.cs Node.cs NodeList.cs ProfileService.cs Provider.cs \
+	NameRegistration.cs Node.cs NodeList.cs Provider.cs \
 	SamlAdvice.cs SamlAssertion.cs SamlAttribute.cs SamlAttributeDesignator.cs \
 	SamlAttributeStatement.cs SamlAttributeValue.cs SamlAudienceRestrictionCondition.cs \
 	SamlAuthenticationStatement.cs SamlAuthorityBinding.cs SamlConditionAbstract.cs \
@@ -67,7 +59,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SamlStatementAbstract.cs SamlSubjectConfirmation.cs SamlSubject.cs \
 	SamlSubjectLocality.cs SamlSubjectStatementAbstract.cs SamlSubjectStatement.cs \
 	Server.cs Session.cs StringList.cs SWIGTYPE_p_LassoMdProtocolType.cs \
-	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs UtilityStatus.cs \
+	SWIGTYPE_p_LassoSignatureType.cs SWIGTYPE_p_void.cs \
 	HttpMethod.cs ProviderRole.cs SignatureMethod.cs LoginProtocolProfile.cs \
 	RequestType.cs
 

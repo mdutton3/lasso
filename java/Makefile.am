@@ -27,24 +27,16 @@ libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 javashare_DATA = lasso.jar
 
 SWIG_OUTPUTS = lasso_wrap.c \
-	Defederation.java DiscoCredentials.java DiscoDescription.java \
-	DiscoEncryptedResourceID.java DiscoInsertEntry.java DiscoModify.java \
-	DiscoModifyResponse.java DiscoOptions.java DiscoQuery.java \
-	DiscoQueryResponse.java DiscoRemoveEntry.java DiscoRequestedServiceType.java \
-	DiscoResourceID.java DiscoResourceOffering.java DiscoServiceInstance.java \
-	Discovery.java DowncastableNode.java DstData.java DstModification.java \
-	DstModify.java DstModifyResponse.java DstNewData.java DstQueryItem.java \
-	DstQuery.java DstQueryResponse.java Federation.java Identity.java \
-	InteractionProfileService.java IsHelp.java IsInquiryElement.java IsInquiry.java \
-	IsInteractionRequest.java IsInteractionResponse.java IsInteractionStatement.java \
-	IsItem.java IsParameter.java IsRedirectRequest.java IsSelect.java IsText.java \
-	IsUserInteraction.java lassoConstants.java lasso.java lassoJNI.java Lecp.java \
+	Defederation.java \
+	DowncastableNode.java \
+	Federation.java Identity.java \
+	lassoConstants.java lasso.java lassoJNI.java Lecp.java \
 	LibAssertion.java LibAuthnRequest.java LibAuthnResponse.java \
 	LibFederationTerminationNotification.java LibLogoutRequest.java \
 	LibLogoutResponse.java LibRegisterNameIdentifierRequest.java \
 	LibRegisterNameIdentifierResponse.java LibRequestAuthnContext.java \
 	LibStatusResponse.java Login.java Logout.java NameIdentifierMapping.java \
-	NameRegistration.java Node.java NodeList.java ProfileService.java Provider.java \
+	NameRegistration.java Node.java NodeList.java Provider.java \
 	SamlAdvice.java SamlAssertion.java SamlAttributeDesignator.java SamlAttribute.java \
 	SamlAttributeStatement.java SamlAttributeValue.java SamlAudienceRestrictionCondition.java \
 	SamlAuthenticationStatement.java SamlAuthorityBinding.java \
@@ -54,7 +46,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	SamlSubjectConfirmation.java SamlSubject.java SamlSubjectLocality.java \
 	SamlSubjectStatementAbstract.java SamlSubjectStatement.java Server.java \
 	Session.java StringList.java SWIGTYPE_p_LassoMdProtocolType.java \
-	SWIGTYPE_p_LassoSignatureType.java SWIGTYPE_p_void.java UtilityStatus.java
+	SWIGTYPE_p_LassoSignatureType.java SWIGTYPE_p_void.java
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
 
