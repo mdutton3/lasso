@@ -41,7 +41,7 @@ clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
 
 SWIG_FILES = liblassosharpglue_wrap.c \
-	Defederation.cs \
+	Defederation.cs CheckVersionMode.cs \
 	DowncastableNode.cs \
 	Federation.cs Identity.cs \
 	lasso.cs lassoPINVOKE.cs Lecp.cs LibAssertion.cs \

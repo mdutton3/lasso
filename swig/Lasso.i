@@ -1089,10 +1089,24 @@ int lasso_init(void);
 #endif
 int lasso_shutdown(void);
 
+/* CheckVersionMode */
+#ifndef SWIGPHP4
+%rename(CHECK_VERSION_EXACT) LASSO_CHECK_VERSION_EXACT;
+%rename(CHECK_VERSIONABI_COMPATIBLE) LASSO_CHECK_VERSIONABI_COMPATIBLE;
+%rename(CHECK_VERSION_NUMERIC) LASSO_CHECK_VERSION_NUMERIC;
+%rename(CheckVersionMode) LassoCheckVersionMode;
+#endif
+typedef enum {
+        LASSO_CHECK_VERSION_EXACT = 0,
+        LASSO_CHECK_VERSIONABI_COMPATIBLE,
+        LASSO_CHECK_VERSION_NUMERIC
+} LassoCheckVersionMode;
+
 #ifndef SWIGPHP4
 %rename(checkVersion) lasso_check_version;
 #endif
-int lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mode = 2);
+int lasso_check_version(int major, int minor, int subminor,
+		LassoCheckVersionMode mode = LASSO_CHECK_VERSION_NUMERIC);
 
 
 /***********************************************************************
