@@ -88,7 +88,7 @@ class LoginTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(lassoServer)
-        login.initAuthnRequest(lasso.httpMethodRedirect)
+        login.initAuthnRequest()
         login.authnRequest
         login.authnRequest.protocolProfile = lasso.libProtocolProfileBrwsArt
 
