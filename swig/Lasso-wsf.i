@@ -1232,7 +1232,11 @@ typedef struct {
 %extend LassoDstModifyResponse {
 	/* Attributes */
 
-	LassoUtilityStatus *status;
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
 
 	/* char *itemIdRef; */
 
@@ -1248,14 +1252,17 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
+
+/* Status */
+#define LassoDstModifyResponse_get_Status(self) get_node((self)->Status)
+#define LassoDstModifyResponse_Status_get(self) get_node((self)->Status)
+#define LassoDstModifyResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoDstModifyResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* status */
 #define LassoDstModifyResponse_get_status LassoDstModifyResponse_status_get
@@ -1271,8 +1278,6 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoDstModifyResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
