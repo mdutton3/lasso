@@ -1,12 +1,13 @@
 figuresdir = $(datadir)/doc/lasso/figures
 
 FIGURES_PNG_FILES = \
-	sso-brws-art-1.png sso-brws-art-2.png sso-brws-art-3.png \
-	sso-brws-art-4.png sso-brws-art-5.png \
-	sso-brws-post-1.png sso-brws-post-2.png sso-brws-post-3.png \
-	sso-brws-post-4.png \
-	slo-sp-soap-1.png slo-sp-soap-2.png slo-sp-soap-3.png \
-	slo-sp-soap-4.png slo-sp-soap-5.png slo-sp-soap-6.png
+	sso-brws-art.png    sso-brws-art-1.png sso-brws-art-2.png \
+	sso-brws-art-3.png  sso-brws-art-4.png sso-brws-art-5.png \
+	sso-brws-post.png   sso-brws-post-1.png sso-brws-post-2.png \
+	sso-brws-post-3.png sso-brws-post-4.png \
+	slo-sp-soap.png     slo-sp-soap-1.png slo-sp-soap-2.png \
+	slo-sp-soap-3.png   slo-sp-soap-4.png slo-sp-soap-5.png \
+	slo-sp-soap-6.png
 
 FIGURES_SVG_FILES = \
 	sso-brws-art-1.svg sso-brws-art-2.svg sso-brws-art-3.svg \

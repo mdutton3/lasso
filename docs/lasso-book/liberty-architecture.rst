@@ -40,23 +40,19 @@ the user.
 Artifact Profile
 ----------------
 
-.. figure:: figures/single-sign-on.png
+.. figure:: figures/sso-brws-art.png
 
    Single Sign-On and Federation interactions, Artifact profile
 
-1. the user clicks on a "login" button
-2. the service provider answers with a redirect to the identity provider
-3. the browser goes to the identity provider where the user logs in
-4. the identity provider answers with a redirect, back to the service provider
-5. the browser goes to the service provider telling it has been authenticated
-6. the service provider makes a SOAP request to the identity provider asking
-   if it is true that the user has been authenticated
-7. the identity provider answers that yeah, everything is under control
-8. the service provider answers to the browser and send a welcome page
+TODO: describe steps
 
 
 Browser POST Profile
 --------------------
+
+.. figure:: figures/sso-brws-post.png
+
+   Single Sign-On and Federation interactions, Browser-POST profile
 
 Almost the Same thing.
 
@@ -70,13 +66,11 @@ A few words about the five different profiles.
 Initiated by the Service Provider, using SOAP requests
 ------------------------------------------------------
 
-.. figure:: figures/single-logout.png
+.. figure:: figures/slo-sp-soap.png
 
    Single Log-out interactions; initiated at service provider, using SOAP
 
 
-Should arrange the figure with the SP on the right; I think it would help read
-the figure.
 
 
 Initiated by the Service Provider, using HTTP Redirects
