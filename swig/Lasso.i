@@ -1114,7 +1114,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibAuthnRequest) LassoLibAuthnRequest;
 #endif
-%nodefault LassoLibAuthnRequest;
 typedef struct {
 	/* Attributes */
 
@@ -1134,6 +1133,17 @@ typedef struct {
 	LassoStringArray *Extension;
 	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
 	// FIXME: LassoLibScoping *Scoping;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibAuthnRequest();
+
+	~LassoLibAuthnRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1179,6 +1189,15 @@ void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringA
 	}
 }
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibAuthnRequest lasso_lib_authn_request_new
+#define delete_LassoLibAuthnRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibAuthnRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1190,7 +1209,6 @@ void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringA
 #ifndef SWIGPHP4
 %rename(LibAuthnResponse) LassoLibAuthnResponse;
 #endif
-%nodefault LassoLibAuthnResponse;
 typedef struct {
 	/* Attributes */
 
@@ -1204,6 +1222,17 @@ typedef struct {
 	// FIXME: LassoSamlAssertion *Assertion;
 	// FIXME: GList *Extension;
 	LassoSamlpStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibAuthnResponse(char *providerID, LassoLibAuthnRequest *request);
+
+	~LassoLibAuthnResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1216,6 +1245,15 @@ typedef struct {
 #define LassoLibAuthnResponse_set_Status(self, value) set_object((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
 #define LassoLibAuthnResponse_Status_set(self, value) set_object((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibAuthnResponse lasso_lib_authn_response_new
+#define delete_LassoLibAuthnResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibAuthnResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1227,7 +1265,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibFederationTerminationNotification) LassoLibFederationTerminationNotification;
 #endif
-%nodefault LassoLibFederationTerminationNotification;
 typedef struct {
 	/* Attributes */
 
@@ -1240,6 +1277,19 @@ typedef struct {
 
 	// FIXME: GList *Extension;
 	LassoSamlNameIdentifier *NameIdentifier;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibFederationTerminationNotification(
+			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+
+	~LassoLibFederationTerminationNotification();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1252,6 +1302,15 @@ typedef struct {
 #define LassoLibFederationTerminationNotification_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
 #define LassoLibFederationTerminationNotification_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibFederationTerminationNotification lasso_lib_federation_termination_notification_new_full
+#define delete_LassoLibFederationTerminationNotification(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibFederationTerminationNotification_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1263,7 +1322,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibLogoutRequest) LassoLibLogoutRequest;
 #endif
-%nodefault LassoLibLogoutRequest;
 typedef struct {
 	/* Attributes */
 
@@ -1278,6 +1336,19 @@ typedef struct {
 
 	// FIXME: GList *Extension;
 	LassoSamlNameIdentifier *NameIdentifier;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibLogoutRequest(
+			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+
+	~LassoLibLogoutRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1290,6 +1361,15 @@ typedef struct {
 #define LassoLibLogoutRequest_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
 #define LassoLibLogoutRequest_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibLogoutRequest lasso_lib_logout_request_new_full
+#define delete_LassoLibLogoutRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibLogoutRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1301,7 +1381,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibLogoutResponse) LassoLibLogoutResponse;
 #endif
-%nodefault LassoLibLogoutResponse;
 typedef struct {
 } LassoLibLogoutResponse;
 %extend LassoLibLogoutResponse {
@@ -1311,6 +1390,20 @@ typedef struct {
 	char *ProviderID;
 	char *RelayState;
 	LassoSamlpStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibLogoutResponse(
+			char *providerID, const char *statusCodeValue,
+			LassoLibLogoutRequest *request,
+			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+
+	~LassoLibLogoutResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1335,6 +1428,15 @@ typedef struct {
 #define LassoLibLogoutResponse_set_Status(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 #define LassoLibLogoutResponse_Status_set(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibLogoutResponse lasso_lib_logout_response_new_full
+#define delete_LassoLibLogoutResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibLogoutResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1346,7 +1448,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibRegisterNameIdentifierRequest) LassoLibRegisterNameIdentifierRequest;
 #endif
-%nodefault LassoLibRegisterNameIdentifierRequest;
 typedef struct {
 	/* Attributes */
 
@@ -1360,6 +1461,22 @@ typedef struct {
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
 	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
 	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibRegisterNameIdentifierRequest(
+			char *providerID,
+			LassoSamlNameIdentifier *idpNameIdentifier,
+			LassoSamlNameIdentifier *spNameIdentifier,
+			LassoSamlNameIdentifier *oldNameIdentifier,
+			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+
+	~LassoLibRegisterNameIdentifierRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1384,6 +1501,15 @@ typedef struct {
 #define LassoLibRegisterNameIdentifierRequest_set_SPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
 #define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibRegisterNameIdentifierRequest lasso_lib_register_name_identifier_request_new_full
+#define delete_LassoLibRegisterNameIdentifierRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibRegisterNameIdentifierRequest_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1395,7 +1521,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibRegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
 #endif
-%nodefault LassoLibRegisterNameIdentifierResponse;
 typedef struct {
 } LassoLibRegisterNameIdentifierResponse;
 %extend LassoLibRegisterNameIdentifierResponse {
@@ -1405,6 +1530,20 @@ typedef struct {
 	char *ProviderID;
 	char *RelayState;
 	LassoSamlpStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibRegisterNameIdentifierResponse(
+			char *providerID, char *statusCodeValue,
+			LassoLibRegisterNameIdentifierRequest *request,
+			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+
+	~LassoLibRegisterNameIdentifierResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1429,6 +1568,15 @@ typedef struct {
 #define LassoLibRegisterNameIdentifierResponse_set_Status(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 #define LassoLibRegisterNameIdentifierResponse_Status_set(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibRegisterNameIdentifierResponse lasso_lib_register_name_identifier_response_new_full
+#define delete_LassoLibRegisterNameIdentifierResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibRegisterNameIdentifierResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
 %}
 
 
@@ -1440,7 +1588,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(LibStatusResponse) LassoLibStatusResponse;
 #endif
-%nodefault LassoLibStatusResponse;
 typedef struct {
 	/* Attributes */
 
@@ -1452,6 +1599,17 @@ typedef struct {
 
 	// FIXME: GList *Extension;
 	LassoSamlpStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoLibStatusResponse();
+
+	~LassoLibStatusResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
 }
 
 %{
@@ -1463,6 +1621,15 @@ typedef struct {
 #define LassoLibStatusResponse_Status_get(self) get_object((self)->Status)
 #define LassoLibStatusResponse_set_Status(self, value) set_object((gpointer *) &(self)->Status, (value))
 #define LassoLibStatusResponse_Status_set(self, value) set_object((gpointer *) &(self)->Status, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoLibStatusResponse lasso_lib_status_response_new
+#define delete_LassoLibStatusResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoLibStatusResponse_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
 
 %}
 
