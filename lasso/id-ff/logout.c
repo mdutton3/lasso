@@ -73,7 +73,9 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
     debug(DEBUG, "building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
-    //profileContext->msg_url = lasso_node_export_to_query(profileContext->request);
+    profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
+							 profileContext->server->signature_method,
+							 profileContext->server->private_key);
     profileContext->msg_body = NULL;
   }
 
@@ -111,7 +113,9 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
     debug(DEBUG, "building a http get response message\n");
     profileContext->response_type = lassoHttpMethodRedirect;
-    //profileContext->msg_url = lasso_node_export_to_query(profileContext->response);
+    profileContext->msg_url = lasso_node_export_to_query(profileContext->response,
+							 profileContext->server->signature_method,
+							 profileContext->server->private_key);
     profileContext->msg_body = NULL;
   }
 
