@@ -39,13 +39,23 @@
 
 %}
 
-/* wsf prefix & href */
+
+/***********************************************************************
+ ***********************************************************************
+ * Constants
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/* WSF prefix & href */
+#ifndef SWIGPHP4
 %rename(discoHref) LASSO_DISCO_HREF;
 %rename(discoPrefix) LASSO_DISCO_PREFIX;
 %rename(epHref) LASSO_EP_HREF;
 %rename(epPrefix) LASSO_EP_PREFIX;
 %rename(ppHref) LASSO_PP_HREF;
 %rename(ppPrefix) LASSO_PP_PREFIX;
+#endif
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
 #define LASSO_EP_HREF   "urn:liberty:ep:2003-08"
@@ -53,7 +63,8 @@
 #define LASSO_PP_HREF   "urn:liberty:pp:2003-08"
 #define LASSO_PP_PREFIX "pp"
 
-/* wsf status code */
+/* WSF status code */
+#ifndef SWIGPHP4
 %rename(dstStatusCodeActionNotAuthorized) LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED;
 %rename(dstStatusCodeActionNotSupported) LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED;
 %rename(dstStatusCodeAllReturned) LASSO_DST_STATUS_CODE_ALL_RETURNED;
@@ -66,7 +77,7 @@
 %rename(dstStatusCodeInvalidData) LASSO_DST_STATUS_CODE_INVALID_DATA;
 %rename(dstStatusCodeInvalidResourceId) LASSO_DST_STATUS_CODE_INVALID_RESOURCE_ID;
 %rename(dstStatusCodeInvalidSelect) LASSO_DST_STATUS_CODE_INVALID_SELECT;
-%rename(dstStatusCodemissingNewDataElement) LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT;
+%rename(dstStatusCodeMissingNewDataElement) LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT;
 %rename(dstStatusCodeMissingResourceIdElement) LASSO_DST_STATUS_CODE_MISSING_RESOURCE_ID_ELEMENT;
 %rename(dstStatusCodeMissingSelect) LASSO_DST_STATUS_CODE_MISSING_SELECT;
 %rename(dstStatusCodeModifiedSince) LASSO_DST_STATUS_CODE_MODIFIED_SINCE;
@@ -76,6 +87,7 @@
 %rename(dstStatusCodeOk) LASSO_DST_STATUS_CODE_OK;
 %rename(dstStatusCodeTimeOut) LASSO_DST_STATUS_CODE_TIME_OUT;
 %rename(dstStatusCodeUnexpectedError) LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR;
+#endif
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
 #define LASSO_DST_STATUS_CODE_ALL_RETURNED "AllReturned"
@@ -102,46 +114,67 @@
 
 /***********************************************************************
  ***********************************************************************
- * ID-WSF LassoDisco domain
+ * XML Elements in Discovery Namespace
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
- * ID-WSF XML LassoDiscoCredentials
+ * disco:Credentials
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
-%rename(Credentials) LassoDiscoCredentials;
+%rename(DiscoCredentials) LassoDiscoCredentials;
 #endif
 typedef struct {
-	%extend {
-		/* Attributes */
-
-		/* Constructor, Destructor & Static Methods */
-		LassoDiscoCredentials();
-
-		/* Methods */
-
-	}
 } LassoDiscoCredentials;
+%extend LassoDiscoCredentials {
+	/* Attributes */
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDiscoCredentials();
+
+	~LassoDiscoCredentials();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
 
 %{
 
 /* Attributes Implementations */
 
+/* AttributeValue */
+#define LassoDiscoCredentials_get_AttributeValue(self) get_node_list((self)->any)
+#define LassoDiscoCredentials_AttributeValue_get(self) get_node_list((self)->any)
+#define LassoDiscoCredentials_set_AttributeValue(self, value) set_node_list(&(self)->any, (value))
+#define LassoDiscoCredentials_AttributeValue_set(self, value) set_node_list(&(self)->any, (value))
+
 /* Constructors, destructors & static methods implementations */
 #define new_LassoDiscoCredentials lasso_disco_credentials_new
+#define delete_LassoDiscoCredentials(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods implementations */
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDiscoCredentials_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
+
 /***********************************************************************
- * ID-WSF XML LassoDiscoDescription
+ * disco:Description
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
-%rename(Description) LassoDiscoDescription;
+%rename(DiscoDescription) LassoDiscoDescription;
 #endif
 typedef struct {
 	%extend {
@@ -171,11 +204,11 @@ typedef struct {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoInsertEntry
+ * disco:InsertEntry
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(InsertEntry) LassoDiscoInsertEntry;
+%rename(DiscoInsertEntry) LassoDiscoInsertEntry;
 #endif
 typedef struct {
 	%extend {
@@ -213,7 +246,7 @@ void LassoDiscoInsertEntry_resourceOffering_set(LassoDiscoInsertEntry *self,
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoModify
+ * disco:Modify
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -277,7 +310,7 @@ LassoDiscoRemoveEntry *LassoDiscoModify_removeEntry_get(LassoDiscoModify *self) 
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoModifyResponse
+ * disco:ModifyResponse
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -328,11 +361,11 @@ char *LassoDiscoModifyResponse_newEntryIds_get(LassoDiscoModifyResponse *self) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoOptions
+ * disco:Options
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(Options) LassoDiscoOptions;
+%rename(DiscoOptions) LassoDiscoOptions;
 #endif
 typedef struct {
 	%extend {
@@ -358,7 +391,7 @@ typedef struct {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoQuery
+ * disco:Query
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -411,7 +444,7 @@ LassoDiscoRequestedServiceType *LassoDiscoQuery_addRequestedServiceType(LassoDis
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoQueryResponse
+ * disco:QueryResponse
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -459,11 +492,11 @@ LassoDiscoCredentials *LassoDiscoQueryResponse_credentials_get(LassoDiscoQueryRe
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoRemoveEntry
+ * disco:RemoveEntry
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(RemoveEntry) LassoDiscoRemoveEntry;
+%rename(DiscoRemoveEntry) LassoDiscoRemoveEntry;
 #endif
 typedef struct {
 	%extend {
@@ -496,11 +529,11 @@ char *LassoDiscoRemoveEntry_entryId_get(LassoDiscoRemoveEntry *self) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoResourceID
+ * disco:ResourceID
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(ResourceID) LassoDiscoResourceID;
+%rename(DiscoResourceID) LassoDiscoResourceID;
 #endif
 typedef struct {
 	%extend {
@@ -533,11 +566,11 @@ char *LassoDiscoResourceID_content_get(LassoDiscoResourceID *self) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoResourceOffering
+ * disco:ResourceOffering
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(ResourceOffering) LassoDiscoResourceOffering;
+%rename(DiscoResourceOffering) LassoDiscoResourceOffering;
 #endif
 typedef struct {
 
@@ -596,11 +629,11 @@ void LassoDiscoResourceOffering_serviceInstance_set(LassoDiscoResourceOffering *
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDiscoServiceInstance
+ * disco:ServiceInstance
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(ServiceInstance) LassoDiscoServiceInstance;
+%rename(DiscoServiceInstance) LassoDiscoServiceInstance;
 #endif
 typedef struct {
 	%extend {
@@ -637,14 +670,16 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(gchar *serviceType,
 
 %}
 
+
 /***********************************************************************
  ***********************************************************************
- LassoDst domain
+ * XML Elements in Data Services Template Namespace
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
- * ID-WSF XML LassoDstModification
+ * dst:Modification
  ***********************************************************************/
 #ifndef SWIGPHP4
 %rename(DstModification) LassoDstModification;
@@ -695,7 +730,7 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 
 
 /***********************************************************************
- * ID-WSF XML LassoDstModify
+ * dst:Modify
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -755,7 +790,7 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDstModifyResponse
+ * dst:ModifyResponse
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -795,7 +830,7 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDstQuery
+ * dst:Query
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -843,11 +878,11 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDstQueryItem
+ * dst:QueryItem
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(QueryItem) LassoDstQueryItem;
+%rename(DstQueryItem) LassoDstQueryItem;
 #endif
 typedef struct {
 	%extend {
@@ -880,7 +915,7 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 %}
 
 /***********************************************************************
- * ID-WSF XML LassoDstQueryResponse
+ * dst:QueryResponse
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -917,16 +952,17 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 
 /***********************************************************************
  ***********************************************************************
- LassoUtility domain
+ * XML Elements in Utility Namespace
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
- * ID-WSF XML LassoUtilityStatus
+ * utility:Status
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(Status) LassoUtilityStatus;
+%rename(UtilityStatus) LassoUtilityStatus;
 #endif
 typedef struct {
 	%extend {
@@ -965,16 +1001,17 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 
 /***********************************************************************
  ***********************************************************************
- LassoIs domain
+ * XML Elements in Interaction Services Namespace
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
- * ID-WSF XML LassoIsInteractionRequest
+ * is:InteractionRequest
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(InteractionRequest) LassoIsInteractionRequest;
+%rename(IsInteractionRequest) LassoIsInteractionRequest;
 #endif
 typedef struct {
 	%extend {
@@ -1039,14 +1076,16 @@ void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *se
 
 %}
 
+
 /***********************************************************************
  ***********************************************************************
- ID-WSF Lasso profiles
+ * ID-WSF
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
- * ID-WSF Node LassoDiscovery
+ * lasso:Discovery
  ***********************************************************************/
 
 #ifndef SWIGPHP4
@@ -1217,7 +1256,7 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 
 
 /***********************************************************************
- * ID-WSF XML LassoProfileService
+ * lasso:ProfileService
  ***********************************************************************/
 
 #ifndef SWIGPHP4

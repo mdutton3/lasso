@@ -649,6 +649,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 
 /* HttpMethod */
 #ifndef SWIGPHP4
+%rename(httpMethodNone) LASSO_HTTP_METHOD_NONE;
 %rename(httpMethodAny) LASSO_HTTP_METHOD_ANY;
 %rename(httpMethodIdpInitiated) LASSO_HTTP_METHOD_IDP_INITIATED;
 %rename(httpMethodGet) LASSO_HTTP_METHOD_GET;
