@@ -189,81 +189,118 @@ int lasso_shutdown(void);
 
 %{
 
-void add_extension_to_array(xmlNode *xmlnode, GPtrArray *array)
-{
-	xmlOutputBufferPtr buf;
-	gchar *extensionString;
-
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf != NULL) {
-		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL)
-			extensionString = g_strdup(buf->buffer->content);
-		else
-			extensionString = g_strdup(buf->conv->content);
-		xmlOutputBufferClose(buf);
-		g_ptr_array_add(array, extensionString);
-	}
-}
-
 void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
 {
         g_ptr_array_add(array, g_strdup(key));
 }
 
-void free_xml_list_element(xmlNode *xmlnode, gpointer unused)
+void add_node_to_array(gpointer node, GPtrArray *array)
 {
-	xmlFreeNode(xmlnode);
+	if (node != NULL)
+		g_object_ref(node);
+        g_ptr_array_add(array, node);
 }
 
-GPtrArray *get_extension(GList *extensionList) {
-	GPtrArray *extensionArray;
-
-	if (extensionList == NULL)
-		return NULL;
-	extensionArray = g_ptr_array_sized_new(g_list_length(extensionList));
-	g_list_foreach(extensionList, (GFunc) add_extension_to_array, extensionArray);
-	return extensionArray;
-}
-
-gpointer get_object(gpointer value)
+void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 {
-	return value == NULL ? NULL : g_object_ref(value);
-}
+	xmlOutputBufferPtr buf;
+	gchar *xmlString;
 
-void set_extension(GList **pointer, GPtrArray *extension) {
-	if (*pointer != NULL) {
-		g_list_foreach(*pointer, (GFunc) free_xml_list_element, NULL);
-		g_list_free(*pointer);
-	}
-	if (extension == NULL)
-		*pointer = NULL;
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf == NULL)
+		xmlString = NULL;
 	else {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL)
+			xmlString = g_strdup(buf->buffer->content);
+		else
+			xmlString = g_strdup(buf->conv->content);
+		xmlOutputBufferClose(buf);
+	}
+	g_ptr_array_add(array, xmlString);
+}
+
+void free_node_array_item(gpointer node, gpointer unused)
+{
+	if (node != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(node))
+			lasso_node_destroy(LASSO_NODE(node));
+		else
+			g_object_unref(node);
+}
+
+void free_node_list_item(gpointer node, gpointer unused)
+{
+	if (node != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(node))
+			lasso_node_destroy(LASSO_NODE(node));
+		else
+			g_object_unref(node);
+}
+
+void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
+{
+	if (xmlnode != NULL)
+		xmlFreeNode(xmlnode);
+}
+
+gpointer get_node(gpointer node)
+{
+	return node == NULL ? NULL : g_object_ref(node);
+}
+
+GPtrArray *get_node_list(GList *nodeList) {
+	GPtrArray *nodeArray;
+
+	if (nodeList == NULL)
+		return NULL;
+	nodeArray = g_ptr_array_sized_new(g_list_length(nodeList));
+	g_list_foreach(nodeList, (GFunc) add_node_to_array, nodeArray);
+	return nodeArray;
+}
+
+GPtrArray *get_xml_list(GList *xmlList) {
+	GPtrArray *xmlArray;
+
+	if (xmlList == NULL)
+		return NULL;
+	xmlArray = g_ptr_array_sized_new(g_list_length(xmlList));
+	g_list_foreach(xmlList, (GFunc) add_xml_to_array, xmlArray);
+	return xmlArray;
+}
+
+void set_node(gpointer *nodePointer, gpointer value)
+{
+	if (*nodePointer != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(*nodePointer))
+			lasso_node_destroy(LASSO_NODE(*nodePointer));
+		else
+			g_object_unref(*nodePointer);
+	*nodePointer = value == NULL ? NULL : g_object_ref(value);
+}
+
+void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
+	if (*nodeListPointer != NULL) {
+		g_list_foreach(*nodeListPointer, (GFunc) free_node_list_item, NULL);
+		g_list_free(*nodeListPointer);
+	}
+	if (nodeArray == NULL)
+		*nodeListPointer = NULL;
+	else {
+		gpointer node;
 		int index;
-		for (index = 0; index < extension->len; index ++) {
-			xmlDoc *doc;
-			xmlNode *node;
-			doc = xmlReadDoc(g_ptr_array_index(extension, index), NULL, NULL,
-					XML_PARSE_NONET);
-			if (doc == NULL)
-				continue;
-			node = xmlDocGetRootElement(doc);
+
+		for (index = 0; index < nodeArray->len; index ++) {
+			node = g_ptr_array_index(nodeArray, index);
 			if (node != NULL)
-				*pointer = g_list_append(*pointer, xmlCopyNode(node, 1));
-			xmlFreeDoc(doc);
+				g_object_ref(node);
+			*nodeListPointer = g_list_append(*nodeListPointer, node);
 		}
 	}
-}
-
-void set_object(gpointer *pointer, gpointer value)
-{
-	if (*pointer != NULL)
-		if (LASSO_IS_NODE(*pointer))
-			lasso_node_destroy(LASSO_NODE(*pointer));
-		else
-			g_object_unref(*pointer);
-	*pointer = value == NULL ? NULL : g_object_ref(value);
 }
 
 void set_string(char **pointer, char *value)
@@ -271,6 +308,38 @@ void set_string(char **pointer, char *value)
 	if (*pointer != NULL)
 		free(*pointer);
 	*pointer = value == NULL ? NULL : strdup(value);
+}
+
+void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
+	if (*xmlListPointer != NULL) {
+		g_list_foreach(*xmlListPointer, (GFunc) free_xml_list_item, NULL);
+		g_list_free(*xmlListPointer);
+	}
+	if (xmlArray == NULL)
+		*xmlListPointer = NULL;
+	else {
+		xmlDoc *doc;
+		int index;
+		xmlNode *node;
+		char *xmlString;
+
+		for (index = 0; index < xmlArray->len; index ++) {
+			xmlString = g_ptr_array_index(xmlArray, index);
+			if (xmlString == NULL)
+				node = NULL;
+			else {
+				doc = xmlReadDoc(g_ptr_array_index(xmlArray, index), NULL, NULL,
+						 XML_PARSE_NONET);
+				if (doc == NULL)
+					continue;
+				node = xmlDocGetRootElement(doc);
+				if (node != NULL)
+					node = xmlCopyNode(node, 1);
+				xmlFreeDoc(doc);
+			}
+			*xmlListPointer = g_list_append(*xmlListPointer, node);
+		}
+	}
 }
 
 %}
@@ -645,6 +714,112 @@ void build_exception_msg(int errorCode, char *errorMsg) {
 
 
 /***********************************************************************
+ * NodeArray
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(NodeArray) LassoNodeArray;
+#endif
+%{
+typedef GPtrArray LassoNodeArray;
+%}
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoNodeArray();
+
+		~LassoNodeArray();
+
+		/* Methods */
+
+		void append(LassoNode *item) {
+			if (item != NULL)
+				g_object_ref(item);
+			g_ptr_array_add(self, item);
+		}
+
+		GPtrArray *cast() {
+			return self;
+		}
+
+		static LassoNodeArray *frompointer(GPtrArray *nodeArray) {
+			return (LassoNodeArray *) nodeArray;
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__getitem__) getitem;
+#endif
+		%newobject getitem;
+		%exception getitem {
+			if (arg2 < 0 || arg2 >= arg1->len) {
+				char errorMsg[256];
+				sprintf(errorMsg, "%d", arg2);
+				SWIG_exception(SWIG_IndexError, errorMsg);
+			}
+			$action
+		}
+		LassoNode *getitem(int index) {
+			LassoNode *item;
+
+			item = g_ptr_array_index(self, index);
+			if (item != NULL)
+				g_object_ref(item);
+			return item;
+		}
+		%exception getitem;
+
+#if defined(SWIGPYTHON)
+		%rename(__len__) length;
+#endif
+		int length() {
+			return self->len;
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__setitem__) setitem;
+#endif
+		%exception setitem {
+			if (arg2 < 0 || arg2 >= arg1->len) {
+				char errorMsg[256];
+				sprintf(errorMsg, "%d", arg2);
+				SWIG_exception(SWIG_IndexError, errorMsg);
+			}
+			$action
+		}
+		void setitem(int index, LassoNode *item) {
+			LassoNode **itemPointer = (LassoNode **) &g_ptr_array_index(self, index);
+			if (*itemPointer != NULL)
+				/* Test added to help debugging. */
+				if (LASSO_IS_NODE(*itemPointer))
+					lasso_node_destroy(LASSO_NODE(*itemPointer));
+				else
+					g_object_unref(*itemPointer);
+			if (item == NULL)
+				*itemPointer = NULL;
+			else
+				*itemPointer = g_object_ref(item);
+		}
+		%exception setitem;
+	}
+} LassoNodeArray;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNodeArray g_ptr_array_new
+
+void delete_LassoNodeArray(GPtrArray *self) {
+	g_ptr_array_foreach(self, (GFunc) free_node_array_item, NULL);
+	g_ptr_array_free(self, false);
+}
+
+%}
+
+
+/***********************************************************************
  * StringArray
  ***********************************************************************/
 
@@ -714,13 +889,13 @@ typedef struct {
 			$action
 		}
 		void setitem(int index, char *item) {
-			char **itemPtr = (char **) &g_ptr_array_index(self, index);
-			if (*itemPtr != NULL)
-				free(*itemPtr);
+			char **itemPointer = (char **) &g_ptr_array_index(self, index);
+			if (*itemPointer != NULL)
+				free(*itemPointer);
 			if (item == NULL)
-				*itemPtr = NULL;
+				*itemPointer = NULL;
 			else
-				*itemPtr = g_strdup(item);
+				*itemPointer = g_strdup(item);
 		}
 		%exception setitem;
 	}
@@ -942,34 +1117,34 @@ typedef struct {
 /* Attributes Implementations */
 
 /* Advice */
-#define LassoSamlAssertion_get_Advice(self) get_object((self)->Advice)
-#define LassoSamlAssertion_Advice_get(self) get_object((self)->Advice)
-#define LassoSamlAssertion_set_Advice(self, value) set_object((gpointer *) &(self)->Advice, (value))
-#define LassoSamlAssertion_Advice_set(self, value) set_object((gpointer *) &(self)->Advice, (value))
+#define LassoSamlAssertion_get_Advice(self) get_node((self)->Advice)
+#define LassoSamlAssertion_Advice_get(self) get_node((self)->Advice)
+#define LassoSamlAssertion_set_Advice(self, value) set_node((gpointer *) &(self)->Advice, (value))
+#define LassoSamlAssertion_Advice_set(self, value) set_node((gpointer *) &(self)->Advice, (value))
 
 /* AttributeStatement */
-#define LassoSamlAssertion_get_AttributeStatement(self) get_object((self)->AttributeStatement)
-#define LassoSamlAssertion_AttributeStatement_get(self) get_object((self)->AttributeStatement)
-#define LassoSamlAssertion_set_AttributeStatement(self, value) set_object((gpointer *) &(self)->AttributeStatement, (value))
-#define LassoSamlAssertion_AttributeStatement_set(self, value) set_object((gpointer *) &(self)->AttributeStatement, (value))
+#define LassoSamlAssertion_get_AttributeStatement(self) get_node((self)->AttributeStatement)
+#define LassoSamlAssertion_AttributeStatement_get(self) get_node((self)->AttributeStatement)
+#define LassoSamlAssertion_set_AttributeStatement(self, value) set_node((gpointer *) &(self)->AttributeStatement, (value))
+#define LassoSamlAssertion_AttributeStatement_set(self, value) set_node((gpointer *) &(self)->AttributeStatement, (value))
 
 /* AuthenticationStatement */
-#define LassoSamlAssertion_get_AuthenticationStatement(self) get_object((self)->AuthenticationStatement)
-#define LassoSamlAssertion_AuthenticationStatement_get(self) get_object((self)->AuthenticationStatement)
-#define LassoSamlAssertion_set_AuthenticationStatement(self, value) set_object((gpointer *) &(self)->AuthenticationStatement, (value))
-#define LassoSamlAssertion_AuthenticationStatement_set(self, value) set_object((gpointer *) &(self)->AuthenticationStatement, (value))
+#define LassoSamlAssertion_get_AuthenticationStatement(self) get_node((self)->AuthenticationStatement)
+#define LassoSamlAssertion_AuthenticationStatement_get(self) get_node((self)->AuthenticationStatement)
+#define LassoSamlAssertion_set_AuthenticationStatement(self, value) set_node((gpointer *) &(self)->AuthenticationStatement, (value))
+#define LassoSamlAssertion_AuthenticationStatement_set(self, value) set_node((gpointer *) &(self)->AuthenticationStatement, (value))
 
 /* Conditions */
-#define LassoSamlAssertion_get_Conditions(self) get_object((self)->Conditions)
-#define LassoSamlAssertion_Conditions_get(self) get_object((self)->Conditions)
-#define LassoSamlAssertion_set_Conditions(self, value) set_object((gpointer *) &(self)->Conditions, (value))
-#define LassoSamlAssertion_Conditions_set(self, value) set_object((gpointer *) &(self)->Conditions, (value))
+#define LassoSamlAssertion_get_Conditions(self) get_node((self)->Conditions)
+#define LassoSamlAssertion_Conditions_get(self) get_node((self)->Conditions)
+#define LassoSamlAssertion_set_Conditions(self, value) set_node((gpointer *) &(self)->Conditions, (value))
+#define LassoSamlAssertion_Conditions_set(self, value) set_node((gpointer *) &(self)->Conditions, (value))
 
 /* SubjectStatement */
-#define LassoSamlAssertion_get_SubjectStatement(self) get_object((self)->SubjectStatement)
-#define LassoSamlAssertion_SubjectStatement_get(self) get_object((self)->SubjectStatement)
-#define LassoSamlAssertion_set_SubjectStatement(self, value) set_object((gpointer *) &(self)->SubjectStatement, (value))
-#define LassoSamlAssertion_SubjectStatement_set(self, value) set_object((gpointer *) &(self)->SubjectStatement, (value))
+#define LassoSamlAssertion_get_SubjectStatement(self) get_node((self)->SubjectStatement)
+#define LassoSamlAssertion_SubjectStatement_get(self) get_node((self)->SubjectStatement)
+#define LassoSamlAssertion_set_SubjectStatement(self, value) set_node((gpointer *) &(self)->SubjectStatement, (value))
+#define LassoSamlAssertion_SubjectStatement_set(self, value) set_node((gpointer *) &(self)->SubjectStatement, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1023,10 +1198,10 @@ typedef struct {
 /* Implementations of attributes inherited from SamlSubjectStatementAbstract */
 
 /* Subject */
-#define LassoSamlAttributeStatement_get_Subject(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
-#define LassoSamlAttributeStatement_Subject_get(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
-#define LassoSamlAttributeStatement_set_Subject(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
-#define LassoSamlAttributeStatement_Subject_set(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlAttributeStatement_get_Subject(self) get_node(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlAttributeStatement_Subject_get(self) get_node(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlAttributeStatement_set_Subject(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlAttributeStatement_Subject_set(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1089,10 +1264,10 @@ typedef struct {
 /* Attributes implementations */
 
 /* SubjectLocality */
-#define LassoSamlAuthenticationStatement_get_SubjectLocality(self) get_object((self)->SubjectLocality)
-#define LassoSamlAuthenticationStatement_SubjectLocality_get(self) get_object((self)->SubjectLocality)
-#define LassoSamlAuthenticationStatement_set_SubjectLocality(self, value) set_object((gpointer *) &(self)->SubjectLocality, (value))
-#define LassoSamlAuthenticationStatement_SubjectLocality_set(self, value) set_object((gpointer *) &(self)->SubjectLocality, (value))
+#define LassoSamlAuthenticationStatement_get_SubjectLocality(self) get_node((self)->SubjectLocality)
+#define LassoSamlAuthenticationStatement_SubjectLocality_get(self) get_node((self)->SubjectLocality)
+#define LassoSamlAuthenticationStatement_set_SubjectLocality(self, value) set_node((gpointer *) &(self)->SubjectLocality, (value))
+#define LassoSamlAuthenticationStatement_SubjectLocality_set(self, value) set_node((gpointer *) &(self)->SubjectLocality, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1251,16 +1426,16 @@ typedef struct {
 /* Attributes implementations */
 
 /* NameIdentifier */
-#define LassoSamlSubject_get_NameIdentifier(self) get_object((self)->NameIdentifier)
-#define LassoSamlSubject_NameIdentifier_get(self) get_object((self)->NameIdentifier)
-#define LassoSamlSubject_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
-#define LassoSamlSubject_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoSamlSubject_get_NameIdentifier(self) get_node((self)->NameIdentifier)
+#define LassoSamlSubject_NameIdentifier_get(self) get_node((self)->NameIdentifier)
+#define LassoSamlSubject_set_NameIdentifier(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoSamlSubject_NameIdentifier_set(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
 
 /* SubjectConfirmation */
-#define LassoSamlSubject_get_SubjectConfirmation(self) get_object((self)->SubjectConfirmation)
-#define LassoSamlSubject_SubjectConfirmation_get(self) get_object((self)->SubjectConfirmation)
-#define LassoSamlSubject_set_SubjectConfirmation(self, value) set_object((gpointer *) &(self)->SubjectConfirmation, (value))
-#define LassoSamlSubject_SubjectConfirmation_set(self, value) set_object((gpointer *) &(self)->SubjectConfirmation, (value))
+#define LassoSamlSubject_get_SubjectConfirmation(self) get_node((self)->SubjectConfirmation)
+#define LassoSamlSubject_SubjectConfirmation_get(self) get_node((self)->SubjectConfirmation)
+#define LassoSamlSubject_set_SubjectConfirmation(self, value) set_node((gpointer *) &(self)->SubjectConfirmation, (value))
+#define LassoSamlSubject_SubjectConfirmation_set(self, value) set_node((gpointer *) &(self)->SubjectConfirmation, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1405,10 +1580,10 @@ typedef struct {
 /* Implementations of attributes inherited from SamlSubjectStatementAbstract */
 
 /* Subject */
-#define LassoSamlSubjectStatement_get_Subject(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
-#define LassoSamlSubjectStatement_Subject_get(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
-#define LassoSamlSubjectStatement_set_Subject(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
-#define LassoSamlSubjectStatement_Subject_set(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlSubjectStatement_get_Subject(self) get_node(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlSubjectStatement_Subject_get(self) get_node(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlSubjectStatement_set_Subject(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlSubjectStatement_Subject_set(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1510,10 +1685,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* Status */
-#define LassoSamlpResponse_get_Status(self) get_object((self)->Status)
-#define LassoSamlpResponse_Status_get(self) get_object((self)->Status)
-#define LassoSamlpResponse_set_Status(self, value) set_object((gpointer *) &(self)->Status, (value))
-#define LassoSamlpResponse_Status_set(self, value) set_object((gpointer *) &(self)->Status, (value))
+#define LassoSamlpResponse_get_Status(self) get_node((self)->Status)
+#define LassoSamlpResponse_Status_get(self) get_node((self)->Status)
+#define LassoSamlpResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoSamlpResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1569,10 +1744,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* StatusCode */
-#define LassoSamlpStatus_get_StatusCode(self) get_object((self)->StatusCode)
-#define LassoSamlpStatus_StatusCode_get(self) get_object((self)->StatusCode)
-#define LassoSamlpStatus_set_StatusCode(self, value) set_object((gpointer *) &(self)->StatusCode, (value))
-#define LassoSamlpStatus_StatusCode_set(self, value) set_object((gpointer *) &(self)->StatusCode, (value))
+#define LassoSamlpStatus_get_StatusCode(self) get_node((self)->StatusCode)
+#define LassoSamlpStatus_StatusCode_get(self) get_node((self)->StatusCode)
+#define LassoSamlpStatus_set_StatusCode(self, value) set_node((gpointer *) &(self)->StatusCode, (value))
+#define LassoSamlpStatus_StatusCode_set(self, value) set_node((gpointer *) &(self)->StatusCode, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1628,10 +1803,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* StatusCode */
-#define LassoSamlpStatusCode_get_StatusCode(self) get_object((self)->StatusCode)
-#define LassoSamlpStatusCode_StatusCode_get(self) get_object((self)->StatusCode)
-#define LassoSamlpStatusCode_set_StatusCode(self, value) set_object((gpointer *) &(self)->StatusCode, (value))
-#define LassoSamlpStatusCode_StatusCode_set(self, value) set_object((gpointer *) &(self)->StatusCode, (value))
+#define LassoSamlpStatusCode_get_StatusCode(self) get_node((self)->StatusCode)
+#define LassoSamlpStatusCode_StatusCode_get(self) get_node((self)->StatusCode)
+#define LassoSamlpStatusCode_set_StatusCode(self, value) set_node((gpointer *) &(self)->StatusCode, (value))
+#define LassoSamlpStatusCode_StatusCode_set(self, value) set_node((gpointer *) &(self)->StatusCode, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1763,10 +1938,10 @@ typedef struct {
 /* Implementations of attributes inherited from SamlAssertion */
 
 /* Advice */
-#define LassoLibAssertion_get_Advice(self) get_object(LASSO_SAML_ASSERTION(self)->Advice)
-#define LassoLibAssertion_Advice_get(self) get_object(LASSO_SAML_ASSERTION(self)->Advice)
-#define LassoLibAssertion_set_Advice(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
-#define LassoLibAssertion_Advice_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
+#define LassoLibAssertion_get_Advice(self) get_node(LASSO_SAML_ASSERTION(self)->Advice)
+#define LassoLibAssertion_Advice_get(self) get_node(LASSO_SAML_ASSERTION(self)->Advice)
+#define LassoLibAssertion_set_Advice(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
+#define LassoLibAssertion_Advice_set(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
 
 /* AssertionID */
 #define LassoLibAssertion_get_AssertionID(self) LASSO_SAML_ASSERTION(self)->AssertionID
@@ -1775,16 +1950,16 @@ typedef struct {
 #define LassoLibAssertion_AssertionID_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->AssertionID, (value))
 
 /* AttributeStatement */
-#define LassoLibAssertion_get_AttributeStatement(self) get_object(LASSO_SAML_ASSERTION(self)->AttributeStatement)
-#define LassoLibAssertion_AttributeStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->AttributeStatement)
-#define LassoLibAssertion_set_AttributeStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
-#define LassoLibAssertion_AttributeStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
+#define LassoLibAssertion_get_AttributeStatement(self) get_node(LASSO_SAML_ASSERTION(self)->AttributeStatement)
+#define LassoLibAssertion_AttributeStatement_get(self) get_node(LASSO_SAML_ASSERTION(self)->AttributeStatement)
+#define LassoLibAssertion_set_AttributeStatement(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
+#define LassoLibAssertion_AttributeStatement_set(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
 
 /* AuthenticationStatement */
-#define LassoLibAssertion_get_AuthenticationStatement(self) get_object(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
-#define LassoLibAssertion_AuthenticationStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
-#define LassoLibAssertion_set_AuthenticationStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
-#define LassoLibAssertion_AuthenticationStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
+#define LassoLibAssertion_get_AuthenticationStatement(self) get_node(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
+#define LassoLibAssertion_AuthenticationStatement_get(self) get_node(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
+#define LassoLibAssertion_set_AuthenticationStatement(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
+#define LassoLibAssertion_AuthenticationStatement_set(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
 
 /* certificate_file */
 #define LassoLibAssertion_get_certificate_file(self) LASSO_SAML_ASSERTION(self)->certificate_file
@@ -1793,10 +1968,10 @@ typedef struct {
 #define LassoLibAssertion_certificate_file_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->certificate_file, (value))
 
 /* Conditions */
-#define LassoLibAssertion_get_Conditions(self) get_object(LASSO_SAML_ASSERTION(self)->Conditions)
-#define LassoLibAssertion_Conditions_get(self) get_object(LASSO_SAML_ASSERTION(self)->Conditions)
-#define LassoLibAssertion_set_Conditions(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
-#define LassoLibAssertion_Conditions_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
+#define LassoLibAssertion_get_Conditions(self) get_node(LASSO_SAML_ASSERTION(self)->Conditions)
+#define LassoLibAssertion_Conditions_get(self) get_node(LASSO_SAML_ASSERTION(self)->Conditions)
+#define LassoLibAssertion_set_Conditions(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
+#define LassoLibAssertion_Conditions_set(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
 
 /* IssueInstant */
 #define LassoLibAssertion_get_IssueInstant(self) LASSO_SAML_ASSERTION(self)->IssueInstant
@@ -1841,10 +2016,10 @@ typedef struct {
 #define LassoLibAssertion_sign_type_set(self, value) LASSO_SAML_ASSERTION(self)->sign_type = (value)
 
 /* SubjectStatement */
-#define LassoLibAssertion_get_SubjectStatement(self) get_object(LASSO_SAML_ASSERTION(self)->SubjectStatement)
-#define LassoLibAssertion_SubjectStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->SubjectStatement)
-#define LassoLibAssertion_set_SubjectStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
-#define LassoLibAssertion_SubjectStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
+#define LassoLibAssertion_get_SubjectStatement(self) get_node(LASSO_SAML_ASSERTION(self)->SubjectStatement)
+#define LassoLibAssertion_SubjectStatement_get(self) get_node(LASSO_SAML_ASSERTION(self)->SubjectStatement)
+#define LassoLibAssertion_set_SubjectStatement(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
+#define LassoLibAssertion_SubjectStatement_set(self, value) set_node((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
 
 /* Implementations of methods inherited from SamlAssertion */
 
@@ -1940,10 +2115,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* extension */
-#define LassoLibAuthnRequest_get_extension(self) get_extension((self)->Extension)
-#define LassoLibAuthnRequest_extension_get(self) get_extension((self)->Extension)
-#define LassoLibAuthnRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibAuthnRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibAuthnRequest_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnRequest_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibAuthnRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2011,16 +2186,16 @@ typedef struct {
 /* Attributes inherited from SamlpResponse implementations */
 
 /* extension */
-#define LassoLibAuthnResponse_get_extension(self) get_extension((self)->Extension)
-#define LassoLibAuthnResponse_extension_get(self) get_extension((self)->Extension)
-#define LassoLibAuthnResponse_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibAuthnResponse_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibAuthnResponse_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnResponse_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnResponse_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibAuthnResponse_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* Status */
-#define LassoLibAuthnResponse_get_Status(self) get_object(LASSO_SAMLP_RESPONSE(self)->Status)
-#define LassoLibAuthnResponse_Status_get(self) get_object(LASSO_SAMLP_RESPONSE(self)->Status)
-#define LassoLibAuthnResponse_set_Status(self, value) set_object((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
-#define LassoLibAuthnResponse_Status_set(self, value) set_object((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
+#define LassoLibAuthnResponse_get_Status(self) get_node(LASSO_SAMLP_RESPONSE(self)->Status)
+#define LassoLibAuthnResponse_Status_get(self) get_node(LASSO_SAMLP_RESPONSE(self)->Status)
+#define LassoLibAuthnResponse_set_Status(self, value) set_node((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
+#define LassoLibAuthnResponse_Status_set(self, value) set_node((gpointer *) &LASSO_SAMLP_RESPONSE(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2088,16 +2263,16 @@ typedef struct {
 /* Attributes implementations */
 
 /* extension */
-#define LassoLibFederationTerminationNotification_get_extension(self) get_extension((self)->Extension)
-#define LassoLibFederationTerminationNotification_extension_get(self) get_extension((self)->Extension)
-#define LassoLibFederationTerminationNotification_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibFederationTerminationNotification_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibFederationTerminationNotification_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibFederationTerminationNotification_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibFederationTerminationNotification_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibFederationTerminationNotification_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* NameIdentifier */
-#define LassoLibFederationTerminationNotification_get_NameIdentifier(self) get_object((self)->NameIdentifier)
-#define LassoLibFederationTerminationNotification_NameIdentifier_get(self) get_object((self)->NameIdentifier)
-#define LassoLibFederationTerminationNotification_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
-#define LassoLibFederationTerminationNotification_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibFederationTerminationNotification_get_NameIdentifier(self) get_node((self)->NameIdentifier)
+#define LassoLibFederationTerminationNotification_NameIdentifier_get(self) get_node((self)->NameIdentifier)
+#define LassoLibFederationTerminationNotification_set_NameIdentifier(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibFederationTerminationNotification_NameIdentifier_set(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2175,16 +2350,16 @@ typedef struct {
 /* Attributes implementations */
 
 /* extension */
-#define LassoLibLogoutRequest_get_extension(self) get_extension((self)->Extension)
-#define LassoLibLogoutRequest_extension_get(self) get_extension((self)->Extension)
-#define LassoLibLogoutRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibLogoutRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibLogoutRequest_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibLogoutRequest_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibLogoutRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibLogoutRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* nameIdentifier */
-#define LassoLibLogoutRequest_get_NameIdentifier(self) get_object((self)->NameIdentifier)
-#define LassoLibLogoutRequest_NameIdentifier_get(self) get_object((self)->NameIdentifier)
-#define LassoLibLogoutRequest_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
-#define LassoLibLogoutRequest_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibLogoutRequest_get_NameIdentifier(self) get_node((self)->NameIdentifier)
+#define LassoLibLogoutRequest_NameIdentifier_get(self) get_node((self)->NameIdentifier)
+#define LassoLibLogoutRequest_set_NameIdentifier(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibLogoutRequest_NameIdentifier_set(self, value) set_node((gpointer *) &(self)->NameIdentifier, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2250,10 +2425,10 @@ typedef struct {
 /* Implementations of attributes inherited from LibStatusResponse */
 
 /* extension */
-#define LassoLibLogoutResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibLogoutResponse_extension_get(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibLogoutResponse_set_extension(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
-#define LassoLibLogoutResponse_extension_set(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibLogoutResponse_get_extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_set_extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibLogoutResponse_extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibLogoutResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -2268,10 +2443,10 @@ typedef struct {
 #define LassoLibLogoutResponse_RelayState_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
 
 /* Status */
-#define LassoLibLogoutResponse_get_Status(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
-#define LassoLibLogoutResponse_Status_get(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
-#define LassoLibLogoutResponse_set_Status(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
-#define LassoLibLogoutResponse_Status_set(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+#define LassoLibLogoutResponse_get_Status(self) get_node(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibLogoutResponse_Status_get(self) get_node(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibLogoutResponse_set_Status(self, value) set_node((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+#define LassoLibLogoutResponse_Status_set(self, value) set_node((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2352,28 +2527,28 @@ typedef struct {
 /* Attributes implementations */
 
 /* extension */
-#define LassoLibRegisterNameIdentifierRequest_get_extension(self) get_extension((self)->Extension)
-#define LassoLibRegisterNameIdentifierRequest_extension_get(self) get_extension((self)->Extension)
-#define LassoLibRegisterNameIdentifierRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibRegisterNameIdentifierRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierRequest_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* idpProvidedNameIdentifier */
-#define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_object((self)->IDPProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_get(self) get_object((self)->IDPProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_set_IDPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
-#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_node((self)->IDPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_get(self) get_node((self)->IDPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_IDPProvidedNameIdentifier(self, value) set_node((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_set(self, value) set_node((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
 
 /* oldProvidedNameIdentifier */
-#define LassoLibRegisterNameIdentifierRequest_get_OldProvidedNameIdentifier(self) get_object((self)->OldProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_get(self) get_object((self)->OldProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_set_OldProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
-#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_get_OldProvidedNameIdentifier(self) get_node((self)->OldProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_get(self) get_node((self)->OldProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_OldProvidedNameIdentifier(self, value) set_node((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_set(self, value) set_node((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
 
 /* spProvidedNameIdentifier */
-#define LassoLibRegisterNameIdentifierRequest_get_SPProvidedNameIdentifier(self) get_object((self)->SPProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_get(self) get_object((self)->SPProvidedNameIdentifier)
-#define LassoLibRegisterNameIdentifierRequest_set_SPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
-#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_get_SPProvidedNameIdentifier(self) get_node((self)->SPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_get(self) get_node((self)->SPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_SPProvidedNameIdentifier(self, value) set_node((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_set(self, value) set_node((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2439,10 +2614,10 @@ typedef struct {
 /* Attributes inherited from LibStatusResponse implementations */
 
 /* extension */
-#define LassoLibRegisterNameIdentifierResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibRegisterNameIdentifierResponse_extension_get(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibRegisterNameIdentifierResponse_set_extension(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
-#define LassoLibRegisterNameIdentifierResponse_extension_set(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierResponse_get_extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_set_extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierResponse_extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibRegisterNameIdentifierResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -2457,10 +2632,10 @@ typedef struct {
 #define LassoLibRegisterNameIdentifierResponse_RelayState_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
 
 /* Status */
-#define LassoLibRegisterNameIdentifierResponse_get_Status(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
-#define LassoLibRegisterNameIdentifierResponse_Status_get(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
-#define LassoLibRegisterNameIdentifierResponse_set_Status(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
-#define LassoLibRegisterNameIdentifierResponse_Status_set(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+#define LassoLibRegisterNameIdentifierResponse_get_Status(self) get_node(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibRegisterNameIdentifierResponse_Status_get(self) get_node(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibRegisterNameIdentifierResponse_set_Status(self, value) set_node((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+#define LassoLibRegisterNameIdentifierResponse_Status_set(self, value) set_node((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2524,16 +2699,16 @@ typedef struct {
 /* Attributes implementations */
 
 /* extension */
-#define LassoLibStatusResponse_get_extension(self) get_extension((self)->Extension)
-#define LassoLibStatusResponse_extension_get(self) get_extension((self)->Extension)
-#define LassoLibStatusResponse_set_extension(self, value) set_extension(&(self)->Extension, (value))
-#define LassoLibStatusResponse_extension_set(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibStatusResponse_get_extension(self) get_xml_list((self)->Extension)
+#define LassoLibStatusResponse_extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibStatusResponse_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibStatusResponse_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* Status */
-#define LassoLibStatusResponse_get_Status(self) get_object((self)->Status)
-#define LassoLibStatusResponse_Status_get(self) get_object((self)->Status)
-#define LassoLibStatusResponse_set_Status(self, value) set_object((gpointer *) &(self)->Status, (value))
-#define LassoLibStatusResponse_Status_set(self, value) set_object((gpointer *) &(self)->Status, (value))
+#define LassoLibStatusResponse_get_Status(self) get_node((self)->Status)
+#define LassoLibStatusResponse_Status_get(self) get_node((self)->Status)
+#define LassoLibStatusResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoLibStatusResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2877,16 +3052,16 @@ typedef struct {
 /* Attributes implementations */
 
 /* localNameIdentifier */
-#define LassoFederation_get_local_nameIdentifier(self) get_object((self)->local_nameIdentifier)
-#define LassoFederation_local_nameIdentifier_get(self) get_object((self)->local_nameIdentifier)
-#define LassoFederation_set_local_nameIdentifier(self, value) set_object((gpointer *) &(self)->local_nameIdentifier, (value))
-#define LassoFederation_local_nameIdentifier_set(self, value) set_object((gpointer *) &(self)->local_nameIdentifier, (value))
+#define LassoFederation_get_local_nameIdentifier(self) get_node((self)->local_nameIdentifier)
+#define LassoFederation_local_nameIdentifier_get(self) get_node((self)->local_nameIdentifier)
+#define LassoFederation_set_local_nameIdentifier(self, value) set_node((gpointer *) &(self)->local_nameIdentifier, (value))
+#define LassoFederation_local_nameIdentifier_set(self, value) set_node((gpointer *) &(self)->local_nameIdentifier, (value))
 
 /* remoteNameIdentifier */
-#define LassoFederation_get_remote_nameIdentifier(self) get_object((self)->remote_nameIdentifier)
-#define LassoFederation_remote_nameIdentifier_get(self) get_object((self)->remote_nameIdentifier)
-#define LassoFederation_set_remote_nameIdentifier(self, value) set_object((gpointer *) &(self)->remote_nameIdentifier, (value))
-#define LassoFederation_remote_nameIdentifier_set(self, value) set_object((gpointer *) &(self)->remote_nameIdentifier, (value))
+#define LassoFederation_get_remote_nameIdentifier(self) get_node((self)->remote_nameIdentifier)
+#define LassoFederation_remote_nameIdentifier_get(self) get_node((self)->remote_nameIdentifier)
+#define LassoFederation_set_remote_nameIdentifier(self, value) set_node((gpointer *) &(self)->remote_nameIdentifier, (value))
+#define LassoFederation_remote_nameIdentifier_set(self, value) set_node((gpointer *) &(self)->remote_nameIdentifier, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3162,8 +3337,8 @@ typedef struct {
 /* identity */
 #define LassoDefederation_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoDefederation_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoDefederation_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoDefederation_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoDefederation_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoDefederation_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoDefederation_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -3186,10 +3361,10 @@ typedef struct {
 #define LassoDefederation_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoDefederation_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoDefederation_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoDefederation_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoDefederation_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoDefederation_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoDefederation_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoDefederation_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoDefederation_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoDefederation_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -3210,8 +3385,8 @@ typedef struct {
 /* session */
 #define LassoDefederation_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoDefederation_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
-#define LassoDefederation_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoDefederation_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoDefederation_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoDefederation_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3416,8 +3591,8 @@ LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 /* identity */
 #define LassoLogin_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLogin_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoLogin_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoLogin_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLogin_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLogin_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoLogin_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -3440,10 +3615,10 @@ LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 #define LassoLogin_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoLogin_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLogin_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLogin_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoLogin_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLogin_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLogin_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLogin_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLogin_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoLogin_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -3478,8 +3653,8 @@ LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
 /* session */
 #define LassoLogin_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLogin_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
-#define LassoLogin_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoLogin_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLogin_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLogin_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3636,8 +3811,8 @@ typedef struct {
 /* identity */
 #define LassoLogout_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLogout_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoLogout_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoLogout_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLogout_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLogout_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoLogout_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -3660,10 +3835,10 @@ typedef struct {
 #define LassoLogout_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoLogout_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLogout_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLogout_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoLogout_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLogout_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLogout_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLogout_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLogout_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoLogout_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -3688,8 +3863,8 @@ typedef struct {
 /* session */
 #define LassoLogout_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLogout_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
-#define LassoLogout_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoLogout_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLogout_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLogout_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3870,8 +4045,8 @@ LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 /* identity */
 #define LassoLecp_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLecp_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoLecp_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoLecp_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLecp_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoLecp_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoLecp_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -3894,10 +4069,10 @@ LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 #define LassoLecp_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoLecp_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLecp_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoLecp_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoLecp_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLecp_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLecp_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoLecp_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoLecp_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoLecp_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -3932,8 +4107,8 @@ LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
 /* session */
 #define LassoLecp_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLecp_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
-#define LassoLecp_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoLecp_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLecp_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoLecp_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -4069,8 +4244,8 @@ typedef struct {
 /* identity */
 #define LassoNameIdentifierMapping_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoNameIdentifierMapping_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoNameIdentifierMapping_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoNameIdentifierMapping_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoNameIdentifierMapping_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoNameIdentifierMapping_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoNameIdentifierMapping_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -4093,10 +4268,10 @@ typedef struct {
 #define LassoNameIdentifierMapping_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoNameIdentifierMapping_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoNameIdentifierMapping_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoNameIdentifierMapping_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoNameIdentifierMapping_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoNameIdentifierMapping_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameIdentifierMapping_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameIdentifierMapping_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoNameIdentifierMapping_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoNameIdentifierMapping_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -4109,8 +4284,8 @@ typedef struct {
 LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping *self) {
 	return lasso_profile_get_session(LASSO_PROFILE(self));
 }
-#define LassoNameIdentifierMapping_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoNameIdentifierMapping_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoNameIdentifierMapping_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoNameIdentifierMapping_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -4247,8 +4422,8 @@ typedef struct {
 /* identity */
 #define LassoNameRegistration_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoNameRegistration_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
-#define LassoNameRegistration_set_identity(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
-#define LassoNameRegistration_identity_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoNameRegistration_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoNameRegistration_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
 /* isIdentityDirty */
 #define LassoNameRegistration_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -4271,10 +4446,10 @@ typedef struct {
 #define LassoNameRegistration_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
 
 /* nameIdentifier */
-#define LassoNameRegistration_get_nameIdentifier(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoNameRegistration_nameIdentifier_get(self) get_object(LASSO_PROFILE(self)->nameIdentifier)
-#define LassoNameRegistration_set_nameIdentifier(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
-#define LassoNameRegistration_nameIdentifier_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoNameRegistration_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameRegistration_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameRegistration_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoNameRegistration_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
 
 /* remoteProviderId */
 #define LassoNameRegistration_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
@@ -4293,16 +4468,16 @@ typedef struct {
 /* session */
 #define LassoNameRegistration_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoNameRegistration_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
-#define LassoNameRegistration_set_session(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
-#define LassoNameRegistration_session_set(self, value) set_object((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoNameRegistration_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoNameRegistration_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
 /* Attributes implementations */
 
 /* oldNameIdentifier */
-#define LassoNameRegistration_get_oldNameIdentifier(self) get_object((self)->oldNameIdentifier)
-#define LassoNameRegistration_oldNameIdentifier_get(self) get_object((self)->oldNameIdentifier)
-#define LassoNameRegistration_set_oldNameIdentifier(self, value) set_object((gpointer *) &(self)->oldNameIdentifier, (value))
-#define LassoNameRegistration_oldNameIdentifier_set(self, value) set_object((gpointer *) &(self)->oldNameIdentifier, (value))
+#define LassoNameRegistration_get_oldNameIdentifier(self) get_node((self)->oldNameIdentifier)
+#define LassoNameRegistration_oldNameIdentifier_get(self) get_node((self)->oldNameIdentifier)
+#define LassoNameRegistration_set_oldNameIdentifier(self, value) set_node((gpointer *) &(self)->oldNameIdentifier, (value))
+#define LassoNameRegistration_oldNameIdentifier_set(self, value) set_node((gpointer *) &(self)->oldNameIdentifier, (value))
 
 /* Constructors, destructors & static methods implementations */
 
