@@ -342,6 +342,17 @@ lasso_logout_init_request(LassoLogout *logout,
     goto done;
   }
 
+  /* verify the identity and session exists */
+  if (profile->identity == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
+    return(-1);
+  }
+
+  if (profile->session != NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
+    exit(-1);
+  }
+
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if (federation == NULL) {
