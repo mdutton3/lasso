@@ -732,53 +732,7 @@ void delete_LassoStringArray(LassoStringArray *self) {
 
 /***********************************************************************
  ***********************************************************************
- * Xml
- ***********************************************************************
- ***********************************************************************/
-
-
-/***********************************************************************
- * Node
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(Node) LassoNode;
-#endif
-typedef struct {
-	%extend {
-		/* Constructor, Destructor & Static Methods */
-
-		LassoNode();
-
-		~LassoNode();
-
-		/* Methods */
-
-		%newobject dump;
-		gchar *dump();
-	}
-} LassoNode;
-
-%{
-
-/* Constructors, destructors & static methods implementations */
-
-#define new_LassoNode lasso_node_new
-#define delete_LassoNode lasso_node_destroy
-
-/* Methods implementations */
-
-gchar* LassoNode_dump(LassoNode *self) {
-	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
-}
-
-%}
-
-
-/***********************************************************************
- ***********************************************************************
- * Protocols
+ * XML
  ***********************************************************************
  ***********************************************************************/
 
@@ -1073,6 +1027,45 @@ typedef struct {
 
 
 /***********************************************************************
+ * Node
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Node) LassoNode;
+#endif
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoNode();
+
+		~LassoNode();
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
+	}
+} LassoNode;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNode lasso_node_new
+#define delete_LassoNode lasso_node_destroy
+
+/* Methods implementations */
+
+gchar* LassoNode_dump(LassoNode *self) {
+	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
+}
+
+%}
+
+
+/***********************************************************************
  * Provider
  ***********************************************************************/
 
@@ -1184,12 +1177,44 @@ typedef struct {
 #endif
 %nodefault LassoSamlpResponse;
 typedef struct {
+	LassoSamlpStatus *Status;
+	// FIXME: LassoSamlAssertion *Assertion;
 } LassoSamlpResponse;
 
 
 /***********************************************************************
+ * Status
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpStatus) LassoSamlpStatus;
+#endif
+%nodefault LassoSamlpStatus;
+typedef struct {
+	LassoSamlpStatusCode *StatusCode;
+	char *StatusMessage;
+} LassoSamlpStatus;
+
+
+/***********************************************************************
+ * StatusCode
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpStatusCode) LassoSamlpStatusCode;
+#endif
+%nodefault LassoSamlpStatusCode;
+typedef struct {
+	LassoSamlpStatusCode *StatusCode;
+	char *Value;
+} LassoSamlpStatusCode;
+
+
+/***********************************************************************
  ***********************************************************************
- * Profiles
+ * ID-FF
  ***********************************************************************
  ***********************************************************************/
 
