@@ -180,10 +180,10 @@ extract_cflags(xmlsec1_cflags)
 extract_libs(xmlsec1_libs)
 
 # FIXME : cflags & libs for lasso
-include_dirs.append('..')
-library_dirs.append('../lasso/.libs')
-#include_dirs.append('/usr/local/include')
-#library_dirs.append('/usr/local/lib')
+#include_dirs.append('..')
+#library_dirs.append('../lasso/.libs')
+include_dirs.append('/usr/local/include')
+library_dirs.append('/usr/local/lib')
 libraries.append('lasso')
 
 em = Extension("lassomod",

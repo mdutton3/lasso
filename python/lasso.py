@@ -37,6 +37,7 @@ class Error(Exception):
     
 def init():
     """
+    Init Lasso Library
     """
     return lassomod.init()
 
@@ -263,6 +264,7 @@ class LibNameIdentifierMappingRequest(Node):
     def set_consent(self, consent):
         lassomod.lib_name_identifier_mapping_request_set_consent(self, consent)
 
+
 class LibNameIdentifierMappingResponse(Node):
     def __init__(self, _obj = None):
         """
@@ -396,6 +398,7 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
         obj = lassomod.federation_termination_notification_new_from_query(query)
         return FederationTerminationNotification(obj)
     new_from_query = classmethod(new_from_query)
+
 
 class LogoutRequest(LibLogoutRequest):
     def __init__(self, _obj):
