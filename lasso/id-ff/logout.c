@@ -160,8 +160,13 @@ lasso_logout_init_request(LassoLogout *logout,
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  if(){
-    profileContext->remote_providerID = remote_providerID;
+  if(remote_providerID==NULL){
+    debug(INFO, "No remote provider id, get the issuer of the first authentication assertion\n");
+    profileContext->remote_providerID = lasso_user_get_next_providerID(profileContext->user);
+  }
+  else{
+    debug(INFO, "A remote provider id : %s\n", remote_providerID);
+    profileContext->remote_providerID = g_strdup(remote_providerID);
   }
 
   /* get identity */
