@@ -600,8 +600,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	xmlSetNs(xmlnode, xmlnode->nsDef);
 
-	xmlReconciliateNs(NULL, xmlnode);
-
 	return xmlnode;
 }
 
