@@ -217,7 +217,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 {
 	LassoFederation *federation = NULL;
 	LassoProfile *profile = LASSO_PROFILE(login);
-	xmlChar *nameIDPolicy;
+	char *nameIDPolicy;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -226,88 +226,82 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 	if (profile->identity == NULL) {
 		profile->identity = lasso_identity_new();
 	}
+
 	/* get nameIDPolicy in lib:AuthnRequest */
 	nameIDPolicy = LASSO_LIB_AUTHN_REQUEST(profile->request)->NameIDPolicy;
+	if (nameIDPolicy == NULL)
+		nameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_NONE;
 	login->nameIDPolicy = g_strdup(nameIDPolicy);
 
 	/* if nameIDPolicy is 'onetime' => nothing to do */
-	if (xmlStrEqual(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME)) {
-		goto done;
+	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0) {
+		return 0;
 	}
 
 	/* search a federation in the identity */
 	federation = g_hash_table_lookup(LASSO_PROFILE(login)->identity->federations,
 			LASSO_PROFILE(login)->remote_providerID);
 
-	if ((nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_NONE))) {
+	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_NONE) == 0) {
 		/* a federation MUST exist */
 		if (federation == NULL) {
-			/*
-			 if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
-			 set StatusCode to FederationDoesNotExist in lib:AuthnResponse
+			/* if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
+			 * set StatusCode to FederationDoesNotExist in lib:AuthnResponse
 			 */
 			if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 				lasso_profile_set_response_status(LASSO_PROFILE(login),
 						LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			}
-			ret = LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
-			goto done;
+			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 		}
+
+		LASSO_PROFILE(login)->nameIdentifier = g_strdup(
+			LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content);
+		return 0;
 	}
-	else if (xmlStrEqual(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) || \
-			xmlStrEqual(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY)) {
-		/*
-		 consent is necessary, it should be obtained via consent attribute
-		 in lib:AuthnRequest or IDP should ask the Principal
+
+	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
+			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
+		message(G_LOG_LEVEL_CRITICAL, "unknown nameidpolicy");
+		return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
+	}
+
+	/* consent is necessary, it should be obtained via consent attribute
+	 * in lib:AuthnRequest or IDP should ask the Principal
+	 */
+	if (lasso_login_must_ask_for_consent_private(login) && !is_consent_obtained) {
+		if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) == 0) {
+			/* if the NameIDPolicy element is 'any' and if the policy
+			 * for the Principal forbids federation, then evaluation
+			 * MAY proceed as if the value was 'onetime'.
+			 */
+			g_free(login->nameIDPolicy);
+			login->nameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME);
+			return 0;
+		}
+		
+		/* if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
+		 * set StatusCode to FederationDoesNotExist in lib:AuthnResponse
 		 */
-		if (lasso_login_must_ask_for_consent_private(login) == TRUE && is_consent_obtained == FALSE) {
-			if (xmlStrEqual(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY)) {
-				/*
-				 if the NameIDPolicy element is 'any' and if the policy for the
-				 Principal forbids federation, then evaluation MAY proceed as if the
-				 value were onetime.
-				 */
-				g_free(login->nameIDPolicy);
-				login->nameIDPolicy = g_strdup(LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME);
-				goto done;
-			}
-			else {
-				/*
-				 if protocolProfile is LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST
-				 set StatusCode to FederationDoesNotExist in lib:AuthnResponse
-				 */
-				/* FIXME : is it the correct value for the StatusCode */
-				if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-					lasso_profile_set_response_status(LASSO_PROFILE(login),
-							LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-				}
-				ret = LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED;
-				goto done;
-			}
+		/* FIXME : is it the correct value for the StatusCode ? */
+		if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+			lasso_profile_set_response_status(LASSO_PROFILE(login),
+					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 		}
-		if (federation == NULL) {
-			federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-			lasso_federation_build_local_nameIdentifier(federation,
-					LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
-					LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED,
-					NULL);
-
-			lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
-		}
-	}
-	else {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY), nameIDPolicy);
-		ret = LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
-		goto done;
+		return LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED;
 	}
 
-done:
-	/* store the IDP name identifier if a federation exists */
-	if (federation != NULL) {
-		LASSO_PROFILE(login)->nameIdentifier = 
-			LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content;
+	if (federation == NULL) {
+		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
+		lasso_federation_build_local_nameIdentifier(federation,
+				LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
+				LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED,
+				NULL);
+		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
+
+	LASSO_PROFILE(login)->nameIdentifier = 
+		g_strdup(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content);
 
 	return ret;
 }
