@@ -78,5 +78,6 @@ PyObject *request_create(PyObject *self, PyObject *args);
 PyObject *response_getattr(PyObject *self, PyObject *args);
 PyObject *response_create(PyObject *self, PyObject *args);
 PyObject *response_init(PyObject *self, PyObject *args);
+PyObject *response_add_assertion(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__ */

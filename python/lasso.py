@@ -227,6 +227,9 @@ class Response:
     def init(self, authentication_result):
         return lassomod.response_init(self, authentication_result)
 
+    def add_assertion(self, assertion):
+        return lassomod.response_add_assertion(self, assertion)
+
 class Node:
     def __init__(self, _obj=None):
         """

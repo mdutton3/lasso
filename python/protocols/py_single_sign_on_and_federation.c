@@ -417,3 +417,17 @@ PyObject *response_init(PyObject *self, PyObject *args) {
 
   return (int_wrap(ret));
 }
+
+PyObject *response_add_assertion(PyObject *self, PyObject *args) {
+  PyObject *response_obj, *assertion_obj;
+  int ret;
+
+  if(!PyArg_ParseTuple(args, (char *) "OO:response_add_assertion",
+		       &response_obj, &assertion_obj))
+    return NULL;
+
+  ret = lasso_response_add_assertion(lassoResponse_get(response_obj),
+				     LassoNode_get(assertion_obj));
+
+  return (int_wrap(ret));
+}

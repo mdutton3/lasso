@@ -68,6 +68,7 @@ static PyMethodDef lasso_methods[] = {
   {"response_create", response_create, METH_VARARGS},
   {"response_getattr", response_getattr, METH_VARARGS},
   {"response_init", response_init, METH_VARARGS},
+  {"response_add_assertion", response_add_assertion, METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
