@@ -260,17 +260,109 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
  ***********************************************************************/
 
 
-#if defined(SWIGCSHARP) || defined(SWIGJAVA)
-
-
 /***********************************************************************
- * C# & Java Dynamic Casting
+ * C# Dynamic Casting
  ***********************************************************************/
 
 
+#ifdef SWIGCSHARP
+
 /* Accept LassoNode subclasses as input argument, when a LassoNode is expected. */
 
-%typemap(javabody) LassoNode %{
+%typemap(csbody) DowncastableNode %{
+  protected IntPtr swigCPtr;
+  protected bool swigCMemOwn;
+
+  internal $csclassname(IntPtr cPtr, bool cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
+    swigCPtr = cPtr;
+  }
+
+  protected static IntPtr getCPtr($csclassname obj) {
+    return (obj == null) ? IntPtr.Zero : obj.swigCPtr;
+  }
+%}
+
+%typemap(csbody) NODE_SUBCLASS %{
+  internal $csclassname(IntPtr cPtr, bool cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
+    swigCPtr = cPtr;
+  }
+
+  protected static IntPtr getCPtr($csclassname obj) {
+    return (obj == null) ? IntPtr.Zero : obj.swigCPtr;
+  }
+%}
+
+%typemap(csdestruct, methodname="Dispose") NODE_SUBCLASS {
+  base.Dispose();
+}
+
+/* Dynamically downcast to a LassoNode subclass, when a LassoNode is expected as a result. */
+
+%typemap(out) DowncastableNode * {
+/* FIXME */
+/* 	char classPath[256]; */
+/* 	jclass clazz; */
+/* 	char *name; */
+
+/* 	name = (char *) G_OBJECT_TYPE_NAME($1); */
+/* 	name += 5; /\* Skip "Lasso" prefix. *\/ */
+/* 	sprintf(classPath, "com/entrouvert/lasso/%s", name); */
+/* 	clazz = (*jenv)->FindClass(jenv, classPath); */
+/* 	if (clazz) { */
+/* 		jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "(JZ)V"); */
+/* 		if (mid) */
+/* 			*(void**)&$result = (*jenv)->NewObject(jenv, clazz, mid, $1, false); */
+/* 	} */
+}
+
+%typemap(csout) DowncastableNode * {
+	return $imcall;
+}
+
+%typemap(ctype) DowncastableNode * "void *"
+%typemap(imtype) DowncastableNode * "DowncastableNode"
+%typemap(cstype) DowncastableNode * "DowncastableNode"
+
+%{
+
+typedef struct {
+} DowncastableNode;
+
+DowncastableNode *downcast_node(LassoNode *node) {
+	return (DowncastableNode *) node;
+}
+
+%}
+
+%nodefault DowncastableNode;
+typedef struct {
+} DowncastableNode;
+
+DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNode.
+
+%typemap(csout) NODE_SUPERCLASS * {
+	IntPtr cPtr = $imcall;
+	return (cPtr == IntPtr.Zero) ? null : ($csclassname) lassoPINVOKE.downcast_node(cPtr);
+}
+
+%apply NODE_SUPERCLASS * {LassoNode *, LassoSamlpRequestAbstract *,
+		LassoSamlpResponseAbstract *};
+
+#else /* ifndef SWIGCSHARP */
+
+
+/***********************************************************************
+ * Java Dynamic Casting
+ ***********************************************************************/
+
+
+#ifdef SWIGJAVA
+
+/* Accept LassoNode subclasses as input argument, when a LassoNode is expected. */
+
+%typemap(javabody) DowncastableNode %{
   protected long swigCPtr;
   protected boolean swigCMemOwn;
 
@@ -293,6 +385,10 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 %}
+
+%typemap(javadestruct, methodname="delete") NODE_SUBCLASS {
+  super.delete();
+}
 
 /* Dynamically downcast to a LassoNode subclass, when a LassoNode is expected as a result. */
 
@@ -345,13 +441,13 @@ DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNo
 %apply NODE_SUPERCLASS * {LassoNode *, LassoSamlpRequestAbstract *,
 		LassoSamlpResponseAbstract *};
 
-#else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
-
 
 /***********************************************************************
  * Perl, PHP & Python Dynamic Casting
  ***********************************************************************/
 
+
+#else /* ifndef SWIGJAVA */
 
 %{
 
@@ -475,7 +571,8 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoNode, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpRequestAbstract, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
-#endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+#endif /* ifndef SWIGJAVA */
+#endif /* ifndef SWIGCSHARP */
 
 
 /***********************************************************************
@@ -483,7 +580,21 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
  ***********************************************************************/
 
 
-#if defined(SWIGCSHARP) || defined(SWIGJAVA)
+#ifdef SWIGCSHARP
+
+%define SET_NODE_INFO(className, superClassName)
+%apply NODE_SUBCLASS {Lasso##className};
+%typemap(csbase) Lasso##className #superClassName;
+%enddef
+
+%typemap(csbase) LassoNode "DowncastableNode";
+
+SET_NODE_INFO(Node, DowncastableNode)
+%include inheritance.h
+
+#else /* ifndef SWIGCSHARP */
+
+#ifdef SWIGJAVA
 
 %define SET_NODE_INFO(className, superClassName)
 %apply NODE_SUBCLASS {Lasso##className};
@@ -492,9 +603,10 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
 %typemap(javabase) LassoNode "DowncastableNode";
 
+SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
 
-#else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+#else /* ifndef SWIGJAVA */
 
 %init %{
 { /* Brace needed for pre-C99 compilers */
@@ -520,7 +632,8 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 }
 %}
 
-#endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+#endif /* ifndef SWIGJAVA */
+#endif /* ifndef SWIGCSHARP */
 
 
 /***********************************************************************
@@ -1060,6 +1173,15 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
  ***********************************************************************/
 
 
+#ifdef SWIGCSHARP
+%pragma(csharp) imclasscode=%{
+/* FIXME: Doesn't work for C# */
+/*   static { */
+/*     // Initialize Lasso. */
+/*     init(); */
+/*   } */
+%}
+#else /* ifndef SWIGCSHARP */
 #ifdef SWIGJAVA
 #if SWIG_VERSION >= 0x010322
   %include "enumsimple.swg"
@@ -1091,7 +1213,8 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 	lasso_init();
 %}
 #endif
-#endif
+#endif /* ifndef SWIGJAVA */
+#endif /* ifndef SWIGCSHARP */
 
 
 /***********************************************************************

@@ -43,9 +43,9 @@ clean-local:
 SWIG_FILES = liblassosharpglue_wrap.c \
 	Credentials.cs Defederation.cs Description.cs DiscoModify.cs \
 	DiscoModifyResponse.cs DiscoQuery.cs DiscoQueryResponse.cs \
-	Discovery.cs DstModification.cs DstModify.cs DstModifyResponse.cs \
-	DstQuery.cs DstQueryResponse.cs Federation.cs Identity.cs \
-	InsertEntry.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
+	Discovery.cs DowncastableNode.cs DstModification.cs DstModify.cs \
+	DstModifyResponse.cs DstQuery.cs DstQueryResponse.cs Federation.cs \
+	Identity.cs InsertEntry.cs LassoHttpMethod.cs LassoLoginProtocolProfile.cs \
 	LassoMessageType.cs LassoProviderRole.cs LassoRequestType.cs \
 	LassoSignatureMethod.cs Lecp.cs LibAssertion.cs LibAuthnRequest.cs \
 	LibAuthnResponse.cs LibFederationTerminationNotification.cs \

@@ -254,9 +254,10 @@ public class BindingTests extends TestCase {
         Login login = new Login(new Server(null, null, null, null));
 
         assertNull(login.getRequest());
-        login.setRequest((SamlpRequestAbstract)new LibAuthnRequest());
-        ((LibAuthnRequest)login.getRequest()).setConsent(lasso.libConsentObtained);
-        assertEquals(((LibAuthnRequest)login.getRequest()).getConsent(), lasso.libConsentObtained);
+        login.setRequest((SamlpRequestAbstract) new LibAuthnRequest());
+        ((LibAuthnRequest) login.getRequest()).setConsent(lasso.libConsentObtained);
+        assertEquals(((LibAuthnRequest) login.getRequest()).getConsent(),
+		     lasso.libConsentObtained);
         login.setRequest(null);
         assertNull(login.getRequest());
 
