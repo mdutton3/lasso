@@ -1323,7 +1323,7 @@ lasso_login_new(LassoServer *server)
  *
  * Restores the @dump to a new #LassoLogin.
  *
- * Return value: a newly created #LassoLogin; or NULL if an error occured
+ * Return value: a newly created #LassoLogin; or NULL if an error occured.
  **/
 LassoLogin*
 lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
