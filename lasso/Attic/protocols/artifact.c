@@ -69,32 +69,59 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
 /*****************************************************************************/
 
 xmlChar*
-lasso_artifact_get_assertionHandle(LassoArtifact *artifact)
+lasso_artifact_get_assertionHandle(LassoArtifact  *artifact,
+				   GError        **err)
 {
-  return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "AssertionHandle", NULL, NULL));
+  xmlChar *assertionHandle;
+  GError *tmp_err = NULL;
+
+  assertionHandle = lasso_node_get_child_content(LASSO_NODE(artifact),
+						 "AssertionHandle",
+						 NULL, &tmp_err);
+  if (assertionHandle == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (assertionHandle);
 }
 
 gint
-lasso_artifact_get_byteCode(LassoArtifact *artifact)
+lasso_artifact_get_byteCode(LassoArtifact  *artifact,
+			    GError        **err)
 {
   xmlChar *byteCode;
+  gint ret;
+  GError *tmp_err = NULL;
 
   byteCode = lasso_node_get_child_content(LASSO_NODE(artifact),
-					  "ByteCode", NULL, NULL);
+					  "ByteCode", NULL, &tmp_err);
+  if (byteCode == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (-1);
+  }
 
-  return ((gint)g_strtod(byteCode, NULL));
+  ret = (gint)g_strtod(byteCode, NULL);
+  xmlFree(byteCode);
+
+  return (ret);
 }
 
 xmlChar*
-lasso_artifact_get_identityProviderSuccinctID(LassoArtifact *artifact)
+lasso_artifact_get_identityProviderSuccinctID(LassoArtifact  *artifact,
+					      GError        **err)
 {
   xmlChar *b64_identityProviderSuccinctID, *identityProviderSuccinctID;
+  GError *tmp_err = NULL;
 
-  identityProviderSuccinctID = xmlMalloc(20+1);
   b64_identityProviderSuccinctID = lasso_node_get_child_content(LASSO_NODE(artifact),
 								"B64IdentityProviderSuccinctID",
-								NULL, NULL);
+								NULL, &tmp_err);
+  if (b64_identityProviderSuccinctID == NULL) {
+    g_propagate_error (err, tmp_err);
+    return(NULL);
+  }
+
+  identityProviderSuccinctID = xmlMalloc(20+1);
   xmlSecBase64Decode(b64_identityProviderSuccinctID, identityProviderSuccinctID, 21);
   xmlFree(b64_identityProviderSuccinctID);
 
@@ -102,17 +129,35 @@ lasso_artifact_get_identityProviderSuccinctID(LassoArtifact *artifact)
 }
 
 xmlChar*
-lasso_artifact_get_relayState(LassoArtifact *artifact)
+lasso_artifact_get_relayState(LassoArtifact  *artifact,
+			      GError        **err)
 {
-  return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "RelayState", NULL, NULL));
+  xmlChar *relayState;
+  GError *tmp_err = NULL;
+
+  relayState = lasso_node_get_child_content(LASSO_NODE(artifact),
+					    "RelayState", NULL, &tmp_err);
+  if (relayState == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (relayState);
 }
 
 xmlChar*
-lasso_artifact_get_samlArt(LassoArtifact *artifact)
+lasso_artifact_get_samlArt(LassoArtifact  *artifact,
+			   GError        **err)
 {
-  return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "SAMLArt", NULL, NULL));
+  xmlChar *samlArt;
+  GError *tmp_err = NULL;
+
+  samlArt = lasso_node_get_child_content(LASSO_NODE(artifact),
+					 "SAMLArt", NULL, &tmp_err);
+  if (samlArt == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (samlArt);
 }
 
 /*****************************************************************************/

@@ -65,15 +65,20 @@ LASSO_EXPORT LassoNode* lasso_artifact_new_from_query (const xmlChar *query);
 LASSO_EXPORT LassoNode* lasso_artifact_new_from_lares (const xmlChar *lares,
 						       const xmlChar *relayState);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_assertionHandle            (LassoArtifact *artifact);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_assertionHandle            (LassoArtifact  *artifact,
+								       GError        **err);
 
-LASSO_EXPORT gint       lasso_artifact_get_byteCode                   (LassoArtifact *artifact);
+LASSO_EXPORT gint       lasso_artifact_get_byteCode                   (LassoArtifact  *artifact,
+								       GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_identityProviderSuccinctID (LassoArtifact *artifact);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_identityProviderSuccinctID (LassoArtifact  *artifact,
+								       GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_relayState                 (LassoArtifact *artifact);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_relayState                 (LassoArtifact  *artifact,
+								       GError        **err);
 
-LASSO_EXPORT xmlChar*   lasso_artifact_get_samlArt                    (LassoArtifact *artifact);
+LASSO_EXPORT xmlChar*   lasso_artifact_get_samlArt                    (LassoArtifact  *artifact,
+								       GError        **err);
 
 #ifdef __cplusplus
 }
