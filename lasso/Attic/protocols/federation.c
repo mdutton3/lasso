@@ -79,7 +79,7 @@ lasso_federation_dump(LassoFederation *federation)
 			     federation->remote_providerID);
 
   /* add the remote name identifier */
-  if(federation->remote_nameIdentifier) {
+  if(federation->remote_nameIdentifier != NULL) {
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
     class->set_name(nameIdentifier, LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE);
@@ -91,7 +91,7 @@ lasso_federation_dump(LassoFederation *federation)
   }
 
   /* add the local name identifier */
-  if(federation->local_nameIdentifier) {
+  if(federation->local_nameIdentifier != NULL) {
     nameIdentifier = lasso_node_new();
     class = LASSO_NODE_GET_CLASS(nameIdentifier);
     class->set_name(nameIdentifier, LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE);
@@ -111,13 +111,23 @@ lasso_federation_dump(LassoFederation *federation)
 LassoNode *
 lasso_federation_get_local_nameIdentifier(LassoFederation *federation)
 {
-  return(lasso_node_copy(federation->local_nameIdentifier));
+  if (federation->local_nameIdentifier != NULL) {
+    return (lasso_node_copy(federation->local_nameIdentifier));
+  }
+  else {
+    return (NULL);
+  }
 }
 
 LassoNode *
 lasso_federation_get_remote_nameIdentifier(LassoFederation *federation)
 {
-  return(lasso_node_copy(federation->remote_nameIdentifier));
+  if (federation->remote_nameIdentifier != NULL) {
+    return(lasso_node_copy(federation->remote_nameIdentifier));
+  }
+  else {
+    return (NULL);
+  }
 }
 
 void
