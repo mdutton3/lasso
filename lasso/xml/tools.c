@@ -213,7 +213,8 @@ lasso_query_verify_signature(const gchar   *query,
   //xmlDocDump(stdout, doc);
 
   /* find start node */
-  sigNode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature, xmlSecDSigNs);
+  sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
+			   xmlSecNodeSignature, xmlSecDSigNs);
   
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
@@ -223,9 +224,12 @@ lasso_query_verify_signature(const gchar   *query,
   }
   
   /* load public key */
-  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(sender_public_key_file, xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(sender_public_key_file,
+					    xmlSecKeyDataFormatPem,
+					    NULL, NULL, NULL);
   if(dsigCtx->signKey == NULL) {
-    fprintf(stderr,"Error: failed to load public pem key from \"%s\"\n", sender_public_key_file);
+    fprintf(stderr,"Error: failed to load public pem key from \"%s\"\n",
+	    sender_public_key_file);
     goto done;
   }
   
