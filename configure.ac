@@ -183,7 +183,7 @@ if test "X$SWIG" != "X"; then
     AC_MSG_RESULT($SWIG_VERSION - OK)
   else
     AC_MSG_RESULT($SWIG_VERSION - too old to generate language interfaces)
-    if test -r $srcdir/perl/CORE_wrap.c ; then
+    if test -r $srcdir/python/lasso_wrap.c ; then
       AC_MSG_WARN(Pre-generated language interface files are present)
       AC_MSG_WARN(If you want to change the interfaces you will need)
       AC_MSG_WARN(SWIG version $SWIG_MIN_VERSION from http://www.swig.org/)
@@ -502,10 +502,9 @@ dnl ==========================================================================
 dnl Check if user disabled the tests.
 AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
               enable_tests="yes")
-AC_DEFINE([CHECK_IS_XML], [], [Define if check available with XML support])
 if test "x$enable_tests" = xyes ; then
   AM_PATH_CHECK
-  AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML)])
+  AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML, [], [Define if check available with XML support])])
 fi
 
 AM_CONDITIONAL(WITH_TESTS, [test "x$enable_tests" = "xyes"])
