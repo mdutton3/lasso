@@ -1045,20 +1045,22 @@ lasso_login_new_from_dump(LassoServer *server,
   LASSO_PROFILE(login)->request_type = atoi(type);
   xmlFree(type);
 
-  request_node = lasso_node_get_child(node_dump, "Request", NULL, NULL);
+  /* rebuild request */
+  if (LASSO_PROFILE(login)->request_type == lassoMessageTypeAuthnRequest) {
+    request_node = lasso_node_get_child(node_dump, "AuthnRequest", lassoLibHRef, NULL);
+  }
+  else if (LASSO_PROFILE(login)->request_type == lassoMessageTypeRequest) {
+    request_node = lasso_node_get_child(node_dump, "Request", lassoSamlProtocolHRef, NULL);
+  }
   if (request_node != NULL) {
     export = lasso_node_export(request_node);
-    switch (LASSO_PROFILE(login)->request_type) {
-    case lassoMessageTypeAuthnRequest:
+    if (LASSO_PROFILE(login)->request_type == lassoMessageTypeAuthnRequest) {
       LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(export,
-										  lassoNodeExportTypeXml);
-      break;
-    case lassoMessageTypeRequest:
+									  lassoNodeExportTypeXml);
+    }
+    else if (LASSO_PROFILE(login)->request_type == lassoMessageTypeRequest) {
       LASSO_PROFILE(login)->request = lasso_request_new_from_export(export,
-									    lassoNodeExportTypeXml);
-      break;
-    default:
-      break; /* XXX */
+								    lassoNodeExportTypeXml);
     }
     xmlFree(export);
     lasso_node_destroy(request_node);
@@ -1068,25 +1070,27 @@ lasso_login_new_from_dump(LassoServer *server,
   LASSO_PROFILE(login)->response_type = atoi(type);
   xmlFree(type);
 
-  response_node = lasso_node_get_child(node_dump, "Response", NULL, NULL);
+  /* rebuild response */
+  if (LASSO_PROFILE(login)->response_type == lassoMessageTypeAuthnResponse) {
+    response_node = lasso_node_get_child(node_dump, "AuthnResponse", lassoLibHRef, NULL);
+  }
+  else if (LASSO_PROFILE(login)->response_type == lassoMessageTypeResponse) {
+    response_node = lasso_node_get_child(node_dump, "Response", lassoSamlProtocolHRef, NULL);
+  }
   if (response_node != NULL) {
     export = lasso_node_export(response_node);
-    switch (LASSO_PROFILE(login)->response_type) {
-    case lassoMessageTypeAuthnResponse:
+    if (LASSO_PROFILE(login)->response_type == lassoMessageTypeAuthnResponse) {
       LASSO_PROFILE(login)->response = lasso_authn_response_new_from_export(export,
-										    lassoNodeExportTypeXml);
-      break;
-    case lassoMessageTypeRequest:
+									    lassoNodeExportTypeXml);
+    }
+    else if (LASSO_PROFILE(login)->response_type == lassoMessageTypeResponse) {
       LASSO_PROFILE(login)->response = lasso_response_new_from_export(export,
-									      lassoNodeExportTypeXml);
-      break;
-    default:
-      break; /* XXX */
+								      lassoNodeExportTypeXml);
     }
     xmlFree(export);
     lasso_node_destroy(response_node);
   }
-
+  
   type = lasso_node_get_child_content(node_dump, "ProviderType", NULL, NULL);
   LASSO_PROFILE(login)->provider_type = atoi(type);
   xmlFree(type);
@@ -1094,7 +1098,7 @@ lasso_login_new_from_dump(LassoServer *server,
   /* login attributes */
   protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile", NULL, NULL);
   if (protocolProfile != NULL) {
-    login->protocolProfile   = atoi(protocolProfile);
+    login->protocolProfile = atoi(protocolProfile);
     xmlFree(protocolProfile);
   }
   login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL, NULL);
