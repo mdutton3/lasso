@@ -3,15 +3,14 @@
 AssemblyInfo.cs
 Defederation.cs
 Identity.cs
-LassoAuthnRequest.cs
-LassoAuthnResponse.cs
+AuthnRequest.cs
+AuthnResponse.cs
 lasso.cs
-LassoDefederation.cs
 lasso.dll
 lassoPINVOKE.cs
 lassoPINVOKE.cs
-LassoRequest.cs
-LassoResponse.cs
+Request.cs
+Response.cs
 lasso-sharp.pc
 Lecp.cs
 liblassosharpglue.la
@@ -24,5 +23,3 @@ Makefile
 Makefile.in
 Server.cs
 Session.cs
-SWIGTYPE_p_GHashTable.cs
-SWIGTYPE_p_GPtrArray.cs

@@ -25,7 +25,7 @@ dotnetlibdir = $(datadir)/dotnet/lasso/
 dotnetlib_DATA = lasso.dll lasso.dll.config
 
 lasso.dll: liblassosharpglue.la
-	$(LN_S) $(srcdir)/lasso-sharp.snk lasso-sharp-build.snk
+	-$(LN_S) $(srcdir)/lasso-sharp.snk lasso-sharp-build.snk
 	$(CSHARPCOMPILER) -out:lasso.dll -target:library $(srcdir)/*.cs
 	rm -f lasso-sharp-build.snk
 
@@ -40,10 +40,10 @@ clean-local:
 
 SWIG_FILES = liblassosharpglue_wrap.c \
 	lassoPINVOKE.cs        lasso.cs          Server.cs  \
-	Defederation.cs        LassoRequest.cs   Session.cs \
-	Identity.cs            LassoResponse.cs  SWIGTYPE_p_GHashTable.cs \
-	LassoAuthnRequest.cs   Lecp.cs           SWIGTYPE_p_GPtrArray.cs  \
-	LassoAuthnResponse.cs  Login.cs          Logout.cs
+	Defederation.cs        Request.cs        Session.cs \
+	Identity.cs            Response.cs       AuthnRequest.cs \
+	Lecp.cs                AuthnResponse.cs  Login.cs \
+	Logout.cs
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
 
