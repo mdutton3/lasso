@@ -42,14 +42,26 @@ struct _lassoLogoutResponse{
   xmlChar    *request_query;
 };
 
-lassoLogoutRequest * lasso_logout_request_create(const xmlChar *providerID,
-						 xmlChar       *nameIdentifier,
-						 const xmlChar *nameQualifier,
-						 const xmlChar *format,
-						 const xmlChar *sessionIndex,
-						 const xmlChar *relayState,
-						 const xmlChar *consent);
+lassoLogoutRequest *
+lasso_logout_request_create(const xmlChar *providerID,
+			    xmlChar       *nameIdentifier,
+			    const xmlChar *nameQualifier,
+			    const xmlChar *format,
+			    const xmlChar *sessionIndex,
+			    const xmlChar *relayState,
+			    const xmlChar *consent);
 
-lassoLogoutResponse * lasso_logout_response_create(xmlChar *query);
+lassoLogoutResponse *
+lasso_logout_response_create(xmlChar       *query,
+			     gboolean       verifySignature,
+			     const xmlChar *public_key,
+			     const xmlChar *private_key,
+			     const xmlChar *certificate);
+
+gint
+lasso_logout_response_init(lassoLogoutResponse *lares,
+			   const xmlChar *providerID,
+			   const xmlChar *statusCodeValue,
+			   const xmlChar *relayState);
 
 #endif /* __LOGOUT_H__ */

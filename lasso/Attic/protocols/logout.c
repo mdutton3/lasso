@@ -138,29 +138,6 @@ lasso_logout_request_create(const xmlChar *providerID,
      return(lareq);
 }
 
-LassoNode *
-lasso_logout_request_rebuild(const xmlChar *query)
-{
-     LassoNode *request = NULL;
-     GData     *gd;
-
-     gd = lasso_query_to_dict(query);
-     if (gd != NULL) {
-	  request = lasso_logout_request_build_full(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
-						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
-     }
-     g_datalist_clear(&gd);
-     return(request);
-}
 
 /*****************************************************************************/
 /* LogoutResponse                                                            */
@@ -241,25 +218,49 @@ lasso_logout_response_build_full(const xmlChar *responseID,
 }
 
 lassoLogoutResponse *
-lasso_logout_response_create(xmlChar *query)
+lasso_logout_response_create(xmlChar       *query,
+			     gboolean       verifySignature,
+			     const xmlChar *public_key,
+			     const xmlChar *private_key,
+			     const xmlChar *certificate)
 {
      lassoLogoutResponse *lares;
+     LassoNode *request = NULL;
+     GData     *gd;
 
      lares = g_malloc(sizeof(lassoLogoutResponse));
      lares->request_query = NULL;
      if(query!=NULL){
 	  lares->request_query = query;
-	  lares->request_node = lasso_logout_request_rebuild(query);
+
+	  gd = lasso_query_to_dict(query);
+	  if (gd != NULL) {
+	       request = lasso_logout_request_build_full(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
+							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
+	  }
+	  g_datalist_clear(&gd);
+
+	  lares->request_node = request;
+
      }
 
      return(lares);
 }
 
 gint
-lasso_logout_response_build(lassoLogoutResponse *lares,
-			    const xmlChar *providerID,
-			    const xmlChar *statusCodeValue,
-			    const xmlChar *relayState)
+lasso_logout_response_init(lassoLogoutResponse *lares,
+			   const xmlChar       *providerID,
+			   const xmlChar       *statusCodeValue,
+			   const xmlChar       *relayState)
 {
      LassoNode *response;
      xmlChar *inResponseTo, *recipient;
