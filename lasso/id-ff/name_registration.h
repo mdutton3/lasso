@@ -68,7 +68,8 @@ LASSO_EXPORT gint            lasso_name_registration_build_response_msg   (Lasso
 LASSO_EXPORT void            lasso_name_registration_destroy              (LassoNameRegistration *name_registration);
 
 LASSO_EXPORT gint            lasso_name_registration_init_request         (LassoNameRegistration *name_registration,
-									   gchar                 *remote_providerID);
+									   gchar                 *remote_providerID,
+									   lassoHttpMethod        request_method);
 
 LASSO_EXPORT gint            lasso_name_registration_process_request_msg  (LassoNameRegistration *name_registration,
 									   gchar                 *request_msg,
