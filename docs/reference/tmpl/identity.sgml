@@ -56,16 +56,6 @@ Principal Identity
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_identity_add_federation ##### -->
-<para>
-
-</para>
-
-@identity: 
-@federation: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_identity_get_federation ##### -->
 <para>
 
@@ -74,17 +64,5 @@ Principal Identity
 @identity: 
 @providerID: 
 @Returns: 
-
-
-<!-- ##### FUNCTION lasso_identity_remove_federation ##### -->
-<para>
-
-</para>
-
-@identity: 
-@providerID: 
-@Returns: 
-<!-- # Unused Parameters # -->
-@remote_providerID: 
 
 

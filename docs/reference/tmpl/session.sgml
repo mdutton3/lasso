@@ -19,6 +19,8 @@ Principal Session
 
 </para>
 
+@assertions: 
+@is_dirty: 
 
 <!-- ##### FUNCTION lasso_session_new ##### -->
 <para>
@@ -51,6 +53,16 @@ Principal Session
 </para>
 
 @session: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_assertions ##### -->
+<para>
+
+</para>
+
+@session: 
+@provider_id: 
 @Returns: 
 
 

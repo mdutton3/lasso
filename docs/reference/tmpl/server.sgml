@@ -61,17 +61,6 @@ certificates to use, etc.
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_server_add_service ##### -->
-<para>
-
-</para>
-
-@server: 
-@service_type: 
-@service_endpoint: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_server_destroy ##### -->
 <para>
 
