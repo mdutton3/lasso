@@ -32,7 +32,7 @@ print 'request url : ', msg_url
 print 'request body : ', msg_body
 
 request_type = lasso.get_request_type_from_soap_msg(msg_body)
-if request_type==lasso.RequestTypeLogout:
+if request_type == lasso.requestTypeLogout:
     print "it's a LogoutRequest !"
 
 

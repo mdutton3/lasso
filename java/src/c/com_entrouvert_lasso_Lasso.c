@@ -42,7 +42,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_Lasso_getRequestTypeFromSoapMsg
     char *value;
 
     value = (char*)(*env)->GetStringUTFChars(env, _value, NULL);
-    result = lasso_get_request_type_from_soap_msg(value);
+    result = lasso_profile_context_get_request_type_from_soap_msg(value);
     (*env)->ReleaseStringUTFChars(env, _value, value);
     return result;
 }

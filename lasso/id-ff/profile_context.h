@@ -48,13 +48,14 @@ typedef struct _LassoProfileContext LassoProfileContext;
 typedef struct _LassoProfileContextClass LassoProfileContextClass;
 typedef struct _LassoProfileContextPrivate LassoProfileContextPrivate;
 
+  /* Request types (used by SOAP endpoint) */
 typedef enum {
   lassoRequestTypeLogin = 1,
   lassoRequestTypeLogout,
   lassoRequestTypeFederationTermination,
   lassoRequestTypeRegisterNameIdentifier,
   lassoRequestTypeNameIdentifierMapping,
-}lassoRequestTypes;
+} lassoRequestTypes;
 
 typedef enum {
   lassoHttpMethodGet = 1,

@@ -62,4 +62,3 @@ public abstract class LassoProfileContext extends LassoObject { // LassoProfileC
     native protected void initResponseField();
 
 } // LassoProfileContext
-

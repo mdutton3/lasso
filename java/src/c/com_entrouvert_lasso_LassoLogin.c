@@ -133,7 +133,24 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_buildRequestMsg
     login = getCObject(env, this);
     result = lasso_login_build_request_msg(login);
 
-    return result;}
+    return result;
+}
+
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_createUser
+(JNIEnv * env, jobject this, jstring _userDump){
+    LassoLogin* login;
+    int result;
+    char *userDump;
+
+    userDump = (char*)(*env)->GetStringUTFChars(env, _userDump, NULL);
+
+    login = getCObject(env, this);
+    result = lasso_login_init_create_user(login, userDump);
+
+    (*env)->ReleaseStringUTFChars(env, _userDump, userDump);
+
+    return result;
+}
 
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_dump
 (JNIEnv * env, jobject this){
@@ -155,8 +172,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initAuthnRequest
     providerID = (char*)(*env)->GetStringUTFChars(env, _providerID, NULL);
 
     login = getCObject(env, this);
-    result = lasso_login_init_authn_request(login,
-                       providerID);
+    result = lasso_login_init_authn_request(login, providerID);
 
     (*env)->ReleaseStringUTFChars(env, _providerID, providerID);
 

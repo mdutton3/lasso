@@ -111,9 +111,11 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(idpLoginContext.build_artifact_msg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
             lasso.httpMethodRedirect), 0)
+        idpUserContextDump = idpLoginContext.user.dump()
+        self.failUnless(idpUserContextDump)
         responseUrl = idpLoginContext.msg_url
         responseQuery = responseUrl.split("?", 1)[1]
-        responseMsg = idpLoginContext.response_dump
+        soapResponseMsg = idpLoginContext.response_dump
         artifact = idpLoginContext.assertionArtifact
         nameIdentifier = idpLoginContext.nameIdentifier
         method = lasso.httpMethodRedirect
@@ -128,13 +130,22 @@ class LoginTestCase(unittest.TestCase):
         soapEndpoint = spLoginContext.msg_url
         soapRequestMsg = spLoginContext.msg_body
 
-##         soapResponseMsg = self.callSoap(loginContext.msg_url, loginContext.msg_body)
-##         logs.debug("soapResponseMsg = %s" % soapResponseMsg)
-##         errorCode = loginContext.process_response_msg(soapResponseMsg)
-##         if errorCode:
-##             raise Exception("Lasso login error %s" % errorCode)
-##         nameIdentifier = loginContext.nameIdentifier
+        # Identity provider SOAP endpoint.
+        idpContextDump = self.generateIdentityProviderContextDump()
+        self.failUnless(idpContextDump)
+        requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
+        self.failUnlessEqual(requestType, lasso.requestTypeLogin)
 
+        # Service provider assertion consumer (step 2).
+        self.failUnlessEqual(spLoginContext.process_response_msg(soapResponseMsg), 0)
+        self.failUnlessEqual(spLoginContext.nameIdentifier, nameIdentifier)
+        # The user doesn't have any federation yet.
+        self.failUnlessEqual(spLoginContext.create_user(None), 0)
+        spUserContextDump = spLoginContext.user.dump()
+        self.failUnless(spUserContextDump)
+        authenticationMethod = spLoginContext.response.get_child(
+            "AuthenticationStatement").get_attr_value("AuthenticationMethod")
+        self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 

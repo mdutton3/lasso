@@ -78,13 +78,14 @@ public class LoginTest extends TestCase {
 
     public void test02_serviceProviderLogin() {
 	boolean userAuthenticated;
-	int method;
+	int method, requestType;
 	LassoAuthnRequest authnRequest;
 	LassoLogin idpLoginContext, spLoginContext;
+	LassoResponse response;
 	LassoServer idpContext, spContext;
 	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpContextDump,
-	    nameIdentifier, relayState, responseMsg, responseQuery, responseUrl, spContextDump,
-	    soapEndpoint, soapRequestMsg;
+	    idpUserContextDump, nameIdentifier, relayState, responseQuery, responseUrl,
+	    soapEndpoint, soapResponseMsg, soapRequestMsg, spContextDump, spUserContextDump;
 
 	// Service provider login using HTTP redirect.
         spContextDump = generateServiceProviderContextDump();
@@ -118,9 +119,11 @@ public class LoginTest extends TestCase {
         assertEquals(idpLoginContext.buildArtifactMsg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
             Lasso.httpMethodRedirect), 0);
+        idpUserContextDump = spLoginContext.getUser().dump();
+        assertNotNull(idpUserContextDump);
         responseUrl = idpLoginContext.getMsgUrl();
         responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);
-        responseMsg = idpLoginContext.getResponseDump();
+        soapResponseMsg = idpLoginContext.getResponseDump();
         artifact = idpLoginContext.getAssertionArtifact();
 	nameIdentifier = idpLoginContext.getNameIdentifier();
         method = Lasso.httpMethodRedirect;
@@ -134,6 +137,24 @@ public class LoginTest extends TestCase {
         assertEquals(spLoginContext.buildRequestMsg(), 0);
         soapEndpoint = spLoginContext.getMsgUrl();
 	soapRequestMsg = spLoginContext.getMsgBody();
+
+        // Identity provider SOAP endpoint.
+        idpContextDump = generateIdentityProviderContextDump();
+        assertNotNull(idpContextDump);
+        requestType = Lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
+        assertEquals(requestType, Lasso.requestTypeLogin);
+
+	    // Service provider assertion consumer (step 2).
+        assertEquals(spLoginContext.processResponseMsg(soapResponseMsg), 0);
+        assertEquals(spLoginContext.getNameIdentifier(), nameIdentifier);
+	// The user doesn't have any federation yet.
+        assertEquals(spLoginContext.createUser(null), 0);
+        spUserContextDump = spLoginContext.getUser().dump();
+        assertNotNull(spUserContextDump);
+	response = (LassoResponse) spLoginContext.getResponse();
+//         authenticationMethod = response.get_child(
+//             "AuthenticationStatement").get_attr_value("AuthenticationMethod")
+//         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
     }
 
     public static Test suite() { 

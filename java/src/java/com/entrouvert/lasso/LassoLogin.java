@@ -57,6 +57,8 @@ public class LassoLogin extends LassoProfileContext { // LassoLogin
 
     native public int buildRequestMsg();
 
+    native public int createUser(String userDump);
+
     native public String dump();
 
     native public int initAuthnRequest(String providerId);

@@ -47,12 +47,12 @@ def shutdown():
     """
     return lassomod.shutdown()
 
-# request types :
-RequestTypeLogin                 = 1
-RequestTypeLogout                = 2
-RequestTypeFederationTermination = 3
-RequestRegisterNameIdentifier    = 4
-RequestTypeNameIdentifierMapping = 5
+# Request types
+requestTypeLogin                  = 1
+requestTypeLogout                 = 2
+requestTypeFederationTermination  = 3
+requestTypeRegisterNameIdentifier = 4
+requestTypeNameIdentifierMapping  = 5
 
 def get_request_type_from_soap_msg(soap_buffer):
     return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
