@@ -7,8 +7,14 @@ endif
 if PHP_ENABLED
     PHP_SD = php
 endif
+if GTK_DOC_ENABLED
+    GTK_DOC_SD = docs
+endif
 
-SUBDIRS		= lasso docs $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) tests
+SUBDIRS		= lasso \
+		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) \
+		  tests \
+		  $(GTK_DOC_SD)
 
 ABS_BUILDDIR	= $(shell pwd)
 

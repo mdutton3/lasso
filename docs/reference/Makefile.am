@@ -24,7 +24,7 @@ DOC_SOURCE_FILES=\
 	$(shell find $(INCLUDE_DIR) -name '*.h' -print )
 
 # do nothing for all
-all:
+all: docs
 
 docs: sgml html clean-sources
 
@@ -66,17 +66,11 @@ templates: scan
 
 # CFLAGS and LDFLAGS for compiling scan program.
 GTKDOC_CFLAGS = 		\
-	@CFLAGS@		\
-	@GLIB_CFLAGS@ 		\
-	@LIBXML_CFLAGS@ 	\
-	@XMLSEC1_CFLAGS@ 	\
+	$(LASSO_CFLAGS) 	\
 	-I$(top_srcdir)
 
-GTKDOC_LIBS = 				\
-	@LIBS@				\
-	@GLIB_LIBS@ -lgobject-2.0 	\
-	@LIBXML_LIBS@ 			\
-	@XMLSEC1_LIBS@ 			\
+GTKDOC_LIBS = 	\
+	$(LASSO_LIBS) \
 	-L$(top_srcdir)/lasso -llasso
 
 GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)

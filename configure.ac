@@ -421,6 +421,10 @@ if test "x$enable_gtk_doc" = "xyes" ; then
     PKG_CHECK_MODULES(GTK_DOC, gtk-doc >= $GTK_DOC_MIN_VERSION, enable_gtk_doc="yes",
                       enable_gtk_doc="no")
 fi
+dnl Conditional docs sub dir test.
+AM_CONDITIONAL([GTK_DOC_ENABLED],[test "x$enable_gtk_doc" = "xyes"])
+AC_MSG_RESULT($enable_gtk_doc)
+
 
 dnl ==========================================================================
 dnl check do we have size_t and its size, 
