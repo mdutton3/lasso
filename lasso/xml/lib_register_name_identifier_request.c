@@ -67,10 +67,11 @@ void
 lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
 									 LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node),
 		   LASSO_NODE (idpProvidedNameIdentifier),
 		   FALSE);
@@ -80,10 +81,11 @@ void
 lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
 									 LassoLibOLDProvidedNameIdentifier *oldProvidedNameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldProvidedNameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node),
 		   LASSO_NODE (oldProvidedNameIdentifier),
 		   FALSE);
@@ -93,21 +95,24 @@ void
 lasso_lib_register_name_identifier_request_set_providerID(LassoLibRegisterNameIdentifierRequest *node,
 							  const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerID lenght SHOULD be <= 1024 */
+  /* FIXME : providerID length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
 void
 lasso_lib_register_name_identifier_request_set_relayState(LassoLibRegisterNameIdentifierRequest *node,
-							  const xmlChar *relayState) {
+							  const xmlChar *relayState)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(relayState != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);
 }
 
@@ -115,10 +120,11 @@ void
 lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LassoLibRegisterNameIdentifierRequest *node,
 									LassoLibSPProvidedNameIdentifier *spProvidedNameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_SP_PROVIDED_NAME_IDENTIFIER(spProvidedNameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node),
 		   LASSO_NODE (spProvidedNameIdentifier),
 		   FALSE);

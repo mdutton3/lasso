@@ -43,12 +43,13 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 
 void
 lasso_samlp_status_code_set_value(LassoSamlpStatusCode *node,
-				  const xmlChar *value) {
-
+				  const xmlChar *value)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_STATUS_CODE(node));
   g_assert(value != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "Value", value);
 }
 

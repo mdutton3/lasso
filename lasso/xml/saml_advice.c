@@ -51,10 +51,11 @@ void
 lasso_saml_advice_add_assertionIDReference(LassoSamlAdvice *node,
 					   const xmlChar *assertionIDReference)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ADVICE(node));
   g_assert(assertionIDReference != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node),
 		   "AssertionIDReference",
 		   assertionIDReference,
@@ -65,10 +66,11 @@ void
 lasso_saml_advice_add_assertion(LassoSamlAdvice *node,
 				gpointer *assertion)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ADVICE(node));
   /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (assertion), TRUE);
 }
 

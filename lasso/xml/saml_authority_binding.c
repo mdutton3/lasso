@@ -45,10 +45,11 @@ void
 lasso_saml_authority_binding_set_authorityKind(LassoSamlAuthorityBinding *node,
 					       const xmlChar *authorityKind)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
   g_assert(authorityKind != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "AuthorityKind", authorityKind);
 }
 
@@ -56,10 +57,11 @@ void
 lasso_saml_authority_binding_set_binding(LassoSamlAuthorityBinding *node,
 					 const xmlChar *binding)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
   g_assert(binding != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "Binding", binding);
 }
 
@@ -67,10 +69,11 @@ void
 lasso_saml_authority_binding_set_location(LassoSamlAuthorityBinding *node,
 					  const xmlChar *location)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
   g_assert(location != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "Location", location);
 }
 

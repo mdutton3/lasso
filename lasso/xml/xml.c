@@ -61,9 +61,11 @@ static void lasso_node_impl_set_xmlNode(LassoNode  *node, xmlNodePtr libxml_node
 LassoNode *
 lasso_node_copy(LassoNode *node)
 {
+  LassoNodeClass *class;
+
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->copy(node));
 }
 
@@ -82,9 +84,10 @@ lasso_node_dump(LassoNode     *node,
 		const xmlChar *encoding,
 		int            format)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->dump(node, encoding, format));
 }
 
@@ -114,9 +117,10 @@ lasso_node_destroy(LassoNode *node)
 gchar *
 lasso_node_export(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->export(node));
 }
 
@@ -131,9 +135,10 @@ lasso_node_export(LassoNode *node)
 gchar *
 lasso_node_export_to_base64(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->export_to_base64(node));
 }
 
@@ -153,9 +158,10 @@ lasso_node_export_to_query(LassoNode            *node,
 			   lassoSignatureMethod  sign_method,
 			   const gchar          *private_key_file)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->export_to_query(node, sign_method, private_key_file));
 }
 
@@ -170,9 +176,10 @@ lasso_node_export_to_query(LassoNode            *node,
 gchar *
 lasso_node_export_to_soap(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->export_to_soap(node));
 }
 
@@ -191,6 +198,7 @@ lasso_node_get_attr(LassoNode      *node,
 		    const xmlChar  *name,
 		    GError        **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -205,7 +213,7 @@ lasso_node_get_attr(LassoNode      *node,
   }
   /* don't check @name here, it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_attr(node, name, err));
 }
 
@@ -225,6 +233,7 @@ lasso_node_get_attr_value(LassoNode      *node,
 			  const xmlChar  *name,
 			  GError        **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -239,7 +248,7 @@ lasso_node_get_attr_value(LassoNode      *node,
   }
   /* don't check @name here, it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_attr_value(node, name, err));
 }
 
@@ -254,9 +263,10 @@ lasso_node_get_attr_value(LassoNode      *node,
 GPtrArray *
 lasso_node_get_attrs(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_attrs(node));
 }
 
@@ -277,6 +287,7 @@ lasso_node_get_child(LassoNode      *node,
 		     const xmlChar  *href,
 		     GError        **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -291,7 +302,7 @@ lasso_node_get_child(LassoNode      *node,
   }
   /* don't check @name here, it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_child(node, name, href, err));
 }
 
@@ -313,6 +324,7 @@ lasso_node_get_child_content(LassoNode      *node,
 			     const xmlChar  *href,
 			     GError        **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -327,7 +339,7 @@ lasso_node_get_child_content(LassoNode      *node,
   }
   /* don't check @name here, it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_child_content(node, name, href, err));
 }
 
@@ -342,9 +354,10 @@ lasso_node_get_child_content(LassoNode      *node,
 GPtrArray *
 lasso_node_get_children(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_children(node));
 }
 
@@ -365,6 +378,7 @@ xmlChar *
 lasso_node_get_content(LassoNode  *node,
 		       GError    **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -378,7 +392,7 @@ lasso_node_get_content(LassoNode  *node,
     g_return_val_if_fail(LASSO_IS_NODE(node), NULL);
   }
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_content(node, err));
 }
 
@@ -393,9 +407,10 @@ lasso_node_get_content(LassoNode  *node,
 xmlChar *
 lasso_node_get_name(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_name(node));
 }
 
@@ -410,9 +425,10 @@ void
 lasso_node_import(LassoNode   *node,
 		  const gchar *buffer)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->import(node, buffer);
 }
 
@@ -427,9 +443,10 @@ void
 lasso_node_import_from_node(LassoNode *node,
 			    LassoNode *imported_node)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->import_from_node(node, imported_node);
 }
 
@@ -446,9 +463,10 @@ lasso_node_rename_prop(LassoNode     *node,
 		       const xmlChar *old_name,
 		       const xmlChar *new_name)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->rename_prop(node, old_name, new_name);
 }
 
@@ -467,6 +485,7 @@ lasso_node_verify_signature(LassoNode    *node,
 			    const gchar  *certificate_file,
 			    GError      **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -483,7 +502,7 @@ lasso_node_verify_signature(LassoNode    *node,
   }
   /* don't check @certificate_file here, it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->verify_signature(node, certificate_file, err));
 }
 
@@ -496,9 +515,10 @@ lasso_node_add_child(LassoNode *node,
 		     LassoNode *child,
 		     gboolean   unbounded)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(node, child, unbounded);
 }
 
@@ -509,6 +529,7 @@ lasso_node_add_signature(LassoNode      *node,
 			 const xmlChar  *certificate_file,
 			 GError        **err)
 {
+  LassoNodeClass *class;
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
@@ -526,7 +547,7 @@ lasso_node_add_signature(LassoNode      *node,
   /* don't check @private_key_file and @certificate_file here,
      it's checked in impl method */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->add_signature(node, sign_method, private_key_file,
 			       certificate_file, err));
 }
@@ -534,18 +555,20 @@ lasso_node_add_signature(LassoNode      *node,
 static gchar *
 lasso_node_build_query(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->build_query(node));
 }
 
 static xmlNodePtr
 lasso_node_get_xmlNode(LassoNode *node)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->get_xmlNode(node));
 }
 
@@ -567,9 +590,10 @@ lasso_node_new_child(LassoNode     *node,
 		     const xmlChar *content,
 		     gboolean       unbounded)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node)); 
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(node, name, content, unbounded);
 }
 
@@ -577,9 +601,10 @@ static GData *
 lasso_node_serialize(LassoNode *node,
 		     GData     *gd)
 {
+  LassoNodeClass *class;
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   return (class->serialize(node, gd));
 }
 
@@ -587,9 +612,10 @@ static void
 lasso_node_set_name(LassoNode     *node,
 		    const xmlChar *name)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_name(node, name);
 }
 
@@ -598,9 +624,10 @@ lasso_node_set_ns(LassoNode     *node,
 		  const xmlChar *href,
 		  const xmlChar *prefix)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_ns(node, href, prefix);
 }
 
@@ -609,9 +636,10 @@ lasso_node_set_prop(LassoNode     *node,
 		    const xmlChar *name,
 		    const xmlChar *value)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(node, name, value);
 }
 
@@ -619,9 +647,10 @@ static void
 lasso_node_set_xmlNode(LassoNode *node,
 		       xmlNodePtr libxml_node)
 {
+  LassoNodeClass *class;
   g_return_if_fail(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_xmlNode(node, libxml_node);
 }
 
@@ -829,6 +858,7 @@ lasso_node_impl_get_attr_value(LassoNode      *node,
 			       const xmlChar  *name,
 			       GError        **err)
 {
+  xmlChar *value;
   if (name == NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_INVALID_VALUE,
@@ -836,7 +866,7 @@ lasso_node_impl_get_attr_value(LassoNode      *node,
     g_return_val_if_fail(name != NULL, NULL);
   }
 
-  xmlChar *value = xmlGetProp(node->private->node, name);
+  value = xmlGetProp(node->private->node, name);
 
   if (value == NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
@@ -874,6 +904,8 @@ lasso_node_impl_get_child(LassoNode      *node,
 			  const xmlChar  *href,
 			  GError        **err)
 {
+  xmlNodePtr child;
+
   if (name == NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_INVALID_VALUE,
@@ -914,8 +946,6 @@ lasso_node_impl_get_child(LassoNode      *node,
   /*     cur = cur->next; */
   /*   } */
   /*   return (NULL); */
-
-  xmlNodePtr child;
 
   if (href != NULL) {
     child = xmlSecFindNode(node->private->node, name, href);
@@ -1087,7 +1117,7 @@ lasso_node_impl_verify_signature(LassoNode    *node,
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_INVALID_VALUE,
 		lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
-    g_return_val_if_fail(certificate_file != NULL, NULL);
+    g_return_val_if_fail(certificate_file != NULL, -2);
   }
 
   doc = xmlNewDoc("1.0");

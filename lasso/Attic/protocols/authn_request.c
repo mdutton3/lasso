@@ -52,10 +52,10 @@ lasso_authn_request_set_requestAuthnContext(LassoAuthnRequest *request,
 					    GPtrArray         *authnContextStatementRefs,
 					    const xmlChar     *authnContextComparison)
 {
-  g_return_if_fail (LASSO_IS_AUTHN_REQUEST(request));
-
   LassoNode *request_authn_context;
   gint i;
+
+  g_return_if_fail (LASSO_IS_AUTHN_REQUEST(request));
 
   /*
     all arguments are optional
@@ -98,9 +98,9 @@ void
 lasso_authn_request_set_scoping(LassoAuthnRequest *request,
 				gint               proxyCount)
 {
-  g_return_if_fail (LASSO_IS_AUTHN_REQUEST(request));
-
   LassoNode *scoping;
+
+  g_return_if_fail (LASSO_IS_AUTHN_REQUEST(request));
 
   /* create a new Scoping instance */
   scoping = lasso_lib_scoping_new();

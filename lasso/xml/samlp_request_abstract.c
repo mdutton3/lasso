@@ -58,40 +58,47 @@ void
 lasso_samlp_request_abstract_add_respondWith(LassoSamlpRequestAbstract *node,
 					     const xmlChar *respondWith)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(respondWith != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "RespondWith", respondWith, TRUE);
 }
 
 void
 lasso_samlp_request_abstract_set_issueInstant(LassoSamlpRequestAbstract *node,
-					      const xmlChar *issueInstant) {
+					      const xmlChar *issueInstant)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(issueInstant != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
 }
 
 void
 lasso_samlp_request_abstract_set_majorVersion(LassoSamlpRequestAbstract *node,
-					      const xmlChar *majorVersion) {
+					      const xmlChar *majorVersion)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(majorVersion != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "MajorVersion", majorVersion);
 }
 
 void
 lasso_samlp_request_abstract_set_minorVersion(LassoSamlpRequestAbstract *node,
-					      const xmlChar *minorVersion) {
+					      const xmlChar *minorVersion)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(minorVersion != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
 }
 
@@ -106,10 +113,11 @@ void
 lasso_samlp_request_abstract_set_requestID(LassoSamlpRequestAbstract *node,
 					   const xmlChar *requestID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(requestID != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "RequestID", requestID);
 }
 
@@ -122,6 +130,7 @@ lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract  *node,
 {
   gint ret;
   GError *tmp_err = NULL;
+  LassoNodeClass *class;
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
@@ -138,7 +147,7 @@ lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract  *node,
 			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   }
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
 
   ret = class->add_signature(LASSO_NODE (node), sign_method,
 			     private_key_file, certificate_file, &tmp_err);

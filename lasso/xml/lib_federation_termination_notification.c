@@ -61,10 +61,11 @@ void
 lasso_lib_federation_termination_notification_set_consent(LassoLibFederationTerminationNotification *node,
 							  const xmlChar *consent)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
   g_assert(consent != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "consent", consent);
 }
 
@@ -72,11 +73,12 @@ void
 lasso_lib_federation_termination_notification_set_providerID(LassoLibFederationTerminationNotification *node,
 							     const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerId lenght SHOULD be <= 1024 */
+  /* FIXME : providerId length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
@@ -84,10 +86,11 @@ void
 lasso_lib_federation_termination_notification_set_nameIdentifier(LassoLibFederationTerminationNotification *node,
 								 LassoSamlNameIdentifier *nameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
   g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
 }
 

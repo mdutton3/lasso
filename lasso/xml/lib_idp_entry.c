@@ -56,10 +56,11 @@ void
 lasso_lib_idp_entry_set_providerID(LassoLibIDPEntry *node,
 				   const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
   g_assert(providerID != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
@@ -76,10 +77,11 @@ void
 lasso_lib_idp_entry_set_providerName(LassoLibIDPEntry *node,
 				     const xmlChar *providerName)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
   g_assert(providerName != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderName", providerName, FALSE);
 }
 
@@ -99,10 +101,11 @@ void
 lasso_lib_idp_entry_set_loc(LassoLibIDPEntry *node,
 			    const xmlChar *loc)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
   g_assert(loc != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "Loc", loc, FALSE);
 }
 

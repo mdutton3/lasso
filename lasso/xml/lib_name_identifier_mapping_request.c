@@ -61,10 +61,11 @@ void
 lasso_lib_name_identifier_mapping_request_set_consent(LassoLibNameIdentifierMappingRequest *node,
 						      const xmlChar *consent)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node));
   g_assert(consent != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "consent", consent);
 }
 
@@ -72,21 +73,24 @@ void
 lasso_lib_name_identifier_mapping_request_set_providerID(LassoLibNameIdentifierMappingRequest *node,
 							 const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerId lenght SHOULD be <= 1024 */
+  /* FIXME : providerId length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
 void
 lasso_lib_name_identifier_mapping_request_set_nameIdentifier(LassoLibNameIdentifierMappingRequest *node,
-							     LassoSamlNameIdentifier *nameIdentifier) {
+							     LassoSamlNameIdentifier *nameIdentifier)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(node));
   g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
 }
 

@@ -61,10 +61,11 @@ void
 lasso_saml_audience_restriction_condition_add_audience(LassoSamlAudienceRestrictionCondition *node,
 						       const xmlChar *audience)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(node));
   g_assert(audience != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "Audience", audience, TRUE);
 }
 

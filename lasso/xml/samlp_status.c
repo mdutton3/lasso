@@ -46,11 +46,13 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 
 void
 lasso_samlp_status_set_statusCode(LassoSamlpStatus *node,
-				  LassoSamlpStatusCode *statusCode) {
+				  LassoSamlpStatusCode *statusCode)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_STATUS(node));
   g_assert(LASSO_IS_SAMLP_STATUS_CODE(statusCode));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (statusCode), FALSE);
 }
 
@@ -66,10 +68,11 @@ void
 lasso_samlp_status_set_statusMessage(LassoSamlpStatus *node,
 				     const xmlChar *statusMessage)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_STATUS(node));
   g_assert(statusMessage != NULL);
   
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "StatusMessage", statusMessage, FALSE);
 }
 

@@ -50,10 +50,11 @@ void
 lasso_samlp_response_add_assertion(LassoSamlpResponse *node,
 				   gpointer assertion)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_RESPONSE(node));
   /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(assertion), TRUE);
 }
 
@@ -61,10 +62,11 @@ void
 lasso_samlp_response_set_status(LassoSamlpResponse *node,
 				LassoSamlpStatus *status)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_RESPONSE(node));
   g_assert(LASSO_IS_SAMLP_STATUS(status));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(status), FALSE);
 }
 

@@ -178,10 +178,10 @@ LassoFederation*
 lasso_identity_get_federation(LassoIdentity *identity,
 			      gchar         *remote_providerID)
 {
+  LassoFederation *federation;
+
   g_return_val_if_fail(identity != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
-
-  LassoFederation *federation;
 
   federation = (LassoFederation *)g_hash_table_lookup(identity->federations,
 						      remote_providerID);

@@ -49,10 +49,11 @@ void
 lasso_saml_subject_confirmation_add_confirmationMethod(LassoSamlSubjectConfirmation *node,
 						       const xmlChar *confirmationMethod)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(node));
   g_assert(confirmationMethod != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node),
 		   "ConfirmationMethod", confirmationMethod, TRUE);
 }
@@ -61,10 +62,11 @@ void
 lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LassoSamlSubjectConfirmation *node,
 							      const xmlChar *subjectConfirmationMethod)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(node));
   g_assert(subjectConfirmationMethod != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node),
 		   "SubjectConfirmationMethod", subjectConfirmationMethod,
 		   FALSE);

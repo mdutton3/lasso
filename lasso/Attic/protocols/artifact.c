@@ -276,13 +276,13 @@ lasso_artifact_new(gchar *samlArt,
 		   gchar *assertionHandle,
 		   gchar *relayState)
 {
-  g_return_val_if_fail(byteCode != NULL, NULL);
-  g_return_val_if_fail(identityProviderSuccinctID != NULL, NULL);
-  g_return_val_if_fail(assertionHandle != NULL, NULL);
-
   LassoNode *artifact;
   LassoNodeClass *class;
   xmlChar *b64_identityProviderSuccinctID;
+
+  g_return_val_if_fail(byteCode != NULL, NULL);
+  g_return_val_if_fail(identityProviderSuccinctID != NULL, NULL);
+  g_return_val_if_fail(assertionHandle != NULL, NULL);
 
   artifact = LASSO_NODE(g_object_new(LASSO_TYPE_ARTIFACT, NULL));
 
@@ -305,13 +305,14 @@ lasso_artifact_new(gchar *samlArt,
 LassoNode*
 lasso_artifact_new_from_query(const xmlChar *query)
 {
-  g_return_val_if_fail(query != NULL, NULL);
-
   LassoNode *artifact = NULL;
   GData *gd;
   gchar *b64_samlArt, *relayState;
   gchar *byteCode, *identityProviderSuccinctID, *assertionHandle;
   gint ret;
+
+  g_return_val_if_fail(query != NULL, NULL);
+
 
   gd = lasso_query_to_dict(query);
   b64_samlArt = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SAMLart"), 0));
@@ -350,11 +351,11 @@ LassoNode*
 lasso_artifact_new_from_lares(const xmlChar *lares,
 			      const xmlChar *relayState)
 {
-  g_return_val_if_fail(lares != NULL, NULL);
-
   LassoNode *artifact = NULL;
   gchar *byteCode, *identityProviderSuccinctID, *assertionHandle;
   gint ret;
+
+  g_return_val_if_fail(lares != NULL, NULL);
 
   byteCode = (gchar *) g_new0(gchar, 5+1);
   identityProviderSuccinctID = (gchar *) g_new0(gchar, 20);

@@ -60,12 +60,13 @@ lasso_lib_scoping_set_proxyCount(LassoLibScoping *node,
 				 gint proxyCount)
 {
   gchar str[6];
+  LassoNodeClass *class;
 
   g_assert(LASSO_IS_LIB_SCOPING(node));
   g_assert(proxyCount >= 0);
 
   g_sprintf(str, "%d", proxyCount);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProxyCount", str, FALSE);
 }
 
@@ -84,10 +85,11 @@ void
 lasso_lib_scoping_set_idpList(LassoLibScoping *node,
 			      LassoLibIDPList *idpList)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_SCOPING(node));
   g_assert(LASSO_IS_LIB_IDP_LIST(idpList));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(idpList), FALSE);
 }
 

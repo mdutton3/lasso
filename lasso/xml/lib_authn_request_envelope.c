@@ -66,20 +66,22 @@ void
 lasso_lib_authn_request_envelope_set_extension(LassoLibAuthnRequestEnvelope *node,
 					       LassoNode                    *extension)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(LASSO_IS_NODE(extension));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE(node), extension, FALSE);
 }
 
 void lasso_lib_authn_request_envelope_set_authnRequest(LassoLibAuthnRequestEnvelope *node,
 						       LassoLibAuthnRequest         *request)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(request));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE(node), LASSO_NODE(request), FALSE);
 }
 
@@ -87,10 +89,11 @@ void
 lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL(LassoLibAuthnRequestEnvelope *node,
 								 const xmlChar                *assertionConsumerServiceURL)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(assertionConsumerServiceURL != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE(node), "AssertionConsumerServiceURL", assertionConsumerServiceURL, FALSE);
 }
 
@@ -98,41 +101,46 @@ void
 lasso_lib_authn_request_envelope_set_providerID(LassoLibAuthnRequestEnvelope *node,
 						const xmlChar                *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerID lenght SHOULD be <= 1024 */
+  /* FIXME : providerID length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE(node), "ProviderID", providerID, FALSE);
 }
 
 void lasso_lib_authn_request_envelope_set_providerName(LassoLibAuthnRequestEnvelope *node,
 						       const xmlChar                *providerName)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(providerName != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE(node), "ProviderName", providerName, FALSE);
 }
 
 void lasso_lib_authn_request_envelope_set_idpList(LassoLibAuthnRequestEnvelope *node,
 						  LassoLibIDPList              *idpList)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(LASSO_IS_LIB_IDP_LIST(idpList));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE(node), LASSO_NODE(idpList), FALSE);
 }
 
 void
 lasso_lib_authn_request_envelope_set_isPassive(LassoLibAuthnRequestEnvelope *node,
-					       gboolean                      isPassive) {
+					       gboolean                      isPassive)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE(node));
   g_assert(isPassive == FALSE || isPassive == TRUE);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   if (isPassive == FALSE) {
     class->new_child(LASSO_NODE (node), "IsPassive", "false", FALSE);
   }

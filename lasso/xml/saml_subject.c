@@ -48,10 +48,11 @@ void
 lasso_saml_subject_set_nameIdentifier(LassoSamlSubject *node,
 				      LassoSamlNameIdentifier *nameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT(node));
   g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(nameIdentifier), FALSE);
 }
 
@@ -59,10 +60,11 @@ void
 lasso_saml_subject_set_subjectConfirmation(LassoSamlSubject *node,
 					   LassoSamlSubjectConfirmation *subjectConfirmation)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT(node));
   g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(subjectConfirmation));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (subjectConfirmation), FALSE);
 }
 

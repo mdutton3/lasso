@@ -48,10 +48,11 @@ void
 lasso_saml_subject_statement_abstract_set_subject(LassoSamlSubjectStatementAbstract *node,
 						  LassoSamlSubject *subject)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(node));
   g_assert(LASSO_IS_SAML_SUBJECT(subject));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(subject), FALSE);
 }
 

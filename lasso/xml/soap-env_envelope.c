@@ -33,10 +33,11 @@ void
 lasso_soap_env_envelope_set_body(LassoSoapEnvEnvelope *envelope,
 				 LassoSoapEnvBody *body)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SOAP_ENV_ENVELOPE(envelope));
   g_assert(LASSO_IS_SOAP_ENV_BODY(body));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(envelope);
+  class = LASSO_NODE_GET_CLASS(envelope);
   class->add_child(LASSO_NODE(envelope),
 		   LASSO_NODE(body),
 		   FALSE);

@@ -54,10 +54,11 @@ void
 lasso_saml_conditions_add_condition(LassoSamlConditions *node,
 				    LassoSamlConditionAbstract *condition)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_CONDITIONS(node));
   g_assert(LASSO_IS_SAML_CONDITION_ABSTRACT(condition));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(condition), TRUE);
 }
 
@@ -72,10 +73,11 @@ void
 lasso_saml_conditions_add_audienceRestrictionCondition(LassoSamlConditions *node,
 						       LassoSamlAudienceRestrictionCondition *audienceRestrictionCondition)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_CONDITIONS(node));
   g_assert(LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(audienceRestrictionCondition));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(audienceRestrictionCondition), TRUE);
 }
 
@@ -94,10 +96,11 @@ void
 lasso_saml_conditions_set_notBefore(LassoSamlConditions *node,
 				    const xmlChar *notBefore)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_CONDITIONS(node));
   g_assert(notBefore != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "NotBefore", notBefore);
 }
 
@@ -116,10 +119,11 @@ void
 lasso_saml_conditions_set_notOnOrAfter(LassoSamlConditions *node,
 				       const xmlChar *notOnOrAfter)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_CONDITIONS(node));
   g_assert(notOnOrAfter != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "NotOnOrAfter", notOnOrAfter);
 }
 

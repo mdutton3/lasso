@@ -32,10 +32,11 @@
 void
 lasso_soap_env_body_add_child(LassoSoapEnvBody *body, LassoNode *node)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SOAP_ENV_BODY(body));
   g_assert(LASSO_IS_NODE(node));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(body);
+  class = LASSO_NODE_GET_CLASS(body);
   class->add_child(LASSO_NODE(body),
 		   LASSO_NODE(node),
 		   FALSE);

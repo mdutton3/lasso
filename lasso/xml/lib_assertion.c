@@ -59,10 +59,11 @@ void
 lasso_lib_assertion_set_inResponseTo(LassoLibAssertion *node,
 				     const xmlChar *inResponseTo)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_ASSERTION(node));
   g_assert(inResponseTo != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "InResponseTo", inResponseTo);
 }
 

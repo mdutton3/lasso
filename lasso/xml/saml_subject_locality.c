@@ -43,10 +43,11 @@ void
 lasso_saml_subject_locality_set_dnsAddress(LassoSamlSubjectLocality *node,
 					   const xmlChar *dnsAddress)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT_LOCALITY(node));
   g_assert(dnsAddress != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "DNSAddress", dnsAddress);
 }
 
@@ -54,10 +55,11 @@ void
 lasso_saml_subject_locality_set_ipAddress(LassoSamlSubjectLocality *node,
 					  const xmlChar *ipAddress)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_SUBJECT_LOCALITY(node));
   g_assert(ipAddress != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "IPAddress", ipAddress);
 }
 

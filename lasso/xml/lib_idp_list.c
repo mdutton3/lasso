@@ -57,10 +57,11 @@ void
 lasso_lib_idp_list_set_getComplete(LassoLibIDPList *node,
 				   const xmlChar *getComplete)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_LIST(node));
   g_assert(getComplete != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "GetComplete", getComplete, FALSE);
 }
 
@@ -77,10 +78,11 @@ void
 lasso_lib_idp_list_set_idpEntries(LassoLibIDPList *node,
 				  LassoLibIDPEntries *idpEntries)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_LIST(node));
   g_assert(LASSO_IS_LIB_IDP_ENTRIES(idpEntries));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(idpEntries), FALSE);
 }
 

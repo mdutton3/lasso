@@ -65,10 +65,11 @@ void
 lasso_saml_assertion_add_authenticationStatement(LassoSamlAssertion *node,
 						 LassoSamlAuthenticationStatement *authenticationStatement)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(authenticationStatement));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(authenticationStatement), TRUE);
 }
 
@@ -76,10 +77,11 @@ void
 lasso_saml_assertion_add_statement(LassoSamlAssertion *node,
 				   LassoSamlStatementAbstract *statement)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(LASSO_IS_SAML_STATEMENT_ABSTRACT(statement));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(statement), TRUE);
 }
 
@@ -87,10 +89,11 @@ void
 lasso_saml_assertion_add_subjectStatement(LassoSamlAssertion *node,
 					  LassoSamlSubjectStatementAbstract *subjectStatement)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(subjectStatement));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(subjectStatement), TRUE);
 }
 
@@ -109,10 +112,11 @@ void
 lasso_saml_assertion_set_advice(LassoSamlAssertion *node,
 				LassoSamlAdvice *advice)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(LASSO_IS_SAML_ADVICE(advice));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(advice), FALSE);
 }
 
@@ -130,10 +134,11 @@ void
 lasso_saml_assertion_set_assertionID(LassoSamlAssertion *node,
 				     const xmlChar *assertionID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(assertionID != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "AssertionID", assertionID);
 }
 
@@ -151,10 +156,11 @@ void
 lasso_saml_assertion_set_conditions(LassoSamlAssertion *node,
 				    LassoSamlConditions *conditions)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(LASSO_IS_SAML_CONDITIONS(conditions));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(conditions), FALSE);
 }
 
@@ -172,10 +178,11 @@ void
 lasso_saml_assertion_set_issueInstant(LassoSamlAssertion *node,
 				      const xmlChar *issueInstant)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(issueInstant != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
 }
 
@@ -195,10 +202,11 @@ void
 lasso_saml_assertion_set_issuer(LassoSamlAssertion *node,
 				const xmlChar *issuer)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(issuer != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "Issuer", issuer);
 }
 
@@ -217,10 +225,11 @@ void
 lasso_saml_assertion_set_majorVersion(LassoSamlAssertion *node,
 				      const xmlChar *majorVersion)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(majorVersion != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "MajorVersion", majorVersion);
 }
 
@@ -239,10 +248,11 @@ void
 lasso_saml_assertion_set_minorVersion(LassoSamlAssertion *node,
 				      const xmlChar *minorVersion)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_ASSERTION(node));
   g_assert(minorVersion != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
 }
 
@@ -255,6 +265,7 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 {
   gint ret;
   GError *tmp_err = NULL;
+  LassoNodeClass *class;
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
@@ -271,7 +282,7 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   }
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
 
   ret = class->add_signature(LASSO_NODE (node), sign_method,
 			     private_key_file, certificate_file, &tmp_err);

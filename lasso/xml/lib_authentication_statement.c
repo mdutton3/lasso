@@ -50,10 +50,11 @@ void
 lasso_lib_authentication_statement_set_authnContext(LassoLibAuthenticationStatement *node,
 						    LassoLibAuthnContext *authnContext)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHENTICATION_STATEMENT(node));
   g_assert(LASSO_IS_LIB_AUTHN_CONTEXT(authnContext));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(authnContext), FALSE);
 }
 
@@ -61,10 +62,11 @@ void
 lasso_lib_authentication_statement_set_reauthenticateOnOrAfter(LassoLibAuthenticationStatement *node,
 							       const xmlChar *reauthenticateOnOrAfter)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHENTICATION_STATEMENT(node));
   g_assert(reauthenticateOnOrAfter != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "ReauthenticateOnOrAfter", reauthenticateOnOrAfter);
 }
 
@@ -72,10 +74,11 @@ void
 lasso_lib_authentication_statement_set_sessionIndex(LassoLibAuthenticationStatement *node,
 						    const xmlChar *sessionIndex)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHENTICATION_STATEMENT(node));
   g_assert(sessionIndex != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "SessionIndex", sessionIndex);
 }
 

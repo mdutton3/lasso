@@ -54,10 +54,11 @@ void
 lasso_lib_idp_entries_add_idpEntry(LassoLibIDPEntries *node,
 				   LassoLibIDPEntry *idpEntry)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_IDP_ENTRIES(node));
   g_assert(LASSO_IS_LIB_IDP_ENTRY(idpEntry));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(idpEntry), TRUE);
 }
 

@@ -509,9 +509,9 @@ lasso_profile_new(LassoServer   *server,
 		  LassoIdentity *identity,
 		  LassoSession  *session)
 {
-  g_return_val_if_fail(server != NULL, NULL);
-
   LassoProfile *ctx;
+
+  g_return_val_if_fail(server != NULL, NULL);
 
   ctx = LASSO_PROFILE(g_object_new(LASSO_TYPE_PROFILE,
 				   "server", lasso_server_copy(server),

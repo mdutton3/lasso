@@ -51,10 +51,11 @@ The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 void lasso_lib_name_identifier_mapping_response_set_nameIdentifier(LassoLibNameIdentifierMappingResponse *node,
 								   LassoSamlNameIdentifier *nameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
   g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
   
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node),
 		   LASSO_NODE (nameIdentifier),
 		   FALSE);
@@ -64,21 +65,23 @@ void
 lasso_lib_name_identifier_mapping_response_set_providerID(LassoLibNameIdentifierMappingResponse *node,
 							  const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerID lenght SHOULD be <= 1024 */
+  /* FIXME : providerID length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
 void lasso_lib_name_identifier_mapping_response_set_status(LassoLibNameIdentifierMappingResponse *node,
 							   LassoSamlpStatus *status)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
   g_assert(LASSO_IS_SAMLP_STATUS(status));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(status), FALSE);
 }
 

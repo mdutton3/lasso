@@ -49,10 +49,11 @@ void
 lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 						LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_SUBJECT(node));
   g_assert(LASSO_IS_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(idpProvidedNameIdentifier), FALSE);
 }
 

@@ -58,22 +58,26 @@ From schema liberty-authentication-context-v1.2.xsd:
 
 void
 lasso_lib_authn_context_set_authnContextClassRef(LassoLibAuthnContext *node,
-						 const xmlChar *authnContextClassRef) {
+						 const xmlChar *authnContextClassRef)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_CONTEXT(node));
   g_assert(authnContextClassRef != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "AuthnContextClassRef",
 		   authnContextClassRef, FALSE);
 }
 
 void
 lasso_lib_authn_context_set_authnContextStatementRef(LassoLibAuthnContext *node,
-						     const xmlChar *authnContextStatementRef) {
+						     const xmlChar *authnContextStatementRef)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_AUTHN_CONTEXT(node));
   g_assert(authnContextStatementRef != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "AuthnContextStatementRef",
 		   authnContextStatementRef, FALSE);
 }

@@ -51,10 +51,11 @@ void
 lasso_saml_authentication_statement_add_authorityBinding(LassoSamlAuthenticationStatement *node,
 							 LassoSamlAuthorityBinding *authorityBinding)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
   g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(authorityBinding));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(authorityBinding), TRUE);
 }
 
@@ -62,10 +63,11 @@ void
 lasso_saml_authentication_statement_set_authenticationInstant(LassoSamlAuthenticationStatement *node,
 							      const xmlChar *authenticationInstant)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
   g_assert(authenticationInstant != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "AuthenticationInstant", authenticationInstant);
 }
 
@@ -73,10 +75,11 @@ void
 lasso_saml_authentication_statement_set_authenticationMethod(LassoSamlAuthenticationStatement *node,
 							     const xmlChar *authenticationMethod)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
   g_assert(authenticationMethod != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "AuthenticationMethod", authenticationMethod);
 }
 
@@ -84,10 +87,11 @@ void
 lasso_saml_authentication_statement_set_subjectLocality(LassoSamlAuthenticationStatement *node,
 							LassoSamlSubjectLocality *subjectLocality)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
   g_assert(LASSO_IS_SAML_SUBJECT_LOCALITY(subjectLocality));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE(subjectLocality), FALSE);
 }
 

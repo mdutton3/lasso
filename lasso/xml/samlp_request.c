@@ -55,10 +55,11 @@ void
 lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
 					  const xmlChar *assertionArtifact)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_SAMLP_REQUEST(node));
   g_assert(assertionArtifact != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "AssertionArtifact", assertionArtifact, FALSE);
 }
 

@@ -63,20 +63,23 @@ void
 lasso_lib_logout_request_set_consent(LassoLibLogoutRequest *node,
 				     const xmlChar *consent)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(consent != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "consent", consent);
 }
 
 void
 lasso_lib_logout_request_set_nameIdentifier(LassoLibLogoutRequest *node,
-					    LassoSamlNameIdentifier *nameIdentifier) {
+					    LassoSamlNameIdentifier *nameIdentifier)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
 }
 
@@ -84,31 +87,36 @@ void
 lasso_lib_logout_request_set_providerID(LassoLibLogoutRequest *node,
 					const xmlChar *providerID)
 {
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(providerID != NULL);
-  /* FIXME : providerID lenght SHOULD be <= 1024 */
+  /* FIXME : providerID length SHOULD be <= 1024 */
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
 }
 
 void
 lasso_lib_logout_request_set_relayState(LassoLibLogoutRequest *node,
-					const xmlChar *relayState) {
+					const xmlChar *relayState)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(relayState != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);
 }
 
 void
 lasso_lib_logout_request_set_sessionIndex(LassoLibLogoutRequest *node,
-					  const xmlChar *sessionIndex) {
+					  const xmlChar *sessionIndex)
+{
+  LassoNodeClass *class;
   g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
   g_assert(sessionIndex != NULL);
 
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "SessionIndex", sessionIndex, FALSE);
 }
 

@@ -40,10 +40,10 @@
 xmlChar *
 lasso_build_random_sequence(guint8 size)
 {
-  g_return_val_if_fail(size > 0, NULL);
-
   int i, val;
   xmlChar *seq;
+
+  g_return_val_if_fail(size > 0, NULL);
 
   seq = xmlMalloc(size+1);
 
@@ -61,7 +61,7 @@ lasso_build_random_sequence(guint8 size)
 
 /**
  * lasso_build_unique_id:
- * @size: the ID's lenght (between 32 and 40)
+ * @size: the ID's length (between 32 and 40)
  * 
  * Builds an ID which has an unicity probability of 2^(-size*4).
  * The result is Base64 encoded.
@@ -78,10 +78,10 @@ lasso_build_unique_id(guint8 size)
     we could build a 128-bit binary number but hexa system is shorter
     32 <= hexa number size <= 40
   */
-  g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
-
   int i, val;
   xmlChar *id; /* , *enc_id; */
+
+  g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
 
   if (size == 0) size = 32;
   id = g_malloc(size+1);
@@ -408,7 +408,7 @@ lasso_str_hash(xmlChar    *str,
 					xmlSecNodeDigestValue,
 					xmlSecDSigNs));
   i = xmlSecBase64Decode(b64_digest, digest, 21);
-  /* printf("Decoded string %s lenght is %d\n", digest, i); */
+  /* printf("Decoded string %s length is %d\n", digest, i); */
   xmlFree(b64_digest);
   xmlFreeDoc(doc);
   /* value returned must be xmlFree() */
