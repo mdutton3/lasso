@@ -47,7 +47,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapBody, Any) },
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSoapBody, any) },
 	{ NULL, 0, 0}
 };
 
@@ -58,7 +58,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoSoapBody *node)
 {
-	node->Any = NULL;
+	node->any = NULL;
 }
 
 static void
