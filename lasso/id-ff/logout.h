@@ -46,7 +46,6 @@ typedef struct _LassoLogoutClass LassoLogoutClass;
 
 struct _LassoLogout {
   LassoProfileContext parent;
-  int method;
   int provider_type;
 
   /*< private >*/
@@ -57,12 +56,17 @@ struct _LassoLogoutClass {
 
 };
 
-LASSO_EXPORT GType        lasso_logout_get_type        (void);
-LASSO_EXPORT LassoLogout *lasso_logout_new             (LassoServer *server,
-							LassoUser   *user,
-							gint         provider_type);
-
-
+LASSO_EXPORT GType        lasso_logout_get_type           (void);
+LASSO_EXPORT LassoLogout *lasso_logout_new                (LassoServer *server,
+							   LassoUser   *user,
+							   gint         provider_type);
+ 
+LASSO_EXPORT gint         lasso_logout_build_request_msg  (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_build_response_msg (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_init_request       (LassoLogout *logout,
+							   xmlChar     *remote_providerID);
+LASSO_EXPORT gint         lasso_logout_handle_request     (LassoLogout *logout, xmlChar *request_msg, gint request_method);
+LASSO_EXPORT gint         lasso_logout_handle_response    (LassoLogout *logout, xmlChar *response_msg, gint response_method);
 
 #ifdef __cplusplus
 }
