@@ -41,6 +41,10 @@ lasso_strerror(int error_code)
   case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
     return "Unable to get '%s' attribute value of '%s' element.\n";
 
+  case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
+    return "Signature element not found in %s.\n";
+  case LASSO_DS_ERROR_INVALID_SIGNATURE:
+    return "The signature of %s is invalid.\n";
   case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
     return "Failed to create signature context.\n";
   case LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
@@ -51,17 +55,15 @@ lasso_strerror(int error_code)
     return "Failed to load certificate %s.\n";
   case LASSO_DS_ERROR_SIGNATURE_FAILED:
     return "Failed to sign the node %s.\n";
-  case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
-    return "Signature element not found in %s.\n";
   case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
     return "Failed to create keys manager.\n";
   case LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED:
     return "Failed to initialize keys manager.\n";
   case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
     return "Failed to verify signature of %s.\n";
-  case LASSO_DS_ERROR_INVALID_SIGNATURE:
-    return "The signature of %s is invalid.\n";
-
+  case LASSO_DS_ERROR_INVALID_SIGALG:
+    return "Invalid signature algorithm.\n";
+    
   case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
     return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
 
