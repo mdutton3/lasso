@@ -298,6 +298,8 @@ class AuthnResponse(Node):
         ret = lassomod.authn_response_getattr(self, name)
         if ret is None:
             raise AttributeError, name
+        if name == "request":
+            ret = AuthnRequest(None, _obj=ret)
         return ret
 
     def add_assertion(self, assertion, private_key_file, certificate_file):

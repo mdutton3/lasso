@@ -27,6 +27,7 @@
 
 #include "../xml/py_xml.h"
 #include "py_authn_response.h"
+#include "py_authn_request.h"
 
 /******************************************************************************/
 /* LassoAuthnResponse                                                          */
@@ -60,7 +61,9 @@ PyObject *authn_response_getattr(PyObject *self, PyObject *args) {
   reponse = LassoAuthnResponse_get(reponse_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ss]", "requestID", "query");
+    return Py_BuildValue("[ss]", "request", "query");
+  if (!strcmp(attr, "request"))
+    return (LassoAuthnRequest_wrap(LASSO_AUTHN_REQUEST(reponse->request)));
   if (!strcmp(attr, "query"))
     return (xmlCharPtr_wrap(reponse->query));
 
