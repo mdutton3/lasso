@@ -1,20 +1,20 @@
-Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert and released under the
-same license as Lasso (see README file).
+Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert
+and released under the same license as Lasso (see README file).
 
 
 Main Developers
 ===============
 
-Nicolas Clapiès <nclapies@entrouvert.com>
-Valéry Febvre <vfebvre@easter-eggs.com>
+Nicolas ClapiÃ¨s <nclapies@entrouvert.com>
+ValÃ©ry Febvre <vfebvre@easter-eggs.com>
 
 
 Packaging
 =========
 
-Nicolas Clapiès <nclapies@entrouvert.com>
-Valéry Febvre <vfebvre@easter-eggs.com>
-Frédéric Péters <fpeters@entrouvert.com>
+Nicolas ClapiÃ¨s <nclapies@entrouvert.com>
+ValÃ©ry Febvre <vfebvre@easter-eggs.com>
+FrÃ©dÃ©ric PÃ©ters <fpeters@entrouvert.com>
 
 
 Java Bindings
@@ -33,8 +33,8 @@ Emmanuel Raviart <eraviart@entrouvert.com>
 Python Bindings
 ===============
 
-Nicolas Clapiès <nclapies@entrouvert.com>
-Valéry Febvre <vfebvre@easter-eggs.com>
+Nicolas ClapiÃ¨s <nclapies@entrouvert.com>
+ValÃ©ry Febvre <vfebvre@easter-eggs.com>
 
 
 Python Unit Tests
@@ -46,7 +46,7 @@ Emmanuel Raviart <eraviart@entrouvert.com>
 Debian Packaging
 ================
 
-Frédéric Péters <fpeters@entrouvert.com>
+FrÃ©dÃ©ric PÃ©ters <fpeters@entrouvert.com>
 
 
 Windows Port
@@ -61,8 +61,8 @@ Documentation
 Christophe Boutet <cboutet@entrouvert.com>
 Romain Chantereau <rchantereau@entrouvert.com>
 Pierre Cros <pcros@entrouvert.com>
-Cédric Musso <cedric.musso@labor-liber.net>
-Frédéric Péters <fpeters@entrouvert.com>
+CÃ©dric Musso <cedric.musso@labor-liber.net>
+FrÃ©dÃ©ric PÃ©ters <fpeters@entrouvert.com>
 Emmanuel Raviart <eraviart@entrouvert.com>
 
 
@@ -77,4 +77,4 @@ Copyright (C) 2004, Entr'ouvert <www.entrouvert.com> & Florent Monnier
 Web Site Design
 ===============
 
-Initial design by Cédric Musso <cedric.musso@labor-liber.net>
+Initial design by CÃ©dric Musso <cedric.musso@labor-liber.net>
