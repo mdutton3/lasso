@@ -6,8 +6,8 @@ else
 doc_DATA = writing-a-c-sp.txt
 endif
 
-writing-a-c-sp.html: writing-a-c-sp.txt
-	$(REST2HTML) writing-a-c-sp.txt > writing-a-c-sp.html
+%.html: %.txt
+	$(REST2HTML) $? > $@
 
 EXTRA_DIST = \
             lasso-book.txt writing-a-c-sp.txt
