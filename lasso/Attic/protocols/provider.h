@@ -76,6 +76,8 @@ LASSO_EXPORT gchar         *lasso_provider_get_assertionConsumerServiceURL      
 
 LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationNotificationProtocolProfile (LassoProvider *provider);
 
+LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider *provider);
+
 LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationNotificationServiceURL      (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_dump                                                 (LassoProvider *provider);

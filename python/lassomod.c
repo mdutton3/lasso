@@ -204,6 +204,8 @@ static PyMethodDef lasso_methods[] = {
   /* environs */
 
   /* py_federation_termination.h */
+  {"federation_termination_getattr",                  federation_termination_getattr,                  METH_VARARGS},
+
   {"federation_termination_new",                      federation_termination_new,                      METH_VARARGS},
   {"federation_termination_build_notification_msg",   federation_termination_build_notification_msg,   METH_VARARGS},
   {"federation_termination_destroy",                  federation_termination_destroy,                  METH_VARARGS},
@@ -229,6 +231,8 @@ static PyMethodDef lasso_methods[] = {
   {"login_process_response_msg",        login_process_response_msg,        METH_VARARGS},
 
   /* py_logout.h */
+  {"logout_getattr",              logout_getattr,              METH_VARARGS},
+
   {"logout_new",                  logout_new,                  METH_VARARGS},
   {"logout_build_request_msg",    logout_build_request_msg,    METH_VARARGS},
   {"logout_build_response_msg",   logout_build_response_msg,   METH_VARARGS},

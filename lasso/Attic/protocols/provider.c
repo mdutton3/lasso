@@ -75,9 +75,15 @@ lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvide
 }
 
 gchar *
-lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *provider)
+lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationReturnServiceURL", NULL));
+}
+
+gchar *
+lasso_provider_get_federationTerminationServiceURL(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationServiceURL", NULL));
 }
 
 gchar *

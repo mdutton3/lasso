@@ -56,7 +56,11 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
     debug(DEBUG, "Building a federation termination soap message\n");
     profileContext->request_type = lassoHttpMethodSoap;
-    profileContext->msg_url = lasso_provider_get_federationTerminationNotificationServiceURL(provider);
+    profileContext->msg_url = lasso_provider_get_federationTerminationServiceURL(provider);
+    if(profileContext->msg_url==NULL){
+      debug(ERROR, "Federation Termination Notification url not found\n");
+      return(-4);
+    }
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
@@ -69,8 +73,11 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   }
   else{
     debug(ERROR, "Unknown protocol profile\n");
-    return(-4);
+    return(-5);
   }
+
+  debug(INFO, "notification url : %s\n", profileContext->msg_url);
+  debug(INFO, "notification body : %s\n", profileContext->msg_body);
 
   return(0);
 }

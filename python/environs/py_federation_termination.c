@@ -42,6 +42,36 @@ PyObject *LassoFederationTermination_wrap(LassoFederationTermination *federation
 
 /******************************************************************************/
 
+PyObject *federation_termination_getattr(PyObject *self, PyObject *args) {
+  PyObject *federation_termination_obj;
+  LassoFederationTermination *federation_termination;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:federation_termination_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:federation_termination_get_attr", &federation_termination_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  federation_termination = LassoFederationTermination_get(federation_termination_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
+			 "msg_relayState");
+
+  if (!strcmp(attr, "user"))
+    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->user));
+  if (!strcmp(attr, "msg_url"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_url));
+  if (!strcmp(attr, "msg_body"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_body));
+  if (!strcmp(attr, "msg_relayState"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_relayState));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *federation_termination_new(PyObject *self, PyObject *args) {
   PyObject    *server_obj, *user_obj;
   LassoFederationTermination *federation_termination;
