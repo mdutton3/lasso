@@ -129,7 +129,8 @@ lasso_response_new_from_export(xmlChar              *buffer,
     break;
   case lassoNodeExportTypeSoap:
     soap_node = lasso_node_new_from_dump(buffer);
-    response_node = lasso_node_get_child(soap_node, "Response", lassoSamlProtocolHRef);
+    response_node = lasso_node_get_child(soap_node, "Response",
+					 lassoSamlProtocolHRef, NULL);
     export = lasso_node_export(response_node);
     lasso_node_import(response, export);
     xmlFree(export);

@@ -171,7 +171,8 @@ PyObject *node_get_child(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  ret = lasso_node_get_child(LassoNode_get(node_obj), name, href);
+  ret = lasso_node_get_child(LassoNode_get(node_obj), name, href, NULL);
+  /* FIXME generate an exception here */
 
   return (LassoNode_wrap(ret));
 }
@@ -187,7 +188,8 @@ PyObject *node_get_content(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  ret = lasso_node_get_content(LassoNode_get(node_obj));
+  ret = lasso_node_get_content(LassoNode_get(node_obj), NULL);
+  /* FIXME generate an exception here */
 
   return (xmlCharPtr_wrap(ret));
 }

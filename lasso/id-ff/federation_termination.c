@@ -149,7 +149,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   }
 
   /* build the request */
-  content = lasso_node_get_content(nameIdentifier);
+  content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
   profile->request = lasso_federation_termination_notification_new(profile->server->providerID,
@@ -206,11 +206,11 @@ lasso_federation_termination_load_notification_msg(LassoFederationTermination *d
 
   /* get the NameIdentifier to load identity dump */
   profile->nameIdentifier = lasso_node_get_child_content(profile->request,
-							 "NameIdentifier", NULL);
+							 "NameIdentifier", NULL, NULL);
   
   /* get the RelayState */
   profile->msg_relayState = lasso_node_get_child_content(profile->request,
-							 "RelayState", NULL);
+							 "RelayState", NULL, NULL);
 
   return(0);
 }
@@ -230,13 +230,15 @@ lasso_federation_termination_process_notification(LassoFederationTermination *de
   }
 
   /* set the remote provider id from the request */
-  profile->remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL);
+  profile->remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
+							    NULL, NULL);
   if(profile->remote_providerID == NULL) {
     message(G_LOG_LEVEL_ERROR, "Remote provider id not found\n");
     return(-1);
   }
 
-  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL);
+  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier",
+					NULL, NULL);
   if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "Name identifier not found in request\n");
     return(-1);

@@ -52,27 +52,27 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
   int type = 0;
 
   soap_node = lasso_node_new_from_dump(soap);
-  if(soap_node==NULL){
+  if (soap_node == NULL) {
     message(G_LOG_LEVEL_ERROR, "Error while build node from soap msg\n");
     return(-1);
   }
 
-  body_node = lasso_node_get_child(soap_node, "Body", NULL);
-  if(body_node==NULL){
+  body_node = lasso_node_get_child(soap_node, "Body", NULL, NULL);
+  if(body_node == NULL) {
     message(G_LOG_LEVEL_ERROR, "Body node not found\n");
     return(-2);
   }
 
   children = lasso_node_get_children(body_node);
-  if(children->len>0){
+  if(children->len>0) {
     request_node = g_ptr_array_index(children, 0);
     name = lasso_node_get_name(request_node);
 
-    if(xmlStrEqual(name, "Request")){
+    if(xmlStrEqual(name, "Request")) {
       debug("A Request node found\n");
       type = lassoRequestTypeLogin;
     }
-    else if(xmlStrEqual(name, "LogoutRequest")){
+    else if(xmlStrEqual(name, "LogoutRequest")) {
       type = lassoRequestTypeLogout;
     }
     else if(xmlStrEqual(name, "FederationTerminationNotification")){

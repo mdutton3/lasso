@@ -181,7 +181,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     /* set the old name identifier */
     nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
     if(nameIdentifier_node != NULL) {
-      oldNameIdentifier = lasso_node_get_content(nameIdentifier_node);
+      oldNameIdentifier = lasso_node_get_content(nameIdentifier_node, NULL);
       oldNameQualifier  = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
       oldFormat         = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
     }
@@ -193,7 +193,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
       message(G_LOG_LEVEL_ERROR, "Remote NameIdentifier for service provider not found\n");
       return(-1);
     }
-    idpNameIdentifier   = lasso_node_get_content(nameIdentifier_node);
+    idpNameIdentifier   = lasso_node_get_content(nameIdentifier_node, NULL);
     idpNameQualifier    = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
     idpFormat           = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
     lasso_node_destroy(nameIdentifier_node);
@@ -213,13 +213,13 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
     idpFormat         = "federated";
 
     nameIdentifier_node = lasso_federation_get_local_nameIdentifier(federation);
-    oldNameIdentifier   = lasso_node_get_content(nameIdentifier_node);
+    oldNameIdentifier   = lasso_node_get_content(nameIdentifier_node, NULL);
     oldNameQualifier    = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
     oldFormat           = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
 
     nameIdentifier_node = lasso_federation_get_remote_nameIdentifier(federation);
     if(nameIdentifier_node != NULL) {
-      spNameIdentifier = lasso_node_get_content(nameIdentifier_node);
+      spNameIdentifier = lasso_node_get_content(nameIdentifier_node, NULL);
       spNameQualifier  = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier", NULL);
       spFormat         = lasso_node_get_attr_value(nameIdentifier_node, "Format", NULL);
     }
@@ -292,11 +292,11 @@ gint lasso_register_name_identifier_load_request_msg(LassoRegisterNameIdentifier
 
   /* get the NameIdentifier to load identity dump */
   profile->nameIdentifier = lasso_node_get_child_content(profile->request,
-							 "NameIdentifier", NULL);
+							 "NameIdentifier", NULL, NULL);
 
   /* get the RelayState */
   profile->msg_relayState = lasso_node_get_child_content(profile->request,
-							 "RelayState", NULL);
+							 "RelayState", NULL, NULL);
 
   return(0);
 }
@@ -316,12 +316,12 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
   profile = LASSO_PROFILE(register_name_identifier);
 
   /* set the remote provider id from the request */
-  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL);
+  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL, NULL);
   profile->remote_providerID = remote_providerID;
 
   /* set RegisterNameIdentifierResponse */
   profile->response = lasso_register_name_identifier_response_new(profile->server->providerID,
-								  lassoSamlStatusCodeSuccess,
+								  (gchar *)lassoSamlStatusCodeSuccess,
 								  profile->request);
 
   if(profile->response == NULL) {
@@ -329,17 +329,17 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
     return(-4);
   }
 
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL);
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
 
-  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL);
+  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL, NULL);
   if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "No name identifier found in register_name_identifier request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-5);
   }
 
-  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL);
+  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL, NULL);
   if(remote_providerID == NULL) {
     message(G_LOG_LEVEL_ERROR, "No provider id found in register_name_identifier request\n");
     return(-6);
@@ -400,7 +400,7 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
     return(-3);
   }
  
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL);
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
   if (err == NULL) {
     if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {

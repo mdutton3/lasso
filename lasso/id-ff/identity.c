@@ -378,7 +378,8 @@ lasso_identity_new_from_dump(gchar *dump)
 
   /* federations */
   federations_node = lasso_node_get_child(identity_node,
-					  LASSO_IDENTITY_FEDERATIONS_NODE, NULL);
+					  LASSO_IDENTITY_FEDERATIONS_NODE,
+					  NULL, NULL);
   if (federations_node != NULL) {
     federations_class = LASSO_NODE_GET_CLASS(federations_node);
     federations_xmlNode = federations_class->get_xmlNode(federations_node);
@@ -403,22 +404,26 @@ lasso_identity_new_from_dump(gchar *dump)
 
 	/* local name identifier */
 	local_nameIdentifier_node = lasso_node_get_child(federation_node,
-							 LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE, NULL);
+							 LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE,
+							 NULL, NULL);
 	if (local_nameIdentifier_node != NULL) {
-	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier", NULL);
+	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier",
+						     NULL, NULL);
 	  lasso_federation_set_local_nameIdentifier(federation, nameIdentifier_node);
-	  debug("  ... add local name identifier %s\n", lasso_node_get_content(nameIdentifier_node));
+	  debug("  ... add local name identifier %s\n", lasso_node_get_content(nameIdentifier_node, NULL));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(local_nameIdentifier_node);
 	}
 
 	/* remote name identifier */
 	remote_nameIdentifier_node = lasso_node_get_child(federation_node,
-							  LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE, NULL);
+							  LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE,
+							  NULL, NULL);
 	if (remote_nameIdentifier_node != NULL) {
-	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier", NULL);
+	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier",
+						     NULL, NULL);
 	  lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier_node);
-	  debug("  ... add remote name identifier %s\n", lasso_node_get_content(nameIdentifier_node));
+	  debug("  ... add remote name identifier %s\n", lasso_node_get_content(nameIdentifier_node, NULL));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(remote_nameIdentifier_node);
 	}

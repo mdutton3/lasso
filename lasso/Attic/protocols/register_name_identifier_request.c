@@ -37,17 +37,20 @@ lasso_register_name_identifier_request_rename_attributes_for_query(LassoRegister
 
   g_return_if_fail (LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST(request));
 
-  idpidentifier = lasso_node_get_child(LASSO_NODE(request), "IDPProvidedNameIdentifier", NULL);
+  idpidentifier = lasso_node_get_child(LASSO_NODE(request), "IDPProvidedNameIdentifier",
+				       NULL, NULL);
   lasso_node_rename_prop(idpidentifier, "NameQualifier", "IDPNameQualifier");
   lasso_node_rename_prop(idpidentifier, "Format", "IDPFormat");
   lasso_node_destroy(idpidentifier);
 
-  spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier", NULL);
+  spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier",
+				      NULL, NULL);
   lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
   lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
   lasso_node_destroy(spidentifier);
 
-  oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier", NULL);
+  oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier",
+				       NULL, NULL);
   lasso_node_rename_prop(oldidentifier, "NameQualifier", "OldNameQualifier");
   lasso_node_rename_prop(oldidentifier, "Format", "OldFormat");
   lasso_node_destroy(oldidentifier);
@@ -241,7 +244,7 @@ lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
   
   envelope = lasso_node_new_from_dump(buffer);
   lassoNode_request = lasso_node_get_child(envelope, "RegisterNameIdentifierRequest",
-					   lassoLibHRef);
+					   lassoLibHRef, NULL);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);

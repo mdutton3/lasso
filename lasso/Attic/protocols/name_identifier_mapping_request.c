@@ -182,7 +182,7 @@ lasso_name_identifier_mapping_request_new_from_soap(const xmlChar *buffer)
 
   envelope = lasso_node_new_from_dump(buffer);
   lassoNode_request = lasso_node_get_child(envelope, "NameIdentifierMappingRequest",
-					   lassoLibHRef);
+					   lassoLibHRef, NULL);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);

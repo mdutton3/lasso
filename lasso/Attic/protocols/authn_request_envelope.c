@@ -24,6 +24,9 @@
  */
 
 #include <string.h>
+
+#include <xmlsec/base64.h>
+
 #include <lasso/protocols/authn_request_envelope.h>
 
 /*****************************************************************************/
@@ -38,7 +41,7 @@ LassoNode *lasso_authn_request_envelope_get_authnRequest(LassoAuthnRequestEnvelo
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST_ENVELOPE(request), NULL);
 
-  return(lasso_node_get_child(LASSO_NODE(request), "AuthnRequest", NULL));
+  return(lasso_node_get_child(LASSO_NODE(request), "AuthnRequest", NULL, NULL));
 }
 
 /*****************************************************************************/
@@ -86,13 +89,15 @@ lasso_authn_request_envelope_new(LassoAuthnRequest *authnRequest,
   LassoNode *request;
 
   g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST(authnRequest), NULL);
-  g_return_val_if_fail(providerID!=NULL, NULL);
-  g_return_val_if_fail(assertionConsumerServiceURL!=NULL, NULL);
+  g_return_val_if_fail(providerID != NULL, NULL);
+  g_return_val_if_fail(assertionConsumerServiceURL != NULL, NULL);
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST_ENVELOPE, NULL));
   
-  lasso_lib_authn_request_envelope_set_authnRequest(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request), LASSO_LIB_AUTHN_REQUEST(authnRequest));
-  lasso_lib_authn_request_envelope_set_providerID(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request), providerID);
+  lasso_lib_authn_request_envelope_set_authnRequest(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request),
+						    LASSO_LIB_AUTHN_REQUEST(authnRequest));
+  lasso_lib_authn_request_envelope_set_providerID(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request),
+						  providerID);
   lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request),
 								   assertionConsumerServiceURL);
 
@@ -110,7 +115,7 @@ lasso_authn_request_envelope_new_from_export(gchar               *buffer,
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST_ENVELOPE, NULL));
 
-  switch(export_type){
+  switch(export_type) {
   case lassoNodeExportTypeBase64:
     buffer_decoded = xmlMalloc(strlen(buffer));
     xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));

@@ -186,13 +186,14 @@ lasso_node_export_to_soap(LassoNode *node)
  * Return value: the attribute or NULL if not found.
  **/
 LassoAttr *
-lasso_node_get_attr(LassoNode     *node,
-		    const xmlChar *name)
+lasso_node_get_attr(LassoNode      *node,
+		    const xmlChar  *name,
+		    GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_attr(node, name));
+  return (class->get_attr(node, name, err));
 }
 
 /**
@@ -245,14 +246,15 @@ lasso_node_get_attrs(LassoNode *node)
  * Return value: a child node
  **/
 LassoNode *
-lasso_node_get_child(LassoNode     *node,
-		     const xmlChar *name,
-		     const xmlChar *href)
+lasso_node_get_child(LassoNode      *node,
+		     const xmlChar  *name,
+		     const xmlChar  *href,
+		     GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_child(node, name, href));
+  return (class->get_child(node, name, href, err));
 }
 
 /**
@@ -267,14 +269,15 @@ lasso_node_get_child(LassoNode     *node,
  * available. It's up to the caller to free the memory with xmlFree().
  **/
 xmlChar *
-lasso_node_get_child_content(LassoNode     *node,
-			     const xmlChar *name,
-			     const xmlChar *href)
+lasso_node_get_child_content(LassoNode      *node,
+			     const xmlChar  *name,
+			     const xmlChar  *href,
+			     GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_child_content(node, name, href));
+  return (class->get_child_content(node, name, href, err));
 }
 
 /**
@@ -307,12 +310,13 @@ lasso_node_get_children(LassoNode *node)
  * It's up to the caller to free the memory with xmlFree().
  **/
 xmlChar *
-lasso_node_get_content(LassoNode *node)
+lasso_node_get_content(LassoNode  *node,
+		       GError    **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_content(node));
+  return (class->get_content(node, err));
 }
 
 /**
@@ -552,7 +556,6 @@ lasso_node_impl_dump(LassoNode     *node,
 		     int            format)
 {
   xmlChar *ret;
-  int len;
   xmlOutputBufferPtr buf;
   xmlCharEncodingHandlerPtr handler = NULL;
 
@@ -570,16 +573,16 @@ lasso_node_impl_dump(LassoNode     *node,
   if (buf == NULL) {
     return (NULL);
   }
-  xmlNodeDumpOutput(buf, node->private->node->doc, node->private->node,
+  xmlNodeDumpOutput(buf, NULL, node->private->node,
 		    0, format, encoding);
   xmlOutputBufferFlush(buf);
   if (buf->conv != NULL) {
-    len = buf->conv->use;
+    /* ret = g_strdup(buf->conv->content); */
     ret = buf->conv->content;
     buf->conv->content = NULL;
   }
   else {
-    len = buf->buffer->use;
+    /* ret = g_strdup(buf->buffer->content); */
     ret = buf->buffer->content;
     buf->buffer->content = NULL;
   }
@@ -603,7 +606,7 @@ lasso_node_impl_export_to_base64(LassoNode *node)
   buffer = lasso_node_impl_dump(node, "utf-8", 0);
   ret = xmlSecBase64Encode((const xmlSecByte *) buffer,
 			   (xmlSecSize)strlen((const char *)buffer), 0);
-  xmlFree(buffer);
+  g_free(buffer);
 
   return (ret);
 }
@@ -701,13 +704,15 @@ lasso_node_impl_export_to_soap(LassoNode *node)
 }
 
 static LassoAttr*
-lasso_node_impl_get_attr(LassoNode     *node,
-			 const xmlChar *name)
+lasso_node_impl_get_attr(LassoNode      *node,
+			 const xmlChar  *name,
+			 GError        **err)
 {
   LassoAttr *prop;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   prop = node->private->node->properties;
   while (prop != NULL) {
@@ -717,6 +722,11 @@ lasso_node_impl_get_attr(LassoNode     *node,
     prop = prop->next;
   }
 
+  /* attr not found */
+  g_set_error(err, g_quark_from_string("Lasso"),
+	      LASSO_XML_ERROR_ATTR_NOTFOUND,
+	      lasso_strerror(LASSO_XML_ERROR_ATTR_NOTFOUND),
+	      name, node->private->node->name);
   return (NULL);
 }
 
@@ -762,12 +772,14 @@ lasso_node_impl_get_attrs(LassoNode *node)
 }
 
 static LassoNode *
-lasso_node_impl_get_child(LassoNode     *node,
-			  const xmlChar *name,
-			  const xmlChar *href)
+lasso_node_impl_get_child(LassoNode      *node,
+			  const xmlChar  *name,
+			  const xmlChar  *href,
+			  GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   /*   /\* No recurssive version *\/ */
   /*   xmlNodePtr cur; */
@@ -805,8 +817,9 @@ lasso_node_impl_get_child(LassoNode     *node,
 
   xmlNodePtr child;
 
-  if (href != NULL)
+  if (href != NULL) {
     child = xmlSecFindNode(node->private->node, name, href);
+  }
   else {
     child = xmlSecFindNode(node->private->node, name, href);
     if (child == NULL)
@@ -820,26 +833,41 @@ lasso_node_impl_get_child(LassoNode     *node,
     if (child == NULL)
       child = xmlSecFindNode(node->private->node, name, lassoMetadataHRef);
   }
-  if (child != NULL)
+  if (child != NULL) {
     return (lasso_node_new_from_xmlNode(child));
-  else
+  }
+  else {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_XML_ERROR_NODE_NOTFOUND,
+		lasso_strerror(LASSO_XML_ERROR_NODE_NOTFOUND),
+		name, node->private->node->name);
     return (NULL);
+  }
 }
 
 static xmlChar *
-lasso_node_impl_get_child_content(LassoNode     *node,
-				  const xmlChar *name,
-				  const xmlChar *href)
+lasso_node_impl_get_child_content(LassoNode      *node,
+				  const xmlChar  *name,
+				  const xmlChar  *href,
+				  GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
-  LassoNode *child = lasso_node_get_child(node, name, href);
+  GError    *tmp_err = NULL;
+  LassoNode *child = lasso_node_get_child(node, name, href, &tmp_err);
   xmlChar   *content = NULL;
 
   if (child != NULL) {
-    content = lasso_node_get_content(child);
+    content = lasso_node_get_content(child, &tmp_err);
     lasso_node_destroy(child);
+    if (content == NULL) {
+      g_propagate_error (err, tmp_err);
+    }
+  }
+  else {
+    g_propagate_error (err, tmp_err);
   }
 
   return (content);
@@ -866,11 +894,23 @@ lasso_node_impl_get_children(LassoNode *node)
 }
 
 static xmlChar *
-lasso_node_impl_get_content(LassoNode *node)
+lasso_node_impl_get_content(LassoNode  *node,
+			    GError    **err)
 {
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  xmlChar *content;
 
-  return (xmlNodeGetContent(node->private->node));
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  content = xmlNodeGetContent(node->private->node);
+  if (content == NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND,
+		lasso_strerror(LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND),
+		node->private->node->name);
+  }
+
+  return (content);
 }
 
 static xmlChar *
@@ -922,7 +962,7 @@ lasso_node_impl_rename_prop(LassoNode     *node,
 
   value = xmlGetProp(node->private->node, old_name);
   if (value != NULL) {
-    xmlRemoveProp(lasso_node_get_attr(node, old_name));
+    xmlRemoveProp(lasso_node_get_attr(node, old_name, NULL));
     lasso_node_set_prop(node, new_name, value);
   }
 }

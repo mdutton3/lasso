@@ -38,14 +38,14 @@ xmlChar *lasso_authn_response_envelope_get_assertionConsumerServiceURL(LassoAuth
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE_ENVELOPE(response), NULL);
 
-  return(lasso_node_get_child_content(LASSO_NODE(response), "AssertionConsumerServiceURL", NULL));
+  return(lasso_node_get_child_content(LASSO_NODE(response), "AssertionConsumerServiceURL", NULL, NULL));
 }
 
 LassoNode* lasso_authn_response_envelope_get_authnResponse(LassoAuthnResponseEnvelope *response)
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE_ENVELOPE(response), NULL);
   
-  return(lasso_node_get_child(LASSO_NODE(response), "AuthnResponse", NULL));
+  return(lasso_node_get_child(LASSO_NODE(response), "AuthnResponse", NULL, NULL));
 }
 
 /*****************************************************************************/
@@ -115,7 +115,7 @@ lasso_authn_response_envelope_new_from_soap(gchar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_response = lasso_node_get_child(envelope, "AuthnResponseEnvelope", NULL);
+  lassoNode_response = lasso_node_get_child(envelope, "AuthnResponseEnvelope", NULL, NULL);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);

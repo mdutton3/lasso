@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND  -1
+#define LASSO_XML_ERROR_NODE_NOTFOUND  -1
+#define LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND  -2
+#define LASSO_XML_ERROR_ATTR_NOTFOUND  -3
+#define LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND  -4
 
 const char* lasso_strerror(int error_code);

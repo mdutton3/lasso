@@ -407,7 +407,7 @@ lasso_server_new_from_dump(gchar *dump)
   }
 
   /* metadata */
-  server_metadata_node = lasso_node_get_child(server_node, "EntityDescriptor", NULL);
+  server_metadata_node = lasso_node_get_child(server_node, "EntityDescriptor", NULL, NULL);
   LASSO_PROVIDER(server)->metadata = lasso_node_copy(server_metadata_node);
   lasso_node_destroy(server_metadata_node);
 
@@ -418,7 +418,7 @@ lasso_server_new_from_dump(gchar *dump)
   LASSO_PROVIDER(server)->ca_certificate = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, NULL);
 
   /* providers */
-  providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, NULL);
+  providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, NULL, NULL);
   if(providers_node != NULL) {
     providers_class = LASSO_NODE_GET_CLASS(providers_node);
     providers_xmlNode = providers_class->get_xmlNode(providers_node);
@@ -430,7 +430,7 @@ lasso_server_new_from_dump(gchar *dump)
 	provider_node = lasso_node_new_from_xmlNode(provider_xmlNode);
 
 	/*  metadata */
-	entity_node = lasso_node_get_child(provider_node, "EntityDescriptor", NULL);
+	entity_node = lasso_node_get_child(provider_node, "EntityDescriptor", NULL, NULL);
 
 	/* public key */
 	public_key = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, NULL);

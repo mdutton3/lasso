@@ -89,25 +89,25 @@ lasso_provider_dump(LassoProvider *provider)
 gchar *
 lasso_provider_get_assertionConsumerServiceURL(LassoProvider  *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider  *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider  *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationReturnServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationReturnServiceURL", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_federationTerminationServiceURL(LassoProvider  *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationServiceURL", NULL, NULL));
 }
 
 gchar *
@@ -188,46 +188,46 @@ lasso_provider_get_providerID(LassoProvider  *provider,
 gchar *
 lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierProtocolProfile", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierProtocolProfile", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierServiceURL", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_singleSignOnServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceURL", NULL, NULL));
 }
 
 gchar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL, NULL));
 }
 
 gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceURL", NULL, NULL));
 }
 
 gchar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnURL", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnURL", NULL, NULL));
 }
 
 gchar *
 lasso_provider_get_soapEndpoint(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL, NULL));
 }
 
 void
@@ -253,11 +253,11 @@ static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider,
   LassoNode *node;
   xmlChar *content;
 
-  node = lasso_node_get_child(LASSO_NODE(provider), name, NULL);
+  node = lasso_node_get_child(LASSO_NODE(provider), name, NULL, NULL);
   if(node == NULL) {
     return(NULL);
   }
-  content = lasso_node_get_content(node);
+  content = lasso_node_get_content(node, NULL);
   lasso_node_destroy(node);
 
   return(content);

@@ -98,7 +98,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   subject = lasso_lib_subject_new();
   if (identifier == NULL) {
     /* create a new NameIdentifier and use idp_identifier data to fill it */
-    str = lasso_node_get_content(LASSO_NODE(idp_identifier));
+    str = lasso_node_get_content(LASSO_NODE(idp_identifier), NULL);
     new_identifier = lasso_saml_name_identifier_new(str);
     xmlFree(str);
     str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
@@ -120,7 +120,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   lasso_node_destroy(new_identifier);
 
   /* create a new IdpProvidedNameIdentifier and use idp_identifier data to fill it */
-  str = lasso_node_get_content(LASSO_NODE(idp_identifier));
+  str = lasso_node_get_content(LASSO_NODE(idp_identifier), NULL);
   new_idp_identifier = lasso_lib_idp_provided_name_identifier_new(str);
   xmlFree(str);
   str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);

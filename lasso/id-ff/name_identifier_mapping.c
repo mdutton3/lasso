@@ -32,7 +32,7 @@
 gchar *
 lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
 {
-  gchar *dump;
+  gchar *dump = NULL;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), NULL);
 
@@ -101,13 +101,13 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
   profile = LASSO_PROFILE(mapping);
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-  if(provider==NULL){
+  if(provider == NULL) {
     message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
   }
 
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
-  if(err != NULL){
+  if(err != NULL) {
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
@@ -144,7 +144,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   xmlChar *content, *nameQualifier, *format;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
-  g_return_val_if_fail(remote_providerID!=NULL, -2);
+  g_return_val_if_fail(remote_providerID != NULL, -2);
 
   profile = LASSO_PROFILE(mapping);
 
@@ -158,7 +158,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
-  switch(profile->provider_type){
+  switch(profile->provider_type) {
   case lassoProviderTypeSp:
     debug("service provider\n");
     nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
@@ -167,23 +167,24 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
     break;
   case lassoProviderTypeIdp:
     debug("federation provider\n");
-    /* get the next assertion ( next authenticated service provider ) */
+    /* get the next assertion (next authenticated service provider) */
     nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
-    if(!nameIdentifier)
+    if(nameIdentifier == NULL) {
       nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
+    }
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
     return(-4);
   }
   
-  if(!nameIdentifier){
+  if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "Name identifier not found\n");
     return(-5);
   }
 
   /* build the request */
-  content = lasso_node_get_content(nameIdentifier);
+  content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
   profile->request = lasso_name_identifier_mapping_request_new(profile->server->providerID,
@@ -231,7 +232,8 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   }
 
   /* set the remote provider id from the request */
-  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL);
+  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
+						   NULL, NULL);
   profile->remote_providerID = remote_providerID;
 
   /* set Name_Identifier_MappingResponse */
@@ -241,16 +243,17 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
   g_return_val_if_fail(profile->response!=NULL, -4);
 
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL);
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
 
-  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL);
+  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL, NULL);
   if(nameIdentifier == NULL) {
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-5);
   }
 
-  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL);
+  remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
+						   NULL, NULL);
 
   /* Verify federation */
   federation = lasso_identity_get_federation(profile->identity, remote_providerID);
@@ -294,7 +297,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
     return(-3);
   }
  
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL);
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
   if (err == NULL) {
     if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {

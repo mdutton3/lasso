@@ -218,7 +218,7 @@ lasso_session_get_authentication_method(LassoSession *session,
   if (remote_providerID == NULL) {
     g_free(providerID);
   }
-  as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL);
+  as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL, NULL);
   authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
   if (authentication_method == NULL) {
     message(G_LOG_LEVEL_ERROR, err->message);
@@ -403,7 +403,8 @@ lasso_session_new_from_dump(gchar *dump)
 
   /* get assertions */
   assertions_node = lasso_node_get_child(session_node,
-					 LASSO_SESSION_ASSERTIONS_NODE, NULL);
+					 LASSO_SESSION_ASSERTIONS_NODE,
+					 NULL, NULL);
   if (assertions_node != NULL) {
     assertions_xmlNode = LASSO_NODE_GET_CLASS(assertions_node)->get_xmlNode(assertions_node);
     assertion_xmlNode = assertions_xmlNode->children;

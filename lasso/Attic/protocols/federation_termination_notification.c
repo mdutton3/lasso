@@ -168,7 +168,7 @@ lasso_federation_termination_notification_new_from_soap(const xmlChar *buffer)
   
   envelope = lasso_node_new_from_dump(buffer);
   lassoNode_notification = lasso_node_get_child(envelope, "FederationTerminationNotification",
-						lassoLibHRef);
+						lassoLibHRef, NULL);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_notification);
   xmlNode_notification = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_notification)), 1);

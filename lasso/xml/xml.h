@@ -79,21 +79,25 @@ struct _LassoNodeClass {
 				       lassoSignatureMethod  sign_method,
 				       const gchar          *private_key_file);
   xmlChar*       (* export_to_soap)   (LassoNode     *node);
-  LassoAttr*     (* get_attr)         (LassoNode     *node,
-				       const xmlChar *name);
+  LassoAttr*     (* get_attr)         (LassoNode      *node,
+				       const xmlChar  *name,
+				       GError        **err);
   xmlChar*       (* get_attr_value)   (LassoNode      *node,
 				       const xmlChar  *name,
 				       GError        **err);
   GPtrArray*     (* get_attrs)        (LassoNode     *node);
-  LassoNode*     (* get_child)        (LassoNode     *node,
-				       const xmlChar *name,
-				       const xmlChar *href);
-  xmlChar*       (* get_child_content)(LassoNode     *node,
-				       const xmlChar *name,
-				       const xmlChar *href);
+  LassoNode*     (* get_child)        (LassoNode      *node,
+				       const xmlChar  *name,
+				       const xmlChar  *href,
+				       GError        **err);
+  xmlChar*       (* get_child_content)(LassoNode      *node,
+				       const xmlChar  *name,
+				       const xmlChar  *href,
+				       GError        **err);
   GPtrArray*     (* get_children)     (LassoNode     *node);
-  xmlChar*       (* get_content)      (LassoNode     *node);
-  const xmlChar* (* get_name)         (LassoNode     *node);
+  xmlChar*       (* get_content)      (LassoNode      *node,
+				       GError        **err);
+  xmlChar*       (* get_name)         (LassoNode     *node);
   void           (* import)           (LassoNode     *node,
                                        const xmlChar *buffer);
   void           (* import_from_node) (LassoNode     *node,
@@ -155,8 +159,9 @@ LASSO_EXPORT gchar*         lasso_node_export_to_query  (LassoNode            *n
 
 LASSO_EXPORT xmlChar*       lasso_node_export_to_soap   (LassoNode *node);
 
-LASSO_EXPORT LassoAttr*     lasso_node_get_attr         (LassoNode     *node,
-							 const xmlChar *name);
+LASSO_EXPORT LassoAttr*     lasso_node_get_attr         (LassoNode      *node,
+							 const xmlChar  *name,
+							 GError        **err);
 
 LASSO_EXPORT xmlChar*       lasso_node_get_attr_value   (LassoNode      *node,
 							 const xmlChar  *name,
@@ -164,17 +169,20 @@ LASSO_EXPORT xmlChar*       lasso_node_get_attr_value   (LassoNode      *node,
 
 LASSO_EXPORT GPtrArray*     lasso_node_get_attrs        (LassoNode *node);
 
-LASSO_EXPORT LassoNode*     lasso_node_get_child        (LassoNode     *node,
-							 const xmlChar *name,
-							 const xmlChar *href);
+LASSO_EXPORT LassoNode*     lasso_node_get_child        (LassoNode      *node,
+							 const xmlChar  *name,
+							 const xmlChar  *href,
+							 GError        **err);
 
-LASSO_EXPORT xmlChar *      lasso_node_get_child_content(LassoNode     *node,
-							 const xmlChar *name,
-							 const xmlChar *href);
+LASSO_EXPORT xmlChar *      lasso_node_get_child_content(LassoNode      *node,
+							 const xmlChar  *name,
+							 const xmlChar  *href,
+							 GError        **err);
 
 LASSO_EXPORT GPtrArray*     lasso_node_get_children     (LassoNode *node);
 
-LASSO_EXPORT xmlChar*       lasso_node_get_content      (LassoNode *node);
+LASSO_EXPORT xmlChar*       lasso_node_get_content      (LassoNode  *node,
+							 GError    **err);
 
 LASSO_EXPORT xmlChar*       lasso_node_get_name         (LassoNode *node);
 

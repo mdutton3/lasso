@@ -29,8 +29,14 @@ const char*
 lasso_strerror(int error_code)
 {
   switch (error_code) {
+  case LASSO_XML_ERROR_NODE_NOTFOUND:
+    return "Unable to get '%s' child of '%s' element.\n";
+  case LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND:
+    return "Unable to get content of '%s' element.\n";
+  case LASSO_XML_ERROR_ATTR_NOTFOUND:
+    return "Unable to get '%s' attribute of '%s' element.\n";
   case LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND:
-    return "Unable to get '%s' attribute value in '%s' element.\n";
+    return "Unable to get '%s' attribute value of '%s' element.\n";
   default:
     return "Undefined error code !!!\n";
   }

@@ -51,8 +51,9 @@ lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
 {
   xmlChar *ni, *idp_ni;
 
-  ni = lasso_node_get_child_content(assertion, "NameIdentifier", NULL);
-  idp_ni = lasso_node_get_child_content(assertion, "IDPProvidedNameIdentifier", NULL);
+  ni = lasso_node_get_child_content(assertion, "NameIdentifier", NULL, NULL);
+  idp_ni = lasso_node_get_child_content(assertion, "IDPProvidedNameIdentifier",
+					NULL, NULL);
 
   if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
     xmlFree(ni);
@@ -64,7 +65,7 @@ lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
       return (ni);
     }
     else {
-      message(G_LOG_LEVEL_ERROR, "NameIdentifier value not found in AuthenticationStatement element.\n");
+      message(G_LOG_LEVEL_CRITICAL, "NameIdentifier value not found in AuthenticationStatement element.\n");
       return (NULL);
     }
   }
@@ -85,7 +86,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 					"RequestID", &err);
 
   if (requestID == NULL) {
-    message(G_LOG_LEVEL_ERROR, err->message);
+    message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
     return(ret);
@@ -103,7 +104,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
   }
   else {
-    message(G_LOG_LEVEL_ERROR, "Failed to build the AuthenticationStatement element of the Assertion.\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to build the AuthenticationStatement element of the Assertion.\n");
     lasso_node_destroy(assertion);
     return(-3);
   }
@@ -149,7 +150,7 @@ lasso_login_process_federation(LassoLogin *login)
   federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
 					     LASSO_PROFILE(login)->remote_providerID);
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-					      "NameIDPolicy", NULL);
+					      "NameIDPolicy", NULL, NULL);
   if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
     if (federation == NULL) {
       lasso_profile_set_response_status(LASSO_PROFILE(login),
@@ -223,7 +224,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
-				   lassoLibHRef);
+				   lassoLibHRef,
+				   NULL);
   idp = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 				  LASSO_PROFILE(login)->remote_providerID);
 
@@ -249,13 +251,13 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 
   /* check StatusCode value */
   status = lasso_node_get_child(LASSO_PROFILE(login)->response,
-				"Status", lassoSamlProtocolHRef);
+				"Status", lassoSamlProtocolHRef, NULL);
   if (status == NULL) {
     message(G_LOG_LEVEL_ERROR, "Status element not found in response.\n");
     ret = -9;
     goto done;
   }
-  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef);
+  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, NULL);
     
   if (statusCode == NULL) {
     message(G_LOG_LEVEL_ERROR, "StatusCode element not found in Status.\n");
@@ -306,7 +308,7 @@ lasso_login_accept_sso(LassoLogin *login)
 
   if (LASSO_PROFILE(login)->response != NULL) {
     assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
-				     "Assertion", lassoLibHRef);
+				     "Assertion", lassoLibHRef, NULL);
     if (assertion == NULL) {
       message(G_LOG_LEVEL_ERROR, "Assertion element not found in response.\n");
       ret = -2;
@@ -319,14 +321,16 @@ lasso_login_accept_sso(LassoLogin *login)
 				assertion);
 
     /* put the 2 NameIdentifiers in identity object */
-    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
+    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier",
+					  lassoSamlAssertionHRef, NULL);
     if (nameIdentifier == NULL) {
       message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in assertion.\n");
       ret = -3;
       goto done;
     }
 
-    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", lassoLibHRef);
+    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier",
+						     lassoLibHRef, NULL);
     if (idpProvidedNameIdentifier == NULL) {
       message(G_LOG_LEVEL_ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
       ret = -4;
@@ -389,13 +393,13 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 
   if (authentication_result == 0) {
     lasso_profile_set_response_status(LASSO_PROFILE(login),
-					      lassoSamlStatusCodeRequestDenied);
+				      lassoSamlStatusCodeRequestDenied);
   }
   else {
     /* federation */
     lasso_login_process_federation(login);
     federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
-					   LASSO_PROFILE(login)->remote_providerID);
+					       LASSO_PROFILE(login)->remote_providerID);
     /* fill the response with the assertion */
     if (federation != NULL) {
       lasso_login_add_response_assertion(login,
@@ -422,7 +426,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   b64_samlArt = (gchar *)xmlSecBase64Encode(samlArt, 42, 0);
   g_free(samlArt);
   relayState = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-					    "RelayState", NULL);
+					    "RelayState", NULL, NULL);
 
   switch (method) {
   case lassoHttpMethodRedirect:
@@ -466,7 +470,9 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 					      LASSO_PROFILE(login)->remote_providerID);
 
   /* check if authnRequest must be signed */
-  md_authnRequestsSigned = lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL);
+  md_authnRequestsSigned = lasso_node_get_child_content(provider->metadata,
+							"AuthnRequestsSigned",
+							NULL, NULL);
   if (md_authnRequestsSigned != NULL) {
     must_sign = xmlStrEqual(md_authnRequestsSigned, "true");
     xmlFree(md_authnRequestsSigned);
@@ -687,7 +693,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
 
   /* get ProtocolProfile */
   protocolProfile = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-						 "ProtocolProfile", NULL);
+						 "ProtocolProfile", NULL, NULL);
   if (protocolProfile == NULL) {
     login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
   }
@@ -716,12 +722,13 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
 
   /* get remote ProviderID */
   LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-										 "ProviderID", NULL);
+									 "ProviderID", NULL, NULL);
 
   remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 					      LASSO_PROFILE(login)->remote_providerID);
   /* Is authnRequest signed ? */
-  md_authnRequestsSigned = lasso_node_get_child_content(remote_provider->metadata, "AuthnRequestsSigned", NULL);
+  md_authnRequestsSigned = lasso_node_get_child_content(remote_provider->metadata,
+							"AuthnRequestsSigned", NULL, NULL);
   if (md_authnRequestsSigned != NULL) {
     must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
     xmlFree(md_authnRequestsSigned);
@@ -819,7 +826,8 @@ lasso_login_must_authenticate(LassoLogin *login)
   gchar    *str;
 
   /* verify if the user must be authenticated or not */
-  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive", NULL);
+  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
+				     NULL, NULL);
   if (str != NULL) {
     if (xmlStrEqual(str, "false")) {
       isPassive = FALSE;
@@ -827,7 +835,8 @@ lasso_login_must_authenticate(LassoLogin *login)
     xmlFree(str);
   }
 
-  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "ForceAuthn", NULL);
+  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "ForceAuthn",
+				     NULL, NULL);
   if (str != NULL) {
     if (xmlStrEqual(str, "true")) {
       forceAuthn = TRUE;
@@ -866,7 +875,8 @@ lasso_login_process_request_msg(LassoLogin *login,
   LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
 
   login->assertionArtifact = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-							  "AssertionArtifact", lassoSamlProtocolHRef);
+							  "AssertionArtifact",
+							  lassoSamlProtocolHRef, NULL);
 
   return (0);
 }
@@ -995,17 +1005,17 @@ lasso_login_new_from_dump(LassoServer   *server,
   node_dump = lasso_node_new_from_dump(dump);
 
   /* profile attributes */
-  LASSO_PROFILE(login)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", NULL);
-  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL);
-  LASSO_PROFILE(login)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl", NULL);
-  LASSO_PROFILE(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", NULL);
-  LASSO_PROFILE(login)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState", NULL);
+  LASSO_PROFILE(login)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", NULL, NULL);
+  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL, NULL);
+  LASSO_PROFILE(login)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl", NULL, NULL);
+  LASSO_PROFILE(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", NULL, NULL);
+  LASSO_PROFILE(login)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState", NULL, NULL);
 
-  type = lasso_node_get_child_content(node_dump, "RequestType", NULL);
+  type = lasso_node_get_child_content(node_dump, "RequestType", NULL, NULL);
   LASSO_PROFILE(login)->request_type = atoi(type);
   xmlFree(type);
 
-  request_node = lasso_node_get_child(node_dump, "Request", NULL);
+  request_node = lasso_node_get_child(node_dump, "Request", NULL, NULL);
   if (request_node != NULL) {
     export = lasso_node_export(request_node);
     switch (LASSO_PROFILE(login)->request_type) {
@@ -1024,11 +1034,11 @@ lasso_login_new_from_dump(LassoServer   *server,
     lasso_node_destroy(request_node);
   }
 
-  type = lasso_node_get_child_content(node_dump, "ResponseType", NULL);
+  type = lasso_node_get_child_content(node_dump, "ResponseType", NULL, NULL);
   LASSO_PROFILE(login)->response_type = atoi(type);
   xmlFree(type);
 
-  response_node = lasso_node_get_child(node_dump, "Response", NULL);
+  response_node = lasso_node_get_child(node_dump, "Response", NULL, NULL);
   if (response_node != NULL) {
     export = lasso_node_export(response_node);
     switch (LASSO_PROFILE(login)->response_type) {
@@ -1047,18 +1057,18 @@ lasso_login_new_from_dump(LassoServer   *server,
     lasso_node_destroy(response_node);
   }
 
-  type = lasso_node_get_child_content(node_dump, "ProviderType", NULL);
+  type = lasso_node_get_child_content(node_dump, "ProviderType", NULL, NULL);
   LASSO_PROFILE(login)->provider_type = atoi(type);
   xmlFree(type);
 
   /* login attributes */
-  protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile", NULL);
+  protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile", NULL, NULL);
   if (protocolProfile != NULL) {
     login->protocolProfile   = atoi(protocolProfile);
     xmlFree(protocolProfile);
   }
-  login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL);
-  login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump", NULL);
+  login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL, NULL);
+  login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump", NULL, NULL);
 
   lasso_node_destroy(node_dump);
 

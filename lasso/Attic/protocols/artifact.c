@@ -71,7 +71,7 @@ xmlChar*
 lasso_artifact_get_assertionHandle(LassoArtifact *artifact)
 {
   return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "AssertionHandle", NULL));
+				       "AssertionHandle", NULL, NULL));
 }
 
 gint
@@ -80,7 +80,7 @@ lasso_artifact_get_byteCode(LassoArtifact *artifact)
   xmlChar *byteCode;
 
   byteCode = lasso_node_get_child_content(LASSO_NODE(artifact),
-					  "ByteCode", NULL);
+					  "ByteCode", NULL, NULL);
   return ((gint)g_strtod(byteCode, NULL));
 }
 
@@ -88,20 +88,21 @@ xmlChar*
 lasso_artifact_get_identityProviderSuccinctID(LassoArtifact *artifact)
 {
   return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "IdentityProviderSuccinctID", NULL));
+				       "IdentityProviderSuccinctID", NULL, NULL));
 }
 
 xmlChar*
 lasso_artifact_get_relayState(LassoArtifact *artifact)
 {
   return (lasso_node_get_child_content(LASSO_NODE(artifact),
-				       "RelayState", NULL));
+				       "RelayState", NULL, NULL));
 }
 
 xmlChar*
 lasso_artifact_get_samlArt(LassoArtifact *artifact)
 {
-  return (lasso_node_get_child_content(LASSO_NODE(artifact), "SAMLArt", NULL));
+  return (lasso_node_get_child_content(LASSO_NODE(artifact),
+				       "SAMLArt", NULL, NULL));
 }
 
 /*****************************************************************************/

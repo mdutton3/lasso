@@ -184,7 +184,8 @@ lasso_logout_request_new_from_soap(gchar *buffer)
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_request = lasso_node_get_child(envelope, "LogoutRequest", lassoLibHRef);
+  lassoNode_request = lasso_node_get_child(envelope, "LogoutRequest",
+					   lassoLibHRef, NULL);
   
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
@@ -202,7 +203,7 @@ LassoNode*
 lasso_logout_request_new_from_export(gchar                *buffer,
 				     lassoNodeExportTypes  export_type)
 {
-  LassoNode *request;
+  LassoNode *request = NULL;
 
   g_return_val_if_fail(buffer != NULL, NULL);
 

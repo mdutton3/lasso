@@ -58,7 +58,8 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
   xmlChar *value;
   GError *err = NULL;
 
-  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
+  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode",
+				     NULL, NULL);
   if (status_code != NULL) {
     value = lasso_node_get_attr_value(status_code, "Value", &err);
     lasso_node_destroy(status_code);
@@ -150,7 +151,7 @@ lasso_authn_response_new(char *providerID,
 					  providerID);
   
   /* RelayState */
-  content = lasso_node_get_child_content(request, "RelayState", lassoLibHRef);
+  content = lasso_node_get_child_content(request, "RelayState", lassoLibHRef, NULL);
   if (content != NULL) {
     lasso_lib_authn_response_set_relayState(LASSO_LIB_AUTHN_RESPONSE(response),
 					    content);

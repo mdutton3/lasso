@@ -132,15 +132,16 @@ lasso_lecp_init_authn_response_envelope(LassoLecp          *lecp,
   g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST(authnRequest), -1);
 
   lecp->server = lasso_server_copy(server);
-  providerID = lasso_node_get_child_content(LASSO_NODE(authnRequest), "ProviderID", NULL);
-  if(providerID==NULL){
+  providerID = lasso_node_get_child_content(LASSO_NODE(authnRequest), "ProviderID",
+					    NULL, NULL);
+  if(providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "ProviderID not found\n");
     return(-1);
   }
 
   provider = lasso_server_get_provider(lecp->server, providerID);
   assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(provider);
-  if(providerID==NULL){
+  if(providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
     return(-1);
   }

@@ -36,7 +36,8 @@ lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
   xmlChar *value;
   GError *err = NULL;
 
-  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
+  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode",
+				     NULL, NULL);
   if (status_code != NULL) {
     value = lasso_node_get_attr_value(status_code, "Value", &err);
     lasso_node_destroy(status_code);
@@ -97,8 +98,8 @@ lasso_logout_response_new(gchar       *providerID,
 			  const gchar *statusCodeValue,
 			  LassoNode   *request)
 {
-  LassoNode *response, *ss, *ssc, *request_providerID, *request_relayState;
-  xmlChar *inResponseTo, *recipient, *relayState;
+  LassoNode *response, *ss, *ssc;
+  xmlChar *inResponseTo, *request_providerID, *request_relayState;
   xmlChar *id, *time;
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
@@ -124,24 +125,21 @@ lasso_logout_response_new(gchar       *providerID,
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   providerID);
   
-  inResponseTo = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(request, "RequestID"));
+  inResponseTo = lasso_node_get_attr_value(request, "RequestID", NULL);
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 inResponseTo);
+  xmlFree(inResponseTo);
   
-  request_providerID = lasso_node_get_child(request, "ProviderID", NULL);
-  recipient = lasso_node_get_content(request_providerID);
+  request_providerID = lasso_node_get_child_content(request, "ProviderID", NULL, NULL);
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      recipient);
-  lasso_node_destroy(request_providerID);
-  xmlFree(recipient);
+					      request_providerID);
+  xmlFree(request_providerID);
 
-  request_relayState = lasso_node_get_child(request, "RelayState", NULL);
+  request_relayState = lasso_node_get_child_content(request, "RelayState", NULL, NULL);
   if (request_relayState != NULL) {
-    relayState = lasso_node_get_content(request_relayState);
     lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
-					     relayState);
-    lasso_node_destroy(request_relayState);
-    xmlFree(relayState);
+					     request_relayState);
+    xmlFree(request_relayState);
   }
 
   ss = lasso_samlp_status_new();
@@ -258,13 +256,14 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  if(envelope==NULL){
+  if(envelope == NULL) {
     message(G_LOG_LEVEL_ERROR, "Error while parsing the soap msg\n");
     return(NULL);
   }
 
-  lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse", NULL);
-  if(lassoNode_response==NULL){
+  lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse",
+					    NULL, NULL);
+  if(lassoNode_response == NULL) {
     message(G_LOG_LEVEL_ERROR, "LogoutResponse node not found\n");
     return(NULL);
   }

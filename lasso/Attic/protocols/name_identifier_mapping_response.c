@@ -72,8 +72,8 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 					   LassoNode     *request)
 {
   /* FIXME : change request type */
-  LassoNode *response, *ss, *ssc, *request_providerID;
-  xmlChar *inResponseTo, *recipient;
+  LassoNode *response, *ss, *ssc;
+  xmlChar *inResponseTo, *request_providerID;
   xmlChar *id, *time;
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
@@ -99,16 +99,15 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
 							    providerID);
 
-  inResponseTo = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(request, "RequestID"));
+  inResponseTo = lasso_node_get_attr_value(request, "RequestID", NULL);
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 inResponseTo);
+  xmlFree(inResponseTo);
 
-  request_providerID = lasso_node_get_child(request, "ProviderID", NULL);
-  recipient = lasso_node_get_content(request_providerID);
+  request_providerID = lasso_node_get_child_content(request, "ProviderID", NULL, NULL);
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      recipient);
-  lasso_node_destroy(request_providerID);
-  xmlFree(recipient);
+					      request_providerID);
+  xmlFree(request_providerID);
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
@@ -211,7 +210,7 @@ lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
 
   envelope = lasso_node_new_from_dump(buffer);
   lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse",
-					    lassoLibHRef);
+					    lassoLibHRef, NULL);
      
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
