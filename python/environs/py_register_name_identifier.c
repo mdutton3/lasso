@@ -71,19 +71,18 @@ PyObject *register_name_identifier_getattr(PyObject *self, PyObject *args) {
 }
 
 PyObject *register_name_identifier_new(PyObject *self, PyObject *args) {
-  PyObject    *server_obj, *user_obj;
+  PyObject    *server_obj;
   LassoRegisterNameIdentifier *register_name_identifier;
   gint         provider_type;
 
-  if (CheckArgs(args, "OOI:register_name_identifier_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOi:register_name_identifier_new",
-			 &server_obj, &user_obj, &provider_type))
+  if (CheckArgs(args, "OI:register_name_identifier_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oi:register_name_identifier_new",
+			 &server_obj, &provider_type))
       return NULL;
   }
   else return NULL;
 
   register_name_identifier = lasso_register_name_identifier_new(LassoServer_get(server_obj),
-								LassoUser_get(user_obj),
 								provider_type);
 
   return (LassoRegisterNameIdentifier_wrap(register_name_identifier));

@@ -92,42 +92,29 @@ PyObject *register_name_identifier_request_rename_attributes_for_query(PyObject 
   }
   else return NULL;
      
-  lasso_register_name_identifier_rename_attributes_for_query(LassoRegisterNameIdentifierRequest_get(request_obj));
+  lasso_register_name_identifier_request_rename_attributes_for_query(LassoRegisterNameIdentifierRequest_get(request_obj));
   
   Py_INCREF(Py_None);
   return (Py_None);
 }
 
-PyObject *register_name_identifier_request_new_from_soap(PyObject *self, PyObject *args) {
-  const xmlChar *soap_buffer;
+PyObject *register_name_identifier_request_new_from_export(PyObject *self, PyObject *args) {
+  gchar     *soap_buffer;
+  LassoNode *request;
+  gint       type;
 
-  LassoNode     *request;
-
-  if (CheckArgs(args, "S:register_name_identifier_request_new_from_soap")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_request_new_from_soap",
-			 &soap_buffer))
+  if (CheckArgs(args, "SS:register_name_identifier_request_new_from_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "ss:register_name_identifier_request_new_from_export",
+			 &soap_buffer, &type))
       return NULL;
   }
   else return NULL;
 
-  request = lasso_register_name_identifier_request_new_from_soap(soap_buffer);
-
-  return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
-}
-
-PyObject *register_name_identifier_request_new_from_query(PyObject *self, PyObject *args) {
-  const xmlChar *query;
-
-  LassoNode     *request;
-
-  if (CheckArgs(args, "S:register_name_identifier_request_new_from_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_request_new_from_query",
-			 &query))
-      return NULL;
+  request = lasso_register_name_identifier_request_new_from_export(soap_buffer, type);
+  if(request==NULL){
+    Py_INCREF(Py_None);
+    return (Py_None);
   }
-  else return NULL;
-
-  request = lasso_register_name_identifier_request_new_from_query(query);
 
   return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
 }

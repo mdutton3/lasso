@@ -42,97 +42,46 @@ PyObject *LassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierRe
 
 /******************************************************************************/
 
-PyObject *register_name_identifier_response_new_from_request_soap(PyObject *self, PyObject *args) {
-  const xmlChar *request_soap_dump;
-  const xmlChar *providerID;
-  const xmlChar *status_code_value;
+PyObject *register_name_identifier_response_new_from_request_export(PyObject *self, PyObject *args) {
+  gchar *request_export;
+  gchar *providerID;
+  gchar *status_code_value;
+  gint   export_type;
 
   LassoNode *response = NULL;
 
-  if (CheckArgs(args, "SSS:register_name_identifier_response_new_from_request_soap")) {
-    if(!PyArg_ParseTuple(args, (char *) "sss:register_name_identifier_response_new_from_request_soap",
-			 &request_soap_dump,
+  if (CheckArgs(args, "SSSS:register_name_identifier_response_new_from_request_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssss:register_name_identifier_response_new_from_request_export",
+			 &request_export,
+			 &export_type,
 			 &providerID,
 			 &status_code_value))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_register_name_identifier_response_new_from_request_soap(request_soap_dump,
-									   providerID,
-									   status_code_value);
+  response = lasso_register_name_identifier_response_new_from_request_export(request_export,
+									     export_type,
+									     providerID,
+									     status_code_value);
 
   return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
 }
 
-PyObject *register_name_identifier_response_new_from_soap(PyObject *self, PyObject *args) {
-  const xmlChar *request_soap_dump;
+PyObject *register_name_identifier_response_new_from_export(PyObject *self, PyObject *args) {
+  gchar *request_export;
+  gint   export_type;
 
   LassoNode *response = NULL;
 
-  if (CheckArgs(args, "S:register_name_identifier_response_new_from_soap")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_soap",
-			 &request_soap_dump))
+  if (CheckArgs(args, "SS:register_name_identifier_response_new_from_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "ss:register_name_identifier_response_new_from_export",
+			 &request_export, &export_type))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_register_name_identifier_response_new_from_soap(request_soap_dump);
-
-  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
-}
-
-PyObject *register_name_identifier_response_new_from_dump(PyObject *self, PyObject *args) {
-  const xmlChar *dump;
-
-  LassoNode *response = NULL;
-
-  if (CheckArgs(args, "S:register_name_identifier_response_new_from_dump")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_dump",
-			 &dump))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lasso_register_name_identifier_response_new_from_soap(dump);
-
-  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
-}
-
-PyObject *register_name_identifier_response_new_from_request_query(PyObject *self, PyObject *args) {
-  const xmlChar *query;
-  const xmlChar *providerID;
-  const xmlChar *status_code_value;
-
-  LassoNode *response = NULL;
-
-  if (CheckArgs(args, "SSS:register_name_identifier_response_new_from_request_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "sss:register_name_identifier_response_new_from_request_query",
-			 &query,
-			 &providerID,
-			 &status_code_value))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lasso_register_name_identifier_response_new_from_request_query(query, providerID, status_code_value);
-
-  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
-}
-
-PyObject *register_name_identifier_response_new_from_query(PyObject *self, PyObject *args) {
-  const xmlChar *query;
-
-  LassoNode *response = NULL;
-
-  if (CheckArgs(args, "S:register_name_identifier_response_new_from_request_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_request_query",
-			 &query))
-      return NULL;
-  }
-  else return NULL;
-
-  response = lasso_register_name_identifier_response_new_from_query(query);
+  response = lasso_register_name_identifier_response_new_from_export(request_export, export_type);
 
   return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
 }

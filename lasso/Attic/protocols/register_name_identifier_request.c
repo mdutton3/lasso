@@ -30,7 +30,8 @@
 /*****************************************************************************/
 
 void
-lasso_register_name_identifier_rename_attributes_for_query(LassoRegisterNameIdentifierRequest *request)
+lasso_register_name_identifier_request_rename_attributes_for_query(LassoRegisterNameIdentifierRequest *request)
+
 {
   LassoNode *idpidentifier, *spidentifier, *oldidentifier;
 
@@ -151,7 +152,7 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
   return (request);
 }
 
-LassoNode *
+static LassoNode *
 lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
 {
   LassoNode *request, *idpidentifier, *spidentifier, *oldidentifier;
@@ -228,7 +229,7 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   return(request);
 }
 
-LassoNode *
+static LassoNode *
 lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
 {
   LassoNode *request;
@@ -250,5 +251,28 @@ lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
   
+  return(request);
+}
+
+LassoNode*
+lasso_register_name_identifier_request_new_from_export(gchar                *buffer,
+						       lassoNodeExportTypes  export_type)
+{
+  LassoNode *request;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    request = lasso_register_name_identifier_request_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    request = lasso_register_name_identifier_request_new_from_soap(buffer);
+    break;
+  default:
+    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
+    request = NULL;
+  }
+
   return(request);
 }

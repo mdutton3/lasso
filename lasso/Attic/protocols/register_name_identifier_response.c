@@ -30,6 +30,84 @@
 /*****************************************************************************/
 
 /*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static LassoNode*
+lasso_register_name_identifier_response_new_from_query(gchar *query)
+{
+  LassoNode *response;
+  xmlChar *relayState;
+  GData *gd;
+  
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
+
+  gd = lasso_query_to_dict(query);
+  
+  /* ResponseID */
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
+  
+  /* MajorVersion */
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
+  
+  /* MinorVersion */
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
+  
+  /* IssueInstant */
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0));
+  
+  /* InResponseTo */
+  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
+  
+  /* Recipient */
+  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
+  
+  /* ProviderID */
+  lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
+					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
+  
+  /* RelayState */
+  relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
+  if (relayState != NULL)
+    lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response), relayState);
+  
+  g_datalist_clear(&gd);
+
+  return(response);
+}
+
+static LassoNode*
+lasso_register_name_identifier_response_new_from_soap(gchar *buffer)
+{
+  LassoNode *response;
+  LassoNode *envelope, *lassoNode_response;
+  xmlNodePtr xmlNode_response;
+  LassoNodeClass *class;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
+
+  envelope = lasso_node_new_from_dump(buffer);
+  lassoNode_response = lasso_node_get_child(envelope, "RegisterNameIdentifierResponse",
+					    lassoLibHRef);
+  
+  class = LASSO_NODE_GET_CLASS(lassoNode_response);
+  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
+  lasso_node_destroy(lassoNode_response);
+
+  class = LASSO_NODE_GET_CLASS(response);
+  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
+  lasso_node_destroy(envelope);
+  
+  return(response);
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
@@ -67,9 +145,9 @@ GType lasso_register_name_identifier_response_get_type() {
 }
 
 LassoNode*
-lasso_register_name_identifier_response_new(const xmlChar *providerID,
-					    const xmlChar *statusCodeValue,
-					    LassoNode     *request)
+lasso_register_name_identifier_response_new(gchar     *providerID,
+					    gchar     *statusCodeValue,
+					    LassoNode *request)
 {
   /* FIXME : change request type */
   LassoNode *response, *ss, *ssc, *request_providerID, *request_relayState;
@@ -131,124 +209,49 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
   return (response);
 }
 
-LassoNode *
-lasso_register_name_identifier_response_new_from_dump(const xmlChar *buffer)
-{
-  LassoNode *response;
-  
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
-  lasso_node_import(response, buffer);
-  
-  return (response);
-}
-
-/* build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierResponse */
-LassoNode *
-lasso_register_name_identifier_response_new_from_query(const xmlChar *query)
-{
-  LassoNode *response;
-  xmlChar *relayState;
-  GData *gd;
-  
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
-
-  gd = lasso_query_to_dict(query);
-  
-  /* ResponseID */
-  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
-  
-  /* MajorVersion */
-  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
-  
-  /* MinorVersion */
-  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
-  
-  /* IssueInstant */
-  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0));
-  
-  /* InResponseTo */
-  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
-  
-  /* Recipient */
-  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
-  
-  /* ProviderID */
-  lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
-					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
-  
-  /* RelayState */
-  relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
-  if (relayState != NULL)
-    lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response), relayState);
-  
-  g_datalist_clear(&gd);
-
-  return(response);
-}
-
-/* build a RegisterNameIdentifierResponse from a query form RegisterNameIdentifierRequest */
-LassoNode *
-lasso_register_name_identifier_response_new_from_request_query(const xmlChar *query,
-							       const xmlChar *providerID,
-							       const xmlChar *statusCodeValue)
+LassoNode*
+lasso_register_name_identifier_response_new_from_request_export(gchar               *buffer,
+								lassoNodeExportTypes export_type,
+								gchar               *providerID,
+								gchar               *statusCodeValue)
 {
   LassoNode *request, *response;
 
-  request = lasso_register_name_identifier_request_new_from_query(query);
-  
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  request = lasso_register_name_identifier_request_new_from_export(buffer, export_type);
+
+  if(request){
+    message(G_LOG_LEVEL_ERROR, "Error while building RegisterNameIdentifierRequest\n");
+    return(NULL);
+  }
+
   response = lasso_register_name_identifier_response_new(providerID,
-				       statusCodeValue,
-				       request);
-  lasso_node_destroy(request);
+							 statusCodeValue,
+							 request);
 
   return(response);
 }
 
-/* build a RegisterNameIdentifierRespose from a soap form RegisterNameIdentifierRequest */
-LassoNode *
-lasso_register_name_identifier_response_new_from_request_soap(const xmlChar *buffer,
-							      const xmlChar *providerID,
-							      const xmlChar *statusCodeValue)
-{
-  LassoNode *request, *response;
-
-  request = lasso_register_name_identifier_request_new_from_soap(buffer);
-
-  response = lasso_register_name_identifier_response_new(providerID,
-				       statusCodeValue,
-				       request);
-  lasso_node_destroy(request);
-
-  return(response);
-}
-
-LassoNode *
-lasso_register_name_identifier_response_new_from_soap(const xmlChar *buffer)
+LassoNode*
+lasso_register_name_identifier_response_new_from_export(gchar               *buffer,
+							lassoNodeExportTypes export_type)
 {
   LassoNode *response;
-  LassoNode *envelope, *lassoNode_response;
-  xmlNodePtr xmlNode_response;
-  LassoNodeClass *class;
 
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
+  g_return_val_if_fail(buffer != NULL, NULL);
 
-  envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_response = lasso_node_get_child(envelope, "RegisterNameIdentifierResponse",
-					    lassoLibHRef);
-  
-  class = LASSO_NODE_GET_CLASS(lassoNode_response);
-  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
-  lasso_node_destroy(lassoNode_response);
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    response = lasso_register_name_identifier_response_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    response = lasso_register_name_identifier_response_new_from_soap(buffer);
+    break;
+  default:
+    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
+    return(NULL);
+  }
 
-  class = LASSO_NODE_GET_CLASS(response);
-  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
-  lasso_node_destroy(envelope);
-  
   return(response);
 }

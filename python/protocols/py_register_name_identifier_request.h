@@ -37,9 +37,9 @@ typedef struct {
 PyObject *LassoRegisterNameIdentifierRequest_wrap(LassoRegisterNameIdentifierRequest *request);
 
 PyObject *register_name_identifier_request_new(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_request_rename_attributes_for_query(PyObject *self, PyObject *args);
 
-PyObject *register_name_identifier_request_new_from_soap(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_request_new_from_query(PyObject *self, PyObject *args);
+PyObject *register_name_identifier_request_new_from_export(PyObject *self, PyObject *args);
+
+PyObject *register_name_identifier_request_rename_attributes_for_query(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_REGISTER_NAME_IDENTIFIER_REQUEST_H__ */

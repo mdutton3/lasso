@@ -517,16 +517,10 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
         return FederationTerminationNotification(obj)
     new = classmethod(new)
 
-    def new_from_soap(cls, envelope):
-        obj = lassomod.federation_termination_notification_new_from_soap(envelope)
-        return FederationTerminationNotification(obj)
-    new_from_soap = classmethod(new_from_soap)
-
-    def new_from_query(cls, query):
-        obj = lassomod.federation_termination_notification_new_from_query(query)
-        return FederationTerminationNotification(obj)
-    new_from_query = classmethod(new_from_query)
-
+    def new_from_export(cls, buffer, export_type = 0):
+        obj = lassomod.federation_termination_notification(buffer, export_type)
+        return LogoutRequest(obj)
+    new_from_export = classmethod(new_from_export)
 
 class LogoutRequest(LibLogoutRequest):
     """\brief Blabla
@@ -545,8 +539,8 @@ class LogoutRequest(LibLogoutRequest):
         return LogoutRequest(obj)
     new = classmethod(new)
 
-    def new_from_export(cls, envelope):
-        obj = lassomod.logout_request_new_from_export(envelope)
+    def new_from_export(cls, buffer, export_type = 0):
+        obj = lassomod.logout_request_new_from_export(buffer, export_type)
         return LogoutRequest(obj)
     new_from_export = classmethod(new_from_export)
 
@@ -563,30 +557,15 @@ class LogoutResponse(LibLogoutResponse):
         self._o = _obj
         LibLogoutResponse.__init__(self, _obj = self._o)
 
-    def new_from_request_soap(cls, envelope, providerID, status_code_value):
-        obj = lassomod.logout_response_new_from_request_soap(envelope, providerID, status_code_value)
+    def new_from_export(cls, buffer, export_type = 0):
+        obj = lassomod.logout_response_new_from_export(buffer, export_type)
         return LogoutResponse(obj)
-    new_from_request_soap = classmethod(new_from_request_soap)
+    new_from_export = classmethod(new_from_export)
 
-    def new_from_soap(cls, envelope):
-        obj = lassomod.logout_response_new_from_soap(envelope)
+    def new_from_request_export(cls, buffer, export_type, providerID, statusCodeValue):
+        obj = lassomod.logout_response_new_from_request_export(buffer, export_type, providerID, statusCodeValue)
         return LogoutResponse(obj)
-    new_from_soap = classmethod(new_from_soap)
-
-    def new_from_dump(cls, dump):
-        obj = lassomod.logout_response_new_from_dump(dump)
-        return LogoutResponse(obj)
-    new_from_dump = classmethod(new_from_dump)
-
-    def new_from_request_query(cls, query, providerID, status_code_value):
-        obj = lassomod.logout_response_new_from_request_query(query, providerID, status_code_value)
-        return LogoutResponse(obj);
-    new_from_request_query = classmethod(new_from_request_query)
-
-    def new_from_query(cls, query):
-        obj = lassomod.logout_response_new_from_query(query)
-        return LogoutResponse(obj);
-    new_from_query = classmethod(new_from_query)
+    new_from_export = classmethod(new_from_request_export)
 
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
@@ -678,15 +657,10 @@ class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
         return RegisterNameIdentifierRequest(obj)
     new = classmethod(new)
 
-    def new_from_soap(cls, envelope):
-        obj = lassomod.register_name_identifier_request_new_from_soap(envelope)
+    def new_from_export(cls, buffer, export_type = 0):
+        obj = lassomod.register_name_identifier_request_new_from_export(buffer, export_type)
         return RegisterNameIdentifierRequest(obj)
-    new_from_soap = classmethod(new_from_soap)
-
-    def new_from_query(cls, query):
-        obj = lassomod.register_name_identifier_request_new_from_query(query)
-        return RegisterNameIdentifierRequest(obj)
-    new_from_query = classmethod(new_from_query)
+    new_from_export = classmethod(new_from_export)
 
     def rename_attributes_for_encoded_query(self):
         lassomod.register_name_identifier_request_rename_attributes_for_query(self)
@@ -704,30 +678,16 @@ class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
         self._o = _obj
         LibRegisterNameIdentifierResponse.__init__(self, _obj = self._o)
 
-    def new_from_request_soap(cls, envelope, providerID, status_code_value):
-        obj = lassomod.register_name_identifier_response_new_from_request_soap(envelope, providerID, status_code_value)
+    def new_from_export(cls, buffer, export_type = 0):
+        obj = lassomod.register_name_identifier_response_new_from_export(buffer, export_type)
         return RegisterNameIdentifierResponse(obj)
-    new_from_request_soap = classmethod(new_from_request_soap)
+    new_from_export = classmethod(new_from_export)
 
-    def new_from_soap(cls, envelope):
-        obj = lassomod.register_name_identifier_response_new_from_soap(envelope)
+    def new_from_request_export(cls, buffer, export_type, providerID, statusCodeValue):
+        obj = lassomod.register_name_identifier_response_new_from_request_export(buffer, export_type, providerID, statusCodeValue)
         return RegisterNameIdentifierResponse(obj)
-    new_from_soap = classmethod(new_from_soap)
+    new_from_export = classmethod(new_from_request_export)    
 
-    def new_from_dump(cls, dump):
-        obj = lassomod.register_name_identifier_response_new_from_dump(dump)
-        return RegisterNameIdentifierResponse(obj)
-    new_from_dump = classmethod(new_from_dump)
-
-    def new_from_request_query(cls, query, providerID, status_code_value):
-        obj = lassomod.register_name_identifier_response_new_from_request_query(query, providerID, status_code_value)
-        return RegisterNameIdentifierResponse(obj);
-    new_from_request_query = classmethod(new_from_request_query)
-
-    def new_from_query(cls, query):
-        obj = lassomod.register_name_identifier_response_new_from_query(query)
-        return RegisterNameIdentifierResponse(obj);
-    new_from_query = classmethod(new_from_query)
 
 ################################################################################
 # elements

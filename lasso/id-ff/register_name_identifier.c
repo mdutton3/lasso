@@ -38,6 +38,8 @@ lasso_register_name_identifier_dump(LassoRegisterNameIdentifier *register_name_i
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), NULL);
 
+  dump = NULL;
+
   return(dump);
 }
 
@@ -134,12 +136,11 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
   LassoNode           *nameIdentifier_node;
   LassoIdentity       *identity;
 
-  xmlChar *spNameIdentifier, *spNameQualifier, *spFormat;
+  xmlChar *spNameIdentifier,  *spNameQualifier, *spFormat;
   xmlChar *idpNameIdentifier, *idpNameQualifier, *idpFormat;
   xmlChar *oldNameIdentifier, *oldNameQualifier, *oldFormat;
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
-  g_return_val_if_fail(remote_providerID!=NULL, -2);
 
   profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
 
@@ -241,10 +242,51 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
   return(0);
 }
 
+gint lasso_register_name_identifier_load_request_msg(LassoRegisterNameIdentifier *register_name_identifier,
+						     gchar                       *request_msg,
+						     lassoHttpMethods             request_method)
+{
+  LassoProfileContext *profileContext;
+
+  g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
+  g_return_val_if_fail(request_msg!=NULL, -2);
+
+  profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
+
+  switch(request_method){
+  case lassoHttpMethodSoap:
+    debug("Build a register name identifier request from soap msg\n");
+    profileContext->request = lasso_register_name_identifier_request_new_from_export(request_msg, lassoNodeExportTypeSoap);
+    break;
+  case lassoHttpMethodRedirect:
+    debug("Build a register name identifier request from query msg\n");
+    profileContext->request = lasso_register_name_identifier_request_new_from_export(request_msg, lassoNodeExportTypeQuery);
+    break;
+  case lassoHttpMethodGet:
+    debug("TODO, implement the get method\n");
+    break;
+  default:
+    message(G_LOG_LEVEL_ERROR, "Invalid request method\n");
+    return(-3);
+  }
+  if(profileContext->request==NULL){
+    message(G_LOG_LEVEL_ERROR, "Error while building the request from msg\n");
+    return(-4);
+  }
+
+  /* get the NameIdentifier to load user dump */
+  profileContext->nameIdentifier = lasso_node_get_child_content(profileContext->request,
+								"NameIdentifier", NULL);
+
+  /* get the RelayState */
+  profileContext->msg_relayState = lasso_node_get_child_content(profileContext->request,
+								"RelayState", NULL);
+
+  return(0);
+}
+
 gint
-lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier *register_name_identifier,
-						   gchar                       *request_msg,
-						   lassoHttpMethods             request_method)
+lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *register_name_identifier)
 {
   LassoProfileContext *profileContext;
   LassoIdentity *identity;
@@ -254,26 +296,8 @@ lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier *
   xmlChar *remote_providerID;
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
-  g_return_val_if_fail(request_msg!=NULL, -2);
 
   profileContext = LASSO_PROFILE_CONTEXT(register_name_identifier);
-
-  switch(request_method){
-  case lassoHttpMethodSoap:
-    debug("build a register_name_identifier request from soap msg\n");
-    profileContext->request = lasso_register_name_identifier_request_new_from_soap(request_msg);
-    break;
-  case lassoHttpMethodRedirect:
-    debug("build a register_name_identifier request from query msg\n");
-    profileContext->request = lasso_register_name_identifier_request_new_from_query(request_msg);
-    break;
-  case lassoHttpMethodGet:
-    message(G_LOG_LEVEL_WARNING, "TODO, implement the get method\n");
-    break;
-  default:
-    message(G_LOG_LEVEL_ERROR, "Unknown request method\n");
-    return(-3);
-  }
 
   /* set the remote provider id from the request */
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
@@ -350,10 +374,10 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
   /* parse RegisterNameIdentifierResponse */
   switch(response_method){
   case lassoHttpMethodSoap:
-    profileContext->response = lasso_register_name_identifier_response_new_from_soap(response_msg);
+    profileContext->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
     break;
   case lassoHttpMethodRedirect:
-    profileContext->response = lasso_register_name_identifier_response_new_from_query(response_msg);
+    profileContext->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown response method\n");
@@ -432,117 +456,17 @@ GType lasso_register_name_identifier_get_type() {
 
 LassoRegisterNameIdentifier *
 lasso_register_name_identifier_new(LassoServer        *server,
-				   LassoUser          *user,
 				   lassoProviderTypes  provider_type)
 {
   LassoRegisterNameIdentifier *register_name_identifier;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the register_name_identifier object */
   register_name_identifier = g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER,
 					  "server", lasso_server_copy(server),
-					  "user", lasso_user_copy(user),
 					  "provider_type", provider_type,
 					  NULL);
 
   return(register_name_identifier);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* gint */
-/* lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registration, */
-/* 					    gchar                       *remote_providerID) */
-/* { */
-
-/*   /\* TODO : implement the setting of the request *\/ */
-/*   switch(profileContext->provider_type){ */
-/*   case lassoProviderTypeSp: */
-/*     /\* generate a new local name identifier *\/ */
-/*     spNameIdentifier = lasso_build_unique_id(32); */
-/*     spNameQualifier  = providerID; */
-/*     spFormat = "federated"; */
-
-/*     debug("new name identifier : %s, name qualifier : %s, format : %s\n", spNameIdentifier, spNameQualifier, spFormat); */
-
-/*     /\* get the old name identifier *\/ */
-/*     identity = lasso_user_get_identity(profileContext->user, remote_providerID); */
-/*     if(identity==NULL){ */
-/*       message(G_LOG_LEVEL_ERROR, "Identity not found\n"); */
-/*       return(-3); */
-/*     } */
-/*     nameIdentifier_node = lasso_identity_get_local_nameIdentifier(identity); */
-/*     if(nameIdentifier_node){ */
-/*       oldNameIdentifier = lasso_node_get_content(nameIdentifier_node); */
-/*       oldNameQualifier = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier"); */
-/*       oldFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format");     */
-/*     } */
-
-/*     /\* get the remote name identifier *\/ */
-/*     nameIdentifier_node = lasso_identity_get_remote_nameIdentifier(identity); */
-/*     idpNameIdentifier = lasso_node_get_content(nameIdentifier_node); */
-/*     idpNameQualifier = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier"); */
-/*     idpFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format"); */
-/*     break; */
-
-/*   case lassoProviderTypeIdp: */
-/*     /\* generate a new local name identifier *\/ */
-/*     idpNameIdentifier = lasso_build_unique_id(32); */
-/*     idpNameQualifier  = providerID; */
-/*     idpFormat = "federated"; */
-
-/*     /\* get the old name identifier *\/ */
-/*     identity = lasso_user_get_identity(profileContext->user, remote_providerID); */
-/*     if(identity==NULL){ */
-/*       message(G_LOG_LEVEL_ERROR, "Identity not found\n"); */
-/*       return(-4); */
-/*     } */
-/*     nameIdentifier_node = lasso_identity_get_local_nameIdentifier(identity); */
-/*     oldNameIdentifier = lasso_node_get_content(nameIdentifier_node); */
-/*     oldNameQualifier = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier"); */
-/*     oldFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format");     */
-
-/*     /\* get the remote name identifier *\/ */
-/*     nameIdentifier_node = lasso_identity_get_remote_nameIdentifier(identity); */
-/*     spNameIdentifier = lasso_node_get_content(nameIdentifier_node); */
-/*     spNameQualifier = lasso_node_get_attr_value(nameIdentifier_node, "NameQualifier"); */
-/*     spFormat = lasso_node_get_attr_value(nameIdentifier_node, "Format"); */
-/*     break; */
-
-/*   default: */
-/*     message(G_LOG_LEVEL_ERROR, "Unknown provider type (%d)\n", profileContext->provider_type); */
-/*     return(-5); */
-/*   } */
-
-/*   return(0); */
-/* } */
