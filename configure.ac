@@ -86,15 +86,14 @@ dnl
 dnl Check for programs
 dnl
 AC_PROG_CC
+AC_HEADER_STDC
 LT_AC_PROG_RC
 AM_PROG_GCJ
 AC_EXEEXT
 AC_PROG_CC_C_O
 AM_SANITY_CHECK
-dnl AC_PROG_AWK dnl Waiting if we really need it.
+AC_PROG_AWK
 AC_PROG_LN_S
-AC_PROG_EGREP
-AC_PROG_RANLIB
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
@@ -102,20 +101,15 @@ AC_SUBST(LIBTOOL_DEPS)
 dnl Find tar command for make dist
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
 
-dnl Find egrep command.
-dnl AC_CHECK_PROGS(EGREP, egrep)
-
 dnl Check existence of binding programs
 AC_CHECK_PROGS(JAVA, java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
-dnl AC_CHECK_PROGS(JAVAH, gcjh javah) dnl Not used with SWIG.
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(PHP, php)
 AC_PATH_PROGS(PHP_PATH, php)
 AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
 AC_CHECK_PROGS(SWIG, swig)
-
 
 LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[^_].*"'
 
@@ -209,14 +203,12 @@ AC_ARG_ENABLE(java, [  --disable-java          disable the Java bindings],,
               enable_java="yes")
 AC_ARG_WITH(java-home,
             [  --with-java-home=(JAVA_HOME)  set the full path to the java home directory.])
-AC_MSG_CHECKING(for Java)
 JAVAC_FLAGS=
 JDK_INCLUDE=
 SUN=no
 if test "X$with_java_home" != X; then
     JDK_INCLUDE="$with_java_home/include"
 fi
-dnl JAVAH_FLAGS= dnl Not used with SWIG
 
 dnl If the java compiler seems to be a Sun JDK-like compile (Kaffe, Sun JDK...)
 if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
@@ -273,11 +265,9 @@ fi
 
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
-AC_MSG_RESULT($enable_java)
 AC_SUBST(JAVA_VERSION)
 AC_SUBST(JAVAC_FLAGS)
 AC_SUBST(JDK_INCLUDE)
-dnl AC_SUBST(JAVAH_FLAGS) dnl Not used with SWIG
 
 
 dnl ==========================================================================
@@ -500,6 +490,7 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
+
 dnl ==========================================================================
 dnl User specific option.
 dnl ==========================================================================
@@ -549,21 +540,6 @@ if test "x$enable_gtk_doc" = "xyes" ; then
 fi
 dnl Conditional docs sub dir test.
 AM_CONDITIONAL([GTK_DOC_ENABLED],[test "x$enable_gtk_doc" = "xyes"])
-AC_MSG_RESULT($enable_gtk_doc)
-
-
-dnl ==========================================================================
-dnl check do we have size_t and its size, 
-dnl TODO: will need to replace this and the lassoSize define with 
-dnl typedef on next ABI refresh
-dnl ==========================================================================
-AC_CHECK_SIZEOF(size_t)
-if test "$ac_cv_sizeof_size_t" -ne "4" ; then
-    LASSO_DEFINES="$LASSO_DEFINES -DLASSO_NO_SIZE_T"
-fi
-
-dnl Checks for header files.
-AC_HEADER_STDC
 
 
 dnl Debug 
@@ -593,7 +569,6 @@ dnl ==========================================================================
 AC_MSG_CHECKING(for pedantic) 
 AC_ARG_ENABLE(pedantic,   [  --enable-pedantic       enable pedantic compilation flags (no)])
 if test "z$enable_pedantic" = "zyes" ; then
-    dnl CFLAGS="$CFLAGS -pedantic -Wall -ansi -W -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
     CFLAGS="$CFLAGS -O -pedantic -Wall -ansi -fno-inline -W -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
     AC_MSG_RESULT(yes)
 else
@@ -618,11 +593,10 @@ dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
 LASSO_CORE_CFLAGS="$LASSO_DEFINES" 
-dnl -I${includedir}
 if test $MINGW -eq 1; then 
-LASSO_CORE_LIBS="-llasso-0"
+  LASSO_CORE_LIBS="-llasso-0"
 else
-LASSO_CORE_LIBS="-llasso "
+  LASSO_CORE_LIBS="-llasso "
 fi
 AC_SUBST(LASSO_CORE_CFLAGS)
 AC_SUBST(LASSO_CORE_LIBS)

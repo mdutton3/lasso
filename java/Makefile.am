@@ -1,7 +1,3 @@
-# Define the java module
-JAVA_MODULE = lasso
-# Define java package name
-JAVA_PACKAGE = com.entrouvert.lasso
 # Define java Package directory, the tailing '/' is mandatory.
 JAVA_PATH = com/entrouvert/lasso/
 JDK_INCLUDES = @JDK_INCLUDE@
@@ -13,24 +9,23 @@ javasharedir = $(prefix)/share/java
 # Shared library.
 javalib_LTLIBRARIES = libjlasso.la
 
-libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c
-
-libjlasso_la_CFLAGS =	$(JDK_INCLUDES) \
-			$(LASSO_CFLAGS) \
-			-I$(top_srcdir)
-
+libjlasso_la_SOURCES =	lasso_wrap.c
+libjlasso_la_CFLAGS = $(JDK_INCLUDES) $(LASSO_CFLAGS) -I$(top_srcdir)
 libjlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
-
 libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 
-# Java package
 javashare_DATA = lasso.jar
-JAVA_JAR = lasso.jar
 
-SWIG_OUTPUTS = $(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE)JNI.java
-JAVA_CRUFT = $(JAVA_PATH)$(JAVA_MODULE).class $(JAVA_MODULE)_wrap.o \
-	$(JAVA_JAR) \
-	$(JAVA_PATH)$(JAVA_MODULE).java
+SWIG_OUTPUTS = lasso_wrap.c \
+	AuthnRequest.java   AuthnResponse.java   Request.java  \
+	Response.java       Server.java          Identity.java \
+	Session.java        Defederation.java    Login.java    \
+	Logout.java         Lecp.java            lassoJNI.java \
+	lasso.java          lassoConstants.java  LogoutRequest.java \
+	FederationTerminationNotification.java   LogoutResponse.java
+
+
+JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
 
 # The SWIG outputs are included in the distribution so SWIG is not
 # required to use the Java interface
@@ -40,32 +35,24 @@ CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
-$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java: $(top_srcdir)/swig/Lasso.i
-	here=`pwd`; \
-	$(SWIG) -v -java -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<
+lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i
+	$(SWIG) -v -java -module lasso -package com.entrouvert.lasso -o lasso_wrap.c $<
 
 # FIXME There must be a better way to do this with SWIG
-$(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java
+$(JAVA_PATH)lasso.java: lasso.java
 	mkdir -p $(JAVA_PATH)
-	test -f $(JAVA_PATH)$(JAVA_MODULE).java || cp *.java $(JAVA_PATH)
+	test -f $(JAVA_PATH)lasso.java || cp $(srcdir)/*.java $(JAVA_PATH)
 
 clean-local:
 	rm -f *.class
 	rm -rf com
 
-all-local: $(JAVA_JAR)
+all-local: lasso.jar
 
-$(JAVA_PATH)$(JAVA_MODULE).class: $(JAVA_PATH)$(JAVA_MODULE).java
+$(JAVA_PATH)lasso.class: $(JAVA_PATH)lasso.java
 	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)*.java
 
-$(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class 
+lasso.jar: $(JAVA_PATH)lasso.class 
 	rm -f $@
 	jar cf $@ $(JAVA_PATH)*.class 
 
-$(DEPDIR)/libjlasso_la-lasso_wrap.Plo:
-	mkdir -p $(DEPDIR)
-	echo "#dummy" > $(DEPDIR)/libjlasso_la-lasso_wrap.Plo 
-
-$(DEPDIR)/com/entrouvert/lasso/lasso.Po:
-	mkdir -p $(DEPDIR)/com/entrouvert/lasso 
-	echo "#dummy" > $(DEPDIR)/com/entrouvert/lasso/lasso.Po  
