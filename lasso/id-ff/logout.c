@@ -584,7 +584,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			g_hash_table_size(profile->session->assertions) == 0) {
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				logout->initial_remote_providerID);
-		if (remote_provider == LASSO_PROVIDER_ROLE_SP) {
+		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
 			if (profile->remote_providerID != NULL)
 				g_free(profile->remote_providerID);
 			if (profile->request != NULL)
