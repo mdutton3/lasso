@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SSO_AND_FEDERATION_AUTHN_RESPONSE_H__
-#define __LASSO_SSO_AND_FEDERATION_AUTHN_RESPONSE_H__
+#ifndef __LASSO_AUTHN_RESPONSE_H__
+#define __LASSO_AUTHN_RESPONSE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,11 +54,14 @@ struct _LassoAuthnResponseClass {
   LassoLibAuthnResponseClass parent;
 };
 
-LASSO_EXPORT GType      lasso_authn_response_get_type          (void);
-LASSO_EXPORT LassoNode* lasso_authn_response_new               (const xmlChar     *providerID);
+LASSO_EXPORT GType      lasso_authn_response_get_type (void);
+LASSO_EXPORT LassoNode* lasso_authn_response_new      (xmlChar       *query,
+						       const xmlChar *providerID,
+						       gboolean       signature_status,
+						       gboolean       authentication_status);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SSO_AND_FEDERATION_AUTHN_RESPONSE_H__ */
+#endif /* __LASSO_AUTHN_RESPONSE_H__ */

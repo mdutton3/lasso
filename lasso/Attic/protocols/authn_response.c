@@ -23,34 +23,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/protocols/sso_and_federation_authn_response.h>
+#include <lasso/protocols/authn_response.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
-
-void
-lasso_authn_response_set_responseAuthnContext(LassoAuthnResponse *response,
-					      GPtrArray          *authnContextClassRefs,
-					      GPtrArray          *authnContextStatementRefs,
-					      const xmlChar      *authnContextComparison)
-{
-  g_return_if_fail (LASSO_IS_AUTHN_RESPONSE(response));
-
-  LassoNode *response_authn_context;
-  gint i;
-
-}
-
-void
-lasso_authn_response_set_scoping(LassoAuthnResponse *response,
-				 gint                proxyCount)
-{
-  g_return_if_fail (LASSO_IS_AUTHN_RESPONSE(response));
-
-  LassoNode *scoping;
-
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -90,13 +67,17 @@ GType lasso_authn_response_get_type() {
 }
 
 LassoNode*
-lasso_authn_response_new(lassoAuthnRequestCtx *ctx,
-			 const xmlChar        *providerID,
-			 gboolean              authentication_result)
+lasso_authn_response_new(xmlChar       *query,
+			 const xmlChar *providerID,
+			 gboolean       signature_status,
+			 gboolean       authentication_status)
 {
-  LassoNode *response;
+  GData         *gd;
+  LassoNode     *response, *status, *status_code;
   const xmlChar *nameIDPolicy;
+  gint           status_code_value = 1;
 
+  gd = lasso_query_to_dict(query);
   response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
 
   /* ResponseID */
@@ -117,23 +98,30 @@ lasso_authn_response_new(lassoAuthnRequestCtx *ctx,
 					  providerID);
 
   /* RelayState */
-  if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(ctx->query_dict), "RelayState"), 0) != NULL) {
+  if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "RelayState"), 0) != NULL) {
     lasso_lib_authn_response_set_relayState(LASSO_LIB_AUTHN_RESPONSE(response),
-					    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(ctx->query_dict), "RelayState"), 0));
+					    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "RelayState"), 0));
   }
   /* InResponseTo */
-  if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(ctx->query_dict), "RequestID"), 0) != NULL) {
+  if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "RequestID"), 0) != NULL) {
     lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(ctx->query_dict), "RequestID"), 0));
+						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "RequestID"), 0));
   }
 
-  /* consent ??? */
-  /* Recipient ??? */
+  /* consent */
+  if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "consent"), 0) != NULL) {
+    lasso_samlp_response_abstract_set_consent(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "consent"), 0));
+  }  
+
+  /* Recipient */
+  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "ProviderID"), 0));
 
   /* Status & StatusCode */
   /* StatusCode */
-  if (authentication_result == TRUE) {
-    nameIDPolicy = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(ctx->query_dict), "NameIDPolicy"), 0);
+  if (authentication_status == TRUE) {
+    nameIDPolicy = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&(gd), "NameIDPolicy"), 0);
     if (xmlStrEqual(nameIDPolicy, "none") || nameIDPolicy == NULL) {
       printf("no NameIDPolicy or none value\n");
       status_code_value = 0;

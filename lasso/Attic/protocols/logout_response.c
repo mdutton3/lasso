@@ -109,9 +109,12 @@ lasso_logout_response_new(const xmlChar *providerID,
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc), statusCodeValue);
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss), LASSO_SAMLP_STATUS_CODE(ssc));
-  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response), LASSO_SAMLP_STATUS(ss));
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+				    statusCodeValue);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
+				    LASSO_SAMLP_STATUS_CODE(ssc));
+  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
+				       LASSO_SAMLP_STATUS(ss));
 
   return (response);
 }

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/protocols/sso_and_federation_authn_request.h>
+#include <lasso/protocols/authn_request.h>
 
 /*****************************************************************************/
 /* public methods                                                            */

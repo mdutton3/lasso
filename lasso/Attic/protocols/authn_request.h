@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SSO_AND_FEDERATION_AUTHN_REQUEST_H__
-#define __LASSO_SSO_AND_FEDERATION_AUTHN_REQUEST_H__
+#ifndef __LASSO_AUTHN_REQUEST_H__
+#define __LASSO_AUTHN_REQUEST_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,4 +67,4 @@ LASSO_EXPORT void lasso_authn_request_set_scoping              (LassoAuthnReques
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SSO_AND_FEDERATION_AUTHN_REQUEST_H__ */
+#endif /* __LASSO_AUTHN_REQUEST_H__ */

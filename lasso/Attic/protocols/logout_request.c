@@ -26,7 +26,6 @@
 #include <lasso/protocols/logout_request.h>
 #include <lasso/xml/saml_name_identifier.h>
 
-
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -96,10 +95,13 @@ lasso_logout_request_new(const xmlChar *providerID,
 					 providerID);
 
   identifier = lasso_saml_name_identifier_new(nameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), format);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
+					       nameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
+					format);
 
-  lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), LASSO_SAML_NAME_IDENTIFIER(identifier));
+  lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
+					      LASSO_SAML_NAME_IDENTIFIER(identifier));
 
   return (request);
 }

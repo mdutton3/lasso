@@ -13,18 +13,23 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-protocols.la
 
 liblasso_protocols_la_SOURCES = \
+	protocols.c \
+	protocol.c \
+	authn_request.c \
+	authn_response.c \
 	federation_termination_notification.c \
 	logout_request.c \
 	logout_response.c \
 	register_name_identifier_response.c \
-	register_name_identifier_request.c \
-	protocol.c
+	register_name_identifier_request.c
 
 liblassoinclude_HEADERS = \
+	protocols.h \
+	protocol.h \
+	authn_request.h \
+	authn_response.h \
 	federation_termination_notification.h \
 	logout_request.h \
 	logout_response.h \
 	register_name_identifier_response.h \
-	register_name_identifier_request.h \
-	protocols.h \
-	protocol.h
+	register_name_identifier_request.h
