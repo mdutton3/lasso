@@ -751,6 +751,8 @@ lasso_node_impl_get_child(LassoNode     *node,
       child = xmlSecFindNode(node->private->node, name, lassoSamlProtocolHRef);
     if (child == NULL)
       child = xmlSecFindNode(node->private->node, name, lassoSoapEnvHRef);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoMetadataHRef);
   }
   if (child != NULL)
     return (lasso_node_new_from_xmlNode(child));
@@ -767,10 +769,12 @@ lasso_node_impl_get_child_content(LassoNode     *node,
   g_return_val_if_fail (name != NULL, NULL);
 
   LassoNode *child = lasso_node_get_child(node, name, href);
-  xmlChar *content;
+  xmlChar   *content = NULL;
 
-  content = lasso_node_get_content(child);
-  lasso_node_destroy(child);
+  if (child != NULL) {
+    content = lasso_node_get_content(child);
+    lasso_node_destroy(child);
+  }
 
   return (content);
 }
