@@ -357,13 +357,11 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   gchar        *providerID;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
-  g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
-
   profile = LASSO_PROFILE(logout);
 
+  g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
   providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
   logout->providerID_index++;
-
   /* if it is the provider id of the SP requester, then get the next */
   if (logout->initial_remote_providerID && xmlStrEqual(providerID, logout->initial_remote_providerID)) {
     providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
