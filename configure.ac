@@ -117,10 +117,11 @@ dnl Check existence of binding programs
 AC_CHECK_PROGS(JAVA, java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
 AC_CHECK_PROGS(JAR, fastjar jar)
-AC_CHECK_PROGS(PYTHON, python)
+AC_CHECK_PROGS(PERL, perl)
 AC_CHECK_PROGS(PHP, php)
-AC_PATH_PROGS(PHP_PATH, php)
 AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
+AC_PATH_PROGS(PHP_PATH, php)
+AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(SWIG, swig)
 
 dnl Make sure we have an ANSI compiler
@@ -205,11 +206,13 @@ AC_SUBST(SWIG_PYTHON_ARGS)
 dnl Detect available languages binding.
 languages_available=
 
-dnl ==========================================================================
-dnl Java(tm) API
-dnl ==========================================================================
+
+# ------------
+# JAVA binding
+# ------------
+
 dnl Check if java is explicitly disabled.
-AC_ARG_ENABLE(java, [  --disable-java          disable the Java bindings],,
+AC_ARG_ENABLE(java, [  --disable-java          disable the Java binding],,
               enable_java="yes")
 AC_ARG_WITH(java-home,
             [  --with-java-home=(JAVA_HOME)  set the full path to the java home directory.])
@@ -281,11 +284,12 @@ AC_SUBST(JAVAC_FLAGS)
 AC_SUBST(JDK_INCLUDE)
 
 
-dnl ==========================================================================
-dnl Python API
-dnl ==========================================================================
+# --------------
+# Python binding
+# --------------
+
 dnl Check if python is explicitly disabled.
-AC_ARG_ENABLE(python, [  --disable-python        disable the Python bindings],,
+AC_ARG_ENABLE(python, [  --disable-python        disable the Python binding],,
               enable_python="yes")
 
 dnl Check if user passed a specific python program.
@@ -339,11 +343,16 @@ AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
 AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
 
+
+# -----------
+# PHP binding
+# -----------
+
 dnl Check if php is explicitly disabled.
-AC_ARG_ENABLE(php, [  --disable-php           disable the PHP bindings],,
+AC_ARG_ENABLE(php, [  --disable-php           disable the PHP binding],,
               enable_php="yes")
 
-AC_ARG_ENABLE(php-force, [  --enable-php-force           force enable of the PHP bindings],
+AC_ARG_ENABLE(php-force, [  --enable-php-force           force enable of the PHP binding],
               [ENABLE_PHP_FORCE="yes"],
               [ENABLE_PHP_FORCE="no"])
 
@@ -409,11 +418,11 @@ AC_SUBST(PHP_VERSION)
 
 
 
-# -----------
-# C# bindings
-# -----------
+# ----------
+# C# binding
+# ----------
 
-AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp bindings],,
+AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
               enable_csharp="yes")
 
 AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
@@ -494,6 +503,42 @@ if test "X$GACUTIL" = X; then
 fi
 AM_CONDITIONAL([CSHARP_ENABLED], [test "x$enable_csharp" = "xyes"])
 
+
+# ------------
+# Perl binding
+# ------------
+
+AC_ARG_ENABLE(perl, [  --disable-perl          disable the Perl binding],,
+              enable_perl="yes")
+
+if test "X$PERL" != "X"; then
+  PERLINSTALLSITEARCH=`$PERL -MConfig -e 'print $Config{installsitearch};'`
+  PERLMAN3DIR=`$PERL -MConfig -e 'print $Config{man3dir};'`
+else
+  PERLINSTALLSITEARCH=none
+  PERLMAN3DIR=none
+fi
+AC_SUBST(PERLINSTALLSITEARCH)
+AC_SUBST(PERLMAN3DIR)
+
+AC_MSG_CHECKING(Enable Perl API)
+if test "X$enable_perl" != Xno ; then
+  if test "X$enable_perl" != Xyes; then
+    PERL=$enable_perl
+  fi
+  enable_perl=yes
+fi
+
+PERL_VERSION=`$PERL -MConfig -e 'print $Config{version}' 2>/dev/null`
+if test "X$PERL_VERSION" != X; then
+  languages_available="$languages_available perl($PERL_VERSION)"
+  if test $enable_perl = yes; then
+    languages="$languages perl"
+  fi
+fi
+AM_CONDITIONAL([PERL_ENABLED],[test "x$enable_perl" = "xyes"])
+AC_MSG_RESULT($enable_perl)
+AC_SUBST(PERL_VERSION)
 
 
 dnl ==========================================================================
@@ -657,6 +702,7 @@ lasso/Makefile
 lasso/id-ff/Makefile
 lasso/id-wsf/Makefile
 lasso/xml/Makefile
+perl/Makefile
 php/Makefile
 php/examples/Makefile
 php/examples/sample-sp/Makefile
@@ -694,6 +740,7 @@ Available languages:    ${languages_available}
 
 C# binding:             ${enable_csharp}
 Java binding:           ${enable_java}
+Perl binding:           ${enable_perl}
 PHP binding:            ${enable_php}
 Python binding:         ${enable_python}
 

@@ -1,0 +1,8 @@
+lasso.pm
+lasso_wrap.c
+.deps
+.libs
+Makefile
+Makefile.in
+*.la
+*.lo
