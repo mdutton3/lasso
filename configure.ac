@@ -532,7 +532,8 @@ AC_SUBST(LASSO_STATIC_BINARIES)
 dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
-LASSO_CORE_CFLAGS="$LASSO_DEFINES -I${includedir}"
+LASSO_CORE_CFLAGS="$LASSO_DEFINES" 
+dnl -I${includedir}"
 if test $MINGW -eq 1; then 
 LASSO_CORE_LIBS="-llasso-0"
 else

@@ -15,7 +15,8 @@ _lassomod_la_CFLAGS=	$(LASSO_CFLAGS) \
 _lassomod_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
 				$(LASSO_LIBS) \
 				$(NULL)
-_lassomod_la_LDFLAGS=	-module -avoid-version \
+_lassomod_la_LDFLAGS=	-no-undefined \
+			-module -avoid-version \
 			-version-info @LASSO_VERSION_INFO@ \
 				$(NULL)
 

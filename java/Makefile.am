@@ -15,13 +15,17 @@ javasharedir=$(prefix)/share/java
 # Shared library.
 javalib_LTLIBRARIES=libjlasso.la
 
-libjlasso_la_SOURCES=$(JAVA_MODULE)_wrap.c
-libjlasso_la_CFLAGS=$(JDK_INCLUDES) $(LASSO_CFLAGS)
-libjlasso_la_LIBADD=$(top_srcdir)/lasso/liblasso.la \
-                   $(LASSO_LIBS) \
-                   $(NULL)
-libjlasso_la_LDFLAGS=-no-undefined -version-info @LASSO_VERSION_INFO@ \
-                     $(NULL)
+libjlasso_la_SOURCES=	$(JAVA_MODULE)_wrap.c
+libjlasso_la_CFLAGS=	$(JDK_INCLUDES) \
+			$(LASSO_CFLAGS) \
+			$(NULL)
+libjlasso_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
+                   	$(LASSO_LIBS) \
+                   	$(NULL)
+libjlasso_la_LDFLAGS=	-no-undefined \
+			-version-info @LASSO_VERSION_INFO@ \
+			-avoid-version -module \
+                     	$(NULL)
 
 # Java package
 javashare_DATA=lasso.jar
