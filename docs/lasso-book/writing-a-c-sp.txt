@@ -9,22 +9,59 @@ Writing a Liberty Alliance service provider in C
 :copyright: Copyright © 2004 Entr'ouvert
 
 
-Introduction to Lasso objects
-=============================
+Introduction to Lasso profiles
+==============================
 
-
-(how to create the LassoServer object)
-
-.. warning:: The source code presented in this document has the purpose to
-             explain the different steps necessary to implement Liberty
+.. warning:: The source code presented in this document has for sole purpose
+             to explain the different steps necessary to implement Liberty
 	     Alliance profiles; they notably lack proper error checking.
+
+
+Lasso provides the necessary functions to implement Liberty Alliance profiles,
+as defined in the `Liberty ID-FF Bindings and Profiles Specification`_.  They
+are:
+
+- Single Sign-On and Federation
+- Name Registration
+- Federation Termination Notification
+- Single Logout
+- Identity Provider Introduction
+- Name Identifier Mapping
+- Name Identifier Encryption
+
+Each profile maps to a Lasso object such as ``LassoLogin``, ``LassoLogout``...
+Those are initialized with data known about identity and service providers,
+available in a ``LassoServer`` object.
+
+The ``LassoServer`` object may be created as follows:
+
+::
+
+  LassoServer *server;
+  server = lasso_server_new("sp-metadata.xml",
+  		NULL, "sp-private-key.pem", "sp-crt.pem");
+  lasso_server_add_provider(server, "idp-metadata.xml",
+  		"idp-public-key.pem", "ca-crt.pem");
+
+- ``sp-private-key.pem`` is the service provider private key; used to sign
+  documents
+- ``sp-crt.pem`` is the service provider certificate; sent inside signed
+  documents
+- ``idp-public-key.pem`` is the identity provider public key; used to verify
+  signature in documents sent by the identity provider
+- ``ca-crt.pem`` is the certificate of the certification authority used by the
+  identity provider.
+
+It is of course possible to have several calls so ``lasso_server_add_provider``
+if there are more than one identity provider.
+
 
 
 Single Sign-On and Federation Profile
 =====================================
 
-.. note:: It may be helpful to look at figure 2 in liberty alliance, binding
-          and profiles specification document.
+.. note:: It may be helpful to look at figure 2 in the previously referred
+          Binding and Profiles specification document.
 
 
 As a first step the user points its browser to the service provider to the
@@ -32,7 +69,7 @@ login URL; the service provider must then respond with an HTTP 302 Redirect
 response, pointing the user browser to the identity provider single sign on
 service.
 
-``server`` is a ``LassoServer*`` and ``idpProviderId`` is a string with the
+``server`` is a ``LassoServer`` and ``idpProviderId`` is a string with the
 identity provider Id (defined in metadata).
 
 ::
@@ -124,6 +161,12 @@ And a success web page displayed.
 Single Logout Profile
 =====================
 
+There are different single logout profiles; some initiated on the identity
+provider, others initiated on the service provider, using either HTTP redirects
+or SOAP requests.
+
+This part is about a logout using SOAP and initiated on the service provider.
+
 ::
 
   LassoLogout *logout;
@@ -153,4 +196,8 @@ The service provider must then make a SOAP request to the identity provider;
 
 And save back session and user dump; the process is similar as the one at the
 end of the single sign on profile.
+
+
+.. _Liberty ID-FF Bindings and Profiles Specification:
+   http://www.projectliberty.org/specs/draft-liberty-idff-bindings-profiles-1.2-errata-v1.0.pdf
 
