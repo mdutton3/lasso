@@ -37,16 +37,14 @@ A packaged version of this book is available from
 http://lasso.entrouvert.org/download. This package is primary for those people
 wanting to have the book available for offline reference and for printing.
 
+.. _README:
+.. include:: ../../README
 
-==============
-Lasso Overview
-==============
-
-
-FIXME
-
-
+.. _INSTALL:
 .. include:: ../../INSTALL
+
+.. _AUTHORS:
+.. include:: ../../AUTHORS
 
 
 ==============================
