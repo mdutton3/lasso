@@ -51,6 +51,10 @@ SNIPPET_LIST_NODES
     <Value-n/>
   </Parent>
 
+[note: if there are no other nodes; it is possible to leave snippet name as
+ the empty string; nodes will then be constructed looking at their names and
+ namespaces  (this is useful for xs:any)]
+
 
 SNIPPET_LIST_CONTENT
 
