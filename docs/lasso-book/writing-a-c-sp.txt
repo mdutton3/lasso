@@ -200,7 +200,8 @@ the next statement would be::
 
   lasso_login_process_response_msg(login, answer);
 
-The users are defined by a ``nameIdentifier``.  Those typically map to users
+The users are defined by a ``nameIdentifier`` (accessible through
+``LASSO_PROFILE(login)->nameIdentifier``).  Those typically map to users
 and sessions in some database on the service provider.  If existing; the
 session should probably contains a ``session_dump`` element and the user a
 ``identity_dump`` element.  See `Database Considerations`_ below for more
