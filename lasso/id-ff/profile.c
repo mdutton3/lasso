@@ -363,8 +363,11 @@ dispose(GObject *object)
 	debug("Profile object 0x%p disposed ...", profile);
 
 	lasso_server_destroy(profile->server);
+	profile->server = NULL;
 	lasso_identity_destroy(profile->identity);
+	profile->identity = NULL;
 	lasso_session_destroy(profile->session);
+	profile->session = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
