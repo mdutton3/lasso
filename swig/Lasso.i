@@ -35,7 +35,7 @@
 
 %{
 
-#if defined(SWIGRUBY) || defined (SWIGPHP4)
+#if defined(SWIGRUBY) || defined (PHP_VERSION)
 /* Ruby and PHP pollute the #define space with these names */
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
@@ -863,7 +863,7 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 
 #define new_LassoServer lasso_server_new
 #define delete_LassoServer lasso_server_destroy
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define LassoServer_newFromDump lasso_server_new_from_dump
 #else
 #define Server_newFromDump lasso_server_new_from_dump
@@ -922,7 +922,7 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 
 #define new_LassoIdentity lasso_identity_new
 #define delete_LassoIdentity lasso_identity_destroy
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define LassoIdentity_newFromDump lasso_identity_new_from_dump
 #else
 #define Identity_newFromDump lasso_identity_new_from_dump
@@ -983,7 +983,7 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 
 #define new_LassoSession lasso_session_new
 #define delete_LassoSession lasso_session_destroy
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define LassoSession_newFromDump lasso_session_new_from_dump
 #else
 #define Session_newFromDump lasso_session_new_from_dump
@@ -1484,7 +1484,7 @@ gint LassoLogin_assertion_set(LassoLogin *self, LassoAssertion *assertion) {
 
 #define new_LassoLogin lasso_login_new
 #define delete_LassoLogin lasso_login_destroy
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define LassoLogin_newFromDump lasso_login_new_from_dump
 #else
 #define Login_newFromDump lasso_login_new_from_dump
@@ -1727,7 +1727,7 @@ gint LassoLogout_session_set(LassoLogout *self, LassoSession *session) {
 
 #define new_LassoLogout lasso_logout_new
 #define delete_LassoLogout lasso_logout_destroy
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define LassoLogout_newFromDump lasso_logout_new_from_dump
 #else
 #define Logout_newFromDump lasso_logout_new_from_dump
