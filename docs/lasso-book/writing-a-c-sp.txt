@@ -274,10 +274,10 @@ Identity and session dumps should be restored to prepare the logout request.
 ::
 
   if (session_dump != NULL) {
-      lasso_logout_set_session_from_dump(login, session_dump);
+      lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump);
   }
   if (identity_dump != NULL) {
-      lasso_logout_set_identity_from_dump(login, identity_dump);
+      lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump);
   }
   
   lasso_logout_init_request(logout, NULL);
