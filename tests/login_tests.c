@@ -91,6 +91,10 @@ START_TEST(test02_serviceProviderLogin)
 	int rc;
 	char *relayState;
 	char *authnRequestUrl, *authnRequestQuery;
+	char *responseUrl, *responseQuery;
+	char *idpUserContextDump;
+	char *soapResponseMsg;
+	int requestType;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
@@ -116,7 +120,7 @@ START_TEST(test02_serviceProviderLogin)
 			"authnRequestUrl shouldn't be NULL");
 	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
 	fail_unless(strlen(authnRequestQuery) > 0,
-			"authnRequestUrl shouldn't be an empty string");
+			"authnRequestRequest shouldn't be an empty string");
 
         /* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDump();
@@ -129,6 +133,54 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_login_init_from_authn_request_msg failed");
 	fail_unless(lasso_login_must_authenticate(idpLoginContext),
 			"lasso_login_must_authenticate() should be TRUE");
+	fail_unless(idpLoginContext->protocolProfile == lassoLoginProtocolProfileBrwsArt,
+			"protocoleProfile should be ProfileBrwsArt");
+	rc = lasso_login_build_artifact_msg(idpLoginContext,
+			1,
+			lassoSamlAuthenticationMethodPassword,
+			"FIXME: reauthenticateOnOrAfter",
+			lassoHttpMethodRedirect);
+	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
+
+	idpUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(idpLoginContext)->user);
+	fail_unless(idpUserContextDump != NULL,
+			"lasso_user_dump shouldn't return NULL");
+	responseUrl = LASSO_PROFILE_CONTEXT(idpLoginContext)->msg_url;
+	fail_unless(responseUrl != NULL, "responseUrl shouldn't be NULL");
+	responseQuery = strchr(responseUrl, '?')+1;
+	fail_unless(strlen(responseQuery) > 0,
+			"responseQuery shouldn't be an empty string");
+	soapResponseMsg = idpLoginContext->response_dump;
+
+        /* Service provider assertion consumer */
+	lasso_server_destroy(spContext);
+	lasso_login_destroy(spLoginContext);
+
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext, NULL);
+	rc = lasso_login_init_request(spLoginContext,
+			responseQuery,
+			lassoHttpMethodRedirect);
+	fail_unless(rc == 0, "lasso_login_init_request failed");
+	rc = lasso_login_build_request_msg(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_build_request_msg failed");
+
+	/* Identity provider SOAP endpoint */
+	requestType = lasso_profile_context_get_request_type_from_soap_msg(
+			LASSO_PROFILE_CONTEXT(spLoginContext)->msg_body);
+	fail_unless(requestType == lassoRequestTypeLogin,
+			"requestType should be lassoRequestTypeLogin");
+	
+        /* Service provider assertion consumer (step 2: process SOAP response) */
+	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
+	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
+	fail_unless(strcmp(LASSO_PROFILE_CONTEXT(spLoginContext)->nameIdentifier,
+        	LASSO_PROFILE_CONTEXT(idpLoginContext)->nameIdentifier) == 0,
+		"nameIdentifiers should be identical");
+
+
+
+
 
 
 
