@@ -689,7 +689,7 @@ gint lasso_logout_build_response_msg(LassoLogout *logout);
 %newobject lasso_logout_get_next_providerID;
 gchar* lasso_logout_get_next_providerID (LassoLogout *logout);
 
-gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID);
+gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID, lassoHttpMethod request_method);
 
 gint lasso_logout_process_request_msg(LassoLogout *logout, gchar *request_msg,
 				      lassoHttpMethod request_method);
