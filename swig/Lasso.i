@@ -614,7 +614,7 @@ SET_NODE_INFO(PPMsgContact, Node)
 	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
 #endif
 
-#ifdef SWIGPHP4
+#ifdef PHP_VERSION
 #define SET_NODE_INFO(className, superClassName)\
 	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
 			SWIGTYPE_p_Lasso##className, &ce_swig_Lasso##className);
