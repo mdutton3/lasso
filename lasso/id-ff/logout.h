@@ -55,8 +55,6 @@ struct _LassoLogout {
   LassoNode      *initial_response;
   gchar          *initial_remote_providerID;
 
-  lassoHttpMethod http_request_method;
-
   LassoLogoutPrivate *private;
 };
 

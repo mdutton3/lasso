@@ -37,12 +37,12 @@
  * 
  * It gets the federation termination notification protocol profile and :
  *    if it is a SOAP method, then it builds the federation termination notification SOAP message,
- *    set the msg_body attribute, get the federation termination service url
- *    and set the msg_url attribute of the federation termination object.
+ *    optionaly signs the notification node, set the msg_body attribute, get the federation termination
+ *    service url and set the msg_url attribute of the federation termination object.
  *
- *    if it is a HTTP-Redirect method, then it builds the federation termination notification QUERY message,
- *    builds the federation termination notification url with federation termination service url,
- *    set the msg_url attribute of the federation termination object,
+ *    if it is a HTTP-Redirect method, then it builds the federation termination notification QUERY message
+ *    ( optionaly signs the notification message ), builds the federation termination notification url
+ *    with federation termination service url, set the msg_url attribute of the federation termination object,
  *    set the msg_body to NULL
  * 
  * Return value: O of OK else < 0
@@ -53,7 +53,6 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   LassoProfile      *profile;
   LassoProvider     *provider;
   xmlChar           *protocolProfile;
-  lassoProviderType  provider_type; /* use to get metadata */
   gint               ret = 0;
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
@@ -63,23 +62,24 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   provider = lasso_server_get_provider_ref(profile->server,
 					   profile->remote_providerID,
 					   NULL);
-  if (provider == NULL) {
-    debug("Provider %s not found\n", profile->remote_providerID);
+
+  /* get the protocol profile of the remote provider ( if the notifier is a IDP, then get with IDP type else if IDP, SP ) */
+  if (profile->provider_type == lassoProviderTypeSp) {
+  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+											lassoProviderTypeIdp,
+											NULL);
+  }
+  else if (profile->provider_type == lassoProviderTypeIdp) {
+  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+											lassoProviderTypeSp,
+											NULL);    
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
     ret = -1;
     goto done;
   }
 
-  if (profile->provider_type == lassoProviderTypeSp) {
-    provider_type = lassoProviderTypeIdp;
-  }
-  else {
-    provider_type = lassoProviderTypeSp;
-  }
-
-  /* get the prototocol profile of the federation termination notification */
-  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
-											provider_type,
-											NULL);
   if (protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Federation termination notification protocol profile not found\n");
     ret = -1;
@@ -88,6 +88,16 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
       xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
+    /* optionaly sign the notification node */
+    if (profile->server->private_key != NULL) {
+      lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
+						 profile->server->signature_method,
+						 profile->server->private_key,
+						 profile->server->certificate,
+						 NULL);
+    }
+
+    /* build the message */
     profile->msg_url = lasso_provider_get_federationTerminationServiceURL(provider,
 									  lassoProviderTypeIdp,
 									  NULL);
@@ -100,10 +110,21 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    profile->msg_url = lasso_node_export_to_query(profile->request,
-						  profile->server->signature_method,
-						  profile->server->private_key);
+    /* temporary vars to store url, query and separator */
+    gchar *url, *query;
+    const gchar *separator = "?";
+
+    /* build and optionaly sign the query message and build the federation termination notification url */
+    url = lasso_provider_get_federationTerminationServiceURL(provider,
+							     lassoProviderTypeIdp,
+							     NULL);
+    query = lasso_node_export_to_query(profile->request,
+				       profile->server->signature_method,
+				       profile->server->private_key);
+    profile->msg_url = g_strjoin(separator, url, query);
     profile->msg_body = NULL;
+    xmlFree(url);
+    xmlFree(query);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid protocol profile\n");
@@ -263,6 +284,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 						      lassoHttpMethod             notification_method)
 {
   LassoProfile *profile;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
   g_return_val_if_fail(notification_msg!=NULL, -1);
@@ -280,11 +302,13 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid notification method\n");
-    return(-3);
+    ret = -1;
+    goto done;
   }
   if (profile->request==NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the notification from msg\n");
-    return(-4);
+    ret = -1;
+    goto done;
   }
 
   /* get the NameIdentifier */
@@ -292,14 +316,17 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 							 "NameIdentifier", NULL, NULL);
   if (profile->nameIdentifier==NULL) {
     message(G_LOG_LEVEL_CRITICAL, "NameIdentifier not found\n");
-    return(-1);
+    ret = -1;
+    goto done;
   }
-  
+
   /* get the RelayState */
   profile->msg_relayState = lasso_node_get_child_content(profile->request,
 							 "RelayState", NULL, NULL);
 
-  return(0);
+  done:
+
+  return(ret);
 }
 
 /**
@@ -307,8 +334,8 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
  * @defederation: the federation termination object
  * 
  * Validate the federation termination notification :
- *    initialises the federation termination notification
  *    verifies the ProviderID
+ *    if HTTP-Redirect method, set msg_url with the federation termination service return url
  *    verifies the federation
  *    verifies the authentication
  * 
@@ -318,9 +345,12 @@ gint
 lasso_federation_termination_validate_notification(LassoFederationTermination *defederation)
 {
   LassoProfile    *profile;
+  LassoProvider   *provider;
   LassoFederation *federation;
   LassoNode       *nameIdentifier;
   gint             ret = 0;
+  gint             signature_check;
+  GError          *err = NULL;
 
   profile = LASSO_PROFILE(defederation);
 
@@ -331,16 +361,38 @@ lasso_federation_termination_validate_notification(LassoFederationTermination *d
   }
 
   /* set the remote provider id from the request */
-  profile->remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
-							    NULL, NULL);
+  profile->remote_providerID = lasso_node_get_child_content(profile->request,
+							    "ProviderID",
+							    NULL,
+							    NULL);
   if (profile->remote_providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Remote provider id not found\n");
     ret = -1;
     goto done;
   }
 
-  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier",
-					NULL, NULL);
+  /* if HTTP-Redirect protocol profile, set the federation termination service return url */
+  provider = lasso_server_get_provider(profile->server, profile->remote_providerID, NULL);
+  if (provider == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
+    ret = -1;
+    goto done;
+  }
+  if (profile->http_request_method==lassoHttpMethodRedirect) {
+    profile->msg_url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
+										profile->provider_type,
+										NULL);
+    if (profile->msg_url) {
+      message(G_LOG_LEVEL_CRITICAL, "Federation termination service return url not found\n");
+      ret = -1;
+      goto done;
+    }
+  }
+
+  nameIdentifier = lasso_node_get_child(profile->request,
+					"NameIdentifier",
+					NULL,
+					NULL);
   if (nameIdentifier == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in request\n");
     ret = -1;
@@ -356,13 +408,13 @@ lasso_federation_termination_validate_notification(LassoFederationTermination *d
 
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if (federation == NULL) {
-    message(G_LOG_LEVEL_WARNING, "No federation for %s\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "No federation for %s\n", profile->remote_providerID);
     ret = -1;
     goto done;
   }
 
   if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
-    message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", profile->remote_providerID);
+    message(G_LOG_LEVEL_CRITICAL, "No name identifier for %s\n", profile->remote_providerID);
     ret = -1;
     goto done;
   }
@@ -423,6 +475,19 @@ GType lasso_federation_termination_get_type() {
  * @server: the server object of the provider
  * @provider_type: the provider type (service provider or identity provider)
  * 
+ * This function build a new federation termination object to build
+ * a notification message or to process a notification.
+ *
+ * If building a federation termination notification message then call :
+ *    lasso_federation_termination_init_notification()
+ *    lasso_federation_termination_build_notification_msg()
+ * and get msg_url or msg_body.
+ *
+ * If processing a federation termination notification message then call :
+ *   lasso_federation_termination_process_notification_msg()
+ *   lasso_federation_termination_validate_notification()
+ * and process the returned code.
+ *
  * Return value: a new instance of federation termination object or NULL
  **/
 LassoFederationTermination*

@@ -117,11 +117,15 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
       xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     /* sign the request message */
-    lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
-					       profile->server->signature_method,
-					       profile->server->private_key,
-					       profile->server->certificate,
-					       NULL);
+    if (profile->server->private_key) {
+      lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
+						 profile->server->signature_method,
+						 profile->server->private_key,
+						 profile->server->certificate,
+						 NULL);
+    }
+
+    /* build the logout request message */
     profile->msg_url  = lasso_provider_get_soapEndpoint(provider,
 							lassoProviderTypeIdp,
 							NULL);
@@ -130,10 +134,17 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
     /* TODO - implement HTTP-Redirect */
-    gchar *query;
+    gchar *url, *query;
+    const gchar *separator = "?";
+
+    url = lasso_provider_get_singleLogoutServiceURL(provider, profile->provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
+    profile->msg_url = g_strjoin(separator, url, query);
+    profile->msg_body = NULL;
+    xmlFree(url);
+    xmlFree(query);
   }
 
   done:
@@ -419,7 +430,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     profile->request = lasso_logout_request_new_from_export(request_msg,
 							    lassoNodeExportTypeSoap);
 
-    /* verify the signature */
+    /* signature verification */
     remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL, NULL);
     if (remote_providerID == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "ProviderID not found\n");
@@ -463,7 +474,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
   }
 
   /* set the http request method */
-  logout->http_request_method = request_method;
+  profile->http_request_method = request_method;
 
   /* Set the NameIdentifier */
   profile->nameIdentifier = lasso_node_get_child_content(profile->request,
@@ -593,7 +604,7 @@ lasso_logout_validate_request(LassoLogout *logout)
   /* if SOAP request method at IDP then verify all the remote service providers support SOAP protocol profile.
      If one remote authenticated principal service provider doesn't support SOAP
      then return UnsupportedProfile to original service provider */
-  if (profile->provider_type==lassoProviderTypeIdp && logout->http_request_method==lassoHttpMethodSoap) {
+  if (profile->provider_type==lassoProviderTypeIdp && profile->http_request_method==lassoHttpMethodSoap) {
     gboolean all_http_soap;
     LassoProvider *provider;
     gchar *providerID, *protocolProfile;
