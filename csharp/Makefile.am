@@ -64,7 +64,9 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SamlSubjectLocality.cs SamlSubjectStatement.cs SamlpRequest.cs \
 	SamlpResponse.cs SamlpStatus.cs SamlpStatusCode.cs Server.cs \
 	ServiceInstance.cs Session.cs Status.cs StringList.cs \
-	lassoPINVOKE.cs
+	lassoPINVOKE.cs SamlpRequestAbstract.cs SamlpResponseAbstract.cs \
+	LibRequestAuthnContext.cs lasso.cs SamlAttribute.cs \
+	SamlSubjectStatementAbstract.cs SamlStatementAbstract.cs
 
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)

@@ -60,6 +60,6 @@ clean-local:
 
 
 # perl module installation disabled since broken wrt to make distcheck
-#install-fakeDATA: install-perl
-install-fakeDATA: install-perl
+install-fakeDATA:
+	@true
 

@@ -128,7 +128,7 @@ lasso-index: scan
 clean-local: clean-sources
 	-rm -rf $(DOC_SOURCE_DIR)
 	-rm -rf .libs
-	-if test $(top_builddir) != $(top_srcdir); then ls -la tmpl/; rm -f tmpl/*.sgml ; fi
+	-if test $(top_builddir) != $(top_srcdir); then rm -f tmpl/*.sgml ; fi
 	-rm -rf sgml
 	-rm -rf html
 	-rm -rf build
