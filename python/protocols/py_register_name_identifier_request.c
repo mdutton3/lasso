@@ -106,3 +106,17 @@ PyObject *register_name_identifier_request_change_attribute_names_identifiers(Py
 
      return (int_wrap(1));
 }
+
+PyObject *register_name_identifier_request_set_relayState(PyObject *self, PyObject *args){
+     PyObject      *request_obj;
+     const xmlChar *relayState;
+
+     if(!PyArg_ParseTuple(args, (char *) "Os:register_name_identifier_request_set_relayState",
+			  &request_obj, &relayState))
+	  return NULL;
+
+     lasso_lib_register_name_identifier_request_set_relayState(lassoRegisterNameIdentifierRequest_get(request_obj),
+							       relayState);
+     
+     return (int_wrap(1));
+}

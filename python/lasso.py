@@ -321,6 +321,7 @@ class RegisterNameIdentifierRequest(Node):
                  idpNameIdentifier, idpNameQualifier, idpFormat,
                  spNameIdentifier,  spNameQualifier,  spFormat,
                  oldNameIdentifier, oldNameQualifier, oldFormat,
+                 relayState = None,
 		 _obj=None):
         """
         """
@@ -332,6 +333,9 @@ class RegisterNameIdentifierRequest(Node):
                                                             spNameIdentifier,  spNameQualifier,  spFormat,
                                                             oldNameIdentifier, oldNameQualifier, oldFormat)
         if self._o is None: raise Error('lasso_register_name_identifier_request() failed')
+
+        if relayState:
+            lassomod.register_name_identifier_request_set_relayState(self, relayState)
 
     def __isprivate(self, name):
         return name == '_o'
