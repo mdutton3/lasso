@@ -62,6 +62,9 @@ LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlC
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_export               (xmlChar *buffer,
 									    gint     type);
 
+LASSO_EXPORT LassoNode* lasso_authn_response_new                           (char *providerID,
+									    LassoNode *request);
+
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_request_query        (gchar         *query,
 									    const xmlChar *providerID);
 
