@@ -1463,6 +1463,15 @@ lasso_login_dump(LassoLogin *login)
 }
 
 
+/**
+ * lasso_login_validate_request_msg:
+ * @authentication_result: whether user has authenticated succesfully
+ * @is_consent_obtained: whether user consent has been obtained
+ *
+ * Initializes a response to the authentication request received.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_result,
 		gboolean is_consent_obtained)
@@ -1514,4 +1523,3 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 
 	return ret;
 }
-
