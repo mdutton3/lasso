@@ -76,14 +76,14 @@ LassoNode *lasso_build_authnRequest_must_autenthicate(gboolean       verifySigna
 	  return(NULL);
      }
 
-     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive")))){
+     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0))){
 	  isPassive = TRUE;
      }
      else{
 	  isPassive = FALSE;
      }
 
-     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn")))){
+     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0))){
 	  forceAuthn = TRUE;
      }
      else{
@@ -105,12 +105,12 @@ LassoNode *lasso_build_authnRequest(const xmlChar   *providerID,
 				    const xmlChar   *isPassive,
 				    const xmlChar   *protocolProfile,
 				    const xmlChar   *assertionConsumerServiceID,
-				    const xmlChar   *authnContextClassRefs,
-				    const xmlChar   *authnContextStatementRefs,
+				    const xmlChar   **authnContextClassRefs,
+				    const xmlChar   **authnContextStatementRefs,
 				    const xmlChar   *authnContextComparison,
 				    const xmlChar   *relayState,
 				    const xmlChar   *proxyCount,
-				    const xmlChar   *idpList,
+				    const xmlChar   **idpList,
 				    const xmlChar   *consent)
 {
   return (lasso_build_full_authnRequest(NULL,
@@ -142,18 +142,15 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar   *requestID,
 					 const xmlChar   *isPassive,
 					 const xmlChar   *protocolProfile,
 					 const xmlChar   *assertionConsumerServiceID,
-					 const xmlChar   *authnContextClassRefs,
-					 const xmlChar   *authnContextStatementRefs,
+					 const xmlChar   **authnContextClassRefs,
+					 const xmlChar   **authnContextStatementRefs,
 					 const xmlChar   *authnContextComparison,
 					 const xmlChar   *relayState,
 					 const xmlChar   *proxyCount,
-					 const xmlChar   *idpList,
+					 const xmlChar   **idpList,
 					 const xmlChar   *consent)
 {
   LassoNode  *request;
-  LassoNode  *requestAuthnContext;
-  int         i;
-  gpointer    pdata;
 
   // build AuthnRequest class
   request = lasso_lib_authn_request_new();
@@ -216,49 +213,6 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar   *requestID,
   if(assertionConsumerServiceID != NULL) {
     lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(request),
 							   assertionConsumerServiceID);
-  }
-  
-  if(authnContextClassRefs!=NULL){
-       if(requestAuthnContext==NULL){
-	    requestAuthnContext = lasso_lib_request_authn_context_new();
-       }
-
-       i = 0;
-       pdata = g_ptr_array_index(authnContextClassRefs, i);
-       while(pdata!=NULL){
-	    lasso_lib_request_authn_context_add_authnContextClassRef(requestAuthnContext, pdata);
-	    i++;
-	    pdata = g_ptr_array_index(authnContextClassRefs, i);
-       }
-       
-  }
-
-  if(authnContextStatementRefs!=NULL){
-       if(requestAuthnContext==NULL){
-	    requestAuthnContext = lasso_lib_request_authn_context_new();
-       }
-
-       i = 0;
-       pdata = g_ptr_array_index(authnContextStatementRefs, i);
-       while(pdata!=NULL){
-	    lasso_lib_request_authn_context_add_authnContextStatementRef(request,
-									 pdata);
-	    i++;
-	    pdata = g_ptr_array_index(authnContextClassRefs, i);
-       }
-       
-  }  
-
-  if(authnContextComparison!=NULL){
-       if(requestAuthnContext==NULL){
-	    requestAuthnContext = lasso_lib_request_authn_context_new();
-       }
-       lasso_lib_request_authn_context_set_authnContextComparison(requestAuthnContext, authnContextComparison);
-  }
-
-  if(requestAuthnContext!=NULL){
-       lasso_lib_authn_request_set_requestAuthnContext(request,
-						       requestAuthnContext);
   }
 
   if(relayState != NULL) {
