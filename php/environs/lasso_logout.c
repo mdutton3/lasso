@@ -70,7 +70,7 @@ PHP_FUNCTION(lasso_logout_init_request) {
 	int num_args;
 
 	num_args = ZEND_NUM_ARGS();
-	if ((num_args == 1) && (num_args == 2)) 
+	if (num_args != 1 && num_args != 2) 
 		WRONG_PARAM_COUNT
 
 	if (zend_parse_parameters(num_args TSRMLS_CC, "z|s", 
