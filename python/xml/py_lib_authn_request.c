@@ -85,6 +85,24 @@ PyObject *lib_authn_request_set_isPassive(PyObject *self, PyObject *args) {
   return (Py_None);
 }
 
+PyObject *lib_authn_request_set_nameIDPolicy(PyObject *self, PyObject *args) {
+  PyObject      *node_obj;
+  const xmlChar *nameIDPolicy;
+
+  if (CheckArgs(args, "OS:lib_authn_request_set_nameIDPolicy")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:lib_authn_request_set_nameIDPolicy",
+			 &node_obj, &nameIDPolicy))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_lib_authn_request_set_nameIDPolicy(LassoLibAuthnRequest_get(node_obj),
+					   nameIDPolicy);
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *lib_authn_request_set_protocolProfile(PyObject *self, PyObject *args) {
   PyObject      *node_obj;
   const xmlChar *protocolProfile;
@@ -98,6 +116,24 @@ PyObject *lib_authn_request_set_protocolProfile(PyObject *self, PyObject *args) 
 
   lasso_lib_authn_request_set_protocolProfile(LassoLibAuthnRequest_get(node_obj),
 					      protocolProfile);
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+PyObject *lib_authn_request_set_relayState(PyObject *self, PyObject *args) {
+  PyObject      *node_obj;
+  const xmlChar *relayState;
+
+  if (CheckArgs(args, "OS:lib_authn_request_set_relayState")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:lib_authn_request_set_relayState",
+			 &node_obj, &relayState))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest_get(node_obj),
+					 relayState);
 
   Py_INCREF(Py_None);
   return (Py_None);

@@ -96,8 +96,14 @@ class LibAuthnRequest(Node):
     def set_isPassive(self, isPassive):
         lassomod.lib_authn_request_set_isPassive(self, isPassive)
 
+    def set_nameIDPolicy(self, nameIDPolicy):
+        lassomod.lib_authn_request_set_nameIDPolicy(self, nameIDPolicy)
+
     def set_protocolProfile(self, protocolProfile):
         lassomod.lib_authn_request_set_protocolProfile(self, protocolProfile)
+
+    def set_relayState(self, relayState):
+        lassomod.lib_authn_request_set_relayState(self, relayState)
 
 
 class LibFederationTerminationNotification(Node):
