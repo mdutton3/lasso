@@ -117,5 +117,10 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
   lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
 						    LASSO_SAML_SUBJECT(subject));
 
+  lasso_node_destroy(subject);
+  lasso_node_destroy(identifier);
+  lasso_node_destroy(idp_identifier);
+  lasso_node_destroy(subject_confirmation);
+
   return (statement);
 }
