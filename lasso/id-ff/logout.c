@@ -93,6 +93,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
+  printf("remote provider id : %s\n", profileContext->remote_providerID);
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
     debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
@@ -106,7 +107,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a http get response message\n");
+    debug(DEBUG, "building a soap response message\n");
     profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
@@ -140,7 +141,6 @@ lasso_logout_init_request(LassoLogout *logout,
   profileContext->remote_providerID = remote_providerID;
 
   /* get identity */
-  printf("%s\n", profileContext->remote_providerID);
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
   if(identity==NULL){
     debug(ERROR, "error, identity not found\n");
@@ -195,9 +195,11 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
 
   switch(request_method){
   case lassoHttpMethodSoap:
+    debug(DEBUG, "build a logout request from soap msg\n");
     profileContext->request = lasso_logout_request_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
+    debug(DEBUG, "build a logout request from query msg\n");
     profileContext->request = lasso_logout_request_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
@@ -207,6 +209,11 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
     printf("error while parsing the request\n");
     return(-1);
   }
+
+  /* set the remote provider id from the request */
+  remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
+  profileContext->remote_providerID = remote_providerID;
+  debug(DEBUG, "build a response to %s\n", profileContext->remote_providerID);  
 
   /* set LogoutResponse */
   profileContext->response = lasso_logout_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
