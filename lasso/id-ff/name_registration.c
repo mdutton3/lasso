@@ -155,10 +155,16 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
+/**
+ * lasso_name_registration_destroy:
+ * @name_registration: a #LassoNameRegistration
+ * 
+ * Destroys a #LassoNameRegistration object.
+ **/
 void
 lasso_name_registration_destroy(LassoNameRegistration *name_registration)
 {
-	g_object_unref(G_OBJECT(name_registration));
+	lasso_node_destroy(LASSO_NODE(name_registration));
 }
 
 gint

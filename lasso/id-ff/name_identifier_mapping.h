@@ -55,7 +55,12 @@ typedef struct _LassoNameIdentifierMappingClass LassoNameIdentifierMappingClass;
 
 struct _LassoNameIdentifierMapping {
 	LassoProfile parent;
+
+	/*< public >*/
 	gchar *targetNameIdentifier;
+
+	/*< private >*/
+	void *private_data;  /* reserved for future use */
 };
 
 struct _LassoNameIdentifierMappingClass {

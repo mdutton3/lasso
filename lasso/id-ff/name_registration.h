@@ -53,7 +53,12 @@ typedef struct _LassoNameRegistrationClass LassoNameRegistrationClass;
 
 struct _LassoNameRegistration {
 	LassoProfile parent;
+
+	/*< public >*/
 	LassoSamlNameIdentifier *oldNameIdentifier;
+	
+	/*< private >*/
+	void *private_data;  /* reserved for future use */
 };
 
 struct _LassoNameRegistrationClass {

@@ -790,7 +790,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
  * lasso_login_destroy:
  * @login: a #LassoLogin
  * 
- * Destroys a login object.
+ * Destroys a #LassoLogin object.
  **/
 void
 lasso_login_destroy(LassoLogin *login)

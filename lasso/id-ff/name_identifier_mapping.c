@@ -105,10 +105,17 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	return 0;
 }
 
+
+/**
+ * lasso_name_identifier_mapping_destroy:
+ * @mapping: a #LassoNameIdentifierMapping
+ * 
+ * Destroys a #LassoNameIdentifierMapping object.
+ **/
 void
 lasso_name_identifier_mapping_destroy(LassoNameIdentifierMapping *mapping)
 {
-	g_object_unref(G_OBJECT(mapping));
+	lasso_node_destroy(LASSO_NODE(mapping));
 }
 
 gint
@@ -438,6 +445,15 @@ lasso_name_identifier_mapping_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_name_identifier_mapping_new
+ * @server: the #LassoServer
+ *
+ * Creates a new #LassoNameIdentifierMapping.
+ *
+ * Return value: a newly created #LassoNameIdentifierMapping object; or NULL
+ *     if an error occured
+ **/
 LassoNameIdentifierMapping *
 lasso_name_identifier_mapping_new(LassoServer *server)
 {

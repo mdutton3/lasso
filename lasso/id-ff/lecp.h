@@ -50,10 +50,13 @@ typedef struct _LassoLecpClass LassoLecpClass;
 struct _LassoLecp {
 	LassoLogin parent;
 
+	/*< public >*/
 	LassoLibAuthnRequestEnvelope *authnRequestEnvelope;
 	LassoLibAuthnResponseEnvelope *authnResponseEnvelope;
-
 	char *assertionConsumerServiceURL;
+
+	/*< private >*/
+	void *private_data;  /* reserved for future use */
 };
 
 struct _LassoLecpClass {
