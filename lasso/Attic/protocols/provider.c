@@ -41,14 +41,14 @@ lasso_provider_dump(LassoProvider *provider)
 
   provider_node = lasso_node_new();
 
-  /* set the public key, certificate, metadata */
+  /* set the public key, ca_certificate, metadata */
   provider_class = LASSO_NODE_GET_CLASS(provider_node);
   provider_class->set_name(provider_node, LASSO_PROVIDER_NODE);
   provider_class->add_child(provider_node, provider->metadata, FALSE);
   if(provider->public_key)
     provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
-  if(provider->certificate)
-    provider_class->set_prop(provider_node, LASSO_PROVIDER_CERTIFICATE_NODE, provider->certificate);
+  if(provider->ca_certificate)
+    provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
 
   return(lasso_node_export(provider_node));
 }
@@ -129,9 +129,9 @@ lasso_provider_set_public_key(LassoProvider *provider, gchar *public_key)
 }
 
 void
-lasso_provider_set_certificate(LassoProvider *provider, gchar *certificate)
+lasso_provider_set_ca_certificate(LassoProvider *provider, gchar *ca_certificate)
 {
-  provider->certificate = g_strdup(certificate);
+  provider->ca_certificate = g_strdup(ca_certificate);
 }
 
 /*****************************************************************************/
@@ -173,7 +173,7 @@ lasso_provider_finalize(LassoProvider *provider)
 
   lasso_node_destroy(provider->metadata);
   g_free(provider->public_key);
-  g_free(provider->certificate);
+  g_free(provider->ca_certificate);
   g_free(provider->private);
 }
 
@@ -186,9 +186,9 @@ lasso_provider_instance_init(LassoProvider *provider)
 {
   provider->private = g_new (LassoProviderPrivate, 1);
   provider->private->dispose_has_run = FALSE;
-  provider->metadata    = NULL;
-  provider->public_key  = NULL;
-  provider->certificate = NULL;
+  provider->metadata       = NULL;
+  provider->public_key     = NULL;
+  provider->ca_certificate = NULL;
 }
 
 static void
@@ -224,15 +224,15 @@ GType lasso_provider_get_type() {
 }
 
 LassoProvider*
-lasso_provider_new(gchar *metadata_filename,
-		   gchar *public_key_filename,
-		   gchar *certificate_filename)
+lasso_provider_new(gchar *metadata,
+		   gchar *public_key,
+		   gchar *ca_certificate)
 {
   LassoProvider *provider;
   
-  provider = lasso_provider_new_metadata_filename(metadata_filename);
-  provider->public_key = public_key_filename;
-  provider->certificate = certificate_filename;
+  provider = lasso_provider_new_metadata_filename(metadata);
+  provider->public_key = public_key;
+  provider->ca_certificate = ca_certificate;
   
   return(provider);
 }

@@ -105,7 +105,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
-				     LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server)->certificate);
+				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
   lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
 				     assertion);
 
@@ -431,7 +431,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
       break;
     case lassoHttpMethodPost:
       signature_status = lasso_node_verify_signature(LASSO_PROFILE_CONTEXT(login)->request,
-						     remote_provider->certificate);
+						     remote_provider->ca_certificate);
       break;
     }
     
@@ -504,7 +504,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login,
   idp = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 				  LASSO_PROFILE_CONTEXT(login)->remote_providerID);
   if (assertion != NULL) {
-    lasso_node_verify_signature(assertion, idp->certificate);
+    lasso_node_verify_signature(assertion, idp->ca_certificate);
   }
   else {
     return (-1);

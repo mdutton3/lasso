@@ -42,6 +42,7 @@ extern "C" {
 #define LASSO_SERVER_NODE                  "LassoServer"
 #define LASSO_SERVER_PROVIDERS_NODE        "LassoProviders"
 #define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
+#define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
 #define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
 
 typedef struct _LassoServer LassoServer;
@@ -52,6 +53,7 @@ struct _LassoServer {
 
   GPtrArray *providers;
   gchar     *private_key;
+  gchar     *certificate;
   guint      signature_method;
   /*< private >*/
 };
@@ -71,9 +73,9 @@ LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar       *me
 LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (gchar       *dump);
 
 LASSO_EXPORT void           lasso_server_add_provider           (LassoServer *server,
-								 gchar       *metadata_filename,
+								 gchar       *metadata,
 								 gchar       *public_key,
-								 gchar       *certificate);
+								 gchar       *ca_certificate);
 
 LASSO_EXPORT gchar         *lasso_server_dump                   (LassoServer *server);
 
