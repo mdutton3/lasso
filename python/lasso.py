@@ -888,7 +888,7 @@ class Login:
         if ret is None:
             raise AttributeError, name
         if name == "user":
-            ret = LassoUser(_obj=ret)
+            ret = User(_obj=ret)
         if name == "request":
             # print "request_type =", lassomod.login_getattr(self, "request_type")
             if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
