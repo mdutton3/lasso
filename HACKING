@@ -64,4 +64,3 @@ Coding Style
     --show-reachable=yes
     --num-callers=32
     --suppressions=tests/valgrind/openssl.supp
-    --suppressions=tests/valgrind/nss.supp 
