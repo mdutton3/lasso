@@ -308,9 +308,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 		nameIdentifier = lasso_profile_get_nameIdentifier(profile);
 		if (nameIdentifier == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s",
-					profile->remote_providerID);
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 		}
 	}
 

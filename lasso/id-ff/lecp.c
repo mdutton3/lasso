@@ -143,8 +143,8 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 	if (provider == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Provider %s not found", profile->remote_providerID);
-		return -1;
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* build lib:AuthnResponse */

@@ -93,6 +93,8 @@ lasso_strerror(int error_code)
 			return "Identity not found";
 		case LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found";
+		case LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND:
+			return "Name identifier not found";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
