@@ -649,6 +649,7 @@ lasso/xml/Makefile
 php/Makefile
 php/examples/Makefile
 php/examples/sample-sp/Makefile
+php/examples/sample-idp/Makefile
 python/Makefile
 swig/Makefile
 tests/Makefile
