@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
+#include <xmlsec/base64.h>
 #include <lasso/protocols/authn_response.h>
 
 static void
