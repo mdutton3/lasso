@@ -835,6 +835,19 @@ class Session:
         """
         self._o = _obj
 
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.session_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        return ret
+
     def new(cls):
         obj = lassmod.session_new()
         return Session(obj)
@@ -894,11 +907,19 @@ class Profile:
     new = classmethod(new)
 
     def get_identity(self):
-        return Identity(_obj=lassomod.profile_get_identity(self))
+        obj = lassomod.profile_get_identity(self)
+        if obj != None:
+            return Identity(_obj=obj)
+        else:
+            return None
 
     def get_session(self):
-        return Session(_obj=lassomod.profile_get_session(self))
-
+        obj = lassomod.profile_get_session(self)
+        if obj != None:
+            return Session(_obj=obj)
+        else:
+            return None
+    
     def is_identity_dirty(self):
         return lassomod.profile_is_identity_dirty(self)
 

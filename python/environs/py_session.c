@@ -42,6 +42,35 @@ PyObject *LassoSession_wrap(LassoSession *session) {
 
 /******************************************************************************/
 
+PyObject *session_getattr(PyObject *self, PyObject *args) {
+  PyObject *session_obj;
+  LassoSession *session;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:session_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:session_get_attr", &session_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  session = LassoSession_get(session_obj);
+
+  if (!strcmp(attr, "__members__")) {
+    return Py_BuildValue("[ss]", "providerIDs", "is_dirty");
+  }
+  if (!strcmp(attr, "providerIDs")) {
+    return (GPtrArray_wrap(session->providerIDs));
+  }
+  if (!strcmp(attr, "is_dirty")) {
+    return (int_wrap(session->is_dirty));
+  }
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+/******************************************************************************/
+
 PyObject *session_new(PyObject *self, PyObject *args) {
   return (LassoSession_wrap(lasso_session_new()));
 }
@@ -107,7 +136,7 @@ PyObject *session_dump(PyObject *self, PyObject *args) {
 
   dump = lasso_session_dump(LassoSession_get(session_obj));
 
-  return (charPtrConst_wrap(dump));
+  return (charPtr_wrap(dump));
 }
 
 PyObject *session_get_assertion(PyObject *self, PyObject *args) {
@@ -143,7 +172,7 @@ PyObject *session_get_authentication_method(PyObject *self, PyObject *args) {
   authentication_method = lasso_session_get_authentication_method(LassoSession_get(session_obj),
 								  remote_providerID);
 
-  return (charPtrConst_wrap(authentication_method));
+  return (charPtr_wrap(authentication_method));
 }
 
 PyObject *session_get_next_assertion_remote_providerID(PyObject *self, PyObject *args) {
@@ -159,7 +188,7 @@ PyObject *session_get_next_assertion_remote_providerID(PyObject *self, PyObject 
 
   remote_providerID = lasso_session_get_next_assertion_remote_providerID(LassoSession_get(session_obj));
 
-  return (charPtrConst_wrap(remote_providerID));
+  return (charPtr_wrap(remote_providerID));
 }
 
 PyObject *session_remove_assertion(PyObject *self, PyObject *args) {

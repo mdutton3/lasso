@@ -66,10 +66,10 @@ PyObject *authn_request_set_requestAuthnContext(PyObject *self, PyObject *args) 
     return NULL;
 
   if (authnContextClassRefs_obj != Py_None) {
-    authnContextClassRefs = PythonStringList2_get(authnContextClassRefs_obj);
+    authnContextClassRefs = GPtrArray_get(authnContextClassRefs_obj);
   }
   if (authnContextStatementRefs_obj != Py_None) {
-    authnContextStatementRefs = PythonStringList2_get(authnContextStatementRefs_obj);
+    authnContextStatementRefs = GPtrArray_get(authnContextStatementRefs_obj);
   }
 
   lasso_authn_request_set_requestAuthnContext(LassoAuthnRequest_get(request_obj),

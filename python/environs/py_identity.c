@@ -74,5 +74,5 @@ PyObject *identity_dump(PyObject *self, PyObject *args) {
 
   dump = lasso_identity_dump(LassoIdentity_get(identity_obj));
 
-  return (charPtrConst_wrap(dump));
+  return (charPtr_wrap(dump));
 }

@@ -154,7 +154,7 @@ PyObject *logout_get_next_providerID(PyObject *self, PyObject *args) {
 
   remote_providerID = lasso_logout_get_next_providerID(LassoLogout_get(logout_obj));
 
-  return (charPtrConst_wrap(remote_providerID));
+  return (charPtr_wrap(remote_providerID));
 }
 
 PyObject *logout_init_request(PyObject *self, PyObject *args) {

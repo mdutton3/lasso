@@ -4,7 +4,7 @@
 /* Functions to wrap Python objects -> C objects                             */
 /*****************************************************************************/
 
-xmlChar **PythonStringList_get(PyObject *list_obj) {
+xmlChar** PythonStringList_get(PyObject *list_obj) {
   int i;
   xmlChar **list = NULL;
 
@@ -19,7 +19,7 @@ xmlChar **PythonStringList_get(PyObject *list_obj) {
   return list;
 }
 
-GPtrArray *PythonStringList2_get(PyObject *list_obj) {
+GPtrArray* GPtrArray_get(PyObject *list_obj) {
   int i;
   GPtrArray *list = NULL;
 
@@ -27,8 +27,9 @@ GPtrArray *PythonStringList2_get(PyObject *list_obj) {
 
   /* convert Python list into a GLib GPtrArray */
   list = g_ptr_array_new();
-  for (i=0; i<PyList_Size(list_obj); i++)
+  for (i=0; i<PyList_Size(list_obj); i++) {
     g_ptr_array_add(list, PyString_AsString(PyList_GetItem(list_obj, i)));
+  }
 
   return list;
 }
@@ -67,10 +68,35 @@ PyObject *charPtrConst_wrap(const char *str) {
 }
 
 /*****************************************************************************/
+/* Functions to wrap GLib objects -> Python objects                          */
+/*****************************************************************************/
+
+PyObject* GPtrArray_wrap(GPtrArray *array) {
+  PyObject *list;
+  int i;
+
+  list = PyList_New(array->len);
+  for (i=0; i<array->len; i++) {
+    /* PyList_SetItem(list, i, */
+    /* 	       PyString_FromString((char *) g_ptr_array_index(array, i))); */
+    PyList_SET_ITEM(list, i,
+		    PyString_FromString((char *) g_ptr_array_index(array, i)));
+  }
+  
+  /* free array */
+  /* for (i=0; i<array->len; i++) { */
+  /*   xmlFree(array->pdata[i]); */
+  /* } */
+  /* g_ptr_array_free(array, TRUE); */
+
+  return (list);
+}
+
+/*****************************************************************************/
 /* Functions to wrap LibXML objects -> Python objects                        */
 /*****************************************************************************/
 
-PyObject *xmlCharPtr_wrap(xmlChar *str) {
+PyObject* xmlCharPtr_wrap(xmlChar *str) {
   PyObject *ret;
 
   if (str == NULL) {
@@ -79,11 +105,11 @@ PyObject *xmlCharPtr_wrap(xmlChar *str) {
   }
   ret = PyString_FromString((char *) str);
   /* deallocation */
-  /* xmlFree(str); */
+  xmlFree(str);
   return (ret);
 }
 
-PyObject *wrap_xmlCharPtrConst(const xmlChar *str) {
+PyObject *xmlCharPtrConst_wrap(const xmlChar *str) {
   PyObject *ret;
 
   if (str == NULL) {

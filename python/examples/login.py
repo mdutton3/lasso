@@ -26,6 +26,7 @@ splogin.request.set_isPassive(0)
 splogin.request.set_forceAuthn(1)
 splogin.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 splogin.request.set_relayState("fake")
+splogin.request.set_consent(lasso.libConsentObtained)
 splogin.request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
 
 splogin.build_authn_request_msg()
@@ -60,6 +61,8 @@ if idplogin.protocolProfile == lasso.loginProtocolProfileBrwsArt:
                                       "",
                                       lasso.httpMethodRedirect)
     print "ret = %d, msg_url = %s" % (ret, idplogin.msg_url)
+    sess = idplogin.get_session()
+    print sess.providerIDs
 
 ####################
 # Service provider #

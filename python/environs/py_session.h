@@ -36,9 +36,9 @@ typedef struct {
 #define LassoSession_get(v) (((v) == Py_None) ? NULL : (((LassoSession_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoSession_wrap(LassoSession *session);
 
+PyObject *session_getattr(PyObject *self, PyObject *args);
 PyObject *session_new(PyObject *self, PyObject *args);
 PyObject *session_new_from_dump(PyObject *self, PyObject *args);
-
 PyObject *session_add_assertion(PyObject *self, PyObject *args);
 PyObject *session_destroy(PyObject *self, PyObject *args);
 PyObject *session_dump(PyObject *self, PyObject *args);

@@ -282,6 +282,7 @@ static PyMethodDef lasso_methods[] = {
   {"server_dump",          server_dump,          METH_VARARGS},
   
   /* py_session.h */
+  {"session_getattr", session_getattr, METH_VARARGS},
   {"session_new",                                  session_new,                                  METH_VARARGS},
   {"session_new_from_dump",                        session_new_from_dump,                        METH_VARARGS},
   {"session_add_assertion",                        session_add_assertion,                        METH_VARARGS},

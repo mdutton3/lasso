@@ -240,7 +240,7 @@ PyObject *login_dump(PyObject *self, PyObject *args) {
 
   ret = lasso_login_dump(LassoLogin_get(login_obj));
 
-  return (charPtrConst_wrap(ret));
+  return (charPtr_wrap(ret));
 }
 
 PyObject *login_init_authn_request(PyObject *self, PyObject *args) {

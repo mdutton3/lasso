@@ -49,15 +49,17 @@ typedef struct {
 /* Functions to wrap Python objects -> C objects */
 #define PythonFile_get(v) (((v) == Py_None) ? NULL : (PyFile_Check(v) ? (PyFile_AsFile(v)) : stdout))
 
-xmlChar **PythonStringList_get(PyObject *list_obj);
-GPtrArray *PythonStringList2_get(PyObject *list_obj);
+xmlChar**  PythonStringList_get(PyObject *list_obj);
+GPtrArray* GPtrArray_get(PyObject *list_obj);
 
 PyObject *int_wrap(int val);
 PyObject *charPtr_wrap(char *str);
 PyObject *charPtrConst_wrap(const char *str);
 
+PyObject* GPtrArray_wrap(GPtrArray *array);
+
 PyObject *xmlCharPtr_wrap(xmlChar *str);
-PyObject *wrap_xmlCharPtrConst(const xmlChar *str);
+PyObject *xmlCharPtrConst_wrap(const xmlChar *str);
 PyObject *wrap_xmlDocPtr(xmlDocPtr doc);
 PyObject *wrap_xmlNodePtr(xmlNodePtr node);
 PyObject *wrap_xmlNodeSetPtr(xmlNodeSetPtr nset);
