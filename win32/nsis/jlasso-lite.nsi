@@ -49,7 +49,7 @@ SetCompressor bzip2
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "Install-java-lite-0_4.exe"
-InstallDir "$SYSDIR"
+InstallDir "$PROGRAMFILES\Liberty Alliance Single Sign On Java"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -59,6 +59,7 @@ FunctionEnd
 
 Section "L.A.S.S.O. Java" SEC08
   File "..\..\java\.libs\libjlasso.dll"
+  File "..\..\java\lasso.jar"
 SectionEnd
 
 Section -AdditionalIcons
@@ -98,7 +99,8 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\libjlasso.dll"
-
+  Delete "$INSTDIR\lasso.jar"
+  
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On Java\Uninstall.lnk"
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On Java\Website.lnk"
 
