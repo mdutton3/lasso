@@ -23,12 +23,9 @@ $(PERL_MAKEFILE): lasso.pm
 	test -e lasso.pm || $(LN_S) $(srcdir)/lasso.pm .
 	VERSION=$(VERSION) CC=$(CC) CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL $(MAKE_PL_OPTS)
 
--perl: $(PERL_MAKEFILE)
+-perl install-perl: $(PERL_MAKEFILE)
 	target=`echo $@ | sed -e 's/-perl//'`; \
-	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR) $$target
-
-install-perl:
-	@echo "Perl binding installation disabled"
+	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR)/$(prefix) $$target
 
 test-perl: $(PERL_MAKEFILE)
 	$(RUN)$(MAKE) -f $(PERL_MAKEFILE) test
@@ -57,9 +54,12 @@ MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 clean-local:
 	rm -rf blib $(PERL_MAKEFILE) $(PERL_MAKEFILE).old build-perl-stamp $(PERL_CRUFT)
-	test -L Makefile.PL && rm Makefile.PL
-	test -L lasso.pm && rm lasso.pm
-	test -L lasso_wrap.c && rm lasso_wrap.c
+	-test -L Makefile.PL && rm Makefile.PL
+	-test -L lasso.pm && rm lasso.pm
+	-test -L lasso_wrap.c && rm lasso_wrap.c
 
-# See this is the fake bit
+
+# perl module installation disabled since broken wrt to make distcheck
+#install-fakeDATA: install-perl
 install-fakeDATA: install-perl
+
