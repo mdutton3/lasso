@@ -28,6 +28,11 @@
 
 #include <lasso/lasso.h>
 
+#include <lasso/xml/lib_assertion.h>
+#include <lasso/xml/lib_authentication_statement.h>
+#include <lasso/xml/saml_name_identifier.h>
+
+
 Suite* random_suite();
 
 START_TEST(test01_provider_new)
@@ -147,6 +152,37 @@ START_TEST(test04_node_new_from_dump)
 }
 END_TEST
 
+START_TEST(test05_xsi_type)
+{
+	/* check lib:AuthnContext element is not converted to
+	 * saml:AuthnContext xsi:type="lib:AuthnContextType" and
+	 * lib:AuthenticationStatement is converted to
+	 * saml:AuthenticationStatement * xsi:type="lib:AuthenticationStatementType"*/
+
+	LassoSamlAssertion *assertion;
+	LassoLibAuthenticationStatement *stmt;
+
+	assertion = LASSO_SAML_ASSERTION(lasso_lib_assertion_new_full("", "", "", "", ""));
+
+	assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(
+			lasso_lib_authentication_statement_new_full(
+			"toto", "toto", "toto",
+			NULL,
+			lasso_saml_name_identifier_new()));
+	stmt = LASSO_LIB_AUTHENTICATION_STATEMENT(assertion->AuthenticationStatement);
+	stmt->AuthnContext = LASSO_LIB_AUTHN_CONTEXT(lasso_lib_authn_context_new());
+	stmt->AuthnContext->AuthnContextClassRef = g_strdup("urn:toto");
+
+	printf("%s\n", lasso_node_dump(LASSO_NODE(assertion)));
+	fail_if(strstr(lasso_node_dump(LASSO_NODE(assertion)),
+				"xsi:type=\"lib:AuthnContextType\"") != NULL,
+			"AuthnContext got a xsi:type");
+	fail_unless(strstr(lasso_node_dump(LASSO_NODE(assertion)),
+				"xsi:type=\"lib:AuthenticationStatementType\"") != NULL,
+			"AuthenticationStatement didn't get a xsi:type");
+}
+END_TEST
+
 Suite*
 random_suite()
 {
@@ -166,6 +202,7 @@ random_suite()
 
 	suite_add_tcase(s, tc_node);
 	tcase_add_test(tc_node, test04_node_new_from_dump);
+	tcase_add_test(tc_node, test05_xsi_type);
 
 	return s;
 }

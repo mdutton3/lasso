@@ -100,7 +100,6 @@ static void
 insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 {
 	/* insure children are kept in saml namespace */
-	char *typename;
 	xmlNode *t;
 	xmlNs *xsi_ns;
 
@@ -112,12 +111,22 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 		}
 		
 		if (xmlnode->ns && strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
+			char *typename, *gtypename;
+			GType gtype;
+
 			typename = g_strdup_printf("lib:%sType", xmlnode->name);
-			xmlSetNs(xmlnode, ns);
-			if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL) {
-				xsi_ns = xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX);
-				xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+			gtypename = g_strdup_printf("LassoSaml%s", xmlnode->name);
+			gtype = g_type_from_name(gtypename);
+
+			if (gtype) {
+				xmlSetNs(xmlnode, ns);
+				if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL) {
+					xsi_ns = xmlNewNs(xmlnode,
+							LASSO_XSI_HREF, LASSO_XSI_PREFIX);
+					xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+				}
 			}
+			g_free(gtypename);
 			g_free(typename);
 		}
 
