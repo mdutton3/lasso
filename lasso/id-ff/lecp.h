@@ -69,16 +69,19 @@ LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (LassoSer
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp   *lecp,
+									const gchar *remote_providerID);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp   *lecp);
+LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp   *lecp,
+									gint         authentication_result,
+									const gchar *authenticationMethod,
+									const gchar *reauthenticateOnOrAfter);
 
 LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp   *lecp,
-									const gchar *remote_providerID);
+LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_init_from_authn_request_msg         (LassoLecp       *lecp,
 									gchar           *authn_request_msg,

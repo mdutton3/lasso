@@ -114,32 +114,41 @@ PyObject *lecp_build_authn_request_envelope_msg(PyObject *self, PyObject *args){
 
 PyObject *lecp_build_authn_response_envelope_msg(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  gint      codeError = 0;
+  gint         authentication_result;
+  const gchar *authenticationMethod;
+  const gchar *reauthenticateOnOrAfter;
+  gint codeError = 0;
 
-  if (CheckArgs(args, "O:lecp_build_authn_response_envelope_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:lecp_build_authn_response_envelope_msg",
-			 &lecp_obj))
+  if (CheckArgs(args, "OISS:lecp_build_authn_response_envelope_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oiss:lecp_build_authn_response_envelope_msg",
+			 &lecp_obj, &authentication_result, &authenticationMethod,
+			 &reauthenticateOnOrAfter))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_lecp_build_authn_response_envelope_msg(LassoLecp_get(lecp_obj));
+  codeError = lasso_lecp_build_authn_response_envelope_msg(LassoLecp_get(lecp_obj),
+							   authentication_result,
+							   authenticationMethod,
+							   reauthenticateOnOrAfter);
 
   return(int_wrap(codeError));
 }
 
 PyObject *lecp_build_authn_request_msg(PyObject *self, PyObject *args){
   PyObject *lecp_obj;
-  gint      codeError = 0;
+  gchar *remote_providerID;
+  gint   codeError = 0;
 
-  if (CheckArgs(args, "O:lecp_build_authn_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:lecp_build_authn_request_msg",
-			 &lecp_obj))
+  if (CheckArgs(args, "OS:lecp_build_authn_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:lecp_build_authn_request_msg",
+			 &lecp_obj, &remote_providerID))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_lecp_build_authn_request_msg(LassoLecp_get(lecp_obj));
+  codeError = lasso_lecp_build_authn_request_msg(LassoLecp_get(lecp_obj),
+						 remote_providerID);
 
   return(int_wrap(codeError));
 }
@@ -178,18 +187,16 @@ PyObject *lecp_destroy(PyObject *self, PyObject *args){
 
 PyObject *lecp_init_authn_request(PyObject *self, PyObject *args) {
   PyObject *lecp_obj;
-  gchar *remote_providerID;
   gint ret;
   
-  if (CheckArgs(args, "OS:lecp_init_authn_request")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:lecp_init_authn_request",
-			 &lecp_obj, &remote_providerID))
+  if (CheckArgs(args, "O:lecp_init_authn_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:lecp_init_authn_request",
+			 &lecp_obj))
       return NULL;
   }
   else return NULL;
   
-  ret = lasso_lecp_init_authn_request(LassoLecp_get(lecp_obj),
-				       remote_providerID);
+  ret = lasso_lecp_init_authn_request(LassoLecp_get(lecp_obj));
   
   return (int_wrap(ret));
 }
