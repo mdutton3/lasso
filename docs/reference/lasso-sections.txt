@@ -1379,9 +1379,12 @@ lasso_logout_new
 lasso_logout_build_request_msg
 lasso_logout_build_response_msg
 lasso_logout_destroy
+lasso_logout_dump
 lasso_logout_get_next_providerID
+lasso_logout_init_request
 lasso_logout_process_request_msg
 lasso_logout_process_response_msg
+lasso_logout_reset_providerID_index
 lasso_logout_validate_request
 <SUBSECTION Standard>
 LASSO_LOGOUT
