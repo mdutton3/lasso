@@ -1206,7 +1206,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 /**
  * lasso_login_process_request_msg:
  * @login: a #LassoLogin
- * @authn_response_msg: the artifact request received
+ * @request_msg: the artifact request received
  *
  * Processes received artifact request.
  * 
@@ -1242,7 +1242,7 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 /**
  * lasso_login_process_response_msg:
  * @login: a #LassoLogin
- * @authn_response_msg: the assertion response received
+ * @response_msg: the assertion response received
  *
  * Processes received assertion response.
  * 
