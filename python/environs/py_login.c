@@ -222,42 +222,6 @@ PyObject *login_dump(PyObject *self, PyObject *args) {
   return (charPtrConst_wrap(ret));
 }
 
-PyObject *login_process_authn_response_msg(PyObject *self, PyObject *args) {
-  PyObject *login_obj;
-  gchar    *authn_response_msg;
-  gboolean ret;
-
-  if (CheckArgs(args, "OS:login_process_authn_response_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:login_process_authn_response_msg",
-			 &login_obj, &authn_response_msg))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_login_process_authn_response_msg(LassoLogin_get(login_obj),
-					      authn_response_msg);
-
-  return (int_wrap(ret));
-}
-
-PyObject *login_process_request_msg(PyObject *self, PyObject *args) {
-  PyObject *login_obj;
-  gchar    *request_msg;
-  gboolean ret;
-
-  if (CheckArgs(args, "OS:login_process_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:login_process_request_msg",
-			 &login_obj, &request_msg))
-      return NULL;
-  }
-  else return NULL;
-
-  ret = lasso_login_process_request_msg(LassoLogin_get(login_obj),
-				       request_msg);
-
-  return (int_wrap(ret));
-}
-
 PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gchar *remote_providerID;
@@ -331,6 +295,61 @@ PyObject *login_must_authenticate(PyObject *self, PyObject *args) {
   else return NULL;
 
   ret = lasso_login_must_authenticate(LassoLogin_get(login_obj));
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_process_authn_response_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar    *authn_response_msg;
+  gboolean ret;
+
+  if (CheckArgs(args, "OS:login_process_authn_response_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_process_authn_response_msg",
+			 &login_obj, &authn_response_msg))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_process_authn_response_msg(LassoLogin_get(login_obj),
+					      authn_response_msg);
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_process_request_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar    *request_msg;
+  gboolean ret;
+
+  if (CheckArgs(args, "OS:login_process_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_process_request_msg",
+			 &login_obj, &request_msg))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_process_request_msg(LassoLogin_get(login_obj),
+				       request_msg);
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_process_response_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar    *response_msg;
+  gchar    *remote_providerID;
+  gboolean ret;
+
+  if (CheckArgs(args, "OSS:login_process_response_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oss:login_process_response_msg",
+			 &login_obj, &response_msg, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_process_response_msg(LassoLogin_get(login_obj),
+					 response_msg, remote_providerID);
 
   return (int_wrap(ret));
 }

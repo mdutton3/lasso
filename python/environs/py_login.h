@@ -47,11 +47,12 @@ PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args);
 PyObject *login_build_authn_response_msg(PyObject *self, PyObject *args);
 PyObject *login_build_request_msg(PyObject *self, PyObject *args);
 PyObject *login_dump(PyObject *self, PyObject *args);
-PyObject *login_process_authn_response_msg(PyObject *self, PyObject *args);
-PyObject *login_process_request_msg(PyObject *self, PyObject *args);
 PyObject *login_init_authn_request(PyObject *self, PyObject *args);
 PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args);
 PyObject *login_init_request(PyObject *self, PyObject *args);
 PyObject *login_must_authenticate(PyObject *self, PyObject *args);
+PyObject *login_process_authn_response_msg(PyObject *self, PyObject *args);
+PyObject *login_process_request_msg(PyObject *self, PyObject *args);
+PyObject *login_process_response_msg(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGIN_H__ */
