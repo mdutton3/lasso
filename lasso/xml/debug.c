@@ -44,17 +44,18 @@ char debug_function[512];
 void
 set_debug_info(int   line,
 	       char *filename,
-	       char *function)
+	       char *function,
+	       int   type)
 {
-  debug_type = 1;
+  debug_type = type;
   debug_line = line;
   strncpy(debug_filename, filename, 512);
   strncpy(debug_function, function, 512);
 }
 
 void
-_debug(GLogLevelFlags level,
-       const char    *format, ...) 
+_debug(GLogLevelFlags  level,
+       const char     *format, ...) 
 {
   char debug_string[1024];
   time_t ts;
@@ -89,7 +90,7 @@ _debug(GLogLevelFlags level,
   /*     break; */
   /*   } */
 
-  if (level == G_LOG_LEVEL_DEBUG) {
+  if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
     g_log("Lasso", level,
 	  "%s (%s/%s:%d)\n======> %s",
 	  date, debug_filename, debug_function, debug_line,

@@ -32,16 +32,16 @@ extern "C" {
 
 #include <glib.h>
 
-void set_debug_info(int line, char *filename, char *function);
+void set_debug_info(int line, char *filename, char *function, int type);
 void _debug(GLogLevelFlags level, const char *format, ...);
 
 #if defined LASSO_DEBUG
-#define debug(format, args...) set_debug_info(__LINE__, __FILE__, __FUNCTION__);  _debug(G_LOG_LEVEL_DEBUG, format, ##args);
+#define debug(format, args...) set_debug_info(__LINE__, __FILE__, __FUNCTION__, 1);  _debug(G_LOG_LEVEL_DEBUG, format, ##args);
 #else
 #define debug(format, ...);
 #endif
 
-#define message(level, format, args...) _debug(level, format, ##args);
+#define message(level, format, args...) set_debug_info(__LINE__, __FILE__, __FUNCTION__, 0); _debug(level, format, ##args);
 
 #ifdef __cplusplus
 }
