@@ -98,7 +98,7 @@ lasso_lib_scoping_get_type()
 /**
  * lasso_lib_scoping_new:
  *
- * Creates a new <lib:Scoping/> node object.
+ * Creates a new lib:Scoping node object.
  *
  * Specifies any preferences on the number and specific identifiers of
  * additional identity providers through which the authentication request may

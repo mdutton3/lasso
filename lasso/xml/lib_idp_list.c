@@ -98,7 +98,7 @@ lasso_lib_idp_list_get_type()
 /**
  * lasso_lib_idp_list_new:
  * 
- * Creates a new <lib:IDPList/> node object.
+ * Creates a new lib:IDPList node object.
  *
  * In the request envelope, some profiles may wish to allow the service
  * provider to transport a list of identity providers to the user agent. This

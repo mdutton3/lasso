@@ -99,7 +99,7 @@ lasso_saml_attribute_statement_get_type()
 /**
  * lasso_saml_attribute_statement_new:
  * 
- * Creates a new <saml:AttributeStatement> node object.
+ * Creates a new saml:AttributeStatement node object.
  * 
  * Return value: the new @LassoSamlAttributeStatement
  **/

@@ -110,7 +110,7 @@ lasso_saml_authentication_statement_get_type()
 /**
  * lasso_saml_authentication_statement_new:
  *
- * Creates a new <saml:AuthenticationStatement> node object.
+ * Creates a new saml:AuthenticationStatement node object.
  * 
  * Return value: the new @LassoSamlAuthenticationStatement
  **/

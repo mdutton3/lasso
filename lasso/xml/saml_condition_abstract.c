@@ -83,7 +83,7 @@ lasso_saml_condition_abstract_get_type()
 /**
  * lasso_saml_condition_abstract_new:
  *
- * Creates a new <saml:ConditionAbstract> node object.
+ * Creates a new saml:ConditionAbstract node object.
  * 
  * Return value: the new @LassoSamlConditionAbstract
  **/

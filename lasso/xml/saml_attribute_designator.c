@@ -96,7 +96,7 @@ lasso_saml_attribute_designator_get_type()
 /**
  * lasso_saml_attribute_designator_new:
  * 
- * Creates a new <saml:AttributeDesignator> node object.
+ * Creates a new saml:AttributeDesignator node object.
  * 
  * Return value: the new @LassoSamlAttributeDesignator
  **/

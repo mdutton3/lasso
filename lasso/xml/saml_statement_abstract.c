@@ -83,7 +83,7 @@ lasso_saml_statement_abstract_get_type()
 /**
  * lasso_saml_statement_abstract_new:
  *
- * Creates a new <saml:StatementAbstract> node object.
+ * Creates a new saml:StatementAbstract node object.
  * 
  * Return value: the new @LassoSamlStatementAbstract
  **/

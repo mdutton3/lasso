@@ -101,7 +101,7 @@ lasso_saml_subject_get_type()
 /**
  * lasso_saml_subject_new:
  * 
- * Creates a new <saml:Subject> node object.
+ * Creates a new saml:Subject node object.
  *
  * Return value: the new @LassoSamlSubject
  **/

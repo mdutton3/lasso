@@ -94,7 +94,7 @@ lasso_saml_subject_locality_get_type()
 /**
  * lasso_saml_subject_locality_new:
  * 
- * Creates a new <saml:SubjectLocality> node object.
+ * Creates a new saml:SubjectLocality node object.
  * 
  * Return value: the new @LassoSamlSubjectLocality
  **/

@@ -102,7 +102,7 @@ lasso_saml_name_identifier_get_type()
 /**
  * lasso_saml_name_identifier_new:
  * 
- * Creates a new <saml:NameIdentifier> node object.
+ * Creates a new saml:NameIdentifier node object.
  * 
  * Return value: the new @LassoSamlNameIdentifier
  **/
