@@ -72,6 +72,7 @@ lasso_federation_dump(LassoFederation *federation)
   federation_node = lasso_node_new();
   federation_class = LASSO_NODE_GET_CLASS(federation_node);
   federation_class->set_name(federation_node, LASSO_FEDERATION_NODE);
+  federation_class->set_ns(federation_node, lassoLassoHRef, NULL);
 
   /* set the remote providerID */
   federation_class->set_prop(federation_node, LASSO_FEDERATION_REMOTE_PROVIDERID_NODE,

@@ -40,10 +40,10 @@ extern "C" {
 #define LASSO_IS_FEDERATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_FEDERATION))
 #define LASSO_FEDERATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_FEDERATION, LassoFederationClass)) 
 
-#define LASSO_FEDERATION_NODE "LassoFederation"
+#define LASSO_FEDERATION_NODE "Federation"
 #define LASSO_FEDERATION_REMOTE_PROVIDERID_NODE "RemoteProviderID"
-#define LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE "LassoLocalNameIdentifier"
-#define LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE "LassoRemoteNameIdentifier"
+#define LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE "LocalNameIdentifier"
+#define LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE "RemoteNameIdentifier"
 
 typedef struct _LassoFederation LassoFederation;
 typedef struct _LassoFederationClass LassoFederationClass;
