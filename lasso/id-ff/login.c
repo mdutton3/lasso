@@ -319,9 +319,8 @@ gint
 lasso_login_accept_sso(LassoLogin *login)
 {
   LassoNode *assertion = NULL;
-  LassoNode *nameIdentifier = NULL;
-  LassoNode *idpProvidedNameIdentifier = NULL;
-  LassoNode *copy_idpProvidedNameIdentifier = NULL;
+  LassoNode *ni;
+  LassoNode *idp_ni, *idp_ni_copy = NULL;
   LassoFederation *federation = NULL;
   gint ret = 0;
   GError *err = NULL;
@@ -352,36 +351,39 @@ lasso_login_accept_sso(LassoLogin *login)
 				LASSO_PROFILE(login)->remote_providerID,
 				assertion);
 
-    /* put the 2 NameIdentifiers in identity object */
-    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier",
-					  lassoSamlAssertionHRef, &err);
-    if (nameIdentifier == NULL) {
+    /* get the 2 NameIdentifiers and put them in identity object */
+    ni = lasso_node_get_child(assertion, "NameIdentifier",
+			      lassoSamlAssertionHRef, &err);
+    /* 1 - the saml:NameIdentifier SHOULD exists */
+    if (ni == NULL) {
       message(G_LOG_LEVEL_CRITICAL, err->message);
       ret = err->code;
       g_error_free(err);
       goto done;
     }
-
-/*     idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", */
-/* 						     lassoLibHRef, &err); */
-/*     if (idpProvidedNameIdentifier == NULL) { */
-/*       message(G_LOG_LEVEL_CRITICAL, err->message); */
-/*       ret = err->code; */
-/*       g_error_free(err); */
-/*       goto done; */
-/*     } */
-/*     copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier); */
-/*     lasso_node_destroy(idpProvidedNameIdentifier); */
-/*     /\* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier *\/ */
-/*     LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier"); */
-/*     LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier, */
-/* 								 lassoSamlAssertionHRef, */
-/* 								 lassoSamlAssertionPrefix); */
+    /* 2 - the lib:IDPProvidedNameIdentifier */
+    idp_ni = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier",
+				  lassoLibHRef, &err);
+    if (idp_ni != NULL) {
+      idp_ni_copy = lasso_node_copy(idp_ni);
+      lasso_node_destroy(idp_ni);
+      /* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier */
+      LASSO_NODE_GET_CLASS(idp_ni_copy)->set_name(idp_ni_copy, "NameIdentifier");
+      LASSO_NODE_GET_CLASS(idp_ni_copy)->set_ns(idp_ni_copy,
+						lassoSamlAssertionHRef,
+						lassoSamlAssertionPrefix);
+    }
 
     /* create federation */
     federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-    /* lasso_federation_set_remote_nameIdentifier(federation, copy_idpProvidedNameIdentifier); */
+    if (ni != NULL && idp_ni_copy != NULL) {
+      lasso_federation_set_local_nameIdentifier(federation, ni);
+      lasso_federation_set_remote_nameIdentifier(federation, idp_ni_copy);
+    }
+    else {
+      lasso_federation_set_remote_nameIdentifier(federation, ni);
+    }
+    /* add federation in identity */
     lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
 				  LASSO_PROFILE(login)->remote_providerID,
 				  federation);
@@ -392,8 +394,8 @@ lasso_login_accept_sso(LassoLogin *login)
   }
   
  done:
-  lasso_node_destroy(nameIdentifier);
-  lasso_node_destroy(copy_idpProvidedNameIdentifier);
+  lasso_node_destroy(ni);
+  lasso_node_destroy(idp_ni_copy);
   lasso_node_destroy(assertion);
 
   return (ret);
@@ -406,7 +408,7 @@ lasso_login_accept_sso(LassoLogin *login)
  * @authenticationMethod: the authentication method
  * @reauthenticateOnOrAfter: the time at, or after which the service provider
  * reauthenticates the Principal with the identity provider 
- * @method: the HTTP method to send the artifact (REDIRECT or POST)
+ * @http_method: the HTTP method to send the artifact (REDIRECT or POST)
  * 
  * Builds an artifact. Depending of the HTTP method, the data for the sending of
  * the artifact are stored in msg_url (REDIRECT) or msg_url, msg_body and
@@ -516,6 +518,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
  * lasso_login_build_authn_request_msg:
  * @login: a LassoLogin
  * @remote_providerID: the providerID of the identity provider
+ * @http_method: the HTTP method to send the AuthnRequest (REDIRECT or POST)
  * 
  * Builds an authentication request. Depending of the SSO protocol profile of
  * the identity provider (defined in metadata file), the data for the sending of
@@ -540,10 +543,11 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-  g_return_val_if_fail(http_method == lassoHttpMethodRedirect || \
-		       http_method == lassoHttpMethodPost,
-		       LASSO_PARAM_ERROR_INVALID_VALUE);
-  
+  if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it must be REDIRECT or POST\n.");
+    return (LASSO_PARAM_ERROR_INVALID_VALUE);
+  }
+
   LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
   
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
@@ -646,7 +650,7 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
  * reauthenticates the Principal with the identity provider 
  * 
  * Builds an authentication response. The data for the sending of the response
- * are stored in login->msg_url and login->msg_body.
+ * are stored in msg_url and msg_body.
  * 
  * Return value: 0 on success and a negative value otherwise.
  **/
@@ -825,14 +829,14 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 									lassoNodeExportTypeBase64);
     break;
   case lassoHttpMethodSoap:
-    /* LibAuthnRequest send by method SOAP - usefull only for LECP */
+    /* LibAuthnRequest send by method SOAP - useful only for LECP */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeSoap);
     break;
   }
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
-  /* get ProtocolProfile */
+  /* get ProtocolProfile in lib:AuthnRequest */
   protocolProfile = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 						 "ProtocolProfile", NULL, NULL);
   if (protocolProfile == NULL) {
@@ -851,7 +855,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   case lassoLoginProtocolProfileBrwsPost:
     /* create LibAuthnResponse */
     LASSO_PROFILE(login)->response = lasso_authn_response_new(LASSO_PROFILE(login)->server->providerID,
-								      LASSO_PROFILE(login)->request);
+							      LASSO_PROFILE(login)->request);
     LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
     break;
   case lassoLoginProtocolProfileBrwsArt:
