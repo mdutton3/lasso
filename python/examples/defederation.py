@@ -33,6 +33,8 @@ spdefederation.build_notification_msg()
 print 'url : ', spdefederation.msg_url
 print 'body : ', spdefederation.msg_body
 
+print lasso.get_request_type_from_soap_msg(spdefederation.msg_body)
+
 
 # idp federation termination :
 print "---------------------------------------------------------"

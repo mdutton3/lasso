@@ -50,6 +50,14 @@ typedef struct _LassoProfileContextClass LassoProfileContextClass;
 typedef struct _LassoProfileContextPrivate LassoProfileContextPrivate;
 
 typedef enum {
+  lassoRequestTypeLogin = 1,
+  lassoRequestTypeLogout,
+  lassoRequestTypeFederationTermination,
+  lassoRequestTypeRegisterNameIdentifier,
+  lassoRequestTypeNameIdentifierMapping,
+}lassoRequestTypes;
+
+typedef enum {
   lassoHttpMethodGet = 1,
   lassoHttpMethodPost,
   lassoHttpMethodRedirect,
@@ -98,19 +106,21 @@ struct _LassoProfileContextClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT GType                lasso_profile_context_get_type             (void);
+LASSO_EXPORT GType                lasso_profile_context_get_type                       (void);
 
-LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                  (LassoServer *server,
-									      LassoUser   *user);
+LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                            (LassoServer *server,
+											LassoUser   *user);
 
-LASSO_EXPORT gchar*               lasso_profile_context_dump                 (LassoProfileContext *ctx,
-									      const gchar         *name);
+LASSO_EXPORT gint                 lasso_profile_context_get_request_type_from_soap_msg (gchar *soap);
 
-LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
-									      gchar               *providerID);
+LASSO_EXPORT gchar*               lasso_profile_context_dump                           (LassoProfileContext *ctx,
+											const gchar         *name);
 
-LASSO_EXPORT void                 lasso_profile_context_set_response_status  (LassoProfileContext *ctx,
-									      const gchar         *statusCodeValue);
+LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID          (LassoProfileContext *ctx,
+											gchar               *providerID);
+
+LASSO_EXPORT void                 lasso_profile_context_set_response_status            (LassoProfileContext *ctx,
+											const gchar         *statusCodeValue);
 
 #ifdef __cplusplus
 }

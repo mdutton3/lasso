@@ -47,6 +47,9 @@ def shutdown():
     """
     return lassomod.shutdown()
 
+def get_request_type_from_soap_msg(soap_buffer):
+    return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
+
 ################################################################################
 # xml : low level classes
 ################################################################################
@@ -1036,10 +1039,9 @@ class FederationTermination:
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name
         ret = lassomod.federation_termination_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "user":
-            ret = User(_obj=ret)
+	if ret:
+	    if name=="user":
+		ret = User(_obj=ret)
         return ret
 
     def new(cls, server, user, provider_type):
@@ -1084,10 +1086,6 @@ class RegisterNameIdentifier:
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name
         ret = lassomod.register_name_identifier_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "user":
-            ret = User(_obj=ret)
         return ret
 
     def new(cls, server, user, provider_type):

@@ -198,6 +198,7 @@ lasso_federation_termination_notification_new_from_export(const xmlChar       *b
     notification = lasso_federation_termination_notification_new_from_soap(buffer);
     break;
   default:
+    return(NULL);
   }
 
   return(notification);
