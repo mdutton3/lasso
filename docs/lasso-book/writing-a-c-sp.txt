@@ -86,9 +86,10 @@ The ``LassoServer`` object may be created as follows:
 
   LassoServer *server;
   server = lasso_server_new("sp-metadata.xml",
-  		NULL, "sp-private-key.pem", "sp-crt.pem", lassoSignatureMethodRsaSha1);
-  lasso_server_add_provider(server, "idp-metadata.xml",
-  		"idp-public-key.pem", "ca-crt.pem");
+  		"sp-private-key.pem", "sp-crt.pem",
+		LASSO_SIGNATURE_METHOD_RSA_SHA1);
+  lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_IDP,
+  		"idp-metadata.xml", "idp-public-key.pem", "ca-crt.pem");
 
 - ``sp-metadata.xml`` is the Liberty metadata file for the service provider
 - ``idp-metadata.xml`` is the Liberty metadata file for the identity provider
@@ -189,17 +190,15 @@ defined in the metadata file).
   LassoLogin *login;
   
   login = lasso_login_new(server);
-  lasso_login_init_authn_request(login, lassoHttpMethodRedirect);
+  lasso_login_init_authn_request(login, idpProviderId, LASSO_HTTP_METHOD_REDIRECT);
   
-  lasso_lib_authn_request_set_forceAuthn(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
-  lasso_lib_authn_request_set_isPassive(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 0);
-  lasso_lib_authn_request_set_nameIDPolicy(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
-  lasso_lib_authn_request_set_consent(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
-  lasso_login_build_authn_request_msg(login, idpProviderId);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ForceAuthn = TRUE;
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->IsPassive = FALSE;
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->NameIDPolicy =
+      strdup(LASSO_LIB_NAME_ID_POLICY_TYPE_FEDERATED);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->consent =
+      strdup(LASSO_LIB_CONSENT_OBTAINED);
+  lasso_login_build_authn_request_msg(login);
 
 
 You can now redirect the user to the URL defined in ``LASSO_PROFILE(login)->msg_url``; for
@@ -220,7 +219,7 @@ passed in the query parameter.
   LassoLogin *login;
   
   login = lasso_login_new(server);
-  lasso_login_init_request(login, query_string, lassoHttpMethodRedirect);
+  lasso_login_init_request(login, query_string, LASSO_HTTP_METHOD_REDIRECT);
   lasso_login_build_request_msg(login);
 
 The service provider must check this artifact using a SOAP request to the
@@ -296,7 +295,7 @@ This part is about a logout using SOAP and initiated on the service provider.
 
   LassoLogout *logout;
 
-  logout = lasso_logout_new(lassoServer, lassoProviderTypeSp);
+  logout = lasso_logout_new(lassoServer);
 
 
 Identity and session dumps should be restored to prepare the logout request.
@@ -310,14 +309,14 @@ Identity and session dumps should be restored to prepare the logout request.
       lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump);
   }
   
-  lasso_logout_init_request(logout, NULL, lassoHttpMethodSoap);
+  lasso_logout_init_request(logout, idpProviderId, LASSO_HTTP_METHOD_SOAP);
   lasso_logout_build_request_msg(logout);
 
 
 The service provider must then make a SOAP request to the identity provider;
 ``msg_url`` and ``msg_body``.  You should then pass the answer to Lasso::
 
-  lasso_logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
+  lasso_logout_process_response_msg(logout, answer);
 
 And save back session and user dump; the process is similar as the one at the
 end of the single sign on profile.
@@ -333,7 +332,7 @@ is strongly advised to check this return code on each call.
 
   int rc;
 
-  rc = lasso_logout_process_response_msg(logout, answer, lassoHttpMethodSoap)
+  rc = lasso_logout_process_response_msg(logout, answer)
   if (rc) {
       fprintf(stderr, "Lasso Error: %d\n", rc);
       /* handling error; most probably bailing out */

@@ -10,6 +10,9 @@ Single Log Out
                 lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump)
                 lasso_logout_init_request(logout, idpProviderId, lassoHttpMethodAny)
                     # if idpProviderId is NULL the first one defined in the metadata will be picked
+                    # if third param http method is lassoHttpMethodAny, then lasso retrieves
+		    # the first http mehtod supported by both providers, else check
+		    # the passed http method is supported.
                 request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(logout)->request)
                 lasso_lib_authn_request_set_relayState(request, relayState)
                     # relayState is an optional value set by the SP
@@ -59,7 +62,7 @@ Single Log Out
     IdP
         /singleLogout (* normative, Single Log-Out service URL *)
             logout = lasso_logout_new(server, lassoProviderTypeIdp)
-            lasso_logout_process_request_msg(logout, /query string/, lassoHttpMethodRedirect)
+            lasso_logout_process_request_msg(logout, /query string/)
             IF error AND error IS NOT LASSO_PROFILE_ERROR_INVALID_QUERY
                 BOOM
 
@@ -80,8 +83,7 @@ Single Log Out
                     SOAP CALL
                         TO LASSO_PROFILE(logout)->msg_url
                         BODY LASSO_PROFILE(logout)->msg_body
-                    lasso_logout_process_response_msg(logout,
-                                soap_answer_message, lassoHttpMethodSoap)
+                    lasso_logout_process_response_msg(logout, soap_answer_message)
                 other_sp = lasso_logout_get_next_providerID(logout)
 
             lasso_logout_reset_providerID_index(logout)
@@ -123,8 +125,7 @@ Single Log Out
                     SOAP CALL
                         TO LASSO_PROFILE(logout)->msg_url
                         BODY LASSO_PROFILE(logout)->msg_body
-                    lasso_logout_process_response_msg(logout,
-                                soap_answer_message, lassoHttpMethodSoap)
+                    lasso_logout_process_response_msg(logout, soap_answer_message)
                     other_sp = lasso_logout_get_next_providerID(logout)
 
                 lasso_logout_build_response_msg(logout)

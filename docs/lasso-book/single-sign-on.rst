@@ -109,33 +109,32 @@ match a providerID defined in the metadata file).
 
 Select profile to use, HTTP Redirect::
 
-  lasso_login_init_authn_request(login, lassoHttpMethodRedirect);
+  lasso_login_init_authn_request(login, idpProviderId, LASSO_HTTP_METHOD_REDIRECT);
 
 or HTTP POST::
 
-  lasso_login_init_authn_request(login, lassoHttpMethodPost);
+  lasso_login_init_authn_request(login, idpProviderId, LASSO_HTTP_METHOD_POST);
   
 
 Parametrize request::
 
   /* will force authentication on the identity provider */
-  lasso_lib_authn_request_set_forceAuthn(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ForceAuthn = TRUE;
   
   /* ask for identity federation */
-  lasso_lib_authn_request_set_nameIDPolicy(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->NameIDPolicy =
+      strdup(LASSO_LIB_NAME_ID_POLICY_TYPE_FEDERATED);
 
   /* the user consents with the idea of identity federation */
-  lasso_lib_authn_request_set_consent(
-      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
+  LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->consent =
+      strdup(LASSO_LIB_CONSENT_OBTAINED);
 
 (see API reference for other possible values)
 
 
 Create the authentication request::
 
-  lasso_login_build_authn_request_msg(login, idpProviderId);
+  lasso_login_build_authn_request_msg(login);
 
 
 An URL is then defined in ``LASSO_PROFILE(login)->msg_url``; the user must be
@@ -163,7 +162,7 @@ used to initialize the *LassoLogin* object.
   LassoLogin *login;
   
   login = lasso_login_new(server);
-  lasso_login_init_request(login, query_string, lassoHttpMethodRedirect);
+  lasso_login_init_request(login, query_string, LASSO_HTTP_METHOD_REDIRECT);
   lasso_login_build_request_msg(login);
 
 If it was a form post it will have a ``LAREQ`` field.
@@ -173,7 +172,7 @@ If it was a form post it will have a ``LAREQ`` field.
   LassoLogin *login;
 
   login = lasso_login_new(server);
-  lasso_login_init_request(login, lareq_field, lassoHttpMethodPost);
+  lasso_login_init_request(login, lareq_field, LASSO_HTTP_METHOD_POST);
   lasso_login_build_request_msg(login);
 
 
