@@ -542,15 +542,10 @@ class LogoutRequest(LibLogoutRequest):
         return LogoutRequest(obj)
     new = classmethod(new)
 
-    def new_from_soap(cls, envelope):
-        obj = lassomod.logout_request_new_from_soap(envelope)
+    def new_from_export(cls, envelope):
+        obj = lassomod.logout_request_new_from_export(envelope)
         return LogoutRequest(obj)
-    new_from_soap = classmethod(new_from_soap)
-
-    def new_from_query(cls, query):
-        obj = lassomod.logout_request_new_from_query(query)
-        return LogoutRequest(obj)
-    new_from_query = classmethod(new_from_query)
+    new_from_export = classmethod(new_from_export)
 
 
 class LogoutResponse(LibLogoutResponse):
@@ -990,11 +985,11 @@ class Logout:
             return self.__dict__[name]
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name
+
         ret = lassomod.logout_getattr(self, name)
-        if ret is None:
-            raise AttributeError, name
-        if name == "user":
-            ret = User(_obj=ret)
+	if ret:
+	    if name=="user":
+		ret = User(_obj=ret)
         return ret
 
     def new(cls, server, user, provider_type):
@@ -1011,7 +1006,7 @@ class Logout:
     def destroy(self):
 	pass
 
-    def init_request(self, remote_providerID):
+    def init_request(self, remote_providerID = None):
 	return lassomod.logout_init_request(self, remote_providerID);
 
     def process_request_msg(self, request_msg, request_method):

@@ -40,9 +40,9 @@ print "---------------------------------------------------------"
 print " At identity provider "
 idpdefederation = lasso.FederationTermination.new(idpserver, idpuser, lasso.providerTypeIdp)
 idpdefederation.process_notification_msg(spdefederation.msg_body, lasso.httpMethodSoap)
-#idpdefederation.build_response_msg()
-#print 'url : ', idpdefederation.msg_url
-#print 'body : ', idpdefederation.msg_body
+idpdefederation.build_response_msg()
+print 'url : ', idpdefederation.msg_url
+print 'body : ', idpdefederation.msg_body
 
 
 print 'End of federation termination'

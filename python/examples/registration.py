@@ -6,46 +6,38 @@ import lasso
 
 lasso.init()
 
-req = lasso.RegisterNameIdentifierRequest.new("http://providerid.com",
-                                              "CD8SC7DSDC56D5CSDCD5CSDCS", "http://qualifier.com", "federated",
-                                              "CD8CSDCS633CDCDCSDCDSCSDC", "http://qualifier.com", "federated",
-                                              "CDS9CDS8C7CDC3I2KCDSCDCSD", "http://qualifier.com", "federated")
-print '----------------------- Requets dump -----------------------', req.dump()
+# servers :
+spserver = lasso.Server.new("../../examples/sp.xml",
+			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+			    lasso.signatureMethodRsaSha1)
 
-req.rename_attributes_for_encoded_query()
-print '----------------------- Requets dump after renaming attributes -----------------------'
-print req.dump()
+spserver.add_provider("../../examples/idp.xml", None, None)
 
+idpserver = lasso.Server.new("../../examples/idp.xml",
+			    "../../examples/rsapub.pem", "../../examples/rsakey.pem", "../../examples/rsacert.pem",
+			    lasso.signatureMethodRsaSha1)
 
-query = req.url_encode(1, 'rsakey.pem')
-print '----------------------- Request encoded url query -----------------------'
-print query
+spserver.add_provider("../../examples/sp.xml", None, None)
 
-soap = req.soap_envelop()
-print '----------------------- Request SOAP envelopped -----------------------'
-print soap
+# users :
+spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">LLLLLLLLLLLLLLLLLLLLLLLLL</NameIdentifier></LassoRemoteNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
 
+spuser = lasso.User.new_from_dump(spuser_dump)
 
-res = lasso.RegisterNameIdentifierResponse.new_from_request_soap(soap, "http://providerid.com", "success")
-print '----------------------- Response from Request SOAP  -----------------------'
-print res.dump()
+idpuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://service-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">LLLLLLLLLLLLLLLLLLLLLLLLL</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
 
-res2 = lasso.RegisterNameIdentifierResponse.new_from_request_query(query, "http://providerid.com", "success")
-print '----------------------- Response from Request QUERY  -----------------------'
-print res.dump()
-
-query = res.url_encode(1, 'rsakey.pem')
-
-res3 = lasso.RegisterNameIdentifierResponse.new_from_query(query)
-print '----------------------- Response from QUERY  -----------------------'
-print res.dump()
+idpuser = lasso.User.new_from_dump(idpuser_dump)
 
 
-soap = res.soap_envelop()
-res3 = lasso.RegisterNameIdentifierResponse.new_from_soap(soap)
-print '----------------------- Response from SOAP  -----------------------'
-print res.dump()
+# sp register name identifier :
+print 'new registration'
+spregistration = lasso.RegisterNameIdentifier.new(spserver, spuser, lasso.providerTypeSp)
+spregistration.init_request("https://identity-provider:2003/liberty-alliance/metadata")
+#spregistration.build_request_msg()
+print 'url : ', spregistration.msg_url
+print 'body : ', spregistration.msg_body
 
 
+print 'End of registration'
 
 lasso.shutdown()

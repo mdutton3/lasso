@@ -33,4 +33,9 @@ print "All assertions deleted\n"
 print "Dump of user environ :"
 print user.dump()
 
+user2 = lasso.User.new_from_dump(user.dump());
+
+assertion = lasso.Assertion("http://nowhere.com", "CD8CS7C6CS6CD6C6SC6SSDC6CS6D")
+user.add_assertion("https://service-provider1:2003/liberty-alliance/metadata", assertion)
+
 user.destroy()
