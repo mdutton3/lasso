@@ -533,18 +533,48 @@ typedef struct _LassoProfile {
 	lassoMessageType response_type;
 } LassoProfile;
 
+/* Inline Methods */
+
+%inline %{
+
+LassoAuthnRequest* lasso_profile_get_authn_request_ref(LassoProfile *profile)
+{
+	if (profile->request_type == lassoMessageTypeAuthnRequest)
+		return LASSO_AUTHN_REQUEST(profile->request);
+	else
+		return NULL;
+}
+
+LassoAuthnResponse* lasso_profile_get_authn_response_ref(LassoProfile *profile)
+{
+	if (profile->response_type == lassoMessageTypeAuthnResponse)
+		return LASSO_AUTHN_RESPONSE(profile->response);
+	else
+		return NULL;
+}
+
+LassoRequest* lasso_profile_get_request_ref(LassoProfile *profile)
+{
+	if (profile->request_type == lassoMessageTypeRequest)
+		return LASSO_REQUEST(profile->request);
+	else
+		return NULL;
+}
+
+LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile)
+{
+	if (profile->response_type == lassoMessageTypeResponse)
+		return LASSO_RESPONSE(profile->response);
+	else
+		return NULL;
+}
+
+%}
+
 /* Methods */
-
-LassoAuthnRequest* lasso_profile_get_authn_request_ref(LassoProfile *profile);
-
-LassoAuthnResponse* lasso_profile_get_authn_response_ref(LassoProfile *profile);
 
 %newobject lasso_profile_get_identity;
 LassoIdentity* lasso_profile_get_identity(LassoProfile *profile);
-
-LassoRequest* lasso_profile_get_request_ref(LassoProfile *profile);
-
-LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile);
 
 %newobject lasso_profile_get_session;
 LassoSession* lasso_profile_get_session(LassoProfile *profile);

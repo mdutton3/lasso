@@ -3,8 +3,7 @@ INCLUDES = -I$(top_srcdir)
 lib_LTLIBRARIES = liblassosharpglue.la
 
 liblassosharpglue_la_SOURCES = \
-	liblassosharpglue_wrap.c \
-	$(top_srcdir)/swig/Lasso.c
+	liblassosharpglue_wrap.c
 
 liblassosharpglue_la_CFLAGS = \
 	$(LASSO_CFLAGS) \

@@ -13,8 +13,8 @@ javasharedir = $(prefix)/share/java
 # Shared library.
 javalib_LTLIBRARIES = libjlasso.la
 
-libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c \
-			$(top_srcdir)/swig/Lasso.c
+libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c
+
 libjlasso_la_CFLAGS =	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
 			-I$(top_srcdir)

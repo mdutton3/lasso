@@ -86,10 +86,35 @@ class LogoutTestCase(unittest.TestCase):
         self.failIf(logout.get_next_providerID())
 
 
+class DefederationTestCase(unittest.TestCase):
+    def test01(self):
+        """IDP initiated defederation; testing process_notification_msg with non Liberty query."""
+
+        lassoServer = lasso.Server(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'),
+            lasso.signatureMethodRsaSha1)
+        lassoServer.add_provider(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/public-key.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        defederation = lasso.Defederation(lassoServer, lasso.providerTypeIdp)
+        # The process_notification_msg should failt but not abort.
+        try:
+            defederation.process_notification_msg('nonLibertyQuery=1', lasso.httpMethodRedirect)
+        except lasso.Error, error:
+            pass
+        else:
+            fail('Defederation process_notification_msg should have failed.')
+
+
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 suite2 = unittest.makeSuite(LogoutTestCase, 'test')
+suite3 = unittest.makeSuite(DefederationTestCase, 'test')
 
-allTests = unittest.TestSuite((suite1, suite2))
+allTests = unittest.TestSuite((suite1, suite2, suite3))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
