@@ -84,7 +84,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
   /* RequestID */
   id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)id);
+					     id);
   xmlFree(id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
@@ -95,7 +95,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						(const xmlChar *)time);
+						time);
   xmlFree(time);
 
   /* set the signature template */

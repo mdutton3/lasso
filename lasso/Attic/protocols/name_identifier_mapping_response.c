@@ -82,7 +82,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   /* ResponseID */
   id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       (const xmlChar *)id);
+					       id);
   xmlFree(id);
   /* MajorVersion */
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
@@ -93,7 +93,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 (const xmlChar *)time);
+						 time);
   xmlFree(time);
   /* ProviderID */
   lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),

@@ -41,7 +41,7 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
   gint i, j, byte_code = 0;
 
   /* decode samlArt */
-  i = xmlSecBase64Decode((const xmlChar *)b64_samlArt, samlArt, 42+1);
+  i = xmlSecBase64Decode(b64_samlArt, samlArt, 42+1);
   if (i < 0 || i > 42) {
     return -1;
   }
@@ -289,7 +289,7 @@ lasso_artifact_new(gchar *samlArt,
   class = LASSO_NODE_GET_CLASS(artifact);
   class->new_child(artifact, "SAMLart", samlArt, FALSE);
   class->new_child(artifact, "ByteCode", byteCode, FALSE);
-  b64_identityProviderSuccinctID = xmlSecBase64Encode((const xmlSecByte *)identityProviderSuccinctID,
+  b64_identityProviderSuccinctID = xmlSecBase64Encode(identityProviderSuccinctID,
 						      20, 0);
   class->new_child(artifact, "B64IdentityProviderSuccinctID",
 		   b64_identityProviderSuccinctID, FALSE);
@@ -351,7 +351,7 @@ lasso_artifact_new_from_lares(const xmlChar *lares,
 
   g_return_val_if_fail(lares != NULL, NULL);
 
-  byteCode = (gchar *) g_new0(gchar, 5+1);
+  byteCode = g_new0(gchar, 5+1);
   identityProviderSuccinctID = (gchar *) g_new0(gchar, 20);
   assertionHandle = (gchar *) g_new0(gchar, 20+1);
   ret = lasso_artifact_split_samlArt((gchar*)lares, byteCode,

@@ -773,8 +773,7 @@ lasso_node_impl_export_to_base64(LassoNode *node)
   gchar *buffer, *ret;
 
   buffer = lasso_node_impl_dump(node, "utf-8", 0);
-  ret = xmlSecBase64Encode((const xmlSecByte *) buffer,
-			   (xmlSecSize)strlen((const char *)buffer), 0);
+  ret = xmlSecBase64Encode(buffer, strlen(buffer), 0);
   g_free(buffer);
   buffer = NULL;
 

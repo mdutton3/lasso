@@ -26,6 +26,7 @@
 #include "errors.h"
 #include <stdio.h>
 #include <string.h>
+#include <glib/gstrfuncs.h>
 
 const char*
 lasso_strerror(int error_code)

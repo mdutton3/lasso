@@ -129,7 +129,7 @@ lasso_authn_response_new(char *providerID,
   /* ResponseID */
   id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       (const xmlChar *)id);
+					       id);
   xmlFree(id);
   
   /* MajorVersion */
@@ -143,7 +143,7 @@ lasso_authn_response_new(char *providerID,
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 (const xmlChar *)time);
+						 time);
   xmlFree(time);
   
   /* ProviderID */

@@ -88,7 +88,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 							       authenticationMethod);
   time = lasso_get_current_time();
   lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
-								(const xmlChar *)time);
+								time);
   xmlFree(time);
   lasso_lib_authentication_statement_set_reauthenticateOnOrAfter(LASSO_LIB_AUTHENTICATION_STATEMENT(statement),
 								 reauthenticateOnOrAfter);

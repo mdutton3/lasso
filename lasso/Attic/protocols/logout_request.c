@@ -85,7 +85,7 @@ lasso_logout_request_new(gchar               *providerID,
   /* RequestID */
   request_id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)request_id);
+					     request_id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						lassoLibMajorVersion);
@@ -95,7 +95,7 @@ lasso_logout_request_new(gchar               *providerID,
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						(const xmlChar *)time);
+						time);
   xmlFree(time);
 
   /* set the signature template */
@@ -217,7 +217,7 @@ lasso_logout_request_new_from_query(gchar *query)
   /* SessionIndex */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0);
   if (str != NULL)
-    lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request), (const xmlChar *)str);
+    lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request), str);
   
   /* consent */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);

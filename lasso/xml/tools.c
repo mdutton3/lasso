@@ -158,7 +158,7 @@ lasso_get_current_time()
 
   g_get_current_time(&time_val);
   tm = localtime(&(time_val.tv_sec));
-  strftime((char *)ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
+  strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
 
   return ret;
 }
@@ -405,10 +405,9 @@ lasso_query_verify_signature(const gchar   *query,
   /* set SignatureValue content */
   str_unescaped = lasso_str_unescape(str_split[1]);
   xmlNodeSetContent(sigValNode, str_unescaped);
-  g_free(str_unescaped);
+  xmlFree(str_unescaped);
 
   g_strfreev(str_split);
-  /*xmlDocDump(stdout, doc);*/
 
   /* find start node */
   sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
@@ -491,7 +490,7 @@ xmlChar *
 lasso_str_escape(xmlChar *str)
 {
   /* value returned must be xmlFree() */
-  return xmlURIEscapeStr((const xmlChar *)str, NULL);
+  return xmlURIEscapeStr(str, NULL);
 }
 
 xmlChar *
@@ -647,9 +646,5 @@ lasso_str_sign(xmlChar              *str,
 xmlChar *
 lasso_str_unescape(xmlChar *str)
 {
-  xmlChar *ret;
-
-  ret = g_malloc(strlen(str) * 2); /* XXX why *2?  strlen(str) should be enough */
-  xmlURIUnescapeString((const char *)str, 0, ret);
-  return ret;
+  return xmlURIUnescapeString(str, 0, NULL);
 }

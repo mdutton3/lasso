@@ -80,16 +80,14 @@ lasso_assertion_new(const xmlChar *issuer,
 				      NULL));
 
   id = lasso_build_unique_id(32);
-  lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
-				       (const xmlChar *)id);
+  lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion), id);
   xmlFree(id);
   lasso_saml_assertion_set_majorVersion(LASSO_SAML_ASSERTION(assertion),
 					lassoLibMajorVersion);
   lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
 					lassoLibMinorVersion);
   time = lasso_get_current_time();
-  lasso_saml_assertion_set_issueInstant(LASSO_SAML_ASSERTION(assertion),
-					(const xmlChar *)time);
+  lasso_saml_assertion_set_issueInstant(LASSO_SAML_ASSERTION(assertion), time);
   xmlFree(time);
 
   lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion), issuer);
