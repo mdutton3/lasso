@@ -132,7 +132,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 				       profile->server->signature_method,
 				       profile->server->private_key);
     if ( (url == NULL) || (query == NULL) ) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while building url and query\n");
+      message(G_LOG_LEVEL_CRITICAL, "Error while building request QUERY url\n");
       ret = -1;
       goto done;
     }
