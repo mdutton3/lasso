@@ -49,6 +49,17 @@ extern "C" {
 #define LASSO_IS_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_NODE))
 #define LASSO_NODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NODE, LassoNodeClass))
 
+/**
+ * LassoMessageFormat::
+ * @LASSO_MESSAGE_FORMAT_ERROR: error while determining forat
+ * @LASSO_MESSAGE_FORMAT_UNKNOWN: unknown format
+ * @LASSO_MESSAGE_FORMAT_XML: XML
+ * @LASSO_MESSAGE_FORMAT_BASE64: base-64 encoded
+ * @LASSO_MESSAGE_FORMAT_QUERY: query string
+ * @LASSO_MESSAGE_FORMAT_SOAP: SOAP
+ *
+ * Message format.
+ **/
 typedef enum {
 	LASSO_MESSAGE_FORMAT_ERROR = -1,
 	LASSO_MESSAGE_FORMAT_UNKNOWN,
@@ -58,16 +69,34 @@ typedef enum {
 	LASSO_MESSAGE_FORMAT_SOAP
 } LassoMessageFormat;
 
+
+/**
+ * LassoSignatureType::
+ * @LASSO_SIGNATURE_TYPE_NONE: no signature
+ * @LASSO_SIGNATURE_TYPE_SIMPLE:
+ * @LASSO_SIGNATURE_TYPE_WITHX509:
+ *
+ * Signature type.
+ **/
 typedef enum {
 	LASSO_SIGNATURE_TYPE_NONE = 0,
 	LASSO_SIGNATURE_TYPE_SIMPLE,
 	LASSO_SIGNATURE_TYPE_WITHX509
 } LassoSignatureType;
 
+
+/**
+ * LassoSignatureMethod::
+ * @LASSO_SIGNATURE_METHOD_RSA_SHA1:
+ * @LASSO_SIGNATURE_METHOD_DSA_SHA1:
+ *
+ * Signature method.
+ **/
 typedef enum {
 	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
 	LASSO_SIGNATURE_METHOD_DSA_SHA1
 } LassoSignatureMethod;
+
 
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
