@@ -5,7 +5,8 @@
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
- * Author: Valery Febvre <vfebvre@easter-eggs.com>
+ * Authors: Valery Febvre <vfebvre@easter-eggs.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +33,12 @@ extern "C" {
 #include <lasso/lasso.h>
 
 LassoNode *lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
-						      const xmlChar *query,
+						      xmlChar       *query,
 						      const xmlChar *rsapub,
 						      const xmlChar *rsakey,
 						      gboolean       isAuthenticated,
-						      gboolean       isPassive,
-						      gboolean       mustAuthenticate,
+						      gboolean      *isPassive,
+						      gboolean      *mustAuthenticate,
 						      GPtrArray     *authenticationMethods,
 						      xmlChar       *authnContextComparison);
 
@@ -47,12 +48,12 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *isPassive,
 				    const xmlChar *protocolProfile,
 				    const xmlChar *assertionConsumerServiceID,
-				    const xmlChar **authnContextClassRefs,
-				    const xmlChar **authnContextStatementRefs,
+				    GPtrArray     *authnContextClassRefs,
+				    GPtrArray     *authnContextStatementRefs,
 				    const xmlChar *authnContextComparison,
 				    const xmlChar *relayState,
-				    const xmlChar *proxyCount,
-				    const xmlChar **idpList,
+				    gint           proxyCount,
+				    GPtrArray     *idpList,
 				    const xmlChar *consent);
 
 LassoNode *lasso_build_full_authnResponse(LassoNode     *request,

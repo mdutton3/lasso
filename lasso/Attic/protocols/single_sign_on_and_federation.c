@@ -25,93 +25,240 @@
 
 #include <lasso/protocols/single_sign_on_and_federation.h>
 
-LassoNode *lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
-						      const xmlChar *query,
-						      const xmlChar *rsapub,
-						      const xmlChar *rsakey,
-						      gboolean       isAuthenticated,
-						      gboolean       isPassive,
-						      gboolean       mustAuthenticate,
-						      GPtrArray     *authenticationMethods,
-						      xmlChar       *authnContextComparison)
+static LassoNode *
+lasso_build_full_authnRequest(const xmlChar *requestID,
+			      const xmlChar *majorVersion,
+			      const xmlChar *minorVersion,
+			      const xmlChar *issueInstant,
+			      const xmlChar *providerID,
+			      const xmlChar *nameIDPolicy,
+			      const xmlChar *forceAuthn,
+			      const xmlChar *isPassive,
+			      const xmlChar *protocolProfile,
+			      const xmlChar *assertionConsumerServiceID,
+			      GPtrArray     *authnContextClassRefs,
+			      GPtrArray     *authnContextStatementRefs,
+			      const xmlChar *authnContextComparison,
+			      const xmlChar *relayState,
+			      gint           proxyCount,
+			      GPtrArray     *idpList,
+			      const xmlChar *consent)
 {
-     LassoNode *req;
-     GData     *gd;
-     int        result;
-     gboolean   forceAuthn;
-     
+  LassoNode  *request, *authn_context, *scoping;
+  gint i;
 
-     if(verifySignature==TRUE){
-	  result = lasso_str_verify(query, rsapub, rsakey);
-	  if(result==-1){
-	       return(NULL);
-	  }
-     }
+  /* create a new AuthnRequestinstance */
+  request = lasso_lib_authn_request_new();
+  /* RequestID */
+  if (requestID != NULL) {
+    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+					       requestID);
+  }
+  else {
+    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+					       (const xmlChar *)lasso_build_unique_id(32));
+  }
 
-     gd = lasso_query_to_dict(query);
-     if(gd!=NULL){
-	  req = lasso_build_full_authnRequest(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd,
-												       "AssertionConsumerServiceID"),
-								      0),
-					      NULL, // AuthnContextClassRef
-					      NULL, // AuthnContextStatementRef
-					      NULL, // AuthnContextComparison
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
-					      NULL, // ProxyCount
-					      NULL, // IDPList
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
+  /* MajorVersion */
+  if (majorVersion != NULL) {
+    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						  majorVersion);
+  }
+  else {
+    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						  lassoLibMajorVersion);
+  }
 
-	  g_datalist_clear(&gd);
-     }
+  /* MinorVersion */
+  if (minorVersion != NULL) {
+    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
+						  minorVersion);
+  }
+  else {
+    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
+						  lassoLibMinorVersion);
+  }
 
-     if(req==NULL){
-	  return(NULL);
-     }
+  /* IssueInstant */
+  if (issueInstant != NULL) {
+    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   issueInstant);
+  }
+  else {
+    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   lasso_get_current_time());
+  }
 
-     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0))){
-	  isPassive = TRUE;
-     }
-     else{
-	  isPassive = FALSE;
-     }
+  /* ProviderID */
+  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
+					 providerID);
 
-     if(g_strcmp("true", lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0))){
-	  forceAuthn = TRUE;
-     }
-     else{
-	  forceAuthn= FALSE;
-     }
+  /* NameIDPolicy */
+  if (nameIDPolicy != NULL) {
+    lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request), nameIDPolicy);
+  }
+  
+  /* ForceAuthn */
+  if (forceAuthn != NULL) {
+    lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), forceAuthn);
+  }
+  
+  /* IsPassive */
+  if (isPassive != NULL) {
+    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
+  }
 
-     if((forceAuthn=TRUE)||(isAuthenticated)){
-	  mustAuthenticate = TRUE;
-     }
+  /* ProtocolProfile */
+  if (protocolProfile != NULL) {
+    lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(request), protocolProfile);
+  }
+  
+  /* AssertionConsumerServiceID */
+  if (assertionConsumerServiceID != NULL) {
+    lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(request),
+							   assertionConsumerServiceID);
+  }
 
-     mustAuthenticate = FALSE;
+  /* AuthnContext */
+  if (authnContextClassRefs != NULL || authnContextStatementRefs != NULL) {
+    /* create a new AuthnContext instance */
+    authn_context = lasso_lib_request_authn_context_new();
+    /* AuthnContextClassRefs */
+    if (authnContextClassRefs != NULL) {
+      for(i=0; i<authnContextClassRefs->len; i++) {
+	lasso_lib_request_authn_context_add_authnContextClassRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
+								 lasso_g_ptr_array_index(authnContextClassRefs, i));
+      }
+    }
+    /* AuthnContextStatementRefs */
+    for(i=0; i<authnContextStatementRefs->len; i++) {
+      lasso_lib_request_authn_context_add_authnContextStatementRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
+								   lasso_g_ptr_array_index(authnContextStatementRefs, i));
+    }
+    /* AuthnContextComparison */
+    if (authnContextComparison != NULL) {
+      lasso_lib_request_authn_context_set_authnContextComparison(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
+								 authnContextComparison);
+    }
+    /* Add AuthnContext to AuthnRequest */
+    lasso_lib_authn_request_set_requestAuthnContext(LASSO_LIB_AUTHN_REQUEST(request),
+						    LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context));
+  }
 
-     return(req);
+  /* RelayState */
+  if (relayState != NULL) {
+    lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(request), relayState);
+  }
+
+  /* Scoping */
+  if (proxyCount > 0) {
+    /* create a new Scoping instance */
+    scoping = lasso_lib_scoping_new();
+    /* ProxyCount */
+    lasso_lib_scoping_set_proxyCount(LASSO_LIB_SCOPING(scoping), proxyCount);
+    lasso_lib_authn_request_set_scoping(LASSO_LIB_AUTHN_REQUEST(request),
+					LASSO_LIB_SCOPING(scoping));
+  }
+
+  /* consent */
+  if (consent != NULL) {
+    lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request), consent);
+  }
+
+  return (request);
 }
 
-LassoNode *lasso_build_authnRequest(const xmlChar   *providerID,
-				    const xmlChar   *nameIDPolicy,
-				    const xmlChar   *forceAuthn,
-				    const xmlChar   *isPassive,
-				    const xmlChar   *protocolProfile,
-				    const xmlChar   *assertionConsumerServiceID,
-				    const xmlChar   **authnContextClassRefs,
-				    const xmlChar   **authnContextStatementRefs,
-				    const xmlChar   *authnContextComparison,
-				    const xmlChar   *relayState,
-				    const xmlChar   *proxyCount,
-				    const xmlChar   **idpList,
-				    const xmlChar   *consent)
+LassoNode *
+lasso_build_authnRequest_must_autenthicate(gboolean       verifySignature,
+					   xmlChar       *query,
+					   const xmlChar *rsapub,
+					   const xmlChar *rsakey,
+					   gboolean       isAuthenticated,
+					   gboolean      *isPassive,
+					   gboolean      *mustAuthenticate,
+					   GPtrArray     *authenticationMethods,
+					   xmlChar       *authnContextComparison)
+{
+  LassoNode *req;
+  GData     *gd;
+  gboolean   forceAuthn = FALSE;
+  gint       proxyCount = 0;
+
+  if (verifySignature == TRUE){
+    if (lasso_str_verify(query, rsapub, rsakey) != 1) {
+      return (NULL);
+    }
+  }
+
+  gd = lasso_query_to_dict(query);
+
+  if (gd != NULL) {
+    /* if ProxyCount exists, convert into integer */
+    if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0) != NULL) {
+      proxyCount = atoi(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0));
+    }
+    req = lasso_build_full_authnRequest(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProtocolProfile"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AssertionConsumerServiceID"), 0),
+					(GPtrArray *)g_datalist_get_data(&gd, "AuthnContextClassRef"),
+					(GPtrArray *)g_datalist_get_data(&gd, "AuthnContextStatementRef"),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
+					proxyCount,
+					(GPtrArray *)g_datalist_get_data(&gd, "IDPList"),
+					lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
+    g_datalist_clear(&gd);
+  }
+
+  lasso_node_dump(req, "iso-8859-1", 1);
+
+  if (req == NULL) {
+    return (NULL);
+  }
+
+  if (xmlStrEqual(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0), "true")) {
+    *isPassive = TRUE;
+  }
+  else {
+    *isPassive = FALSE;
+  }
+
+  if (xmlStrEqual(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0), "true")){
+    forceAuthn = TRUE;
+  }
+  else {
+    forceAuthn = FALSE;
+  }
+
+  *mustAuthenticate = FALSE;
+  if ((forceAuthn == TRUE) || (isAuthenticated == TRUE)) {
+    *mustAuthenticate = TRUE;
+  }
+
+  return (req);
+}
+
+LassoNode *
+lasso_build_authnRequest(const xmlChar *providerID,
+			 const xmlChar *nameIDPolicy,
+			 const xmlChar *forceAuthn,
+			 const xmlChar *isPassive,
+			 const xmlChar *protocolProfile,
+			 const xmlChar *assertionConsumerServiceID,
+			 GPtrArray     *authnContextClassRefs,
+			 GPtrArray     *authnContextStatementRefs,
+			 const xmlChar *authnContextComparison,
+			 const xmlChar *relayState,
+			 gint           proxyCount,
+			 GPtrArray     *idpList,
+			 const xmlChar *consent)
 {
   return (lasso_build_full_authnRequest(NULL,
 					NULL,
@@ -132,188 +279,99 @@ LassoNode *lasso_build_authnRequest(const xmlChar   *providerID,
 					consent));
 }
 
-LassoNode *lasso_build_full_authnRequest(const xmlChar   *requestID,
-					 const xmlChar   *majorVersion,
-					 const xmlChar   *minorVersion,
-					 const xmlChar   *issueInstant,
-					 const xmlChar   *providerID,
-					 const xmlChar   *nameIDPolicy,
-					 const xmlChar   *forceAuthn,
-					 const xmlChar   *isPassive,
-					 const xmlChar   *protocolProfile,
-					 const xmlChar   *assertionConsumerServiceID,
-					 const xmlChar   **authnContextClassRefs,
-					 const xmlChar   **authnContextStatementRefs,
-					 const xmlChar   *authnContextComparison,
-					 const xmlChar   *relayState,
-					 const xmlChar   *proxyCount,
-					 const xmlChar   **idpList,
-					 const xmlChar   *consent)
+LassoNode *
+lasso_build_full_authnResponse(LassoNode     *request,
+			       const xmlChar *providerID)
 {
-  LassoNode  *request;
+  LassoNode *response;
 
-  // build AuthnRequest class
-  request = lasso_lib_authn_request_new();
-
-  if (requestID != NULL) {
-    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					       requestID);
-  }
-  else {
-    lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+  response = lasso_lib_authn_response_new();
+  
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					       (const xmlChar *)lasso_build_unique_id(32));
-  }
-
-  if (majorVersion != NULL) {
-    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						  majorVersion);
-  }
-  else {
-    lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						  lassoLibMajorVersion);
-  }
-
-  if (minorVersion != NULL) {
-    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-						  minorVersion);
-  }
-  else {
-    lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
-						  lassoLibMinorVersion);
-  }
-
-  if (issueInstant != NULL) {
-    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						   issueInstant);
-  }
-  else {
-    lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						   lasso_get_current_time());
-  }
-
-  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
-					 providerID);
-
-  if(nameIDPolicy != NULL) {
-    lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request), nameIDPolicy);
-  }
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lassoLibMajorVersion);     
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
+						 lassoLibMinorVersion);
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  lasso_get_current_time());
   
-  if(forceAuthn != NULL) {
-    lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), forceAuthn);
-  }
+  lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response), providerID);
   
-  if(isPassive != NULL) {
-    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
-  }
-
-  if(protocolProfile != NULL) {
-    lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(request), protocolProfile);
-  }
-  
-  if(assertionConsumerServiceID != NULL) {
-    lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(request),
-							   assertionConsumerServiceID);
-  }
-
-  if(relayState != NULL) {
-    lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(request), relayState);
-  }
-  
-  if(consent != NULL) {
-    lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request), consent);
-  }
-
-  return (request);
+  return(response);
 }
 
-
-LassoNode *lasso_build_full_authnResponse(LassoNode     *request,
-					  const xmlChar *providerID)
+LassoNode *
+lasso_build_full_response(LassoNode     *request,
+			  const xmlChar *providerID)
 {
-     LassoNode *response;
+  LassoNode *response;
 
-     response = lasso_lib_authn_response_new();
-     
-     lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)lasso_build_unique_id(32));
-     lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						   lassoLibMajorVersion);     
-     lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
-						   lassoLibMinorVersion);
-     lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						    lasso_get_current_time());
+  response = lasso_samlp_response_new();
 
-     lasso_lib_authn_response_set_providerID(response, providerID);
-
-     return(response);
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					       (const xmlChar *)lasso_build_unique_id(32));
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lassoSamlMajorVersion);     
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
+						 lassoSamlMinorVersion);
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  lasso_get_current_time());
+  
+  return (response);
 }
 
-LassoNode *lasso_build_full_response(LassoNode     *request,
-				     const xmlChar *providerID)
+LassoNode *
+lasso_build_assertion(const xmlChar *inResponseTo,
+		      const xmlChar *issuer)
 {
-     LassoNode *response;
+  LassoNode *assertion, *subject;
 
-     response = lasso_samlp_response_new();
+  assertion = lasso_lib_assertion_new();
 
-     lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)lasso_build_unique_id(32));
-     lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						   lassoSamlMajorVersion);     
-     lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
-						   lassoSamlMinorVersion);
-     lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						    lasso_get_current_time());
-
-     return(response);
+  lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
+				       (const xmlChar *)lasso_build_unique_id(32));
+  lasso_saml_assertion_set_majorVersion(LASSO_SAML_ASSERTION(assertion),
+					lassoLibMajorVersion);
+  lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
+					lassoLibMajorVersion);
+  lasso_saml_assertion_set_issueInstance(LASSO_SAML_ASSERTION(assertion),
+					 lasso_get_current_time());
+  
+  lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
+				       inResponseTo);
+  
+  lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion),
+				  issuer);
+  
+  return (assertion);
 }
 
-LassoNode *lasso_build_assertion(const xmlChar *inResponseTo,
-				 const xmlChar *issuer)
+LassoNode *
+lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
+				    LassoNode     *nameIdentifier,
+				    LassoNode     *idpProvidedNameIdentifier)
 {
-     LassoNode *assertion, *subject;
-
-     assertion = lasso_lib_assertion_new();
-
-     lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
-					  (const xmlChar *)lasso_build_unique_id(32));
-     lasso_saml_assertion_set_majorVersion(LASSO_SAML_ASSERTION(assertion),
-					   lassoLibMajorVersion);
-     lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
-					   lassoLibMajorVersion);
-     lasso_saml_assertion_set_issueInstance(LASSO_SAML_ASSERTION(assertion),
-					    lasso_get_current_time());
-
-     lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
-					  inResponseTo);
-
-     lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion),
-				     issuer);
-
-     return(assertion);
-}
-
-LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMethod,
-					       LassoNode     *nameIdentifier,
-					       LassoNode     *idpProvidedNameIdentifier)
-{
-     LassoNode *statement, *subject;
-
-     statement = lasso_lib_authentication_statement_new();
-
-     lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), authenticationMethod);
-
-     lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), lasso_get_current_time());
-
-     subject = lasso_lib_subject_new();
-
-     lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
-					   LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
-
-     lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
-						     LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
-
-     lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
-						       LASSO_SAML_SUBJECT(subject));
-
-     return(statement);
+  LassoNode *statement, *subject;
+  
+  statement = lasso_lib_authentication_statement_new();
+  
+  lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
+							       authenticationMethod);
+  
+  lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
+								lasso_get_current_time());
+  
+  subject = lasso_lib_subject_new();
+  
+  lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
+					LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
+  
+  lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
+						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
+  
+  lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
+						    LASSO_SAML_SUBJECT(subject));
+  
+  return (statement);
 }
