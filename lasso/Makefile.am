@@ -2,10 +2,7 @@ SUBDIRS = xml protocols environs
 
 liblassoincludedir = $(includedir)/lasso
 
-INCLUDES = \
-	-I$(top_srcdir) \
-	$(LASSO_DEFINES) \
-	$(LASSO_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(LASSO_DEFINES) $(LASSO_CFLAGS)
 
 ## Added to activate libtool 1.5.6 windows resources partial support
 LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \

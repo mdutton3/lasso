@@ -1,5 +1,3 @@
-SUBDIRS = 
-
 liblassoincludedir = $(includedir)/lasso/environs
 
 INCLUDES = \

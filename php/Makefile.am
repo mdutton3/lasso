@@ -14,6 +14,6 @@ lasso_wrap.c php_lasso.h lasso.php: $(top_srcdir)/swig/Lasso.i
 test-php: lasso.la lasso.php
 	$(PHP) -d extension_dir=.libs $(srcdir)/lasso.php
 
-MAINTAINERCLEANFILES=$(SWIG_OUTPUTS)
-EXTRA_DIST=$(SWIG_OUTPUTS)
-SUBDIRS=examples
+MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
+EXTRA_DIST = $(SWIG_OUTPUTS)
+SUBDIRS = examples

@@ -1,34 +1,25 @@
-TOP=$(top_srcdir)
-DOC_MAIN_SGML_FILE=lasso.sgml
-SOURCE_DIR=$(TOP)/lasso
-INCLUDE_DIR=$(TOP)/lasso
-
 EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \
 	lasso.types 
 
-# Extra options to pass to gtkdoc-scangobj.
-SCANOBJ_OPTIONS=
-
-#
 # We need to pre-process original source files
 # because gtkdoc does not understand some C features
 #
-DOC_SOURCE_DIR=./code
-DOC_SOURCE_FILES=\
-	$(shell find $(SOURCE_DIR) -name '*.c' -print ) \
-	$(shell find $(INCLUDE_DIR) -name '*.h' -print )
+DOC_SOURCE_DIR = ./code
+DOC_SOURCE_FILES = \
+	$(shell find $(top_srcdir)/lasso -name '*.c' -print ) \
+	$(shell find $(top_srcdir)/lasso -name '*.h' -print )
 
 # do nothing for all
 all: docs
 
 docs: sgml html clean-sources
 
-html: sgml $(DOC_MAIN_SGML_FILE) lasso-index
+html: sgml lasso.sgml lasso-index
 	@echo '*** Building HTML ***'
 	test -d html || mkdir html
-	cd html && gtkdoc-mkhtml lasso ../build/$(DOC_MAIN_SGML_FILE)
+	cd html && gtkdoc-mkhtml lasso ../build/lasso.sgml
 
 SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisites lasso.args
 
@@ -41,7 +32,7 @@ SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisit
 sgml: templates
 	@echo '*** Building SGML ***'
 	cd build && gtkdoc-mkdb --module=lasso \
-		    --main-sgml-file=$(DOC_MAIN_SGML_FILE) \
+		    --main-sgml-file=lasso.sgml \
 		    --tmpl-dir=../tmpl/ \
 		    --source-dir=../$(DOC_SOURCE_DIR)/lasso \
 		    --output-dir=../sgml/
@@ -69,8 +60,8 @@ GTKDOC_LIBS = 	\
 	$(LASSO_LIBS) \
 	$(top_builddir)/lasso/liblasso.la
 
-GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)
-GTKDOC_LD=$(LIBTOOL) --mode=link $(CC)
+GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC)
+GTKDOC_LD = $(LIBTOOL) --mode=link $(CC)
 
 scan: doc_sources
 	test -d build || mkdir build
@@ -94,7 +85,7 @@ scan: doc_sources
 doc_sources: $(DOC_SOURCE_FILES)
 	@echo '*** Prepare sources ***'
 	(for i in $(DOC_SOURCE_FILES) ; do \
-	    folder_name=`echo $$i | sed 's#$(TOP)/##' | sed 's#/[^/]*$$##'`; \
+	    folder_name=`echo $$i | sed 's#$(top_srcdir)/##' | sed 's#/[^/]*$$##'`; \
 	    file_name=`echo $$i | sed 's#.*/##'`; \
 	    test -d $(DOC_SOURCE_DIR)/$$folder_name || mkdir -p $(DOC_SOURCE_DIR)/$$folder_name; \
 	    cat $$i | \
