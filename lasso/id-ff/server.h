@@ -87,10 +87,6 @@ LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
 LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar *providerID);
 LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 
-/* XXX Private methods. Should be in serverprivate.h */
-LASSO_EXPORT gchar* lasso_server_get_first_providerID(LassoServer *server);
-LASSO_EXPORT gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

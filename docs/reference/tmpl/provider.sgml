@@ -102,6 +102,15 @@ It holds all the data about a provider.
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_provider_get_base64_succinct_id ##### -->
+<para>
+
+</para>
+
+@provider: 
+@Returns: 
+
+
 <!-- ##### FUNCTION lasso_provider_get_first_http_method ##### -->
 <para>
 

@@ -36,9 +36,7 @@ lasso_server_add_provider
 lasso_server_add_service
 lasso_server_destroy
 lasso_server_dump
-lasso_server_get_first_providerID
 lasso_server_get_provider
-lasso_server_get_providerID_from_hash
 <SUBSECTION Standard>
 LASSO_SERVER
 LASSO_IS_SERVER

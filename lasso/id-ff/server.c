@@ -27,6 +27,7 @@
 #include <lasso/id-ff/server.h>
 
 #include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/serverprivate.h>
 
 struct _LassoServerPrivate
 {
