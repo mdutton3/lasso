@@ -1031,7 +1031,7 @@ SOURCE=..\..\lasso\extract_types.py
 !IF  "$(CFG)" == "lasso - Win32 Release"
 
 # Begin Custom Build
-InputDir=\lasso\lasso-0.6.1rc1\lasso
+InputDir=\lasso\lasso-0.6.1rc2\lasso
 InputPath=..\..\lasso\extract_types.py
 
 "$(InputDir)\types.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -1043,7 +1043,7 @@ InputPath=..\..\lasso\extract_types.py
 !ELSEIF  "$(CFG)" == "lasso - Win32 Debug"
 
 # Begin Custom Build
-InputDir=\lasso\lasso-0.6.1rc1\lasso
+InputDir=\lasso\lasso-0.6.1rc2\lasso
 InputPath=..\..\lasso\extract_types.py
 
 "$(InputDir)\types.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
