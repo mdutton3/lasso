@@ -25,9 +25,9 @@ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-675 Mass Ave, Cambridge, MA 02139, USA.
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA  02111-1307, USA.
 
 In addition, as a special exception, Entr'ouvert gives permission to link
 the code of its release of Lasso with the OpenSSL project's "OpenSSL"
@@ -38,4 +38,7 @@ other than "OpenSSL".  If you modify this file, you may extend this
 exception to your version of the file, but you are not obligated to do so.
 If you do not wish to do so, delete this exception statement from your
 version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General Public
+License can be found in `/usr/share/common-licenses/GPL'.
 
