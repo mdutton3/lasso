@@ -682,13 +682,21 @@ SET_NODE_INFO(Node, DowncastableNode)
 #endif /* ifdef SWIGJAVA */
 
 
-/* Version Number */
+/* Configuration Constants */
 #ifndef SWIGPHP4
+%rename(VERSION_DECIMAL) LASSO_VERSION_DECIMAL;
 %rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
 %rename(VERSION_MINOR) LASSO_VERSION_MINOR;
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
+%rename(WSF_ENABLED) LASSO_WSF_ENABLED;
 #endif
 %include "../lasso/lasso_config.h"
+#ifndef LASSO_WSF_ENABLED
+%{
+#define LASSO_WSF_ENABLED 0
+%}
+#define LASSO_WSF_ENABLED 0
+#endif
 
 /* HttpMethod */
 #ifndef SWIGPHP4
@@ -6480,7 +6488,7 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 %}
 
-#ifdef LASSO_WSF_ENABLED
+#if LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 #endif
 
