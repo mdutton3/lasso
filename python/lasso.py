@@ -82,8 +82,8 @@ class Node:
     def get_attr_value(self, name):
         return lassomod.node_get_attr_value(self, name)
 
-    def get_child(self, name):
-        obj = lassomod.node_get_child(self, name)
+    def get_child(self, name, href=None):
+        obj = lassomod.node_get_child(self, name, href)
         if obj:
             return Node(_obj=obj)
         return None

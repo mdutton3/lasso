@@ -160,17 +160,17 @@ PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
 
 PyObject *node_get_child(PyObject *self, PyObject *args) {
   PyObject *node_obj;
-  const xmlChar *name;
+  const xmlChar *name, *href;
   LassoNode *ret;
 
-  if (CheckArgs(args, "OS:node_get_child")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:node_get_child",
-			 &node_obj, &name))
+  if (CheckArgs(args, "OSs:node_get_child")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osz:node_get_child",
+			 &node_obj, &name, &href))
       return NULL;
   }
   else return NULL;
 
-  ret = lasso_node_get_child(LassoNode_get(node_obj), name);
+  ret = lasso_node_get_child(LassoNode_get(node_obj), name, href);
 
   return (LassoNode_wrap(ret));
 }
