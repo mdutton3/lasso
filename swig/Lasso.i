@@ -518,7 +518,7 @@ gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *rem
  ***********************************************************************/
 
 
-%{
+%inline %{
 	/* Dirty hack because otherwise SWIG doesn't recognize attributes defined in extend */
 	/* below as read-only arguments. */
 	typedef LassoAuthnRequest *LassoAuthnRequestPtr;
@@ -555,28 +555,28 @@ typedef struct _LassoProfile {
 /* Implementations */
 
 %{
-	LassoAuthnRequest* LassoProfile_authn_request_get(LassoProfile *profile) {
+	LassoAuthnRequestPtr LassoProfile_authn_request_get(LassoProfile *profile) {
 		if (profile->request_type == lassoMessageTypeAuthnRequest)
 			return LASSO_AUTHN_REQUEST(profile->request);
 		else
 			return NULL;
 	}
 
-	LassoAuthnResponse* LassoProfile_authn_response_get(LassoProfile *profile) {
+	LassoAuthnResponsePtr LassoProfile_authn_response_get(LassoProfile *profile) {
 		if (profile->response_type == lassoMessageTypeAuthnResponse)
 			return LASSO_AUTHN_RESPONSE(profile->response);
 		else
 			return NULL;
 	}
 
-	LassoRequest* LassoProfile_request_get(LassoProfile *profile) {
+	LassoRequestPtr LassoProfile_request_get(LassoProfile *profile) {
 		if (profile->request_type == lassoMessageTypeRequest)
 			return LASSO_REQUEST(profile->request);
 		else
 			return NULL;
 	}
 
-	LassoResponse* LassoProfile_response_get(LassoProfile *profile) {
+	LassoResponsePtr LassoProfile_response_get(LassoProfile *profile) {
 		if (profile->response_type == lassoMessageTypeResponse)
 			return LASSO_RESPONSE(profile->response);
 		else

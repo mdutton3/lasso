@@ -43,7 +43,24 @@ except NameError:
 
 
 class LoginTestCase(unittest.TestCase):
-    pass
+    def test01(self):
+        """SP login; testing access to authentication request."""
+
+        lassoServer = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'),
+            lasso.signatureMethodRsaSha1)
+        lassoServer.add_provider(
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
+        login = lasso.Login(lassoServer)
+        login.init_authn_request(lasso.httpMethodRedirect)
+        self.failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
+        login.authn_request
+        login.authn_request.set_protocolProfile(lasso.libProtocolProfileBrwsArt)
 
 
 class LogoutTestCase(unittest.TestCase):
@@ -107,7 +124,7 @@ class DefederationTestCase(unittest.TestCase):
         except lasso.Error, error:
             pass
         else:
-            fail('Defederation process_notification_msg should have failed.')
+            self.fail('Defederation process_notification_msg should have failed.')
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')

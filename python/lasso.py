@@ -187,12 +187,15 @@ class _ObjectMixin(object):
 
 
 def _setRegisteredClass(instance):
-    cls = _registeredClasses.get(instance.__class__, None)
-    if cls is None and instance.__class__.__name__.endswith('Ptr'):
-        cls = _registeredClasses.get(instance.__class__.__bases__[0], None)
+    try:
+        instanceClass = instance.__class__
+    except AttributeError:
+        return
+    cls = _registeredClasses.get(instanceClass, None)
+    if cls is None and instanceClass.__name__.endswith('Ptr'):
+        cls = _registeredClasses.get(instanceClass.__bases__[0], None)
     if cls is not None:
         object.__setattr__(instance, '__class__', cls)
-
 
 def registerClass(cls):
     assert cls.lassomodClass
