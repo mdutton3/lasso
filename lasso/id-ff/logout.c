@@ -66,6 +66,13 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
     debug(DEBUG, "building a soap request message\n");
     profileContext->request_type = lassoHttpMethodSoap;
+
+    /* sign the request message */
+    lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profileContext->request),
+					       profileContext->server->signature_method,
+					       profileContext->server->private_key,
+					       profileContext->server->certificate);
+    
     profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
