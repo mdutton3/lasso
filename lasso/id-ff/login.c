@@ -307,7 +307,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
-    message(WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
+    message(G_LOG_LEVEL_WARNING, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
     return (-3);
   }
 
@@ -399,14 +399,14 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   else {
     /* FIXME : is there a default value for AuthnRequestsSigned */
     must_sign = 0;
-    message(WARNING, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
+    message(G_LOG_LEVEL_WARNING, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
   }
 
   /* export request depending on the request ProtocolProfile */
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
   if (request_protocolProfile == NULL) {
     /* FIXME : is there a default value for SingleSignOnProtocolProfile */
-    message(WARNING, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
+    message(G_LOG_LEVEL_WARNING, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
     ret = -1;
   }
 

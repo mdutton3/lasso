@@ -45,7 +45,7 @@ lasso_ds_signature_sign(LassoDsSignature *node,
   /* create signature context */
   dsig_ctx = xmlSecDSigCtxCreate(NULL);
   if(dsig_ctx == NULL) {
-    debug(ERROR, "Failed to create signature context.\n");
+    debug("Failed to create signature context.\n");
     return(-1);
   }
   
@@ -55,7 +55,7 @@ lasso_ds_signature_sign(LassoDsSignature *node,
 					     NULL, NULL, NULL);
   if(dsig_ctx->signKey == NULL) {
     ret = -2;
-    debug(ERROR, "Failed to load private pem key from \"%s\"\n", private_key_file);
+    debug("Failed to load private pem key from \"%s\"\n", private_key_file);
     goto done;
   }
   
@@ -63,13 +63,13 @@ lasso_ds_signature_sign(LassoDsSignature *node,
   if(xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
 				xmlSecKeyDataFormatPem) < 0) {
     ret = -3;
-    debug(ERROR, "Failed to load pem certificate \"%s\"\n", certificate_file);
+    debug("Failed to load pem certificate \"%s\"\n", certificate_file);
     goto done;
   }
 
   /* sign the template */
   if(xmlSecDSigCtxSign(dsig_ctx, signature) < 0) {
-    debug(ERROR, "Signature failed.\n");
+    debug("Signature failed.\n");
   }
 
  done:
