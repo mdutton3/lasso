@@ -81,22 +81,22 @@ PyObject *server_new_from_dump(PyObject *self, PyObject *args) {
 
 PyObject *server_add_provider(PyObject *self, PyObject *args) {
   PyObject *server_obj;
-  gchar       *metadata;
-  gchar       *public_key = NULL;
-  gchar       *ca_certificat = NULL;
+  gchar    *metadata;
+  gchar    *public_key = NULL;
+  gchar    *ca_certificate = NULL;
+  gint     ret;
 
   if (CheckArgs(args, "OSss:server_add_provider")) {
     if(!PyArg_ParseTuple(args, (char *) "Oszz:server_add_provider",
-			 &server_obj, &metadata, &public_key, &ca_certificat))
+			 &server_obj, &metadata, &public_key, &ca_certificate))
       return NULL;
   }
   else return NULL;
   
-  lasso_server_add_provider(LassoServer_get(server_obj),
-			    metadata, public_key, ca_certificat);
+  ret = lasso_server_add_provider(LassoServer_get(server_obj),
+				  metadata, public_key, ca_certificate);
 
-  Py_INCREF(Py_None);
-  return (Py_None);
+  return (int_wrap(ret));
 }
 
 PyObject *server_destroy(PyObject *self, PyObject *args) {

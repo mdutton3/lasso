@@ -813,8 +813,8 @@ class Server:
     new_from_dump = classmethod(new_from_dump)
 
     def add_provider(self, metadata, public_key=None, certificate=None):
-        lassomod.server_add_provider(self, metadata,
-                                     public_key, certificate)
+        return lassomod.server_add_provider(self, metadata,
+                                            public_key, certificate)
 
     def dump(self):
         return lassomod.server_dump(self)
