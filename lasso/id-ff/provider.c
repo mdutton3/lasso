@@ -374,7 +374,6 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoProvider *provider = LASSO_PROVIDER(node);
-	xmlNode *t;
 	xmlChar *s;
 
 	parent_class->init_from_xml(node, xmlnode);
