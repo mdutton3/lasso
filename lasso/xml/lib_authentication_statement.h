@@ -67,7 +67,6 @@ struct _LassoLibAuthenticationStatementClass {
 };
 
 LASSO_EXPORT GType lasso_lib_authentication_statement_get_type                   (void);
-LASSO_EXPORT LassoLibAuthenticationStatement* lasso_lib_authentication_statement_new(void);
 LASSO_EXPORT LassoLibAuthenticationStatement* lasso_lib_authentication_statement_new_full(
 		const char *authenticationMethod,
 		const char *authenticationInstant,
