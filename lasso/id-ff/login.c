@@ -628,17 +628,12 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 		g_free(url);
 	}
 	if (login->http_method == LASSO_HTTP_METHOD_POST) {
-		/* POST -> form */
-#if 0 /* XXX: signatures are done differently */
-		if (must_sign) {
-			ret = lasso_samlp_request_abstract_sign_signature_tmpl(
-					LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
-					LASSO_PROFILE(login)->server->private_key,
-					LASSO_PROFILE(login)->server->certificate);
-			if (ret < 0)
-				goto done;
+		char *private_key = NULL, *certificate = NULL;
+		if (! must_sign) {
+			private_key = LASSO_PROFILE(login)->server->private_key;
+			certificate = LASSO_PROFILE(login)->server->certificate;
 		}
-#endif
+		/* XXX: lareq may need to be signed */
 		lareq = lasso_node_export_to_base64(LASSO_PROFILE(login)->request);
 
 		if (lareq == NULL) {
