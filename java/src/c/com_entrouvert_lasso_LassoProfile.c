@@ -24,103 +24,103 @@
 
 #include <helper.h>
 #include <lasso/lasso.h>
-#include <com_entrouvert_lasso_LassoProfileContext.h>
+#include <com_entrouvert_lasso_LassoProfile.h>
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgBody
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfile_getMsgBody
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    result = profileContext->msg_body;
+    result = profile->msg_body;
 
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgRelayState
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfile_getMsgRelayState
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    result = profileContext->msg_relayState;
+    result = profile->msg_relayState;
 
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getMsgUrl
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfile_getMsgUrl
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    result = profileContext->msg_url;
+    result = profile->msg_url;
 
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getNameIdentifier
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfile_getNameIdentifier
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char *result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    result = profileContext->nameIdentifier;
+    result = profile->nameIdentifier;
     if (result == NULL)
         return NULL;
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getProviderID
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoProfile_getProviderID
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    result = profileContext->remote_providerID;
+    result = profile->remote_providerID;
 
     return (*env)->NewStringUTF(env, result);
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getRequestType
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfile_getRequestType
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    return profileContext->request_type;
+    return profile->request_type;
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_getResponseType
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfile_getResponseType
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * result;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
 
-    return profileContext->response_type;
+    return profile->response_type;
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRequestField
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfile_initRequestField
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * fieldName = "request";
     char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
     char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
     LassoNode *cObject;
 
-    profileContext = getCObject(env, this);
-    cObject = profileContext->request;
+    profile = getCObject(env, this);
+    cObject = profile->request;
 
-    if (profileContext->request_type == lassoMessageTypeAuthnRequest) {
+    if (profile->request_type == lassoMessageTypeAuthnRequest) {
         javaObjectClassName = "com/entrouvert/lasso/LassoAuthnRequest";
-    } else if(profileContext->request_type == lassoMessageTypeRequest) {
+    } else if(profile->request_type == lassoMessageTypeRequest) {
         javaObjectClassName = "com/entrouvert/lasso/LassoRequest";
     } else {
         /* FIXME: Throw error */
@@ -128,20 +128,20 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRequest
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initResponseField
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfile_initResponseField
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * fieldName = "response";
     char * fieldType = "Lcom/entrouvert/lasso/LassoNode;";
     char * javaObjectClassName = "com/entrouvert/lasso/LassoNode";
     LassoNode *cObject;
 
-    profileContext = getCObject(env, this);
-    cObject = profileContext->response;
+    profile = getCObject(env, this);
+    cObject = profile->response;
 
-    if(profileContext->response_type == lassoMessageTypeAuthnResponse){
+    if(profile->response_type == lassoMessageTypeAuthnResponse){
         javaObjectClassName = "com/entrouvert/lasso/LassoAuthnResponse";
-    }else if(profileContext->response_type == lassoMessageTypeResponse){
+    }else if(profile->response_type == lassoMessageTypeResponse){
         javaObjectClassName = "com/entrouvert/lasso/LassoResponse";
     }else{
         /* FIXME: Throw error */
@@ -150,43 +150,43 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRespons
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initServerField
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfile_initServerField
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * fieldName = "server";
     char * fieldType = "Lcom/entrouvert/lasso/LassoServer;";
     char * javaObjectClassName = "com/entrouvert/lasso/LassoServer";
     LassoServer *cObject;
 
-    profileContext = getCObject(env, this);
-    cObject = profileContext->server;
+    profile = getCObject(env, this);
+    cObject = profile->server;
 
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initUserField
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfile_initUserField
 (JNIEnv * env, jobject this){
-    LassoProfileContext * profileContext;
+    LassoProfile * profile;
     char * fieldName = "user";
     char * fieldType = "Lcom/entrouvert/lasso/LassoUser;";
     char * javaObjectClassName = "com/entrouvert/lasso/LassoUser";
     LassoUser *cObject;
 
-    profileContext = getCObject(env, this);
-    cObject = profileContext->user;
+    profile = getCObject(env, this);
+    cObject = profile->user;
 
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_setUserFromDump
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfile_setUserFromDump
 (JNIEnv * env, jobject this, jstring _dump) {
     int result;
-    LassoProfileContext *profileContext;
+    LassoProfile *profile;
     char *dump;
 
-    profileContext = getCObject(env, this);
+    profile = getCObject(env, this);
     dump = (char*)(*env)->GetStringUTFChars(env, _dump, NULL);
-    result = lasso_profile_context_set_user_from_dump(profileContext, dump);
+    result = lasso_profile_set_user_from_dump(profile, dump);
     (*env)->ReleaseStringUTFChars(env, _dump, dump);
     return result;
 }

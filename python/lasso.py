@@ -855,7 +855,7 @@ class Session:
     def remove_assertion(self, remote_providerID):
         lassomod.session_remove_assertion(self, remote_providerID)
 
-## ProfileContext
+## Profile
 # Request types
 requestTypeLogin                  = 1
 requestTypeLogout                 = 2
@@ -864,7 +864,7 @@ requestTypeRegisterNameIdentifier = 4
 requestTypeNameIdentifierMapping  = 5
 
 def get_request_type_from_soap_msg(soap_buffer):
-    return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
+    return lassomod.profile_get_request_type_from_soap_msg(soap_buffer);
 
 class Profile:
     """\brief Short desc

@@ -24,7 +24,7 @@
 
 package com.entrouvert.lasso;
 
-public abstract class LassoProfileContext extends LassoObject { // LassoProfileContext
+public abstract class LassoProfile extends LassoObject { // LassoProfile
     protected LassoNode request = null;
     protected LassoNode response = null;
     protected LassoServer server = null;
@@ -74,4 +74,4 @@ public abstract class LassoProfileContext extends LassoObject { // LassoProfileC
 
     native public int setUserFromDump(String userDump);
 
-} // LassoProfileContext
+} // LassoProfile

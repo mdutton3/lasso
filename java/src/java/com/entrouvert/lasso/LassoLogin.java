@@ -24,7 +24,7 @@
 
 package com.entrouvert.lasso;
 
-public class LassoLogin extends LassoProfileContext { // LassoLogin
+public class LassoLogin extends LassoProfile { // LassoLogin
 
     public LassoLogin(LassoServer server){
         this.server = server;

@@ -24,7 +24,7 @@
 
 package com.entrouvert.lasso;
 
-public class LassoLogout extends LassoProfileContext { // LassoLogout
+public class LassoLogout extends LassoProfile { // LassoLogout
 
     public LassoLogout(LassoServer server, int providerType){
         this.server = server;

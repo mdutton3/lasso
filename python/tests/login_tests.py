@@ -117,8 +117,8 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(idpLoginContext.build_artifact_msg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
             lasso.httpMethodRedirect), 0)
-        idpUserContextDump = idpLoginContext.user.dump()
-        self.failUnless(idpUserContextDump)
+        idpIdentityContextDump = idpLoginContext.get_identity().dump()
+        self.failUnless(idpIdentityContextDump)
         responseUrl = idpLoginContext.msg_url
         responseQuery = responseUrl.split("?", 1)[1]
         soapResponseMsg = idpLoginContext.response_dump
@@ -144,12 +144,12 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(spLoginContext.process_response_msg(soapResponseMsg), 0)
         self.failUnlessEqual(spLoginContext.nameIdentifier, nameIdentifier)
         # The user doesn't have any federation yet.
-        self.failUnlessEqual(spLoginContext.create_user(None), 0)
-        spUserContext = spLoginContext.user
-        self.failUnless(spUserContext)
-        spUserContextDump = spUserContext.dump()
-        self.failUnless(spUserContextDump)
-        authenticationMethod = spUserContext.get_authentication_method()
+        self.failUnlessEqual(spLoginContext.create_identity(None), 0)
+        spIdentityContext = spLoginContext.identity
+        self.failUnless(spIdentityContext)
+        spIdentityContextDump = spIdentityContext.dump()
+        self.failUnless(spIdentityContextDump)
+        authenticationMethod = spIdentityContext.get_authentication_method()
         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
 
         # Service provider logout.
@@ -158,8 +158,8 @@ class LoginTestCase(unittest.TestCase):
         spContext = lasso.Server.new_from_dump(spContextDump)
         self.failUnless(spContext)
         spLogoutContext = lasso.Logout.new(spContext, lasso.providerTypeSp)
-        self.failUnless(spUserContextDump)
-        spLogoutContext.set_user_from_dump(spUserContextDump)
+        self.failUnless(spIdentityContextDump)
+        spLogoutContext.set_identity_from_dump(spIdentityContextDump)
         self.failUnlessEqual(spLogoutContext.init_request(), 0)
         self.failUnlessEqual(spLogoutContext.build_request_msg(), 0)
         soapEndpoint = spLogoutContext.msg_url
@@ -176,13 +176,13 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(
             idpLogoutContext.load_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
         self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
-        self.failUnless(idpUserContextDump)
-        self.failUnlessEqual(idpLogoutContext.set_user_from_dump(idpUserContextDump), 0)
+        self.failUnless(idpIdentityContextDump)
+        self.failUnlessEqual(idpLogoutContext.set_identity_from_dump(idpIdentityContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.process_request(), 0)
-        idpUserContext = idpLogoutContext.user
-        self.failUnless(idpUserContext)
-        idpUserContextDump = idpUserContext.dump()
-        self.failUnless(idpUserContextDump)
+        idpIdentityContext = idpLogoutContext.identity
+        self.failUnless(idpIdentityContext)
+        idpIdentityContextDump = idpIdentityContext.dump()
+        self.failUnless(idpIdentityContextDump)
         # There is no other service provider from which the user must be logged out.
         self.failUnlessEqual(idpLogoutContext.get_next_providerID(), None)
         self.failUnlessEqual(idpLogoutContext.build_response_msg(), 0)
@@ -191,8 +191,8 @@ class LoginTestCase(unittest.TestCase):
         # Service provider logout (step 2: process SOAP response).
         self.failUnlessEqual(
             spLogoutContext.process_response_msg(soapResponseMsg, lasso.httpMethodSoap), 0)
-        spUserContextDump = spLogoutContext.user.dump()
-        self.failUnless(spUserContextDump)
+        spIdentityContextDump = spLogoutContext.identity.dump()
+        self.failUnless(spIdentityContextDump)
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
