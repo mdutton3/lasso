@@ -50,8 +50,8 @@ struct _LassoLoginPrivate
 };
 
 
-static void
-lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion);
+static void lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion);
+static void lasso_login_build_assertion_artifact(LassoLogin *login);
 
 /*****************************************************************************/
 /* static methods/functions */
@@ -124,7 +124,7 @@ lasso_login_build_assertion(LassoLogin *login,
 {
 	LassoSamlAssertion *assertion;
 	LassoLibAuthenticationStatement *as;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoSamlNameIdentifier *nameIdentifier = NULL;
 	LassoProfile *profile;
 	LassoFederation *federation;
 
@@ -163,8 +163,7 @@ lasso_login_build_assertion(LassoLogin *login,
 				federation->local_nameIdentifier);
 	}
 
-	LASSO_SAML_ASSERTION(assertion)->AuthenticationStatement = 
-				LASSO_SAML_AUTHENTICATION_STATEMENT(as);
+	assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(as);
 
 	if (profile->server->certificate) {
 		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
@@ -177,8 +176,7 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL,
-			LASSO_SAML_ASSERTION(assertion));
+		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
 	}
 
 	lasso_login_assertion_add_discovery(login, assertion);
@@ -192,6 +190,40 @@ lasso_login_build_assertion(LassoLogin *login,
 	login->assertion = LASSO_SAML_ASSERTION(g_object_ref(assertion));
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_SAML_ASSERTION(g_object_ref(assertion)));
+
+	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 2) {
+		/* pre-id-ff 1.2, saml 1.0 */
+		LassoSamlSubjectStatementAbstract *ss;
+
+		/* needs assertion artifact */
+		lasso_login_build_assertion_artifact(login);
+
+		assertion->MinorVersion = 0;
+
+		ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement);
+		ss->Subject = LASSO_SAML_SUBJECT(lasso_saml_subject_new());
+		ss->Subject->NameIdentifier = g_object_ref(profile->nameIdentifier);
+		ss->Subject->SubjectConfirmation = lasso_saml_subject_confirmation_new();
+		if (ss->Subject->SubjectConfirmation->ConfirmationMethod) {
+			/* we know it will only have one element */
+			g_free(ss->Subject->SubjectConfirmation->ConfirmationMethod->data);
+			g_list_free(ss->Subject->SubjectConfirmation->ConfirmationMethod);
+		}
+		/* liberty-architecture-bindings-profiles-v1.1.pdf, page 24, line 729 */
+		ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
+				g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
+		ss->Subject->SubjectConfirmation->SubjectConfirmationData = 
+			g_strdup(login->assertionArtifact);
+
+		if (nameIdentifier) {
+			/* draft-liberty-idff-protocols-schemas-1.2-errata-v2.0.pdf */
+			g_free(nameIdentifier->NameQualifier);
+			nameIdentifier->NameQualifier = NULL;
+			g_free(nameIdentifier->Format);
+			nameIdentifier->Format = NULL;
+		}
+	}
+	
 	return 0;
 }
 
@@ -482,6 +514,27 @@ lasso_login_accept_sso(LassoLogin *login)
 	return 0;
 }
 
+static void
+lasso_login_build_assertion_artifact(LassoLogin *login)
+{
+	xmlSecByte samlArt[42], *b64_samlArt;
+	xmlChar *identityProviderSuccinctID;
+
+	identityProviderSuccinctID = lasso_sha1(
+			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
+
+	/* Artifact Format is described in "Binding Profiles", 3.2.2.2. */
+	memcpy(samlArt, "\000\003", 2); /* type code */
+	memcpy(samlArt+2, identityProviderSuccinctID, 20);
+	lasso_build_random_sequence(samlArt+22, 20);
+
+	xmlFree(identityProviderSuccinctID);
+	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+
+	login->assertionArtifact = g_strdup(b64_samlArt);
+	xmlFree(b64_samlArt);
+}
+
 /**
  * lasso_login_build_artifact_msg:
  * @login: a #LassoLogin
@@ -499,8 +552,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	LassoProvider *remote_provider;
 	LassoProfile *profile;
 	gchar *url;
-	xmlSecByte samlArt[42], *b64_samlArt, *relayState;
-	xmlChar *identityProviderSuccinctID;
+	xmlSecByte *b64_samlArt, *relayState;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -531,16 +583,12 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	if (url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
-	identityProviderSuccinctID = lasso_sha1(
-			LASSO_PROVIDER(profile->server)->ProviderID);
 
-	/* Artifact Format is described in "Binding Profiles", 3.2.2.2. */
-	memcpy(samlArt, "\000\003", 2); /* type code */
-	memcpy(samlArt+2, identityProviderSuccinctID, 20);
-	lasso_build_random_sequence(samlArt+22, 20);
+	/* it may have been created in lasso_login_build_assertion */
+	if (login->assertionArtifact == NULL)
+		lasso_login_build_assertion_artifact(login);
 
-	xmlFree(identityProviderSuccinctID);
-	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+	b64_samlArt = xmlStrdup(login->assertionArtifact);
 	relayState = xmlURIEscapeStr(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
@@ -562,7 +610,6 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 			profile->msg_relayState = g_strdup(relayState);
 		}
 	}
-	login->assertionArtifact = g_strdup(b64_samlArt);
 	xmlFree(url);
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
@@ -787,6 +834,10 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 	profile->response = lasso_samlp_response_new();
 	profile->response->InResponseTo = g_strdup(profile->request->RequestID);
+	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 2) {
+		/* pre-id-ff 1.2, move accordingly */
+		profile->response->MinorVersion = 0;
+	}
 
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
@@ -833,7 +884,6 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 					lasso_session_remove_status(profile->session,
 							remote_providerID);
 				}
-				
 			}
 		}
 	} else {
@@ -916,7 +966,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	profile->request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
 		profile->request->MajorVersion = 1;
-		profile->request->MinorVersion = 1;
+		profile->request->MinorVersion = 0;
 	}
 	profile->request->IssueInstant = lasso_get_current_time();
 	LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID = g_strdup(
@@ -1121,17 +1171,20 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	gint ret = 0;
 	LassoLibAuthnRequest *request;
 	LassoMessageFormat format;
+	LassoProfile *profile;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+	profile = LASSO_PROFILE(login);
+
 	if (authn_request_msg == NULL) {
 		format = 0;
-		if (LASSO_PROFILE(login)->request == NULL) {
+		if (profile->request == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
 		}
 
 		/* LibAuthnRequest already set by lasso_login_init_idp_initiated_authn_request() */
-		request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+		request = LASSO_LIB_AUTHN_REQUEST(profile->request);
 		
 		/* verify that NameIDPolicy is 'any' */
 		if (request->NameIDPolicy == NULL)
@@ -1147,17 +1200,17 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 		}
 		
-		LASSO_PROFILE(login)->request = LASSO_SAMLP_REQUEST_ABSTRACT(request);
+		profile->request = LASSO_SAMLP_REQUEST_ABSTRACT(request);
 
 		/* get remote ProviderID */
-		LASSO_PROFILE(login)->remote_providerID = g_strdup(
-				LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProviderID);
+		profile->remote_providerID = g_strdup(
+				LASSO_LIB_AUTHN_REQUEST(profile->request)->ProviderID);
 
 	}
 
 
 	/* get ProtocolProfile in lib:AuthnRequest */
-	protocolProfile = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProtocolProfile;
+	protocolProfile = LASSO_LIB_AUTHN_REQUEST(profile->request)->ProtocolProfile;
 	if (protocolProfile == NULL ||
 			strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART) == 0) {
 		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
@@ -1170,9 +1223,9 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	}
 
 	/* check if requested single sign on protocol profile is supported */
-	LASSO_PROVIDER(LASSO_PROFILE(login)->server)->role = LASSO_PROVIDER_ROLE_IDP;
+	LASSO_PROVIDER(profile->server)->role = LASSO_PROVIDER_ROLE_IDP;
 	if (lasso_provider_has_protocol_profile(
-				LASSO_PROVIDER(LASSO_PROFILE(login)->server),
+				LASSO_PROVIDER(profile->server),
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
 				protocolProfile) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
@@ -1180,8 +1233,8 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	/* Check authnRequest signature. */
 	if (authn_request_msg != NULL) {
-		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+		remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 		if (remote_provider != NULL) {
 			/* Is authnRequest signed ? */
 			authnRequestSigned = lasso_provider_get_metadata_one(
@@ -1196,21 +1249,26 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			}
 		} else {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-					LASSO_PROFILE(login)->remote_providerID);
+					profile->remote_providerID);
 		}
 
 		/* verify request signature */
 		if (must_verify_signature) {
 			ret = lasso_provider_verify_signature(remote_provider,
 					authn_request_msg, "RequestID", format);
-			LASSO_PROFILE(login)->signature_status = ret;
+			profile->signature_status = ret;
 		}
 	}
 
 	/* create LibAuthnResponse */
-	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(
-			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
-			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request));
+	profile->response = lasso_lib_authn_response_new(
+			LASSO_PROVIDER(profile->server)->ProviderID,
+			LASSO_LIB_AUTHN_REQUEST(profile->request));
+	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 2) {
+		/* pre-id-ff 1.2, move accordingly */
+		profile->response->MajorVersion = 1;
+		profile->response->MinorVersion = 0;
+	}
 
 
 	return ret;
