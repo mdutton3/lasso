@@ -22,4 +22,5 @@ liblassoinclude_HEADERS = \
 	single_sign_on_and_federation.h \
 	logout.h \
 	federation_termination_notification.h \
-	register_name_identifier.h
+	register_name_identifier.h \
+	protocols.h

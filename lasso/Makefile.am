@@ -22,6 +22,7 @@ lib_LTLIBRARIES = \
 	$(NULL)
 
 liblassoinclude_HEADERS = \
+	export.h	\
 	lasso.h	\
 	version.h \
 	$(NULL)

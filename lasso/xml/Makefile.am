@@ -59,9 +59,11 @@ liblasso_xml_la_SOURCES = \
 	samlp_status_code.c
 
 liblassoinclude_HEADERS = \
-	xml.h	\
+	lib.h \
+	saml.h \
 	strings.h \
 	tools.h \
+	xml.h	\
 	ds_signature.h	\
 	lib_assertion.h	\
 	lib_authentication_statement.h \
