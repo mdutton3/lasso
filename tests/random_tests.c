@@ -28,6 +28,8 @@
 
 #include <lasso/lasso.h>
 
+Suite* random_suite();
+
 START_TEST(test01_provider_new)
 {
 	LassoProvider *provider;
@@ -124,8 +126,26 @@ START_TEST(test03_server_new_from_dump)
 }
 END_TEST
 
+START_TEST(test04_node_new_from_dump)
+{
+	LassoNode *node;
 
+	char *msg = \
+	  "<lib:LogoutRequest xmlns:lib=\"urn:liberty:iff:2003-08\" "\
+	  "xmlns:saml=\"urn:oasis:names:tc:SAML:1.0:assertion\" "\
+	  "RequestID=\"_52EDD5A8A0BF74977C0A16B827CA4229\" MajorVersion=\"1\" "\
+	  "MinorVersion=\"2\" IssueInstant=\"2004-12-04T11:05:26Z\">" \
+	  "<lib:ProviderID>https://idp1/metadata</lib:ProviderID>" \
+	  "<saml:NameIdentifier xmlns:saml=\"urn:oasis:names:tc:SAML:1.0:assertion\" "\
+	  "NameQualifier=\"https://idp1/metadata\" "\
+	  "Format=\"urn:liberty:iff:nameid:federated\">_AF452F97C9E1590DDEB91D5BA6AA48ED"\
+	  "</saml:NameIdentifier>"\
+	  "</lib:LogoutRequest>";
 
+	node = lasso_node_new_from_dump(msg);
+	fail_unless(node != NULL, "new_from_dump failed");
+}
+END_TEST
 
 Suite*
 random_suite()
@@ -133,13 +153,20 @@ random_suite()
 	Suite *s = suite_create("Random tests");
 	TCase *tc_providers = tcase_create("Provider stuffs");
 	TCase *tc_servers = tcase_create("Server stuffs");
+	TCase *tc_node = tcase_create("Node stuff");
+
 	suite_add_tcase(s, tc_providers);
 	tcase_add_test(tc_providers, test01_provider_new);
 	tcase_add_test(tc_providers, test02_provider_new_from_dump);
+
 	suite_add_tcase(s, tc_servers);
 	tcase_add_test(tc_servers, test01_server_new);
 	tcase_add_test(tc_servers, test02_server_add_provider);
 	tcase_add_test(tc_servers, test03_server_new_from_dump);
+
+	suite_add_tcase(s, tc_node);
+	tcase_add_test(tc_node, test04_node_new_from_dump);
+
 	return s;
 }
 

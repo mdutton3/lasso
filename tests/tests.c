@@ -30,12 +30,14 @@
 
 extern Suite* basic_suite();
 extern Suite* login_suite();
+extern Suite* random_suite();
 
 typedef Suite* (*SuiteFunction) ();
 
 SuiteFunction suites[] = {
 	basic_suite,
 	login_suite,
+	random_suite,
 	NULL
 };
 
@@ -45,7 +47,7 @@ main(int argc, char *argv[])
 	int rc;
 	SRunner *sr;
 	int i;
-	int dont_fork = 1;
+	int dont_fork = 0;
 
 	for (i=1; i<argc; i++) {
 		if (strcmp(argv[i], "--dontfork") == 0) {
