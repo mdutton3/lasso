@@ -1303,7 +1303,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void initNotification(gchar *remoteProviderId,
+		void initNotification(gchar *remoteProviderId = NULL,
 				      lassoHttpMethod httpMethod = lassoHttpMethodAny);
 		END_THROW_ERROR
 
