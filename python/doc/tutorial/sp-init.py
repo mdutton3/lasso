@@ -7,12 +7,14 @@ import lasso
 ## Once inited, this service provider context is never changed.
 
 # Initialize with service provider informations.
-[...] # Read metadata, public_key, private_key & certificate from file or database or...
-server = lasso.Server.new(metadata, public_key, private_key, certificate, lasso.signatureMethods["dsaSha1"])
+[...] # Get metadata_file_path, public_key_file_path, private_key_file_path &
+      # certificate_file_path.
+server = lasso.Server.new(metadata_file_path, public_key_file_path, private_key_file_path,
+                          certificate_file_path, lasso.signatureMethodDsaSha1)
 
 # Add identity provider informations.
-[...] # Read idp_metadata, idp_public_key & idp_certificate from file or database or...
-server.add_provider(idp_metadata, idp_public_key, idp_certificate)
+[...] # Get idp_metadata_file_path, idp_public_key_file_path & idp_ca_certificate_file_path.
+server.add_provider(idp_metadata_file_path, idp_public_key_file_path, idp_ca_certificate_file_path)
 
 # Dump server context to a string and store it in a file.
 server_dump = server.dump()
