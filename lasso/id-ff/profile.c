@@ -299,7 +299,7 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 
 	if (LASSO_IS_SAMLP_RESPONSE(profile->response)) {
 		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(profile->response);
-/* 		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status)); */
+ 		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
 		response->Status = status;
 		return;
 	}
