@@ -1,7 +1,7 @@
 SWIG_OUTPUTS = lasso_wrap.c php_lasso.h lasso.php
 
 php_extension_LTLIBRARIES = lasso.la
-lasso_la_CFLAGS = $(LASSO_CFLAGS) -I$(top_srcdir) $(PHP_INCLUDES)
+lasso_la_CFLAGS = $(LASSO_CORE_CFLAGS) -I$(top_srcdir) $(PHP_INCLUDES)
 lasso_la_LDFLAGS = -export-dynamic -prefer-pic -module -avoid-version
 lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS) $(PHP_LDFLAGS)
 lasso_la_SOURCES = lasso_wrap.c

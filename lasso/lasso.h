@@ -34,6 +34,9 @@ extern "C" {
 #   include <windows.h>
 #endif
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <lasso/export.h>
 
 #include <lasso/id-ff/defederation.h>

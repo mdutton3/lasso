@@ -2,7 +2,7 @@ SUBDIRS = xml id-ff id-wsf
 
 liblassoincludedir = $(includedir)/lasso
 
-INCLUDES = -I$(top_srcdir) $(LASSO_DEFINES) $(LASSO_CFLAGS) -DLASSO_INTERNALS
+INCLUDES = -I$(top_srcdir) $(LASSO_CORE_CFLAGS)
 
 ## Added to activate libtool 1.5.6 windows resources partial support
 LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \

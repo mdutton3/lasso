@@ -30,14 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <glib.h>
+#include <lasso/xml/xml.h>
 #include <xmlsec/crypto.h>
-#include <lasso/export.h>
-
-typedef enum {
-	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
-	LASSO_SIGNATURE_METHOD_DSA_SHA1
-} lassoSignatureMethod;
 
 typedef enum {
 	LASSO_PEM_FILE_TYPE_UNKNOWN,

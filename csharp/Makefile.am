@@ -6,7 +6,7 @@ liblassosharpglue_la_SOURCES = \
 	liblassosharpglue_wrap.c
 
 liblassosharpglue_la_CFLAGS = \
-	$(LASSO_CFLAGS) \
+	$(LASSO_CORE_CFLAGS) \
 	-DSWIG_COBJECT_TYPES
 
 liblassosharpglue_la_LIBADD = \

@@ -39,12 +39,9 @@ extern "C" {
 #include <libxml/uri.h>
 #include <libxml/tree.h>
 
+#include <lasso/export.h>
 #include <lasso/xml/errors.h>
 #include <lasso/xml/strings.h>
-
-#ifdef LASSO_INTERNALS
-#include <lasso/xml/tools.h>
-#endif
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))
@@ -67,6 +64,11 @@ typedef enum {
 	LASSO_SIGNATURE_TYPE_SIMPLE,
 	LASSO_SIGNATURE_TYPE_WITHX509
 } lassoSignatureType;
+
+typedef enum {
+	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
+	LASSO_SIGNATURE_METHOD_DSA_SHA1
+} lassoSignatureMethod;
 
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
@@ -122,6 +124,7 @@ LASSO_EXPORT gint lasso_node_verify_signature(LassoNode *node,
 
 #ifdef LASSO_INTERNALS
 #include <lasso/xml/internals.h>
+#include <lasso/xml/tools.h>
 #endif
 
 #ifdef __cplusplus

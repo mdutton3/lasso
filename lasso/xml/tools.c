@@ -35,10 +35,8 @@
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
 
+#include <lasso/xml/xml.h>
 #include <lasso/xml/tools.h>
-
-#include <lasso/xml/errors.h>
-#include <lasso/xml/strings.h>
 
 
 /**
@@ -304,7 +302,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 xmlChar*
-lasso_query_sign(xmlChar *query, lassoSignatureMethod  sign_method, const char *private_key_file)
+lasso_query_sign(xmlChar *query, lassoSignatureMethod sign_method, const char *private_key_file)
 {
 	BIO *bio = NULL;
 	xmlChar *digest = NULL; /* 160 bit buffer */

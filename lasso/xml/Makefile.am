@@ -3,9 +3,7 @@ liblassoincludedir = $(includedir)/lasso/xml
 INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
-	$(LASSO_DEFINES) \
-	$(LASSO_CFLAGS) \
-	-DLASSO_INTERNALS \
+	$(LASSO_CORE_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
 noinst_LTLIBRARIES = liblasso-xml.la

@@ -5,7 +5,7 @@ python_DATA = lasso.py
 python_LTLIBRARIES = _lasso.la
 
 _lasso_la_SOURCES = lasso_wrap.c
-_lasso_la_CFLAGS = $(LASSO_CFLAGS) -DSWIG_COBJECT_TYPES $(PY_CFLAGS)
+_lasso_la_CFLAGS = $(LASSO_CORE_CFLAGS) -DSWIG_COBJECT_TYPES $(PY_CFLAGS)
 _lasso_la_LIBADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 if DARWIN
 _lasso_la_LDFLAGS = -no-undefined -module -avoid-version -Wl,-F. -Wl,-F. -bundle -framework Python 
