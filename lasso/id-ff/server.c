@@ -95,6 +95,12 @@ lasso_server_add_provider(LassoServer *server,
   g_ptr_array_add(server->providers, provider);
 }
 
+void
+lasso_server_destroy(LassoServer *server)
+{
+  g_object_unref(G_OBJECT(server));
+}
+
 LassoProvider*
 lasso_server_get_provider(LassoServer *server,
 			  gchar       *providerID)
@@ -245,33 +251,33 @@ lasso_server_new_from_dump(gchar *dump)
 
     while(provider_xmlNode){
       if(provider_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(provider_xmlNode->name, LASSO_PROVIDER_NODE)){
-	/* provider node */
-	provider_node = lasso_node_new_from_xmlNode(provider_xmlNode);
+/* 	/\* provider node *\/ */
+/* 	provider_node = lasso_node_new_from_xmlNode(provider_xmlNode); */
 
-	/*  metadata */
-	entity_node = lasso_node_get_child(provider_node, "EntityDescriptor");
+/* 	/\*  metadata *\/ */
+/* 	entity_node = lasso_node_get_child(provider_node, "EntityDescriptor"); */
 
-	/* public key */
-	public_key = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE);
+/* 	/\* public key *\/ */
+/* 	public_key = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE); */
 
-	/* certificate */
-	certificate = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_CERTIFICATE_NODE);
+/* 	/\* certificate *\/ */
+/* 	certificate = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_CERTIFICATE_NODE); */
 
-	/* add provider */
-	provider = lasso_provider_new_
-
-
+/* 	/\* add provider *\/ */
+/* 	provider = lasso_provider_new_ */
 
 
-	/* add a new provider */
-	provider = lasso_provider_new_metadata_xmlNode(entity_xmlNode);
-	if(public_key){
-	  lasso_provider_set_public_key(provider, public_key);
-	}
-	if(certificate){
-	  lasso_provider_set_public_key(provider, certificate);
-	}
-	lasso_server_add_lasso_provider(server, provider);
+
+
+/* 	/\* add a new provider *\/ */
+/* 	provider = lasso_provider_new_metadata_xmlNode(entity_xmlNode); */
+/* 	if(public_key){ */
+/* 	  lasso_provider_set_public_key(provider, public_key); */
+/* 	} */
+/* 	if(certificate){ */
+/* 	  lasso_provider_set_public_key(provider, certificate); */
+/* 	} */
+/* 	lasso_server_add_lasso_provider(server, provider); */
       }
 
       provider_xmlNode = provider_xmlNode->next;

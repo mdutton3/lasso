@@ -79,9 +79,11 @@ struct _LassoProfileContext {
   LassoNode *response;
 
   gchar *remote_providerID;
-  
+
   gchar *msg_url;
   gchar *msg_body;
+
+  int provider_type;
 
   /*< private >*/
   lassoMessageTypes request_type;

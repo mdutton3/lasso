@@ -329,5 +329,6 @@ lasso_logout_new(LassoServer *server,
 			"provider_type", provider_type,
 			NULL);
 
+
   return(logout);
 }

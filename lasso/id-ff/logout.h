@@ -47,7 +47,6 @@ typedef struct _LassoLogoutClass LassoLogoutClass;
 
 struct _LassoLogout {
   LassoProfileContext parent;
-  int provider_type;
 
   /*< private >*/
 };
