@@ -72,8 +72,6 @@ lasso_login_build_assertion(LassoLogin      *login,
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail(LASSO_IS_FEDERATION(federation),
-		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* get RequestID to build Assertion */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
