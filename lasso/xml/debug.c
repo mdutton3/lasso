@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
@@ -38,7 +39,7 @@
 int  debug_line;
 char debug_filename[512];
 char debug_function[512];
-static const char *errorcode[4] = {
+static const char *levels[4] = {
   "DEBUG:",
   "INFO:", 
   "WARNING:",
@@ -63,12 +64,12 @@ _debug(unsigned int level,
   char new_debug_string[2048];
   time_t ts;
   char date[20];
-  char *color;
+  char *color = NULL;
 
   va_list args;
   
   if ((level < 0) || (level > 3)) {
-    printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n");
+    printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n", level);
     return;
   }
 
@@ -97,7 +98,7 @@ _debug(unsigned int level,
   sprintf(new_debug_string, 
 	  "%s%s%s %s (%s/%s:%d)\t%s", 
 	  color,
-	  errorcode[level],
+	  levels[level],
 	  normal,
 	  date,
 	  debug_filename, debug_function,
