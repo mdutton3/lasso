@@ -24,7 +24,13 @@
 
 #include <lasso/xml/debug.h>
 
-int debug_line;
+#define normal "\033[m"
+#define red    "\033[31m"
+#define green  "\033[32m"
+#define yellow "\033[33m"
+#define blue   "\033[34m"
+
+int  debug_line;
 char debug_filename[512];
 char debug_function[512];
 static const char *errorcode[4] = {
@@ -50,7 +56,7 @@ _debug(unsigned int level,
 {
   char debug_string[1024];
   char new_debug_string[2048];
-  char *color;
+  char *color, *p;
 
   va_list args;
   
@@ -58,9 +64,10 @@ _debug(unsigned int level,
     printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n");
     return;
   }
- 
+
   va_start(args, format);
-  vsprintf(debug_string, format, args);
+  //vsprintf(debug_string, format, args);
+  vsnprintf(debug_string, sizeof(debug_string), format, args);
   va_end(args);
 
   switch (level) {
@@ -71,6 +78,8 @@ _debug(unsigned int level,
     color = blue;
     break;
   case DEBUG:
+    color = yellow;
+    break;
   case INFO:
     color = green;
     break;
@@ -80,7 +89,7 @@ _debug(unsigned int level,
 	  "%s%s%s (%s/%s:%d)\t%s", 
 	  color,
 	  errorcode[level],
-	  black,
+	  normal,
 	  debug_filename, debug_function,
 	  debug_line, debug_string);
 

@@ -32,15 +32,10 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#define black "\033[m"
-#define red   "\033[31m"
-#define green "\033[32m"
-#define blue  "\033[34m"
-
-#define DEBUG   0
-#define INFO    1
-#define WARNING 2
-#define ERROR   3
+#define DEBUG   0 /* for debug - print only if flags LASSO_DEBUG is defined */
+#define INFO    1 /* just print info */
+#define WARNING 2 /* non fatal errors */
+#define ERROR   3 /* criticial/fatal errors */
 
 void set_debug_info(int line, char *filename, char *function);
 void _debug(unsigned int level, const char *format, ...);
@@ -48,7 +43,7 @@ void _debug(unsigned int level, const char *format, ...);
 #if defined LASSO_DEBUG
 #define debug set_debug_info(__LINE__, __FILE__, __FUNCTION__); _debug
 #else
-#define debug(level, format, ...);
+#define debug(level, format, args...) if (level > DEBUG) { set_debug_info(__LINE__, __FILE__, __FUNCTION__);  _debug(level, format, ##args); }
 #endif
 
 #ifdef __cplusplus
