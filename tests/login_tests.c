@@ -135,8 +135,11 @@ START_TEST(test02_serviceProviderLogin)
 			"lasso_login_must_authenticate() should be TRUE");
 	fail_unless(idpLoginContext->protocolProfile == lassoLoginProtocolProfileBrwsArt,
 			"protocoleProfile should be ProfileBrwsArt");
+	fail_unless(! lasso_login_must_ask_for_consent(idpLoginContext),
+			"lasso_login_must_ask_for_consent() should be FALSE");
 	rc = lasso_login_build_artifact_msg(idpLoginContext,
-			1,
+			1, /* authentication_result */
+		        0, /* is_consent_obtained */
 			lassoSamlAuthenticationMethodPassword,
 			"FIXME: reauthenticateOnOrAfter",
 			lassoHttpMethodRedirect);
