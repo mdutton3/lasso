@@ -46,6 +46,10 @@
     </repository>
     <release>
       <Version>
+        <created>2004-09-06</created>
+        <revision>0.4.0</revision>
+      </Version>
+      <Version>
         <created>2004-07-27</created>
         <revision>0.3.0</revision>
       </Version>
