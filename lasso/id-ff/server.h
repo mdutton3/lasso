@@ -49,6 +49,7 @@ typedef struct _LassoServerPrivate LassoServerPrivate;
 struct _LassoServer {
 	LassoProvider parent;
 
+	/*< public >*/
 	GHashTable *providers;
 	GHashTable *services;  /* hash for services with 'service type' as key */
 
@@ -75,8 +76,8 @@ LASSO_EXPORT LassoServer* lasso_server_new(const gchar *metadata,
 LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT gint lasso_server_add_provider (LassoServer *server,
-		LassoProviderRole role, gchar *metadata,
-		gchar *public_key, gchar *ca_cert_chain);
+		LassoProviderRole role, const gchar *metadata,
+		const gchar *public_key, const gchar *ca_cert_chain);
 
 LASSO_EXPORT gint lasso_server_add_service(LassoServer *server,
 					   const gchar *service_type,

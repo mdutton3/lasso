@@ -89,8 +89,8 @@ struct _LassoProviderClass {
 };
 
 LASSO_EXPORT GType lasso_provider_get_type(void);
-LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, char *metadata,
-		char *public_key, char *ca_cert_chain);
+LASSO_EXPORT LassoProvider* lasso_provider_new(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain);
 LASSO_EXPORT gchar* lasso_provider_get_metadata_one(LassoProvider *provider, const char *name);
 LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, const char *name);
 

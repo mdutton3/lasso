@@ -40,7 +40,6 @@
 <!ENTITY LassoSamlpRequest SYSTEM "sgml/samlp_request.sgml">
 <!ENTITY LassoLibAuthnContext SYSTEM "sgml/lib_authn_context.sgml">
 <!ENTITY LassoLibAuthenticationStatement SYSTEM "sgml/lib_authentication_statement.sgml">
-<!ENTITY lasso-export SYSTEM "sgml/export.sgml">
 <!ENTITY lasso-lasso SYSTEM "sgml/lasso.sgml">
 <!ENTITY lasso-version SYSTEM "sgml/version.sgml">
 <!ENTITY LassoFederation SYSTEM "sgml/federation.sgml">
@@ -106,15 +105,26 @@ implement Liberty Alliance specifications.
 
     &LassoNode;
     &LassoLibAssertion;
+    &LassoLibAuthenticationStatement;
+    &LassoLibAuthnContext;
     &LassoLibAuthnRequest;
     &lasso-LassoLibAuthnRequestEnvelope;
     &LassoLibAuthnResponse;
     &lasso-LassoLibAuthnResponseEnvelope;
+    &LassoLibFederationTerminationNotification;
     &LassoLibIDPEntries;
     &LassoLibIDPEntry;
     &LassoLibIDPList;
+    &LassoLibLogoutRequest;
+    &LassoLibLogoutResponse;
+    &LassoLibNameIdentifierMappingRequest;
+    &LassoLibNameIdentifierMappingResponse;
+    &LassoLibRegisterNameIdentifierRequest;
+    &LassoLibRegisterNameIdentifierResponse;
     &LassoLibRequestAuthnContext;
     &LassoLibScoping;
+    &LassoLibStatusResponse;
+    &LassoLibSubject;
     &LassoSamlAdvice;
     &LassoSamlAssertion;
     &LassoSamlAudienceRestrictionCondition;
@@ -123,29 +133,22 @@ implement Liberty Alliance specifications.
     &LassoSamlConditionAbstract;
     &LassoSamlConditions;
     &LassoSamlNameIdentifier;
-    &LassoSamlStatementAbstract;
-    &LassoSamlSubject;
-    &LassoSamlSubjectConfirmation;
-    &LassoSamlSubjectLocality;
-    &LassoSamlSubjectStatementAbstract;
+    &LassoSamlpRequest;
     &LassoSamlpRequestAbstract;
     &LassoSamlpResponse;
     &LassoSamlpResponseAbstract;
     &LassoSamlpStatus;
     &LassoSamlpStatusCode;
-    &LassoLibLogoutRequest;
-    &LassoLibFederationTerminationNotification;
-    &LassoLibLogoutResponse;
-    &LassoLibNameIdentifierMappingRequest;
-    &LassoLibNameIdentifierMappingResponse;
-    &LassoLibRegisterNameIdentifierRequest;
-    &LassoLibRegisterNameIdentifierResponse;
-    &LassoLibStatusResponse;
-    &LassoLibSubject;
-    &LassoSamlpRequest;
-    &LassoLibAuthnContext;
-    &LassoLibAuthenticationStatement;
-    &lasso-export;
+    &LassoSamlStatementAbstract;
+    &LassoSamlSubject;
+    &LassoSamlSubjectConfirmation;
+    &LassoSamlSubjectLocality;
+    &LassoSamlSubjectStatementAbstract;
+  </chapter>
+
+  <chapter id="misc">
+    <title>Misc</title>
+
     &lasso-lasso;
     &lasso-version;
   </chapter>

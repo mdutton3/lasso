@@ -549,16 +549,17 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 /**
  * lasso_provider_new:
  * @role: provider role, identity provider or service provider
- * @metadata: path to metadata file for the provider
- * @public_key: 
- * @ca_cert_chain:
+ * @metadata: path to the provider metadata file
+ * @public_key: path to the provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: path to the provider CA certificate chain file or NULL
  *
- * Creates a new #LassoProvider
+ * Creates a new #LassoProvider.
  *
- * Return value: a newly created #LassoProvider
+ * Return value: a newly created #LassoProvider; or NULL if an error occured
  */
 LassoProvider*
-lasso_provider_new(LassoProviderRole role, char *metadata, char *public_key, char *ca_cert_chain)
+lasso_provider_new(LassoProviderRole role, const char *metadata,
+		const char *public_key, const char *ca_cert_chain)
 {
 	LassoProvider *provider;
 

@@ -6,7 +6,7 @@ Representation of a provider
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+It holds all the data about a provider.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -73,65 +73,12 @@ Representation of a provider
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_provider_get_metadata_one ##### -->
-<para>
-
-</para>
-
-@provider: 
-@name: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_provider_get_metadata_list ##### -->
-<para>
-
-</para>
-
-@provider: 
-@name: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_provider_load_metadata ##### -->
-<para>
-
-</para>
-
-@provider: 
-@metadata: 
-@Returns: 
-
-
 <!-- ##### FUNCTION lasso_provider_new_from_dump ##### -->
 <para>
 
 </para>
 
 @dump: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_provider_verify_signature ##### -->
-<para>
-
-</para>
-
-@provider: 
-@message: 
-@id_attr_name: 
-@format: 
-@Returns: 
-
-
-<!-- ##### FUNCTION lasso_provider_get_first_http_method ##### -->
-<para>
-
-</para>
-
-@provider: 
-@remote_provider: 
-@protocol_type: 
 @Returns: 
 
 
@@ -148,6 +95,46 @@ Representation of a provider
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_provider_get_base64_succint_id ##### -->
+<para>
+
+</para>
+
+@provider: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_first_http_method ##### -->
+<para>
+
+</para>
+
+@provider: 
+@remote_provider: 
+@protocol_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_metadata_list ##### -->
+<para>
+
+</para>
+
+@provider: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_metadata_one ##### -->
+<para>
+
+</para>
+
+@provider: 
+@name: 
+@Returns: 
+
+
 <!-- ##### FUNCTION lasso_provider_has_protocol_profile ##### -->
 <para>
 
@@ -159,12 +146,25 @@ Representation of a provider
 @Returns: 
 
 
-<!-- ##### FUNCTION lasso_provider_get_base64_succint_id ##### -->
+<!-- ##### FUNCTION lasso_provider_load_metadata ##### -->
 <para>
 
 </para>
 
 @provider: 
+@metadata: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_verify_signature ##### -->
+<para>
+
+</para>
+
+@provider: 
+@message: 
+@id_attr_name: 
+@format: 
 @Returns: 
 
 

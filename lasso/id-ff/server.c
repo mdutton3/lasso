@@ -37,18 +37,19 @@ struct _LassoServerPrivate
 
 /**
  * lasso_server_add_provider:
- * @server: a LassoServer
- * @metadata: the provider metadata file
- * @public_key: the provider public key file (may be a certificate) or NULL
- * @ca_cert_chain: the provider CA certificate chain file or NULL
+ * @server: a #LassoServer
+ * @role: provider role, identity provider or service provider
+ * @metadata: path to the provider metadata file
+ * @public_key: provider public key file (may be a certificate) or NULL
+ * @ca_cert_chain: provider CA certificate chain file or NULL
  * 
- * Adds a provider in a server.
+ * Creates a new #LassoProvider and makes it known to the @server
  * 
- * Return value: 0 on success or a negative value if an error occurs.
+ * Return value: 0 on success; a negative value if an error occured.
  **/
 gint
 lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
-		gchar *metadata, gchar *public_key, gchar *ca_cert_chain)
+		const gchar *metadata, const gchar *public_key, const gchar *ca_cert_chain)
 {
 	LassoProvider *provider;
 
@@ -91,6 +92,12 @@ lasso_server_add_service(LassoServer *server,
 	return 0;
 }
 
+/**
+ * lasso_server_destroy
+ * @server: a #LassoServer
+ *
+ * Destroys a server.
+ **/
 void
 lasso_server_destroy(LassoServer *server)
 {
@@ -218,6 +225,15 @@ get_first_providerID(gchar *key, gpointer value, char **providerID)
 	return TRUE;
 }
 
+/**
+ * lasso_server_get_first_providerID:
+ * @server: a #LassoServer
+ *
+ * Looks up and returns the provider ID of a known provider
+ *
+ * Return value: the provider ID, NULL if there are no providers.  This string
+ *      must be freed by the caller.
+ **/
 gchar*
 lasso_server_get_first_providerID(LassoServer *server)
 {
@@ -227,6 +243,16 @@ lasso_server_get_first_providerID(LassoServer *server)
 	return g_strdup(providerID);
 }
 
+/**
+ * lasso_server_get_provider:
+ * @server: a #LassoServer
+ * @providerID: the provider ID
+ *
+ * Looks up for a #LassoProvider whose ID is @providerID and returns it.
+ *
+ * Return value: the #LassoProvider, NULL if it was not found.  The
+ *     #LassoProvider is owned by Lasso and should not be freed.
+ **/
 LassoProvider*
 lasso_server_get_provider(LassoServer *server, gchar *providerID)
 {
@@ -363,15 +389,16 @@ lasso_server_get_type()
 
 /**
  * lasso_server_new:
- * @metadata: the server metadata file
- * @private_key: the server private key or NULL
- * @secret_key: the server secret key (to decrypt the private key)
- * @certificate: the server certificate
+ * @metadata: path to the provider metadata file
+ * @private_key: path to the the server private key file or NULL
+ * @secret_key: path to the the server secret key file (used to decrypt the
+ *     private key)
+ * @certificate: path to the server certificate file
  * 
- * Creates a server. The caller is responsible for destroying returned
- * object by calling #lasso_server_destroy method.
+ * Creates a new #LassoServer.
  * 
- * Return value: a newly allocated #LassoServer object or NULL if an error occurs.
+ * Return value: a newly created #LassoServer object; or NULL if an error
+ *      occured
  **/
 LassoServer*
 lasso_server_new(const gchar *metadata,
@@ -400,6 +427,14 @@ lasso_server_new(const gchar *metadata,
 	return server;
 }
 
+/**
+ * lasso_server_new_from_dump
+ * @dump: XML server dump
+ *
+ * Restores the @dump to a new #LassoServer.
+ *
+ * Return value: a newly created #LassoServer; or NULL if an error occured
+ **/
 LassoServer*
 lasso_server_new_from_dump(const gchar *dump)
 {
@@ -415,9 +450,16 @@ lasso_server_new_from_dump(const gchar *dump)
 	return LASSO_SERVER(server);
 }
 
+/**
+ * lasso_server_dump:
+ * @server: a #LassoServer
+ *
+ * Dumps server content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
+ **/
 gchar*
 lasso_server_dump(LassoServer *server)
 {
 	return lasso_node_dump(LASSO_NODE(server), NULL, 1);
 }
-
