@@ -49,7 +49,7 @@ lasso_identity_set_remote_nameIdentifier(LassoIdentity *identity,
 static void
 lasso_identity_instance_init(LassoIdentity *identity)
 {
-  identity->local_nameIdentifier = NULL;
+  identity->local_nameIdentifier  = NULL;
   identity->remote_nameIdentifier = NULL;
 }
 
@@ -89,7 +89,6 @@ lasso_identity_new(gchar *remote_providerID)
   identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
   identity->remote_providerID = g_strdup(remote_providerID);
-  //sprintf(identity->remote_providerID, "%s", remote_providerID);
 
   return(identity);
 }
