@@ -903,7 +903,7 @@ static void free_xml_list_elem(xmlNode *xmlnode, gpointer unused)
 #define LassoLibAuthnRequest_set_extension LassoLibAuthnRequest_extension_set
 void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringArray *extension) {
 	if (self->Extension != NULL) {
-		g_list_foreach(self->Extension, free_xml_list_elem, NULL);
+		g_list_foreach(self->Extension, (GFunc) free_xml_list_elem, NULL);
 		g_list_free(self->Extension);
 	}
 	if (extension == NULL)
