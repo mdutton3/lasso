@@ -209,7 +209,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   status = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				"Status", lassoSamlProtocolHRef, &err);
   if (status == NULL) {
-    /* nico : return a code error if status code not found */
+    /* nico : return an error code error if status code not found */
     ret = -1;
     goto done;
   }
@@ -515,17 +515,20 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 /**
  * lasso_login_build_authn_request_msg:
  * @login: a LassoLogin
- * @remote_providerID: the providerID of the identity provider
+ * @remote_providerID: the providerID of the identity provider or NULL
  * 
- * Builds an authentication request. Depending of the SSO protocol profile of
- * the identity provider (defined in metadata file), the data for the sending of
- * the request are stored in msg_url (GET) or msg_url and msg_body (POST).
+ * Builds an authentication request. Depending of the selected HTTP method,
+ * the data for the sending of the request are stored in msg_url (GET) or
+ * msg_url and msg_body (POST).
  * 
+ * If remote_providerID is NULL, the providerID of the first provider
+ * of server is used.
+ *
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
-lasso_login_build_authn_request_msg(LassoLogin      *login,
-				    const gchar     *remote_providerID)
+lasso_login_build_authn_request_msg(LassoLogin  *login,
+				    const gchar *remote_providerID)
 {
   LassoProvider *provider, *remote_provider;
   xmlChar *md_authnRequestsSigned = NULL;
@@ -538,10 +541,14 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
   GError *err = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
-  
+  if (remote_providerID != NULL) {
+    LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+  }
+  else {
+    LASSO_PROFILE(login)->remote_providerID = lasso_server_get_first_providerID(LASSO_PROFILE(login)->server);
+  }
+
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
 						  LASSO_PROFILE(login)->remote_providerID,
@@ -910,7 +917,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   default:
     break;
   }
-  /* verify ASSO_PROFILE(login)-request is an AuthnRequest object */
+  /* verify login>-request is an AuthnRequest object */
   if ( LASSO_IS_AUTHN_REQUEST(LASSO_PROFILE(login)->request) == FALSE ) {
     message(G_LOG_LEVEL_CRITICAL, "Message is not an AuthnRequest\n");
     return -1;
@@ -929,6 +936,10 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   }
   else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsPost)) {
     login->protocolProfile = lassoLoginProtocolProfileBrwsPost;
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Unknown ProtocolProfile : %s\n", protocolProfile);
+    return -2;
   }
   xmlFree(protocolProfile);
 
@@ -1154,6 +1165,7 @@ gint
 lasso_login_process_request_msg(LassoLogin *login,
 				gchar      *request_msg)
 {
+/*   LassoProvider *remote_provider; */
   gint ret = 0;
   GError *err = NULL;
 
@@ -1168,6 +1180,16 @@ lasso_login_process_request_msg(LassoLogin *login,
     return LASSO_ERROR_UNDEFINED;
   }
   LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
+
+  /* TODO : verify signature */
+/*   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server, */
+/* 						  LASSO_PROFILE(login)->remote_providerID, */
+/* 						  NULL); */
+/*   ret = lasso_node_verify_x509_signature(LASSO_PROFILE(login)->request, */
+/* 					 remote_provider->ca_certificate); */
+/*   if (ret < 0) { */
+/*     return ret; */
+/*   } */
 
   /* get AssertionArtifact */
   login->assertionArtifact = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
