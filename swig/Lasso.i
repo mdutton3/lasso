@@ -635,32 +635,36 @@ void build_exception_msg(int errorCode, char *errorMsg) {
 
 
 /***********************************************************************
- * ProviderIds
+ * StringArray
  ***********************************************************************/
 
 
 #ifndef SWIGPHP4
-%rename(ProviderIds) LassoProviderIds;
+%rename(StringArray) LassoStringArray;
 #endif
 %{
-typedef GPtrArray LassoProviderIds;
+typedef GPtrArray LassoStringArray;
 %}
 typedef struct {
 	%extend {
 		/* Constructor, Destructor & Static Methods */
 
-		LassoProviderIds();
+		LassoStringArray();
 
-		~LassoProviderIds();
+		~LassoStringArray();
 
 		/* Methods */
+
+		void append(gchar *item) {
+			g_ptr_array_add(self, item);
+		}
 
 		GPtrArray *cast() {
 			return self;
 		}
 
-		static LassoProviderIds *frompointer(GPtrArray *providerIds) {
-			return (LassoProviderIds *) providerIds;
+		static LassoStringArray *frompointer(GPtrArray *providerIds) {
+			return (LassoStringArray *) providerIds;
 		}
 
 #if defined(SWIGPYTHON)
@@ -686,18 +690,40 @@ typedef struct {
 		gint length() {
 			return self->len;
 		}
+
+#if defined(SWIGPYTHON)
+		%rename(__setitem__) setitem;
+#endif
+		%exception setitem {
+			if (arg2 < 0 || arg2 >= arg1->len) {
+				char errorMsg[256];
+				sprintf(errorMsg, "%d", arg2);
+				SWIG_exception(SWIG_IndexError, errorMsg);
+			}
+			$action
+		}
+		void setitem(int index, gchar *item) {
+			gchar **itemPtr = (gchar **) &g_ptr_array_index(self, index);
+			if (*itemPtr != NULL)
+				g_free(*itemPtr);
+			if (item == NULL)
+				*itemPtr = NULL;
+			else
+				*itemPtr = g_strdup(item);
+		}
+		%exception setitem;
 	}
-} LassoProviderIds;
+} LassoStringArray;
 
 %{
 
 /* Constructors, destructors & static methods implementations */
 
-LassoProviderIds *new_LassoProviderIds() {
+LassoStringArray *new_LassoStringArray() {
 	return g_ptr_array_new();
 }
 
-void delete_LassoProviderIds(LassoProviderIds *self) {
+void delete_LassoStringArray(LassoStringArray *self) {
 	g_ptr_array_free(self, true);
 }
 
@@ -817,6 +843,7 @@ typedef struct {
 		gchar *affiliationId;
 		gchar *assertionConsumerServiceId;
 		gchar *consent;
+		LassoStringArray *extension;
 		gboolean forceAuthn;
 		gboolean isPassive;
 		gchar *nameIdPolicy;
@@ -860,6 +887,48 @@ gchar *LassoLibAuthnRequest_consent_get(LassoLibAuthnRequest *self) {
 #define LassoLibAuthnRequest_set_consent LassoLibAuthnRequest_consent_set
 void LassoLibAuthnRequest_consent_set(LassoLibAuthnRequest *self, gchar *consent) {
 	 LASSO_LIB_AUTHN_REQUEST(self)->consent = strdup(consent);
+}
+
+/* extension */
+#define LassoLibAuthnRequest_get_extension LassoLibAuthnRequest_extension_get
+LassoStringArray *LassoLibAuthnRequest_extension_get(LassoLibAuthnRequest *self) {
+	return NULL; /* FIXME */
+}
+#define LassoLibAuthnRequest_set_extension LassoLibAuthnRequest_extension_set
+void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringArray *extension) {
+	if (self->Extension != NULL)
+		xmlFreeNodeList(self->Extension);
+	if (extension == NULL)
+		self->Extension = NULL;
+	else {
+		xmlNode *extensionList = NULL;
+		int index;
+		xmlNs *libertyNamespace;
+		libertyNamespace = xmlNewNs(NULL, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+		for (index = 0; index < extension->len; index ++) {
+			xmlDoc *doc;
+			doc = xmlReadDoc(g_ptr_array_index(extension, index), NULL, NULL,
+					XML_PARSE_NONET);
+			if (doc != NULL) {
+				xmlNode *node;
+				node = xmlDocGetRootElement(doc);
+				if (node != NULL) {
+					xmlNode *extensionNode;
+					extensionNode = xmlNewNode(libertyNamespace, "Extension");
+					xmlAddChild(extensionNode, xmlCopyNode(node, 1));
+					if (extensionList == NULL)
+						extensionList = extensionNode;
+					else
+						xmlAddNextSibling(extensionList, extensionNode);
+						
+				}
+				xmlFreeDoc(doc);
+			}
+		}
+		if (extensionList == NULL)
+			xmlFreeNs(libertyNamespace);
+		self->Extension = extensionList;
+	}
 }
 
 /* forceAuthn */
@@ -1144,7 +1213,7 @@ typedef struct {
 
 		%immutable providerIds;
 		%newobject providerIds_get;
-		LassoProviderIds *providerIds;
+		LassoStringArray *providerIds;
 
 		/* Constructor, destructor & static methods */
 
@@ -1191,7 +1260,7 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 
 /* providerIds */
 #define LassoServer_get_providerIds LassoServer_providerIds_get
-LassoProviderIds *LassoServer_providerIds_get(LassoServer *self) {
+LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
 	g_hash_table_foreach(self->providers, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -1233,7 +1302,7 @@ typedef struct {
 
 		%immutable providerIds;
 		%newobject providerIds_get;
-		LassoProviderIds *providerIds;
+		LassoStringArray *providerIds;
 
 		/* Constructor, Destructor & Static Methods */
 
@@ -1263,7 +1332,7 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 
 /* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
-LassoProviderIds *LassoIdentity_providerIds_get(LassoIdentity *self) {
+LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->federations));
 	g_hash_table_foreach(self->federations, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
@@ -1304,7 +1373,7 @@ typedef struct {
 
 		%immutable providerIds;
 		%newobject providerIds_get;
-		LassoProviderIds *providerIds;
+		LassoStringArray *providerIds;
 
 		/* Constructor, destructor & static methods */
 
@@ -1334,7 +1403,7 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 
 /* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
-LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
+LassoStringArray *LassoSession_providerIds_get(LassoSession *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->assertions));
 	g_hash_table_foreach(self->assertions, (GHFunc) add_key_to_array, providerIds);
 	return providerIds;
