@@ -59,7 +59,7 @@ struct _LassoLibRequestAuthnContext {
 	GList *AuthnContextStatementRef;
 	/* <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" 
 	 *   minOccurs="0"/> */
-	char *AuthnContextComparisonType;
+	char *AuthnContextComparison;
 };
 
 struct _LassoLibRequestAuthnContextClass {

@@ -51,9 +51,38 @@
 #define LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED	 "federated"
 #define LASSO_LIB_NAMEID_POLICY_TYPE_ANY	 "any"
 
+/* AuthenticationClassRef */
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_INTERNET_PROTOCOL \
+	"http://www.projectliberty.org/schemas/authctx/classes/InternetProtocol"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_INTERNET_PROTOCOL_PASSWORD \
+	"http://www.projectliberty.org/schemas/authctx/classes/InternetProtocolPassword"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_MOBILE_ONE_FACTOR_UNREGISTERED \
+	"http://www.projectliberty.org/schemas/authctx/classes/MobileOneFactorUnregistered"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_MOBILE_TWO_FACTOR_UNREGISTERED \
+	"http://www.projectliberty.org/schemas/authctx/classes/MobileTwoFactorUnregistered"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_MOBILE_ONE_FACTOR_CONTRACT \
+	"http://www.projectliberty.org/schemas/authctx/classes/MobileOneFactorContract"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_MOBILE_TWO_FACTOR_CONTRACT \
+	"http://www.projectliberty.org/schemas/authctx/classes/MobileTwoFactorContract"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD \
+	"http://www.projectliberty.org/schemas/authctx/classes/Password"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD_PROTECTED_TRANSPORT \
+	"http: //www.projectliberty.org/schemas/authctx/classes/PasswordProtectedTransport"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PREVIOUS_SESSION \
+	"http://www.projectliberty.org/schemas/authctx/classes/PreviousSession"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_SMARTCARD \
+	"http://www.projectliberty.org/schemas/authctx/classes/Smartcard"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_SMARTCARD_PKI \
+	"http://www.projectliberty.org/schemas/authctx/classes/SmartcardPKI"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_SOFTWARE_PKI \
+	"http://www.projectliberty.org/schemas/authctx/classes/SoftwarePKI"
+#define LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_TIME_SYNC_TOKEN \
+	"http://www.projectliberty.org/schemas/authctx/classes/TimeSyncToken"
+
 /* AuthnContextComparison */
 #define LASSO_LIB_AUTHN_CONTEXT_COMPARISON_EXACT	 "exact"
 #define LASSO_LIB_AUTHN_CONTEXT_COMPARISON_MINIMUM	 "minimum"
+#define LASSO_LIB_AUTHN_CONTEXT_COMPARISON_MAXIMUM	 "maximum"
 #define LASSO_LIB_AUTHN_CONTEXT_COMPARISON_BETTER	 "better"
 
 /* StatusCodes */
@@ -202,6 +231,7 @@
 #define LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG       "urn:ietf:rfc:3075"
 #define LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED	\
 	"urn:oasis:names:tc:SAML:1.0:am:unspecified"
+#define LASSO_SAML_AUTHENTICATION_METHOD_LIBERTY        "urn:liberty:ac:2003-08"
 
 /* ConfirmationMethods */
 #define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01	\

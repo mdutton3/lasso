@@ -53,8 +53,8 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoLibRequestAuthnContext, AuthnContextClassRef) },
 	{ "AuthnContextStatementRef", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoLibRequestAuthnContext, AuthnContextStatementRef) },
-	{ "AuthnContextComparisonType", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoLibRequestAuthnContext, AuthnContextComparisonType) },
+	{ "AuthnContextComparison", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoLibRequestAuthnContext, AuthnContextComparison) },
 	{ NULL, 0, 0}
 };
 
@@ -67,7 +67,7 @@ instance_init(LassoLibRequestAuthnContext *node)
 {
 	node->AuthnContextClassRef = NULL;
 	node->AuthnContextStatementRef = NULL;
-	node->AuthnContextComparisonType = NULL;
+	node->AuthnContextComparison = NULL;
 }
 
 static void
