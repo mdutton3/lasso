@@ -276,7 +276,7 @@ static PyMethodDef lasso_methods[] = {
   {"register_name_identifier_build_response_msg",   register_name_identifier_build_response_msg,   METH_VARARGS},
   {"register_name_identifier_destroy",              register_name_identifier_destroy,              METH_VARARGS},
   {"register_name_identifier_init_request",         register_name_identifier_init_request,         METH_VARARGS},
-  {"register_name_identifier_process_request",      register_name_identifier_process_request,      METH_VARARGS},
+  {"register_name_identifier_process_request_msg",  register_name_identifier_process_request_msg,  METH_VARARGS},
   {"register_name_identifier_process_response_msg", register_name_identifier_process_response_msg, METH_VARARGS},
 
   /* py_server.h */

@@ -47,7 +47,7 @@ PyObject *register_name_identifier_build_response_msg(PyObject *self, PyObject *
 PyObject *register_name_identifier_destroy(PyObject *self, PyObject *args);
 PyObject *register_name_identifier_init_request(PyObject *self, PyObject *args);
 PyObject *register_name_identifier_new(PyObject *self, PyObject *args);
-PyObject *register_name_identifier_process_request(PyObject *self, PyObject *args);
+PyObject *register_name_identifier_process_request_msg(PyObject *self, PyObject *args);
 PyObject *register_name_identifier_process_response_msg(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_REGISTER_NAME_IDENTIFIER_H__ */

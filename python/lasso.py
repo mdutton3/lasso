@@ -1414,10 +1414,10 @@ class RegisterNameIdentifier(Profile):
         if errorCode:
             raise newError(errorCode, 'lasso_register_name_identifier_init_request')
 
-    def process_request(self):
-        errorCode = lassomod.register_name_identifier_process_request(self)
+    def process_request_msg(self):
+        errorCode = lassomod.register_name_identifier_process_request_msg(self)
         if errorCode:
-            raise newError(errorCode, 'lasso_register_name_identifier_process_request')
+            raise newError(errorCode, 'lasso_register_name_identifier_process_request_msg')
 
     def process_response_msg(self, response_msg, response_method):
         errorCode = lassomod.register_name_identifier_process_response_msg(

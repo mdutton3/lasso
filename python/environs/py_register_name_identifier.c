@@ -155,18 +155,22 @@ PyObject *register_name_identifier_init_request(PyObject *self, PyObject *args) 
   return(int_wrap(codeError));
 }
 
-PyObject *register_name_identifier_process_request(PyObject *self, PyObject *args) {
+PyObject *register_name_identifier_process_request_msg(PyObject *self, PyObject *args) {
   PyObject *register_name_identifier_obj;
+  gchar    *request_msg;
+  gint      request_method;
   gint      codeError;
 
-  if (CheckArgs(args, "O:register_name_identifier_process_request")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_process_request",
-			 &register_name_identifier_obj))
+  if (CheckArgs(args, "OS:register_name_identifier_process_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "OS:register_name_identifier_process_request_msg",
+			 &register_name_identifier_obj, &request_msg, &request_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier_get(register_name_identifier_obj));
+  codeError = lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier_get(register_name_identifier_obj),
+								 request_msg,
+								 request_method);
 
   return(int_wrap(codeError));
 }
