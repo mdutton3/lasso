@@ -49,8 +49,8 @@ typedef struct _LassoLogin LassoLogin;
 typedef struct _LassoLoginClass LassoLoginClass;
 
 typedef enum {
-  lassoLoginProtocolPorfileBrwsArt = 1,
-  lassoLoginProtocolPorfileBrwsPost,
+  lassoLoginProtocolProfileBrwsArt = 1,
+  lassoLoginProtocolProfileBrwsPost,
 } lassoLoginProtocolProfiles;
 
 struct _LassoLogin {

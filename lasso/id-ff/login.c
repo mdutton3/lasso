@@ -134,7 +134,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   xmlChar *providerID;
 
   /* ProtocolProfile must be BrwsArt */
-  if (login->protocolProfile != lassoLoginProtocolPorfileBrwsArt) {
+  if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
     return (-1);
   }
 
@@ -260,7 +260,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   LassoIdentity *identity;
 
   /* ProtocolProfile must be BrwsPost */
-  if (login->protocolProfile != lassoLoginProtocolPorfileBrwsPost) {
+  if (login->protocolProfile != lassoLoginProtocolProfileBrwsPost) {
     return (-1);
   }
   
@@ -404,24 +404,24 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   protocolProfile = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
 						 "ProtocolProfile", NULL);
   if (protocolProfile == NULL) {
-    login->protocolProfile = lassoLoginProtocolPorfileBrwsArt;
+    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
   }
   else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsArt)) {
-    login->protocolProfile = lassoLoginProtocolPorfileBrwsArt;
+    login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
   }
   else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileBrwsPost)) {
-    login->protocolProfile = lassoLoginProtocolPorfileBrwsPost;
+    login->protocolProfile = lassoLoginProtocolProfileBrwsPost;
   }
 
   /* build response */
   switch (login->protocolProfile) {
-  case lassoLoginProtocolPorfileBrwsPost:
+  case lassoLoginProtocolProfileBrwsPost:
     /* create LibAuthnResponse */
     LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(server)),
 								      LASSO_PROFILE_CONTEXT(login)->request);
     LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
     break;
-  case lassoLoginProtocolPorfileBrwsArt:
+  case lassoLoginProtocolProfileBrwsArt:
     /* create SamlpResponse */
     LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new();
     LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
