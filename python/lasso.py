@@ -791,6 +791,11 @@ class AuthenticationStatement(Node):
 SignatureMethodRsaSha1 = 1
 SignatureMethodDsaSha1 = 2
 
+HttpMethodGet      = 1
+HttpMethodPost     = 2
+HttpMethodRedirect = 3
+HttpMethodSoap     = 4
+
 MessageTypeNone          = 0
 MessageTypeAuthnRequest  = 1
 MessageTypeAuthnResponse = 2
@@ -868,6 +873,13 @@ class Login:
 
     def init_authn_request(self, remote_providerID):
         return lassomod.login_init_authn_request(self, remote_providerID)
+
+    def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
+        return lassomod.login_init_from_authn_request_msg(self, authn_request_msg,
+                                                          authn_request_method)
+
+    def must_authenticate(self):
+        return lassomod.login_must_authenticate(self)
 
 
 class Logout:

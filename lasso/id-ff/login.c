@@ -423,7 +423,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     switch (authn_request_method) {
     case lassoHttpMethodGet:
     case lassoHttpMethodRedirect:
-      printf("VERIFY SIGNATURE\n");
+      debug(INFO, "Query signature has been verified\n");
       signature_status = lasso_query_verify_signature(authn_request_msg,
 						      remote_provider->public_key,
 						      LASSO_PROFILE_CONTEXT(login)->server->private_key);

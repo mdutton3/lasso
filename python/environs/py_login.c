@@ -56,8 +56,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssss]", "request", "response", "request_type",
-			 "msg_url");
+    return Py_BuildValue("[sssss]", "request", "response", "request_type",
+			 "msg_url", "protocolProfile");
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
   if (!strcmp(attr, "response"))
@@ -65,7 +65,9 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   if (!strcmp(attr, "request_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
   if (!strcmp(attr, "msg_url"))
-    return (charPtr_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
+  if (!strcmp(attr, "protocolProfile"))
+    return (int_wrap(login->protocolProfile));
 
   Py_INCREF(Py_None);
   return (Py_None);
@@ -174,5 +176,41 @@ PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
   ret = lasso_login_init_authn_request(LassoLogin_get(login_obj),
 				       remote_providerID);
   
+  return (int_wrap(ret));
+}
+
+PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar            *authn_request_msg;
+  lassoHttpMethods  authn_request_method;
+  gint ret;
+
+  if (CheckArgs(args, "OSI:login_init_from_authn_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:login_init_from_authn_request_msg",
+			 &login_obj, &authn_request_msg, &authn_request_method))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_init_from_authn_request_msg(LassoLogin_get(login_obj),
+						authn_request_msg,
+						authn_request_method);
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_must_authenticate(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gboolean ret;
+
+  if (CheckArgs(args, "O:login_must_authenticate")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_must_authenticate",
+			 &login_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_must_authenticate(LassoLogin_get(login_obj));
+
   return (int_wrap(ret));
 }

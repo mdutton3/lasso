@@ -45,5 +45,7 @@ PyObject *login_new_from_dump(PyObject *self, PyObject *args);
 PyObject *login_build_artifact_msg(PyObject *self, PyObject *args);
 PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args);
 PyObject *login_init_authn_request(PyObject *self, PyObject *args);
+PyObject *login_init_from_authn_request_msg(PyObject *self, PyObject *args);
+PyObject *login_must_authenticate(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGIN_H__ */
