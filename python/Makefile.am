@@ -1,6 +1,6 @@
 NULL=
 
-INCLUDES=-I$(top_srcdir)
+INCLUDES=-I$(top_srcdir)/lasso
 
 pythondir= $(PY_SITE_PACKAGES)
 python_DATA=lassomod.py
@@ -13,7 +13,7 @@ _lassomod_la_CFLAGS=	$(LASSO_CFLAGS) \
 			-DSWIG_COBJECT_TYPES \
 			$(PY_CFLAGS) \
 			$(NULL)
-_lassomod_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
+_lassomod_la_LIBADD=	$(top_builddir)/lasso/liblasso.la \
 			$(LASSO_LIBS) \
 			$(NULL)
 _lassomod_la_LDFLAGS=	-no-undefined \
