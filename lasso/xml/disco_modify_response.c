@@ -65,6 +65,34 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static LassoNodeClass *parent_class = NULL;
+
+static void
+insure_namespace(xmlNode *xmlnode, xmlNs *ns)
+{
+	xmlNode *t = xmlnode->children;
+
+	xmlSetNs(xmlnode, ns);
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
+			insure_namespace(t, ns);
+		t = t->next;
+	}
+}
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	xmlNs *ns;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	ns = xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	insure_namespace(xmlnode, ns);
+
+	return xmlnode;
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -82,9 +110,10 @@ class_init(LassoDiscoModifyResponseClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "ModifyResponse");
-	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 

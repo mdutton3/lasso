@@ -61,6 +61,34 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static LassoNodeClass *parent_class = NULL;
+
+static void
+insure_namespace(xmlNode *xmlnode, xmlNs *ns)
+{
+	xmlNode *t = xmlnode->children;
+
+	xmlSetNs(xmlnode, ns);
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
+			insure_namespace(t, ns);
+		t = t->next;
+	}
+}
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	xmlNs *ns;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	ns = xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	insure_namespace(xmlnode, ns);
+
+	return xmlnode;
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -80,9 +108,10 @@ class_init(LassoDiscoQueryResponseClass *class)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(class);
 
+	parent_class = g_type_class_peek_parent(class);
+	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "QueryResponse");
-	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
@@ -122,4 +151,17 @@ lasso_disco_query_response_new(LassoUtilityStatus *status)
 	node->Status = status;
 
 	return node;
+}
+
+LassoDiscoQueryResponse*
+lasso_disco_query_response_new_from_message(const gchar *message)
+{
+	LassoDiscoQueryResponse *response;
+
+	g_return_val_if_fail(message != NULL, NULL);
+
+	response = g_object_new(LASSO_TYPE_DISCO_QUERY_RESPONSE, NULL);
+	lasso_node_init_from_message(LASSO_NODE(response), message);
+
+	return response;
 }
