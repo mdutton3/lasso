@@ -450,7 +450,7 @@ AC_OUTPUT([
 lasso/version.h
 Makefile
 lasso/Makefile
-lasso/schema/Makefile
+lasso/xml/Makefile
 lasso/protocols/Makefile
 docs/Makefile
 docs/reference/Makefile

@@ -35,9 +35,9 @@ extern "C" {
 #include <xmlsec/xmlsec.h>
 #include <xmlsec/crypto.h>
 
-#include <lasso/schema/strings.h>
-#include <lasso/schema/saml.h>
-#include <lasso/schema/lib.h>
+#include <lasso/xml/strings.h>
+#include <lasso/xml/saml.h>
+#include <lasso/xml/lib.h>
 #include <lasso/protocols/protocols.h>
 
 LASSO_EXPORT int lasso_init(void);
