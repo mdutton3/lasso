@@ -26,7 +26,7 @@
 
 #include "py_xml.h"
 
-PyObject *wrap_LassoNode(LassoNode *node) {
+PyObject *LassoNode_wrap(LassoNode *node) {
   PyObject *ret;
 
   if (node == NULL) {

@@ -24,6 +24,7 @@
 
 #include "../lassomod.h"
 
+#include "../xml/py_xml.h"
 #include "py_single_sign_on_and_federation.h"
 
 PyObject *wrap_LassoAuthnRequest(LassoAuthnRequest *request) {
@@ -58,7 +59,7 @@ PyObject *authn_request_getattr(PyObject *self, PyObject *args) {
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[s]", "request");
   if (!strcmp(attr, "request"))
-    return (wrap_LassoNode(lareq->request));
+    return (LassoNode_wrap(lareq->request));
 
   Py_INCREF(Py_None);
   return (Py_None);
