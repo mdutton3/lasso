@@ -64,11 +64,11 @@ LASSO_EXPORT gint                        lasso_federation_termination_build_noti
 LASSO_EXPORT void                        lasso_federation_termination_destroy                (LassoFederationTermination *defederation);
 
 LASSO_EXPORT gint                        lasso_federation_termination_init_notification      (LassoFederationTermination *defederation,
-											      gchar                 *remote_providerID);
+											      gchar                      *remote_providerID);
 
 LASSO_EXPORT gint                        lasso_federation_termination_load_notification_msg  (LassoFederationTermination *defederation,
 											      gchar                      *request_msg,
-											      lassoHttpMethods          request_method);
+											      lassoHttpMethods            request_method);
   
 LASSO_EXPORT gint                        lasso_federation_termination_process_notification   (LassoFederationTermination *defederation);
 

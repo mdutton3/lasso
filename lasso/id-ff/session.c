@@ -26,8 +26,6 @@
 #include <lasso/environs/session.h>
 
 #define LASSO_SESSION_NODE                   "LassoSession"
-#define LASSO_SESSION_IDENTITIES_NODE        "LassoIdentities"
-#define LASSO_SESSION_IDENTITY_NODE          "LassoIdentity"
 #define LASSO_SESSION_ASSERTIONS_NODE        "LassoAssertions"
 #define LASSO_SESSION_ASSERTION_NODE         "LassoAssertion"
 #define LASSO_SESSION_REMOTE_PROVIDERID_ATTR "RemoteProviderID"

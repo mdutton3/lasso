@@ -135,7 +135,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 {
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
-  LassoIdentity       *identity;
+  LassoFederation     *federation;
 
   xmlChar *content, *nameQualifier, *format;
 
@@ -146,10 +146,10 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
   profileContext->remote_providerID = remote_providerID;
 
-  /* get identity */
-  identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(identity==NULL){
-    message(G_LOG_LEVEL_ERROR, "error, identity not found\n");
+  /* get federation */
+  federation = lasso_identity_get_federation(profileContext->identity, profileContext->remote_providerID);
+  if(federation == NULL) {
+    message(G_LOG_LEVEL_ERROR, "error, federation not found\n");
     return(-3);
   }
 
@@ -157,16 +157,16 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
     debug("service provider\n");
-    nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
+    nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
     if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
+      nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
     break;
   case lassoProviderTypeIdp:
-    debug("identity provider\n");
+    debug("federation provider\n");
     /* get the next assertion ( next authenticated service provider ) */
-    nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
+    nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
     if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
+      nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
@@ -198,7 +198,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 						  lassoHttpMethods            request_method)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity *identity;
+  LassoFederation *federation;
   LassoNode *nameIdentifier;
   LassoNode *statusCode;
   LassoNodeClass *statusCode_class;
@@ -249,14 +249,14 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
 
   /* Verify federation */
-  identity = lasso_user_get_identity(profileContext->user, remote_providerID);
-  if(identity==NULL){
-    message(G_LOG_LEVEL_WARNING, "No identity for %s\n", remote_providerID);
+  federation = lasso_identity_get_federation(profileContext->identity, remote_providerID);
+  if(federation == NULL) {
+    message(G_LOG_LEVEL_WARNING, "No federation for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-6);
   }
 
-  if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
+  if(lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE){
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-7);
@@ -345,18 +345,18 @@ GType lasso_name_identifier_mapping_get_type() {
 
 LassoNameIdentifierMapping *
 lasso_name_identifier_mapping_new(LassoServer        *server,
-				  LassoUser          *user,
+				  LassoIdentity      *identity,
 				  lassoProviderTypes  provider_type)
 {
   LassoNameIdentifierMapping *mapping;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(LASSO_IS_USER(user), NULL);
+  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), NULL);
 
   /* set the name_identifier_mapping object */
   mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING,
 			 "server", lasso_server_copy(server),
-			 "user", lasso_user_copy(user),
+			 "identity", lasso_identity_copy(identity),
 			 "provider_type", provider_type,
 			 NULL);
   return(mapping);

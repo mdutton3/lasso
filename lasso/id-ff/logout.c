@@ -173,8 +173,8 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
   /* if a ProviderID from a SP request, pass it and return the next provider id found */
-  for(i = 0; i<profileContext->user->assertion_providerIDs->len; i++){
-    current_provider_id = g_strdup(g_ptr_array_index(profileContext->user->assertion_providerIDs, i));
+  for(i = 0; i<profileContext->session->providerIDs->len; i++){
+    current_provider_id = g_strdup(g_ptr_array_index(profileContext->session->providerIDs, i));
     if(logout->initial_remote_providerID!=NULL){
       if(xmlStrEqual(current_provider_id, logout->initial_remote_providerID)){
 	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
@@ -196,7 +196,7 @@ lasso_logout_init_request(LassoLogout *logout,
 {
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
-  LassoIdentity       *identity;
+  LassoFederation     *federation;
 
   xmlChar *content, *nameQualifier, *format;
 
@@ -206,7 +206,7 @@ lasso_logout_init_request(LassoLogout *logout,
 
   if(remote_providerID == NULL) {
     /* message(G_LOG_LEVEL_INFO, "No remote provider id, get the next assertion peer provider id\n"); */
-    profileContext->remote_providerID = lasso_user_get_next_assertion_remote_providerID(profileContext->user);
+    profileContext->remote_providerID = lasso_session_get_next_assertion_remote_providerID(profileContext->session);
   }
   else {
     /* message(G_LOG_LEVEL_INFO, "A remote provider id for logout request : %s\n", remote_providerID); */
@@ -218,25 +218,25 @@ lasso_logout_init_request(LassoLogout *logout,
     return(-2);
   }
 
-  /* get identity */
-  identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(identity == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Identity not found\n");
+  /* get federation */
+  federation = lasso_identity_get_federation(profileContext->identity, profileContext->remote_providerID);
+  if(federation == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Federation not found\n");
     return(-3);
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
-    nameIdentifier = lasso_identity_get_local_nameIdentifier(identity);
+    nameIdentifier = lasso_federation_get_local_nameIdentifier(federation);
     if(nameIdentifier == NULL) {
-      nameIdentifier = lasso_identity_get_remote_nameIdentifier(identity);
+      nameIdentifier = lasso_federation_get_remote_nameIdentifier(federation);
     }
     break;
   case lassoProviderTypeIdp:
-    nameIdentifier = lasso_identity_get_remote_nameIdentifier(identity);
+    nameIdentifier = lasso_federation_get_remote_nameIdentifier(federation);
     if(nameIdentifier == NULL) {
-      nameIdentifier = lasso_identity_get_local_nameIdentifier(identity);
+      nameIdentifier = lasso_federation_get_local_nameIdentifier(federation);
     }
     break;
   default:
@@ -302,7 +302,7 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
     return(-4);
   }
 
-  /* get the NameIdentifier to load user dump */
+  /* get the NameIdentifier to load identity dump */
   profileContext->nameIdentifier = lasso_node_get_child_content(profileContext->request,
 								"NameIdentifier", NULL);
 
@@ -317,7 +317,7 @@ gint
 lasso_logout_process_request(LassoLogout *logout)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity *identity;
+  LassoFederation *federation;
   LassoNode *nameIdentifier, *assertion;
   LassoNode *statusCode;
   LassoNodeClass *statusCode_class;
@@ -366,13 +366,13 @@ lasso_logout_process_request(LassoLogout *logout)
   }
 
   /* verify authentication */
-  if(profileContext->user == NULL) {
-    message(G_LOG_LEVEL_WARNING, "User environ not found\n");
+  if(profileContext->identity == NULL) {
+    message(G_LOG_LEVEL_WARNING, "Identity not found\n");
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
     return(-1);
   }
 
-  assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
+  assertion = lasso_session_get_assertion(profileContext->session, remote_providerID);
   if(assertion == NULL) {
     message(G_LOG_LEVEL_WARNING, "%s has no assertion\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
@@ -381,14 +381,14 @@ lasso_logout_process_request(LassoLogout *logout)
   lasso_node_destroy(assertion);
 
   /* Verify federation */
-  identity = lasso_user_get_identity(profileContext->user, remote_providerID);
-  if(identity == NULL) {
-    message(G_LOG_LEVEL_WARNING, "No identity for %s\n", remote_providerID);
+  federation = lasso_identity_get_federation(profileContext->identity, remote_providerID);
+  if(federation == NULL) {
+    message(G_LOG_LEVEL_WARNING, "No federation for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-9);
   }
 
-  if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier) == FALSE) {
+  if(lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-10);
@@ -398,13 +398,13 @@ lasso_logout_process_request(LassoLogout *logout)
   switch(profileContext->provider_type) {
   case lassoProviderTypeSp:
     /* at sp, everything is ok, delete the assertion */
-    lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
+    lasso_session_remove_assertion(profileContext->session, profileContext->remote_providerID);
     break;
   case lassoProviderTypeIdp:
     /* if more than one sp registered, backup original infos of the sp requester */
     /* FIXME : get the nb of remote providers with a proper way */
     logout->initial_remote_providerID = g_strdup(profileContext->remote_providerID);
-    if(profileContext->user->assertion_providerIDs->len>1){
+    if(profileContext->session->providerIDs->len>1){
       logout->initial_request = profileContext->request;
       profileContext->request = NULL;
     
@@ -473,13 +473,13 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     break;
   case lassoProviderTypeIdp:
     /* response os ok, delete the assertion */
-    lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
+    lasso_session_remove_assertion(profileContext->session, profileContext->remote_providerID);
     message(G_LOG_LEVEL_INFO, "Remove assertion for %s\n", profileContext->remote_providerID);
 
     /* if no more assertion for other providers, remove assertion of the original provider and restore the original requester infos */
-    if(profileContext->user->assertion_providerIDs->len == 1){
+    if(profileContext->session->providerIDs->len == 1){
       message(G_LOG_LEVEL_WARNING, "remove assertion of the original provider\n");
-      lasso_user_remove_assertion(profileContext->user, logout->initial_remote_providerID);
+      lasso_session_remove_assertion(profileContext->session, logout->initial_remote_providerID);
 
       profileContext->remote_providerID = logout->initial_remote_providerID;
       profileContext->request = logout->initial_request;

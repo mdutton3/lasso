@@ -88,7 +88,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
 					       gchar                      *remote_providerID)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity       *identity;
+  LassoFederation       *federation;
 
   LassoNode *nameIdentifier = NULL;
   xmlChar   *content = NULL, *nameQualifier = NULL, *format = NULL;
@@ -100,8 +100,8 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   profileContext = LASSO_PROFILE_CONTEXT(defederation);
 
   if (remote_providerID == NULL) {
-    message(G_LOG_LEVEL_INFO, "No remote provider id, get the remote provider id of the first identity\n");
-    profileContext->remote_providerID = lasso_user_get_next_identity_remote_providerID(profileContext->user);
+    message(G_LOG_LEVEL_INFO, "No remote provider id, get the remote provider id of the first federation\n");
+    profileContext->remote_providerID = lasso_identity_get_next_federation_remote_providerID(profileContext->identity);
   }
   else {
     message(G_LOG_LEVEL_INFO, "A remote provider id for defederation notification : %s\n", remote_providerID);
@@ -114,10 +114,10 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     goto done;
   }
 
-  /* get identity */
-  identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if (identity == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Identity not found for %s\n", profileContext->remote_providerID);
+  /* get federation */
+  federation = lasso_identity_get_federation(profileContext->identity, profileContext->remote_providerID);
+  if (federation == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Federation not found for %s\n", profileContext->remote_providerID);
     codeError = -1;
     goto done;
   }
@@ -125,15 +125,15 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
-    nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
+    nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
     if(!nameIdentifier){
-      nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
+      nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
     }
     break;
   case lassoProviderTypeIdp:
-    nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
+    nameIdentifier = LASSO_NODE(lasso_federation_get_remote_nameIdentifier(federation));
     if(!nameIdentifier)
-      nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
+      nameIdentifier = LASSO_NODE(lasso_federation_get_local_nameIdentifier(federation));
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Invalid provider type\n");
@@ -201,7 +201,7 @@ lasso_federation_termination_load_notification_msg(LassoFederationTermination *d
     return(-4);
   }
 
-  /* get the NameIdentifier to load user dump */
+  /* get the NameIdentifier to load identity dump */
   profileContext->nameIdentifier = lasso_node_get_child_content(profileContext->request,
 								"NameIdentifier", NULL);
 
@@ -216,7 +216,7 @@ gint
 lasso_federation_termination_process_notification(LassoFederationTermination *defederation)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity       *identity;
+  LassoFederation       *federation;
   LassoNode           *nameIdentifier;
 
   profileContext = LASSO_PROFILE_CONTEXT(defederation);
@@ -240,24 +240,24 @@ lasso_federation_termination_process_notification(LassoFederationTermination *de
   }
 
   /* Verify federation */
-  if (profileContext->user == NULL){
-    message(G_LOG_LEVEL_ERROR, "User environ not found\n");
+  if (profileContext->identity == NULL){
+    message(G_LOG_LEVEL_ERROR, "Identity environ not found\n");
     return(-1);
   }
 
-  identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if (identity == NULL) {
-    message(G_LOG_LEVEL_WARNING, "No identity for %s\n", profileContext->remote_providerID);
+  federation = lasso_identity_get_federation(profileContext->identity, profileContext->remote_providerID);
+  if (federation == NULL) {
+    message(G_LOG_LEVEL_WARNING, "No federation for %s\n", profileContext->remote_providerID);
     return(-1);
   }
 
-  if (lasso_identity_verify_nameIdentifier(identity, nameIdentifier) == FALSE) {
+  if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", profileContext->remote_providerID);
     return(-1);
   }
 
   /* remove federation of the remote provider */
-  lasso_user_remove_identity(profileContext->user, profileContext->remote_providerID);
+  lasso_identity_remove_federation(profileContext->identity, profileContext->remote_providerID);
 
   return(0);
 }

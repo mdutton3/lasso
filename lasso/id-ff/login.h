@@ -73,9 +73,11 @@ LASSO_EXPORT GType                lasso_login_get_type                    (void)
 
 LASSO_EXPORT LassoLogin*          lasso_login_new                         (LassoServer *server);
 
-LASSO_EXPORT LassoLogin*          lasso_login_new_from_dump               (LassoServer *server,
-									   LassoUser   *user,
-									   gchar       *dump);
+LASSO_EXPORT LassoLogin*          lasso_login_new_from_dump               (LassoServer   *server,
+									   LassoIdentity *identity,
+									   gchar         *dump);
+
+LASSO_EXPORT gint                 lasso_login_accept_sso                  (LassoLogin *login);
 
 LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (LassoLogin       *login,
 									   gint              authentication_result,
@@ -91,9 +93,6 @@ LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (Lasso
 									   const gchar *reauthenticateOnOrAfter);
 
 LASSO_EXPORT gint                 lasso_login_build_request_msg           (LassoLogin *login);
-
-LASSO_EXPORT gint                 lasso_login_create_user                 (LassoLogin *login,
-									   gchar      *user_dump);
 
 LASSO_EXPORT void                 lasso_login_destroy                     (LassoLogin *login);
 

@@ -35,7 +35,8 @@ extern "C" {
 #include <lasso/xml/tools.h>
 
 #include <lasso/environs/server.h>
-#include <lasso/environs/user.h>
+#include <lasso/environs/identity.h>
+#include <lasso/environs/session.h>
 
 #define LASSO_TYPE_PROFILE_CONTEXT (lasso_profile_context_get_type())
 #define LASSO_PROFILE_CONTEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE_CONTEXT, LassoProfileContext))
@@ -48,7 +49,7 @@ typedef struct _LassoProfileContext LassoProfileContext;
 typedef struct _LassoProfileContextClass LassoProfileContextClass;
 typedef struct _LassoProfileContextPrivate LassoProfileContextPrivate;
 
-  /* Request types (used by SOAP endpoint) */
+/* Request types (used by SOAP endpoint) */
 typedef enum {
   lassoRequestTypeLogin = 1,
   lassoRequestTypeLogout,
@@ -77,8 +78,9 @@ struct _LassoProfileContext {
   GObject parent;
 
   /*< public >*/
-  LassoServer *server;
-  LassoUser   *user;
+  LassoServer   *server;
+  LassoIdentity *identity;
+  LassoSession  *session;
 
   LassoNode *request;
   LassoNode *response;
@@ -90,6 +92,9 @@ struct _LassoProfileContext {
   gchar *msg_url;
   gchar *msg_body;
   gchar *msg_relayState;
+
+  gboolean identity_is_durty;
+  gboolean session_is_durty;
 
   /*< private >*/
   LassoProfileContextPrivate *private;
@@ -107,8 +112,9 @@ LASSO_EXPORT gint                 lasso_profile_context_get_request_type_from_so
 
 LASSO_EXPORT GType                lasso_profile_context_get_type                       (void);
 
-LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                            (LassoServer *server,
-											LassoUser   *user);
+LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                            (LassoServer   *server,
+											LassoIdentity *identity,
+											LassoSession  *session);
 
 LASSO_EXPORT gchar*               lasso_profile_context_dump                           (LassoProfileContext *ctx,
 											const gchar         *name);
@@ -119,7 +125,16 @@ LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID   
 LASSO_EXPORT void                 lasso_profile_context_set_response_status            (LassoProfileContext *ctx,
 											const gchar         *statusCodeValue);
 
-LASSO_EXPORT gint                 lasso_profile_context_set_user_from_dump             (LassoProfileContext *ctx,
+LASSO_EXPORT gint                 lasso_profile_context_set_session                    (LassoProfileContext *ctx,
+											LassoSession        *session);
+
+LASSO_EXPORT gint                 lasso_profile_context_set_session_from_dump          (LassoProfileContext *ctx,
+											const gchar         *dump);
+
+LASSO_EXPORT gint                 lasso_profile_context_set_identity                   (LassoProfileContext *ctx,
+											LassoIdentity       *identity);
+
+LASSO_EXPORT gint                 lasso_profile_context_set_identity_from_dump         (LassoProfileContext *ctx,
 											const gchar         *dump);
 
 #ifdef __cplusplus
