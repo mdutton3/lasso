@@ -43,7 +43,8 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	Defederation.cs        Request.cs        Session.cs \
 	Identity.cs            Response.cs       AuthnRequest.cs \
 	Lecp.cs                AuthnResponse.cs  Login.cs \
-	Logout.cs
+	Logout.cs              LogoutResponse.cs LogoutRequest.cs \
+	FederationTerminationNotification.cs
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
 
