@@ -254,7 +254,6 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   LassoNode *statusCode;
   LassoNodeClass *statusCode_class;
   xmlChar *remote_providerID;
-  int nb_remote_providers;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   g_return_val_if_fail(request_msg!=NULL, -2);
@@ -346,16 +345,16 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     break;
   case lassoProviderTypeIdp:
     /* if more than one sp registered, backup original infos of the sp requester */
-    nb_remote_providers = profileContext->user->assertion_providerIDs->len;
-    if(nb_remote_providers>1){
+    /* FIXME : get the nb of remote providers with a proper way */
+    logout->first_remote_providerID = g_strdup(profileContext->remote_providerID);
+    if(profileContext->user->assertion_providerIDs->len>1){
       logout->first_request = profileContext->request;
       profileContext->request = NULL;
     
       logout->first_response = profileContext->response;
       profileContext->response = NULL;
-      
-      logout->first_remote_providerID = profileContext->remote_providerID;
-      profileContext->remote_providerID = NULL;
+
+      profileContext->remote_providerID = NULL;    
     }
 
     break;
@@ -457,7 +456,9 @@ lasso_logout_finalize(LassoLogout *logout)
 static void
 lasso_logout_instance_init(LassoLogout *logout)
 {
-
+  logout->first_request = NULL;
+  logout->first_response = NULL;
+  logout->first_remote_providerID = NULL;
 }
 
 static void
