@@ -32,6 +32,8 @@
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
 
+#include <lasso/id-ff/sessionprivate.h>
+
 
 struct _LassoLoginPrivate
 {

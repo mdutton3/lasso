@@ -31,8 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/lib_assertion.h>
-#include <lasso/xml/samlp_status.h>
 
 #define LASSO_TYPE_SESSION (lasso_session_get_type())
 #define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
@@ -64,28 +62,11 @@ struct _LassoSessionClass {
 LASSO_EXPORT GType lasso_session_get_type(void);
 
 LASSO_EXPORT LassoSession* lasso_session_new(void);
-
 LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
-
-LASSO_EXPORT gint lasso_session_add_assertion(LassoSession *session,
-		char *providerID, LassoSamlAssertion *assertion);
-
 LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
-
-LASSO_EXPORT LassoSamlAssertion* lasso_session_get_assertion(
-		LassoSession *session, gchar *providerID);
-
-LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
-
-LASSO_EXPORT gint lasso_session_remove_assertion(LassoSession *session, gchar *providerID);
-
 LASSO_EXPORT void lasso_session_destroy(LassoSession *session);
 
-gint lasso_session_add_status(LassoSession *session,
-		char *providerID, LassoSamlpStatus *authn_response);
-LassoSamlpStatus* lasso_session_get_status(LassoSession *session, gchar *providerID);
-gint lasso_session_remove_status(LassoSession *session, gchar *providerID);
-
+LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
 LASSO_EXPORT gboolean lasso_session_is_empty(LassoSession *session);
 
 #ifdef __cplusplus

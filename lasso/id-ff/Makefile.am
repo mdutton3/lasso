@@ -23,6 +23,9 @@ liblasso_id_ff_la_SOURCES = \
 	service.c \
 	session.c
 
+lasso_private_h_sources = \
+	sessionprivate.h
+
 liblassoinclude_HEADERS = \
 	defederation.h \
 	federation.h \
@@ -37,3 +40,5 @@ liblassoinclude_HEADERS = \
 	server.h \
 	service.h \
 	session.h
+
+EXTRA_DIST = $(lasso_private_h_sources)

@@ -24,6 +24,7 @@
  */
 
 #include <lasso/id-ff/session.h>
+#include <lasso/id-ff/sessionprivate.h>
 
 struct _LassoSessionPrivate
 {
