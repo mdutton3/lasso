@@ -250,21 +250,6 @@ class Identity(_ObjectMixin, lassomod.LassoIdentity):
 
     lassomodClass = lassomod.LassoIdentity
 
-    # Constructors
-
-    def new_from_dump(cls, dump):
-        self = lassomod.lasso_identity_new_from_dump(dump)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_identity_new_from_dump')
-        _setRegisteredClass(self)
-        return self
-    new_from_dump = classmethod(new_from_dump)
-
-    # Methods
-
-    def dump(self):
-        return lassomod.lasso_identity_dump(self)
-
 registerClass(Identity)
 
 
@@ -272,27 +257,6 @@ class Session(_ObjectMixin, lassomod.LassoSession):
     # Constants
 
     lassomodClass = lassomod.LassoSession
-
-    # Constructors
-
-    def new_from_dump(cls, dump):
-        self = lassomod.lasso_session_new_from_dump(dump)
-        if self is None:
-            raise ErrorInstanceCreationFailed('lasso_session_new_from_dump')
-        _setRegisteredClass(self)
-        return self
-    new_from_dump = classmethod(new_from_dump)
-
-    # Attributes
-
-    def get_authentication_method(self, remote_providerID = None):
-        return lassomod.lasso_session_get_authentication_method(self, remote_providerID)
-    authentication_method = property(get_authentication_method)
-
-    # Methods
-
-    def dump(self):
-        return lassomod.lasso_session_dump(self)
 
 registerClass(Session)
 

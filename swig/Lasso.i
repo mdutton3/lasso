@@ -506,6 +506,7 @@ typedef struct {
 				  gchar *ca_certificate = NULL);
 		END_THROW_ERROR
 
+		%newobject dump;
 		gchar *dump();
 	}
 } LassoServer;
@@ -555,15 +556,31 @@ typedef struct {
 	gboolean is_dirty;
 
 	%extend {
-		LassoIdentity() {
-			return lasso_identity_new();
-		}
+		/* Constructor, Destructor & Static Methods */
 
-		~LassoIdentity() {
-			lasso_identity_destroy(self);
-		}
+		LassoIdentity();
+
+		~LassoIdentity();
+
+		%newobject new_from_dump;
+		static LassoIdentity *new_from_dump(gchar *dump);
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
 	}
 } LassoIdentity;
+
+%{
+
+#define new_LassoIdentity lasso_identity_new
+#define delete_LassoIdentity lasso_identity_destroy
+#define LassoIdentity_new_from_dump lasso_identity_new_from_dump
+#define LassoIdentity_add_provider lasso_identity_add_provider
+#define LassoIdentity_dump lasso_identity_dump
+
+%}
 
 /* Constructors */
 
@@ -595,15 +612,35 @@ typedef struct {
 	gboolean is_dirty;
 
 	%extend {
-		LassoSession() {
-			return lasso_session_new();
-		}
+		/* Constructor, Destructor & Static Methods */
 
-		~LassoSession() {
-			lasso_session_destroy(self);
-		}
+		LassoSession();
+
+		~LassoSession();
+
+		%newobject new_from_dump;
+		static LassoSession *new_from_dump(gchar *dump);
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
+
+		%newobject get_authentication_method;
+		gchar *get_authentication_method(gchar *remote_providerID);
 	}
 } LassoSession;
+
+%{
+
+#define new_LassoSession lasso_session_new
+#define delete_LassoSession lasso_session_destroy
+#define LassoSession_new_from_dump lasso_session_new_from_dump
+#define LassoSession_add_provider lasso_session_add_provider
+#define LassoSession_dump lasso_session_dump
+#define LassoSession_get_authentication_method lasso_session_get_authentication_method
+
+%}
 
 /* Constructors */
 
