@@ -1,7 +1,7 @@
 if WITH_TESTS
 
 TESTS = tests
-noinst_PROGRAMS = tests perfs m2
+noinst_PROGRAMS = tests perfs
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
@@ -19,9 +19,6 @@ tests_LDADD = \
 
 perfs_SOURCES = perfs.c
 perfs_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
-
-m2_SOURCES = m2.c
-m2_LDADD = $(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 
 endif
 
