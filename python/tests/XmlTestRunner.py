@@ -26,6 +26,8 @@ import time
 import sys
 
 def xml(text):
+    if not text:
+        return ""
     return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 class XmlTestResult(unittest.TestResult):
