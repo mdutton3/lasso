@@ -57,7 +57,9 @@ liblasso_xml_la_SOURCES = \
 	samlp_response.c \
 	samlp_response_abstract.c \
 	samlp_status.c \
-	samlp_status_code.c
+	samlp_status_code.c \
+	soap-env_envelope.c \
+	soap-env_body.c
 
 liblassoinclude_HEADERS = \
 	lib.h \
@@ -106,4 +108,6 @@ liblassoinclude_HEADERS = \
 	samlp_response.h \
 	samlp_response_abstract.h \
 	samlp_status.h \
-	samlp_status_code.h
+	samlp_status_code.h \
+	soap-env_envelope.h \
+	soap-env_body.h
