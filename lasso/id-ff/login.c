@@ -1045,6 +1045,9 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(
 			LASSO_PROFILE(login)->server, provider_succinct_id_b64);
 	xmlFree(provider_succinct_id_b64);
+	if (LASSO_PROFILE(login)->remote_providerID == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
 
 	request = LASSO_SAMLP_REQUEST_ABSTRACT(lasso_samlp_request_new());
 	request->RequestID = lasso_build_unique_id(32);
