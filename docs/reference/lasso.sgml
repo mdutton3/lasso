@@ -66,11 +66,28 @@
     <releaseinfo>for Lasso &version;</releaseinfo>
   </bookinfo>
 
+  <!-- not known by gtk-doc.xsl
+  <copyright>
+    <year>2004</year>
+    <holder>Entr'ouvert</holder>
+  </copyright>
+  -->
+
   <chapter id="lasso">
     <title>Lasso Overview</title>
     <para>
 Lasso is a library which provides all the necessary functions for sites to
-implement Liberty Alliance specifications.
+implement <ulink url="http://www.projectliberty.org">Liberty Alliance</ulink>
+specifications.  It defines processes for federated identities, single sign-on
+and related protocols.
+    </para>
+
+    <para>
+It is built on top of <ulink url="http://www.xmlsoft.org">libxml2</ulink>,
+<ulink url="http://www.aleksey.com/xmlsec/">XMLSec</ulink> and
+<ulink url="http://www.openssl.org">OpenSSL</ulink> and is licensed under
+the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License</ulink>
+(with an <ulink url="http://lasso.entrouvert.org/license#openssl">OpenSSL exception</ulink>).
     </para>
 
   </chapter>
@@ -158,4 +175,5 @@ implement Liberty Alliance specifications.
     &lasso-lasso;
     &lasso-version;
   </chapter>
+
 </book>
