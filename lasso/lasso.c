@@ -27,6 +27,7 @@
 #include <xmlsec/crypto.h>
 #include <libxslt/xslt.h>
 
+#include "lasso_config.h"
 #include "lasso.h"
 
 #if defined _MSC_VER

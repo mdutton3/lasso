@@ -34,8 +34,6 @@ extern "C" {
 #   include <windows.h>
 #endif
 
-/*#include <lasso/version.h>*/
-#include <lasso/lasso_config.h>
 #include <lasso/export.h>
 
 #include <lasso/environs/login.h>
