@@ -41,7 +41,7 @@ extern "C" {
 #include <lasso/environs/login.h>
 #include <lasso/environs/logout.h>
 #include <lasso/environs/name_identifier_mapping.h>
-#include <lasso/environs/register_name_identifier.h>
+#include <lasso/environs/name_registration.h>
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);
