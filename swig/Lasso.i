@@ -689,21 +689,19 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
 %rename(VERSION_MINOR) LASSO_VERSION_MINOR;
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
-%rename(WSF_ENABLED) LASSO_WSF_ENABLED;
+%rename(WSF_SUPPORT) LASSO_WSF_SUPPORT;
 #endif
 %include "../lasso/lasso_config.h"
 #ifdef LASSO_WSF_ENABLED
 %{
-#undef LASSO_WSF_ENABLED
-#define LASSO_WSF_ENABLED 1
+#define LASSO_WSF_SUPPORT 1
 %}
-#undef LASSO_WSF_ENABLED
-#define LASSO_WSF_ENABLED 1
+#define LASSO_WSF_SUPPORT 1
 #else
 %{
-#define LASSO_WSF_ENABLED 0
+#define LASSO_WSF_SUPPORT 0
 %}
-#define LASSO_WSF_ENABLED 0
+#define LASSO_WSF_SUPPORT 0
 #endif
 
 /* HttpMethod */
@@ -6558,7 +6556,7 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 %}
 
-#if LASSO_WSF_ENABLED
+#ifdef LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 #endif
 
