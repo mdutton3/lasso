@@ -8,11 +8,9 @@ INCLUDES = \
 	$(LASSO_CFLAGS) \
 	$(PY_CFLAGS)
 
-pythondir = $(PY_DYNLOAD)
+pythondir = $(PY_SITE_PACKAGES)
 python_LTLIBRARIES = lassomod.la
-
-pythonspdir = $(PY_SITE_PACKAGES)
-pythonsp_DATA = lasso.py lasso_strings.py
+python_DATA = lasso.py lasso_strings.py
 
 mylibs = $(top_builddir)/lasso/liblasso.la
 
