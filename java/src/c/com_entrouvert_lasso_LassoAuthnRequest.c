@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_init
 
     (*env)->ReleaseStringUTFChars(env, _providerID, providerID);
 
-    storeCObject(env, this, request);
+    setCObject(env, this, request);
 }
 
 /* From LassoLibAuthnRequest */

@@ -37,6 +37,6 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoRequest_init
 
     (*env)->ReleaseStringUTFChars(env, _assertionArtifact, assertionArtifact);
 
-    storeCObject(env, this, request);
+    setCObject(env, this, request);
 }
 

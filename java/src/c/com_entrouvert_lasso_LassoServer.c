@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoServer_init
     (*env)->ReleaseStringUTFChars(env, _privateKey, privateKey);
     (*env)->ReleaseStringUTFChars(env, _certificate, certificate);
 
-    storeCObject(env, this, server);
+    setCObject(env, this, server);
 }
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoServer_initFromDump
@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoServer_initFromDump
 
     (*env)->ReleaseStringUTFChars(env, _dump, dump);
 
-    storeCObject(env, this, server);
+    setCObject(env, this, server);
 }
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoServer_addProvider

@@ -25,18 +25,30 @@
 package com.entrouvert.lasso;
 
 public abstract class LassoProfile extends LassoObject { // LassoProfile
+    protected LassoIdentity identity = null;
     protected LassoNode request = null;
     protected LassoNode response = null;
     protected LassoServer server = null;
-    protected LassoUser user = null;
+    protected LassoSession session = null;
 
-    native protected void initRequestField();
+    native protected void getCIdentity();
 
-    native protected void initResponseField();
+    native protected void getCRequest();
 
-    native protected void initServerField();
+    native protected void getCResponse();
 
-    native protected void initUserField();
+    native protected void getCServer();
+
+    native protected void getCSession();
+
+    native protected int setCIdentity();
+
+    native protected int setCSession();
+
+    public LassoIdentity getIdentity() {
+        getCIdentity();
+        return identity;
+    }
 
     native public String getMsgBody();
 
@@ -48,30 +60,42 @@ public abstract class LassoProfile extends LassoObject { // LassoProfile
 
     native public String getProviderID();
 
-    public LassoNode getRequest(){
-        initRequestField();
+    public LassoNode getRequest() {
+        getCRequest();
         return request;
     }
 
     native public int getRequestType();
 
-    public LassoNode getResponse(){
-        initResponseField();
+    public LassoNode getResponse() {
+        getCResponse();
         return response;
     }
 
     native public int gettResponseType();
 
-    public LassoServer getServer(){
-        initServerField();
+    public LassoServer getServer() {
+        getCServer();
         return server;
     }
 
-    public LassoUser getUser(){
-        initUserField();
-        return user;
+    public LassoSession getSession() {
+        getCSession();
+        return session;
     }
 
-    native public int setUserFromDump(String userDump);
+    public int setIdentity(LassoIdentity identity) {
+        this.identity = identity;
+	return setCIdentity();
+    }
+
+    native public int setIdentityFromDump(String identityDump);
+
+    public int setSession(LassoSession session) {
+        this.session = session;
+	return setCSession();
+    }
+
+    native public int setSessionFromDump(String sessionDump);
 
 } // LassoProfile

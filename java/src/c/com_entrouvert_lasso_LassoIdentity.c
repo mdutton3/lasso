@@ -23,56 +23,38 @@
  */
 
 #include <helper.h>
-#include <com_entrouvert_lasso_LassoUser.h>
+#include <com_entrouvert_lasso_LassoIdentity.h>
 #include <lasso/lasso.h>
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoUser_init
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoIdentity_init
 (JNIEnv * env, jobject this){
-    LassoUser *user;
+    LassoIdentity *identity;
 
-    user = lasso_user_new();
+    identity = lasso_identity_new();
 
-    storeCObject(env, this, user);
+    setCObject(env, this, identity);
 }
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoUser_initFromDump
+JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoIdentity_initFromDump
 (JNIEnv * env, jobject this, jstring _dump){
-    LassoUser *user;
+    LassoIdentity *identity;
     char *dump;
 
     dump = (char*)(*env)->GetStringUTFChars(env, _dump, NULL);
-    user = lasso_user_new_from_dump(dump);
+    identity = lasso_identity_new_from_dump(dump);
 
     (*env)->ReleaseStringUTFChars(env, _dump, dump);
 
-    storeCObject(env, this, user);
+    setCObject(env, this, identity);
 }
 
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoUser_dump
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoIdentity_dump
 (JNIEnv * env, jobject this){
-    LassoUser *user;
+    LassoIdentity *identity;
     char* result;
 
-    user = (LassoUser*)getCObject(env, this);
-    result = lasso_user_dump(user);
-
-    return (*env)->NewStringUTF(env, result);
-}
-
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoUser_getAuthenticationMethod
-(JNIEnv * env, jobject this, jstring _remoteProviderId){
-    char *remoteProviderId = NULL;
-    char *result;
-    LassoUser* user;
-
-    if (_remoteProviderId)
-        remoteProviderId = (char*)(*env)->GetStringUTFChars(env, _remoteProviderId, NULL);
-
-    user = getCObject(env, this);
-    result = lasso_user_get_authentication_method(user, remoteProviderId);
-
-    if (_remoteProviderId)
-        (*env)->ReleaseStringUTFChars(env, _remoteProviderId, remoteProviderId);
+    identity = (LassoIdentity*)getCObject(env, this);
+    result = lasso_identity_dump(identity);
 
     return (*env)->NewStringUTF(env, result);
 }

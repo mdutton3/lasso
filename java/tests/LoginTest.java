@@ -80,14 +80,16 @@ public class LoginTest extends TestCase {
 	boolean userAuthenticated;
 	int method, requestType;
 	LassoAuthnRequest authnRequest;
+	LassoIdentity idpIdentityContext, spIdentityContext;
 	LassoLogin idpLoginContext, spLoginContext;
 	LassoLogout idpLogoutContext, spLogoutContext;
 	LassoResponse response;
 	LassoServer idpContext, spContext;
-	LassoUser idpUserContext, spUserContext;
+	LassoSession idpSessionContext, spSessionContext;
 	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpContextDump,
-	    idpUserContextDump, nameIdentifier, relayState, responseQuery, responseUrl,
-	    soapEndpoint, soapResponseMsg, soapRequestMsg, spContextDump, spUserContextDump;
+	    idpIdentityContextDump, idpSessionContextDump, nameIdentifier, relayState,
+	    responseQuery, responseUrl, soapEndpoint, soapResponseMsg, soapRequestMsg,
+	    spContextDump, spIdentityContextDump, spSessionContextDump;
 
 	// Service provider login using HTTP redirect.
         spContextDump = generateServiceProviderContextDump();
@@ -122,8 +124,10 @@ public class LoginTest extends TestCase {
         assertEquals(0, idpLoginContext.buildArtifactMsg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
             Lasso.httpMethodRedirect));
-	idpUserContextDump = idpLoginContext.getUser().dump();
-        assertNotNull(idpUserContextDump);
+	idpIdentityContextDump = idpLoginContext.getIdentity().dump();
+        assertNotNull(idpIdentityContextDump);
+	idpSessionContextDump = idpLoginContext.getSession().dump();
+        assertNotNull(idpSessionContextDump);
         responseUrl = idpLoginContext.getMsgUrl();
         responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);
         soapResponseMsg = idpLoginContext.getResponseDump();
@@ -149,12 +153,16 @@ public class LoginTest extends TestCase {
         assertEquals(0, spLoginContext.processResponseMsg(soapResponseMsg));
         assertEquals(nameIdentifier, spLoginContext.getNameIdentifier());
 	// The user doesn't have any federation yet.
-        assertEquals(0, spLoginContext.createUser(null));
-        spUserContext = spLoginContext.getUser();
-        assertNotNull(spUserContext);
-        spUserContextDump = spUserContext.dump();
-        assertNotNull(spUserContextDump);
-	authenticationMethod = spUserContext.getAuthenticationMethod(null);
+        assertEquals(0, spLoginContext.acceptSso());
+        spIdentityContext = spLoginContext.getIdentity();
+        assertNotNull(spIdentityContext);
+        spIdentityContextDump = spIdentityContext.dump();
+        assertNotNull(spIdentityContextDump);
+        spSessionContext = spLoginContext.getSession();
+        assertNotNull(spSessionContext);
+        spSessionContextDump = spSessionContext.dump();
+        assertNotNull(spSessionContextDump);
+	authenticationMethod = spSessionContext.getAuthenticationMethod(null);
         assertEquals(Lasso.samlAuthenticationMethodPassword, authenticationMethod);
 
         // Service provider logout.
@@ -163,8 +171,10 @@ public class LoginTest extends TestCase {
         spContext = new LassoServer(spContextDump);
         assertNotNull(spContext);
         spLogoutContext = new LassoLogout(spContext, Lasso.providerTypeSp);
-        assertNotNull(spUserContextDump);
-	spLogoutContext.setUserFromDump(spUserContextDump);
+        assertNotNull(spIdentityContextDump);
+	spLogoutContext.setIdentityFromDump(spIdentityContextDump);
+        assertNotNull(spSessionContextDump);
+	spLogoutContext.setSessionFromDump(spSessionContextDump);
         assertEquals(0, spLogoutContext.initRequest(null));
         assertEquals(0, spLogoutContext.buildRequestMsg());
         soapEndpoint = spLogoutContext.getMsgUrl();
@@ -180,13 +190,15 @@ public class LoginTest extends TestCase {
         idpLogoutContext = new LassoLogout(idpContext, Lasso.providerTypeIdp);
 	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.httpMethodSoap));
         assertEquals(nameIdentifier, idpLogoutContext.getNameIdentifier());
-        assertNotNull(idpUserContextDump);
-        assertEquals(0, idpLogoutContext.setUserFromDump(idpUserContextDump));
+        assertNotNull(idpIdentityContextDump);
+        assertEquals(0, idpLogoutContext.setIdentityFromDump(idpIdentityContextDump));
+        assertNotNull(idpSessionContextDump);
+        assertEquals(0, idpLogoutContext.setSessionFromDump(idpSessionContextDump));
 	assertEquals(0, idpLogoutContext.processRequest());
-        idpUserContext = idpLogoutContext.getUser();
-        assertNotNull(idpUserContext);
-        idpUserContextDump = idpUserContext.dump();
-        assertNotNull(idpUserContextDump);
+        idpIdentityContext = idpLogoutContext.getIdentity();
+        assertNotNull(idpIdentityContext);
+        idpIdentityContextDump = idpIdentityContext.dump();
+        assertNotNull(idpIdentityContextDump);
 	// There is no other service provider from which the user must be logged out.
         assertEquals(null, idpLogoutContext.getNextProviderId());
         assertEquals(0, idpLogoutContext.buildResponseMsg());
@@ -194,8 +206,8 @@ public class LoginTest extends TestCase {
 
 	// Service provider logout (step 2: process SOAP response).
         assertEquals(0, spLogoutContext.processResponseMsg(soapResponseMsg, Lasso.httpMethodSoap));
-        spUserContextDump = spLogoutContext.getUser().dump();
-        assertNotNull(spUserContextDump);
+        spIdentityContextDump = spLogoutContext.getIdentity().dump();
+        assertNotNull(spIdentityContextDump);
     }
 
     public static Test suite() { 

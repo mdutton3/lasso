@@ -27,41 +27,37 @@
 #include <com_entrouvert_lasso_LassoLogin.h>
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoLogin_init
-(JNIEnv * env, jobject this, jobject _server){
+(JNIEnv * env, jobject this, jobject _server) {
     LassoLogin *login;
     LassoServer* server;
 
     server = (LassoServer*)getCObject(env, _server);
     login = LASSO_LOGIN(lasso_login_new(server));
-    storeCObject(env, this, login);
+    setCObject(env, this, login);
 }
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoLogin_initFromDump
-(JNIEnv * env, jobject this, jobject _server,
-                             jobject _user,
-                             jstring _dump){
+(JNIEnv * env, jobject this, jobject _server, jobject _identity, jstring _dump) {
     LassoLogin *login;
     LassoServer* server;
     char *dump;
-    LassoUser* user = NULL;
+    LassoIdentity* identity = NULL;
 
     server = (LassoServer*)getCObject(env, _server);
-    if(_user != NULL){
-        user = (LassoUser*)getCObject(env, _user);
+    if(_identity != NULL){
+        identity = (LassoIdentity*)getCObject(env, _identity);
     }
 
     dump = (char*)(*env)->GetStringUTFChars(env, _dump, NULL);
-    login = LASSO_LOGIN(lasso_login_new_from_dump(server, user, dump));
+    login = LASSO_LOGIN(lasso_login_new_from_dump(server, identity, dump));
     (*env)->ReleaseStringUTFChars(env, _dump, dump);
 
-    storeCObject(env, this, login);
+    setCObject(env, this, login);
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_buildArtifactMsg
-(JNIEnv * env, jobject this, jboolean _authenticationResult,
-                             jstring _authenticationMethod,
-                             jstring _reauthenticateOnOrAfter,
-                             jint _method){
+(JNIEnv * env, jobject this, jboolean _authenticationResult, jstring _authenticationMethod,
+ jstring _reauthenticateOnOrAfter, jint _method) {
     int result;
     LassoLogin* login;
     char *authenticationMethod;
@@ -129,20 +125,13 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_buildRequestMsg
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_createUser
-(JNIEnv * env, jobject this, jstring _userDump){
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_acceptSso
+(JNIEnv * env, jobject this){
     LassoLogin* login;
     int result;
-    char *userDump = NULL;
-
-    if (_userDump)
-        userDump = (char*)(*env)->GetStringUTFChars(env, _userDump, NULL);
 
     login = getCObject(env, this);
-    result = lasso_login_create_user(login, userDump);
-
-    if (_userDump)
-        (*env)->ReleaseStringUTFChars(env, _userDump, userDump);
+    result = lasso_login_accept_sso(login);
 
     return result;
 }
@@ -175,8 +164,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initAuthnRequest
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initFromAuthnRequestMsg
-(JNIEnv * env, jobject this, jstring _authnRequestMsg,
-                             jint _authnRequestMethod){
+(JNIEnv * env, jobject this, jstring _authnRequestMsg, jint _authnRequestMethod) {
     int result;
     LassoLogin* login;
     char *authnRequestMsg;
@@ -194,8 +182,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initFromAuthnRequest
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initRequest
-(JNIEnv * env, jobject this, jstring _responseMsg,
-                             jint _responseMethod){
+(JNIEnv * env, jobject this, jstring _responseMsg, jint _responseMethod) {
     int result;
     LassoLogin* login;
     char *responseMsg;
@@ -213,7 +200,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initRequest
 }
 
 JNIEXPORT jboolean JNICALL Java_com_entrouvert_lasso_LassoLogin_mustAuthenticate
-(JNIEnv * env, jobject this){
+(JNIEnv * env, jobject this) {
     int result;
     LassoLogin* login;
 
@@ -224,7 +211,7 @@ JNIEXPORT jboolean JNICALL Java_com_entrouvert_lasso_LassoLogin_mustAuthenticate
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processAuthnResponseMsg
-(JNIEnv * env, jobject this, jstring _authnResponseMsg){
+(JNIEnv * env, jobject this, jstring _authnResponseMsg) {
     int result;
     LassoLogin* login;
     char *authnResponseMsg;
@@ -241,7 +228,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processAuthnResponse
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processRequestMsg
-(JNIEnv * env, jobject this, jstring _requestMsg){
+(JNIEnv * env, jobject this, jstring _requestMsg) {
     int result;
     LassoLogin* login;
     char *requestMsg;
@@ -258,7 +245,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processRequestMsg
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processResponseMsg
-(JNIEnv * env, jobject this, jstring _responseMsg){
+(JNIEnv * env, jobject this, jstring _responseMsg) {
     int result;
     LassoLogin* login;
     char *responseMsg;
@@ -275,7 +262,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_processResponseMsg
 }
 
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_getAssertionArtifact
-(JNIEnv * env, jobject this){
+(JNIEnv * env, jobject this) {
     LassoLogin * login;
     char *result;
 
@@ -287,7 +274,7 @@ JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_getAssertionArtif
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_getProtocolProfile
-(JNIEnv * env, jobject this){
+(JNIEnv * env, jobject this) {
     LassoLogin * login;
     int result;
 
@@ -299,7 +286,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_getProtocolProfile
 }
 
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogin_getResponseDump
-(JNIEnv * env, jobject this){
+(JNIEnv * env, jobject this) {
     LassoLogin * login;
     char *result;
 

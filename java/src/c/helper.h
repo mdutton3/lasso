@@ -28,43 +28,34 @@
 #include <jni.h>
 
 /**
-* Store C object in Java object
+* If field in Java object don't represent C object, then create new Java
+* object representation for this C object and set java field.
 */
-void storeCObject(JNIEnv * env, jobject this, void * cobject);
+void checkAndSetField(JNIEnv * env, jobject this, char * fieldName,
+		      char * fieldType, char * javaObjectClassName, void * cObject);
 
 /**
 * Get C object from Java object
 */
-void* getCObject(JNIEnv * env, jobject this);
+void *getCObject(JNIEnv * env, jobject this);
+
+/**
+* Get value of attribute, attribute must be Java object
+*/
+jobject getJavaObjectField(JNIEnv * env, jobject this, const char * fieldName,
+			   const char * fieldType);
 
 /**
 * Get pointer object stored in java field
 * @param name name of field used to store pointer
 * @return object pointer
 */
-void * getObjectRef(JNIEnv * env, jobject this, const char * name);
+void *getObjectRef(JNIEnv * env, jobject this, const char * name);
 
 /**
-* Store object pointer in java field
-* @param name name of field used to store pointer
-* @param objectRef pointer to store
+* Instantiate a new object. Default constructor used
 */
-void setObjectRef(JNIEnv * env, jobject this, const char * name, void * objectRef);
-
-/**
-* Get value of attribute, attribute must be Java object
-*/
-jobject getJavaObjectField(JNIEnv * env, jobject this, const char * fieldName, const char * fieldType);
-
-/**
-* Store new value for Java object attribute, attribute must be Java object
-*/
-void setJavaObjectField(JNIEnv * env, jobject this, const char * name, const char * fieldType, jobject value);
-
-/**
-* Instanciate a new object. Default constructor used
-*/
-jobject instanciate(JNIEnv * env, const char * className);
+jobject instantiate(JNIEnv * env, const char * className);
 
 /**
 * Check if Java object store the C object passed in parameter
@@ -72,10 +63,21 @@ jobject instanciate(JNIEnv * env, const char * className);
 int isSameObject(JNIEnv * env, jobject javaObject, void* cObject);
 
 /**
-* If field in Java object don't represent C object, then create new Java
-* object representation for this C object and set java field.
+* Store C object in Java object
 */
-void checkAndSetField(JNIEnv * env, jobject this, char * fieldName,
-char * fieldType, char * javaObjectClassName, void * cObject);
+void setCObject(JNIEnv * env, jobject this, void * cobject);
+
+/**
+* Store new value for Java object attribute, attribute must be Java object
+*/
+void setJavaObjectField(JNIEnv * env, jobject this, const char * name, const char * fieldType,
+			jobject value);
+
+/**
+* Store object pointer in java field
+* @param name name of field used to store pointer
+* @param objectRef pointer to store
+*/
+void setObjectRef(JNIEnv * env, jobject this, const char * name, void * objectRef);
 
 #endif

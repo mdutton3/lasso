@@ -39,7 +39,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnResponse_init
 
     (*env)->ReleaseStringUTFChars(env, _providerID, providerID);
 
-    storeCObject(env, this, response);
+    setCObject(env, this, response);
 }
 
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoAuthnResponse_getStatus

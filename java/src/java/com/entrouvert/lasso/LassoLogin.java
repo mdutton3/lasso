@@ -31,17 +31,19 @@ public class LassoLogin extends LassoProfile { // LassoLogin
         init(server);
     }
 
-    public LassoLogin(LassoServer server, LassoUser user, String dump){
+    public LassoLogin(LassoServer server, LassoIdentity identity, String dump){
         this.server = server;
-	this.user = user;
-        initFromDump(server, user, dump);
+	this.identity = identity;
+        initFromDump(server, identity, dump);
     }
 
     native protected void init(LassoServer server);
 
     native protected void initFromDump(LassoServer server,
-                                       LassoUser user,
+                                       LassoIdentity identity,
                                        String dump);
+
+    native public int acceptSso();
 
     native public int buildArtifactMsg(boolean authenticationResult,
                                        String authenticationMethod,
@@ -55,8 +57,6 @@ public class LassoLogin extends LassoProfile { // LassoLogin
                                             String reauthenticateOnOrAfter);
 
     native public int buildRequestMsg();
-
-    native public int createUser(String userDump);
 
     native public String dump();
 

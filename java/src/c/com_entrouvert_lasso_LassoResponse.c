@@ -32,5 +32,5 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoResponse_init
 
     response = lasso_response_new();
 
-    storeCObject(env, this, response);
+    setCObject(env, this, response);
 }

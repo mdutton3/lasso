@@ -35,7 +35,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoLogout_init
     server = (LassoServer*)getCObject(env, _server);
     logout = lasso_logout_new(server, _providerType);
 
-    storeCObject(env, this, logout);
+    setCObject(env, this, logout);
 }
 
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_buildRequestMsg
@@ -58,19 +58,6 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_buildResponseMsg
     result = lasso_logout_build_response_msg(logout);
 
     return result;
-}
-
-JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogout_getNameIdentifier
-(JNIEnv * env, jobject this){
-    LassoLogout * logout;
-    char *result;
-
-    logout = getCObject(env, this);
-
-    result = LASSO_PROFILE_CONTEXT(logout)->nameIdentifier;
-    if (result == NULL)
-        return NULL;
-    return (*env)->NewStringUTF(env, result);
 }
 
 JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogout_getNextProviderId

@@ -24,28 +24,21 @@
 
 package com.entrouvert.lasso;
 
-public class LassoLogout extends LassoProfile { // LassoLogout
+public class LassoIdentity extends LassoObject { // LassoIdentity
 
-    public LassoLogout(LassoServer server, int providerType){
-        this.server = server;
-        init(server, providerType);
+    public LassoIdentity(){
+        init();
     }
 
-    native protected void init(LassoServer server, int providerType);
+    public LassoIdentity(String dump){
+        initFromDump(dump);
+    }
 
-    native public int buildRequestMsg();
+    native protected void init();
 
-    native public int buildResponseMsg();
+    native protected void initFromDump(String dump);
 
-    native public String getNextProviderId();
+    native public String dump();
 
-    native public int initRequest(String providerId);
-
-    native public int loadRequestMsg(String requestMsg, int requestMethod);
-
-    native public int processRequest();
-
-    native public int processResponseMsg(String responseMsg, int responseMethod);
-
-} // LassoLogout
+} // LassoIdentity
 

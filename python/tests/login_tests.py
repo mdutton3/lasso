@@ -189,7 +189,7 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpSessionContextDump)
         self.failUnlessEqual(idpLogoutContext.set_session_from_dump(idpSessionContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.process_request(), 0)
-        idpIdentityContext = idpLogoutContext.identity
+        idpIdentityContext = idpLogoutContext.get_identity()
         self.failUnless(idpIdentityContext)
         idpIdentityContextDump = idpIdentityContext.dump()
         self.failUnless(idpIdentityContextDump)
@@ -201,7 +201,7 @@ class LoginTestCase(unittest.TestCase):
         # Service provider logout (step 2: process SOAP response).
         self.failUnlessEqual(
             spLogoutContext.process_response_msg(soapResponseMsg, lasso.httpMethodSoap), 0)
-        spIdentityContextDump = spLogoutContext.identity.dump()
+        spIdentityContextDump = spLogoutContext.get_identity().dump()
         self.failUnless(spIdentityContextDump)
 
 

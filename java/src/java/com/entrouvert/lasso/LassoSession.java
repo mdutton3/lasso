@@ -24,13 +24,13 @@
 
 package com.entrouvert.lasso;
 
-public class LassoUser extends LassoObject { // LassoUser
+public class LassoSession extends LassoObject { // LassoSession
 
-    public LassoUser(){
+    public LassoSession(){
         init();
     }
 
-    public LassoUser(String dump){
+    public LassoSession(String dump){
         initFromDump(dump);
     }
 
@@ -42,5 +42,5 @@ public class LassoUser extends LassoObject { // LassoUser
 
     native public String getAuthenticationMethod(String remoteProviderId);
 
-} // LassoUser
+} // LassoSession
 

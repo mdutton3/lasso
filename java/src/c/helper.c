@@ -24,41 +24,33 @@
 
 #include <helper.h>
 
-void * getObjectRef(JNIEnv * env, jobject this, const char * name){
-    jclass clazz;
-    jfieldID fid;
-    jlong result;
+void checkAndSetField(JNIEnv *env, jobject this, char *fieldName,
+		      char *fieldType, char *javaObjectClassName, void *cObject) {
+    jobject javaObject;
 
-    clazz = (*env)->GetObjectClass(env, this);
-    fid = (*env)->GetFieldID(env, clazz, name, "J");
+    /* check if changes are made */
+    javaObject = getJavaObjectField(env, this, fieldName, fieldType);
+    if(isSameObject(env, javaObject, cObject)){
+        /* no change made, do nothing */
+        return;
+    }
 
-    result = (*env)->GetLongField(env, this, fid);
-    return (void*)(long)result;
+    javaObject = instantiate(env, javaObjectClassName);
+    if(javaObject == NULL){
+        return; /* exception thrown */
+    }
+
+    /* associate C object with JavaObject */
+    setCObject(env, javaObject, cObject);
+    setJavaObjectField(env, this, fieldName, fieldType, javaObject);
 }
 
-void setObjectRef(JNIEnv * env, jobject this, const char * name, void * objectRef){
-    jclass clazz;
-    jfieldID fid;
-    jlong ref;
-
-    clazz = (*env)->GetObjectClass(env, this);
-    fid = (*env)->GetFieldID(env, clazz, name, "J");
-
-    ref = (jlong)(long)objectRef;
-    (*env)->SetLongField(env, this, fid, ref);
-}
-
-
-void storeCObject(JNIEnv * env, jobject this, void * cobject){
-    setObjectRef(env, this, "c_lasso_object", cobject);
-}
-
-void* getCObject(JNIEnv * env, jobject this){
+void * getCObject(JNIEnv * env, jobject this) {
     return getObjectRef(env, this, "c_lasso_object");
 }
 
-
-jobject getJavaObjectField(JNIEnv * env, jobject this, const char * fieldName, const char * fieldType){
+jobject getJavaObjectField(JNIEnv * env, jobject this, const char * fieldName,
+			   const char * fieldType) {
     jclass clazz;
     jfieldID fid;
     jobject result;
@@ -70,17 +62,19 @@ jobject getJavaObjectField(JNIEnv * env, jobject this, const char * fieldName, c
     return result;
 }
 
-void setJavaObjectField(JNIEnv * env, jobject this, const char * fieldName, const char * fieldType, jobject value){
+void * getObjectRef(JNIEnv * env, jobject this, const char * name) {
     jclass clazz;
     jfieldID fid;
+    jlong result;
 
     clazz = (*env)->GetObjectClass(env, this);
-    fid = (*env)->GetFieldID(env, clazz, fieldName, fieldType);
+    fid = (*env)->GetFieldID(env, clazz, name, "J");
 
-    (*env)->SetObjectField(env, this, fid, value);
+    result = (*env)->GetLongField(env, this, fid);
+    return (void*)(long)result;
 }
 
-jobject instanciate(JNIEnv * env, const char * className){
+jobject instantiate(JNIEnv * env, const char * className){
     jclass clazz;
     jmethodID constructor;
     jobject result;
@@ -104,23 +98,28 @@ int isSameObject(JNIEnv * env, jobject javaObject, void* cObject){
     return javaObject != NULL && cObject == getCObject(env, javaObject);
 }
 
-void checkAndSetField(JNIEnv * env, jobject this, char * fieldName,
-char * fieldType, char * javaObjectClassName, void * cObject){
-    jobject javaObject;
+void setCObject(JNIEnv * env, jobject this, void * cobject) {
+    setObjectRef(env, this, "c_lasso_object", cobject);
+}
 
-    /* check if change are made */
-    javaObject = getJavaObjectField(env, this, fieldName, fieldType);
-    if(isSameObject(env, javaObject, cObject)){
-        /* no change made, do nothing */
-        return;
-    }
+void setJavaObjectField(JNIEnv * env, jobject this, const char * fieldName, const char * fieldType, jobject value){
+    jclass clazz;
+    jfieldID fid;
 
-    javaObject = instanciate(env, javaObjectClassName);
-    if(javaObject == NULL){
-        return; /* exception thrown */
-    }
+    clazz = (*env)->GetObjectClass(env, this);
+    fid = (*env)->GetFieldID(env, clazz, fieldName, fieldType);
 
-    /* associate C object with JavaObject */
-    storeCObject(env, javaObject, cObject);
-    setJavaObjectField(env, this, fieldName, fieldType, javaObject);
+    (*env)->SetObjectField(env, this, fid, value);
+}
+
+void setObjectRef(JNIEnv * env, jobject this, const char * name, void * objectRef) {
+    jclass clazz;
+    jfieldID fid;
+    jlong ref;
+
+    clazz = (*env)->GetObjectClass(env, this);
+    fid = (*env)->GetFieldID(env, clazz, name, "J");
+
+    ref = (jlong)(long)objectRef;
+    (*env)->SetLongField(env, this, fid, ref);
 }
