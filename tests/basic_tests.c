@@ -57,6 +57,25 @@ START_TEST(test03_server_load_dump_random_xml)
 END_TEST
 
 
+START_TEST(test04_identity_load_dump_null)
+{
+	LassoIdentity *identity;
+
+	identity = lasso_identity_new_from_dump(NULL);
+	fail_unless(identity == NULL, "identity was created from NULL dump");
+}
+END_TEST
+
+START_TEST(test05_identity_load_dump_empty)
+{
+	LassoIdentity *identity;
+
+	identity = lasso_identity_new_from_dump("");
+	fail_unless(identity == NULL, "identity was created from empty dump");
+}
+END_TEST
+
+
 Suite*
 basic_suite()
 {
@@ -64,12 +83,18 @@ basic_suite()
 	TCase *tc_server_load_dump_empty_string = tcase_create("Create server from empty string");
 	TCase *tc_server_load_dump_random_string = tcase_create("Create server from random string");
 	TCase *tc_server_load_dump_random_xml = tcase_create("Create server from random XML");
+	TCase *tc_identity_load_dump_null = tcase_create("Create identity from NULL");
+	TCase *tc_identity_load_dump_empty = tcase_create("Create identity from empty string");
 	suite_add_tcase(s, tc_server_load_dump_empty_string);
 	suite_add_tcase(s, tc_server_load_dump_random_string);
 	suite_add_tcase(s, tc_server_load_dump_random_xml);
+	suite_add_tcase(s, tc_identity_load_dump_null);
+	suite_add_tcase(s, tc_identity_load_dump_empty);
 	tcase_add_test(tc_server_load_dump_empty_string, test01_server_load_dump_empty_string);
 	tcase_add_test(tc_server_load_dump_random_string, test02_server_load_dump_random_string);
 	tcase_add_test(tc_server_load_dump_random_xml, test03_server_load_dump_random_xml);
+	tcase_add_test(tc_identity_load_dump_null, test04_identity_load_dump_null);
+	tcase_add_test(tc_identity_load_dump_empty, test05_identity_load_dump_empty);
 	return s;
 }
 
