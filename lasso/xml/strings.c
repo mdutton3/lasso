@@ -120,8 +120,8 @@ const xmlChar lassoSamlMajorVersion[] = "1";
 const xmlChar lassoSamlMinorVersion[] = "1";
 
 /* StatusCodes */
-const xmlChar lassoSamlStatusCodeRequestDenied[] = "Samlp:RequestDenied";
-const xmlChar lassoSamlStatusCodeSuccess[]       = "Samlp:Success";
+const xmlChar lassoSamlStatusCodeRequestDenied[] = "samlp:RequestDenied";
+const xmlChar lassoSamlStatusCodeSuccess[]       = "samlp:Success";
 
 /* AuthenticationMethods */
 const xmlChar lassoSamlAuthenticationMethodPassword[]             = "urn:oasis:names:tc:SAML:1.0:am:password";
