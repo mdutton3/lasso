@@ -311,7 +311,11 @@ class LoginTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(lassoServer)
-        login.processResponseMsg('')
+        try:
+            login.processResponseMsg('')
+        except lasso.Error, error:
+            if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
+                raise
 
 
 class LogoutTestCase(unittest.TestCase):
