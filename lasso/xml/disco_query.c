@@ -43,15 +43,6 @@
  *   </xs:sequence>
  *   <xs:attribute name="id" type="xs:ID" use="optional"/>
  * </xs:complexType>
- *
- * <xs:group name="ResourceIDGroup">
- *   <xs:sequence>
- *      <xs:choice minOccurs="0" maxOccurs="1">
- *        <xs:element ref="ResourceID"/>
- *        <xs:element ref="EncryptedResourceID"/>
- *      </xs:choice>
- *   </xs:sequence>
- * </xs:group>
  */ 
 
 /*****************************************************************************/
@@ -59,9 +50,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoQuery, ResourceID) },
-	{ "EncryptedResourceID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoQuery, EncryptedResourceID) },
+	{ "ResourceIDGroup", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoQuery, ResourceIDGroup) },
 	{ "RequestedServiceType", SNIPPET_LIST_NODES,
 	  G_STRUCT_OFFSET(LassoDiscoQuery, RequestedServiceType) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoQuery, id) },
@@ -75,8 +64,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoQuery *node)
 {
-	node->ResourceID = NULL;
-	node->EncryptedResourceID = NULL;
+	node->ResourceIDGroup = NULL;
 	node->RequestedServiceType = NULL;
 	node->id = NULL;
 }
@@ -117,21 +105,16 @@ lasso_disco_query_get_type()
 }
 
 LassoDiscoQuery*
-lasso_disco_query_new(const gchar *resourceID,
-		      gboolean     encrypt_resourceID)
+lasso_disco_query_new(LassoDiscoResourceIDGroup *resourceIDGroup)
 {
 	LassoDiscoQuery *node;
 
-	g_return_val_if_fail (resourceID != NULL, NULL);
+	g_return_val_if_fail (LASSO_IS_DISCO_RESOURCE_ID_GROUP(resourceIDGroup), NULL);
 
 	node = g_object_new(LASSO_TYPE_DISCO_QUERY, NULL);
 
-	if (encrypt_resourceID == TRUE) {
-		node->EncryptedResourceID = g_strdup(resourceID);
-	}
-	else {
-		node->ResourceID = g_strdup(resourceID);
-	}
+	/* Should ResourceIDGroup be a copy ? */
+	node->ResourceIDGroup = resourceIDGroup;
 
 	return node;
 }

@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/disco_resource_id_group.h>
 #include <lasso/xml/disco_service_instance.h>
 #include <lasso/xml/disco_options.h>
 
@@ -56,14 +57,13 @@ struct _LassoDiscoResourceOffering {
 	LassoNode parent;
 
 	/* elements */
-	char *ResourceID;
-	char *EncryptedResourceID;
+	LassoDiscoResourceIDGroup *ResourceIDGroup;
 	LassoDiscoServiceInstance *ServiceInstance;
 	LassoDiscoOptions *Options;
-	char *Abstract;
+	gchar *Abstract;
 
 	/* attributes */
-	char *entryID;
+	gchar *entryID;
 };
 
 struct _LassoDiscoResourceOfferingClass {
@@ -73,9 +73,8 @@ struct _LassoDiscoResourceOfferingClass {
 LASSO_EXPORT GType lasso_disco_resource_offering_get_type(void);
 
 LASSO_EXPORT LassoDiscoResourceOffering* lasso_disco_resource_offering_new(
-	LassoDiscoServiceInstance *service_instance,
-	const gchar               *resourceID,
-	gboolean                   encrypt_resourceID);
+	LassoDiscoResourceIDGroup *resourceIDGroup,
+	LassoDiscoServiceInstance *serviceInstance);
 
 #ifdef __cplusplus
 }

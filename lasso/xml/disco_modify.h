@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/disco_resource_id_group.h>
 
 #define LASSO_TYPE_DISCO_MODIFY (lasso_disco_modify_get_type())
 #define LASSO_DISCO_MODIFY(obj) \
@@ -49,8 +50,7 @@ typedef struct _LassoDiscoModifyClass LassoDiscoModifyClass;
 struct _LassoDiscoModify {
 	LassoNode parent;
 
-	char *ResourceID;
-	char *EncryptedResourceID;
+	LassoDiscoResourceIDGroup *ResourceIDGroup;
 
 	GList *InsertEntry;
 	GList *RemoveEntry;
@@ -64,8 +64,7 @@ struct _LassoDiscoModifyClass {
 
 LASSO_EXPORT GType lasso_disco_modify_get_type (void);
 
-LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new (const gchar *resourceID,
-						       gboolean     encrypt_resourceID);
+LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new (LassoDiscoResourceIDGroup *resourceIDGroup);
 
 LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new_from_message(const gchar *message);
 

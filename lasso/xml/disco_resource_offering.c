@@ -39,15 +39,6 @@
  *   <xs:attribute name="entryID" type="IDType" use="optional"/>
  * </xs:complexType>
  * 
- * <xs:group name="ResourceIDGroup">
- *   <xs:sequence>
- *     <xs:choice minOccurs="0" maxOccurs="1">
- *       <xs:element ref="ResourceID"/>
- *       <xs:element ref="EncryptedResourceID"/>
- *     </xs:choice>
- *   </xs:sequence>
- * </xs:group>
- * 
  * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
  * 
  * <xs:simpleType name="IDType">
@@ -60,10 +51,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
-	{ "EncryptedResourceID", SNIPPET_CONTENT,
-	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
+	{ "ResourceIDGroup", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceIDGroup) },
 	{ "ServiceInstance", SNIPPET_NODE,
 	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
 	{ "Options", SNIPPET_NODE,
@@ -82,8 +71,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoResourceOffering *node)
 {
-	node->ResourceID = NULL;
-	node->EncryptedResourceID = NULL;
+	node->ResourceIDGroup = NULL;
 	node->ServiceInstance = NULL;
 	node->Options = NULL;
 	node->Abstract = NULL;
@@ -126,29 +114,19 @@ lasso_disco_resource_offering_get_type()
 }
 
 LassoDiscoResourceOffering*
-lasso_disco_resource_offering_new(LassoDiscoServiceInstance *service_instance,
-				  const gchar               *resourceID,
-				  gboolean                   encrypt_resourceID)
+lasso_disco_resource_offering_new(LassoDiscoResourceIDGroup *resourceIDGroup,
+				  LassoDiscoServiceInstance *serviceInstance)
 {
 	LassoDiscoResourceOffering *resource;
 
-	g_return_val_if_fail (LASSO_IS_DISCO_SERVICE_INSTANCE(service_instance), NULL);
-	/* ResourceID/EncryptedResourceID is optional */
+	g_return_val_if_fail (LASSO_IS_DISCO_RESOURCE_ID_GROUP(resourceIDGroup), NULL);
+	g_return_val_if_fail (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance), NULL);
 
 	resource = g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
 
-	/* FIXME: Should ServiceInstance be a copy ? */
-	resource->ServiceInstance = service_instance;
-
-	/* ResourceID or EncryptedResourceID */
-	if (resourceID != NULL) {
-		if (encrypt_resourceID == FALSE) {
-			resource->ResourceID = g_strdup(resourceID);
-		}
-		else {
-			resource->EncryptedResourceID = g_strdup(resourceID);
-		}
-	}
+	/* FIXME: Should ServiceInstance and ResourceIDGroup be copies ? */
+	resource->ServiceInstance = serviceInstance;
+	resource->ResourceIDGroup = resourceIDGroup;
 
 	return resource;
 }

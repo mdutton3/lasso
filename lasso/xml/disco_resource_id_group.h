@@ -65,12 +65,6 @@ LASSO_EXPORT GType lasso_disco_resource_id_group_get_type(void);
 
 LASSO_EXPORT LassoDiscoResourceIDGroup* lasso_disco_resource_id_group_new(void);
 
-LASSO_EXPORT LassoDiscoResourceIDGroup* lasso_disco_resource_id_group_set_resourceID(
-	const char *resourceID, const char id);
-
-LASSO_EXPORT LassoDiscoResourceIDGroup* lasso_disco_resource_id_group_set_encryptedResourceID(
-	const char *encryptedData, const char *encryptedKey);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

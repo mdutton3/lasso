@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/disco_resource_id_group.h>
 #include <lasso/xml/disco_requested_service_type.h>
 
 #define LASSO_TYPE_DISCO_QUERY (lasso_disco_query_get_type())
@@ -50,10 +51,9 @@ typedef struct _LassoDiscoQueryClass LassoDiscoQueryClass;
 struct _LassoDiscoQuery {
 	LassoNode parent;
 
-	char *ResourceID;
-	char *EncryptedResourceID;
+	LassoDiscoResourceIDGroup *ResourceIDGroup;
 	GList *RequestedServiceType;
-	char *id;
+	gchar *id;
 };
 
 struct _LassoDiscoQueryClass {
@@ -62,8 +62,7 @@ struct _LassoDiscoQueryClass {
 
 LASSO_EXPORT GType lasso_disco_query_get_type(void);
 
-LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new(const gchar *resourceID,
-						    gboolean     encrypt_resourceID);
+LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new(LassoDiscoResourceIDGroup *resourceIDGroup);
 
 LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new_from_message(const gchar *message);
 
