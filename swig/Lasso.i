@@ -47,6 +47,7 @@
 
 #include <lasso/lasso_config.h>
 #include <lasso/lasso.h>
+#include <lasso/xml/lib_assertion.h>
 /* FIXME: IMHO, Lasso errors should not be defined in lasso/xml/ */
 /*        and should be included in lasso.h. */
 #include <lasso/xml/errors.h>
