@@ -35,6 +35,10 @@
 	}
  }
  
+ include 'config.php.inc';
+
+ require_once 'DB.php';
+
  session_start();
 
  lasso_init();
@@ -51,15 +55,24 @@
 <br><br>
 <table border="1" align="center" frame="above">
 <tr>
-  <td><b>Serice Provider Administration</b></td>
+  <td><b>Service Provider Administration</b></td>
 </tr>
+<?php
+  if (!file_exists($server_dump_filename)) {
+?>
+<tr>
+  <td><a href="setup.php">Setup</a></td>
+</tr>
+</table>
+<?php 
+} else {
+?>
 <tr>
   <td><a href="admin_user.php">Users Management</a></td>
 </tr>
 <tr>
   <td><a href="admin_fed.php">Federation Administration</a></td>
 </tr>
-<tr>
 <tr>
   <td><b>Serice Provider Fonctionnality</b></td>
 </tr>
@@ -95,17 +108,41 @@
 <tr>
 	<td><b>UserID:</b></td><td><?php echo $_SESSION["user_id"]; ?></td>
 </tr>
+<?php
+  $db = &DB::connect($dsn);
+
+  if (DB::isError($db)) 
+	die($db->getMessage());
+
+  $query = "SELECT * FROM users WHERE user_id='". $_SESSION["user_id"] ."'"; 
+
+  $res =& $db->query($query);
+  if (DB::isError($res)) 
+	print $res->getMessage(). "\n";
+
+  list($user_id, $identity_dump, $first_name, $last_name, $created, $last_login) = $res->fetchRow();
+
+  ?>
 <tr>
 	<td><b>Last Name:</b></td><td><?php echo $last_name; ?></td>
 </tr>
 <tr>
 	<td><b>First Name:</b></td><td><?php echo $first_name; ?></td>
+</tr>
+<tr>
+	<td><b>Account Created:</b></td><td><?php echo $created; ?></td>
+</tr>
+<tr>
+	<td><b>Last Login:</b></td><td><?php echo $last_login; ?></td>
   <?php 
+	$db->disconnect();
 	} 
 	?>
 </tr>
 </table>
-
+<?php
+}
+?>
 <p>Lasso Version : <?php echo lasso_version(); ?></p>
 
 <br>

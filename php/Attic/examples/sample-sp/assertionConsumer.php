@@ -102,7 +102,6 @@
   {
 	$row =& $res->fetchRow();
     $user_id = $row[0];
-	// print "user id : " . $user_id .  "<br>\n";
 
 	# Get Identity Dump from the data base
 	$query = "SELECT identity_dump FROM users WHERE user_id='$user_id'";
@@ -119,6 +118,12 @@
 	$res->free();
   	
 	lasso_login_accept_sso($login);
+	
+	$_SESSION["nameidentifier"] = $nameidentifier;
+	$_SESSION["session_dump"] = $session_dump;
+	$_SESSION["user_id"] = $user_id;
+
+	$url = "index.php";
   }
   else 
   {
@@ -162,6 +167,12 @@
 
 	$url = "register.php";
   }
+  
+  // Update last_login
+  $query = "UPDATE users SET last_login=NOW() WHERE user_id='$user_id'";
+  $res =& $db->query($query);
+  if (DB::isError($res)) 
+	print $res->getMessage(). "\n";
 
   $db->disconnect();
 	

@@ -27,7 +27,7 @@
 
 	require_once 'DB.php';
 
-	print "Install script for L.A.S.S.O (Liberty Alliance Single Sign On)\n";
+	print "Setup script for L.A.S.S.O (Liberty Alliance Single Sign On)\n";
 
 	lasso_init();
 	print "$server_dump_filename: ";
