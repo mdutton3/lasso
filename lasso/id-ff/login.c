@@ -1439,6 +1439,7 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
 
   lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request),
 				      lassoLibConsentObtained);
+  lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), FALSE);
   lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request),
 					   lassoLibNameIDPolicyTypeAny);
   lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(request),
