@@ -71,7 +71,7 @@ JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogout_getNameIdentifie
 
     logout = getCObject(env, this);
 
-    result = logout->nameIdentifier;
+    result = LASSO_PROFILE_CONTEXT(logout)->nameIdentifier;
     if (result == NULL)
         return NULL;
     return (*env)->NewStringUTF(env, result);
