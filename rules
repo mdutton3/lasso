@@ -68,7 +68,8 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp \
+		GACUTIL="/usr/bin/gacutil -root $(CURDIR)/debian/tmp/usr/lib"
 
 
 # Build architecture-independent files here.
