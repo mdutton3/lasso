@@ -81,7 +81,7 @@
   </bookinfo>
 
   <chapter id="lasso">
-    <title>Lasso Overview</title>
+    <title>Lasso &amp; Liberty Alliance Overview</title>
     <para>
 Lasso is a library which provides all the necessary functions for sites to
 implement <ulink url="http://www.projectliberty.org">Liberty Alliance</ulink>
@@ -90,7 +90,71 @@ and related protocols.
     </para>
 
     <para>
-It is built on top of <ulink url="http://www.xmlsoft.org">libxml2</ulink>,
+Founded in 2001 by Sun in order to propose an alternative to the
+Microsoft Passport project, the consortium Liberty Alliance aims to
+promote an infrastructure of standards allowing the management of
+federated identities between several services or systems.
+    </para>
+
+    <para>
+
+A federated identity (or network identity) of an individual or a legal entity
+on Internet gather at the same time:
+
+<itemizedlist>
+  <listitem>
+   Its identification (name, co-ordinates, preferences, history...);
+  </listitem>
+  <listitem>
+   Its authentication (which guarantees the validity of an identity);
+  </listitem>
+  <listitem>
+   Its authorisations (access rights to information, access rights to
+   services).
+  </listitem>
+</itemizedlist>
+</para>
+
+<para>
+Liberty standards aims to give more coherence to a network identity
+which is scattered (numerous logins and passwords) today. This identity
+becomes frequently delicate to manage, both for customers and businesses.
+</para>
+ 
+<para>
+The Liberty Alliance specifications define three types of actors:
+
+<itemizedlist>
+  <listitem>
+    The user, person or entity who can acquire an identity;
+  </listitem>
+  <listitem>
+    The identity provider which creates and manages the identity of
+    the users, and authenticates them to the service providers;
+  </listitem>
+  <listitem>
+    The service provider who provides services to the users once that
+    they have authenticated to an identity provider.
+  </listitem>
+</itemizedlist>
+</para>
+
+<para>
+One calls circle of trust a grouping of identity providers and service
+providers which agreed to share (to federate) the identity of their users.
+</para>
+
+    <para>
+Contrary to the other implementations of Liberty Alliance, Lasso is not a
+full-fedged system (most often Java/J2EE) but a fast and tiny C library.  The
+integration work is largely facilitated.  An existing site should be able to
+integrate it in a few days of development, without calling into question its
+architecture.  Lasso is a library written in C Language. It works on GNU/Linux,
+Windows and UNIX and has complete bindings for Java, Perl, PHP and Python.
+    </para>
+
+<para>
+Lasso is built on top of <ulink url="http://www.xmlsoft.org">libxml2</ulink>,
 <ulink url="http://www.aleksey.com/xmlsec/">XMLSec</ulink> and
 <ulink url="http://www.openssl.org">OpenSSL</ulink> and is licensed under
 the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License</ulink>
