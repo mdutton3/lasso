@@ -194,6 +194,18 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
   lasso_node_destroy(status);
 }
 
+gint
+lasso_profile_context_set_user_from_dump(LassoProfileContext *ctx,
+					 const gchar         *dump)
+{
+  ctx->user = lasso_user_new_from_dump((gchar *)dump);
+  if (ctx->user == NULL) {
+    message(G_LOG_LEVEL_ERROR, "Failed to create the user from the user dump\n");
+    return(-1);
+  }
+  return(0);
+}
+
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/

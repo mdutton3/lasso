@@ -102,12 +102,13 @@ struct _LassoProfileContextClass {
   GObjectClass parent;
 };
 
+LASSO_EXPORT gint                 lasso_profile_context_get_request_type_from_soap_msg (gchar *soap);
+
+
 LASSO_EXPORT GType                lasso_profile_context_get_type                       (void);
 
 LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                            (LassoServer *server,
 											LassoUser   *user);
-
-LASSO_EXPORT gint                 lasso_profile_context_get_request_type_from_soap_msg (gchar *soap);
 
 LASSO_EXPORT gchar*               lasso_profile_context_dump                           (LassoProfileContext *ctx,
 											const gchar         *name);
@@ -117,6 +118,9 @@ LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID   
 
 LASSO_EXPORT void                 lasso_profile_context_set_response_status            (LassoProfileContext *ctx,
 											const gchar         *statusCodeValue);
+
+LASSO_EXPORT gint                 lasso_profile_context_set_user_from_dump             (LassoProfileContext *ctx,
+											const gchar         *dump);
 
 #ifdef __cplusplus
 }
