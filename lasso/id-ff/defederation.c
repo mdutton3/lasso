@@ -42,16 +42,16 @@
  * <itemizedlist>
  * <listitem><para>
  *   if it is a SOAP method, then it builds the federation termination
- *   notification SOAP message, optionally signs the notification node, set the
- *   msg_body attribute, gets the SoapEndpoint url and set the msg_url
- *   attribute of the federation termination object.
+ *   notification SOAP message, optionally signs the notification node, sets
+ *   @msg_body, gets the SoapEndpoint url and sets @msg_url of the federation
+ *   termination object.
  * </para></listitem>
  * <listitem><para>
  *   if it is a HTTP-Redirect method, then it builds the federation termination
  *   notification QUERY message (optionally signs the notification message),
  *   builds the federation termination notification url with federation
- *   termination service url, set the msg_url attribute of the federation
- *   termination object, set the msg_body to NULL
+ *   termination service url, sets @msg_url in the federation termination
+ *   object, sets @msg_body to NULL.
  * </para></listitem>
  * </itemizedlist>
  * 

@@ -434,8 +434,8 @@ lasso_login_accept_sso(LassoLogin *login)
  * @http_method: the HTTP method to send the artifact (REDIRECT or POST)
  * 
  * Builds a SAML artifact. Depending of the HTTP method, the data for the sending of
- * the artifact are stored in msg_url (REDIRECT) or msg_url, msg_body and
- * msg_relayState (POST).
+ * the artifact are stored in @msg_url (REDIRECT) or @msg_url, @msg_body and
+ * @msg_relayState (POST).
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/

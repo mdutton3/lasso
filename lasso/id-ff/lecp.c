@@ -32,6 +32,16 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+
+/**
+ * lasso_lecp_build_authn_request_envelope_msg:
+ * @lecp: a #LassoLecp
+ *
+ * Builds an enveloped authentication request message.  Sets @msg_body to that
+ * message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 {
@@ -91,12 +101,12 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 
 /**
  * lasso_lecp_build_authn_request_msg:
- * @lecp: a LassoLecp
+ * @lecp: a #LassoLecp
  * 
  * Builds an authentication request. The data for the sending of the request are
- * stored in msg_url and msg_body (SOAP POST).
+ * stored in @msg_url and @msg_body (SOAP POST).
  * 
- * Return value: 0 on success and a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 int
 lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
@@ -121,6 +131,16 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 	return 0;
 }
 
+
+/**
+ * lasso_lecp_build_authn_response_msg:
+ * @lecp: a #LassoLecp
+ *
+ * Builds the lecp authentication response message (base64).  Sets @msg_body to
+ * that message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 {
@@ -141,6 +161,16 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 	return 0;
 }
 
+
+/**
+ * lasso_lecp_build_authn_response_envelope_msg:
+ * @lecp: a #LassoLecp
+ *
+ * Builds the enveloped LECP authentication response message (SOAP message).
+ * Sets @msg_body to that message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 {
@@ -177,6 +207,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 
 	if (LASSO_PROFILE(lecp)->msg_url)
 		g_free(LASSO_PROFILE(lecp)->msg_url);
+	LASSO_PROFILE(lecp)->msg_url = NULL;
 
 	lecp->authnResponseEnvelope = lasso_lib_authn_response_envelope_new(
 			LASSO_LIB_AUTHN_RESPONSE(profile->response),
@@ -220,6 +251,17 @@ lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
 	return res;
 }
 
+
+/**
+ * lasso_lecp_process_authn_request_msg:
+ * @lecp: a #LassoLecp
+ * @authn_request_msg: the authentication request received
+ *
+ * Processes received authentication request, checks it is signed correctly,
+ * checks if requested protocol profile is supported, etc.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_lecp_process_authn_request_msg(LassoLecp *lecp, const char *authn_request_msg)
 {
@@ -229,6 +271,17 @@ lasso_lecp_process_authn_request_msg(LassoLecp *lecp, const char *authn_request_
 	return lasso_login_process_authn_request_msg(LASSO_LOGIN(lecp), authn_request_msg);
 }
 
+
+/**
+ * lasso_lecp_process_authn_request_envelope_msg:
+ * @lecp: a #LassoLecp
+ * @request_msg: the enveloped authentication request received
+ *
+ * Processes received enveloped authentication request, extracts the
+ * authentication request out of it.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *request_msg)
 {
@@ -278,6 +331,17 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 	return 0;
 }
 
+
+/**
+ * lasso_lecp_process_authn_response_envelope_msg:
+ * @lecp: a #LassoLecp
+ * @response_msg: the enveloped authentication response received
+ *
+ * Processes received enveloped authentication response, extracts the
+ * authentication response out of it and stores it in @response.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *response_msg)
 {

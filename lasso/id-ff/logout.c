@@ -52,12 +52,12 @@ static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile
  * <listitem><para>
  *   if it is a SOAP method, then it builds the logout request SOAP message,
  *   sets the msg_body attribute, gets the single logout service url and sets
- *   the msg_url attribute of the logout object.
+ *   @msg_url in the logout object.
  * </para></listitem>
  * <listitem><para>
  *   if it is a HTTP-Redirect method, then it builds the logout request QUERY
- *   message, builds the logout request url, sets the msg_url to the logout
- *   request url, sets the msg_body to NULL.
+ *   message, builds the logout request url, sets @msg_url in the logout
+ *   request url, sets @msg_body to NULL.
  * </para></listitem>
  * </itemizedlist>
  *
@@ -134,12 +134,12 @@ lasso_logout_build_request_msg(LassoLogout *logout)
  * <listitem><para>
  *    if it is a SOAP method, then it builds the logout response SOAP message,
  *    sets the msg_body attribute, gets the single logout service return url
- *    and sets the msg_url attribute of the logout object.
+ *    and sets @msg_url in the logout object.
  * </para></listitem>
  * <listitem><para>
  *    if it is a HTTP-Redirect method, then it builds the logout response QUERY message,
- *    builds the logout response url, sets the msg_url with the logout response url,
- *    sets the msg_body with NULL
+ *    builds the logout response url, sets @msg_url with the logout response url,
+ *    sets @msg_body to NULL
  * </para></listitem>
  * </itemizedlist>
  *

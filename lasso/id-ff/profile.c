@@ -43,6 +43,18 @@ struct _LassoProfilePrivate
 /* public functions                                                          */
 /*****************************************************************************/
 
+
+/**
+ * lasso_profile_get_nameIdentifier:
+ * @profile: a #LassoProifle
+ *
+ * Looks up appropriate federation in object and gets the service provider name
+ * identifier.
+ *
+ * Return value: the name identifier or NULL if none was found.  The
+ *     #LassoSamlNameIdentifier object is internally allocated and must not be
+ *     freed by the caller.
+ **/
 LassoSamlNameIdentifier*
 lasso_profile_get_nameIdentifier(LassoProfile *profile)
 {
@@ -173,7 +185,7 @@ lasso_profile_is_liberty_query(const gchar *query)
  *
  * Gets the identity bound to @profile.
  *
- * Return value: the identity or NULL if it none was bound.  The #LassoIdentity
+ * Return value: the identity or NULL if it none was found.  The #LassoIdentity
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoIdentity*
@@ -191,7 +203,7 @@ lasso_profile_get_identity(LassoProfile *profile)
  *
  * Gets the session bound to @profile.
  *
- * Return value: the session or NULL if it none was bound.  The #LassoSession
+ * Return value: the session or NULL if it none was found.  The #LassoSession
  *      object is internally allocated and must not be freed by the caller.
  **/
 LassoSession*
