@@ -477,33 +477,32 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
 
   if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
+    message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
     return(-1);
   }
 
   profile->remote_providerID = lasso_node_get_child_content(profile->response, "ProviderID",
 							    NULL, NULL);
+
+  /* response os ok, delete the assertion */
+  lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+
   /* response is ok, so delete the assertion */
   switch(profile->provider_type) {
   case lassoProviderTypeSp:
     break;
   case lassoProviderTypeIdp:
-    /* response os ok, delete the assertion */
-    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-    message(G_LOG_LEVEL_INFO, "Remove assertion for %s\n", profile->remote_providerID);
-
     /* if no more assertion for other providers, remove assertion of the original provider and restore the original requester infos */
     if(profile->session->providerIDs->len == 1){
-      message(G_LOG_LEVEL_WARNING, "Remove assertion of the original provider\n");
       lasso_session_remove_assertion(profile->session, logout->initial_remote_providerID);
 
       profile->remote_providerID = logout->initial_remote_providerID;
       profile->request = logout->initial_request;
       profile->response = logout->initial_response;
     }
-
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Unkown provider type\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
   }
 
   return(0);
