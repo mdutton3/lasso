@@ -57,6 +57,7 @@ liblasso_xml_la_SOURCES = \
 	lib_scoping.c \
 	lib_status_response.c \
 	lib_subject.c \
+	pp_msg_contact.c \
 	saml_advice.c \
 	saml_assertion.c \
 	saml_attribute.c \
@@ -130,6 +131,7 @@ liblassoinclude_HEADERS = \
 	lib_scoping.h \
 	lib_status_response.h \
 	lib_subject.h \
+	pp_msg_contact.h \
 	saml_advice.h \
 	saml_assertion.h \
 	saml_attribute.h \
