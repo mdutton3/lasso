@@ -97,7 +97,7 @@ lasso_lib_logout_response_get_type()
 LassoNode*
 lasso_lib_logout_response_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_LOGOUT_RESPONSE, NULL));
+	return g_object_new(LASSO_TYPE_LIB_LOGOUT_RESPONSE, NULL);
 }
 
 LassoNode*

@@ -144,6 +144,6 @@ lasso_saml_subject_get_type()
  **/
 LassoNode* lasso_saml_subject_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT, NULL));
+	return g_object_new(LASSO_TYPE_SAML_SUBJECT, NULL);
 }
 

@@ -141,6 +141,6 @@ lasso_lib_idp_entry_get_type()
 LassoNode*
 lasso_lib_idp_entry_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_IDP_ENTRY, NULL));
+	return g_object_new(LASSO_TYPE_LIB_IDP_ENTRY, NULL);
 }
 

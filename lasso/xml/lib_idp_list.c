@@ -140,6 +140,6 @@ lasso_lib_idp_list_get_type()
 LassoNode*
 lasso_lib_idp_list_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_IDP_LIST, NULL));
+	return g_object_new(LASSO_TYPE_LIB_IDP_LIST, NULL);
 }
 

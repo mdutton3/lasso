@@ -150,5 +150,5 @@ lasso_lib_request_authn_context_get_type()
 LassoNode*
 lasso_lib_request_authn_context_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT, NULL));
+	return g_object_new(LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT, NULL);
 }

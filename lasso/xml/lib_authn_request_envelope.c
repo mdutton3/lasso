@@ -187,5 +187,5 @@ lasso_lib_authn_request_envelope_get_type()
 LassoNode*
 lasso_lib_authn_request_envelope_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE, NULL));
+	return g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE, NULL);
 }

@@ -153,6 +153,6 @@ lasso_saml_authentication_statement_get_type()
 LassoNode*
 lasso_saml_authentication_statement_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, NULL));
+	return g_object_new(LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, NULL);
 }
 

@@ -211,6 +211,6 @@ lasso_lib_status_response_get_type()
 
 LassoNode* lasso_lib_status_response_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_STATUS_RESPONSE, NULL));
+	return g_object_new(LASSO_TYPE_LIB_STATUS_RESPONSE, NULL);
 }
 

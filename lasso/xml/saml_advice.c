@@ -153,6 +153,6 @@ lasso_saml_advice_get_type()
 LassoNode*
 lasso_saml_advice_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_ADVICE, NULL));
+	return g_object_new(LASSO_TYPE_SAML_ADVICE, NULL);
 }
 

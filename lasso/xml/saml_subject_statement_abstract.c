@@ -137,6 +137,6 @@ lasso_saml_subject_statement_abstract_get_type()
 LassoNode*
 lasso_saml_subject_statement_abstract_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT, NULL));
+	return g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT, NULL);
 }
 

@@ -126,6 +126,6 @@ lasso_saml_authority_binding_get_type()
 LassoNode*
 lasso_saml_authority_binding_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHORITY_BINDING, NULL));
+	return g_object_new(LASSO_TYPE_SAML_AUTHORITY_BINDING, NULL);
 }
 
