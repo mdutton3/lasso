@@ -534,7 +534,6 @@ AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc       disable documentation build],,
 
 if test "x$enable_gtk_doc" = "xyes" ; then
     GTK_DOC_MIN_VERSION=1.0
-    AC_MSG_CHECKING(gtk-doc support:)
     PKG_CHECK_MODULES(GTK_DOC, gtk-doc >= $GTK_DOC_MIN_VERSION, enable_gtk_doc="yes",
                       enable_gtk_doc="no")
 fi
