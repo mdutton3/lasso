@@ -51,6 +51,7 @@ MAINTAINERCLEANFILES=$(SWIG_OUTPUTS)
 
 $(JAVA_MODULE)_wrap.c $(JAVA_PATH)$(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
 	here=`pwd`; \
+	mkdir -p $(JAVA_PATH) \
 	cd $(JAVA_PATH); \
 	$(SWIG) -v -java -noproxy -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
 	if test -r $(JAVA_MODULE)JNI.java; then \
