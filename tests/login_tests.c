@@ -22,12 +22,19 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <check.h>
+
 #include <lasso/lasso.h>
 
 
-char *generateIdentityProviderContextDump() {
-	LassoServer *serverContext = lasso_server_new(
+char*
+generateIdentityProviderContextDump()
+{
+	LassoServer *serverContext;
+	
+	serverContext = lasso_server_new(
 			"../examples/data/idp-metadata.xml",
 			"../examples/data/idp-public-key.pem",
 			"../examples/data/idp-private-key.pem",
@@ -38,28 +45,111 @@ char *generateIdentityProviderContextDump() {
 			"../examples/data/sp-metadata.xml",
 			"../examples/data/sp-public-key.pem",
 			"../examples/data/ca-crt.pem");
-	char *serverContextDump = lasso_server_dump(serverContext);
-	return serverContextDump;
+	return lasso_server_dump(serverContext);
 }
+
+char*
+generateServiceProviderContextDump()
+{
+	LassoServer *serverContext;
+	
+	serverContext = lasso_server_new(
+			"../examples/data/sp-metadata.xml",
+			"../examples/data/sp-public-key.pem",
+			"../examples/data/sp-private-key.pem",
+			"../examples/data/sp-crt.pem",
+			lassoSignatureMethodRsaSha1);
+	lasso_server_add_provider(
+			serverContext,
+			"../examples/data/idp-metadata.xml",
+			"../examples/data/idp-public-key.pem",
+			"../examples/data/ca-crt.pem");
+	return lasso_server_dump(serverContext);
+}
+
 
 START_TEST(test01_generateServersContextDumps)
 {
-	char *identityProviderContextDump = generateIdentityProviderContextDump();
+	char *identityProviderContextDump;
+	char *serviceProviderContextDump; 
+
+	identityProviderContextDump = generateIdentityProviderContextDump();
 	fail_unless(identityProviderContextDump != NULL,
-		"generateIdentityProviderContextDump should not return NULL");
+			"generateIdentityProviderContextDump should not return NULL");
+	serviceProviderContextDump = generateServiceProviderContextDump();
+	fail_unless(serviceProviderContextDump != NULL,
+			"generateServiceProviderContextDump should not return NULL");
 }
 END_TEST
 
-Suite* login_suite()
+START_TEST(test02_serviceProviderLogin)
+{
+	char *serviceProviderContextDump, *identityProviderContextDump;
+	LassoServer *spContext, *idpContext;
+	LassoLogin *spLoginContext, *idpLoginContext;
+	LassoLibAuthnRequest *request;
+	int rc;
+	char *relayState;
+	char *authnRequestUrl, *authnRequestQuery;
+
+	serviceProviderContextDump = generateServiceProviderContextDump();
+	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
+	spLoginContext = lasso_login_new(spContext, NULL);
+	fail_unless(spLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	rc = lasso_login_init_authn_request(spLoginContext,
+			"https://identity-provider:1998/liberty-alliance/metadata");
+	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
+	fail_unless(LASSO_PROFILE_CONTEXT(spLoginContext)->request_type == \
+			lassoMessageTypeAuthnRequest, "request_type should be AuthnRequest");
+	request = LASSO_LIB_AUTHN_REQUEST(
+			LASSO_PROFILE_CONTEXT(spLoginContext)->request);
+	lasso_lib_authn_request_set_isPassive(request, 0);
+	lasso_lib_authn_request_set_nameIDPolicy(request, lassoLibNameIDPolicyTypeFederated);
+	lasso_lib_authn_request_set_consent(request, lassoLibConsentObtained);
+	relayState = "fake";
+	lasso_lib_authn_request_set_relayState(request, "fake");
+	rc = lasso_login_build_authn_request_msg(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
+	authnRequestUrl = LASSO_PROFILE_CONTEXT(spLoginContext)->msg_url;
+	fail_unless(authnRequestUrl != NULL,
+			"authnRequestUrl shouldn't be NULL");
+	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
+	fail_unless(strlen(authnRequestQuery) > 0,
+			"authnRequestUrl shouldn't be an empty string");
+
+        /* Identity provider singleSignOn, for a user having no federation. */
+	identityProviderContextDump = generateIdentityProviderContextDump();
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new(idpContext, NULL);
+	fail_unless(idpLoginContext != NULL,
+			"lasso_login_new() shouldn't have returned NULL");
+	rc = lasso_login_init_from_authn_request_msg(idpLoginContext,
+			authnRequestQuery, lassoHttpMethodRedirect);
+	fail_unless(rc == 0, "lasso_login_init_from_authn_request_msg failed");
+	fail_unless(lasso_login_must_authenticate(idpLoginContext),
+			"lasso_login_must_authenticate() should be TRUE");
+
+
+
+}
+END_TEST
+
+Suite*
+login_suite()
 {
 	Suite *s = suite_create("Login");
 	TCase *tc_generate = tcase_create("Generate Server Contexts");
+	TCase *tc_spLogin = tcase_create("Login initiated by service provider");
 	suite_add_tcase(s, tc_generate);
+	suite_add_tcase(s, tc_spLogin);
 	tcase_add_test(tc_generate, test01_generateServersContextDumps);
+	tcase_add_test(tc_spLogin, test02_serviceProviderLogin);
 	return s;
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	int rc;
 	Suite *s;
