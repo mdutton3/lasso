@@ -6,6 +6,7 @@ JAVA_MODULE=lasso
 JAVA_PACKAGE=com.entrouvert.lasso
 # Define java Package directory, the tailing '/' is mandatory.
 JAVA_PATH=com/entrouvert/lasso/
+JDK_INCLUDES=@JDK_INCLUDE@
 CLASSPATH=.
 
 javalibdir=$(prefix)/lib/java
