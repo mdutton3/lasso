@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
 #include <lasso/protocols/authn_request.h>
 
 /*****************************************************************************/
@@ -344,6 +345,8 @@ lasso_authn_request_new_from_export(gchar                *buffer,
     break;
   case lassoNodeExportTypeBase64:
     break;
+  case lassoNodeExportTypeSoap:
+    break; /* XXX */
   }
 
   return (request);
