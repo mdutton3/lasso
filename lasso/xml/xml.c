@@ -43,7 +43,7 @@ lasso_node_build_query(LassoNode *node)
   return (class->build_query(node));
 }
 
-void
+xmlChar *
 lasso_node_dump(LassoNode *node, const xmlChar *encoding, int format) {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->dump(node, encoding, format);
@@ -292,7 +292,7 @@ lasso_node_impl_build_query(LassoNode *node)
   return (query);
 }
 
-static void
+static xmlChar *
 lasso_node_impl_dump(LassoNode *node,
 		     const xmlChar *encoding,
 		     int format)
@@ -305,12 +305,12 @@ lasso_node_impl_dump(LassoNode *node,
   if (encoding != NULL) {
     handler = xmlFindCharEncodingHandler(encoding);
     if (handler == NULL) {
-      return;
+      return (NULL);
     }
   }
   buf = xmlAllocOutputBuffer(handler);
   if (buf == NULL) {
-    return;
+    return (NULL);
   }
   xmlNodeDumpOutput(buf, node->private->node->doc, node->private->node,
 		    0, format, encoding);
@@ -328,6 +328,7 @@ lasso_node_impl_dump(LassoNode *node,
   (void) xmlOutputBufferClose(buf);
 
   printf("%s\n\n", ret);
+  return (ret);
 }
 
 static LassoAttr*
