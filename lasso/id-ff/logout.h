@@ -84,12 +84,15 @@ LASSO_EXPORT gint         lasso_logout_process_request_msg  (LassoLogout     *lo
 							     gchar           *request_msg,
 							     lassoHttpMethod  request_method);
 
-LASSO_EXPORT gint         lasso_logout_validate_request     (LassoLogout *logout);
-
 LASSO_EXPORT gint         lasso_logout_process_response_msg (LassoLogout     *logout,
 							     gchar           *response_msg,
 							     lassoHttpMethod  response_method);
-  
+
+LASSO_EXPORT gint         lasso_logout_reset_session_index  (LassoLogout     *logout);
+
+LASSO_EXPORT gint         lasso_logout_validate_request     (LassoLogout *logout);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

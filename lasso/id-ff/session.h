@@ -54,7 +54,10 @@ struct _LassoSession {
   gboolean is_dirty;
 
   /*< private >*/
-  LassoSessionPrivate *private;
+  LassoSessionPrivate *private; /* Index of the current remote provider id in the providerIDs list */
+
+  gint index_providerID;
+
 };
 
 struct _LassoSessionClass {
@@ -68,7 +71,7 @@ LASSO_EXPORT LassoSession*  lasso_session_new                                  (
 LASSO_EXPORT LassoSession*  lasso_session_new_from_dump                        (gchar *dump);
 
 LASSO_EXPORT gint           lasso_session_add_assertion                        (LassoSession *session,
-										gchar        *remote_providerID,
+										gchar        *providerID,
 										LassoNode    *assertion);
   
 LASSO_EXPORT LassoSession*  lasso_session_copy                                 (LassoSession *session);
@@ -78,15 +81,17 @@ LASSO_EXPORT void           lasso_session_destroy                              (
 LASSO_EXPORT gchar*         lasso_session_dump                                 (LassoSession *session);
 
 LASSO_EXPORT LassoNode*     lasso_session_get_assertion                        (LassoSession *session,
-										gchar        *remote_providerID);
+										gchar        *providerID);
 
 LASSO_EXPORT gchar*         lasso_session_get_authentication_method            (LassoSession *session,
-										gchar        *remote_providerID);
+										gchar        *providerID);
 
-LASSO_EXPORT gchar*         lasso_session_get_next_assertion_remote_providerID (LassoSession *session);
+LASSO_EXPORT gchar*         lasso_session_get_next_providerID                  (LassoSession *session);
 
 LASSO_EXPORT gint           lasso_session_remove_assertion                     (LassoSession *session,
-										gchar        *remote_providerID);
+										gchar        *providerID);
+
+LASSO_EXPORT gint           lasso_session_reset_index_providerID               (LassoSession *session);
 
 #ifdef __cplusplus
 }

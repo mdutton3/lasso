@@ -83,19 +83,19 @@ lasso_session_dump_assertion(gpointer   key,
 
 gint
 lasso_session_add_assertion(LassoSession *session,
-			    gchar        *remote_providerID,
+			    gchar        *providerID,
 			    LassoNode    *assertion)
 {
   int i;
   gboolean found = FALSE;
 
   g_return_val_if_fail(session != NULL, -1);
-  g_return_val_if_fail(remote_providerID != NULL, -2);
+  g_return_val_if_fail(providerID != NULL, -2);
   g_return_val_if_fail(assertion != NULL, -3);
 
   /* add the remote provider id */
   for(i = 0; i<session->providerIDs->len; i++) {
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(session->providerIDs, i))) {
+    if(xmlStrEqual(providerID, g_ptr_array_index(session->providerIDs, i))) {
       found = TRUE;
       break;
     }
@@ -104,12 +104,17 @@ lasso_session_add_assertion(LassoSession *session,
     debug("An assertion existed already for this providerID, it was replaced by the new one.\n");
   }
   else {
-    g_ptr_array_add(session->providerIDs, g_strdup(remote_providerID));
+    g_ptr_array_add(session->providerIDs, g_strdup(providerID));
   }
 
   /* add the assertion */
-  g_hash_table_insert(session->assertions, g_strdup(remote_providerID),
+  g_hash_table_insert(session->assertions, g_strdup(providerID),
 		      lasso_node_copy(assertion));
+
+  /* If index_providerID is -1, then set to 0 (now there is at least one  assertion) */
+  if (session->index_providerID < 0) {
+    session->index_providerID = 0;
+  }
 
   session->is_dirty = TRUE;
 
@@ -187,15 +192,15 @@ lasso_session_dump(LassoSession *session)
 
 LassoNode*
 lasso_session_get_assertion(LassoSession *session,
-			    gchar        *remote_providerID)
+			    gchar        *providerID)
 {
   LassoNode *assertion;
 
   g_return_val_if_fail(session != NULL, NULL);
-  g_return_val_if_fail(remote_providerID != NULL, NULL);
+  g_return_val_if_fail(providerID != NULL, NULL);
 
   assertion = (LassoNode *)g_hash_table_lookup(session->assertions,
-					       remote_providerID);
+					       providerID);
   if (assertion == NULL) {
     return NULL;
   }
@@ -212,11 +217,11 @@ lasso_session_get_authentication_method(LassoSession *session,
   gchar *authentication_method;
   GError *err = NULL;
 
-  if (remote_providerID == NULL) {
-    providerID = lasso_session_get_next_assertion_remote_providerID(session);
+  if (providerID == NULL) {
+    providerID = lasso_session_get_next_providerID(session);
   }
   assertion = lasso_session_get_assertion(session, providerID);
-  if (remote_providerID == NULL) {
+  if (providerID == NULL) {
     g_free(providerID);
   }
   as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL, NULL);
@@ -234,9 +239,9 @@ lasso_session_get_authentication_method(LassoSession *session,
 }
 
 gchar*
-lasso_session_get_next_assertion_remote_providerID(LassoSession *session)
+lasso_session_get_next_providerID(LassoSession *session)
 {
-  gchar *remote_providerID;
+  gchar *providerID;
 
   g_return_val_if_fail(session!=NULL, NULL);
 
@@ -244,39 +249,60 @@ lasso_session_get_next_assertion_remote_providerID(LassoSession *session)
     return(NULL);
   }
 
-  remote_providerID = g_strdup(g_ptr_array_index(session->providerIDs, 0));
+  if (session->index_providerID < 0) {
+    return(NULL);
+  }
 
-  return(remote_providerID);
+  /* get the next provider id and increments the index */
+  providerID = g_strdup(g_ptr_array_index(session->providerIDs, session->index_providerID));
+  session->index_providerID++;
+
+  return(providerID);
 }
 
 gint
 lasso_session_remove_assertion(LassoSession *session,
-			       gchar        *remote_providerID)
+			       gchar        *providerID)
 {
   LassoNode *assertion;
   int i;
 
   g_return_val_if_fail(session != NULL, -1);
-  g_return_val_if_fail(remote_providerID != NULL, -2);
+  g_return_val_if_fail(providerID != NULL, -2);
 
   /* remove the assertion */
-  assertion = lasso_session_get_assertion(session, remote_providerID);
+  assertion = lasso_session_get_assertion(session, providerID);
   if (assertion != NULL) {
-    debug("Remove assertion of remote provider id %s\n", remote_providerID);
-    g_hash_table_remove(session->assertions, remote_providerID);
+    debug("Remove assertion of remote provider id %s\n", providerID);
+    g_hash_table_remove(session->assertions, providerID);
     lasso_node_destroy(assertion);
   }
 
   /* remove the remote provider id */
   for(i = 0; i<session->providerIDs->len; i++) {
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(session->providerIDs, i))) {
-      debug("Remove remote provider id %s\n", remote_providerID);
+    if(xmlStrEqual(providerID, g_ptr_array_index(session->providerIDs, i))) {
+      debug("Remove remote provider id %s\n", providerID);
       g_ptr_array_remove_index(session->providerIDs, i);
       break;
     }
   }
 
+  /* decrements the index of provider id */
+  session->index_providerID--;
+
   session->is_dirty = TRUE;
+
+  return(0);
+}
+
+gint
+lasso_session_reset_index_providerID(LassoSession *session)
+{
+  g_return_val_if_fail(session != NULL, -1);
+
+  if (session->index_providerID >= 0) {
+    session->index_providerID = 0;
+  }
 
   return(0);
 }
@@ -336,6 +362,7 @@ lasso_session_instance_init(LassoSession *session)
   session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      (GDestroyNotify)g_free,
 					      (GDestroyNotify)lasso_node_destroy);
+  session->index_providerID = -1; /* There is no assertion yet, so index_providerID is set to -1 */
   session->is_dirty = TRUE;
 }
 
@@ -390,7 +417,7 @@ lasso_session_new_from_dump(gchar *dump)
   LassoNode      *session_node;
   LassoNode      *assertions_node, *assertion_node, *assertion;
   xmlNodePtr      assertions_xmlNode, assertion_xmlNode;
-  xmlChar        *remote_providerID;
+  xmlChar        *providerID;
   GError         *err = NULL;
 
   g_return_val_if_fail(dump != NULL, NULL);
@@ -418,16 +445,16 @@ lasso_session_new_from_dump(gchar *dump)
 	  xmlStrEqual(assertion_xmlNode->name, LASSO_SESSION_ASSERTION_NODE)) {
 	/* assertion node */
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
-	remote_providerID = lasso_node_get_attr_value(assertion_node,
+	providerID = lasso_node_get_attr_value(assertion_node,
 						      LASSO_SESSION_REMOTE_PROVIDERID_ATTR,
 						      &err);
-	if (remote_providerID != NULL) {
+	if (providerID != NULL) {
 	  assertion = lasso_node_get_child(assertion_node,
 					   "Assertion",
 					   NULL, /* lassoLibHRef, FIXME changed for SourceID */
 					   &err);
 	  if (assertion != NULL) {
-	    lasso_session_add_assertion(session, remote_providerID, assertion);
+	    lasso_session_add_assertion(session, providerID, assertion);
 	    lasso_node_destroy(assertion);
 	  }
 	  else {
@@ -439,7 +466,7 @@ lasso_session_new_from_dump(gchar *dump)
 	  message(G_LOG_LEVEL_CRITICAL, err->message);
 	  g_clear_error(&err);
 	}
-	g_free(remote_providerID);
+	g_free(providerID);
 	lasso_node_destroy(assertion_node);
       }
       assertion_xmlNode = assertion_xmlNode->next;

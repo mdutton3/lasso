@@ -286,6 +286,9 @@ lasso_logout_destroy(LassoLogout *logout)
  * 
  * This method returns the next logout request service provider id
  * excepted the initial service provider id.
+ *
+ * This method returns the next provider id to send a logout request.
+ * get the current provider id with index_remote_providerID as index in session->providerIDs.
  * 
  * Return value: a newly allocated string or NULL
  **/
@@ -293,36 +296,16 @@ gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)
 {
   LassoProfile *profile;
-  gchar        *current_provider_id;
-  int           i;
+  gchar        *provider_id;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
-
   profile = LASSO_PROFILE(logout);
 
-  if (profile->session == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
-    return(NULL);
-  }
+  g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
 
-  /* if a ProviderID from a SP request, pass it and return the next provider id found */
-  for (i = 0; i < profile->session->providerIDs->len; i++) {
-    current_provider_id = g_strdup(g_ptr_array_index(profile->session->providerIDs, i));
-
-    /* if logout request from SP at IDP, verify not to return the ProviderID of the initial SP requester */
-    if (logout->initial_remote_providerID != NULL) {
-      if (xmlStrEqual(current_provider_id, logout->initial_remote_providerID)) {
-	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
-	      logout->initial_remote_providerID,
-	      current_provider_id);
-	g_free(current_provider_id);
-	continue;
-      }
-    }
-    return(current_provider_id);
-  }
-
-  return(NULL);
+  provider_id = lasso_session_get_next_providerID(profile->session);
+  
+  return(provider_id);
 }
 
 /**
@@ -374,7 +357,7 @@ lasso_logout_init_request(LassoLogout    *logout,
   /* get the remote provider id */
   if (remote_providerID == NULL) {
     debug("No remote provider id, get the next assertion peer provider id\n");
-    profile->remote_providerID = lasso_session_get_next_assertion_remote_providerID(profile->session);
+    profile->remote_providerID = lasso_session_get_next_providerID(profile->session);
   }
   else {
     debug("A remote provider id for logout request : %s\n", remote_providerID);
@@ -632,6 +615,148 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 }
 
 /**
+ * lasso_logout_process_response_msg:
+ * @logout: the logout object
+ * @response_msg: the response message
+ * @response_method: the response method
+ * 
+ * Process the response method :
+ *    build the logout response object
+ *    verify the status code value
+ * 
+ * Return value: 0 if OK else < 0
+ **/
+gint
+lasso_logout_process_response_msg(LassoLogout     *logout,
+				  gchar           *response_msg,
+				  lassoHttpMethod  response_method)
+{
+  LassoProfile *profile;
+  xmlChar      *statusCodeValue;
+  LassoNode    *statusCode;
+  GError       *err = NULL;
+  gint          ret = 0;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+  g_return_val_if_fail(response_msg != NULL, -1);
+
+  profile = LASSO_PROFILE(logout);
+
+  /* build logout response object */
+  switch (response_method) {
+  case lassoHttpMethodSoap:
+    profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
+    break;
+  case lassoHttpMethodRedirect:
+    profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
+    break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
+    ret = -1;
+    goto done;
+  }
+  if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutResponse\n");
+    ret = -1;
+    goto done;
+  }
+
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
+  if (statusCode == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "StatusCode node not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
+
+  if (!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
+    /* At SP, if the request method was a SOAP type, if at IDP, then rebuild the request message with HTTP method */
+    if (profile->provider_type == lassoProviderTypeSp && profile->http_request_method == lassoHttpMethodSoap) {
+      /* temporary vars */
+      LassoProvider *provider;
+      gchar *url, *query;
+
+      provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
+      if (provider == NULL) {
+	message(G_LOG_LEVEL_CRITICAL, err->message);
+	ret = err->code;
+	g_error_free(err);
+	goto done;
+      }
+
+      /* FIXME : verify the IDP support a HTTP method */
+
+      /* Build and optionaly sign the logout request QUERY message */
+      url = lasso_provider_get_singleLogoutServiceURL(provider, lassoProviderTypeIdp, NULL);
+      query = lasso_node_export_to_query(profile->request,
+					 profile->server->signature_method,
+					 profile->server->private_key);
+      profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+      g_sprintf(profile->msg_url, "%s?%s", url, query);
+      profile->msg_body = NULL;
+
+      /* send a HTTP Redirect / GET method, so first remove session */
+      lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+    }
+
+    message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
+    ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
+    goto done;
+  }
+
+  /* LogoutResponse status code value is ok, so remove assertion */
+  profile->remote_providerID = lasso_node_get_child_content(profile->response, "ProviderID",
+							    NULL, NULL);
+  lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+
+  switch (profile->provider_type) {
+  case lassoProviderTypeSp:
+    /* */
+    break;
+  case lassoProviderTypeIdp:
+    /* At IDP, if no more assertion for other providers and if initial remote provider id is set,
+       then remove his assertion and restore his original requester infos */
+    if(profile->session->providerIDs->len == 1 && logout->initial_remote_providerID){
+      lasso_session_remove_assertion(profile->session, logout->initial_remote_providerID);
+      
+      profile->remote_providerID = logout->initial_remote_providerID;
+      profile->request = logout->initial_request;
+      profile->response = logout->initial_response;
+    }
+    break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+  }
+
+  done:
+
+  return(ret);
+}
+
+/**
+ * lasso_logout_reset_session_index:
+ * @logout: the logout object
+ * 
+ * Call the reset of the index provider id in session object
+ * 
+ * Return value: 0 if OK else < 0
+ **/
+gint lasso_logout_reset_session_index(LassoLogout *logout)
+{
+  LassoProfile *profile;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+  profile = LASSO_PROFILE(logout);
+
+  g_return_val_if_fail(LASSO_IS_SESSION(profile->session), -1);
+
+  lasso_session_reset_index_providerID(profile->session);
+
+  return(0);
+}
+
+/**
  * lasso_logout_validate_request:
  * @logout: the logout object
  * 
@@ -803,130 +928,6 @@ lasso_logout_validate_request(LassoLogout *logout)
       profile->response = NULL;
       profile->remote_providerID = NULL;    
     }
-  }
-
-  done:
-
-  return(ret);
-}
-
-/**
- * lasso_logout_process_response_msg:
- * @logout: the logout object
- * @response_msg: the response message
- * @response_method: the response method
- * 
- * Process the response method :
- *    build the logout response object
- *    verify the status code value
- * 
- * Return value: 0 if OK else < 0
- **/
-gint
-lasso_logout_process_response_msg(LassoLogout     *logout,
-				  gchar           *response_msg,
-				  lassoHttpMethod  response_method)
-{
-  LassoProfile *profile;
-  xmlChar      *statusCodeValue;
-  LassoNode    *statusCode;
-  GError       *err = NULL;
-  gint          ret = 0;
-
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-  g_return_val_if_fail(response_msg != NULL, -1);
-
-  profile = LASSO_PROFILE(logout);
-
-  /* build logout response object */
-  switch (response_method) {
-  case lassoHttpMethodSoap:
-    profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
-    break;
-  case lassoHttpMethodRedirect:
-    profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
-    break;
-  default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
-    ret = -1;
-    goto done;
-  }
-  if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
-    message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutResponse\n");
-    ret = -1;
-    goto done;
-  }
-
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
-  if (statusCode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "StatusCode node not found\n");
-    ret = -1;
-    goto done;
-  }
-
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
-
-  if (!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
-    /* At SP, if the request method was a SOAP type, if at IDP, then rebuild the request message with HTTP method */
-    if (profile->provider_type == lassoProviderTypeSp && profile->http_request_method == lassoHttpMethodSoap) {
-      /* temporary vars */
-      LassoProvider *provider;
-      gchar *url, *query;
-
-      provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
-      if (provider == NULL) {
-	message(G_LOG_LEVEL_CRITICAL, err->message);
-	ret = err->code;
-	g_error_free(err);
-	goto done;
-      }
-
-      /* FIXME : verify the IDP support a HTTP method */
-
-      /* Build and optionaly sign the logout request QUERY message */
-      url = lasso_provider_get_singleLogoutServiceURL(provider, lassoProviderTypeIdp, NULL);
-      query = lasso_node_export_to_query(profile->request,
-					 profile->server->signature_method,
-					 profile->server->private_key);
-      profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-      g_sprintf(profile->msg_url, "%s?%s", url, query);
-      profile->msg_body = NULL;
-
-      /* send a HTTP Redirect / GET method, so first remove session */
-      lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-    }
-
-    message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
-    ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
-    goto done;
-  }
-
-  /* LogoutResponse status code value is ok, so remove assertion */
-
-  profile->remote_providerID = lasso_node_get_child_content(profile->response, "ProviderID",
-							    NULL, NULL);
-
-  /* response os ok, delete the assertion */
-  lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-
-  /* response is ok, so delete the assertion */
-  switch (profile->provider_type) {
-  case lassoProviderTypeSp:
-    /* */
-    break;
-  case lassoProviderTypeIdp:
-    /* if no more assertion for other providers and if initial remote provider id is set,
-       then remove his assertion and restore his original requester infos */
-    if(profile->session->providerIDs->len == 1 && logout->initial_remote_providerID){
-      lasso_session_remove_assertion(profile->session, logout->initial_remote_providerID);
-      
-      profile->remote_providerID = logout->initial_remote_providerID;
-      profile->request = logout->initial_request;
-      profile->response = logout->initial_response;
-    }
-    break;
-  default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
   }
 
   done:
