@@ -42,6 +42,82 @@ except NameError:
     dataDir = '../../tests/data'
 
 
+class BindingTestCase(unittest.TestCase):
+    def test01(self):
+        """Create and delete nodes."""
+
+        authnRequest = lasso.LibAuthnRequest()
+        del authnRequest
+
+    def test02(self):
+        """Get & set simple attributes of nodes."""
+
+        authnRequest = lasso.LibAuthnRequest()
+
+        # Test a string attribute.
+        self.failUnlessEqual(authnRequest.consent, None)
+        authnRequest.consent = lasso.libConsentObtained
+        self.failUnlessEqual(authnRequest.consent, lasso.libConsentObtained)
+
+        # Test a renamed string attribute.
+        self.failUnlessEqual(authnRequest.relayState, None)
+        authnRequest.relayState = 'Hello World!'
+        self.failUnlessEqual(authnRequest.relayState, 'Hello World!')
+
+        # Test an integer attribute.
+        self.failUnlessEqual(authnRequest.majorVersion, 0)
+        authnRequest.majorVersion = 314
+        self.failUnlessEqual(authnRequest.majorVersion, 314)
+
+        del authnRequest
+
+    def test03(self):
+        """Get & set attributes of nodes of type string list."""
+
+        authnRequest = lasso.LibAuthnRequest()
+
+        self.failUnlessEqual(authnRequest.respondWith, None)
+
+        respondWith = lasso.StringList()
+        self.failUnlessEqual(len(respondWith), 0)
+        respondWith.append('first string')
+        self.failUnlessEqual(len(respondWith), 1)
+        self.failUnlessEqual(respondWith[0], 'first string')
+        self.failUnlessEqual(respondWith[0], 'first string')
+        respondWith.append('second string')
+        self.failUnlessEqual(len(respondWith), 2)
+        self.failUnlessEqual(respondWith[0], 'first string')
+        self.failUnlessEqual(respondWith[1], 'second string')
+        respondWith.append('third string')
+        self.failUnlessEqual(len(respondWith), 3)
+        self.failUnlessEqual(respondWith[0], 'first string')
+        self.failUnlessEqual(respondWith[1], 'second string')
+        self.failUnlessEqual(respondWith[2], 'third string')
+        authnRequest.respondWith = respondWith
+        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
+        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
+        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
+        self.failUnlessEqual(respondWith[0], 'first string')
+        self.failUnlessEqual(respondWith[1], 'second string')
+        self.failUnlessEqual(respondWith[2], 'third string')
+        del respondWith
+        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
+        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
+        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
+        respondWith = authnRequest.respondWith
+        self.failUnlessEqual(respondWith[0], 'first string')
+        self.failUnlessEqual(respondWith[1], 'second string')
+        self.failUnlessEqual(respondWith[2], 'third string')
+        del respondWith
+        self.failUnlessEqual(authnRequest.respondWith[0], 'first string')
+        self.failUnlessEqual(authnRequest.respondWith[1], 'second string')
+        self.failUnlessEqual(authnRequest.respondWith[2], 'third string')
+        authnRequest.respondWith = None
+        self.failUnlessEqual(authnRequest.respondWith, None)
+
+        del authnRequest
+
+
 class ServerTestCase(unittest.TestCase):
     def test01(self):
         """Server construction, dump & newFromDump."""
@@ -230,13 +306,15 @@ class IdentityTestCase(unittest.TestCase):
         self.failUnlessEqual(identityDump, newIdentityDump)
 
 
-suite1 = unittest.makeSuite(ServerTestCase, 'test')
-suite2 = unittest.makeSuite(LoginTestCase, 'test')
-suite3 = unittest.makeSuite(LogoutTestCase, 'test')
-suite4 = unittest.makeSuite(DefederationTestCase, 'test')
-suite5 = unittest.makeSuite(IdentityTestCase, 'test')
+bindingSuite = unittest.makeSuite(BindingTestCase, 'test')
+serverSuite = unittest.makeSuite(ServerTestCase, 'test')
+loginSuite = unittest.makeSuite(LoginTestCase, 'test')
+logoutSuite = unittest.makeSuite(LogoutTestCase, 'test')
+defederationSuite = unittest.makeSuite(DefederationTestCase, 'test')
+identitySuite = unittest.makeSuite(IdentityTestCase, 'test')
 
-allTests = unittest.TestSuite((suite1, suite2, suite3, suite4, suite5))
+allTests = unittest.TestSuite((bindingSuite, serverSuite, loginSuite, logoutSuite,
+                               defederationSuite, identitySuite))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
