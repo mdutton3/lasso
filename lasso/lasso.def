@@ -3,7 +3,7 @@ LIBRARY lasso
 DESCRIPTION "Free implementation of the Liberty Alliance specifications."
 
 EXPORTS
-
+; Functions exports
     lasso_artifact_get_assertionHandle
     lasso_artifact_get_byteCode
     lasso_artifact_get_identityProviderSuccinctID
@@ -409,3 +409,75 @@ EXPORTS
     lasso_user_new_from_dump
     lasso_user_remove_assertion
     set_debug_info
+
+; Var exports.
+    lassoLassoHRef
+    lassoLassoPrefix
+    lassoLibHRef
+    lassoLibPrefix
+    lassoLibMajorVersion
+    lassoLibMinorVersion
+    lassoLibNameIDPolicyTypeNone
+    lassoLibNameIDPolicyTypeOneTime
+    lassoLibNameIDPolicyTypeFederated
+    lassoLibNameIDPolicyTypeAny
+    lassoLibAuthnContextComparisonExact
+    lassoLibAuthnContextComparisonMinimum
+    lassoLibAuthnContextComparisonBetter
+    lassoLibStatusCodeFederationDoesNotExist
+    lassoLibStatusCodeInvalidAssertionConsumerServiceIndex
+    lassoLibStatusCodeInvalidSignature
+    lassoLibStatusCodeNoAuthnContext
+    lassoLibStatusCodeNoAvailableIDP
+    lassoLibStatusCodeNoPassive
+    lassoLibStatusCodeNoSupportedIDP
+    lassoLibStatusCodeProxyCountExceeded
+    lassoLibStatusCodeUnknownPrincipal
+    lassoLibStatusCodeUnsignedAuthnRequest
+    lassoLibProtocolProfileSSOGet
+    lassoLibProtocolProfileSSOPost
+    lassoLibProtocolProfileBrwsArt
+    lassoLibProtocolProfileBrwsPost
+    lassoLibProtocolProfileFedTermIdpHttp
+    lassoLibProtocolProfileFedTermIdpSoap
+    lassoLibProtocolProfileFedTermSpHttp
+    lassoLibProtocolProfileFedTermSpSoap
+    lassoLibProtocolProfileRniIdpHttp
+    lassoLibProtocolProfileRniIdpSoap
+    lassoLibProtocolProfileRniSpHttp
+    lassoLibProtocolProfileRniSpSoap
+    lassoLibProtocolProfileSloSpHttp
+    lassoLibProtocolProfileSloSpSoap
+    lassoLibProtocolProfileSloIdpHttp
+    lassoLibProtocolProfileSloIdpSoap
+    lassoLibNameIdentifierFormatFederated
+    lassoLibNameIdentifierFormatOneTime
+    lassoLibNameIdentifierFormatEncrypted
+    lassoLibNameIdentifierFormatEntityID
+    lassoMetadataHRef
+    lassoMetadataPrefix
+    lassoSamlAssertionHRef
+    lassoSamlAssertionPrefix
+    lassoSamlProtocolHRef
+    lassoSamlProtocolPrefix
+    lassoSamlMajorVersion
+    lassoSamlMinorVersion
+    lassoSamlStatusCodeRequestDenied
+    lassoSamlStatusCodeSuccess
+    lassoSamlAuthenticationMethodPassword
+    lassoSamlAuthenticationMethodKerberos
+    lassoSamlAuthenticationMethodSecureRemotePassword
+    lassoSamlAuthenticationMethodHardwareToken
+    lassoSamlAuthenticationMethodSmartcardPki
+    lassoSamlAuthenticationMethodSoftwarePki
+    lassoSamlAuthenticationMethodPgp
+    lassoSamlAuthenticationMethodSPki
+    lassoSamlAuthenticationMethodXkms
+    lassoSamlAuthenticationMethodXmlDSig
+    lassoSamlAuthenticationMethodUnspecified
+    lassoSamlConfirmationMethodArtifact01
+    lassoSamlConfirmationMethodBearer
+    lassoSamlConfirmationMethodHolderOfKey
+    lassoSamlConfirmationMethodSenderVouches
+    lassoSoapEnvHRef
+    lassoSoapEnvPrefix
