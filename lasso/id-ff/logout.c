@@ -295,8 +295,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     profile->msg_body = NULL;
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method\n");
-    ret = -1;
+    ret = LASSO_PROFILE_ERROR_MISSING_REQUEST;
     goto done;
   }
 
@@ -382,7 +381,6 @@ lasso_logout_init_request(LassoLogout    *logout,
   GError            *err = NULL;
   lassoSignatureType signature_type = lassoSignatureTypeNone;
   gint               ret = 0;
-
   gboolean           is_http_redirect_get_method = FALSE; /* tell if the logout protocol profile is HTTP Redirect / GET */
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
@@ -510,7 +508,7 @@ lasso_logout_init_request(LassoLogout    *logout,
     ret = -1;
     goto done;
   }
-  if (profile->request == NULL) {
+  if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the request\n");
     ret = -1;
     goto done;
