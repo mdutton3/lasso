@@ -41,49 +41,29 @@
  *     </xs:simpleType>
  *   </xs:attribute>
  * </xs:complexType>
+ *
+ * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd):
+ *
+ * <xs:simpleType name="IDReferenceType">
+ *   <xs:annotation>
+ *     <xs:documentation> This type can be used when referring to elements that are
+ *       identified using an IDType </xs:documentation>
+ *     </xs:annotation>
+ *   <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
  */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoModifyResponse *response = LASSO_DISCO_MODIFY_RESPONSE(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&(response->id) }, \
-		{ "newEntryIDs", SNIPPET_ATTRIBUTE, (void**)&(response->newEntryIDs) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "ModifyResponse");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, Status) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModifyResponse, id) },
+	{ "newEntryIDs", SNIPPET_ATTRIBUTE,
+	  G_STRUCT_OFFSET(LassoDiscoModifyResponse, newEntryIDs) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -100,11 +80,12 @@ instance_init(LassoDiscoModifyResponse *node)
 static void
 class_init(LassoDiscoModifyResponseClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "ModifyResponse");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -126,13 +107,35 @@ lasso_disco_modify_response_get_type()
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-						   "LassoDiscoModifyResponse", &this_info, 0);
+						   "LassoDiscoModifyResponse",
+						   &this_info, 0);
 	}
 	return this_type;
 }
 
 LassoDiscoModifyResponse*
-lasso_disco_modify_response_new()
+lasso_disco_modify_response_new(LassoUtilityStatus *status)
 {
-	return g_object_new(LASSO_TYPE_DISCO_MODIFY_RESPONSE, NULL);
+	LassoDiscoModifyResponse *response;
+	
+	g_return_val_if_fail(LASSO_IS_UTILITY_STATUS(status), NULL);
+	
+	response = g_object_new(LASSO_TYPE_DISCO_MODIFY_RESPONSE, NULL);
+	
+	response->Status = status;
+	
+	return response;
+}
+
+LassoDiscoModifyResponse*
+lasso_disco_modify_response_new_from_message(const gchar *message)
+{
+	LassoDiscoModifyResponse *response;
+
+	g_return_val_if_fail(message != NULL, NULL);
+
+	response = g_object_new(LASSO_TYPE_DISCO_MODIFY_RESPONSE, NULL);
+	lasso_node_init_from_message(LASSO_NODE(response), message);
+
+	return response;
 }

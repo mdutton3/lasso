@@ -26,7 +26,7 @@
 #include <lasso/xml/disco_resource_offering.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  * 
  * <xs:element name="ResourceOffering" type="ResourceOfferingType"/>
  * <xs:complexType name="ResourceOfferingType">
@@ -59,47 +59,21 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoResourceOffering *resource = LASSO_DISCO_RESOURCE_OFFERING(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&(resource->ResourceID) }, \
-		{ "EncryptedResourceID", SNIPPET_CONTENT, \
-			(void**)&(resource->EncryptedResourceID) }, \
-		{ "ServiceInstance", SNIPPET_NODE, (void**)&(resource->ServiceInstance) }, \
-		{ "Options", SNIPPET_NODE, (void**)&(resource->Options) }, \
-		{ "Abstract", SNIPPET_CONTENT, (void**)&(resource->Abstract) }, \
-		{ "entryID", SNIPPET_ATTRIBUTE, (void**)&(resource->entryID) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "ResourceOffering");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-	
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "ResourceID", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, EncryptedResourceID) },
+	{ "ServiceInstance", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, ServiceInstance) },
+	{ "Options", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, Options) },
+	{ "Abstract", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, Abstract) },
+	{ "entryID", SNIPPET_ATTRIBUTE,
+	  G_STRUCT_OFFSET(LassoDiscoResourceOffering, entryID) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -119,9 +93,12 @@ instance_init(LassoDiscoResourceOffering *node)
 static void
 class_init(LassoDiscoResourceOfferingClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "ResourceOffering");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -149,7 +126,29 @@ lasso_disco_resource_offering_get_type()
 }
 
 LassoDiscoResourceOffering*
-lasso_disco_resource_offering_new()
+lasso_disco_resource_offering_new(LassoDiscoServiceInstance *service_instance,
+				  const gchar               *resourceID,
+				  gboolean                   encrypt_resourceID)
 {
-	return g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
+	LassoDiscoResourceOffering *resource;
+
+	g_return_val_if_fail (LASSO_IS_DISCO_SERVICE_INSTANCE(service_instance), NULL);
+	/* ResourceID/EncryptedResourceID is optional */
+
+	resource = g_object_new(LASSO_TYPE_DISCO_RESOURCE_OFFERING, NULL);
+
+	/* FIXME: Should ServiceInstance be a copy ? */
+	resource->ServiceInstance = service_instance;
+
+	/* ResourceID or EncryptedResourceID */
+	if (resourceID != NULL) {
+		if (encrypt_resourceID == FALSE) {
+			resource->ResourceID = g_strdup(resourceID);
+		}
+		else {
+			resource->EncryptedResourceID = g_strdup(resourceID);
+		}
+	}
+
+	return resource;
 }

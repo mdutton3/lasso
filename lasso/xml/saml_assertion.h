@@ -36,6 +36,7 @@ extern "C" {
 #include <lasso/xml/saml_conditions.h>
 #include <lasso/xml/saml_statement_abstract.h>
 #include <lasso/xml/saml_subject_statement.h>
+#include <lasso/xml/saml_attribute_statement.h>
 
 #define LASSO_TYPE_SAML_ASSERTION (lasso_saml_assertion_get_type())
 #define LASSO_SAML_ASSERTION(obj) \
@@ -65,9 +66,9 @@ struct _LassoSamlAssertion {
 	LassoSamlSubjectStatement *SubjectStatement;
 	LassoSamlAuthenticationStatement *AuthenticationStatement;
 #if 0
-	LassoAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
-	LassoAttributeStatement *AttributeStatement;
+	LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
 #endif
+	LassoSamlAttributeStatement *AttributeStatement;
 
 	int MajorVersion;
 	int MinorVersion;

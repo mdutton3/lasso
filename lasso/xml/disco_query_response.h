@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/disco_requested_service_type.h>
 #include <lasso/xml/disco_credentials.h>
 #include <lasso/xml/utility_status.h>
 

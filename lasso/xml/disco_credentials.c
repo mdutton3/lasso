@@ -26,7 +26,7 @@
 #include <lasso/xml/disco_credentials.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  * 
  * <xs:element name="Credentials" minOccurs="0">
  *   <xs:complexType>
@@ -39,46 +39,13 @@
 
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoCredentials *credentials = LASSO_DISCO_CREDENTIALS(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "", SNIPPET_LIST_NODES, (void**)&credentials->any }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	GList *option;
-	xmlNode *xmlnode, *options_xmlNode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Credentials");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	xmlNode *option_xmlNode;
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "any", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoCredentials, any) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -93,11 +60,12 @@ instance_init(LassoDiscoCredentials *node)
 static void
 class_init(LassoDiscoCredentialsClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Credentials");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

@@ -57,9 +57,9 @@ struct _LassoDiscoOptionsClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_options_get_type            (void);
+LASSO_EXPORT GType lasso_disco_options_get_type(void);
 
-LASSO_EXPORT LassoDiscoOptions* lasso_disco_options_new ();
+LASSO_EXPORT LassoDiscoOptions* lasso_disco_options_new(void);
 
 #ifdef __cplusplus
 }

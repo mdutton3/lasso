@@ -44,19 +44,6 @@ extern "C" {
 typedef struct _LassoDstData LassoDstData;
 typedef struct _LassoDstDataClass LassoDstDataClass;
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
- * <xs:element name="Data" minOccurs="0" maxOccurs="unbounded">
- *    <xs:complexType>
- *        <xs:sequence>
- *            <xs:any minOccurs="0" maxOccurs="unbounded"/>
- *        </xs:sequence>
- *        <xs:attribute name="id" type="xs:ID"/>
- *        <xs:attribute name="itemIDRef" type="IDReferenceType"/>
- *    </xs:complexType>
- * </xs:element>
-*/
-
 struct _LassoDstData {
 	LassoNode parent;
 
@@ -71,7 +58,8 @@ struct _LassoDstDataClass {
 };
 
 LASSO_EXPORT GType lasso_dst_data_get_type(void);
-LASSO_EXPORT LassoDstData* lasso_dst_data_new(const char *itemIDRef);
+LASSO_EXPORT LassoDstData* lasso_dst_data_new(const gchar *id,
+					      const gchar *itemIDRef);
 
 #ifdef __cplusplus
 }

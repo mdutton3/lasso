@@ -26,16 +26,7 @@
 #include <lasso/xml/disco_query.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
- * 
- * <xs:group name="ResourceIDGroup">
- *   <xs:sequence>
- *      <xs:choice minOccurs="0" maxOccurs="1">
- *        <xs:element ref="ResourceID"/>
- *        <xs:element ref="EncryptedResourceID"/>
- *      </xs:choice>
- *   </xs:sequence>
- * </xs:group>
+ * Schema fragments (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  * 
  * <xs:element name="Query" type="QueryType"/>
  * <xs:complexType name="QueryType">
@@ -50,54 +41,32 @@
  *        </xs:complexType>
  *      </xs:element>
  *   </xs:sequence>
- *   <xs:attribute name="id" type="xs: ID" use="optional"/>
+ *   <xs:attribute name="id" type="xs:ID" use="optional"/>
  * </xs:complexType>
- */
+ *
+ * <xs:group name="ResourceIDGroup">
+ *   <xs:sequence>
+ *      <xs:choice minOccurs="0" maxOccurs="1">
+ *        <xs:element ref="ResourceID"/>
+ *        <xs:element ref="EncryptedResourceID"/>
+ *      </xs:choice>
+ *   </xs:sequence>
+ * </xs:group>
+ */ 
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoQuery *query = LASSO_DISCO_QUERY(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&query->ResourceID }, \
-		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&query->EncryptedResourceID }, \
-		{ "RequestedServiceType", SNIPPET_LIST_NODES, \
-			(void**)&query->RequestedServiceType }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&query->id }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Query");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-
-	build_xml_with_snippets(xmlnode, snippets);
-	
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
-
+static struct XmlSnippet schema_snippets[] = {
+	{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoQuery, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoQuery, EncryptedResourceID) },
+	{ "RequestedServiceType", SNIPPET_LIST_NODES,
+	  G_STRUCT_OFFSET(LassoDiscoQuery, RequestedServiceType) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoQuery, id) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -115,11 +84,12 @@ instance_init(LassoDiscoQuery *node)
 static void
 class_init(LassoDiscoQueryClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Query");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -147,7 +117,8 @@ lasso_disco_query_get_type()
 }
 
 LassoDiscoQuery*
-lasso_disco_query_new(const char *resourceID, gboolean is_encrypted)
+lasso_disco_query_new(const gchar *resourceID,
+		      gboolean     encrypt_resourceID)
 {
 	LassoDiscoQuery *node;
 
@@ -155,12 +126,25 @@ lasso_disco_query_new(const char *resourceID, gboolean is_encrypted)
 
 	node = g_object_new(LASSO_TYPE_DISCO_QUERY, NULL);
 
-	if (is_encrypted == TRUE) {
+	if (encrypt_resourceID == TRUE) {
 		node->EncryptedResourceID = g_strdup(resourceID);
 	}
 	else {
 		node->ResourceID = g_strdup(resourceID);
 	}
+
+	return node;
+}
+
+LassoDiscoQuery*
+lasso_disco_query_new_from_message(const gchar *message)
+{
+	LassoDiscoQuery *node;
+
+	g_return_val_if_fail(message != NULL, NULL);
+
+	node = g_object_new(LASSO_TYPE_DISCO_QUERY, NULL);
+	lasso_node_init_from_message(LASSO_NODE(node), message);
 
 	return node;
 }

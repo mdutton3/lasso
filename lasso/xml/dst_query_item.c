@@ -27,18 +27,31 @@
 
 /*
  * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ *
  * <xs:element name="QueryItem" maxOccurs="unbounded">
- *    <xs:complexType>
- *        <xs:sequence>
- *            <xs:element name="Select" type="SelectType"/>
- *        </xs:sequence>
- *        <xs:attribute name="id" type="xs:ID"/>
- *        <xs:attribute name="includeCommonAttributes" type="xs:boolean" default="0"/>
- *        <xs:attribute name="itemID" type="IDType"/>
- *        <xs:attribute name="changedSince" type="xs:dateTime"/>
- *    </xs:complexType>
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:element name="Select" type="SelectType"/>
+ *     </xs:sequence>
+ *     <xs:attribute name="id" type="xs:ID"/>
+ *     <xs:attribute name="includeCommonAttributes" type="xs:boolean" default="0"/>
+ *     <xs:attribute name="itemID" type="IDType"/>
+ *     <xs:attribute name="changedSince" type="xs:dateTime"/>
+ *   </xs:complexType>
  * </xs:element>
-*/
+ *
+ * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd):
+ *
+ * <xs:simpleType name="IDType">
+ *   <xs:annotation>
+ *     <xs:documentation>
+ *       This type should be used to provided IDs to components that have IDs
+ *       that may not  be scoped within the local xml instance document.
+ *     </xs:documentation>
+ *     </xs:annotation>
+ *     <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -55,7 +68,6 @@ static struct XmlSnippet schema_snippets[] = {
 };
 
 static LassoNodeClass *parent_class = NULL;
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -108,14 +120,15 @@ lasso_dst_query_item_get_type()
 }
 
 LassoDstQueryItem*
-lasso_dst_query_item_new(const char *Select)
+lasso_dst_query_item_new(const char *select)
 {
 	LassoDstQueryItem *node;
 
+	g_return_val_if_fail(select != NULL, NULL);
+
 	node = g_object_new(LASSO_TYPE_DST_QUERY_ITEM, NULL);
 
-	node->Select = g_strdup(Select);
-	node->includeCommonAttributes = FALSE;
+	node->Select = g_strdup(select);
 
 	return node;
 }

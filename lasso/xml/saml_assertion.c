@@ -63,19 +63,18 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "Conditions", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Conditions) },
 	{ "Advice", SNIPPET_NODE, G_STRUCT_OFFSET(LassoSamlAssertion, Advice) },
-	{ "SubjectStatement", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement) },
+	{ "SubjectStatement", SNIPPET_NODE,G_STRUCT_OFFSET(LassoSamlAssertion, SubjectStatement) },
 	{ "AuthenticationStatement", SNIPPET_NODE, 
-		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
+	  G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
+	{ "AttributeStatement", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement) },
 	{ "MajorVersion", SNIPPET_ATTRIBUTE_INT,
-		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion) },
+	  G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion) },
 	{ "MinorVersion", SNIPPET_ATTRIBUTE_INT,
-		G_STRUCT_OFFSET(LassoSamlAssertion, MinorVersion) },
-	{ "AssertionID", SNIPPET_ATTRIBUTE, 
-		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
+	  G_STRUCT_OFFSET(LassoSamlAssertion, MinorVersion) },
+	{ "AssertionID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
 	{ "Issuer", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, Issuer) },
-	{ "IssueInstant", SNIPPET_ATTRIBUTE,
-		G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant) },
+	{ "IssueInstant", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant) },
 	{ NULL, 0, 0}
 };
 

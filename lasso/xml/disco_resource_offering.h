@@ -72,7 +72,10 @@ struct _LassoDiscoResourceOfferingClass {
 
 LASSO_EXPORT GType lasso_disco_resource_offering_get_type(void);
 
-LASSO_EXPORT LassoDiscoResourceOffering* lasso_disco_resource_offering_new(void);
+LASSO_EXPORT LassoDiscoResourceOffering* lasso_disco_resource_offering_new(
+	LassoDiscoServiceInstance *service_instance,
+	const gchar               *resourceID,
+	gboolean                   encrypt_resourceID);
 
 #ifdef __cplusplus
 }

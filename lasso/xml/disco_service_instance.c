@@ -26,7 +26,7 @@
 #include <lasso/xml/disco_service_instance.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  * 
  * <xs:complexType name="ServiceInstanceType">
  *   <xs:sequence>
@@ -43,41 +43,15 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoServiceInstance *instance = LASSO_DISCO_SERVICE_INSTANCE(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ServiceType", SNIPPET_CONTENT, (void**)&(instance->ServiceType) }, \
-		{ "ProviderID",  SNIPPET_CONTENT, (void**)&(instance->ProviderID) }, \
-		{ "Description", SNIPPET_LIST_NODES, (void**)&(instance->Description) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "ServiceInstance");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-	
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "ServiceType", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, ServiceType) },
+	{ "ProviderID",  SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, ProviderID) },
+	{ "Description", SNIPPET_LIST_NODES,
+	  G_STRUCT_OFFSET(LassoDiscoServiceInstance, Description) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -94,9 +68,12 @@ instance_init(LassoDiscoServiceInstance *node)
 static void
 class_init(LassoDiscoServiceInstanceClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "ServiceInstance");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -124,7 +101,23 @@ lasso_disco_service_instance_get_type()
 }
 
 LassoDiscoServiceInstance*
-lasso_disco_service_instance_new()
+lasso_disco_service_instance_new(const gchar *serviceType,
+				 const gchar *providerID,
+				 GList       *descriptions)
 {
-	return g_object_new(LASSO_TYPE_DISCO_SERVICE_INSTANCE, NULL);
+	LassoDiscoServiceInstance *service_instance;
+
+	g_return_val_if_fail (serviceType != NULL, NULL);
+	g_return_val_if_fail (providerID != NULL, NULL);
+	g_return_val_if_fail(g_list_length(descriptions) >= 1, NULL);
+
+	service_instance = g_object_new(LASSO_TYPE_DISCO_SERVICE_INSTANCE, NULL);
+
+	service_instance->ServiceType = g_strdup(serviceType);
+	service_instance->ProviderID = g_strdup(providerID);
+
+	/* FIXME: should Description be a copy ??*/
+	service_instance->Description = descriptions;
+
+	return service_instance;
 }

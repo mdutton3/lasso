@@ -52,46 +52,15 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoModify *modify = LASSO_DISCO_MODIFY(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&(modify->ResourceID) }, \
-		{ "EncryptedResourceID", SNIPPET_CONTENT, \
-			(void**)&(modify->EncryptedResourceID) }, \
-		{ "InsertEntry", SNIPPET_LIST_NODES, (void**)&(modify->InsertEntry) }, \
-		{ "RemoveEntry", SNIPPET_LIST_NODES, (void**)&(modify->RemoveEntry) }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&(modify->id) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Modify");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoModify, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoModify, EncryptedResourceID) },
+	{ "InsertEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, InsertEntry) },
+	{ "RemoveEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, RemoveEntry) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModify, id) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -110,11 +79,12 @@ instance_init(LassoDiscoModify *node)
 static void
 class_init(LassoDiscoModifyClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Modify");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -142,22 +112,35 @@ lasso_disco_modify_get_type()
 }
 
 LassoDiscoModify*
-lasso_disco_modify_new(char     *resourceID,
-		       gboolean  encrypted)
+lasso_disco_modify_new(const gchar *resourceID,
+		       gboolean     encrypt_resourceID)
 {
 	LassoDiscoModify *modify;
 
-	g_return_val_if_fail (resourceID != NULL, NULL);
-
 	modify = g_object_new(LASSO_TYPE_DISCO_MODIFY, NULL);
 
-	/* ResourceID or EncryptedResourceID */
-	if (encrypted == FALSE) {
-		modify->ResourceID = g_strdup(resourceID);
+	/* ResourceID or EncryptedResourceID (optional value) */
+	if (resourceID != NULL) {
+		if (encrypt_resourceID == FALSE) {
+			modify->ResourceID = g_strdup(resourceID);
+		}
+		else {
+			modify->EncryptedResourceID = g_strdup(resourceID);
+		}
 	}
-	else {
-		modify->EncryptedResourceID = g_strdup(resourceID);
-	}
+
+	return modify;
+}
+
+LassoDiscoModify*
+lasso_disco_modify_new_from_message(const gchar *message)
+{
+	LassoDiscoModify *modify;
+
+	g_return_val_if_fail(message != NULL, NULL);
+
+	modify = g_object_new(LASSO_TYPE_DISCO_MODIFY, NULL);
+	lasso_node_init_from_message(LASSO_NODE(modify), message);
 
 	return modify;
 }

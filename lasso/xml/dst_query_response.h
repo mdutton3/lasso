@@ -69,7 +69,7 @@ struct _LassoDstQueryResponseClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_response_get_type(void);
-LASSO_EXPORT LassoDstQueryResponse* lasso_dst_query_response_new(LassoUtilityStatus *Status);
+LASSO_EXPORT LassoDstQueryResponse* lasso_dst_query_response_new(LassoUtilityStatus *status);
 
 #ifdef __cplusplus
 }

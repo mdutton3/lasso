@@ -27,6 +27,7 @@
 
 /*
  * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ *
  * <xs:element name="Query" type="QueryType"/>
  * <xs:complexType name="QueryType">
  *     <xs:sequence>
@@ -37,20 +38,28 @@
  *     <xs:attribute name="id" type="xs:ID"/>
  *     <xs:attribute name="itemID" type="IDType"/>
  * </xs:complexType>
-*/
+ *
+ * <xs:simpleType name="IDReferenceType">
+ *   <xs:annotation>
+ *     <xs:documentation> This type can be used when referring to elements that are
+ *       identified using an IDType </xs:documentation>
+ *     </xs:annotation>
+ *   <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-		{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
-		{ "EncryptedResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery,
-									  EncryptedResourceID) },
-		{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
-		{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
-		{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
-		{NULL, 0, 0}
+	{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDstQuery, EncryptedResourceID) },
+	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
+	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
+	{NULL, 0, 0}
 };
 
 static LassoNodeClass *parent_class = NULL;
@@ -141,13 +150,15 @@ lasso_dst_query_get_type()
 }
 
 LassoDstQuery*
-lasso_dst_query_new(LassoDstQueryItem *QueryItem)
+lasso_dst_query_new(LassoDstQueryItem *queryItem)
 {
 	LassoDstQuery *query;
 
+	g_return_val_if_fail(LASSO_IS_DST_QUERY_ITEM(queryItem), NULL);
+
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 
-	query->QueryItem = g_list_append(query->QueryItem, QueryItem);
+	query->QueryItem = g_list_append(query->QueryItem, queryItem);
 
 	return query;
 }

@@ -25,46 +25,40 @@
 
 #include <lasso/xml/dst_data.h>
 
+/*
+ * Schema fragments (liberty-idwsf-dst-v1.0.xsd):
+ * 
+ * <xs:element name="Data" minOccurs="0" maxOccurs="unbounded">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:any minOccurs="0" maxOccurs="unbounded"/>
+ *     </xs:sequence>
+ *     <xs:attribute name="id" type="xs:ID"/>
+ *     <xs:attribute name="itemIDRef" type="IDReferenceType"/>
+ *   </xs:complexType>
+ * </xs:element>
+ *
+ * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
+ *
+ * <xs:simpleType name="IDReferenceType">
+ *   <xs:annotation>
+ *     <xs:documentation> This type can be used when referring to elements that are
+ *       identified using an IDType </xs:documentation>
+ *     </xs:annotation>
+ *   <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDstData *data = LASSO_DST_DATA(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Data");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, NULL, NULL));
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
-
+static struct XmlSnippet schema_snippets[] = {
+	{ "any", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstData, any) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, id) },
+	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstData, itemIDRef) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -73,17 +67,20 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 instance_init(LassoDstData *node)
 {
-
+	node->any = NULL;
+	node->id = NULL;
+	node->itemIDRef = NULL;
 }
 
 static void
 class_init(LassoDstDataClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Data");
+	/* no namespace */
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -111,11 +108,18 @@ lasso_dst_data_get_type()
 }
 
 LassoDstData*
-lasso_dst_data_new(const char *itemIDRef)
+lasso_dst_data_new(const gchar *id,
+		   const gchar *itemIDRef)
 {
 	LassoDstData *data;
 
+	g_return_val_if_fail(id != NULL, NULL);
+	g_return_val_if_fail(itemIDRef != NULL, NULL);
+
 	data = g_object_new(LASSO_TYPE_DST_DATA, NULL);
+
+	data->id = g_strdup(id);
+	data->itemIDRef = g_strdup(itemIDRef);
 
 	return data;
 }

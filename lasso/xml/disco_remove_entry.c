@@ -26,10 +26,10 @@
 #include <lasso/xml/disco_remove_entry.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  * 
  * <xs:complexType name="RemoveEntryType">
- *   <xs:attribute name="entryID" type="IDReferenceType"/>
+ *   <xs:attribute name="entryID" type="IDReferenceType" use="required"/>
  * </xs:complexType>
  * 
  * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
@@ -43,41 +43,10 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoRemoveEntry *entry = LASSO_DISCO_REMOVE_ENTRY(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "entryID", SNIPPET_ATTRIBUTE, (void**)&(entry->entryID) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "RemoveEntry");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);	
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "entryID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoRemoveEntry, entryID) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -92,9 +61,12 @@ instance_init(LassoDiscoRemoveEntry *node)
 static void
 class_init(LassoDiscoRemoveEntryClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "RemoveEntry");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -122,7 +94,14 @@ lasso_disco_remove_entry_get_type()
 }
 
 LassoDiscoRemoveEntry*
-lasso_disco_remove_entry_new()
+lasso_disco_remove_entry_new(const gchar *entryID)
 {
-	return g_object_new(LASSO_TYPE_DISCO_REMOVE_ENTRY, NULL);
+	LassoDiscoRemoveEntry *entry;
+
+	g_return_val_if_fail(entryID != NULL, NULL);
+
+	entry = g_object_new(LASSO_TYPE_DISCO_REMOVE_ENTRY, NULL);
+	entry->entryID = g_strdup(entryID);
+
+	return entry;
 }

@@ -64,8 +64,10 @@ struct _LassoDiscoModifyClass {
 
 LASSO_EXPORT GType lasso_disco_modify_get_type (void);
 
-LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new (char     *resourceID,
-						       gboolean  encrypted);
+LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new (const gchar *resourceID,
+						       gboolean     encrypt_resourceID);
+
+LASSO_EXPORT LassoDiscoModify* lasso_disco_modify_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

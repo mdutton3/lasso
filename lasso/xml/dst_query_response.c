@@ -27,6 +27,7 @@
 
 /*
  * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ *
  * <xs:element name="QueryResponse" type="QueryResponseType"/>
  * <xs:complexType name="QueryResponseType">
  *   <xs:sequence>
@@ -38,6 +39,16 @@
  *   <xs:attribute name="itemIDRef" type="IDReferenceType"/>
  *   <xs:attribute name="timeStamp" type="xs:dateTime"/>
  * </xs:complexType>
+ *
+ * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd):
+ *
+ * <xs:simpleType name="IDReferenceType">
+ *   <xs:annotation>
+ *     <xs:documentation> This type can be used when referring to elements that are
+ *       identified using an IDType </xs:documentation>
+ *     </xs:annotation>
+ *   <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
  */
 
 /*****************************************************************************/
@@ -146,13 +157,15 @@ lasso_dst_query_response_get_type()
 }
 
 LassoDstQueryResponse*
-lasso_dst_query_response_new(LassoUtilityStatus *Status)
+lasso_dst_query_response_new(LassoUtilityStatus *status)
 {
 	LassoDstQueryResponse *node;
 
+	g_return_val_if_fail(LASSO_IS_UTILITY_STATUS(status), NULL);
+
 	node = g_object_new(LASSO_TYPE_DST_QUERY_RESPONSE, NULL);
 
-	node->Status = Status;
+	node->Status = status;
 
 	return node;
 }

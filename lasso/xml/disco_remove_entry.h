@@ -60,7 +60,8 @@ struct _LassoDiscoRemoveEntryClass {
 };
 
 LASSO_EXPORT GType lasso_disco_remove_entry_get_type(void);
-LASSO_EXPORT LassoDiscoRemoveEntry* lasso_disco_remove_entry_new(void);
+
+LASSO_EXPORT LassoDiscoRemoveEntry* lasso_disco_remove_entry_new(const gchar *entryID);
 
 #ifdef __cplusplus
 }

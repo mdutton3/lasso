@@ -32,7 +32,7 @@ extern "C" {
 
 #include <lasso/xml/saml_subject_statement_abstract.h>
 
-#define LASSO_TYPE_SAML_SUBJECT_STATEMENT (lasso_saml_subject_statement_abstract_get_type())
+#define LASSO_TYPE_SAML_SUBJECT_STATEMENT (lasso_saml_subject_statement_get_type())
 #define LASSO_SAML_SUBJECT_STATEMENT(obj) \
 	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT_STATEMENT, \
 				    LassoSamlSubjectStatement))

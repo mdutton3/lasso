@@ -26,7 +26,7 @@
 #include <lasso/xml/disco_query_response.h>
 
 /*
- * Schema fragment:
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  *
  * <xs:element name="QueryResponse" type="QueryResponseType"/>
  * <xs:complexType name="QueryResponseType">
@@ -46,47 +46,20 @@
  */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoQueryResponse *query_response = LASSO_DISCO_QUERY_RESPONSE(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "Status", SNIPPET_NODE, (void**)&query_response->Status }, \
-		{ "ResourceOffering", SNIPPET_LIST_NODES, \
-			(void**)&query_response->ResourceOffering }, \
-		{ "Credentials", SNIPPET_NODE, (void**)&query_response->Credentials }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&query_response->id }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "QueryResponse");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "Status", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, Status) },
+	{ "ResourceOffering", SNIPPET_LIST_NODES,
+	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, ResourceOffering) },
+	{ "Credentials", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, Credentials) },
+	{ "id", SNIPPET_ATTRIBUTE,
+	  G_STRUCT_OFFSET(LassoDiscoQueryResponse, id) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -105,11 +78,12 @@ instance_init(LassoDiscoQueryResponse *node)
 static void
 class_init(LassoDiscoQueryResponseClass *class)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(class);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(class);
 
-	parent_class = g_type_class_peek_parent(class);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "QueryResponse");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -137,13 +111,15 @@ lasso_disco_query_response_get_type()
 }
 
 LassoDiscoQueryResponse*
-lasso_disco_query_response_new(LassoUtilityStatus *Status)
+lasso_disco_query_response_new(LassoUtilityStatus *status)
 {
 	LassoDiscoQueryResponse *node;
 
+	g_return_val_if_fail(LASSO_IS_UTILITY_STATUS(status), NULL);
+
 	node = g_object_new(LASSO_TYPE_DISCO_QUERY_RESPONSE, NULL);
 
-	node->Status = Status;
+	node->Status = status;
 
 	return node;
 }

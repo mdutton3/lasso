@@ -61,7 +61,11 @@ struct _LassoDiscoQueryClass {
 };
 
 LASSO_EXPORT GType lasso_disco_query_get_type(void);
-LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new(const char *resourceID, gboolean is_encrypted);
+
+LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new(const gchar *resourceID,
+						    gboolean     encrypt_resourceID);
+
+LASSO_EXPORT LassoDiscoQuery* lasso_disco_query_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }

@@ -59,43 +59,19 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoDescription *description = LASSO_DISCO_DESCRIPTION(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "SecurityMechID", SNIPPET_CONTENT, (void**)&(description->SecurityMechID) }, \
-		{ "CredentialRef", SNIPPET_CONTENT, (void**)&(description->CredentialRef) }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&(description->id) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Description");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-
-	if (parent_class->init_from_xml(node, xmlnode)) {
-		return -1;
-	}
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "SecurityMechID", SNIPPET_LIST_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoDescription, SecurityMechID) },
+	{ "CredentialRef", SNIPPET_LIST_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoDescription, CredentialRef) },
+	{ "WsdlURI", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, WsdlURI) },
+	{ "ServiceNameRef", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoDescription, ServiceNameRef) },
+	{ "Endpoint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, Endpoint) },
+	{ "SoapAction", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDiscoDescription, SoapAction) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoDescription, id) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -106,17 +82,25 @@ instance_init(LassoDiscoDescription *node)
 {
 	node->SecurityMechID = NULL;
 	node->CredentialRef = NULL;
+
+	node->WsdlURI= NULL;
+	node->ServiceNameRef = NULL;
+
+	node->Endpoint = NULL;
+	node->SoapAction = NULL;
+
 	node->id = NULL;
 }
 
 static void
 class_init(LassoDiscoDescriptionClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Description");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -144,7 +128,26 @@ lasso_disco_description_get_type()
 }
 
 LassoDiscoDescription*
-lasso_disco_description_new()
+lasso_disco_description_new(const gchar *securityMechID,
+			    const gchar *wsdlURI,
+			    const gchar *serviceNameRef,
+			    const gchar *endpoint,
+			    const gchar *soapAction)
 {
-	return g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
+	LassoDiscoDescription *description;
+
+	g_return_val_if_fail(securityMechID != NULL, NULL);
+	g_return_val_if_fail((wsdlURI != NULL && serviceNameRef != NULL) || endpoint != NULL, NULL);
+	/* SoapAction is associated with Endpoint but optional */
+	
+	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
+
+	description->SecurityMechID = g_list_append(description->SecurityMechID,
+						    g_strdup(securityMechID));
+	description->WsdlURI = g_strdup(wsdlURI);
+	description->ServiceNameRef = g_strdup(serviceNameRef);
+	description->Endpoint = g_strdup(endpoint);
+	description->SoapAction = g_strdup(soapAction);
+
+	return description;
 }

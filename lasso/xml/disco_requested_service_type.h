@@ -63,7 +63,7 @@ struct _LassoDiscoRequestedServiceTypeClass {
 
 LASSO_EXPORT GType lasso_disco_requested_service_type_get_type(void);
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_disco_requested_service_type_new(
-		const char *ServiceType);
+		const char *serviceType);
 
 #ifdef __cplusplus
 }

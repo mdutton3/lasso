@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/utility_status.h>
 
 #define LASSO_TYPE_DISCO_MODIFY_RESPONSE (lasso_disco_modify_response_get_type())
 #define LASSO_DISCO_MODIFY_RESPONSE(obj) \
@@ -53,7 +54,7 @@ typedef struct _LassoDiscoModifyResponseClass LassoDiscoModifyResponseClass;
 struct _LassoDiscoModifyResponse {
 	LassoNode parent;
 
-	char *Status; /* FIXME valos */
+	LassoUtilityStatus *Status;
 
 	char *id;
 	char *newEntryIDs;
@@ -65,7 +66,10 @@ struct _LassoDiscoModifyResponseClass {
 
 LASSO_EXPORT GType lasso_disco_modify_response_get_type            (void);
 
-LASSO_EXPORT LassoDiscoModifyResponse* lasso_disco_modify_response_new  ();
+LASSO_EXPORT LassoDiscoModifyResponse* lasso_disco_modify_response_new(LassoUtilityStatus *status);
+
+LASSO_EXPORT LassoDiscoModifyResponse* lasso_disco_modify_response_new_from_message(
+	const gchar *message);
 
 #ifdef __cplusplus
 }

@@ -26,7 +26,7 @@
 #include <lasso/xml/disco_requested_service_type.h>
 
 /*
- * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
  *
  * <xs:element name="RequestedServiceType" minOccurs="0" maxOccurs="unbounded">
  *   <xs:complexType>
@@ -36,48 +36,21 @@
  *      </xs:sequence>
  *   </xs:complexType>
  * </xs:element>
+ *
+ * <xs:element name="ServiceType" type="xs:anyURI"/>
  */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDiscoRequestedServiceType *RequestedServiceType = \
-		LASSO_DISCO_REQUESTED_SERVICE_TYPE(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ServiceType", SNIPPET_CONTENT, (void**)&RequestedServiceType->ServiceType }, \
-		{ "Options", SNIPPET_NODE, (void**)&RequestedServiceType->Options }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "RequestedServiceType");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
+static struct XmlSnippet schema_snippets[] = {
+	{ "ServiceType", SNIPPET_CONTENT,
+	  G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, ServiceType) },
+	{ "Options", SNIPPET_NODE,
+	  G_STRUCT_OFFSET(LassoDiscoRequestedServiceType, Options) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -91,13 +64,14 @@ instance_init(LassoDiscoRequestedServiceType *node)
 }
 
 static void
-class_init(LassoDiscoRequestedServiceTypeClass *class)
+class_init(LassoDiscoRequestedServiceTypeClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(class);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(class);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "RequestedServiceType");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -125,13 +99,15 @@ lasso_disco_requested_service_type_get_type()
 }
 
 LassoDiscoRequestedServiceType*
-lasso_disco_requested_service_type_new(const char *ServiceType)
+lasso_disco_requested_service_type_new(const char *serviceType)
 {
 	LassoDiscoRequestedServiceType *node;
 
+	g_return_val_if_fail(serviceType != NULL, NULL);
+
 	node = g_object_new(LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, NULL);
 
-	node->ServiceType = g_strdup(ServiceType);
+	node->ServiceType = g_strdup(serviceType);
 
 	return node;
 }

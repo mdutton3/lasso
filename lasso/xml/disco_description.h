@@ -55,8 +55,11 @@ struct _LassoDiscoDescription {
 	GList *SecurityMechID;
 	GList *CredentialRef;
 
-	GList *WsdlRef;
-	GList *BriefSoapHttpDescription;
+	gchar *WsdlURI;
+	gchar *ServiceNameRef;
+
+	gchar *Endpoint;
+	gchar *SoapAction;
 
 	char *id;
 };
@@ -67,7 +70,11 @@ struct _LassoDiscoDescriptionClass {
 
 LASSO_EXPORT GType lasso_disco_description_get_type            (void);
 
-LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new  ();
+LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new  (const gchar *securityMechID,
+								  const gchar *wsdlURI,
+								  const gchar *serviceNameRef,
+								  const gchar *endpoint,
+								  const gchar *soapAction);
 
 #ifdef __cplusplus
 }
