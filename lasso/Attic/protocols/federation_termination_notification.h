@@ -6,6 +6,7 @@
  * http://lasso.entrouvert.org
  * 
  * Author: Valery Febvre <vfebvre@easter-eggs.com>
+ *         Nicolas Clapies <nclapies@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +20,46 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Templ
-e Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __FEDERATION_TERMINATION_NOTIFICATION_H__
-#define __FEDERATION_TERMINATION_NOTIFICATION_H__
+#ifndef __LASSO_FEDERATION_TERMINATION_NOTIFICATION_H__
+#define __LASSO_FEDERATION_TERMINATION_NOTIFICATION_H__
 
-#include <lasso/protocols/protocols.h>
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */ 
 
-LassoNode *lasso_build_full_federationTerminationNotification(const xmlChar *requestID,
-							      const xmlChar *majorVersion,
-							      const xmlChar *minorVersion,
-							      const xmlChar *issueInstant,
-							      const xmlChar *providerID,
-							      LassoNode     *nameIdentifier,
-							      const xmlChar *consent);
+#include <lasso/xml/lib_federation_termination_notification.h>
 
-LassoNode *lasso_build_federationTerminationNotification(const xmlChar *providerID,
-							 LassoNode     *nameIdentifier,
-							 const xmlChar *consent);
+#define LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION (lasso_federation_termination_notification_get_type())
+#define LASSO_FEDERATION_TERMINATION_NOTIFICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, LassoFederationTerminationNotification))
+#define LASSO_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, LassoFederationTerminationNotificationClass))
+#define LASSO_IS_FEDERATION_TERMINATION_NOTIFICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION))
+#define LASSP_IS_FEDERATION_TERMINATION_NOTIFICATION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION))
+#define LASSO_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, LassoFederationTerminationNotificationClass)) 
 
-#endif /* __FEDERATION_TERMINATION_NOTIFICATION_H__ */
+typedef struct _LassoFederationTerminationNotification LassoFederationTerminationNotification;
+typedef struct _LassoFederationTerminationNotificationClass LassoFederationTerminationNotificationClass;
+
+struct _LassoFederationTerminationNotification {
+  LassoLibFederationTerminationNotification parent;
+  /*< public >*/
+  /*< private >*/
+};
+
+struct _LassoFederationTerminationNotificationClass {
+  LassoLibFederationTerminationNotificationClass parent;
+};
+
+LASSO_EXPORT GType      lasso_federation_termination_notification_get_type          (void);
+LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new               (const xmlChar *providerID,
+										     const xmlChar *nameIdentifier,
+										     const xmlChar *nameQualifier,
+										     const xmlChar *format);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __LASSO_FEDERATION_TERMINATION_NOTIFICATION_H__ */
