@@ -6021,6 +6021,16 @@ typedef struct {
 			char *notBefore, char *notOnOrAfter);
 	END_THROW_ERROR
 
+#ifdef LASSO_WSF_ENABLED
+	THROW_ERROR
+	int setEncryptedResourceId(LassoDiscoEncryptedResourceID *encryptedResourceId);
+	END_THROW_ERROR
+#endif
+
+	THROW_ERROR
+	int setResourceId(char *content);
+	END_THROW_ERROR
+
 	THROW_ERROR
 	int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
 	END_THROW_ERROR
@@ -6148,6 +6158,17 @@ int LassoLecp_buildAssertion(LassoLecp *self, char *authenticationMethod,
 		char *notOnOrAfter) {
 	return lasso_login_build_assertion(LASSO_LOGIN(self), authenticationMethod,
 			authenticationInstant, reauthenticateOnOrAfter, notBefore, notOnOrAfter);
+}
+
+#ifdef LASSO_WSF_ENABLED
+int LassoLecp_setEncryptedResourceId(LassoLecp *self,
+		LassoDiscoEncryptedResourceID *encryptedResourceId) {
+	return lasso_login_set_encryptedResourceId(LASSO_LOGIN(self), encryptedResourceId);
+}
+#endif
+
+int LassoLecp_setResourceId(LassoLecp *self, char *content) {
+	return lasso_login_set_resourceId(LASSO_LOGIN(self), content);
 }
 
 int LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult,
