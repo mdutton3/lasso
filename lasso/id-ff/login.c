@@ -110,7 +110,7 @@ gint
 lasso_login_build_authn_request_msg(LassoLogin *login)
 {
   LassoProvider *provider, *remote_provider;
-  xmlChar *request_protocolProfile, *url=NULL, *query=NULL;
+  xmlChar *request_protocolProfile, *url, *query, *lareq;
   gboolean must_sign;
   
   provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
@@ -119,10 +119,12 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   must_sign = xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true");
   /* export request depending on the request ProtocolProfile */
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
+  /* get SingleSignOnServiceURL metadata */
+  url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
+  if (url == NULL) return (-1);
 
   if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
     /* GET -> query */
-    url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
     if (must_sign) {
       query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
 					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
@@ -131,18 +133,21 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
     else {
       query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
     }
-    if (url == NULL) return (-1);
     if (query == NULL) return (-2);
     /* alloc msg_url (+2 for the ? and \0) */
     LASSO_PROFILE_CONTEXT(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
     g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?%s", url, query);
-    g_free(url);
+    LASSO_PROFILE_CONTEXT(login)->msg_body = NULL;
     g_free(query);
   }
   else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
     /* POST -> formular */
-    printf("TODO - export the AuthnRequest in a formular\n");
+    lareq = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->request);
+    if (lareq == NULL) return (-2);
+    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
+    LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
   }
+  g_free(url);
   
   return (0);
 }
