@@ -372,7 +372,7 @@ dispose(GObject *object)
 	}
 	discovery->private_data->dispose_has_run = TRUE;
 
-	debug("Discovery object 0x%x disposed ...", discovery);
+	debug("Discovery object 0x%p disposed ...", discovery);
 
 	/* unref reference counted objects */
 
@@ -384,7 +384,7 @@ finalize(GObject *object)
 { 
 	LassoDiscovery *discovery = LASSO_DISCOVERY(object);
 
-	debug("Discovery object 0x%x finalized ...", discovery);
+	debug("Discovery object 0x%p finalized ...", discovery);
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

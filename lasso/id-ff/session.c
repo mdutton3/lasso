@@ -192,7 +192,7 @@ dispose(GObject *object)
 	}
 	session->private_data->dispose_has_run = TRUE;
 
-	debug("Session object 0x%x disposed ...", session);
+	debug("Session object 0x%p disposed ...", session);
 
 	/* XXX: here or not ?
 	g_hash_table_destroy(session->assertions);
@@ -207,7 +207,7 @@ finalize(GObject *object)
 {
 	LassoSession *session = LASSO_SESSION(object);
 
-	debug("Session object 0x%x finalized ...", session);
+	debug("Session object 0x%p finalized ...", session);
 
 	g_free(session->private_data);
 	session->private_data = NULL;

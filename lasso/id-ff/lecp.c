@@ -286,7 +286,7 @@ static LassoNodeClass *parent_class = NULL;
 static void
 finalize(GObject *object)
 {  
-	debug("Lecp object 0x%x finalized ...", object);
+	debug("Lecp object 0x%p finalized ...", object);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

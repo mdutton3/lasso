@@ -273,7 +273,7 @@ dispose(GObject *object)
 	}
 	profile->private_data->dispose_has_run = TRUE;
 
-	debug("Profile object 0x%x disposed ...", profile);
+	debug("Profile object 0x%p disposed ...", profile);
 
 	/* XXX unref reference counted objects */
 	/* lasso_server_destroy(profile->server);
@@ -292,7 +292,7 @@ finalize(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
 
-	debug("Profile object 0x%x finalized ...", object);
+	debug("Profile object 0x%p finalized ...", object);
 
 	g_free(profile->private_data);
 

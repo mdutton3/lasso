@@ -278,7 +278,7 @@ dispose(GObject *object)
 	}
 	server->private_data->dispose_has_run = TRUE;
 
-	debug("Server object 0x%x disposed ...", server);
+	debug("Server object 0x%p disposed ...", server);
 
 	/* free allocated memory for providers array */
 	/* XXX */
@@ -291,7 +291,7 @@ finalize(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
 
-	debug("Server object 0x%x finalized ...", server);
+	debug("Server object 0x%p finalized ...", server);
 
 	g_free(server->private_key);
 	g_free(server->secret_key);
