@@ -149,6 +149,82 @@ lasso_login_build_assertion(LassoLogin      *login,
 }
 
 /**
+ * lasso_login_must_ask_for_consent_private:
+ * @login: a LassoLogin
+ * 
+ * Evaluates if it is necessary to ask the consent of the Principal. 
+ * This method doesn't take the isPassive value into account.
+ * 
+ * Return value: TRUE or FALSE
+ **/
+static gboolean
+lasso_login_must_ask_for_consent_private(LassoLogin *login)
+{
+  xmlChar *nameIDPolicy, *consent;
+  LassoFederation *federation = NULL;
+  gboolean ret = FALSE;
+
+  nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
+					      "NameIDPolicy", lassoLibHRef, NULL);
+
+  if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone) || nameIDPolicy == NULL) {
+    ret = FALSE;
+  }
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
+    ret = FALSE;
+  }
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated) ||  \
+	   xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
+    if (LASSO_PROFILE(login)->identity != NULL) {
+      federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
+						 LASSO_PROFILE(login)->remote_providerID);
+    }
+    if (federation != NULL) {
+      ret = FALSE;
+    }
+    else {
+      consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request,
+					  "consent", NULL);
+      if (consent != NULL) {
+	if (xmlStrEqual(consent, lassoLibConsentObtained) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedPrior) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentImplicit) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentExplicit)) {
+	  ret = FALSE;
+	}
+	else if (xmlStrEqual(consent, lassoLibConsentUnavailable) || \
+		 xmlStrEqual(consent, lassoLibConsentInapplicable)) {
+	  ret = TRUE;
+	}
+	else {
+	  message(G_LOG_LEVEL_CRITICAL, "Unknown consent value : %s\n", consent);
+	  /* we consider consent as empty if its value is unknown/invalid */
+	  ret = TRUE;
+	}
+	xmlFree(consent);
+      }
+      else {
+	/* no consent */
+	ret = TRUE;
+	goto done;
+      }
+    }
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s\n", nameIDPolicy);
+    /* we consider NameIDPolicy as empty (none value) if its value is unknown/invalid */
+  }
+
+ done:
+  if (federation != NULL) {
+    lasso_federation_destroy(federation);
+  }
+  xmlFree(nameIDPolicy);
+
+  return ret;
+}
+
+/**
  * lasso_login_process_federation:
  * @login: a LassoLogin
  * @is_consent_obtained: is user consent obtained ?
@@ -205,7 +281,7 @@ lasso_login_process_federation(LassoLogin *login,
       consent is necessary, it should be obtained via consent attribute
       in lib:AuthnRequest or IDP should ask the Principal
     */
-    if (lasso_login_must_ask_for_consent(login) == TRUE && is_consent_obtained == FALSE) {
+    if (lasso_login_must_ask_for_consent_private(login) == TRUE && is_consent_obtained == FALSE) {
       if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
 	/*
 	  if the NameIDPolicy element is 'any' and if the policy for the
@@ -989,63 +1065,35 @@ lasso_login_init_request(LassoLogin      *login,
   return ret;
 }
 
+/**
+ * lasso_login_must_ask_for_consent_private:
+ * @login: a LassoLogin
+ * 
+ * Evaluates if a consent must be ask to the Principal to federate him.
+ * 
+ * Return value: TRUE or FALSE
+ **/
 gboolean
 lasso_login_must_ask_for_consent(LassoLogin *login)
 {
-  xmlChar *nameIDPolicy, *consent;
-  LassoFederation *federation = NULL;
-  gboolean ret = FALSE;
-
-  nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-					      "NameIDPolicy", lassoLibHRef, NULL);
-
-  if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone) || nameIDPolicy == NULL) {
-    goto done;
-  }
-  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
-    goto done;
-  }
-  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated) ||  \
-	   xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
-    if (LASSO_PROFILE(login)->identity != NULL) {
-      federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
-						 LASSO_PROFILE(login)->remote_providerID);
-    }
-    if (federation != NULL) {
-      goto done;
-    }
-    else {
-      consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request,
-					  "consent", NULL);
-      if (consent != NULL) {
-	if (xmlStrEqual(consent, lassoLibConsentObtained) || \
-	    xmlStrEqual(consent, lassoLibConsentObtainedPrior) || \
-	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentImplicit) || \
-	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentExplicit)) {
-	  xmlFree(consent);
-	  goto done;
-	}
-	else {
-	  /* FIXME: what to do if consent value is inapplicable or unavailable ? */
-	}
+  xmlChar *content;
+  gboolean isPassive = TRUE; /* default value */
+  gboolean ret = lasso_login_must_ask_for_consent_private(login);
+ 
+  /* if must_ask_for_consent = TRUE we must return FALSE if isPassive is TRUE */
+  if (ret == TRUE) {
+    content = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
+					   NULL, NULL);
+    if (content != NULL) {
+      if (xmlStrEqual(content, "false") || xmlStrEqual(content, "0")) {
+	ret = FALSE;
       }
-      else {
-	ret = TRUE;
-	goto done;
-      }
+      xmlFree(content);
+    }
+    if (isPassive == TRUE) {
+      ret = FALSE;
     }
   }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s\n", nameIDPolicy);
-    /* NameIDPolicy is consider as empty (return FALSE)
-       if its value is unknown/invalid */
-  }
-
- done:
-  if (federation != NULL) {
-    lasso_federation_destroy(federation);
-  }
-  xmlFree(nameIDPolicy);
 
   return ret;
 }
