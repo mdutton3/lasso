@@ -208,7 +208,6 @@ lasso_user_remove_assertion(LassoUser     *user,
 
   /* remove the remote provider id */
   for(i = 0; i<user->assertion_providerIDs->len; i++){
-    printf("%s %s\n", remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i));
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i))){
       debug(DEBUG, "Remove assertion of %s\n", remote_providerID);
       g_ptr_array_remove_index(user->assertion_providerIDs, i);
