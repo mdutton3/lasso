@@ -9,6 +9,7 @@ import lasso
 # Initialize with service provider informations.
 [...] # Get metadata_file_path, public_key_file_path, private_key_file_path &
       # certificate_file_path.
+# The last argument lassoSignatureMethod... must be the method used to crypt the private key.
 server = lasso.Server.new(metadata_file_path, public_key_file_path, private_key_file_path,
                           certificate_file_path, lasso.signatureMethodRsaSha1)
 
