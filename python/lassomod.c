@@ -235,9 +235,12 @@ static PyMethodDef lasso_methods[] = {
   {"server_dump",          server_dump,          METH_VARARGS},
   
   /* py_user.h */
-  {"user_new",           user_new,           METH_VARARGS},
-  {"user_new_from_dump", user_new_from_dump, METH_VARARGS},
-
+  {"user_new",                 user_new,           METH_VARARGS},
+  {"user_new_from_dump",       user_new_from_dump, METH_VARARGS},
+  {"user_dump",                user_dump,          METH_VARARGS},
+  {"user_get_assertion",       user_get_assertion, METH_VARARGS},
+  {"user_get_next_providerID", user_get_next_providerID, METH_VARARGS},
+  {"user_remove_assertion",    user_remove_assertion, METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };

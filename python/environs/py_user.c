@@ -59,3 +59,65 @@ PyObject *user_new_from_dump(PyObject *self, PyObject *args) {
 
   return (LassoUser_wrap(user));
 }
+
+PyObject *user_dump(PyObject *self, PyObject *args) {
+  PyObject  *user_obj;
+  gchar     *dump;
+
+  if (CheckArgs(args, "O:user_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:user_dump", &user_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  dump = lasso_user_dump(LassoUser_get(user_obj));
+
+  return (charPtrConst_wrap(dump));
+}
+
+PyObject *user_get_assertion(PyObject *self, PyObject *args) {
+  PyObject  *user_obj;
+  LassoNode *assertion_node;
+  gchar     *remote_providerID;
+
+  if (CheckArgs(args, "OS:user_get_assertion")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:user_get_assertion", &user_obj, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  assertion_node = lasso_user_get_assertion(LassoUser_get(user_obj), remote_providerID);
+
+  return (LassoNode_wrap(assertion_node));
+}
+
+PyObject *user_get_next_providerID(PyObject *self, PyObject *args) {
+  PyObject  *user_obj;
+  gchar     *remote_providerID;
+
+  if (CheckArgs(args, "O:user_get_next_providerID")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_providerID", &user_obj, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  remote_providerID = lasso_user_get_next_providerID(LassoUser_get(user_obj));
+
+  return (charPtr_wrap(remote_providerID));
+}
+
+PyObject *user_remove_assertion(PyObject *self, PyObject *args) {
+  PyObject  *user_obj;
+  gchar     *remote_providerID;
+  int       code;
+
+  if (CheckArgs(args, "OS:user_remove_assertion")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:user_remove_assertion", &user_obj, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+
+  code = lasso_user_remove_assertion(LassoUser_get(user_obj), remote_providerID);
+
+  return (int_wrap(code));
+}

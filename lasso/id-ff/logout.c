@@ -24,6 +24,8 @@
 
 #include <lasso/environs/logout.h>
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -44,7 +46,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 {
   LassoProfileContext *profileContext;
   LassoProvider *provider;
-  xmlChar *protocolProfile;
+  xmlChar *protocolProfile, *singleLogoutServiceURL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   
@@ -57,14 +59,21 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     return(-2);
   }
 
+  singleLogoutServiceURL = lasso_provider_get_singleLogoutServiceURL(provider);
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
+
   if(protocolProfile==NULL){
     debug(ERROR, "Single Logout Protocol profile not found\n");
     return(-3);
   }
 
+  if(singleLogoutServiceURL==NULL){
+    debug(ERROR, "Single Logout Service URL not found\n");
+    return(-4);
+  }
+
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a soap request message\n");
+    debug(DEBUG, "Building a soap request message\n");
     profileContext->request_type = lassoHttpMethodSoap;
 
     /* sign the request message */
@@ -73,11 +82,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 					       profileContext->server->private_key,
 					       profileContext->server->certificate);
     
-    profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
+    profileContext->msg_url  = singleLogoutServiceURL;
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
-    debug(DEBUG, "building a http get request message\n");
+    debug(DEBUG, "Building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
 							 profileContext->server->signature_method,
@@ -99,9 +108,10 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
+  printf("get provider id %s\n",  profileContext->remote_providerID);
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
+    debug(ERROR, "Provider not found (ProviderID = %s)\n", profileContext->remote_providerID);
     return(-2);
   }
 
@@ -126,6 +136,12 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   }
 
   return(0);
+}
+
+void
+lasso_logout_destroy(LassoLogout *logout)
+{
+  g_object_unref(G_OBJECT(logout));
 }
 
 gint
@@ -188,7 +204,10 @@ lasso_logout_init_request(LassoLogout *logout,
 						     nameQualifier,
 						     format);
 
-  g_return_val_if_fail(profileContext->request!=NULL, -6);
+  if(profileContext->request==NULL){
+    debug(ERROR, "Error while creating the request\n");
+    return(-6);
+  }
 
   return(0);
 }
@@ -292,6 +311,7 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
   switch(response_method){
   case lassoHttpMethodSoap:
     profileContext->response = lasso_logout_response_new_from_soap(response_msg);
+    break;
   default:
     debug(ERROR, "Unknown response method\n");
     return(-3);
@@ -307,6 +327,18 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
 }
 
 /*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_logout_finalize(LassoLogout *logout)
+{  
+  debug(INFO, "Logout object 0x%x finalized ...\n", logout);
+
+  parent_class->finalize(LASSO_PROFILE_CONTEXT(logout));
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
@@ -316,8 +348,13 @@ lasso_logout_instance_init(LassoLogout *logout)
 }
 
 static void
-lasso_logout_class_init(LassoLogoutClass *klass)
+lasso_logout_class_init(LassoLogoutClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
+  
+  parent_class = g_type_class_peek_parent(class);
+  /* override parent class methods */
+  gobject_class->finalize = (void *)lasso_logout_finalize;
 }
 
 GType lasso_logout_get_type() {

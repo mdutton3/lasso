@@ -858,8 +858,16 @@ class User:
 	return lassomod.user_dump(self)
 
     def destroy(self):
-	lassomod.server_destroy(self)
+	lassomod.user_destroy(self)
 
+    def get_assertion(self):
+	pass
+
+    def get_next_providerID(self):
+	return lassomod.user_get_next_providerID(self)
+
+    def remove_assertion(self, providerID):
+	return lassomod.user_remove_assertion(self, providerID)
 
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2

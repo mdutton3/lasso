@@ -38,5 +38,9 @@ PyObject *LassoUser_wrap(LassoUser *user);
 
 PyObject *user_new(PyObject *self, PyObject *args);
 PyObject *user_new_from_dump(PyObject *self, PyObject *args);
+PyObject *user_dump(PyObject *self, PyObject *args);
+PyObject *user_get_assertion(PyObject *self, PyObject *args);
+PyObject *user_get_next_providerID(PyObject *self, PyObject *args);
+PyObject *user_remove_assertion(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_USER_H__ */

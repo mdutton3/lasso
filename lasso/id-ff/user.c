@@ -59,7 +59,7 @@ lasso_user_add_assertion(LassoUser *user,
   }
 
   /* add the assertion */
-  debug(DEBUG, "add assertion for %s\n", remote_providerID);
+  debug(DEBUG, "add an assertion for %s\n", remote_providerID);
   g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
 
   return(0);
@@ -74,6 +74,7 @@ lasso_user_add_identity(LassoUser     *user,
   g_return_val_if_fail(remote_providerID!=NULL, -2);
   g_return_val_if_fail(identity!=NULL, -3);
 
+  debug(INFO, "Add an identity for %s\n", remote_providerID);
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 
   return(0);
@@ -136,7 +137,7 @@ lasso_user_dump(LassoUser *user)
   assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
   g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
   user_class->add_child(user_node, assertions_node, FALSE);
-
+  
   /* dump the identities */
   identities_node = lasso_node_new();
   identities_class = LASSO_NODE_GET_CLASS(identities_node);
@@ -161,6 +162,9 @@ gchar*
 lasso_user_get_next_providerID(LassoUser *user)
 {
   g_return_val_if_fail(user!=NULL, NULL);
+
+  if(user->assertion_providerIDs->len==0)
+    return(NULL);
 
   return(g_ptr_array_index(user->assertion_providerIDs, 0));
 }
@@ -192,6 +196,7 @@ lasso_user_remove_assertion(LassoUser     *user,
   /* remove the remote provider id */
   for(i = 0; i<user->assertion_providerIDs->len; i++){
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->assertion_providerIDs, i))){
+      debug(INFO, "Remove assertion for %s\n", remote_providerID);
       g_ptr_array_remove_index(user->assertion_providerIDs, i);
       break;
     }
@@ -277,9 +282,12 @@ lasso_user_new_from_dump(gchar *dump)
 
   /* get user */
   user_node = lasso_node_new_from_dump(dump);
+  if(user_node==NULL){
+    debug(WARNING, "Can' create a user from dump\n");
+    return(NULL);
+  }
 
   /* get assertions */
-  debug(DEBUG, "Get assertions\n");
   assertions_node = lasso_node_get_child(user_node, LASSO_USER_ASSERTIONS_NODE, NULL);
   if(assertions_node){
     assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
@@ -294,12 +302,12 @@ lasso_user_new_from_dump(gchar *dump)
 	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE);
 	lasso_user_add_assertion(user, remote_providerID, assertion_node);
       }
+
       assertion_xmlNode = assertion_xmlNode->next;
     }
   }
 
   /* identities*/
-  debug(DEBUG, "Get identities\n");
   identities_node = lasso_node_get_child(user_node, LASSO_USER_IDENTITIES_NODE, NULL);
   if(identities_node){
     identities_class = LASSO_NODE_GET_CLASS(identities_node);
@@ -328,15 +336,18 @@ lasso_user_new_from_dump(gchar *dump)
 	  lasso_identity_set_remote_nameIdentifier(identity, nameIdentifier_node);
 	}
 
-	debug(DEBUG, "Add a new identity %s\n", remote_providerID);
 	lasso_user_add_identity(user, remote_providerID, identity);
 
+	//lasso_node_destroy(identity_node);
       }
 
       identity_xmlNode = identity_xmlNode->next;
     }
-    
+
+    //lasso_node_destroy(identities_node);
   }
+
+  //lasso_node_destroy(user_node);
 
   return(user);
 }
