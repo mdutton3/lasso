@@ -542,6 +542,13 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     profile->request = lasso_logout_request_new_from_export(request_msg,
 							    lassoNodeExportTypeSoap);
 
+    /* verify requets is a LogoutRequest */
+    if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutRequest\n");
+      ret = -1;
+      goto done;
+    }
+
     /* signature verification */
     remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID", NULL, NULL);
     if (remote_providerID == NULL) {
@@ -549,6 +556,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       ret = -1;
       goto done;
     }
+
     provider = lasso_server_get_provider_ref(profile->server, remote_providerID, &err);
     if (provider == NULL) {
       message(G_LOG_LEVEL_CRITICAL, err->message);
@@ -556,6 +564,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       g_error_free(err);
       goto done;
     }
+
     if (provider->ca_certificate != NULL) {
       ret = lasso_node_verify_x509_signature(profile->request, provider->ca_certificate);
       /* ret = lasso_node_verify_signature(profile->request, provider->public_key); */
@@ -565,6 +574,14 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     debug("Build a logout request from query msg\n");
     profile->request = lasso_logout_request_new_from_export(request_msg,
 							    lassoNodeExportTypeQuery);
+
+    /* verify the message is a LogoutRequest */
+    if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutRequest\n");
+      ret = -1;
+      goto done;
+    }
+
     break;
   case lassoHttpMethodGet:
     debug("TODO, implement the get method\n");
@@ -812,23 +829,34 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   switch (response_method) {
   case lassoHttpMethodSoap:
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
+    if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutResponse\n");
+      ret = -1;
+      goto done;
+    }
+
     break;
   case lassoHttpMethodRedirect:
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
+    if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutResponse\n");
+      ret = -1;
+      goto done;
+    }
+
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
     ret = -1;
     goto done;
   }
-
-  if (profile->response == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Response is NULL\n");
+  if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Message is not a LogoutResponse\n");
     ret = -1;
     goto done;
   }
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
 
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   if (statusCode == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "StatusCode node not found\n");
     ret = -1;
