@@ -25,9 +25,6 @@
 #ifndef __LASSO_DEBUG_H__
 #define __LASSO_DEBUG_H__
 
-#include <stdio.h>
-#include <stdarg.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 

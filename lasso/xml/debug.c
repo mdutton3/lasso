@@ -22,6 +22,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <stdio.h>
+#include <stdarg.h>
+#include <time.h>
+
 #include <lasso/xml/debug.h>
 
 #define normal "\033[m"
@@ -56,6 +60,8 @@ _debug(unsigned int level,
 {
   char debug_string[1024];
   char new_debug_string[2048];
+  time_t ts;
+  char date[20];
   char *color;
 
   va_list args;
@@ -68,6 +74,9 @@ _debug(unsigned int level,
   va_start(args, format);
   vsnprintf(debug_string, sizeof(debug_string), format, args);
   va_end(args);
+
+  time(&ts);
+  strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
 
   switch (level) {
   case ERROR:
@@ -85,10 +94,11 @@ _debug(unsigned int level,
   }
 
   sprintf(new_debug_string, 
-	  "%s%s%s (%s/%s:%d)\t%s", 
+	  "%s%s%s %s (%s/%s:%d)\t%s", 
 	  color,
 	  errorcode[level],
 	  normal,
+	  date,
 	  debug_filename, debug_function,
 	  debug_line, debug_string);
 
