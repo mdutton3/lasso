@@ -5,17 +5,17 @@
 
 xmlChar *lasso_build_url_encoded_message_authnRequest(LassoNode *);
 
-LassoNode *lasso_build_authnRequest(const char *providerID,
-									const char *nameIDPolicy,
-									const char *isPassive,
-									const char *forceAuthn,
-									const char *assertionConsumerServiceID,
-									const char **authnContextClassRefs,
-									const char **authnContextStatementRefs,
-									const char *authnContextComparison,
-									const char *relayState,
-									const char *proxyCount,
-									const char **idpList,
-									const char *consent);
+LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
+				    const xmlChar *nameIDPolicy,
+				    const xmlChar *isPassive,
+				    const xmlChar *forceAuthn,
+				    const xmlChar *assertionConsumerServiceID,
+				    const xmlChar **authnContextClassRefs,
+				    const xmlChar **authnContextStatementRefs,
+				    const xmlChar *authnContextComparison,
+				    const xmlChar *relayState,
+				    const xmlChar *proxyCount,
+				    const xmlChar **idpList,
+				    const xmlChar *consent);
 
 #endif
