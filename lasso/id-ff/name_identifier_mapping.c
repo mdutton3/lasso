@@ -25,6 +25,7 @@
 
 #include <lasso/id-ff/name_identifier_mapping.h>
 
+#include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 
 /*****************************************************************************/

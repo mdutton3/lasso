@@ -25,6 +25,7 @@
 
 #include <lasso/id-ff/logout.h>
 
+#include <lasso/id-ff/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
 

@@ -24,6 +24,7 @@ liblasso_id_ff_la_SOURCES = \
 	session.c
 
 lasso_private_h_sources = \
+	profileprivate.h \
 	providerprivate.h \
 	serverprivate.h \
 	sessionprivate.h

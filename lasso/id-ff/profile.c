@@ -32,6 +32,7 @@
 #include <lasso/xml/lib_status_response.h>
 
 #include <lasso/id-ff/profile.h>
+#include <lasso/id-ff/profileprivate.h>
 
 struct _LassoProfilePrivate
 {

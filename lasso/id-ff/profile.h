@@ -117,9 +117,6 @@ LASSO_EXPORT LassoSession* lasso_profile_get_session(LassoProfile *profile);
 LASSO_EXPORT gboolean lasso_profile_is_identity_dirty(LassoProfile *profile);
 LASSO_EXPORT gboolean lasso_profile_is_session_dirty(LassoProfile *profile);
 
-LASSO_EXPORT void lasso_profile_set_response_status(
-		LassoProfile *profile, const gchar *statusCodeValue);
-
 LASSO_EXPORT gint lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump);
 LASSO_EXPORT gint lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump);
 LASSO_EXPORT LassoSamlNameIdentifier* lasso_profile_get_nameIdentifier(LassoProfile *profile);
