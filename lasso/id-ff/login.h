@@ -61,9 +61,9 @@ struct _LassoLogin {
 
   gchar     *assertionArtifact;
   gchar     *response_dump;
-  LassoNode *assertion;
 
   /*< private >*/
+  LassoNode *assertion;
   lassoHttpMethod http_method;
   LassoLoginPrivate *private;
 };
