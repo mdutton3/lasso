@@ -47,9 +47,23 @@ static GObjectClass *parent_class = NULL;
 gchar *
 lasso_name_registration_dump(LassoNameRegistration *name_registration)
 {
-  gchar *dump;
+  gchar     *dump = NULL, *parent_dump = NULL;
+  LassoNode *node = NULL;
 
   g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), NULL);
+
+  parent_dump = lasso_profile_dump(LASSO_PROFILE(name_registration), "NameRegistration");
+  node = lasso_node_new_from_dump(parent_dump);
+  g_free(parent_dump);
+
+  if (name_registration->oldNameIdentifier != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "OldNameIdentifier",
+					  name_registration->oldNameIdentifier, FALSE);
+  }
+ 
+  dump = lasso_node_export(node);
+  
+  lasso_node_destroy(node);
 
   dump = NULL;
 
@@ -408,8 +422,11 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
     goto done;
   }
 
-  /* update the local name identifier in the federation */
-  lasso_federation_set_local_nameIdentifier(federation, local_nameIdentifier_node);
+  /* Save name identifier and old name identifier value */
+  /* lasso_federation_set_local_nameIdentifier(federation, local_nameIdentifier_node); */
+  profile->nameIdentifier              = lasso_node_get_content(local_nameIdentifier_node, NULL);
+  name_registration->oldNameIdentifier = oldNameIdentifier;
+  oldNameIdentifier                    = NULL;
 
   done:
   if (idpNameIdentifier != NULL) {
@@ -497,10 +514,11 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 					     gchar                 *response_msg,
 					     lassoHttpMethod        response_method)
 {
-  LassoProfile *profile;
-  xmlChar      *statusCodeValue;
-  LassoNode    *statusCode;
-  gint          ret = 0;
+  LassoProfile    *profile;
+  LassoFederation *federation;
+  xmlChar         *statusCodeValue;
+  LassoNode       *statusCode, *nameIdentifier_node;
+  gint             ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
   g_return_val_if_fail(response_msg != NULL, -1);
@@ -538,6 +556,27 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
     ret = -1;
     goto done;
   }
+
+  /* Update federation with the nameIdentifier attribute. NameQualifier is local ProviderID and format is Federated type */
+  if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
+    ret = -1;
+    goto done;
+  }
+  federation = lasso_identity_get_federation_ref(profile->identity, profile->remote_providerID);
+  if (LASSO_IS_FEDERATION(federation) == FALSE) {
+    message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
+    ret = -1;
+    goto done;
+  }
+  nameIdentifier_node = LASSO_NODE(lasso_saml_name_identifier_new(profile->nameIdentifier));
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_node), profile->server->providerID);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_node), lassoLibNameIdentifierFormatFederated);
+  lasso_federation_set_local_nameIdentifier(federation, nameIdentifier_node);
+  /* FIXME : use a proper way to set the identity dirty */
+  profile->identity->is_dirty = TRUE;
+
+  lasso_node_destroy(nameIdentifier_node);
 
   done:
 
@@ -714,6 +753,71 @@ lasso_name_registration_new(LassoServer       *server,
 					  "server", lasso_server_copy(server),
 					  "provider_type", provider_type,
 					  NULL);
+
+  return name_registration;
+}
+
+LassoNameRegistration*
+lasso_name_registration_new_from_dump(LassoServer *server,
+				      gchar       *dump)
+{
+  LassoNameRegistration *name_registration;
+  LassoProfile          *profile;
+  LassoNode             *node_dump, *request_node, *response_node;
+  LassoNode             *initial_request_node, *initial_response_node;
+  gchar                 *type, *export, *providerID_index_str;
+
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(dump != NULL, NULL);
+
+  name_registration = LASSO_NAME_REGISTRATION(g_object_new(LASSO_TYPE_NAME_REGISTRATION,
+				     "server", lasso_server_copy(server),
+				     NULL));
+
+  profile = LASSO_PROFILE(name_registration);
+
+  node_dump = lasso_node_new_from_dump(dump);
+
+  /* profile attributes */
+  profile->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier",
+							    lassoLassoHRef, NULL);
+  profile->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID",
+							    lassoLassoHRef, NULL);
+  profile->msg_url           = lasso_node_get_child_content(node_dump, "MsgUrl",
+							    lassoLassoHRef, NULL);
+  profile->msg_body          = lasso_node_get_child_content(node_dump, "MsgBody",
+							    lassoLassoHRef, NULL);
+  profile->msg_relayState    = lasso_node_get_child_content(node_dump, "MsgRelayState",
+							    lassoLassoHRef, NULL);
+
+  /* rebuild request */
+  request_node = lasso_node_get_child(node_dump, "RegisterNameIdentifierRequest", lassoLibHRef, NULL);
+  if (LASSO_IS_NODE(request_node) == TRUE) {
+    export = lasso_node_export(request_node);
+    profile->request = lasso_register_name_identifier_request_new_from_export(export,
+									      lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(request_node);
+  }
+
+  /* rebuild response */
+  response_node = lasso_node_get_child(node_dump, "RegisterNameIdentifierResponse", lassoLibHRef, NULL);
+  if (response_node != NULL) {
+    export = lasso_node_export(response_node);
+    profile->response = lasso_register_name_identifier_response_new_from_export(export,
+										lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(response_node);
+  }
+  
+  /* provider type */
+  type = lasso_node_get_child_content(node_dump, "ProviderType", lassoLassoHRef, NULL);
+  profile->provider_type = atoi(type);
+  xmlFree(type);
+
+  /* name registration attributes */
+  name_registration->oldNameIdentifier = lasso_node_get_child_content(node_dump, "OldNameIdentifier",
+								      lassoLassoHRef, NULL);
 
   return name_registration;
 }
