@@ -94,7 +94,7 @@ START_TEST(test02_serviceProviderLogin)
 	char *authnRequestUrl, *authnRequestQuery;
 	char *responseUrl, *responseQuery;
 	char *idpIdentityContextDump;
-	char *soapResponseMsg;
+	char *assertionDump, *soapRequestMsg, *soapResponseMsg;
 	char *spIdentityContextDump, *spIdentityContextDumpTemp;
 	char *spSessionDump;
 	int requestType;
@@ -152,7 +152,8 @@ START_TEST(test02_serviceProviderLogin)
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
 			"responseQuery shouldn't be an empty string");
-	soapResponseMsg = idpLoginContext->response_dump;
+	assertionDump = lasso_node_export(LASSO_NODE(idpLoginContext->assertion));
+	fail_unless(assertionDump != NULL, "assertionDump must not be NULL");
 
         /* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
@@ -166,19 +167,30 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_login_init_request failed");
 	rc = lasso_login_build_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_request_msg failed");
+	soapRequestMsg = LASSO_PROFILE(spLoginContext)->msg_body;
+	fail_unless(soapRequestMsg != NULL, "soapRequestMsg must not be NULL");
 
 	/* Identity provider SOAP endpoint */
-	requestType = lasso_profile_get_request_type_from_soap_msg(
-			LASSO_PROFILE(spLoginContext)->msg_body);
+	lasso_server_destroy(idpContext);
+	lasso_login_destroy(idpLoginContext);
+	requestType = lasso_profile_get_request_type_from_soap_msg(soapRequestMsg);
 	fail_unless(requestType == lassoRequestTypeLogin,
 			"requestType should be lassoRequestTypeLogin");
-	
+
+	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
+	idpLoginContext = lasso_login_new(idpContext);
+	rc = lasso_login_process_request_msg(idpLoginContext, soapRequestMsg);
+	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
+	rc = lasso_login_set_assertion_from_dump(idpLoginContext, assertionDump);
+	fail_unless(rc == 0, "lasso_login_set_assertion_from_dump failed");
+	rc = lasso_login_build_response_msg(idpLoginContext);
+	fail_unless(rc == 0, "lasso_login_build_response_msg failed");
+	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
+	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
+
         /* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
-	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
-	fail_unless(strcmp(LASSO_PROFILE(spLoginContext)->nameIdentifier,
-        	LASSO_PROFILE(idpLoginContext)->nameIdentifier) == 0,
-		"nameIdentifiers should be identical");
+	fail_unless(rc == 0, "lasso_login_process_response_msg failed");
 	rc = lasso_login_accept_sso(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_accept_sso failed");
 	fail_unless(LASSO_PROFILE(spLoginContext)->identity != NULL,
