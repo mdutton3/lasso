@@ -63,7 +63,7 @@ struct _LassoLibRegisterNameIdentifierRequest {
 	char *ProviderID;
 	/* <xs:element ref="IDPProvidedNameIdentifier"/> */
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
-	/* <xs:element ref="SPProvidedNameIdentifier"/> */
+	/* <xs:element ref="SPProvidedNameIdentifier" minOccurs="0"/> */
 	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
 	/* <xs:element ref="OldProvidedNameIdentifier"/> */
 	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
