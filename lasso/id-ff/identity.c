@@ -38,7 +38,8 @@ struct _LassoIdentityPrivate
  * @identity: a #LassoIdentity
  * @federation: the #LassoFederation
  *
- * Adds @federation as a known federation for @identity.
+ * Adds @federation as a known federation for @identity.  @federation is
+ * then owned by the identity; caller must not free it.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
