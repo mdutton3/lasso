@@ -127,7 +127,7 @@ lasso_register_name_identifier_response_new_from_dump(const xmlChar *buffer)
   LassoNode *response;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
-  lasso_node_load_from_buffer(response, buffer);
+  lasso_node_import(response, buffer);
   
   return (response);
 }

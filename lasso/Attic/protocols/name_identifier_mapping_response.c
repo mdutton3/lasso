@@ -122,7 +122,7 @@ lasso_name_identifier_mapping_response_new_from_dump(const xmlChar *buffer)
   LassoNode *response;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
-  lasso_node_load_from_buffer(response, buffer);
+  lasso_node_import(response, buffer);
   
   return (response);
 }
