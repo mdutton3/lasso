@@ -283,6 +283,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+  g_return_val_if_fail(remote_providerID != NULL, -1);
 
   profile = LASSO_PROFILE(name_registration);
 
