@@ -118,3 +118,20 @@ PyObject *logout_response_new_from_request_query(PyObject *self, PyObject *args)
 
   return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
 }
+
+PyObject *logout_response_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:logout_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:logout_response_new_from_request_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_logout_response_new_from_query(query);
+
+  return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
+}

@@ -362,6 +362,11 @@ class LogoutResponse(LibLogoutResponse):
         return LogoutResponse(obj);
     new_from_request_query = classmethod(new_from_request_query)
 
+    def new_from_query(cls, query):
+        obj = lassomod.logout_response_new_from_query(query)
+        return LogoutResponse(obj);
+    new_from_query = classmethod(new_from_query)
+
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
     def __init__(self, providerID, nameIdentifier, nameQualifier, format,

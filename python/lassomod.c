@@ -138,6 +138,7 @@ static PyMethodDef lasso_methods[] = {
   {"logout_response_new_from_soap",          logout_response_new_from_soap,          METH_VARARGS},
   {"logout_response_new_from_dump",          logout_response_new_from_dump,          METH_VARARGS},
   {"logout_response_new_from_request_query", logout_response_new_from_request_query, METH_VARARGS},
+  {"logout_response_new_from_query",         logout_response_new_from_query,         METH_VARARGS},
 
   /* py_name_identifier_mapping_request.h */
   {"name_identifier_mapping_request_new", name_identifier_mapping_request_new, METH_VARARGS},
