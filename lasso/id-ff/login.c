@@ -64,29 +64,23 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 				   const gchar   *authenticationMethod,
 				   const gchar   *reauthenticateOnOrAfter)
 {
-  xmlChar *providerID, *requestID;
-  LassoNode *assertion=NULL, *authentication_statement;
+  LassoNode *assertion = NULL, *authentication_statement;
+  xmlChar *requestID;
   gint ret = 0;
 
-  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
-  if (providerID == NULL) {
-    debug(ERROR, "The attribute 'ProviderID' is missing in metadata of server.\n");
-    return(-1);
-  }
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID");
-  if (providerID == NULL) {
+  if (requestID == NULL) {
     debug(ERROR, "The attribute 'RequestID' is missing in request message.\n");
     return(-2);
   }
 
-  assertion = lasso_assertion_new(providerID, requestID);
-  xmlFree(providerID);
+  assertion = lasso_assertion_new(LASSO_PROFILE_CONTEXT(login)->server->providerID,
+				  requestID);
   xmlFree(requestID);
-  authentication_statement = lasso_authentication_statement_new(
-		authenticationMethod,
-		reauthenticateOnOrAfter,
-		LASSO_SAML_NAME_IDENTIFIER(identity->remote_nameIdentifier),
-		LASSO_SAML_NAME_IDENTIFIER(identity->local_nameIdentifier));
+  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
+								reauthenticateOnOrAfter,
+								LASSO_SAML_NAME_IDENTIFIER(identity->remote_nameIdentifier),
+								LASSO_SAML_NAME_IDENTIFIER(identity->local_nameIdentifier));
   if (authentication_statement != NULL) {
     lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
@@ -124,7 +118,7 @@ lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
   LassoNode *nameIdentifier;
-  xmlChar *nameIDPolicy, *providerID;
+  xmlChar *nameIDPolicy;
   gint ret = 0;
 
   /* verify if a user context exists else create it */
@@ -148,16 +142,8 @@ lasso_login_process_federation(LassoLogin *login)
 
       /* set local NameIdentifier in identity */
       nameIdentifier = lasso_saml_name_identifier_new(lasso_build_unique_id(32));
-      providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
-      /*
-      if (providerID == NULL) {
-	ret = LASSO_ERROR_SERVER_PROVIDERID;
-	debug(ERROR, lasso_error_msg(ret));
-      }
-      */
       lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-						   providerID);
-      xmlFree(providerID);
+						   LASSO_PROFILE_CONTEXT(login)->server->providerID);
       lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
 					    lassoLibNameIdentifierFormatFederated);
       lasso_identity_set_local_nameIdentifier(identity, nameIdentifier);
@@ -259,7 +245,6 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   gchar   *b64_samlArt, *samlArt, *url;
   xmlChar *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
-  xmlChar *providerID;
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
@@ -291,16 +276,14 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
   debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
 
-  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
   /* build artifact infos */
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
   url = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
   samlArt = g_new(gchar, 2+20+20+1);
-  identityProviderSuccinctID = lasso_str_hash(providerID,
+  identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE_CONTEXT(login)->server->providerID,
 					      LASSO_PROFILE_CONTEXT(login)->server->private_key);
-  xmlFree(providerID);
   assertionHandle = lasso_build_random_sequence(20);
   sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
   g_free(assertionHandle);
@@ -598,19 +581,10 @@ lasso_login_init_authn_request(LassoLogin  *login,
 			       const gchar *remote_providerID)
 {
   LassoProvider *server;
-  gchar *local_providerID;
 
   g_return_val_if_fail(remote_providerID != NULL, -1);
-
-  server = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
-  local_providerID = lasso_provider_get_providerID(server);
-  if (local_providerID == NULL) {
-    debug(ERROR, "The attribute 'ProviderID' is missing in metadata of server");
-    return (-1);
-  }
   
-  LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(local_providerID);
-  g_free(local_providerID);
+  LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(LASSO_PROFILE_CONTEXT(login)->server->providerID);
   LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
 
@@ -664,7 +638,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   switch (login->protocolProfile) {
   case lassoLoginProtocolProfileBrwsPost:
     /* create LibAuthnResponse */
-    LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(server)),
+    LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new(LASSO_PROFILE_CONTEXT(login)->server->providerID,
 								      LASSO_PROFILE_CONTEXT(login)->request);
     LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
     break;
