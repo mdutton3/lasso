@@ -223,6 +223,7 @@ lasso_user_new_from_dump(gchar *dump)
   LassoNodeClass *identities_class, *assertions_class;
   LassoIdentity  *identity;
   xmlNodePtr     identities_xmlNode, identity_xmlNode, assertions_xmlNode, assertion_xmlNode, nameIdentifier_xmlNode;
+  xmlNodePtr     localNameIdentifier_xmlNode, remoteNameIdentifier_xmlNode;
   LassoUser      *user;
   xmlChar        *remote_providerID;
 
@@ -230,7 +231,6 @@ lasso_user_new_from_dump(gchar *dump)
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
 
   /* get user */
-  debug(DEBUG, "LassoUser node\n");
   user_node = lasso_node_new_from_dump(dump);
 
   /* get assertions */
@@ -254,9 +254,10 @@ lasso_user_new_from_dump(gchar *dump)
 
   /* set lasso identities */
   identities_node = lasso_node_get_child(user_node, LASSO_USER_IDENTITIES_NODE, NULL);
-  identities_class = LASSO_NODE_GET_CLASS(identities_node);
-  identities_xmlNode = identities_class->get_xmlNode(identities_node);
-  if(identities_xmlNode){
+  if(identities_node){
+    identities_class = LASSO_NODE_GET_CLASS(identities_node);
+    identities_xmlNode = identities_class->get_xmlNode(identities_node);
+
     /* get the identities */
     debug(DEBUG, "LassoIdentities node found\n");
     identity_xmlNode = identities_xmlNode->children;
@@ -264,21 +265,41 @@ lasso_user_new_from_dump(gchar *dump)
       if(identity_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(identity_xmlNode->name, LASSO_USER_IDENTITY_NODE)){
 	/* a new identity */
 	debug(DEBUG, "LassoIdentity found\n");
-	identity = lasso_identity_new(xmlGetProp(identity_xmlNode, LASSO_USER_REMOTE_PROVIDERID_NODE));
+
+	remote_providerID = xmlGetProp(identity_xmlNode, LASSO_USER_REMOTE_PROVIDERID_NODE);
+	if(!remote_providerID){
+	  debug(ERROR, "LassoRemoteProviderID attribute not found\n");
+	  return(NULL);
+	}
+	identity = lasso_identity_new(remote_providerID);
 	nameIdentifier_xmlNode = identity_xmlNode->children;
 	while(nameIdentifier_xmlNode){
 	  if(nameIdentifier_xmlNode->type==XML_ELEMENT_NODE){
 	    if(xmlStrEqual(nameIdentifier_xmlNode->name, LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE)){
 	      /* a new local name identifier */
 	      debug(DEBUG, "LassoLocalNameIdentifier found\n");
-	      local_nameIdentifier = lasso_node_new_from_xmlNode(nameIdentifier_xmlNode);
+	      localNameIdentifier_xmlNode = nameIdentifier_xmlNode->children;
+	      while(localNameIdentifier_xmlNode){
+		if(localNameIdentifier_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(localNameIdentifier_xmlNode->name,
+										      "NameIdentifier"))
+		  break;
+		localNameIdentifier_xmlNode = localNameIdentifier_xmlNode->next;
+	      }
+	      local_nameIdentifier = lasso_node_new_from_xmlNode(localNameIdentifier_xmlNode);
 	      lasso_identity_set_local_nameIdentifier(identity, local_nameIdentifier);
 	    }
 	    else if(xmlStrEqual(nameIdentifier_xmlNode->name, LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE)){
 	      /* a new remote name identifier */
 	      debug(DEBUG, "LassoRemoteNameIdentifier found\n");
-	      remote_nameIdentifier = lasso_node_new_from_xmlNode(nameIdentifier_xmlNode);
-	      lasso_identity_set_local_nameIdentifier(identity, remote_nameIdentifier);
+	      remoteNameIdentifier_xmlNode = nameIdentifier_xmlNode->children;
+	      while(remoteNameIdentifier_xmlNode){
+		if(remoteNameIdentifier_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(remoteNameIdentifier_xmlNode->name,
+										       "NameIdentifier"))
+		  break;
+		remoteNameIdentifier_xmlNode = remoteNameIdentifier_xmlNode->next;
+	      }
+	      local_nameIdentifier = lasso_node_new_from_xmlNode(remoteNameIdentifier_xmlNode);
+	      lasso_identity_set_local_nameIdentifier(identity, local_nameIdentifier);
 
 	    } /* end if */
 
@@ -286,6 +307,8 @@ lasso_user_new_from_dump(gchar *dump)
 
 	  nameIdentifier_xmlNode = nameIdentifier_xmlNode->next;
 	} /* end while */
+
+	lasso_user_add_identity(user, remote_providerID, identity);
 
       }
 
