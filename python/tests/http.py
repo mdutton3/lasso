@@ -287,15 +287,12 @@ class HttpResponse(abstractweb.HttpResponseMixin, object):
 
 class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
     canUseCookie = False
-#    command = None # Strange
     cookie = None
     httpAuthenticationLogoutTrick = False
     HttpResponse = HttpResponse # Class
     socketCreationTime = None
     protocol_version = 'HTTP/1.1'
     realm = 'HttpRequestHandlerMixin Web Site'
-#    requestline = None # Strange
-#    request_version = None # Strange
     server_version = 'HttpRequestHandlerMixin/1.0'
     site = None # Class variable
     testCookieSupport = False
