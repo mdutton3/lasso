@@ -33,9 +33,11 @@ LassoServer
 lasso_server_new
 lasso_server_new_from_dump
 lasso_server_add_provider
+lasso_server_add_service
 lasso_server_destroy
 lasso_server_dump
 lasso_server_get_provider
+lasso_server_get_service
 <SUBSECTION Standard>
 LASSO_SERVER
 LASSO_IS_SERVER
@@ -155,6 +157,8 @@ lasso_login_process_authn_response_msg
 lasso_login_process_request_msg
 lasso_login_process_response_msg
 lasso_login_validate_request_msg
+lasso_login_set_encryptedResourceId
+lasso_login_set_resourceId
 <SUBSECTION Standard>
 LASSO_LOGIN
 LASSO_IS_LOGIN

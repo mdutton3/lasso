@@ -103,21 +103,23 @@ LassoRequestType
 lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 {
 	xmlDoc *doc;
-	xmlNode *xmlnode;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	LassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
 	const char *name = NULL;
+	xmlNs *ns = NULL;
 
 	doc = xmlParseMemory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
 
-	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		name = xpathObj->nodesetval->nodeTab[0]->name;
+		ns = xpathObj->nodesetval->nodeTab[0]->ns;
+	}
 
-	if (name == NULL) {
+	if (name == NULL || ns == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Invalid SOAP request");
 	} else if (strcmp(name, "Request") == 0) {
 		type = LASSO_REQUEST_TYPE_LOGIN;
@@ -131,31 +133,20 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
+	} else if (strcmp(name, "Query") == 0) {
+		if (strcmp(ns->href, LASSO_DISCO_HREF) == 0) {
+			type = LASSO_REQUEST_TYPE_DISCO_QUERY;
+		} else {
+			type = LASSO_REQUEST_TYPE_DST_QUERY;
+		}
+	} else if (strcmp(name, "Modify") == 0) {
+		if (strcmp(ns->href, LASSO_DISCO_HREF) == 0) {
+			type =LASSO_REQUEST_TYPE_DISCO_MODIFY;
+		} else {
+			type =LASSO_REQUEST_TYPE_DST_MODIFY;	
+		}
 	} else {
-		/* try to get type of wsf request */
-		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		if (xmlnode->ns == NULL) {
-			return LASSO_REQUEST_TYPE_INVALID;
-		}
-		if ( strcmp(name, "Query") == 0 ) {
-			if ( strcmp(xmlnode->ns->href, LASSO_DISCO_HREF) == 0 ) {
-				type = 	LASSO_REQUEST_TYPE_DISCO_QUERY;
-			}
-			else  {
-				type = 	LASSO_REQUEST_TYPE_DST_QUERY;
-			}
-		}
-		else if ( strcmp(name, "Modify") == 0 ) {
-			if ( strcmp(xmlnode->ns->href, LASSO_DISCO_HREF) == 0 ) {
-				type = 	LASSO_REQUEST_TYPE_DISCO_MODIFY;
-			}
-			else {
-				type = 	LASSO_REQUEST_TYPE_DST_MODIFY;	
-			}
-		}
-		else {
-			message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
-		}
+		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
 	}
 
 	xmlFreeDoc(doc);

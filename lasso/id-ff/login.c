@@ -49,9 +49,53 @@ struct _LassoLoginPrivate
 	LassoDiscoEncryptedResourceID *encryptedResourceId;
 };
 
+
+static void
+lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion);
+
 /*****************************************************************************/
 /* static methods/functions */
 /*****************************************************************************/
+
+
+/**
+ * lasso_login_assertion_add_discovery:
+ * @login: a #LassoLogin
+ * @assertion:
+ *
+ * Adds AttributeStatement and ResourceOffering attributes to assertion if
+ * there is a discovery service.
+ **/
+static void
+lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
+{
+	LassoProfile *profile = LASSO_PROFILE(login);
+	LassoDiscoResourceOffering *resourceOffering;
+	LassoDiscoServiceInstance *serviceInstance;
+	LassoSamlAttributeStatement *attributeStatement;
+	LassoSamlAttribute *attribute;
+	LassoSamlAttributeValue *attributeValue;
+
+	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
+	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance)) {
+		resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
+		resourceOffering->ResourceID = g_object_ref(login->private_data->resourceId);
+
+		attributeValue = lasso_saml_attribute_value_new();
+		attributeValue->any = g_list_append(attributeValue->any, resourceOffering);
+
+		attribute = lasso_saml_attribute_new();
+		attribute->AttributeValue = g_list_append(attribute->AttributeValue,
+				attributeValue);
+
+		attributeStatement = lasso_saml_attribute_statement_new();
+		attributeStatement->Attribute = g_list_append(
+				attributeStatement->Attribute, attribute);
+
+		assertion->AttributeStatement = attributeStatement;
+	}
+}
+
 
 /**
  * lasso_login_build_assertion:
@@ -137,37 +181,7 @@ lasso_login_build_assertion(LassoLogin *login,
 			LASSO_SAML_ASSERTION(assertion));
 	}
 
-	/* Bootstrapping : if server has a discovery service and if login->resourceId is set,
-	 then add a AttributeStatement / ResourceOffering */
-	{
-		LassoDiscoResourceOffering *resourceOffering;
-		LassoDiscoServiceInstance *serviceInstance;
-
-		LassoSamlAttributeStatement *attributeStatement;
-		LassoSamlAttribute *attribute;
-		LassoSamlAttributeValue *attributeValue;
-
-		serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
-		if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) == TRUE) {
-
-			resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
-			resourceOffering->ResourceID = g_object_ref(
-					login->private_data->resourceId);
-		
-			attributeValue = lasso_saml_attribute_value_new();
-			attributeValue->any = g_list_append(attributeValue->any, resourceOffering);
-			
-			attribute = lasso_saml_attribute_new();
-			attribute->AttributeValue = g_list_append(attribute->AttributeValue,
-								  attributeValue);
-
-			attributeStatement = lasso_saml_attribute_statement_new();
-			attributeStatement->Attribute = g_list_append(
-					attributeStatement->Attribute, attribute);
-			
-			assertion->AttributeStatement = attributeStatement;
-		}
-	}
+	lasso_login_assertion_add_discovery(login, assertion);
 
 	/* store assertion in session object */
 	if (profile->session == NULL) {
@@ -1313,6 +1327,16 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	return lasso_login_process_response_status_and_assertion(login);
 }
 
+
+/**
+ * lasso_login_set_encryptedResourceId:
+ * @login: a #LassoLogin
+ * @encryptedResourceId:
+ *
+ * ...
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_login_set_encryptedResourceId(LassoLogin *login,
 				    LassoDiscoEncryptedResourceID *encryptedResourceId)
@@ -1321,12 +1345,21 @@ lasso_login_set_encryptedResourceId(LassoLogin *login,
 	g_return_val_if_fail(LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceId),
 			     LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	g_object_ref(encryptedResourceId);
-	login->private_data->encryptedResourceId = encryptedResourceId;
+	login->private_data->encryptedResourceId = g_object_ref(encryptedResourceId);
 
 	return 0;
 }
 
+
+/**
+ * lasso_login_set_resourceId:
+ * @login: a #LassoLogin
+ * @content:
+ *
+ * ...
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_login_set_resourceId(LassoLogin *login, const char *content)
 {
@@ -1337,6 +1370,7 @@ lasso_login_set_resourceId(LassoLogin *login, const char *content)
 
 	return 0;
 }
+
 
 /*****************************************************************************/
 /* private methods                                                           */

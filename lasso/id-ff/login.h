@@ -120,7 +120,7 @@ LASSO_EXPORT gint lasso_login_process_response_msg(LassoLogin *login, gchar *res
 LASSO_EXPORT int lasso_login_set_encryptedResourceId(
 		LassoLogin *login, LassoDiscoEncryptedResourceID *encryptedResourceId);
 
-LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *resourceId);
+LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *content);
 
 LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);

@@ -68,20 +68,29 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 	return 0;
 }
 
+
+/**
+ * lasso_server_add_service:
+ * @server: a #LassoServer
+ * @service:
+ * 
+ * ...
+ * 
+ * Return value: 0 on success; a negative value if an error occured.
+ **/
 gint
 lasso_server_add_service(LassoServer *server, LassoDiscoServiceInstance *service)
 {
 	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_SERVICE_INSTANCE(service),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	/* append new service */
-	g_hash_table_insert(server->services,
-			    g_strdup(service->ServiceType),
-			    g_object_ref(service));
+	g_hash_table_insert(server->services, g_strdup(service->ServiceType),
+			g_object_ref(service));
 
-	return 0;  	
+	return 0;
 }
+
 
 /**
  * lasso_server_destroy:
@@ -118,7 +127,7 @@ add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 static void
 add_service_childnode(gchar *key, LassoNode *value, xmlNode *xmlnode)
 {
-	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));	
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
 static xmlNode*
@@ -185,7 +194,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 
-		/* Providers part */
 		if (strcmp(t->name, "Providers") == 0) {
 			while (t2) {
 				if (t2->type != XML_ELEMENT_NODE) {
@@ -198,9 +206,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				t2 = t2->next;
 			}
 		}
-
-		/* Services part */
-		else if (strcmp(t->name, "Services") == 0) {
+		
+		if (strcmp(t->name, "Services") == 0) {
 			while (t2) {
 				if (t2->type != XML_ELEMENT_NODE) {
 					t2 = t2->next;
@@ -215,9 +222,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		t = t->next;
 	}
+
 	return 0;
 }
-
 
 
 static gboolean
@@ -245,6 +252,7 @@ lasso_server_get_first_providerID(LassoServer *server)
 	return g_strdup(providerID);
 }
 
+
 /**
  * lasso_server_get_provider:
  * @server: a #LassoServer
@@ -261,11 +269,24 @@ lasso_server_get_provider(LassoServer *server, gchar *providerID)
 	return g_hash_table_lookup(server->providers, providerID);
 }
 
+
+/**
+ * lasso_server_get_service:
+ * @server: a #LassoServer
+ * @serviceType:
+ *
+ * ...
+ *
+ * Return value: the #LassoDiscoServiceInstance, NULL if it was not found.
+ *     The #LassoDiscoServiceInstance is owned by Lasso and should not be
+ *     freed.
+ **/
 LassoDiscoServiceInstance*
 lasso_server_get_service(LassoServer *server, gchar *serviceType)
 {
 	return g_hash_table_lookup(server->services, serviceType);
 }
+
 
 static gboolean
 get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
