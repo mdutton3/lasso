@@ -141,6 +141,7 @@ AC_CHECK_PROGS(JAVAH, gcjh javah)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(PHP, php)
+AC_PATH_PROGS(PHP_PATH, php)
 AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
 AC_CHECK_PROGS(SWIG, swig)
 
@@ -523,6 +524,7 @@ python/protocols/elements/Makefile
 python/tests/Makefile
 python/xml/Makefile
 php/Makefile
+php/run-tests.php
 php/environs/Makefile
 php/xml/Makefile
 php/tests/Makefile
