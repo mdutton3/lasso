@@ -109,19 +109,21 @@ GType lasso_ds_signature_get_type() {
  * 
  * Return value: the new @LassoDsDignature
  **/
-LassoNode* lasso_ds_signature_new(xmlDocPtr         doc,
-				  xmlSecTransformId signMethodId)
+LassoNode* lasso_ds_signature_new(LassoNode        *node,
+				  xmlSecTransformId sign_method)
 {
-  LassoNode *node;
+  LassoNode *sign_node;
+  xmlDocPtr  doc = xmlNewDoc("1.0");
   xmlNodePtr signature;
   xmlNodePtr reference;
   xmlNodePtr key_info;
 
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_DS_SIGNATURE, NULL));
+  xmlAddChild((xmlNodePtr)doc, LASSO_NODE_GET_CLASS(node)->get_xmlNode(node));
 
-  //signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
+  sign_node = LASSO_NODE(g_object_new(LASSO_TYPE_DS_SIGNATURE, NULL));
+
   signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-					signMethodId, NULL);
+					sign_method, NULL);
   if (signature == NULL) {
     printf("Error: failed to create signature template\n");
   }
@@ -132,7 +134,7 @@ LassoNode* lasso_ds_signature_new(xmlDocPtr         doc,
     printf("Error: failed to add reference to signature template\n");
   }
 
-  // add enveloped transform
+  /* add enveloped transform */
   if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
     printf("Error: failed to add enveloped transform to reference\n");
   }
@@ -147,7 +149,7 @@ LassoNode* lasso_ds_signature_new(xmlDocPtr         doc,
     printf("Error: failed to add X509Data node\n");
   }
 
-  LASSO_NODE_GET_CLASS(node)->set_xmlNode(node, signature);
+  LASSO_NODE_GET_CLASS(sign_node)->set_xmlNode(sign_node, signature);
 
-  return (node);
+  return (sign_node);
 }

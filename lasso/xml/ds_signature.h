@@ -51,12 +51,12 @@ struct _LassoDsSignatureClass {
 };
 
 LASSO_EXPORT GType lasso_ds_signature_get_type(void);
-LASSO_EXPORT LassoNode* lasso_ds_signature_new(xmlDocPtr doc,
-					       xmlSecTransformId signMethodId);
+LASSO_EXPORT LassoNode* lasso_ds_signature_new(LassoNode        *node,
+					       xmlSecTransformId sign_method);
 
 LASSO_EXPORT void lasso_ds_signature_sign (LassoDsSignature *node,
-					   const xmlChar* key_file,
-					   const xmlChar* cert_file);
+					   const xmlChar    *private_key_file,
+					   const xmlChar    *certificate_file);
 
 #ifdef __cplusplus
 }
