@@ -51,7 +51,7 @@ lasso_strerror(int error_code)
   case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
     return "Failed to load certificate %s.\n";
   case LASSO_DS_ERROR_SIGNATURE_FAILED:
-    return "Failed to sign the node.\n";
+    return "Failed to sign the node %s.\n";
   case LASSO_DS_ERROR_SIGNATURE_NOTFOUND:
     return "Signature element not found in %s.\n";
   case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
@@ -74,7 +74,7 @@ lasso_strerror(int error_code)
     return "The error return location should be either NULL or contains a NULL error.\n";
 
   default:
-    sprintf(msg, "Undefined error code %d !!!", error_code);
+    sprintf(msg, "Undefined error code %d.", error_code);
     return(strdup(msg));
   }
 }
