@@ -33,6 +33,18 @@ liblasso_xml_la_SOURCES = \
 	dst_query.c \
 	dst_query_item.c \
 	dst_query_response.c \
+	is_help.c \
+	is_inquiry.c \
+	is_inquiry_element.c \
+	is_interaction_request.c \
+	is_interaction_response.c \
+	is_interaction_statement.c \
+	is_item.c \
+	is_parameter.c \
+	is_redirect_request.c \
+	is_select.c \
+	is_text.c \
+	is_user_interaction.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -105,6 +117,18 @@ liblassoinclude_HEADERS = \
 	dst_query.h \
 	dst_query_item.h \
 	dst_query_response.h \
+	is_help.h \
+	is_inquiry.h \
+	is_inquiry_element.h \
+	is_interaction_request.h \
+	is_interaction_response.h \
+	is_interaction_statement.h \
+	is_item.h \
+	is_parameter.h \
+	is_redirect_request.h \
+	is_select.h \
+	is_text.h \
+	is_user_interaction.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
