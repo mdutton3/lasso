@@ -37,6 +37,12 @@ static GObjectClass *parent_class = NULL;
 /* public methods                                                            */
 /*****************************************************************************/
 
+void
+lasso_provider_destroy(LassoProvider *provider)
+{
+  g_object_unref(G_OBJECT(provider));
+}
+
 gchar *
 lasso_provider_dump(LassoProvider *provider)
 {

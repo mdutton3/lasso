@@ -79,6 +79,8 @@ LASSO_EXPORT LassoProvider *lasso_provider_new_from_metadata_node               
 
 LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename                                (gchar *metadata_filename);
 
+LASSO_EXPORT void           lasso_provider_destroy                                              (LassoProvider *provider);
+
 LASSO_EXPORT gchar         *lasso_provider_dump                                                 (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_get_assertionConsumerServiceURL                      (LassoProvider *provider);
