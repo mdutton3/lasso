@@ -39,6 +39,7 @@ sys.path.insert(0, '../.libs')
 
 testSuites = (
     'login_tests',
+    'errorchecking_tests',
     )
 
 if "--xml" in sys.argv:
