@@ -77,6 +77,8 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg);
 PHP_FUNCTION(lasso_login_init_request);
 PHP_FUNCTION(lasso_login_build_request_msg);
 PHP_FUNCTION(lasso_login_process_response_msg);
+PHP_FUNCTION(lasso_login_accept_sso);
+PHP_FUNCTION(lasso_login_set_identity_from_dump);
 
 /* lasso_identity.c */
 PHP_FUNCTION(lasso_identity_new);	
@@ -86,7 +88,10 @@ PHP_FUNCTION(lasso_identity_destroy);
 /* lasso_federation.c */
 PHP_FUNCTION(lasso_federation_new);	
 
-/* lasso_profile.c */
+/* lasso_session.c */
+PHP_FUNCTION(lasso_session_dump);	
+
+/* lasso_profile_.c */
 PHP_FUNCTION(lasso_profile_new);	
 PHP_FUNCTION(lasso_profile_dump);	
 PHP_FUNCTION(lasso_profile_set_remote_providerid);	
@@ -102,7 +107,7 @@ PHP_FUNCTION(lasso_profile_get_identity);
 PHP_FUNCTION(lasso_profile_is_identity_dirty);	
 PHP_FUNCTION(lasso_profile_get_session);	
 PHP_FUNCTION(lasso_profile_is_session_dirty);	
-
+PHP_FUNCTION(lasso_profile_get_nameidentifier);	
 
 /* lasso_lib_authn_request.c */
 PHP_FUNCTION(lasso_cast_to_lib_authn_request);
