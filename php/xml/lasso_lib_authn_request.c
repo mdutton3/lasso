@@ -124,7 +124,7 @@ PHP_FUNCTION(lasso_lib_authn_request_set_forceauthn)
 {
   LassoLibAuthnRequest   	*lib_authn_request;  
   zval *param;
-  unsigned int forceauthn;
+  zend_bool forceauthn = 1;
   int num_args;
 
   zend_printf("DEBUG: lasso_lib_authn_request_set_forceauthn\n");
@@ -141,9 +141,9 @@ PHP_FUNCTION(lasso_lib_authn_request_set_forceauthn)
 
   zend_printf("DEBUG: lassolibauthnrequest at 0x%p\n", lib_authn_request);  
 
-  zend_printf("DEBUG: forceAuthn %d\n", forceauthn - 137311488);
+  zend_printf("DEBUG: forceAuthn %d\n", forceauthn);
 	
-  lasso_lib_authn_request_set_forceAuthn(lib_authn_request, forceauthn - 137311488);
+  lasso_lib_authn_request_set_forceAuthn(lib_authn_request, forceauthn);
 }
 /* }}} */
 
