@@ -288,6 +288,79 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 /*****************************************************************************/
 
 gint
+lasso_login_accept_sso(LassoLogin *login)
+{
+  LassoNode *assertion = NULL;
+  LassoNode *nameIdentifier = NULL;
+  LassoNode *idpProvidedNameIdentifier = NULL;
+  LassoNode *copy_idpProvidedNameIdentifier = NULL;
+  LassoFederation *federation = NULL;
+  gint ret = 0;
+
+  if(LASSO_PROFILE(login)->identity == NULL) {
+    LASSO_PROFILE(login)->identity = lasso_identity_new();    
+  }
+  if(LASSO_PROFILE(login)->session == NULL) {
+    LASSO_PROFILE(login)->session = lasso_session_new();
+  }
+
+  if (LASSO_PROFILE(login)->response != NULL) {
+    assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
+				     "Assertion", lassoLibHRef);
+    if (assertion == NULL) {
+      message(G_LOG_LEVEL_ERROR, "Assertion element not found in response.\n");
+      ret = -2;
+      goto done;
+    }
+
+    /* put response assertion in identity object */
+    lasso_session_add_assertion(LASSO_PROFILE(login)->session,
+				LASSO_PROFILE(login)->remote_providerID,
+				assertion);
+
+    /* put the 2 NameIdentifiers in identity object */
+    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
+    if (nameIdentifier == NULL) {
+      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in assertion.\n");
+      ret = -3;
+      goto done;
+    }
+
+    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", lassoLibHRef);
+    if (idpProvidedNameIdentifier == NULL) {
+      message(G_LOG_LEVEL_ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
+      ret = -4;
+      goto done;
+    }
+    copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier);
+    lasso_node_destroy(idpProvidedNameIdentifier);
+    /* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier */
+    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier");
+    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier,
+								 lassoSamlAssertionHRef,
+								 lassoSamlAssertionPrefix);
+
+    /* create federation */
+    federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
+    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
+    lasso_federation_set_remote_nameIdentifier(federation, copy_idpProvidedNameIdentifier);
+    lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
+				  LASSO_PROFILE(login)->remote_providerID,
+				  federation);
+  }
+  else {
+    message(G_LOG_LEVEL_ERROR, "response attribute is empty.\n");
+  }
+  
+ done:
+  lasso_node_destroy(nameIdentifier);
+  lasso_node_destroy(copy_idpProvidedNameIdentifier);
+  lasso_node_destroy(assertion);
+
+  return (ret);
+}
+
+gint
 lasso_login_build_artifact_msg(LassoLogin       *login,
 			       gint              authentication_result,
 			       const gchar      *authenticationMethod,
@@ -523,79 +596,6 @@ lasso_login_build_request_msg(LassoLogin *login)
   LASSO_PROFILE(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider);
 
   return (0);
-}
-
-gint
-lasso_login_accept_sso(LassoLogin *login)
-{
-  LassoNode *assertion = NULL;
-  LassoNode *nameIdentifier = NULL;
-  LassoNode *idpProvidedNameIdentifier = NULL;
-  LassoNode *copy_idpProvidedNameIdentifier = NULL;
-  LassoFederation *federation = NULL;
-  gint ret = 0;
-
-  if(LASSO_PROFILE(login)->identity == NULL) {
-    LASSO_PROFILE(login)->identity = lasso_identity_new();    
-  }
-  if(LASSO_PROFILE(login)->session == NULL) {
-    LASSO_PROFILE(login)->session = lasso_session_new();
-  }
-
-  if (LASSO_PROFILE(login)->response != NULL) {
-    assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
-				     "Assertion", lassoLibHRef);
-    if (assertion == NULL) {
-      message(G_LOG_LEVEL_ERROR, "Assertion element not found in response.\n");
-      ret = -2;
-      goto done;
-    }
-
-    /* put response assertion in identity object */
-    lasso_session_add_assertion(LASSO_PROFILE(login)->session,
-				LASSO_PROFILE(login)->remote_providerID,
-				assertion);
-
-    /* put the 2 NameIdentifiers in identity object */
-    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
-    if (nameIdentifier == NULL) {
-      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in assertion.\n");
-      ret = -3;
-      goto done;
-    }
-
-    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", lassoLibHRef);
-    if (idpProvidedNameIdentifier == NULL) {
-      message(G_LOG_LEVEL_ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
-      ret = -4;
-      goto done;
-    }
-    copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier);
-    lasso_node_destroy(idpProvidedNameIdentifier);
-    /* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier */
-    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier");
-    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier,
-								 lassoSamlAssertionHRef,
-								 lassoSamlAssertionPrefix);
-
-    /* create federation */
-    federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-    lasso_federation_set_remote_nameIdentifier(federation, copy_idpProvidedNameIdentifier);
-    lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
-				  LASSO_PROFILE(login)->remote_providerID,
-				  federation);
-  }
-  else {
-    message(G_LOG_LEVEL_ERROR, "response attribute is empty.\n");
-  }
-  
- done:
-  lasso_node_destroy(nameIdentifier);
-  lasso_node_destroy(copy_idpProvidedNameIdentifier);
-  lasso_node_destroy(assertion);
-
-  return (ret);
 }
 
 void
