@@ -100,7 +100,7 @@ Section "LIBINTL: Library for native language support." SEC08
 SectionEnd
 
 Section "Lasso version @VERSION@" SEC09
-  File  "..\..\lasso\.libs\liblasso-3.dll"
+  File  "..\..\lasso\.libs\@DLL_FILENAME@"
 SectionEnd
 
 Section -AdditionalIcons
@@ -147,7 +147,7 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\liblasso-3.dll"
+  Delete "$INSTDIR\@DLL_FILENAME@"
   Delete "$INSTDIR\iconv.dll"
   Delete "$INSTDIR\zlib.dll"
   Delete "$INSTDIR\zlib1.dll"

@@ -61,7 +61,7 @@ FunctionEnd
 Section "Lasso version @VERSION@" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\..\lasso\.libs\liblasso-3.dll"
+  File "..\..\lasso\.libs\@DLL_FILENAME@"
 SectionEnd
 
 Section -AdditionalIcons
@@ -100,7 +100,7 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\liblasso-3.dll"
+  Delete "$INSTDIR\@DLL_FILENAME@"
 
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Uninstall.lnk"
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Website.lnk"
