@@ -169,6 +169,64 @@ class LogoutRequest:
             ret = Node(_obj=ret)
         return ret
 
+class Request:
+    def __init__(self, assertionArtifact, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        self._o = lassomod.request_create(assertionArtifact)
+        if self._o is None: raise Error('lasso_request_create() failed')
+    def __isprivate(self, name):
+        return name == '_o'
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.request_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "node":
+            ret = Node(_obj=ret)
+        return ret
+
+class Response:
+    def __init__(self, serialized_request,
+                 verify_signature,
+                 public_key_file, private_key_file, certificate_file,
+                 _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        self._o = lassomod.response_create(serialized_request,
+                                           verify_signature,
+                                           public_key_file, private_key_file, certificate_file)
+        if self._o is None: raise Error('lasso_response_create() failed')
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.response_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "node":
+            ret = Node(_obj=ret)
+        elif name == "request_node":
+            ret = Node(_obj=ret)
+        return ret
+
+    def init(self, authentication_result):
+        return lassomod.response_init(self, authentication_result)
+
 class Node:
     def __init__(self, _obj=None):
         """
