@@ -213,6 +213,15 @@ lasso_node_export_to_soap(LassoNode *node)
 }
 
 
+/**
+ * lasso_node_init_from_query:
+ * @node: a #LassoNode (or derived class)
+ * @query: the query string
+ *
+ * Initialiazes @node fields with data from @query string.
+ *
+ * Return value: %TRUE if success
+ **/
 gboolean
 lasso_node_init_from_query(LassoNode *node, const char *query)
 {
@@ -233,6 +242,16 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 	return rc;
 }
 
+
+/**
+ * lasso_node_init_from_xml:
+ * @node: a #LassoNode (or derived class)
+ * @xmlnode: the libxml2 node
+ *
+ * Initialiazes @node fields with data from @xmlnode XML node.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
@@ -614,6 +633,15 @@ lasso_node_new_from_dump(const char *dump)
 	return node;
 }
 
+
+/**
+ * lasso_node_new_from_soap:
+ * @soap: the SOAP message
+ *
+ * Parses SOAP message and creates a new Lasso object with the right class.
+ *
+ * Return value: node if success; NULL otherwise
+ **/
 LassoNode*
 lasso_node_new_from_soap(const char *soap)
 {
@@ -734,6 +762,19 @@ is_base64(const char *message)
 	return FALSE;
 }
 
+
+/**
+ * lasso_node_init_from_message:
+ * @node: a #LassoNode (or derived class)
+ * @message: a Liberty message
+ *
+ * Parses @message and initialiazes @node fields with data from it.  Message
+ * type may be base64, SOAP, XML or query string, correct type is found
+ * automatically.
+ *
+ * Return value: message format
+ **/
+int
 LassoMessageFormat
 lasso_node_init_from_message(LassoNode *node, const char *message)
 {
