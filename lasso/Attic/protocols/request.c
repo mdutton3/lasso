@@ -105,8 +105,8 @@ lasso_request_new(const xmlChar *assertionArtifact)
 }
 
 LassoNode*
-lasso_request_new_from_export(gchar                *buffer,
-			      lassoNodeExportTypes  export_type)
+lasso_request_new_from_export(gchar               *buffer,
+			      lassoNodeExportType  export_type)
 {
   LassoNode *request=NULL, *soap_node, *request_node;
   xmlChar *export;

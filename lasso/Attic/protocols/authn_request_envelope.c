@@ -106,7 +106,7 @@ lasso_authn_request_envelope_new(LassoAuthnRequest *authnRequest,
 
 LassoNode*
 lasso_authn_request_envelope_new_from_export(gchar               *buffer,
-					     lassoNodeExportTypes export_type)
+					     lassoNodeExportType  export_type)
 {
   LassoNode *request;
   xmlChar   *buffer_decoded;

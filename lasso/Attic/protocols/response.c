@@ -110,8 +110,8 @@ lasso_response_new()
 }
 
 LassoNode*
-lasso_response_new_from_export(xmlChar              *buffer,
-			       lassoNodeExportTypes  export_type)
+lasso_response_new_from_export(xmlChar             *buffer,
+			       lassoNodeExportType  export_type)
 {
   LassoNode *response = NULL, *soap_node, *response_node;
   xmlChar *export;

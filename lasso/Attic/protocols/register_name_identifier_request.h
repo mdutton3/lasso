@@ -54,19 +54,19 @@ struct _LassoRegisterNameIdentifierRequestClass {
 
 LASSO_EXPORT GType      lasso_register_name_identifier_request_get_type              (void);
 
-LASSO_EXPORT LassoNode* lasso_register_name_identifier_request_new                   (const xmlChar     *providerID,
-										      const xmlChar     *idpProvidedNameIdentifier,
-										      const xmlChar     *idpNameQualifier,
-										      const xmlChar     *idpFormat,
-										      const xmlChar     *spProvidedNameIdentifier,
-										      const xmlChar     *spNameQualifier,
-										      const xmlChar     *spFormat,
-										      const xmlChar     *oldProvidedNameIdentifier,
-										      const xmlChar     *oldNameQualifier,
-										      const xmlChar     *oldFormat);
+LASSO_EXPORT LassoNode* lasso_register_name_identifier_request_new                   (const xmlChar *providerID,
+										      const xmlChar *idpProvidedNameIdentifier,
+										      const xmlChar *idpNameQualifier,
+										      const xmlChar *idpFormat,
+										      const xmlChar *spProvidedNameIdentifier,
+										      const xmlChar *spNameQualifier,
+										      const xmlChar *spFormat,
+										      const xmlChar *oldProvidedNameIdentifier,
+										      const xmlChar *oldNameQualifier,
+										      const xmlChar *oldFormat);
 
 LASSO_EXPORT LassoNode* lasso_register_name_identifier_request_new_from_export       (gchar               *buffer,
-										      lassoNodeExportTypes export_type);
+										      lassoNodeExportType  export_type);
 
 LASSO_EXPORT void lasso_register_name_identifier_request_rename_attributes_for_query (LassoRegisterNameIdentifierRequest *request);
 

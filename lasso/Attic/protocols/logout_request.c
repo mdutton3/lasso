@@ -200,8 +200,8 @@ lasso_logout_request_new_from_soap(gchar *buffer)
 
 
 LassoNode*
-lasso_logout_request_new_from_export(gchar                *buffer,
-				     lassoNodeExportTypes  export_type)
+lasso_logout_request_new_from_export(gchar               *buffer,
+				     lassoNodeExportType  export_type)
 {
   LassoNode *request = NULL;
 

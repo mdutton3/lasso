@@ -129,8 +129,8 @@ lasso_authn_response_envelope_new_from_soap(gchar *buffer)
 }
 
 LassoNode*
-lasso_authn_response_envelope_new_from_export(gchar               *buffer,
-					     lassoNodeExportTypes export_type)
+lasso_authn_response_envelope_new_from_export(gchar              *buffer,
+					     lassoNodeExportType  export_type)
 {
   LassoNode *response = NULL;
   xmlChar   *buffer_decoded;

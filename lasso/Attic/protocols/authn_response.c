@@ -165,8 +165,8 @@ lasso_authn_response_new(char *providerID,
 }
 
 LassoNode*
-lasso_authn_response_new_from_export(xmlChar              *buffer,
-				     lassoNodeExportTypes  export_type)
+lasso_authn_response_new_from_export(xmlChar             *buffer,
+				     lassoNodeExportType  export_type)
 {
   xmlChar *buffer_decoded;
   LassoNode *response = NULL;

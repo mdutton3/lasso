@@ -184,7 +184,7 @@ lasso_federation_termination_notification_new_from_soap(const xmlChar *buffer)
 
 LassoNode*
 lasso_federation_termination_notification_new_from_export(const xmlChar       *buffer,
-							  lassoNodeExportTypes export_type)
+							  lassoNodeExportType  export_type)
 {
   LassoNode *notification;
 

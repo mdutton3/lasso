@@ -59,8 +59,8 @@ LASSO_EXPORT GType      lasso_authn_request_get_type                (void);
 
 LASSO_EXPORT LassoNode* lasso_authn_request_new                     (const xmlChar *providerID);
 
-LASSO_EXPORT LassoNode* lasso_authn_request_new_from_export         (gchar                *buffer,
-								     lassoNodeExportTypes  export_type);
+LASSO_EXPORT LassoNode* lasso_authn_request_new_from_export         (gchar               *buffer,
+								     lassoNodeExportType  export_type);
 
 LASSO_EXPORT void       lasso_authn_request_set_requestAuthnContext (LassoAuthnRequest *request,
 								     GPtrArray         *authnContextClassRefs,

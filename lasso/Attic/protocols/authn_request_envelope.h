@@ -54,16 +54,16 @@ struct _LassoAuthnRequestEnvelopeClass {
   LassoLibAuthnRequestEnvelopeClass parent;
 };
 
-LASSO_EXPORT GType      lasso_authn_request_envelope_get_type                        (void);
+LASSO_EXPORT GType      lasso_authn_request_envelope_get_type         (void);
 
-LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new                             (LassoAuthnRequest *authnRequest,
-										      xmlChar           *providerID,
-										      xmlChar           *assertionConsumerServiceURL);
+LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new              (LassoAuthnRequest *authnRequest,
+								       xmlChar           *providerID,
+								       xmlChar           *assertionConsumerServiceURL);
 
-LASSO_EXPORT LassoNode* lasso_authn_request_envelope_get_authnRequest                (LassoAuthnRequestEnvelope *request);
+LASSO_EXPORT LassoNode* lasso_authn_request_envelope_get_authnRequest (LassoAuthnRequestEnvelope *request);
 
-LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new_from_export                 (gchar                *buffer,
-										      lassoNodeExportTypes  export_type);
+LASSO_EXPORT LassoNode* lasso_authn_request_envelope_new_from_export  (gchar               *buffer,
+								       lassoNodeExportType  export_type);
 
 #ifdef __cplusplus
 }

@@ -59,8 +59,8 @@ LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new           
 										     const xmlChar *nameQualifier,
 										     const xmlChar *format);
 
-LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new_from_export   (const xmlChar *export,
-										     lassoNodeExportTypes export_type);
+LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new_from_export   (const xmlChar       *export,
+										     lassoNodeExportType  export_type);
 
 #ifdef __cplusplus
 }

@@ -258,8 +258,8 @@ lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
 }
 
 LassoNode*
-lasso_register_name_identifier_request_new_from_export(gchar                *buffer,
-						       lassoNodeExportTypes  export_type)
+lasso_register_name_identifier_request_new_from_export(gchar               *buffer,
+						       lassoNodeExportType  export_type)
 {
   LassoNode *request;
 

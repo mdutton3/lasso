@@ -60,10 +60,10 @@ LASSO_EXPORT LassoNode*  lasso_register_name_identifier_response_new            
 											  LassoNode *request);
 
 LASSO_EXPORT LassoNode*  lasso_register_name_identifier_response_new_from_export         (gchar               *buffer,
-											  lassoNodeExportTypes export_type);
+											  lassoNodeExportType  export_type);
 
 LASSO_EXPORT LassoNode*  lasso_register_name_identifier_response_new_from_request_export (gchar               *buffer,
-											  lassoNodeExportTypes export_type,
+											  lassoNodeExportType  export_type,
 											  gchar               *providerID,
 											  gchar               *statusCodeValue);
 

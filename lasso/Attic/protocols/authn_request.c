@@ -182,8 +182,8 @@ lasso_authn_request_new(const xmlChar *providerID)
 }
 
 LassoNode*
-lasso_authn_request_new_from_export(gchar                *buffer,
-				    lassoNodeExportTypes  export_type)
+lasso_authn_request_new_from_export(gchar               *buffer,
+				    lassoNodeExportType  export_type)
 {
   LassoNode *request=NULL, *authn_context=NULL, *scoping;
   GData     *gd;

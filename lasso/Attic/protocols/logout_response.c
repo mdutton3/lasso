@@ -217,10 +217,10 @@ lasso_logout_response_new_from_query(gchar *query)
 }
 
 LassoNode *
-lasso_logout_response_new_from_request_export(gchar                *buffer,
-					      lassoNodeExportTypes  export_type,
-					      gchar                *providerID,
-					      gchar                *statusCodeValue)
+lasso_logout_response_new_from_request_export(gchar               *buffer,
+					      lassoNodeExportType  export_type,
+					      gchar               *providerID,
+					      gchar               *statusCodeValue)
 {
   LassoNode *request, *response;
 
@@ -279,8 +279,8 @@ lasso_logout_response_new_from_soap(gchar *buffer)
 }
 
 LassoNode*
-lasso_logout_response_new_from_export(gchar                *buffer,
-				      lassoNodeExportTypes  export_type)
+lasso_logout_response_new_from_export(gchar               *buffer,
+				      lassoNodeExportType  export_type)
 {
   LassoNode *response;
 

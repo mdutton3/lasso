@@ -210,7 +210,7 @@ lasso_register_name_identifier_response_new(gchar     *providerID,
 
 LassoNode*
 lasso_register_name_identifier_response_new_from_request_export(gchar               *buffer,
-								lassoNodeExportTypes export_type,
+								lassoNodeExportType  export_type,
 								gchar               *providerID,
 								gchar               *statusCodeValue)
 {
@@ -234,7 +234,7 @@ lasso_register_name_identifier_response_new_from_request_export(gchar           
 
 LassoNode*
 lasso_register_name_identifier_response_new_from_export(gchar               *buffer,
-							lassoNodeExportTypes export_type)
+							lassoNodeExportType  export_type)
 {
   LassoNode *response;
 

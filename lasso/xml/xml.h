@@ -45,7 +45,7 @@ typedef enum {
   lassoNodeExportTypeBase64,
   lassoNodeExportTypeQuery,
   lassoNodeExportTypeSoap
-} lassoNodeExportTypes;
+} lassoNodeExportType;
 
 typedef struct _xmlAttr LassoAttr;
 

@@ -58,8 +58,8 @@ LASSO_EXPORT GType      lasso_authn_response_get_type                      (void
 LASSO_EXPORT LassoNode* lasso_authn_response_new                           (char      *providerID,
 									    LassoNode *request);
 
-LASSO_EXPORT LassoNode* lasso_authn_response_new_from_export               (xmlChar              *buffer,
-									    lassoNodeExportTypes  type);
+LASSO_EXPORT LassoNode* lasso_authn_response_new_from_export               (xmlChar             *buffer,
+									    lassoNodeExportType  type);
 
 LASSO_EXPORT xmlChar*   lasso_authn_response_get_status                    (LassoAuthnResponse *response);
 
