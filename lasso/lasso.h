@@ -36,9 +36,12 @@ extern "C" {
 
 #include <lasso/export.h>
 
+#include <lasso/environs/federation_termination.h>
 #include <lasso/environs/lecp.h>
 #include <lasso/environs/login.h>
 #include <lasso/environs/logout.h>
+#include <lasso/environs/name_identifier_mapping.h>
+#include <lasso/environs/register_name_identifier.h>
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);
