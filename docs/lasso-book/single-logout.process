@@ -3,8 +3,7 @@ Single Log Out
         /singleLogout (* normative, Single Logout Service URL *)
             logout = lasso_logout_new(server, lassoProviderTypeSp)
 
-            lasso_logout_process_request_msg(logout, /query string/)
-            IF error IS LASSO_PROFILE_ERROR_INVALID_QUERY
+            IF NOT lasso_is_liberty_query(query)
                 # Logout initiated by SP, now
                 lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump)
                 lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump)
@@ -33,44 +32,43 @@ Single Log Out
 
                 DISPLAY HTML PAGE
                     <h1>OK</h1>
+                END
 
-            ELIF NOT error
-                # Logout initiated by IdP
+            # Logout initiated by IdP
+            lasso_logout_process_request_msg(logout, /query string/)
 
-                # use LASSO_PROFILE(logout)->nameIdentifier to get identity and session
-                lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump)
-                lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump)
-                lasso_logout_validate_request(logout)
+            # use LASSO_PROFILE(logout)->nameIdentifier->content to get identity and session
+            lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump)
+            lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump)
+            lasso_logout_validate_request(logout)
 
-                IF lasso_profile_is_identity_dirty(LASSO_PROFILE(login))
-                    identity = lasso_profile_get_identity(LASSO_PROFILE(login))
-                    # save identity;
-                    #   serialization with lasso_identity_dump(identity)
+            IF lasso_profile_is_identity_dirty(LASSO_PROFILE(login))
+                identity = lasso_profile_get_identity(LASSO_PROFILE(login))
+                # save identity;
+                #   serialization with lasso_identity_dump(identity)
 
-                IF lasso_profile_is_session_dirty(LASSO_PROFILE(login))
-                    session = lasso_profile_get_session(LASSO_PROFILE(login))
-                    # save session;
-                    #   serialization with lasso_session_dump(session)
-                
-                lasso_logout_build_response_msg(logout)
+            IF lasso_profile_is_session_dirty(LASSO_PROFILE(login))
+                session = lasso_profile_get_session(LASSO_PROFILE(login))
+                # save session;
+                #   serialization with lasso_session_dump(session)
+            
+            lasso_logout_build_response_msg(logout)
 
-                IF LASSO_PROFILE(logout)->msg_body
-                    ANSWER SOAP REQUEST WITH: LASSO_PROFILE(logout)->msg_body)
-                ELSE
-                    REDIRECT TO LASSO_PROFILE(logout)->msg_url
+            IF LASSO_PROFILE(logout)->msg_body
+                ANSWER SOAP REQUEST WITH: LASSO_PROFILE(logout)->msg_body)
+            ELSE
+                REDIRECT TO LASSO_PROFILE(logout)->msg_url
          
     IdP
         /singleLogout (* normative, Single Log-Out service URL *)
             logout = lasso_logout_new(server, lassoProviderTypeIdp)
-            lasso_logout_process_request_msg(logout, /query string/)
-            IF error AND error IS NOT LASSO_PROFILE_ERROR_INVALID_QUERY
-                BOOM
 
-            IF error LASSO_PROFILE_ERROR_INVALID_QUERY
+            IF lasso_is_liberty_query(query)
+                lasso_logout_process_request_msg(logout, /query string/)
+                # get identity and session from LASSO_PROFILE(logout)->nameIdentifier
+            ELSE
                 # initiate logout
                 # get identity and session from user authentication
-            ELSE
-                # get identity and session from LASSO_PROFILE(logout)->nameIdentifier
 
             lasso_profile_set_identity_from_dump(LASSO_PROFILE(logout), identity_dump)
             lasso_profile_set_session_from_dump(LASSO_PROFILE(logout), session_dump)

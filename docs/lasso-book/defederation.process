@@ -10,7 +10,7 @@ Federation Termination Notification
         lasso_defederation_process_notification_msg(defederation, query)
 
         nameIdentifier = LASSO_PROFILE(defederation)->nameIdentifier
-        # Retrieve session and user using name identifier.
+        # Retrieve session and user using name identifier (->content).
         lasso_profile_set_identity_from_dump(LASSO_PROFILE(defederation), identityDump)
         lasso_profile_set_session_from_dump(LASSO_PROFILE(defederation), sessionDump)
 
@@ -50,7 +50,7 @@ Federation Termination Notification
     lasso_defederation_process_notification_msg(defederation, soapRequestMsg)
     
     nameIdentifier = LASSO_PROFILE(defederation)->nameIdentifier
-    # Retrieve session and user using name identifier.
+    # Retrieve session and user using name identifier (->content).
 
     lasso_defederation_validate_notification(defederation)
     # Close the federation locally.
