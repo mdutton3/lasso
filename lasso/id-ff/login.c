@@ -1424,8 +1424,18 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
   /* if remote_providerID is NULL, get first providerID in session */
   /* relayState can be NULL */
 
+  /* store providerID of the service provider */
+  if (remote_providerID == NULL) {
+    first_providerID = lasso_server_get_first_providerID(LASSO_PROFILE(login)->server);
+    LASSO_PROFILE(login)->remote_providerID = first_providerID;
+  }
+  else {
+    LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+  }
+
   /* build a fake/dummy lib:AuthnRequest */
-  request = lasso_authn_request_new(remote_providerID, lassoSignatureTypeNone, 0);
+  request = lasso_authn_request_new(LASSO_PROFILE(login)->remote_providerID,
+				    lassoSignatureTypeNone, 0);
 
   lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request),
 				      lassoLibConsentObtained);
@@ -1443,15 +1453,6 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
 
   LASSO_PROFILE(login)->request = request;
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
-
-  /* store providerID of the service provider */
-  if (remote_providerID == NULL) {
-    first_providerID = lasso_session_get_first_providerID(LASSO_PROFILE(login)->session);
-    LASSO_PROFILE(login)->remote_providerID = first_providerID;
-  }
-  else {
-    LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
-  }
 
   login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
 
