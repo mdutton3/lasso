@@ -42,7 +42,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ProxyCount", SNIPPET_CONTENT | SNIPPET_INTEGER,
+	{ "ProxyCount", SNIPPET_CONTENT | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoLibScoping, ProxyCount) },
 	{ "IDPList", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibScoping, IDPList) },
 	{ NULL, 0, 0}
@@ -55,7 +55,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoLibScoping *node)
 {
-	node->ProxyCount = 0;
+	node->ProxyCount = -1;
 	node->IDPList = NULL;
 }
 

@@ -51,7 +51,8 @@ typedef enum {
 	SNIPPET_BOOLEAN = 1 << 20,
 	SNIPPET_INTEGER = 1 << 21,
 	SNIPPET_LASSO_DUMP = 1 << 22,
-	SNIPPET_OPTIONAL = 1 << 23,
+	SNIPPET_OPTIONAL = 1 << 23, /* optional, ignored if 0 */
+	SNIPPET_OPTIONAL_NEG = 1 << 24, /* optional, ignored if -1 */
 } SnippetType;
 
 struct XmlSnippet {
