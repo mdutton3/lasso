@@ -65,18 +65,17 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 {
   xmlChar *providerID, *requestID;
   LassoNode *assertion=NULL, *authentication_statement;
-  xmlChar *ni, *idp_ni;
   gint ret = 0;
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   if (providerID == NULL) {
-    ret = -1;
     debug(ERROR, "The attribute 'ProviderID' is missing in metadata of server.\n");
+    return(-1);
   }
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID");
   if (providerID == NULL) {
-    ret = -2;
     debug(ERROR, "The attribute 'RequestID' is missing in request message.\n");
+    return(-2);
   }
 
   assertion = lasso_assertion_new(providerID, requestID);
@@ -86,23 +85,34 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 								reauthenticateOnOrAfter,
 								identity->remote_nameIdentifier,
 								identity->local_nameIdentifier);
-  lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
-						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
-
+  if (authentication_statement != NULL) {
+    lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
+						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+  }
+  else {
+    debug(ERROR, "Failed to build the AuthenticationStatement element of the Assertion.\n");
+    lasso_node_destroy(assertion);
+    return(-3);
+  }
   /* store NameIdentifier */
   login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
 
-  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
-				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
-				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
-				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
-				     assertion);
+  ret = lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
+					   LASSO_PROFILE_CONTEXT(login)->server->signature_method,
+					   LASSO_PROFILE_CONTEXT(login)->server->private_key,
+					   LASSO_PROFILE_CONTEXT(login)->server->certificate);
+  if (ret == 0) {
+    lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
+				       assertion);
   
-  /* store assertion in user object */
-  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
-			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
-			   lasso_node_copy(assertion));
+    /* store assertion in user object */
+    lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
+			     LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			     lasso_node_copy(assertion));
+  }
+
+  lasso_node_destroy(authentication_statement);
+  lasso_node_destroy(assertion);
 
   return (ret);
 }
