@@ -24,6 +24,15 @@
 
 #include <lasso/xml/tools.h>
 
+/**
+ * lasso_build_unique_id:
+ * @size: the ID's lenght (between 32 and 48)
+ * 
+ * Builds an ID which has an unicity probability of 2^(-size*4).
+ * The result is Base64 encoded.
+ * 
+ * Return value: a Base64 encoded "unique" ID
+ **/
 xmlChar *
 lasso_build_unique_id(guint8 size)
 {
@@ -34,6 +43,8 @@ lasso_build_unique_id(guint8 size)
     we could build a 128-bit binary number but hexa system is shorter
     32 <= hexa number size <= 48
   */
+  g_return_val_if_fail((size >= 32 && size <= 48) || size == 0, NULL);
+
   int i, val;
   xmlChar *id, *enc_id;
 
@@ -57,12 +68,22 @@ lasso_build_unique_id(guint8 size)
   return (enc_id);
 }
 
+/**
+ * lasso_doc_get_node_content:
+ * @doc: a doc
+ * @name: the name
+ * 
+ * Gets the value of the first node having given @name.
+ * 
+ * Return value: a node value or NULL if no node found or if no content is
+ * available
+ **/
 xmlChar *
 lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
 {
   xmlNodePtr node;
 
-  /* FIXME : bad namespace used */
+  /* FIXME: bad namespace used */
   node = xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
   if (node != NULL)
     /* val returned must be xmlFree() */
@@ -71,6 +92,15 @@ lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
     return (NULL);
 }
 
+/**
+ * lasso_g_ptr_array_index:
+ * @a: a GPtrArray
+ * @i: the index
+ * 
+ * Gets the pointer at the given index @i of the pointer array.
+ * 
+ * Return value: the pointer at the given index.
+ **/
 xmlChar*
 lasso_g_ptr_array_index(GPtrArray *a, guint i)
 {
@@ -82,6 +112,13 @@ lasso_g_ptr_array_index(GPtrArray *a, guint i)
   }
 }
 
+/**
+ * lasso_get_current_time:
+ * 
+ * Returns the current time, format is "yyyy-mm-ddThh:mm:ssZ".
+ * 
+ * Return value: a string
+ **/
 xmlChar *
 lasso_get_current_time()
 {
@@ -96,6 +133,15 @@ lasso_get_current_time()
   return (ret);
 }
 
+/**
+ * lasso_query_get_value:
+ * @query: a query (an url-encoded node)
+ * @param: the parameter
+ * 
+ * Returns the value of the given @param
+ * 
+ * Return value: a string or NULL if no parameter found
+ **/
 GPtrArray *
 lasso_query_get_value(const gchar   *query,
 		      const xmlChar *param)
@@ -130,10 +176,10 @@ gdata_query_to_dict_destroy_notify(gpointer data)
 
 /**
  * lasso_query_to_dict:
- * @query: the query part of the 'url-encoded + signed' message
+ * @query: the query (an url-encoded node)
  * 
- * Split query (& char) and build a dictonary with key=value
- * value is a GPtrArray.
+ * Explodes query to build a dictonary.
+ * Dictionary values are stored in GPtrArray.
  * The caller is responsible for freeing returned object by calling
  * g_datalist_clear() function.
  *
@@ -178,6 +224,17 @@ lasso_query_to_dict(const gchar *query)
   return (gd);
 }
 
+/**
+ * lasso_query_verify_signature:
+ * @query: a query  (an url-encoded and signed node)
+ * @sender_public_key_file: the sender public key
+ * @recipient_private_key_file: the recipient private key
+ * 
+ * Verifys the query's signature.
+ * 
+ * Return value: 1 if signature is valid, 0 if invalid, 2 if no signature found
+ * and -1 if an error occurs.
+ **/
 int
 lasso_query_verify_signature(const gchar   *query,
 			     const xmlChar *sender_public_key_file,
@@ -263,6 +320,14 @@ lasso_query_verify_signature(const gchar   *query,
   return (ret);
 }
 
+/**
+ * lasso_str_escape:
+ * @str: a string
+ * 
+ * Escapes the given string @str.
+ * 
+ * Return value: a new escaped string or NULL in case of error.
+ **/
 xmlChar *
 lasso_str_escape(xmlChar *str)
 {
@@ -270,6 +335,16 @@ lasso_str_escape(xmlChar *str)
   return (xmlURIEscapeStr((const xmlChar *)str, NULL));
 }
 
+/**
+ * lasso_str_sign:
+ * @str: 
+ * @sign_method: 
+ * @private_key_file: 
+ * 
+ * 
+ * 
+ * Return value: 
+ **/
 xmlDocPtr
 lasso_str_sign(xmlChar              *str,
 	       lassoSignatureMethod  sign_method,
@@ -380,6 +455,14 @@ lasso_str_sign(xmlChar              *str,
   return (NULL);
 }
 
+/**
+ * lasso_str_unescape:
+ * @str: an escaped string
+ * 
+ * Unescapes the given string @str.
+ * 
+ * Return value: a new unescaped string or NULL in case of error.
+ **/
 xmlChar *
 lasso_str_unescape(xmlChar *str)
 {

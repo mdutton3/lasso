@@ -40,7 +40,7 @@ struct _LassoNodePrivate
  * lasso_node_copy:
  * @node: a LassoNode
  * 
- * Build a copy of the node
+ * Build a copy of the node.
  * 
  * Return value: a copy of the node
  **/
@@ -78,7 +78,7 @@ lasso_node_dump(LassoNode     *node,
  * lasso_node_destroy:
  * @node: a LassoNode
  * 
- * Destroys the LassoNode
+ * Destroys the LassoNode.
  **/
 void
 lasso_node_destroy(LassoNode *node)
@@ -243,7 +243,7 @@ lasso_node_get_child(LassoNode     *node,
  * lasso_node_get_children:
  * @node: a LassoNode
  * 
- * Gets direct children of node
+ * Gets direct children of node.
  * 
  * Return value: an array of node or NULL if no children found.
  **/
@@ -281,7 +281,7 @@ lasso_node_get_content(LassoNode *node)
  * lasso_node_get_name:
  * @node: a LassoNode
  * 
- * Gets the name of the node
+ * Gets the name of the node.
  * 
  * Return value: the name of the node
  **/
@@ -299,7 +299,7 @@ lasso_node_get_name(LassoNode *node)
  * @node: a LassoNode
  * @buffer: an XML buffer
  * 
- * parse an XML buffer and build a LassoNode
+ * Parses the XML buffer and loads it into the node.
  **/
 void
 lasso_node_import(LassoNode     *node,
@@ -317,7 +317,7 @@ lasso_node_import(LassoNode     *node,
  * @old_name: the attribut name
  * @new_name: the new attribut name
  * 
- * Renames an attribut of the node
+ * Renames an attribut of the node.
  **/
 void
 lasso_node_rename_prop(LassoNode     *node,
@@ -1292,12 +1292,27 @@ GType lasso_node_get_type() {
   return this_type;
 }
 
+/**
+ * lasso_node_new:
+ * 
+ * The main LassoNode constructor.
+ * 
+ * Return value: a new node
+ **/
 LassoNode*
 lasso_node_new()
 {
   return (LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL)));
 }
 
+/**
+ * lasso_node_new_from_dump:
+ * @buffer: a buffer
+ * 
+ * Builds a new LassoNode from an LassoNode dump.
+ * 
+ * Return value: a new node
+ **/
 LassoNode*
 lasso_node_new_from_dump(const xmlChar *buffer)
 {
@@ -1318,6 +1333,14 @@ lasso_node_new_from_dump(const xmlChar *buffer)
   return (node);
 }
 
+/**
+ * lasso_node_new_from_xmlNode:
+ * @node: an xmlNode
+ * 
+ * Builds a new LassoNode from an xmlNode.
+ * 
+ * Return value: a new node
+ **/
 LassoNode*
 lasso_node_new_from_xmlNode(xmlNodePtr node)
 {
