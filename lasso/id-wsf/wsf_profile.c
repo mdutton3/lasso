@@ -62,25 +62,6 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 
 static LassoNodeClass *parent_class = NULL;
 
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode, *t;
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(node);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(node);
-	xmlNode *t;
-
-	return 0;
-}
-
-
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
@@ -95,16 +76,7 @@ dispose(GObject *object)
 	}
 	profile->private_data->dispose_has_run = TRUE;
 
-	debug("Profile object 0x%x disposed ...", profile);
-
-	/* XXX unref reference counted objects */
-	/* lasso_server_destroy(profile->server);
-	lasso_identity_destroy(profile->identity);
-	lasso_session_destroy(profile->session);
-
-	lasso_node_destroy(profile->request);
-	lasso_node_destroy(profile->response);
-	*/
+	debug("LassoWsfProfile object 0x%x disposed ...", profile);
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
@@ -114,7 +86,7 @@ finalize(GObject *object)
 {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(object);
 
-	debug("Profile object 0x%x finalized ...", object);
+	debug("LassoWsfProfile object 0x%x finalized ...", object);
 
 	g_free(profile->msg_url);
 	g_free(profile->msg_body);
@@ -145,9 +117,6 @@ static void
 class_init(LassoWsfProfileClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
@@ -188,10 +157,3 @@ lasso_wsf_profile_new(LassoServer *server)
 
 	return profile;
 }
-
-gchar*
-lasso_wsf_profile_dump(LassoWsfProfile *profile)
-{
-	return lasso_node_dump(LASSO_NODE(profile), NULL, 1);
-}
-
