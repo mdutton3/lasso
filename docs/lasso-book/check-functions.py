@@ -8,7 +8,7 @@ import sys
 
 functions = {}
 for filename in os.listdir('.'):
-    if filename[:-4] not in ('.txt', '.rst'):
+    if filename[-4:] not in ('.txt', '.rst'):
         continue
     for line in file(filename):
         if not 'lasso_' in line:
@@ -17,6 +17,9 @@ for filename in os.listdir('.'):
             continue
         for f in re.findall(r'(lasso_[a-zA-Z_]+?)\(', line):
             functions[f] = 1
+
+#for f in functions:
+#    print f
 
 known_symbols = [x.strip() for x in file('../reference/build/lasso-decl-list.txt')]
 

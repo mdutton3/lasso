@@ -12,17 +12,18 @@ The service provider has four things to do:
 - receiving an authentication response or an artifact
 - (eventually) checking it against the identity provider
 
-The first two steps are handled with an HTTP redirection; typically the user
-would click on a button, the service provider would then create the
-authentication request and send an HTTP Redirect to the browser.  No URL is
-defined in the specifications for this first step.
+The first two steps are handled with an HTTP redirection or an HTML form;
+typically the user would click on a button, the service provider would then
+create the authentication request and send an HTTP Redirect to the browser.  No
+URL is defined in the specifications for this first step.
 
 The last two steps are handled in the *AssertionConsumerServiceURL*; the user
 will arrive there through an HTTP Redirect or an HTTP POST carrying a piece of
 information from the identity provider.  In case of a redirect, this
-information won't be large and will be exchanged with the identity provider for
-a *AuthnResponse*.  An HTTP POST will be able to carry much more information
-and will therefore directly provider the same *AuthnResponse*.
+information, called *artifact*, won't be large and will be exchanged with the
+identity provider for a *AuthnResponse*.  An HTTP POST will be able to carry
+much more information and will therefore be able to provide either the
+*artifact* or directly the *AuthnResponse*.
 
 An appropriate metadata snippet would be::
 
@@ -56,15 +57,16 @@ service provider.  It is actually not a direct communication, the answer
 bounces on the user agent with an HTTP Redirect or by an HTML form pointing to
 the service provider.
 
-The first case is preferred, an *artifact* is generated and incorporated in a
-URL (based on the service provider *AssertionConsumerURL*); the user is then
+The answer may be an *artifact* (available in the query string in case of a
+redirect or in a ``LAREQ`` form field in case of a POST); the user is then
 simply redirected to this URL.  The service provider will then make a SOAP
 request to the *SoapEndpoint* asking for the authentication response matching
 the artifact.
 
-The second case consists in the identity provider answering with an HTML page
-with an HTML form embedding the authentication response.  The user will then
-submit this form to the service provider *AssertionConsumerURL*.
+The answer may also be an *authentication response*; since it will be a large
+piece of data it must be passed in an HTML page; an HTML form embedding the
+authentication response.  The user will then submit this form to the service
+provider *AssertionConsumerURL*.
 
 Metadata would be::
 
@@ -149,12 +151,12 @@ Receiving an answer from the identity provider
 This part is handled on the *AssertionConsumerURL*.
 
 
-GET request
-...........
+Receiving an assertion
+......................
 
-
-The user has been redirected to this URL.  The query string (the part of the
-URL after the question mark) is used to initialize the *LassoLogin* object.
+The user has been directed to this URL.  If it was a redirect the query string
+(the part of the URL after the question mark) will hold the artifact and may be
+used to initialize the *LassoLogin* object.
 
 ::
 
@@ -164,12 +166,40 @@ URL after the question mark) is used to initialize the *LassoLogin* object.
   lasso_login_init_request(login, query_string, lassoHttpMethodRedirect);
   lasso_login_build_request_msg(login);
 
-The service provider must check this artifact using a SOAP request to the
+If it was a form post it will have a ``LAREQ`` field.
+
+::
+
+  LassoLogin *login;
+
+  login = lasso_login_new(server);
+  lasso_login_init_request(login, lareq_field, lassoHttpMethodPost);
+  lasso_login_build_request_msg(login);
+
+
+The service provider must then check this artifact using a SOAP request to the
 identity provider.  The URL is ``LASSO_PROFILE(login)->msg_url`` while the
 request is ``LASSO_PROFILE(login)->msg_body``.  The request must succeed with
 an HTTP 200 status code.  The SOAP answer body must then be passed to::
 
   lasso_login_process_response_msg(login, answer);
+
+Receiving an authentication response
+....................................
+
+A form with a ``LARES`` field has been posted; this element holds the
+authentication response.
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  lasso_login_process_authn_response_msg(lares_field);
+
+
+Federating identities
+.....................
 
 There is then a ``nameIdentifier`` (accessible through
 ``LASSO_PROFILE(login)->nameIdentifier``) for the user identifying.  If this
@@ -200,10 +230,7 @@ destroyed::
 And a success web page may then be displayed.
 
 
-POST request
-............
 
-XXX
 
 
 Implementing the identity provider parts
