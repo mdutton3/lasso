@@ -128,7 +128,7 @@
 	$_SESSION["session_dump"] = $session->dump();
 	$_SESSION["user_id"] = $user_id;
 
-	$url = "index.php?SID=". $SID;
+	$url = "index.php";
   }
   else 
   {
@@ -166,7 +166,7 @@
 	$_SESSION["session_dump"] = $session->dump();
 	$_SESSION["user_id"] = $user_id;
 
-	$url = "register.php?SID=". $SID;
+	$url = "register.php";
   }
   
   // Update last_login

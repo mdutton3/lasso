@@ -49,7 +49,7 @@
 <html>
 <body onLoad="window.focus();">
 <table>
-<caption><?php echo ($_GET['type'] == 'user' ? 'Identity' : 'Session'); ?> Dump</caption>
+<caption><?php echo ($_GET['type'] == 'identity' ? 'Identity' : 'Session'); ?> Dump</caption>
 <tr>
   <td>
   <textarea rows="15" cols="50"><?php echo htmlentities($row[0], ENT_QUOTES); ?></textarea>

@@ -22,19 +22,85 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  require_once 'HTML/QuickForm.php';
-  require_once 'DB.php';
+    require_once 'HTML/QuickForm.php';
+    require_once 'DB.php';
  
-  $config = unserialize(file_get_contents('config.inc'));
-
-  session_start();
+    $config = unserialize(file_get_contents('config.inc'));
+    
+    session_start();
   
-  lasso_init();
+    lasso_init();
 
-  // Create Lasso Server
-  $server_dump = file_get_contents($config['server_dump_filename']);
-  $server = LassoServer::newFromDump($server_dump);
+    // Create Lasso Server
+    $server_dump = file_get_contents($config['server_dump_filename']);
+    $server = LassoServer::newFromDump($server_dump);
 
+    // HTTP Basic Authentification
+    if ($config['auth_type'] == 'auth_basic')
+    {
+        if (!isset($_SERVER['PHP_AUTH_USER']))
+        {
+            sendHTTPBasicAuth();
+            exit;
+        }
+        else
+        {
+            $login = new LassoLogin($server);
+
+            // init login
+            updateDumpsFromSession($login);
+            initFromAuthnRequest($login);
+
+            // connect to the data base
+            $db = &DB::connect($config['dsn']);
+            if (DB::isError($db)) 
+                die($db->getMessage());
+
+          	// User must *NOT* Authenticate with the IdP 
+            if (!$login->mustAuthenticate()) 
+            {
+                $user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+                if (!$user_id) 
+                    die("Unknown User");
+                    
+                $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
+                if (empty($array))
+                    die("Could not get Identity and Session Dump");
+
+                $login->setIdentityFromDump($array['identity_dump']);
+                $login->setSessionFromDump($array['session_dump']);
+	  
+                doneSingleSignOn($db, $login, $user_id);
+                $db->disconnect();
+                exit;
+            }
+
+            // Check Login and Password
+            if (!($user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])))
+            {
+                sendHTTPBasicAuth();
+                $db->disconnect();
+                exit;
+            }
+            else
+            {
+                $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
+                $is_first_sso = (empty($array) ? TRUE : FALSE);
+
+                if (!$is_first_sso)
+                {
+                    $login->setIdentityFromDump($array['identity_dump']);
+                    $login->setSessionFromDump($array['session_dump']);
+                } 
+                doneSingleSignOn($db, $login, $user_id, $is_first_sso);
+            }
+            $db->disconnect();
+        }
+        exit;
+  }
+
+  // HTML Form Authentification
+  
   // Create the form
   $form = new HTML_QuickForm('frm');
   
@@ -47,6 +113,92 @@
   $form->addRule('username', 'Please enter the Username', 'required', null, 'client');
   $form->addRule('password', 'Please enter the Password', 'required', null, 'client');
 
+  /*
+   * 
+   */
+  function sendHTTPBasicAuth()
+  {
+    header('WWW-Authenticate: Basic realm="Lasso Identity Provider One"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo "Acces Denied";
+  }
+
+  /*
+   * Update Identity dump
+   */
+   function updateIdentityDump($db, $user_id, $identity_dump)
+   {
+       	$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity_dump);
+		$query .= " WHERE user_id='$user_id'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+   }
+
+   /*
+   * Update Session dump
+   */
+   function updateSessionDump($db, $user_id, $session_dump)
+   {
+		$query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
+		$query .= " WHERE user_id='$user_id'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+   }
+
+   /*
+    * Save the Assertion Artifact in the database
+    */
+   function saveAssertionArtifact($db, $artifact, $assertion)
+   {
+	  $assertion_dump = $assertion->dump();
+
+	  if (empty($assertion_dump))
+		die("assertion dump is empty");
+		
+	  // Save assertion 
+	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
+	  $query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
+
+	  $res =& $db->query($query);
+  	  if (DB::isError($res)) 
+		die($res->getMessage());
+   }
+
+  /*
+   * Update Session and Identity Dump from PHP Session variables
+   */
+  function updateDumpsFromSession(&$login)
+  {
+	// Get session and identity dump if there are available
+	if (!empty($_SESSION['session_dump']))
+	  $login->setSessionFromDump($_SESSION['session_dump']);
+
+	if (!empty($_SESSION['identity_dump']))
+	  $login->setIdentityFromDump($_SESSION['identity_dump']);
+  }
+
+  /*
+   * Init Lasso login from AuthnRequestMsg
+   */
+  function initFromAuthnRequest(&$login)
+  {
+	switch ($_SERVER['REQUEST_METHOD'])
+	{
+	  case 'GET':
+		$login->initFromAuthnRequestMsg($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
+		break;
+	  case 'POST':
+		die("methode POST not implemented"); // TODO
+		break;
+	  default:
+		die("Unknown request method"); 
+	}
+  }
+  
   /*
    * This function authentificate the user against the Postgres Database
    */
@@ -68,9 +220,52 @@
   }
 
   /*
+   * Get UserID from the NameIdentifier
+   * return user_id or 0 if not found
+   */
+  function getUserIDFromNameIdentifier($db, $nameidentifier)
+  {
+      $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameidentifier'";
+      echo $query;
+	  
+	  $res =& $db->query($query);
+	  if (DB::isError($res)) 
+  		die($res->getMessage());
+		
+      // UserID not found
+	  if (!$res->numRows()) 
+        return (0);
+	  
+	  $row = $res->fetchRow();
+      return ($row[0]);
+  }
+
+  /*
    * 
    */
-  function doneSingleSignOn($db, $login, $user_id, $is_first_sso)
+   function getIdentityDumpAndSessionDumpFromUserID($db, $user_id)
+   {
+      // User is authentificated
+	  $query = "SELECT identity_dump,session_dump FROM users WHERE identity_dump";
+	  $query .= " IS NOT NULL AND session_dump IS NOT NULL AND user_id='$user_id'";
+
+	  $res =& $db->query($query);
+	  if (DB::isError($res)) 
+		die($res->getMessage());
+
+	  if ($res->numRows()) 
+	  {
+		$row =& $res->fetchRow();
+        $ret = array("identity_dump" => $row[0], "session_dump" => $row[1]);
+        return ($ret);
+	  } 
+   }
+
+
+  /*
+   * 
+   */
+  function doneSingleSignOn($db, &$login, $user_id, $is_first_sso = FALSE)
   {
 	  $authenticationMethod = 
 	  (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
@@ -113,45 +308,19 @@
 	  $identity = $login->identity;
 	  // do we need to update identity dump?
 	  if ($login->isIdentityDirty)
-	  {
-		$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity->dump());
-		$query .= " WHERE user_id='$user_id'";
-
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
-		  die($res->getMessage());
-	  }
+        updateIdentityDump($db, $user_id, $identity->dump());
 
 	  $session = $login->session;
 	  // do we need to update session dump?
 	  if ($login->isSessionDirty)
-	  {
-		$query = "UPDATE users SET session_dump=".$db->quoteSmart($identity->dump());
-		$query .= " WHERE user_id='$user_id'";
-
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
-		  die($res->getMessage());
-	  }
+        updateSessionDump($db, $user_id, $session->dump());
 
 	  if (empty($login->assertionArtifact))
 		die("assertion Artifact is empty");
 
-	  $assertion = $login->assertion;
-	  $assertion_dump = $assertion->dump();
+      saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
 
-	  if (empty($assertion_dump))
-		die("assertion dump is empty");
-		
-	  // Save assertion 
-	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
-	  $query .= "('".$login->assertionArtifact."',".$db->quoteSmart($assertion_dump).", NOW())";
-
-	  $res =& $db->query($query);
-  	  if (DB::isError($res)) 
-		die($res->getMessage());
-
-	  $_SESSION['login_dump'] = ''; // delete login_dump 
+	  unset($_SESSION['login_dump']); // delete login_dump 
 	  $_SESSION['identity_dump'] = $session->dump();
 	  $_SESSION['session_dump'] = $session->dump();
 
@@ -179,33 +348,24 @@
 	if (empty($_SESSION['login_dump']))
 	  die("Login dump is not registred");
 
-	// conect to the data base
+	// connect to the data base
 	$db = &DB::connect($config['dsn']);
 	if (DB::isError($db)) 
 	  die($db->getMessage());
 
-	$login = LassoLogin::newfromdump($server, $_SESSION['login_dump']);
+	$login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
 
 	if (($user_id = authentificateUser($db, $form->exportValue('username'), 
 	  $form->exportValue('password')))) 
 	{
-	  // User is authentificated
-	  $query = "SELECT identity_dump,session_dump FROM users WHERE identity_dump";
-	  $query .= " IS NOT NULL AND session_dump IS NOT NULL AND user_id='$user_id'";
+      $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
+      $is_first_sso = (empty($array) ? TRUE : FALSE);
 
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-		die($res->getMessage());
-
-	  $is_first_sso = FALSE;
-	  if ($res->numRows()) 
-	  {
-		$row =& $res->fetchRow();
-		$login->setIdentityFromDump($row[0]);
-		$login->setSessionFromDump($row[1]);
+      if (!$is_first_sso)
+      {
+		$login->setIdentityFromDump($array['identity_dump']);
+		$login->setSessionFromDump($array['session_dump']);
 	  } 
-	  else
-		$is_first_sso = TRUE;
 
 	  doneSingleSignOn($db, $login, $user_id, $is_first_sso);
 	  $db->disconnect();
@@ -216,24 +376,9 @@
   {
   	$login = new LassoLogin($server);
 
-	// Get session and identity dump if there are available
-	if (!empty($_SESSION['session_dump']))
-	  $login->setSessionFromDump($_SESSION['session_dump']);
-
-	if (!empty($_SESSION['identity_dump']))
-	  $login->setIdentityFromDump($_SESSION['identity_dump']);
-	
-	switch ($_SERVER['REQUEST_METHOD'])
-	{
-	  case 'GET':
-		$login->initFromAuthnRequestMsg($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
-		break;
-	  case 'POST':
-		die("methode POST not implemented"); // TODO
-		break;
-	  default:
-		die("Unknown request method"); 
-	}
+    // init login
+    updateDumpsFromSession($login);
+    initFromAuthnRequest($login);
 	
 	// User must NOT Authenticate with the IdP 
 	if (!$login->mustAuthenticate()) 
@@ -242,21 +387,13 @@
 	  $db = &DB::connect($config['dsn']);
 	  if (DB::isError($db)) 
 		die($db->getMessage());
-
-	  $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='";
-	  $query .= $login->nameIdentifier . "'";
+        
+      $user_id = getUserIDFromNameIdentifier($db, $login->nameIdentifier);
 	  
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-  		die($res->getMessage());
-		
-	  if (!$res->numRows()) 
+	  if (!$user_id) 
 		die("Unknown User");
 	  
-	  $row = $res->fetchRow();
-	  $user_id = $row[0];
-
-	  doneSingleSignOn($db, $user_id);
+	  doneSingleSignOn($db, $login, $user_id);
 	  $db->disconnect();
 	  exit;
 	}

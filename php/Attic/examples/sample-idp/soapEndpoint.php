@@ -116,7 +116,7 @@
 	  $row = $res->fetchRow();
 	  $user_id = $row[0];
 
-	  $query = "SELECT user_dump,session_dump FROM users WHERE user_id='$user_id'";
+	  $query = "SELECT identity_dump,session_dump FROM users WHERE user_id='$user_id'";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
@@ -146,8 +146,8 @@
 	  if ($logout->isIdentityDirty)
 	  {
 		$identity = $logout->identity;
-		$query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump());
-		$query .= " WHERE user_id='$user_id'";
+		$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity->dump());
+		$query .= " WHERE identity_id='$user_id'";
 
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
@@ -179,15 +179,37 @@
 		  die("Logout failed with : " . $providerID);
 		}
 		
-		while (!feof($fp)) {
-		  $reponse .= @fread($fp, 8192);
-		}
+        // header
+        do $header .= fread($fp, 1); while (!preg_match('/\\r\\n\\r\\n$/',$header));
 
-		fclose($fp);
+        // chunked encoding
+        if (preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/',$header))
+        {
+            do {
+                $byte = '';
+                $chunk_size = '';
+                
+                do {
+                    $chunk_size .= $byte;
+                    $byte = fread($fp, 1);
+                } while ($byte != "\\r");     
+	  
+                fread($fp, 1);    
+                $chunk_size = hexdec($chunk_size); 
+                $response .= fread($fp, $chunk_size);
+                fread($fp, 2);          
+            } while ($chunk_size);        
+        }
+        else
+        {
+            if (preg_match('/Content\\-Length:\\s+([0-9]+)\\r\\n/', $header, $matches))
+                $response = fread($fp, $matches[1]);
+            else 
+                while (!feof($fp)) $response .= fread($fp, 1024);
+        }
+        fclose($fp);
 
-		list($header, $body) = preg_split("/(\r\n\r\n|\n\n)/", $reponse, 2);
-
-		$logout->processResponseMsg($body, lassoHttpMethodSoap);
+		$logout->processResponseMsg($response, lassoHttpMethodSoap);
 	  } 
 	  
 	  $logout->buildResponseMsg();

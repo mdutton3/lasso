@@ -335,7 +335,8 @@
 		}
 		$setup = TRUE;
 	}
-		ob_start();
+        $setup_log = ob_get_contents();
+		ob_end_clean();
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
@@ -345,24 +346,17 @@
   if ($setup == TRUE) {
 ?>
 <meta http-equiv="Refresh" CONTENT="3; URL=index.php">
-<?php } ?>
 </head>
 <body>
-<?php
-  ob_end_flush();
-  ob_end_flush();
-  ?>
+<?php echo $setup_log;  ?>
+<p><a href='index.php'>Back to Index</a></p>
 </body>
 </html>
 <?php
-  	if (empty($setup))
+    }
+    else
 	{
 ?>
-
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<title>Setup script for Lasso (Liberty Alliance Single Sign On)</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
 <script language="JavaScript" type="text/javascript">
 <!-- 
 
@@ -385,9 +379,6 @@
 <tr>
   <td>DSN (Data Source Name) :</td><td><input type='text' name='dsn' size='50' value='<?php echo $config['dsn']; ?>' maxlength='100'></td><td><a href='http://pear.php.net/manual/en/package.database.db.intro-dsn.php' target='_new'>Help</a></td>
 </tr>
-<tr>
-  <td>Server XML Dump:</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
-</tr>
 </table>
 </p>
 <hr>
@@ -398,8 +389,8 @@
   <td>Authentification type :</td>
   <td>
   <select name='auth_type'>
-	<option value="auth_form">HTML Login/Password Form</option>
-	<option value="auth_basic">HTTP Auth Basic</option>
+    <option value="auth_form" <?php if ($config['auth_type'] == 'auth_form') echo 'selected' ?>>HTML Login/Password Form</option>
+	<option value="auth_basic" <?php if ($config['auth_type'] == 'auth_basic') echo 'selected' ?>>HTTP Auth Basic</option>
   </select>
   </td><td>&nbsp;</td>
 </tr>
@@ -411,19 +402,23 @@
 <caption>Identity Provider</caption>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
+  <td>Server XML Dump :</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Public Key</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
+  <td>Metadata :</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Private Key</td><td><input type='text' name='idp-private_key' size='50' value='<?php echo $config['idp-private_key']; ?>'></td><td>&nbsp;</td>
+  <td>Public Key :</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Certificate</td><td><input type='text' name='idp-ca' size='50' value='<?php echo $config['idp-ca']; ?>'></td><td>&nbsp;</td>
+  <td>Private Key :</td><td><input type='text' name='idp-private_key' size='50' value='<?php echo $config['idp-private_key']; ?>'></td><td>&nbsp;</td>
+</tr>
+
+<tr>
+  <td>Certificate :</td><td><input type='text' name='idp-ca' size='50' value='<?php echo $config['idp-ca']; ?>'></td><td>&nbsp;</td>
 </tr>
 </table>
 </p>
@@ -437,15 +432,15 @@
 <caption>Service Provider <b><?php echo $sp ?></caption>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='sp^<?php echo $sp; ?>^metadata' size='50' value='<?php echo $config['sp'][$sp]['metadata']; ?>'></td>
+  <td>Metadata :</td><td><input type='text' name='sp^<?php echo $sp; ?>^metadata' size='50' value='<?php echo $config['sp'][$sp]['metadata']; ?>'></td>
   <td><a href="javascript:openpopup('edit_metadata.php?filename=<?php echo $config['sp'][$sp]['metadata']; ?>')">Edit Metadata</a></td>
 </tr>
 <tr>
-  <td>Public Key</td><td><input type='text' name='sp^<?php echo $sp; ?>^public_key' size='50' value='<?php echo $config['sp'][$sp]['public_key']; ?>'></td><td>&nbsp;</td>
+  <td>Public Key :</td><td><input type='text' name='sp^<?php echo $sp; ?>^public_key' size='50' value='<?php echo $config['sp'][$sp]['public_key']; ?>'></td><td>&nbsp;</td>
 
 </tr>
 <tr>
-  <td>Certificate</td><td><input type='text' name='sp^<?php echo $sp; ?>^ca' size='50' value='<?php echo $config['sp'][$sp]['ca']; ?>'></td><td>&nbsp;</td>
+  <td>Certificate :</td><td><input type='text' name='sp^<?php echo $sp; ?>^ca' size='50' value='<?php echo $config['sp'][$sp]['ca']; ?>'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
@@ -466,20 +461,20 @@
 <caption>Add a new Service Provider</caption>
 
 <tr>
-  <td>Name</td><td><input type='text' name='sp' size='50'></td><td>&nbsp;</td>
+  <td>Name :</td><td><input type='text' name='sp' size='50'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='metadata' size='50'></td>
+  <td>Metadata :</td><td><input type='text' name='metadata' size='50'></td>
   <td><a href="javascript:openpopup('create_metadata.php')">Create Metadata</a></td>
 </tr>
 
 <tr>
-  <td>Public Key</td><td><input type='text' name='public_key' size='50'></td><td>&nbsp;</td>
+  <td>Public Key :</td><td><input type='text' name='public_key' size='50'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Certificate</td><td><input type='text' name='ca' size='50'></td><td>&nbsp;</td>
+  <td>Certificate :</td><td><input type='text' name='ca' size='50'></td><td>&nbsp;</td>
 </tr>
 
 <tr>

@@ -52,10 +52,7 @@ You can get more informations about <b>Lasso</b> at <br>
 
  require_once 'DB.php';
 
- if (!empty($_GET['SID'])) 
-  session_start($_GET['SID']);
- else
-  session_start();
+ session_start();
 
  lasso_init();
  
@@ -90,7 +87,7 @@ You can get more informations about <b>Lasso</b> at <br>
 </tr>
 <?php } else { ?>
 <tr>
-  <td><a href="logout.php?SID=<?php echo $SID ?>">Logout!</a></td>
+  <td><a href="logout.php">Logout!</a></td>
 </tr>
 <?php } ?>
 </table>
