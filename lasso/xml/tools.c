@@ -57,7 +57,7 @@ lasso_build_random_sequence(char *buffer, unsigned int size)
 	unsigned int rnd, i;
 
 	t = buffer;
-	while (t-buffer < size) {
+	while (t-buffer < (int)size) {
 		rnd = g_random_int();
 		for (i=0; i<sizeof(int); i++) {
 			*(t++) = '0' + ((rnd>>i*4)&0xf);
