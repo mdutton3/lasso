@@ -90,6 +90,14 @@ LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEncrypted[];
 LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEntityID[];
 
 /*****************************************************************************/
+/* METADATA                                                                  */
+/*****************************************************************************/
+
+/* prefix & href */
+LASSO_EXPORT_VAR const xmlChar lassoMetadataHRef[];
+LASSO_EXPORT_VAR const xmlChar lassoMetadataPrefix[];
+
+/*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
 

@@ -82,6 +82,15 @@ const xmlChar lassoLibNameIdentifierFormatEncrypted[] = "urn:liberty:iff:nameid:
 const xmlChar lassoLibNameIdentifierFormatEntityID[]  = "urn:liberty:iff:nameid:entityID";
 
 /*****************************************************************************/
+/* METADATA                                                                  */
+/*****************************************************************************/
+
+/* prefix & href */
+const xmlChar lassoMetadataHRef[]   = "urn:liberty:metadata:2003-08";
+const xmlChar lassoMetadataPrefix[] = "md";
+
+
+/*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
 
