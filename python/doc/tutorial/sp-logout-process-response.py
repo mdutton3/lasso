@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Logout initiated by service provider (continued): Process the HTTP redirect logout response returned by
 ## identity provider.
@@ -17,3 +18,5 @@ user_dump = logout.user.dump()
 [...] # Store string user_dump into account (replace the previous one).
 # User is now logged out => delete session, cookie...
 [...]
+
+lasso.shutdown()

@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Send an authentication request to identity provider.
 ##
@@ -24,3 +25,5 @@ login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 if login.build_authn_request_msg():
     raise Exception('Login error')
 [...] # Reply a HTTP redirect to login.msg_url.
+
+lasso.shutdown()

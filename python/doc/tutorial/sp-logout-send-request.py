@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Logout initiated by service provider: Send a logout request to identity provider.
 ##
@@ -27,3 +28,5 @@ else:
     [...] # Store string user_dump into account (replace the previous one).
     # User is now logged out => delete session, cookie...
     [...]
+
+lasso.shutdown()

@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Redirect Logout initiated by identity provider.
 
@@ -28,3 +29,5 @@ else:
 if logout.build_response_msg():
     raise Exception('Logout error')
 [...] # Reply a HTTP redirect to logout.msg_url.
+
+lasso.shutdown()

@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Initialize service provider context.
 ##
@@ -20,3 +21,5 @@ server.add_provider(idp_metadata_file_path, idp_public_key_file_path, idp_ca_cer
 # Dump server context to a string and store it in a file.
 server_dump = server.dump()
 [...] # Save server_dump in a file or database or...
+
+lasso.shutdown()

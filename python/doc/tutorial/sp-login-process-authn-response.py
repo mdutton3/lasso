@@ -1,5 +1,6 @@
 import lasso
 
+lasso.init()
 
 ## Process the authentication response returned by identity provider and send received artifact to identity
 ## provider.
@@ -30,3 +31,5 @@ user_dump = login.user.dump()
 [...] # Store string user_dump into account.
 # User is now authenticated => create session, cookie...
 [...]
+
+lasso.shutdown()
