@@ -73,7 +73,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 {
   /* FIXME : change request type */
   LassoNode *response, *ss, *ssc, *request_providerID;
-  xmlChar *inResponseTo, *recipient, *relayState;
+  xmlChar *inResponseTo, *recipient;
   xmlChar *id, *time;
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
@@ -140,7 +140,6 @@ LassoNode *
 lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
 {
   LassoNode *response;
-  xmlChar *relayState, *consent;
   GData *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
