@@ -6,7 +6,7 @@ dnl
 dnl $Id$
 dnl
 dnl 
-dnl See LICENSE.html or LICENSE.txt at the top of this package for the
+dnl See COPYING at the top of this package for the
 dnl full license terms.
 dnl 
 dnl 
@@ -252,7 +252,7 @@ AC_SUBST(JAVAH_FLAGS)
 
 
 dnl python
-AC_ARG_WITH(python, [  --with-python(=PYTHON)  Enable the Python interface], with_python="$withval", with_python="no")
+AC_ARG_WITH(python, [  --with-python(=PYTHON)  Enable the Python interface], with_python="$withval", with_python="yes")
 AC_MSG_CHECKING(Enable Python API)
 if test "X$with_python" != Xno; then
   if test "X$with_python" != Xyes; then
@@ -479,11 +479,10 @@ python/protocols/elements/Makefile
 python/tests/Makefile
 python/xml/Makefile
 tests/Makefile
-java/Makefile
-java/coldfusion/Makefile
-java/src/Makefile
-java/src/c/Makefile
-]
+java/Makefile]
+dnl [java/coldfusion/Makefile]
+[java/src/Makefile
+java/src/c/Makefile]
 [lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]
 dnl [lasso.spec:lasso.spec.in]
