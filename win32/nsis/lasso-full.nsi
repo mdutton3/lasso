@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Liberty Alliance Single Sign On and all dependencies"
-!define PRODUCT_VERSION "0.3"
+!define PRODUCT_VERSION "0.4"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://www.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -83,27 +83,26 @@ SectionEnd
 
 Section "libopenssl" SEC05
   File "..\..\..\..\..\usr\local\lib\libeay32.dll"
-  File "..\..\..\..\..\usr\local\lib\libssl32.dll"
-  File "..\..\..\..\..\usr\local\lib\ssleay32.dll"
+  File "..\..\..\..\..\usr\local\lib\libssleay32.dll"
 SectionEnd
 
 Section "zlib" SEC06
-  File "..\..\..\..\..\usr\local\lib\zlib.dll"
+  File "..\..\..\..\..\usr\local\lib\libz.dll"
 SectionEnd
 
 Section "iconv" SEC07
-  File "..\..\..\..\..\usr\local\lib\iconv.dll"
+  File "..\..\..\..\..\usr\local\lib\libiconv.dll"
 SectionEnd
 
-Section "lasso" SEC08
-  File "..\..\..\..\..\usr\local\lib\liblasso.dll"
+Section "L.A.S.S.O." SEC08
+  File  "..\..\lasso\.libs\liblasso-1.dll"
 SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateDirectory "$SMPROGRAMS\Liberty Alliance Single Sign On"
-  CreateShortCut "$SMPROGRAMS\Liberty Alliance Single Sign On\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\Liberty Alliance Single Sign On\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateDirectory "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies"
+  CreateShortCut "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -142,11 +141,10 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\liblasso.dll"
-  Delete "$INSTDIR\iconv.dll"
-  Delete "$INSTDIR\zlib.dll"
-  Delete "$INSTDIR\ssleay32.dll"
-  Delete "$INSTDIR\libssl32.dll"
+  Delete "$INSTDIR\liblasso-1.dll"
+  Delete "$INSTDIR\libiconv.dll"
+  Delete "$INSTDIR\libz.dll"
+  Delete "$INSTDIR\libssleay32.dll"
   Delete "$INSTDIR\libeay32.dll"
   Delete "$INSTDIR\libxmlsec-openssl.dll"
   Delete "$INSTDIR\libxmlsec-mscrypto.dll"
@@ -159,10 +157,10 @@ Section Uninstall
   Delete "$INSTDIR\libgobject-2.0-0.dll"
   Delete "$INSTDIR\libglib-2.0-0.dll"
 
-  Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Uninstall.lnk"
-  Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Website.lnk"
+  Delete "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Uninstall.lnk"
+  Delete "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies\Website.lnk"
 
-  RMDir "$SMPROGRAMS\Liberty Alliance Single Sign On"
+  RMDir "$SMPROGRAMS\Liberty Alliance Single Sign On & Dependencies"
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
