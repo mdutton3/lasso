@@ -281,6 +281,12 @@ class Session(_ObjectMixin, lassomod.LassoSession):
         return self
     new_from_dump = classmethod(new_from_dump)
 
+    # Attributes
+
+    def get_authentication_method(self, remote_providerID = None):
+        return lassomod.lasso_session_get_authentication_method(self, remote_providerID)
+    authentication_method = property(get_authentication_method)
+
     # Methods
 
     def dump(self):
@@ -680,8 +686,8 @@ if __name__ == '__main__':
     login = Login(server)
     login.init_authn_request()
     login.request.set_isPassive(False)
-    login.request.set_nameIDPolicy('federated')
-    login.request.set_consent('urn:liberty:consent:obtained')
+    login.request.set_nameIDPolicy(libNameIDPolicyTypeFederated)
+    login.request.set_consent(libConsentObtained)
     login.build_authn_request_msg('https://idp1/metadata')
     print login.msg_url
     shutdown()
