@@ -999,8 +999,8 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	request = LASSO_SAMLP_REQUEST_ABSTRACT(lasso_samlp_request_new());
 	request->RequestID = lasso_build_unique_id(32);
-	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
-	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	request->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
+	request->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
 	request->IssueInstant = lasso_get_current_time();
 
 	LASSO_SAMLP_REQUEST(request)->AssertionArtifact = artifact_b64;
