@@ -594,6 +594,10 @@ lasso_node_dispose(GObject *object)
 	SnippetType type;
 	GList *elem;
 
+#if 1
+	fprintf(stderr, "dispose of %s (at %p)\n", G_OBJECT_TYPE_NAME(object), object);
+#endif
+
 	class = LASSO_NODE_GET_CLASS(object);
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {

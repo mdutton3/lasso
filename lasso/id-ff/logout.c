@@ -199,8 +199,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
  * lasso_logout_destroy:
  * @logout: a #LassoLogout
  *
- * Destroys a logout object
- * 
+ * Destroys a logout object.
  **/
 void
 lasso_logout_destroy(LassoLogout *logout)

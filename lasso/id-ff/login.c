@@ -47,19 +47,17 @@ struct _LassoLoginPrivate
 /**
  * lasso_login_build_assertion:
  * @login: a #LassoLogin
- * @authenticationMethod: the authentication method.
- * @authenticationInstant: the time at which the authentication took place or NULL.
+ * @authenticationMethod: the authentication method
+ * @authenticationInstant: the time at which the authentication took place
  * @reauthenticateOnOrAfter: the time at, or after which the service provider
- *     reauthenticates the Principal with the identity provider or NULL.
- * @notBefore: the earliest time instant at which the assertion is valid or NULL.
- * @notOnOrAfter: the time instant at which the assertion has expired or NULL.
+ *     must reauthenticates the principal with the identity provider
+ * @notBefore: the earliest time instant at which the assertion is valid
+ * @notOnOrAfter: the time instant at which the assertion has expired
  * 
- * Builds an assertion.
- * Assertion is stored in session property. If session property is NULL, a new
- * session is built before.
- * The NameIdentifier of the assertion is stored into nameIdentifier proprerty.
- * If @authenticationInstant is NULL, the current time will be set.
- * Time values must be encoded in UTC.
+ * Builds an assertion and stores it in profile session.
+ * @authenticationInstant, reauthenticateOnOrAfter, @notBefore and
+ * @notOnOrAfter may be NULL.  If @authenticationInstant is NULL, the current
+ * time will be used.  Time values must be encoded in UTC.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -210,10 +208,10 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 
 /**
  * lasso_login_process_federation:
- * @login: a LassoLogin
- * @is_consent_obtained: is user consent obtained ?
- * 
- * Return value: a positive value on success or a negative if an error occurs.
+ * @login: a #LassoLogin
+ * @is_consent_obtained: whether user consent has been obtained
+ *
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 static gint
 lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
@@ -367,14 +365,14 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 /**
  * lasso_login_accept_sso:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
  * Gets the assertion of the response and adds it into the session.
  * Builds a federation with the 2 name identifiers of the assertion
  * and adds it into the identity.
  * If the session or the identity are NULL, they are created.
  * 
- * Return value: 0 on success and a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_accept_sso(LassoLogin *login)
@@ -436,14 +434,14 @@ lasso_login_accept_sso(LassoLogin *login)
 
 /**
  * lasso_login_build_artifact_msg:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * @http_method: the HTTP method to send the artifact (REDIRECT or POST)
  * 
- * Builds an artifact. Depending of the HTTP method, the data for the sending of
+ * Builds a SAML artifact. Depending of the HTTP method, the data for the sending of
  * the artifact are stored in msg_url (REDIRECT) or msg_url, msg_body and
  * msg_relayState (POST).
  *
- * Return value: 0 on success and a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
@@ -528,13 +526,16 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 
 /**
  * lasso_login_build_authn_request_msg:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
- * Builds an authentication request. Depending of the selected HTTP method,
- * the data for the sending of the request are stored in msg_url (GET) or
- * msg_url and msg_body (POST).
+ * Converts profile authentication request (@request member) into a Liberty
+ * message, either an URL in HTTP-Redirect profile or an URL and a field value
+ * in Browser-POST (form) profile.
+ *
+ * The URL is set into the @msg_url member and the eventual field value (LAREQ)
+ * is set into the @msg_body member.
  * 
- * Return value: 0 on success and a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_build_authn_request_msg(LassoLogin *login)
@@ -626,12 +627,15 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 
 /**
  * lasso_login_build_authn_response_msg:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
- * Builds an authentication response. The data for the sending of the response
- * are stored in msg_url and msg_body.
+ * Converts profile authentication response (@response member) into a Liberty
+ * message.
  *
- * Return value: 0 on success and a negative value otherwise.
+ * The URL is set into the @msg_url member and the field value (LARES) is set
+ * into the @msg_body member.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_build_authn_response_msg(LassoLogin *login)
@@ -668,12 +672,14 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 
 /**
  * lasso_login_build_request_msg:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
- * Builds a SOAP request message. The data for the sending of the request
- * are stored in msg_url and msg_body.
+ * Converts profile artifact request into a Liberty SOAP message.
+ *
+ * The URL is set into the @msg_url member and the SOAP message is set into the
+ * @msg_body member.
  * 
- * Return value: 0 on success and a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_build_request_msg(LassoLogin *login)
@@ -701,13 +707,16 @@ lasso_login_build_request_msg(LassoLogin *login)
 
 /**
  * lasso_login_build_response_msg:
- * @login: a LassoLogin
- * @remote_providerID: the providerID of the session provider
+ * @login: a #LassoLogin
+ * @remote_providerID: service provider ID
  * 
- * Builds a SOAP response message. The data for the sending of the response
- * are stored in msg_body.
+ * Converts profile assertion response (@response member) into a Liberty SOAP
+ * messageresponse message.
+ *
+ * The URL is set into the @msg_url member and the SOAP message is set into the
+ * @msg_body member.
  * 
- * Return value: 0 on success or a negative value if an 
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
@@ -786,7 +795,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
  * lasso_login_destroy:
  * @login: a #LassoLogin
  * 
- * Destroys LassoLogin objects created with lasso_login_new() or lasso_login_new_from_dump().
+ * Destroys a login object.
  **/
 void
 lasso_login_destroy(LassoLogin *login)
@@ -797,11 +806,12 @@ lasso_login_destroy(LassoLogin *login)
 /**
  * lasso_login_init_authn_request:
  * @login: a #LassoLogin
- * @remote_providerID: the providerID of the identity provider. When NULL, the
- *     first known identity provider is used.
+ * @remote_providerID: the providerID of the identity provider (may be NULL)
  * @http_method: HTTP method to use for request transmission
  *
- * Initializes a new lib:AuthnRequest.
+ * Initializes a new lib:AuthnRequest from current service provider to remote
+ * identity provider specified in @remote_providerID (if NULL the first known
+ * identity provider is used).
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -850,6 +860,19 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	return 0;
 }
 
+
+/**
+ * lasso_login_init_request:
+ * @login: a #LassoLogin
+ * @response_msg: the authentication response received
+ * @response_http_method: the method used to receive the authentication
+ *      response
+ *
+ * Initializes an artifact request.  @response_msg is either the query string
+ * (in redirect mode) or the form LAREQ field (in browser-post mode).
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/ 
 gint
 lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		lassoHttpMethod response_http_method)
@@ -924,15 +947,16 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 /**
  * lasso_login_init_idp_initiated_authn_request:
- * @login: a LassoLogin.
- * @remote_providerID: the providerID of the remote service provider (may be NULL).
+ * @login: a #LassoLogin.
+ * @remote_providerID: the providerID of the remote service provider (may be
+ *      NULL)
  * 
- * It's possible for an identity provider to generate an authentication response without first
- * having received an authentication request. This method must be used in this case.
+ * Generates an authentication response without matching authentication
+ * request.
  *
- * If @remote_providerID is NULL, the providerID of the first provider found in server is used.
+ * If @remote_providerID is NULL, the first known provider is used.
  * 
- * Return value: 0 on success and a negative value if an error occurs.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
@@ -973,7 +997,7 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
  * 
  * Evaluates if consent must be asked to the Principal to federate him.
  * 
- * Return value: TRUE or FALSE
+ * Return value: %TRUE if consent must be asked
  **/
 gboolean
 lasso_login_must_ask_for_consent(LassoLogin *login)
@@ -986,13 +1010,14 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 	return FALSE;
 }
 
+
 /**
  * lasso_login_must_authenticate:
  * @login: a #LassoLogin
  * 
- * Verifies if the user must be authenticated or not.
+ * Evaluates if user must be authenticated.
  * 
- * Return value: TRUE or FALSE
+ * Return value: %TRUE if user must be authenticated
  **/
 gboolean
 lasso_login_must_authenticate(LassoLogin *login)
@@ -1018,6 +1043,16 @@ lasso_login_must_authenticate(LassoLogin *login)
 	return FALSE;
 }
 
+/**
+ * lasso_login_process_authn_request_msg:
+ * @login: a #LassoLogin
+ * @authn_request_msg: the authentication request received
+ *
+ * Processes received authentication request, checks it is signed correctly,
+ * checks if requested protocol profile is supported, etc.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg)
 {
@@ -1116,6 +1151,15 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	return ret;
 }
 
+/**
+ * lasso_login_process_authn_response_msg:
+ * @login: a #LassoLogin
+ * @authn_response_msg: the authentication response received
+ *
+ * Processes received authentication response.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
 {
@@ -1158,6 +1202,16 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	return ret2 == 0 ? ret1 : ret2;
 }
 
+
+/**
+ * lasso_login_process_request_msg:
+ * @login: a #LassoLogin
+ * @authn_response_msg: the artifact request received
+ *
+ * Processes received artifact request.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 {
@@ -1184,6 +1238,16 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	return ret;
 }
 
+
+/**
+ * lasso_login_process_response_msg:
+ * @login: a #LassoLogin
+ * @authn_response_msg: the assertion response received
+ *
+ * Processes received assertion response.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
