@@ -1155,14 +1155,10 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   /* FIXME : register 'AssertionID' ID attribute manually */
   id_attr = lasso_node_get_attr(node, "AssertionID", NULL);
   if (id_attr != NULL) {
-    printf("OK AssertionID attr found, try to add new ID\n");
     id_value = xmlNodeListGetString(doc, id_attr->children, 1);
     id = xmlAddID(NULL, doc, id_value, id_attr);
-    if (id == NULL) printf("Failed add new ID\n");
     xmlFree(id_value);
   }
-  else
-    printf("AssertionID attr not found\n");
 
   /* find start node */
   signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
