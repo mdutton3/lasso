@@ -299,7 +299,7 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 
 /* Accept LassoNode subclasses as input argument, when a LassoNode is expected. */
 
-%typemap(javabody) LassoSamlpRequestAbstract %{
+%typemap(javabody) LassoNode %{
   protected long swigCPtr;
   protected boolean swigCMemOwn;
 
@@ -322,8 +322,6 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 %}
-
-%apply NODE_SUBCLASS {LassoLibAuthnRequest};
 
 /* Dynamically downcast to a LassoNode subclass, when a LassoNode is expected as a result. */
 
@@ -354,9 +352,9 @@ static void build_exception_msg(int errorCode, char *errorMsg) {
 %{
 
 typedef struct {
-} DowncastableNode; // FIXME: Replace with LassoNode.
+} DowncastableNode;
 
-DowncastableNode *downcast_node(LassoSamlpRequestAbstract *node) { // FIXME: Replace with LassoNode.
+DowncastableNode *downcast_node(LassoNode *node) {
 	return (DowncastableNode *) node;
 }
 
@@ -364,17 +362,17 @@ DowncastableNode *downcast_node(LassoSamlpRequestAbstract *node) { // FIXME: Rep
 
 %nodefault DowncastableNode;
 typedef struct {
-} DowncastableNode; // FIXME: Replace with LassoNode.
+} DowncastableNode;
 
-DowncastableNode *downcast_node(LassoSamlpRequestAbstract *node); // FIXME: Replace with LassoNode.
+DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNode.
 
 %typemap(javaout) NODE_SUPERCLASS * {
 	long cPtr = $jnicall;
 	return (cPtr == 0) ? null : ($javaclassname) lassoJNI.downcast_node(cPtr);
 }
 
-%apply NODE_SUPERCLASS * {LassoSamlpRequestAbstract *};
-
+%apply NODE_SUPERCLASS * {LassoNode *, LassoSamlpRequestAbstract *,
+		LassoSamlpResponseAbstract *};
 
 #else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
@@ -451,108 +449,6 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 
 %}
 
-%init %{
-{ /* Brace needed for pre-C99 compilers */
-	node_info *info;
-
-#ifdef PHP_VERSION
-#define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className, &ce_swig_##className)
-#else
-#define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className)
-#endif
-
-	info = node_infos;
-#ifdef PHP_VERSION
-	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode, &ce_swig_LassoNode);
-#else
-	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
-#endif
-
-	/* saml prefix */
-
-	SET_NODE_INFO(LassoSamlAdvice, LassoNode);
-	SET_NODE_INFO(LassoSamlAssertion, LassoNode);
-	SET_NODE_INFO(LassoSamlAttributeDesignator, LassoNode);
-	SET_NODE_INFO(LassoSamlAuthorityBinding, LassoNode);
-	SET_NODE_INFO(LassoSamlConditionAbstract, LassoNode);
-	SET_NODE_INFO(LassoSamlConditions, LassoNode);
-	SET_NODE_INFO(LassoSamlNameIdentifier, LassoNode);
-	SET_NODE_INFO(LassoSamlStatementAbstract, LassoNode);
-	SET_NODE_INFO(LassoSamlSubject, LassoNode);
-	SET_NODE_INFO(LassoSamlSubjectConfirmation, LassoNode);
-	SET_NODE_INFO(LassoSamlSubjectLocality, LassoNode);
-
-	SET_NODE_INFO(LassoSamlAttribute, LassoSamlAttributeDesignator);
-	SET_NODE_INFO(LassoSamlAudienceRestrictionCondition, LassoSamlConditionAbstract);
-	SET_NODE_INFO(LassoSamlSubjectStatementAbstract, LassoSamlStatementAbstract);
-
-	SET_NODE_INFO(LassoSamlAttributeStatement, LassoSamlSubjectStatementAbstract);
-	SET_NODE_INFO(LassoSamlAuthenticationStatement, LassoSamlSubjectStatementAbstract);
-	SET_NODE_INFO(LassoSamlSubjectStatement, LassoSamlSubjectStatementAbstract);
-
-	/* samlp prefix */
-
-	SET_NODE_INFO(LassoSamlpRequestAbstract, LassoNode);
-	SET_NODE_INFO(LassoSamlpResponseAbstract, LassoNode);
-	SET_NODE_INFO(LassoSamlpStatus, LassoNode);
-	SET_NODE_INFO(LassoSamlpStatusCode, LassoNode);
-
-	SET_NODE_INFO(LassoSamlpRequest, LassoSamlpRequestAbstract);
-	SET_NODE_INFO(LassoSamlpResponse, LassoSamlpResponseAbstract);
-
-	/* lib prefix */
-
-	SET_NODE_INFO(LassoLibAssertion, LassoSamlAssertion);
-	SET_NODE_INFO(LassoLibAuthnRequest, LassoSamlpRequestAbstract);
-	SET_NODE_INFO(LassoLibAuthnResponse, LassoSamlpResponse);
-	SET_NODE_INFO(LassoLibFederationTerminationNotification, LassoSamlpRequestAbstract);
-	SET_NODE_INFO(LassoLibLogoutRequest, LassoSamlpRequestAbstract);
-	SET_NODE_INFO(LassoLibRegisterNameIdentifierRequest, LassoSamlpRequestAbstract);
-	SET_NODE_INFO(LassoLibRequestAuthnContext, LassoNode);
-	SET_NODE_INFO(LassoLibStatusResponse, LassoSamlpResponseAbstract);
-
-	SET_NODE_INFO(LassoLibLogoutResponse, LassoLibStatusResponse);
-	SET_NODE_INFO(LassoLibRegisterNameIdentifierResponse, LassoLibStatusResponse);
-
-	/* ID-WSF FIXME: Check inheritance */
-#if 0
-	/* disco prefix */
-
-	SET_NODE_INFO(LassoDiscoCredentials, LassoNode);
-	SET_NODE_INFO(LassoDiscoDescription, LassoNode);
-	SET_NODE_INFO(LassoDiscoEncryptedResourceID, LassoNode);
-	SET_NODE_INFO(LassoDiscoInsertEntry, LassoNode);
-	SET_NODE_INFO(LassoDiscoModify, LassoNode);
-	SET_NODE_INFO(LassoDiscoModifyResponse, LassoNode);
-	SET_NODE_INFO(LassoDiscoOptions, LassoNode);
-	SET_NODE_INFO(LassoDiscoQuery, LassoNode);
-	SET_NODE_INFO(LassoDiscoQueryResponse, LassoNode);
-	SET_NODE_INFO(LassoDiscoRemoveEntry, LassoNode);
-	SET_NODE_INFO(LassoDiscoRequestedServiceType, LassoNode);
-	SET_NODE_INFO(LassoDiscoResourceID, LassoNode);
-	SET_NODE_INFO(LassoDiscoResourceOffering, LassoNode);
-	SET_NODE_INFO(LassoDiscoServiceInstance, LassoNode);
-
-	/* dst prefix */
-
-	SET_NODE_INFO(LassoDstModification, LassoNode);
-	SET_NODE_INFO(LassoDstModify, LassoNode);
-	SET_NODE_INFO(LassoDstModifyResponse, LassoNode);
-	SET_NODE_INFO(LassoDstNewData, LassoNode);
-	SET_NODE_INFO(LassoDstQuery, LassoNode);
-	SET_NODE_INFO(LassoDstQueryItem, LassoNode);
-	SET_NODE_INFO(LassoDstQueryResponse, LassoNode);
-
-	/* pp prefix */
-
-	SET_NODE_INFO(LassoPPMsgContact, LassoNode);
-#endif
-
-	info->name = NULL;
-	info->swig = NULL;
-}
-%}
-
 /* Accept any GObject class derivated from LassoNode as a LassoNode */
 %typemap(in) LassoNode *, LassoSamlpRequestAbstract *, LassoSamlpResponseAbstract * {
 	node_info *info, *super;
@@ -607,6 +503,211 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 DYNAMIC_CAST(SWIGTYPE_p_LassoNode, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpRequestAbstract, dynamic_cast_node);
 DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
+
+#endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+
+
+/***********************************************************************
+ * Declaration of LassoNode Derivated Classes
+ ***********************************************************************/
+
+
+#if defined(SWIGCSHARP) || defined(SWIGJAVA)
+
+%define SET_NODE_INFO(className, superClassName)
+%apply NODE_SUBCLASS {Lasso##className};
+%typemap(javabase) Lasso##className #superClassName;
+%enddef
+
+%typemap(javabase) LassoNode "DowncastableNode";
+
+/* saml prefix */
+
+SET_NODE_INFO(SamlAdvice, Node)
+SET_NODE_INFO(SamlAssertion, Node)
+SET_NODE_INFO(SamlAttributeDesignator, Node)
+SET_NODE_INFO(SamlAuthorityBinding, Node)
+SET_NODE_INFO(SamlConditionAbstract, Node)
+SET_NODE_INFO(SamlConditions, Node)
+SET_NODE_INFO(SamlNameIdentifier, Node)
+SET_NODE_INFO(SamlStatementAbstract, Node)
+SET_NODE_INFO(SamlSubject, Node)
+SET_NODE_INFO(SamlSubjectConfirmation, Node)
+SET_NODE_INFO(SamlSubjectLocality, Node)
+
+SET_NODE_INFO(SamlAttribute, SamlAttributeDesignator)
+SET_NODE_INFO(SamlAudienceRestrictionCondition, SamlConditionAbstract)
+SET_NODE_INFO(SamlSubjectStatementAbstract, SamlStatementAbstract)
+
+SET_NODE_INFO(SamlAttributeStatement, SamlSubjectStatementAbstract)
+SET_NODE_INFO(SamlAuthenticationStatement, SamlSubjectStatementAbstract)
+SET_NODE_INFO(SamlSubjectStatement, SamlSubjectStatementAbstract)
+
+/* samlp prefix */
+
+SET_NODE_INFO(SamlpRequestAbstract, Node)
+SET_NODE_INFO(SamlpResponseAbstract, Node)
+SET_NODE_INFO(SamlpStatus, Node)
+SET_NODE_INFO(SamlpStatusCode, Node)
+
+SET_NODE_INFO(SamlpRequest, SamlpRequestAbstract)
+SET_NODE_INFO(SamlpResponse, SamlpResponseAbstract)
+
+/* lib prefix */
+
+SET_NODE_INFO(LibAssertion, SamlAssertion)
+SET_NODE_INFO(LibAuthnRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibAuthnResponse, SamlpResponse)
+SET_NODE_INFO(LibFederationTerminationNotification, SamlpRequestAbstract)
+SET_NODE_INFO(LibLogoutRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibRegisterNameIdentifierRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibRequestAuthnContext, Node)
+SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
+
+SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
+SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
+
+/* ID-WSF FIXME: Check inheritance */
+#if 0
+/* disco prefix */
+
+SET_NODE_INFO(DiscoCredentials, Node)
+SET_NODE_INFO(DiscoDescription, Node)
+SET_NODE_INFO(DiscoEncryptedResourceID, Node)
+SET_NODE_INFO(DiscoInsertEntry, Node)
+SET_NODE_INFO(DiscoModify, Node)
+SET_NODE_INFO(DiscoModifyResponse, Node)
+SET_NODE_INFO(DiscoOptions, Node)
+SET_NODE_INFO(DiscoQuery, Node)
+SET_NODE_INFO(DiscoQueryResponse, Node)
+SET_NODE_INFO(DiscoRemoveEntry, Node)
+SET_NODE_INFO(DiscoRequestedServiceType, Node)
+SET_NODE_INFO(DiscoResourceID, Node)
+SET_NODE_INFO(DiscoResourceOffering, Node)
+SET_NODE_INFO(DiscoServiceInstance, Node)
+
+/* dst prefix */
+
+SET_NODE_INFO(DstModification, Node)
+SET_NODE_INFO(DstModify, Node)
+SET_NODE_INFO(DstModifyResponse, Node)
+SET_NODE_INFO(DstNewData, Node)
+SET_NODE_INFO(DstQuery, Node)
+SET_NODE_INFO(DstQueryItem, Node)
+SET_NODE_INFO(DstQueryResponse, Node)
+
+/* pp prefix */
+
+SET_NODE_INFO(PPMsgContact, Node)
+#endif
+
+#else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+
+%init %{
+{ /* Brace needed for pre-C99 compilers */
+	node_info *info;
+
+	info = node_infos;
+#ifdef PHP_VERSION
+	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode, &ce_swig_LassoNode);
+#else
+	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
+#endif
+
+#ifdef SWIGPHP4
+#define SET_NODE_INFO(className, superClassName)\
+	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
+			SWIGTYPE_p_Lasso##className, &ce_swig_Lasso##className);
+#else
+#define SET_NODE_INFO(className, superClassName)\
+	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
+			SWIGTYPE_p_Lasso##className);
+#endif
+
+/* saml prefix */
+
+SET_NODE_INFO(SamlAdvice, Node)
+SET_NODE_INFO(SamlAssertion, Node)
+SET_NODE_INFO(SamlAttributeDesignator, Node)
+SET_NODE_INFO(SamlAuthorityBinding, Node)
+SET_NODE_INFO(SamlConditionAbstract, Node)
+SET_NODE_INFO(SamlConditions, Node)
+SET_NODE_INFO(SamlNameIdentifier, Node)
+SET_NODE_INFO(SamlStatementAbstract, Node)
+SET_NODE_INFO(SamlSubject, Node)
+SET_NODE_INFO(SamlSubjectConfirmation, Node)
+SET_NODE_INFO(SamlSubjectLocality, Node)
+
+SET_NODE_INFO(SamlAttribute, SamlAttributeDesignator)
+SET_NODE_INFO(SamlAudienceRestrictionCondition, SamlConditionAbstract)
+SET_NODE_INFO(SamlSubjectStatementAbstract, SamlStatementAbstract)
+
+SET_NODE_INFO(SamlAttributeStatement, SamlSubjectStatementAbstract)
+SET_NODE_INFO(SamlAuthenticationStatement, SamlSubjectStatementAbstract)
+SET_NODE_INFO(SamlSubjectStatement, SamlSubjectStatementAbstract)
+
+/* samlp prefix */
+
+SET_NODE_INFO(SamlpRequestAbstract, Node)
+SET_NODE_INFO(SamlpResponseAbstract, Node)
+SET_NODE_INFO(SamlpStatus, Node)
+SET_NODE_INFO(SamlpStatusCode, Node)
+
+SET_NODE_INFO(SamlpRequest, SamlpRequestAbstract)
+SET_NODE_INFO(SamlpResponse, SamlpResponseAbstract)
+
+/* lib prefix */
+
+SET_NODE_INFO(LibAssertion, SamlAssertion)
+SET_NODE_INFO(LibAuthnRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibAuthnResponse, SamlpResponse)
+SET_NODE_INFO(LibFederationTerminationNotification, SamlpRequestAbstract)
+SET_NODE_INFO(LibLogoutRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibRegisterNameIdentifierRequest, SamlpRequestAbstract)
+SET_NODE_INFO(LibRequestAuthnContext, Node)
+SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
+
+SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
+SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
+
+/* ID-WSF FIXME: Check inheritance */
+#if 0
+/* disco prefix */
+
+SET_NODE_INFO(DiscoCredentials, Node)
+SET_NODE_INFO(DiscoDescription, Node)
+SET_NODE_INFO(DiscoEncryptedResourceID, Node)
+SET_NODE_INFO(DiscoInsertEntry, Node)
+SET_NODE_INFO(DiscoModify, Node)
+SET_NODE_INFO(DiscoModifyResponse, Node)
+SET_NODE_INFO(DiscoOptions, Node)
+SET_NODE_INFO(DiscoQuery, Node)
+SET_NODE_INFO(DiscoQueryResponse, Node)
+SET_NODE_INFO(DiscoRemoveEntry, Node)
+SET_NODE_INFO(DiscoRequestedServiceType, Node)
+SET_NODE_INFO(DiscoResourceID, Node)
+SET_NODE_INFO(DiscoResourceOffering, Node)
+SET_NODE_INFO(DiscoServiceInstance, Node)
+
+/* dst prefix */
+
+SET_NODE_INFO(DstModification, Node)
+SET_NODE_INFO(DstModify, Node)
+SET_NODE_INFO(DstModifyResponse, Node)
+SET_NODE_INFO(DstNewData, Node)
+SET_NODE_INFO(DstQuery, Node)
+SET_NODE_INFO(DstQueryItem, Node)
+SET_NODE_INFO(DstQueryResponse, Node)
+
+/* pp prefix */
+
+SET_NODE_INFO(PPMsgContact, Node)
+#endif
+
+	info->name = NULL;
+	info->swig = NULL;
+}
+%}
 
 #endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
@@ -2564,9 +2665,6 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(SamlpRequestAbstract) LassoSamlpRequestAbstract;
 #endif
-#ifdef SWIGJAVA /* FIXME: change to Node */
-%typemap(javabase) LassoSamlpRequestAbstract "DowncastableNode"
-#endif
 %nodefault LassoSamlpRequestAbstract;
 typedef struct {
 	/* Attributes */
@@ -3240,9 +3338,6 @@ typedef struct {
 
 #ifndef SWIGPHP4
 %rename(LibAuthnRequest) LassoLibAuthnRequest;
-#endif
-#ifdef SWIGJAVA
-%typemap(javabase) LassoLibAuthnRequest "SamlpRequestAbstract"
 #endif
 typedef struct {
 	/* Attributes */
