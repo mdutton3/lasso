@@ -393,9 +393,9 @@ done:
 	g_free(new_query);
 	xmlFree(digest);
 	BIO_free(bio);
-	free(sigret);
+	g_free(sigret);
 	xmlFree(b64_sigret);
-	free(e_b64_sigret);
+	xmlFree(e_b64_sigret);
 
 	return s_new_query;
 }
