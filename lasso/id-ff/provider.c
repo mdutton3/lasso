@@ -62,6 +62,16 @@ char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
 /* public methods */
 /*****************************************************************************/
 
+/**
+ * lasso_provider_get_metadata_one:
+ * @provider: a #LassoProvider
+ * @name: the element name
+ *
+ * Extracts the element @name from the provider metadata descriptor.
+ *
+ * Return value: the element value, NULL if the element was not found.  This
+ *      string must be freed by the caller.
+ **/
 gchar*
 lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 {
@@ -79,6 +89,18 @@ lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 	return NULL;
 }
 
+
+/**
+ * lasso_provider_get_metadata_list:
+ * @provider: a #LassoProvider
+ * @name: the element name
+ *
+ * Extracts zero to many elements from the provider metadata descriptor.
+ *
+ * Return value: a #GList with the elements.  This GList is internally
+ *      allocated and points to internally allocated strings.  It must
+ *      not be freed, modified or stored.
+ **/
 GList*
 lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 {
@@ -92,6 +114,17 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
 }
 
 
+/**
+ * lasso_provider_get_first_http_method:
+ * @provider: a #LassoProvider
+ * @remote_provider: a #LassoProvider depicting the remote provider
+ * @protocol_type: a Liberty profile
+ *
+ * Looks up and returns a #lassoHttpMethod appropriate for performing the
+ * @protocol_type between @provider and @remote_provider.
+ *
+ * Return value: the #lassoHttpMethod
+ **/
 lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, lassoMdProtocolType protocol_type)
 {
@@ -142,6 +175,19 @@ lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
 	return LASSO_HTTP_METHOD_NONE;
 }
 
+/**
+ * lasso_provider_accept_http_method:
+ * @provider: a #LassoProvider
+ * @remote_provider: a #LassoProvider depicting the remote provider
+ * @protocol_type: a Liberty profile type
+ * @http_method: an HTTP method
+ * @initiate_profile: whether @provider initiates the profile
+ *
+ * Gets if @http_method is an appropriate method for the @protocol_type profile
+ * between @provider and @remote_provider.
+ *
+ * Return value: %TRUE if it is appropriate
+ **/
 gboolean
 lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
 		lassoMdProtocolType protocol_type, lassoHttpMethod http_method,
@@ -176,6 +222,16 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 	return TRUE;
 }
 
+/**
+ * lasso_provider_has_protocol_profile:
+ * @provider: a #LassoProvider
+ * @protocol_type: a Liberty profile type
+ * @protocol_profile: a fully-qualified Liberty profile
+ *
+ * Gets if @provider supports @protocol_profile.
+ *
+ * Return value: %TRUE if it is supported
+ **/
 gboolean
 lasso_provider_has_protocol_profile(LassoProvider *provider,
 		lassoMdProtocolType protocol_type, const char *protocol_profile)
@@ -191,11 +247,14 @@ lasso_provider_has_protocol_profile(LassoProvider *provider,
 }
 
 /**
- * lasso_provider_get_base64_succint_id
- * @provider: #LassoProvider
+ * lasso_provider_get_base64_succint_id:
+ * @provider: a #LassoProvider
  *
  * Computes and returns the base64-encoded provider succint ID.
- */
+ *
+ * Return value: the provider succint ID.  This string must be freed by the
+ *      caller.
+ **/
 char*
 lasso_provider_get_base64_succint_id(LassoProvider *provider)
 {
@@ -487,6 +546,17 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	return TRUE;
 }
 
+/**
+ * lasso_provider_new:
+ * @role: provider role, identity provider or service provider
+ * @metadata: path to metadata file for the provider
+ * @public_key: 
+ * @ca_cert_chain:
+ *
+ * Creates a new #LassoProvider
+ *
+ * Return value: a newly created #LassoProvider
+ */
 LassoProvider*
 lasso_provider_new(LassoProviderRole role, char *metadata, char *public_key, char *ca_cert_chain)
 {

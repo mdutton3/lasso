@@ -48,37 +48,39 @@ typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
 typedef enum {
 	LASSO_HTTP_METHOD_NONE = -1,
-	LASSO_HTTP_METHOD_ANY,
-	LASSO_HTTP_METHOD_IDP_INITIATED,
-	LASSO_HTTP_METHOD_GET,
-	LASSO_HTTP_METHOD_POST,
-	LASSO_HTTP_METHOD_REDIRECT,
-	LASSO_HTTP_METHOD_SOAP
+	LASSO_HTTP_METHOD_ANY,           /* any method will do */
+	LASSO_HTTP_METHOD_IDP_INITIATED, /* no method, IdP initiated profile */
+	LASSO_HTTP_METHOD_GET,           /* HTTP GET */
+	LASSO_HTTP_METHOD_POST,          /* Browser POST */
+	LASSO_HTTP_METHOD_REDIRECT,      /* HTTP-Redirect based */
+	LASSO_HTTP_METHOD_SOAP           /* SOAP/HTTP based */
 } lassoHttpMethod;
 
 typedef enum {
-	LASSO_MD_PROTOCOL_TYPE_FEDERATION_TERMINATION = 0,
-	LASSO_MD_PROTOCOL_TYPE_NAME_IDENTIFIER_MAPPING,
-	LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,
-	LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,
-	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON
+	LASSO_MD_PROTOCOL_TYPE_FEDERATION_TERMINATION = 0, /* Federation Termination Notification */
+	LASSO_MD_PROTOCOL_TYPE_NAME_IDENTIFIER_MAPPING,    /* Name Identifier Mapping */
+	LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,   /* Name Registration */
+	LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,              /* Single Logout */
+	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON              /* Single Sign-On and Federation */
 } lassoMdProtocolType;
 
 typedef enum {
 	LASSO_PROVIDER_ROLE_NONE = 0,
-	LASSO_PROVIDER_ROLE_SP,
-	LASSO_PROVIDER_ROLE_IDP
+	LASSO_PROVIDER_ROLE_SP,       /* Service Provider */
+	LASSO_PROVIDER_ROLE_IDP       /* Identity Provider */
 } LassoProviderRole;
 
 struct _LassoProvider {
 	LassoNode parent;
 
+	/*< public >*/
 	gchar *ProviderID;
 	LassoProviderRole role;
 
 	gchar *public_key;
 	gchar *ca_cert_chain;
 
+	/*< private >*/
 	LassoProviderPrivate *private_data;
 };
 

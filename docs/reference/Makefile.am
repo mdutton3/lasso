@@ -1,7 +1,8 @@
 EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \
-	lasso.types 
+	lasso.types \
+	version.xml.in
 
 # We need to pre-process original source files
 # because gtkdoc does not understand some C features
@@ -36,7 +37,7 @@ sgml: templates
 		    --tmpl-dir=../tmpl/ \
 		    --source-dir=../$(DOC_SOURCE_DIR)/lasso \
 		    --output-dir=../sgml/
-	cp $(srcdir)/lasso.sgml build/
+	cp $(srcdir)/*.sgml $(srcdir)/version.xml build/
 	(for i in `find sgml -name "*.sgml" -print` ; do \
 	    cat $$i | \
 		sed 's!\(&lt;dsig:\)\([^/]*\)\(\/&gt;\)!<ulink URL=\"http://www.w3.org/TR/xmldsig-core/#sec-\2\">\1\2\3</ulink>!g' | \

@@ -53,15 +53,58 @@
 <!ENTITY LassoProfile SYSTEM "sgml/profile.sgml">
 <!ENTITY LassoServer SYSTEM "sgml/server.sgml">
 <!ENTITY LassoSession SYSTEM "sgml/session.sgml">
-<!ENTITY lasso-tools SYSTEM "sgml/tools.sgml">
+
+<!ENTITY lasso-Liberty-Alliance "liberty-alliance.sgml">
+<!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
   <bookinfo>
-    <title>Lasso API Reference</title>
+    <title>Lasso Reference Manual</title>
+    <releaseinfo>for Lasso &version;</releaseinfo>
   </bookinfo>
 
-  <chapter>
-    <title>Lasso</title>
+  <chapter id="lasso">
+    <title>Lasso Overview</title>
+    <para>
+Lasso is a library which provides all the necessary functions for sites to
+implement Liberty Alliance specifications.
+    </para>
+
+  </chapter>
+
+  
+  <chapter id="architecture">
+    <title>Lasso Architecture</title>
+    &LassoProvider;
+    &LassoServer;
+    &LassoIdentity;
+    &LassoSession;
+  </chapter>
+    
+  <chapter id="idff">
+    <title>Identity Federation Framework</title>
+
+    &LassoProfile;
+    &LassoLogin;
+    &LassoFederation;
+    &LassoLecp;
+    &LassoLogout;
+    &LassoDefederation;
+
+  </chapter>
+
+  <chapter id="idwsf">
+    <title>Identity Web Services Framework</title>
+
+    <para>
+    </para>
+
+  </chapter>
+
+  <chapter id="xml">
+    <title>Schemas</title>
+
+    &LassoNode;
     &LassoLibAssertion;
     &LassoLibAuthnRequest;
     &lasso-LassoLibAuthnRequestEnvelope;
@@ -90,7 +133,6 @@
     &LassoSamlpResponseAbstract;
     &LassoSamlpStatus;
     &LassoSamlpStatusCode;
-    &LassoNode;
     &LassoLibLogoutRequest;
     &LassoLibFederationTerminationNotification;
     &LassoLibLogoutResponse;
@@ -106,16 +148,5 @@
     &lasso-export;
     &lasso-lasso;
     &lasso-version;
-    &LassoFederation;
-    &LassoLecp;
-    &LassoProvider;
-    &LassoDefederation;
-    &LassoIdentity;
-    &LassoLogin;
-    &LassoLogout;
-    &LassoProfile;
-    &LassoServer;
-    &LassoSession;
-    &lasso-tools;
   </chapter>
 </book>

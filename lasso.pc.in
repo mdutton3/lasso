@@ -7,5 +7,5 @@ Name: lasso
 Version: @VERSION@
 Description: A free implementation of the Liberty Alliance specifications
 Requires: libxml-2.0 libxslt xmlsec1 glib-2.0 gobject-2.0
-Cflags: @LASSO_CORE_CFLAGS@
+Cflags: @LASSO_PUB_CFLAGS@
 Libs: -L${libdir} @LASSO_CORE_LIBS@
