@@ -27,11 +27,7 @@ import abstractweb
 
 class HttpRequest(abstractweb.HttpRequestMixin, object):
     client = None # Principal or web site sending the request.
-    body = None
     form = None
-    headers = None
-    method = None # 'GET' or 'POST' or 'PUT' or...
-    url = None
 
     def __init__(self, client, method, url, headers = None, body = None, form = None):
         self.client = client
@@ -83,6 +79,13 @@ class HttpRequest(abstractweb.HttpRequestMixin, object):
     pathAndQuery = property(getPathAndQuery)
     query = property(getQuery)
     scheme = property(getScheme)
+
+
+class FunctionHttpRequest(abstractweb.FunctionHttpRequest):
+    def getClient(self):
+        return self.previousHttpRequest.client
+
+    client = property(getClient)
 
 
 class HttpResponse(abstractweb.HttpResponseMixin, object):
@@ -199,7 +202,7 @@ class WebUser(abstractweb.WebUserMixin, object):
 class WebSite(abstractweb.WebSiteMixin, WebClient):
     """Simulation of a web site"""
 
-    instantAuthentication = True # Authentication doesn't use a HTML form.
+    FunctionHttpRequest = FunctionHttpRequest # Class
     url = None # The main URL of web site
     WebSession = WebSession
     WebUser = WebUser
@@ -209,24 +212,6 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
         abstractweb.WebSiteMixin.__init__(self)
         self.url = url
         self.internet.addWebSite(self)
-
-    def authenticate(self, handler, callback, *arguments, **keywordArguments):
-        userId = handler.httpRequest.client.keyring.get(self.url, None)
-        userAuthenticated = userId in self.users
-
-        import lasso
-        authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
-        if userAuthenticated:
-            session = handler.session
-            if session is None:
-                session = handler.createSession()
-            user = handler.user
-            if user is None:
-                user = handler.createUser()
-            session.userId = user.uniqueId
-            user.sessionToken = session.token
-        return callback(handler, userAuthenticated, authenticationMethod, *arguments,
-                        **keywordArguments)
 
     def handleHttpRequest(self, httpRequest):
         httpRequestHandler = HttpRequestHandler(self, httpRequest)
@@ -241,3 +226,19 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
                     httpRequestHandler.user = self.users.get(session.userId, None)
 
         return self.handleHttpRequestHandler(httpRequestHandler)
+
+    def login_local(self, handler):
+        userId = handler.httpRequest.client.keyring.get(self.url, None)
+        userAuthenticated = userId in self.users
+        # authenticationMethod = lasso.samlAuthenticationMethodPassword
+        authenticationMethod = 'urn:oasis:names:tc:SAML:1.0:am:password'
+        if userAuthenticated:
+            session = handler.session
+            if session is None:
+                session = handler.createSession()
+            user = handler.user
+            if user is None:
+                user = handler.createUser()
+            session.userId = user.uniqueId
+            user.sessionToken = session.token
+        return self.login_done(handler, userAuthenticated, authenticationMethod)

@@ -39,7 +39,6 @@ import builtins
 import http
 import liberty
 
-
 applicationCamelCaseName = 'LassoSimulator'
 applicationPublicName = 'Lasso Simulator'
 applicationVersion = '(Unreleased CVS Version)'
@@ -97,19 +96,17 @@ def main():
     logger.setLevel(logging._levelNames[options.logLevel.upper()])
     builtins.set('logger', logger)
 
-    site = liberty.IdentityProvider('https://identity-provider/')
-    site.providerId = 'https://identity-provider/metadata'
+    site = liberty.ServiceProvider('https://service-provider-lep/')
+    site.providerId = 'https://service-provider-lep/metadata'
+    site.idpSite = liberty.IdentityProvider('https://liberty-enabled-proxy/')
+    site.idpSite.providerId = 'https://liberty-enabled-proxy/metadata'
 
     lassoServer = lasso.Server.new(
-        '../../examples/data/idp-metadata.xml',
-        None, # '../../examples/data/idp-public-key.pem' is no more used.
-        '../../examples/data/idp-private-key.pem',
-        '../../examples/data/idp-crt.pem',
+        '../../examples/data/sp-lep-metadata.xml',
+        None, # '../../examples/data/sp-public-key.pem' is no more used.
+        '../../examples/data/sp-private-key.pem',
+        '../../examples/data/sp-crt.pem',
         lasso.signatureMethodRsaSha1)
-    lassoServer.add_provider(
-        '../../examples/data/sp-metadata.xml',
-        '../../examples/data/sp-public-key.pem',
-        '../../examples/data/ca-crt.pem')
     lassoServer.add_provider(
         '../../examples/data/lep-metadata.xml',
         '../../examples/data/idp-public-key.pem',
@@ -118,24 +115,24 @@ def main():
     failUnless(site.lassoServerDump)
     lassoServer.destroy()
 
-    site.certificateAbsolutePath = '../../examples/data/idp-ssl-crt.pem'
-    site.privateKeyAbsolutePath = '../../examples/data/idp-ssl-private-key.pem'
+    site.certificateAbsolutePath = '../../examples/data/sp-ssl-crt.pem'
+    site.privateKeyAbsolutePath = '../../examples/data/sp-ssl-private-key.pem'
     site.peerCaCertificateAbsolutePath = '../../examples/data/ca-ssl-crt.pem'
 
-    site.newUser('Chantereau')
-    site.newUser('Clapies')
-    site.newUser('Febvre')
-    site.newUser('Nowicki')
-    # Frederic Peters has no account on identity provider.
+    site.newUser('Nicolas')
+    site.newUser('Romain')
+    site.newUser('Valery')
+    # Christophe Nowicki has no account on service provider.
+    site.newUser('Frederic')
 
     HttpRequestHandlerMixin.site = site # Directly a site, not a server => no virtual host.
-##     httpServer = http.HttpServer(('127.0.0.2', 80), HttpRequestHandler)
+##     httpServer = http.HttpServer(('127.0.0.5', 80), HttpRequestHandler)
 ##     logger.info('Serving HTTP on %s port %s...' % httpServer.socket.getsockname())
     httpServer = http.HttpsServer(
-        ('127.0.0.2', 443),
+        ('127.0.0.5', 443),
         HttpsRequestHandler,
-        '../../examples/data/idp-ssl-private-key.pem', # Server private key
-        '../../examples/data/idp-ssl-crt.pem', # Server certificate
+        '../../examples/data/sp-ssl-private-key.pem', # Server private key
+        '../../examples/data/sp-ssl-crt.pem', # Server certificate
         '../../examples/data/ca-ssl-crt.pem', # Clients certification authority certificate
         None, # sslCertificateChainFile see mod_ssl, ssl_engine_init.c, line 852
         None, # sslVerifyClient http://www.modssl.org/docs/2.1/ssl_reference.html#ToC13

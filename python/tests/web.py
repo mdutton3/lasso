@@ -114,7 +114,6 @@ class WebUser(abstractweb.WebUserMixin, object):
 
 
 class WebSite(abstractweb.WebSiteMixin, WebClient):
-    instantAuthentication = True # Authentication doesn't use a HTML form.
     url = None # The main URL of web site
     WebSession = WebSession
     WebUser = WebUser
@@ -124,7 +123,12 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
         abstractweb.WebSiteMixin.__init__(self)
         self.url = url
 
-    def authenticate(self, handler, callback, *arguments, **keywordArguments):
+    def authenticateLoginPasswordUser(self, login, password):
+        # We should check login & password and return the user if one matches or None otherwise.
+        # FIXME: Check password also.
+        return self.users.get(login)
+
+    def login_local(self, handler):
         user = handler.user
         if user is None:
             failUnless(handler.useHttpAuthentication)
@@ -133,8 +137,8 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
             # The user is already authenticated using HTTP authentication.
             userAuthenticated = True
 
-        import lasso
-        authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+        # authenticationMethod = lasso.samlAuthenticationMethodPassword
+        authenticationMethod = 'urn:oasis:names:tc:SAML:1.0:am:password'
         if userAuthenticated:
             session = handler.session
             if session is None:
@@ -147,10 +151,9 @@ class WebSite(abstractweb.WebSiteMixin, WebClient):
                 user = handler.createUser()
             session.userId = user.uniqueId
             user.sessionToken = session.token
-        return callback(handler, userAuthenticated, authenticationMethod, *arguments,
-                        **keywordArguments)
+        return self.login_done(handler, userAuthenticated, authenticationMethod)
 
-    def authenticateLoginPasswordUser(self, login, password):
-        # We should check login & password and return the user if one matches or None otherwise.
-        # FIXME: Check password also.
-        return self.users.get(login)
+    def login_failed(self, handler):
+        if handler.useHttpAuthentication:
+            handler.useHttpAuthentication = 'not this time'
+        return handler.respond(401, 'Access Unauthorized: User has no account.')

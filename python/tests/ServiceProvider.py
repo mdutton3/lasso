@@ -36,6 +36,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
         login = lasso.Login.new(lassoServer)
 
         if handler.httpRequest.method == 'GET':
+            relayState = handler.httpRequest.getQueryField('RelayState', None)
             login.init_request(handler.httpRequest.query, lasso.httpMethodRedirect)
             login.build_request_msg()
 
@@ -57,6 +58,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
                 else:
                     raise
         elif handler.httpRequest.method == 'POST':
+            relayState = handler.httpRequest.getFormField('RelayState', None)
             authnResponseMsg = handler.httpRequest.getFormField('LARES', None)
             failUnless(authnResponseMsg)
             # FIXME: Should we do an init before process_authn_response_msg?
@@ -113,14 +115,30 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             session = handler.createSession()
             session.publishToken = True
         if user is None:
+            # The user has been successfully authenticated on identity provider, but he has no
+            # account on this service provider or his account is not federated yet and he is not
+            # logged.
             # A real service provider would ask user to login locally to create a federation. Or it
             # would ask user informations to create a local account. Or it would automatically
             # create a new account...
             if self.createNewAccountWhenNewFederationForUnknownUser:
                 user = handler.createUser()
             else:
-                return self.assertionConsumer_newFederationForUnknownUser(
-                    handler, nameIdentifier, lassoSessionDump, lassoIdentityDump)
+                # Save some informations in session for a short time (until user is logged).
+                # These informations can't be stored as fields in URL query, because they are too
+                # large.
+                session.lassoIdentityDump = lassoIdentityDump
+                session.lassoSessionDump = lassoSessionDump
+                session.nameIdentifier = nameIdentifier
+                session.relayState = relayState
+
+                # We do a redirect now for two reasons:
+                # - We don't want the user to be able to reload assertionConsumer page (because the
+                #   artifact has been removed from identity-provider).
+                # - For HTTP authentication, we don't want to emit a 401 Unauthorized that would
+                #   force the Principal to reload the assertionConsumer page.
+                # FIXME: Add the session token to redirect URL.
+                return handler.respondRedirectTemporarily('/login_local')
 
         session.userId = user.uniqueId
         user.sessionToken = session.token
@@ -136,56 +154,17 @@ class ServiceProviderMixin(Provider.ProviderMixin):
         # We do a redirect now because we don't want the user to be able to reload
         # assertionConsumer page (because the artifact has been removed from identity-provider).
         # FIXME: Add the session token to redirect URL.
-        return handler.respondRedirectTemporarily('/assertionConsumer_success')
+        redirectUrl = '/assertionConsumer_done'
+        if relayState:
+            redirectUrl = '%s?RelayState=%s' % (redirectUrl, relayState)
+        return handler.respondRedirectTemporarily(redirectUrl)
 
-    def assertionConsumer_newFederationForUnknownUser(
-            self, handler, nameIdentifier, lassoSessionDump, lassoIdentityDump):
-        # Called whe the user has been successfully authenticated on identity provider, but he has
-        # no account on this service provider or is account is not federated yet and he is not
-        # logged.
-        # Depending of the policy of the service provider, the user account can be created
-        # immediately, or the user can be asked to provide informations to create a new account.
-        # He also can be asked to authenticate locally (for the last time :-) in order for the
-        # service-provider to create the federation.
-
-        # Save Lasso login as a dump in session.
-        session = handler.session
-        session.nameIdentifier = nameIdentifier
-        session.lassoSessionDump = lassoSessionDump
-        session.lassoIdentityDump = lassoIdentityDump
-        nameIdentifier = lassoSessionDump = lassoIdentityDump = None
-
-        # We do a redirect now for two reasons:
-        # - We don't want the user to be able to reload assertionConsumer page (because the
-        #   artifact has been removed from identity-provider).
-        # - For HTTP authentication, we don't want to emit a 401 Unauthorized that would force the
-        #   Principal to reload assertionConsumer page.
-        # FIXME: Add the session token to redirect URL.
-        return handler.respondRedirectTemporarily(
-            '/assertionConsumer_newFederationForUnknownUser_part2')
-
-    def assertionConsumer_newFederationForUnknownUser_part2(self, handler):
-        return self.authenticate(handler, self.assertionConsumer_newFederationForUnknownUser_part3)
-
-    def assertionConsumer_newFederationForUnknownUser_part3(
-            self, handler, userAuthenticated, authenticationMethod):
-        if not userAuthenticated:
-            return handler.respond(401, 'Access Unauthorized: User has no account.')
-
-        # User has been authenticated => Create federation.
-        session = handler.session
-        nameIdentifier = session.nameIdentifier
-        del session.nameIdentifier
-        user = handler.user
-        user.lassoIdentityDump = session.lassoIdentityDump
-        del session.lassoIdentityDump
-        self.userIdsByNameIdentifier[nameIdentifier] = user.uniqueId
-        self.sessionTokensByNameIdentifier[nameIdentifier] = session.token
-        return self.assertionConsumer_success(handler)
-
-    def assertionConsumer_success(self, handler):
-        return handler.respond(200, headers = {'Content-Type': 'text/plain'},
-                               body = 'Liberty authentication succeeded')
+    def assertionConsumer_done(self, handler):
+        # A real service provider could use the string relayState for any purpose.
+        relayState = handler.httpRequest.getQueryField('RelayState', None)
+        return handler.respond(
+            200, headers = {'Content-Type': 'text/plain'},
+            body = 'Liberty authentication succeeded\nRelayState = %s' % relayState)
 
     def login(self, handler):
         libertyEnabled = handler.httpRequest.headers.get('Liberty-Enabled', None)
@@ -206,6 +185,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
 
         forceAuthn = handler.httpRequest.getQueryBoolean('forceAuthn', False)
         isPassive = handler.httpRequest.getQueryBoolean('isPassive', False)
+        relayState = handler.httpRequest.getQueryField('RelayState', None)
         lassoServer = self.getLassoServer()
         if useLecp:
             lecp = lasso.Lecp.new(lassoServer)
@@ -222,8 +202,8 @@ class ServiceProviderMixin(Provider.ProviderMixin):
                 lecp.request.set_isPassive(isPassive)
             lecp.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
             lecp.request.set_consent(lasso.libConsentObtained)
-            relayState = 'fake'
-            lecp.request.set_relayState(relayState)
+            if relayState:
+                lecp.request.set_relayState(relayState)
 
             lecp.build_authn_request_envelope_msg()
             authnRequestEnvelopeMsg = lecp.msg_body
@@ -251,12 +231,33 @@ class ServiceProviderMixin(Provider.ProviderMixin):
                 login.request.set_isPassive(isPassive)
             login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
             login.request.set_consent(lasso.libConsentObtained)
-            relayState = 'fake'
-            login.request.set_relayState(relayState)
+            if relayState:
+                login.request.set_relayState(relayState)
             login.build_authn_request_msg(self.idpSite.providerId)
             authnRequestUrl = login.msg_url
             failUnless(authnRequestUrl)
             return handler.respondRedirectTemporarily(authnRequestUrl)
+
+    def login_done(self, handler, userAuthenticated, authenticationMethod):
+        # Remove  informations that are no more needed in session.
+        session = handler.session
+        lassoIdentityDump = session.lassoIdentityDump
+        del session.lassoIdentityDump
+        nameIdentifier = session.nameIdentifier
+        del session.nameIdentifier
+        relayState = session.relayState
+        del session.relayState
+
+        if not userAuthenticated:
+            return self.login_failed(handler)
+
+        # User has been authenticated => Create federation.
+        user = handler.user
+        user.lassoIdentityDump = lassoIdentityDump
+        self.userIdsByNameIdentifier[nameIdentifier] = user.uniqueId
+        self.sessionTokensByNameIdentifier[nameIdentifier] = session.token
+        # Note: The uppercase for RelayState below is not a bug.
+        return self.callHttpFunction(self.assertionConsumer_done, handler, RelayState = relayState)
 
     def logoutUsingSoap(self, handler):
         session = handler.session

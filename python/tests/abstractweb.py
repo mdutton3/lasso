@@ -30,11 +30,11 @@ class HttpRequestMixin:
     body = None
     headers = None
     method = None # 'GET' or 'POST' or 'PUT' or...
-    url = None
     path = None
     pathAndQuery = None
     query = None
     scheme = None # 'http' or 'https'
+    url = None
 
     def getFormField(self, name, default = None):
         raise NotImplementedError
@@ -64,6 +64,33 @@ class HttpRequestMixin:
                 if name == fieldName:
                     return True
         return False
+
+
+class FunctionHttpRequest(HttpRequestMixin, object):
+    method = 'GET'
+    previousHttpRequest = None
+    queryFields = None
+
+    def __init__(self, previousHttpRequest, **queryFields):
+        self.previousHttpRequest = previousHttpRequest
+        self.queryFields = queryFields
+        
+    def getFormField(self, name, default = None):
+        return default
+
+    def getHeaders(self):
+        return self.previousHttpRequest.headers
+
+    def getQueryField(self, name, default = None):
+        return self.queryFields.get(name, default)
+
+    def hasFormField(self, name):
+        return False
+
+    def hasQueryField(self, name):
+        return name in self.queryFields
+
+    headers = property(getHeaders)
 
 
 class HttpResponseMixin:
@@ -200,10 +227,10 @@ class WebSessionMixin(WebClientMixin):
 
 
 class WebSiteMixin:
+    FunctionHttpRequest = FunctionHttpRequest # Class
     httpResponseHeaders = {
         'Server': 'Lasso Simulator Web Server',
         }
-    instantAuthentication = False
     lastSessionToken = 0
     lastUserId = 0
     users = None
@@ -215,11 +242,6 @@ class WebSiteMixin:
         self.users = {}
         self.sessions = {}
 
-    def authenticate(self, handler, callback, *arguments, **keywordArguments):
-        # The arguments & keywordArguments should be given back to callback only for
-        # instant authentication.
-        raise NotImplementedError
-
     def authenticateX509User(self, clientCertificate):
         # We should check certificate (for example clientCertificate.get_serial_number()
         # and return the user if one matches, or None otherwise.
@@ -229,6 +251,15 @@ class WebSiteMixin:
         # We should check login & password and return the user if one matches or None otherwise.
         return None
 
+    def callHttpFunction(self, function, httpRequestHandler, **queryFields):
+        httpRequestHandler.httpRequest = self.FunctionHttpRequest(
+            httpRequestHandler.httpRequest, **queryFields)
+        try:
+            result = function(httpRequestHandler)
+        finally:
+            httpRequestHandler.httpRequest = httpRequestHandler.httpRequest.previousHttpRequest
+        return result
+
     def handleHttpRequestHandler(self, httpRequestHandler):
         methodName = httpRequestHandler.httpRequest.path.replace('/', '')
         try:
@@ -237,6 +268,25 @@ class WebSiteMixin:
             return httpRequestHandler.respond(
                 404, 'Path "%s" Not Found.' % httpRequestHandler.httpRequest.path)
         return method(httpRequestHandler)
+
+    def login(self, handler):
+        # On most site (except Liberty service providers), authentication is done locally.
+        return self.callHttpFunction(self.login_local, handler)
+
+    def login_done(self, handler, userAuthenticated, authenticationMethod):
+        if not userAuthenticated:
+            return self.login_failed(handler)
+        return handler.respond(
+            200, headers = {'Content-Type': 'text/plain'},
+            body = 'Login terminated:\n  userAuthenticated = %s\n  authenticationMethod = %s' % (
+                userAuthenticated, authenticationMethod))
+
+    def login_failed(self, handler):
+        return handler.respond(401, 'Access Unauthorized: User has no account.')
+
+    def login_local(self, handler):
+        # Note: Once local login is done, the HTTP function login_done must be called.
+        raise NotImplementedError
 
     def newSession(self):
         self.lastSessionToken += 1

@@ -165,7 +165,9 @@ class HttpRequest(abstractweb.HttpRequestMixin, object):
 class HttpResponse(abstractweb.HttpResponseMixin, object):
     def send(self, httpRequestHandler):
         statusCode = self.statusCode
-        if statusCode == 404:
+        if statusCode == 401:
+            return self.send401(httpRequestHandler)
+        elif statusCode == 404:
             return self.send404(httpRequestHandler)
         assert statusCode in (200, 207)
         if self.headers is None:
@@ -262,6 +264,19 @@ class HttpResponse(abstractweb.HttpResponseMixin, object):
                     if not chunk:
                         break
                     outputFile.write(chunk)
+
+    def send401(self, httpRequestHandler):
+        logger.info(self.statusMessage)
+        data = '<html><body>%s</body></html>' % self.statusMessage
+        headers = {}
+        if httpRequestHandler.useHttpAuthentication == 'not this time':
+            del httpRequestHandler.useHttpAuthentication
+            if  httpRequestHandler.useHttpAuthentication != True:
+                httpRequestHandler.useHttpAuthentication = True
+        elif httpRequestHandler.useHttpAuthentication:
+            headers["WWW-Authenticate"] = 'Basic realm="%s"' % httpRequestHandler.realm
+        return httpRequestHandler.send_error(
+            self.statusCode, self.statusMessage, data, headers, setCookie = True)
 
     def send404(self, httpRequestHandler):
         logger.info(self.statusMessage)
@@ -373,7 +388,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         if self.httpRequest.hasQueryField('login') and not authorization \
                and self.useHttpAuthentication:
             # Ask for HTTP authentication.
-            return self.outputErrorUnauthorized(httpPath)
+            return self.outputErrorUnauthorized(self.httpRequest.path)
         if self.httpRequest.hasQueryField('logout') and authorization:
             # Since HTTP authentication provides no way to logout,  we send a status
             # Unauthorized to force the user to press the cancel button. But instead of
@@ -385,7 +400,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
             try:
                 authenticationScheme, credentials = authorization.split(None, 1)
             except ValueError:
-                return self.outputErrorUnauthorized(httpPath)
+                return self.outputErrorUnauthorized(self.httpRequest.path)
             authenticationScheme = authenticationScheme.lower()
             if authenticationScheme == 'basic':
                 loginAndPassword = base64.decodestring(credentials)
@@ -401,7 +416,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                     if user is None:
                         logger.info('Unknown user (login = "%s" / password = "%s")' % (
                             login, password))
-                        return self.outputErrorUnauthorized(httpPath)
+                        return self.outputErrorUnauthorized(self.httpRequest.path)
                     else:
                         sessionToken = user.sessionToken
                         if sessionToken is not None:
@@ -428,7 +443,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                             user.sessionToken = session.token
             else:
                 logger.info('Unknown authentication scheme = %s' % authenticationScheme)
-                return self.outputErrorUnauthorized(httpPath)
+                return self.outputErrorUnauthorized(self.httpRequest.path)
 
         # Handle use of cookies, session and user.
         cookie = None

@@ -23,6 +23,7 @@
 
 
 from LibertyEnabledClientProxy import LibertyEnabledClientProxyMixin
+from LibertyEnabledProxy import LibertyEnabledProxyMixin
 from IdentityProvider import IdentityProviderMixin
 from ServiceProvider import ServiceProviderMixin
 from Provider import ProviderMixin
@@ -33,6 +34,12 @@ class LibertyEnabledClientProxy(LibertyEnabledClientProxyMixin, websimulator.Web
     def __init__(self, internet):
         websimulator.WebClient.__init__(self, internet)
         LibertyEnabledClientProxyMixin.__init__(self)
+
+
+class LibertyEnabledProxy(LibertyEnabledProxyMixin, websimulator.WebSite):
+    def __init__(self, internet, url):
+        websimulator.WebSite.__init__(self, internet, url)
+        LibertyEnabledProxyMixin.__init__(self)
 
 
 class Provider(ProviderMixin, websimulator.WebSite):

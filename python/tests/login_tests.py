@@ -130,6 +130,25 @@ class LoginTestCase(unittest.TestCase):
         failIf(spSite.sessions)
         failIf(idpSite.sessions)
 
+    def test01_withRelayState(self):
+        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Checking RelayState."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
+
+        httpResponse = principal.sendHttpRequestToSite(
+            spSite, 'GET', '/login?RelayState=a_sample_relay_state')
+        failUnlessEqual(httpResponse.statusCode, 200)
+        httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/logoutUsingSoap')
+        failUnlessEqual(httpResponse.statusCode, 200)
+        failIf(spSite.sessions)
+        failIf(idpSite.sessions)
+
     def test02(self):
         """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done three times."""
 

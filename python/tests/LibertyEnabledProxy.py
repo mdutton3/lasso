@@ -22,39 +22,28 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-from LibertyEnabledClientProxy import LibertyEnabledClientProxyMixin
-from LibertyEnabledProxy import LibertyEnabledProxyMixin
+import lasso
+
 from IdentityProvider import IdentityProviderMixin
 from ServiceProvider import ServiceProviderMixin
-from Provider import ProviderMixin
-import web
 
 
-class LibertyEnabledClientProxy(LibertyEnabledClientProxyMixin, web.WebClient):
+class LibertyEnabledProxyMixin(IdentityProviderMixin, ServiceProviderMixin):
     def __init__(self):
-        web.WebClient.__init__(self)
-        LibertyEnabledClientProxyMixin.__init__(self)
-
-
-class LibertyEnabledProxy(LibertyEnabledProxyMixin, web.WebSite):
-    def __init__(self, url):
-        web.WebSite.__init__(self, url)
-        LibertyEnabledProxyMixin.__init__(self)
-
-
-class Provider(ProviderMixin, web.WebSite):
-    def __init__(self, url):
-        web.WebSite.__init__(self, url)
-        ProviderMixin.__init__(self)
-
-
-class IdentityProvider(IdentityProviderMixin, Provider):
-    def __init__(self, url):
-        Provider.__init__(self, url)
+        ServiceProviderMixin.__init__(self)
         IdentityProviderMixin.__init__(self)
 
+    def login(self, handler):
+        # Before, this proxy was considered as an identity provider. Now it is a service provider.
+        return ServiceProviderMixin.login(self, handler)
 
-class ServiceProvider(ServiceProviderMixin, Provider):
-    def __init__(self, url):
-        Provider.__init__(self, url)
-        ServiceProviderMixin.__init__(self)
+    def login_failed(self, handler):
+        # Before, this proxy was considered as a service provider. Now it acts again as a service
+        # provider.
+        return self.login_done(handler, False, None)
+
+    def assertionConsumer_done(self, handler):
+        # Before, this proxy was considered as a service provider. Now it acts again as a service
+        # provider.
+        # FIXME: We should retrieve authentication method from session.lassoSessionDump.
+        return self.login_done(handler, True, lasso.samlAuthenticationMethodPassword)

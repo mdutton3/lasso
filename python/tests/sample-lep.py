@@ -97,22 +97,24 @@ def main():
     logger.setLevel(logging._levelNames[options.logLevel.upper()])
     builtins.set('logger', logger)
 
-    site = liberty.IdentityProvider('https://identity-provider/')
-    site.providerId = 'https://identity-provider/metadata'
+    site = liberty.LibertyEnabledProxy('https://liberty-enabled-proxy/')
+    site.providerId = 'https://liberty-enabled-proxy/metadata'
+    site.idpSite = liberty.IdentityProvider('https://identity-provider/')
+    site.idpSite.providerId = 'https://identity-provider/metadata'
 
     lassoServer = lasso.Server.new(
-        '../../examples/data/idp-metadata.xml',
+        '../../examples/data/lep-metadata.xml',
         None, # '../../examples/data/idp-public-key.pem' is no more used.
         '../../examples/data/idp-private-key.pem',
         '../../examples/data/idp-crt.pem',
         lasso.signatureMethodRsaSha1)
     lassoServer.add_provider(
-        '../../examples/data/sp-metadata.xml',
-        '../../examples/data/sp-public-key.pem',
+        '../../examples/data/idp-metadata.xml',
+        '../../examples/data/idp-public-key.pem',
         '../../examples/data/ca-crt.pem')
     lassoServer.add_provider(
-        '../../examples/data/lep-metadata.xml',
-        '../../examples/data/idp-public-key.pem',
+        '../../examples/data/sp-lep-metadata.xml',
+        '../../examples/data/sp-public-key.pem',
         '../../examples/data/ca-crt.pem')
     site.lassoServerDump = lassoServer.dump()
     failUnless(site.lassoServerDump)
@@ -122,17 +124,17 @@ def main():
     site.privateKeyAbsolutePath = '../../examples/data/idp-ssl-private-key.pem'
     site.peerCaCertificateAbsolutePath = '../../examples/data/ca-ssl-crt.pem'
 
-    site.newUser('Chantereau')
-    site.newUser('Clapies')
-    site.newUser('Febvre')
-    site.newUser('Nowicki')
-    # Frederic Peters has no account on identity provider.
+    site.newUser('rc')
+    site.newUser('nc')
+    # site.newUser('vf') Valery Febvre has no account on liberty-enabled proxy.
+    site.newUser('cn')
+    site.newUser('fp')
 
     HttpRequestHandlerMixin.site = site # Directly a site, not a server => no virtual host.
-##     httpServer = http.HttpServer(('127.0.0.2', 80), HttpRequestHandler)
+##     httpServer = http.HttpServer(('127.0.0.4', 80), HttpRequestHandler)
 ##     logger.info('Serving HTTP on %s port %s...' % httpServer.socket.getsockname())
     httpServer = http.HttpsServer(
-        ('127.0.0.2', 443),
+        ('127.0.0.4', 443),
         HttpsRequestHandler,
         '../../examples/data/idp-ssl-private-key.pem', # Server private key
         '../../examples/data/idp-ssl-crt.pem', # Server certificate
