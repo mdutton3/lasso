@@ -17,11 +17,15 @@ lasso.rc.lo: $(top_srcdir)/win32/lasso.rc
 lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h
+BUILT_SOURCES = types.c
 
-liblasso_la_SOURCES = lasso.c types.c
+liblasso_la_SOURCES = lasso.c
 
 types.c:
 	python extract_types.py
+
+clean-local:
+	-rm types.c
 
 EXTRA_DIST = extract_types.py
 
