@@ -55,31 +55,28 @@ typedef enum {
 struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
+  gint     protocolProfile;
+  xmlChar *assertionArtifact;
+
+  xmlChar *response_dump;
+
+  gchar   *msg_relayState;
   /*< private >*/
-  gint   protocolProfile;
-  gchar *msg_relayState;
 };
 
 struct _LassoLoginClass {
   LassoProfileContextClass parent;
 };
 
-LASSO_EXPORT GType                lasso_login_get_type               (void);
+LASSO_EXPORT GType                lasso_login_get_type                (void);
 
-LASSO_EXPORT LassoProfileContext* lasso_login_new                    (LassoServer *server,
-								      LassoUser   *user);
+LASSO_EXPORT LassoProfileContext* lasso_login_new                     (LassoServer *server,
+								       LassoUser   *user);
 
-LASSO_EXPORT gchar*               lasso_login_build_request_msg      (LassoLogin *authn);
+LASSO_EXPORT gint                 lasso_login_build_authn_request_msg (LassoLogin *login);
 
-LASSO_EXPORT gchar*               lasso_login_process_login_result (LassoLogin *authn,
-										      gint                 login_result,
-										      const char          *login_method);
-
-LASSO_EXPORT gchar*               lasso_login_build_response_msg            (LassoLogin *authn,
-										      gint                 login_result,
-										      const gchar         *loginMethod,
-										      const gchar         *reauthenticateOnOrAfter,
-										      gint                 method);
+LASSO_EXPORT gint                 lasso_login_init_authn_request      (LassoLogin  *login,
+								       const gchar *remote_providerID);
 
 #ifdef __cplusplus
 }

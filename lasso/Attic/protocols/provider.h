@@ -61,15 +61,18 @@ LASSO_EXPORT LassoProvider* lasso_provider_new                              (gch
 									     const gchar *public_key,
 									     const gchar *certificate);
 
+LASSO_EXPORT xmlChar       *lasso_provider_get_assertionConsumerServiceURL  (LassoProvider *provider);
+
 LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                   (LassoProvider *provider);
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnProtocolProfile  (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnServiceUrl       (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnServiceURL       (LassoProvider *provider);
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutProtocolProfile  (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceUrl       (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceReturnUrl (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceURL       (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceReturnURL (LassoProvider *provider);
 
+LASSO_EXPORT xmlChar*       lasso_provider_get_soapEndpoint                 (LassoProvider *provider);
 
 #ifdef __cplusplus
 }

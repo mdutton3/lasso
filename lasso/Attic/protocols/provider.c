@@ -27,6 +27,13 @@
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
+
+xmlChar *
+lasso_provider_get_assertionConsumerServiceURL(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL));
+}
+
 xmlChar *
 lasso_provider_get_providerID(LassoProvider *provider)
 {
@@ -40,9 +47,9 @@ lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider)
 }
 
 xmlChar *
-lasso_provider_get_singleSignOnServiceUrl(LassoProvider *provider)
+lasso_provider_get_singleSignOnServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceUrl", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceURL", NULL));
 }
 
 xmlChar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
@@ -50,14 +57,20 @@ xmlChar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
   return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL));
 }
 
-xmlChar *lasso_provider_get_singleLogoutServiceUrl(LassoProvider *provider)
+xmlChar *lasso_provider_get_singleLogoutServiceURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceUrl", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceURL", NULL));
 }
 
-xmlChar *lasso_provider_get_singleLogoutServiceReturnUrl(LassoProvider *provider)
+xmlChar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider *provider)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnUrl", NULL));
+  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnURL", NULL));
+}
+
+xmlChar *
+lasso_provider_get_soapEndpoint(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL));
 }
 
 /*****************************************************************************/
