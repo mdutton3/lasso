@@ -129,4 +129,75 @@ public class BindingTests extends TestCase {
 
 	authnRequest = null;
     }
+
+    public void test05() {
+	// Get & set attributes of nodes of type XML list.
+
+	LibAuthnRequest authnRequest = new LibAuthnRequest();
+
+	assertNull(authnRequest.getExtension());
+
+        String actionString1 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
+	    + "  <action>do 1</action>\n"
+	    + "</lib:Extension>";
+        String actionString2 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
+	    + "  <action>do 2</action>\n"
+	    + "</lib:Extension>";
+        String actionString3 = "<lib:Extension xmlns:lib=\"urn:liberty:iff:2003-08\">\n"
+	    + "  <action>do 3</action>\n"
+	    + "</lib:Extension>";
+	StringList extension = new StringList();
+	assertEquals(extension.length(), 0);
+	extension.append(actionString1);
+	assertEquals(extension.length(), 1);
+	assertEquals(extension.getItem(0), actionString1);
+	assertEquals(extension.getItem(0), actionString1);
+	extension.append(actionString2);
+	assertEquals(extension.length(), 2);
+	assertEquals(extension.getItem(0), actionString1);
+	assertEquals(extension.getItem(1), actionString2);
+	extension.append(actionString3);
+	assertEquals(extension.length(), 3);
+	assertEquals(extension.getItem(0), actionString1);
+	assertEquals(extension.getItem(1), actionString2);
+	assertEquals(extension.getItem(2), actionString3);
+	authnRequest.setExtension(extension);
+	assertEquals(authnRequest.getExtension().getItem(0), actionString1);
+	assertEquals(authnRequest.getExtension().getItem(1), actionString2);
+	assertEquals(authnRequest.getExtension().getItem(2), actionString3);
+	assertEquals(extension.getItem(0), actionString1);
+	assertEquals(extension.getItem(1), actionString2);
+	assertEquals(extension.getItem(2), actionString3);
+	extension = null;
+	assertEquals(authnRequest.getExtension().getItem(0), actionString1);
+	assertEquals(authnRequest.getExtension().getItem(1), actionString2);
+	assertEquals(authnRequest.getExtension().getItem(2), actionString3);
+	extension = authnRequest.getExtension();
+	assertEquals(extension.getItem(0), actionString1);
+	assertEquals(extension.getItem(1), actionString2);
+	assertEquals(extension.getItem(2), actionString3);
+	extension = null;
+	assertEquals(authnRequest.getExtension().getItem(0), actionString1);
+	assertEquals(authnRequest.getExtension().getItem(1), actionString2);
+	assertEquals(authnRequest.getExtension().getItem(2), actionString3);
+	authnRequest.setExtension(null);
+	assertNull(authnRequest.getExtension());
+
+	authnRequest = null;
+    }
+
+    public void test06() {
+        // Get & set attributes of nodes of type node.
+
+        Login login = new Login(new Server(null, null, null, null));
+
+        assertNull(login.getRequest());
+        login.setRequest((SamlpRequestAbstract)new LibAuthnRequest());
+        ((LibAuthnRequest)login.getRequest()).setConsent(lasso.libConsentObtained);
+        assertEquals(((LibAuthnRequest)login.getRequest()).getConsent(), lasso.libConsentObtained);
+        login.setRequest(null);
+        assertNull(login.getRequest());
+
+        login = null;
+    }
 }

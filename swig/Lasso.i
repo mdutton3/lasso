@@ -151,19 +151,10 @@ Warning = _lasso.Warning
 #define gpointer void*
 #define GPtrArray void
 
-/* Functions */
 
-#ifndef SWIGPHP4
-%rename(init) lasso_init;
-#endif
-int lasso_init(void);
-
-#ifndef SWIGPHP4
-%rename(shutdown) lasso_shutdown;
-#endif
-int lasso_shutdown(void);
-
-/* Swig tuning */
+/***********************************************************************
+ * Swig Tuning
+ ***********************************************************************/
 
 #define %nonewobject %feature("new","")
 
@@ -221,11 +212,177 @@ int lasso_shutdown(void);
 
 #endif /* if defined(SWIGPHP4) */
 
-/* Dynamic casting handling */
+
+/***********************************************************************
+ * Exceptions Generation From Lasso Error Codes
+ ***********************************************************************/
+
+
+#ifdef SWIGPYTHON
+
+%{
+
+static void lasso_exception(int errorCode) {
+	PyObject *errorTuple;
+
+	if (errorCode > 0) {
+		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Warning");
+		PyErr_SetObject(LASSO_WARNING, errorTuple);
+		Py_DECREF(errorTuple);
+	}
+	else {
+		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Error");
+		PyErr_SetObject(lassoError, errorTuple);
+		Py_DECREF(errorTuple);
+	}
+}
+
+%}
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		lasso_exception(errorCode);
+		SWIG_fail;
+	}
+}
+%enddef
+
+#else
+
+%{
+
+static void build_exception_msg(int errorCode, char *errorMsg) {
+	if (errorCode > 0)
+		sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+	else
+		sprintf(errorMsg, "%d / Lasso Error", errorCode);
+}
+
+%}
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		char errorMsg[256];
+		build_exception_msg(errorCode, errorMsg);
+		SWIG_exception(SWIG_UnknownError, errorMsg);
+	}
+}
+%enddef
+
+#endif
+
+%define END_THROW_ERROR
+%exception;
+%enddef
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Dynamic Casting of Arguments and Results
+ ***********************************************************************
+ ***********************************************************************/
+
 
 #if defined(SWIGCSHARP) || defined(SWIGJAVA)
 
+
+/***********************************************************************
+ * C# & Java Dynamic Casting
+ ***********************************************************************/
+
+
+/* Accept LassoNode subclasses as input argument, when a LassoNode is expected. */
+
+%typemap(javabody) LassoSamlpRequestAbstract %{
+  protected long swigCPtr;
+  protected boolean swigCMemOwn;
+
+  protected $javaclassname(long cPtr, boolean cMemoryOwn) {
+    swigCMemOwn = cMemoryOwn;
+    swigCPtr = cPtr;
+  }
+
+  protected static long getCPtr($javaclassname obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
+%}
+
+%typemap(javabody) NODE_SUBCLASS %{
+  protected $javaclassname(long cPtr, boolean cMemoryOwn) {
+    super(cPtr, cMemoryOwn);
+  }
+
+  protected static long getCPtr($javaclassname obj) {
+    return (obj == null) ? 0 : obj.swigCPtr;
+  }
+%}
+
+%apply NODE_SUBCLASS {LassoLibAuthnRequest};
+
+/* Dynamically downcast to a LassoNode subclass, when a LassoNode is expected as a result. */
+
+%typemap(out) DowncastableNode * {
+	char classPath[256];
+	jclass clazz;
+	char *name;
+
+	name = (char *) G_OBJECT_TYPE_NAME($1);
+	name += 5; /* Skip "Lasso" prefix. */
+	sprintf(classPath, "com/entrouvert/lasso/%s", name);
+	clazz = (*jenv)->FindClass(jenv, classPath);
+	if (clazz) {
+		jmethodID mid = (*jenv)->GetMethodID(jenv, clazz, "<init>", "(JZ)V");
+		if (mid)
+			*(void**)&$result = (*jenv)->NewObject(jenv, clazz, mid, $1, false);
+	}
+}
+
+%typemap(javaout) DowncastableNode * {
+	return $jnicall;
+}
+
+%typemap(jni) DowncastableNode * "jobject"
+%typemap(jtype) DowncastableNode * "DowncastableNode"
+%typemap(jstype) DowncastableNode * "DowncastableNode"
+
+%{
+
+typedef struct {
+} DowncastableNode; // FIXME: Replace with LassoNode.
+
+DowncastableNode *downcast_node(LassoSamlpRequestAbstract *node) { // FIXME: Replace with LassoNode.
+	return (DowncastableNode *) node;
+}
+
+%}
+
+%nodefault DowncastableNode;
+typedef struct {
+} DowncastableNode; // FIXME: Replace with LassoNode.
+
+DowncastableNode *downcast_node(LassoSamlpRequestAbstract *node); // FIXME: Replace with LassoNode.
+
+%typemap(javaout) NODE_SUPERCLASS * {
+	long cPtr = $jnicall;
+	return (cPtr == 0) ? null : ($javaclassname) lassoJNI.downcast_node(cPtr);
+}
+
+%apply NODE_SUPERCLASS * {LassoSamlpRequestAbstract *};
+
+
 #else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
+
+
+/***********************************************************************
+ * Perl, PHP & Python Dynamic Casting
+ ***********************************************************************/
+
 
 %{
 
@@ -454,209 +611,10 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 #endif /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
 
-%{
-
-static void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
-{
-        g_ptr_array_add(array, g_strdup(key));
-}
-
-static void add_node_to_array(gpointer node, GPtrArray *array)
-{
-	if (node != NULL)
-		g_object_ref(node);
-        g_ptr_array_add(array, node);
-}
-
-static void add_string_to_array(char *string, GPtrArray *array)
-{
-	if (string != NULL)
-		string = g_strdup(string);
-        g_ptr_array_add(array, string);
-}
-
-static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
-{
-	xmlOutputBufferPtr buf;
-	gchar *xmlString;
-
-	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL)
-		xmlString = NULL;
-	else {
-		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
-		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL)
-			xmlString = g_strdup(buf->buffer->content);
-		else
-			xmlString = g_strdup(buf->conv->content);
-		xmlOutputBufferClose(buf);
-	}
-	g_ptr_array_add(array, xmlString);
-}
-
-static void free_node_array_item(gpointer node, gpointer unused)
-{
-	if (node != NULL)
-		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(node))
-			lasso_node_destroy(LASSO_NODE(node));
-		else
-			g_object_unref(node);
-}
-
-static void free_node_list_item(gpointer node, gpointer unused)
-{
-	if (node != NULL)
-		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(node))
-			lasso_node_destroy(LASSO_NODE(node));
-		else
-			g_object_unref(node);
-}
-
-static void free_string_list_item(char *string, gpointer unused)
-{
-	if (string != NULL)
-		free(string);
-}
-
-static void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
-{
-	if (xmlnode != NULL)
-		xmlFreeNode(xmlnode);
-}
-
-static gpointer get_node(gpointer node)
-{
-	return node == NULL ? NULL : g_object_ref(node);
-}
-
-static GPtrArray *get_node_list(GList *nodeList) {
-	GPtrArray *nodeArray;
-
-	if (nodeList == NULL)
-		return NULL;
-	nodeArray = g_ptr_array_sized_new(g_list_length(nodeList));
-	g_list_foreach(nodeList, (GFunc) add_node_to_array, nodeArray);
-	return nodeArray;
-}
-
-static GPtrArray *get_string_list(GList *stringList) {
-	GPtrArray *stringArray;
-
-	if (stringList == NULL)
-		return NULL;
-	stringArray = g_ptr_array_sized_new(g_list_length(stringList));
-	g_list_foreach(stringList, (GFunc) add_string_to_array, stringArray);
-	return stringArray;
-}
-
-static GPtrArray *get_xml_list(GList *xmlList) {
-	GPtrArray *xmlArray;
-
-	if (xmlList == NULL)
-		return NULL;
-	xmlArray = g_ptr_array_sized_new(g_list_length(xmlList));
-	g_list_foreach(xmlList, (GFunc) add_xml_to_array, xmlArray);
-	return xmlArray;
-}
-
-static void set_node(gpointer *nodePointer, gpointer value)
-{
-	if (*nodePointer != NULL)
-		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(*nodePointer))
-			lasso_node_destroy(LASSO_NODE(*nodePointer));
-		else
-			g_object_unref(*nodePointer);
-	*nodePointer = value == NULL ? NULL : g_object_ref(value);
-}
-
-static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
-	if (*nodeListPointer != NULL) {
-		g_list_foreach(*nodeListPointer, (GFunc) free_node_list_item, NULL);
-		g_list_free(*nodeListPointer);
-	}
-	if (nodeArray == NULL)
-		*nodeListPointer = NULL;
-	else {
-		gpointer node;
-		int index;
-
-		for (index = 0; index < nodeArray->len; index ++) {
-			node = g_ptr_array_index(nodeArray, index);
-			if (node != NULL)
-				g_object_ref(node);
-			*nodeListPointer = g_list_append(*nodeListPointer, node);
-		}
-	}
-}
-
-static void set_string(char **pointer, char *value)
-{
-	if (*pointer != NULL)
-		free(*pointer);
-	*pointer = value == NULL ? NULL : strdup(value);
-}
-
-static void set_string_list(GList **stringListPointer, GPtrArray *stringArray) {
-	if (*stringListPointer != NULL) {
-		g_list_foreach(*stringListPointer, (GFunc) free_string_list_item, NULL);
-		g_list_free(*stringListPointer);
-	}
-	if (stringArray == NULL)
-		*stringListPointer = NULL;
-	else {
-		char *string;
-		int index;
-
-		for (index = 0; index < stringArray->len; index ++) {
-			string = g_ptr_array_index(stringArray, index);
-			if (string != NULL)
-				string = g_strdup(string);
-			*stringListPointer = g_list_append(*stringListPointer, string);
-		}
-	}
-}
-
-static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
-	if (*xmlListPointer != NULL) {
-		g_list_foreach(*xmlListPointer, (GFunc) free_xml_list_item, NULL);
-		g_list_free(*xmlListPointer);
-	}
-	if (xmlArray == NULL)
-		*xmlListPointer = NULL;
-	else {
-		xmlDoc *doc;
-		int index;
-		xmlNode *node;
-		char *xmlString;
-
-		for (index = 0; index < xmlArray->len; index ++) {
-			xmlString = g_ptr_array_index(xmlArray, index);
-			if (xmlString == NULL)
-				node = NULL;
-			else {
-				doc = xmlReadDoc(g_ptr_array_index(xmlArray, index), NULL, NULL,
-						 XML_PARSE_NONET);
-				if (doc == NULL)
-					continue;
-				node = xmlDocGetRootElement(doc);
-				if (node != NULL)
-					node = xmlCopyNode(node, 1);
-				xmlFreeDoc(doc);
-			}
-			*xmlListPointer = g_list_append(*xmlListPointer, node);
-		}
-	}
-}
-
-%}
-
-
 /***********************************************************************
+ ***********************************************************************
  * Constants
+ ***********************************************************************
  ***********************************************************************/
 
 
@@ -955,72 +913,273 @@ typedef enum {
 
 
 /***********************************************************************
- * Exceptions Generation From Lasso Error Codes
+ ***********************************************************************
+ * Global Functions
+ ***********************************************************************
  ***********************************************************************/
 
 
-#ifdef SWIGPYTHON
-
-%{
-
-static void lasso_exception(int errorCode) {
-	PyObject *errorTuple;
-
-	if (errorCode > 0) {
-		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Warning");
-		PyErr_SetObject(LASSO_WARNING, errorTuple);
-		Py_DECREF(errorTuple);
-	}
-	else {
-		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Error");
-		PyErr_SetObject(lassoError, errorTuple);
-		Py_DECREF(errorTuple);
-	}
-}
-
-%}
-
-%define THROW_ERROR
-%exception {
-	int errorCode;
-	errorCode = $action
-	if (errorCode) {
-		lasso_exception(errorCode);
-		SWIG_fail;
-	}
-}
-%enddef
-
-#else
-
-%{
-
-static void build_exception_msg(int errorCode, char *errorMsg) {
-	if (errorCode > 0)
-		sprintf(errorMsg, "%d / Lasso Warning", errorCode);
-	else
-		sprintf(errorMsg, "%d / Lasso Error", errorCode);
-}
-
-%}
-
-%define THROW_ERROR
-%exception {
-	int errorCode;
-	errorCode = $action
-	if (errorCode) {
-		char errorMsg[256];
-		build_exception_msg(errorCode, errorMsg);
-		SWIG_exception(SWIG_UnknownError, errorMsg);
-	}
-}
-%enddef
-
+#ifndef SWIGPHP4
+%rename(init) lasso_init;
 #endif
+int lasso_init(void);
 
-%define END_THROW_ERROR
-%exception;
-%enddef
+#ifndef SWIGPHP4
+%rename(shutdown) lasso_shutdown;
+#endif
+int lasso_shutdown(void);
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Utility functions to handle nodes, strings, lists...
+ ***********************************************************************
+ ***********************************************************************/
+
+
+%{
+
+static void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
+{
+        g_ptr_array_add(array, g_strdup(key));
+}
+
+static void add_node_to_array(gpointer node, GPtrArray *array)
+{
+	if (node != NULL)
+		g_object_ref(node);
+        g_ptr_array_add(array, node);
+}
+
+static void add_string_to_array(char *string, GPtrArray *array)
+{
+	if (string != NULL)
+		string = g_strdup(string);
+        g_ptr_array_add(array, string);
+}
+
+static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
+{
+	xmlOutputBufferPtr buf;
+	gchar *xmlString;
+
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf == NULL)
+		xmlString = NULL;
+	else {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL)
+			xmlString = g_strdup(buf->buffer->content);
+		else
+			xmlString = g_strdup(buf->conv->content);
+		xmlOutputBufferClose(buf);
+	}
+	g_ptr_array_add(array, xmlString);
+}
+
+static void free_node_array_item(gpointer node, gpointer unused)
+{
+	if (node != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(node))
+			lasso_node_destroy(LASSO_NODE(node));
+		else
+			g_object_unref(node);
+}
+
+static void free_node_list_item(gpointer node, gpointer unused)
+{
+	if (node != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(node))
+			lasso_node_destroy(LASSO_NODE(node));
+		else
+			g_object_unref(node);
+}
+
+static void free_string_list_item(char *string, gpointer unused)
+{
+	if (string != NULL)
+		free(string);
+}
+
+static void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
+{
+	if (xmlnode != NULL)
+		xmlFreeNode(xmlnode);
+}
+
+static gpointer get_node(gpointer node)
+{
+	return node == NULL ? NULL : g_object_ref(node);
+}
+
+static GPtrArray *get_node_list(GList *nodeList) {
+	GPtrArray *nodeArray;
+
+	if (nodeList == NULL)
+		return NULL;
+	nodeArray = g_ptr_array_sized_new(g_list_length(nodeList));
+	g_list_foreach(nodeList, (GFunc) add_node_to_array, nodeArray);
+	return nodeArray;
+}
+
+static GPtrArray *get_string_list(GList *stringList) {
+	GPtrArray *stringArray;
+
+	if (stringList == NULL)
+		return NULL;
+	stringArray = g_ptr_array_sized_new(g_list_length(stringList));
+	g_list_foreach(stringList, (GFunc) add_string_to_array, stringArray);
+	return stringArray;
+}
+
+static GPtrArray *get_xml_list(GList *xmlList) {
+	GPtrArray *xmlArray;
+
+	if (xmlList == NULL)
+		return NULL;
+	xmlArray = g_ptr_array_sized_new(g_list_length(xmlList));
+	g_list_foreach(xmlList, (GFunc) add_xml_to_array, xmlArray);
+	return xmlArray;
+}
+
+static void set_node(gpointer *nodePointer, gpointer value)
+{
+	if (*nodePointer != NULL)
+		/* Test added to help debugging. */
+		if (LASSO_IS_NODE(*nodePointer))
+			lasso_node_destroy(LASSO_NODE(*nodePointer));
+		else
+			g_object_unref(*nodePointer);
+	*nodePointer = value == NULL ? NULL : g_object_ref(value);
+}
+
+static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
+	if (*nodeListPointer != NULL) {
+		g_list_foreach(*nodeListPointer, (GFunc) free_node_list_item, NULL);
+		g_list_free(*nodeListPointer);
+	}
+	if (nodeArray == NULL)
+		*nodeListPointer = NULL;
+	else {
+		gpointer node;
+		int index;
+
+		for (index = 0; index < nodeArray->len; index ++) {
+			node = g_ptr_array_index(nodeArray, index);
+			if (node != NULL)
+				g_object_ref(node);
+			*nodeListPointer = g_list_append(*nodeListPointer, node);
+		}
+	}
+}
+
+static void set_string(char **pointer, char *value)
+{
+	if (*pointer != NULL)
+		free(*pointer);
+	*pointer = value == NULL ? NULL : strdup(value);
+}
+
+static void set_string_list(GList **stringListPointer, GPtrArray *stringArray) {
+	if (*stringListPointer != NULL) {
+		g_list_foreach(*stringListPointer, (GFunc) free_string_list_item, NULL);
+		g_list_free(*stringListPointer);
+	}
+	if (stringArray == NULL)
+		*stringListPointer = NULL;
+	else {
+		char *string;
+		int index;
+
+		for (index = 0; index < stringArray->len; index ++) {
+			string = g_ptr_array_index(stringArray, index);
+			if (string != NULL)
+				string = g_strdup(string);
+			*stringListPointer = g_list_append(*stringListPointer, string);
+		}
+	}
+}
+
+static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
+	if (*xmlListPointer != NULL) {
+		g_list_foreach(*xmlListPointer, (GFunc) free_xml_list_item, NULL);
+		g_list_free(*xmlListPointer);
+	}
+	if (xmlArray == NULL)
+		*xmlListPointer = NULL;
+	else {
+		xmlDoc *doc;
+		int index;
+		xmlNode *node;
+		char *xmlString;
+
+		for (index = 0; index < xmlArray->len; index ++) {
+			xmlString = g_ptr_array_index(xmlArray, index);
+			if (xmlString == NULL)
+				node = NULL;
+			else {
+				doc = xmlReadDoc(g_ptr_array_index(xmlArray, index), NULL, NULL,
+						 XML_PARSE_NONET);
+				if (doc == NULL)
+					continue;
+				node = xmlDocGetRootElement(doc);
+				if (node != NULL)
+					node = xmlCopyNode(node, 1);
+				xmlFreeDoc(doc);
+			}
+			*xmlListPointer = g_list_append(*xmlListPointer, node);
+		}
+	}
+}
+
+%}
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Core Structures
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * Node
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Node) LassoNode;
+#endif
+typedef struct {
+} LassoNode;
+%extend LassoNode {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoNode();
+
+	~LassoNode();
+
+	/* Methods */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNode lasso_node_new
+#define delete_LassoNode lasso_node_destroy
+
+/* Methods implementations */
+
+#define LassoNode_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
 
 
 /***********************************************************************
@@ -1218,50 +1377,6 @@ typedef struct {
 
 #define new_LassoStringList g_ptr_array_new
 #define delete_LassoStringList(self) g_ptr_array_free(self, true)
-
-%}
-
-
-/***********************************************************************
- ***********************************************************************
- * XML Elements without namespace
- ***********************************************************************
- ***********************************************************************/
-
-
-/***********************************************************************
- * Node
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(Node) LassoNode;
-#endif
-typedef struct {
-} LassoNode;
-%extend LassoNode {
-	/* Constructor, Destructor & Static Methods */
-
-	LassoNode();
-
-	~LassoNode();
-
-	/* Methods */
-
-	%newobject dump;
-	char *dump();
-}
-
-%{
-
-/* Constructors, destructors & static methods implementations */
-
-#define new_LassoNode lasso_node_new
-#define delete_LassoNode lasso_node_destroy
-
-/* Methods implementations */
-
-#define LassoNode_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -2449,6 +2564,9 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(SamlpRequestAbstract) LassoSamlpRequestAbstract;
 #endif
+#ifdef SWIGJAVA /* FIXME: change to Node */
+%typemap(javabase) LassoSamlpRequestAbstract "DowncastableNode"
+#endif
 %nodefault LassoSamlpRequestAbstract;
 typedef struct {
 	/* Attributes */
@@ -2712,7 +2830,7 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(SamlpResponseAbstract) LassoSamlpResponseAbstract;
 #endif
-%nodefault LassoSamlpRequestAbstract;
+%nodefault LassoSamlpResponseAbstract;
 typedef struct {
 	/* Attributes */
 
@@ -3122,6 +3240,9 @@ typedef struct {
 
 #ifndef SWIGPHP4
 %rename(LibAuthnRequest) LassoLibAuthnRequest;
+#endif
+#ifdef SWIGJAVA
+%typemap(javabase) LassoLibAuthnRequest "SamlpRequestAbstract"
 #endif
 typedef struct {
 	/* Attributes */

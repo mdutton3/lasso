@@ -29,7 +29,7 @@ javashare_DATA = lasso.jar
 SWIG_OUTPUTS = lasso_wrap.c \
 	Credentials.java Defederation.java Description.java DiscoModify.java \
 	DiscoModifyResponse.java DiscoQuery.java DiscoQueryResponse.java \
-	Discovery.java DstModification.java DstModify.java \
+	Discovery.java DowncastableNode DstModification.java DstModify.java \
 	DstModifyResponse.java DstQuery.java DstQueryResponse.java \
 	Federation.java Identity.java InsertEntry.java Lecp.java \
 	LibAssertion.java LibAuthnRequest.java LibAuthnResponse.java \
