@@ -697,7 +697,7 @@ lasso_login_init_request(LassoLogin       *login,
 gboolean
 lasso_login_must_authenticate(LassoLogin *login)
 {
-  gboolean  must_authenticate = TRUE;
+  gboolean  must_authenticate = FALSE;
   gboolean  isPassive = TRUE;
   gboolean  forceAuthn = FALSE;
 
@@ -717,7 +717,6 @@ lasso_login_must_authenticate(LassoLogin *login)
   else if (LASSO_PROFILE_CONTEXT(login)->user == NULL && isPassive == TRUE) {
     lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 					      lassoLibStatusCodeNoPassive);
-    must_authenticate = FALSE;
   }
 
   return (must_authenticate);
