@@ -33,7 +33,11 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Logout.java         Lecp.java            lassoJNI.java \
 	lasso.java          lassoConstants.java  LogoutRequest.java \
 	FederationTerminationNotification.java   LogoutResponse.java \
-	Assertion.java
+	Assertion.java      ProviderIds.java     Provider.java \
+	Providers.java      NameIdentifierMapping.java NameRegistration.java \
+	Node.java           RegisterNameIdentifierRequest.java \
+	RegisterNameIdentifierResponse.java      SWIGTYPE_p_void.java
+
 
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java

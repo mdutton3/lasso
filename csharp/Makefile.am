@@ -16,7 +16,7 @@ liblassosharpglue_la_LIBADD = \
 liblassosharpglue_la_LDFLAGS =	-no-undefined -module -avoid-version
 
 liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i
-	$(SWIG) -v -csharp -package lasso -module lasso -o liblassosharpglue_wrap.c $<
+	$(SWIG) -v -csharp -module lasso -o liblassosharpglue_wrap.c $<
 	cp liblassosharpglue_wrap.c liblassosharpglue_wrap.c.bak
 	sed -e 's/(char \*) "\(.*\)"/malloc("\1")/' \
 		< liblassosharpglue_wrap.c.bak > liblassosharpglue_wrap.c
@@ -44,7 +44,22 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	Identity.cs            Response.cs       AuthnRequest.cs \
 	Lecp.cs                AuthnResponse.cs  Login.cs \
 	Logout.cs              LogoutResponse.cs LogoutRequest.cs \
-	FederationTerminationNotification.cs     Assertion.cs
+	FederationTerminationNotification.cs     Assertion.cs \
+	NameIdentifierMapping.cs NameRegistration.cs Node.cs \
+	Provider.cs            ProviderIds.cs    Providers.cs \
+	RegisterNameIdentifierRequest.cs \
+	RegisterNameIdentifierResponse.cs \
+	SWIGTYPE_p_void.cs \
+	lassoHttpMethod.cs \
+	lassoLoginProtocolProfile.cs \
+	lassoMessageType.cs \
+	lassoNameIdentifierFormatType.cs \
+	lassoProviderRole.cs \
+	lassoRequestType.cs \
+	lassoSignatureMethod.cs
+
+
+
 
 EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
 
