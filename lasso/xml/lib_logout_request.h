@@ -61,6 +61,7 @@ struct _LassoLibLogoutRequest {
 	char *SessionIndex;
 	char *RelayState;
 	char *consent;
+	char *NotOnOrAfter;
 };
 
 struct _LassoLibLogoutRequestClass {

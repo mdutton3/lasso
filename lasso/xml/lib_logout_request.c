@@ -37,10 +37,11 @@
  *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
  *         <xs:element ref="ProviderID"/>
  *         <xs:element ref="saml:NameIdentifier"/>
- *         <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/>
+ *         <xs:element name="SessionIndex" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
  *         <xs:element ref="RelayState" minOccurs="0"/>
  *       </xs:sequence>
  *       <xs:attribute ref="consent" use="optional"/>
+ *       <xs:attribute name="NotOnOrAfter" type="xs:dateTime" use="optional"/>
  *     </xs:extension>
  *   </xs:complexContent>
  * </xs:complexType>
@@ -67,6 +68,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "SessionIndex", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, SessionIndex) },
 	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibLogoutRequest, RelayState) },
 	{ "consent", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoLibLogoutRequest, consent) },
+	{ "NotOnOrAfter", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoLibLogoutRequest, NotOnOrAfter) },
 	{ NULL, 0, 0}
 };
 
