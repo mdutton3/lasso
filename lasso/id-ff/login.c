@@ -479,14 +479,15 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	relayState = xmlURIEscapeStr(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
+		xmlChar *escaped_artifact = xmlURIEscapeStr(b64_samlArt, NULL);
 		if (relayState == NULL) {
-			profile->msg_url = g_strdup_printf(
-					"%s?SAMLart=%s", url, b64_samlArt);
+			profile->msg_url = g_strdup_printf("%s?SAMLart=%s", url, escaped_artifact);
 		} else {
 			profile->msg_url = g_strdup_printf(
 					"%s?SAMLart=%s&RelayState=%s", 
-					url, b64_samlArt, relayState);
+					url, escaped_artifact, relayState);
 		}
+		xmlFree(escaped_artifact);
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
@@ -816,6 +817,12 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 
 	profile = LASSO_PROFILE(login);
 
+	/* clean state */
+	if (profile->remote_providerID)
+		g_free(profile->remote_providerID);
+	if (profile->request)
+		lasso_node_destroy(LASSO_NODE(profile->request));
+
 	if (remote_providerID != NULL) {
 		profile->remote_providerID = g_strdup(remote_providerID);
 	} else {
@@ -1142,6 +1149,9 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	
+	/* clean state */
+	if (LASSO_PROFILE(login)->remote_providerID)
+		g_free(LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_PROFILE(login)->response)
 		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(login)->response));
 
