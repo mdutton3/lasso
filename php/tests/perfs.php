@@ -3,11 +3,8 @@
 
 $ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 if ($ret == FALSE) {
-    $ret = @dl('../.libs/lasso.' . PHP_SHLIB_SUFFIX);
-    if ($ret == FALSE) {
-        print "lasso not found\n";
-        exit();
-    }
+    print "lasso not found\n";
+    exit(1);
 }
 
 function create_authnresponse($query)
@@ -54,7 +51,7 @@ printf("Generating 50 AuthnRequest...\n");
 for ($i=0; $i < 50; $i++) {
     $login->initAuthnRequest("https://idp1/metadata", LASSO_HTTP_METHOD_REDIRECT);
 
-    $request = $login->authnRequest;
+    $request = $login->request;
     $request->ForceAuthn = true;
     $request->IsPassive = false;
     $request->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
