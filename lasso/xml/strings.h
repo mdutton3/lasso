@@ -71,8 +71,6 @@
 #define lassoLibStatusCodeUnsupportedProfile	 "lib:UnsupportedProfile"
 
 /* ProtocolProfile */
-#define lassoLibProtocolProfileSSOGet	 "http://projectliberty.org/profiles/sso-get"
-#define lassoLibProtocolProfileSSOPost	 "http://projectliberty.org/profiles/sso-post"
 #define lassoLibProtocolProfileBrwsArt	 "http://projectliberty.org/profiles/brws-art"
 #define lassoLibProtocolProfileBrwsPost	 "http://projectliberty.org/profiles/brws-post"
 #define lassoLibProtocolProfileFedTermIdpHttp	 "http://projectliberty.org/profiles/fedterm-idp-http"
@@ -152,6 +150,12 @@
 #define lassoSoapEnvHRef	 "http://schemas.xmlsoap.org/soap/envelope/"
 #define lassoSoapEnvPrefix	 "soap-env"
 
+/*****************************************************************************/
+/* Others                                                                    */
+/*****************************************************************************/
 
+/* xsi prefix & href */
+#define lassoXsiHRef "http://www.w3.org/2001/XMLSchema-instance"
+#define lassoXsiPrefix "xsi"
 
 #endif /* __LASSO_STRINGS_H__ */
