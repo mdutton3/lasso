@@ -1466,7 +1466,7 @@ lasso_session_destroy
 lasso_session_dump
 lasso_session_get_assertion
 lasso_session_get_authentication_method
-lasso_session_get_next_assertion_remote_providerID
+lasso_session_get_next_providerID
 lasso_session_remove_assertion
 <SUBSECTION Standard>
 LASSO_SESSION
