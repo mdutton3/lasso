@@ -22,10 +22,10 @@ BUILT_SOURCES = types.c symbols.sym
 liblasso_la_SOURCES = lasso.c errors.c
 
 types.c:
-	python $(srcdir)/extract_types.py $(srcdir)
+	$(PYTHON) $(srcdir)/extract_types.py $(srcdir)
 
 symbols.sym:
-	python $(srcdir)/extract_symbols.py $(srcdir) > symbols.sym
+	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) > symbols.sym
 
 clean-local:
 	-rm types.c symbols.sym
