@@ -51,46 +51,62 @@
 # *****************************************************************************/
 
 # * Versioning */
-LibMajorVersion = "1"
-LibMinorVersion = "2"
+libMajorVersion = "1"
+libMinorVersion = "2"
 
 # * NameIDPolicyType */
-LibNameIDPolicyTypeNone = "none"
-LibNameIDPolicyTypeOneTime = "onetime"
-LibNameIDPolicyTypeFederated = "federated"
-LibNameIDPolicyTypeAny = "any"
+libNameIDPolicyTypeNone = "none"
+libNameIDPolicyTypeOneTime = "onetime"
+libNameIDPolicyTypeFederated = "federated"
+libNameIDPolicyTypeAny = "any"
 
 # * AuthnContextComparison */
-LibAuthnContextComparisonExact = "exact"
-LibAuthnContextComparisonMinimum = "minimum"
-LibAuthnContextComparisonBetter = "better"
+libAuthnContextComparisonExact = "exact"
+libAuthnContextComparisonMinimum = "minimum"
+libAuthnContextComparisonBetter = "better"
 
 # * StatusCodes */
-LibStatusCodeFederationDoesNotExist = "lib:FederationDoesNotExist"
-LibStatusCodeNoPassive = "lib:NoPassive"
+libStatusCodeFederationDoesNotExist = "lib:FederationDoesNotExist"
+libStatusCodeNoPassive = "lib:NoPassive"
+
+# * ProtocolProfile */
+libProtocolProfileArtifact = "http://projectliberty.org/profiles/brws-art"
+libProtocolProfilePost = "http://projectliberty.org/profiles/brws-post"
+libProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http"
+libProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap"
+libProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http"
+libProtocolProfileFedTermSpSoap = "http://projectliberty.org/profiles/fedterm-sp-soap"
+libProtocolProfileRniIdpHttp = "http://projectliberty.org/profiles/rni-idp-http"
+libProtocolProfileRniIdpSoap = "http://projectliberty.org/profiles/rni-idp-soap"
+libProtocolProfileRniSpHttp = "http://projectliberty.org/profiles/rni-sp-http"
+libProtocolProfileRniSpSoap = "http://projectliberty.org/profiles/rni-sp-soap"
+libProtocolProfileSloSpHttp = "http://projectliberty.org/profiles/slo-sp-http"
+libProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap"
+libProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http"
+libProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap"
 
 # *****************************************************************************/
 # * SAML                                                                      */
 # *****************************************************************************/
 
 # * Versioning */
-SamlMajorVersion = "1"
-SamlMinorVersion = "0"
+samlMajorVersion = "1"
+samlMinorVersion = "0"
 
 # * StatusCodes */
-SamlStatusCodeRequestDenied = "Samlp:RequestDenied"
-SamlStatusCodeSuccess = "Samlp:Success"
+samlStatusCodeRequestDenied = "Samlp:RequestDenied"
+samlStatusCodeSuccess = "Samlp:Success"
 
 # * AuthenticationMethods */
-SamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password"
-SamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510"
-SamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
-SamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
-SamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
-SamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
-SamlAuthenticationMethodPGP = "urn:oasis:names:tc:SAML:1.0:am:PGP"
-SamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
-SamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
-SamlAuthenticationMethodXmlSign = "urn:ietf:rfc:3075"
-SamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
+samlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password"
+samlAuthenticationMethodKerberos = "urn:ietf:rfc:1510"
+samlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
+samlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+samlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
+samlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+samlAuthenticationMethodPGP = "urn:oasis:names:tc:SAML:1.0:am:PGP"
+samlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+samlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+samlAuthenticationMethodXmlSign = "urn:ietf:rfc:3075"
+samlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
