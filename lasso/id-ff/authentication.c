@@ -41,7 +41,7 @@ lasso_authentication_build_request_msg(LassoAuthentication *authn)
 {
   LassoProvider *provider;
   xmlChar *request_protocolProfile, *url, *query;
-  gchar *request_msg;
+  gchar *msg;
   gboolean must_sign;
   
   provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(authn)->server,
@@ -64,8 +64,8 @@ lasso_authentication_build_request_msg(LassoAuthentication *authn)
       query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(authn)->request, 0, NULL);
     }
     /* alloc returned string +2 for the ? and \0 */
-    request_msg = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
-    g_sprintf(request_msg, "%s?%s", url, query);
+    msg = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
+    g_sprintf(msg, "%s?%s", url, query);
     g_free(url);
     g_free(query);
   }
@@ -74,7 +74,7 @@ lasso_authentication_build_request_msg(LassoAuthentication *authn)
     printf("TODO - export the AuthnRequest in a formular\n");
   }
   
-  return (request_msg);
+  return (msg);
 }
 
 static void
@@ -186,10 +186,12 @@ gchar *
 lasso_authentication_build_response_msg(LassoAuthentication *authn,
 					gint                 authentication_result,
 					const gchar         *authenticationMethod,
-					const gchar         *reauthenticateOnOrAfter)
+					const gchar         *reauthenticateOnOrAfter,
+					gint                 method)
 {
   LassoUser *user;
-  xmlChar   *str, *nameIDPolicy, *protocolProfile;
+  gchar     *msg;
+  xmlChar   *nameIDPolicy, *protocolProfile;
   LassoNode *assertion, *authentication_statement, *idpProvidedNameIdentifier;
   
   LassoIdentity *identity;
@@ -243,13 +245,17 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
 
     if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfilePost)) {
       /* return an authnResponse (base64 encoded) */
-      str = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
+      msg = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
     }
-    else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileArtifact)) {
+    else if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfileArtifact)) {
       /* return an artifact */
-      switch (authn->response_method) {
+      switch (method) {
       case lassoProfileContextMethodRedirect:
-	/* return query */
+	/* return query (base64 encoded) */
+	/* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
+	msg = g_new(gchar, 2+20+20+1);
+	sprintf(msg, "%c%c%s%s", 0, 3, "01234567890123456789", "01234567890123456789");
+	msg = xmlSecBase64Encode(msg, 42, 0);
 	break;
       case lassoProfileContextMethodPost:
 	/* return a formular */
@@ -262,7 +268,7 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
     break;
   }
   
-  return(str);
+  return (msg);
 }
 
 xmlChar*
@@ -320,14 +326,12 @@ GType lasso_authentication_get_type() {
       sizeof (LassoAuthenticationClass),
       NULL,
       NULL,
-/*       (GClassInitFunc) lasso_authentication_class_init, */
-      NULL,
+      (GClassInitFunc) lasso_authentication_class_init,
       NULL,
       NULL,
       sizeof(LassoAuthentication),
       0,
-/*       (GInstanceInitFunc) lasso_authentication_instance_init, */
-      NULL,
+      (GInstanceInitFunc) lasso_authentication_instance_init,
     };
     
     this_type = g_type_register_static(LASSO_TYPE_PROFILE_CONTEXT,
@@ -367,11 +371,6 @@ lasso_authentication_new(LassoServer *server,
     authn->request = lasso_authn_request_new(authn->local_providerID);
   }
   else if (request_msg != NULL) {
-    /*
-      rebuild request
-      create response (LibAuthnResponse or SamlpResponse)
-      verify request signature -> modify response status if need
-    */
     lasso_authentication_process_request(LASSO_AUTHENTICATION(authn), request_msg);
   }
   else if (response_msg != NULL) {

@@ -83,7 +83,6 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
   lasso_node_destroy(status);
 }
 
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -101,10 +100,11 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
 {
   LassoProfileContext *ctx = LASSO_PROFILE_CONTEXT(instance);
 
-  ctx->user = NULL;
+  ctx->server = NULL;
+  ctx->user   = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
-  ctx->local_providerID = NULL;
+  ctx->local_providerID  = NULL;
   ctx->remote_providerID = NULL;
 }
 
@@ -118,12 +118,16 @@ lasso_profile_context_set_property (GObject      *object,
 
   switch (property_id) {
   case LASSO_PROFILE_CONTEXT_SERVER: {
-    g_object_unref(self->server);
+    if (self->server) {
+      g_object_unref(self->server);
+    }
     self->server = g_value_get_pointer (value);
   }
     break;
   case LASSO_PROFILE_CONTEXT_USER: {
-    g_object_unref(self->user);
+    if (self->user) {
+      g_object_unref(self->user);
+    }
     self->user = g_value_get_pointer (value);
   }
     break;
@@ -157,7 +161,6 @@ lasso_profile_context_class_init(gpointer g_class,
 				 gpointer g_class_data)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
-  LassoProfileContextClass *klass = LASSO_PROFILE_CONTEXT_CLASS (g_class);
   GParamSpec *pspec;
 
   gobject_class->set_property = lasso_profile_context_set_property;
@@ -227,21 +230,18 @@ lasso_profile_context_new(LassoServer *server,
 			  gchar       *local_providerID,
 			  gchar       *remote_providerID)
 {
-  /* load the ProviderID name or a reference to the provider ? */
+  g_return_val_if_fail(server != NULL, NULL);
   g_return_val_if_fail(local_providerID != NULL, NULL);
   g_return_val_if_fail(remote_providerID != NULL, NULL);
 
   LassoProfileContext *ctx;
 
-  ctx = g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
-		     "server", server,
-		     "user", user,
-		     "local_providerID", local_providerID,
-		     "remote_providerID", remote_providerID,
-		     NULL);
-
-/*   lasso_profile_context_set_local_providerID(ctx, local_providerID); */
-/*   lasso_profile_context_set_remote_providerID(ctx, remote_providerID); */
+  ctx = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
+					   "server", server,
+					   "user", user,
+					   "local_providerID", local_providerID,
+					   "remote_providerID", remote_providerID,
+					   NULL));
 
   return (ctx);
 }

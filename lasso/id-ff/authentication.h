@@ -73,15 +73,15 @@ LASSO_EXPORT LassoProfileContext* lasso_authentication_new                    (L
 
 LASSO_EXPORT gchar*               lasso_authentication_build_request_msg      (LassoAuthentication *authn);
 
-LASSO_EXPORT xmlChar*             lasso_authentication_process_artifact       (LassoAuthentication *authn,
-									       gchar               *artifact);
-  
-LASSO_EXPORT gboolean             lasso_authentication_process_response       (LassoAuthentication *authn,
-										xmlChar             *response);
-
 LASSO_EXPORT gchar*               lasso_authentication_process_authentication_result (LassoAuthentication *authn,
 										      gint                 authentication_result,
 										      const char          *authentication_method);
+
+LASSO_EXPORT gchar*               lasso_authentication_build_response_msg            (LassoAuthentication *authn,
+										      gint                 authentication_result,
+										      const gchar         *authenticationMethod,
+										      const gchar         *reauthenticateOnOrAfter,
+										      gint                 method);
 
 #ifdef __cplusplus
 }
