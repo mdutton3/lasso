@@ -42,7 +42,7 @@ static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xml
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
 static int set_value_at_path(LassoNode *node, char *path, char *query_value);
-static char* get_value_by_path(LassoNode *node, char *path);
+static char* get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet);
 static int find_path(LassoNode *node, char *path, LassoNode **value_node,
 		struct XmlSnippet **snippet);
 
@@ -1221,13 +1221,15 @@ find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet
 
 
 static char*
-get_value_by_path(LassoNode *node, char *path)
+get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 {
 	struct XmlSnippet *snippet;
 	LassoNode *value_node;
 	
 	if (find_path(node, path, &value_node, &snippet) != 0)
 		return NULL;
+
+	*xml_snippet = *snippet;
 
 	if (snippet->type & SNIPPET_BOOLEAN) {
 		gboolean v = G_STRUCT_MEMBER(gboolean, value_node, snippet->offset);
@@ -1238,6 +1240,56 @@ get_value_by_path(LassoNode *node, char *path)
 	} else if (snippet->type == SNIPPET_NODE) {
 		LassoNode *value = G_STRUCT_MEMBER(LassoNode*, value_node, snippet->offset);
 		return lasso_node_build_query(value);
+	} else if (snippet->type == SNIPPET_EXTENSION) {
+		/* convert all of the <lib:Extension> into a string, already
+		 * escaped for URI usage */
+		GList *value = G_STRUCT_MEMBER(GList*, value_node, snippet->offset);
+		xmlChar *s, *s2;
+		GString *result = g_string_new("");
+		while (value) {
+			xmlNode *t = value->data;
+			xmlNode *c;
+			xmlAttr *a;
+
+			/* attributes */
+			for (a = t->properties; a; a = a->next) {
+				if (result->len)
+					g_string_append(result, "&");
+				s = xmlGetProp(t, a->name);
+				g_string_append(result, a->name);
+				g_string_append(result, "=");
+				s2 = xmlURIEscapeStr(s, NULL);
+				g_string_append(result, s2);
+				xmlFree(s2);
+				xmlFree(s);
+			}
+
+			/* children (only simple ones and 1-level deep) */
+			for (c = t->children; c; c = c->next) {
+				if (c->type != XML_ELEMENT_NODE)
+					continue;
+				if (c->children->type != XML_TEXT_NODE)
+					continue;
+				if (c->properties != NULL)
+					continue;
+				if (result->len)
+					g_string_append(result, "&");
+				g_string_append(result, c->name);
+				g_string_append(result, "=");
+				s = xmlNodeGetContent(c);
+				s2 = xmlURIEscapeStr(s, NULL);
+				g_string_append(result, s2);
+				xmlFree(s2);
+				xmlFree(s);
+			}
+
+			value = g_list_next(value);
+		}
+		if (result->len == 0) {
+			g_string_free(result, TRUE);
+			return NULL;
+		}
+		return g_string_free(result, FALSE);
 	} else {
 		char *value = G_STRUCT_MEMBER(char*, value_node, snippet->offset);
 		if (value == NULL) return NULL;
@@ -1289,6 +1341,7 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 	xmlChar *t;
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 	struct QuerySnippet *query_snippets = NULL;
+	struct XmlSnippet xml_snippet;
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		if (class->node_data && class->node_data->query_snippets) {
@@ -1305,7 +1358,13 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 	for (i=0; query_snippets[i].path; i++) {
 		memset(path, 0, 100);
 		strncpy(path, query_snippets[i].path, 100);
-		v = get_value_by_path(node, path);
+		v = get_value_by_path(node, path, &xml_snippet);
+		if (v && xml_snippet.type == SNIPPET_EXTENSION) {
+			if (s->len)
+				g_string_append(s, "&");
+			g_string_append(s, v);
+			continue;
+		}
 		if (v) {
 			char *field_name = query_snippets[i].field_name;
 			if (field_name == NULL)
@@ -1318,12 +1377,11 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 			g_string_append(s, t);
 			xmlFree(t);
 		}
+		if (v)
+			g_free(v);
 	}
 
-	v = s->str;
-	g_string_free(s, FALSE);
-
-	return v;
+	return g_string_free(s, FALSE);
 }
 
 

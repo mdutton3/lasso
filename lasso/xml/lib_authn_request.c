@@ -125,6 +125,7 @@ static struct QuerySnippet query_snippets[] = {
 	{ "Scoping/IDPList/IDPEntries", "IDPEntries" },
 	{ "Scoping/IDPList/GetComplete", "GetComplete" },
 	{ "consent", NULL },
+	{ "Extension", NULL },
 	{ NULL, NULL }
 };
 
