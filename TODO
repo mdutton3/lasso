@@ -9,3 +9,10 @@
 * Response -> samlp:ResponseType extend samlp:StatusResponseType
    ds LibertyAlliance : StatusResponseType est redefinit (extend
    samlp:ResponseAbstractType) ???
+
+* Extension -> implementer seulement dans les elements liberty alliance qui le supportent
+
+* NameIdentifierMappingRequest -> implementer l'element TargetNamespace
+
+* dans les methodes de classe de type xxx_set_xxx qui initialise un element enfant,
+  fait soit un addChild() soit un newChild(), mais pas de test si un element existe deja
