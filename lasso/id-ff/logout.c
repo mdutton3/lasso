@@ -254,6 +254,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   LassoNode *statusCode;
   LassoNodeClass *statusCode_class;
   xmlChar *remote_providerID;
+  int nb_remote_providers;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   g_return_val_if_fail(request_msg!=NULL, -2);
@@ -344,15 +345,18 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
     break;
   case lassoProviderTypeIdp:
-    /* at idp, backup original infos of the sp requester */
-    logout->first_request = profileContext->request;
-    profileContext->request = NULL;
+    /* if more than one sp registered, backup original infos of the sp requester */
+    nb_remote_providers = profileContext->user->assertion_providerIDs->len;
+    if(nb_remote_providers>1){
+      logout->first_request = profileContext->request;
+      profileContext->request = NULL;
     
-    logout->first_response = profileContext->response;
-    profileContext->response = NULL;
-
-    logout->first_remote_providerID = profileContext->remote_providerID;
-    profileContext->remote_providerID = NULL;
+      logout->first_response = profileContext->response;
+      profileContext->response = NULL;
+      
+      logout->first_remote_providerID = profileContext->remote_providerID;
+      profileContext->remote_providerID = NULL;
+    }
 
     break;
   default:
@@ -416,10 +420,14 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
     debug(INFO, "Remove assertion for %s\n", profileContext->remote_providerID);
 
-    /* if no more assertion for other providers, remove assertion of the original provider */
+    /* if no more assertion for other providers, remove assertion of the original provider and restore the original requester infos */
     if(profileContext->user->assertion_providerIDs->len == 1){
       debug(WARNING, "remove assertion of the original provider\n");
       lasso_user_remove_assertion(profileContext->user, logout->first_remote_providerID);
+
+      profileContext->remote_providerID = logout->first_remote_providerID;
+      profileContext->request = logout->first_request;
+      profileContext->response = logout->first_response;
     }
 
     break;
