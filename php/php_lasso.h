@@ -86,7 +86,7 @@ PHP_FUNCTION(lasso_identity_destroy);
 /* lasso_federation.c */
 PHP_FUNCTION(lasso_federation_new);	
 
-/* lasso_profile_.c */
+/* lasso_profile.c */
 PHP_FUNCTION(lasso_profile_new);	
 PHP_FUNCTION(lasso_profile_dump);	
 PHP_FUNCTION(lasso_profile_set_remote_providerid);	
@@ -98,6 +98,11 @@ PHP_FUNCTION(lasso_profile_get_request);
 PHP_FUNCTION(lasso_profile_get_msg_url);	
 PHP_FUNCTION(lasso_profile_get_msg_body);	
 PHP_FUNCTION(lasso_profile_get_msg_relaystate);	
+PHP_FUNCTION(lasso_profile_get_identity);	
+PHP_FUNCTION(lasso_profile_is_identity_dirty);	
+PHP_FUNCTION(lasso_profile_get_session);	
+PHP_FUNCTION(lasso_profile_is_session_dirty);	
+
 
 /* lasso_lib_authn_request.c */
 PHP_FUNCTION(lasso_cast_to_lib_authn_request);

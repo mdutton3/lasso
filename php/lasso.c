@@ -79,7 +79,7 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_identity_dump,	NULL)
 	PHP_FE(lasso_identity_destroy,	NULL)
 
-	/* lasso_profile_.c */
+	/* lasso_profile.c */
 	PHP_FE(lasso_profile_new,	NULL)
 	PHP_FE(lasso_profile_dump,	NULL)
 	PHP_FE(lasso_profile_set_remote_providerid,	NULL)
@@ -90,6 +90,11 @@ function_entry lasso_functions[] = {
 	PHP_FE(lasso_profile_get_request,	NULL)
 	PHP_FE(lasso_profile_get_msg_url,	NULL)
 	PHP_FE(lasso_profile_get_msg_body,	NULL)
+	PHP_FE(lasso_profile_get_msg_relaystate,	NULL)
+	PHP_FE(lasso_profile_get_identity,	NULL)
+	PHP_FE(lasso_profile_is_identity_dirty,	NULL)
+	PHP_FE(lasso_profile_get_session,	NULL)
+	PHP_FE(lasso_profile_is_session_dirty,	NULL)
 	
 	/* lasso_lib_authn_request.c */
 	PHP_FE(lasso_cast_to_lib_authn_request,	NULL)

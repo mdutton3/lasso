@@ -189,7 +189,6 @@ PHP_FUNCTION(lasso_profile_get_msg_url) {
 	if (ctx->msg_url)
 	  RETURN_STRING(ctx->msg_url, 1);
 }
-
 /* }}} */
 
 /* {{{ proto string lasso_profile_get_msg_body(resource ctx) */
@@ -241,5 +240,104 @@ PHP_FUNCTION(lasso_profile_get_msg_relaystate) {
 	
 	if (ctx->msg_relayState)
 	  RETURN_STRING(ctx->msg_relayState, 1);
+}
+/* }}} */
+
+
+/* {{{ proto string lasso_profile_get_identity(resource ctx) */
+PHP_FUNCTION(lasso_profile_get_identity) {
+	LassoProfile	*ctx;  
+	LassoIdentity 	*identity;
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	identity = lasso_profile_get_identity(ctx);
+	
+	ZEND_REGISTER_RESOURCE(return_value, identity, le_lassoidentity);	
+}
+/* }}} */
+
+/* {{{ proto string lasso_profile_is_identity_dirty(resource ctx) */
+PHP_FUNCTION(lasso_profile_is_identity_dirty) {
+	LassoProfile	*ctx;  
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	ret = lasso_profile_is_identity_dirty(ctx);
+
+	RETURN_BOOL(ret);
+}
+/* }}} */
+
+/* {{{ proto string lasso_profile_get_session(resource ctx) */
+PHP_FUNCTION(lasso_profile_get_session) {
+	LassoProfile	*ctx;  
+	LassoSession 	*session;
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	session = lasso_profile_get_session(ctx);
+	
+	ZEND_REGISTER_RESOURCE(return_value, session, le_lassosession);	
+}
+/* }}} */
+
+/* {{{ proto string lasso_profile_is_session_dirty(resource ctx) */
+PHP_FUNCTION(lasso_profile_is_session_dirty) {
+	LassoProfile	*ctx;  
+
+	zval *parm;
+
+	int num_args;
+	int ret;
+
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+		WRONG_PARAM_COUNT
+
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+		return;
+	}
+
+	ZEND_FETCH_RESOURCE(ctx, LassoProfile *, &parm, -1, le_lassoprofile_name, le_lassoprofile);
+
+	ret = lasso_profile_is_session_dirty(ctx);
+
+	RETURN_BOOL(ret);
 }
 /* }}} */
