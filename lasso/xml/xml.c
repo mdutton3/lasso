@@ -474,49 +474,27 @@ lasso_node_rename_prop(LassoNode     *node,
 /**
  * lasso_node_verify_signature:
  * @node: a LassoNode
- * @public_key_file: the public key
+ * @public_key_file: a public key (or a certificate) file
+ * @ca_cert_chain_file: a CA certificate chain file
  * 
- * Verifys the node signature.
+ * Verifys the node signature of @node.
  * 
- * Return value: 1 if signature is valid, 0 if invalid or a negative value
- * if an error occurs.
+ * Return value: 0 if signature is valid
+ * a positive value if signature was not found or is invalid
+ * a negative value if an error occurs during verification
  **/
 gint
 lasso_node_verify_signature(LassoNode   *node,
-			    const gchar *public_key_file)
+			    const gchar *public_key_file,
+			    const gchar *ca_cert_chain_file)
 {
   LassoNodeClass *class;
 
   g_return_val_if_fail(LASSO_IS_NODE(node),
 		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  /* don't check @public_key_file here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return class->verify_signature(node, public_key_file);
-}
-
-/**
- * lasso_node_verify_x509_signature:
- * @node: a LassoNode
- * @ca_certificate_file: the trusted certificate
- * 
- * Verifys the node signature with X509 certificate.
- * 
- * Return value: 1 if signature is valid, 0 if invalid or a negative value
- * if an error occurs.
- **/
-gint
-lasso_node_verify_x509_signature(LassoNode   *node,
-				 const gchar *ca_certificate_file)
-{
-  LassoNodeClass *class;
-
-  g_return_val_if_fail(LASSO_IS_NODE(node),
-		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  /* don't check @certificate_file here, it's checked in impl method */
-
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->verify_x509_signature(node, ca_certificate_file);
+  return class->verify_signature(node, public_key_file, ca_cert_chain_file);
 }
 
 /*****************************************************************************/
@@ -1116,21 +1094,22 @@ lasso_node_impl_rename_prop(LassoNode     *node,
 
 static gint
 lasso_node_impl_verify_signature(LassoNode   *node,
-				 const gchar *public_key_file)
+				 const gchar *public_key_file,
+				 const gchar *ca_cert_chain_file)
 {
   xmlDocPtr doc = NULL;
   xmlNodePtr xmlNode = NULL;
   xmlNodePtr signature = NULL;
+  xmlNodePtr x509data = NULL;
+  xmlSecKeysMngrPtr keys_mngr = NULL;
   xmlSecDSigCtxPtr dsigCtx = NULL;
   xmlIDPtr id;
   xmlAttrPtr id_attr;
   xmlChar *id_value;
   gint ret = 0;
 
-  g_return_val_if_fail(public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
   doc = xmlNewDoc("1.0");
-  /* Don't use xmlCopyNode here because it changed the attrs and ns order :-( */
+  /* Don't use xmlCopyNode here because it changes the attrs and ns order :-( */
   xmlNode = lasso_node_get_xmlNode(node);
   xmlAddChild((xmlNodePtr)doc, xmlNode);
 
@@ -1143,7 +1122,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   }
 
   /* find start node */
-  signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
+  signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature,
 			     xmlSecDSigNs);
   if (signature == NULL) {
     message(G_LOG_LEVEL_CRITICAL,
@@ -1153,8 +1132,23 @@ lasso_node_impl_verify_signature(LassoNode   *node,
     goto done;	
   }
 
-  /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(NULL);
+  x509data = xmlSecFindNode(xmlNode, xmlSecNodeX509Data,
+			    xmlSecDSigNs);
+  if (x509data != NULL && ca_cert_chain_file != NULL) {
+    /* create simple keys mngr */
+    printf("verify a X509 signature \n");
+    keys_mngr = lasso_load_certs_from_pem_certs_chain_file(ca_cert_chain_file);
+    dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
+  }
+  else if (public_key_file != NULL) {
+    /* create signature context */
+    printf("verify a simple signature \n");
+    dsigCtx = xmlSecDSigCtxCreate(NULL);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Impossible to verify signature");
+  }
+
   if (dsigCtx == NULL) {
     message(G_LOG_LEVEL_CRITICAL,
 	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
@@ -1162,16 +1156,18 @@ lasso_node_impl_verify_signature(LassoNode   *node,
     goto done;
   }
 
-  /* load public key */
-  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(public_key_file,
-					    xmlSecKeyDataFormatPem,
-					    NULL, NULL, NULL);
-  if(dsigCtx->signKey == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
-	    public_key_file);
-    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-    goto done;
+  if (keys_mngr == NULL) {
+    /* load public key */
+    dsigCtx->signKey = xmlSecCryptoAppKeyLoad(public_key_file,
+					      xmlSecKeyDataFormatPem,
+					      NULL, NULL, NULL);
+    if(dsigCtx->signKey == NULL) {
+      message(G_LOG_LEVEL_CRITICAL,
+	      lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
+	      public_key_file);
+      ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+      goto done;
+    }
   }
 
   /* verify signature */
@@ -1198,113 +1194,8 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   if(dsigCtx != NULL) {
     xmlSecDSigCtxDestroy(dsigCtx);
   }
-  /* FIXME xmlFreeDoc(doc); */
-  return ret;
-}
-
-static gint
-lasso_node_impl_verify_x509_signature(LassoNode   *node,
-				      const gchar *ca_certificate_file)
-{
-  xmlDocPtr doc = NULL;
-  xmlNodePtr xmlNode = NULL;
-  xmlNodePtr signature = NULL;
-  xmlSecKeysMngrPtr mngr = NULL;
-  xmlSecDSigCtxPtr dsigCtx = NULL;
-  xmlIDPtr id;
-  xmlAttrPtr id_attr;
-  xmlChar *id_value;
-  gint ret = 0;
-
-  g_return_val_if_fail(ca_certificate_file != NULL,
-		       LASSO_PARAM_ERROR_INVALID_VALUE);
-
-  doc = xmlNewDoc("1.0");
-  /* Don't use xmlCopyNode here because it changed the attrs and ns order :-( */
-  xmlNode = lasso_node_get_xmlNode(node);
-  xmlAddChild((xmlNodePtr)doc, xmlNode);
-
-  /* FIXME: register 'AssertionID' ID attribute manually */
-  id_attr = lasso_node_get_attr(node, "AssertionID", NULL);
-  if (id_attr != NULL) {
-    id_value = xmlNodeListGetString(doc, id_attr->children, 1);
-    id = xmlAddID(NULL, doc, id_value, id_attr);
-    xmlFree(id_value);
-  }
-
-  /* find start node */
-  signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
-			     xmlSecDSigNs);
-  if (signature == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOT_FOUND),
-	    node->private->node->name);
-    ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-    goto done;	
-  }
-
-  /* create simple keys mngr */
-  mngr = xmlSecKeysMngrCreate();
-  if (mngr == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
-    ret = LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED;
-    goto done;
-  }
-
-  if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
-    ret = LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED;
-    goto done;
-  }
-  
-  /* load trusted cert */
-  if (xmlSecCryptoAppKeysMngrCertLoad(mngr, ca_certificate_file,
-				      xmlSecKeyDataFormatPem,
-				      xmlSecKeyDataTypeTrusted) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
-	    ca_certificate_file);
-    ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-    goto done;
-  }
-
-  /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(mngr);
-  if (dsigCtx == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
-    ret = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
-    goto done;
-  }
-
-  /* verify signature */
-  if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED),
-	    node->private->node->name);
-    ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-    goto done;
-  }
-
-  if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    ret = 0;
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
-	    node->private->node->name);
-    ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
-  }
-
- done:
-  /* cleanup */
-  if(dsigCtx != NULL) {
-    xmlSecDSigCtxDestroy(dsigCtx);
-  }
-  if(mngr != NULL) {
-    xmlSecKeysMngrDestroy(mngr);
+  if(keys_mngr != NULL) {
+    xmlSecKeysMngrDestroy(keys_mngr);
   }
   /* FIXME xmlFreeDoc(doc); */
   return ret;
@@ -1860,7 +1751,6 @@ lasso_node_class_init(LassoNodeClass *class)
   class->import_from_node      = lasso_node_impl_import_from_node;
   class->rename_prop           = lasso_node_impl_rename_prop;
   class->verify_signature      = lasso_node_impl_verify_signature;
-  class->verify_x509_signature = lasso_node_impl_verify_x509_signature;
   /* virtual private methods */
   class->add_child           = lasso_node_impl_add_child;
   class->add_signature       = lasso_node_impl_add_signature;

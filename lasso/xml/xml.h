@@ -112,9 +112,8 @@ struct _LassoNodeClass {
 					    const xmlChar *old_name,
 					    const xmlChar *new_name);
   gint           (* verify_signature)      (LassoNode   *node,
-					    const gchar *public_key_file);
-  gint           (* verify_x509_signature) (LassoNode   *node,
-					    const gchar *certificate_file);
+					    const gchar *public_key_file,
+					    const gchar *ca_cert_chain_file);
   /*< private >*/
   void       (* add_child)          (LassoNode     *node,
 				     LassoNode     *child,
@@ -217,10 +216,8 @@ LASSO_EXPORT void       lasso_node_rename_prop           (LassoNode     *node,
 							  const xmlChar *new_name);
 
 LASSO_EXPORT gint       lasso_node_verify_signature      (LassoNode   *node,
-							  const gchar *public_key_file);
-
-LASSO_EXPORT gint       lasso_node_verify_x509_signature (LassoNode   *node,
-							  const gchar *ca_certificate_file);
+							  const gchar *public_key_file,
+							  const gchar *ca_cert_chain_file);
 
 #ifdef __cplusplus
 }
