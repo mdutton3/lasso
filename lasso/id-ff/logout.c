@@ -814,13 +814,13 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
     ret = -1;
     goto done;
   }
 
   if (profile->response == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "LogoutResponse is NULL\n");
+    message(G_LOG_LEVEL_CRITICAL, "Response is NULL\n");
     ret = -1;
     goto done;
   }
@@ -835,6 +835,26 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
 
   if (!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
+    /* At SP, if the request method was a SOAP type, if the IDP supports, then rebuild the request message with HTTP method */
+    if (profile->provider_type == lassoProviderTypeSp && profile->http_request_method == lassoHttpMethodSoap) {
+      /* temporary vars */
+      LassoProvider *provider;
+      gchar *url, *query;
+
+      provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
+
+      /* FIXME : get an HTTP method in metadata */
+
+      /* Build and optionaly sign the logout request QUERY message */
+      url = lasso_provider_get_singleLogoutServiceURL(provider, lassoProviderTypeIdp, NULL);
+      query = lasso_node_export_to_query(profile->request,
+					 profile->server->signature_method,
+					 profile->server->private_key);
+      profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+      g_sprintf(profile->msg_url, "%s?%s", url, query);
+      profile->msg_body = NULL;
+    }
+
     message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
     ret = -1;
     goto done;
