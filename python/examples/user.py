@@ -34,8 +34,16 @@ print "Dump of user environ :"
 print user.dump()
 
 user2 = lasso.User.new_from_dump(user.dump());
+print 'user2 dump 1'
+print user2.dump()
 
 assertion = lasso.Assertion("http://nowhere.com", "CD8CS7C6CS6CD6C6SC6SSDC6CS6D")
+
+print 'user dump 1'
+print user.dump()
+
 user.add_assertion("https://service-provider1:2003/liberty-alliance/metadata", assertion)
+
+print user.dump()
 
 user.destroy()

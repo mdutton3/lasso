@@ -94,6 +94,8 @@ lasso_user_add_assertion(LassoUser *user,
   int i;
   gboolean found;
 
+  LassoNode *copy_assertion;
+
   g_return_val_if_fail(user!=NULL, -1);
   g_return_val_if_fail(remote_providerID!=NULL, -2);
   g_return_val_if_fail(assertion!=NULL, -3);
@@ -112,7 +114,9 @@ lasso_user_add_assertion(LassoUser *user,
   g_ptr_array_add(user->assertion_providerIDs, g_strdup(remote_providerID));
 
   /* add the assertion */
-  g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
+  copy_assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION, NULL));
+  lasso_node_import_from_node(copy_assertion, assertion);
+  g_hash_table_insert(user->assertions, g_strdup(remote_providerID), copy_assertion);
 
   return(0);
 }
