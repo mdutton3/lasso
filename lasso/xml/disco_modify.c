@@ -52,7 +52,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, resourceId) },
+	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDiscoModify, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_NODE, \
+	  G_STRUCT_OFFSET(LassoDiscoModify, EncryptedResourceID) },
 	{ "InsertEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, InsertEntry) },
 	{ "RemoveEntry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoModify, RemoveEntry) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDiscoModify, id) },
@@ -66,7 +68,8 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDiscoModify *node)
 {
-	node->resourceId = NULL;
+	node->ResourceID = NULL;
+	node->EncryptedResourceID = NULL;
 	node->InsertEntry = NULL;
 	node->RemoveEntry = NULL;
 	node->id = NULL;

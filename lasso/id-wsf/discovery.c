@@ -68,8 +68,8 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 	if (resourceOffering->ResourceID != NULL) {
 		g_object_ref(resourceOffering->ResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-			LASSO_DISCO_MODIFY(profile->request)->resourceId = \
-				LASSO_NODE(resourceOffering->ResourceID);
+			LASSO_DISCO_MODIFY(profile->request)->ResourceID = \
+				resourceOffering->ResourceID;
 		}
 		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->ResourceID = \
@@ -79,14 +79,15 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 	else if (resourceOffering->EncryptedResourceID != NULL) {
 		g_object_ref(resourceOffering->EncryptedResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
-			LASSO_DISCO_MODIFY(profile->request)->resourceId = \
-				LASSO_NODE(resourceOffering->EncryptedResourceID);
+			LASSO_DISCO_MODIFY(profile->request)->EncryptedResourceID = \
+				resourceOffering->EncryptedResourceID;
 		}
 		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->EncryptedResourceID = \
 				resourceOffering->EncryptedResourceID;
 		}
 	}
+
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	}
@@ -96,10 +97,6 @@ lasso_discovery_init_request(LassoDiscovery             *discovery,
 
 	return 0;
 }
-
-/*****************************************************************************/
-/* public methods */
-/*****************************************************************************/
 
 LassoDiscoInsertEntry*
 lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
@@ -119,7 +116,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 	g_return_val_if_fail(providerID != NULL, NULL);
 	/* resourceID/encryptedResourceID and option are optional */
 	g_return_val_if_fail((resourceID == NULL && encryptedResourceID == NULL) || \
-			     (LASSO_IS_DISCO_RESOURCE_ID(resourceID) ^	\
+			     (LASSO_IS_DISCO_RESOURCE_ID(resourceID) ^ \
 			      LASSO_IS_DISCO_ENCRYPTED_RESOURCE_ID(encryptedResourceID)), NULL);
 
 	modify = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
@@ -129,8 +126,8 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 	resource = lasso_disco_resource_offering_new(service);
 	/* ResourceID and EncryptedResourceID are owned by the method caller,
 	 so increment reference count */
-	resource->ResourceID = g_object_ref(resourceID);
-	resource->EncryptedResourceID = g_object_ref(encryptedResourceID);
+	resource->ResourceID = resourceID;
+	resource->EncryptedResourceID = encryptedResourceID;
 
 	entry = lasso_disco_insert_entry_new();
 	entry->ResourceOffering = resource;

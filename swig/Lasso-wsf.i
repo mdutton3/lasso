@@ -69,6 +69,27 @@
  ***********************************************************************
  ***********************************************************************/
 
+/* Liberty Security Mechanisms */
+#ifndef SWIGPHP4
+%rename(SECURITY_MECH_TLS) LASSO_SECURITY_MECH_TLS;
+%rename(SECURITY_MECH_TLS_X509) LASSO_SECURITY_MECH_TLS_X509;
+%rename(SECURITY_MECH_TLS_SAML) LASSO_SECURITY_MECH_TLS_SAML;
+%rename(SECURITY_MECH_TLS_BEARER) LASSO_SECURITY_MECH_TLS_BEARER;
+
+%rename(SECURITY_MECH_CLIENT_TLS_X509) LASSO_SECURITY_MECH_CLIENT_TLS_X509;
+%rename(SECURITY_MECH_CLIENT_TLS_SAML) LASSO_SECURITY_MECH_CLIENT_TLS_SAML;
+%rename(SECURITY_MECH_CLIENT_TLS_BEARER) LASSO_SECURITY_MECH_CLIENT_TLS_BEARER;
+#endif
+#define LASSO_SECURITY_MECH_TLS        "urn:liberty:security:2003-08:TLS:null"
+#define LASSO_SECURITY_MECH_TLS_X509   "urn:liberty:security:2003-08:TLS:X509"
+#define LASSO_SECURITY_MECH_TLS_SAML   "urn:liberty:security:2003-08:TLS:SAML"
+#define LASSO_SECURITY_MECH_TLS_BEARER "urn:liberty:security:2004-04:TLS:Bearer"
+
+#define LASSO_SECURITY_MECH_CLIENT_TLS        "urn:liberty:security:2003-08:ClientTLS:null"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_X509   "urn:liberty:security:2003-08:ClientTLS:X509"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_SAML   "urn:liberty:security:2003-08:ClientTLS:SAML"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
+
 
 /* WSF prefix & href */
 #ifndef SWIGPHP4
@@ -728,8 +749,17 @@ typedef struct {
 	%newobject RemoveEntry_get;
 	LassoNodeList *RemoveEntry;
 
-	%newobject resourceId_get;
-	LassoNode *resourceId;
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
+
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -759,11 +789,17 @@ typedef struct {
 #define LassoDiscoModify_set_RemoveEntry(self, value) set_node_list(&(self)->RemoveEntry, (value))
 #define LassoDiscoModify_RemoveEntry_set(self, value) set_node_list(&(self)->RemoveEntry, (value))
 
-/* resourceId */
-#define LassoDiscoModify_get_resourceId(self) get_node((self)->resourceId)
-#define LassoDiscoModify_resourceId_get(self) get_node((self)->resourceId)
-#define LassoDiscoModify_set_resourceId(self, value) set_node((gpointer *) &(self)->resourceId, (value))
-#define LassoDiscoModify_resourceId_set(self, value) set_node((gpointer *) &(self)->resourceId, (value))
+/* ResourceID */
+#define LassoDiscoModify_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDiscoModify_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDiscoModify_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDiscoModify_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+
+/* EncryptedResourceID */
+#define LassoDiscoModify_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoModify_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDiscoModify_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDiscoModify_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3310,8 +3346,8 @@ typedef struct {
 	LassoDiscoInsertEntry* addInsertEntry(char *serviceType,
 					      char *providerID,
 					      LassoDiscoDescription *description,
-					      LassoDiscoResourceID *resourceID,
-					      LassoDiscoEncryptedResourceID *encryptedResourceID);
+					      LassoDiscoResourceID *resourceID = NULL,
+					      LassoDiscoEncryptedResourceID *encryptedResourceID = NULL);
 
 	THROW_ERROR
 	int addRemoveEntry(char *entryID);

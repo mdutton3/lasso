@@ -141,6 +141,18 @@
 /* Liberty Alliance ID-WSF                                                   */
 /*****************************************************************************/
 
+/* Liberty Security Mechanisms */
+#define LASSO_SECURITY_MECH_TLS        "urn:liberty:security:2003-08:TLS:null"
+#define LASSO_SECURITY_MECH_TLS_X509   "urn:liberty:security:2003-08:TLS:X509"
+#define LASSO_SECURITY_MECH_TLS_SAML   "urn:liberty:security:2003-08:TLS:SAML"
+#define LASSO_SECURITY_MECH_TLS_BEARER "urn:liberty:security:2004-04:TLS:Bearer"
+
+#define LASSO_SECURITY_MECH_CLIENT_TLS        "urn:liberty:security:2003-08:ClientTLS:null"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_X509   "urn:liberty:security:2003-08:ClientTLS:X509"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_SAML   "urn:liberty:security:2003-08:ClientTLS:SAML"
+#define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
+
+
 /* disco prefix & href */
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
