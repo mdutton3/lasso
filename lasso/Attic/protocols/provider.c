@@ -28,7 +28,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-xmlChar *
+gchar *
 lasso_provider_dump(LassoProvider *provider)
 {
   LassoNode *provider_node;
@@ -48,83 +48,83 @@ lasso_provider_dump(LassoProvider *provider)
   return(lasso_node_export(provider_node));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_assertionConsumerServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationServiceURL", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_providerID(LassoProvider *provider)
 {
   return(lasso_node_get_attr_value(provider->metadata, "ProviderID"));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierProtocolProfile", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierServiceURL", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_singleSignOnServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceURL", NULL));
 }
 
-xmlChar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
+gchar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL));
 }
 
-xmlChar *lasso_provider_get_singleLogoutServiceURL(LassoProvider *provider)
+gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceURL", NULL));
 }
 
-xmlChar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider *provider)
+gchar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnURL", NULL));
 }
 
-xmlChar *
+gchar *
 lasso_provider_get_soapEndpoint(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL));
 }
 
 void
-lasso_provider_set_public_key(LassoProvider *provider, xmlChar *public_key)
+lasso_provider_set_public_key(LassoProvider *provider, gchar *public_key)
 {
   provider->public_key = g_strdup(public_key);
 }
 
 void
-lasso_provider_set_certificate(LassoProvider *provider, xmlChar *certificate)
+lasso_provider_set_certificate(LassoProvider *provider, gchar *certificate)
 {
   provider->certificate = g_strdup(certificate);
 }
@@ -133,8 +133,8 @@ lasso_provider_set_certificate(LassoProvider *provider, xmlChar *certificate)
 /* private methods                                                           */
 /*****************************************************************************/
 
-static xmlChar *lasso_provider_get_direct_child_content(LassoProvider *provider, 
-							const xmlChar *name)
+static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider, 
+							const gchar *name)
 {
   LassoNode *node;
   
@@ -209,7 +209,7 @@ lasso_provider_new_metadata_xmlNode(xmlNodePtr metadata_xmlNode)
 }
 
 LassoProvider*
-lasso_provider_new_metadata_filename(xmlChar *metadata_filename)
+lasso_provider_new_metadata_filename(gchar *metadata_filename)
 {
   LassoProvider *provider;
   xmlDocPtr  doc;
