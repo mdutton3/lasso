@@ -345,8 +345,17 @@ dnl Check if php is explicitly disabled.
 AC_ARG_ENABLE(php, [  --disable-php           disable the PHP bindings],,
               enable_php="yes")
 
+AC_ARG_ENABLE(php-force, [  --enable-php-force           force enable of the PHP bindings],
+              [ENABLE_PHP_FORCE="yes"],
+              [ENABLE_PHP_FORCE="no"])
+
 AC_ARG_WITH(php-config,
             [  --with-php-config=(PHP_CONFIG)      Specify full path to php-config.])
+
+AC_ARG_WITH(php-extension-dir,
+            [  --with-php-extension-dir=(PHP_EXTENSION_DIR)      Specify full path to php extension dir.],
+            [PHP_EXTENSION_DIR="$withval"],[PHP_EXTENSION_DIR=])
+
 dnl Check if user passed a specific php-config program.
 if test "X$with_php_config" != X ; then
     PHP_CONFIG=$with_php_config
@@ -359,12 +368,13 @@ if test "X$PHP_CONFIG" != X ; then
   PHP_UNPREFIXED_EXTENSION_DIR=`$PHP_CONFIG --extension-dir | $SED 's/\/usr//g'`
   PHP_PREFIX=`$PHP_CONFIG --prefix`
 else
-  # This allows 'make clean' in the php directory to work when
-  # php isn't available
-  PHP=:
-  PHP_INCLUDES=
+  # We assumes PHP are in /usr/local directory.
+  if test $MINGW -eq 1; then 
+    CFLAGS="$CFLAGS -DZTS -DZEND_WIN32 -DWIN32 -D_MBCS"
+  fi
+  PHP_INCLUDES="-I/usr/local/include/php4 -I/usr/local/include/php4/main -I/usr/local/include/php4/Zend -I/usr/local/include/php4/TSRM -I/usr/local/include/php4/win32"
   PHP_LDFLAGS=
-  PHP_LIBS=
+  PHP_LIBS=-lphp4ts -lxmlparse -lxmltok
   PHP_UNPREFIXED_EXTENSION_DIR=
   PHP_PREFIX=
 fi
@@ -372,11 +382,16 @@ AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LDFLAGS)
 AC_SUBST(PHP_LIBS)
 AC_SUBST(PHP_UNPREFIXED_EXTENSION_DIR)
+AC_SUBST(PHP_EXTENSION_DIR)
 AC_SUBST(PHP_PREFIX)
 
 dnl Check for expat
 have_expat_include=no
-AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+if test $MINGW -eq 1; then 
+    AC_CHECK_LIB(xmlparse, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+else
+    AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+fi
   
 if test x$have_expat_lib = xno; then
     enable_php=no
@@ -385,7 +400,7 @@ fi
 AC_MSG_CHECKING(for PHP development files)
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 dnl Check if we were be able to extract a good version number.
-if test "X$PHP_VERSION" != X; then
+if test "X$PHP_VERSION" != X || test "X$ENABLE_PHP_FORCE" == "Xyes"; then
     languages_available="$languages_available php($PHP_VERSION)"
 else
     enable_php=no
