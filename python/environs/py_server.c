@@ -49,8 +49,8 @@ PyObject *server_new(PyObject *self, PyObject *args) {
   gchar *certificate = NULL;
   guint  signature_method = 0;
 
-  if (CheckArgs(args, "Ssssi:server_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "szzz|i:server_new",
+  if (CheckArgs(args, "ssssi:server_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "zzzz|i:server_new",
 			 &metadata, &public_key, &private_key, &certificate,
 			 &signature_method))
       return NULL;

@@ -925,7 +925,8 @@ class Server:
         """
         self._o = _obj
 
-    def new(cls, metadata, public_key, private_key, certificate, signature_method):
+    def new(cls, metadata=None, public_key=None, private_key=None,
+            certificate=None, signature_method=0):
         obj = lassomod.server_new(metadata, public_key, private_key,
                                   certificate, signature_method)
         if obj is None:
