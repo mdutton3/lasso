@@ -106,28 +106,6 @@ PyObject *authn_response_new_from_request_query(PyObject *self, PyObject *args) 
   return (LassoAuthnResponse_wrap(LASSO_AUTHN_RESPONSE(response)));
 }
 
-PyObject *authn_response_add_assertion(PyObject *self, PyObject *args) {
-  PyObject *response_obj, *assertion_obj;
-  const xmlChar *private_key_file;
-  const xmlChar *certificate_file;
-
-  if (CheckArgs(args, "OOSS:authn_response_add_assertion")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOss:authn_response_add_assertion",
-			 &response_obj, &assertion_obj,
-			 &private_key_file, &certificate_file))
-      return NULL;
-  }
-  else return NULL;
-
-  lasso_authn_response_add_assertion(LassoAuthnResponse_get(response_obj),
-				     LassoAssertion_get(assertion_obj),
-				     private_key_file,
-				     certificate_file);
-
-  Py_INCREF(Py_None);
-  return (Py_None);
-}
-
 PyObject *authn_response_must_authenticate(PyObject *self, PyObject *args) {
   PyObject *response_obj;
   gboolean is_authenticated;
