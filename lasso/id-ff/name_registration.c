@@ -391,7 +391,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	}
 
 	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID");
+	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
 	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {

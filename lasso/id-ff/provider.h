@@ -97,7 +97,7 @@ LASSO_EXPORT gboolean lasso_provider_load_metadata(LassoProvider *provider, cons
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT int lasso_provider_verify_signature(LassoProvider *provider,
-		const char *message, const char *id_attr_name);
+		const char *message, const char *id_attr_name, LassoMessageFormat format);
 
 LASSO_EXPORT lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, lassoMdProtocolType protocol_type);

@@ -231,7 +231,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
 	/* verify signature */
 	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "RequestID");
+			remote_provider, request_msg, "RequestID", format);
 
 	profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
 
@@ -272,7 +272,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	}
 
 	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID");
+	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
 	statusCodeValue = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(
 			profile->response)->Status->StatusCode->Value;

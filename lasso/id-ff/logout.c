@@ -429,7 +429,7 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 
 	/* verify signatures */
 	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "RequestID");
+			remote_provider, request_msg, "RequestID", format);
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)
 		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
@@ -514,7 +514,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	}
 
 	/* verify signature */
-	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID");
+	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
 	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
 

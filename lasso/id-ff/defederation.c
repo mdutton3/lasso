@@ -294,7 +294,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	}
 
 	profile->signature_status = lasso_provider_verify_signature(
-			remote_provider, request_msg, "RequestID");
+			remote_provider, request_msg, "RequestID", format);
 
 	/* set the http request method */
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)

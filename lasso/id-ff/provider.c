@@ -502,16 +502,27 @@ lasso_provider_new_from_dump(const gchar *dump)
 }
 
 int lasso_provider_verify_signature(LassoProvider *provider,
-		const char *message, const char *id_attr_name)
+		const char *message, const char *id_attr_name, LassoMessageFormat format)
 {
-	return 0; /* XXX */
-	
-	if (message[0] == '<') {
+	if (format == LASSO_MESSAGE_FORMAT_ERROR)
+		return -2;
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN)
+		return -2;
+
+	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
+		/* XXX: checking signature in base64 mode (probably going back
+		 * to XML mode)*/
+		return 0;
+	}
+
+	if (format == LASSO_MESSAGE_FORMAT_XML || format == LASSO_MESSAGE_FORMAT_SOAP) {
 		xmlDoc *doc;
 		xmlNode *xmlnode, *sign, *x509data;
 		xmlSecKeysMngr *keys_mngr = NULL;
 		xmlSecDSigCtx *dsigCtx;
 		lassoPemFileType public_key_file_type;
+
+		return 0; /* XXX: enable back signature check on xml messages */
 
 		doc = xmlParseMemory(message, strlen(message));
 		xmlnode = xmlDocGetRootElement(doc);
@@ -562,7 +573,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		return 0;
 	}
 
-	if (strchr(message, '&')) {
+	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
 		return lasso_query_verify_signature(message, provider->public_key);
 	}
 

@@ -1171,14 +1171,15 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				return -1;
 			}
 		} else {
-			message(G_LOG_LEVEL_CRITICAL, "Must sign without knowing provider");
+			message(G_LOG_LEVEL_CRITICAL,
+					"Must verify signature without knowing provider");
 			return -1;
 		}
 
 		/* verify request signature */
 		if (must_verify_signature) {
 			ret = lasso_provider_verify_signature(remote_provider,
-					authn_request_msg, "RequestID");
+					authn_request_msg, "RequestID", format);
 			LASSO_PROFILE(login)->signature_status = ret;
 		}
 	}
