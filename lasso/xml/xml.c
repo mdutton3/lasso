@@ -1406,7 +1406,11 @@ xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 			xmlDeclareNs(root_node, t);
 }
 
+#if defined(__GNUC__)
 __inline__ static int
+#else
+__inline static int
+#endif
 sameNs(xmlNs *ns1, xmlNs *ns2)
 {
 	/* this checks ns->prefix instead of ns->href so it is possible to
