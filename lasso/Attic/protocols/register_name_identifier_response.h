@@ -30,6 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/protocols/register_name_identifier_request.h>
 #include <lasso/xml/lib_register_name_identifier_response.h>
 
 #define LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE (lasso_register_name_identifier_response_get_type())

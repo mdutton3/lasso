@@ -35,7 +35,7 @@ lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
   LassoNodeClass *statusCode_class;
   LassoNode *statusCode_node;
   
-  statusCode_node = lasso_node_get_child(response, "StatusCode", NULL);
+  statusCode_node = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
   statusCode_class = LASSO_NODE_GET_CLASS(statusCode_node);
 
   return(statusCode_class->get_attr_value(statusCode_node, "Value"));

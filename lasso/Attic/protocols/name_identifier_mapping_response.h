@@ -30,6 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/protocols/name_identifier_mapping_request.h>
 #include <lasso/xml/lib_name_identifier_mapping_response.h>
 
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE (lasso_name_identifier_mapping_response_get_type())

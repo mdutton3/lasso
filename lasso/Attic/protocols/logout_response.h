@@ -30,6 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/protocols/logout_request.h>
 #include <lasso/xml/lib_logout_response.h>
 
 #define LASSO_TYPE_LOGOUT_RESPONSE (lasso_logout_response_get_type())

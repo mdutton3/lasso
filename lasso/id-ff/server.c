@@ -83,12 +83,12 @@ lasso_server_dump(LassoServer *server)
   return(lasso_node_export(server_node));
 }
 
-void
+gint
 lasso_server_add_lasso_provider(LassoServer   *server,
 				LassoProvider *provider)
 {
-  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+  g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
+  g_return_val_if_fail(LASSO_IS_PROVIDER(provider), -2);
 
   g_ptr_array_add(server->providers, provider);
 }

@@ -53,8 +53,8 @@ struct _LassoIdentity {
   
   gchar *remote_providerID;
 
-  LassoSamlNameIdentifier *local_nameIdentifier;
-  LassoSamlNameIdentifier *remote_nameIdentifier;
+  LassoNode *local_nameIdentifier;
+  LassoNode *remote_nameIdentifier;
 
   /*< private >*/
 };
@@ -66,13 +66,18 @@ struct _LassoIdentityClass {
 LASSO_EXPORT GType          lasso_identity_get_type                  (void);
 
 LASSO_EXPORT LassoIdentity *lasso_identity_new                       (gchar *remote_providerID);
+
 LASSO_EXPORT LassoIdentity *lasso_identity_new_from_dump             (xmlChar *dump);
 
 LASSO_EXPORT xmlChar       *lasso_identity_dump                      (LassoIdentity *identity);
+
 LASSO_EXPORT LassoNode     *lasso_identity_get_remote_nameIdentifier (LassoIdentity *identity);
+
 LASSO_EXPORT LassoNode     *lasso_identity_get_local_nameIdentifier  (LassoIdentity *identity);
+
 LASSO_EXPORT void           lasso_identity_set_local_nameIdentifier  (LassoIdentity *identity,
 								      LassoNode     *nameIdentifier);
+
 LASSO_EXPORT void           lasso_identity_set_remote_nameIdentifier (LassoIdentity *identity,
 								      LassoNode     *nameIdentifier);
 
