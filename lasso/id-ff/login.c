@@ -650,7 +650,7 @@ lasso_login_dump(LassoLogin *login)
   gchar *parent_dump, *dump;
   gchar *protocolProfile = g_new0(gchar, 6);
 
-  parent_dump = lasso_profile_dump(LASSO_PROFILE(login), "LassoLogin");
+  parent_dump = lasso_profile_dump(LASSO_PROFILE(login), "Login");
   node = lasso_node_new_from_dump(parent_dump);
   g_free(parent_dump);
 
@@ -818,7 +818,7 @@ lasso_login_init_request(LassoLogin      *login,
 			 lassoHttpMethod  response_method)
 {
   LassoNode *response = NULL;
-  xmlChar *artifact, *identityProviderSuccinctID;
+  xmlChar *artifact, *b64_identityProviderSuccinctID;
   gint ret = 0;
   GError *err = NULL;
 
@@ -846,11 +846,11 @@ lasso_login_init_request(LassoLogin      *login,
   LASSO_PROFILE(login)->response_type = lassoMessageTypeArtifact;
 
   /* get remote identityProviderSuccinctID */
-  identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(LASSO_ARTIFACT(response), &err);
-  if (identityProviderSuccinctID != NULL) {
+  b64_identityProviderSuccinctID = lasso_artifact_get_b64IdentityProviderSuccinctID(LASSO_ARTIFACT(response), &err);
+  if (b64_identityProviderSuccinctID != NULL) {
     LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE(login)->server,
-										    identityProviderSuccinctID);
-    xmlFree(identityProviderSuccinctID);
+										    b64_identityProviderSuccinctID);
+    xmlFree(b64_identityProviderSuccinctID);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, err->message);
@@ -1060,13 +1060,18 @@ lasso_login_new_from_dump(LassoServer *server,
   node_dump = lasso_node_new_from_dump(dump);
 
   /* profile attributes */
-  LASSO_PROFILE(login)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", NULL, NULL);
-  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", NULL, NULL);
-  LASSO_PROFILE(login)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl", NULL, NULL);
-  LASSO_PROFILE(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", NULL, NULL);
-  LASSO_PROFILE(login)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState", NULL, NULL);
+  LASSO_PROFILE(login)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier",
+									 lassoLassoHRef, NULL);
+  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID",
+									 lassoLassoHRef, NULL);
+  LASSO_PROFILE(login)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl",
+								      lassoLassoHRef, NULL);
+  LASSO_PROFILE(login)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody",
+								      lassoLassoHRef, NULL);
+  LASSO_PROFILE(login)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState",
+								      lassoLassoHRef, NULL);
 
-  type = lasso_node_get_child_content(node_dump, "RequestType", NULL, NULL);
+  type = lasso_node_get_child_content(node_dump, "RequestType", lassoLassoHRef, NULL);
   LASSO_PROFILE(login)->request_type = atoi(type);
   xmlFree(type);
 
@@ -1091,7 +1096,7 @@ lasso_login_new_from_dump(LassoServer *server,
     lasso_node_destroy(request_node);
   }
 
-  type = lasso_node_get_child_content(node_dump, "ResponseType", NULL, NULL);
+  type = lasso_node_get_child_content(node_dump, "ResponseType", lassoLassoHRef, NULL);
   LASSO_PROFILE(login)->response_type = atoi(type);
   xmlFree(type);
 
@@ -1116,18 +1121,21 @@ lasso_login_new_from_dump(LassoServer *server,
     lasso_node_destroy(response_node);
   }
   
-  type = lasso_node_get_child_content(node_dump, "ProviderType", NULL, NULL);
+  type = lasso_node_get_child_content(node_dump, "ProviderType", lassoLassoHRef, NULL);
   LASSO_PROFILE(login)->provider_type = atoi(type);
   xmlFree(type);
 
   /* login attributes */
-  protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile", NULL, NULL);
+  protocolProfile = lasso_node_get_child_content(node_dump, "ProtocolProfile",
+						 lassoLassoHRef, NULL);
   if (protocolProfile != NULL) {
     login->protocolProfile = atoi(protocolProfile);
     xmlFree(protocolProfile);
   }
-  login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact", NULL, NULL);
-  login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump", NULL, NULL);
+  login->assertionArtifact = lasso_node_get_child_content(node_dump, "AssertionArtifact",
+							  lassoLassoHRef, NULL);
+  login->response_dump     = lasso_node_get_child_content(node_dump, "ResponseDump",
+							  lassoLassoHRef, NULL);
 
   lasso_node_destroy(node_dump);
 
