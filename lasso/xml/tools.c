@@ -90,7 +90,7 @@ lasso_build_unique_id(unsigned int size)
 
 	g_assert(size >= 32);
 
-	result = g_ malloc(size+2); /* trailing \0 and leading _ */
+	result = g_malloc(size+2); /* trailing \0 and leading _ */
 	result[0] = '_';
 	lasso_build_random_sequence(result+1, size);
 	result[size+1] = 0;
