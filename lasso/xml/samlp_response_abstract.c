@@ -164,7 +164,6 @@ init_from_query(LassoNode *node, char **query_fields)
 			continue;
 		}
 	}
-	parent_class->init_from_query(node, query_fields);
 }
 
 static int

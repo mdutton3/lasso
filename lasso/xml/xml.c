@@ -446,12 +446,6 @@ lasso_node_impl_destroy(LassoNode *node)
 	g_object_unref(G_OBJECT(node));
 }
 
-static void
-lasso_node_impl_init_from_query(LassoNode *node, char **query_fields)
-{
-	;
-}
-
 static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
@@ -498,7 +492,7 @@ class_init(LassoNodeClass *class)
 	parent_class = g_type_class_peek_parent(class);
 	/* virtual public methods */
 	class->destroy = lasso_node_impl_destroy;
-	class->init_from_query = lasso_node_impl_init_from_query;
+	class->init_from_query = NULL;
 	class->init_from_xml = lasso_node_impl_init_from_xml;
 	class->get_sign_attr_name = NULL;
 
