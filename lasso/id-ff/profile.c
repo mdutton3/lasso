@@ -188,6 +188,18 @@ lasso_profile_get_identity(LassoProfile *ctx)
   return NULL;
 }
 
+gchar*
+lasso_profile_get_remote_providerID(LassoProfile *ctx)
+{
+  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
+
+  if (ctx->remote_providerID != NULL) {
+    return g_strdup(ctx->remote_providerID);
+  }
+
+  return NULL;
+}
+
 LassoSession*
 lasso_profile_get_session(LassoProfile *ctx)
 {

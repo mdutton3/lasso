@@ -126,6 +126,8 @@ LASSO_EXPORT gchar*         lasso_profile_dump                           (LassoP
 
 LASSO_EXPORT LassoIdentity* lasso_profile_get_identity                   (LassoProfile *ctx);
 
+LASSO_EXPORT gchar*         lasso_profile_get_remote_providerID          (LassoProfile *ctx);
+
 LASSO_EXPORT LassoSession*  lasso_profile_get_session                    (LassoProfile *ctx);
 
 LASSO_EXPORT gboolean       lasso_profile_is_identity_dirty              (LassoProfile *ctx);
