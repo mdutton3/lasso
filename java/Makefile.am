@@ -13,7 +13,8 @@ javasharedir = $(prefix)/share/java
 # Shared library.
 javalib_LTLIBRARIES = libjlasso.la
 
-libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c
+libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c \
+			$(top_srcdir)/swig/Lasso.c
 libjlasso_la_CFLAGS =	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
 			-I$(top_srcdir)
@@ -39,7 +40,7 @@ CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
-$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
+$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(top_srcdir)/swig/Lasso.i
 	here=`pwd`; \
 	$(SWIG) -v -java -noproxy -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
 	if test -r $(JAVA_MODULE)JNI.java; then \
@@ -77,9 +78,10 @@ $(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class
 	rm -f $@
 	jar cf $@ $(JAVA_PATH)$(JAVA_MODULE).class 
 
-.deps/libjlasso_la-lasso_wrap.Plo:
-	echo "#dummy" > .deps/libjlasso_la-lasso_wrap.Plo 
+$(DEPDIR)/libjlasso_la-lasso_wrap.Plo:
+	mkdir -p $(DEPDIR)
+	echo "#dummy" > $(DEPDIR)/libjlasso_la-lasso_wrap.Plo 
 
-.deps/com/entrouvert/lasso/lasso.Po:
-	mkdir -p .deps/com/entrouvert/lasso 
-	echo "#dummy" > .deps/com/entrouvert/lasso/lasso.Po  
+$(DEPDIR)/com/entrouvert/lasso/lasso.Po:
+	mkdir -p $(DEPDIR)/com/entrouvert/lasso 
+	echo "#dummy" > $(DEPDIR)/com/entrouvert/lasso/lasso.Po  

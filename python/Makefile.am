@@ -23,9 +23,9 @@ $(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py: $(top_srcdir)/swig/Lasso.i
 	$(SWIG) -v -python -module $(PYTHON_PACKAGE) -o $(PYTHON_PACKAGE)_wrap.c $<
 
 # Dirty hack, another better way ?
-.deps/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo:
-	mkdir -p .deps
-	echo "#dummy" > .deps/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo
+$(DEPDIR)/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo:
+	mkdir -p $(DEPDIR)
+	echo "#dummy" > $(DEPDIR)/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo
 
 SWIG_OUTPUTS = $(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py
 
