@@ -107,52 +107,6 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 /*****************************************************************************/
 
 gint
-lasso_login_build_authn_request_msg(LassoLogin *login)
-{
-  LassoProvider *provider, *remote_provider;
-  xmlChar *request_protocolProfile, *url, *query, *lareq;
-  gboolean must_sign;
-  
-  provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
-					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-  must_sign = xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true");
-  /* export request depending on the request ProtocolProfile */
-  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
-  /* get SingleSignOnServiceURL metadata */
-  url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
-  if (url == NULL) return (-1);
-
-  if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
-    /* GET -> query */
-    if (must_sign) {
-      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
-					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
-					 LASSO_PROFILE_CONTEXT(login)->server->private_key);
-    }
-    else {
-      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
-    }
-    if (query == NULL) return (-2);
-    /* alloc msg_url (+2 for the ? and \0) */
-    LASSO_PROFILE_CONTEXT(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
-    g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?%s", url, query);
-    LASSO_PROFILE_CONTEXT(login)->msg_body = NULL;
-    g_free(query);
-  }
-  else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
-    /* POST -> formular */
-    lareq = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->request);
-    if (lareq == NULL) return (-2);
-    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
-    LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
-  }
-  g_free(url);
-  
-  return (0);
-}
-
-gint
 lasso_login_build_artifact_msg(LassoLogin       *login,
 			       gint              authentication_result,
 			       const gchar      *authenticationMethod,
@@ -239,6 +193,52 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 }
 
 gint
+lasso_login_build_authn_request_msg(LassoLogin *login)
+{
+  LassoProvider *provider, *remote_provider;
+  xmlChar *request_protocolProfile, *url, *query, *lareq;
+  gboolean must_sign;
+  
+  provider = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
+  remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
+					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+  must_sign = xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true");
+  /* export request depending on the request ProtocolProfile */
+  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
+  /* get SingleSignOnServiceURL metadata */
+  url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
+  if (url == NULL) return (-1);
+
+  if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
+    /* GET -> query */
+    if (must_sign) {
+      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request,
+					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
+					 LASSO_PROFILE_CONTEXT(login)->server->private_key);
+    }
+    else {
+      query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(login)->request, 0, NULL);
+    }
+    if (query == NULL) return (-2);
+    /* alloc msg_url (+2 for the ? and \0) */
+    LASSO_PROFILE_CONTEXT(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
+    g_sprintf(LASSO_PROFILE_CONTEXT(login)->msg_url, "%s?%s", url, query);
+    LASSO_PROFILE_CONTEXT(login)->msg_body = NULL;
+    g_free(query);
+  }
+  else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
+    /* POST -> formular */
+    lareq = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(login)->request);
+    if (lareq == NULL) return (-2);
+    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
+    LASSO_PROFILE_CONTEXT(login)->msg_body = lareq;
+  }
+  g_free(url);
+  
+  return (0);
+}
+
+gint
 lasso_login_build_authn_response_msg(LassoLogin  *login,
 				     gint         authentication_result,
 				     const gchar *authenticationMethod,
@@ -293,6 +293,39 @@ lasso_login_build_request_msg(LassoLogin *login)
   LASSO_PROFILE_CONTEXT(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->request);
   LASSO_PROFILE_CONTEXT(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider);
   return (0);
+}
+
+gchar*
+lasso_login_dump(LassoLogin *login)
+{
+  LassoNode *node;
+  gchar *parent_dump, *dump, *str;
+
+  parent_dump = lasso_profile_context_dump(LASSO_PROFILE_CONTEXT(login), "LassoLogin");
+  node = lasso_node_new_from_dump(parent_dump);
+  g_free(parent_dump);
+
+  if (login->protocolProfile > 0) {
+    str = g_new0(gchar, 6);
+    sprintf(str, "%d", login->protocolProfile);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "protocolProfile", str, FALSE);
+    g_free(str);
+  }
+
+  if (login->assertionArtifact != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE);
+  }
+  if (login->response_dump != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE);
+  }
+  if (login->msg_relayState != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE);
+  }
+
+  dump = lasso_node_export(node);
+  lasso_node_destroy(node);
+
+  return (dump);
 }
 
 gint
@@ -437,20 +470,6 @@ lasso_login_init_request(LassoLogin       *login,
 }
 
 gint
-lasso_login_handle_request_msg(LassoLogin *login,
-			       gchar      *request_msg)
-{
-  LassoNode *node;
-
-  node = lasso_node_new_from_dump(request_msg);
- 
-  login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
-  lasso_node_destroy(node);
-
-  return (0);
-}
-
-gint
 lasso_login_handle_authn_response_msg(LassoLogin *login,
 				      gchar      *authn_response_msg)
 {
@@ -491,6 +510,20 @@ lasso_login_handle_authn_response_msg(LassoLogin *login,
   else {
     return (-2);
   }
+  return (0);
+}
+
+gint
+lasso_login_handle_request_msg(LassoLogin *login,
+			       gchar      *request_msg)
+{
+  LassoNode *node;
+
+  node = lasso_node_new_from_dump(request_msg);
+ 
+  login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
+  lasso_node_destroy(node);
+
   return (0);
 }
 

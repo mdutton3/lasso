@@ -36,6 +36,45 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+gchar*
+lasso_profile_context_dump(LassoProfileContext *ctx,
+			   const gchar         *name)
+{
+  LassoNode *node;
+  gchar *child_dump, *dump = NULL;
+
+  node = lasso_node_new();
+  if (name != NULL) {
+    LASSO_NODE_GET_CLASS(node)->set_name(node, name);
+  }
+  else {
+    LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfileContext");
+  }
+
+  if (ctx->request != NULL) {
+    LASSO_NODE_GET_CLASS(node)->add_child(node, ctx->request, FALSE);
+  }
+  if (ctx->response != NULL) {
+    LASSO_NODE_GET_CLASS(node)->add_child(node, ctx->response, FALSE);
+  }
+
+  if (ctx->remote_providerID != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "remote_providerID", ctx->remote_providerID, FALSE);
+  }
+
+  if (ctx->msg_url != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_url", lasso_str_escape(ctx->msg_url), FALSE);
+  }
+  if (ctx->msg_body != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE);
+  }
+
+  dump = lasso_node_export(node);
+  lasso_node_destroy(node);
+
+  return (dump);
+}
+
 gint
 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 					    gchar               *providerID)

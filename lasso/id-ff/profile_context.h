@@ -66,9 +66,6 @@ struct _LassoProfileContext {
   LassoNode *request;
   LassoNode *response;
 
-  gint request_method;
-  gint response_method;
-
   gchar *remote_providerID;
   
   gchar *msg_url;
@@ -85,6 +82,9 @@ LASSO_EXPORT GType                lasso_profile_context_get_type             (vo
 
 LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                  (LassoServer *server,
 									      LassoUser   *user);
+
+LASSO_EXPORT gchar*               lasso_profile_context_dump                 (LassoProfileContext *ctx,
+									      const gchar         *name);
 
 LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 									      gchar               *providerID);

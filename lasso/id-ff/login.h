@@ -55,12 +55,12 @@ typedef enum {
 struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
-  gint     protocolProfile;
-  xmlChar *assertionArtifact;
+  gint   protocolProfile;
+  gchar *assertionArtifact;
 
-  xmlChar *response_dump;
+  gchar *response_dump;
 
-  gchar   *msg_relayState;
+  gchar *msg_relayState;
   /*< private >*/
 };
 
@@ -73,13 +73,13 @@ LASSO_EXPORT GType                lasso_login_get_type                    (void)
 LASSO_EXPORT LassoProfileContext* lasso_login_new                         (LassoServer *server,
 									   LassoUser   *user);
 
-LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin *login);
-
 LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (LassoLogin       *login,
 									   gint              authentication_result,
 									   const gchar      *authenticationMethod,
 									   const gchar      *reauthenticateOnOrAfter,
 									   lassoHttpMethods  method);
+
+LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin *login);
 
 LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (LassoLogin  *login,
 									   gint         authentication_result,
@@ -87,6 +87,8 @@ LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (Lasso
 									   const gchar *reauthenticateOnOrAfter);
 
 LASSO_EXPORT gint                 lasso_login_build_request_msg           (LassoLogin *login);
+
+LASSO_EXPORT gchar*               lasso_login_dump                        (LassoLogin *login);
 
 LASSO_EXPORT gint                 lasso_login_init_authn_request          (LassoLogin  *login,
 									   const gchar *remote_providerID);
@@ -100,11 +102,11 @@ LASSO_EXPORT gint                 lasso_login_init_request                (Lasso
 									   lassoHttpMethods  response_method,
 									   const gchar      *remote_providerID);
 
-LASSO_EXPORT gint                 lasso_login_handle_request_msg          (LassoLogin *login,
-									   gchar      *request_msg);
-
 LASSO_EXPORT gint                 lasso_login_handle_authn_response_msg   (LassoLogin *login,
 									   gchar      *authn_response_msg);
+
+LASSO_EXPORT gint                 lasso_login_handle_request_msg          (LassoLogin *login,
+									   gchar      *request_msg);
 
 LASSO_EXPORT gboolean             lasso_login_must_authenticate           (LassoLogin *login);
 
