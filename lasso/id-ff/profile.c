@@ -118,6 +118,7 @@ lasso_profile_dump(LassoProfile *ctx,
   else {
     LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfile");
   }
+  LASSO_NODE_GET_CLASS(node)->set_ns(node, lassoLassoHRef, NULL);
 
   if (ctx->request != NULL) {
     request = lasso_node_copy(ctx->request);
@@ -131,7 +132,8 @@ lasso_profile_dump(LassoProfile *ctx,
   }
 
   if (ctx->nameIdentifier != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "NameIdentifier", ctx->nameIdentifier, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "NameIdentifier",
+					  ctx->nameIdentifier, FALSE);
   }
 
   if (ctx->remote_providerID != NULL) {
@@ -146,7 +148,8 @@ lasso_profile_dump(LassoProfile *ctx,
     LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", ctx->msg_body, FALSE);
   }
   if (ctx->msg_relayState != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", ctx->msg_relayState, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState",
+					  ctx->msg_relayState, FALSE);
   }
 
   g_sprintf(request_type, "%d", ctx->request_type);
@@ -168,25 +171,53 @@ lasso_profile_dump(LassoProfile *ctx,
 LassoIdentity*
 lasso_profile_get_identity(LassoProfile *ctx)
 {
-  return (lasso_identity_copy(ctx->identity));
+  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
+
+  if (ctx->identity != NULL) {
+    /* return identity copy only if identity isn't empty */
+    if (ctx->identity->providerIDs->len > 0) {
+      return (lasso_identity_copy(ctx->identity));
+    }
+  }
+
+  return (NULL);
 }
 
 LassoSession*
 lasso_profile_get_session(LassoProfile *ctx)
 {
-  return (lasso_session_copy(ctx->session));
+  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
+
+  if (ctx->session != NULL) {
+    /* return session copy only if session isn't empty */
+    if (ctx->session->providerIDs->len > 0) {
+      return (lasso_session_copy(ctx->session));
+    }
+  }
+
+  return (NULL);
 }
 
 gboolean
 lasso_profile_is_identity_dirty(LassoProfile *ctx)
 {
-  return (ctx->identity->is_dirty);
+  if (ctx->identity != NULL) {
+    return (ctx->identity->is_dirty);
+  }
+  else {
+    return (FALSE);
+  }
 }
 
 gboolean
 lasso_profile_is_session_dirty(LassoProfile *ctx)
 {
-  return (ctx->session->is_dirty);
+  if (ctx->session != NULL) {
+    return (ctx->session->is_dirty);
+  }
+  else {
+    return (FALSE);
+  }
 }
 
 gint
