@@ -113,6 +113,11 @@ libNameIdentifierFormatOneTime = "urn:liberty:iff:nameid:one-time"
 libNameIdentifierFormatEncrypted = "urn:liberty:iff:nameid:encrypted"
 libNameIdentifierFormatEntityID = "urn:liberty:iff:nameid:entityID"
 
+# * Consent */
+libConsentObtained = "urn:liberty:consent:obtained"
+libConsentUnavailable = "urn:liberty:consent:unavailable"
+libConsentInapplicable = "urn:liberty:consent:inapplicable"
+
 # *****************************************************************************/
 # * METADATA                                                                  */
 # *****************************************************************************/
