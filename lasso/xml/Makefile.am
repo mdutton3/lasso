@@ -30,6 +30,10 @@ liblasso_xml_la_SOURCES = \
 	disco_resource_offering.c \
 	disco_service_instance.c \
 	dst_data.c \
+	dst_modification.c \
+	dst_modify.c \
+	dst_modify_response.c \
+	dst_new_data.c \
 	dst_query.c \
 	dst_query_item.c \
 	dst_query_response.c \
@@ -100,6 +104,10 @@ liblassoinclude_HEADERS = \
 	disco_resource_offering.h \
 	disco_service_instance.h \
 	dst_data.h \
+	dst_modification.h \
+	dst_modify.h \
+	dst_modify_response.h \
+	dst_new_data.h \
 	dst_query.h \
 	dst_query_item.h \
 	dst_query_response.h \
