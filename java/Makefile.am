@@ -64,12 +64,13 @@ $(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java.in lasso-fragment.java
 
 clean-local:
 	rm -f *.class
+	rm -rf com
 
 all-local: $(JAVA_JAR)
 
 $(JAVA_PATH)$(JAVA_MODULE).class: $(JAVA_PATH)$(JAVA_MODULE).java
 	mkdir -p $(JAVA_PATH)
-	cp $(srcdir)/$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_PATH)
+	test -f $(JAVA_PATH)$(JAVA_MODULE).java || cp $(srcdir)/$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_PATH)
 	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)$(JAVA_MODULE).java
 
 $(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class 
