@@ -41,32 +41,27 @@
 
 /**
  * lasso_build_random_sequence:
+ * @buffer: buffer to fill with random sequence
  * @size: the sequence size in byte (character)
  * 
  * Builds a random sequence of [0-9A-F] characters of size @size.
  * 
- * Return value: a newly allocated string or NULL if an error occurs.
+ * Return value: None
  **/
-xmlChar *
-lasso_build_random_sequence(guint8 size)
+void
+lasso_build_random_sequence(char *buffer, unsigned int size)
 {
-  int i, val;
-  xmlChar *seq;
+	char *t;
+	unsigned int rnd, i;
 
-  g_return_val_if_fail(size > 0, NULL);
-
-  seq = xmlMalloc(size+1);
-
-  for (i=0; i<size; i++) {
-    val = g_random_int_range(0, 16);
-    if (val < 10)
-      seq[i] = 48 + val;
-    else
-      seq[i] = 65 + val-10;
-  }
-  seq[size] = '\0';
-
-  return seq;
+	t = buffer;
+	while (t-buffer < size) {
+		rnd = g_random_int();
+		for (i=0; i<sizeof(int); i++) {
+			*(t++) = '0' + ((rnd>>i*4)&0xf);
+			if (*(t-1) > '9') *(t-1) += 7;
+		}
+	}
 }
 
 /**
@@ -77,36 +72,29 @@ lasso_build_random_sequence(guint8 size)
  * 
  * Return value: a "unique" ID (begin always with _ character)
  **/
-xmlChar *
-lasso_build_unique_id(guint8 size)
+char*
+lasso_build_unique_id(unsigned int size)
 {
-  /*
-    The probability of 2 randomly chosen identifiers being identical MUST be
-    less than 2^-128 and SHOULD be less than 2^-160.
-    so we must have 128 <= exp <= 160
-    we could build a 128-bit binary number but hexa system is shorter
-    32 <= hexa number size <= 40
-  */
-  int i, val;
-  xmlChar *id;
+	/*
+	 * When generating one-time-use identifiers for Principals, in the
+	 * case that a pseudorandom technique is employed, the probability
+	 * of two randomly chosen identifiers being identical MUST be less
+	 * than or equal to 2-128 and SHOULD be less than or equal to 2-160.
+	 * These levels correspond, respectively, to use of strong 128-bit
+	 * and 160-bit hash functions, in conjunction with sufficient input
+	 * entropy.
+	 *   -- 3.1.4 Name Identifier Construction
+	 *      in « Liberty ID-FF Protocols and Schema Specification »
+	 */
+	char *result;
 
-  g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
+	g_assert(size >= 32);
 
-  if (size == 0) size = 32;
-  id = xmlMalloc(size+1+1); /* one for _ and one for \0 */
-
-  /* build hex number (<= 2^exp-1) */
-  id[0] = '_';
-  for (i=1; i<size+1; i++) {
-    val = g_random_int_range(0, 16);
-    if (val < 10)
-      id[i] = 48 + val;
-    else
-      id[i] = 65 + val-10;
-  }
-  id[size+1] = '\0';
-
-  return id;
+	result = malloc(size+2); /* trailing \0 and leading _ */
+	result[0] = '_';
+	lasso_build_random_sequence(result+1, size);
+	result[size+1] = 0;
+	return result;
 }
 
 /**

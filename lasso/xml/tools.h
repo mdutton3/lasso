@@ -52,9 +52,8 @@ typedef enum {
   LASSO_PEM_FILE_TYPE_CERT
 } lassoPemFileType;
 
-LASSO_EXPORT xmlChar*          lasso_build_random_sequence                (guint8 size);
-
-LASSO_EXPORT xmlChar*          lasso_build_unique_id                      (guint8 size);
+LASSO_EXPORT void  lasso_build_random_sequence(char *buffer, unsigned int size);
+LASSO_EXPORT char* lasso_build_unique_id(unsigned int size);
 
 LASSO_EXPORT char* lasso_get_current_time(void);
 

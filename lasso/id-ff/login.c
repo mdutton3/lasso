@@ -475,7 +475,7 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	LassoProvider *remote_provider;
 	gchar *url;
 	xmlSecByte samlArt[42], *b64_samlArt, *relayState;
-	xmlChar *assertionHandle, *identityProviderSuccinctID;
+	xmlChar *identityProviderSuccinctID;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -521,13 +521,11 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	url = lasso_provider_get_metadata_one(remote_provider, "AssertionConsumerServiceURL");
 	identityProviderSuccinctID = lasso_sha1(
 			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
-	assertionHandle = lasso_build_random_sequence(20);
 
 	memcpy(samlArt, "\000\003", 2); /* type code */
 	memcpy(samlArt+2, identityProviderSuccinctID, 20);
-	memcpy(samlArt+22, assertionHandle, 20);
+	lasso_build_random_sequence(samlArt+22, 20);
 
-	xmlFree(assertionHandle);
 	xmlFree(identityProviderSuccinctID);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
 	relayState = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->RelayState;
