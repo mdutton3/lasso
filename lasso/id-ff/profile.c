@@ -199,18 +199,21 @@ void
 lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue)
 {
 	LassoSamlpStatus *status;
-	/* XXX: cleanup before if necessary */
 
 	status = lasso_samlp_status_new();
 	status->StatusCode = lasso_samlp_status_code_new();
 	status->StatusCode->Value = g_strdup(statusCodeValue);
 
 	if (LASSO_IS_SAMLP_RESPONSE(ctx->response)) {
-		LASSO_SAMLP_RESPONSE(ctx->response)->Status = status;
+		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(ctx->response);
+		if (response->Status) g_object_unref(response->Status);
+		response->Status = status;
 		return;
 	}
 	if (LASSO_IS_LIB_STATUS_RESPONSE(ctx->response)) {
-		LASSO_LIB_STATUS_RESPONSE(ctx->response)->Status = status;
+		LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(ctx->response);
+		if (response->Status) g_object_unref(response->Status);
+		response->Status = status;
 		return;
 	}
 

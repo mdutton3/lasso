@@ -685,75 +685,72 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 		const char *notBefore,
 		const char *notOnOrAfter)
 {
+	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+	profile = LASSO_PROFILE(login);
+
 	/* ProtocolProfile must be BrwsPost */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
 		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 	}
 
 	/* create LibAuthnResponse */
-	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(
-			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
-			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request));
+	profile->response = lasso_lib_authn_response_new(
+			LASSO_PROVIDER(profile->server)->ProviderID,
+			LASSO_LIB_AUTHN_REQUEST(profile->request));
+
+	/* modify AuthnResponse StatusCode if user authentication is not OK */
+	if (authentication_result == FALSE) {
+		lasso_profile_set_response_status(profile,
+				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
+	}
 
 	/* if signature is not OK => modify AuthnResponse StatusCode */
-	if (LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE ||
-			LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
-		switch (LASSO_PROFILE(login)->signature_status) {
-			case LASSO_DS_ERROR_INVALID_SIGNATURE:
-				lasso_profile_set_response_status(LASSO_PROFILE(login),
-						LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
-				break;
-			case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND: /* Unsigned AuthnRequest */
-				lasso_profile_set_response_status(LASSO_PROFILE(login),
-						LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST);
-				break;
-		}
-		/* ret = LASSO_PROFILE(login)->signature_status; */
-	} else {
-		/* modify AuthnResponse StatusCode if user authentication is not OK */
-		if (authentication_result == FALSE) {
-			lasso_profile_set_response_status(LASSO_PROFILE(login),
-					LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
-		}
+	if (profile->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE) {
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
+	}
 
-		if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
-			/* process federation */
-			ret = lasso_login_process_federation(login, is_consent_obtained);
-			/* fill the response with the assertion */
-			if (ret == 0) {
-				federation = g_hash_table_lookup(
-						LASSO_PROFILE(login)->identity->federations,
-						LASSO_PROFILE(login)->remote_providerID);
-				lasso_login_build_assertion(login,
-						federation,
-						authenticationMethod,
-						authenticationInstant,
-						reauthenticateOnOrAfter,
-						notBefore,
-						notOnOrAfter);
-			}
-			else if (ret < 0) {
-				return ret;
-			}
+	if (profile->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+		/* Unsigned AuthnRequest */
+		lasso_profile_set_response_status(profile,
+				LASSO_LIB_STATUS_CODE_UNSIGNED_AUTHN_REQUEST);
+	}
+
+	if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
+		/* process federation */
+		ret = lasso_login_process_federation(login, is_consent_obtained);
+		if (ret < 0)
+			return ret;
+
+		/* fill the response with the assertion */
+		if (ret == 0) {
+			federation = g_hash_table_lookup(
+					profile->identity->federations,
+					profile->remote_providerID);
+			lasso_login_build_assertion(login, federation,
+					authenticationMethod, authenticationInstant,
+					reauthenticateOnOrAfter,
+					notBefore, notOnOrAfter);
 		}
 	}
 
 	if (LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Status == NULL) {
-		lasso_profile_set_response_status(LASSO_PROFILE(login),
+		lasso_profile_set_response_status(profile,
 				LASSO_SAML_STATUS_CODE_SUCCESS);
 	}
 
-	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 	/* build an lib:AuthnResponse base64 encoded */
-	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE(login)->response);
+	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(profile->response);
 	LASSO_PROFILE(login)->msg_url = lasso_provider_get_metadata_one(
 			remote_provider, "AssertionConsumerServiceURL");
 
