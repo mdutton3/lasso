@@ -35,6 +35,7 @@
 struct _LassoProviderPrivate
 {
 	gboolean dispose_has_run;
+	gboolean liberty_12_conformance; /* conformance with Liberty 1.2 specs */
 	GHashTable *SPDescriptor;
 	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
@@ -598,6 +599,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	xmlFreeDoc(doc);
 	xmlXPathFreeContext(xpathCtx);
+
+	provider->private_data->liberty_12_conformance = compatibility;
 
 	return TRUE;
 }
