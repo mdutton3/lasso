@@ -150,13 +150,16 @@ LassoNode*
 lasso_authn_request_new(const xmlChar *providerID)
 {
   LassoNode *request;
+  xmlChar   *id, *time;
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST, NULL));
   
   /* Set ONLY required elements/attributs */
   /* RequestID */
+  id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)lasso_build_unique_id(32));
+					     (const xmlChar *)id);
+  xmlFree(id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						lassoLibMajorVersion);
@@ -164,8 +167,10 @@ lasso_authn_request_new(const xmlChar *providerID)
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
 						lassoLibMinorVersion);
   /* IssueInstant */
+  time = lasso_get_current_time();
   lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						 lasso_get_current_time());
+						 (const xmlChar *)time);
+  xmlFree(time);
   /* ProviderID */
   lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
 					 providerID);

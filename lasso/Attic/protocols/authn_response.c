@@ -263,8 +263,9 @@ LassoNode*
 lasso_authn_response_new_from_request_query(gchar         *query,
 					    const xmlChar *providerID)
 {
-  GData      *gd;
-  LassoNode  *response, *status, *status_code;
+  GData     *gd;
+  LassoNode *response, *status, *status_code;
+  xmlChar   *id, *time;
 
   g_return_val_if_fail(query != NULL, NULL);
   g_return_val_if_fail(providerID != NULL, NULL);
@@ -277,8 +278,10 @@ lasso_authn_response_new_from_request_query(gchar         *query,
   LASSO_AUTHN_RESPONSE(response)->request = NULL;
 
   /* ResponseID */
+  id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       (const xmlChar *)lasso_build_unique_id(32));
+					       (const xmlChar *)id);
+  xmlFree(id);
   /* MajorVersion */
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoLibMajorVersion);     
@@ -286,8 +289,10 @@ lasso_authn_response_new_from_request_query(gchar         *query,
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
 						 lassoLibMinorVersion);
   /* IssueInstance */
+  time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  lasso_get_current_time());
+						  (const xmlChar *)time);
+  xmlFree(time);
 
   /* ProviderID */
   lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response),

@@ -74,6 +74,7 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
 					  const xmlChar *format)
 {
   LassoNode *request, *identifier;
+  xmlChar *id, *time;
 
   g_return_val_if_fail(providerID != NULL, NULL);
   g_return_val_if_fail(nameIdentifier != NULL, NULL);
@@ -84,8 +85,10 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
   
   /* Set ONLY required elements/attributs */
   /* RequestID */
+  id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)lasso_build_unique_id(32));
+					     (const xmlChar *)id);
+  xmlFree(id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						lassoLibMajorVersion);
@@ -93,8 +96,10 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), 
 						lassoLibMinorVersion);
   /* IssueInstant */
+  time = lasso_get_current_time();
   lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-						 lasso_get_current_time());
+						 (const xmlChar *)time);
+  xmlFree(time);
   /* ProviderID */
   lasso_lib_name_identifier_mapping_request_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request),
 							   providerID);
@@ -125,7 +130,6 @@ lasso_name_identifier_mapping_request_new_from_query(const xmlChar *query)
   /* RequestID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
-
   
   /* MajorVersion */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);

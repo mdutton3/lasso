@@ -71,20 +71,25 @@ lasso_assertion_new(const xmlChar *issuer,
 		    xmlChar       *requestID)
 {
   LassoNode *assertion;
+  xmlChar *id, *time;
 
   g_return_val_if_fail(issuer != NULL, NULL);
 
   assertion = LASSO_NODE(g_object_new(LASSO_TYPE_ASSERTION, NULL));
 
+  id = lasso_build_unique_id(32);
   lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
-				       (const xmlChar *)lasso_build_unique_id(32));
+				       (const xmlChar *)id);
+  xmlFree(id);
   lasso_saml_assertion_set_majorVersion(LASSO_SAML_ASSERTION(assertion),
 					lassoLibMajorVersion);
   lasso_saml_assertion_set_minorVersion(LASSO_SAML_ASSERTION(assertion),
 					lassoLibMinorVersion);
+  time = lasso_get_current_time();
   lasso_saml_assertion_set_issueInstance(LASSO_SAML_ASSERTION(assertion),
-					 lasso_get_current_time());
-  
+					 (const xmlChar *)time);
+  xmlFree(time);
+
   lasso_saml_assertion_set_issuer(LASSO_SAML_ASSERTION(assertion), issuer);
 
   /* InResponseTo */

@@ -29,6 +29,7 @@ struct _LassoNodePrivate
 {
   gboolean   dispose_has_run;
   xmlNodePtr node;
+  GPtrArray  *children;
 };
 
 /*****************************************************************************/
@@ -714,24 +715,39 @@ lasso_node_impl_add_child(LassoNode *node,
 			  LassoNode *child,
 			  gboolean   unbounded)
 {
-  LassoNode *old_child;
+  xmlNodePtr old_child;
+  LassoNode *search_child = NULL;
+  gint i;
 
   g_return_if_fail (LASSO_IS_NODE(node));
   g_return_if_fail (LASSO_IS_NODE(child));
 
-  // if child is not unbounded, we search it
+  /* if child is not unbounded, we search it */
   if (!unbounded) {
-    old_child = lasso_node_get_child(node, child->private->node->name);
+    //old_child = lasso_node_get_child(node, child->private->node->name);
+    old_child = xmlSecFindNode(node->private->node,
+			       child->private->node->name, NULL);
   }
 
   if (!unbounded && old_child != NULL) {
-    // child replace old child
-    xmlReplaceNode(old_child->private->node, child->private->node);
+    /* old child removed in array children and freed */
+    for(i=0;i<node->private->children->len;i++) {
+      search_child = LASSO_NODE(g_ptr_array_index(node->private->children, i));
+      if (search_child->private->node == old_child) {
+	g_ptr_array_remove_index(node->private->children, i);
+	break;
+      }
+    }
+    /* child replace old child */
+    xmlReplaceNode(old_child, child->private->node);
+    g_object_unref(G_OBJECT(search_child));
   }
   else {
-    // else child is added
+    /* else child is added */
     xmlAddChild(node->private->node, child->private->node);
   }
+  /* child added in children array */
+  g_ptr_array_add(node->private->children, (gpointer)child);
 }
 
 static void
@@ -1014,7 +1030,16 @@ lasso_node_dispose(LassoNode *node)
 static void
 lasso_node_finalize(LassoNode *node)
 {
+  gint i;
+  LassoNode *child;
+
   g_print("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
+  for(i=0;i<node->private->children->len;i++) {
+    child = LASSO_NODE(g_ptr_array_index(node->private->children, i));
+    g_ptr_array_remove_index(node->private->children, i);
+    g_object_unref(G_OBJECT(child));
+  }
+  xmlUnlinkNode(node->private->node);
   xmlFreeNode(node->private->node);
   g_free (node->private);
 }
@@ -1030,7 +1055,8 @@ lasso_node_instance_init(LassoNode *instance)
 
   node->private = g_new (LassoNodePrivate, 1);
   node->private->dispose_has_run = FALSE;
-  node->private->node = xmlNewNode(NULL, "no-name-set");
+  node->private->node            = xmlNewNode(NULL, "no-name-set");
+  node->private->children        = g_ptr_array_new();
 }
 
 static void

@@ -74,13 +74,16 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
   /* FIXME : change request type */
   LassoNode *response, *ss, *ssc;
   xmlChar *inResponseTo, *recipient, *relayState;
+  xmlChar *id, *time;
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
   
   /* Set ONLY required elements/attributs */
   /* ResponseID */
+  id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       (const xmlChar *)lasso_build_unique_id(32));
+					       (const xmlChar *)id);
+  xmlFree(id);
   /* MajorVersion */
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoLibMajorVersion);
@@ -88,8 +91,10 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoLibMinorVersion);
   /* IssueInstant */
+  time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  lasso_get_current_time());
+						  (const xmlChar *)time);
+  xmlFree(time);
   /* ProviderID */
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   providerID);

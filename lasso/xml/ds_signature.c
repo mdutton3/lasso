@@ -102,8 +102,8 @@ GType lasso_ds_signature_get_type() {
 
 /**
  * lasso_ds_signature_new:
- * @doc: the doc
- * @signMethodId: the signature method (RsaSha1 or DsaSha1)
+ * @node: the doc
+ * @sign_method: the signature method (RsaSha1 or DsaSha1)
  *
  * Creates a new <ds:Signature> node object.
  * 

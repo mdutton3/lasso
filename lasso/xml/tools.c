@@ -87,7 +87,7 @@ lasso_get_current_time()
 {
   struct tm *tm;
   GTimeVal time_val;
-  xmlChar *ret = g_malloc(21);
+  xmlChar *ret = xmlMalloc(21);
 
   g_get_current_time(&time_val);
   tm = localtime(&(time_val.tv_sec));
@@ -186,6 +186,7 @@ lasso_query_verify_signature(const gchar   *query,
   xmlDocPtr doc;
   xmlNodePtr sigNode, sigValNode;
   xmlSecDSigCtxPtr dsigCtx;
+  xmlChar *str_unescaped;
   gchar **str_split;
   /*
      0: signature invalid
@@ -207,7 +208,9 @@ lasso_query_verify_signature(const gchar   *query,
 			      xmlSecNodeSignatureValue,
 			      xmlSecDSigNs);
   /* set SignatureValue content */
-  xmlNodeSetContent(sigValNode, lasso_str_unescape(str_split[1]));
+  str_unescaped = lasso_str_unescape(str_split[1]);
+  xmlNodeSetContent(sigValNode, str_unescaped);
+  xmlFree(str_unescaped);
 
   g_strfreev(str_split);
   //xmlDocDump(stdout, doc);

@@ -40,7 +40,7 @@ int lasso_init()
   LIBXML_TEST_VERSION
     xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
   xmlSubstituteEntitiesDefault(1);
-	
+
   /* Init xmlsec library */
   if(xmlSecInit() < 0) {
     fprintf(stderr, "Error: xmlsec initialization failed.\n");

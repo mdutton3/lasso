@@ -78,13 +78,16 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
 {
   LassoNode *statement;
   LassoNode *subject, *identifier, *idp_identifier, *subject_confirmation;
+  xmlChar *time;
 
   statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
 
   lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
 							       authenticationMethod);
+  time = lasso_get_current_time();
   lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement),
-								lasso_get_current_time());
+								(const xmlChar *)time);
+  xmlFree(time);
   lasso_lib_authentication_statement_set_reauthenticateOnOrAfter(LASSO_LIB_AUTHENTICATION_STATEMENT(statement),
 								 reauthenticateOnOrAfter);
 
