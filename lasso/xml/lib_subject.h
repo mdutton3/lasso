@@ -31,6 +31,7 @@ extern "C" {
 
 #include <lasso/lasso.h>
 #include <lasso/xml/saml_subject.h>
+#include <lasso/xml/lib_idp_provided_name_identifier.h>
 
 #define LASSO_TYPE_LIB_SUBJECT (lasso_lib_subject_get_type())
 #define LASSO_LIB_SUBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_SUBJECT, LassoLibSubject))

@@ -30,20 +30,22 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/lasso.h>
+#include <lasso/protocols/protocols.h>
 
 typedef struct _lassoAuthnRequest lassoAuthnRequest;
 
 struct _lassoAuthnRequest {
   LassoNode  *node;
+  enum lassoProtocolTypes type;
 };
 
 typedef struct _lassoAuthnResponse lassoAuthnResponse;
 
 struct _lassoAuthnResponse {
   LassoNode     *node;
-  xmlChar       *request_query;
+  enum lassoProtocolTypes type;
   LassoNode     *request_node;
+  xmlChar       *request_query;
   gboolean       isPassive;
   gboolean       mustAuthenticate;
   const xmlChar *public_key;
@@ -79,7 +81,7 @@ gint lasso_authn_response_init(lassoAuthnResponse *lares,
 gint lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
 					LassoNode *assertion);
 
-LassoNode *lasso_assertion_build(lassoAuthnResponse *lares,
+LassoNode *lasso_assertion_build(gpointer *lares,
 				 const xmlChar *issuer);
 
 gint lasso_assertion_add_authenticationStatement(LassoNode *assertion,
@@ -88,10 +90,10 @@ gint lasso_assertion_add_authenticationStatement(LassoNode *assertion,
 LassoNode *lasso_authentication_statement_build(const xmlChar *authenticationMethod,
 						const xmlChar *sessionIndex,
 						const xmlChar *reauthenticateOnOrAfter,
-						const xmlChar *nameIdentifier,
+						xmlChar       *nameIdentifier,
 						const xmlChar *nameQualifier,
 						const xmlChar *format,
-						const xmlChar *idp_nameIdentifier,
+						xmlChar       *idp_nameIdentifier,
 						const xmlChar *idp_nameQualifier,
 						const xmlChar *idp_format,
 						const xmlChar *confirmationMethod);

@@ -29,16 +29,21 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#include <lasso/lasso.h>
-#include <lasso/protocols/federation_termination_notification.h>
-#include <lasso/protocols/logout.h>
-#include <lasso/protocols/register_name_identifier.h>
-#include <lasso/protocols/single_sign_on_and_federation.h>
+#include <lasso/xml/lib_authn_request.h>
+#include <lasso/xml/lib_authn_response.h>
+#include <lasso/xml/lib_federation_termination_notification.h>
+#include <lasso/xml/lib_logout_request.h>
+#include <lasso/xml/lib_logout_response.h>
+#include <lasso/xml/lib_register_name_identifier_request.h>
+#include <lasso/xml/lib_register_name_identifier_response.h>
 
-GString *lasso_build_encoded_message_url(const char *authority,
-					 LassoNode *request);
-void lasso_sign_encoded_message(GString *message,
-				const char *private_key_filename);
+enum lassoProtocolTypes {
+  lassoProtocolTypeAuthnRequest,
+  lassoProtocolTypeAuthnResponse,
+  lassoProtocolTypeLogoutRequest,
+  lassoProtocolTypeLogoutResponse,
+  lassoProtocolTypeResponse
+};
 
 #ifdef __cplusplus
 }

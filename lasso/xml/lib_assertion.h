@@ -31,6 +31,8 @@ extern "C" {
 
 #include <lasso/xml/saml_assertion.h>
 
+#include <lasso/xml/lib_authentication_statement.h>
+
 #define LASSO_TYPE_LIB_ASSERTION (lasso_lib_assertion_get_type())
 #define LASSO_LIB_ASSERTION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_ASSERTION, LassoLibAssertion))
 #define LASSO_LIB_ASSERTION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_ASSERTION, LassoLibAssertionClass))

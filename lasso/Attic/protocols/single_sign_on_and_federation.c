@@ -48,7 +48,7 @@ lasso_authn_request_build_full(const xmlChar *requestID,
 			       GPtrArray     *idpList,
 			       const xmlChar *consent)
 {
-  LassoNode  *request, *authn_context, *scoping;
+  LassoNode *request, *authn_context, *scoping;
   gint i;
   gboolean authn_context_ok = FALSE;
 
@@ -203,6 +203,7 @@ lasso_authn_request_create(const xmlChar *providerID,
   lassoAuthnRequest *lareq;
 
   lareq = g_malloc(sizeof(lassoAuthnRequest));
+  lareq->type = lassoProtocolTypeAuthnRequest;
   lareq->node = lasso_authn_request_build_full(NULL,
 					       NULL,
 					       NULL,
@@ -236,13 +237,14 @@ lasso_authn_response_create(xmlChar       *query,
 			    gboolean       isAuthenticated)
 {
   lassoAuthnResponse *lares;
-  GData     *gd;
-  gboolean   forceAuthn = FALSE;
-  gboolean   isPassive = TRUE;
+  GData       *gd;
+  gboolean     forceAuthn = FALSE;
+  gboolean     isPassive = TRUE;
   const gchar *authnContextComparison = lassoLibAuthnContextComparisonExact;
-  gint       proxyCount = 0;
+  gint         proxyCount = 0;
 
   lares = g_malloc(sizeof(lassoAuthnResponse));
+  lares->type = lassoProtocolTypeAuthnResponse;
   lares->request_query = query;
   lares->public_key = public_key;
   lares->private_key = private_key;
@@ -353,7 +355,7 @@ lasso_authn_response_init(lassoAuthnResponse *lares,
   if (authentication_result == TRUE) {
     content = lasso_node_get_content(lasso_node_get_child(lares->request_node, "NameIDPolicy"));
     if (xmlStrEqual(content, "none") || content == NULL) {
-      printf("Pas de NameIDPolicy ou None\n");
+      printf("Aucun NameIDPolicy ou None\n");
       status_code_value = 0;
     }
     xmlFree(content);
@@ -416,13 +418,22 @@ lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
 }
 
 LassoNode *
-lasso_assertion_build(lassoAuthnResponse *lares,
+lasso_assertion_build(gpointer *lares,
 		      const xmlChar *issuer)
 {
   LassoNode *assertion, *statement, *subject;
+  LassoAttr *requestID;
   xmlChar *content;
 
-  assertion = lasso_lib_assertion_new();
+  g_assert(((lassoAuthnResponse *)lares)->type == lassoProtocolTypeAuthnResponse ||
+	   ((lassoAuthnResponse *)lares)->type == lassoProtocolTypeResponse);
+
+  if (((lassoAuthnResponse *)lares)->type == lassoProtocolTypeAuthnResponse) {
+    assertion = lasso_lib_assertion_new();
+  }
+  else {
+    assertion = lasso_saml_assertion_new();
+  }
 
   lasso_saml_assertion_set_assertionID(LASSO_SAML_ASSERTION(assertion),
 				       (const xmlChar *)lasso_build_unique_id(32));
@@ -437,7 +448,9 @@ lasso_assertion_build(lassoAuthnResponse *lares,
 				  issuer);
 
   /* InResponseTo */
-  content = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(lares->request_node, "RequestID"));
+  requestID = lasso_node_get_attr(((lassoAuthnResponse *)lares)->request_node,
+				  "RequestID");
+  content = xmlNodeGetContent((xmlNodePtr)requestID);
   if (content != NULL) {
     lasso_lib_assertion_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
 					 content);
@@ -452,7 +465,7 @@ lasso_assertion_add_authenticationStatement(LassoNode *assertion,
 					    LassoNode *statement)
 {
   lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
-						   LASSO_LIB_AUTHENTICATION_STATEMENT(statement));
+						   LASSO_SAML_AUTHENTICATION_STATEMENT(statement));
   return (1);
 }
 
@@ -460,10 +473,10 @@ LassoNode *
 lasso_authentication_statement_build(const xmlChar *authenticationMethod,
 				     const xmlChar *sessionIndex,
 				     const xmlChar *reauthenticateOnOrAfter,
-				     const xmlChar *nameIdentifier,
+				     xmlChar       *nameIdentifier,
 				     const xmlChar *nameQualifier,
 				     const xmlChar *format,
-				     const xmlChar *idp_nameIdentifier,
+				     xmlChar       *idp_nameIdentifier,
 				     const xmlChar *idp_nameQualifier,
 				     const xmlChar *idp_format,
 				     const xmlChar *confirmationMethod)

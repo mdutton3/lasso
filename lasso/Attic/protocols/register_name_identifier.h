@@ -28,9 +28,9 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */ 
+#endif /* __cplusplus */
 
-#include <lasso/lasso.h>
+#include <lasso/protocols/protocols.h>
 
 LassoNode *lasso_build_full_registerNameIdentifierRequest(const xmlChar *requestID,
 							  const xmlChar *majorVersion,

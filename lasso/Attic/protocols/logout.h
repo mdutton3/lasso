@@ -26,28 +26,32 @@
 #ifndef __LOGOUT_H__
 #define __LOGOUT_H__
 
-#include <lasso/lasso.h>
+#include <lasso/protocols/protocols.h>
 
 typedef struct _lassoLogoutRequest lassoLogoutRequest;
 
 struct _lassoLogoutRequest{
   LassoNode  *node;
+  enum lassoProtocolTypes type;
 };
 
 typedef struct _lassoLogoutResponse lassoLogoutResponse;
 
 struct _lassoLogoutResponse{
   LassoNode  *node;
+  enum lassoProtocolTypes type;
   LassoNode  *request_node;
   xmlChar    *request_query;
 };
 
 lassoLogoutRequest * lasso_logout_request_create(const xmlChar *providerID,
-						 const xmlChar *nameIdentifier,
+						 xmlChar       *nameIdentifier,
 						 const xmlChar *nameQualifier,
 						 const xmlChar *format,
 						 const xmlChar *sessionIndex,
 						 const xmlChar *relayState,
 						 const xmlChar *consent);
+
+lassoLogoutResponse * lasso_logout_response_create(xmlChar *query);
 
 #endif /* __LOGOUT_H__ */

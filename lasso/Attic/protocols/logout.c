@@ -35,7 +35,7 @@ lasso_logout_request_build_full(const char    *requestID,
 			       const xmlChar *minorVersion,
 			       const xmlChar *issueInstant,
 			       const xmlChar *providerID,
-			       const xmlChar *nameIdentifier,
+			       xmlChar       *nameIdentifier,
 			       const xmlChar *nameQualifier,
 			       const xmlChar *format,
 			       const xmlChar *sessionIndex,
@@ -114,7 +114,7 @@ lasso_logout_request_build_full(const char    *requestID,
 
 lassoLogoutRequest *
 lasso_logout_request_create(const xmlChar *providerID,
-			    const xmlChar *nameIdentifier,
+			    xmlChar       *nameIdentifier,
 			    const xmlChar *nameQualifier,
 			    const xmlChar *format,
 			    const xmlChar *sessionIndex,
@@ -124,17 +124,18 @@ lasso_logout_request_create(const xmlChar *providerID,
      lassoLogoutRequest *lareq;
 
      lareq = g_malloc(sizeof(lassoLogoutRequest));
+     lareq->type = lassoProtocolTypeLogoutRequest;
      lareq->node = lasso_logout_request_build_full(NULL,
-						  NULL,
-						  NULL,
-						  NULL,
-						  providerID,
-						  nameIdentifier,
-						  nameQualifier,
-						  format,
-						  sessionIndex,
-						  relayState,
-						  consent);
+						   NULL,
+						   NULL,
+						   NULL,
+						   providerID,
+						   nameIdentifier,
+						   nameQualifier,
+						   format,
+						   sessionIndex,
+						   relayState,
+						   consent);
      return(lareq);
 }
 
@@ -158,7 +159,7 @@ lasso_logout_request_rebuild(const xmlChar *query)
 						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
 						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
      }
-
+     g_datalist_clear(&gd);
      return(request);
 }
 
@@ -241,11 +242,12 @@ lasso_logout_response_build_full(const xmlChar *responseID,
 }
 
 lassoLogoutResponse *
-lasso_logout_response_create(const xmlChar *query)
+lasso_logout_response_create(xmlChar *query)
 {
      lassoLogoutResponse *lares;
 
      lares = g_malloc(sizeof(lassoLogoutResponse));
+     lares->type = lassoProtocolTypeLogoutResponse;
      lares->request_query = NULL;
      if(query!=NULL){
 	  lares->request_query = query;

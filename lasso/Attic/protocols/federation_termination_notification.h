@@ -26,7 +26,7 @@ e Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __FEDERATION_TERMINATION_NOTIFICATION_H__
 #define __FEDERATION_TERMINATION_NOTIFICATION_H__
 
-#include <lasso/lasso.h>
+#include <lasso/protocols/protocols.h>
 
 LassoNode *lasso_build_full_federationTerminationNotification(const xmlChar *requestID,
 							      const xmlChar *majorVersion,

@@ -158,7 +158,7 @@ class LogoutRequest:
     def __isprivate(self, name):
         return name == '_o'
     def __getattr__(self, name):
-        if self.__isprivate(name):d
+        if self.__isprivate(name):
             return self.__dict__[name]
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name

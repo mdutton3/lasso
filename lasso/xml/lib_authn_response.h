@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/samlp_response.h>
+#include <lasso/xml/lib_assertion.h>
 
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
 #define LASSO_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponse))

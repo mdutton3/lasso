@@ -54,11 +54,11 @@ struct _LassoSamlpResponseClass {
 LASSO_EXPORT GType lasso_samlp_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_samlp_response_new(void);
 
-LASSO_EXPORT void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
-						      LassoSamlpStatus *status);
-
 LASSO_EXPORT void lasso_samlp_response_add_assertion (LassoSamlpResponse *node,
 						      gpointer assertion);
+
+LASSO_EXPORT void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
+						      LassoSamlpStatus *status);
 
 #ifdef __cplusplus
 }
