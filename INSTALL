@@ -73,7 +73,7 @@ below for what these are)::
   ./autogen.sh --prefix=/usr/local/somewhere
 
 The 'automake' and 'autoconf' tools have many different versions and
-at present development is being done with automake 1.4, autoconf 2.59
+at present development is being done with automake 1.8, autoconf 2.59
 and libtool 1.5.6.  These are only needed when compiling from CVS sources.
 'autogen.sh' enforces the requirements.
 
