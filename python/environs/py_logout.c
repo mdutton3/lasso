@@ -57,22 +57,24 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
   logout = LassoLogout_get(logout_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
-			 "nameIdentifier", "msg_relayState");
-  if (!strcmp(attr, "msg_url"))
-    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_url));
-  if (!strcmp(attr, "msg_body"))
-    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_body));
-  if (!strcmp(attr, "msg_relayState"))
-    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_relayState));
-  if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(LASSO_PROFILE(logout)->nameIdentifier));
+    return Py_BuildValue("[ssssssss]", "identity", "session", "request", "response",
+			 "msg_url", "msg_body", "nameIdentifier", "msg_relayState");
+  if (!strcmp(attr, "identity"))
+    return (LassoIdentity_wrap(LASSO_PROFILE(logout)->identity));
+  if (!strcmp(attr, "session"))
+    return (LassoSession_wrap(LASSO_PROFILE(logout)->session));
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE(logout)->request));
   if (!strcmp(attr, "response"))
     return (LassoNode_wrap(LASSO_PROFILE(logout)->response));
-  if (!strcmp(attr, "identity"))
-    return (LassoIdentity_wrap(LASSO_PROFILE(logout)->identity));
+  if (!strcmp(attr, "msg_url"))
+    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_url));
+  if (!strcmp(attr, "msg_body"))
+    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_body));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(LASSO_PROFILE(logout)->nameIdentifier));
+  if (!strcmp(attr, "msg_relayState"))
+    return (charPtrConst_wrap(LASSO_PROFILE(logout)->msg_relayState));
 
   Py_INCREF(Py_None);
   return (Py_None);

@@ -119,6 +119,8 @@ class LoginTestCase(unittest.TestCase):
             lasso.httpMethodRedirect), 0)
         idpIdentityContextDump = idpLoginContext.get_identity().dump()
         self.failUnless(idpIdentityContextDump)
+        idpSessionContextDump = idpLoginContext.get_session().dump()
+        self.failUnless(idpSessionContextDump)
         responseUrl = idpLoginContext.msg_url
         responseQuery = responseUrl.split("?", 1)[1]
         soapResponseMsg = idpLoginContext.response_dump
@@ -164,6 +166,8 @@ class LoginTestCase(unittest.TestCase):
         spLogoutContext = lasso.Logout.new(spContext, lasso.providerTypeSp)
         self.failUnless(spIdentityContextDump)
         spLogoutContext.set_identity_from_dump(spIdentityContextDump)
+        self.failUnless(spSessionContextDump)
+        spLogoutContext.set_session_from_dump(spSessionContextDump)
         self.failUnlessEqual(spLogoutContext.init_request(), 0)
         self.failUnlessEqual(spLogoutContext.build_request_msg(), 0)
         soapEndpoint = spLogoutContext.msg_url
@@ -182,6 +186,8 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
         self.failUnless(idpIdentityContextDump)
         self.failUnlessEqual(idpLogoutContext.set_identity_from_dump(idpIdentityContextDump), 0)
+        self.failUnless(idpSessionContextDump)
+        self.failUnlessEqual(idpLogoutContext.set_session_from_dump(idpSessionContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.process_request(), 0)
         idpIdentityContext = idpLogoutContext.identity
         self.failUnless(idpIdentityContext)

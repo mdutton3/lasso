@@ -23,8 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PYLASSO_PY_USER_H__
-#define __PYLASSO_PY_USER_H__
+#ifndef __PYLASSO_PY_SESSION_H__
+#define __PYLASSO_PY_SESSION_H__
 
 #include <lasso/environs/session.h>
 

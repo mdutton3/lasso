@@ -1039,11 +1039,13 @@ class Logout(Profile):
         ret = lassomod.logout_getattr(self, name)
         if ret is None:
             return None
-        if name == "user":
-            ret = User(_obj=ret)
-        if name == "request":
+        elif name == "identity":
+            ret= Identity(_obj=ret)
+        elif name == "session":
+            ret= Session(_obj=ret)
+        elif name == "request":
             ret = LogoutRequest(_obj=ret)
-        if name == "response":
+        elif name == "response":
             ret = LogoutResponse(_obj=ret)
         return ret
 
@@ -1098,8 +1100,10 @@ class FederationTermination(Profile):
             raise AttributeError, name
         ret = lassomod.federation_termination_getattr(self, name)
         if ret:
-            if name=="user":
-                ret = User(_obj=ret)
+            if name == "identity":
+                ret= Identity(_obj=ret)
+            elif name == "session":
+                ret= Session(_obj=ret)
         return ret
 
     def new(cls, server, provider_type):
