@@ -203,7 +203,8 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		profile->request = lasso_lib_federation_termination_notification_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
-				LASSO_SIGNATURE_TYPE_WITHX509,
+				profile->server->certificate ? 
+					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
 		if (profile->msg_relayState) {
 			message(G_LOG_LEVEL_WARNING,

@@ -235,7 +235,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			nameIdentifier,
 			targetNamespace,
-			LASSO_SIGNATURE_TYPE_WITHX509,
+			profile->server->certificate ? 
+				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 			LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
@@ -424,7 +425,8 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			LASSO_SAML_STATUS_CODE_SUCCESS,
 			request,
-			LASSO_SIGNATURE_TYPE_WITHX509,
+			profile->server->certificate ? 
+				LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 			LASSO_SIGNATURE_METHOD_RSA_SHA1);
 
 	if (LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response) == FALSE) {

@@ -360,7 +360,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		profile->request = lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
-				LASSO_SIGNATURE_TYPE_WITHX509,
+				profile->server->certificate ? 
+					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	} else { /* http_method == LASSO_HTTP_METHOD_REDIRECT */
 		is_http_redirect_get_method = TRUE;
@@ -697,7 +698,8 @@ lasso_logout_validate_request(LassoLogout *logout)
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML_STATUS_CODE_SUCCESS,
 				LASSO_LIB_LOGOUT_REQUEST(profile->request),
-				LASSO_SIGNATURE_TYPE_WITHX509,
+				profile->server->certificate ? 
+					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	}
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {

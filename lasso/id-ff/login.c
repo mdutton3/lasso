@@ -752,7 +752,10 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 
 	/* Countermeasure: The issuer should sign <lib:AuthnResponse> messages.
 	 * (binding and profiles (1.2errata2, page 65) */
-	profile->response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	if (profile->server->certificate)
+		profile->response->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	else
+		profile->response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	profile->response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	profile->response->private_key_file = profile->server->private_key;
 	profile->response->certificate_file = profile->server->certificate;
@@ -835,7 +838,13 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		profile->response->MinorVersion = 0;
 	}
 
-	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	if (profile->server->certificate) {
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = 
+			LASSO_SIGNATURE_TYPE_WITHX509;
+	} else {
+		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = 
+			LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
@@ -970,7 +979,11 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
 		profile->request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-		profile->request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+		if (profile->server->certificate) {
+			profile->request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+		} else {
+			profile->request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+		}
 	}
 
 	return 0;
@@ -1056,7 +1069,11 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	request->IssueInstant = lasso_get_current_time();
 
 	LASSO_SAMLP_REQUEST(request)->AssertionArtifact = artifact_b64;
-	request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	if (LASSO_PROFILE(login)->server->certificate) {
+		request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	} else {
+		request->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
 	request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	LASSO_PROFILE(login)->request = LASSO_SAMLP_REQUEST_ABSTRACT(request);

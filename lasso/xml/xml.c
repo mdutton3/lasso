@@ -1034,7 +1034,7 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
 	LassoSignatureType sign_type;
 	LassoSignatureMethod sign_method;
-	xmlNode *signature = NULL, *reference, *key_info;
+	xmlNode *signature = NULL, *reference, *key_info, *t;
 	char *uri;
 	char *id;
 
@@ -1082,9 +1082,8 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 
 	if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
 		/* add <dsig:KeyInfo/> */
-		key_info = xmlSecTmplSignatureEnsureKeyInfo(
-				signature, NULL);
-		xmlSecTmplKeyInfoAddX509Data(key_info);
+		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+		t = xmlSecTmplKeyInfoAddX509Data(key_info);
 	}
 }
 
