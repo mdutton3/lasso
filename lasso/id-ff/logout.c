@@ -33,9 +33,11 @@ lasso_logout_dump(LassoLogout *logout)
 {
   LassoProfileContext *profileContext;
   gchar *dump;
+
+  return(dump);
 }
 
-int
+gint
 lasso_logout_build_request_msg(LassoLogout *logout)
 {
   LassoProfileContext *profileContext;
@@ -56,7 +58,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    profileContext->msg_url = lasso_provider_get_singleLogoutServiceUrl(provider);
+    profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
 
@@ -83,7 +85,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    profileContext->msg_url = lasso_provider_get_singleLogoutServiceUrl(provider);
+    profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
 
@@ -171,7 +173,7 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
 						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
 
-  nameIdentifier = lasso_logout_request_get_nameIdentifier(profileContext->response);
+  nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
   if(nameIdentifier==NULL){
     return(-2);
   }
@@ -194,8 +196,6 @@ lasso_logout_handle_request_msg(LassoLogout      *logout,
     return(-5);
   }
 
-  /* TODO : verify the name identifier */
-
   return(0);
 }
 
@@ -205,7 +205,8 @@ lasso_logout_handle_response_msg(LassoLogout *logout,
 				 lassoHttpMethods response_method)
 {
   LassoProfileContext *profileContext;
-  xmlChar *statusCodeValue;
+  xmlChar   *statusCodeValue;
+  LassoNode *statusCode;
 
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
@@ -214,8 +215,9 @@ lasso_logout_handle_response_msg(LassoLogout *logout,
   case lassoHttpMethodSoap:
     profileContext->response = lasso_logout_response_new_from_soap(response_msg);
   }
-    
-  statusCodeValue = lasso_logout_response_get_statusCodeValue(profileContext->response);
+ 
+  statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
   if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
     return(-1);
   }
