@@ -560,9 +560,8 @@ lasso_node_new_from_soap(const char *soap)
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
 	xmlNode *xmlnode;
-	LassoNode *node;
+	LassoNode *node = NULL;
 
-	/* FIXME: totally lacking error checking */
 	doc = xmlParseMemory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
@@ -570,9 +569,12 @@ lasso_node_new_from_soap(const char *soap)
 
 	xmlnode = xpathObj->nodesetval->nodeTab[0];
 
-	node = lasso_node_new_from_xmlNode(xmlnode);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+		node = lasso_node_new_from_xmlNode(xmlnode);
 
-	/* XXX: free xpath objects */
+	xmlFreeDoc(doc);
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
 
 	return node;
 }
