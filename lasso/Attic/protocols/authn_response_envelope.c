@@ -34,7 +34,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-xmlChar *lasso_authn_response_envelope_get_assertionConsumerServiceURL (LassoAuthnResponseEnvelope *response)
+xmlChar *lasso_authn_response_envelope_get_assertionConsumerServiceURL(LassoAuthnResponseEnvelope *response)
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE_ENVELOPE(response), NULL);
 
@@ -86,20 +86,45 @@ GType lasso_authn_response_envelope_get_type() {
 }
 
 LassoNode*
-lasso_authn_response_envelope_new(LassoLibAuthnResponse *authnResponse,
-				  const xmlChar        *assertionConsumerServiceURL)
+lasso_authn_response_envelope_new(LassoAuthnResponse *authnResponse,
+				  xmlChar            *assertionConsumerServiceURL)
 {
   LassoNode *response;
 
-  g_return_val_if_fail(LASSO_IS_LIB_AUTHN_RESPONSE(authnResponse), NULL);
+  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(authnResponse), NULL);
   g_return_val_if_fail(assertionConsumerServiceURL!=NULL, NULL);
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, NULL));
   
-  lasso_lib_authn_response_envelope_set_authnResponse(LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(response), authnResponse);
+  lasso_lib_authn_response_envelope_set_authnResponse(LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(response),
+						      LASSO_LIB_AUTHN_RESPONSE(authnResponse));
   lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL(LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(response),
 								    assertionConsumerServiceURL);
 
+  return(response);
+}
+
+static LassoNode *
+lasso_authn_response_envelope_new_from_soap(gchar *buffer)
+{
+  LassoNode *response;
+  LassoNode *envelope, *lassoNode_response;
+  xmlNodePtr xmlNode_response;
+  LassoNodeClass *class;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, NULL));
+
+  envelope = lasso_node_new_from_dump(buffer);
+  lassoNode_response = lasso_node_get_child(envelope, "AuthnResponseEnvelope", NULL);
+  
+  class = LASSO_NODE_GET_CLASS(lassoNode_response);
+  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
+  lasso_node_destroy(lassoNode_response);
+
+  class = LASSO_NODE_GET_CLASS(response);
+  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
+  lasso_node_destroy(envelope);
+  
   return(response);
 }
 
@@ -107,20 +132,25 @@ LassoNode*
 lasso_authn_response_envelope_new_from_export(gchar               *buffer,
 					     lassoNodeExportTypes export_type)
 {
-  LassoNode *response;
+  LassoNode *response = NULL;
   xmlChar   *buffer_decoded;
 
   g_return_val_if_fail(buffer != NULL, NULL);
 
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, NULL));
-
   switch(export_type){
   case lassoNodeExportTypeBase64:
+    response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, NULL));
     buffer_decoded = xmlMalloc(strlen(buffer));
     xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));
     lasso_node_import(response, buffer_decoded);
     xmlFree(buffer_decoded);
+    break;
+  case lassoNodeExportTypeSoap:
+    response = lasso_authn_response_envelope_new_from_soap(buffer);
+    break;
   default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid export type\n");
+    return(NULL);
     break;
   }
 

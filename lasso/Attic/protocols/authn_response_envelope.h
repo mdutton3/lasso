@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/lib_authn_response_envelope.h>
+#include <lasso/protocols/authn_response.h>
 
 #define LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE (lasso_authn_response_envelope_get_type())
 #define LASSO_AUTHN_RESPONSE_ENVELOPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE, LassoAuthnResponseEnvelope))
@@ -54,8 +55,8 @@ struct _LassoAuthnResponseEnvelopeClass {
 
 LASSO_EXPORT GType      lasso_authn_response_envelope_get_type                        (void);
 
-LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new                             (LassoLibAuthnResponse *authnResponse,
-										       const xmlChar        *assertionConsumerServiceURL);
+LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new                             (LassoAuthnResponse *authnResponse,
+										       xmlChar            *assertionConsumerServiceURL);
 
 LASSO_EXPORT xmlChar*   lasso_authn_response_envelope_get_assertionConsumerServiceURL (LassoAuthnResponseEnvelope *response);
 

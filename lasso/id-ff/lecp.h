@@ -38,6 +38,7 @@ extern "C" {
 #include <lasso/protocols/authn_response.h>
 
 #include <lasso/environs/server.h>
+#include <lasso/environs/profile.h>
 
 #define LASSO_TYPE_LECP (lasso_lecp_get_type())
 #define LASSO_LECP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LECP, LassoLecp))

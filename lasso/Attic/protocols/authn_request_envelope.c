@@ -79,19 +79,19 @@ GType lasso_authn_request_envelope_get_type() {
 }
 
 LassoNode*
-lasso_authn_request_envelope_new(LassoLibAuthnRequest *authnRequest,
-				 const xmlChar        *providerID,
-				 const xmlChar        *assertionConsumerServiceURL)
+lasso_authn_request_envelope_new(LassoAuthnRequest *authnRequest,
+				 xmlChar           *providerID,
+				 xmlChar           *assertionConsumerServiceURL)
 {
   LassoNode *request;
 
-  g_return_val_if_fail(LASSO_IS_LIB_AUTHN_REQUEST(authnRequest), NULL);
+  g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST(authnRequest), NULL);
   g_return_val_if_fail(providerID!=NULL, NULL);
   g_return_val_if_fail(assertionConsumerServiceURL!=NULL, NULL);
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST_ENVELOPE, NULL));
   
-  lasso_lib_authn_request_envelope_set_authnRequest(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request), authnRequest);
+  lasso_lib_authn_request_envelope_set_authnRequest(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request), LASSO_LIB_AUTHN_REQUEST(authnRequest));
   lasso_lib_authn_request_envelope_set_providerID(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request), providerID);
   lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request),
 								   assertionConsumerServiceURL);
@@ -116,7 +116,9 @@ lasso_authn_request_envelope_new_from_export(gchar               *buffer,
     xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));
     lasso_node_import(request, buffer_decoded);
     xmlFree(buffer_decoded);
+    break;
   default:
+    message(G_LOG_LEVEL_ERROR, "Invalid export type : %d\n", export_type);
     break;
   }
 
