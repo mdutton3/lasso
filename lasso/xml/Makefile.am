@@ -11,7 +11,6 @@ noinst_LTLIBRARIES = liblasso-xml.la
 
 liblasso_xml_la_SOURCES = \
 	tools.c \
-	debug.c \
 	errors.c \
 	xml.c \
 	lib_assertion.c	\
@@ -59,7 +58,6 @@ liblasso_xml_la_SOURCES = \
 liblassoinclude_HEADERS = \
 	strings.h \
 	tools.h \
-	debug.h \
 	errors.h \
 	xml.h	\
 	lib_assertion.h	\

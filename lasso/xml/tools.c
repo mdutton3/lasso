@@ -39,6 +39,13 @@
 #include <lasso/xml/errors.h>
 #include <lasso/xml/strings.h>
 
+
+static int debug_type;
+static int debug_line;
+static char debug_filename[512];
+static char debug_function[512];
+
+
 /**
  * lasso_build_random_sequence:
  * @buffer: buffer to fill with random sequence
@@ -424,7 +431,7 @@ lasso_query_sign(xmlChar              *query,
  **/
 int
 lasso_query_verify_signature(const char   *query,
-			     const xmlChar *sender_public_key_file)
+			     const char *sender_public_key_file)
 {
   BIO *bio = NULL;
   RSA *rsa = NULL;
@@ -530,8 +537,8 @@ lasso_query_verify_signature(const char   *query,
  * 
  * Return value: 20-bytes buffer allocated with xmlMalloc
  **/
-xmlChar*
-lasso_sha1(xmlChar *str)
+char*
+lasso_sha1(const char *str)
 {
 	xmlChar *md;
 
@@ -567,3 +574,42 @@ char** urlencoded_to_strings(const char *str)
 	return result;
 }
 
+
+void
+set_debug_info(int line, char *filename, char *function, int type)
+{
+	debug_type = type;
+	debug_line = line;
+	debug_filename[511] = 0;
+	debug_function[511] = 0;
+	strncpy(debug_filename, filename, 511);
+	strncpy(debug_function, function, 511);
+}
+
+void
+_debug(GLogLevelFlags level, const char *format, ...) 
+{
+	char debug_string[1024];
+	time_t ts;
+	char date[20];
+	va_list args;
+
+	if (level == G_LOG_LEVEL_DEBUG && debug_type == 0) {
+		g_warning("message() function should not be used with G_LOG_LEVEL_DEBUG level. Use debug() function rather.");
+	}
+	debug_type = 0;
+
+	va_start(args, format);
+	vsnprintf(debug_string, sizeof(debug_string), format, args);
+	va_end(args);
+
+	time(&ts);
+	strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
+
+	if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
+		g_log("Lasso", level, "%s (%s/%s:%d)\n======> %s",
+				date, debug_filename, debug_function, debug_line, debug_string);
+	} else {
+		g_log("Lasso", level, "%s\t%s", date, debug_string);
+	}
+}

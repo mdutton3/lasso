@@ -38,7 +38,6 @@ extern "C" {
 #include <string.h>
 
 #include <lasso/export.h>
-#include <lasso/xml/debug.h>
 
 typedef enum {
 	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
@@ -55,21 +54,35 @@ typedef enum {
 LASSO_EXPORT void  lasso_build_random_sequence(char *buffer, unsigned int size);
 LASSO_EXPORT char* lasso_build_unique_id(unsigned int size);
 LASSO_EXPORT char* lasso_get_current_time(void);
-LASSO_EXPORT lassoPemFileType lasso_get_pem_file_type(const char *pem_file);
+LASSO_EXPORT lassoPemFileType lasso_get_pem_file_type(const char *file);
 
-LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const char *pem_cert_file);
-
-LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const char* pem_certs_chain_file);
+LASSO_EXPORT xmlSecKey* lasso_get_public_key_from_pem_cert_file(const char *file);
+LASSO_EXPORT xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
 LASSO_EXPORT xmlChar* lasso_query_sign(xmlChar *query,
 		lassoSignatureMethod sign_method, const char *private_key_file);
 
-LASSO_EXPORT int               lasso_query_verify_signature               (const char   *query,
-									   const xmlChar *sender_public_key_file);
+LASSO_EXPORT int lasso_query_verify_signature(const char *query, const char *sender_public_key_file);
 
-LASSO_EXPORT xmlChar*          lasso_sha1                                 (xmlChar *str);
+LASSO_EXPORT char* lasso_sha1(const char *str);
 
 char** urlencoded_to_strings(const char *str);
+
+
+void set_debug_info(int line, char *filename, char *function, int type);
+void _debug(GLogLevelFlags level, const char *format, ...);
+
+#if defined LASSO_DEBUG
+# define debug(format, args...) \
+	set_debug_info(__LINE__, __FILE__, __FUNCTION__, 1); \
+	_debug(G_LOG_LEVEL_DEBUG, format, ##args);
+#else
+# define debug(format, ...);
+#endif
+
+#define message(level, format, args...) \
+	set_debug_info(__LINE__, __FILE__, __FUNCTION__, 0); _debug(level, format, ##args);
+
 
 #ifdef __cplusplus
 }
