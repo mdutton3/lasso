@@ -49,11 +49,8 @@ struct _LassoSamlpResponse {
 
 	/* <element ref="samlp:Status"/> */
 	LassoSamlpStatus *Status;
-
 	/* <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/> */
 	LassoSamlAssertion *Assertion; /* XXX: GList */
-
-	/*< private >*/
 };
 
 struct _LassoSamlpResponseClass {

@@ -151,20 +151,17 @@ lasso_lib_authn_response_get_type()
 LassoNode*
 lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 {
-	LassoSamlpResponseAbstract *response;
+	LassoLibAuthnResponse *response;
 
 	response = g_object_new(LASSO_TYPE_LIB_AUTHN_RESPONSE, NULL);
  
 	if (providerID) {
-		response->ResponseID = lasso_build_unique_id(32);
-		response->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
-		response->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
-		response->IssueInstant = lasso_get_current_time();
-
-		LASSO_LIB_AUTHN_RESPONSE(response)->ProviderID = g_strdup(providerID);
-
-		LASSO_LIB_AUTHN_RESPONSE(response)->RelayState = g_strdup(
-				request->RelayState);
+		lasso_samlp_response_abstract_fill(
+				LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+				LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID,
+				request->ProviderID);
+		response->ProviderID = g_strdup(providerID);
+		response->RelayState = g_strdup(request->RelayState);
 	}
 
 	return LASSO_NODE(response);
