@@ -64,9 +64,8 @@ lasso_build_random_sequence(guint8 size)
  * @size: the ID's length (between 32 and 40)
  * 
  * Builds an ID which has an unicity probability of 2^(-size*4).
- * The result is Base64 encoded.
  * 
- * Return value: a Base64 encoded "unique" ID
+ * Return value: a "unique" ID (begin always with _ character)
  **/
 xmlChar *
 lasso_build_unique_id(guint8 size)
@@ -84,20 +83,21 @@ lasso_build_unique_id(guint8 size)
   g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
 
   if (size == 0) size = 32;
-  id = g_malloc(size+1);
+  id = g_malloc(size+1+1); /* one for _ and one for \0 */
 
   /* build hex number (<= 2^exp-1) */
-  for (i=0; i<size; i++) {
+  id[0] = '_';
+  for (i=1; i<size+1; i++) {
     val = g_random_int_range(0, 16);
     if (val < 10)
       id[i] = 48 + val;
     else
       id[i] = 65 + val-10;
   }
-  id[size] = '\0';
+  id[size+1] = '\0';
 
   /* base64 encoding of build string */
-  /* enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0); */
+  /* enc_id = xmlSecBase64Encode((const xmlChar *)id, size+1, 0); */
 
   /* g_free(id); */
   /* return (enc_id); */
@@ -310,7 +310,7 @@ lasso_query_verify_signature(const gchar   *query,
 
   /* find start node */
   sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-				       xmlSecNodeSignature, xmlSecDSigNs);
+			   xmlSecNodeSignature, xmlSecDSigNs);
   
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
