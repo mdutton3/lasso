@@ -65,10 +65,10 @@ LASSO_EXPORT void lasso_lib_authn_request_set_consent                    (LassoL
 									  const xmlChar *);
 
 LASSO_EXPORT void lasso_lib_authn_request_set_forceAuthn                 (LassoLibAuthnRequest *,
-									  const xmlChar *);
+									  gint);
 
 LASSO_EXPORT void lasso_lib_authn_request_set_isPassive                  (LassoLibAuthnRequest *,
-									  const xmlChar *);
+									  gint);
 
 LASSO_EXPORT void lasso_lib_authn_request_set_nameIDPolicy               (LassoLibAuthnRequest *node,
 									  const xmlChar   *nameIDPolicy);

@@ -8,13 +8,13 @@ print lasso.init()
 
 req = lasso.AuthnRequest("providerid.com",
                          "federated",
-                         "false",
-                         "true",
+                         0,
+                         1,
                          "pp", # None
                          "3",
                          ["test"],
-                         [],
-                         "1", # None
+                         None,
+                         lasso.LibAuthnContextComparisonExact, # None
                          "encoded_RelayState", # None
                          0,
                          None,

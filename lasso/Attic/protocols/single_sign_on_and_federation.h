@@ -53,8 +53,8 @@ struct _lassoAuthnResponse {
 
 lassoAuthnRequest *lasso_authn_request_create(const xmlChar *providerID,
 					      const xmlChar *nameIDPolicy,
-					      const xmlChar *forceAuthn,
-					      const xmlChar *isPassive,
+					      gint           forceAuthn,
+					      gint           isPassive,
 					      const xmlChar *protocolProfile,
 					      const xmlChar *assertionConsumerServiceID,
 					      GPtrArray     *authnContextClassRefs,

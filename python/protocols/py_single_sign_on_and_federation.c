@@ -73,22 +73,22 @@ PyObject *authn_request_create(PyObject *self, PyObject *args) {
   PyObject *authnContextClassRefs_obj, *authnContextStatementRefs_obj;
   PyObject *idpList_obj;
   const xmlChar *providerID;
-  const xmlChar *nameIDPolicy;
-  const xmlChar *forceAuthn;
-  const xmlChar *isPassive;
-  const xmlChar *protocolProfile;
-  const xmlChar *assertionConsumerServiceID;
-  //GPtrArray     *authnContextClassRefs = NULL;
-  //GPtrArray     *authnContextStatementRefs = NULL;
-  const xmlChar *authnContextComparison;
-  const xmlChar *relayState;
+  const xmlChar *nameIDPolicy = NULL;
+  gint           forceAuthn;
+  gint           isPassive;
+  const xmlChar *protocolProfile = NULL;
+  const xmlChar *assertionConsumerServiceID = NULL;
+  GPtrArray     *authnContextClassRefs = NULL;
+  GPtrArray     *authnContextStatementRefs = NULL;
+  const xmlChar *authnContextComparison = NULL;
+  const xmlChar *relayState = NULL;
   gint           proxyCount;
   GPtrArray     *idpList = NULL;
-  const xmlChar *consent;
+  const xmlChar *consent = NULL;
 
   lassoAuthnRequest *request;
 
-  if(!PyArg_ParseTuple(args, (char *) "ssssssOOssiOs:authn_request_create",
+  if(!PyArg_ParseTuple(args, (char *) "sziizz|O|OzziOz:authn_request_create",
 		       &providerID, &nameIDPolicy, &forceAuthn, &isPassive,
 		       &protocolProfile, &assertionConsumerServiceID,
 		       &authnContextClassRefs_obj, &authnContextStatementRefs_obj,
@@ -96,14 +96,24 @@ PyObject *authn_request_create(PyObject *self, PyObject *args) {
 		       &idpList_obj, &consent))
     return NULL;
 
+  if (authnContextClassRefs_obj != Py_None) {
+    authnContextClassRefs = PythonStringList2_get(authnContextClassRefs_obj);
+  }
+  if (authnContextStatementRefs_obj != Py_None) {
+    authnContextStatementRefs = PythonStringList2_get(authnContextStatementRefs_obj);
+  }
+  if (idpList_obj != Py_None) {
+    idpList = PythonStringList2_get(idpList_obj);
+  }
+
   request = lasso_authn_request_create(providerID,
 				       nameIDPolicy,
 				       forceAuthn,
 				       isPassive,
 				       protocolProfile,
 				       assertionConsumerServiceID,
-				       PythonStringList2_get(authnContextClassRefs_obj),
-				       PythonStringList2_get(authnContextStatementRefs_obj),
+				       authnContextClassRefs,
+				       authnContextStatementRefs,
 				       authnContextComparison,
 				       relayState,
 				       proxyCount,

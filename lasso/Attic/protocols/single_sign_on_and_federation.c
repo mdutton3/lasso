@@ -36,8 +36,8 @@ lasso_authn_request_build_full(const xmlChar *requestID,
 			       const xmlChar *issueInstant,
 			       const xmlChar *providerID,
 			       const xmlChar *nameIDPolicy,
-			       const xmlChar *forceAuthn,
-			       const xmlChar *isPassive,
+			       gint           forceAuthn,
+			       gint           isPassive,
 			       const xmlChar *protocolProfile,
 			       const xmlChar *assertionConsumerServiceID,
 			       GPtrArray     *authnContextClassRefs,
@@ -50,6 +50,7 @@ lasso_authn_request_build_full(const xmlChar *requestID,
 {
   LassoNode  *request, *authn_context, *scoping;
   gint i;
+  gboolean authn_context_ok = FALSE;
 
   /* create a new AuthnRequestinstance */
   request = lasso_lib_authn_request_new();
@@ -94,8 +95,7 @@ lasso_authn_request_build_full(const xmlChar *requestID,
   }
 
   /* ProviderID */
-  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
-					 providerID);
+  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request), providerID);
 
   /* NameIDPolicy */
   if (nameIDPolicy != NULL) {
@@ -103,14 +103,10 @@ lasso_authn_request_build_full(const xmlChar *requestID,
   }
   
   /* ForceAuthn */
-  if (forceAuthn != NULL) {
-    lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), forceAuthn);
-  }
+  lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), forceAuthn);
   
   /* IsPassive */
-  if (isPassive != NULL) {
-    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
-  }
+  lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
 
   /* ProtocolProfile */
   if (protocolProfile != NULL) {
@@ -124,20 +120,37 @@ lasso_authn_request_build_full(const xmlChar *requestID,
   }
 
   /* AuthnContext */
-  if (authnContextClassRefs != NULL || authnContextStatementRefs != NULL) {
+  if (authnContextClassRefs != NULL) {
+    if (authnContextClassRefs->len > 0) {
+      authn_context_ok = TRUE;
+    }
+  }
+  if (!authn_context_ok && authnContextStatementRefs != NULL) {
+    if (authnContextStatementRefs->len > 0) {
+      authn_context_ok = TRUE;
+    }
+  }
+
+  if (authn_context_ok) {
     /* create a new AuthnContext instance */
     authn_context = lasso_lib_request_authn_context_new();
     /* AuthnContextClassRefs */
     if (authnContextClassRefs != NULL) {
-      for(i=0; i<authnContextClassRefs->len; i++) {
-	lasso_lib_request_authn_context_add_authnContextClassRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
-								 lasso_g_ptr_array_index(authnContextClassRefs, i));
+      if (authnContextClassRefs->len > 0) {
+	for(i=0; i<authnContextClassRefs->len; i++) {
+	  lasso_lib_request_authn_context_add_authnContextClassRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
+								   lasso_g_ptr_array_index(authnContextClassRefs, i));
+	}
       }
     }
     /* AuthnContextStatementRefs */
-    for(i=0; i<authnContextStatementRefs->len; i++) {
-      lasso_lib_request_authn_context_add_authnContextStatementRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
-								   lasso_g_ptr_array_index(authnContextStatementRefs, i));
+    if (authnContextStatementRefs != NULL) {
+      if (authnContextStatementRefs->len > 0) {
+	for(i=0; i<authnContextStatementRefs->len; i++) {
+	  lasso_lib_request_authn_context_add_authnContextStatementRef(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
+								       lasso_g_ptr_array_index(authnContextStatementRefs, i));
+	}
+      }
     }
     /* AuthnContextComparison */
     if (authnContextComparison != NULL) {
@@ -175,8 +188,8 @@ lasso_authn_request_build_full(const xmlChar *requestID,
 lassoAuthnRequest *
 lasso_authn_request_create(const xmlChar *providerID,
 			   const xmlChar *nameIDPolicy,
-			   const xmlChar *forceAuthn,
-			   const xmlChar *isPassive,
+			   gint           forceAuthn,
+			   gint           isPassive,
 			   const xmlChar *protocolProfile,
 			   const xmlChar *assertionConsumerServiceID,
 			   GPtrArray     *authnContextClassRefs,
@@ -225,6 +238,8 @@ lasso_authn_response_create(xmlChar       *query,
   lassoAuthnResponse *lares;
   GData     *gd;
   gboolean   forceAuthn = FALSE;
+  gboolean   isPassive = TRUE;
+  const gchar *authnContextComparison = lassoLibAuthnContextComparisonExact;
   gint       proxyCount = 0;
 
   lares = g_malloc(sizeof(lassoAuthnResponse));
@@ -246,19 +261,35 @@ lasso_authn_response_create(xmlChar       *query,
     if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0) != NULL) {
       proxyCount = atoi(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProxyCount"), 0));
     }
+    /* if forceAuthn exists, convert it into integer */
+    if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "forceAuthn"), 0) != NULL) {
+      forceAuthn = atoi(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0));
+    }
+    /* if isPassive exists, convert it into integer */
+    if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0) != NULL) {
+      isPassive = atoi(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0));
+    }
+    /* if isPassive exists, convert it into integer */
+    if (g_datalist_get_data(&gd, "AuthnContextClassRef") != NULL ||
+	g_datalist_get_data(&gd, "AuthnContextStatementRef") != NULL) {
+      if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0) != NULL) {
+	authnContextComparison = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0);
+      }
+    }
+    
     lares->request_node = lasso_authn_request_build_full(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
-							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
-							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
+							 forceAuthn,
+							 isPassive,
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProtocolProfile"), 0),
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AssertionConsumerServiceID"), 0),
 							 (GPtrArray *)g_datalist_get_data(&gd, "AuthnContextClassRef"),
 							 (GPtrArray *)g_datalist_get_data(&gd, "AuthnContextStatementRef"),
-							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "AuthnContextComparison"), 0),
+							 authnContextComparison,
 							 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
 							 proxyCount,
 							 (GPtrArray *)g_datalist_get_data(&gd, "IDPList"),
