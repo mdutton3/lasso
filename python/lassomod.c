@@ -64,6 +64,7 @@ static PyMethodDef lasso_methods[] = {
   {"node_get_child",        node_get_child,        METH_VARARGS},
   {"node_unref",            node_unref,            METH_VARARGS},
   {"node_url_encode",       node_url_encode,       METH_VARARGS},
+  {"node_soap_envelop",     node_soap_envelop,     METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
   /* py_lib_authn_request.h */

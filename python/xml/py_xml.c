@@ -130,6 +130,22 @@ PyObject *node_url_encode(PyObject *self, PyObject *args) {
   return (charPtr_wrap(ret));
 }
 
+PyObject *node_soap_envelop(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  gchar *ret;
+
+  if (CheckArgs(args, "O:node_unref")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_url_encode",
+			 &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_soap_envelop(LassoNode_get(node_obj));
+
+  return (charPtr_wrap(ret));
+}
+
 PyObject *node_verify_signature(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   const gchar *certificate_file;

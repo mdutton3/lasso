@@ -75,6 +75,9 @@ class Node:
     def url_encode(self, sign_method, private_key_file):
         return lassomod.node_url_encode(self, sign_method, private_key_file)
 
+    def soap_envelop(self):
+        return lassomod.node_soap_envelop(self)
+
     def verify_signature(self, certificate_file):
         return lassomod.node_verify_signature(self, certificate_file)
 
@@ -282,8 +285,8 @@ class AuthnResponse(Node):
 
 
 class FederationTerminationNotification(LibFederationTerminationNotification):
-    def __init__(self, providerID, nameIdentifier,
-                 nameQualifier=None, format=None, _obj=None):
+    def __init__(self, providerID,
+                 nameIdentifier, nameQualifier = None, format = None, _obj=None):
         """
         """
         if _obj != None:
@@ -299,29 +302,39 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
 
 
 class LogoutRequest(LibLogoutRequest):
-    def __init__(self, providerID, nameIdentifier, nameQualifier, format,
-                 _obj=None):
+    def __init__(self, obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.logout_request_new(providerID,
-                                           nameIdentifier,
-                                           nameQualifier,
-                                           format)
-        if _obj is None: raise Error('lasso_logout_request_new() failed')
-        LibLogoutRequest.__init__(self, _obj=_obj)
+##         if _obj != None:
+##             self._o = _obj
+##             return
+##         _obj = lassomod.logout_request_new(soap,
+##                                            query,
+##                                            providerID,
+##                                            nameIdentifier,
+##                                            nameQualifier,
+##                                            format)
+##         if _obj is None: raise Error('lasso_logout_request_new() failed')
+##         LibLogoutRequest.__init__(self, _obj=_obj)
 
+        self._o = obj
+        LibLogoutRequest.__init__(self, _obj = self._o)
+        
+
+    def new(cls, providerID, nameIdentifier, nameQualifier, format):
+        obj = lassomod.logout_request_new(providerID, nameIdentifier, nameQualifier, format)
+        return LogoutRequest(obj)
+    new = classmethod(new)
 
 class LogoutResponse(Node):
-    def __init__(self, providerID, statusCodeValue, request, _obj=None):
+    def __init__(self, soap, query, providerID, statusCodeValue, request, _obj=None):
         """
         """
         if _obj != None:
             self._o = _obj
             return
-        _obj = lassomod.logout_response_new(providerID, statusCodeValue,
+        _obj = lassomod.logout_response_new(soap, query,
+                                            providerID, statusCodeValue,
                                             request)
         if _obj is None: raise Error('lasso_logout_response_new() failed')
         Node.__init__(self, _obj=_obj)
