@@ -35,16 +35,16 @@ generateIdentityProviderContextDump()
 	LassoServer *serverContext;
 	
 	serverContext = lasso_server_new(
-			"../tests/data/idp1-la/metadata.xml",
+			TESTSDATADIR "/idp1-la/metadata.xml",
 			NULL, /* "../tests/data/idp1-la/public-key.pem" is no more used */
-			"../tests/data/idp1-la/private-key-raw.pem",
-			"../tests/data/idp1-la/certificate.pem",
+			TESTSDATADIR "/idp1-la/private-key-raw.pem",
+			TESTSDATADIR "/idp1-la/certificate.pem",
 			lassoSignatureMethodRsaSha1);
 	lasso_server_add_provider(
 			serverContext,
-			"../tests/data/sp1-la/metadata.xml",
-			"../tests/data/sp1-la/public-key.pem",
-			"../tests/data/ca1-la/certificate.pem");
+			TESTSDATADIR "/sp1-la/metadata.xml",
+			TESTSDATADIR "/sp1-la/public-key.pem",
+			TESTSDATADIR "/ca1-la/certificate.pem");
 	return lasso_server_dump(serverContext);
 }
 
@@ -54,16 +54,16 @@ generateServiceProviderContextDump()
 	LassoServer *serverContext;
 	
 	serverContext = lasso_server_new(
-			"../tests/data/sp1-la/metadata.xml",
+			TESTSDATADIR "/sp1-la/metadata.xml",
 			NULL, /* "../tests/data/sp1-la/public-key.pem" is no more used */
-			"../tests/data/sp1-la/private-key-raw.pem",
-			"../tests/data/sp1-la/certificate.pem",
+			TESTSDATADIR "/sp1-la/private-key-raw.pem",
+			TESTSDATADIR "/sp1-la/certificate.pem",
 			lassoSignatureMethodRsaSha1);
 	lasso_server_add_provider(
 			serverContext,
-			"../tests/data/idp1-la/metadata.xml",
-			"../tests/data/idp1-la/public-key.pem",
-			"../tests/data/ca1-la/certificate.pem");
+			TESTSDATADIR "/idp1-la/metadata.xml",
+			TESTSDATADIR "/idp1-la/public-key.pem",
+			TESTSDATADIR "/ca1-la/certificate.pem");
 	return lasso_server_dump(serverContext);
 }
 
