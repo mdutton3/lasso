@@ -83,38 +83,32 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	const xmlChar *name;
-
 	lassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
-
-	/* FIXME: totally lacking error checking */
+	const char *name = NULL;
 
 	doc = xmlParseMemory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
 
-	name = xpathObj->nodesetval->nodeTab[0]->name;
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+		name = xpathObj->nodesetval->nodeTab[0]->name;
 
-	if (xmlStrEqual(name, "Request")) {
+	if (name == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Invalid SOAP request");
+	} else if (strcmp(name, "Request") == 0) {
 		type = LASSO_REQUEST_TYPE_LOGIN;
-	}
-	else if (xmlStrEqual(name, "LogoutRequest")) {
+	} else if (strcmp(name, "LogoutRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LOGOUT;
-	}
-	else if (xmlStrEqual(name, "FederationTerminationNotification")) {
+	} else if (strcmp(name, "FederationTerminationNotification") == 0) {
 		type = LASSO_REQUEST_TYPE_DEFEDERATION;
-	}
-	else if (xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
+	} else if (strcmp(name, "RegisterNameIdentifierRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_NAME_REGISTRATION;
-	}
-	else if (xmlStrEqual(name, "NameIdentifierMappingRequest")) {
+	} else if (strcmp(name, "NameIdentifierMappingRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
-	}
-	else if (xmlStrEqual(name, "AuthnRequest")) {
+	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
-	}
-	else {
+	} else {
 		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
 	}
 
