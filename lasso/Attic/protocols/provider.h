@@ -96,7 +96,7 @@ LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationNotification
 												 lassoProviderType   provider_type,
 												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider      *provider,
+LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationServiceReturnURL            (LassoProvider      *provider,
 												 lassoProviderType   provider_type,
 												 GError            **err);
 

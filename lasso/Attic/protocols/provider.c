@@ -226,7 +226,7 @@ lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvide
 }
 
 gchar *
-lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider      *provider,
+lasso_provider_get_federationTerminationServiceReturnURL(LassoProvider      *provider,
 							 lassoProviderType   provider_type,
 							 GError            **err)
 {
@@ -242,7 +242,7 @@ lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider      *pro
 
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
-					    "FederationTerminationReturnServiceURL",
+					    "FederationTerminationServiceReturnURL",
 					    &tmp_err);
   if (value == NULL) {
     g_propagate_error (err, tmp_err);
