@@ -56,5 +56,5 @@ $(JAVA_PATH)lasso.class: $(JAVA_PATH)lasso.java
 
 lasso.jar: $(JAVA_PATH)lasso.class 
 	rm -f $@
-	jar cf $@ $(JAVA_PATH)*.class 
+	$(JAR) cf $@ $(JAVA_PATH)*.class 
 
