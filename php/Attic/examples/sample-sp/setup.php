@@ -57,7 +57,7 @@
 
 	  $config_ser = serialize($config);
 
-	  if (($fd = fopen(getcwd()."/config.inc", "w")))
+	  if (($fd = fopen("config.inc", "w")))
 		{
 		  fwrite($fd, $config_ser);
 		  fclose($fd);

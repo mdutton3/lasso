@@ -128,15 +128,21 @@
 	  }
 	  else
 		die("Unknown protocol profile for login:" . $login->protocolProfile);
-	  
+	
 	  if ($login->isIdentityDirty)
 	  {
-		// TODO 
-		// print "isIdentityDirty yes";
+		$identity = $login->identity;
+		$query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump());
+		$query .= " WHERE user_id='$user_id'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
 	  } 
 	  
 	  // Get name identifier
-	  $query = "SELECT name_identifier FROM nameidentifiers WHERE user_id='$user_id'";
+	  $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='";
+	  $query .= $login->nameIdentifier . "'";
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
 		die($res->getMessage());
@@ -173,18 +179,26 @@
   	  if (DB::isError($res)) 
 		die($res->getMessage());
 
-	  // Save assertion 
-	  $query = 	"INSERT INTO assertions (assertion, response_dump) VALUES ('" . $login->assertionArtifact;
-	  $query .= "', '" . $login->responseDump . "')";
+	  if (empty($login->assertionArtifact))
+		die("assertion Artifact is empty");
 
+	  $assertion = $login->assertion;
+	  $assertion_dump = $assertion->dump();
+
+	  if (empty($assertion_dump))
+		die("assertion dump is empty");
+
+	  
+	  // Save assertion 
+	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
+	  $query .= "('".$login->assertionArtifact."',".$db->quoteSmart($assertion_dump).", NOW())";
+	  
 	  $res =& $db->query($query);
   	  if (DB::isError($res)) 
 		die($res->getMessage());
 
 	  if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
 	  {
-		$artifact = $login->assertionArtifact;
-		$response_msg = $login->responseDump;
 		$url = $login->msgUrl;
 
 		header("Request-URI: $url");

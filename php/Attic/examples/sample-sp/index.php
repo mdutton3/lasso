@@ -45,6 +45,7 @@ Please run the setup script :<br>
 You can get more informations about <b>Lasso</b> at <br>
 <a href='http://lasso.entrouvert.org/'>http://lasso.entrouvert.org/</a></p>
 <?php
+  exit();
   }
 
  $config = unserialize(file_get_contents('config.inc'));

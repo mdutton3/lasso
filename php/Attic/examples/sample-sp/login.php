@@ -30,7 +30,7 @@
 
   $server_dump = file_get_contents($config['server_dump_filename']);
 
-  $server = LassoServer::newfromdump($server_dump);
+  $server = LassoServer::newFromdump($server_dump);
 
   $login = new LassoLogin($server);
 

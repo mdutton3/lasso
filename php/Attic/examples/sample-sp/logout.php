@@ -49,7 +49,8 @@
   
   $logout = new LassoLogout($server, lassoProviderTypeSp);
   
-  $query = "SELECT identity_dump FROM users WHERE user_id='" . $_SESSION['user_id'] . "'";
+  $query = "SELECT identity_dump FROM users WHERE user_id='";
+  $query .= $_SESSION['user_id']."'";
 
   $res =& $db->query($query);
   
@@ -67,10 +68,9 @@
   $url = parse_url($logout->msgUrl);
 
   $soap = sprintf(
-	"POST %s HTTP/1.1\r\nHost: %s:%d\r\nAccept-Encoding: identity\r\nContent-Length: %d\r\nContent-Type: text/xml\r\nAccept: text/xml,application/xml,application/xhtml+xml,text/html\r\nConnection: close\r\n\r\n%s\r\n",
+	"POST %s HTTP/1.1\r\nHost: %s:%d\r\nContent-Length: %d\r\nContent-Type: text/xml\r\n\r\n%s\r\n",
   $url['path'], $url['host'], $url['port'], 
   strlen($logout->msgBody), $logout->msgBody);
-
 
   # PHP 4.3.0 with OpenSSL support required
   $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));

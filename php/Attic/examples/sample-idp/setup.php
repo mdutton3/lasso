@@ -239,8 +239,9 @@
 		$res =& $db->query($query);
 
 		$query = "CREATE TABLE assertions (
-		  assertion       text,
-		  response_dump    text)";
+		  assertion        text,
+		  response_dump    text,
+		  created          timestamp)";
 
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
