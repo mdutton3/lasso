@@ -29,6 +29,7 @@
 #include <lasso/environs/server.h>
 
 #define LASSO_SERVER_NODE                  "Server"
+#define LASSO_SERVER_METADATA_NODE         "ServerMetadata"
 #define LASSO_SERVER_PROVIDERS_NODE        "Providers"
 #define LASSO_SERVER_PROVIDERID_NODE       "ProviderID"
 #define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
@@ -124,8 +125,8 @@ gchar *
 lasso_server_dump(LassoServer *server)
 {
   LassoProvider  *provider;
-  LassoNode      *server_node, *providers_node, *provider_node, *metadata_copy;
-  LassoNodeClass *server_class, *providers_class;
+  LassoNode      *server_node, *providers_node, *provider_node, *metadata_copy, *metadata_node, *entity_node;
+  LassoNodeClass *metadata_class, *server_class, *providers_class;
   xmlChar        *signature_method_str, *dump;
   gint            i;
 
@@ -157,10 +158,17 @@ lasso_server_dump(LassoServer *server)
   /* metadata */
   provider = LASSO_PROVIDER(server);
   if (provider->metadata != NULL) {
+    metadata_node = lasso_node_new();
+    metadata_class = LASSO_NODE_GET_CLASS(metadata_node);
+    metadata_class->set_name(metadata_node, LASSO_SERVER_METADATA_NODE);
+    metadata_class->set_ns(metadata_node, lassoLassoHRef, NULL);
+
     metadata_copy = lasso_node_copy(provider->metadata);
-    server_class->add_child(server_node, metadata_copy, FALSE);
+    metadata_class->add_child(metadata_node, metadata_copy, FALSE);
     lasso_node_destroy(metadata_copy);
+    server_class->add_child(server_node, metadata_node, FALSE);
   }
+
   /* public key */
   if (provider->public_key != NULL) {
     server_class->set_prop(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
@@ -489,10 +497,11 @@ lasso_server_new_from_dump(gchar *dump)
   }
 
   /* metadata */
-  server_metadata_node = lasso_node_get_child(server_node, "EntityDescriptor", NULL, NULL);
+  server_metadata_node = lasso_node_get_child(server_node, LASSO_SERVER_METADATA_NODE, NULL, NULL);
   if (server_metadata_node != NULL) {
-    LASSO_PROVIDER(server)->metadata = lasso_node_copy(server_metadata_node);
-    lasso_node_destroy(server_metadata_node);
+    entity_node = lasso_node_get_child(server_metadata_node, "EntityDescriptor", NULL, NULL);
+    LASSO_PROVIDER(server)->metadata = lasso_node_copy(entity_node);
+    lasso_node_destroy(entity_node);
   }
 
   /* public key */
