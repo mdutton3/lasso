@@ -87,7 +87,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 {
   LassoProfile  *profile;
   LassoProvider *provider;
-  xmlChar       *protocolProfile;
+  xmlChar       *protocolProfile = NULL;
   gint           ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
@@ -314,12 +314,12 @@ gint
 lasso_logout_init_request(LassoLogout *logout,
 			  gchar       *remote_providerID)
 {
-  LassoProfile      *profile;
-  LassoProvider     *provider;
-  LassoNode         *nameIdentifier;
-  LassoFederation   *federation;
-  xmlChar           *content, *nameQualifier, *format;
-  xmlChar           *singleLogoutProtocolProfile;
+  LassoProfile      *profile        = NULL;
+  LassoProvider     *provider       = NULL;
+  LassoNode         *nameIdentifier = NULL;
+  LassoFederation   *federation     = NULL;
+  xmlChar           *content        = NULL, *nameQualifier = NULL, *format = NULL;
+  xmlChar           *singleLogoutProtocolProfile = NULL;
   lassoSignatureType signature_type = lassoSignatureTypeNone;
   gint               ret = 0;
 
@@ -327,6 +327,20 @@ lasso_logout_init_request(LassoLogout *logout,
 
   profile = LASSO_PROFILE(logout);
 
+  /* verify if the identity and session exist */
+  if (profile->identity == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  if (profile->session == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  /* get the remote provider id */
   if (remote_providerID == NULL) {
     debug("No remote provider id, get the next assertion peer provider id\n");
     profile->remote_providerID = lasso_session_get_next_assertion_remote_providerID(profile->session);
@@ -338,19 +352,6 @@ lasso_logout_init_request(LassoLogout *logout,
 
   if (profile->remote_providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "No remote provider id to send the logout request\n");
-    ret = -1;
-    goto done;
-  }
-
-  /* verify the identity and session exists */
-  if (profile->identity == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
-    ret = -1;
-    goto done;
-  }
-
-  if (profile->session != NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
     ret = -1;
     goto done;
   }
@@ -451,6 +452,7 @@ lasso_logout_init_request(LassoLogout *logout,
   }
 
   done:
+  printf("lasso_logout_init_request() done\n");
   if (federation != NULL) {
     lasso_federation_destroy(federation);
   }
@@ -494,7 +496,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 {
   LassoProfile  *profile;
   LassoProvider *provider;
-  gchar         *remote_providerID;
+  gchar         *remote_providerID = NULL;
   gint           ret = 0;
   GError        *err = NULL;
 
