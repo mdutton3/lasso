@@ -42,10 +42,10 @@ PyObject *LassoLogoutRequest_wrap(LassoLogoutRequest *request) {
 /******************************************************************************/
 
 PyObject *logout_request_new(PyObject *self, PyObject *args) {
-  const xmlChar *providerID;
-  const xmlChar *nameIdentifier;
-  const xmlChar *nameQualifier;
-  const xmlChar *format;
+  gchar *providerID;
+  gchar *nameIdentifier;
+  gchar *nameQualifier;
+  gchar *format;
 
   LassoNode *request;
 
@@ -62,36 +62,19 @@ PyObject *logout_request_new(PyObject *self, PyObject *args) {
   return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
 }
 
-PyObject *logout_request_new_from_soap(PyObject *self, PyObject *args) {
-  const xmlChar *soap_buffer;
+PyObject *logout_request_new_from_export(PyObject *self, PyObject *args) {
+  gchar               *buffer;
+  lassoNodeExportTypes export_type;
+  LassoNode           *request;
 
-  LassoNode     *request;
-
-  if (CheckArgs(args, "S:logout_request_new_from_soap")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:logout_request_new_from_soap",
-			 &soap_buffer))
+  if (CheckArgs(args, "SS:logout_request_new_from_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "ss:logout_request_new_from_export",
+			 &buffer, &export_type))
       return NULL;
   }
   else return NULL;
 
-  request = lasso_logout_request_new_from_soap(soap_buffer);
-
-  return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
-}
-
-PyObject *logout_request_new_from_query(PyObject *self, PyObject *args) {
-  const xmlChar *query;
-
-  LassoNode     *request;
-
-  if (CheckArgs(args, "S:logout_request_new_from_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:logout_request_new_from_query",
-			 &query))
-      return NULL;
-  }
-  else return NULL;
-
-  request = lasso_logout_request_new_from_query(query);
+  request = lasso_logout_request_new_from_export(buffer, export_type);
 
   return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
 }

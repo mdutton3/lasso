@@ -1,3 +1,4 @@
+
 /* $Id$ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
@@ -68,10 +69,10 @@ GType lasso_logout_request_get_type() {
 }
 
 LassoNode *
-lasso_logout_request_new(const xmlChar *providerID,
-			 const xmlChar *nameIdentifier,
-			 const xmlChar *nameQualifier,
-			 const xmlChar *format)
+lasso_logout_request_new(gchar *providerID,
+			 gchar *nameIdentifier,
+			 gchar *nameQualifier,
+			 gchar *format)
 {
   LassoNode *request, *identifier;
   xmlChar *id, *time;
@@ -110,8 +111,8 @@ lasso_logout_request_new(const xmlChar *providerID,
   return(request);
 }
 
-LassoNode *
-lasso_logout_request_new_from_query(const xmlChar *query)
+static LassoNode *
+lasso_logout_request_new_from_query(gchar *query)
 {
   LassoNode *request, *identifier;
   xmlChar *str;
@@ -172,8 +173,8 @@ lasso_logout_request_new_from_query(const xmlChar *query)
   return(request);
 }
 
-LassoNode *
-lasso_logout_request_new_from_soap(const xmlChar *buffer)
+static LassoNode *
+lasso_logout_request_new_from_soap(gchar *buffer)
 {
   LassoNode *request;
   LassoNode *envelope, *lassoNode_request;
@@ -193,5 +194,27 @@ lasso_logout_request_new_from_soap(const xmlChar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
   
+  return(request);
+}
+
+
+LassoNode*
+lasso_logout_request_new_from_export(gchar                *buffer,
+				     lassoNodeExportTypes  export_type)
+{
+  LassoNode *request;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    request = lasso_logout_request_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    request = lasso_logout_request_new_from_soap(buffer);
+    break;
+  default:
+  }
+
   return(request);
 }

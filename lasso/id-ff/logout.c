@@ -103,15 +103,18 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   LassoProfileContext *profileContext;
   LassoProvider *provider;
   xmlChar *protocolProfile;
+  int codeError = 0;
   
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-
+  if(!LASSO_IS_LOGOUT(logout)){
+    debug(ERROR, "Not a Logout object\n");
+    return(-1);
+  }
+  
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
-  printf("get provider id %s\n",  profileContext->remote_providerID);
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    debug(ERROR, "Provider not found (ProviderID = %s)\n", profileContext->remote_providerID);
+    debug(ERROR, "Provider not found %s\n", profileContext->remote_providerID);
     return(-2);
   }
 
@@ -122,12 +125,12 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a soap response message\n");
-    profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
+    debug(DEBUG, "Building a soap response message\n");
+    profileContext->msg_url = NULL;
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
-    debug(DEBUG, "building a http get response message\n");
+    debug(DEBUG, "Building a http get response message\n");
     profileContext->response_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->response,
 							 profileContext->server->signature_method,
@@ -237,11 +240,11 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   switch(request_method){
   case lassoHttpMethodSoap:
     debug(DEBUG, "Build a logout request from soap msg\n");
-    profileContext->request = lasso_logout_request_new_from_soap(request_msg);
+    profileContext->request = lasso_logout_request_new_from_export(request_msg, lassoNodeExportTypeSoap);
     break;
   case lassoHttpMethodRedirect:
     debug(DEBUG, "Build a logout request from query msg\n");
-    profileContext->request = lasso_logout_request_new_from_query(request_msg);
+    profileContext->request = lasso_logout_request_new_from_export(request_msg, lassoNodeExportTypeQuery);
     break;
   case lassoHttpMethodGet:
     debug(WARNING, "TODO, implement the get method\n");
@@ -323,10 +326,10 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
   /* parse LogoutResponse */
   switch(response_method){
   case lassoHttpMethodSoap:
-    profileContext->response = lasso_logout_response_new_from_soap(response_msg);
+    profileContext->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
     break;
   case lassoHttpMethodRedirect:
-    profileContext->response = lasso_logout_response_new_from_query(response_msg);
+    profileContext->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
     debug(ERROR, "Unknown response method\n");

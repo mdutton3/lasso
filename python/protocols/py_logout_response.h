@@ -35,10 +35,7 @@ typedef struct {
 #define LassoLogoutResponse_get(v) (((v) == Py_None) ? NULL : (((LassoLogoutResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoLogoutResponse_wrap(LassoLogoutResponse *response);
 
-PyObject *logout_response_new_from_request_soap(PyObject *self, PyObject *args);
-PyObject *logout_response_new_from_soap(PyObject *self, PyObject *args);
-PyObject *logout_response_new_from_dump(PyObject *self, PyObject *args);
-PyObject *logout_response_new_from_request_query(PyObject *self, PyObject *args);
-PyObject *logout_response_new_from_query(PyObject *self, PyObject *args);
+PyObject *logout_response_new_from_request_export(PyObject *self, PyObject *args);
+PyObject *logout_response_new_from_export(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_RESPONSE_H__ */

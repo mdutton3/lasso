@@ -53,24 +53,19 @@ struct _LassoLogoutResponseClass {
   LassoLibLogoutResponseClass parent;
 };
 
-LASSO_EXPORT GType      lasso_logout_response_get_type               (void);
-LASSO_EXPORT LassoNode* lasso_logout_response_new                    (const xmlChar *providerID,
-								      const xmlChar *statusCodeValue,
-								      LassoNode     *request);
+LASSO_EXPORT GType      lasso_logout_response_get_type                (void);
 
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_dump          (const xmlChar *buffer);
+LASSO_EXPORT LassoNode* lasso_logout_response_new                     (gchar       *providerID,
+								       const gchar *statusCodeValue,
+								       LassoNode   *request);
 
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_query         (const xmlChar *query);
+LASSO_EXPORT LassoNode* lasso_logout_response_new_from_export         (gchar                *buffer,
+								       lassoNodeExportTypes  export_type);
 
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_query (const xmlChar *query,
-								      const xmlChar *providerID,
-								      const xmlChar *statusCodeValue);
-
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_soap  (const xmlChar *buffer,
-								      const xmlChar *providerID,
-								      const xmlChar *statusCodeValue);
-
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_soap          (const xmlChar *buffer);
+LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_export (gchar                *buffer,
+								       lassoNodeExportTypes  export_type,
+								       gchar                *providerID,
+								       gchar                *statusCodeValue);
 
 #ifdef __cplusplus
 }

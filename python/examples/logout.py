@@ -11,8 +11,9 @@ spserver = lasso.Server.new("../../examples/sp.xml",
 			    lasso.signatureMethodRsaSha1)
 
 spserver.add_provider("../../examples/idp.xml", None, None)
+spserver.add_provider("../../examples/idp2.xml", None, None)
 
-spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">LLLLLLLLLLLLLLLLLLLLLLLLL</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
+spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">11111111111111111111111111</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity><LassoIdentity RemoteProviderID=\"https://identity-provider2:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">22222222222222222222222222</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
 
 spuser = lasso.User.new_from_dump(spuser_dump)
 
@@ -22,8 +23,13 @@ splogout.init_request("https://identity-provider:2003/liberty-alliance/metadata"
 splogout.build_request_msg()
 
 request_msg = splogout.msg_body
-print 'request url : ', splogout.msg_url
-print 'request body : ', splogout.msg_body
+msg_url  = splogout.msg_url
+msg_body = splogout.msg_body
+
+splogout.destroy()
+
+print 'request url : ', msg_url
+print 'request body : ', msg_body
 
 
 # LogoutResponse :
@@ -36,9 +42,15 @@ idpuser_dump = "<LassoUser><LassoAssertions></LassoAssertions><LassoIdentities><
 idpuser = lasso.User.new_from_dump(idpuser_dump)
 
 idplogout = lasso.Logout.new(idpserver, idpuser, lasso.providerTypeIdp)
-idplogout.process_request_msg(request_msg, lasso.httpMethodSoap)
-idplogout.build_response_msg()
-print 'url : ', idplogout.msg_url
-print 'body : ', idplogout.msg_body
+#idplogout.process_request_msg(request_msg, lasso.httpMethodSoap)
+#idplogout.build_response_msg()
+
+#msg_url  = idplogout.msg_url
+#msg_body = idplogout.msg_body
+#print 'body : ', idplogout.msg_body
+
+# process the response :
+#splogout = lasso.Logout.new(spserver, spuser, lasso.providerTypeSp)
+#splogout.process_response_msg(msg_body, lasso.httpMethodSoap)
 
 lasso.shutdown()

@@ -29,7 +29,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-xmlChar*
+gchar*
 lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
 {
   LassoNodeClass *statusCode_class;
@@ -79,9 +79,9 @@ GType lasso_logout_response_get_type() {
 }
 
 LassoNode*
-lasso_logout_response_new(const xmlChar *providerID,
-			  const xmlChar *statusCodeValue,
-			  LassoNode     *request)
+lasso_logout_response_new(gchar       *providerID,
+			  const gchar *statusCodeValue,
+			  LassoNode   *request)
 {
   LassoNode *response, *ss, *ssc, *request_providerID, *request_relayState;
   xmlChar *inResponseTo, *recipient, *relayState;
@@ -143,7 +143,7 @@ lasso_logout_response_new(const xmlChar *providerID,
 }
 
 LassoNode *
-lasso_logout_response_new_from_dump(const xmlChar *buffer)
+lasso_logout_response_new_from_dump(gchar *buffer)
 {
   LassoNode *response;
   
@@ -153,9 +153,8 @@ lasso_logout_response_new_from_dump(const xmlChar *buffer)
   return (response);
 }
 
-/* build a LogoutResponse from a query form LogoutResponse */
 LassoNode *
-lasso_logout_response_new_from_query(const xmlChar *query)
+lasso_logout_response_new_from_query(gchar *query)
 {
   LassoNode *response;
   xmlChar *relayState, *consent;
@@ -203,44 +202,37 @@ lasso_logout_response_new_from_query(const xmlChar *query)
   return(response);
 }
 
-/* build a LogoutResponse from a query form LogoutRequest */
 LassoNode *
-lasso_logout_response_new_from_request_query(const xmlChar *query,
-					     const xmlChar *providerID,
-					     const xmlChar *statusCodeValue)
+lasso_logout_response_new_from_request_export(gchar                *buffer,
+					      lassoNodeExportTypes  export_type,
+					      gchar                *providerID,
+					      gchar                *statusCodeValue)
 {
   LassoNode *request, *response;
 
-  request = lasso_logout_request_new_from_query(query);
-  
-  response = lasso_logout_response_new(providerID,
-				       statusCodeValue,
-				       request);
-  lasso_node_destroy(request);
-  
-  return(response);
-}
+  g_return_val_if_fail(buffer != NULL, NULL);
 
-/* build a LogoutRespose from a soap form LogoutRequest */
-LassoNode *
-lasso_logout_response_new_from_request_soap(const xmlChar *buffer,
-					    const xmlChar *providerID,
-					    const xmlChar *statusCodeValue)
-{
-  LassoNode *request, *response;
-
-  request = lasso_logout_request_new_from_soap(buffer);
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    request = lasso_logout_request_new_from_export(buffer, export_type);
+    break;
+  case lassoNodeExportTypeSoap:
+    request = lasso_logout_request_new_from_export(buffer, export_type);
+    break;
+  default:
+    debug(ERROR, "Unkown export type\n");
+    return(NULL);
+  }
 
   response = lasso_logout_response_new(providerID,
 				       statusCodeValue,
 				       request);
-  lasso_node_destroy(request);
 
   return(response);
 }
 
 LassoNode *
-lasso_logout_response_new_from_soap(const xmlChar *buffer)
+lasso_logout_response_new_from_soap(gchar *buffer)
 {
   LassoNode *response;
   LassoNode *envelope, *lassoNode_response;
@@ -260,5 +252,28 @@ lasso_logout_response_new_from_soap(const xmlChar *buffer)
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);
   
+  return(response);
+}
+
+LassoNode*
+lasso_logout_response_new_from_export(gchar                *buffer,
+				      lassoNodeExportTypes  export_type)
+{
+  LassoNode *response;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    response = lasso_logout_response_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    response = lasso_logout_response_new_from_soap(buffer);
+    break;
+  default:
+    debug(ERROR, "Unknown export type\n");
+    return(NULL);
+  }
+
   return(response);
 }
