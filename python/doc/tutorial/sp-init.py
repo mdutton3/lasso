@@ -10,7 +10,7 @@ import lasso
 [...] # Get metadata_file_path, public_key_file_path, private_key_file_path &
       # certificate_file_path.
 server = lasso.Server.new(metadata_file_path, public_key_file_path, private_key_file_path,
-                          certificate_file_path, lasso.signatureMethodDsaSha1)
+                          certificate_file_path, lasso.signatureMethodRsaSha1)
 
 # Add identity provider informations.
 [...] # Get idp_metadata_file_path, idp_public_key_file_path & idp_ca_certificate_file_path.
