@@ -103,6 +103,18 @@ class HttpRequestHandler(abstractweb.HttpRequestHandlerMixin, object):
         return session
 
     def respondRedirectTemporarily(self, url):
+        scheme = url.split('://')[0].lower()
+        if scheme not in ('http', 'https'):
+            # The url doesn't include host name => add it.
+            path = url
+            url = self.site.url
+            if path:
+                if path[0] == '/':
+                    while url[-1] == '/':
+                        url = url[:-1]
+                elif url[-1] != '/':
+                    url += '/'
+                url += path
         return self.httpRequest.client.redirect(url)
 
 
