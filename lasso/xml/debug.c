@@ -30,21 +30,21 @@
 
 #include <lasso/xml/debug.h>
 
-#define normal "\033[m"
-#define red    "\033[31m"
-#define green  "\033[32m"
-#define yellow "\033[33m"
-#define blue   "\033[34m"
+/* #define normal "\033[m" */
+/* #define red    "\033[31m" */
+/* #define green  "\033[32m" */
+/* #define yellow "\033[33m" */
+/* #define blue   "\033[34m" */
 
 int  debug_line;
 char debug_filename[512];
 char debug_function[512];
-static const char *levels[4] = {
-  "DEBUG:",
-  "INFO:", 
-  "WARNING:",
-  "ERROR:"
-};
+/* static const char *levels[4] = { */
+/*   "DEBUG:", */
+/*   "INFO:",  */
+/*   "WARNING:", */
+/*   "ERROR:" */
+/* }; */
 
 void
 set_debug_info(int   line,
@@ -57,21 +57,20 @@ set_debug_info(int   line,
 }
 
 void
-_debug(unsigned int level,
-       const char *format, ...) 
+_debug(GLogLevelFlags level,
+       const char    *format, ...) 
 {
   char debug_string[1024];
-  char new_debug_string[2048];
   time_t ts;
   char date[20];
-  char *color = NULL;
-
   va_list args;
+  /* char new_debug_string[2048]; */
+  /* char *color = NULL; */
   
-  if ((level < 0) || (level > 3)) {
-    printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n", level);
-    return;
-  }
+  /*   if ((level < 0) || (level > 3)) { */
+  /*     printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n", level); */
+  /*     return; */
+  /*   } */
 
   va_start(args, format);
   vsnprintf(debug_string, sizeof(debug_string), format, args);
@@ -80,30 +79,41 @@ _debug(unsigned int level,
   time(&ts);
   strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
 
-  switch (level) {
-  case ERROR:
-    color = red;
-    break;
-  case WARNING:
-    color = blue;
-    break;
-  case DEBUG:
-    color = yellow;
-    break;
-  case INFO:
-    color = green;
-    break;
+  if (level == G_LOG_LEVEL_DEBUG) {
+    g_log("Lasso", level,
+	  "%s (%s/%s:%d)\n======> %s",
+	  date, debug_filename, debug_function, debug_line,
+	  debug_string);
+  }
+  else {
+    g_log("Lasso", level,
+	  "%s\t%s",
+	  date, debug_string);
   }
 
-  sprintf(new_debug_string, 
-	  "%s%s%s %s (%s/%s:%d)\t%s", 
-	  color,
-	  levels[level],
-	  normal,
-	  date,
-	  debug_filename, debug_function,
-	  debug_line, debug_string);
+  /*   switch (level) { */
+  /*   case ERROR: */
+  /*     color = red; */
+  /*     break; */
+  /*   case WARNING: */
+  /*     color = blue; */
+  /*     break; */
+  /*   case DEBUG: */
+  /*     color = yellow; */
+  /*     break; */
+  /*   case INFO: */
+  /*     color = green; */
+  /*     break; */
+  /*   } */
 
-  printf("%s", new_debug_string);
-  fflush(stdout);
+  /*   sprintf(new_debug_string,  */
+  /* 	  "%s%s%s %s (%s/%s:%d)\t%s",  */
+  /* 	  color, */
+  /* 	  levels[level], */
+  /* 	  normal, */
+  /* 	  date, */
+  /* 	  debug_filename, debug_function, */
+  /* 	  debug_line, debug_string); */
+  /*   printf("%s", new_debug_string); */
+  /*   fflush(stdout); */
 }

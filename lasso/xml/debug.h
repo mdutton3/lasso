@@ -30,19 +30,23 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <glib.h>
+
 #define DEBUG   0 /* for debug - print only if flags LASSO_DEBUG is defined */
 #define INFO    1 /* just print info */
 #define WARNING 2 /* non fatal errors */
 #define ERROR   3 /* criticial/fatal errors */
 
 void set_debug_info(int line, char *filename, char *function);
-void _debug(unsigned int level, const char *format, ...);
+void _debug(GLogLevelFlags level, const char *format, ...);
 
 #if defined LASSO_DEBUG
-#define debug set_debug_info(__LINE__, __FILE__, __FUNCTION__); _debug
+#define debug(format, args...) set_debug_info(__LINE__, __FILE__, __FUNCTION__);  _debug(G_LOG_LEVEL_DEBUG, format, ##args);
 #else
-#define debug(level, format, args...) if (level > DEBUG) { set_debug_info(__LINE__, __FILE__, __FUNCTION__);  _debug(level, format, ##args); }
+#define debug(format, ...);
 #endif
+
+#define message _debug
 
 #ifdef __cplusplus
 }
