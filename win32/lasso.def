@@ -35,7 +35,6 @@ EXPORTS
     lasso_ds_signature_get_type
     lasso_ds_signature_new
     lasso_ds_signature_sign
-    lasso_error_msg
     lasso_federation_termination_build_notification_msg
     lasso_federation_termination_destroy
     lasso_federation_termination_dump
@@ -412,7 +411,6 @@ EXPORTS
     lasso_user_dump
     lasso_user_get_assertion
     lasso_user_get_identity
-    lasso_user_get_next_providerID
     lasso_user_get_type
     lasso_user_new
     lasso_user_new_from_dump
