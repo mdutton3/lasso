@@ -568,7 +568,6 @@ fi
 dnl Conditional docs sub dir test.
 AM_CONDITIONAL([GTK_DOC_ENABLED],[test "x$enable_gtk_doc" = "xyes"])
 
-
 dnl Debug 
 AC_MSG_CHECKING(for debugging) 
 AC_ARG_ENABLE(debugging,   [  --enable-debugging      enable debuging messages (no)])
@@ -619,7 +618,8 @@ AC_SUBST(LASSO_STATIC_BINARIES)
 dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
-LASSO_CORE_CFLAGS="$LASSO_DEFINES" 
+LASSO_PUB_CFLAGS="$LASSO_DEFINES"
+LASSO_CORE_CFLAGS="$LASSO_CFLAGS $LASSO_DEFINES -DLASSO_INTERNALS" 
 if test $MINGW -eq 1; then 
   LASSO_CORE_LIBS="-llasso-0"
 else
@@ -628,11 +628,11 @@ fi
 AC_SUBST(LASSO_CORE_CFLAGS)
 AC_SUBST(LASSO_CORE_LIBS)
 
-LASSO_CFLAGS="$LASSO_CORE_CFLAGS $LASSO_CFLAGS"
 LASSO_LIBS="-L${libdir} $LASSO_LIBS"
 AC_SUBST(LASSO_CFLAGS)
 AC_SUBST(LASSO_LIBS)
 
+AC_SUBST(LASSO_PUB_CFLAGS)
 AC_SUBST(LASSO_DEFINES)
 AC_SUBST(LASSO_APP_DEFINES)
 AC_SUBST(CFLAGS)
