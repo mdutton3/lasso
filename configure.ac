@@ -347,6 +347,14 @@ AC_SUBST(PHP_LIBS)
 AC_SUBST(PHP_EXTENSION_DIR)
 AC_SUBST(PHP_PREFIX)
 
+dnl Check for expat
+have_expat_include=no
+AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+  
+if test x$have_expat_lib = xno; then
+	enable_php=no
+fi
+
 AC_MSG_CHECKING(for PHP development files)
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 dnl Check if we were be able to extract a good version number.
