@@ -47,10 +47,15 @@ static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
+	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node);
 
 	xmlnode = xmlNewNode(NULL, "StatusCode");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
-	xmlSetProp(xmlnode, "Value", LASSO_SAMLP_STATUS_CODE(node)->Value);
+	if (status_code->Value)
+		xmlSetProp(xmlnode, "Value", status_code->Value);
+
+	if (status_code->StatusCode)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(status_code->StatusCode)));
 
 	return xmlnode;
 }
@@ -58,7 +63,23 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LASSO_SAMLP_STATUS_CODE(node)->Value = xmlGetProp(xmlnode, "Value");
+	LassoSamlpStatusCode *status_code = LASSO_SAMLP_STATUS_CODE(node);
+	xmlNode *t;
+
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
+	status_code->Value = xmlGetProp(xmlnode, "Value");
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE || strcmp(t->name, "StatusCode") != 0) {
+			t = t->next;
+			continue;
+		}
+		status_code->StatusCode = LASSO_SAMLP_STATUS_CODE(lasso_node_new_from_xmlNode(t));
+		break;
+	}
+
 	return 0;
 }
 

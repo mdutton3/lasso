@@ -54,13 +54,11 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Status");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
-	if (status->StatusCode) {
+	if (status->StatusCode)
 		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(status->StatusCode)));
-	}
 
-	if (status->StatusMessage) {
+	if (status->StatusMessage)
 		xmlNewTextChild(xmlnode, NULL, "StatusMessage", status->StatusMessage);
-	}
 
 	return xmlnode;
 }
