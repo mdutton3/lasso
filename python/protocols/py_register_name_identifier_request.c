@@ -82,18 +82,52 @@ PyObject *register_name_identifier_request_new(PyObject *self, PyObject *args) {
   return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
 }
 
-PyObject *register_name_identifier_request_change_attribute_names_identifiers(PyObject *self, PyObject *args){
+PyObject *register_name_identifier_request_rename_attributes_for_query(PyObject *self, PyObject *args){
   PyObject *request_obj;
 
-  if (CheckArgs(args, "O:register_name_identifier_request_change_attribute_names_identifiers")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_request_change_attribute_names_identifiers",
+  if (CheckArgs(args, "O:register_name_identifier_request_rename_attributes_for_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_request_rename_attributes_for_query",
 			 &request_obj))
       return NULL;
   }
   else return NULL;
      
-  lasso_register_name_identifier_change_attribute_names_identifiers(LassoRegisterNameIdentifierRequest_get(request_obj));
+  lasso_register_name_identifier_rename_attributes_for_query(LassoRegisterNameIdentifierRequest_get(request_obj));
   
   Py_INCREF(Py_None);
   return (Py_None);
+}
+
+PyObject *register_name_identifier_request_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *soap_buffer;
+
+  LassoNode     *request;
+
+  if (CheckArgs(args, "S:register_name_identifier_request_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_request_new_from_soap",
+			 &soap_buffer))
+      return NULL;
+  }
+  else return NULL;
+
+  request = lasso_register_name_identifier_request_new_from_soap(soap_buffer);
+
+  return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
+}
+
+PyObject *register_name_identifier_request_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode     *request;
+
+  if (CheckArgs(args, "S:register_name_identifier_request_new_from_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_request_new_from_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  request = lasso_register_name_identifier_request_new_from_query(query);
+
+  return (LassoRegisterNameIdentifierRequest_wrap(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(request)));
 }

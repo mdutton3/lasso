@@ -42,23 +42,97 @@ PyObject *LassoRegisterNameIdentifierResponse_wrap(LassoRegisterNameIdentifierRe
 
 /******************************************************************************/
 
-PyObject *register_name_identifier_response_new(PyObject *self, PyObject *args) {
+PyObject *register_name_identifier_response_new_from_request_soap(PyObject *self, PyObject *args) {
+  const xmlChar *request_soap_dump;
   const xmlChar *providerID;
-  const xmlChar *statusCodeValue;
-  PyObject      *request_obj;
-  LassoNode     *response;
+  const xmlChar *status_code_value;
 
-  if (CheckArgs(args, "SSO:register_name_identifier_response_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "ssO:register_name_identifier_response_new",
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "SSS:register_name_identifier_response_new_from_request_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:register_name_identifier_response_new_from_request_soap",
+			 &request_soap_dump,
 			 &providerID,
-			 &statusCodeValue, &request_obj))
+			 &status_code_value))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_register_name_identifier_response_new(providerID,
-							 statusCodeValue,
-							 LassoRegisterNameIdentifierRequest_get(request_obj));
+  response = lasso_register_name_identifier_response_new_from_request_soap(request_soap_dump,
+									   providerID,
+									   status_code_value);
+
+  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
+}
+
+PyObject *register_name_identifier_response_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *request_soap_dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:register_name_identifier_response_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_soap",
+			 &request_soap_dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_register_name_identifier_response_new_from_soap(request_soap_dump);
+
+  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
+}
+
+PyObject *register_name_identifier_response_new_from_dump(PyObject *self, PyObject *args) {
+  const xmlChar *dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:register_name_identifier_response_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_dump",
+			 &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_register_name_identifier_response_new_from_soap(dump);
+
+  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
+}
+
+PyObject *register_name_identifier_response_new_from_request_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+  const xmlChar *providerID;
+  const xmlChar *status_code_value;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "SSS:register_name_identifier_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:register_name_identifier_response_new_from_request_query",
+			 &query,
+			 &providerID,
+			 &status_code_value))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_register_name_identifier_response_new_from_request_query(query, providerID, status_code_value);
+
+  return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
+}
+
+PyObject *register_name_identifier_response_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:register_name_identifier_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:register_name_identifier_response_new_from_request_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_register_name_identifier_response_new_from_query(query);
 
   return (LassoRegisterNameIdentifierResponse_wrap(LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE(response)));
 }

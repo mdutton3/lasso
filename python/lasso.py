@@ -239,6 +239,32 @@ class LibNameIdentifierMappingResponse(Node):
         Node.__init__(self, _obj=_obj)
 
 
+class LibRegisterNameIdentifierRequest(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_register_name_identifier_request_new()
+        if _obj is None:
+            raise Error('lasso_lib_register_name_identifier_request_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+
+class LibRegisterNameIdentifierResponse(Node):
+    def __init__(self, _obj = None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_register_name_identifier_response_new()
+        if _obj is None:
+            raise Error('lasso_lib_register_name_identifier_response_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+        
 class SamlNameIdentifier(Node):
     def __init__(self, _obj=None):
         """
@@ -469,48 +495,69 @@ class NameIdentifierMappingResponse(LibNameIdentifierMappingResponse):
     new_from_query = classmethod(new_from_query)
 
 
-class RegisterNameIdentifierRequest(Node):
-    def __init__(_obj):
+class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
+    def __init__(self, _obj):
         """
         """
-        self._o = obj
+        self._o = _obj
         LibRegisterNameIdentifierRequest.__init__(self, _obj = self._o)
 
-    def new(cls, providerID, nameIdentifier, nameQualifier, format):
-        obj = lassomod.register_name_identifier_new(providerID, nameIdentifier, nameQualifier, format)
+    def new(cls, providerID,
+            idpNameIdentifier, idpNameQualifier, idpFormat,
+            spNameIdentifier, spNameQualifier, spFormat,
+            oldNameIdentifier, oldNameQualifier, oldFormat):
+        obj = lassomod.register_name_identifier_request_new(providerID,
+                                                            idpNameIdentifier, idpNameQualifier, idpFormat,
+                                                            spNameIdentifier, spNameQualifier, spFormat,
+                                                            oldNameIdentifier, oldNameQualifier, oldFormat)
         return RegisterNameIdentifierRequest(obj)
     new = classmethod(new)
 
     def new_from_soap(cls, envelope):
-        obj = lassomod.register_name_identifier_new_from_soap(envelope)
+        obj = lassomod.register_name_identifier_request_new_from_soap(envelope)
         return RegisterNameIdentifierRequest(obj)
     new_from_soap = classmethod(new_from_soap)
 
     def new_from_query(cls, query):
-        obj = lassomod.register_name_identifier_new_from_query(query)
+        obj = lassomod.register_name_identifier_request_new_from_query(query)
         return RegisterNameIdentifierRequest(obj)
     new_from_query = classmethod(new_from_query)
 
-    def url_encode(self):
-        pass
+    def rename_attributes_for_encoded_query(self):
+        lassomod.register_name_identifier_request_rename_attributes_for_query(self)
 
-class RegisterNameIdentifierResponse(Node):
-    def __init__(self,
-                 providerID,
-                 statusCodeValue,
-                 request,
-                 _obj=None):
+
+class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
+    def __init__(self, _obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.register_name_identifier_response_new(providerID,
-                                                              statusCodeValue,
-                                                              request)
-        if _obj is None:
-            raise Error('lasso_register_name_identifier_response_new() failed')
-        Node.__init__(self, _obj=_obj)
+        self._o = _obj
+        LibRegisterNameIdentifierResponse.__init__(self, _obj = self._o)
+
+    def new_from_request_soap(cls, envelope, providerID, status_code_value):
+        obj = lassomod.register_name_identifier_response_new_from_request_soap(envelope, providerID, status_code_value)
+        return RegisterNameIdentifierResponse(obj)
+    new_from_request_soap = classmethod(new_from_request_soap)
+
+    def new_from_soap(cls, envelope):
+        obj = lassomod.register_name_identifier_response_new_from_soap(envelope)
+        return RegisterNameIdentifierResponse(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_dump(cls, dump):
+        obj = lassomod.register_name_identifier_response_new_from_dump(dump)
+        return RegisterNameIdentifierResponse(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def new_from_request_query(cls, query, providerID, status_code_value):
+        obj = lassomod.register_name_identifier_response_new_from_request_query(query, providerID, status_code_value)
+        return RegisterNameIdentifierResponse(obj);
+    new_from_request_query = classmethod(new_from_request_query)
+
+    def new_from_query(cls, query):
+        obj = lassomod.register_name_identifier_response_new_from_query(query)
+        return RegisterNameIdentifierResponse(obj);
+    new_from_query = classmethod(new_from_query)
 
 ################################################################################
 # elements

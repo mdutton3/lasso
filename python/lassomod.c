@@ -167,11 +167,15 @@ static PyMethodDef lasso_methods[] = {
 
   /* py_register_name_identifier_request.h */
   {"register_name_identifier_request_new", register_name_identifier_request_new, METH_VARARGS},
-  {"register_name_identifier_request_change_attribute_names_identifiers",
-       register_name_identifier_request_change_attribute_names_identifiers, METH_VARARGS},
+  {"register_name_identifier_request_rename_attributes_for_query", register_name_identifier_request_rename_attributes_for_query, METH_VARARGS},
 
   /* py_register_name_identifier_response.h */
-  {"register_name_identifier_response_new", register_name_identifier_response_new, METH_VARARGS},
+  {"register_name_identifier_response_new_from_request_soap",  register_name_identifier_response_new_from_request_soap,  METH_VARARGS},
+  {"register_name_identifier_response_new_from_soap",          register_name_identifier_response_new_from_soap,          METH_VARARGS},
+  {"register_name_identifier_response_new_from_dump",          register_name_identifier_response_new_from_dump,          METH_VARARGS},
+  {"register_name_identifier_response_new_from_request_query", register_name_identifier_response_new_from_request_query, METH_VARARGS},
+  {"register_name_identifier_response_new_from_query",         register_name_identifier_response_new_from_query,         METH_VARARGS},
+
 
   /* py_request.h */
 /*   {"request_create", request_create, METH_VARARGS}, */

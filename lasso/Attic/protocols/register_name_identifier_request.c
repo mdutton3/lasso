@@ -30,7 +30,7 @@
 /*****************************************************************************/
 
 void
-lasso_register_name_identifier_change_attribute_names_identifiers(LassoRegisterNameIdentifierRequest *request)
+lasso_register_name_identifier_rename_attributes_for_query(LassoRegisterNameIdentifierRequest *request)
 {
   LassoNode *idpidentifier, *spidentifier, *oldidentifier;
 
@@ -138,4 +138,99 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
 
   return (request);
+}
+
+LassoNode *
+lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
+{
+     LassoNode *request, *idpidentifier, *spidentifier, *oldidentifier;
+     xmlChar *str;
+     GData *gd;
+
+     request = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_REQUEST, NULL));
+
+     gd = lasso_query_to_dict(query);
+     
+     /* RequestID */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
+     lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+     /* MajorVersion */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+     /* MinorVersion */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
+     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+     /* IssueInstant */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0);
+     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+     /* ProviderID */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+     lasso_lib_register_name_identifier_request_set_providerID(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), str);
+     
+     /* RelayState */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
+     if (str != NULL)
+	  lasso_lib_register_name_identifier_request_set_relayState(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), str);
+
+     /* IDPProvidedNameIdentifier */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPProvidedNameIdentifier"), 0);
+     idpidentifier = lasso_lib_idp_provided_name_identifier_new(str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPNameQualifier"), 0);
+     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPFormat"), 0);
+     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), str);
+     
+     lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), idpidentifier);
+     
+     /* SPPProvidedNameIdentifier */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
+     spidentifier = lasso_lib_sp_provided_name_identifier_new(str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPNameQualifier"), 0);
+     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPFormat"), 0);
+     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
+     
+     lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), spidentifier);
+ 
+     /* OldPProvidedNameIdentifier */
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldProvidedNameIdentifier"), 0);
+     oldidentifier = lasso_lib_old_provided_name_identifier_new(str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldNameQualifier"), 0);
+     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), str);
+     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldFormat"), 0);
+     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), str);
+     
+     lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), oldidentifier);
+
+     g_datalist_clear(&gd);
+
+     return(request);
+}
+
+
+LassoNode *
+lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
+{
+     LassoNode *request;
+     LassoNode *envelope, *lassoNode_request;
+     xmlNodePtr xmlNode_request;
+     LassoNodeClass *class;
+
+     request = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_REQUEST, NULL));
+
+     envelope = lasso_node_new_from_dump(buffer);
+     lassoNode_request = lasso_node_get_child(envelope, "RegisterNameIdentifierRequest");
+  
+     class = LASSO_NODE_GET_CLASS(lassoNode_request);
+     xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
+  
+     class = LASSO_NODE_GET_CLASS(request);
+     class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
+     g_object_unref(envelope);
+     
+     return(request);
 }
