@@ -140,28 +140,28 @@ LassoNode* lasso_ds_signature_new(LassoNode        *node,
   signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
 					sign_method, NULL);
   if (signature == NULL) {
-    printf("Error: failed to create signature template\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to create signature template\n");
   }
   reference = xmlSecTmplSignatureAddReference(signature,
 					      xmlSecTransformSha1Id,
 					      NULL, NULL, NULL);
   if (reference == NULL) {
-    printf("Error: failed to add reference to signature template\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add reference to signature template\n");
   }
 
   /* add enveloped transform */
   if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
-    printf("Error: failed to add enveloped transform to reference\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add enveloped transform to reference\n");
   }
 
   /* add <dsig:KeyInfo/> and <dsig:X509Data/> */
   key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
   if(key_info == NULL) {
-    printf("Error: failed to add key info\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add key info\n");
   }
   
   if(xmlSecTmplKeyInfoAddX509Data(key_info) == NULL) {
-    printf("Error: failed to add X509Data node\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add X509Data node\n");
   }
 
   LASSO_NODE_GET_CLASS(sign_node)->set_xmlNode(sign_node, signature);

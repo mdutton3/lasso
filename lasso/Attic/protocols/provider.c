@@ -215,7 +215,8 @@ lasso_provider_set_public_key(LassoProvider *provider, gchar *public_key)
 }
 
 void
-lasso_provider_set_ca_certificate(LassoProvider *provider, gchar *ca_certificate)
+lasso_provider_set_ca_certificate(LassoProvider *provider,
+				  gchar *ca_certificate)
 {
   provider->ca_certificate = g_strdup(ca_certificate);
 }
@@ -225,7 +226,7 @@ lasso_provider_set_ca_certificate(LassoProvider *provider, gchar *ca_certificate
 /*****************************************************************************/
 
 static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider, 
-							const gchar *name)
+						      const gchar *name)
 {
   LassoNode *node;
   
@@ -247,7 +248,7 @@ lasso_provider_dispose(LassoProvider *provider)
   }
   provider->private->dispose_has_run = TRUE;
 
-  debug(DEBUG, "Provider object 0x%x disposed ...\n", provider);
+  debug("Provider object 0x%x disposed ...\n", provider);
 
   /* unref reference counted objects */
   lasso_node_destroy(provider->metadata);
@@ -258,7 +259,7 @@ lasso_provider_dispose(LassoProvider *provider)
 static void
 lasso_provider_finalize(LassoProvider *provider)
 {
-  debug(DEBUG, "Provider object 0x%x finalized ...\n", provider);
+  debug("Provider object 0x%x finalized ...\n", provider);
 
   g_free(provider->public_key);
   g_free(provider->ca_certificate);
@@ -322,8 +323,8 @@ lasso_provider_new(gchar *metadata,
   LassoProvider *provider;
   
   provider = lasso_provider_new_metadata_filename(metadata);
-  provider->public_key = public_key;
-  provider->ca_certificate = ca_certificate;
+  provider->public_key = g_strdup(public_key);
+  provider->ca_certificate = g_strdup(ca_certificate);
   
   return(provider);
 }

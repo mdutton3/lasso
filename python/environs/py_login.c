@@ -57,9 +57,10 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[ssssssssssss]", "user", "request", "response",
-			 "request_type", "response_type", "provider_type",
+			 "request_type", "response_type", "nameIdentifier",
+			 "provider_type",
 			 "msg_url", "msg_body", "msg_relayState", "response_dump",
-			 "protocolProfile", "assertionArtifact", "nameIdentifier");
+			 "protocolProfile", "assertionArtifact");
   if (!strcmp(attr, "user"))
     return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(login)->user));
   if (!strcmp(attr, "request"))
@@ -70,6 +71,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
   if (!strcmp(attr, "response_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->response_type));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->nameIdentifier));
   if (!strcmp(attr, "provider_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->provider_type));
   if (!strcmp(attr, "msg_url"))
@@ -84,8 +87,6 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (int_wrap(login->protocolProfile));
   if (!strcmp(attr, "assertionArtifact"))
     return (charPtrConst_wrap(login->assertionArtifact));
-  if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(login->nameIdentifier));
 
   Py_INCREF(Py_None);
   return (Py_None);

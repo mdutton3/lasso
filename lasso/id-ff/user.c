@@ -138,8 +138,10 @@ lasso_user_dump_identity(gpointer   key,
 
   dump = lasso_identity_dump(LASSO_IDENTITY(value));
   identity_node = lasso_node_new_from_dump(dump);
+  xmlFree(dump);
   identity_class = LASSO_NODE_GET_CLASS(identity_node);
   identity_class->add_child(identities, identity_node, TRUE);
+  lasso_node_destroy(identity_node);
 }
 
 void
@@ -206,6 +208,7 @@ lasso_user_get_authentication_method(LassoUser *user,
     providerID = lasso_user_get_next_assertion_remote_providerID(user);
   }
   assertion = lasso_user_get_assertion(user, providerID);
+  g_free(providerID);
   as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL);
   authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
   if (authentication_method == NULL) {
@@ -334,7 +337,7 @@ lasso_user_remove_identity(LassoUser *user,
 static void
 lasso_user_finalize(LassoUser *user)
 {  
-  message(G_LOG_LEVEL_INFO, "User object 0x%x finalized ...\n", user);
+  debug("User object 0x%x finalized ...\n", user);
 
   parent_class->finalize(G_OBJECT(user));
 }
@@ -474,7 +477,7 @@ lasso_user_new_from_dump(gchar *dump)
 	local_nameIdentifier_node = lasso_node_get_child(identity_node, LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE, NULL);
 	if (local_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier", NULL);
-	  lasso_identity_set_local_nameIdentifier(identity, lasso_node_copy(nameIdentifier_node));
+	  lasso_identity_set_local_nameIdentifier(identity, nameIdentifier_node);
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(local_nameIdentifier_node);
 	}
@@ -483,7 +486,7 @@ lasso_user_new_from_dump(gchar *dump)
 	remote_nameIdentifier_node = lasso_node_get_child(identity_node, LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE, NULL);
 	if (remote_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier", NULL);
-	  lasso_identity_set_remote_nameIdentifier(identity, lasso_node_copy(nameIdentifier_node));
+	  lasso_identity_set_remote_nameIdentifier(identity, nameIdentifier_node);
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(remote_nameIdentifier_node);
 	}

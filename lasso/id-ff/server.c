@@ -57,6 +57,7 @@ lasso_server_dump(LassoServer *server)
   signature_method_str = g_new(gchar, 6);
   sprintf(signature_method_str, "%d", server->signature_method);
   server_class->set_prop(server_node, LASSO_SERVER_SIGNATURE_METHOD_NODE, signature_method_str);
+  g_free(signature_method_str);
 
   /* providerID */
   if(server->providerID)
@@ -197,7 +198,7 @@ lasso_server_dispose(LassoServer *server)
 /*   } */
 /*   server->private->dispose_has_run = TRUE; */
 
-  debug(DEBUG, "Server object 0x%x finalized ...\n", server);
+  debug("Server object 0x%x finalized ...\n", server);
 
   /* TODO destroy the providers */
 
@@ -207,7 +208,7 @@ lasso_server_dispose(LassoServer *server)
 static void
 lasso_server_finalize(LassoServer *server)
 {
-  debug(DEBUG, "Server object 0x%x finalized ...\n", server);
+  debug("Server object 0x%x finalized ...\n", server);
 
   g_free(server->providerID);
   g_free(server->private_key);
@@ -236,7 +237,7 @@ lasso_server_class_init(LassoServerClass *class) {
   
   parent_class = g_type_class_peek_parent(class);
   /* override parent class methods */
-  /* object_class->dispose  = (void *)lasso_server_dispose; */
+  gobject_class->dispose  = (void *)lasso_server_dispose;
   gobject_class->finalize = (void *)lasso_server_finalize;
 }
 

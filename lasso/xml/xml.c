@@ -99,9 +99,8 @@ lasso_node_destroy(LassoNode *node)
 {
   if (node != NULL) {
     LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-    return (class->destroy(node));
+    class->destroy(node);
   }
-  return;
 }
 
 /**
@@ -536,9 +535,7 @@ lasso_node_impl_copy(LassoNode *node)
   LassoNode *copy;
   
   copy = LASSO_NODE(g_object_new(G_OBJECT_TYPE(node), NULL));
-  copy->private->node = xmlCopyNode(node->private->node, 1);
-  /* copy = lasso_node_new_from_xmlNode(xmlCopyNode(node->private->node, 1)); */
-  /* copy->private->node_is_weak_ref = FALSE; */
+  lasso_node_set_xmlNode(copy, xmlCopyNode(node->private->node, 1));
 
   return (copy);
 }
@@ -586,7 +583,7 @@ lasso_node_impl_dump(LassoNode     *node,
     ret = buf->buffer->content;
     buf->buffer->content = NULL;
   }
-  (void) xmlOutputBufferClose(buf);
+  xmlOutputBufferClose(buf);
 
   return (ret);
 }
@@ -881,7 +878,7 @@ lasso_node_impl_get_name(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  return (node->private->node->name);
+  return (xmlStrdup(node->private->node->name));
 }
 
 static void
@@ -935,6 +932,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
 {
   xmlDocPtr doc = xmlNewDoc("1.0");
+  xmlNodePtr xmlNode_copy = NULL;
   xmlNodePtr signature = NULL;
   xmlSecKeysMngrPtr mngr = NULL;
   xmlSecDSigCtxPtr dsigCtx = NULL;
@@ -943,13 +941,15 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), -4);
   g_return_val_if_fail (certificate_file != NULL, -5);
 
+  /* create a copy of the xmlNode (node->private->node) of @node */
+  xmlNode_copy = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
+
   /* we must associate the xmlNode with an xmlDoc !!! */
-  xmlAddChild((xmlNodePtr)doc,
-  	      LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node)));
+  xmlAddChild((xmlNodePtr)doc, xmlNode_copy);
 
   /* find start node */
-  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
-					 xmlSecDSigNs);
+  signature = xmlSecFindNode(xmlNode_copy, xmlSecNodeSignature, 
+			     xmlSecDSigNs);
   if (signature == NULL) {
     message(G_LOG_LEVEL_ERROR, "Signature element not found.\n");
     ret = -2;
@@ -1006,6 +1006,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   if(mngr != NULL) {
     xmlSecKeysMngrDestroy(mngr);
   }
+  xmlFreeDoc(doc);
   return (ret);
 }
 
@@ -1226,13 +1227,14 @@ lasso_node_impl_serialize(LassoNode *node,
 	gd = lasso_node_serialize(g_ptr_array_index(children, i), gd);
 	break;
       case XML_TEXT_NODE:
-	name   = lasso_node_get_name(node);
+	name = lasso_node_get_name(node);
 	/* xmlNodeGetContent returns a COPY of node content
 	   each val must be xmlFree in gdata_serialize_destroy_notify()
 	   which is called by g_datalist_clear() */
-	val    = xmlNodeGetContent(node->private->node);
-	if (val == NULL)
+	val = xmlNodeGetContent(node->private->node);
+	if (val == NULL) {
 	  break;
+	}
 	values = (GPtrArray *)g_datalist_get_data(&gd, name);
 	if (values == NULL) {
 	  values = g_ptr_array_new();
@@ -1243,6 +1245,7 @@ lasso_node_impl_serialize(LassoNode *node,
 	else {
 	  g_ptr_array_add(values, val);
 	}
+	xmlFree(name);
 	break;
       }
       lasso_node_destroy((LassoNode *)g_ptr_array_index(children, i));
@@ -1287,9 +1290,9 @@ lasso_node_impl_set_ns(LassoNode     *node,
   /*   } */
 
   new_ns = xmlNewNs(node->private->node, href, prefix);
-  xmlFreeNs(node->private->node->ns);
+  //xmlFreeNs(node->private->node->ns);
   xmlSetNs(node->private->node, new_ns);
-  node->private->node->nsDef = new_ns;
+  //node->private->node->nsDef = new_ns;
 }
 
 static void
@@ -1322,13 +1325,18 @@ lasso_node_impl_set_xmlNode(LassoNode  *node,
 static void
 lasso_node_dispose(LassoNode *node)
 {
-  if (node->private->dispose_has_run) {
+  xmlChar *name;
+
+  if (node->private->dispose_has_run == TRUE) {
     return;
   }
   node->private->dispose_has_run = TRUE;
 
-  debug("%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
-
+  name = lasso_node_get_name(node);
+  if (name != NULL) {
+    debug("%s 0x%x disposed ...\n", name, node);
+    xmlFree(name);
+  }
   /* unref reference counted objects */
   /* we don't have any here */
 
@@ -1338,8 +1346,13 @@ lasso_node_dispose(LassoNode *node)
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  debug("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
-  
+  xmlChar *name = lasso_node_get_name(node);
+
+  if (name != NULL) {
+    debug("%s 0x%x finalized ...\n", name, node);
+    xmlFree(name);
+  }
+
   if (node->private->node_is_weak_ref == FALSE) {
     xmlUnlinkNode(node->private->node);
     xmlFreeNode(node->private->node);
@@ -1403,8 +1416,8 @@ lasso_node_class_init(LassoNodeClass *class)
   class->set_prop      = lasso_node_impl_set_prop;
   class->set_xmlNode   = lasso_node_impl_set_xmlNode;
   /* override parent class methods */
-  gobject_class->dispose  = (void *)lasso_node_dispose;
-  gobject_class->finalize = (void *)lasso_node_finalize;
+  gobject_class->dispose  = lasso_node_dispose;
+  gobject_class->finalize = lasso_node_finalize;
 }
 
 GType lasso_node_get_type() {

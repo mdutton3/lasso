@@ -152,16 +152,16 @@ lasso_g_ptr_array_index(GPtrArray *a, guint i)
  * 
  * Return value: a string
  **/
-xmlChar *
+gchar *
 lasso_get_current_time()
 {
   struct tm *tm;
   GTimeVal time_val;
-  xmlChar *ret = xmlMalloc(21);
+  gchar *ret = g_new0(gchar, 21);
 
   g_get_current_time(&time_val);
   tm = localtime(&(time_val.tv_sec));
-  strftime(ret, 21, "%FT%TZ", tm);
+  strftime((char *)ret, 21, "%FT%TZ", tm);
 
   return (ret);
 }
@@ -179,12 +179,12 @@ GPtrArray *
 lasso_query_get_value(const gchar   *query,
 		      const xmlChar *param)
 {
-  gint i;
+  guint i;
   GData *gd;
   GPtrArray *tmp_array, *array = NULL;
 
   gd = lasso_query_to_dict(query);
-  tmp_array = (GPtrArray *)g_datalist_get_data(&gd, param);
+  tmp_array = (GPtrArray *)g_datalist_get_data(&gd, (gchar *)param);
   /* create a copy of tmp_array */
   if (tmp_array != NULL) {
     array = g_ptr_array_new();
@@ -198,7 +198,7 @@ lasso_query_get_value(const gchar   *query,
 static void
 gdata_query_to_dict_destroy_notify(gpointer data)
 {
-  gint i;
+  guint i;
   GPtrArray *array = data;
 
   for (i=0; i<array->len; i++) {

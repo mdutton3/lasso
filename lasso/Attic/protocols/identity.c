@@ -164,7 +164,7 @@ lasso_identity_dispose(LassoIdentity *identity)
   }
   identity->private->dispose_has_run = TRUE;
 
-  debug(DEBUG, "Identity object 0x%x disposed ...\n", identity);
+  debug("Identity object 0x%x disposed ...\n", identity);
 
   /* unref reference counted objects */
   lasso_node_destroy(identity->local_nameIdentifier);
@@ -176,7 +176,7 @@ lasso_identity_dispose(LassoIdentity *identity)
 static void
 lasso_identity_finalize(LassoIdentity *identity)
 {
-  debug(DEBUG, "Identity object 0x%x finalized ...\n", identity);
+  debug("Identity object 0x%x finalized ...\n", identity);
 
   g_free(identity->remote_providerID);
 

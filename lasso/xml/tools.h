@@ -39,7 +39,7 @@ extern "C" {
 
 typedef enum {
   lassoSignatureMethodRsaSha1 = 1,
-  lassoSignatureMethodDsaSha1,
+  lassoSignatureMethodDsaSha1
 } lassoSignatureMethod;
 
 LASSO_EXPORT xmlChar*   lasso_build_random_sequence  (guint8 size);
@@ -52,7 +52,7 @@ LASSO_EXPORT xmlChar*   lasso_doc_get_node_content   (xmlDocPtr      doc,
 LASSO_EXPORT xmlChar*   lasso_g_ptr_array_index      (GPtrArray *a,
 						      guint      i);
 
-LASSO_EXPORT xmlChar*   lasso_get_current_time       (void);
+LASSO_EXPORT gchar*     lasso_get_current_time       (void);
 
 LASSO_EXPORT GPtrArray* lasso_query_get_value        (const gchar   *query,
 						      const xmlChar *param);
