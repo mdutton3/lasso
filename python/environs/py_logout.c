@@ -64,7 +64,7 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_body));
   if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(logout->nameIdentifier));
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->nameIdentifier));
   if (!strcmp(attr, "msg_relayState"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_relayState));
 

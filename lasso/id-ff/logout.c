@@ -297,7 +297,8 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
   }
 
   /* get the NameIdentifier to load user dump */
-  logout->nameIdentifier = lasso_node_get_child_content(profileContext->request,"NameIdentifier", NULL);
+  LASSO_PROFILE_CONTEXT(logout)->nameIdentifier = lasso_node_get_child_content(profileContext->request,
+									       "NameIdentifier", NULL);
 
   return(0);
 }

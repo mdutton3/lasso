@@ -48,12 +48,10 @@ typedef struct _LassoLogoutClass LassoLogoutClass;
 struct _LassoLogout {
   LassoProfileContext parent;
   
+  /*< public >*/
   LassoNode *first_request;
   LassoNode *first_response;
   gchar     *first_remote_providerID;
-
-  gchar *nameIdentifier;
-  /*< public >*/
 
   /*< private >*/
 };
