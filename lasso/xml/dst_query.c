@@ -57,6 +57,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstQuery,
 							       EncryptedResourceID) },
 	{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstQuery, Extension) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
 	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
 	{NULL, 0, 0}

@@ -51,10 +51,11 @@ typedef struct _LassoDstModifyClass LassoDstModifyClass;
 struct _LassoDstModify {
 	LassoNode parent;
 
+	/*< public >*/
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *Modification;
-	/* FIXME : implement Extension element */
+	xmlNode *Extension;
 
 	char *id;
 	char *itemID;

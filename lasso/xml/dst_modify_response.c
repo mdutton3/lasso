@@ -46,7 +46,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModifyResponse, Status) },
-	/* FIXME : implement Extension element */
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstModifyResponse, Extension) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, id) },
 	{ "itemIDRef", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, itemIDRef) },
 	{ "timeStamp", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModifyResponse, timeStamp) },

@@ -51,6 +51,8 @@ typedef struct _LassoDstModifyResponseClass LassoDstModifyResponseClass;
 struct _LassoDstModifyResponse {
 	LassoNode parent;
 
+	/*< public >*/
+	xmlNode *Extension;
 	LassoUtilityStatus *Status;
 
 	char *id;

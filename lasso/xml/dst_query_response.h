@@ -52,9 +52,10 @@ typedef struct _LassoDstQueryResponseClass LassoDstQueryResponseClass;
 struct _LassoDstQueryResponse {
 	LassoNode parent;
 
+	/*< public >*/
 	LassoUtilityStatus *Status;
 	GList *Data;
-	/* FIXME : implement Extension element */
+	xmlNode *Extension;
 
 	char *id;
 	char *itemIDRef;

@@ -63,10 +63,10 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModify, ResourceID) },
 	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModify,
-							       EncryptedResourceID) },
+			EncryptedResourceID) },
 	{ "Modification", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstModify,
-							Modification) },
-	/* FIXME : implement Extension element */
+			Modification) },
+	{ "Extension", SNIPPET_EXTENSION, G_STRUCT_OFFSET(LassoDstModify, Extension) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModify, id) },
 	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModify, itemID) },
 	{NULL, 0, 0}

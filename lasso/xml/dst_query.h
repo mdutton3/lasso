@@ -51,6 +51,7 @@ typedef struct _LassoDstQueryClass LassoDstQueryClass;
 struct _LassoDstQuery {
 	LassoNode parent;
 
+	/*< public >*/
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *QueryItem;
