@@ -32,41 +32,40 @@ lasso_strerror(int error_code)
 {
 	switch (error_code) {
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
-			return "Unable to get '%s' child of '%s' element.";
+			return "Unable to get child of element.";
 		case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
-			return "Unable to get content of '%s' element.";
+			return "Unable to get content of element.";
 		case LASSO_XML_ERROR_ATTR_NOT_FOUND:
-			return "Unable to get '%s' attribute of '%s' element.";
+			return "Unable to get attribute of element.";
 		case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
-			return "Unable to get '%s' attribute value of '%s' element.";
+			return "Unable to get attribute value of element.";
 		case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
-			return "Signature element not found in %s.";
+			return "Signature element not found.";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:
-			return "The signature of %s is invalid.";
+			return "Invalid signature.";
 		case LASSO_DS_ERROR_CONTEXT_CREATION_FAILED:
 			return "Failed to create signature context.";
 		case LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED:
-			return "Failed to load public key %s.";
+			return "Failed to load public key.";
 		case LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED:
-			return "Failed to load private key %s.";
+			return "Failed to load private key.";
 		case LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED:
-			return "Failed to load certificate %s.";
+			return "Failed to load certificate.";
 		case LASSO_DS_ERROR_SIGNATURE_FAILED:
-			return "Failed to sign the node %s.";
+			return "Failed to sign the node.";
 		case LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED:
 			return "Failed to create keys manager.";
 		case LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED:
 			return "Failed to initialize keys manager.";
 		case LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED:
-			return "Failed to verify signature of %s.";
+			return "Failed to verify signature.";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
 		case LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND:
 			return "Signature template has not been found.";
 
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
-			return "Failed to get LassoProvider object "\
-				"with providerID %s in LassoServer object.";
+			return "ProviderID unknown to LassoServer";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
 			return "Failed to add new provider.";
 
@@ -123,12 +122,12 @@ lasso_strerror(int error_code)
 				"either NULL or contains a NULL error.";
 
 		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
-			return "Invalid NameIDPolicy in lib:AuthnRequest: %s";
+			return "Invalid NameIDPolicy in lib:AuthnRequest";
 
 		case LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
 			return "Name identifier not found in request";
 
 		default:
-			return g_strdup_printf("Undefined error code %d.", error_code);
+			return "Undefined error code.";
 	}
 }

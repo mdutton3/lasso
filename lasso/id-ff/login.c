@@ -347,7 +347,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
 			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
-		return critical_error(LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY, nameIDPolicy);
+		return critical_error(LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY);
 	}
 
 	/* consent is necessary, it should be obtained via consent attribute
@@ -575,8 +575,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
@@ -656,8 +655,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	protocolProfile = LASSO_LIB_AUTHN_REQUEST(profile->request)->ProtocolProfile;
@@ -765,8 +763,7 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 
@@ -801,8 +798,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 	return 0;
@@ -951,8 +947,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	login->http_method = http_method;
 
@@ -1248,8 +1243,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				must_verify_signature = TRUE;
 			}
 		} else {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-					profile->remote_providerID);
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
 
 		/* verify request signature */
@@ -1316,8 +1310,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				LASSO_PROFILE(login)->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	LASSO_PROFILE(login)->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
 			LASSO_PROFILE(login)->response)->RelayState);

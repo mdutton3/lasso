@@ -73,8 +73,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* get the protocol profile type */
@@ -167,8 +166,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* get federation */
@@ -285,8 +283,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	profile->signature_status = lasso_provider_verify_signature(
@@ -346,8 +343,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
 		if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-					profile->remote_providerID);
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 		}
 
 		/* build the QUERY and the url. Dont need to sign the query,

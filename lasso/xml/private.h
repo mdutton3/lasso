@@ -138,11 +138,7 @@ int error_code(GLogLevelFlags level, int error, ...);
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
 #endif
 
-#if defined __GNUC__
-#  define critical_error(args...) error_code(G_LOG_LEVEL_CRITICAL, ##args)
-#else
-#  define critical_error(...) error_code(G_LOG_LEVEL_CRITICAL, __VA_ARGS__)
-#endif
+#define critical_error(rc) error_code(G_LOG_LEVEL_CRITICAL, rc)
 
 #ifdef __cplusplus
 }

@@ -418,7 +418,7 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	gchar **str_split = NULL;
-	LassoSignatureMethod  sign_method;
+	LassoSignatureMethod sign_method;
 	xmlChar *digest = NULL, *b64_signature = NULL;
 	xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
 	xmlSecByte *signature = NULL;
@@ -428,6 +428,8 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	g_return_val_if_fail(sender_public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* split query, the signature MUST be the last param of the query */
+	/* FIXME: actually there could be more params in the URL; but they
+	 * wouldn't be covered by the signature */
 	str_split = g_strsplit(query, "&Signature=", 0);
 	if (str_split[1] == NULL) {
 		ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
@@ -437,10 +439,7 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	/* create bio to read public key */
 	bio = BIO_new_file(sender_public_key_file, "rb");
 	if (bio == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, 
-				lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
-				sender_public_key_file);
-		ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+		ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 		goto done;
 	}  
 
@@ -634,19 +633,18 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 			NULL, NULL, NULL);
 	if (dsig_ctx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
-		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED, private_key_file);
+		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED);
 	}
 	if (certificate_file != NULL && certificate_file[0] != 0) {
 		if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
 					xmlSecKeyDataFormatPem) < 0) {
 			xmlSecDSigCtxDestroy(dsig_ctx);
-			return critical_error(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED,
-					certificate_file);
+			return critical_error(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED);
 		}
 	}
 	if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
 		xmlSecDSigCtxDestroy(dsig_ctx);
-		return critical_error(LASSO_DS_ERROR_SIGNATURE_FAILED, xmlnode->name);
+		return critical_error(LASSO_DS_ERROR_SIGNATURE_FAILED);
 	}
 	xmlSecDSigCtxDestroy(dsig_ctx);
 	xmlUnlinkNode(xmlnode);

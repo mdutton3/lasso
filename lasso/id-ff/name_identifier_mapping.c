@@ -65,8 +65,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
@@ -127,8 +126,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_SP) {
@@ -202,8 +200,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
 		message(G_LOG_LEVEL_CRITICAL, "Init request method is forbidden for an IDP");
@@ -289,9 +286,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
-					profile->request)->ProviderID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 	profile->remote_providerID = g_strdup(remote_provider->ProviderID);
 
@@ -353,8 +348,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* verify signature */
@@ -406,8 +400,7 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_SP) {

@@ -83,8 +83,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* build the logout request message */
@@ -164,8 +163,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	/* get the provider */
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 	if (provider == NULL) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* build logout response message */
@@ -330,8 +328,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* before setting profile->request, verify if it is already set */
@@ -429,8 +426,7 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* verify signatures */
@@ -516,8 +512,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* verify signature */
@@ -692,8 +687,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-				profile->remote_providerID);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* Set LogoutResponse */
