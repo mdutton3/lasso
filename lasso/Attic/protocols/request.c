@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <lasso/xml/samlp_request.h>
 #include <lasso/protocols/request.h>
 
 /*****************************************************************************/

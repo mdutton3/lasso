@@ -54,6 +54,8 @@ struct _LassoSamlpRequestClass {
 LASSO_EXPORT GType lasso_samlp_request_get_type(void);
 LASSO_EXPORT LassoNode* lasso_samlp_request_new(void);
 
+LASSO_EXPORT void lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
+					  const xmlChar *assertionArtifact);
 
 #ifdef __cplusplus
 }
