@@ -87,13 +87,13 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
  *
  * Return value: the type of request
  **/
-lassoRequestType
+LassoRequestType
 lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 {
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	lassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
+	LassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
 	const char *name = NULL;
 
 	doc = xmlParseMemory(soap, strlen(soap));

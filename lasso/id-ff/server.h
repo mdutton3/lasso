@@ -56,7 +56,7 @@ struct _LassoServer {
 	gchar *private_key;
 	gchar *secret_key;
 	gchar *certificate;
-	lassoSignatureMethod signature_method;
+	LassoSignatureMethod signature_method;
 
 	/*< private >*/
 	LassoServerPrivate *private_data;

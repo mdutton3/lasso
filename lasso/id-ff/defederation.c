@@ -142,7 +142,7 @@ lasso_defederation_destroy(LassoDefederation *defederation)
  **/
 gint
 lasso_defederation_init_notification(LassoDefederation *defederation, gchar *remote_providerID,
-		lassoHttpMethod http_method)
+		LassoHttpMethod http_method)
 {
 	LassoProfile*profile;
 	LassoProvider *remote_provider;

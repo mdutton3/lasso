@@ -60,7 +60,7 @@ typedef enum {
 	LASSO_REQUEST_TYPE_NAME_REGISTRATION = 4,
 	LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING = 5,
 	LASSO_REQUEST_TYPE_LECP = 6
-} lassoRequestType;
+} LassoRequestType;
 
 typedef enum {
 	LASSO_MESSAGE_TYPE_NONE = 0,
@@ -69,7 +69,7 @@ typedef enum {
 	LASSO_MESSAGE_TYPE_REQUEST,
 	LASSO_MESSAGE_TYPE_RESPONSE,
 	LASSO_MESSAGE_TYPE_ARTIFACT
-} lassoMessageType;
+} LassoMessageType;
 
 struct _LassoProfile {
 	LassoNode parent;
@@ -92,7 +92,7 @@ struct _LassoProfile {
 	LassoIdentity *identity;
 	LassoSession  *session;
 
-	lassoHttpMethod http_request_method;
+	LassoHttpMethod http_request_method;
 	gint signature_status;
 
 	LassoProfilePrivate *private_data;
@@ -104,7 +104,7 @@ struct _LassoProfileClass {
 
 /* public functions */
 
-LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg(const gchar *soap);
+LASSO_EXPORT LassoRequestType lasso_profile_get_request_type_from_soap_msg(const gchar *soap);
 LASSO_EXPORT gboolean lasso_profile_is_liberty_query(const gchar *query);
 
 

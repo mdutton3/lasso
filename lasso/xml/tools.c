@@ -128,13 +128,13 @@ lasso_get_current_time()
  * 
  * Return value: the pem file type
  **/
-lassoPemFileType
+LassoPemFileType
 lasso_get_pem_file_type(const char *pem_file)
 {
 	BIO* bio;
 	EVP_PKEY *pkey;
 	X509 *cert;
-	lassoPemFileType type = LASSO_PEM_FILE_TYPE_UNKNOWN;
+	LassoPemFileType type = LASSO_PEM_FILE_TYPE_UNKNOWN;
 
 	g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -303,7 +303,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 xmlChar*
-lasso_query_sign(xmlChar *query, lassoSignatureMethod sign_method, const char *private_key_file)
+lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *private_key_file)
 {
 	BIO *bio = NULL;
 	xmlChar *digest = NULL; /* 160 bit buffer */
@@ -419,7 +419,7 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	gchar **str_split = NULL;
-	lassoSignatureMethod  sign_method;
+	LassoSignatureMethod  sign_method;
 	xmlChar *digest = NULL, *b64_signature = NULL;
 	xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
 	xmlSecByte *signature = NULL;

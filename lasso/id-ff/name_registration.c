@@ -163,7 +163,7 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
 
 gint
 lasso_name_registration_init_request(LassoNameRegistration *name_registration,
-		char *remote_providerID, lassoHttpMethod http_method)
+		char *remote_providerID, LassoHttpMethod http_method)
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
@@ -361,7 +361,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *nameIdentifier = NULL;
-	lassoHttpMethod response_method;
+	LassoHttpMethod response_method;
 	LassoMessageFormat format;
 	int rc;
 	char *statusCodeValue;

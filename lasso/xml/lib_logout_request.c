@@ -199,7 +199,7 @@ lasso_lib_logout_request_new()
  **/
 LassoSamlpRequestAbstract*
 lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
 	LassoSamlpRequestAbstract *request;
 

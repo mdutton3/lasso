@@ -88,21 +88,20 @@ typedef enum {
 	LASSO_PEM_FILE_TYPE_PUB_KEY,
 	LASSO_PEM_FILE_TYPE_PRIVATE_KEY,
 	LASSO_PEM_FILE_TYPE_CERT
-} lassoPemFileType;
+} LassoPemFileType;
 
 void  lasso_build_random_sequence(char *buffer, unsigned int size);
 char* lasso_build_unique_id(unsigned int size);
 char* lasso_get_current_time(void);
-lassoPemFileType lasso_get_pem_file_type(const char *file);
+LassoPemFileType lasso_get_pem_file_type(const char *file);
 
 xmlSecKey* lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
 xmlChar* lasso_query_sign(xmlChar *query,
-   lassoSignatureMethod sign_method, const char *private_key_file);
+		LassoSignatureMethod sign_method, const char *private_key_file);
 
-int lasso_query_verify_signature(
-   const char *query, const char *sender_public_key_file);
+int lasso_query_verify_signature(const char *query, const char *sender_public_key_file);
 
 char* lasso_sha1(const char *str);
 

@@ -437,7 +437,7 @@ lasso_login_accept_sso(LassoLogin *login)
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
+lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 {
 	LassoProvider *remote_provider;
 	LassoProfile *profile;
@@ -810,7 +810,7 @@ lasso_login_destroy(LassoLogin *login)
  **/
 gint
 lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID,
-		lassoHttpMethod http_method)
+		LassoHttpMethod http_method)
 {
 	LassoLibAuthnRequest *request;
 
@@ -868,7 +868,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
  **/ 
 gint
 lasso_login_init_request(LassoLogin *login, gchar *response_msg,
-		lassoHttpMethod response_http_method)
+		LassoHttpMethod response_http_method)
 {
 	char **query_fields;
 	gint ret = 0;

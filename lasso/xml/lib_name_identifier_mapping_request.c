@@ -151,7 +151,7 @@ lasso_lib_name_identifier_mapping_request_new()
 LassoSamlpRequestAbstract*
 lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier, const char *targetNamespace,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
 	LassoSamlpRequestAbstract *request;
 

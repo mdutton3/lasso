@@ -78,7 +78,7 @@ LASSO_EXPORT GType lasso_lib_federation_termination_notification_get_type(void);
 LASSO_EXPORT LassoSamlpRequestAbstract* lasso_lib_federation_termination_notification_new(void);
 LASSO_EXPORT LassoSamlpRequestAbstract* lasso_lib_federation_termination_notification_new_full(
 		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

@@ -5,8 +5,8 @@
 <TITLE>LassoProvider</TITLE>
 LassoProvider
 LassoProviderRole
-lassoHttpMethod
-lassoMdProtocolType
+LassoHttpMethod
+LassoMdProtocolType
 lasso_provider_new
 lasso_provider_new_from_dump
 lasso_provider_accept_http_method
@@ -113,8 +113,8 @@ LASSO_FEDERATION_GET_CLASS
 <SECTION>
 <FILE>profile</FILE>
 <TITLE>LassoProfile</TITLE>
-lassoMessageType
-lassoRequestType
+LassoMessageType
+LassoRequestType
 LassoProfile
 lasso_profile_get_identity
 lasso_profile_get_session
@@ -140,7 +140,7 @@ LASSO_PROFILE_GET_CLASS
 <FILE>login</FILE>
 <TITLE>LassoLogin</TITLE>
 LassoLogin
-lassoLoginProtocolProfile
+LassoLoginProtocolProfile
 lasso_login_new
 lasso_login_destroy
 lasso_login_dump
@@ -685,8 +685,8 @@ LASSO_SAMLP_STATUS_CODE_GET_CLASS
 <TITLE>LassoNode</TITLE>
 LassoNode
 LassoMessageFormat
-lassoSignatureType
-lassoSignatureMethod
+LassoSignatureType
+LassoSignatureMethod
 lasso_node_new
 lasso_node_new_from_dump
 lasso_node_new_from_xmlNode
@@ -902,7 +902,7 @@ LASSO_LIB_AUTHENTICATION_STATEMENT_GET_CLASS
 <FILE>lasso</FILE>
 lasso_init
 lasso_shutdown
-lassoCheckVersionMode
+LassoCheckVersionMode
 lasso_check_version_exact
 lasso_check_version
 lasso_check_version_ext

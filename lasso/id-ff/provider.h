@@ -54,7 +54,7 @@ typedef enum {
 	LASSO_HTTP_METHOD_POST,          /* Browser POST */
 	LASSO_HTTP_METHOD_REDIRECT,      /* HTTP-Redirect based */
 	LASSO_HTTP_METHOD_SOAP           /* SOAP/HTTP based */
-} lassoHttpMethod;
+} LassoHttpMethod;
 
 typedef enum {
 	LASSO_MD_PROTOCOL_TYPE_FEDERATION_TERMINATION = 0, /* Federation Termination Notification */
@@ -62,7 +62,7 @@ typedef enum {
 	LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,   /* Name Registration */
 	LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,              /* Single Logout */
 	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON              /* Single Sign-On and Federation */
-} lassoMdProtocolType;
+} LassoMdProtocolType;
 
 typedef enum {
 	LASSO_PROVIDER_ROLE_NONE = 0,
@@ -99,15 +99,15 @@ LASSO_EXPORT GList* lasso_provider_get_metadata_list(LassoProvider *provider, co
 
 LASSO_EXPORT LassoProvider* lasso_provider_new_from_dump(const gchar *dump);
 
-LASSO_EXPORT lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, lassoMdProtocolType protocol_type);
+LASSO_EXPORT LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
 LASSO_EXPORT gboolean lasso_provider_accept_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, lassoMdProtocolType protocol_type,
-		lassoHttpMethod http_method, gboolean initiate_profile);
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
+		LassoHttpMethod http_method, gboolean initiate_profile);
 
 LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provider,
-		lassoMdProtocolType protocol_type, const char *protocol_profile);
+		LassoMdProtocolType protocol_type, const char *protocol_profile);
 
 LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(LassoProvider *provider);
 

@@ -229,7 +229,7 @@ lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 		LassoSamlNameIdentifier *idpNameIdentifier,
 		LassoSamlNameIdentifier *spNameIdentifier,
 		LassoSamlNameIdentifier *oldNameIdentifier,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
 	LassoLibRegisterNameIdentifierRequest *request;
 	LassoSamlpRequestAbstract *request_base;

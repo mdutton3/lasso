@@ -159,13 +159,13 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
  * @remote_provider: a #LassoProvider depicting the remote provider
  * @protocol_type: a Liberty profile
  *
- * Looks up and returns a #lassoHttpMethod appropriate for performing the
+ * Looks up and returns a #LassoHttpMethod appropriate for performing the
  * @protocol_type between @provider and @remote_provider.
  *
- * Return value: the #lassoHttpMethod
+ * Return value: the #LassoHttpMethod
  **/
-lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, lassoMdProtocolType protocol_type)
+LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
+		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	char *protocol_profile_prefix;
 	GList *local_supported_profiles;
@@ -229,7 +229,7 @@ lassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
  **/
 gboolean
 lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
-		lassoMdProtocolType protocol_type, lassoHttpMethod http_method,
+		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
 		gboolean initiate_profile)
 { 
 	LassoProviderRole initiating_role;
@@ -273,7 +273,7 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
  **/
 gboolean
 lasso_provider_has_protocol_profile(LassoProvider *provider,
-		lassoMdProtocolType protocol_type, const char *protocol_profile)
+		LassoMdProtocolType protocol_type, const char *protocol_profile)
 {
 	GList *supported;
 	
@@ -682,7 +682,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	xmlNode *xmlnode = NULL, *sign, *x509data;
 	xmlSecKeysMngr *keys_mngr = NULL;
 	xmlSecDSigCtx *dsigCtx;
-	lassoPemFileType public_key_file_type;
+	LassoPemFileType public_key_file_type;
 	int rc;
 
 	msg = (char*)message;
@@ -767,8 +767,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
 		if (provider->public_key) {
-			public_key_file_type = lasso_get_pem_file_type(
-					provider->public_key);
+			public_key_file_type = lasso_get_pem_file_type(provider->public_key);
 			if (public_key_file_type == LASSO_PEM_FILE_TYPE_CERT) {
 				/* public_key_file is a certificate file
 				 * => get public key in it */

@@ -227,7 +227,7 @@ lasso_lib_federation_termination_notification_new()
 LassoSamlpRequestAbstract*
 lasso_lib_federation_termination_notification_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
 	LassoSamlpRequestAbstract *request;
 

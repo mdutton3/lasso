@@ -253,7 +253,7 @@ typedef enum {
 	LASSO_HTTP_METHOD_POST,
 	LASSO_HTTP_METHOD_REDIRECT,
 	LASSO_HTTP_METHOD_SOAP
-} lassoHttpMethod;
+} LassoHttpMethod;
 
 /* Consent */
 #ifndef SWIGPHP4
@@ -323,7 +323,7 @@ typedef enum {
 typedef enum {
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST,
-} lassoLoginProtocolProfile;
+} LassoLoginProtocolProfile;
 
 /* MessageType */
 #ifndef SWIGPHP4
@@ -341,7 +341,7 @@ typedef enum {
 	LASSO_MESSAGE_TYPE_REQUEST,
 	LASSO_MESSAGE_TYPE_RESPONSE,
 	LASSO_MESSAGE_TYPE_ARTIFACT
-} lassoMessageType;
+} LassoMessageType;
 
 /* ProviderRole */
 #ifndef SWIGPHP4
@@ -373,7 +373,7 @@ typedef enum {
 	LASSO_REQUEST_TYPE_NAME_REGISTRATION = 4,
 	LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING = 5,
 	LASSO_REQUEST_TYPE_LECP = 6
-} lassoRequestType;
+} LassoRequestType;
 
 /* SamlAuthenticationMethod */
 #ifndef SWIGPHP4
@@ -409,7 +409,7 @@ typedef enum {
 typedef enum {
 	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
 	LASSO_SIGNATURE_METHOD_DSA_SHA1
-} lassoSignatureMethod;
+} LassoSignatureMethod;
 
 
 /***********************************************************************
@@ -749,8 +749,8 @@ typedef struct {
 
 	char *certificate_file;
 	char *private_key_file;
-	lassoSignatureType sign_type;
-	lassoSignatureMethod sign_method;
+	LassoSignatureType sign_type;
+	LassoSignatureMethod sign_method;
 } LassoSamlAssertion;
 %extend LassoSamlAssertion {
 	/* Attributes */
@@ -1068,8 +1068,8 @@ typedef struct {
 
 /* 	char *certificate_file; */
 /* 	char *private_key_file; */
-/* 	lassoSignatureType sign_type; */
-/* 	lassoSignatureMethod sign_method; */
+/* 	LassoSignatureType sign_type; */
+/* 	LassoSignatureMethod sign_method; */
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1282,7 +1282,7 @@ typedef struct {
 
 	LassoLibFederationTerminationNotification(
 			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	~LassoLibFederationTerminationNotification();
 
@@ -1341,7 +1341,7 @@ typedef struct {
 
 	LassoLibLogoutRequest(
 			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	~LassoLibLogoutRequest();
 
@@ -1396,7 +1396,7 @@ typedef struct {
 	LassoLibLogoutResponse(
 			char *providerID, const char *statusCodeValue,
 			LassoLibLogoutRequest *request,
-			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	~LassoLibLogoutResponse();
 
@@ -1469,7 +1469,7 @@ typedef struct {
 			LassoSamlNameIdentifier *idpNameIdentifier,
 			LassoSamlNameIdentifier *spNameIdentifier,
 			LassoSamlNameIdentifier *oldNameIdentifier,
-			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	~LassoLibRegisterNameIdentifierRequest();
 
@@ -1536,7 +1536,7 @@ typedef struct {
 	LassoLibRegisterNameIdentifierResponse(
 			char *providerID, char *statusCodeValue,
 			LassoLibRegisterNameIdentifierRequest *request,
-			lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	~LassoLibRegisterNameIdentifierResponse();
 
@@ -1956,7 +1956,7 @@ LassoStringArray *LassoSession_providerIds_get(LassoSession *self) {
 #else
 %rename(getRequestTypeFromSoapMsg) lasso_profile_get_request_type_from_soap_msg;
 #endif
-lassoRequestType lasso_profile_get_request_type_from_soap_msg(char *soap);
+LassoRequestType lasso_profile_get_request_type_from_soap_msg(char *soap);
 
 #ifdef SWIGPHP4
 %rename(lasso_isLibertyQuery) lasso_profile_is_liberty_query;
@@ -2032,7 +2032,7 @@ typedef struct {
 
 	THROW_ERROR
 	void initNotification(char *remoteProviderId = NULL,
-			      lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+			      LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -2140,7 +2140,7 @@ typedef struct {
 	char *assertionArtifact;
 
 	%immutable protocolProfile;
-	lassoLoginProtocolProfile protocolProfile;
+	LassoLoginProtocolProfile protocolProfile;
 
 	%extend {
 		/* Attributes inherited from LassoProfile */
@@ -2211,7 +2211,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildArtifactMsg(lassoHttpMethod httpMethod);
+		void buildArtifactMsg(LassoHttpMethod httpMethod);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2241,12 +2241,12 @@ typedef struct {
 
 		THROW_ERROR
 		void initAuthnRequest(char *remoteProviderId = NULL,
-				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 		END_THROW_ERROR
 
 		THROW_ERROR
 		void initRequest(char *responseMsg,
-				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2497,7 +2497,7 @@ typedef struct {
 
 		THROW_ERROR
 		void initRequest(char *remoteProviderId = NULL,
-				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+				 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -3110,7 +3110,7 @@ typedef struct {
 
 		THROW_ERROR
 		void initRequest(char *remoteProviderId,
-				lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+				LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 		END_THROW_ERROR
 
 		THROW_ERROR

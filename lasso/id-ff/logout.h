@@ -55,7 +55,7 @@ struct _LassoLogout {
 	LassoNode *initial_response;
 	gchar     *initial_remote_providerID;
 	gint       providerID_index;
-	lassoHttpMethod initial_http_request_method;
+	LassoHttpMethod initial_http_request_method;
 
 	LassoLogoutPrivate *private_data;
 };
@@ -83,7 +83,7 @@ LASSO_EXPORT gchar*       lasso_logout_get_next_providerID    (LassoLogout *logo
 
 LASSO_EXPORT gint         lasso_logout_init_request           (LassoLogout    *logout,
 							       gchar          *remote_providerID,
-							       lassoHttpMethod request_method);
+							       LassoHttpMethod request_method);
 
 LASSO_EXPORT gint         lasso_logout_process_request_msg    (LassoLogout     *logout,
 							       gchar           *request_msg);

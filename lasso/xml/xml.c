@@ -173,7 +173,7 @@ lasso_node_export_to_base64(LassoNode *node)
  **/
 char*
 lasso_node_export_to_query(LassoNode *node,
-		lassoSignatureMethod sign_method, const char *private_key_file)
+		LassoSignatureMethod sign_method, const char *private_key_file)
 {
 	char *unsigned_query, *query;
 
@@ -949,8 +949,8 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature)
 {
 	LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
-	lassoSignatureType sign_type;
-	lassoSignatureType sign_method;
+	LassoSignatureType sign_type;
+	LassoSignatureMethod sign_method;
 	xmlNode *signature = NULL, *reference, *key_info;
 	char *uri;
 	char *id;
@@ -965,10 +965,10 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		return;
 
 	sign_type = G_STRUCT_MEMBER(
-			lassoSignatureType, node,
+			LassoSignatureType, node,
 			klass->node_data->sign_type_offset);
 	sign_method = G_STRUCT_MEMBER(
-			lassoSignatureType, node,
+			LassoSignatureMethod, node,
 			klass->node_data->sign_method_offset);
 
 	if (sign_type == LASSO_SIGNATURE_TYPE_NONE)

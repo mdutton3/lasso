@@ -79,7 +79,7 @@ LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_name_identifier_mapping_respo
 LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_name_identifier_mapping_response_new_full(
 		char *provideRID, const char *statusCodeValue,
 		LassoLibNameIdentifierMappingRequest *request,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

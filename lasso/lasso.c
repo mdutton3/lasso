@@ -158,7 +158,7 @@ int lasso_shutdown()
  * 0 if it is not or a negative value if an error occurs.
  */
 int 
-lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMode mode)
+lasso_check_version_ext(int major, int minor, int subminor, LassoCheckVersionMode mode)
 {
 	/* we always want to have a match for major version number */
 	if (major != LASSO_VERSION_MAJOR) {

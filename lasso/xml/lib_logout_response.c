@@ -108,7 +108,7 @@ lasso_lib_logout_response_new()
 LassoSamlpResponseAbstract*
 lasso_lib_logout_response_new_full(char *providerID, const char *statusCodeValue,
 		LassoLibLogoutRequest *request,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
 	LassoLibStatusResponse *response;
 

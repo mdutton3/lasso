@@ -256,7 +256,7 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
  **/
 gint
 lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
-		lassoHttpMethod http_method)
+		LassoHttpMethod http_method)
 {
 	LassoProfile      *profile;
 	LassoProvider     *remote_provider;
@@ -465,7 +465,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	LassoProfile  *profile;
 	LassoProvider *remote_provider;
 	char *statusCodeValue;
-	lassoHttpMethod response_method;
+	LassoHttpMethod response_method;
 	LassoMessageFormat format;
 	LassoLibStatusResponse *response;
 	int rc;

@@ -83,7 +83,7 @@ LASSO_EXPORT LassoSamlpRequestAbstract* lasso_lib_register_name_identifier_reque
 		LassoSamlNameIdentifier *idpNameIdentifier,
 		LassoSamlNameIdentifier *spNameIdentifier,
 		LassoSamlNameIdentifier *oldNameIdentifier,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

@@ -66,7 +66,7 @@ LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_register_name_identifier_resp
 LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_register_name_identifier_response_new_full(
 		const char *providerID, const char *statusCodeValue,
 		LassoLibRegisterNameIdentifierRequest *request,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
+		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }
