@@ -250,12 +250,18 @@ typedef enum {
 /* Consent */
 #ifndef SWIGPHP4
 %rename(libConsentObtained) lassoLibConsentObtained;
+%rename(libConsentObtainedPrior) lassoLibConsentObtainedPrior;
+%rename(libConsentObtainedCurrentImplicit) lassoLibConsentObtainedCurrentImplicit;
+%rename(libConsentObtainedCurrentExplicit) lassoLibConsentObtainedCurrentExplicit;
 %rename(libConsentUnavailable) lassoLibConsentUnavailable;
 %rename(libConsentInapplicable) lassoLibConsentInapplicable;
 #endif
-%constant xmlChar *lassoLibConsentObtained = "urn:liberty:consent:obtained";
-%constant xmlChar *lassoLibConsentUnavailable  = "urn:liberty:consent:unavailable";
-%constant xmlChar *lassoLibConsentInapplicable = "urn:liberty:consent:inapplicable";
+#define lassoLibConsentObtained "urn:liberty:consent:obtained"
+#define lassoLibConsentObtainedPrior "urn:liberty:consent:obtained:prior"
+#define lassoLibConsentObtainedCurrentImplicit "urn:liberty:consent:obtained:current:implicit"
+#define lassoLibConsentObtainedCurrentExplicit "urn:liberty:consent:obtained:current:explicit"
+#define lassoLibConsentUnavailable "urn:liberty:consent:unavailable"
+#define lassoLibConsentInapplicable "urn:liberty:consent:inapplicable"
 
 /* NameIdPolicyType */
 #ifndef SWIGPHP4
@@ -264,10 +270,10 @@ typedef enum {
 %rename(libNameIdPolicyTypeFederated) lassoLibNameIDPolicyTypeFederated;
 %rename(libNameIdPolicyTypeAny) lassoLibNameIDPolicyTypeAny;
 #endif
-%constant xmlChar *lassoLibNameIDPolicyTypeNone = "none";
-%constant xmlChar *lassoLibNameIDPolicyTypeOneTime = "onetime";
-%constant xmlChar *lassoLibNameIDPolicyTypeFederated = "federated";
-%constant xmlChar *lassoLibNameIDPolicyTypeAny = "any";
+#define lassoLibNameIDPolicyTypeNone "none"
+#define lassoLibNameIDPolicyTypeOneTime "onetime"
+#define lassoLibNameIDPolicyTypeFederated "federated"
+#define lassoLibNameIDPolicyTypeAny "any"
 
 /* ProtocolProfile */
 #ifndef SWIGPHP4
@@ -286,20 +292,20 @@ typedef enum {
 %rename(libProtocolProfileSloSpHttp) lassoLibProtocolProfileSloSpHttp;
 %rename(libProtocolProfileSloSpSoap) lassoLibProtocolProfileSloSpSoap;
 #endif
-%constant xmlChar *lassoLibProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art";
-%constant xmlChar *lassoLibProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post";
-%constant xmlChar *lassoLibProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http";
-%constant xmlChar *lassoLibProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap";
-%constant xmlChar *lassoLibProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http";
-%constant xmlChar *lassoLibProtocolProfileFedTermSpSoap = "http://projectliberty.org/profiles/fedterm-sp-soap";
-%constant xmlChar *lassoLibProtocolProfileRniIdpHttp = "http://projectliberty.org/profiles/rni-idp-http";
-%constant xmlChar *lassoLibProtocolProfileRniIdpSoap = "http://projectliberty.org/profiles/rni-idp-soap";
-%constant xmlChar *lassoLibProtocolProfileRniSpHttp = "http://projectliberty.org/profiles/rni-sp-http";
-%constant xmlChar *lassoLibProtocolProfileRniSpSoap = "http://projectliberty.org/profiles/rni-sp-soap";
-%constant xmlChar *lassoLibProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http";
-%constant xmlChar *lassoLibProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap";
-%constant xmlChar *lassoLibProtocolProfileSloSpHttp = "http://projectliberty.org/profiles/slo-sp-http";
-%constant xmlChar *lassoLibProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap";
+#define lassoLibProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art"
+#define lassoLibProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post"
+#define lassoLibProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http"
+#define lassoLibProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap"
+#define lassoLibProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http"
+#define lassoLibProtocolProfileFedTermSpSoap = "http://projectliberty.org/profiles/fedterm-sp-soap"
+#define lassoLibProtocolProfileRniIdpHttp = "http://projectliberty.org/profiles/rni-idp-http"
+#define lassoLibProtocolProfileRniIdpSoap = "http://projectliberty.org/profiles/rni-idp-soap"
+#define lassoLibProtocolProfileRniSpHttp = "http://projectliberty.org/profiles/rni-sp-http"
+#define lassoLibProtocolProfileRniSpSoap = "http://projectliberty.org/profiles/rni-sp-soap"
+#define lassoLibProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http"
+#define lassoLibProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap"
+#define lassoLibProtocolProfileSloSpHttp = "http://projectliberty.org/profiles/slo-sp-http"
+#define lassoLibProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap"
 
 /* LoginProtocolProfile */
 #ifndef SWIGPHP4
@@ -377,17 +383,17 @@ typedef enum {
 %rename(samlAuthenticationMethodXmlDsig) lassoSamlAuthenticationMethodXmlDSig;
 %rename(samlAuthenticationMethodUnspecified) lassoSamlAuthenticationMethodUnspecified;
 #endif
-%constant xmlChar *lassoSamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password";
-%constant xmlChar *lassoSamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510";
-%constant xmlChar *lassoSamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945";
-%constant xmlChar *lassoSamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
-%constant xmlChar *lassoSamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246";
-%constant xmlChar *lassoSamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
-%constant xmlChar *lassoSamlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP";
-%constant xmlChar *lassoSamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
-%constant xmlChar *lassoSamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
-%constant xmlChar *lassoSamlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075";
-%constant xmlChar *lassoSamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
+#define lassoSamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password"
+#define lassoSamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510"
+#define lassoSamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
+#define lassoSamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+#define lassoSamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
+#define lassoSamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+#define lassoSamlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP"
+#define lassoSamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+#define lassoSamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+#define lassoSamlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075"
+#define lassoSamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 /* SignatureMethod */
 #ifndef SWIGPHP4
