@@ -253,42 +253,44 @@ GType lasso_authn_response_get_type() {
 /* } */
 
 LassoNode*
-lasso_authn_response_new(char *providerID, LassoNode *request){
-     LassoNode *response;
-     xmlChar *id, *time, content;
+lasso_authn_response_new(char *providerID,
+			 LassoNode *request)
+{
+  LassoNode *response;
+  xmlChar *id, *time, content;
+  
+  g_return_val_if_fail(providerID != NULL, NULL);
+  
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
+  
+  /* ResponseID */
+  id = lasso_build_unique_id(32);
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					       (const xmlChar *)id);
+  xmlFree(id);
+  
+  /* MajorVersion */
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lassoLibMajorVersion);     
+  
+  /* MinorVersion */
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
+						 lassoLibMinorVersion);
 
-     g_return_val_if_fail(providerID != NULL, NULL);
-
-     response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
-
-     /* ResponseID */
-     id = lasso_build_unique_id(32);
-     lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  (const xmlChar *)id);
-     xmlFree(id);
-
-     /* MajorVersion */
-     lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						    lassoLibMajorVersion);     
-
-     /* MinorVersion */
-     lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
-						    lassoLibMinorVersion);
-
-     /* IssueInstance */
-     time = lasso_get_current_time();
-     lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						     (const xmlChar *)time);
-     xmlFree(time);
-     
-     /* ProviderID */
-     lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response),
-					     providerID);
-
-     /* Status Code */
-     lasso_authn_response_set_status(response, lassoSamlStatusCodeSuccess);
-
-     return(response);
+  /* IssueInstance */
+  time = lasso_get_current_time();
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  (const xmlChar *)time);
+  xmlFree(time);
+  
+  /* ProviderID */
+  lasso_lib_authn_response_set_providerID(LASSO_LIB_AUTHN_RESPONSE(response),
+					  providerID);
+  
+  /* Status Code */
+  //lasso_authn_response_set_status(response, lassoSamlStatusCodeSuccess);
+  
+  return(response);
 }
 
 LassoNode*

@@ -302,10 +302,11 @@ lasso_authn_request_new_from_query(gchar *query)
     lasso_lib_request_authn_context_set_authnContextComparison(LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context),
 							       str);
   }
-  if (authn_context != NULL)
+  if (authn_context != NULL) {
     lasso_lib_authn_request_set_requestAuthnContext(LASSO_LIB_AUTHN_REQUEST(request),
 						    LASSO_LIB_REQUEST_AUTHN_CONTEXT(authn_context));
-  lasso_node_destroy(authn_context);
+    lasso_node_destroy(authn_context);
+  }
 
   /* RelayState */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
