@@ -33,7 +33,7 @@ void lasso_ds_signature_sign(LassoDsSignature *node,
 			     const xmlChar *key_file,
 			     const xmlChar *cert_file)
 {
-  xmlNodePtr signature = LASSO_NODE_GET_CLASS(node)->get_xmlNode(node);
+  xmlNodePtr signature = LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node));
   xmlSecDSigCtxPtr dsig_ctx = NULL;
 
   /* create signature context */
