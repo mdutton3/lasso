@@ -38,6 +38,7 @@
 #include "xml/py_saml_assertion.h"
 #include "xml/py_saml_authentication_statement.h"
 #include "xml/py_saml_name_identifier.h"
+#include "xml/py_samlp_response.h"
 
 #include "protocols/py_authn_request.h"
 #include "protocols/py_authn_response.h"
@@ -63,12 +64,12 @@ static PyMethodDef lasso_methods[] = {
   /* xml */
   /* py_xml.h */
   {"node_dump",             node_dump,             METH_VARARGS},
+  {"node_export_to_query",  node_export_to_query,  METH_VARARGS},
+  {"node_export_to_soap",   node_export_to_soap,   METH_VARARGS},
   {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
   {"node_get_child",        node_get_child,        METH_VARARGS},
   {"node_get_content",      node_get_content,      METH_VARARGS},
   {"node_unref",            node_unref,            METH_VARARGS},
-  {"node_url_encode",       node_url_encode,       METH_VARARGS},
-  {"node_soap_envelop",     node_soap_envelop,     METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
   /* py_lib_authentication_statement.h */
@@ -111,6 +112,7 @@ static PyMethodDef lasso_methods[] = {
   /* py_saml_assertion.h */
   {"saml_assertion_new",                         saml_assertion_new,                         METH_VARARGS},
   {"saml_assertion_add_authenticationStatement", saml_assertion_add_authenticationStatement, METH_VARARGS},
+  {"saml_assertion_set_signature",               saml_assertion_set_signature,               METH_VARARGS},
 
   /* py_saml_authentication_statement.h */
   {"saml_authentication_statement_new", saml_authentication_statement_new, METH_VARARGS},
@@ -119,6 +121,10 @@ static PyMethodDef lasso_methods[] = {
   {"saml_name_identifier_new",               saml_name_identifier_new,               METH_VARARGS},
   {"saml_name_identifier_set_format",        saml_name_identifier_set_format,        METH_VARARGS},
   {"saml_name_identifier_set_nameQualifier", saml_name_identifier_set_nameQualifier, METH_VARARGS},
+
+  /* py_samlp_response.h */
+  {"samlp_response_new",           samlp_response_new,           METH_VARARGS},
+  {"samlp_response_add_assertion", samlp_response_add_assertion, METH_VARARGS},
 
   /* protocols */
   /* py_authn_request.h */
@@ -131,7 +137,7 @@ static PyMethodDef lasso_methods[] = {
   {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
   {"authn_response_new_from_dump",                 authn_response_new_from_dump,                 METH_VARARGS},
   {"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
-  {"authn_response_add_assertion",                 authn_response_add_assertion,                 METH_VARARGS},
+/*   {"authn_response_add_assertion",                 authn_response_add_assertion,                 METH_VARARGS}, */
   {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
   {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},
   {"authn_response_verify_signature",              authn_response_verify_signature,              METH_VARARGS},
