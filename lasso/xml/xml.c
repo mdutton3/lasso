@@ -696,6 +696,8 @@ lasso_node_sign_signature_tmpl(LassoNode     *node,
 
   class = LASSO_NODE_GET_CLASS(node);
   class->sign_signature_tmpl(node, private_key_file, certificate_file);
+
+  return 0;
 }
 
 /*****************************************************************************/
