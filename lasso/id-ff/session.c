@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/environs/session.h>
+#include <lasso/id-ff/session.h>
 #include <lasso/xml/errors.h>
 #include <lasso/lasso_config.h>
 #include <libxml/tree.h>

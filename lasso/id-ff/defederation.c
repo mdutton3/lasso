@@ -27,7 +27,7 @@
 
 #include <glib/gprintf.h>
 
-#include <lasso/environs/defederation.h>
+#include <lasso/id-ff/defederation.h>
 #include <lasso/xml/errors.h>
 
 struct _LassoDefederationPrivate

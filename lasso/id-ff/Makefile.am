@@ -1,4 +1,4 @@
-liblassoincludedir = $(includedir)/lasso/environs
+liblassoincludedir = $(includedir)/lasso/id-ff
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -7,9 +7,9 @@ INCLUDES = \
 	$(LASSO_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
-noinst_LTLIBRARIES = liblasso-environs.la
+noinst_LTLIBRARIES = liblasso-id-ff.la
 
-liblasso_environs_la_SOURCES = \
+liblasso_id_ff_la_SOURCES = \
 	defederation.c \
 	federation.c \
 	identity.c \

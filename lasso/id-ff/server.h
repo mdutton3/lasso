@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/environs/provider.h>
+#include <lasso/id-ff/provider.h>
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
 #define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))

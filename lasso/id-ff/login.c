@@ -31,8 +31,8 @@
 
 #include <lasso/xml/errors.h>
 
-#include <lasso/environs/login.h>
-#include <lasso/environs/provider.h>
+#include <lasso/id-ff/login.h>
+#include <lasso/id-ff/provider.h>
 
 struct _LassoLoginPrivate
 {

@@ -28,7 +28,7 @@
 #include <xmlsec/base64.h>
 
 #include <lasso/xml/errors.h>
-#include <lasso/environs/server.h>
+#include <lasso/id-ff/server.h>
 
 #include <lasso/lasso_config.h>
 

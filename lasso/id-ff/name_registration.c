@@ -26,7 +26,7 @@
 #include <string.h>
 #include <glib/gprintf.h>
 
-#include <lasso/environs/name_registration.h>
+#include <lasso/id-ff/name_registration.h>
 
 #include <lasso/xml/errors.h>
 

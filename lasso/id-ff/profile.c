@@ -34,7 +34,7 @@
 #include <lasso/xml/samlp_request.h>
 #include <lasso/xml/lib_authn_response.h>
 #include <lasso/xml/lib_status_response.h>
-#include <lasso/environs/profile.h>
+#include <lasso/id-ff/profile.h>
 
 #include <lasso/lasso_config.h>
 

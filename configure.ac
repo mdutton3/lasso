@@ -657,7 +657,7 @@ docs/reference/Makefile
 docs/tutorial/Makefile
 java/Makefile
 lasso/Makefile
-lasso/environs/Makefile
+lasso/id-ff/Makefile
 lasso/xml/Makefile
 php/Makefile
 php/examples/Makefile

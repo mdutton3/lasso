@@ -1,4 +1,4 @@
-SUBDIRS = xml environs
+SUBDIRS = xml id-ff
 
 liblassoincludedir = $(includedir)/lasso
 
@@ -23,7 +23,7 @@ liblasso_la_SOURCES = lasso.c
 if MINGW
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
-	$(top_builddir)/lasso/environs/liblasso-environs.la \
+	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(LASSO_LIBS) \
 	lasso.rc.lo
 # Just make damn sure the ABI stays the same between
@@ -34,7 +34,7 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@ \
 else
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
-	$(top_builddir)/lasso/environs/liblasso-environs.la \
+	$(top_builddir)/lasso/id-ff/liblasso-id-ff.la \
 	$(LASSO_LIBS)
 # Just make damn sure the ABI stays the same between
 # upgrades.

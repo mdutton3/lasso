@@ -27,7 +27,7 @@
 
 #include <glib/gprintf.h>
 
-#include <lasso/environs/logout.h>
+#include <lasso/id-ff/logout.h>
 #include <lasso/xml/errors.h>
 
 struct _LassoLogoutPrivate

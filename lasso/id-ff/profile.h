@@ -34,9 +34,9 @@ extern "C" {
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
 
-#include <lasso/environs/server.h>
-#include <lasso/environs/identity.h>
-#include <lasso/environs/session.h>
+#include <lasso/id-ff/server.h>
+#include <lasso/id-ff/identity.h>
+#include <lasso/id-ff/session.h>
 
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())
 #define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))

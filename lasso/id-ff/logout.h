@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/environs/profile.h>
+#include <lasso/id-ff/profile.h>
 #include <lasso/xml/lib_logout_request.h>
 #include <lasso/xml/lib_logout_response.h>
 
