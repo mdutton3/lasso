@@ -52,7 +52,7 @@ idplogin = lasso.Login.new(server, None)
 # get query part in msg_url
 authn_request_msg = string.split(splogin.msg_url, '?')[1]
 ret = idplogin.init_from_authn_request_msg(authn_request_msg,
-                                           lasso.httpMethodRedirect);
+                                           lasso.httpMethodRedirect)
 
 print "ProtocolProfile =", idplogin.protocolProfile
 
