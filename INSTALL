@@ -25,7 +25,7 @@ reconfiguring, and a file 'config.log' containing compiler output
 
 If you need to do unusual things to compile the package, please try
 to figure out how 'configure' could check whether to do them, and mail
-diffs or instructions to the address given in the 'README' so they can
+diffs or instructions to the address given in the README_ so they can
 be considered for the next release.  If at some point 'config.cache'
 contains results you don't want to keep, you may remove or edit it.
 
@@ -112,24 +112,41 @@ options like '--bindir=PATH' to specify different values for particular
 kinds of files.  Run 'configure --help' for a list of the directories
 you can set and what kinds of files go in them.
 
-If the package supports it, you can cause programs to be installed
-with an extra prefix or suffix on their names by giving 'configure' the
-option '--program-prefix=PREFIX' or '--program-suffix=SUFFIX'.
+You can cause programs to be installed with an extra prefix or suffix
+on their names by giving 'configure' the option
+'--program-prefix=PREFIX' or '--program-suffix=SUFFIX'.
 
 Optional Features
 =================
 
-Some packages pay attention to '--enable-FEATURE' options to
-'configure', where FEATURE indicates an optional part of the package.
-They may also pay attention to '--with-PACKAGE' options, where PACKAGE
-is something like 'gnu-as' or 'x' (for the X Window System).  The
-'README' should mention any '--enable-' and '--with-' options that the
-package recognizes.
+These package pays attention to '--enable-FEATURE' or '--disable-FEATURE'
+options to 'configure', where FEATURE indicates an optional part of the
+package.  It also pays attention to '--with-PACKAGE' options, where
+PACKAGE is something like 'gnu-ld' or 'pic'.
 
-For packages that use the X Window System, 'configure' can usually
-find the X include and library files automatically, but if it doesn't,
-you can use the 'configure' options '--x-includes=DIR' and
-'--x-libraries=DIR' to specify their locations.
+'configure' recognizes the following FEATUREs.
+
+coldfusion
+    Build Lasso ColdFusion binding (enabled by default).
+
+debugging
+    Display debugging messages in 'stderr'.
+
+gtk-doc
+    Build Lasso API reference manual using gtk-doc system (enabled by
+    default if gtk-doc is installed).
+
+java
+    Build Lasso Java binding (enabled by default).
+
+php
+    Build Lasso PHP binding (enabled by default).
+
+python
+    Build Lasso Python binding (enabled by default).
+
+tests
+    Build unit test suite (enabled by default)
 
 Specifying the System Type
 ==========================
