@@ -181,13 +181,13 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpContext)
         idpLogoutContext = lasso.Logout.new(idpContext, lasso.providerTypeIdp)
         self.failUnlessEqual(
-            idpLogoutContext.load_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+            idpLogoutContext.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
         self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
         self.failUnless(idpIdentityContextDump)
         self.failUnlessEqual(idpLogoutContext.set_identity_from_dump(idpIdentityContextDump), 0)
         self.failUnless(idpSessionContextDump)
         self.failUnlessEqual(idpLogoutContext.set_session_from_dump(idpSessionContextDump), 0)
-        self.failUnlessEqual(idpLogoutContext.process_request(), 0)
+        self.failUnlessEqual(idpLogoutContext.validate_request(), 0)
         idpIdentityContext = idpLogoutContext.get_identity()
         self.failUnless(idpIdentityContext)
         idpIdentityContextDump = idpIdentityContext.dump()
@@ -327,7 +327,7 @@ CGb/HRUx5EPgbIy52G224ITlQWadD1Z6y4PFTowDjkaRVerjUVRJZ/a5QVNsI4Du
         idpLogoutContext = lasso.Logout.new(idpContext, lasso.providerTypeIdp)
         self.failUnless(idpLogoutContext)
         self.failUnlessEqual(
-            idpLogoutContext.load_request_msg(soapRequestMessage, lasso.httpMethodSoap), 0)
+            idpLogoutContext.process_request_msg(soapRequestMessage, lasso.httpMethodSoap), 0)
         self.failUnless(idpLogoutContext.nameIdentifier)
         idpIdentityContextDump = """\
 <LassoIdentity><LassoFederations><LassoFederation RemoteProviderID="https://service-provider:2003/liberty-alliance/metadata"><LassoLocalNameIdentifier><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://identity-provider:1998/liberty-alliance/metadata" Format="urn:liberty:iff:nameid:federated">QkM3M0M4MTYxREQzNEYwNEI4M0I4MUVERDUyQUUyMjA=</saml:NameIdentifier></LassoLocalNameIdentifier></LassoFederation></LassoFederations></LassoIdentity>
@@ -379,7 +379,7 @@ jFL7NhzvY02aBTLhm22YOLYnlycKm64NGne+siooDCi5tel2/vcx+e+btX9x</X509Certificate>
         # " <-- Trick for Emacs Python mode.
         self.failUnlessEqual(idpLogoutContext.set_session_from_dump(idpSessionContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.get_session().dump(), idpSessionContextDump)
-        self.failUnlessEqual(idpLogoutContext.process_request(), 0)
+        self.failUnlessEqual(idpLogoutContext.validate_request(), 0)
         self.failIf(idpLogoutContext.is_identity_dirty())
         self.failUnless(idpLogoutContext.is_session_dirty())
         idpSessionContextDump = idpLogoutContext.get_session().dump()
