@@ -109,9 +109,11 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
+        self.failIf(spSite.webSessions)
+        self.failIf(idpSite.webSessions)
 
     def test02(self):
-        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done twice."""
+        """Service provider initiated login using HTTP redirect and service provider initiated logout using SOAP. Done three times."""
 
         internet = Internet()
         idpSite = self.generateIdpSite(internet)
@@ -126,11 +128,26 @@ class LoginTestCase(unittest.TestCase):
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
-        # Once again, but now the principal already has a federation between spSite and idpSite.
+        # Once again. Now the principal already has a federation between spSite and idpSite.
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 200)
+
+        # Once again. Do a new passive login between normal login and logout.
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        del principal.keyring[idpSite.url] # Ensure identity provider will be really passive.
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+
+        # Once again, with isPassive and the user having no web session.
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
 
     def test03(self):
         """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider. Then logout, with same problem."""
@@ -163,6 +180,21 @@ class LoginTestCase(unittest.TestCase):
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
         self.failUnlessEqual(httpResponse.statusCode, 401)
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+
+    def test05(self):
+        """Service provider initiated login using HTTP redirect with isPassive for a user without federation yet."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, 'Romain Chantereau')
+        principal.keyring[idpSite.url] = 'Chantereau'
+        principal.keyring[spSite.url] = 'Romain'
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(
+            principal, 'GET', '/loginUsingRedirect?isPassive=1'))
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
 ##     def test06(self):

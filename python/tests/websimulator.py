@@ -43,6 +43,35 @@ class HttpRequest(object):
         webSite = self.client.internet.getWebSite(self.url)
         return webSite.doHttpRequest(self)
 
+    def getQueryBoolean(self, name, default = 'none'):
+        try:
+            fieldValue = self.getQueryField(name)
+        except KeyError:
+            if default == 'none':
+                raise
+            return default
+        return fieldValue.lower not in ('', '0', 'false')
+
+    def getQuery(self):
+        splitedUrl = self.url.split('?', 1)
+        if len(splitedUrl) > 1:
+            return splitedUrl[1]
+        else:
+            return ''
+
+    def getQueryField(self, name, default = 'none'):
+        query = self.query
+        if query:
+            for field in self.query.split('&'):
+                fieldName, fieldValue = field.split('=')
+                if name == fieldName:
+                    return fieldValue
+        if default == 'none':
+            raise KeyError(name)
+        return default
+
+    query = property(getQuery)
+
 
 class HttpResponse(object):
     body = None
@@ -194,9 +223,6 @@ class WebSite(WebClient, Simulation):
         methodName = url.split('?', 1)[0].replace('/', '')
         method = getattr(self, methodName)
         return method(httpRequest)
-
-    def extractQueryFromUrl(self, url):
-        return url.split('?', 1)[1]
 
     def getIdentityDump(self, principal):
         webSession = self.getWebSession(principal)

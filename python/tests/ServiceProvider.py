@@ -37,8 +37,7 @@ class ServiceProvider(Provider):
     def assertionConsumer(self, httpRequest):
         server = self.getServer()
         login = lasso.Login.new(server)
-        responseQuery = self.extractQueryFromUrl(httpRequest.url)
-        login.init_request(responseQuery, lasso.httpMethodRedirect)
+        login.init_request(httpRequest.query, lasso.httpMethodRedirect)
         login.build_request_msg()
 
         soapEndpoint = login.msg_url
@@ -102,13 +101,15 @@ class ServiceProvider(Provider):
             userAuthenticated = webUserId in self.webUsers
             if not userAuthenticated:
                 return HttpResponse(401, 'Access Unauthorized: User has no account.')
-            webSession.webUserId = webUserId
             webUser = self.webUsers[webUserId]
+
+        webSession.webUserId = webUser.uniqueId
 
         # Store the updated identity dump and session dump.
         if login.is_identity_dirty():
             webUser.identityDump = identityDump
         webSession.sessionDump = sessionDump
+
         self.webUserIdsByNameIdentifier[nameIdentifier] = webUser.uniqueId
         self.webSessionIdsByNameIdentifier[nameIdentifier] = webSession.uniqueId
 
@@ -119,7 +120,7 @@ class ServiceProvider(Provider):
         login = lasso.Login.new(server)
         login.init_authn_request(self.idpSite.providerId)
         self.failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
-        login.request.set_isPassive(False)
+        login.request.set_isPassive(httpRequest.getQueryBoolean('isPassive', False))
         login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
         login.request.set_consent(lasso.libConsentObtained)
         relayState = 'fake'
@@ -164,8 +165,14 @@ class ServiceProvider(Provider):
         self.failUnless(logout.is_session_dirty())
         session = logout.get_session()
         if session is None:
+            # The user is no more authenticated on any identity provider. Log him out.
             del webSession.sessionDump
+            del webSession.webUserId
+            # We also delete the session, but it is not mandantory, since the user is logged out
+            # anyway.
+            del self.webSessions[webSession.uniqueId] 
         else:
+            # The user is still logged in on some other identity providers.
             sessionDump = session.dump()
             self.failUnless(sessionDump)
             webSession.sessionDump = sessionDump

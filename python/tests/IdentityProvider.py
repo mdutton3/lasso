@@ -41,17 +41,22 @@ class IdentityProvider(Provider):
     def singleSignOn(self, httpRequest):
         server = self.getServer()
         login = lasso.Login.new(server)
-        identityDump = self.getIdentityDump(httpRequest.client)
-        if identityDump is not None:
-            login.set_identity_from_dump(identityDump)
-        sessionDump = self.getSessionDump(httpRequest.client)
-        if sessionDump is not None:
-            login.set_session_from_dump(sessionDump)
-        authnRequestQuery = self.extractQueryFromUrl(httpRequest.url)
-        login.init_from_authn_request_msg(authnRequestQuery, lasso.httpMethodRedirect)
-
-        self.failUnless(login.must_authenticate()) # FIXME: To improve.
         webSession = self.getWebSession(httpRequest.client)
+        webUser = None
+        if webSession is not None:
+            if webSession.sessionDump is not None:
+                login.set_session_from_dump(webSession.sessionDump)
+            webUser = self.getWebUserFromWebSession(webSession)
+            if webUser is not None and webUser.identityDump is not None:
+                login.set_identity_from_dump(webUser.identityDump)
+        login.init_from_authn_request_msg(httpRequest.query, lasso.httpMethodRedirect)
+
+        if not login.must_authenticate():
+            userAuthenticated = webUser is not None
+            authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+            return self.singleSignOn_part2(
+                httpRequest, login, webSession, webUser, userAuthenticated, authenticationMethod)
+
         if webSession is None:
             webSession = self.createWebSession(httpRequest.client)
         webSession.loginDump = login.dump()
@@ -70,18 +75,22 @@ class IdentityProvider(Provider):
         del webSession.loginDump
         login = lasso.Login.new_from_dump(server, loginDump)
         # Set identity & session in login, because loginDump doesn't contain them.
-        identityDump = self.getIdentityDump(httpRequest.client)
-        if identityDump is not None:
-            login.set_identity_from_dump(identityDump)
-        sessionDump = self.getSessionDump(httpRequest.client)
-        if sessionDump is not None:
-            login.set_session_from_dump(sessionDump)
+        if webSession.sessionDump is not None:
+            login.set_session_from_dump(webSession.sessionDump)
+        webUser = self.getWebUserFromWebSession(webSession)
+        if webUser is not None and webUser.identityDump is not None:
+            login.set_identity_from_dump(webUser.identityDump)
+
+        return self.singleSignOn_part2(
+            httpRequest, login, webSession, webUser, userAuthenticated, authenticationMethod)
+
+    def singleSignOn_part2(self, httpRequest, login, webSession, webUser, userAuthenticated,
+                           authenticationMethod):
         self.failUnlessEqual(login.protocolProfile, lasso.loginProtocolProfileBrwsArt) # FIXME
         login.build_artifact_msg(
             userAuthenticated, authenticationMethod, 'FIXME: reauthenticateOnOrAfter',
             lasso.httpMethodRedirect)
         if userAuthenticated:
-            webUser = self.getWebUserFromWebSession(webSession)
             if login.is_identity_dirty():
                 identityDump = login.get_identity().dump()
                 self.failUnless(identityDump)
@@ -151,13 +160,15 @@ class IdentityProvider(Provider):
             identityDump = identity.dump()
             self.failUnless(identityDump)
             self.failUnless(logout.is_session_dirty())
-            session = logout.get_session()
-            if session is None:
-                del webSession.sessionDump
-            else:
-                sessionDump = session.dump()
-                self.failUnless(sessionDump)
-                webSession.sessionDump = sessionDump
+
+            # Log the user out.
+            # It is done before logout from other service providers, since we don't want to
+            # accept passive login connections inbetween.
+            del webSession.sessionDump
+            del webSession.webUserId
+            # We also delete the session, but it is not mandantory, since the user is logged out
+            # anyway.
+            del self.webSessions[webSession.uniqueId] 
             nameIdentifier = logout.nameIdentifier
             self.failUnless(nameIdentifier)
             del self.webSessionIdsByNameIdentifier[nameIdentifier]
