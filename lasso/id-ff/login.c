@@ -1386,10 +1386,11 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
 					      const gchar *relayState)
 {
   LassoNode *request;
+  gchar *first_providerID;
   gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+  /* if remote_providerID is NULL, get first providerID in session */
   /* relayState can be NULL */
 
   /* build a fake/dummy lib:AuthnRequest */
@@ -1406,9 +1407,16 @@ lasso_login_process_without_authn_request_msg(LassoLogin  *login,
 					   relayState);
   }
   LASSO_PROFILE(login)->request = request;
-
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
-  LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+
+  if (remote_providerID == NULL) {
+    first_providerID = lasso_session_get_first_providerID(LASSO_PROFILE(login)->session);
+    LASSO_PROFILE(login)->remote_providerID = first_providerID;
+  }
+  else {
+    LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+  }
+
   login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
 
   return ret;
