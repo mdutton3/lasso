@@ -91,8 +91,8 @@ class LoginTestCase(unittest.TestCase):
 ##     def tearDown(self):
 ##         pass
 
-    def test01_generateServers(self):
-        """Service provider initiated login using HTTP redirect ans service provider initiated
+    def test01(self):
+        """Service provider initiated login using HTTP redirect and service provider initiated
         logout using SOAP."""
 
         internet = Internet()
@@ -102,6 +102,30 @@ class LoginTestCase(unittest.TestCase):
         principal = Principal(internet, "Romain Chantereau")
         principal.keyring[idpSite.url] = "Chantereau"
         principal.keyring[spSite.url] = "Romain"
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+
+    def test02(self):
+        """Service provider initiated login using HTTP redirect and service provider initiated
+        logout using SOAP."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, "Romain Chantereau")
+        principal.keyring[idpSite.url] = "Chantereau"
+        principal.keyring[spSite.url] = "Romain"
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
+        self.failUnlessEqual(httpResponse.statusCode, 200)
+
+        # Once again, but now the principal already has a federation between spSite and idpSite.
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/loginUsingRedirect"))
         self.failUnlessEqual(httpResponse.statusCode, 200)
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, "GET", "/logoutUsingSoap"))
