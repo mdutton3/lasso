@@ -584,7 +584,7 @@ gint lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, gchar *resp
 /* protocols/auth_response_envelope.h */
 /* environs/login.h */
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_FEDERATION_TERMINATION (lasso_federation_termination_get_type())
@@ -629,7 +629,7 @@ gint lasso_federation_termination_validate_notification    (LassoFederationTermi
 
 
   
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING (lasso_name_identifier_mapping_get_type())
@@ -679,7 +679,7 @@ gint                        lasso_name_identifier_mapping_process_response_msg (
 											     lassoHttpMethod             response_method);
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_REGISTER_NAME_IDENTIFIER (lasso_register_name_identifier_get_type())
@@ -733,7 +733,7 @@ gint            lasso_register_name_identifier_process_response_msg  (LassoRegis
   
 
 
-/* $Id$ 
+/*
  */
 
 typedef enum {
@@ -748,7 +748,7 @@ int lasso_check_version_ext(int major,
 
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_AUTHN_REQUEST_ENVELOPE (lasso_authn_request_envelope_get_type())
@@ -785,7 +785,7 @@ LassoNode* lasso_authn_request_envelope_get_authnRequest (LassoAuthnRequestEnvel
 LassoNode* lasso_authn_request_envelope_new_from_export  (gchar               *buffer,
 								       lassoNodeExportType  export_type);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_AUTHN_RESPONSE (lasso_authn_response_get_type())
@@ -819,7 +819,7 @@ LassoNode* lasso_authn_response_new_from_export               (xmlChar          
 
 xmlChar*   lasso_authn_response_get_status                    (LassoAuthnResponse *response);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE (lasso_authn_response_envelope_get_type())
@@ -858,7 +858,7 @@ LassoNode* lasso_authn_response_envelope_get_authnResponse               (LassoA
 LassoNode* lasso_authn_response_envelope_new_from_export                 (gchar               *buffer,
 										       lassoNodeExportType  export_type);
 
-/* $Id$
+/*
  */
 #define LASSO_TYPE_FEDERATION (lasso_federation_get_type())
 #define LASSO_FEDERATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_FEDERATION, LassoFederation))
@@ -922,7 +922,7 @@ void             lasso_federation_set_remote_nameIdentifier    (LassoFederation 
 gboolean         lasso_federation_verify_nameIdentifier        (LassoFederation *federation,
 									     LassoNode       *nameIdentifier);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION (lasso_federation_termination_notification_get_type())
 #define LASSO_FEDERATION_TERMINATION_NOTIFICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, LassoFederationTerminationNotification))
@@ -960,7 +960,7 @@ LassoNode* lasso_federation_termination_notification_new               (const xm
 LassoNode* lasso_federation_termination_notification_new_from_export   (const xmlChar       *export,
 										     lassoNodeExportType  export_type);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LOGOUT_REQUEST (lasso_logout_request_get_type())
 #define LASSO_LOGOUT_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT_REQUEST, LassoLogoutRequest))
@@ -993,7 +993,7 @@ LassoNode* lasso_logout_request_new             (gchar *providerID,
 LassoNode* lasso_logout_request_new_from_export (gchar               *buffer,
 							      lassoNodeExportType  export_type);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LOGOUT_RESPONSE (lasso_logout_response_get_type())
 #define LASSO_LOGOUT_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT_RESPONSE, LassoLogoutResponse))
@@ -1030,7 +1030,7 @@ LassoNode* lasso_logout_response_new_from_request_export (gchar               *b
 								       gchar               *providerID,
 								       gchar               *statusCodeValue);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST (lasso_name_identifier_mapping_request_get_type())
 #define LASSO_NAME_IDENTIFIER_MAPPING_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, LassoNameIdentifierMappingRequest))
@@ -1066,7 +1066,7 @@ LassoNode *lasso_name_identifier_mapping_request_new               (const xmlCha
 LassoNode *lasso_name_identifier_mapping_request_new_from_query    (const xmlChar *query);
 LassoNode *lasso_name_identifier_mapping_request_new_from_soap     (const xmlChar *buffer);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE (lasso_name_identifier_mapping_response_get_type())
@@ -1109,7 +1109,7 @@ LassoNode *lasso_name_identifier_mapping_response_new_from_request_query (const 
 										       const xmlChar *providerID,
 										       const xmlChar *statusCodeValue);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_PROVIDER (lasso_provider_get_type())
 #define LASSO_PROVIDER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROVIDER, LassoProvider))
@@ -1226,7 +1226,7 @@ void           lasso_provider_set_public_key                                    
 
 void           lasso_provider_set_ca_certificate                                   (LassoProvider *provider,
 												 gchar         *ca_certificate);
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_REGISTER_NAME_IDENTIFIER_REQUEST (lasso_register_name_identifier_request_get_type())
@@ -1272,7 +1272,7 @@ LassoNode* lasso_register_name_identifier_request_new_from_export       (gchar  
 
 void lasso_register_name_identifier_request_rename_attributes_for_query (LassoRegisterNameIdentifierRequest *request);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE (lasso_register_name_identifier_response_get_type())
@@ -1315,7 +1315,7 @@ LassoNode*  lasso_register_name_identifier_response_new_from_request_export (gch
 											  gchar               *providerID,
 											  gchar               *statusCodeValue);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_REQUEST (lasso_request_get_type())
 #define LASSO_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_REQUEST, LassoRequest))
@@ -1345,7 +1345,7 @@ LassoNode* lasso_request_new             (const xmlChar *assertionArtifact);
 LassoNode* lasso_request_new_from_export (gchar               *buffer,
 						       lassoNodeExportType  export_type);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_RESPONSE (lasso_response_get_type())
 #define LASSO_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_RESPONSE, LassoResponse))
@@ -1375,7 +1375,7 @@ LassoNode* lasso_response_new             (void);
 LassoNode* lasso_response_new_from_export (xmlChar             *buffer,
 							lassoNodeExportType  export_type);
 
-/* $Id$
+/*
  */
 
 #define LASSO_TYPE_DS_SIGNATURE (lasso_ds_signature_get_type())
@@ -1407,7 +1407,7 @@ gint lasso_ds_signature_sign (LassoDsSignature  *node,
 					   const xmlChar     *certificate_file,
 					   GError           **err);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_XML_ERROR_NODE_NOTFOUND  -1
@@ -1434,7 +1434,7 @@ gint lasso_ds_signature_sign (LassoDsSignature  *node,
 #define LASSO_ERR_ERROR_CHECK_FAILED  -666
 
 /*const char* lasso_strerror(int error_code);*/
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_ASSERTION (lasso_lib_assertion_get_type())
 #define LASSO_LIB_ASSERTION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_ASSERTION, LassoLibAssertion))
@@ -1462,7 +1462,7 @@ LassoNode* lasso_lib_assertion_new(void);
 void lasso_lib_assertion_set_inResponseTo (LassoLibAssertion *,
 							const xmlChar *);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT (lasso_lib_authentication_statement_get_type())
@@ -1500,7 +1500,7 @@ void lasso_lib_authentication_statement_set_reauthenticateOnOrAfter (LassoLibAut
 void lasso_lib_authentication_statement_set_sessionIndex            (LassoLibAuthenticationStatement *node,
 										  const xmlChar *sessionIndex);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_AUTHN_CONTEXT (lasso_lib_authn_context_get_type())
@@ -1533,7 +1533,7 @@ void lasso_lib_authn_context_set_authnContextStatementRef (LassoLibAuthnContext 
 									const xmlChar *authnContextStatementRef);
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE (lasso_lib_authn_request_envelope_get_type())
@@ -1585,7 +1585,7 @@ void       lasso_lib_authn_request_envelope_set_idpList      (LassoLibAuthnReque
 void       lasso_lib_authn_request_envelope_set_isPassive    (LassoLibAuthnRequestEnvelope *node,
 									   gboolean                      isPassive);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
 #define LASSO_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponse))
@@ -1620,7 +1620,7 @@ void lasso_lib_authn_response_set_providerID (LassoLibAuthnResponse *,
 void lasso_lib_authn_response_set_relayState (LassoLibAuthnResponse *,
 							   const xmlChar *);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE (lasso_lib_authn_response_envelope_get_type())
 #define LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE, LassoLibAuthnResponseEnvelope))
@@ -1659,7 +1659,7 @@ void       lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL (La
 											   const xmlChar *url);
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION (lasso_lib_federation_termination_notification_get_type())
@@ -1699,7 +1699,7 @@ void lasso_lib_federation_termination_notification_set_providerID     (LassoLibF
 void lasso_lib_federation_termination_notification_set_nameIdentifier (LassoLibFederationTerminationNotification *,
 										    LassoSamlNameIdentifier *);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_IDP_ENTRIES (lasso_lib_idp_entries_get_type())
@@ -1727,7 +1727,7 @@ LassoNode* lasso_lib_idp_entries_new(void);
 
 void lasso_lib_idp_entries_add_idpEntry (LassoLibIDPEntries *node,
 						      LassoLibIDPEntry *idpEntry);
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_IDP_ENTRY (lasso_lib_idp_entry_get_type())
 #define LASSO_LIB_IDP_ENTRY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_IDP_ENTRY, LassoLibIDPEntry))
@@ -1761,7 +1761,7 @@ void lasso_lib_idp_entry_set_providerName (LassoLibIDPEntry *node,
 void lasso_lib_idp_entry_set_loc          (LassoLibIDPEntry *node,
 							const xmlChar *loc);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_IDP_LIST (lasso_lib_idp_list_get_type())
@@ -1792,7 +1792,7 @@ void lasso_lib_idp_list_set_getComplete (LassoLibIDPList *node,
 void lasso_lib_idp_list_set_idpEntries  (LassoLibIDPList *node,
 						      LassoLibIDPEntries *idpEntries);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_IDP_PROVIDED_NAME_IDENTIFIER (lasso_lib_idp_provided_name_identifier_get_type())
 #define LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_IDP_PROVIDED_NAME_IDENTIFIER, LassoLibIDPProvidedNameIdentifier))
@@ -1821,7 +1821,7 @@ typedef struct _LassoLibIDPProvidedNameIdentifier {
 GType lasso_lib_idp_provided_name_identifier_get_type(void);
 LassoNode* lasso_lib_idp_provided_name_identifier_new(const xmlChar *content);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_LOGOUT_REQUEST (lasso_lib_logout_request_get_type())
@@ -1863,7 +1863,7 @@ void lasso_lib_logout_request_set_relayState     (LassoLibLogoutRequest *,
 void lasso_lib_logout_request_set_sessionIndex   (LassoLibLogoutRequest *,
 							       const xmlChar *);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_LOGOUT_RESPONSE (lasso_lib_logout_response_get_type())
@@ -1890,7 +1890,7 @@ typedef struct _LassoLibLogoutResponse {
 GType lasso_lib_logout_response_get_type(void);
 LassoNode* lasso_lib_logout_response_new(void);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_REQUEST (lasso_lib_name_identifier_mapping_request_get_type())
@@ -1930,7 +1930,7 @@ void lasso_lib_name_identifier_mapping_request_set_providerID     (LassoLibNameI
 void lasso_lib_name_identifier_mapping_request_set_nameIdentifier (LassoLibNameIdentifierMappingRequest *,
 										LassoSamlNameIdentifier *);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE (lasso_lib_name_identifier_mapping_response_get_type())
 #define LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, LassoLibNameIdentifierMappingResponse))
@@ -1968,7 +1968,7 @@ void lasso_lib_name_identifier_mapping_response_set_providerID     (LassoLibName
 
 void lasso_lib_name_identifier_mapping_response_set_status         (LassoLibNameIdentifierMappingResponse *node,
 										 LassoSamlpStatus *status);
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_OLD_PROVIDED_NAME_IDENTIFIER (lasso_lib_old_provided_name_identifier_get_type())
 #define LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_OLD_PROVIDED_NAME_IDENTIFIER, LassoLibOLDProvidedNameIdentifier))
@@ -1997,7 +1997,7 @@ typedef struct _LassoLibOLDProvidedNameIdentifier {
 GType lasso_lib_old_provided_name_identifier_get_type(void);
 LassoNode* lasso_lib_old_provided_name_identifier_new(const xmlChar *content);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST (lasso_lib_register_name_identifier_request_get_type())
 #define LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST, LassoLibRegisterNameIdentifierRequest))
@@ -2042,7 +2042,7 @@ void lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier (L
 void lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier  (LassoLibRegisterNameIdentifierRequest *,
 											    LassoLibSPProvidedNameIdentifier *);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE (lasso_lib_register_name_identifier_response_get_type())
 #define LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, LassoLibRegisterNameIdentifierResponse))
@@ -2072,7 +2072,7 @@ typedef struct _LassoLibRegisterNameIdentifierResponse {
 GType lasso_lib_register_name_identifier_response_get_type(void);
 LassoNode* lasso_lib_register_name_identifier_response_new(void);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT (lasso_lib_request_authn_context_get_type())
@@ -2112,7 +2112,7 @@ void lasso_lib_request_authn_context_add_authnContextStatementRef (LassoLibReque
 void lasso_lib_request_authn_context_set_authnContextComparison   (LassoLibRequestAuthnContext *node,
 										const xmlChar *authnContextComparison);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_SCOPING (lasso_lib_scoping_get_type())
@@ -2144,7 +2144,7 @@ void lasso_lib_scoping_set_proxyCount (LassoLibScoping *node,
 void lasso_lib_scoping_set_idpList    (LassoLibScoping *node,
 						    LassoLibIDPList *idpList);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_SP_PROVIDED_NAME_IDENTIFIER (lasso_lib_sp_provided_name_identifier_get_type())
@@ -2173,7 +2173,7 @@ typedef struct _LassoLibSPProvidedNameIdentifier {
 GType lasso_lib_sp_provided_name_identifier_get_type(void);
 LassoNode* lasso_lib_sp_provided_name_identifier_new(const xmlChar *content);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_LIB_STATUS_RESPONSE (lasso_lib_status_response_get_type())
 #define LASSO_LIB_STATUS_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_STATUS_RESPONSE, LassoLibStatusResponse))
@@ -2208,7 +2208,7 @@ void lasso_lib_status_response_set_relayState (LassoLibStatusResponse *node,
 void lasso_lib_status_response_set_status     (LassoLibStatusResponse *node,
 							    LassoSamlpStatus *status);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_LIB_SUBJECT (lasso_lib_subject_get_type())
@@ -2238,7 +2238,7 @@ void lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 								  LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier);
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAMLP_REQUEST_ABSTRACT (lasso_samlp_request_abstract_get_type())
@@ -2281,7 +2281,7 @@ void lasso_samlp_request_abstract_set_minorVersion (LassoSamlpRequestAbstract *n
 void lasso_samlp_request_abstract_set_requestID    (LassoSamlpRequestAbstract *node,
 								 const xmlChar *requestID);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAMLP_RESPONSE (lasso_samlp_response_get_type())
@@ -2313,7 +2313,7 @@ void lasso_samlp_response_add_assertion (LassoSamlpResponse *node,
 void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
 						      LassoSamlpStatus *status);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT (lasso_samlp_response_abstract_get_type())
@@ -2361,7 +2361,7 @@ void lasso_samlp_response_abstract_set_recipient    (LassoSamlpResponseAbstract 
 void lasso_samlp_response_abstract_set_responseID   (LassoSamlpResponseAbstract *node,
 								  const xmlChar *responseID);
 
-/* $Id$
+/*
  */
 #define LASSO_TYPE_SAMLP_STATUS (lasso_samlp_status_get_type())
 #define LASSO_SAMLP_STATUS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_STATUS, LassoSamlpStatus))
@@ -2397,7 +2397,7 @@ LassoSamlpStatusDetail *statusDetail);
 void lasso_samlp_status_set_statusMessage  (LassoSamlpStatus *node,
 							 const xmlChar *statusMessage);
 
-/* $Id$
+/*
  */
 #define LASSO_TYPE_SAMLP_STATUS_CODE (lasso_samlp_status_code_get_type())
 #define LASSO_SAMLP_STATUS_CODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_STATUS_CODE, LassoSamlpStatusCode))
@@ -2425,7 +2425,7 @@ LassoNode* lasso_samlp_status_code_new(void);
 void lasso_samlp_status_code_set_value (LassoSamlpStatusCode *node,
 						     const xmlChar *value);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_ADVICE (lasso_saml_advice_get_type())
@@ -2457,7 +2457,7 @@ void lasso_saml_advice_add_assertionIDReference (LassoSamlAdvice *node,
 void lasso_saml_advice_add_assertion            (LassoSamlAdvice *node,
 							      gpointer *assertion);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_ASSERTION (lasso_saml_assertion_get_type())
@@ -2514,7 +2514,7 @@ void lasso_saml_assertion_set_minorVersion            (LassoSamlAssertion *node,
 								    const xmlChar *minorVersion);
 
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION (lasso_saml_audience_restriction_condition_get_type())
@@ -2548,7 +2548,7 @@ LassoNode* lasso_saml_audience_restriction_condition_new(void);
 void lasso_saml_audience_restriction_condition_add_audience (LassoSamlAudienceRestrictionCondition *node,
 									  const xmlChar *audience);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT (lasso_saml_authentication_statement_get_type())
 #define LASSO_SAML_AUTHENTICATION_STATEMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, LassoSamlAuthenticationStatement))
@@ -2588,7 +2588,7 @@ void lasso_saml_authentication_statement_set_authenticationMethod  (LassoSamlAut
 void lasso_saml_authentication_statement_set_subjectLocality       (LassoSamlAuthenticationStatement *node,
 										 LassoSamlSubjectLocality *subjectLocality);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_SAML_AUTHORITY_BINDING (lasso_saml_authority_binding_get_type())
 #define LASSO_SAML_AUTHORITY_BINDING(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_AUTHORITY_BINDING, LassoSamlAuthorityBinding))
@@ -2624,7 +2624,7 @@ void lasso_saml_authority_binding_set_binding       (LassoSamlAuthorityBinding *
 void lasso_saml_authority_binding_set_location      (LassoSamlAuthorityBinding *node,
 								  const xmlChar *location);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_CONDITIONS (lasso_saml_conditions_get_type())
@@ -2662,7 +2662,7 @@ void lasso_saml_conditions_set_notBefore    (LassoSamlConditions *node,
 void lasso_saml_conditions_set_notOnOrAfter (LassoSamlConditions *node,
 							  const xmlChar *notOnOrAfter);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_SAML_CONDITION_ABSTRACT (lasso_saml_condition_abstract_get_type())
 #define LASSO_SAML_CONDITION_ABSTRACT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_CONDITION_ABSTRACT, LassoSamlConditionAbstract))
@@ -2690,7 +2690,7 @@ typedef struct _LassoSamlConditionAbstract {
 GType lasso_saml_condition_abstract_get_type(void);
 LassoNode* lasso_saml_condition_abstract_new(const xmlChar *name);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_SAML_NAME_IDENTIFIER (lasso_saml_name_identifier_get_type())
 #define LASSO_SAML_NAME_IDENTIFIER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_NAME_IDENTIFIER, LassoSamlNameIdentifier))
@@ -2722,7 +2722,7 @@ void lasso_saml_name_identifier_set_format        (LassoSamlNameIdentifier *node
 void lasso_saml_name_identifier_set_nameQualifier (LassoSamlNameIdentifier *node,
 								const xmlChar *nameQualifier);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_STATEMENT_ABSTRACT (lasso_saml_statement_abstract_get_type())
@@ -2751,7 +2751,7 @@ typedef struct _LassoSamlStatementAbstract {
 GType lasso_saml_statement_abstract_get_type(void);
 LassoNode* lasso_saml_statement_abstract_new(const xmlChar *name);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_SUBJECT (lasso_saml_subject_get_type())
@@ -2783,7 +2783,7 @@ void lasso_saml_subject_set_nameIdentifier      (LassoSamlSubject *node,
 void lasso_saml_subject_set_subjectConfirmation (LassoSamlSubject *node,
 							      LassoSamlSubjectConfirmation *subjectConfirmation);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_SUBJECT_CONFIRMATION (lasso_saml_subject_confirmation_get_type())
@@ -2818,7 +2818,7 @@ void lasso_saml_subject_confirmation_add_confirmationMethod        (LassoSamlSub
 void lasso_saml_subject_confirmation_set_subjectConfirmationMethod (LassoSamlSubjectConfirmation *node,
 										 const xmlChar *subjectConfirmationMethod);
 
-/* $Id$ 
+/*
  */
 #define LASSO_TYPE_SAML_SUBJECT_LOCALITY (lasso_saml_subject_locality_get_type())
 #define LASSO_SAML_SUBJECT_LOCALITY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_SUBJECT_LOCALITY, LassoSamlSubjectLocality))
@@ -2850,7 +2850,7 @@ void lasso_saml_subject_locality_set_dnsAddress (LassoSamlSubjectLocality *node,
 void lasso_saml_subject_locality_set_ipAddress  (LassoSamlSubjectLocality *node,
 							      const xmlChar *ipAddress);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT (lasso_saml_subject_statement_abstract_get_type())
@@ -2883,7 +2883,7 @@ void lasso_saml_subject_statement_abstract_set_subject (LassoSamlSubjectStatemen
 								     LassoSamlSubject *subject);
 
 
-/* $Id$ 
+/*
  */
 
 /*****************************************************************************/
@@ -3011,7 +3011,7 @@ const xmlChar lassoSamlConfirmationMethodSenderVouches[];
 const xmlChar lassoSoapEnvHRef[];
 const xmlChar lassoSoapEnvPrefix[];
 
-/* $Id$ 
+/*
  */
 
 typedef enum {
@@ -3053,7 +3053,7 @@ xmlDocPtr  lasso_str_sign               (xmlChar              *str,
 
 xmlChar*   lasso_str_unescape           (xmlChar *str);
 
-/* $Id$ 
+/*
  */
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
