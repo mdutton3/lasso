@@ -33,6 +33,7 @@ extern "C" {
 
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
+#include <lasso/xml/errors.h>
 
 #include <lasso/environs/server.h>
 #include <lasso/environs/user.h>
@@ -41,7 +42,7 @@ extern "C" {
 #define LASSO_PROFILE_CONTEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE_CONTEXT, LassoProfileContext))
 #define LASSO_PROFILE_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_PROFILE_CONTEXT, LassoProfileContextClass))
 #define LASSO_IS_PROFILE_CONTEXT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_PROFILE_CONTEXT))
-#define LASSP_IS_PROFILE_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROFILE_CONTEXT))
+#define LASSO_IS_PROFILE_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROFILE_CONTEXT))
 #define LASSO_PROFILE_CONTEXT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_PROFILE_CONTEXT, LassoProfileContextClass)) 
 
 typedef struct _LassoProfileContext LassoProfileContext;
