@@ -162,19 +162,19 @@ identity provider Id (defined in metadata).
   lasso_login_init_authn_request(login);
   
   lasso_lib_authn_request_set_forceAuthn(
-      LASSO_LIB_AUTHN_REQUEST(login->request), 1);
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
   
   lasso_lib_authn_request_set_nameIDPolicy(
-      LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibNameIDPolicyTypeFederated);
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_response_set_consent(
-      LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibConsentObtained);
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
   lasso_login_build_authn_request_msg(login, idpProviderId);
 
 
 You can now redirect the user to the URL defined in ``login->msg_url``; for
 example, in a CGI::
   
-  printf("Location: %s\n", login->msg_url);
+  printf("Location: %s\n", LASSO_PROFILE(login)->msg_url);
 
 
 The user then logs in on the identity provider which ultimately redirects back
@@ -193,10 +193,10 @@ passed in the query parameter.
   lasso_login_build_request_msg(login);
 
 The service provider must check this artifact using a SOAP request to the
-identity provider.  The URL is ``login->msg_url`` while the request is
-``login->msg_body``.  The request must succeed with an HTTP 200 status code;
-let's consider its content is put in the ``answer``, the next statement would
-be::
+identity provider.  The URL is ``LASSO_PROFILE(login)->msg_url`` while the
+request is ``LASSO_PROFILE(login)->msg_body``.  The request must succeed with
+an HTTP 200 status code; let's consider its content is put in the ``answer``,
+the next statement would be::
 
   lasso_login_process_response_msg(login, answer);
 
