@@ -1,4 +1,5 @@
 #! /usr/bin/env php
+<?php
 #
 # $Id$
 #
@@ -22,9 +23,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-
-<?php
 
 $ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 if ($ret == FALSE) {
@@ -82,11 +80,9 @@ for ($i=0; $i < 50; $i++) {
     $request->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
     $request->ProtocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
     $login->buildAuthnRequestMsg();
-    printf("%s\n", $login->msgUrl);
 }
 
 $query = $login->msgUrl;
-print $query;
 $authn_response_msg = create_authnresponse($query);
 
 printf("Processing 50 AuthnResponse...\n");
