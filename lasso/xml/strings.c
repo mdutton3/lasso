@@ -67,6 +67,7 @@ const xmlChar lassoLibStatusCodeNoSupportedIDP[]                       = "lib:No
 const xmlChar lassoLibStatusCodeProxyCountExceeded[]                   = "lib:ProxyCountExceeded";
 const xmlChar lassoLibStatusCodeUnknownPrincipal[]                     = "lib:UnknownPrincipal";
 const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[]                 = "lib:UnsignedAuthnRequest";
+const xmlChar lassoLibStatusCodeUnsupportedProfile[]                   = "lib:UnsupportedProfile";
 
 /* ProtocolProfile */
 const xmlChar lassoLibProtocolProfileSSOGet[]         = "http://projectliberty.org/profiles/sso-get";

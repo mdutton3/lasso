@@ -75,6 +75,7 @@ LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoSupportedIDP[];
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeProxyCountExceeded[];
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnknownPrincipal[];
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsupportedProfile[];
 
 /* ProtocolProfile */
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSSOGet[];
