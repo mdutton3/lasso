@@ -52,7 +52,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\Lasso-@VERSION_UNDERSCORED@.win32-py2.4.exe"
+OutFile "Lasso-@VERSION_UNDERSCORED@.win32-py2.4.exe"
 ShowInstDetails show
 ShowUnInstDetails show
 
