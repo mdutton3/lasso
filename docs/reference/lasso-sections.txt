@@ -518,6 +518,7 @@ lasso_node_new
 lasso_node_new_from_dump
 lasso_node_new_from_xmlNode
 lasso_node_copy
+lasso_node_destroy
 lasso_node_dump
 lasso_node_export
 lasso_node_export_to_base64
@@ -1102,6 +1103,7 @@ lasso_g_ptr_array_index
 lasso_get_current_time
 lasso_query_get_value
 lasso_query_to_dict
+lasso_query_verify_signature
 lasso_str_escape
 lasso_str_sign
 lasso_str_unescape
