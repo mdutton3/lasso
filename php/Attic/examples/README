@@ -86,15 +86,19 @@ CONFIGURATION
  To generate SSL certificat for the Identity Provider and the Service 
  Provider you need the openssl command line utility. You need to create
  a certificate, a public and private key : 
- 
+
  # cd /var/www/sp
  # openssl req -out certificate_sp1.pem -keyout private-key-raw_sp1.pem -x509 -nodes -newkey rsa:2048
  [ ... ]
+ Common Name (eg, YOUR name) []:sp1
+ [ ... ]  
  # openssl x509 -in certificate_sp1.pem -noout -pubkey > public-key_sp1.pem
  # chown www-data: *.pem
 
  # cd /var/www/idp
  # openssl req -out certificate_idp1.pem -keyout private-key-raw_idp1.pem -x509 -nodes -newkey rsa:2048
+ [ ... ]
+ Common Name (eg, YOUR name) []:idp1
  [ ... ]
  # openssl x509 -in certificate_idp1.pem -noout -pubkey > public-key_idp1.pem
  # chown www-data: *.pem
