@@ -24,6 +24,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
+import os
 import unittest
 import sys
 
@@ -35,6 +36,12 @@ if not '../.libs' in sys.path:
 import lasso
 
 
+try:
+    dataDir
+except NameError:
+    dataDir = '../../tests/data'
+
+
 class LoginTestCase(unittest.TestCase):
     pass
 
@@ -44,15 +51,15 @@ class LogoutTestCase(unittest.TestCase):
         """SP logout without session and indentity; testing init_request."""
 
         lassoServer = lasso.Server(
-            '../../tests/data/sp1-la/metadata.xml',
-            None, # '../../tests/data/sp1-la/public-key.pem' is no more used
-            '../../tests/data/sp1-la/private-key-raw.pem',
-            '../../tests/data/sp1-la/certificate.pem',
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
         lassoServer.add_provider(
-            '../../tests/data/idp1-la/metadata.xml',
-            '../../tests/data/idp1-la/public-key.pem',
-            '../../tests/data/ca1-la/certificate.pem')
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         logout = lasso.Logout(lassoServer, lasso.providerTypeSp)
         try:
             logout.init_request()
@@ -66,15 +73,15 @@ class LogoutTestCase(unittest.TestCase):
         """IDP logout without session and identity; testing logout.get_next_providerID."""
 
         lassoServer = lasso.Server(
-            '../../tests/data/idp1-la/metadata.xml',
-            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
-            '../../tests/data/idp1-la/private-key-raw.pem',
-            '../../tests/data/idp1-la/certificate.pem',
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
         lassoServer.add_provider(
-            '../../tests/data/sp1-la/metadata.xml',
-            '../../tests/data/sp1-la/public-key.pem',
-            '../../tests/data/ca1-la/certificate.pem')
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/public-key.pem'),
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
         logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
         self.failIf(logout.get_next_providerID())
 

@@ -24,7 +24,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
+import __builtin__
 import imp
+from optparse import OptionParser
+import os
 import sys
 import time
 import unittest
@@ -42,7 +45,19 @@ testSuites = (
     'errorchecking_tests',
     )
 
-if "--xml" in sys.argv:
+
+# Parse command line options.
+parser = OptionParser()
+parser.add_option(
+    '-x', '--xml', dest = 'xmlMode', help = 'enable XML output',
+    action = 'store_true', default = False)
+parser.add_option(
+    '-s', '--source-dir', dest = 'srcDir', help = 'path of source directory',
+    metavar = 'DIR', default = os.getcwd())
+(options, args) = parser.parse_args()
+__builtin__.__dict__['dataDir'] = os.path.join(options.srcDir, '../../tests/data')
+
+if options.xmlMode:
     print """<?xml version="1.0"?>"""
     print """<testsuites xmlns="http://check.sourceforge.net/ns">"""
     print """  <title>Python Bindings</title>"""
@@ -65,7 +80,7 @@ for testSuite in testSuites:
     else:
         doc = testSuite
 
-    if "--xml" in sys.argv:
+    if options.xmlMode:
         runner = XmlTestRunner()
     else:
         runner = unittest.TextTestRunner(verbosity=2)
@@ -76,7 +91,7 @@ for testSuite in testSuites:
     result = runner.run(module.allTests)
     success = success and result.wasSuccessful()
 
-if "--xml" in sys.argv:
+if options.xmlMode:
     print """</testsuites>"""
 
 sys.exit(not success)

@@ -24,6 +24,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
+import os
 import unittest
 import sys
 
@@ -33,6 +34,12 @@ if not '../.libs' in sys.path:
     sys.path.insert(0, '../.libs')
 
 import lasso
+
+
+try:
+    dataDir
+except NameError:
+    dataDir = '../../tests/data'
 
 
 class ErrorCheckingTestCase(unittest.TestCase):
@@ -53,10 +60,10 @@ class ErrorCheckingTestCase(unittest.TestCase):
         # This time; we got something wrong as query string; we pass it to
         # init_from_authn_request_msg; surely it shouldn't segfault
         server = lasso.Server(
-            '../../tests/data/idp1-la/metadata.xml',
-            None, # '../../tests/data/idp1-la/public-key.pem' is no more used
-            '../../tests/data/idp1-la/private-key-raw.pem',
-            '../../tests/data/idp1-la/certificate.pem',
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
+            os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
+            os.path.join(dataDir, 'idp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
         login = lasso.Login(server)
         try:
