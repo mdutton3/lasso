@@ -226,23 +226,26 @@ lasso_server_get_provider_ref(LassoServer *server,
 
 gchar *
 lasso_server_get_providerID_from_hash(LassoServer *server,
-				      gchar       *hash)
+				      gchar       *b64_hash)
 {
   LassoProvider *provider;
-  gchar *providerID, *hash_providerID;
+  xmlChar *providerID, *hash_providerID;
+  xmlChar *b64_hash_providerID;
   int i;
 
   for(i=0; i<server->providers->len; i++) {
     provider = g_ptr_array_index(server->providers, i);
     providerID = lasso_provider_get_providerID(provider, NULL);
     hash_providerID = lasso_str_hash(providerID, server->private_key);
-    if (xmlStrEqual(hash_providerID, hash)) {
-      g_free(hash_providerID);
+    b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
+    xmlFree(hash_providerID);
+    if (xmlStrEqual(b64_hash_providerID, b64_hash)) {
+      xmlFree(b64_hash_providerID);
       return(providerID);
     }
     else {
-      g_free(providerID);
-      g_free(hash_providerID);
+      xmlFree(b64_hash_providerID);
+      xmlFree(providerID);
     }
   }
 

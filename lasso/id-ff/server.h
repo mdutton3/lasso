@@ -88,7 +88,7 @@ LASSO_EXPORT LassoProvider* lasso_server_get_provider_ref         (LassoServer *
 								   gchar       *providerID);
 
 LASSO_EXPORT gchar*         lasso_server_get_providerID_from_hash (LassoServer *server,
-								   gchar *hash);
+								   gchar       *b64_hash);
 
 #ifdef __cplusplus
 }
