@@ -12,7 +12,7 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
-	federation_termination.c \
+	defederation.c \
 	identity.c \
 	lecp.c \
 	login.c \
@@ -24,7 +24,7 @@ liblasso_environs_la_SOURCES = \
 	session.c
 
 liblassoinclude_HEADERS = \
-	federation_termination.h \
+	defederation.h \
 	identity.h \
 	lecp.h \
 	login.h \

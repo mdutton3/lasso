@@ -36,7 +36,7 @@ extern "C" {
 
 #include <lasso/export.h>
 
-#include <lasso/environs/federation_termination.h>
+#include <lasso/environs/defederation.h>
 #include <lasso/environs/lecp.h>
 #include <lasso/environs/login.h>
 #include <lasso/environs/logout.h>
