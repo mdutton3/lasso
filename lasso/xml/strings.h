@@ -120,8 +120,16 @@
 #define lassoSamlMinorVersion	 "1"
 
 /* StatusCodes */
-#define lassoSamlStatusCodeRequestDenied	 "samlp:RequestDenied"
-#define lassoSamlStatusCodeSuccess	 "samlp:Success"
+#define lassoSamlStatusCodeSuccess	            "samlp:Success"
+#define lassoSamlStatusCodeRequestDenied            "samlp:RequestDenied"
+#define lassoSamlStatusCodeVersionMismatch          "samlp:VersionMismatch"
+#define lassoSamlStatusCodeRequester                "samlp:Requester"
+#define lassoSamlStatusCodeResponder                "samlp:Responder"
+#define lassoSamlStatusCodeRequestVersionTooHigh    "samlp:RequestVersionTooHigh"
+#define lassoSamlStatusCodeRequestVersionTooLow     "samlp:RequestVersionTooLow"
+#define lassoSamlStatusCodeRequestVersionDeprecated "samlp:RequestVersionDeprecated"
+#define lassoSamlStatusCodeTooManyResponses         "samlp:TooManyResponses"
+#define lassoSamlStatusCodeResourceNotRecognized    "samlp:ResourceNotRecognized"
 
 /* AuthenticationMethods */
 #define lassoSamlAuthenticationMethodPassword	 "urn:oasis:names:tc:SAML:1.0:am:password"
