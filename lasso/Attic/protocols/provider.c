@@ -74,6 +74,24 @@ lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *pr
 }
 
 gchar *
+lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider *provider)
+{
+  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingProtocolProfile"));
+}
+
+gchar *
+lasso_provider_get_nameIdentifierMappingServiceURL(LassoProvider *provider)
+{
+  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingServiceURL"));
+}
+
+gchar *
+lasso_provider_get_nameIdentifierMappingServiceReturnURL(LassoProvider *provider)
+{
+  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingServiceReturnURL"));
+}
+
+gchar *
 lasso_provider_get_providerID(LassoProvider *provider)
 {
   return(lasso_node_get_attr_value(provider->metadata, "ProviderID"));

@@ -80,6 +80,12 @@ LASSO_EXPORT gchar         *lasso_provider_get_federationTerminationNotification
 
 LASSO_EXPORT gchar         *lasso_provider_dump                                                 (LassoProvider *provider);
 
+LASSO_EXPORT gchar         *lasso_provider_get_nameIdentifierMappingProtocolProfile             (LassoProvider *provider);
+
+LASSO_EXPORT gchar         *lasso_provider_get_nameIdentifierMappingServiceURL                  (LassoProvider *provider);
+
+LASSO_EXPORT gchar         *lasso_provider_get_nameIdentifierMappingServiceReturnURL            (LassoProvider *provider);
+
 LASSO_EXPORT gchar         *lasso_provider_get_providerID                                       (LassoProvider *provider);
 
 LASSO_EXPORT gchar         *lasso_provider_get_registerNameIdentifierProtocolProfile            (LassoProvider *provider);
