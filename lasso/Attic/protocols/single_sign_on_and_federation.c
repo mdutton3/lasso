@@ -409,8 +409,8 @@ lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
 			  lares->private_key,
 			  lares->certificate);
 
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(lares->node),
-				     LASSO_LIB_ASSERTION(assertion));
+/*   lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(lares->node), */
+/* 				     LASSO_LIB_ASSERTION(assertion)); */
 
   return (0);
 }
