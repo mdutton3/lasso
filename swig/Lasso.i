@@ -1910,10 +1910,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* Assertion */
-#define LassoSamlResponse_get_Assertion(self) get_node_list((self)->Assertion)
-#define LassoSamlResponse_Assertion_get(self) get_node_list((self)->Assertion)
-#define LassoSamlResponse_set_Assertion(self, value) set_node_list(&(self)->Assertion, (value))
-#define LassoSamlResponse_Assertion_set(self, value) set_node_list(&(self)->Assertion, (value))
+#define LassoSamlpResponse_get_Assertion(self) get_node_list((self)->Assertion)
+#define LassoSamlpResponse_Assertion_get(self) get_node_list((self)->Assertion)
+#define LassoSamlpResponse_set_Assertion(self, value) set_node_list(&(self)->Assertion, (value))
+#define LassoSamlpResponse_Assertion_set(self, value) set_node_list(&(self)->Assertion, (value))
 
 /* Status */
 #define LassoSamlpResponse_get_Status(self) get_node((self)->Status)
