@@ -89,7 +89,7 @@ struct _LassoSamlAssertionClass {
 };
 
 LASSO_EXPORT GType lasso_saml_assertion_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_assertion_new(void);
+LASSO_EXPORT LassoSamlAssertion* lasso_saml_assertion_new(void);
 
 #ifdef __cplusplus
 }

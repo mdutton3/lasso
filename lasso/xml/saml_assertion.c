@@ -206,7 +206,7 @@ lasso_saml_assertion_get_type()
  * 
  * Return value: the new @LassoSamlAssertion
  **/
-LassoNode*
+LassoSamlAssertion*
 lasso_saml_assertion_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_ASSERTION, NULL);
