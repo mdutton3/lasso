@@ -445,6 +445,7 @@ Makefile
 lasso/Makefile
 lasso/xml/Makefile
 lasso/protocols/Makefile
+lasso/protocols/elements/Makefile
 docs/Makefile
 docs/reference/Makefile
 ]
