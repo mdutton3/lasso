@@ -72,7 +72,7 @@ lasso_logout_response_new(const xmlChar *providerID,
 			  LassoNode     *request)
 {
   LassoNode *response, *ss, *ssc;
-  xmlChar *inResponseTo, *recipient;
+  xmlChar *inResponseTo, *recipient, *relayState;
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
   
@@ -101,6 +101,11 @@ lasso_logout_response_new(const xmlChar *providerID,
 
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					      recipient);
+
+  relayState = lasso_node_get_content(lasso_node_get_child(request, "RelayState"));
+  if(relayState!=NULL)
+       lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
+						relayState);
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();

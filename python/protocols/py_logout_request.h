@@ -27,6 +27,7 @@
 #define __PYLASSO_PY_LOGOUT_REQUEST_H__
 
 #include <lasso/protocols/logout_request.h>
+#include <lasso/xml/lib_logout_request.h>
 
 typedef struct {
     PyObject_HEAD
@@ -38,5 +39,9 @@ PyObject *lassoLogoutRequest_wrap(LassoLogoutRequest *request);
 
 PyObject *logout_request_getattr(PyObject *self, PyObject *args);
 PyObject *logout_request(PyObject *self, PyObject *args);
+
+PyObject *logout_request_set_sessionIndex(PyObject *self, PyObject *args);
+PyObject *logout_request_set_relayState(PyObject *self, PyObject *args);
+PyObject *logout_request_set_consent(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_REQUEST_H__ */

@@ -78,3 +78,46 @@ PyObject *logout_request(PyObject *self, PyObject *args) {
 
   return (lassoLogoutRequest_wrap(request));
 }
+
+PyObject *logout_request_set_sessionIndex(PyObject *self, PyObject *args){
+     PyObject      *request_obj;
+     const xmlChar *sessionIndex;
+
+     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_sessionIndex",
+			  &request_obj, &sessionIndex))
+	  return NULL;
+
+     lasso_lib_logout_request_set_sessionIndex(lassoLogoutRequest_get(request_obj),
+					       sessionIndex);
+     
+     return (int_wrap(1));
+}
+
+PyObject *logout_request_set_relayState(PyObject *self, PyObject *args){
+     PyObject      *request_obj;
+     const xmlChar *relayState;
+
+     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_relayState",
+			  &request_obj, &relayState))
+	  return NULL;
+
+     lasso_lib_logout_request_set_relayState(lassoLogoutRequest_get(request_obj),
+					     relayState);
+     
+     return (int_wrap(1));
+}
+
+PyObject *logout_request_set_consent(PyObject *self, PyObject *args){
+     PyObject      *request_obj;
+     const xmlChar *consent;
+     
+
+     if(!PyArg_ParseTuple(args, (char *) "Os:logout_request_set_consent",
+			  &request_obj, &consent))
+	  return NULL;
+
+     lasso_lib_logout_request_set_consent(lassoLogoutRequest_get(request_obj),
+					  consent);
+     
+     return (int_wrap(1));
+}

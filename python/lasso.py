@@ -241,11 +241,11 @@ class Response:
     def add_assertion(self, assertion):
         return lassomod.response_add_assertion(self, assertion)
 
-
 class LogoutRequest(Node):
     def __init__(self,
                  providerID,
 		 nameIdentifier, nameQualifier, format,
+                 sessionIndex = None, relayState = None, consent = None,
                  _obj=None):
         """
         """
@@ -257,6 +257,15 @@ class LogoutRequest(Node):
                                           nameQualifier,
                                           format)
         if self._o is None: raise Error('lasso_logout_request() failed')
+
+        if sessionIndex:
+            lassomod.logout_request_set_sessionIndex(self, sessionIndex)
+
+        if relayState:
+            lassomod.logout_request_set_relayState(self, relayState)
+
+        if consent:
+            lassomod.logout_request_set_consent(self, consent)
 
     def __isprivate(self, name):
         return name == '_o'

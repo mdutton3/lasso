@@ -51,8 +51,12 @@ static PyMethodDef lasso_methods[] = {
 
   /* protocols */
   /* py_logout_request.h */
-  {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
-  {"logout_request",         logout_request,         METH_VARARGS},
+  {"logout_request_getattr",      logout_request_getattr,      METH_VARARGS},
+  {"logout_request",              logout_request,              METH_VARARGS},
+
+  {"logout_request_set_sessionIndex", logout_request_set_sessionIndex, METH_VARARGS},
+  {"logout_request_set_relayState",   logout_request_set_relayState,   METH_VARARGS},
+  {"logout_request_set_consent",      logout_request_set_consent,      METH_VARARGS},
 
   /* py_logout_response.h */
   {"logout_response_getattr", logout_response_getattr, METH_VARARGS},
