@@ -130,6 +130,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(targetNamespace != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(mapping);
 
@@ -139,8 +140,6 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	}
 
 	/* set the remote provider id */
-	if (remote_providerID == NULL)
-		g_assert_not_reached(); /* was default; didn't make sense */
 	profile->remote_providerID = g_strdup(remote_providerID);
 
 	/* verify the provider type is a service provider type */
@@ -480,4 +479,3 @@ lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
 	g_assert_not_reached();
 	return lasso_node_dump(LASSO_NODE(mapping));
 }
-

@@ -177,6 +177,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	LassoSamlNameIdentifier *spNameIdentifier, *idpNameIdentifier, *oldNameIdentifier = NULL;
 
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -186,9 +187,6 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	}
 
 	/* set the remote provider id */
-	if (remote_providerID == NULL)
-		g_assert_not_reached(); /* was default; didn't make sense */
-
 	profile->remote_providerID = g_strdup(remote_providerID);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
