@@ -26,6 +26,10 @@
 #ifndef __LOGOUT_H__
 #define __LOGOUT_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <lasso/protocols/protocols.h>
 
 typedef struct _lassoLogoutRequest lassoLogoutRequest;
@@ -63,5 +67,9 @@ lasso_logout_response_init(lassoLogoutResponse *lares,
 			   const xmlChar *providerID,
 			   const xmlChar *statusCodeValue,
 			   const xmlChar *relayState);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* __LOGOUT_H__ */
