@@ -83,7 +83,7 @@ struct _LassoNodeClass {
   GData*         (* serialize)        (LassoNode     *,
 				       GData         *);
   gchar*         (* url_encode)       (LassoNode     *node,
-				       guint          sign_method,
+				       gint           sign_method,
 				       const gchar   *private_key_file);
   gchar*         (* soap_envelop)     (LassoNode     *node);
   gint           (* verify_signature) (LassoNode     *node,
@@ -92,6 +92,10 @@ struct _LassoNodeClass {
   void       (* add_child)    (LassoNode *,
 			       LassoNode *,
 			       gboolean);
+  void       (*add_signature) (LassoNode     *node,
+			       gint           sign_method,
+			       const xmlChar *private_key_file,
+			       const xmlChar *certificate_file);
   xmlNodePtr (* get_xmlNode)  (LassoNode     *);
   void       (* new_child)    (LassoNode     *,
 			       const xmlChar *,
@@ -157,8 +161,8 @@ LASSO_EXPORT GData*         lasso_node_serialize        (LassoNode *node,
 
 LASSO_EXPORT gchar*         lasso_node_soap_envelop     (LassoNode *node);
 
-LASSO_EXPORT gchar*         lasso_node_url_encode       (LassoNode *node,
-							 guint sign_method,
+LASSO_EXPORT gchar*         lasso_node_url_encode       (LassoNode   *node,
+							 gint         sign_method,
 							 const gchar *private_key_file);
 
 LASSO_EXPORT gint           lasso_node_verify_signature (LassoNode *node,

@@ -184,7 +184,7 @@ lasso_node_soap_envelop(LassoNode *node)
 
 gchar *
 lasso_node_url_encode(LassoNode   *node,
-		      guint        sign_method,
+		      gint         sign_method,
 		      const gchar *private_key_file)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -216,6 +216,18 @@ lasso_node_add_child(LassoNode *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->add_child(node, child, unbounded);
+}
+
+static void
+lasso_node_add_signature(LassoNode         *node,
+			 gint               sign_method,
+			 const xmlChar     *private_key_file,
+			 const xmlChar     *certificate_file)
+{
+  g_return_if_fail(LASSO_IS_NODE(node));
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->add_signature(node, sign_method, private_key_file, certificate_file);
 }
 
 static xmlNodePtr
@@ -680,7 +692,7 @@ lasso_node_impl_soap_envelop(LassoNode *node)
 
 static gchar *
 lasso_node_impl_url_encode(LassoNode   *node,
-			   guint        sign_method,
+			   gint         sign_method,
 			   const gchar *private_key_file)
 {
   GString *url;
@@ -727,6 +739,7 @@ static gint
 lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
 {
+  xmlDocPtr doc = xmlNewDoc("1.0");
   xmlNodePtr signature;
   xmlSecKeysMngrPtr mngr;
   xmlSecDSigCtxPtr dsigCtx;
@@ -735,9 +748,13 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), -1);
   g_return_val_if_fail (certificate_file != NULL, -1);
 
+  /* we must associate the xmlNode with an xmlDoc !!! */
+  xmlAddChild((xmlNodePtr)doc,
+  	      LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node)));
+
   /* find start node */
-  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature,
-			     xmlSecDSigNs);
+  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
+ 			     xmlSecDSigNs);
   if (signature == NULL) {
     fprintf(stderr, "Error: start node not found\n");
     goto done;	
@@ -821,6 +838,27 @@ lasso_node_impl_add_child(LassoNode *node,
     // else child is added
     xmlAddChild(node->private->node, child->private->node);
   }
+}
+
+static void
+lasso_node_impl_add_signature(LassoNode         *node,
+			      gint               sign_method,
+			      const xmlChar     *private_key_file,
+			      const xmlChar     *certificate_file)
+{
+  xmlDocPtr doc;
+  LassoNode *signature;
+
+  /* FIXME : destroy doc after */
+  doc = xmlNewDoc("1.0"); // <---
+  xmlAddChild((xmlNodePtr)doc, node->private->node);
+
+  /* FIXME : use sign_method */
+  signature = lasso_ds_signature_new(doc, xmlSecTransformRsaSha1Id);
+  lasso_node_add_child(node, signature, 0);
+  lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
+			  private_key_file,
+			  certificate_file);
 }
 
 static xmlNodePtr
@@ -979,13 +1017,14 @@ lasso_node_class_init(LassoNodeClass *class)
   class->url_encode       = lasso_node_impl_url_encode;
   class->verify_signature = lasso_node_impl_verify_signature;
   /* virtual private methods */
-  class->add_child   = lasso_node_impl_add_child;
-  class->get_xmlNode = lasso_node_impl_get_xmlNode;
-  class->new_child   = lasso_node_impl_new_child;
-  class->set_name    = lasso_node_impl_set_name;
-  class->set_ns      = lasso_node_impl_set_ns;
-  class->set_prop    = lasso_node_impl_set_prop;
-  class->set_xmlNode = lasso_node_impl_set_xmlNode;
+  class->add_child     = lasso_node_impl_add_child;
+  class->add_signature = lasso_node_impl_add_signature;
+  class->get_xmlNode   = lasso_node_impl_get_xmlNode;
+  class->new_child     = lasso_node_impl_new_child;
+  class->set_name      = lasso_node_impl_set_name;
+  class->set_ns        = lasso_node_impl_set_ns;
+  class->set_prop      = lasso_node_impl_set_prop;
+  class->set_xmlNode   = lasso_node_impl_set_xmlNode;
   /* override parent class methods */
   gobject_class->dispose  = (void *)lasso_node_dispose;
   gobject_class->finalize = (void *)lasso_node_finalize;
@@ -1034,7 +1073,7 @@ lasso_node_new_from_dump(xmlChar *buffer)
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   lasso_node_set_xmlNode(node, root);
   /* free doc */
-  xmlFreeDoc(doc);
+  //xmlFreeDoc(doc);
 
   return (node);
 }
