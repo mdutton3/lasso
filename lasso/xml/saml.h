@@ -43,6 +43,7 @@ extern "C" {
 #include <lasso/xml/saml_subject_locality.h>
 #include <lasso/xml/saml_subject_statement_abstract.h>
 
+#include <lasso/xml/samlp_request.h>
 #include <lasso/xml/samlp_response_abstract.h>
 #include <lasso/xml/samlp_response.h>
 #include <lasso/xml/samlp_request_abstract.h>
