@@ -16,11 +16,13 @@ liblasso_protocols_la_SOURCES = \
 	protocol.c \
 	logout_request.c \
 	logout_response.c \
-	#sso_and_federation_authn_request.c
+	register_name_identifier_response.c \
+	register_name_identifier_request.c
 
 liblassoinclude_HEADERS = \
 	protocols.h \
 	protocol.h \
 	logout_request.h \
 	logout_response.h \
-	#sso_and_federation_authn_request.h
+	register_name_identifier_response.h \
+	register_name_identifier_request.h
