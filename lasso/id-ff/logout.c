@@ -92,10 +92,11 @@ lasso_logout_dump(LassoLogout *logout)
   
   /* add providerID_index */
   providerID_index_str = g_strdup_printf("%d", logout->providerID_index);
-  LASSO_NODE_GET_CLASS(node)->new_child(node, "IndexProviderID",
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderIDIndex",
 					providerID_index_str, FALSE);
 
   dump = lasso_node_export(node);
+
   lasso_node_destroy(node);
 
   return dump;
@@ -1214,11 +1215,15 @@ lasso_logout_new_from_dump(LassoServer *server,
   logout->initial_remote_providerID = lasso_node_get_child_content(node_dump, "InitialRemoteProviderID", lassoLassoHRef, NULL);
 
   /* index provider id */
-  providerID_index_str = lasso_node_get_child_content(node_dump, "IndexProviderID", lassoLassoHRef, NULL);
+
+  providerID_index_str = lasso_node_get_child_content(node_dump, "ProviderIDIndex", NULL, NULL);
+
   if (providerID_index_str == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Index ProviderID not found\n");
   }
-  logout->providerID_index = atoi(providerID_index_str);
+  else {
+    logout->providerID_index = atoi(providerID_index_str);
+  }
 
   return logout;
 }
