@@ -309,11 +309,11 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	profile->nameIdentifier = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 				profile->request)->NameIdentifier->content);
 
-	/* get the RelayState */
-
-	/* XXX: not in schema; some mention in 3.4.1.1.5 (Step 5: Redirecting
-	 * to the Identity Provider Return URL)
-	 */
+	/* get the RelayState (only available in redirect mode) */
+	if (LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState)
+		profile->msg_relayState = g_strdup(
+				LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
+					profile->request)->RelayState);
 
 	return profile->signature_status;
 }

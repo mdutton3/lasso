@@ -120,6 +120,8 @@ build_query(LassoNode *node)
 	}
 	if (request->consent)
 		g_string_append_printf(s, "&consent=%s", request->consent);
+	if (request->RelayState)
+		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
 
 	str = s->str;
 	g_string_free(s, FALSE);
@@ -159,6 +161,10 @@ init_from_query(LassoNode *node, char **query_fields)
 			request->NameIdentifier->NameQualifier = g_strdup(t+14);
 			continue;
 		}
+		if (g_str_has_prefix(t, "RelayState=")) {
+			request->RelayState = g_strdup(t+11);
+			continue;
+		}
 	}
 
 	if (request->ProviderID == NULL ||
@@ -186,6 +192,7 @@ instance_init(LassoLibFederationTerminationNotification *node)
 	node->ProviderID = NULL;
 	node->NameIdentifier = NULL;
 	node->consent = NULL;
+	node->RelayState = NULL;
 }
 
 static void

@@ -65,6 +65,8 @@ struct _LassoLibFederationTerminationNotification {
 	LassoSamlNameIdentifier *NameIdentifier;
 	/* <xs:attribute ref="consent" use="optional"/> */
 	char *consent;
+
+	char *RelayState;	/* not in schema but allowed in redirects */
 };
 
 struct _LassoLibFederationTerminationNotificationClass {
