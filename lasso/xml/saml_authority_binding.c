@@ -48,7 +48,6 @@
 		{ "Binding", 'a', (void**)&(binding->Binding) }, \
 		{ NULL, 0, NULL} \
 	};
-	
 
 static LassoNodeClass *parent_class = NULL;
 
