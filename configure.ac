@@ -116,6 +116,7 @@ dnl Check for programs
 dnl
 AC_PROG_CC
 LT_AC_PROG_RC
+AM_PROG_GCJ
 AC_EXEEXT
 AC_PROG_CC_C_O
 AM_SANITY_CHECK
@@ -390,7 +391,7 @@ if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
 fi
 
-PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
+PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl openssl)
 
 dnl Let people disable the gtk-doc stuff.
 AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc        Disable documentation build],,
@@ -528,9 +529,9 @@ php/tests/Makefile
 tests/Makefile
 java/Makefile]
 dnl [java/coldfusion/Makefile]
-[java/src/Makefile
-java/src/java/Makefile
-java/src/c/Makefile]
+dnl [java/src/Makefile
+dnl java/src/java/Makefile
+dnl java/src/c/Makefile]
 [lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]
 dnl [lasso.spec:lasso.spec.in]
