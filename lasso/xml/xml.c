@@ -35,6 +35,7 @@
 #include <xmlsec/crypto.h>
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/saml_name_identifier.h>
 
 static GObjectClass *parent_class = NULL;
 
