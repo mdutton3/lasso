@@ -24,6 +24,8 @@
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/ds_signature.h>
+#include <xmlsec/base64.h>
+#include <xmlsec/xmltree.h>
 
 struct _LassoNodePrivate
 {
@@ -592,8 +594,8 @@ lasso_node_impl_export_to_base64(LassoNode *node)
   xmlChar *buffer, *ret;
 
   buffer = lasso_node_impl_dump(node, "utf-8", 0);
-  ret = (xmlChar*)xmlSecBase64Encode((const xmlSecByte *) buffer,
-				     (xmlSecSize)strlen((const char *)buffer), 0);
+  ret = xmlSecBase64Encode((const xmlSecByte *) buffer,
+			   (xmlSecSize)strlen((const char *)buffer), 0);
   xmlFree(buffer);
 
   return (ret);
@@ -788,19 +790,19 @@ lasso_node_impl_get_child(LassoNode     *node,
   xmlNodePtr child;
 
   if (href != NULL)
-    child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, href);
+    child = xmlSecFindNode(node->private->node, name, href);
   else {
-    child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, href);
+    child = xmlSecFindNode(node->private->node, name, href);
     if (child == NULL)
-      child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, lassoLibHRef);
+      child = xmlSecFindNode(node->private->node, name, lassoLibHRef);
     if (child == NULL)
-      child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, lassoSamlAssertionHRef);
+      child = xmlSecFindNode(node->private->node, name, lassoSamlAssertionHRef);
     if (child == NULL)
-      child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, lassoSamlProtocolHRef);
+      child = xmlSecFindNode(node->private->node, name, lassoSamlProtocolHRef);
     if (child == NULL)
-      child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, lassoSoapEnvHRef);
+      child = xmlSecFindNode(node->private->node, name, lassoSoapEnvHRef);
     if (child == NULL)
-      child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, lassoMetadataHRef);
+      child = xmlSecFindNode(node->private->node, name, lassoMetadataHRef);
   }
   if (child != NULL)
     return (lasso_node_new_from_xmlNode(child));
@@ -927,7 +929,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   	      LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node)));
 
   /* find start node */
-  signature = (xmlNodePtr)xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
+  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, 
 					 xmlSecDSigNs);
   if (signature == NULL) {
     debug(ERROR, "Signature element not found.\n");
@@ -1008,7 +1010,7 @@ lasso_node_impl_add_child(LassoNode *node,
     if (node->private->node->ns != NULL) {
       href = node->private->node->ns->href;
     }
-    old_child = (xmlNodePtr)xmlSecFindNode(node->private->node,
+    old_child = xmlSecFindNode(node->private->node,
 				           child->private->node->name,
 				           href);
   }
@@ -1142,7 +1144,7 @@ lasso_node_impl_new_child(LassoNode     *node,
     if (node->private->node->ns != NULL) {
       href = node->private->node->ns->href;
     }
-    old_child = (xmlNodePtr)xmlSecFindNode(node->private->node, name, href);
+    old_child = xmlSecFindNode(node->private->node, name, href);
     /* old_child = lasso_node_get_child(node, name); */
   }
 
