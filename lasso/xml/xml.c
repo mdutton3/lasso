@@ -943,6 +943,7 @@ lasso_node_impl_add_child(LassoNode *node,
 {
   xmlNodePtr old_child = NULL;
   LassoNode *search_child = NULL;
+  xmlChar   *href = NULL;
   gint i;
 
   g_return_if_fail (LASSO_IS_NODE(node));
@@ -950,9 +951,12 @@ lasso_node_impl_add_child(LassoNode *node,
 
   /* if child is not unbounded, we search it */
   if (!unbounded) {
+    if (node->private->node->ns != NULL) {
+      href = node->private->node->ns->href;
+    }
     old_child = xmlSecFindNode(node->private->node,
 			       child->private->node->name,
-			       child->private->node->ns->href);
+			       href);
   }
 
   if (!unbounded && old_child != NULL) {
@@ -1071,14 +1075,18 @@ lasso_node_impl_new_child(LassoNode     *node,
 {
   //LassoNode *old_child = NULL;
   xmlNodePtr old_child = NULL;
+  xmlChar   *href = NULL;
 
   g_return_if_fail (LASSO_IS_NODE(node));
   g_return_if_fail (name != NULL);
   g_return_if_fail (content != NULL);
   
   if (!unbounded) {
+    if (node->private->node->ns != NULL) {
+      href = node->private->node->ns->href;
+    }
     old_child = xmlSecFindNode(node->private->node, name,
-			       node->private->node->ns->href);
+			       href);
     //old_child = lasso_node_get_child(node, name);
   }
 
