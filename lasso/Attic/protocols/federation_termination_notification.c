@@ -95,7 +95,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
 					 providerID);
 
   identifier = lasso_saml_name_identifier_new(nameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),nameQualifier);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), nameQualifier);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), format);
 
   lasso_lib_federation_termination_notification_set_nameIdentifier(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request),
@@ -143,7 +143,8 @@ lasso_federation_termination_notification_new_from_query(const xmlChar *query)
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
 
-     lasso_lib_federation_termination_notification_set_nameIdentifier(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification), identifier);
+     lasso_lib_federation_termination_notification_set_nameIdentifier(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification),
+								      LASSO_SAML_NAME_IDENTIFIER(identifier));
 
      return(notification);
 }

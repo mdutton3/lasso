@@ -184,7 +184,8 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPFormat"), 0);
      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), str);
      
-     lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), idpidentifier);
+     lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
+									      LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
      
      /* SPPProvidedNameIdentifier */
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
@@ -194,7 +195,8 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPFormat"), 0);
      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
      
-     lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), spidentifier);
+     lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
+									     LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
  
      /* OldPProvidedNameIdentifier */
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldProvidedNameIdentifier"), 0);
@@ -204,7 +206,8 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
      str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldFormat"), 0);
      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), str);
      
-     lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), oldidentifier);
+     lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
+									      LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
 
      g_datalist_clear(&gd);
 

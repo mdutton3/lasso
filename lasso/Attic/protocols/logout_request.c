@@ -143,7 +143,7 @@ lasso_logout_request_new_from_query(const xmlChar *query)
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
      
-  lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), identifier);
+  lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), LASSO_SAML_NAME_IDENTIFIER(identifier));
   
   /* RelayState */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
@@ -153,7 +153,7 @@ lasso_logout_request_new_from_query(const xmlChar *query)
   /* SessionIndex */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0);
   if (str != NULL)
-    lasso_lib_logout_request_set_sessionIndex(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+    lasso_lib_logout_request_set_sessionIndex(LASSO_SAML_NAME_IDENTIFIER(identifier), (const xmlChar *)str);
   
   /* consent */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);
