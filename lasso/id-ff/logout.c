@@ -1112,79 +1112,85 @@ lasso_logout_new(LassoServer       *server,
 
 LassoLogout*
 lasso_logout_new_from_dump(LassoServer *server,
-		 gchar       *dump)
+			   gchar       *dump)
 {
-  LassoLogout *logout;
+  LassoLogout  *logout;
+  LassoProfile *profile;
+  LassoNode   *node_dump, *request_node, *response_node;
+  LassoNode   *initial_request_node, *initial_response_node;
+  gchar       *type, *export, *initial_remote_providerID;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(dump != NULL, NULL);
 
-/*   logout = LASSO_LOGOUT(g_object_new(LASSO_TYPE_LOGOUT, */
-/* 				     "server", lasso_server_copy(server), */
-/* 				     NULL)); */
+  logout = LASSO_LOGOUT(g_object_new(LASSO_TYPE_LOGOUT,
+				     "server", lasso_server_copy(server),
+				     NULL));
 
-/*   node_dump = lasso_node_new_from_dump(dump); */
+  node_dump = lasso_node_new_from_dump(dump);
 
   /* profile attributes */
-/*   LASSO_PROFILE(logout)->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier", */
-/* 									  lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID", */
-/* 									  lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->msg_url        = lasso_node_get_child_content(node_dump, "MsgUrl", */
-/* 								       lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->msg_body       = lasso_node_get_child_content(node_dump, "MsgBody", */
-/* 								       lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->msg_relayState = lasso_node_get_child_content(node_dump, "MsgRelayState", */
-/* 								       lassoLassoHRef, NULL); */
-
+  profile->nameIdentifier    = lasso_node_get_child_content(node_dump, "NameIdentifier",
+							    lassoLassoHRef, NULL);
+  profile->remote_providerID = lasso_node_get_child_content(node_dump, "RemoteProviderID",
+							    lassoLassoHRef, NULL);
+  profile->msg_url           = lasso_node_get_child_content(node_dump, "MsgUrl",
+							    lassoLassoHRef, NULL);
+  profile->msg_body          = lasso_node_get_child_content(node_dump, "MsgBody",
+							    lassoLassoHRef, NULL);
+  profile->msg_relayState    = lasso_node_get_child_content(node_dump, "MsgRelayState",
+							    lassoLassoHRef, NULL);
 
   /* rebuild request */
-/*   type = lasso_node_get_child_content(node_dump, "RequestType", lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->request_type = atoi(type); */
-/*   xmlFree(type); */
-  
-/*   if (LASSO_PROFILE(logout)->request_type == lassoMessageTypeLogoutRequest) { */
-/*     request_node = lasso_node_get_child(node_dump, "LogoutRequest", lassoLibHRef, NULL); */
-/*   } */
-/*   if (request_node != NULL) { */
-/*     export = lasso_node_export(request_node); */
-/*     if (LASSO_PROFILE(logout)->request_type == lassoMessageTypeLogoutRequest) { */
-/*       LASSO_PROFILE(logout)->request = lasso_logout_request_new_from_export(export, */
-/* 									    lassoNodeExportTypeXml); */
-/*     g_free(export); */
-/*     lasso_node_destroy(request_node); */
-/*   } */
+  request_node = lasso_node_get_child(node_dump, "LogoutRequest", lassoLibHRef, NULL);
+  if (request_node != NULL) {
+    export = lasso_node_export(request_node);
+    profile->request = lasso_logout_request_new_from_export(export,
+							    lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(request_node);
+  }
 
- /*  /\* rebuild response *\/ */
-/*   type = lasso_node_get_child_content(node_dump, "ResponseType", lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(login)->response_type = atoi(type); */
-/*   xmlFree(type); */
-
-/*   if (LASSO_PROFILE(logout)->response_type == lassoMessageTypeAuthnResponse) { */
-/*     response_node = lasso_node_get_child(node_dump, "AuthnResponse", lassoLibHRef, NULL); */
-/*   } */
-/*   else if (LASSO_PROFILE(logout)->response_type == lassoMessageTypeResponse) { */
-/*     response_node = lasso_node_get_child(node_dump, "Response", lassoSamlProtocolHRef, NULL); */
-/*   } */
-/*   if (response_node != NULL) { */
-/*     export = lasso_node_export(response_node); */
-/*     if (LASSO_PROFILE(logout)->response_type == lassoMessageTypeAuthnResponse) { */
-/*       LASSO_PROFILE(logout)->response = lasso_authn_response_new_from_export(export, */
-/* 									    lassoNodeExportTypeXml); */
-/*     } */
-/*     else if (LASSO_PROFILE(logout)->response_type == lassoMessageTypeResponse) { */
-/*       LASSO_PROFILE(logout)->response = lasso_response_new_from_export(export, */
-/* 								      lassoNodeExportTypeXml); */
-/*     } */
-/*     g_free(export); */
-/*     lasso_node_destroy(response_node); */
-/*   } */
+  /* rebuild response */
+  response_node = lasso_node_get_child(node_dump, "LogoutResponse", lassoLibHRef, NULL);
+  if (response_node != NULL) {
+    export = lasso_node_export(response_node);
+    profile->response = lasso_logout_response_new_from_export(export,
+							      lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(response_node);
+  }
   
-/*   type = lasso_node_get_child_content(node_dump, "ProviderType", lassoLassoHRef, NULL); */
-/*   LASSO_PROFILE(logout)->provider_type = atoi(type); */
-/*   xmlFree(type); */
+  /* provider type */
+  type = lasso_node_get_child_content(node_dump, "ProviderType", lassoLassoHRef, NULL);
+  profile->provider_type = atoi(type);
+  xmlFree(type);
 
   /* logout attributes */
+  /* Initial logout request */
+  initial_request_node = lasso_node_get_child(node_dump, "InitialRequest", lassoLassoHRef, NULL);
+  if (initial_request_node != NULL) {
+    request_node = lasso_node_get_child(node_dump, "LogoutRequest", lassoLibHRef, NULL);
+    export = lasso_node_export(request_node);
+    profile->request = lasso_logout_request_new_from_export(export,
+							    lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(request_node);
+  }
+
+  /* Initial logout response */
+  initial_response_node = lasso_node_get_child(node_dump, "InitialResponse", lassoLassoHRef, NULL);
+  if (initial_response_node != NULL) {
+    response_node = lasso_node_get_child(node_dump, "LogoutResponse", lassoLibHRef, NULL);
+    export = lasso_node_export(response_node);
+    profile->response = lasso_logout_response_new_from_export(export,
+							      lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(response_node);
+  }
+
+  /* Initial logout remote provider id */
+  logout->initial_remote_providerID = lasso_node_get_child_content(node_dump, "InitialRemoteProviderID", lassoLassoHRef, NULL);
 
 
   return(logout);
