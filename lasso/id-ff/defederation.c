@@ -64,7 +64,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 {
   LassoProfile      *profile;
   LassoProvider     *provider;
-  xmlChar           *protocolProfile;
+  xmlChar           *protocolProfile = NULL;
   gchar             *url = NULL, *query = NULL;
   lassoProviderType  remote_provider_type;
   gint               ret = 0;
@@ -192,7 +192,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
 {
   LassoProfile    *profile;
   LassoProvider   *provider;
-  LassoFederation *federation;
+  LassoFederation *federation = NULL;
   LassoNode       *nameIdentifier = NULL;
   xmlChar         *content = NULL, *nameQualifier = NULL, *format = NULL;
   xmlChar         *federationTerminationProtocolProfile;
@@ -442,8 +442,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 {
   LassoProfile    *profile;
   LassoProvider   *provider;
-  LassoFederation *federation;
-  LassoNode       *nameIdentifier;
+  LassoFederation *federation = NULL;
+  LassoNode       *nameIdentifier = NULL;
   gint             ret = 0;
   gint            remote_provider_type;
 

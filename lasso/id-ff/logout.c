@@ -844,7 +844,7 @@ gint
 lasso_logout_validate_request(LassoLogout *logout)
 {
   LassoProfile    *profile;
-  LassoFederation *federation;
+  LassoFederation *federation = NULL;
   LassoNode       *nameIdentifier, *assertion;
   LassoNode       *statusCode;
   LassoNodeClass  *statusCode_class;

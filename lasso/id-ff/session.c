@@ -263,7 +263,6 @@ lasso_session_get_provider_index(LassoSession *session,
   gchar *providerID;
 
   g_return_val_if_fail(session != NULL, NULL);
-  g_return_val_if_fail(providerID != NULL, NULL);
 
   /* verify index is valid */
   if ( (session->providerIDs == NULL) && (session->providerIDs->len < 0) ) {

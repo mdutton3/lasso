@@ -1430,6 +1430,8 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
     signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
 					  xmlSecTransformDsaSha1Id, NULL);
     break;
+  default:
+    signature = NULL;
   }
  
   if (signature == NULL) {

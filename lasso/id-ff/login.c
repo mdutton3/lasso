@@ -133,7 +133,7 @@ lasso_login_process_federation(LassoLogin *login)
 {
   LassoFederation *federation;
   LassoNode *nameIdentifier;
-  xmlChar *id, *nameIDPolicy, *consent;
+  xmlChar *id, *nameIDPolicy, *consent = NULL;
   gint ret = 0;
   GError *err = NULL;
 
@@ -327,7 +327,7 @@ gint
 lasso_login_accept_sso(LassoLogin *login)
 {
   LassoNode *assertion = NULL;
-  LassoNode *ni;
+  LassoNode *ni = NULL;
   LassoNode *idp_ni, *idp_ni_copy = NULL;
   LassoFederation *federation = NULL;
   gint ret = 0;
@@ -1386,7 +1386,7 @@ lasso_login_new_from_dump(LassoServer *server,
 			  gchar       *dump)
 {
   LassoLogin *login;
-  LassoNode *node_dump, *request_node, *response_node;
+  LassoNode *node_dump, *request_node = NULL, *response_node = NULL;
   gchar *protocolProfile, *export, *type;
 
   /* nico : assertion vars */
