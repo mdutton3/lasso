@@ -55,6 +55,7 @@
 #include "protocols/elements/py_authentication_statement.h"
 
 #include "environs/py_federation_termination.h"
+#include "environs/py_lecp.h"
 #include "environs/py_login.h"
 #include "environs/py_logout.h"
 #include "environs/py_profile_context.h"
@@ -212,6 +213,15 @@ static PyMethodDef lasso_methods[] = {
   {"federation_termination_init_notification",        federation_termination_init_notification,        METH_VARARGS},
   {"federation_termination_process_notification_msg", federation_termination_process_notification_msg, METH_VARARGS},
 
+  /* py_lecp.h */
+  {"lecp_new",                                 lecp_new,                                 METH_VARARGS},
+  {"lecp_build_authn_request_envelope_msg",    lecp_build_authn_request_envelope_msg,    METH_VARARGS},
+  {"lecp_build_authn_response_envelope_msg",   lecp_build_authn_response_envelope_msg,   METH_VARARGS},
+  {"lecp_destroy",                             lecp_destroy,                             METH_VARARGS},
+  {"lecp_init_authn_request_envelope",         lecp_init_authn_request_envelope,         METH_VARARGS},
+  {"lecp_process_authn_request_envelope_msg",  lecp_process_authn_request_envelope_msg,  METH_VARARGS},
+  {"lecp_process_authn_response_envelope_msg", lecp_process_authn_response_envelope_msg, METH_VARARGS},
+
   /* py_login.h */
   {"login_getattr",                     login_getattr,                     METH_VARARGS},
   {"login_new",                         login_new,                         METH_VARARGS},
@@ -239,7 +249,9 @@ static PyMethodDef lasso_methods[] = {
   {"logout_destroy",              logout_destroy,              METH_VARARGS},
   {"logout_get_next_providerID",  logout_get_next_providerID,  METH_VARARGS},
   {"logout_init_request",         logout_init_request,         METH_VARARGS},
-  {"logout_process_request_msg",  logout_process_request_msg,  METH_VARARGS},
+  {"logout_load_request_msg",     logout_load_request_msg,     METH_VARARGS},
+  {"logout_load_user_dump",       logout_load_user_dump,       METH_VARARGS},
+  {"logout_process_request",      logout_process_request,  METH_VARARGS},
   {"logout_process_response_msg", logout_process_response_msg, METH_VARARGS},
 
   /* py_register_name_identifier.h */

@@ -1008,8 +1008,8 @@ class Logout:
 		ret = User(_obj=ret)
         return ret
 
-    def new(cls, server, user, provider_type):
-	obj = lassomod.logout_new(server, user, provider_type)
+    def new(cls, provider_type, server, user = None):
+	obj = lassomod.logout_new(provider_type, server, user)
 	return Logout(obj)
     new = classmethod(new)
 
@@ -1028,8 +1028,14 @@ class Logout:
     def init_request(self, remote_providerID = None):
 	return lassomod.logout_init_request(self, remote_providerID);
 
-    def process_request_msg(self, request_msg, request_method):
-	return lassomod.logout_process_request_msg(self, request_msg, request_method);
+    def load_request_msg(self, request_msg, request_method):
+	return lassomod.logout_load_request_msg(self, request_msg, request_method);
+
+    def load_user_dump(self, user_dump):
+	return lassomod.logout_load_user_dump(self, user_dump);
+
+    def process_request(self):
+	return lassomod.logout_process_request(self);
 
     def process_response_msg(self, response_msg, response_method):
 	return lassomod.logout_process_response_msg(self, response_msg, response_method);
@@ -1126,3 +1132,50 @@ class RegisterNameIdentifier:
 
     def process_response_msg(self, response_msg, response_method):
 	return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method);
+
+class Lecp:
+    """\brief Short desc
+
+    Long desc
+    """
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __init__(self, _obj):
+	"""
+	The constructor
+	"""
+	self._o = _obj
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.lecp_getattr(self, name)
+        return ret
+
+    def new(cls):
+	obj = lassomod.lecp_new()
+	return Lecp(obj)
+    new = classmethod(new)
+
+    def build_authn_request_envelope_msg(self):
+	pass
+
+    def build_authn_response_envelope_msg(self):
+	pass
+
+    def destroy(self):
+	pass
+
+    def init_authn_request_envelope(self):
+	pass
+
+    def process_authn_request_envelope_msg(self):
+	pass
+
+    def process_authn_response_envelope_msg(self):
+	pass
+
