@@ -65,6 +65,9 @@ lasso_strerror(int error_code)
   case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
     return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
 
+  case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
+    return "Invalid NameIDPolicy in lib:AuthnRequest : %s\n";
+
   case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
     return "Unsupported logout protocol profile\n";
 
