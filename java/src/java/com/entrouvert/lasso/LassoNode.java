@@ -1,11 +1,11 @@
-/* $Id$
- *
+/*
  * JLasso -- Java bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.labs.libre-entreprise.org
+ * http://lasso.entrouvert.com
  *
  * Authors: Benjamin Poussin <poussin@codelutin.com>
+ *          Emmanuel Raviart <eraviart@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* *
- * LassoNode.java
- *
- * Created: 17 juil. 2004
- *
- * @author Benjamin Poussin <poussin@codelutin.com>
- * @version $Revision$
- *
- * Mise a jour: $Date$
- * par : $Author$
- */
-
 package com.entrouvert.lasso;
 
-public abstract class LassoNode { // LassoNode
-
-    /** used to store ref to the c real object, this field must be used only by native methode */
-    protected long c_lasso_object = 0;
+public abstract class LassoNode extends LassoObject { // LassoNode
 
     protected void finalize(){
         destroy();
     }
     native protected void destroy();
 
-
-} // LassoNode
-
+}  // LassoNode

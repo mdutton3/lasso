@@ -1,8 +1,9 @@
 /*
+ *
  * JLasso -- Java bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.entrouvert.com
+ * http://lasso.labs.libre-entreprise.org
  *
  * Authors: Benjamin Poussin <poussin@codelutin.com>
  *          Emmanuel Raviart <eraviart@entrouvert.com>
@@ -22,15 +23,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <helper.h>
-#include <com_entrouvert_lasso_LassoResponse.h>
-#include <lasso/lasso.h>
+package com.entrouvert.lasso;
 
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoResponse_init
-(JNIEnv * env, jobject this){
-    LassoNode * response;
+public abstract class LassoObject { // LassoObject
 
-    response = lasso_response_new();
+    /** used to store ref to the c real object, this field must be used only by native methode */
+    protected long c_lasso_object = 0;
 
-    storeCObject(env, this, response);
-}
+} // LassoObject
+

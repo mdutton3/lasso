@@ -23,14 +23,5 @@
  */
 
 #include <helper.h>
-#include <com_entrouvert_lasso_LassoResponse.h>
 #include <lasso/lasso.h>
-
-JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoResponse_init
-(JNIEnv * env, jobject this){
-    LassoNode * response;
-
-    response = lasso_response_new();
-
-    storeCObject(env, this, response);
-}
+#include <com_entrouvert_lasso_LassoNode.h>

@@ -1,8 +1,14 @@
 TARGET=target
 
-JAVAC=/opt/jdk/bin/javac
-JAVAH=/opt/jdk/bin/javah
-JAR=/opt/jdk/bin/jar
+#JAVAC=/opt/jdk/bin/javac
+#JAVAH=/opt/jdk/bin/javah
+#JAVAH_CLASSPATH_PREFIX=
+#JAR=/opt/jdk/bin/jar
+
+JAVAC=/usr/lib/kaffe/bin/javac
+JAVAH=/usr/lib/kaffe/bin/javah
+JAVAH_CLASSPATH_PREFIX=/usr/share/kaffe/Klasses.jar:
+JAR=/usr/lib/kaffe/bin/jar
 
 JAVA_BUILD_DIR=${TARGET}/classes
 JAVA_SOURCE_DIR=src/java
@@ -27,7 +33,7 @@ binary-java:
 	${JAR} cf ${LASSO.JAR} -C ${JAVA_BUILD_DIR} com
 
 generate-header: binary-java
-	${JAVAH} -d ${C_SOURCE_DIR} -classpath ${JAVA_BUILD_DIR} ${JAVA_CLASSES}
+	${JAVAH} -d ${C_SOURCE_DIR} -classpath ${JAVAH_CLASSPATH_PREFIX}${JAVA_BUILD_DIR} ${JAVA_CLASSES}
 
 binary-c: ${LASSO.SO}
 
@@ -35,7 +41,7 @@ ${C_OBJECT}: ${C_SOURCE}
 	${MAKE} -C ${C_SOURCE_DIR}
 
 ${LASSO.SO}: generate-header ${C_OBJECT}
-	$(CC) -shared ${C_OBJECT} -o $@
+	$(CC) -shared -lgobject-2.0 -lglib-2.0 -llasso ${C_OBJECT} -o $@
 
 clean:
 	${MAKE} -C ${C_SOURCE_DIR} clean
