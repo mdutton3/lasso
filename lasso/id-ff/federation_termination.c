@@ -86,7 +86,6 @@ lasso_federation_termination_destroy(LassoFederationTermination *defederation)
 gchar *
 lasso_federation_termination_dump(LassoFederationTermination *defederation)
 {
-  LassoProfileContext *profileContext;
   gchar *dump;
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), NULL);
@@ -176,9 +175,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 {
   LassoProfileContext *profileContext;
   LassoIdentity       *identity;
-  LassoNode           *nameIdentifier, *assertion;
-  LassoNode           *statusCode;
-  LassoNodeClass      *statusCode_class;
+  LassoNode           *nameIdentifier;
   xmlChar             *remote_providerID;
 
   profileContext = LASSO_PROFILE_CONTEXT(defederation);
