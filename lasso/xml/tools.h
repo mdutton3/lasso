@@ -30,13 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <glib-object.h>
-
-#include <libxml/tree.h>
+#include <glib.h>
 #include <xmlsec/crypto.h>
-
-#include <string.h>
-
 #include <lasso/export.h>
 
 typedef enum {

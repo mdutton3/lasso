@@ -30,9 +30,9 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/saml_subject_statement_abstract.h>
 #include <lasso/xml/saml_authority_binding.h>
 #include <lasso/xml/saml_subject_locality.h>
+#include <lasso/xml/saml_subject_statement_abstract.h>
 
 #define LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT (lasso_saml_authentication_statement_get_type())
 #define LASSO_SAML_AUTHENTICATION_STATEMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, LassoSamlAuthenticationStatement))
@@ -54,12 +54,10 @@ struct _LassoSamlAuthenticationStatement {
 	char *AuthenticationMethod;
 	/* <attribute name="AuthenticationInstant" type="dateTime" use="required"/> */
 	char *AuthenticationInstant;
-
 };
 
 struct _LassoSamlAuthenticationStatementClass {
-  LassoSamlSubjectStatementAbstractClass parent;
-  /*< vtable >*/
+	LassoSamlSubjectStatementAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_authentication_statement_get_type(void);

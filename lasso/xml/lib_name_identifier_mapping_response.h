@@ -31,8 +31,8 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/samlp_response_abstract.h>
-#include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_status.h>
+#include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/lib_name_identifier_mapping_request.h>
 
 #define LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE (lasso_lib_name_identifier_mapping_response_get_type())

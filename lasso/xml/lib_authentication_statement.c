@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/lib_authentication_statement.h>
+#include <lasso/xml/lib_subject.h>
 
 /*
 The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):

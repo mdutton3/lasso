@@ -37,7 +37,6 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-#include <lasso/xml/errors.h>
 #include <lasso/xml/xml.h>
 
 static GObjectClass *parent_class = NULL;

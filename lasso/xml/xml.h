@@ -30,8 +30,19 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <string.h>
+
+#include <glib.h>
+#include <glib-object.h>
+#include <glib/gprintf.h>
+
+#include <libxml/uri.h>
+#include <libxml/tree.h>
+
+#include <lasso/xml/errors.h>
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
+
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))

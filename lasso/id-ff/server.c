@@ -23,14 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string.h>
-
 #include <xmlsec/base64.h>
-
-#include <lasso/xml/errors.h>
 #include <lasso/id-ff/server.h>
-
-#include <lasso/lasso_config.h>
 
 struct _LassoServerPrivate
 {

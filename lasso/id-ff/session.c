@@ -24,9 +24,6 @@
  */
 
 #include <lasso/id-ff/session.h>
-#include <lasso/xml/errors.h>
-#include <lasso/lasso_config.h>
-#include <libxml/tree.h>
 
 struct _LassoSessionPrivate
 {

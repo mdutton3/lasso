@@ -33,8 +33,6 @@ extern "C" {
 #include <lasso/xml/saml_authentication_statement.h>
 #include <lasso/xml/lib_authn_context.h>
 
-#include <lasso/xml/lib_subject.h>
-
 #define LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT (lasso_lib_authentication_statement_get_type())
 #define LASSO_LIB_AUTHENTICATION_STATEMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, LassoLibAuthenticationStatement))
 #define LASSO_LIB_AUTHENTICATION_STATEMENT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, LassoLibAuthenticationStatementClass))

@@ -72,21 +72,6 @@ LASSO_EXPORT LassoNode* lasso_samlp_response_abstract_new           (void);
 LASSO_EXPORT void lasso_samlp_response_abstract_fill(LassoSamlpResponseAbstract *response,
 		const char *InResponseTo, const char *Recipient);
 
-#if 0
-LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature       (LassoSamlpResponseAbstract *node,
-								     gint                        sign_method,
-								     const xmlChar              *private_key_file,
-								     const xmlChar              *certificate_file);
-
-LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature_tmpl  (LassoSamlpResponseAbstract *node,
-								     lassoSignatureType          sign_type,
-								     lassoSignatureMethod        sign_method);
-
-LASSO_EXPORT gint lasso_samlp_response_abstract_sign_signature_tmpl (LassoSamlpResponseAbstract *node,
-								     const xmlChar              *private_key_file,
-								     const xmlChar              *certificate_file);
-#endif
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

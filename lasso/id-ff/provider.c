@@ -30,7 +30,6 @@
 #include <xmlsec/xmltree.h>
 
 #include <lasso/id-ff/provider.h>
-#include <lasso/xml/errors.h>
 
 struct _LassoProviderPrivate
 {

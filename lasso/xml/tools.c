@@ -32,10 +32,11 @@
 #include <openssl/sha.h>
 #include <openssl/engine.h>
 
-#include <xmlsec/xmltree.h>
 #include <xmlsec/base64.h>
+#include <xmlsec/xmltree.h>
 
 #include <lasso/xml/tools.h>
+
 #include <lasso/xml/errors.h>
 #include <lasso/xml/strings.h>
 

@@ -23,20 +23,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <glib.h>
-#include <glib/gprintf.h>
-
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-#include <lasso/xml/errors.h>
 #include <lasso/xml/samlp_response.h>
 #include <lasso/xml/samlp_request.h>
 #include <lasso/xml/lib_authn_response.h>
 #include <lasso/xml/lib_status_response.h>
-#include <lasso/id-ff/profile.h>
 
-#include <lasso/lasso_config.h>
+#include <lasso/id-ff/profile.h>
 
 struct _LassoProfilePrivate
 {

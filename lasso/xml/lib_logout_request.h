@@ -30,8 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_request_abstract.h>
+#include <lasso/xml/saml_name_identifier.h>
 
 #define LASSO_TYPE_LIB_LOGOUT_REQUEST (lasso_lib_logout_request_get_type())
 #define LASSO_LIB_LOGOUT_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_LOGOUT_REQUEST, LassoLibLogoutRequest))

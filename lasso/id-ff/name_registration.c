@@ -23,12 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <string.h>
-#include <glib/gprintf.h>
-
 #include <lasso/id-ff/name_registration.h>
-
-#include <lasso/xml/errors.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
