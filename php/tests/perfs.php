@@ -57,9 +57,11 @@ for ($i=0; $i < 50; $i++) {
     $request->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
     $request->ProtocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
     $login->buildAuthnRequestMsg();
+    printf("%s\n", $login->msgUrl);
 }
 
 $query = $login->msgUrl;
+print $query;
 $authn_response_msg = create_authnresponse($query);
 
 printf("Processing 50 AuthnResponse...\n");

@@ -138,11 +138,14 @@ end = """
 i = wrap.find(begin)
 while i >= 0:
     j = wrap.find(end, i) + len(end)
+    if j < len(end): # bails out if not found
+        break
     segment = wrap[i:j]
     x = segment.find('object_init_ex(obj,') + len('object_init_ex(obj,')
     y = segment.find(')', x)
     segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
     wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
     i = wrap.find(begin, i + len(segment))
+    print i, j
 
 print wrap
