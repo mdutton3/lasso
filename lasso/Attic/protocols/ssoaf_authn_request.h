@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/protocols/protocol.h>
+#include <lasso/xml/lib_authn_request.h>
 
 #define LASSO_TYPE_AUTHN_REQUEST (lasso_authn_request_get_type())
 #define LASSO_AUTHN_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_AUTHN_REQUEST, LassoAuthnRequest))
@@ -43,45 +43,25 @@ typedef struct _LassoAuthnRequest LassoAuthnRequest;
 typedef struct _LassoAuthnRequestClass LassoAuthnRequestClass;
 
 struct _LassoAuthnRequest {
-  LassoProtocol parent;
+  LassoLibAuthnRequest parent;
+  /*< public >*/
   /*< private >*/
 };
 
 struct _LassoAuthnRequestClass {
-  LassoProtocolClass parent;
+  LassoLibAuthnRequestClass parent;
 };
 
-LASSO_EXPORT GType          lasso_authn_request_get_type             (void);
-LASSO_EXPORT LassoProtocol* lasso_authn_request_new                  (const xmlChar     *providerID);
+LASSO_EXPORT GType      lasso_authn_request_get_type          (void);
+LASSO_EXPORT LassoNode* lasso_authn_request_new               (const xmlChar     *providerID);
 
-LASSO_EXPORT void lasso_authn_request_set_assertionConsumerServiceID (LassoAuthnRequest *request,
-								      const xmlChar     *assertionConsumerServiceID);
+LASSO_EXPORT void lasso_authn_request_set_requestAuthnContext (LassoAuthnRequest *request,
+							       GPtrArray         *authnContextClassRefs,
+							       GPtrArray         *authnContextStatementRefs,
+							       const xmlChar     *authnContextComparison);
 
-LASSO_EXPORT void lasso_authn_request_set_consent                    (LassoAuthnRequest *request,
-								      const xmlChar     *consent);
-
-LASSO_EXPORT void lasso_authn_request_set_forceAuthn                 (LassoAuthnRequest *request,
-								      gint               forceAuthn);
-
-LASSO_EXPORT void lasso_authn_request_set_isPassive                  (LassoAuthnRequest *request,
-								      gint               isPassive);
-
-LASSO_EXPORT void lasso_authn_request_set_nameIDPolicy               (LassoAuthnRequest *request,
-								      const xmlChar     *nameIDPolicy);
-
-LASSO_EXPORT void lasso_authn_request_set_protocolProfile            (LassoAuthnRequest *request,
-								      const xmlChar     *protocolProfile);
-
-LASSO_EXPORT void lasso_authn_request_set_requestAuthnContext        (LassoAuthnRequest *request,
-								      GPtrArray         *authnContextClassRefs,
-								      GPtrArray         *authnContextStatementRefs,
-								      const xmlChar     *authnContextComparison);
-
-LASSO_EXPORT void lasso_authn_request_set_relayState                 (LassoAuthnRequest *request,
-								      const xmlChar     *relayState);
-
-LASSO_EXPORT void lasso_authn_request_set_scoping                    (LassoAuthnRequest *request,
-								      gint               proxyCount);
+LASSO_EXPORT void lasso_authn_request_set_scoping              (LassoAuthnRequest *request,
+								gint               proxyCount);
 
 #ifdef __cplusplus
 }
