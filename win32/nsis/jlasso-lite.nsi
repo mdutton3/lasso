@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Liberty Alliance Single Sign On Java"
-!define PRODUCT_VERSION "0.4"
+!define PRODUCT_VERSION "0.4.1"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://www.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -48,7 +48,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-java-lite-0_4.exe"
+OutFile "Install-java-lite-0_4_1.exe"
 InstallDir "$PROGRAMFILES\Liberty Alliance Single Sign On Java"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -58,7 +58,7 @@ Function .onInit
 FunctionEnd
 
 Section "L.A.S.S.O. Java" SEC08
-  File "..\..\java\.libs\libjlasso.dll"
+  File "..\..\java\.libs\jlasso.dll"
   File "..\..\java\lasso.jar"
 SectionEnd
 
