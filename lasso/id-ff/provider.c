@@ -546,8 +546,10 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	/* if empty: not a ID-FF 1.2 metadata file -> bails out */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
 		xmlXPathFreeObject(xpathObj);
+		xmlXPathRegisterNs(xpathCtx, "md11",
+				"http://projectliberty.org/schemas/core/2002/12");
 		xpathObj = xmlXPathEvalExpression(
-				"/lib:SPDescriptor|/lib:IDPDescriptor", xpathCtx);
+				"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
 		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
 			xmlXPathFreeObject(xpathObj);
 			xmlFreeDoc(doc);
@@ -555,8 +557,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			return FALSE;
 		}
 		compatibility = TRUE;
-		xpath_idp = "/lib:IDPDescriptor";
-		xpath_sp = "/lib:SPDescriptor";
+		xpath_idp = "/md11:IDPDescriptor";
+		xpath_sp = "/md11:SPDescriptor";
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
 	provider->ProviderID = xmlGetProp(node, "providerID");
