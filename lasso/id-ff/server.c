@@ -428,7 +428,7 @@ lasso_server_new(const gchar *metadata,
 }
 
 /**
- * lasso_server_new_from_dump
+ * lasso_server_new_from_dump:
  * @dump: XML server dump
  *
  * Restores the @dump to a new #LassoServer.
@@ -454,7 +454,7 @@ lasso_server_new_from_dump(const gchar *dump)
  * lasso_server_dump:
  * @server: a #LassoServer
  *
- * Dumps server content to an XML string.
+ * Dumps @server content to an XML string.
  *
  * Return value: the dump string.  It must be freed by the caller.
  **/

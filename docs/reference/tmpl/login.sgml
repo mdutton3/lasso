@@ -1,0 +1,230 @@
+<!-- ##### SECTION Title ##### -->
+LassoLogin
+
+<!-- ##### SECTION Short_Description ##### -->
+Single Sign-On and Federation Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoLogin ##### -->
+<para>
+
+</para>
+
+@protocolProfile: 
+@assertionArtifact: 
+@assertion: 
+
+<!-- ##### ENUM lassoLoginProtocolProfile ##### -->
+<para>
+
+</para>
+
+@LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART: 
+@LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST: 
+
+<!-- ##### FUNCTION lasso_login_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_destroy ##### -->
+<para>
+
+</para>
+
+@login: 
+
+
+<!-- ##### FUNCTION lasso_login_dump ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_new_from_dump ##### -->
+<para>
+
+</para>
+
+@server: 
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_accept_sso ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_artifact_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@http_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_assertion ##### -->
+<para>
+
+</para>
+
+@login: 
+@authenticationMethod: 
+@authenticationInstant: 
+@reauthenticateOnOrAfter: 
+@notBefore: 
+@notOnOrAfter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_authn_request_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_authn_response_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_request_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_build_response_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@remote_providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_init_authn_request ##### -->
+<para>
+
+</para>
+
+@login: 
+@remote_providerID: 
+@http_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_init_request ##### -->
+<para>
+
+</para>
+
+@login: 
+@response_msg: 
+@response_http_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_must_ask_for_consent ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_must_authenticate ##### -->
+<para>
+
+</para>
+
+@login: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_process_authn_request_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@authn_request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_process_authn_response_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@authn_response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_process_request_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_process_response_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_validate_request_msg ##### -->
+<para>
+
+</para>
+
+@login: 
+@authentication_result: 
+@is_consent_obtained: 
+@Returns: 
+
+

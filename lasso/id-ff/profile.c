@@ -43,22 +43,24 @@ struct _LassoProfilePrivate
 /*****************************************************************************/
 
 LassoSamlNameIdentifier*
-lasso_profile_get_nameIdentifier(LassoProfile *ctx)
+lasso_profile_get_nameIdentifier(LassoProfile *profile)
 {
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
+	g_return_val_if_fail(LASSO_IS_PROFILE(profile), NULL);
 
-	g_return_val_if_fail(LASSO_IS_SERVER(ctx->server), NULL);
-	g_return_val_if_fail(LASSO_IS_IDENTITY(ctx->identity), NULL);
-	g_return_val_if_fail(ctx->remote_providerID != NULL, NULL);
+	g_return_val_if_fail(LASSO_IS_SERVER(profile->server), NULL);
+	g_return_val_if_fail(LASSO_IS_IDENTITY(profile->identity), NULL);
+	g_return_val_if_fail(profile->remote_providerID != NULL, NULL);
 
-	remote_provider = g_hash_table_lookup(ctx->server->providers, ctx->remote_providerID);
+	remote_provider = g_hash_table_lookup(
+			profile->server->providers, profile->remote_providerID);
 	if (remote_provider == NULL)
 		return NULL;
 
-	federation = g_hash_table_lookup(ctx->identity->federations, ctx->remote_providerID);
+	federation = g_hash_table_lookup(
+			profile->identity->federations, profile->remote_providerID);
 	if (federation == NULL)
 		return NULL;
 
@@ -77,6 +79,14 @@ lasso_profile_get_nameIdentifier(LassoProfile *ctx)
 	return NULL;
 }
 
+/**
+ * lasso_profile_get_request_type_from_soap_msg:
+ * @soap: the SOAP message
+ *
+ * Looks up and return the type of the request in a SOAP message.
+ *
+ * Return value: the type of request
+ **/
 lassoRequestType
 lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 {
@@ -120,13 +130,13 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 }
 
 /**
- * lasso_profile_is_liberty_query
+ * lasso_profile_is_liberty_query:
  * @query: HTTP query string
  *
  * Tests the query string to know if the URL is called as the result of a
  * Liberty redirect (action initiated elsewhere) or not.
  *
- * Returns: TRUE if lasso query, FALSE otherwise
+ * Return value: TRUE if lasso query, FALSE otherwise
  **/
 gboolean
 lasso_profile_is_liberty_query(const gchar *query)
@@ -157,35 +167,35 @@ lasso_profile_is_liberty_query(const gchar *query)
 
 
 LassoIdentity*
-lasso_profile_get_identity(LassoProfile *ctx)
+lasso_profile_get_identity(LassoProfile *profile)
 {
-	if (ctx->identity && g_hash_table_size(ctx->identity->federations))
-		return ctx->identity;
+	if (profile->identity && g_hash_table_size(profile->identity->federations))
+		return profile->identity;
 	return NULL;
 }
 
 LassoSession*
-lasso_profile_get_session(LassoProfile *ctx)
+lasso_profile_get_session(LassoProfile *profile)
 {
-	if (ctx->session && g_hash_table_size(ctx->session->assertions))
-		return ctx->session;
+	if (profile->session && g_hash_table_size(profile->session->assertions))
+		return profile->session;
 	return NULL;
 }
 
 gboolean
-lasso_profile_is_identity_dirty(LassoProfile *ctx)
+lasso_profile_is_identity_dirty(LassoProfile *profile)
 {
-	return (ctx->identity && ctx->identity->is_dirty);
+	return (profile->identity && profile->identity->is_dirty);
 }
 
 gboolean
-lasso_profile_is_session_dirty(LassoProfile *ctx)
+lasso_profile_is_session_dirty(LassoProfile *profile)
 {
-	return (ctx->session && ctx->session->is_dirty);
+	return (profile->session && profile->session->is_dirty);
 }
 
 void
-lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue)
+lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeValue)
 {
 	LassoSamlpStatus *status;
 
@@ -213,14 +223,14 @@ lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue
 		status->StatusCode->StatusCode->Value = g_strdup(statusCodeValue);
 	}
 
-	if (LASSO_IS_SAMLP_RESPONSE(ctx->response)) {
-		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(ctx->response);
+	if (LASSO_IS_SAMLP_RESPONSE(profile->response)) {
+		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(profile->response);
 		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
 		response->Status = status;
 		return;
 	}
-	if (LASSO_IS_LIB_STATUS_RESPONSE(ctx->response)) {
-		LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(ctx->response);
+	if (LASSO_IS_LIB_STATUS_RESPONSE(profile->response)) {
+		LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(profile->response);
 		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
 		response->Status = status;
 		return;
@@ -231,26 +241,26 @@ lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue
 } 
 
 gint
-lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump)
+lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	ctx->identity = lasso_identity_new_from_dump(dump);
-	if (ctx->identity == NULL)
+	profile->identity = lasso_identity_new_from_dump(dump);
+	if (profile->identity == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP);
 
 	return 0;
 }
 
 gint
-lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
+lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar  *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	ctx->session = lasso_session_new_from_dump(dump);
-	if (ctx->session == NULL)
+	profile->session = lasso_session_new_from_dump(dump);
+	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
-	ctx->session->is_dirty = FALSE;
+	profile->session->is_dirty = FALSE;
 
 	return 0;
 }
@@ -375,25 +385,5 @@ lasso_profile_get_type()
 				"LassoProfile", &this_info, 0);
 	}
 	return this_type;
-}
-
-LassoProfile*
-lasso_profile_new(LassoServer *server, LassoIdentity *identity, LassoSession *session)
-{
-	LassoProfile *profile = NULL;
-
-	g_return_val_if_fail(server != NULL, NULL);
-
-	profile = g_object_new(LASSO_TYPE_PROFILE, NULL);
-	profile->identity = identity;
-	profile->session = session;
-
-	return profile;
-}
-
-gchar*
-lasso_profile_dump(LassoProfile *profile)
-{
-	return lasso_node_dump(LASSO_NODE(profile), NULL, 1);
 }
 

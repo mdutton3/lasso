@@ -59,6 +59,7 @@ typedef enum {
 struct _LassoLogin {
 	LassoProfile parent;
 
+	/*< public >*/
 	lassoLoginProtocolProfile protocolProfile;
 	gchar *assertionArtifact;
 	LassoSamlAssertion *assertion;

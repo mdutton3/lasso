@@ -109,21 +109,17 @@ LASSO_EXPORT gboolean lasso_profile_is_liberty_query(const gchar *query);
 
 LASSO_EXPORT GType lasso_profile_get_type(void);
 
-LASSO_EXPORT LassoProfile* lasso_profile_new(LassoServer *server,
-		LassoIdentity *identity, LassoSession *session);
-
-LASSO_EXPORT gchar* lasso_profile_dump(LassoProfile *ctx);
-LASSO_EXPORT LassoIdentity* lasso_profile_get_identity(LassoProfile *ctx);
-LASSO_EXPORT LassoSession* lasso_profile_get_session(LassoProfile *ctx);
-LASSO_EXPORT gboolean lasso_profile_is_identity_dirty(LassoProfile *ctx);
-LASSO_EXPORT gboolean lasso_profile_is_session_dirty(LassoProfile *ctx);
+LASSO_EXPORT LassoIdentity* lasso_profile_get_identity(LassoProfile *profile);
+LASSO_EXPORT LassoSession* lasso_profile_get_session(LassoProfile *profile);
+LASSO_EXPORT gboolean lasso_profile_is_identity_dirty(LassoProfile *profile);
+LASSO_EXPORT gboolean lasso_profile_is_session_dirty(LassoProfile *profile);
 
 LASSO_EXPORT void lasso_profile_set_response_status(
-		LassoProfile *ctx, const gchar *statusCodeValue);
+		LassoProfile *profile, const gchar *statusCodeValue);
 
-LASSO_EXPORT gint lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump);
-LASSO_EXPORT gint lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar *dump);
-LASSO_EXPORT LassoSamlNameIdentifier* lasso_profile_get_nameIdentifier(LassoProfile *ctx);
+LASSO_EXPORT gint lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump);
+LASSO_EXPORT gint lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump);
+LASSO_EXPORT LassoSamlNameIdentifier* lasso_profile_get_nameIdentifier(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

@@ -43,22 +43,22 @@ struct _LassoLoginPrivate
 
 /**
  * lasso_login_build_assertion:
- * @login: a Login
+ * @login: a #LassoLogin
  * @authenticationMethod: the authentication method.
  * @authenticationInstant: the time at which the authentication took place or NULL.
  * @reauthenticateOnOrAfter: the time at, or after which the service provider
- * reauthenticates the Principal with the identity provider or NULL.
+ *     reauthenticates the Principal with the identity provider or NULL.
  * @notBefore: the earliest time instant at which the assertion is valid or NULL.
  * @notOnOrAfter: the time instant at which the assertion has expired or NULL.
  * 
  * Builds an assertion.
  * Assertion is stored in session property. If session property is NULL, a new
- * session is build before.
+ * session is built before.
  * The NameIdentifier of the assertion is stored into nameIdentifier proprerty.
  * If @authenticationInstant is NULL, the current time will be set.
  * Time values must be encoded in UTC.
  *
- * Return value: 0 on success or a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 int
 lasso_login_build_assertion(LassoLogin *login,
@@ -142,7 +142,7 @@ lasso_login_build_assertion(LassoLogin *login,
 
 /**
  * lasso_login_must_ask_for_consent_private:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
  * Evaluates if it is necessary to ask the consent of the Principal. 
  * This method doesn't take the isPassive value into account.
@@ -929,9 +929,9 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 
 /**
  * lasso_login_must_ask_for_consent:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
- * Evaluates if a consent must be ask to the Principal to federate him.
+ * Evaluates if consent must be asked to the Principal to federate him.
  * 
  * Return value: TRUE or FALSE
  **/
@@ -948,7 +948,7 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 
 /**
  * lasso_login_must_authenticate:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
  * Verifies if the user must be authenticated or not.
  * 
@@ -1297,6 +1297,15 @@ lasso_login_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_login_new
+ * @server: a #LassoServer
+ *
+ * Creates a new #LassoLogin.
+ *
+ * Return value: a newly created #LassoLogin object; or NULL if an error
+ *     occured
+ **/
 LassoLogin*
 lasso_login_new(LassoServer *server)
 {
@@ -1310,6 +1319,14 @@ lasso_login_new(LassoServer *server)
 	return login;
 }
 
+/**
+ * lasso_login_new_from_dump:
+ * @dump: XML login dump
+ *
+ * Restores the @dump to a new #LassoLogin.
+ *
+ * Return value: a newly created #LassoLogin; or NULL if an error occured
+ **/
 LassoLogin*
 lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 {
@@ -1324,6 +1341,14 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	return login;
 }
 
+/**
+ * lasso_login_dump:
+ * @login: a #LassoLogin
+ *
+ * Dumps @login content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
+ **/
 gchar*
 lasso_login_dump(LassoLogin *login)
 {
