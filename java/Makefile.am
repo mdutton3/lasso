@@ -20,7 +20,7 @@ libjlasso_la_CFLAGS=	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
 			-I$(top_srcdir) -I$(top_srcdir)/lasso \
 			$(NULL)
-libjlasso_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
+libjlasso_la_LIBADD=	$(top_builddir)/lasso/liblasso.la \
                    	$(LASSO_LIBS) \
                    	$(NULL)
 libjlasso_la_LDFLAGS=	-no-undefined \
