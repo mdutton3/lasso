@@ -60,23 +60,25 @@ struct _LassoNodeClass {
   GObjectClass parent_class;
   /*< vtable >*/
   /*< public >*/
-  GString *   (* build_query)  (LassoNode     *node);
-  void        (* dump)         (LassoNode     *,
-				const xmlChar *,
-				int);
-  LassoAttr*  (* get_attr)     (LassoNode     *,
-				const xmlChar *);
-  GPtrArray*  (* get_attrs)    (LassoNode     *);
-  LassoNode*  (* get_child)    (LassoNode     *,
-				const xmlChar *);
-  GPtrArray*  (* get_children) (LassoNode     *);
-  xmlChar *   (* get_content)  (LassoNode     *);
-  xmlChar *   (* get_name)     (LassoNode     *);
-  GData *     (* serialize)    (LassoNode     *,
-				GData         *);
-  gchar *     (* url_encode)   (LassoNode     *node,
-				guint          sign_method,
-				const gchar   *key_file);
+  GString *   (* build_query)      (LassoNode     *node);
+  void        (* dump)             (LassoNode     *,
+				    const xmlChar *,
+				    int);
+  LassoAttr*  (* get_attr)         (LassoNode     *,
+				    const xmlChar *);
+  GPtrArray*  (* get_attrs)        (LassoNode     *);
+  LassoNode*  (* get_child)        (LassoNode     *,
+				    const xmlChar *);
+  GPtrArray*  (* get_children)     (LassoNode     *);
+  xmlChar *   (* get_content)      (LassoNode     *);
+  xmlChar *   (* get_name)         (LassoNode     *);
+  GData *     (* serialize)        (LassoNode     *,
+				    GData         *);
+  gchar *     (* url_encode)       (LassoNode     *node,
+				    guint          sign_method,
+				    const gchar   *key_file);
+  gint        (* verify_signature) (LassoNode     *node,
+				    const gchar   *certificate_file);
   /*< private >*/
   void       (* add_child)    (LassoNode *,
 			       LassoNode *,
@@ -139,6 +141,9 @@ LASSO_EXPORT GData*     lasso_node_serialize    (LassoNode *node,
 LASSO_EXPORT gchar*     lasso_node_url_encode   (LassoNode *node,
 						 guint sign_method,
 						 const gchar *key_file);
+
+LASSO_EXPORT gchar*     lasso_node_verify_signature(LassoNode *node,
+						    const gchar *certificate_file);
 
 #ifdef __cplusplus
 }

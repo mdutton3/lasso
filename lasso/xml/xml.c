@@ -133,6 +133,14 @@ lasso_node_url_encode(LassoNode *node,
   return (class->url_encode(node, sign_method, key_file));
 }
 
+gchar *
+lasso_node_verify_signature(LassoNode *node,
+			    const gchar *certificate_file)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->verify_signature(node, certificate_file));
+}
+
 /*****************************************************************************/
 /* virtual private methods                                                   */
 /*****************************************************************************/
@@ -482,6 +490,73 @@ lasso_node_impl_url_encode(LassoNode *node,
   return (ret);
 }
 
+gint
+lasso_node_impl_verify_signature(LassoNode *node,
+				 const gchar *certificate_file)
+{
+  xmlNodePtr *signature;
+  xmlSecKeysMngrPtr mngr;
+  xmlSecDSigCtxPtr dsigCtx = NULL;
+  int res = -1;
+ 
+  /* find start node */
+  signature = xmlSecFindNode(node->private->node, xmlSecNodeSignature, xmlSecDSigNs);
+  if(signature == NULL) {
+    fprintf(stderr, "Error: start node not found\n");
+    goto done;	
+  }
+
+  /* create simple keys mngr */
+  mngr = xmlSecKeysMngrCreate();
+  if(mngr == NULL) {
+    fprintf(stderr, "Error: failed to create keys manager.\n");
+    return(NULL);
+  }
+
+  if(xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
+    fprintf(stderr, "Error: failed to initialize keys manager.\n");
+    goto done;
+  }
+  
+  /* load trusted cert */
+  if(xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file, xmlSecKeyDataFormatPem,
+				     xmlSecKeyDataTypeTrusted) < 0) {
+    fprintf(stderr,"Error: failed to load pem certificate from \"%s\"\n", certificate_file);
+    goto done;
+  }
+
+  /* create signature context */
+  dsigCtx = xmlSecDSigCtxCreate(mngr);
+  if(dsigCtx == NULL) {
+    fprintf(stderr,"Error: failed to create signature context\n");
+    goto done;
+  }
+
+  /* Verify signature */
+  if(xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
+    fprintf(stderr,"Error: signature verify\n");
+    goto done;
+  }
+
+  /* print verification result to stdout */
+  if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
+    fprintf(stdout, "Signature is OK\n");
+  } else {
+    fprintf(stdout, "Signature is INVALID\n");
+  }    
+  res = 1;
+
+ done:    
+  /* cleanup */
+  if(dsigCtx != NULL) {
+    //xmlSecDSigCtxDestroy(dsigCtx);
+  }
+  if(mngr != NULL) {
+    //xmlSecKeysMngrDestroy(mngr);
+  }
+  return (res);
+}
+
 /*****************************************************************************/
 
 static void
@@ -623,16 +698,17 @@ lasso_node_class_init(LassoNodeClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS(class);
   
   /* virtual public methods */
-  class->build_query  = lasso_node_impl_build_query;
-  class->dump         = lasso_node_impl_dump;
-  class->get_attr     = lasso_node_impl_get_attr;
-  class->get_attrs    = lasso_node_impl_get_attrs;
-  class->get_child    = lasso_node_impl_get_child;
-  class->get_children = lasso_node_impl_get_children;
-  class->get_content  = lasso_node_impl_get_content;
-  class->get_name     = lasso_node_impl_get_name;
-  class->serialize    = lasso_node_impl_serialize;
-  class->url_encode   = lasso_node_impl_url_encode;
+  class->build_query      = lasso_node_impl_build_query;
+  class->dump             = lasso_node_impl_dump;
+  class->get_attr         = lasso_node_impl_get_attr;
+  class->get_attrs        = lasso_node_impl_get_attrs;
+  class->get_child        = lasso_node_impl_get_child;
+  class->get_children     = lasso_node_impl_get_children;
+  class->get_content      = lasso_node_impl_get_content;
+  class->get_name         = lasso_node_impl_get_name;
+  class->serialize        = lasso_node_impl_serialize;
+  class->url_encode       = lasso_node_impl_url_encode;
+  class->verify_signature = lasso_node_impl_verify_signature;
   /* virtual private methods */
   class->add_child    = lasso_node_impl_add_child;
   class->get_xmlNode  = lasso_node_impl_get_xmlNode;
