@@ -515,7 +515,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   identityProviderSuccinctID = lasso_sha1(LASSO_PROFILE(login)->server->providerID);
   assertionHandle = lasso_build_random_sequence(20);
 
-  //g_sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
+  /* g_sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle); */
   g_sprintf(samlArt, "%c%c", 0, 3); /* ByteCode */
   for(i=0;i<20;i++) {
     samlArt[i+2] = identityProviderSuccinctID[i];
