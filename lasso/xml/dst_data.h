@@ -35,11 +35,11 @@ extern "C" {
 #define LASSO_TYPE_DST_DATA (lasso_dst_data_get_type())
 #define LASSO_DST_DATA(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DST_DATA, LassoDstData))
 #define LASSO_DST_DATA_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                                           LASSO_TYPE_DST_DATA, LassoDstDataClass))
+			LASSO_TYPE_DST_DATA, LassoDstDataClass))
 #define LASSO_IS_DST_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DST_DATA))
 #define LASSO_IS_DST_DATA_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DST_DATA))
 #define LASSO_DST_DATA_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                                                           LASSO_TYPE_DST_DATA, LassoDstDataClass)) 
+			LASSO_TYPE_DST_DATA, LassoDstDataClass)) 
 
 typedef struct _LassoDstData LassoDstData;
 typedef struct _LassoDstDataClass LassoDstDataClass;

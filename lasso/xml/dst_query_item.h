@@ -34,15 +34,15 @@ extern "C" {
 
 #define LASSO_TYPE_DST_QUERY_ITEM (lasso_dst_query_item_get_type())
 #define LASSO_DST_QUERY_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                                     LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItem))
+			LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItem))
 #define LASSO_DST_QUERY_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                                LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItemClass))
+			LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItemClass))
 #define LASSO_IS_DST_QUERY_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-                                                                        LASSO_TYPE_DST_QUERY_ITEM))
+			LASSO_TYPE_DST_QUERY_ITEM))
 #define LASSO_IS_DST_QUERY_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-                                                                        LASSO_TYPE_DST_QUERY_ITEM))
+			LASSO_TYPE_DST_QUERY_ITEM))
 #define LASSO_DST_QUERY_ITEM_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                                                LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItemClass)) 
+			LASSO_TYPE_DST_QUERY_ITEM, LassoDstQueryItemClass)) 
 
 typedef struct _LassoDstQueryItem LassoDstQueryItem;
 typedef struct _LassoDstQueryItemClass LassoDstQueryItemClass;

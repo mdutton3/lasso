@@ -35,9 +35,9 @@ extern "C" {
 
 #define LASSO_TYPE_DST_QUERY (lasso_dst_query_get_type())
 #define LASSO_DST_QUERY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                                               LASSO_TYPE_DST_QUERY, LassoDstQuery))
+			LASSO_TYPE_DST_QUERY, LassoDstQuery))
 #define LASSO_DST_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                                          LASSO_TYPE_DST_QUERY, LassoDstQueryClass))
+			LASSO_TYPE_DST_QUERY, LassoDstQueryClass))
 #define LASSO_IS_DST_QUERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DST_QUERY))
 #define LASSO_IS_DST_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DST_QUERY))
 #define LASSO_DST_QUERY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
@@ -51,13 +51,13 @@ typedef struct _LassoDstQueryClass LassoDstQueryClass;
 
    <xs:element name="Query" type="QueryType"/>
     <xs:complexType name="QueryType">
-        <xs:sequence>
-            <xs:group ref="ResourceIDGroup" minOccurs="0"/>
-            <xs:element name="QueryItem" maxOccurs="unbounded"/>
-            <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:ID"/>
-        <xs:attribute name="itemID" type="IDType"/>
+	<xs:sequence>
+	    <xs:group ref="ResourceIDGroup" minOccurs="0"/>
+	    <xs:element name="QueryItem" maxOccurs="unbounded"/>
+	    <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="id" type="xs:ID"/>
+	<xs:attribute name="itemID" type="IDType"/>
     </xs:complexType>
 
 */
