@@ -106,6 +106,8 @@
 #define gldouble long double
 #define gpointer void*
 
+#define xmlChar char
+
 /* SWIG instructions telling how to deallocate Lasso structures */
 
 %typemap(newfree) gchar * "g_free($1);";
@@ -116,6 +118,55 @@
 int lasso_init(void);
 
 int lasso_shutdown(void);
+
+
+/***********************************************************************
+ * Constants
+ ***********************************************************************/
+
+
+typedef enum {
+	lassoHttpMethodGet = 1,
+	lassoHttpMethodPost,
+	lassoHttpMethodRedirect,
+	lassoHttpMethodSoap
+} lassoHttpMethod;
+
+typedef enum {
+	lassoLoginProtocolProfileBrwsArt = 1,
+	lassoLoginProtocolProfileBrwsPost,
+} lassoLoginProtocolProfile;
+
+typedef enum {
+	lassoMessageTypeNone = 0,
+	lassoMessageTypeAuthnRequest,
+	lassoMessageTypeAuthnResponse,
+	lassoMessageTypeRequest,
+	lassoMessageTypeResponse,
+	lassoMessageTypeArtifact
+} lassoMessageType;
+
+typedef enum {
+	lassoProviderTypeNone = 0,
+	lassoProviderTypeSp,
+	lassoProviderTypeIdp
+} lassoProviderType;
+
+/* Request types (used by SOAP endpoint) */
+typedef enum {
+	lassoRequestTypeInvalid = 0,
+	lassoRequestTypeLogin,
+	lassoRequestTypeLogout,
+	lassoRequestTypeFederationTermination,
+	lassoRequestTypeRegisterNameIdentifier,
+	lassoRequestTypeNameIdentifierMapping,
+	lassoRequestTypeLecp
+} lassoRequestType;
+
+typedef enum {
+	lassoSignatureMethodRsaSha1 = 1,
+	lassoSignatureMethodDsaSha1
+} lassoSignatureMethod;
 
 
 /***********************************************************************
@@ -130,8 +181,6 @@ int lasso_shutdown(void);
  ***********************************************************************/
 
 
-/* Object */
-
 %nodefault _LassoSamlpRequest;
 typedef struct _LassoSamlpRequest {
 	LassoSamlpRequestAbstract parent;
@@ -139,11 +188,21 @@ typedef struct _LassoSamlpRequest {
 
 
 /***********************************************************************
- * LibAuthnRequest
+ * SamlpResponse
  ***********************************************************************/
 
 
-/* Object */
+%nodefault _LassoSamlpResponse;
+typedef struct _LassoSamlpResponse {
+	LassoSamlpResponseAbstract parent;
+} LassoSamlpResponse;
+
+
+
+/***********************************************************************
+ * LibAuthnRequest
+ ***********************************************************************/
+
 
 %nodefault _LassoLibAuthnRequest;
 typedef struct _LassoLibAuthnRequest {
@@ -179,6 +238,17 @@ void lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node, LassoLibSco
 
 
 /***********************************************************************
+ * LibAuthnResponse
+ ***********************************************************************/
+
+
+%nodefault _LassoLibAuthnResponse;
+typedef struct _LassoLibAuthnResponse {
+	LassoSamlpResponse parent;
+} LassoLibAuthnResponse;
+
+
+/***********************************************************************
  ***********************************************************************
  * Protocols
  ***********************************************************************
@@ -190,12 +260,48 @@ void lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node, LassoLibSco
  ***********************************************************************/
 
 
-/* Object */
-
 %nodefault _LassoAuthnRequest;
 typedef struct _LassoAuthnRequest {
 	LassoLibAuthnRequest parent;
 } LassoAuthnRequest;
+
+
+/***********************************************************************
+ * AuthnResponse
+ ***********************************************************************/
+
+
+%nodefault _LassoAuthnResponse;
+typedef struct _LassoAuthnResponse {
+	LassoLibAuthnResponse parent;
+} LassoAuthnResponse;
+
+/* Methods */
+
+%newobject lasso_authn_response_get_status;
+xmlChar* lasso_authn_response_get_status(LassoAuthnResponse *response);
+
+
+/***********************************************************************
+ * Request
+ ***********************************************************************/
+
+
+%nodefault _LassoRequest;
+typedef struct _LassoRequest {
+	LassoSamlpRequest parent;
+} LassoRequest;
+
+
+/***********************************************************************
+ * Response
+ ***********************************************************************/
+
+
+%nodefault _LassoResponse;
+typedef struct _LassoResponse {
+	LassoSamlpResponse parent;
+} LassoResponse;
 
 
 /***********************************************************************
@@ -209,8 +315,6 @@ typedef struct _LassoAuthnRequest {
  * Server
  ***********************************************************************/
 
-
-/* Object */
 
 typedef struct {
 	LassoProvider parent;
@@ -254,8 +358,6 @@ gchar* lasso_server_dump(LassoServer *server);
  ***********************************************************************/
 
 
-/* Object */
-
 typedef struct {
 	GObject parent;
 	GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
@@ -290,8 +392,6 @@ gchar* lasso_identity_dump(LassoIdentity *identity);
  * Session
  ***********************************************************************/
 
-
-/* Object */
 
 typedef struct {
 	GObject parent;
@@ -331,37 +431,6 @@ gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *rem
  ***********************************************************************/
 
 
-/* Constants */
-
-typedef enum {
-	lassoHttpMethodGet = 1,
-	lassoHttpMethodPost,
-	lassoHttpMethodRedirect,
-	lassoHttpMethodSoap
-} lassoHttpMethod;
-
-typedef enum {
-	lassoMessageTypeNone = 0,
-	lassoMessageTypeAuthnRequest,
-	lassoMessageTypeAuthnResponse,
-	lassoMessageTypeRequest,
-	lassoMessageTypeResponse,
-	lassoMessageTypeArtifact
-} lassoMessageType;
-
-/* Request types (used by SOAP endpoint) */
-typedef enum {
-	lassoRequestTypeInvalid = 0,
-	lassoRequestTypeLogin,
-	lassoRequestTypeLogout,
-	lassoRequestTypeFederationTermination,
-	lassoRequestTypeRegisterNameIdentifier,
-	lassoRequestTypeNameIdentifierMapping,
-	lassoRequestTypeLecp
-} lassoRequestType;
-
-/* Object */
-
 %nodefault _LassoProfile;
 typedef struct _LassoProfile {
 	GObject parent;
@@ -379,8 +448,16 @@ typedef struct _LassoProfile {
 
 /* Methods */
 
+LassoAuthnRequest* lasso_profile_get_authn_request_ref(LassoProfile *profile);
+
+LassoAuthnResponse* lasso_profile_get_authn_response_ref(LassoProfile *profile);
+
 %newobject lasso_profile_get_identity;
 LassoIdentity* lasso_profile_get_identity(LassoProfile *profile);
+
+LassoRequest* lasso_profile_get_request_ref(LassoProfile *profile);
+
+LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile);
 
 %newobject lasso_profile_get_session;
 LassoSession* lasso_profile_get_session(LassoProfile *profile);
@@ -411,18 +488,9 @@ lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
  ***********************************************************************/
 
 
-/* Constants */
-
-typedef enum {
-	lassoLoginProtocolProfileBrwsArt = 1,
-	lassoLoginProtocolProfileBrwsPost,
-} lassoLoginProtocolProfiles;
-
-/* Object */
-
 typedef struct {
 	LassoProfile parent;
-	lassoLoginProtocolProfiles protocolProfile;
+	lassoLoginProtocolProfile protocolProfile;
 	gchar *assertionArtifact;
 	gchar *response_dump;
 
@@ -485,8 +553,6 @@ gint lasso_login_process_response_msg(LassoLogin  *login, gchar *response_msg);
  ***********************************************************************/
 
 
-/* Object */
-
 typedef struct {
 	LassoProfile parent;
 
@@ -529,8 +595,6 @@ gint lasso_logout_validate_request(LassoLogout *logout);
  * LECP
  ***********************************************************************/
 
-
-/* Object */
 
 typedef struct {
 	LassoLogin parent;
@@ -788,40 +852,6 @@ LassoNode* lasso_authn_request_envelope_get_authnRequest (LassoAuthnRequestEnvel
 
 LassoNode* lasso_authn_request_envelope_new_from_export  (gchar               *buffer,
 								       lassoNodeExportType  export_type);
-
-/*
- */
-
-#define LASSO_TYPE_AUTHN_RESPONSE (lasso_authn_response_get_type())
-#define LASSO_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_AUTHN_RESPONSE, LassoAuthnResponse))
-/*#define LASSO_AUTHN_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_AUTHN_RESPONSE, LassoAuthnResponseClass))*/
-#define LASSO_IS_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_AUTHN_RESPONSE))
-#define LASSO_IS_AUTHN_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_AUTHN_RESPONSE))
-/*#define LASSO_AUTHN_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_AUTHN_RESPONSE, LassoAuthnResponseClass)) */
-
-/*typedef struct _LassoAuthnResponseClass LassoAuthnResponseClass;*/
-
-typedef struct _LassoAuthnResponse {
-  LassoLibAuthnResponse parent;
-  /*< public >*/
-  /*< private >*/
-} LassoAuthnResponse;
-
-/*struct _LassoAuthnResponseClass {
-  LassoLibAuthnResponseClass parent;
-};*/
-
-GType      lasso_authn_response_get_type                      (void);
-
-LassoNode* lasso_authn_response_new                           (char      *providerID,
-									    LassoNode *request);
-
-LassoNode* lasso_authn_response_new_from_export               (xmlChar             *buffer,
-									    lassoNodeExportType  type);
-
-xmlChar*   lasso_authn_response_get_status                    (LassoAuthnResponse *response);
 
 /*
  */
@@ -1131,12 +1161,6 @@ LassoNode *lasso_name_identifier_mapping_response_new_from_request_query (const 
 /*typedef struct _LassoProviderClass LassoProviderClass;*/
 typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
-typedef enum {
-  lassoProviderTypeNone = 0,
-  lassoProviderTypeSp,
-  lassoProviderTypeIdp
-} lassoProviderType;
-
 typedef struct _LassoProvider {
   GObject parent;
 
@@ -1319,65 +1343,6 @@ LassoNode*  lasso_register_name_identifier_response_new_from_request_export (gch
 											  gchar               *providerID,
 											  gchar               *statusCodeValue);
 
-/*
- */
-#define LASSO_TYPE_REQUEST (lasso_request_get_type())
-#define LASSO_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_REQUEST, LassoRequest))
-/*#define LASSO_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_REQUEST, LassoRequestClass))*/
-#define LASSO_IS_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_REQUEST))
-#define LASSO_IS_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_REQUEST))
-/*#define LASSO_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_REQUEST, LassoRequestClass)) */
-
-/*typedef struct _LassoRequestClass LassoRequestClass;*/
-
-typedef struct _LassoRequest {
-  LassoSamlpRequest parent;
-  /*< public >*/
-  /*< private >*/
-} LassoRequest;
-
-/*struct _LassoRequestClass {
-  LassoSamlpRequestClass parent;
-};*/
-
-GType      lasso_request_get_type        (void);
-
-LassoNode* lasso_request_new             (const xmlChar *assertionArtifact);
-
-LassoNode* lasso_request_new_from_export (gchar               *buffer,
-						       lassoNodeExportType  export_type);
-
-/*
- */
-#define LASSO_TYPE_RESPONSE (lasso_response_get_type())
-#define LASSO_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_RESPONSE, LassoResponse))
-/*#define LASSO_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_RESPONSE, LassoResponseClass))*/
-#define LASSO_IS_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_RESPONSE))
-#define LASSO_IS_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_RESPONSE))
-/*#define LASSO_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_RESPONSE, LassoResponseClass)) */
-
-/*typedef struct _LassoResponseClass LassoResponseClass;*/
-
-typedef struct _LassoResponse {
-  LassoSamlpResponse parent;
-  /*< public >*/
-  /*< private >*/
-} LassoResponse;
-
-/*struct _LassoResponseClass {
-  LassoSamlpResponseClass parent;
-};*/
-
-GType      lasso_response_get_type        (void);
-
-LassoNode* lasso_response_new             (void);
-
-LassoNode* lasso_response_new_from_export (xmlChar             *buffer,
-							lassoNodeExportType  export_type);
 
 /*
  */
@@ -1589,41 +1554,6 @@ void       lasso_lib_authn_request_envelope_set_idpList      (LassoLibAuthnReque
 
 void       lasso_lib_authn_request_envelope_set_isPassive    (LassoLibAuthnRequestEnvelope *node,
 									   gboolean                      isPassive);
-
-/*
- */
-#define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
-#define LASSO_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponse))
-/*#define LASSO_LIB_AUTHN_RESPONSE_CLASS(klass)
- * (G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_LIB_AUTHN_RESPONSE,
- * LassoLibAuthnResponseClass))*/
-#define LASSO_IS_LIB_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_AUTHN_RESPONSE))
-#define LASSO_IS_LIB_AUTHN_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_AUTHN_RESPONSE))
-/*#define LASSO_LIB_AUTHN_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_LIB_AUTHN_RESPONSE, LassoLibAuthnResponseClass)) */
-
-/*typedef struct _LassoLibAuthnResponseClass LassoLibAuthnResponseClass;*/
-
-typedef struct _LassoLibAuthnResponse {
-  LassoSamlpResponse parent;
-  /*< private >*/
-} LassoLibAuthnResponse;
-
-/*struct _LassoLibAuthnResponseClass {
-  LassoSamlpResponseClass parent;
-};*/
-
-GType lasso_lib_authn_response_get_type(void);
-LassoNode* lasso_lib_authn_response_new(void);
-
-void lasso_lib_authn_response_set_consent    (LassoLibAuthnResponse *,
-							   const xmlChar *);
-
-void lasso_lib_authn_response_set_providerID (LassoLibAuthnResponse *,
-							   const xmlChar *);
-
-void lasso_lib_authn_response_set_relayState (LassoLibAuthnResponse *,
-							   const xmlChar *);
 
 /*
  */
@@ -2285,38 +2215,6 @@ void lasso_samlp_request_abstract_set_minorVersion (LassoSamlpRequestAbstract *n
 
 void lasso_samlp_request_abstract_set_requestID    (LassoSamlpRequestAbstract *node,
 								 const xmlChar *requestID);
-
-/*
- */
-
-#define LASSO_TYPE_SAMLP_RESPONSE (lasso_samlp_response_get_type())
-#define LASSO_SAMLP_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponse))
-/*#define LASSO_SAMLP_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass))*/
-#define LASSO_IS_SAMLP_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP_RESPONSE))
-#define LASSO_IS_SAMLP_RESPONSE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_RESPONSE))
-/*#define LASSO_SAMLP_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponseClass)) */
-
-/*typedef struct _LassoSamlpResponseClass LassoSamlpResponseClass;*/
-
-typedef struct _LassoSamlpResponse {
-  LassoSamlpResponseAbstract parent;
-  /*< private >*/
-} LassoSamlpResponse;
-
-/*struct _LassoSamlpResponseClass {
-  LassoSamlpResponseAbstractClass parent;
-};*/
-
-GType lasso_samlp_response_get_type(void);
-LassoNode* lasso_samlp_response_new(void);
-
-void lasso_samlp_response_add_assertion (LassoSamlpResponse *node,
-						      gpointer assertion);
-
-void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
-						      LassoSamlpStatus *status);
 
 /*
  */
@@ -3019,10 +2917,6 @@ const xmlChar lassoSoapEnvPrefix[];
 /*
  */
 
-typedef enum {
-  lassoSignatureMethodRsaSha1 = 1,
-  lassoSignatureMethodDsaSha1
-} lassoSignatureMethod;
 
 xmlChar*   lasso_build_random_sequence  (guint8 size);
 

@@ -87,6 +87,44 @@ void delete_LassoSession(LassoSession *session)
 
 
 /***********************************************************************
+ * Profile
+ ***********************************************************************/
+
+
+LassoAuthnRequest* lasso_profile_get_authn_request_ref(LassoProfile *profile)
+{
+	if (profile->request_type == lassoMessageTypeAuthnRequest)
+		return LASSO_AUTHN_REQUEST(profile->request);
+	else
+		return NULL;
+}
+
+LassoAuthnResponse* lasso_profile_get_authn_response_ref(LassoProfile *profile)
+{
+	if (profile->response_type == lassoMessageTypeAuthnResponse)
+		return LASSO_AUTHN_RESPONSE(profile->response);
+	else
+		return NULL;
+}
+
+LassoRequest* lasso_profile_get_request_ref(LassoProfile *profile)
+{
+	if (profile->request_type == lassoMessageTypeRequest)
+		return LASSO_REQUEST(profile->request);
+	else
+		return NULL;
+}
+
+LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile)
+{
+	if (profile->response_type == lassoMessageTypeResponse)
+		return LASSO_RESPONSE(profile->response);
+	else
+		return NULL;
+}
+
+
+/***********************************************************************
  * Login
  ***********************************************************************/
 

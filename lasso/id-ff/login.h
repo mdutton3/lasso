@@ -52,12 +52,12 @@ typedef struct _LassoLoginPrivate LassoLoginPrivate;
 typedef enum {
   lassoLoginProtocolProfileBrwsArt = 1,
   lassoLoginProtocolProfileBrwsPost,
-} lassoLoginProtocolProfiles;
+} lassoLoginProtocolProfile;
 
 struct _LassoLogin {
   LassoProfile parent;
   /*< public >*/
-  lassoLoginProtocolProfiles  protocolProfile;
+  lassoLoginProtocolProfile  protocolProfile;
 
   gchar                      *assertionArtifact;
   gchar                      *response_dump;
