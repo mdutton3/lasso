@@ -1,12 +1,21 @@
-Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert
-and released under the same license as Lasso (see README file).
+                   *****************************************
+                                    AUTHORS
+                   *****************************************
+
+Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert and
+released under the same license as Lasso (see README file).
+
+Note: NEVER send bug reports, help and feature requests directly to the authors.
+The best way to report a bug is to use the Lasso tracking database at
+http://labs.libre-entreprise.org/tracker/?group_id=31
+There is also a mailing list (please see the README file).
 
 
 Main Developers
 ===============
 
-Nicolas Clapiès <nclapies@entrouvert.com>
-Valéry Febvre <vfebvre@easter-eggs.com>
+Nicolas Clapiès (Developer)  <nclapies@entrouvert.com>
+Valéry Febvre (Lead Developer) <vfebvre@easter-eggs.com>
 
 
 Packaging
@@ -60,6 +69,7 @@ Documentation
 
 Christophe Boutet <cboutet@entrouvert.com>
 Romain Chantereau <rchantereau@entrouvert.com>
+Nicolas Clapi�s <nclapies@entrouvert.com>
 Pierre Cros <pcros@entrouvert.com>
 Cédric Musso <cedric.musso@labor-liber.net>
 Frédéric Péters <fpeters@entrouvert.com>
