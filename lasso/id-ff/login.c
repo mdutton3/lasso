@@ -831,6 +831,7 @@ lasso_login_init_request(LassoLogin      *login,
     return (-1);
   }
 
+  printf("SourceID ProviderID hash : %s\n", lasso_str_hash("http://example-idp", LASSO_PROFILE(login)->server->private_key));
   /* rebuild response (artifact) */
   switch (response_method) {
   case lassoHttpMethodRedirect:
@@ -901,7 +902,7 @@ lasso_login_must_authenticate(LassoLogin *login)
     xmlFree(str);
   }
 
-  if ((forceAuthn == TRUE || LASSO_PROFILE(login)->identity == NULL) && isPassive == FALSE) {
+  if ((forceAuthn == TRUE || LASSO_PROFILE(login)->session == NULL) && isPassive == FALSE) {
     must_authenticate = TRUE;
   }
   else if (LASSO_PROFILE(login)->identity == NULL && isPassive == TRUE) {
