@@ -91,12 +91,37 @@
   }
 %}
 #else
+#ifdef SWIGPYTHON
+%{
+	PyObject *lassoError;
+	PyObject *lassoSyntaxError;
+%}
+
+%init %{
+	lassoError = PyErr_NewException("_lasso.Error", NULL, NULL);
+	Py_INCREF(lassoError);
+	PyModule_AddObject(m, "Error", lassoError);
+
+	lassoSyntaxError = PyErr_NewException("_lasso.SyntaxError", lassoError, NULL);
+	Py_INCREF(lassoSyntaxError);
+	PyModule_AddObject(m, "SyntaxError", lassoSyntaxError);
+	
+	lasso_init();
+%}
+
+%pythoncode %{
+Error = _lasso.Error
+SyntaxError = _lasso.SyntaxError
+%}
+
+#else
 /* Apache fails when lasso_init is called too early in PHP binding. */
 /* FIXME: To investigate. */
 #ifndef SWIGPHP
 %init %{
 	lasso_init();
 %}
+#endif
 #endif
 #endif
 
@@ -421,21 +446,65 @@ typedef enum {
 #endif
 #define LASSO_ERROR_UNDEFINED -999
 
-/* Generate a language independant exception from Lasso error codes. */
+
+/***********************************************************************
+ * Exceptions Generation From Lasso Error Codes
+ ***********************************************************************/
+
+
+#ifdef SWIGPYTHON
 
 %{
 
-int get_exception_type(int errorCode)
-{
-	if (errorCode == LASSO_PROFILE_ERROR_INVALID_QUERY) 
-		return SWIG_SyntaxError;
-	else
-		return SWIG_UnknownError;
+void lasso_exception(int errorCode) {
+	PyObject *errorTuple;
+
+	switch(errorCode) {
+	case LASSO_PROFILE_ERROR_INVALID_QUERY:
+		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Syntax Error");
+		PyErr_SetObject(lassoSyntaxError, errorTuple);
+		Py_DECREF(errorTuple);
+		break;
+	default:
+		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Error");
+		PyErr_SetObject(lassoError, errorTuple);
+		Py_DECREF(errorTuple);
+		break;
+	}
 }
 
 %}
 
-/* Wrappers for Lasso functions that return an error code. */
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode) {
+		lasso_exception(errorCode);
+		SWIG_fail;
+	}
+}
+%enddef
+
+#else
+
+%{
+
+int get_exception_type(int errorCode) {
+	int exceptionType;
+
+	switch(errorCode) {
+	case LASSO_PROFILE_ERROR_INVALID_QUERY:
+		exceptionType = SWIG_SyntaxError;
+		break;
+	default:
+		exceptionType = SWIG_UnknownError;
+		break;
+	}
+	return exceptionType;
+}
+
+%}
 
 %define THROW_ERROR
 %exception {
@@ -448,6 +517,8 @@ int get_exception_type(int errorCode)
 	}
 }
 %enddef
+
+#endif
 
 %define END_THROW_ERROR
 %exception;

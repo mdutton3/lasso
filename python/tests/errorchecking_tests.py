@@ -68,7 +68,7 @@ class ErrorCheckingTestCase(unittest.TestCase):
         login = lasso.Login(server)
         try:
             login.initFromAuthnRequestMsg("", lasso.httpMethodRedirect)
-        except:
+        except lasso.Error:
             pass
 
 
