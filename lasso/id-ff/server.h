@@ -64,8 +64,10 @@ LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *pu
 								 const gchar *private_key,
 								 const gchar *certificate);
 
-LASSO_EXPORT gint           lasso_server_add_provider_from_file (LassoServer *server,
-								 gchar       *filename);
+LASSO_EXPORT gint           lasso_server_add_provider           (LassoServer *server,
+								 gchar       *metadata,
+								 const gchar *public_key,
+								 const gchar *certificate);
 
 LASSO_EXPORT LassoProvider* lasso_server_get_provider           (LassoServer *server,
 								 gchar       *providerID);

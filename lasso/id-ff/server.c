@@ -29,12 +29,14 @@
 /*****************************************************************************/
 
 gint
-lasso_server_add_provider_from_file(LassoServer *server,
-				    gchar       *filename)
+lasso_server_add_provider(LassoServer *server,
+			  gchar       *metadata,
+			  const gchar *public_key,
+			  const gchar *certificate)
 {
   LassoProvider *provider;
   
-  provider = lasso_provider_new_from_filename(filename);
+  provider = lasso_provider_new(metadata, public_key, certificate);
   g_ptr_array_add(server->providers, provider);
   
   return (1);

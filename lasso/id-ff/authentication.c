@@ -99,7 +99,6 @@ lasso_authentication_process_request(LassoAuthentication *authn,
     return;
     break;
   }
-  printf("%s\n", lasso_node_export(LASSO_PROFILE_CONTEXT(authn)->request));
 
   authn->protocolProfile = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
 							"ProtocolProfile", NULL);
@@ -208,7 +207,7 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
     nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
 						"NameIDPolicy", NULL);
     printf("NameIDPolicy %s\n", nameIDPolicy);
-    if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
+    if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
       if (identity == NULL) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
 						lassoLibStatusCodeFederationDoesNotExist);
@@ -240,10 +239,11 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
       lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(authn)->response),
 					 assertion);
     }
+    else printf("No identity !!!\n");
 
     if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfilePost)) {
       /* return an authnResponse (base64 encoded) */
-      //str = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
+      str = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
     }
     else if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileArtifact)) {
       /* return an artifact */

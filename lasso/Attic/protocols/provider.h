@@ -57,7 +57,9 @@ struct _LassoProviderClass {
 };
 
 LASSO_EXPORT GType          lasso_provider_get_type                         (void);
-LASSO_EXPORT LassoNode*     lasso_provider_new                              (void);
+LASSO_EXPORT LassoProvider* lasso_provider_new                              (gchar       *metadata,
+									     const gchar *public_key,
+									     const gchar *certificate);
 
 LASSO_EXPORT LassoProvider *lasso_provider_new_from_filename                (char *filename);
 

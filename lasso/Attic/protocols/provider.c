@@ -115,29 +115,25 @@ GType lasso_provider_get_type() {
   return this_type;
 }
 
-LassoNode* lasso_provider_new(){
-     LassoNode *provider;
-
-     provider = LASSO_NODE(g_object_new(LASSO_TYPE_PROVIDER, NULL));
-
-     return (provider);
-}
-
-LassoProvider *lasso_provider_new_from_filename(char *filename){
-     LassoProvider *provider;
-     xmlDocPtr  doc;
-     xmlNodePtr root;
-
-     provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-
-     /* get root element of doc and duplicate it */
-     doc = xmlParseFile(filename);
-     root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-     xmlFreeDoc(doc);
-     provider->metadata = lasso_node_new_from_xmlNode(root);
-
-     provider->public_key = NULL;
-     provider->certificate = NULL;
-
-     return(provider);
+LassoProvider*
+lasso_provider_new(gchar       *metadata,
+		   const gchar *public_key,
+		   const gchar *certificate)
+{
+  LassoProvider *provider;
+  xmlDocPtr  doc;
+  xmlNodePtr root;
+  
+  provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+  
+  /* get root element of doc and duplicate it */
+  doc = xmlParseFile(metadata);
+  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+  xmlFreeDoc(doc);
+  provider->metadata = lasso_node_new_from_xmlNode(root);
+  
+  provider->public_key = public_key;
+  provider->certificate = certificate;
+  
+  return(provider);
 }
