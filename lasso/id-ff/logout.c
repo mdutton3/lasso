@@ -45,67 +45,6 @@ struct _LassoLogoutPrivate
 /*****************************************************************************/
 
 /**
- * lasso_logout_dump:
- * @logout: the logout object
- * 
- * This method dumps the logout object in string a xml message.
- * it first adds profile informations.
- * Next, it adds his logout informations (initial_request, initial_response,
- * initial_remote_providerID and providerID_index).
- * 
- * Return value: a newly allocated string or NULL
- **/
-gchar *
-lasso_logout_dump(LassoLogout *logout)
-{
-  LassoNode      *initial_node = NULL, *child_node = NULL;
-  gchar          *dump = NULL, *parent_dump = NULL, *providerID_index_str;
-  LassoNode      *node = NULL;
-
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
-
-  parent_dump = lasso_profile_dump(LASSO_PROFILE(logout), "Logout");
-  node = lasso_node_new_from_dump(parent_dump);
-  g_free(parent_dump);
-
-  if (logout->initial_request != NULL) {
-    initial_node = lasso_node_new();
-    LASSO_NODE_GET_CLASS(initial_node)->set_name(initial_node, "InitialLogoutResquest");
-    child_node = lasso_node_copy(logout->initial_request);
-    LASSO_NODE_GET_CLASS(initial_node)->add_child(initial_node, child_node, FALSE);
-    lasso_node_destroy(child_node);
-
-    LASSO_NODE_GET_CLASS(node)->add_child(node, initial_node, FALSE);
-  }
-
-  if (logout->initial_response != NULL) {
-    initial_node = lasso_node_new();
-    LASSO_NODE_GET_CLASS(initial_node)->set_name(initial_node, "InitialLogoutResponse");
-    child_node = lasso_node_copy(logout->initial_response);
-    LASSO_NODE_GET_CLASS(initial_node)->add_child(initial_node, child_node, FALSE);
-    lasso_node_destroy(child_node);
-
-    LASSO_NODE_GET_CLASS(node)->add_child(node, initial_node, FALSE);
-  }
-
-  if (logout->initial_remote_providerID != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "InitialRemoteProviderID",
-					  logout->initial_remote_providerID, FALSE);
-  }
-  
-  /* add providerID_index */
-  providerID_index_str = g_strdup_printf("%d", logout->providerID_index);
-  LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderIDIndex",
-					providerID_index_str, FALSE);
-
-  dump = lasso_node_export(node);
-
-  lasso_node_destroy(node);
-
-  return dump;
-}
-
-/**
  * lasso_logout_build_request_msg:
  * @logout: the logout object
  * 
@@ -336,6 +275,67 @@ void
 lasso_logout_destroy(LassoLogout *logout)
 {
   g_object_unref(G_OBJECT(logout));
+}
+
+/**
+ * lasso_logout_dump:
+ * @logout: the logout object
+ * 
+ * This method dumps the logout object in string a xml message.
+ * it first adds profile informations.
+ * Next, it adds his logout informations (initial_request, initial_response,
+ * initial_remote_providerID and providerID_index).
+ * 
+ * Return value: a newly allocated string or NULL
+ **/
+gchar *
+lasso_logout_dump(LassoLogout *logout)
+{
+  LassoNode      *initial_node = NULL, *child_node = NULL;
+  gchar          *dump = NULL, *parent_dump = NULL, *providerID_index_str;
+  LassoNode      *node = NULL;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+
+  parent_dump = lasso_profile_dump(LASSO_PROFILE(logout), "Logout");
+  node = lasso_node_new_from_dump(parent_dump);
+  g_free(parent_dump);
+
+  if (logout->initial_request != NULL) {
+    initial_node = lasso_node_new();
+    LASSO_NODE_GET_CLASS(initial_node)->set_name(initial_node, "InitialLogoutResquest");
+    child_node = lasso_node_copy(logout->initial_request);
+    LASSO_NODE_GET_CLASS(initial_node)->add_child(initial_node, child_node, FALSE);
+    lasso_node_destroy(child_node);
+
+    LASSO_NODE_GET_CLASS(node)->add_child(node, initial_node, FALSE);
+  }
+
+  if (logout->initial_response != NULL) {
+    initial_node = lasso_node_new();
+    LASSO_NODE_GET_CLASS(initial_node)->set_name(initial_node, "InitialLogoutResponse");
+    child_node = lasso_node_copy(logout->initial_response);
+    LASSO_NODE_GET_CLASS(initial_node)->add_child(initial_node, child_node, FALSE);
+    lasso_node_destroy(child_node);
+
+    LASSO_NODE_GET_CLASS(node)->add_child(node, initial_node, FALSE);
+  }
+
+  if (logout->initial_remote_providerID != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "InitialRemoteProviderID",
+					  logout->initial_remote_providerID, FALSE);
+  }
+  
+  /* add providerID_index */
+  providerID_index_str = g_strdup_printf("%d", logout->providerID_index);
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderIDIndex",
+					providerID_index_str, FALSE);
+
+  dump = lasso_node_export(node);
+
+  lasso_node_destroy(node);
+
+  return dump;
 }
 
 /**
