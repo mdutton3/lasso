@@ -84,9 +84,9 @@ lasso_build_unique_id(guint8 size)
   id[size] = '\0';
 
   /* base64 encoding of build string */
-  enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0);
+  enc_id = (xmlChar*)xmlSecBase64Encode((const xmlChar *)id, size, 0);
 
-  xmlFree(id);
+  g_free(id);
   return (enc_id);
 }
 
@@ -106,7 +106,7 @@ lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
   xmlNodePtr node;
 
   /* FIXME: bad namespace used */
-  node = xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
+  node = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
   if (node != NULL)
     /* val returned must be xmlFree() */
     return (xmlNodeGetContent(node));
@@ -283,20 +283,20 @@ lasso_query_verify_signature(const gchar   *query,
   doc = lasso_str_sign(str_split[0],
 		       lassoSignatureMethodRsaSha1,
 		       recipient_private_key_file);
-  sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-			      xmlSecNodeSignatureValue,
-			      xmlSecDSigNs);
+  sigValNode = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc),
+				          xmlSecNodeSignatureValue,
+					  xmlSecDSigNs);
   /* set SignatureValue content */
   str_unescaped = lasso_str_unescape(str_split[1]);
   xmlNodeSetContent(sigValNode, str_unescaped);
-  xmlFree(str_unescaped);
+  g_free(str_unescaped);
 
   g_strfreev(str_split);
   /*xmlDocDump(stdout, doc);*/
 
   /* find start node */
-  sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-			   xmlSecNodeSignature, xmlSecDSigNs);
+  sigNode = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc),
+				       xmlSecNodeSignature, xmlSecDSigNs);
   
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
@@ -354,7 +354,7 @@ xmlChar *
 lasso_str_escape(xmlChar *str)
 {
   /* value returned must be xmlFree() */
-  return (xmlURIEscapeStr((const xmlChar *)str, NULL));
+  return (xmlChar*)(xmlURIEscapeStr((const xmlChar *)str, NULL));
 }
 
 xmlChar *
@@ -368,9 +368,10 @@ lasso_str_hash(xmlChar    *str,
   doc = lasso_str_sign(str,
 		       lassoSignatureMethodRsaSha1,
 		       private_key_file);
-  b64_digest = xmlNodeGetContent(xmlSecFindNode(xmlDocGetRootElement(doc),
-						xmlSecNodeDigestValue,
-						xmlSecDSigNs));
+  b64_digest = xmlNodeGetContent((xmlNodePtr)xmlSecFindNode(
+			  	 	xmlDocGetRootElement(doc),
+					xmlSecNodeDigestValue,
+					xmlSecDSigNs));
   i = xmlSecBase64Decode(b64_digest, digest, 21);
   /* printf("Decoded string %s lenght is %d\n", digest, i); */
   xmlFree(b64_digest);
@@ -512,7 +513,7 @@ lasso_str_unescape(xmlChar *str)
 {
   xmlChar *ret;
 
-  ret = g_malloc(strlen(str) * 2);
+  ret = g_malloc(strlen(str) * 2); /* XXX why *2?  strlen(str) should be enough */
   xmlURIUnescapeString((const char *)str, 0, ret);
   return (ret);
 }
