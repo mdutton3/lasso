@@ -92,7 +92,7 @@ class LibertyEnabledClientProxyMixin(abstractweb.WebClientMixin):
         failUnless(libertyEnabledHeader)
         failUnless('LIBV=urn:liberty:iff:2003-08' in libertyEnabledHeader)
         lassoServer = self.getLassoServer()
-        lecp = lasso.Lecp.new(lassoServer)
+        lecp = lasso.Lecp(lassoServer)
         authnRequestEnvelope = httpResponse.body
         lecp.process_authn_request_envelope_msg(authnRequestEnvelope)
         # FIXME: The service provider could return an IDPList in authnRequestEnvelope, so that

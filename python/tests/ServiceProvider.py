@@ -33,7 +33,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
 
     def assertionConsumer(self, handler):
         lassoServer = self.getLassoServer()
-        login = lasso.Login.new(lassoServer)
+        login = lasso.Login(lassoServer)
 
         if handler.httpRequest.method == 'GET':
             relayState = handler.httpRequest.getQueryField('RelayState', None)
@@ -170,7 +170,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
         libertyEnabled = handler.httpRequest.headers.get('Liberty-Enabled', None)
         userAgent = handler.httpRequest.headers.get('User-Agent', None)
         # FIXME: Lasso should have a function to compute useLecp.
-        # Or this should be done in lasso.Login.new(lassoServer, libertyEnabled, userAgent)
+        # Or this should be done in lasso.Login(lassoServer, libertyEnabled, userAgent)
         useLecp = False
         if libertyEnabled:
             useLecp = 'urn:liberty:iff:2003-08' in libertyEnabled
@@ -188,7 +188,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
         relayState = handler.httpRequest.getQueryField('RelayState', None)
         lassoServer = self.getLassoServer()
         if useLecp:
-            lecp = lasso.Lecp.new(lassoServer)
+            lecp = lasso.Lecp(lassoServer)
             lecp.init_authn_request()
             failUnlessEqual(lecp.request_type, lasso.messageTypeAuthnRequest)
 
@@ -222,7 +222,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             headers.update(self.libertyEnabledHeaders)
             return handler.respond(headers = headers, body = authnRequestEnvelopeMsg)
         else:
-            login = lasso.Login.new(lassoServer)
+            login = lasso.Login(lassoServer)
             login.init_authn_request()
             failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
             if forceAuthn:
@@ -270,7 +270,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
 
     def logout_do(self, handler, session, user):
         lassoServer = self.getLassoServer()
-        logout = lasso.Logout.new(lassoServer, lasso.providerTypeSp)
+        logout = lasso.Logout(lassoServer, lasso.providerTypeSp)
         if user.lassoIdentityDump is not None:
             logout.set_identity_from_dump(user.lassoIdentityDump)
         if session.lassoSessionDump is not None:

@@ -44,7 +44,7 @@ class LoginTestCase(unittest.TestCase):
         site = IdentityProvider(internet, 'https://idp1')
         site.providerId = 'https://idp1/metadata'
 
-        lassoServer = lasso.Server.new(
+        lassoServer = lasso.Server(
             '../../tests/data/idp1-la/metadata.xml',
             None, # '../../tests/data/idp1-la/public-key.pem' is no more used
             '../../tests/data/idp1-la/private-key-raw.pem',
@@ -56,7 +56,6 @@ class LoginTestCase(unittest.TestCase):
             '../../tests/data/ca1-la/certificate.pem')
         site.lassoServerDump = lassoServer.dump()
         failUnless(site.lassoServerDump)
-        lassoServer.destroy()
 
         site.newUser('Chantereau')
         site.newUser('Clapies')
@@ -67,21 +66,20 @@ class LoginTestCase(unittest.TestCase):
 
     def generateLibertyEnabledClientProxy(self, internet):
         clientProxy = LibertyEnabledClientProxy(internet)
-        lassoServer = lasso.Server.new()
+        lassoServer = lasso.Server()
         lassoServer.add_provider(
             '../../tests/data/idp1-la/metadata.xml',
             '../../tests/data/idp1-la/public-key.pem',
             '../../tests/data/ca1-la/certificate.pem')
         clientProxy.lassoServerDump = lassoServer.dump()
         failUnless(clientProxy.lassoServerDump)
-        lassoServer.destroy()
         return clientProxy
         
     def generateSpSite(self, internet):
         site = ServiceProvider(internet, 'https://sp1')
         site.providerId = 'https://service-provider/metadata'
 
-        lassoServer = lasso.Server.new(
+        lassoServer = lasso.Server(
             '../../tests/data/sp1-la/metadata.xml',
             None, # '../../tests/data/sp1-la/public-key.pem' is no more used
             '../../tests/data/sp1-la/private-key-raw.pem',
@@ -93,7 +91,6 @@ class LoginTestCase(unittest.TestCase):
             '../../tests/data/ca1-la/certificate.pem')
         site.lassoServerDump = lassoServer.dump()
         failUnless(site.lassoServerDump)
-        lassoServer.destroy()
 
         site.newUser('Nicolas')
         site.newUser('Romain')

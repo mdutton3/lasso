@@ -41,10 +41,14 @@ import lassomod
 _globals = globals()
 for constantName, constantValue in lassomod.__dict__.iteritems():
     if constantName.startswith('lassoHttpMethod') \
+           or constantName.startswith('lassoLibConsent') \
+           or constantName.startswith('lassoLibNameIDPolicyType') \
+           or constantName.startswith('lassoLibProtocolProfile') \
            or constantName.startswith('lassoLoginProtocolProfile') \
            or constantName.startswith('lassoMessageType') \
            or constantName.startswith('lassoProviderType') \
            or constantName.startswith('lassoRequestType') \
+           or constantName.startswith('lassoSamlAuthenticationMethod') \
            or constantName.startswith('lassoSignatureMethod'):
         _globals[constantName[5].lower() + constantName[6:]] = constantValue
 
@@ -231,13 +235,68 @@ class Server(_ObjectMixin, lassomod.LassoServer):
         return lassomod.lasso_server_dump(self)
 
 
+class Identity(_ObjectMixin, lassomod.LassoIdentity):
+    # Constructors
+
+    def __new__(cls, metadata = None, public_key = None, private_key = None, certificate = None,
+                signature_method = signatureMethodRsaSha1):
+        self = lassomod.lasso_identity_new(
+            metadata, public_key, private_key, certificate, signature_method)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_identity_new')
+        object.__setattr__(self, '__class__', cls)
+        return self
+
+    def new_from_dump(cls, dump):
+        self = lassomod.lasso_identity_new_from_dump(dump)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_identity_new_from_dump')
+        object.__setattr__(self, '__class__', cls)
+        return self
+    new_from_dump = classmethod(new_from_dump)
+
+    # Methods
+
+    def dump(self):
+        return lassomod.lasso_identity_dump(self)
+
+
+class Session(_ObjectMixin, lassomod.LassoSession):
+    # Constructors
+
+    def __new__(cls, metadata = None, public_key = None, private_key = None, certificate = None,
+                signature_method = signatureMethodRsaSha1):
+        self = lassomod.lasso_session_new(
+            metadata, public_key, private_key, certificate, signature_method)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_session_new')
+        object.__setattr__(self, '__class__', cls)
+        return self
+
+    def new_from_dump(cls, dump):
+        self = lassomod.lasso_session_new_from_dump(dump)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_session_new_from_dump')
+        object.__setattr__(self, '__class__', cls)
+        return self
+    new_from_dump = classmethod(new_from_dump)
+
+    # Methods
+
+    def dump(self):
+        return lassomod.lasso_session_dump(self)
+
+
 class _ProfileChild(object):
     """Abstract class for all Lasso objects that inherit from LassoProfile"""
 
     # Attributes
 
     def get_identity(self):
-        return lassomod.lasso_profile_get_identity(self.parent)
+        identity = lassomod.lasso_profile_get_identity(self.parent)
+        if identity is not None:
+            object.__setattr__(identity, '__class__', Identity)
+        return identity
     def set_identity(self, identity):
         lassomod.lasso_profile_set_identity(self.parent, identity)
     identity = property(get_identity, set_identity)
@@ -305,11 +364,17 @@ class _ProfileChild(object):
     response_type = property(get_response_type)
 
     def get_server(self):
-        return self.parent.server
+        server = self.parent.server
+        if server is not None:
+            object.__setattr__(server, '__class__', Server)
+        return server
     server = property(get_server)
 
     def get_session(self):
-        return lassomod.lasso_profile_get_session(self.parent)
+        session = lassomod.lasso_profile_get_session(self.parent)
+        if session is not None:
+            object.__setattr__(session, '__class__', Session)
+        return session
     def set_session(self, session):
         lassomod.lasso_profile_set_session(self.parent, session)
     session = property(get_session, set_session)
@@ -467,6 +532,103 @@ class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
         errorCode = lassomod.lasso_logout_validate_request(self)
         if errorCode:
             raise newError(errorCode, 'lasso_logout_validate_request')
+
+
+class Lecp(_ObjectMixin, lassomod.LassoLecp):
+    # Attributes
+
+    def get_msg_body(self):
+        return self.parent.parent.msg_body
+    msg_body = property(get_msg_body)
+
+    def get_msg_url(self):
+        return self.parent.parent.msg_url
+    msg_url = property(get_msg_url)
+
+    def get_request(self):
+        request_type = self.request_type
+        if request_type == messageTypeAuthnRequest:
+            request = lassomod.lasso_profile_get_authn_request_ref(self.parent.parent)
+            object.__setattr__(request, '__class__', AuthnRequest)
+        elif request_type == messageTypeRequest:
+            request = lassomod.lasso_profile_get_request_ref(self.parent.parent)
+            object.__setattr__(request, '__class__', Request)
+        else:
+            raise ErrorUnknownRequestType('lasso_profile_get_???_request', request_type)
+        return request
+    request = property(get_request)
+
+    def get_request_type(self):
+        return self.parent.parent.request_type
+    request_type = property(get_request_type)
+
+    # Constructors
+
+    def __new__(cls, server):
+        self = lassomod.lasso_lecp_new(server)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_lecp_new')
+        object.__setattr__(self, '__class__', cls)
+        return self
+
+    def new_from_dump(cls, server, dump):
+        self = lassomod.lasso_lecp_new_from_dump(server, dump)
+        if self is None:
+            raise ErrorInstanceCreationFailed('lasso_lecp_new_from_dump')
+        object.__setattr__(self, '__class__', cls)
+        return self
+    new_from_dump = classmethod(new_from_dump)
+
+    # Methods
+
+    def build_authn_request_envelope_msg(self):
+        errorCode = lassomod.lasso_lecp_build_authn_request_envelope_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_request_envelope_msg')
+
+    def build_authn_request_msg(self, remote_providerID):
+        errorCode = lassomod.lasso_lecp_build_authn_request_msg(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_request_msg')
+
+    def build_authn_response_envelope_msg(self, authentication_result, authenticationMethod,
+                                          reauthenticateOnOrAfter):
+        errorCode = lassomod.lasso_lecp_build_authn_response_envelope_msg(
+            self, authentication_result, authenticationMethod, reauthenticateOnOrAfter)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_response_envelope_msg')
+
+    def build_authn_response_msg(self):
+        errorCode = lassomod.lasso_lecp_build_authn_response_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_response_msg')
+
+    def init_authn_request(self):
+        errorCode = lassomod.lasso_lecp_init_authn_request(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_init_authn_request')
+
+    def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
+        errorCode = lassomod.lasso_lecp_init_from_authn_request_msg(
+            self, authn_request_msg, authn_request_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_init_from_authn_request_msg')
+
+    def process_authn_request_envelope_msg(self, request_msg):
+        errorCode = lassomod.lasso_lecp_process_authn_request_envelope_msg(self, request_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_process_authn_request_envelope_msg')
+
+    def process_authn_response_envelope_msg(self, response_msg):
+        errorCode = lassomod.lasso_lecp_process_authn_response_envelope_msg(self, response_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_process_authn_response_envelope_msg')
+
+    def set_identity_from_dump(self, dump):
+        lassomod.lasso_profile_set_identity_from_dump(self.parent.parent, dump)
+
+    def set_session_from_dump(self, dump):
+        lassomod.lasso_profile_set_session_from_dump(self.parent.parent, dump)
 
 
 ################################################################################

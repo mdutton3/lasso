@@ -55,7 +55,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
         lassoServer = self.getLassoServer()
         if handler.httpRequest.method == 'GET':
             # Single sign-on using HTTP redirect.
-            login = lasso.Login.new(lassoServer)
+            login = lasso.Login(lassoServer)
             session = handler.session
             if session is not None and session.lassoSessionDump is not None:
                 login.set_session_from_dump(session.lassoSessionDump)
@@ -82,7 +82,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
         elif handler.httpRequest.method == 'POST' \
                and handler.httpRequest.headers.get('Content-Type', None) == 'text/xml':
             # SOAP request => LECP single sign-on.
-            lecp = lasso.Lecp.new(lassoServer)
+            lecp = lasso.Lecp(lassoServer)
             session = handler.session
             if session is not None and session.lassoSessionDump is not None:
                 lecp.set_session_from_dump(session.lassoSessionDump)
@@ -160,7 +160,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
         requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
         if requestType == lasso.requestTypeLogin:
             lassoServer = self.getLassoServer()
-            login = lasso.Login.new(lassoServer)
+            login = lasso.Login(lassoServer)
             # FIXME: What should we return when there is an error in process_request_msg?
             # FIXME: Create a new Lasso function build_response_msg, with either None or
             # soapResponseMessage as argument. It is called after process_request_message and
@@ -177,7 +177,7 @@ class IdentityProviderMixin(Provider.ProviderMixin):
                 headers = {'Content-Type': 'text/xml'}, body = soapResponseMsg)
         elif requestType == lasso.requestTypeLogout:
             lassoServer = self.getLassoServer()
-            logout = lasso.Logout.new(lassoServer, lasso.providerTypeIdp)
+            logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
             logout.process_request_msg(soapRequestMsg, lasso.httpMethodSoap)
             nameIdentifier = logout.nameIdentifier
             failUnless(nameIdentifier)

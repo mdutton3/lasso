@@ -37,8 +37,6 @@ import lasso
 
 class ErrorCheckingTestCase(unittest.TestCase):
     def DISABLEDtest01(self):
-        # the user should call lasso.Login.new(); but what if it doesn't ?
-        # An exception should be raised; the program should not segfault.
         try:
             lasso.Login(None).msg_url
         except:
@@ -54,13 +52,13 @@ class ErrorCheckingTestCase(unittest.TestCase):
     def test03(self):
         # This time; we got something wrong as query string; we pass it to
         # init_from_authn_request_msg; surely it shouldn't segfault
-        server = lasso.Server.new(
+        server = lasso.Server(
             '../../tests/data/idp1-la/metadata.xml',
             None, # '../../tests/data/idp1-la/public-key.pem' is no more used
             '../../tests/data/idp1-la/private-key-raw.pem',
             '../../tests/data/idp1-la/certificate.pem',
             lasso.signatureMethodRsaSha1)
-        login = lasso.Login.new(server)
+        login = lasso.Login(server)
         try:
             login.init_from_authn_request_msg("", lasso.httpMethodRedirect)
         except:

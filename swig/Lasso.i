@@ -132,6 +132,35 @@ typedef enum {
 	lassoHttpMethodSoap
 } lassoHttpMethod;
 
+/* Consent */
+%constant xmlChar *lassoLibConsentObtained = "urn:liberty:consent:obtained";
+%constant xmlChar *lassoLibConsentUnavailable  = "urn:liberty:consent:unavailable";
+%constant xmlChar *lassoLibConsentInapplicable = "urn:liberty:consent:inapplicable";
+
+/* NameIDPolicyType */
+%constant xmlChar *lassoLibNameIDPolicyTypeNone = "none";
+%constant xmlChar *lassoLibNameIDPolicyTypeOneTime = "onetime";
+%constant xmlChar *lassoLibNameIDPolicyTypeFederated = "federated";
+%constant xmlChar *lassoLibNameIDPolicyTypeAny = "any";
+
+/* ProtocolProfile */
+%constant xmlChar *lassoLibProtocolProfileSSOGet = "http://projectliberty.org/profiles/sso-get";
+%constant xmlChar *lassoLibProtocolProfileSSOPost = "http://projectliberty.org/profiles/sso-post";
+%constant xmlChar *lassoLibProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art";
+%constant xmlChar *lassoLibProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post";
+%constant xmlChar *lassoLibProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http";
+%constant xmlChar *lassoLibProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap";
+%constant xmlChar *lassoLibProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http";
+%constant xmlChar *lassoLibProtocolProfileFedTermSpSoap = "http://projectliberty.org/profiles/fedterm-sp-soap";
+%constant xmlChar *lassoLibProtocolProfileRniIdpHttp = "http://projectliberty.org/profiles/rni-idp-http";
+%constant xmlChar *lassoLibProtocolProfileRniIdpSoap = "http://projectliberty.org/profiles/rni-idp-soap";
+%constant xmlChar *lassoLibProtocolProfileRniSpHttp = "http://projectliberty.org/profiles/rni-sp-http";
+%constant xmlChar *lassoLibProtocolProfileRniSpSoap = "http://projectliberty.org/profiles/rni-sp-soap";
+%constant xmlChar *lassoLibProtocolProfileSloSpHttp = "http://projectliberty.org/profiles/slo-sp-http";
+%constant xmlChar *lassoLibProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap";
+%constant xmlChar *lassoLibProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http";
+%constant xmlChar *lassoLibProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap";
+
 typedef enum {
 	lassoLoginProtocolProfileBrwsArt = 1,
 	lassoLoginProtocolProfileBrwsPost,
@@ -162,6 +191,19 @@ typedef enum {
 	lassoRequestTypeNameIdentifierMapping,
 	lassoRequestTypeLecp
 } lassoRequestType;
+
+/* AuthenticationMethods */
+%constant xmlChar *lassoSamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password";
+%constant xmlChar *lassoSamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510";
+%constant xmlChar *lassoSamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945";
+%constant xmlChar *lassoSamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
+%constant xmlChar *lassoSamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246";
+%constant xmlChar *lassoSamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
+%constant xmlChar *lassoSamlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP";
+%constant xmlChar *lassoSamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
+%constant xmlChar *lassoSamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
+%constant xmlChar *lassoSamlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075";
+%constant xmlChar *lassoSamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 
 typedef enum {
 	lassoSignatureMethodRsaSha1 = 1,
@@ -620,11 +662,11 @@ gint lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
 
 gint lasso_lecp_build_authn_request_msg(LassoLecp *lecp, const gchar *remote_providerID);
 
-gint lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
-
 gint lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp, gint authentication_result,
 						  const gchar *authenticationMethod,
 						  const gchar *reauthenticateOnOrAfter);
+
+gint lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
 
 gint lasso_lecp_init_authn_request(LassoLecp *lecp);
 
