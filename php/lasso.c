@@ -39,6 +39,7 @@ int le_lasso;
 int le_lassonode;
 int le_lassoserver;
 int le_lassologin;
+int le_lassologout;
 int le_lassouser;
 int le_lassofederation;
 int le_lassosession;
@@ -115,6 +116,11 @@ function_entry lasso_functions[] = {
 	/* lasso_session.c */
 	PHP_FE(lasso_session_dump,	NULL)
 
+	/* lasso_logout.c */
+	PHP_FE(lasso_logout_new,	NULL)
+	PHP_FE(lasso_logout_init_request,	NULL)
+	PHP_FE(lasso_logout_build_request_msg,	NULL)
+
 	{NULL, NULL, NULL}	
 };
 /* }}} */
@@ -186,7 +192,6 @@ void lassosession_destruction_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
 }
 /* }}} */
 
-
 /* {{{ */
 void lassoprofile_destruction_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
 	LassoProfile *my_rsrc = (LassoProfile *) rsrc->ptr;
@@ -208,6 +213,12 @@ void lassolibauthnrequest_destruction_handler(zend_rsrc_list_entry *rsrc TSRMLS_
 }
 /* }}} */
 
+/* {{{ */
+void lassologout_destruction_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
+	LassoLogout *my_rsrc = (LassoLogout *) rsrc->ptr;
+    // do_whatever_needs_to_be_done_with_the_resource(my_rsrc);
+}
+/* }}} */
 
 /* {{{ php_lasso_init_globals
  */
@@ -229,6 +240,7 @@ PHP_MINIT_FUNCTION(lasso)
 	le_lassonode = zend_register_list_destructors_ex(lassonode_destruction_handler, NULL, le_lassonode_name, module_number);
 	le_lassoserver = zend_register_list_destructors_ex(lassoserver_destruction_handler, NULL, le_lassoserver_name, module_number);
 	le_lassologin = zend_register_list_destructors_ex(lassologin_destruction_handler, NULL, le_lassologin_name, module_number);
+	le_lassologout = zend_register_list_destructors_ex(lassologout_destruction_handler, NULL, le_lassologout_name, module_number);
 	le_lassoidentity = zend_register_list_destructors_ex(lassoidentity_destruction_handler, NULL, le_lassoidentity_name, module_number);
 	le_lassosession = zend_register_list_destructors_ex(lassosession_destruction_handler, NULL, le_lassosession_name, module_number);
 	le_lassofederation = zend_register_list_destructors_ex(lassofederation_destruction_handler, NULL, le_lassofederation_name, module_number);
@@ -247,6 +259,11 @@ PHP_MINIT_FUNCTION(lasso)
 	REGISTER_LONG_CONSTANT("lassoHttpMethodPost", 2, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("lassoHttpMethodRedirect", 3, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("lassoHttpMethodSoap", 4, CONST_CS | CONST_PERSISTENT);
+
+	/* lassoProviderType */
+	REGISTER_LONG_CONSTANT("lassoProviderTypeNone", 1, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("lassoProviderTypeSp", 2, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("lassoProviderTypeIdp", 3, CONST_CS | CONST_PERSISTENT);
 		
 	return SUCCESS;
 }
@@ -331,10 +348,8 @@ PHP_FUNCTION(lasso_version)
 {
 	char lasso_version[6];
 
-	
-
-	/* snprintf(lasso_version, 6, "%d.%d.%d", LASSO_VERSION_MAJOR, 
-			LASSO_VERSION_MINOR, LASSO_VERSION_SUBMINOR); */
+	snprintf(lasso_version, 6, "%d.%d.%d", LASSO_VERSION_MAJOR, 
+			LASSO_VERSION_MINOR, LASSO_VERSION_SUBMINOR);
 
 	RETURN_STRING(lasso_version, 1)
 }

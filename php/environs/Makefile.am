@@ -7,7 +7,7 @@ INCLUDES = \
     $(PHP_INCLUDES) 
 
 
-ENVSOURCES = lasso_identity.c lasso_profile.c lasso_session.c lasso_federation.c lasso_login.c lasso_server.c
+ENVSOURCES = lasso_identity.c lasso_profile.c lasso_session.c lasso_federation.c lasso_login.c lasso_server.c lasso_logout.c
 
 noinst_LIBRARIES = libenvirons.a
 libenvirons_a_SOURCES = $(ENVSOURCES)

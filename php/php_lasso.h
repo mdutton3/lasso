@@ -45,6 +45,7 @@ extern zend_module_entry lasso_module_entry;
 #define le_lassonode_name  "LASSO Node Resource"
 #define le_lassoserver_name  "LASSO Server Resource"
 #define le_lassologin_name  "LASSO Login Resource"
+#define le_lassologout_name  "LASSO Logout Resource"
 #define le_lassoidentity_name  "LASSO Identity Resource"
 #define le_lassosession_name  "LASSO Session Resource"
 #define le_lassofederation_name  "LASSO Federation Resource"
@@ -119,6 +120,11 @@ PHP_FUNCTION(lasso_lib_authn_request_set_relaystate);
 PHP_FUNCTION(lasso_lib_authn_request_set_protocolprofile);
 PHP_FUNCTION(lasso_lib_authn_response_set_consent);
 
+/* lasso_logout.c */
+PHP_FUNCTION(lasso_logout_new);
+PHP_FUNCTION(lasso_logout_init_request);
+PHP_FUNCTION(lasso_logout_build_request_msg);
+
 /* GLOBALS */
 ZEND_BEGIN_MODULE_GLOBALS(lasso)
 	long  global_value;
@@ -130,6 +136,7 @@ extern int le_lasso;
 extern int le_lassonode;
 extern int le_lassoserver;
 extern int le_lassologin;
+extern int le_lassologout;
 extern int le_lassoidentity;
 extern int le_lassosession;
 extern int le_lassofederation;
