@@ -11,7 +11,13 @@ dnl full license terms.
 dnl 
 dnl 
 
-dnl Declare package
+dnl Declare package and package version.
+dnl (r-c).a.r
+dnl - First number is the lowest supported API version number.
+dnl - Second number is the number of supported API versions where API version >
+dnl   first number.
+dnl - Third number is the current API version implementation version number.
+dnl See libtool explanations about current, age and release, later in this file.
 AC_INIT([Liberty Alliance Single Sign On], 0.3.0, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
@@ -123,6 +129,10 @@ AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of 
 #     then set AGE to 0.
 #
 # syntax: CURRENT[:REVISION[:AGE]]
+# So if M=major, m=minor, r=release:
+# c = M + a = M + m;
+# m = a
+# r = r
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
 LASSO_VERSION_INFO="$current:$VERSION_RELEASE:$VERSION_MINOR"
 AC_SUBST(LASSO_VERSION_INFO)
