@@ -81,6 +81,8 @@ LASSO_EXPORT void           lasso_server_destroy                  (LassoServer *
 
 LASSO_EXPORT gchar*         lasso_server_dump                     (LassoServer *server);
 
+LASSO_EXPORT gchar*         lasso_server_get_first_providerID     (LassoServer *server);
+
 LASSO_EXPORT LassoProvider* lasso_server_get_provider             (LassoServer  *server,
 								   gchar        *providerID,
 								   GError      **err);

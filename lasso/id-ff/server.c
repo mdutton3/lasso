@@ -204,6 +204,20 @@ lasso_server_dump(LassoServer *server)
   return dump;
 }
 
+gchar*
+lasso_server_get_first_providerID(LassoServer *server)
+{
+  LassoProvider *provider;
+
+  if (server->providers->len > 0) {
+    provider = (LassoProvider *)g_ptr_array_index(server->providers, 0);
+    return lasso_provider_get_providerID(provider);
+  }
+  else {
+    return NULL;
+  }
+}
+
 LassoProvider*
 lasso_server_get_provider(LassoServer  *server,
 			  gchar        *providerID,
