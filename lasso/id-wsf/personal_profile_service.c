@@ -38,6 +38,26 @@ struct _LassoPersonalProfileServicePrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
+gint
+lasso_personal_profile_service_add_data(LassoPersonalProfileService *pp, LassoNode *requested_data)
+{
+	LassoWsfProfile *profile;
+	LassoDstData *data;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp) == TRUE, -1);
+	g_return_val_if_fail(LASSO_IS_NODE(requested_data) == TRUE, -1);
+
+	profile = LASSO_WSF_PROFILE(pp);
+
+	data = lasso_dst_data_new();
+	data->any = g_list_append(data->any, requested_data);
+
+	LASSO_DST_QUERY_RESPONSE(profile->response)->Data = \
+		g_list_append(LASSO_DST_QUERY_RESPONSE(profile->response)->Data, data);
+
+	return ;
+}
+
 LassoDstQueryItem*
 lasso_personal_profile_service_add_query_item(LassoPersonalProfileService *pp, const char *select)
 {
@@ -65,6 +85,7 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
 	LassoAbstractService *service;
+	GList *l_desc;
 
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
@@ -91,28 +112,15 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *pp,
 	
 	/* set msg_url */
 	/* TODO : implement WSDLRef */
+	l_desc = resourceOffering->ServiceInstance->Description;
+	while (l_desc != NULL) {
+		l_desc = l_desc->next;
+	}
 	if (description->Endpoint) {
 		profile->msg_url = g_strdup(description->Endpoint);
 	}
 
 	return query_item;
-}
-
-gint
-lasso_personal_profile_service_add_data(LassoPersonalProfileService *pp, LassoDstData *data)
-{
-	LassoWsfProfile *profile;
-	LassoDstQueryResponse *response;
-
-	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(pp), -1);
-	g_return_val_if_fail(LASSO_IS_DST_DATA(data), -1);
-
-	profile = LASSO_WSF_PROFILE(pp);
-	response = LASSO_DST_QUERY_RESPONSE(profile->response);
-
-	response->Data = g_list_append(response->Data, (gpointer)data);
-
-	return 0;
 }
 
 gint

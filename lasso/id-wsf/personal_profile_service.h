@@ -66,6 +66,9 @@ struct _LassoPersonalProfileServiceClass {
 
 LASSO_EXPORT GType lasso_personal_profile_service_get_type(void);
 
+LASSO_EXPORT gint lasso_personal_profile_service_add_data(
+	LassoPersonalProfileService *pp, LassoNode *requested_data);
+
 LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_add_query_item(
 	LassoPersonalProfileService *pp, const char *select);
 
