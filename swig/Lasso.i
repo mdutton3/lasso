@@ -1649,23 +1649,51 @@ typedef struct {
 #ifndef SWIGPHP4
 %rename(Provider) LassoProvider;
 #endif
-%nodefault LassoProvider;
 typedef struct {
-	/* XXX
-	%immutable metadata;
-	LassoNode *metadata;
-	*/
-
-	%immutable role;
+	char *ProviderID;
+	gchar *ca_cert_chain;
+	char *metadata_filename;
+	gchar *public_key;
 	LassoProviderRole role;
-
-	%extend {
-		/* Attributes */
-		%immutable providerId;
-		%newobject providerId_get;
-		char *providerId;
-	}
 } LassoProvider;
+%extend LassoProvider {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoProvider(LassoProviderRole role, const char *metadata,
+			const char *public_key, const char *ca_cert_chain);
+
+	~LassoProvider();
+
+	%newobject newFromDump;
+	static LassoProvider *newFromDump(char *dump);
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump(char *encoding = NULL, int format = 1);
+
+	/* Methods */
+
+	gboolean acceptHttpMethod(
+			LassoProvider *remote_provider, lassoMdProtocolType protocol_type,
+			lassoHttpMethod http_method, gboolean initiate_profile);
+
+	%newobject getAssertionConsumerServiceUrl;
+	char* getAssertionConsumerServiceUrl(char *service_id);
+
+	%newobject getBase64SuccinctId;
+	char* getBase64SuccinctId();
+
+	lassoHttpMethod getFirstHttpMethod(
+			LassoProvider *remote_provider, lassoMdProtocolType protocol_type);
+
+	// FIXME: GList* lasso_provider_get_metadata_list(char *name);
+
+	%newobject getMetadataOne;
+	char* getMetadataOne(char *name);
+
+	gboolean hasProtocolProfile(lassoMdProtocolType protocol_type, char *protocol_profile);
+}
 
 %{
 
@@ -1674,6 +1702,29 @@ typedef struct {
 /* providerId */
 #define LassoProvider_get_providerId(self) (self)->ProviderID
 #define LassoProvider_providerId_get(self) (self)->ProviderID
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoProvider lasso_provider_new
+#define delete_LassoProvider(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoProvider_newFromDump lasso_provider_new_from_dump
+#else
+#define Provider_newFromDump lasso_provider_new_from_dump
+#endif
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoProvider_dump(self, encoding, format) lasso_node_dump(LASSO_NODE(self), encoding, format)
+
+/* Methods implementations */
+
+#define LassoProvider_acceptHttpMethod lasso_provider_accept_http_method
+#define LassoProvider_getAssertionConsumerServiceUrl lasso_provider_get_assertion_consumer_service_url
+#define LassoProvider_getBase64SuccinctId lasso_provider_get_base64_succinct_id
+#define LassoProvider_getFirstHttpMethod lasso_provider_get_first_http_method
+#define LassoProvider_getMetadataOne lasso_provider_get_metadata_one
+#define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
 
 %}
 
