@@ -68,7 +68,7 @@ LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_query (const xmlC
 LASSO_EXPORT LassoNode* lasso_logout_response_new_from_soap          (const xmlChar *soap_buffer);
 
 
-
+LASSO_EXPORT LassoNode *lasso_logout_response_new_from_dump          (const xmlChar *buffer);
 
 #ifdef __cplusplus
 }

@@ -236,7 +236,7 @@ lasso_logout_response_new_from_query(const xmlChar *query)
 }
 
 LassoNode *
-lasso_logout_response_new_from_memory(const xmlChar *buffer)
+lasso_logout_response_new_from_dump(const xmlChar *buffer)
 {
      LassoNode *response;
 
