@@ -121,8 +121,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
       lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
 						 profile->server->signature_method,
 						 profile->server->private_key,
-						 profile->server->certificate,
-						 NULL);
+						 profile->server->certificate);
     }
 
     /* build the logout request message */
@@ -209,8 +208,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
       lasso_samlp_response_abstract_set_signature(LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response),
 						  profile->server->signature_method,
 						  profile->server->private_key,
-						  profile->server->certificate,
-						  NULL);
+						  profile->server->certificate);
     }
     
     /* build the logout response messsage */
@@ -424,7 +422,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
   LassoProfile  *profile;
   LassoProvider *provider;
   gchar         *remote_providerID;
-  gint           signature_check, ret = 0;
+  gint           ret = 0;
   GError        *err = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
@@ -454,12 +452,8 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       goto done;
     }
     if (provider->ca_certificate != NULL) {
-      signature_check = lasso_node_verify_signature(profile->request, provider->ca_certificate, &err);
-      if (signature_check < 0) {
-	message(G_LOG_LEVEL_CRITICAL, err->message);
-	ret = err->code;
-	g_clear_error(&err);
-      }
+      ret = lasso_node_verify_x509_signature(profile->request, provider->ca_certificate);
+      /* ret = lasso_node_verify_signature(profile->request, provider->public_key); */
     }
     break;
   case lassoHttpMethodRedirect:

@@ -260,35 +260,18 @@ gint
 lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 				   gint                 sign_method,
 				   const xmlChar       *private_key_file,
-				   const xmlChar       *certificate_file,
-				   GError             **err)
+				   const xmlChar       *certificate_file)
 {
   gint ret;
-  GError *tmp_err = NULL;
   LassoNodeClass *class;
 
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL,
-			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
-  }
-  if (LASSO_IS_SAML_ASSERTION(node) == FALSE) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
-    g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
-			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
-  }
+  g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
 
   ret = class->add_signature(LASSO_NODE (node), sign_method,
-			     private_key_file, certificate_file, &tmp_err);
-  if (ret < 0) {
-    g_propagate_error (err, tmp_err);
-  }
+			     private_key_file, certificate_file);
 
   return (ret);
 }

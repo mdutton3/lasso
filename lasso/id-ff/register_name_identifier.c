@@ -108,8 +108,7 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
     lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
 					       profile->server->signature_method,
 					       profile->server->private_key,
-					       profile->server->certificate,
-					       NULL);
+					       profile->server->certificate);
     
     /* build the registration request message */
     profile->msg_url  = lasso_provider_get_soapEndpoint(provider,

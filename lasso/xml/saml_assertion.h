@@ -93,8 +93,7 @@ LASSO_EXPORT void lasso_saml_assertion_set_minorVersion            (LassoSamlAss
 LASSO_EXPORT gint lasso_saml_assertion_set_signature               (LassoSamlAssertion  *node,
 								    gint                 sign_method,
 								    const xmlChar       *private_key_file,
-								    const xmlChar       *certificate_file,
-								    GError             **err);
+								    const xmlChar       *certificate_file);
 
 #ifdef __cplusplus
 }

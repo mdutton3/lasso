@@ -33,7 +33,6 @@
 
 #include <lasso/xml/errors.h>
 #include <lasso/xml/xml.h>
-#include <lasso/xml/ds_signature.h>
 
 struct _LassoNodePrivate
 {
@@ -473,37 +472,51 @@ lasso_node_rename_prop(LassoNode     *node,
 /**
  * lasso_node_verify_signature:
  * @node: a LassoNode
- * @certificate_file: a certificate
+ * @public_key_file: the public key
  * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Verifys the node signature.
  * 
- * Return value: 1 if signature is valid, 0 if invalid. -1 if an error occurs.
+ * Return value: 1 if signature is valid, 0 if invalid or a negative value
+ * if an error occurs.
  **/
 gint
-lasso_node_verify_signature(LassoNode    *node,
-			    const gchar  *certificate_file,
-			    GError      **err)
+lasso_node_verify_signature(LassoNode   *node,
+			    const gchar *public_key_file)
 {
   LassoNodeClass *class;
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL,
-			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
-  }
-  if (LASSO_IS_NODE(node) == FALSE) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
-    g_return_val_if_fail(LASSO_IS_NODE(node),
-			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
-  }
+
+  g_return_val_if_fail(LASSO_IS_NODE(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  /* don't check @public_key_file here, it's checked in impl method */
+
+  class = LASSO_NODE_GET_CLASS(node);
+  return (class->verify_signature(node, public_key_file));
+}
+
+/**
+ * lasso_node_verify_x509_signature:
+ * @node: a LassoNode
+ * @ca_certificate_file: the trusted certificate
+ * @err: return location for an allocated GError, or NULL to ignore errors
+ * 
+ * Verifys the node signature with X509 certificate.
+ * 
+ * Return value: 1 if signature is valid, 0 if invalid or a negative value
+ * if an error occurs.
+ **/
+gint
+lasso_node_verify_x509_signature(LassoNode   *node,
+				 const gchar *ca_certificate_file)
+{
+  LassoNodeClass *class;
+
+  g_return_val_if_fail(LASSO_IS_NODE(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   /* don't check @certificate_file here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->verify_signature(node, certificate_file, err));
+  return (class->verify_x509_signature(node, ca_certificate_file));
 }
 
 /*****************************************************************************/
@@ -523,33 +536,35 @@ lasso_node_add_child(LassoNode *node,
 }
 
 static gint
-lasso_node_add_signature(LassoNode      *node,
-			 gint            sign_method,
-			 const xmlChar  *private_key_file,
-			 const xmlChar  *certificate_file,
-			 GError        **err)
+lasso_node_add_signature(LassoNode     *node,
+			 gint           sign_method,
+			 const xmlChar *private_key_file,
+			 const xmlChar *certificate_file)
 {
   LassoNodeClass *class;
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL,
-			  LASSO_PARAM_ERROR_ERR_CHECK_FAILED);
-  }
-  if (LASSO_IS_NODE(node) == FALSE) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
-    g_return_val_if_fail(LASSO_IS_NODE(node),
-			 LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
-  }
+
+  g_return_val_if_fail(LASSO_IS_NODE(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   /* don't check @private_key_file and @certificate_file here,
      it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
   return (class->add_signature(node, sign_method, private_key_file,
-			       certificate_file, err));
+			       certificate_file));
+}
+
+static gint
+lasso_node_add_signature_tmpl(LassoNode            *node,
+			      lassoSignatureType    sign_type,
+			      lassoSignatureMethod  sign_method)
+{
+  LassoNodeClass *class;
+
+  g_return_val_if_fail(LASSO_IS_NODE(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+
+  class = LASSO_NODE_GET_CLASS(node);
+  return (class->add_signature_tmpl(node, sign_type, sign_method));
 }
 
 static gchar *
@@ -652,6 +667,22 @@ lasso_node_set_xmlNode(LassoNode *node,
 
   class = LASSO_NODE_GET_CLASS(node);
   class->set_xmlNode(node, libxml_node);
+}
+
+static gint
+lasso_node_sign_signature_tmpl(LassoNode     *node,
+			       const xmlChar *private_key_file,
+			       const xmlChar *certificate_file)
+{
+  LassoNodeClass *class;
+
+  g_return_val_if_fail(LASSO_IS_NODE(node),
+		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
+  /* don't check @private_key_file and @certificate_file here,
+     it's checked in impl method */
+
+  class = LASSO_NODE_GET_CLASS(node);
+  class->sign_signature_tmpl(node, private_key_file, certificate_file);
 }
 
 /*****************************************************************************/
@@ -1102,88 +1133,69 @@ lasso_node_impl_rename_prop(LassoNode     *node,
 }
 
 static gint
-lasso_node_impl_verify_signature(LassoNode    *node,
-				 const gchar  *certificate_file,
-				 GError      **err)
+lasso_node_impl_verify_signature(LassoNode   *node,
+				 const gchar *public_key_file)
 {
   xmlDocPtr doc = NULL;
-  xmlNodePtr xmlNode_copy = NULL;
+  xmlNodePtr xmlNode = NULL;
   xmlNodePtr signature = NULL;
-  xmlSecKeysMngrPtr mngr = NULL;
   xmlSecDSigCtxPtr dsigCtx = NULL;
+  xmlIDPtr id;
+  xmlAttrPtr id_attr;
+  xmlChar *id_value;
   gint ret = 0;
 
-  if (certificate_file == NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_INVALID_VALUE,
-		lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
-    g_return_val_if_fail(certificate_file != NULL, -2);
-  }
+  g_return_val_if_fail(public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   doc = xmlNewDoc("1.0");
+  xmlNode = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
+  xmlAddChild((xmlNodePtr)doc, xmlNode);
 
-  /* create a copy of the xmlNode (node->private->node) of @node */
-  xmlNode_copy = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
-
-  /* we must associate the xmlNode with an xmlDoc !!! */
-  xmlAddChild((xmlNodePtr)doc, xmlNode_copy);
+  /* FIXME : register 'AssertionID' ID attribute manually */
+  id_attr = lasso_node_get_attr(node, "AssertionID", NULL);
+  if (id_attr != NULL) {
+    id_value = xmlNodeListGetString(doc, id_attr->children, 1);
+    id = xmlAddID(NULL, doc, id_value, id_attr);
+    xmlFree(id_value);
+  }
 
   /* find start node */
-  signature = xmlSecFindNode(xmlNode_copy, xmlSecNodeSignature, 
+  signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
 			     xmlSecDSigNs);
   if (signature == NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_SIGNATURE_NOTFOUND,
-		lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOTFOUND));
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOTFOUND),
+	    node->private->node->name);
     ret = LASSO_DS_ERROR_SIGNATURE_NOTFOUND;
     goto done;	
   }
 
-  /* create simple keys mngr */
-  mngr = xmlSecKeysMngrCreate();
-  if (mngr == NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED,
-		lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
-    ret = LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED;
-    goto done;
-  }
-
-  if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED,
-		lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
-    ret = LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED;
-    goto done;
-  }
-  
-  /* load trusted cert */
-  if (xmlSecCryptoAppKeysMngrCertLoad(mngr, certificate_file,
-				      xmlSecKeyDataFormatPem,
-				      xmlSecKeyDataTypeTrusted) < 0) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED,
-		lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
-		certificate_file);
-    ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-    goto done;
-  }
-
   /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(mngr);
+  dsigCtx = xmlSecDSigCtxCreate(NULL);
   if (dsigCtx == NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_CONTEXT_CREATION_FAILED,
-		lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
     ret = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
+    goto done;
+  }
+
+  /* load public key */
+  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(public_key_file,
+					    xmlSecKeyDataFormatPem,
+					    NULL, NULL, NULL);
+  if(dsigCtx->signKey == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
+	    public_key_file);
+    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
     goto done;
   }
 
   /* verify signature */
   if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED,
-		lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED));
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED),
+	    node->private->node->name);
     ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
     goto done;
   }
@@ -1192,10 +1204,113 @@ lasso_node_impl_verify_signature(LassoNode    *node,
     ret = 0;
   }
   else {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_DS_ERROR_INVALID_SIGNATURE,
-		lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
-		node->private->node->name);
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
+	    node->private->node->name);
+    ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
+  }
+
+ done:
+  /* cleanup */
+  if(dsigCtx != NULL) {
+    xmlSecDSigCtxDestroy(dsigCtx);
+  }
+  xmlFreeDoc(doc);
+  return (ret);
+}
+
+static gint
+lasso_node_impl_verify_x509_signature(LassoNode   *node,
+				      const gchar *ca_certificate_file)
+{
+  xmlDocPtr doc = NULL;
+  xmlNodePtr xmlNode = NULL;
+  xmlNodePtr signature = NULL;
+  xmlSecKeysMngrPtr mngr = NULL;
+  xmlSecDSigCtxPtr dsigCtx = NULL;
+  xmlIDPtr id;
+  xmlAttrPtr id_attr;
+  xmlChar *id_value;
+  gint ret = 0;
+
+  g_return_val_if_fail(ca_certificate_file != NULL,
+		       LASSO_PARAM_ERROR_INVALID_VALUE);
+
+  doc = xmlNewDoc("1.0");
+  xmlNode = xmlCopyNode(lasso_node_get_xmlNode(node), 1);
+  xmlAddChild((xmlNodePtr)doc, xmlNode);
+
+  /* FIXME: register 'AssertionID' ID attribute manually */
+  id_attr = lasso_node_get_attr(node, "AssertionID", NULL);
+  if (id_attr != NULL) {
+    id_value = xmlNodeListGetString(doc, id_attr->children, 1);
+    id = xmlAddID(NULL, doc, id_value, id_attr);
+    xmlFree(id_value);
+  }
+
+  /* find start node */
+  signature = xmlSecFindNode(xmlNode, xmlSecNodeSignature, 
+			     xmlSecDSigNs);
+  if (signature == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOTFOUND),
+	    node->private->node->name);
+    ret = LASSO_DS_ERROR_SIGNATURE_NOTFOUND;
+    goto done;	
+  }
+
+  /* create simple keys mngr */
+  mngr = xmlSecKeysMngrCreate();
+  if (mngr == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
+    ret = LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED;
+    goto done;
+  }
+
+  if (xmlSecCryptoAppDefaultKeysMngrInit(mngr) < 0) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
+    ret = LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED;
+    goto done;
+  }
+  
+  /* load trusted cert */
+  if (xmlSecCryptoAppKeysMngrCertLoad(mngr, ca_certificate_file,
+				      xmlSecKeyDataFormatPem,
+				      xmlSecKeyDataTypeTrusted) < 0) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
+	    ca_certificate_file);
+    ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
+    goto done;
+  }
+
+  /* create signature context */
+  dsigCtx = xmlSecDSigCtxCreate(mngr);
+  if (dsigCtx == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
+    ret = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
+    goto done;
+  }
+
+  /* verify signature */
+  if (xmlSecDSigCtxVerify(dsigCtx, signature) < 0) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED),
+	    node->private->node->name);
+    ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+    goto done;
+  }
+
+  if (dsigCtx->status == xmlSecDSigStatusSucceeded) {
+    ret = 0;
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
+	    node->private->node->name);
     ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
   }
 
@@ -1246,44 +1361,109 @@ lasso_node_impl_add_child(LassoNode *node,
 }
 
 static gint
-lasso_node_impl_add_signature(LassoNode      *node,
-			      gint            sign_method,
-			      const xmlChar  *private_key_file,
-			      const xmlChar  *certificate_file,
-			      GError        **err)
+lasso_node_impl_add_signature(LassoNode     *node,
+			      gint           sign_method,
+			      const xmlChar *private_key_file,
+			      const xmlChar *certificate_file)
 {
-  LassoNode *signature = NULL;
   gint ret = 0;
-  GError *tmp_err = NULL;
 
-  /* don't chech private_key_file and certificate_file here
-     done in lasso_ds_signature_sign() */
-
-  switch (sign_method) {
-  case lassoSignatureMethodRsaSha1:
-    signature = lasso_ds_signature_new(node, xmlSecTransformRsaSha1Id);
-    break;
-  case lassoSignatureMethodDsaSha1:
-    signature = lasso_ds_signature_new(node, xmlSecTransformDsaSha1Id);
-    break;
+  g_return_val_if_fail (private_key_file != NULL,
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+ 
+  if (certificate_file != NULL) {
+    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeWithX509, sign_method);
   }
-  lasso_node_add_child(node, signature, TRUE);
-  ret = lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
-				private_key_file,
-				certificate_file,
-				&tmp_err);
-  lasso_node_destroy(signature);
-  if (ret < 0) {
-    ret = tmp_err->code;
-    g_propagate_error(err, tmp_err);
+  else {
+    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeSimple, sign_method);
+  }
+  if (ret == 0) {
+    ret = lasso_node_sign_signature_tmpl(node, private_key_file, certificate_file);
   }
 
   return (ret);
 }
 
-static void gdata_build_query_foreach_func(GQuark   key_id,
-					   gpointer data,
-					   gpointer user_data) {
+static gint
+lasso_node_impl_add_signature_tmpl(LassoNode            *node,
+				   lassoSignatureType    sign_type,
+				   lassoSignatureMethod  sign_method)
+{
+  LassoNode *sign_node;
+  xmlDocPtr  doc;
+  xmlNodePtr signature, reference, key_info;
+
+  g_return_val_if_fail(sign_method == lassoSignatureMethodRsaSha1 || \
+		       sign_method == lassoSignatureMethodDsaSha1,
+		       LASSO_PARAM_ERROR_INVALID_VALUE);
+
+  doc = xmlNewDoc("1.0");
+  xmlAddChild((xmlNodePtr)doc, lasso_node_get_xmlNode(node));
+
+  switch (sign_method) {
+  case lassoSignatureMethodRsaSha1:
+    signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					  xmlSecTransformRsaSha1Id, NULL);
+    break;
+  case lassoSignatureMethodDsaSha1:
+    signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					  xmlSecTransformDsaSha1Id, NULL);
+    break;
+  }
+ 
+  if (signature == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
+    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+  }
+  reference = xmlSecTmplSignatureAddReference(signature,
+					      xmlSecTransformSha1Id,
+					      NULL, NULL, NULL);
+  if (reference == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
+    xmlFreeNode(signature);
+    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+  }
+
+  /* add enveloped transform */
+  if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add enveloped transform to reference\n");
+    xmlFreeNode(signature);
+    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+  }
+
+  /* add <dsig:KeyInfo/> */
+  key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+  if (key_info == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
+    xmlFreeNode(signature);
+    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+  }
+  
+  /* add <dsig:X509Data/> */
+  if (sign_type == lassoSignatureTypeWithX509) {
+    if (xmlSecTmplKeyInfoAddX509Data(key_info) == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Failed to add X509Data node\n");
+      xmlFreeNode(signature);
+      return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+    }
+  }
+
+  sign_node = lasso_node_new();
+  lasso_node_set_xmlNode(sign_node, signature);
+  lasso_node_add_child(node, sign_node, TRUE);
+  lasso_node_destroy(sign_node);
+
+  /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
+  /* xmlFreeDoc(doc); */
+
+  return (0);
+}
+
+static void
+gdata_build_query_foreach_func(GQuark   key_id,
+			       gpointer data,
+			       gpointer user_data)
+{
   guint i;
   GString *str;
   GPtrArray *array;
@@ -1531,6 +1711,73 @@ lasso_node_impl_set_xmlNode(LassoNode  *node,
   node->private->node = libxml_node;
 }
 
+gint
+lasso_node_impl_sign_signature_tmpl(LassoNode     *node,
+				    const xmlChar *private_key_file,
+				    const xmlChar *certificate_file)
+{
+  xmlDocPtr doc;
+  xmlNodePtr signature_tmpl;
+  xmlSecDSigCtxPtr dsig_ctx;
+  gint ret = 0;
+
+  g_return_val_if_fail(private_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+  doc = xmlNewDoc("1.0");
+  xmlAddChild((xmlNodePtr)doc, lasso_node_get_xmlNode(node));
+  signature_tmpl = xmlSecFindNode(lasso_node_get_xmlNode(node),
+				  xmlSecNodeSignature, 
+				  xmlSecDSigNs);
+
+  /* create signature context */
+  dsig_ctx = xmlSecDSigCtxCreate(NULL);
+  if (dsig_ctx == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
+    return(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
+  }
+  
+  /* load private key, assuming that there is not password */
+  dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+					     xmlSecKeyDataFormatPem,
+					     NULL, NULL, NULL);
+  if (dsig_ctx->signKey == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
+	    private_key_file);
+    ret = LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
+    goto done;
+  }
+  
+  /* load certificate and add to the key */
+  if (certificate_file != NULL) {
+    if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+				   xmlSecKeyDataFormatPem) < 0) {
+      message(G_LOG_LEVEL_CRITICAL,
+	      lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
+	      certificate_file);
+      ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
+      goto done;
+    }
+  }
+
+  /* sign the template */
+  if (xmlSecDSigCtxSign(dsig_ctx, signature_tmpl) < 0) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
+	    node->private->node->name);
+    ret = LASSO_DS_ERROR_SIGNATURE_FAILED;
+  }
+
+ done:
+  xmlSecDSigCtxDestroy(dsig_ctx);
+  /* FIXME */
+  /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
+  /* xmlFreeDoc(doc); */
+
+  return (ret);
+}
+
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
@@ -1593,36 +1840,39 @@ lasso_node_class_init(LassoNodeClass *class)
   
   parent_class = g_type_class_peek_parent(class);
   /* virtual public methods */
-  class->copy              = lasso_node_impl_copy;
-  class->destroy           = lasso_node_impl_destroy;
-  class->dump              = lasso_node_impl_dump;
-  class->export            = lasso_node_impl_export;
-  class->export_to_base64  = lasso_node_impl_export_to_base64;
-  class->export_to_query   = lasso_node_impl_export_to_query;
-  class->export_to_soap    = lasso_node_impl_export_to_soap;
-  class->get_attr          = lasso_node_impl_get_attr;
-  class->get_attr_value    = lasso_node_impl_get_attr_value;
-  class->get_attrs         = lasso_node_impl_get_attrs;
-  class->get_child         = lasso_node_impl_get_child;
-  class->get_child_content = lasso_node_impl_get_child_content;
-  class->get_children      = lasso_node_impl_get_children;
-  class->get_content       = lasso_node_impl_get_content;
-  class->get_name          = lasso_node_impl_get_name;
-  class->import            = lasso_node_impl_import;
-  class->import_from_node  = lasso_node_impl_import_from_node;
-  class->rename_prop       = lasso_node_impl_rename_prop;
-  class->verify_signature  = lasso_node_impl_verify_signature;
+  class->copy                  = lasso_node_impl_copy;
+  class->destroy               = lasso_node_impl_destroy;
+  class->dump                  = lasso_node_impl_dump;
+  class->export                = lasso_node_impl_export;
+  class->export_to_base64      = lasso_node_impl_export_to_base64;
+  class->export_to_query       = lasso_node_impl_export_to_query;
+  class->export_to_soap        = lasso_node_impl_export_to_soap;
+  class->get_attr              = lasso_node_impl_get_attr;
+  class->get_attr_value        = lasso_node_impl_get_attr_value;
+  class->get_attrs             = lasso_node_impl_get_attrs;
+  class->get_child             = lasso_node_impl_get_child;
+  class->get_child_content     = lasso_node_impl_get_child_content;
+  class->get_children          = lasso_node_impl_get_children;
+  class->get_content           = lasso_node_impl_get_content;
+  class->get_name              = lasso_node_impl_get_name;
+  class->import                = lasso_node_impl_import;
+  class->import_from_node      = lasso_node_impl_import_from_node;
+  class->rename_prop           = lasso_node_impl_rename_prop;
+  class->verify_signature      = lasso_node_impl_verify_signature;
+  class->verify_x509_signature = lasso_node_impl_verify_x509_signature;
   /* virtual private methods */
-  class->add_child     = lasso_node_impl_add_child;
-  class->add_signature = lasso_node_impl_add_signature;
-  class->build_query   = lasso_node_impl_build_query;
-  class->get_xmlNode   = lasso_node_impl_get_xmlNode;
-  class->new_child     = lasso_node_impl_new_child;
-  class->serialize     = lasso_node_impl_serialize;
-  class->set_name      = lasso_node_impl_set_name;
-  class->set_ns        = lasso_node_impl_set_ns;
-  class->set_prop      = lasso_node_impl_set_prop;
-  class->set_xmlNode   = lasso_node_impl_set_xmlNode;
+  class->add_child           = lasso_node_impl_add_child;
+  class->add_signature       = lasso_node_impl_add_signature;
+  class->add_signature_tmpl  = lasso_node_impl_add_signature_tmpl;
+  class->build_query         = lasso_node_impl_build_query;
+  class->get_xmlNode         = lasso_node_impl_get_xmlNode;
+  class->new_child           = lasso_node_impl_new_child;
+  class->serialize           = lasso_node_impl_serialize;
+  class->set_name            = lasso_node_impl_set_name;
+  class->set_ns              = lasso_node_impl_set_ns;
+  class->set_prop            = lasso_node_impl_set_prop;
+  class->set_xmlNode         = lasso_node_impl_set_xmlNode;
+  class->sign_signature_tmpl = lasso_node_impl_sign_signature_tmpl;
   /* override parent class methods */
   gobject_class->dispose  = (void *)lasso_node_dispose;
   gobject_class->finalize = (void *)lasso_node_finalize;

@@ -94,8 +94,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
       lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
 						 profile->server->signature_method,
 						 profile->server->private_key,
-						 profile->server->certificate,
-						 NULL);
+						 profile->server->certificate);
     }
 
     /* build the message */
