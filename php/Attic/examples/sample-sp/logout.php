@@ -22,14 +22,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  $config = unserialize(file_get_contents('config.inc'));
+    $config = unserialize(file_get_contents('config.inc'));
 
- require_once 'DB.php';
+    require_once 'DB.php';
 
-  if (!empty($_GET['SID'])) 
-	session_start($_GET['SID']);
-  else
-	session_start();
+    session_start();
 
   if (!isset($_SESSION["nameidentifier"])) {
 	print "User is not logged in";
@@ -124,6 +121,6 @@
   
   header("Request-URI: $url");
   header("Content-Location: $url");
-  header("Location: $url\n\n");
+  header("Location: $url\r\n\r\n");
   exit;
 ?>

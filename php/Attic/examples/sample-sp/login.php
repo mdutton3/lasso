@@ -48,6 +48,6 @@
 
   header("Request-URI: $url");
   header("Content-Location: $url");
-  header("Location: $url\n\n");
+  header("Location: $url\r\n\r\n");
   exit();
 ?>
