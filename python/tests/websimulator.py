@@ -101,13 +101,13 @@ class HttpRequestHandler(abstractweb.HttpRequestHandlerMixin, object):
         self.site = site
         self.httpRequest = httpRequest
 
-    def getSession(self):
-        return self.site.getSessionFromPrincipal(self.httpRequest.client)
-        
+    def createSession(self):
+        session = abstractweb.HttpRequestHandlerMixin.createSession(self)
+        self.httpRequest.client.sessionTokens[self.site.url] = session.token
+        return session
+
     def respondRedirectTemporarily(self, url):
         return self.httpRequest.client.redirect(url)
-
-    session = property(getSession)
 
 
 class Internet(object):
@@ -181,120 +181,59 @@ class WebSession(abstractweb.WebSessionMixin, object):
     """Simulation of session of a web site"""
 
     expirationTime = None # A sample session variable
-    isDirty = True
+    lassoLoginDump = None # Used only by some identity providers
     lassoSessionDump = None
-    loginDump = None # Used only by some identity providers
-    userId = None # ID of logged user. 
-
-    def __init__(self, token):
-        self.token = token
-
-    def save(self):
-        pass
-
-
-class WebSite(abstractweb.WebSiteMixin, WebClient):
-    """Simulation of a web site"""
-
-    httpResponseHeaders = {
-        'Server': 'Lasso Simulator Web Server',
-        }
-    lastSessionToken = 0
-    providerId = None # The Liberty providerID of this web site
-    url = None # The main URL of web site
-    users = None
-    sessions = None
-
-    def __init__(self, internet, url):
-        WebClient.__init__(self, internet)
-        self.url = url
-        self.userIdsByNameIdentifier = {}
-        self.users = {}
-        self.sessionTokensByNameIdentifier = {}
-        self.sessions = {}
-        self.internet.addWebSite(self)
-
-    def addUser(self, name):
-        self.users[name] = WebUser(name)
-
-    def createSession(self, client):
-        self.lastSessionToken += 1
-        session = WebSession(self.lastSessionToken)
-        self.sessions[self.lastSessionToken] = session
-        client.sessionTokens[self.url] = self.lastSessionToken
-        return session
-
-    def getIdentityDump(self, principal):
-        session = self.getSessionFromPrincipal(principal)
-        user = self.getUserFromSession(session)
-        if user is None:
-            return None
-        return user.lassoIdentityDump
-
-    def getLassoSessionDump(self, principal):
-        session = self.getSessionFromPrincipal(principal)
-        if session is None:
-            return None
-        return session.lassoSessionDump
-
-    def getSessionFromNameIdentifier(self, nameIdentifier):
-        sessionToken = self.sessionTokensByNameIdentifier.get(nameIdentifier, None)
-        if sessionToken is None:
-            # The user has no federation on this site or has no authentication assertion for this
-            # federation.
-            return None
-        return self.sessions.get(sessionToken, None)
-
-    def getSessionFromPrincipal(self, principal):
-        sessionToken = principal.sessionTokens.get(self.url, None)
-        return self.getSessionFromToken(sessionToken)
-
-    def getSessionFromToken(self, sessionToken):
-        if sessionToken is None:
-            # The user has no web session opened on this site.
-            return None
-        return self.sessions.get(sessionToken, None)
-
-    def getUserFromNameIdentifier(self, nameIdentifier):
-        userId = self.userIdsByNameIdentifier.get(nameIdentifier, None)
-        if userId is None:
-            # The user has no federation on this site.
-            return None
-        return self.users.get(userId, None)
-
-    def getUserFromSession(self, session):
-        if session is None:
-            return None
-        userId = session.userId
-        if userId is None:
-            # The user has no account on this site.
-            return None
-        return self.users.get(userId, None)
-
-    def handleHttpRequest(self, httpRequest):
-        httpRequestHandler = HttpRequestHandler(self, httpRequest)
-        return self.handleHttpRequestHandler(httpRequestHandler)
-
-    def handleHttpRequestHandler(self, httpRequestHandler):
-        methodName = httpRequestHandler.httpRequest.path.replace('/', '')
-        try:
-            method = getattr(self, methodName)
-        except AttributeError:
-            return httpRequestHandler.respond(
-                404, 'Path "%s" Not Found.' % httpRequestHandler.httpRequest.path)
-        return method(httpRequestHandler)
 
 
 class WebUser(abstractweb.WebUserMixin, object):
     """Simulation of user of a web site"""
 
-    isDirty = True
     lassoIdentityDump = None
     language = 'fr' # A sample user variable
-    uniqueId = None # The user name is used as an ID in this simulation.
 
-    def __init__(self, uniqueId):
-        self.uniqueId = uniqueId
 
-    def save(self):
-        pass
+class WebSite(abstractweb.WebSiteMixin, WebClient):
+    """Simulation of a web site"""
+
+    instantAuthentication = True # Authentication doesn't use a HTML form.
+    url = None # The main URL of web site
+    WebSession = WebSession
+    WebUser = WebUser
+
+    def __init__(self, internet, url):
+        WebClient.__init__(self, internet)
+        abstractweb.WebSiteMixin.__init__(self)
+        self.url = url
+        self.internet.addWebSite(self)
+
+    def authenticate(self, handler, callback, *arguments, **keywordArguments):
+        userId = handler.httpRequest.client.keyring.get(self.url, None)
+        userAuthenticated = userId in self.users
+
+        import lasso
+        authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
+        if userAuthenticated:
+            session = handler.session
+            if session is None:
+                session = handler.createSession()
+            user = handler.user
+            if user is None:
+                user = handler.createUser()
+            session.userId = user.uniqueId
+            user.sessionToken = session.token
+        return callback(handler, userAuthenticated, authenticationMethod, *arguments,
+                        **keywordArguments)
+
+    def handleHttpRequest(self, httpRequest):
+        httpRequestHandler = HttpRequestHandler(self, httpRequest)
+
+        # Retrieve session and user.
+        sessionToken = httpRequest.client.sessionTokens.get(self.url, None)
+        if sessionToken is not None:
+            session = self.sessions.get(sessionToken)
+            if session is not None:
+                httpRequestHandler.session = session
+                if session.userId is not None:
+                    httpRequestHandler.user = self.users.get(session.userId, None)
+
+        return self.handleHttpRequestHandler(httpRequestHandler)

@@ -83,22 +83,18 @@ class ServiceProvider(Provider):
         session = self.getSessionFromNameIdentifier(nameIdentifier)
         if session is None:
             session = handler.session
-        if session is not None:
-            lassoSessionDump = session.lassoSessionDump
-            if lassoSessionDump is not None:
-                login.set_session_from_dump(lassoSessionDump)
+        if session is not None and session.lassoSessionDump is not None:
+            login.set_session_from_dump(session.lassoSessionDump)
         # Retrieve identity dump, using name identifier or else try to retrieve him from web
         # session. If identity dump exists, give it to Lasso, so that it updates it.
         user = self.getUserFromNameIdentifier(nameIdentifier)
         if user is None:
-            user = self.getUserFromSession(session)
-        if user is not None:
-            lassoIdentityDump = user.lassoIdentityDump
-            if lassoIdentityDump is not None:
-                login.set_identity_from_dump(lassoIdentityDump)
+            user = handler.user
+        if user is not None and user.lassoIdentityDump is not None:
+            login.set_identity_from_dump(user.lassoIdentityDump)
 
         login.accept_sso()
-        if user is not None and lassoIdentityDump is None:
+        if user is not None and user.lassoIdentityDump is None:
             failUnless(login.is_identity_dirty())
         lassoIdentity = login.get_identity()
         failUnless(lassoIdentity)
@@ -114,7 +110,7 @@ class ServiceProvider(Provider):
 
         # If there was no web session yet, create it. Idem for the web user account.
         if session is None:
-            session = self.createSession(handler.httpRequest.client)
+            session = handler.createSession()
         if user is None:
             # A real service provider would ask user to login locally to create federation. Or it
             # would ask user informations to create a local account.
@@ -211,18 +207,16 @@ class ServiceProvider(Provider):
         session = handler.session
         if session is None:
             return handler.respond(401, 'Access Unauthorized: User has no session opened.')
-        user = self.getUserFromSession(session)
+        user = handler.user
         if user is None:
             return handler.respond(401, 'Access Unauthorized: User is not logged in.')
 
         lassoServer = self.getLassoServer()
         logout = lasso.Logout.new(lassoServer, lasso.providerTypeSp)
-        lassoIdentityDump = self.getIdentityDump(handler.httpRequest.client)
-        if lassoIdentityDump is not None:
-            logout.set_identity_from_dump(lassoIdentityDump)
-        lassoSessionDump = self.getLassoSessionDump(handler.httpRequest.client)
-        if lassoSessionDump is not None:
-            logout.set_session_from_dump(lassoSessionDump)
+        if user.lassoIdentityDump is not None:
+            logout.set_identity_from_dump(user.lassoIdentityDump)
+        if session.lassoSessionDump is not None:
+            logout.set_session_from_dump(session.lassoSessionDump)
         logout.init_request()
         logout.build_request_msg()
 

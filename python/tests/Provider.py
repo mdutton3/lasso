@@ -33,8 +33,29 @@ class Provider(WebSite):
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
         })
     lassoServerDump = None
+    providerId = None # The Liberty providerID of this web site
     sessionTokensByNameIdentifier = None
     userIdsByNameIdentifier = None
 
+    def __init__(self, internet, url):
+        WebSite.__init__(self, internet, url)
+        self.userIdsByNameIdentifier = {}
+        self.sessionTokensByNameIdentifier = {}
+
     def getLassoServer(self):
         return lasso.Server.new_from_dump(self.lassoServerDump)
+
+    def getSessionFromNameIdentifier(self, nameIdentifier):
+        sessionToken = self.sessionTokensByNameIdentifier.get(nameIdentifier, None)
+        if sessionToken is None:
+            # The user has no federation on this site or has no authentication assertion for this
+            # federation.
+            return None
+        return self.sessions.get(sessionToken, None)
+
+    def getUserFromNameIdentifier(self, nameIdentifier):
+        userId = self.userIdsByNameIdentifier.get(nameIdentifier, None)
+        if userId is None:
+            # The user has no federation on this site.
+            return None
+        return self.users.get(userId, None)

@@ -60,10 +60,10 @@ class LoginTestCase(unittest.TestCase):
         failUnless(site.lassoServerDump)
         lassoServer.destroy()
 
-        site.addUser('Chantereau')
-        site.addUser('Clapies')
-        site.addUser('Febvre')
-        site.addUser('Nowicki')
+        site.newUser('Chantereau')
+        site.newUser('Clapies')
+        site.newUser('Febvre')
+        site.newUser('Nowicki')
         # Frederic Peters has no account on identity provider.
         return site
 
@@ -97,11 +97,11 @@ class LoginTestCase(unittest.TestCase):
         failUnless(site.lassoServerDump)
         lassoServer.destroy()
 
-        site.addUser('Nicolas')
-        site.addUser('Romain')
-        site.addUser('Valery')
+        site.newUser('Nicolas')
+        site.newUser('Romain')
+        site.newUser('Valery')
         # Christophe Nowicki has no account on service provider.
-        site.addUser('Frederic')
+        site.newUser('Frederic')
         return site
 
     def setUp(self):
@@ -247,6 +247,7 @@ class LoginTestCase(unittest.TestCase):
 
     def test07(self):
         """LECP login."""
+
         internet = Internet()
         idpSite = self.generateIdpSite(internet)
         spSite = self.generateSpSite(internet)
@@ -262,10 +263,9 @@ class LoginTestCase(unittest.TestCase):
         httpResponse = lecp.login(principal, spSite, '/login')
         failUnlessEqual(httpResponse.statusCode, 401)
 
-        # Now we authenticate principal, before testing LECP. So, LECP must succeed.
+        # Now authenticate principal, before testing LECP. So, LECP must succeed.
         httpResponse = principal.sendHttpRequestToSite(spSite, 'GET', '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
-        idpSite.createSession(lecp)
         httpResponse = lecp.login(principal, spSite, '/login')
         failUnlessEqual(httpResponse.statusCode, 200)
 

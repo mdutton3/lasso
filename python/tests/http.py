@@ -274,7 +274,14 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
 #    requestline = None # Strange
 #    request_version = None # Strange
     server_version = 'HttpRequestHandlerMixin/1.0'
-    site = None # Class variable.
+    site = None # Class variable
+    testCookieSupport = False
+
+    def createSession(self):
+        session = abstractweb.HttpRequestHandlerMixin.createSession(self)
+        if self.canUseCookie:
+            self.testCookieSupport = True
+        return session
 
     def handle(self):
         """Handle multiple requests if necessary."""
@@ -314,7 +321,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         logger.info(self.raw_requestline.strip())
         logger.debug(str(self.headers))
 
-###############
+        # Retrieve the session and user, if possible.
 
         session = None
         sessionToken = None
@@ -330,8 +337,8 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                                 % clientCertificate.get_serial_number())
                 else:
                     sessionToken = user.sessionToken
-                    if sessionToken:
-                        session = self.site.getSessionFromToken(sessionToken)
+                    if sessionToken is not None:
+                        session = self.site.sessions.get(sessionToken)
                         if session is None:
                             sessionToken = None
                             del user.sessionToken
@@ -379,8 +386,8 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                         return self.outputErrorUnauthorized(httpPath)
                     else:
                         sessionToken = user.sessionToken
-                        if sessionToken:
-                            session = self.site.getSessionFromToken(sessionToken)
+                        if sessionToken is not None:
+                            session = self.site.sessions.get(sessionToken)
                             if session is None:
                                 sessionToken = None
                                 del user.sessionToken
@@ -394,9 +401,10 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                 elif login:
                     # No password was given. Assume login contains a session token.
                     # TODO: sanity chek on login
-                    session = self.site.getSessionFromToken(sessionToken)
-                    if session is not None:
-                        user = session.user
+                    sessionToken = login
+                    session = self.site.sessions.get(sessionToken)
+                    if session is not None and session.userId is not None:
+                        user = self.site.users.get(session.userId)
                         if user is not None and user.sessionToken != session.token:
                             # Sanity check.
                             user.sessionToken = session.token
@@ -434,16 +442,17 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                         sessionTokenInCookie = True
         canUseCookie = True
         if session is None and sessionToken is not None:
-            session = self.site.getSessionFromToken(sessionToken)
+            session = self.site.sessions.get(sessionToken)
             if session is None:
                 sessionToken = None
                 sessionTokenInCookie = False
             else:
                 if user is None:
-                    user = session.user
-                    if user is not None and user.sessionToken != sessionToken:
-                        # Sanity check.
-                        user.sessionToken = sessionToken
+                    if session.userId is not None:
+                        user = self.site.users.get(session.userId)
+                        if user is not None and user.sessionToken != sessionToken:
+                            # Sanity check.
+                            user.sessionToken = sessionToken
                 else:
                     # The user has been authenticated (using HTTP or X.509 authentication), but the
                     # associated session didn't exist (or was too old, or...). So, update
@@ -453,28 +462,30 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                     # token (it is better not to store it in a cookie or in URLs).
                     if session.publishToken:
                         del session.publishToken
+        self.canUseCookie = canUseCookie
         if session is None and user is not None:
             # The user has been authenticated (using HTTP or X.509 authentication), but the session
             # doesn't exist yet (or was too old, or...). Create a new session.
-            session = sessions.getOrCreateSession()
+            session = self.createSession()
             # For security reasons, we want to minimize the publication of session
             # token (it is better not to store it in a cookie or in URLs).
             # session.publishToken = False # False is the default value.
-            session.setAccountAbsolutePath(account.getAbsolutePath())
+            session.userId = user.uniqueId
             user.sessionToken = session.token
-        self.user = user
-        if user is not None:
-            logger.debug('User: %s' % user.simpleLabel)
-        self.session = session
+        else:
+            self.session = session
         if session is not None:
             if not sessionTokenInCookie:
                 # The sessionToken is valid but is not stored in the cookie. So, don't try to
                 # use cookie.
                 canUseCookie = False
             logger.debug('Session: %s' % session.simpleLabel)
-        self.canUseCookie = canUseCookie
+        self.user = user
+        if user is not None:
+            logger.debug('User: %s' % user.simpleLabel)
 
-###############
+        # Now, the HTTP request handler has done everything it could done. Transfer the processing
+        # to the site.
 
         try:
             self.site.handleHttpRequestHandler(self)

@@ -41,69 +41,41 @@ class IdentityProvider(Provider):
             # Single sign-on using HTTP redirect.
             login = lasso.Login.new(lassoServer)
             session = handler.session
-            user = None
-            if session is not None:
-                if session.lassoSessionDump is not None:
-                    login.set_session_from_dump(session.lassoSessionDump)
-                user = self.getUserFromSession(session)
-                if user is not None and user.lassoIdentityDump is not None:
-                    login.set_identity_from_dump(user.lassoIdentityDump)
+            if session is not None and session.lassoSessionDump is not None:
+                login.set_session_from_dump(session.lassoSessionDump)
+            user = handler.user
+            if user is not None and user.lassoIdentityDump is not None:
+                login.set_identity_from_dump(user.lassoIdentityDump)
             login.init_from_authn_request_msg(handler.httpRequest.query, lasso.httpMethodRedirect)
 
             if not login.must_authenticate():
                 userAuthenticated = user is not None
                 authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
                 return self.singleSignOn_part2(
-                    handler, login, session, user, userAuthenticated, authenticationMethod)
+                    handler, login, userAuthenticated, authenticationMethod)
 
-            if session is None:
-                session = self.createSession(handler.httpRequest.client)
-            session.loginDump = login.dump()
+            return self.singleSignOn_authenticate(handler, login)
 
-            # A real identity provider using a HTML form to ask user's login & password would store
-            # idpLoginDump in a session variable and display the HTML login form.
-            userId = handler.httpRequest.client.keyring.get(self.url, None)
-            userAuthenticated = userId in self.users
-            if userAuthenticated:
-                session.userId = userId
-            authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
-
-            lassoServer = self.getLassoServer()
-            session = handler.session
-            loginDump = session.loginDump
-            del session.loginDump
-            login = lasso.Login.new_from_dump(lassoServer, loginDump)
-            # Set identity & session in login, because loginDump doesn't contain them.
-            if session.lassoSessionDump is not None:
-                login.set_session_from_dump(session.lassoSessionDump)
-            user = self.getUserFromSession(session)
-            if user is not None and user.lassoIdentityDump is not None:
-                login.set_identity_from_dump(user.lassoIdentityDump)
-
-            return self.singleSignOn_part2(
-                handler, login, session, user, userAuthenticated, authenticationMethod)
         elif handler.httpRequest.method == 'POST' \
                and handler.httpRequest.headers.get('Content-Type', None) == 'text/xml':
             # SOAP request => LECP single sign-on.
             lecp = lasso.Lecp.new(lassoServer)
             session = handler.session
-            user = None
-            if session is not None:
-                if session.lassoSessionDump is not None:
-                    lecp.set_session_from_dump(session.lassoSessionDump)
-                user = self.getUserFromSession(session)
-                if user is not None and user.lassoIdentityDump is not None:
-                    lecp.set_identity_from_dump(user.lassoIdentityDump)
+            if session is not None and session.lassoSessionDump is not None:
+                lecp.set_session_from_dump(session.lassoSessionDump)
+            user = handler.user
+            if user is not None and user.lassoIdentityDump is not None:
+                lecp.set_identity_from_dump(user.lassoIdentityDump)
             lecp.init_from_authn_request_msg(handler.httpRequest.body, lasso.httpMethodSoap)
             # FIXME: lecp.must_authenticate() should always return False.
             # The other solution is that we are able to not call lecp.must_authenticate()
             # failIf(lecp.must_authenticate())
             userAuthenticated = user is not None
             authenticationMethod = lasso.samlAuthenticationMethodPassword # FIXME
-            # FIXME: It is very very strange that we don't provide userAuthenticated,
-            # authenticationMethod, reauthenticateOnOrAfter' to lecp before or when build response.
             lecp.build_authn_response_envelope_msg(
-                userAuthenticated, authenticationMethod, 'FIXME: reauthenticateOnOrAfter')
+                userAuthenticated, authenticationMethod,
+                "2005-05-03T16:12:00Z", # FIXME: reauthenticateOnOrAfter
+                )
             soapResponseMsg = lecp.msg_body
             failUnless(soapResponseMsg)
             # FIXME: Lasso should set a lecp.msg_content_type to
@@ -124,13 +96,47 @@ class IdentityProvider(Provider):
                 400,
                 'Bad Request: Method %s not handled by singleSignOn' % handler.httpRequest.method)
 
-    def singleSignOn_part2(self, handler, login, session, user, userAuthenticated,
-                           authenticationMethod):
+    def singleSignOn_authenticate(self, handler, login):
+        if not self.instantAuthentication:
+            # The authentication needs to change page (needed for a HTML form, for example).
+            # Save Lasso login as a dump in session.
+            session = handler.session
+            if session is None:
+                session = handler.createSession()
+            session.lassoLoginDump = login.dump()
+            login = None
+        return self.authenticate(handler, self.singleSignOn_authenticate_part2, login)
+
+    def singleSignOn_authenticate_part2(self, handler, userAuthenticated, authenticationMethod,
+                                        login = None):
+        if login is None:
+            # The authentication needed to change page (needed for a HTML form, for example).
+            # Reconstruct Lasso login from dump.
+            lassoServer = self.getLassoServer()
+            session = handler.session
+            failUnless(session)
+            failUnless(session.lassoLoginDump)
+            login = lasso.Login.new_from_dump(lassoServer, session.lassoLoginDump)
+            del session.lassoLoginDump
+            # Set identity & session in login, because session.lassoLoginDump doesn't contain them.
+            if session.lassoSessionDump is not None:
+                login.set_session_from_dump(session.lassoSessionDump)
+            user = handler.user
+            if user is not None and user.lassoIdentityDump is not None:
+                login.set_identity_from_dump(user.lassoIdentityDump)
+        return self.singleSignOn_part2(handler, login, userAuthenticated, authenticationMethod)
+
+    def singleSignOn_part2(self, handler, login, userAuthenticated, authenticationMethod):
         failUnlessEqual(login.protocolProfile, lasso.loginProtocolProfileBrwsArt) # FIXME
         login.build_artifact_msg(
-            userAuthenticated, authenticationMethod, 'FIXME: reauthenticateOnOrAfter',
+            userAuthenticated, authenticationMethod,
+            "2005-05-03T16:12:00Z", # FIXME: reauthenticateOnOrAfter
             lasso.httpMethodRedirect)
         if userAuthenticated:
+            session = handler.session
+            failUnless(session)
+            user = handler.user
+            failUnless(user)
             if login.is_identity_dirty():
                 lassoIdentityDump = login.get_identity().dump()
                 failUnless(lassoIdentityDump)
@@ -180,19 +186,17 @@ class IdentityProvider(Provider):
             session = self.getSessionFromNameIdentifier(nameIdentifier)
             if session is None:
                 raise Exception('FIXME: Handle the case when there is no web session')
-            lassoSessionDump = session.lassoSessionDump
-            if lassoSessionDump is None:
+            if session.lassoSessionDump is None:
                 raise Exception(
                     'FIXME: Handle the case when there is no session dump in web session')
-            logout.set_session_from_dump(lassoSessionDump)
+            logout.set_session_from_dump(session.lassoSessionDump)
             user = self.getUserFromNameIdentifier(nameIdentifier)
             if user is None:
                 raise Exception('FIXME: Handle the case when there is no web user')
-            lassoIdentityDump = user.lassoIdentityDump
-            if lassoIdentityDump is None:
+            if user.lassoIdentityDump is None:
                 raise Exception(
                     'FIXME: Handle the case when there is no identity dump in web user')
-            logout.set_identity_from_dump(lassoIdentityDump)
+            logout.set_identity_from_dump(user.lassoIdentityDump)
 
             logout.validate_request()
             failIf(logout.is_identity_dirty())

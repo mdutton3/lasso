@@ -142,6 +142,16 @@ class HttpRequestHandlerMixin:
     user = None
     site = None # The virtual host
 
+    def createSession(self):
+        session = self.site.newSession()
+        self.session = session
+        return session
+
+    def createUser(self):
+        user = self.site.newUser()
+        self.user = user
+        return user
+
     def respond(self, statusCode = 200, statusMessage = None, headers = None, body = None):
         self.httpResponse = self.HttpResponse(
             self, statusCode, statusMessage = statusMessage, headers = headers, body = body)
@@ -161,11 +171,44 @@ class HttpRequestHandlerMixin:
 
 
 class WebSessionMixin:
+    isDirty = True
     publishToken = False
     token = None
+    userId = None # ID of logged user
+
+    def __init__(self, token):
+        self.token = token
+
+    def getSimpleLabel(self):
+        return self.token
+
+    def save(self):
+        pass
+
+    simpleLabel = property(getSimpleLabel)
 
 
 class WebSiteMixin:
+    httpResponseHeaders = {
+        'Server': 'Lasso Simulator Web Server',
+        }
+    instantAuthentication = False
+    lastSessionToken = 0
+    lastUserId = 0
+    users = None
+    sessions = None
+    WebSession = None # Class
+    WebUser = None # Class
+
+    def __init__(self):
+        self.users = {}
+        self.sessions = {}
+
+    def authenticate(self, handler, callback, *arguments, **keywordArguments):
+        # The arguments & keywordArguments should be given back to callback only for
+        # instant authentication.
+        raise NotImplementedError
+
     def authenticateX509User(self, clientCertificate):
         # We should check certificate (for example clientCertificate.get_serial_number()
         # and return the user if one matches, or None otherwise.
@@ -175,6 +218,50 @@ class WebSiteMixin:
         # We should check login & password and return the user if one matches or None otherwise.
         return None
 
+    def handleHttpRequestHandler(self, httpRequestHandler):
+        methodName = httpRequestHandler.httpRequest.path.replace('/', '')
+        try:
+            method = getattr(self, methodName)
+        except AttributeError:
+            return httpRequestHandler.respond(
+                404, 'Path "%s" Not Found.' % httpRequestHandler.httpRequest.path)
+        return method(httpRequestHandler)
+
+    def newSession(self):
+        self.lastSessionToken += 1
+        session = self.WebSession(self.lastSessionToken)
+        self.sessions[self.lastSessionToken] = session
+        return session
+
+    def newUser(self, name = None):
+        if name is None:
+            self.lastUserId += 1
+            userId = self.lastUserId
+        else:
+            userId = name
+        user = self.WebUser(userId, name = name)
+        self.users[userId] = user
+        return user
+
 
 class WebUserMixin:
+    isDirty = True
+    name = None
     sessionToken = None
+    uniqueId = None
+
+    def __init__(self, uniqueId, name = None):
+        self.uniqueId = uniqueId
+        if name:
+            self.name = name
+
+    def getSimpleLabel(self):
+        if self.name:
+            return self.name
+        else:
+            return 'Anonymous User #%s' % self.uniqueId
+
+    def save(self):
+        pass
+
+    simpleLabel = property(getSimpleLabel)
