@@ -37,13 +37,13 @@ class Error(Exception):
     
 def init():
     """
-    Init Lasso Library
+    Init Lasso Library.
     """
     return lassomod.init()
 
 def shutdown():
     """
-    Shutdown Lasso Library
+    Shutdown Lasso Library.
     """
     return lassomod.shutdown()
 
@@ -52,52 +52,121 @@ def shutdown():
 ################################################################################
 
 class Node:
+    """\brief The base class of the Lasso hierarchy.
+
+    Node is the base class for all Lasso classes.
+    """
+
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
             return
-##         #self._o = lassomod.(size)
-##         if self._o is None: raise Error('lasso_node_new() failed')
-
+        
     def destroy(self):
+        """
+        Destroys the node.
+        """
         lassomod.node_destroy(self)
 
     def dump(self, encoding="utf8", format=1):
+        """
+        Dumps the node. All datas in object are dumped in an XML format.
+
+        \param encoding the name of the encoding to use or None.
+        \param format is formatting allowed?
+        \return an XML dump of the node
+        """
         return lassomod.node_dump(self, encoding, format)
 
     def export(self):
+        """
+        Exports the node.
+
+        \return an XML dump of the node (UTF-8 encoded)
+        """
         return lassomod.node_export(self)
 
     def export_to_base64(self):
+        """
+        Like export() method except that result is Base64 encoded.
+
+        \return a Base64 encoded export of the node
+        """
         return lassomod.node_export_to_base64(self)
 
-    def export_to_query(self, sign_method, private_key_file):
+    def export_to_query(self, sign_method=0, private_key_file=None):
+        """
+        URL-encodes and signes the node.
+        If private_key_file is None, query won't be signed.
+
+        \param sign_method the Signature transform method
+        \param private_key_file a private key
+        \return a query
+        """
         return lassomod.node_export_to_query(self, sign_method, private_key_file)
 
     def export_to_soap(self):
+        """
+        Like export() method except that result is SOAP enveloped.
+
+        \return a SOAP enveloped export of the node
+        """
         return lassomod.node_export_to_soap(self)
 
     def get_attr_value(self, name):
+        """
+        Gets the value of an attribute associated to node.
+        
+        \param name an attribut name
+        \return the attribut value or None if not found.
+        """
         return lassomod.node_get_attr_value(self, name)
 
     def get_child(self, name, href=None):
+        """
+        Gets child of node having given \a name and namespace \a href.
+
+        \param name the child name
+        \param href the namespace
+        \return a child node
+        """
         obj = lassomod.node_get_child(self, name, href)
         if obj:
             return Node(_obj=obj)
         return None
 
     def get_content(self):
+        """
+        Read the value of node, this can be either the text carried directly by
+        this node if it's a TEXT node or the aggregate string of the values carried
+        by this node child's (TEXT and ENTITY_REF). Entity references are
+        substituted.
+
+        \return a string or None if no content is available.
+        """
         return lassomod.node_get_content(self)
 
     def verify_signature(self, certificate_file):
+        """
+        Verifys the node signature.
+
+        \param certificate_file a certificate
+        \return 1 if signature is valid, 0 if invalid. -1 if an error occurs.
+        """
         return lassomod.node_verify_signature(self, certificate_file)
 
 
 class SamlAssertion(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -107,6 +176,9 @@ class SamlAssertion(Node):
         Node.__init__(self, _obj=_obj)
 
     def add_authenticationStatement(self, authenticationStatement):
+        """
+        bla bla
+        """
         lassomod.saml_assertion_add_authenticationStatement(self,
                                                             authenticationStatement)
 
@@ -116,8 +188,13 @@ class SamlAssertion(Node):
 
 
 class SamlAuthenticationStatement(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -128,8 +205,13 @@ class SamlAuthenticationStatement(Node):
 
 
 class SamlNameIdentifier(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -146,8 +228,13 @@ class SamlNameIdentifier(Node):
 
 
 class SamlpResponse(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -161,8 +248,13 @@ class SamlpResponse(Node):
 
 
 class LibAuthenticationStatement(SamlAuthenticationStatement):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -175,8 +267,13 @@ class LibAuthenticationStatement(SamlAuthenticationStatement):
 
 
 class LibAuthnRequest(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -202,8 +299,13 @@ class LibAuthnRequest(Node):
 
 
 class LibFederationTerminationNotification(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -218,8 +320,13 @@ class LibFederationTerminationNotification(Node):
 
 
 class LibLogoutRequest(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -245,6 +352,10 @@ class LibLogoutRequest(Node):
 
 
 class LibLogoutResponse(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj = None):
         if _obj!=None:
             self._o = _obj
@@ -256,8 +367,13 @@ class LibLogoutResponse(Node):
         
 
 class LibNameIdentifierMappingRequest(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -272,8 +388,13 @@ class LibNameIdentifierMappingRequest(Node):
 
 
 class LibNameIdentifierMappingResponse(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj = None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -285,8 +406,13 @@ class LibNameIdentifierMappingResponse(Node):
 
 
 class LibRegisterNameIdentifierRequest(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -298,8 +424,13 @@ class LibRegisterNameIdentifierRequest(Node):
 
 
 class LibRegisterNameIdentifierResponse(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj = None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -316,8 +447,13 @@ class LibRegisterNameIdentifierResponse(Node):
 def authn_request_get_protocolProfile(query):
     return lassomod.authn_request_get_protocolProfile(query)
 class AuthnRequest(LibAuthnRequest):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, providerID, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -339,8 +475,13 @@ class AuthnRequest(LibAuthnRequest):
 
 
 class AuthnResponse(SamlpResponse):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         SamlpResponse.__init__(self, _obj=_obj)
@@ -389,8 +530,13 @@ class AuthnResponse(SamlpResponse):
 
 
 class FederationTerminationNotification(LibFederationTerminationNotification):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, obj):
         """
+        The constructor
         """
         self._o = obj
         LibFederationTerminationNotification.__init__(self, _obj=self._o)
@@ -412,8 +558,13 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
 
 
 class LogoutRequest(LibLogoutRequest):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibLogoutRequest.__init__(self, _obj = self._o)
@@ -435,8 +586,13 @@ class LogoutRequest(LibLogoutRequest):
 
 
 class LogoutResponse(LibLogoutResponse):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibLogoutResponse.__init__(self, _obj = self._o)
@@ -468,8 +624,13 @@ class LogoutResponse(LibLogoutResponse):
 
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibNameIdentifierMappingRequest.__init__(self, _obj = self._o)
@@ -491,8 +652,13 @@ class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
 
 
 class NameIdentifierMappingResponse(LibNameIdentifierMappingResponse):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibNameIdentifierMappingResponse.__init__(self, _obj = self._o)
@@ -524,8 +690,13 @@ class NameIdentifierMappingResponse(LibNameIdentifierMappingResponse):
 
 
 class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibRegisterNameIdentifierRequest.__init__(self, _obj = self._o)
@@ -556,8 +727,13 @@ class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
 
 
 class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, _obj):
         """
+        The constructor
         """
         self._o = _obj
         LibRegisterNameIdentifierResponse.__init__(self, _obj = self._o)
@@ -592,8 +768,13 @@ class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
 ################################################################################
 
 class Assertion(SamlAssertion):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self, issuer, requestID, _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
@@ -604,6 +785,10 @@ class Assertion(SamlAssertion):
 
 
 class AuthenticationStatement(Node):
+    """\brief Blabla
+
+    Bla bla
+    """
     def __init__(self,
                  authenticationMethod,
                  reauthenticateOnOrAfter,
@@ -615,6 +800,7 @@ class AuthenticationStatement(Node):
                  idp_format,
                  _obj=None):
         """
+        The constructor
         """
         if _obj != None:
             self._o = _obj
