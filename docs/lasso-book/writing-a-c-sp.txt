@@ -47,14 +47,16 @@ compilation and linking.
  -lpthread -lz -lm -lglib-2.0
 
 
-Creating an executable from the previous sample is then a simple matter of
-calling ``gcc``::
+Creating an executable from the previous sample would then a simple matter of
+calling ``gcc`` with the right flags.  But there is currently in bug in
+XMLSec, the library used by Lasso to provide XML Signature and XML Encryption
+support.  It is possible to workaround the bug::
 
-  $ gcc hello.c -o hello `pkg-config lasso --cflags --libs`
+  $ gcc hello.c -o hello $(pkg-config lasso --cflags --libs)
+ <command line>:4:16: missing terminating " character
+  $ gcc hello.c -o hello $(pkg-config xmlsec1 --cflags --libs | tr -d '\\')
   $ ./hello
  Hello world.
-  $
-
 
 
 Liberty and Lasso profiles
@@ -86,6 +88,8 @@ The ``LassoServer`` object may be created as follows:
   lasso_server_add_provider(server, "idp-metadata.xml",
   		"idp-public-key.pem", "ca-crt.pem");
 
+- ``sp-metadata.xml`` is the Liberty metadata file for the service provider
+- ``idp-metadata.xml`` is the Liberty metadata file for the identity provider
 - ``sp-private-key.pem`` is the service provider private key; used to sign
   documents
 - ``sp-crt.pem`` is the service provider certificate; sent inside signed
@@ -97,6 +101,33 @@ The ``LassoServer`` object may be created as follows:
 
 It is of course possible to have several calls so ``lasso_server_add_provider``
 if there are more than one identity provider.
+
+.. note:: Figures in the previously referred Binding and Profiles specification
+          document are quite helpful in figuring out the message passing.
+
+
+Liberty Metadata Files
+======================
+
+
+They are descriptions of a provider containing ``providerID`` and various
+norminative URLs::
+
+  <?xml version="1.0"?>
+  <EntityDescriptor
+      providerID="https://sp.example.com/" xmlns="urn:liberty:metadata:2003-08">
+    <SPDescriptor>
+      <SingleLogoutServiceURL>https://sp.example.com/singleLogout</SingleLogoutServiceURL>
+      <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
+      <SoapEndpoint>https://sp.example.com/soapEndpoint</SoapEndpoint>
+      <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">https://sp.example.com/assertionConsumer</AssertionConsumerServiceURL>
+      <AuthnRequestsSigned>true</AuthnRequestsSigned>
+    </SPDescriptor>
+  </EntityDescriptor>
+
+Describe a service provider (with providerID ``https://sp.example.com``) whose
+single logout service URL is ``https://sp.example.com/singleLogout``.  Refer to
+the Liberty Alliance specifications for details.
 
 
 Single Sign-On and Federation Profile
@@ -113,8 +144,8 @@ login URL; the service provider must then respond with an HTTP 302 Redirect
 response, pointing the user browser to the identity provider single sign on
 service.
 
-.. note:: It may be helpful to look at figure 2 in the previously referred
-          Binding and Profiles specification document.
+.. note:: the login URL is not normative; any name will go.
+
 
 ``server`` is a ``LassoServer`` and ``idpProviderId`` is a string with the
 identity provider Id (defined in metadata).
@@ -145,6 +176,9 @@ example, in a CGI::
 The user then logs in on the identity provider which ultimately redirects back
 to the service provider; to the assertion consumer URL.  A SAML artifact is
 passed in the query parameter.
+
+.. note:: the assertion consumer URL is defined by Liberty; it must be declared
+   in the ``AssertionConsumerServiceURL`` element of the metadata file.
 
 ::
 
