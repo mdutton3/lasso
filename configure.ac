@@ -654,7 +654,6 @@ csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
 docs/reference/Makefile
-docs/tutorial/Makefile
 java/Makefile
 lasso/Makefile
 lasso/id-ff/Makefile
