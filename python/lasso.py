@@ -1208,13 +1208,13 @@ class RegisterNameIdentifier:
         pass
 
     def init_request(self, remote_providerID):
-        return lassomod.register_name_identifier_init_request(self, remote_providerID);
+        return lassomod.register_name_identifier_init_request(self, remote_providerID)
 
     def process_request(self):
         return lassomod.register_name_identifier_process_request(self)
 
     def process_response_msg(self, response_msg, response_method):
-        return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method);
+        return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method)
 
 class Lecp:
     """\brief Short desc
@@ -1246,30 +1246,30 @@ class Lecp:
         return Lecp(obj)
     new = classmethod(new)
 
-    def build_authn_request_msg(self):
-        return lassomod.lecp_build_authn_request_msg(self)
-
     def build_authn_request_envelope_msg(self):
-        return lassomod.lecp_build_authn_request_envelope_msg(self);
-
-    def build_authn_response_msg(self):
-        return lassomod.lecp_build_authn_response_msg(self)
+        return lassomod.lecp_build_authn_request_envelope_msg(self)
 
     def build_authn_response_envelope_msg(self):
         return lassomod.lecp_build_authn_response_envelope_msg(self)
 
+    def build_authn_request_msg(self):
+        return lassomod.lecp_build_authn_request_msg(self)
+
+    def build_authn_response_msg(self):
+        return lassomod.lecp_build_authn_response_msg(self)
+
     def destroy(self):
         lassomod.lecp_destroy(self)
 
-    def init_authn_request_envelope(self, authnRequest):
-        return lassomod.lecp_init_authn_request_envelope(self, authnRequest)
+    def init_authn_request(self, remote_providerID):
+        return lassomod.lecp_init_authn_request(self, remote_providerID)
 
-    def init_authn_response_envelope(self, authnRequest, authnResponse):
-        return lassomod.lecp_init_authn_response_envelope(self, authnRequest, authnResponse)
+    def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
+        return lassomod.lecp_init_from_authn_request_msg(self, authn_request_msg, authn_request_method)
 
     def process_authn_request_envelope_msg(self, request_msg):
         return lassomod.lecp_process_authn_request_envelope_msg(self, request_msg)
-
+  
     def process_authn_response_envelope_msg(self, response_msg):
         return lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)
 

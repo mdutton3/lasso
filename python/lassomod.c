@@ -229,13 +229,13 @@ static PyMethodDef lasso_methods[] = {
   /* py_lecp.h */
   {"lecp_new",                                 lecp_new,                                 METH_VARARGS},
   {"lecp_getattr",                             lecp_getattr,                             METH_VARARGS},
-  {"lecp_build_authn_request_msg",             lecp_build_authn_request_msg,             METH_VARARGS},
   {"lecp_build_authn_request_envelope_msg",    lecp_build_authn_request_envelope_msg,    METH_VARARGS},
+  {"lecp_build_authn_request_msg",             lecp_build_authn_request_msg,             METH_VARARGS},
   {"lecp_build_authn_response_msg",            lecp_build_authn_response_msg,            METH_VARARGS},
   {"lecp_build_authn_response_envelope_msg",   lecp_build_authn_response_envelope_msg,   METH_VARARGS},
   {"lecp_destroy",                             lecp_destroy,                             METH_VARARGS},
-  {"lecp_init_authn_request_envelope",         lecp_init_authn_request_envelope,         METH_VARARGS},
-  {"lecp_init_authn_response_envelope",        lecp_init_authn_response_envelope,        METH_VARARGS},
+  {"lecp_init_authn_request",                  lecp_init_authn_request,                  METH_VARARGS},
+  {"lecp_init_from_authn_request_msg",         lecp_init_from_authn_request_msg,         METH_VARARGS},
   {"lecp_process_authn_request_envelope_msg",  lecp_process_authn_request_envelope_msg,  METH_VARARGS},
   {"lecp_process_authn_response_envelope_msg", lecp_process_authn_response_envelope_msg, METH_VARARGS},
 

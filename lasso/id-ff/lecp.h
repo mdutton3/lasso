@@ -75,6 +75,8 @@ LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLec
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp *lecp);
 
+LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
+
 LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp   *lecp,
 									const gchar *remote_providerID);
 
