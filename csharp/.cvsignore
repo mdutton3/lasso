@@ -46,4 +46,8 @@ lassoLoginProtocolProfile.cs
 lassoMessageType.cs
 lassoRequestType.cs
 lassoSignatureMethod.cs
+LibRegisterNameIdentifierResponse.cs
+LibLogoutResponse.cs
+LibAuthnRequest.cs
+LibAssertion.cs
 

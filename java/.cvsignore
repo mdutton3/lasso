@@ -39,4 +39,7 @@ RegisterNameIdentifierResponse.java
 SWIGTYPE_p_void.java
 SamlpRequest.java
 SamlpResponse.java
-
+LibRegisterNameIdentifierResponse.java
+LibLogoutResponse.java
+LibAuthnRequest.java
+LibAssertion.java
