@@ -14,7 +14,7 @@ for line in file(sys.argv[1]):
     for f in re.findall(r"(lasso_[a-zA-Z_]+?)\(", line):
         functions[f] = 1
 
-known_symbols = [x.strip() for x in file("../reference/lasso-decl-list.txt")]
+known_symbols = [x.strip() for x in file("../reference/build/lasso-decl-list.txt")]
 
 for f in functions:
     if not f in known_symbols:
