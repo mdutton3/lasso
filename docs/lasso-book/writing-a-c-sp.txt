@@ -104,17 +104,17 @@ Single Sign-On and Federation Profile
 
 .. warning:: The source code presented in this section has for sole purpose
              to explain the different steps necessary to implement this
-	     profile; they notably lack proper error checking.
-
-
-.. note:: It may be helpful to look at figure 2 in the previously referred
-          Binding and Profiles specification document.
+	     profile; they notably lack proper error checking.  See `Proper
+	     Error Checking`_ for details on error checking.
 
 
 As a first step the user points its browser to the service provider to the
 login URL; the service provider must then respond with an HTTP 302 Redirect
 response, pointing the user browser to the identity provider single sign on
 service.
+
+.. note:: It may be helpful to look at figure 2 in the previously referred
+          Binding and Profiles specification document.
 
 ``server`` is a ``LassoServer`` and ``idpProviderId`` is a string with the
 identity provider Id (defined in metadata).
