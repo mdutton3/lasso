@@ -77,9 +77,9 @@ LASSO_EXPORT gint           lasso_server_add_provider             (LassoServer *
 
 LASSO_EXPORT LassoServer*   lasso_server_copy                     (LassoServer *server);
 
-LASSO_EXPORT gchar*         lasso_server_dump                     (LassoServer *server);
-
 LASSO_EXPORT void           lasso_server_destroy                  (LassoServer *server);
+
+LASSO_EXPORT gchar*         lasso_server_dump                     (LassoServer *server);
 
 LASSO_EXPORT LassoProvider* lasso_server_get_provider             (LassoServer *server,
 								   gchar       *providerID);
