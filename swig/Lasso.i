@@ -94,6 +94,7 @@
   }
 %}
 #else
+
 #ifdef SWIGPYTHON
 %{
 	PyObject *lassoError;
@@ -138,6 +139,25 @@ SyntaxError = _lasso.SyntaxError
 
 #if defined(SWIGPYTHON)
 %typemap(in,parse="z") char *, char [ANY] "";
+#endif
+
+
+#if defined(SWIGPHP4)
+%{
+/* ZVAL_STRING segfault when s is null */
+#undef ZVAL_STRING
+#define ZVAL_STRING(z, s, duplicate) {	\
+		char *__s=(s);					\
+        if (__s) {                      \
+		  (z)->value.str.len = strlen(__s);	\
+		  (z)->value.str.val = (duplicate?estrndup(__s, (z)->value.str.len):__s);	\
+		} else {                        \
+		  (z)->value.str.len = 0;	    \
+		  (z)->value.str.val = empty_string; \
+		}                               \
+		(z)->type = IS_STRING;	        \
+	}
+%}
 #endif
 
 
