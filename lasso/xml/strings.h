@@ -109,11 +109,6 @@
 #define LASSO_LIB_CONSENT_UNAVAILABLE               "urn:liberty:consent:unavailable"
 #define LASSO_LIB_CONSENT_INAPPLICABLE              "urn:liberty:consent:inapplicable"
 
-/* Service types */
-#define LASSO_LIB_SERVICE_TYPE_DISCO     "urn:liberty:disco:2003-08"
-#define LASSO_LIB_SERVICE_TYPE_ID_SIS_EP "urn:liberty:id-sis-ep:2003-08"
-#define LASSO_LIB_SERVICE_TYPE_ID_SIS_PP "urn:liberty:id-sis-pp:2003-08"
-
 /*****************************************************************************/
 /* Liberty Alliance ID-WSF                                                   */
 /*****************************************************************************/
@@ -121,6 +116,12 @@
 /* disco prefix & href */
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
+
+#define LASSO_DISCO_HREF   "urn:liberty:ep:2003-08"
+#define LASSO_DISCO_PREFIX "ep"
+
+#define LASSO_DISCO_HREF   "urn:liberty:pp:2003-08"
+#define LASSO_DISCO_PREFIX "pp"
 
 /* status code */
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
