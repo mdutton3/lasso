@@ -577,54 +577,6 @@ gint lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, gchar *resp
  ***********************************************************************/
 
 
-/*  xml/xml.h */
-/*
-GType          lasso_node_get_type         (void);
-LassoNode*     lasso_node_new              (void);
-LassoNode*     lasso_node_new_from_dump    (const xmlChar *buffer);
-LassoNode*     lasso_node_new_from_xmlNode (xmlNodePtr node);
-LassoNode*     lasso_node_copy             (LassoNode *node);
-void           lasso_node_destroy          (LassoNode *node);
-xmlChar*       lasso_node_dump             (LassoNode     *node,
-							 const xmlChar *encoding,
-							 int            format);
-xmlChar*       lasso_node_export           (LassoNode *node);
-xmlChar*       lasso_node_export_to_base64 (LassoNode *node);
-gchar*         lasso_node_export_to_query  (LassoNode            *node,
-							 lassoSignatureMethod  sign_method,
-							 const gchar          *private_key_file);
-xmlChar*       lasso_node_export_to_soap   (LassoNode *node);
-LassoAttr*     lasso_node_get_attr         (LassoNode      *node,
-							 const xmlChar  *name,
-							 GError        **err);
-xmlChar*       lasso_node_get_attr_value   (LassoNode      *node,
-							 const xmlChar  *name,
-							 GError        **err);
-GPtrArray*     lasso_node_get_attrs        (LassoNode *node);
-LassoNode*     lasso_node_get_child        (LassoNode      *node,
-							 const xmlChar  *name,
-							 const xmlChar  *href,
-							 GError        **err);
-xmlChar *      lasso_node_get_child_content(LassoNode      *node,
-							 const xmlChar  *name,
-							 const xmlChar  *href,
-							 GError        **err);
-GPtrArray*     lasso_node_get_children     (LassoNode *node);
-xmlChar*       lasso_node_get_content      (LassoNode  *node,
-							 GError    **err);
-xmlChar*       lasso_node_get_name         (LassoNode *node);
-void           lasso_node_import           (LassoNode     *node,
-							 const xmlChar *buffer);
-void           lasso_node_import_from_node (LassoNode *node,
-							 LassoNode *imported_node);
-void           lasso_node_rename_prop      (LassoNode     *node,
-							 const xmlChar *old_name,
-							 const xmlChar *new_name);
-gint           lasso_node_verify_signature (LassoNode    *node,
-							 const gchar  *certificate_file,
-							 GError      **err);
-*/
-
 /* xml/strings.h */
 /* xml/tools.h */
 
@@ -2329,12 +2281,6 @@ void lasso_samlp_request_abstract_set_minorVersion (LassoSamlpRequestAbstract *n
 void lasso_samlp_request_abstract_set_requestID    (LassoSamlpRequestAbstract *node,
 								 const xmlChar *requestID);
 
-gint lasso_samlp_request_abstract_set_signature    (LassoSamlpRequestAbstract  *node,
-								 gint                        sign_method,
-								 const xmlChar              *private_key_file,
-								 const xmlChar              *certificate_file,
-								 GError                    **err);
-
 /* $Id$ 
  */
 
@@ -2414,12 +2360,6 @@ void lasso_samlp_response_abstract_set_recipient    (LassoSamlpResponseAbstract 
 
 void lasso_samlp_response_abstract_set_responseID   (LassoSamlpResponseAbstract *node,
 								  const xmlChar *responseID);
-
-gint lasso_samlp_response_abstract_set_signature    (LassoSamlpResponseAbstract  *node,
-								  gint                         sign_method,
-								  const xmlChar               *private_key_file,
-								  const xmlChar               *certificate_file,
-								  GError                     **err);
 
 /* $Id$
  */
@@ -2573,11 +2513,6 @@ void lasso_saml_assertion_set_majorVersion            (LassoSamlAssertion *node,
 void lasso_saml_assertion_set_minorVersion            (LassoSamlAssertion *node,
 								    const xmlChar *minorVersion);
 
-gint lasso_saml_assertion_set_signature               (LassoSamlAssertion  *node,
-								    gint                 sign_method,
-								    const xmlChar       *private_key_file,
-								    const xmlChar       *certificate_file,
-								    GError             **err);
 
 /* $Id$ 
  */
@@ -3284,8 +3219,4 @@ void           lasso_node_import_from_node (LassoNode *node,
 void           lasso_node_rename_prop      (LassoNode     *node,
 							 const xmlChar *old_name,
 							 const xmlChar *new_name);
-
-gint           lasso_node_verify_signature (LassoNode    *node,
-							 const gchar  *certificate_file,
-							 GError      **err);
 
