@@ -676,6 +676,7 @@ typedef struct {
  * Server
  ***********************************************************************/
 
+
 #ifndef SWIGPHP
 %rename(Server) LassoServer;
 #endif
@@ -905,7 +906,7 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoRequest *request;
+		LassoFederationTerminationNotification *request;
 
 		%newobject session_get;
 		LassoSession *session;
@@ -1361,10 +1362,10 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoRequest *request;
+		LassoLogoutRequest *request;
 
 		%immutable response;
-		LassoResponse *response;
+		LassoLogoutResponse *response;
 
 		gchar *responseStatus;
 
