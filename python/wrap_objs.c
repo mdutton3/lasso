@@ -70,7 +70,7 @@ PyObject *charPtrConst_wrap(const char *str) {
 /* Functions to wrap LibXML objects -> Python objects                        */
 /*****************************************************************************/
 
-PyObject *wrap_xmlCharPtr(xmlChar *str) {
+PyObject *xmlCharPtr_wrap(xmlChar *str) {
   PyObject *ret;
 
   if (str == NULL) {

@@ -103,7 +103,10 @@ int lasso_shutdown()
 #ifndef XMLSEC_NO_XSLT
   xsltCleanupGlobals();            
 #endif /* XMLSEC_NO_XSLT */
+  /* Cleanup function for the XML library */
   xmlCleanupParser();
+  /* this is to debug memory for regression tests */
+  xmlMemoryDump();
   return (0);
 }
 
@@ -120,33 +123,34 @@ int lasso_shutdown()
  * 0 if it is not or a negative value if an error occurs.
  */
 int 
-lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMode mode) {
+lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMode mode)
+{
   /* we always want to have a match for major version number */
-  if(major != LASSO_VERSION_MAJOR) {
+  if (major != LASSO_VERSION_MAJOR) {
     g_message("expected major version=%d;real major version=%d",
 	      LASSO_VERSION_MAJOR, major);
-    return(0);
+    return (0);
   }
   
-  switch(mode) {
+  switch (mode) {
   case lassoCheckVersionExact:
-    if((minor != LASSO_VERSION_MINOR) || (subminor != LASSO_VERSION_SUBMINOR)) {
+    if ((minor != LASSO_VERSION_MINOR) || (subminor != LASSO_VERSION_SUBMINOR)) {
       g_message("mode=exact;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
 		LASSO_VERSION_MINOR, minor,
 		LASSO_VERSION_SUBMINOR, subminor);
-      return(0);
+      return (0);
     }
     break;
   case lassoCheckVersionABICompatible:
-    if((minor < LASSO_VERSION_MINOR) ||
-       ((minor == LASSO_VERSION_MINOR) && (subminor < LASSO_VERSION_SUBMINOR))) {
+    if ((minor < LASSO_VERSION_MINOR) ||
+	((minor == LASSO_VERSION_MINOR) && (subminor < LASSO_VERSION_SUBMINOR))) {
       g_message("mode=abi compatible;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
 		LASSO_VERSION_MINOR, minor,
 		LASSO_VERSION_SUBMINOR, subminor);
-      return(0);
+      return (0);
     }
     break;
   }
   
-  return(1);
+  return (1);
 }

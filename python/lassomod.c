@@ -38,9 +38,12 @@ static PyMethodDef lasso_methods[] = {
   {"check_version_ext",   check_version_ext,   METH_VARARGS},
 
   /* py_xml.h */
-  {"node_dump",       node_dump,       METH_VARARGS},
-  {"node_unref",      node_unref,      METH_VARARGS},
-  {"node_url_encode", node_url_encode, METH_VARARGS},
+  {"node_dump",             node_dump,             METH_VARARGS},
+  {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
+  {"node_get_child",        node_get_child,        METH_VARARGS},
+  {"node_unref",            node_unref,            METH_VARARGS},
+  {"node_url_encode",       node_url_encode,       METH_VARARGS},
+  {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
   /* py_single_sign_on_and_federation.h */
   {"authn_request_getattr", authn_request_getattr, METH_VARARGS},

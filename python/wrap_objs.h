@@ -55,7 +55,7 @@ PyObject *int_wrap(int val);
 PyObject *charPtr_wrap(char *str);
 PyObject *charPtrConst_wrap(const char *str);
 
-PyObject *wrap_xmlCharPtr(xmlChar *str);
+PyObject *xmlCharPtr_wrap(xmlChar *str);
 PyObject *wrap_xmlCharPtrConst(const xmlChar *str);
 PyObject *wrap_xmlDocPtr(xmlDocPtr doc);
 PyObject *wrap_xmlNodePtr(xmlNodePtr node);

@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, '../')
 import lasso
 
-print lasso.init()
+lasso.init()
 
 req = lasso.AuthnRequest("providerid.com",
                          "federated",
@@ -28,7 +28,7 @@ print query
 
 res = lasso.AuthnResponse(query, 1,
                           "../../examples/rsapub.pem",
-                          "../../examples/rsakey2.pem",
+                          "../../examples/rsakey.pem",
                           "../../examples/rsacert.pem", 0)
 
 res.init("toto", 1)
@@ -36,7 +36,7 @@ res.init("toto", 1)
 assertion = lasso.assertion_build(res, "http://idprovider.com")
 authentication_statement = lasso.authentication_statement_build("password",
                                                                 "3",
-                                                                "tralalal",
+                                                                "tralala",
                                                                 "dslqkjfslfj",
                                                                 "http://service-provider.com",
                                                                 "federated",
@@ -46,8 +46,15 @@ authentication_statement = lasso.authentication_statement_build("password",
                                                                 "bearer")
 lasso.assertion_add_authenticationStatement(assertion, authentication_statement);
 res.add_assertion(assertion)
-
 res.node.dump("iso-8859-1", 1)
+
+assertion.verify_signature("../../examples/rootcert.pem")
+res.node.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
+
+status = res.node.get_child("Status")
+status_code = status.get_child("StatusCode")
+print status_code.get_attr_value("Value")
+
 #req.node.destroy()
 
-#print lasso.shutdown()
+#lasso.shutdown()

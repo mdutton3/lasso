@@ -56,6 +56,13 @@ lasso_node_get_attr(LassoNode *node, const xmlChar *name)
   return (class->get_attr(node, name));
 }
 
+xmlChar *
+lasso_node_get_attr_value(LassoNode *node, const xmlChar *name)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->get_attr_value(node, name));
+}
+
 GPtrArray *
 lasso_node_get_attrs(LassoNode *node)
 {
@@ -293,6 +300,12 @@ lasso_node_impl_get_attr(LassoNode *node, const xmlChar *name)
   return (NULL);
 }
 
+static xmlChar *
+lasso_node_impl_get_attr_value(LassoNode *node, const xmlChar *name)
+{
+  return (lasso_node_get_attr(node, name)->children->content);
+}
+
 static GPtrArray *
 lasso_node_impl_get_attrs(LassoNode *node)
 {
@@ -360,8 +373,8 @@ lasso_node_impl_get_name(LassoNode *node)
 
 static void
 lasso_node_impl_dump(LassoNode *node,
-			  const xmlChar *encoding,
-			  int format)
+		     const xmlChar *encoding,
+		     int format)
 {
   xmlChar *ret;
   int len;
@@ -460,7 +473,7 @@ lasso_node_impl_url_encode(LassoNode *node,
 
   if (sign_method > 0 && key_file != NULL) {
     switch (sign_method) {
-    case LassoUrlEncodeRsaSha1:
+    case lassoUrlEncodeRsaSha1:
       msg = g_string_append(msg, "&SigAlg=");
       msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#rsa-sha1"));
       doc = lasso_str_sign(msg->str, xmlSecTransformRsaSha1Id, key_file);
@@ -471,7 +484,7 @@ lasso_node_impl_url_encode(LassoNode *node,
       msg = g_string_append(msg, str2);
       xmlFree(str2);
       break;
-    case LassoUrlEncodeDsaSha1:
+    case lassoUrlEncodeDsaSha1:
       msg = g_string_append(msg, "&SigAlg=");
       msg = g_string_append(msg, lasso_str_escape("http://www.w3.org/2000/09/xmldsig#dsa-sha1"));
       doc = lasso_str_sign(msg->str, xmlSecTransformDsaSha1Id, key_file);
@@ -706,6 +719,7 @@ lasso_node_class_init(LassoNodeClass *class)
   class->build_query      = lasso_node_impl_build_query;
   class->dump             = lasso_node_impl_dump;
   class->get_attr         = lasso_node_impl_get_attr;
+  class->get_attr_value   = lasso_node_impl_get_attr_value;
   class->get_attrs        = lasso_node_impl_get_attrs;
   class->get_child        = lasso_node_impl_get_child;
   class->get_children     = lasso_node_impl_get_children;

@@ -66,6 +66,8 @@ struct _LassoNodeClass {
 				    int);
   LassoAttr*  (* get_attr)         (LassoNode     *,
 				    const xmlChar *);
+  xmlChar*    (* get_attr_value)   (LassoNode     *node,
+				    const xmlChar *name);
   GPtrArray*  (* get_attrs)        (LassoNode     *);
   LassoNode*  (* get_child)        (LassoNode     *,
 				    const xmlChar *);
@@ -104,9 +106,9 @@ struct _LassoNodeClass {
 };
 
 typedef enum {
-  LassoUrlEncodeRsaSha1 = 1,
-  LassoUrlEncodeDsaSha1
-} LassoUrlEncodeSignMethod;
+  lassoUrlEncodeRsaSha1 = 1,
+  lassoUrlEncodeDsaSha1
+} lassoUrlEncodeSignMethod;
 
 LASSO_EXPORT GType lasso_node_get_type(void);
 LASSO_EXPORT LassoNode* lasso_node_new(xmlNodePtr node);
@@ -121,6 +123,9 @@ LASSO_EXPORT LassoAttr* lasso_node_get_attr         (LassoNode *node,
 						     const xmlChar *name);
 
 LASSO_EXPORT GPtrArray* lasso_node_get_attrs        (LassoNode *node);
+
+LASSO_EXPORT xmlChar*   lasso_node_get_attr_value   (LassoNode *node,
+						     const xmlChar *name);
 
 LASSO_EXPORT LassoNode* lasso_node_get_child        (LassoNode *node,
 						     const xmlChar *name);

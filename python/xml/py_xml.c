@@ -60,6 +60,40 @@ PyObject *node_dump(PyObject *self, PyObject *args) {
   return (Py_None);
 }
 
+PyObject *node_get_attr_value(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  const xmlChar *name;
+  xmlChar *ret;
+
+  if (CheckArgs(args, "OS:node_get_attr_value")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:node_get_attr_value",
+			 &node_obj, &name))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_get_attr_value(LassoNode_get(node_obj), name);
+
+  return (xmlCharPtr_wrap(ret));
+}
+
+PyObject *node_get_child(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  const xmlChar *name;
+  LassoNode *ret;
+
+  if (CheckArgs(args, "OS:node_get_child")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:node_get_child",
+			 &node_obj, &name))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_get_child(LassoNode_get(node_obj), name);
+
+  return (LassoNode_wrap(ret));
+}
+
 PyObject *node_unref(PyObject *self, PyObject *args) {
   PyObject *node_obj;
 
@@ -93,4 +127,22 @@ PyObject *node_url_encode(PyObject *self, PyObject *args) {
 			      sign_method, private_key_file);
 
   return (charPtr_wrap(ret));
+}
+
+PyObject *node_verify_signature(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  const gchar *certificate_file;
+  gint ret;
+
+  if (CheckArgs(args, "OS:node_verify_signature")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:node_verify_signature",
+			 &node_obj, &certificate_file))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_verify_signature(LassoNode_get(node_obj),
+				    certificate_file);
+
+  return (int_wrap(ret));
 }
