@@ -476,6 +476,59 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 }
 
 gint
+lasso_name_registration_process_response_msg(LassoNameRegistration *name_registration,
+						    gchar                       *response_msg,
+						    lassoHttpMethod              response_method)
+{
+  LassoProfile *profile;
+  xmlChar      *statusCodeValue;
+  LassoNode    *statusCode;
+  gint          ret = 0;
+
+  g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+  g_return_val_if_fail(response_msg != NULL, -1);
+
+  profile = LASSO_PROFILE(name_registration);
+
+  /* parse NameRegistrationResponse */
+  switch (response_method) {
+  case lassoHttpMethodSoap:
+    profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
+    break;
+  case lassoHttpMethodRedirect:
+    profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
+    break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
+    ret = -1;
+    goto done;
+  }
+ 
+  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
+  if (statusCode == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "StatusCode not found\n");
+    ret = -1;
+    goto done;
+  }
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
+  if (statusCodeValue == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "StatusCodeValue not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
+    ret = -1;
+    goto done;
+  }
+
+  done:
+
+  return ret;
+}
+
+
+gint
 lasso_name_registration_validate_request(LassoNameRegistration *name_registration)
 {
   LassoProfile    *profile;
@@ -542,58 +595,6 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
     message(G_LOG_LEVEL_WARNING, "%s has no assertion\n", profile->remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
     lasso_node_destroy(assertion);
-    ret = -1;
-    goto done;
-  }
-
-  done:
-
-  return ret;
-}
-
-gint
-lasso_name_registration_process_response_msg(LassoNameRegistration *name_registration,
-						    gchar                       *response_msg,
-						    lassoHttpMethod              response_method)
-{
-  LassoProfile *profile;
-  xmlChar      *statusCodeValue;
-  LassoNode    *statusCode;
-  gint          ret = 0;
-
-  g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-  g_return_val_if_fail(response_msg != NULL, -1);
-
-  profile = LASSO_PROFILE(name_registration);
-
-  /* parse NameRegistrationResponse */
-  switch (response_method) {
-  case lassoHttpMethodSoap:
-    profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
-    break;
-  case lassoHttpMethodRedirect:
-    profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
-    break;
-  default:
-    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
-    ret = -1;
-    goto done;
-  }
- 
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
-  if (statusCode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "StatusCode not found\n");
-    ret = -1;
-    goto done;
-  }
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
-  if (statusCodeValue == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "StatusCodeValue not found\n");
-    ret = -1;
-    goto done;
-  }
-
-  if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
     ret = -1;
     goto done;
   }
