@@ -2533,7 +2533,7 @@ typedef struct {
 					      char *providerID,
 					      LassoDiscoDescription *description,
 					      LassoDiscoResourceID *resourceID,
-					      LassoDiscoEncryptedResourceID *encryptedResourceI);
+					      LassoDiscoEncryptedResourceID *encryptedResourceID);
 
 	THROW_ERROR
 	int addRemoveEntry(char *entryID);
