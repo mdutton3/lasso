@@ -30,6 +30,9 @@ import imp
 import sys
 import unittest
 
+sys.path.insert(0, '..')
+sys.path.insert(0, '../.libs')
+
 
 testSuites = (
     'login_tests',
