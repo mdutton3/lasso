@@ -61,6 +61,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   LassoProfile      *profile;
   LassoProvider     *provider;
   xmlChar           *protocolProfile;
+  gchar             *url = NULL, *query = NULL;
   lassoProviderType  remote_provider_type;
   gint               ret = 0;
 
@@ -103,13 +104,12 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
       xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     /* optionaly sign the notification node */
-    if (profile->server->private_key != NULL && profile->server->signature_method && profile->server->certificate) {
+    if ( (profile->server->private_key != NULL) && (profile->server->signature_method && profile->server->certificate) ) {
       lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
 						 profile->server->signature_method,
 						 profile->server->private_key,
 						 profile->server->certificate);
     }
-
     /* build the message */
     profile->msg_url = lasso_provider_get_soapEndpoint(provider,
 						       remote_provider_type,
@@ -118,9 +118,6 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    /* temporary vars to store url and query */
-    gchar *url, *query;
-
     /* build and optionaly sign the query message and build the federation termination notification url */
     url = lasso_provider_get_federationTerminationServiceURL(provider,
 							     remote_provider_type,
@@ -135,12 +132,9 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
       goto done;
     }
 
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+    profile->msg_url = g_new(gchar, strlen(url) + strlen(query) + 1 + 1);
     g_sprintf(profile->msg_url, "%s?%s", url, query);
     profile->msg_body = NULL;
-
-    xmlFree(url);
-    xmlFree(query);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid federation termination notification protocol profile\n");
@@ -151,6 +145,12 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   done:
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
+  }
+  if (url != NULL) {
+    xmlFree(url);
+  }
+  if (query != NULL) {
+    xmlFree(query);
   }
 
   return(ret);
@@ -198,6 +198,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
 
   profile = LASSO_PROFILE(defederation);
 
+  /* set the remote provider id */
   if (remote_providerID == NULL) {
     debug("No remote provider id, get the remote provider id of the first federation\n");
     profile->remote_providerID = lasso_identity_get_next_federation_remote_providerID(profile->identity);
@@ -206,7 +207,6 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
     debug("A remote provider id for defederation notification : %s\n", remote_providerID);
     profile->remote_providerID = g_strdup(remote_providerID);
   }
-
   if (profile->remote_providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "No remote provider id to build the federation termination notification\n");
     ret = -1;
@@ -439,14 +439,15 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
   LassoProfile    *profile;
   LassoProvider   *provider;
   LassoFederation *federation;
-  LassoNode       *assertion;
-  LassoNode       *nameIdentifier;
+  LassoNode       *assertion, *nameIdentifier;
   GError          *err = NULL;
   gint             signature_check;
   gint             ret = 0;
+  gint            remote_provider_type;
 
   profile = LASSO_PROFILE(defederation);
 
+  /* verify the federation termination notification */
   if (profile->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Request not found\n");
     ret = -1;
@@ -464,6 +465,19 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
     goto done;
   }
 
+  /* get the remote provider type */
+  if (profile->provider_type == lassoProviderTypeSp) {
+    remote_provider_type = lassoProviderTypeIdp;
+  }
+  else if (profile->provider_type == lassoProviderTypeIdp) {
+    remote_provider_type = lassoProviderTypeSp;
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "invalid provider type\n");
+    ret = -1;
+    goto done;
+  }
+
   /* If SOAP notification, then msg_url and msg_body are NULL */
   /* if HTTP-Redirect notification, set msg_url with the federation termination service return url,
    and set msg_body to NULL */
@@ -471,7 +485,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
   profile->msg_body = NULL;
   if (profile->http_request_method == lassoHttpMethodRedirect) {
     /* temporary vars */
-    gchar *url, *query;
+    gchar *url = NULL, *query = NULL;
 
     provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
     if (provider == NULL) {
@@ -481,20 +495,28 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
     }
 
     /* build the QUERY and the url. Dont need to sign the query, only the relay state is optinaly added and it is crypted by the notifier */
-    url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
-								   profile->provider_type,
-								   NULL);
+    profile->msg_url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
+										remote_provider_type,
+										NULL);
 
-    if (profile->msg_relayState != NULL) {
-      profile->msg_url = g_new(gchar, strlen(url)+strlen("RelayState=")+strlen(profile->msg_relayState)+1+1);
-      g_sprintf(profile->msg_url, "%s?RelayState=%s", url, profile->msg_relayState);
-      xmlFree(url);
+    if (profile->msg_url == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Federation termination service return url not found\n");
+      ret = -1;
+      goto done;
     }
-    else {
+
+    /* if a relay state, then build the query part */
+    if (profile->msg_relayState != NULL) {
+      gchar *url = NULL;
+      url = g_new(gchar, strlen(profile->msg_url) + strlen("RelayState=") + strlen(profile->msg_relayState) + 1 + 1);
+      g_sprintf(url, "%s?RelayState=%s", url, profile->msg_relayState);
+
+      xmlFree(profile->msg_url);
       profile->msg_url = url;
     }
   }
 
+  /* get the name identifier */
   nameIdentifier = lasso_node_get_child(profile->request,
 					"NameIdentifier",
 					NULL,
