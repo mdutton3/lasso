@@ -38,6 +38,7 @@ extern "C" {
 #include <lasso/schema/strings.h>
 #include <lasso/schema/saml.h>
 #include <lasso/schema/lib.h>
+#include <lasso/protocols/protocols.h>
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT void lasso_shutdown(void);

@@ -1,5 +1,5 @@
 NULL = 	
-SUBDIRS = schema bindings
+SUBDIRS = schema bindings protocols
 
 liblassoincludedir = $(includedir)/lasso
 
@@ -33,6 +33,7 @@ liblasso_la_SOURCES = \
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/schema/liblasso-schema.la \
 	$(top_builddir)/lasso/bindings/liblasso-bindings.la \
+	$(top_builddir)/lasso/protocols/liblasso-protocols.la \
 	$(GLIB_LIBS) \
 	$(LIBXSLT_LIBS) \
 	$(LIBXML_LIBS) \
