@@ -347,20 +347,20 @@ typedef enum {
 %rename(requestTypeLogin) lassoRequestTypeLogin;
 %rename(requestTypeLogout) lassoRequestTypeLogout;
 %rename(requestTypeDefederation) lassoRequestTypeDefederation;
-%rename(requestTypeRegisterNameIdentifier) lassoRequestTypeRegisterNameIdentifier; /* Obsolete */
+%rename(requestTypeRegisterNameIdentifier) lassoRequestTypeRegisterNameIdentifier; /* FIXME ABI : Obsolete */
 %rename(requestTypeNameRegistration) lassoRequestTypeNameRegistration;
 %rename(requestTypeNameIdentifierMapping) lassoRequestTypeNameIdentifierMapping;
 %rename(requestTypeLecp) lassoRequestTypeLecp;
 #endif
 typedef enum {
 	lassoRequestTypeInvalid = 0,
-	lassoRequestTypeLogin,
-	lassoRequestTypeLogout,
-	lassoRequestTypeDefederation,
-	lassoRequestTypeRegisterNameIdentifier, /* Obsolete */
-	lassoRequestTypeNameRegistration,
-	lassoRequestTypeNameIdentifierMapping,
-	lassoRequestTypeLecp
+	lassoRequestTypeLogin = 1,
+	lassoRequestTypeLogout = 2,
+	lassoRequestTypeDefederation = 3,
+	lassoRequestTypeRegisterNameIdentifier = 4, /* FIXME ABI : Obsolete */
+	lassoRequestTypeNameRegistration = 4,
+	lassoRequestTypeNameIdentifierMapping = 5,
+	lassoRequestTypeLecp = 6
 } lassoRequestType;
 
 /* SamlAuthenticationMethod */
