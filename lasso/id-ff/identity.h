@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/protocols/federation.h>
+#include <lasso/environs/federation.h>
 
 #define LASSO_TYPE_IDENTITY (lasso_identity_get_type())
 #define LASSO_IDENTITY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDENTITY, LassoIdentity))
@@ -45,50 +45,32 @@ typedef struct _LassoIdentityClass LassoIdentityClass;
 typedef struct _LassoIdentityPrivate LassoIdentityPrivate;
 
 struct _LassoIdentity {
-  GObject parent;
+	LassoNode parent;
 
-  /*< public >*/
-  GPtrArray  *providerIDs; /* list of the remote provider ids for federations hash table */
-  GHashTable *federations; /* hash for federations with remote ProviderID as key */
+	/*< public >*/
+	GHashTable *federations; /* hash for federations with remote ProviderID as key */
+	gboolean is_dirty;
 
-  gboolean is_dirty;
-
-  /*< private >*/
-  LassoIdentityPrivate *private;
+	/*< private >*/
+	LassoIdentityPrivate *private;
 };
 
 struct _LassoIdentityClass {
-  GObjectClass parent;
+	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType            lasso_identity_get_type                              (void);
+LASSO_EXPORT GType lasso_identity_get_type(void);
+LASSO_EXPORT LassoIdentity* lasso_identity_new(void);
 
-LASSO_EXPORT LassoIdentity*   lasso_identity_new                                   (void);
+LASSO_EXPORT gint lasso_identity_add_federation(LassoIdentity *identity,
+		LassoFederation *federation);
+LASSO_EXPORT gint lasso_identity_remove_federation(LassoIdentity *identity,
+		char *remote_providerID);
 
-LASSO_EXPORT LassoIdentity*   lasso_identity_new_from_dump                         (gchar *dump);
+LASSO_EXPORT void lasso_identity_destroy(LassoIdentity *identity);
 
-LASSO_EXPORT gint             lasso_identity_add_federation                        (LassoIdentity   *identity,
-										    gchar           *remote_providerID,
-										    LassoFederation *federation);
-
-LASSO_EXPORT LassoIdentity*   lasso_identity_copy                                  (LassoIdentity *identity);
-
-LASSO_EXPORT void             lasso_identity_destroy                               (LassoIdentity *identity);
-
-LASSO_EXPORT gchar*           lasso_identity_dump                                  (LassoIdentity *identity);
-
-LASSO_EXPORT LassoFederation* lasso_identity_get_federation                        (LassoIdentity *identity,
-										    gchar         *remote_providerID);
-
-LASSO_EXPORT LassoFederation* lasso_identity_get_federation_ref                    (LassoIdentity *identity,
-										    gchar         *remote_providerID);
-
-LASSO_EXPORT gchar*           lasso_identity_get_first_providerID                  (LassoIdentity *identity);
-
-LASSO_EXPORT gchar*           lasso_identity_get_next_federation_remote_providerID (LassoIdentity *identity);
-
-LASSO_EXPORT gint             lasso_identity_remove_federation                     (LassoIdentity *identity,
-										    gchar         *remote_providerID);
+LASSO_EXPORT gchar* lasso_identity_dump(LassoIdentity *identity);
+LASSO_EXPORT LassoIdentity* lasso_identity_new_from_dump(const gchar *dump);
 
 #ifdef __cplusplus
 }

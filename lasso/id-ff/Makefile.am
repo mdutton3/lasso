@@ -11,6 +11,7 @@ noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
 	defederation.c \
+	federation.c \
 	identity.c \
 	lecp.c \
 	login.c \
@@ -18,11 +19,13 @@ liblasso_environs_la_SOURCES = \
 	name_identifier_mapping.c \
 	name_registration.c \
 	profile.c \
+	provider.c \
 	server.c \
 	session.c
 
 liblassoinclude_HEADERS = \
 	defederation.h \
+	federation.h \
 	identity.h \
 	lecp.h \
 	login.h \
@@ -30,5 +33,6 @@ liblassoinclude_HEADERS = \
 	name_identifier_mapping.h \
 	name_registration.h \
 	profile.h \
+	provider.h \
 	server.h \
 	session.h

@@ -35,27 +35,26 @@ extern "C" {
 #include <libxml/tree.h>
 #include <xmlsec/crypto.h>
 
+#include <string.h>
+
 #include <lasso/export.h>
 #include <lasso/xml/debug.h>
 
 typedef enum {
-  lassoSignatureMethodRsaSha1 = 1,
-  lassoSignatureMethodDsaSha1
+  LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
+  LASSO_SIGNATURE_METHOD_DSA_SHA1
 } lassoSignatureMethod;
 
 typedef enum {
-  lassoPemFileTypeUnknown = 0,
-  lassoPemFileTypePubKey,
-  lassoPemFileTypePrivateKey,
-  lassoPemFileTypeCert
+  LASSO_PEM_FILE_TYPE_UNKNOWN = 0,
+  LASSO_PEM_FILE_TYPE_PUB_KEY,
+  LASSO_PEM_FILE_TYPE_PRIVATE_KEY,
+  LASSO_PEM_FILE_TYPE_CERT
 } lassoPemFileType;
 
 LASSO_EXPORT xmlChar*          lasso_build_random_sequence                (guint8 size);
 
 LASSO_EXPORT xmlChar*          lasso_build_unique_id                      (guint8 size);
-
-LASSO_EXPORT xmlChar*          lasso_doc_get_node_content                 (xmlDocPtr      doc,
-									   const xmlChar *name);
 
 LASSO_EXPORT xmlChar*          lasso_g_ptr_array_index                    (GPtrArray *a,
 									   guint      i);
@@ -68,24 +67,15 @@ LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const
 
 LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const gchar* pem_certs_chain_file);
 
-LASSO_EXPORT GPtrArray*        lasso_query_get_value                      (const gchar   *query,
-									   const xmlChar *param);
-
-LASSO_EXPORT GData*            lasso_query_to_dict                        (const gchar *query);
+LASSO_EXPORT xmlChar* lasso_query_sign(xmlChar *query,
+		lassoSignatureMethod sign_method, const char *private_key_file);
 
 LASSO_EXPORT int               lasso_query_verify_signature               (const gchar   *query,
-									   const xmlChar *sender_public_key_file,
-									   const xmlChar *recipient_private_key_file);
+									   const xmlChar *sender_public_key_file);
 
 LASSO_EXPORT xmlChar*          lasso_sha1                                 (xmlChar *str);
 
-LASSO_EXPORT xmlChar*          lasso_str_escape                           (xmlChar *str);
-
-LASSO_EXPORT xmlDocPtr         lasso_str_sign                             (xmlChar              *str,
-									   lassoSignatureMethod  sign_method,
-									   const char           *private_key_file);
-
-LASSO_EXPORT xmlChar*          lasso_str_unescape                         (xmlChar *str);
+char** urlencoded_to_strings(const char *str);
 
 #ifdef __cplusplus
 }

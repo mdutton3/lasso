@@ -43,23 +43,23 @@ typedef struct _LassoSamlNameIdentifier LassoSamlNameIdentifier;
 typedef struct _LassoSamlNameIdentifierClass LassoSamlNameIdentifierClass;
 
 struct _LassoSamlNameIdentifier {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	char *NameQualifier;
+	char *Format;
+	char *content;
 };
 
 struct _LassoSamlNameIdentifierClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_name_identifier_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_name_identifier_new(const xmlChar *content);
+LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new(void);
 
-LASSO_EXPORT void lasso_saml_name_identifier_set_format        (LassoSamlNameIdentifier *node,
-								const xmlChar *format);
+LASSO_EXPORT LassoSamlNameIdentifier* lasso_saml_name_identifier_new_from_xmlNode(xmlNode*);
 
-LASSO_EXPORT void lasso_saml_name_identifier_set_nameQualifier (LassoSamlNameIdentifier *node,
-								const xmlChar *nameQualifier);
+LASSO_EXPORT char* lasso_saml_name_identifier_build_query(
+		LassoSamlNameIdentifier *identifier, char *prefix, char *prefix_content);
 
 #ifdef __cplusplus
 }

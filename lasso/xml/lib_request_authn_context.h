@@ -43,25 +43,21 @@ typedef struct _LassoLibRequestAuthnContext LassoLibRequestAuthnContext;
 typedef struct _LassoLibRequestAuthnContextClass LassoLibRequestAuthnContextClass;
 
 struct _LassoLibRequestAuthnContext {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	/* <xs:element name="AuthnContextClassRef" type="xs:anyURI" maxOccurs="unbounded"/> */
+	char *AuthnContextClassRef; /* XXX: should actually be a list */
+	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/> */
+	char *AuthnContextStatementRef; /* XXX: idem */
+	/* <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" minOccurs="0"/> */
+	char *AuthnContextComparisonType; /* XXX should be enum ? */
 };
 
 struct _LassoLibRequestAuthnContextClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_request_authn_context_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_request_authn_context_new(void);
-
-LASSO_EXPORT void lasso_lib_request_authn_context_add_authnContextClassRef     (LassoLibRequestAuthnContext *node,
-										const xmlChar *authnContextClassRef);
-
-LASSO_EXPORT void lasso_lib_request_authn_context_add_authnContextStatementRef (LassoLibRequestAuthnContext *node,
-										const xmlChar *authnContextStatementRef);
-
-LASSO_EXPORT void lasso_lib_request_authn_context_set_authnContextComparison   (LassoLibRequestAuthnContext *node,
-										const xmlChar *authnContextComparison);
 
 #ifdef __cplusplus
 }

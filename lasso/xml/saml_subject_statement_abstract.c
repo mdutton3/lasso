@@ -28,7 +28,6 @@
 /*
 The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 
-<element name="SubjectStatement" type="saml:SubjectStatementAbstractType"/>
 <complexType name="SubjectStatementAbstractType" abstract="true">
   <complexContent>
     <extension base="saml:StatementAbstractType">
@@ -41,79 +40,103 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* publics methods                                                           */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_subject_statement_abstract_set_subject(LassoSamlSubjectStatementAbstract *node,
-						  LassoSamlSubject *subject)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(node));
-  g_assert(LASSO_IS_SAML_SUBJECT(subject));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(subject), FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlSubjectStatementAbstract *statement;
+	
+	statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "SubjectStatementAbstract");
+	if (statement->Subject)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(statement->Subject)));
+
+	return xmlnode;
 }
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	xmlNode *t;
+	LassoSamlSubjectStatementAbstract *statement;
+	
+	statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node);
+
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		
+		if (strcmp(t->name, "Subject") == 0)
+			statement->Subject = LASSO_SAML_SUBJECT(
+					lasso_node_new_from_xmlNode(t));
+		t = t->next;
+	}
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_statement_abstract_instance_init(LassoSamlSubjectStatementAbstract *node)
+instance_init(LassoSamlSubjectStatementAbstract *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  /* namespace herited from saml:StatementAbstract */
-  class->set_name(LASSO_NODE(node), "SubjectStatementAbstract");
+	node->Subject = NULL;
 }
 
 static void
-lasso_saml_subject_statement_abstract_class_init(LassoSamlSubjectStatementAbstractClass *klass)
+class_init(LassoSamlSubjectStatementAbstractClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_subject_statement_abstract_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_subject_statement_abstract_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlSubjectStatementAbstractClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_subject_statement_abstract_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlSubjectStatementAbstract),
-      0,
-      (GInstanceInitFunc) lasso_saml_subject_statement_abstract_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAML_STATEMENT_ABSTRACT,
-				       "LassoSamlSubjectStatementAbstract",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlSubjectStatementAbstractClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlSubjectStatementAbstract),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAML_STATEMENT_ABSTRACT,
+				"LassoSamlSubjectStatementAbstract", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
  * lasso_saml_subject_statement_abstract_new:
- * @name: the node's name. If @name is NULL or an empty string, default value
- * "SubjectStatementAbstract" will be used.
  * 
  * Creates a new <saml:SubjectStatementAbstract> node object.
  * 
  * Return value: the new @LassoSamlSubjectStatementAbstract
  **/
-LassoNode* lasso_saml_subject_statement_abstract_new(const xmlChar *name)
+LassoNode*
+lasso_saml_subject_statement_abstract_new()
 {
-  LassoNode *node;
-
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT, NULL));
-
-  if (name && *name)
-    LASSO_NODE_GET_CLASS(node)->set_name(node, name);
-
-  return node;
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT, NULL));
 }
+

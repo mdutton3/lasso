@@ -33,64 +33,71 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+
+	xmlnode = xmlNewNode(NULL, "ConditionAbstract");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	return xmlnode;
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_condition_abstract_instance_init(LassoSamlConditionAbstract *node)
+instance_init(LassoSamlConditionAbstract *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "ConditionAbstract");
 }
 
 static void
-lasso_saml_condition_abstract_class_init(LassoSamlConditionAbstractClass *klass)
+class_init(LassoSamlConditionAbstractClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
 }
 
-GType lasso_saml_condition_abstract_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_condition_abstract_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlConditionAbstractClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_condition_abstract_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlConditionAbstract),
-      0,
-      (GInstanceInitFunc) lasso_saml_condition_abstract_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlConditionAbstract",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlConditionAbstractClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlConditionAbstract),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlConditionAbstract", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
  * lasso_saml_condition_abstract_new:
- * @name: the node's name. If @name is NULL or an empty string, default value
- * "ConditionAbstract" will be used.
  *
  * Creates a new <saml:ConditionAbstract> node object.
  * 
  * Return value: the new @LassoSamlConditionAbstract
  **/
-LassoNode* lasso_saml_condition_abstract_new(const xmlChar *name)
+LassoNode*
+lasso_saml_condition_abstract_new()
 {
-  LassoNode *node;
-
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_SAML_CONDITION_ABSTRACT, NULL));
-
-  if (name && *name)
-    LASSO_NODE_GET_CLASS(node)->set_name(node, name);
-
-  return node;
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_CONDITION_ABSTRACT, NULL));
 }
+

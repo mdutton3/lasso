@@ -43,47 +43,28 @@ typedef struct _LassoSamlpRequestAbstract LassoSamlpRequestAbstract;
 typedef struct _LassoSamlpRequestAbstractClass LassoSamlpRequestAbstractClass;
 
 struct _LassoSamlpRequestAbstract {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/> */
+	char *RespondWith; /* XXX */
+	/* <attribute name="RequestID" type="saml:IDType" use="required"/> */
+	char *RequestID;
+	/* <attribute name="MajorVersion" type="integer" use="required"/> */
+	int MajorVersion;
+	/* <attribute name="MinorVersion" type="integer" use="required"/> */
+	int MinorVersion;
+	/* <attribute name="IssueInstant" type="dateTime" use="required"/> */
+	char *IssueInstant;
 };
 
 struct _LassoSamlpRequestAbstractClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
+	/*< vtable >*/
 };
 
 LASSO_EXPORT GType lasso_samlp_request_abstract_get_type           (void);
 
 LASSO_EXPORT LassoNode* lasso_samlp_request_abstract_new           (void);
-
-LASSO_EXPORT void lasso_samlp_request_abstract_add_respondWith     (LassoSamlpRequestAbstract *node,
-								    const xmlChar *respondWith);
-
-LASSO_EXPORT void lasso_samlp_request_abstract_set_issueInstant    (LassoSamlpRequestAbstract *node,
-								    const xmlChar *issueInstant);
-
-LASSO_EXPORT void lasso_samlp_request_abstract_set_majorVersion    (LassoSamlpRequestAbstract *node,
-								    const xmlChar *majorVersion);
-
-LASSO_EXPORT void lasso_samlp_request_abstract_set_minorVersion    (LassoSamlpRequestAbstract *node,
-								    const xmlChar *minorVersion);
-
-LASSO_EXPORT void lasso_samlp_request_abstract_set_requestID       (LassoSamlpRequestAbstract *node,
-								    const xmlChar *requestID);
-
-LASSO_EXPORT gint lasso_samlp_request_abstract_set_signature       (LassoSamlpRequestAbstract *node,
-								    gint                       sign_method,
-								    const xmlChar             *private_key_file,
-								    const xmlChar             *certificate_file);
-
-LASSO_EXPORT gint lasso_samlp_request_abstract_set_signature_tmpl  (LassoSamlpRequestAbstract *node,
-								    lassoSignatureType         sign_type,
-								    lassoSignatureMethod       sign_method,
-								    xmlChar                   *reference_id);
-
-LASSO_EXPORT gint lasso_samlp_request_abstract_sign_signature_tmpl (LassoSamlpRequestAbstract *node,
-								    const xmlChar             *private_key_file,
-								    const xmlChar             *certificate_file);
 
 #ifdef __cplusplus
 }

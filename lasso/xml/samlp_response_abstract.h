@@ -43,37 +43,30 @@ typedef struct _LassoSamlpResponseAbstract LassoSamlpResponseAbstract;
 typedef struct _LassoSamlpResponseAbstractClass LassoSamlpResponseAbstractClass;
 
 struct _LassoSamlpResponseAbstract {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <attribute name="ResponseID" type="saml:IDType" use="required"/> */
+	char *ResponseID;
+	/* <attribute name="InResponseTo" type="saml:IDReferenceType" use="optional"/> */
+	char *InResponseTo;
+	/* <attribute name="MajorVersion" type="integer" use="required"/> */
+	int MajorVersion;
+	/* <attribute name="MinorVersion" type="integer" use="required"/> */
+	int MinorVersion;
+	/* <attribute name="IssueInstant" type="dateTime" use="required"/> */
+	char *IssueInstant;
+	/* <attribute name="Recipient" type="anyURI" use="optional"/> */
+	char *Recipient;
 };
 
 struct _LassoSamlpResponseAbstractClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_samlp_response_abstract_get_type           (void);
-
 LASSO_EXPORT LassoNode* lasso_samlp_response_abstract_new           (void);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_inResponseTo    (LassoSamlpResponseAbstract *node,
-								     const xmlChar *inResponseTo);
-
-LASSO_EXPORT void lasso_samlp_response_abstract_set_issueInstant    (LassoSamlpResponseAbstract *node,
-								     const xmlChar *issueInstant);
-
-LASSO_EXPORT void lasso_samlp_response_abstract_set_majorVersion    (LassoSamlpResponseAbstract *node,
-								     const xmlChar *majorVersion);
-
-LASSO_EXPORT void lasso_samlp_response_abstract_set_minorVersion    (LassoSamlpResponseAbstract *node,
-								     const xmlChar *minorVersion);
-
-LASSO_EXPORT void lasso_samlp_response_abstract_set_recipient       (LassoSamlpResponseAbstract *node,
-								     const xmlChar *recipient);
-
-LASSO_EXPORT void lasso_samlp_response_abstract_set_responseID      (LassoSamlpResponseAbstract *node,
-								     const xmlChar *responseID);
-
+#if 0
 LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature       (LassoSamlpResponseAbstract *node,
 								     gint                        sign_method,
 								     const xmlChar              *private_key_file,
@@ -86,6 +79,7 @@ LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature_tmpl  (LassoSamlpR
 LASSO_EXPORT gint lasso_samlp_response_abstract_sign_signature_tmpl (LassoSamlpResponseAbstract *node,
 								     const xmlChar              *private_key_file,
 								     const xmlChar              *certificate_file);
+#endif
 
 #ifdef __cplusplus
 }

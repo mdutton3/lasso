@@ -41,84 +41,99 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_samlp_status_set_statusCode(LassoSamlpStatus *node,
-				  LassoSamlpStatusCode *statusCode)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_STATUS(node));
-  g_assert(LASSO_IS_SAMLP_STATUS_CODE(statusCode));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (statusCode), FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{ 
+	xmlNode *xmlnode;
+	LassoSamlpStatus *status = LASSO_SAMLP_STATUS(node);
+
+	xmlnode = xmlNewNode(NULL, "Status");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
+	if (status->StatusCode) {
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(status->StatusCode)));
+	}
+
+	if (status->StatusMessage) {
+		xmlNewTextChild(xmlnode, NULL, "StatusMessage", status->StatusMessage);
+	}
+
+	return xmlnode;
 }
 
-/* TODO
-void
-lasso_samlp_status_set_statusDetail(LassoSamlpStatus *node,
-                              LassoSamlpStatusDetail *statusDetail)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-}
-*/
+	xmlNode *t;
+	LassoSamlpStatus *status = LASSO_SAMLP_STATUS(node);
 
-void
-lasso_samlp_status_set_statusMessage(LassoSamlpStatus *node,
-				     const xmlChar *statusMessage)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_STATUS(node));
-  g_assert(statusMessage != NULL);
-  
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "StatusMessage", statusMessage, FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "StatusCode") == 0) {
+			status->StatusCode = LASSO_SAMLP_STATUS_CODE(lasso_node_new_from_xmlNode(t));
+		}
+		if (strcmp(t->name, "StatusMessage") == 0) {
+			status->StatusMessage = xmlNodeGetContent(t);
+		}
+		t = t->next;
+	}
 }
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-lasso_samlp_status_instance_init(LassoSamlpStatus *node)
-{
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
-		lassoSamlProtocolPrefix);
-  class->set_name(LASSO_NODE(node), "Status");
+static void
+instance_init(LassoSamlpStatus *node)
+{
+	node->StatusCode = NULL;
+	node->StatusMessage = NULL;
 }
 
 static void
-lasso_samlp_status_class_init(LassoSamlpStatusClass *klass)
+class_init(LassoSamlpStatusClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_samlp_status_get_type() {
-  static GType this_type = 0;
+GType lasso_samlp_status_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlpStatusClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_samlp_status_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlpStatus),
-      0,
-      (GInstanceInitFunc) lasso_samlp_status_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlpStatus",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlpStatusClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlpStatus),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlpStatus", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_samlp_status_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_STATUS,
-				 NULL));
+LassoSamlpStatus*
+lasso_samlp_status_new()
+{
+	return g_object_new(LASSO_TYPE_SAMLP_STATUS, NULL);
 }
+

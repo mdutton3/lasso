@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Lasso - A free implementation of the Liberty Alliance specifications.
+ * Lasso - A free implementation of the Samlerty Alliance specifications.
  *
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
@@ -23,18 +23,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/lib_idp_entries.h>
+#include <lasso/xml/saml_subject_statement.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 
-<xs:element name="IDPEntries">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element ref="IDPEntry" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
+<element name="SubjectStatement" type="saml:SubjectStatementAbstractType"/>
 */
 
 /*****************************************************************************/
@@ -47,32 +41,9 @@ static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoLibIDPEntries *entries = LASSO_LIB_IDP_ENTRIES(node);
-
-	xmlnode = xmlNewNode(NULL, "IDPEntries");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-
-	if (entries->IDPEntry)
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(entries->IDPEntry)));
-
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "SubjectStatement");
 	return xmlnode;
-}
-
-static void
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	LassoLibIDPEntries *entries = LASSO_LIB_IDP_ENTRIES(node);
-	xmlNode *t;
-
-	parent_class->init_from_xml(node, xmlnode);
-	t = xmlnode->children;
-	while (t) {
-		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "IDPEntry") == 0) {
-			/* XXX: should actually be "add to list" */
-			entries->IDPEntry = LASSO_LIB_IDP_ENTRY(lasso_node_new_from_xmlNode(t));
-		}
-		t = t->next;
-	}
 }
 
 /*****************************************************************************/
@@ -80,53 +51,51 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 /*****************************************************************************/
 
 static void
-instance_init(LassoLibIDPEntries *node)
+instance_init(LassoSamlSubjectStatement *node)
 {
-	node->IDPEntry = NULL;
 }
 
 static void
-class_init(LassoLibIDPEntriesClass *klass)
+class_init(LassoSamlSubjectStatementClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
 GType
-lasso_lib_idp_entries_get_type()
+lasso_saml_subject_statement_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoLibIDPEntriesClass),
+			sizeof (LassoSamlSubjectStatementClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoLibIDPEntries),
+			sizeof(LassoSamlSubjectStatement),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
-		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoLibIDPEntries", &this_info, 0);
+		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,
+				"LassoSamlSubjectStatement", &this_info, 0);
 	}
 	return this_type;
 }
 
 /**
- * lasso_lib_idp_entries_new:
+ * lasso_saml_subject_statement_new:
  * 
- * Creates a new "<lib:IDPEntries/>" node object.
+ * Creates a new <saml:SubjectStatement> node object.
  * 
- * Return value: the new @LassoLibIDPEntries
+ * Return value: the new @LassoSamlSubjectStatement
  **/
 LassoNode*
-lasso_lib_idp_entries_new()
+lasso_saml_subject_statement_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_IDP_ENTRIES, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT_STATEMENT, NULL));
 }
 

@@ -45,39 +45,31 @@ typedef struct _LassoLibAuthnRequestEnvelope LassoLibAuthnRequestEnvelope;
 typedef struct _LassoLibAuthnRequestEnvelopeClass LassoLibAuthnRequestEnvelopeClass;
 
 struct _LassoLibAuthnRequestEnvelope {
-  LassoNode parent;
+	LassoNode parent;
 
-  /*< private >*/
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension; /* XXX */
+	/* <xs:element ref="AuthnRequest"/> */
+	LassoLibAuthnRequest *AuthnRequest;
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element name="ProviderName" type="xs:string" minOccurs="0"/> */
+	char *ProviderName;
+	/* <xs:element name="AssertionConsumerServiceURL" type="xs:anyURI"/> */
+	char *AssertionConsumerServiceURL;
+	/* <xs:element ref="IDPList" minOccurs="0"/> */
+	LassoLibIDPList *IDPList;
+	/* <xs:element name="IsPassive" type="xs:boolean" minOccurs="0"/> */
+	gboolean IsPassive;
+
 };
 
 struct _LassoLibAuthnRequestEnvelopeClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType      lasso_lib_authn_request_envelope_get_type         (void);
-
 LASSO_EXPORT LassoNode* lasso_lib_authn_request_envelope_new              (void);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_extension    (LassoLibAuthnRequestEnvelope *node,
-									   LassoNode                    *extension);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_authnRequest (LassoLibAuthnRequestEnvelope *node,
-									   LassoLibAuthnRequest         *request);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL (LassoLibAuthnRequestEnvelope *node,
-											  const xmlChar *assertionConsumerServiceURL);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_providerID   (LassoLibAuthnRequestEnvelope *node,
-									   const xmlChar                *providerID);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_providerName (LassoLibAuthnRequestEnvelope *node,
-									   const xmlChar                *providerName);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_idpList      (LassoLibAuthnRequestEnvelope *node,
-									   LassoLibIDPList              *idpList);
-
-LASSO_EXPORT void       lasso_lib_authn_request_envelope_set_isPassive    (LassoLibAuthnRequestEnvelope *node,
-									   gboolean                      isPassive);
 
 #ifdef __cplusplus
 }

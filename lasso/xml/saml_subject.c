@@ -41,31 +41,57 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_subject_set_nameIdentifier(LassoSamlSubject *node,
-				      LassoSamlNameIdentifier *nameIdentifier)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_SUBJECT(node));
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(nameIdentifier), FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node);
+	xmlNode *xmlnode;
+
+	xmlnode = xmlNewNode(NULL, "Subject");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+
+	if (subject->NameIdentifier)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(subject->NameIdentifier)));
+
+	if (subject->SubjectConfirmation)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(subject->SubjectConfirmation)));
+
+	return xmlnode;
 }
 
-void
-lasso_saml_subject_set_subjectConfirmation(LassoSamlSubject *node,
-					   LassoSamlSubjectConfirmation *subjectConfirmation)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_SUBJECT(node));
-  g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(subjectConfirmation));
+	xmlNode *t;
+	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (subjectConfirmation), FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "NameIdentifier") == 0) {
+			subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
+					lasso_saml_name_identifier_new());
+			lasso_node_init_from_xml(LASSO_NODE(subject->NameIdentifier), t);
+		}
+		if (strcmp(t->name, "SubjectConfirmation") == 0) {
+			subject->SubjectConfirmation = LASSO_SAML_SUBJECT_CONFIRMATION(
+					lasso_saml_subject_confirmation_new());
+			lasso_node_init_from_xml(LASSO_NODE(subject->SubjectConfirmation), t);
+		}
+		t = t->next;
+	}
 }
 
 /*****************************************************************************/
@@ -73,40 +99,42 @@ lasso_saml_subject_set_subjectConfirmation(LassoSamlSubject *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_instance_init(LassoSamlSubject *node)
+instance_init(LassoSamlSubject *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "Subject");
+	node->NameIdentifier = NULL;
+	node->SubjectConfirmation = NULL;
 }
 
 static void
-lasso_saml_subject_class_init(LassoSamlSubjectClass *klass) {
+class_init(LassoSamlSubjectClass *klass)
+{
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_subject_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_subject_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlSubjectClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_subject_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlSubject),
-      0,
-      (GInstanceInitFunc) lasso_saml_subject_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlSubject",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlSubjectClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlSubject),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlSubject", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -118,5 +146,6 @@ GType lasso_saml_subject_get_type() {
  **/
 LassoNode* lasso_saml_subject_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT, NULL));
 }
+

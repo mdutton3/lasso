@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/saml_name_identifier.h>
+#include <libxml/uri.h>
 
 /*
 The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
@@ -43,28 +44,75 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /* public methods                                                            */
 /*****************************************************************************/
 
-void
-lasso_saml_name_identifier_set_format(LassoSamlNameIdentifier *node,
-				      const xmlChar *format)
+gchar*
+lasso_saml_name_identifier_build_query(LassoSamlNameIdentifier *identifier,
+		char *prefix, char *prefix_content)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(node));
-  g_assert(format != NULL);
+	GString *s;
+	char *str;
+	xmlChar *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "Format", format);
+	s = g_string_new("");
+	if (identifier->NameQualifier) {
+		t = xmlURIEscapeStr(identifier->NameQualifier, NULL);
+		g_string_append_printf(s, "&%sNameQualifier=%s", prefix, t);
+		xmlFree(t);
+	}
+	if (identifier->Format) {
+		t = xmlURIEscapeStr(identifier->Format, NULL);
+		g_string_append_printf(s, "&%sNameFormat=%s", prefix, t);
+		xmlFree(t);
+	}
+	if (identifier->content) {
+		t = xmlURIEscapeStr(identifier->content, NULL);
+		g_string_append_printf(s, "&%sNameIdentifier=%s", prefix_content, t);
+		xmlFree(t);
+	}
+
+	str = s->str;
+	g_string_free(s, FALSE);
+
+	return str;
 }
 
-void
-lasso_saml_name_identifier_set_nameQualifier(LassoSamlNameIdentifier *node,
-					     const xmlChar *nameQualifier)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(node));
-  g_assert(nameQualifier != NULL);
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "NameQualifier", nameQualifier);
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
+
+	xmlnode = xmlNewNode(NULL, "NameIdentifier");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	xmlNodeSetContent(xmlnode, identifier->content);
+	if (identifier->Format)
+		xmlSetProp(xmlnode, "Format", identifier->Format);
+	if (identifier->NameQualifier)
+		xmlSetProp(xmlnode, "NameQualifier", identifier->NameQualifier);
+
+	return xmlnode;
+}
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
+
+        parent_class->init_from_xml(node, xmlnode);
+	identifier->content = xmlNodeGetContent(xmlnode);
+	identifier->Format = xmlGetProp(xmlnode, "Format");
+	identifier->NameQualifier = xmlGetProp(xmlnode, "NameQualifier");
+}
+
+static gchar*
+build_query(LassoNode *node)
+{
+	return lasso_saml_name_identifier_build_query(LASSO_SAML_NAME_IDENTIFIER(node), "", "");
 }
 
 /*****************************************************************************/
@@ -72,59 +120,67 @@ lasso_saml_name_identifier_set_nameQualifier(LassoSamlNameIdentifier *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_name_identifier_instance_init(LassoSamlNameIdentifier *node)
+instance_init(LassoSamlNameIdentifier *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "NameIdentifier");
+	node->NameQualifier = NULL;
+	node->Format = NULL;
+	node->content = NULL;
 }
 
 static void
-lasso_saml_name_identifier_class_init(LassoSamlNameIdentifierClass *klass)
+class_init(LassoSamlNameIdentifierClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LASSO_NODE_CLASS(klass)->build_query = build_query;
 }
 
-GType lasso_saml_name_identifier_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_name_identifier_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlNameIdentifierClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_name_identifier_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlNameIdentifier),
-      0,
-      (GInstanceInitFunc) lasso_saml_name_identifier_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlNameIdentifier",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlNameIdentifierClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlNameIdentifier),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlNameIdentifier", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
  * lasso_saml_name_identifier_new:
- * @content: the node content
  * 
  * Creates a new <saml:NameIdentifier> node object.
  * 
  * Return value: the new @LassoSamlNameIdentifier
  **/
-LassoNode* lasso_saml_name_identifier_new(const xmlChar *content)
+LassoSamlNameIdentifier*
+lasso_saml_name_identifier_new()
 {
-  LassoNode *node;
-
-  g_assert(content != NULL);
-
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_SAML_NAME_IDENTIFIER, NULL));
-  xmlNodeSetContent(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node),
-		    content);
-  return node;
+	return g_object_new(LASSO_TYPE_SAML_NAME_IDENTIFIER, NULL);
 }
+
+
+LassoSamlNameIdentifier*
+lasso_saml_name_identifier_new_from_xmlNode(xmlNode *xmlnode)
+{
+	LassoNode *node;
+
+	node = g_object_new(LASSO_TYPE_SAML_NAME_IDENTIFIER, NULL);
+	lasso_node_init_from_xml(node, xmlnode);
+	return LASSO_SAML_NAME_IDENTIFIER(node);
+}
+

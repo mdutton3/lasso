@@ -45,44 +45,60 @@ The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void lasso_lib_name_identifier_mapping_response_set_nameIdentifier(LassoLibNameIdentifierMappingResponse *node,
-								   LassoSamlNameIdentifier *nameIdentifier)
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
-  
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node),
-		   LASSO_NODE (nameIdentifier),
-		   FALSE);
+	xmlNode *xmlnode;
+	LassoLibNameIdentifierMappingResponse *response;
+
+	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
+	
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "NameIdentifierMappingResponse");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (response->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", response->ProviderID);
+	if (response->Status)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(response->Status)));
+	if (response->NameIdentifier)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(response->NameIdentifier)));
+
+	return xmlnode;
 }
 
-void
-lasso_lib_name_identifier_mapping_response_set_providerID(LassoLibNameIdentifierMappingResponse *node,
-							  const xmlChar *providerID)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
-  g_assert(providerID != NULL);
-  /* FIXME : providerID length SHOULD be <= 1024 */
+	LassoLibNameIdentifierMappingResponse *response;
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
-}
+	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
 
-void lasso_lib_name_identifier_mapping_response_set_status(LassoLibNameIdentifierMappingResponse *node,
-							   LassoSamlpStatus *status)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node));
-  g_assert(LASSO_IS_SAMLP_STATUS(status));
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(status), FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "ProviderID") == 0) {
+			response->ProviderID = xmlNodeGetContent(t);
+		}
+		if (strcmp(t->name, "Status") == 0) {
+			response->Status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(t));
+		}
+		if (strcmp(t->name, "NameIdentifier") == 0) {
+			response->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
+					lasso_node_new_from_xmlNode(t));
+		}
+		t = t->next;
+	}
 }
 
 /*****************************************************************************/
@@ -90,43 +106,84 @@ void lasso_lib_name_identifier_mapping_response_set_status(LassoLibNameIdentifie
 /*****************************************************************************/
 
 static void
-lasso_lib_name_identifier_mapping_response_instance_init(LassoLibNameIdentifierMappingResponse *node)
+instance_init(LassoLibNameIdentifierMappingResponse *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "NameIdentifierMappingResponse");
+	node->Extension = NULL;
+	node->ProviderID = NULL;
+	node->Status = NULL;
+	node->NameIdentifier = NULL;
 }
 
 static void
-lasso_lib_name_identifier_mapping_response_class_init(LassoLibNameIdentifierMappingResponseClass *klass)
+class_init(LassoLibNameIdentifierMappingResponseClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_name_identifier_mapping_response_get_type() {
-  static GType name_identifier_mapping_response_type = 0;
-
-  if (!name_identifier_mapping_response_type) {
-    static const GTypeInfo name_identifier_mapping_response_info = {
-      sizeof (LassoLibNameIdentifierMappingResponseClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_name_identifier_mapping_response_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibNameIdentifierMappingResponse),
-      0,
-      (GInstanceInitFunc) lasso_lib_name_identifier_mapping_response_instance_init,
-    };
-    
-    name_identifier_mapping_response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT,
-								   "LassoLibNameIdentifierMappingResponse",
-								   &name_identifier_mapping_response_info, 0);
-  }
-  return name_identifier_mapping_response_type;
-}
-
-LassoNode* lasso_lib_name_identifier_mapping_response_new()
+GType
+lasso_lib_name_identifier_mapping_response_get_type()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+	static GType name_identifier_mapping_response_type = 0;
+
+	if (!name_identifier_mapping_response_type) {
+		static const GTypeInfo name_identifier_mapping_response_info = {
+			sizeof (LassoLibNameIdentifierMappingResponseClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibNameIdentifierMappingResponse),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		name_identifier_mapping_response_type = g_type_register_static
+			(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT,
+			 "LassoLibNameIdentifierMappingResponse",
+			 &name_identifier_mapping_response_info, 0);
+	}
+	return name_identifier_mapping_response_type;
 }
+
+LassoNode*
+lasso_lib_name_identifier_mapping_response_new()
+{
+	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL);
+}
+
+LassoNode*
+lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char *statusCodeValue,
+		LassoLibNameIdentifierMappingRequest *request,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+{
+	LassoSamlpResponseAbstract *response_base;
+	LassoLibNameIdentifierMappingResponse *response;
+
+	response = g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL);
+	response_base = LASSO_SAMLP_RESPONSE_ABSTRACT(response);
+  
+	response_base->ResponseID = lasso_build_unique_id(32);
+	response_base->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+	response_base->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	response_base->IssueInstant = lasso_get_current_time();
+	response_base->InResponseTo = LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID;
+	response_base->Recipient = request->ProviderID;
+
+#if 0 /* XXX: signature to do */
+	/* set the signature template */
+	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
+		lasso_samlp_response_abstract_set_signature_tmpl(response, sign_type, sign_method);
+	}
+#endif
+
+	response->ProviderID = g_strdup(providerID);
+	response->Status = lasso_samlp_status_new();
+	response->Status->StatusCode = lasso_samlp_status_code_new();
+	response->Status->StatusCode->Value = g_strdup(statusCodeValue);
+
+	return LASSO_NODE(response);
+}
+

@@ -43,26 +43,22 @@ typedef struct _LassoSamlAuthorityBinding LassoSamlAuthorityBinding;
 typedef struct _LassoSamlAuthorityBindingClass LassoSamlAuthorityBindingClass;
 
 struct _LassoSamlAuthorityBinding {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <attribute name="AuthorityKind" type="QName" use="required"/> */
+	char *AuthorityKind;
+	/* <attribute name="Location" type="anyURI" use="required"/> */
+	char *Location;
+	/* <attribute name="Binding" type="anyURI" use="required"/> */
+	char *Binding;
 };
 
 struct _LassoSamlAuthorityBindingClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_authority_binding_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_authority_binding_new(void);
-
-LASSO_EXPORT void lasso_saml_authority_binding_set_authorityKind (LassoSamlAuthorityBinding *node,
-								  const xmlChar *authorityKind);
-
-LASSO_EXPORT void lasso_saml_authority_binding_set_binding       (LassoSamlAuthorityBinding *node,
-								  const xmlChar *binding);
-
-LASSO_EXPORT void lasso_saml_authority_binding_set_location      (LassoSamlAuthorityBinding *node,
-								  const xmlChar *location);
 
 #ifdef __cplusplus
 }

@@ -26,76 +26,108 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
 #include <lasso/xml/errors.h>
 #include <lasso/xml/samlp_response.h>
-#include <lasso/protocols/request.h>
-#include <lasso/protocols/response.h>
-#include <lasso/protocols/authn_response.h>
+#include <lasso/xml/samlp_request.h>
+#include <lasso/xml/lib_authn_response.h>
+#include <lasso/xml/lib_status_response.h>
 #include <lasso/environs/profile.h>
 
 #include <lasso/lasso_config.h>
 
 struct _LassoProfilePrivate
 {
-  gboolean dispose_has_run;
+	gboolean dispose_has_run;
 };
-
-static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
 /* public functions                                                          */
 /*****************************************************************************/
 
+LassoSamlNameIdentifier*
+lasso_profile_get_nameIdentifier(LassoProfile *ctx)
+{
+	LassoProvider *remote_provider;
+	LassoFederation *federation;
+
+	g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
+
+	g_return_val_if_fail(LASSO_IS_SERVER(ctx->server), NULL);
+	g_return_val_if_fail(LASSO_IS_IDENTITY(ctx->identity), NULL);
+	g_return_val_if_fail(ctx->remote_providerID != NULL, NULL);
+
+	remote_provider = g_hash_table_lookup(ctx->server->providers, ctx->remote_providerID);
+	if (remote_provider == NULL)
+		return NULL;
+
+	federation = g_hash_table_lookup(ctx->identity->federations, ctx->remote_providerID);
+	if (federation == NULL)
+		return NULL;
+
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+		if (federation->remote_nameIdentifier)
+			return federation->remote_nameIdentifier;
+		return federation->local_nameIdentifier;
+	}
+
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
+		if (federation->local_nameIdentifier)
+			return federation->local_nameIdentifier;
+		return federation->remote_nameIdentifier;
+	}
+
+	return NULL;
+}
+
 lassoRequestType
 lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 {
-  LassoNode *soap_node, *body_node, *request_node;
-  GPtrArray *children;
-  xmlChar *name;
-  lassoRequestType type = lassoRequestTypeInvalid;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	const xmlChar *name;
 
-  soap_node = lasso_node_new_from_dump(soap);
-  if (soap_node == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Error while build node from soap msg\n");
-    return -1;
-  }
+	lassoRequestType type = LASSO_REQUEST_TYPE_INVALID;
 
-  body_node = lasso_node_get_child(soap_node, "Body", NULL, NULL);
-  if(body_node == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Body node not found\n");
-    return -2;
-  }
+	/* FIXME: totally lacking error checking */
 
-  children = lasso_node_get_children(body_node);
-  if(children->len > 0) {
-    request_node = g_ptr_array_index(children, 0);
-    name = lasso_node_get_name(request_node);
+	doc = xmlParseMemory(soap, strlen(soap));
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
+	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
 
-    if(xmlStrEqual(name, "Request")) {
-      type = lassoRequestTypeLogin;
-    }
-    else if(xmlStrEqual(name, "LogoutRequest")) {
-      type = lassoRequestTypeLogout;
-    }
-    else if(xmlStrEqual(name, "FederationTerminationNotification")) {
-      type = lassoRequestTypeDefederation;
-    }
-    else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
-      type = lassoRequestTypeNameRegistration;
-    }
-    else if(xmlStrEqual(name, "NameIdentifierMappingRequest")) {
-      type = lassoRequestTypeNameIdentifierMapping;
-    }
-    else if(xmlStrEqual(name, "AuthnRequest")) {
-      type = lassoRequestTypeLecp;
-    }
-    else {
-      message(G_LOG_LEVEL_WARNING, "Unkown node name : %s\n", name);
-    }
-    xmlFree(name);
-  }
+	name = xpathObj->nodesetval->nodeTab[0]->name;
 
-  return type;
+	if (xmlStrEqual(name, "Request")) {
+		type = LASSO_REQUEST_TYPE_LOGIN;
+	}
+	else if (xmlStrEqual(name, "LogoutRequest")) {
+		type = LASSO_REQUEST_TYPE_LOGOUT;
+	}
+	else if (xmlStrEqual(name, "FederationTerminationNotification")) {
+		type = LASSO_REQUEST_TYPE_DEFEDERATION;
+	}
+	else if (xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
+		type = LASSO_REQUEST_TYPE_NAME_REGISTRATION;
+	}
+	else if (xmlStrEqual(name, "NameIdentifierMappingRequest")) {
+		type = LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
+	}
+	else if (xmlStrEqual(name, "AuthnRequest")) {
+		type = LASSO_REQUEST_TYPE_LECP;
+	}
+	else {
+		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s\n", name);
+	}
+
+	xmlFreeDoc(doc);
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
+
+	return type;
 }
 
 /**
@@ -110,23 +142,23 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 gboolean
 lasso_profile_is_liberty_query(const gchar *query)
 {
-  /* logic is that a lasso query always has some parameters (RequestId,
-   * MajorVersion, MinorVersion, IssueInstant, ProviderID,
-   * NameIdentifier, NameQualifier, Format).  If three of them are there;
-   * it's a lasso query, possibly broken, but a lasso query nevertheless.
-   */
-  gchar *parameters[] = {
-    "RequestId=", "MajorVersion=", "MinorVersion=", "IssueInstant=",
-    "ProviderID=", "NameIdentifier=", "NameQualifier=", "Format=",
-    NULL };
-  gint i, n = 0;
+	/* logic is that a lasso query always has some parameters (RequestId,
+	 * MajorVersion, MinorVersion, IssueInstant, ProviderID,
+	 * NameIdentifier, NameQualifier, Format).  If three of them are there;
+	 * it's a lasso query, possibly broken, but a lasso query nevertheless.
+	 */
+	gchar *parameters[] = {
+		"RequestId=", "MajorVersion=", "MinorVersion=", "IssueInstant=",
+		"ProviderID=", "NameIdentifier=", "NameQualifier=", "Format=",
+		NULL };
+	gint i, n = 0;
 
-  for (i=0; parameters[i] && n < 3; i++) {
-    if (strstr(query, parameters[i]))
-      n++;
-  }
+	for (i=0; parameters[i] && n < 3; i++) {
+		if (strstr(query, parameters[i]))
+			n++;
+	}
 
-  return (n == 3);
+	return (n == 3);
 }
 
 
@@ -134,443 +166,306 @@ lasso_profile_is_liberty_query(const gchar *query)
 /* public methods                                                            */
 /*****************************************************************************/
 
-gchar*
-lasso_profile_dump(LassoProfile *ctx,
-		   const gchar  *name)
-{
-  LassoNode *node;
-  LassoNode *request, *response = NULL;
-  gchar *dump = NULL;
-  gchar *request_type =  g_new0(gchar, 6);
-  gchar *response_type = g_new0(gchar, 6);
-  gchar *provider_type = g_new0(gchar, 6);
-
-  node = lasso_node_new();
-  if (name != NULL) {
-    LASSO_NODE_GET_CLASS(node)->set_name(node, name);
-  }
-  else {
-    LASSO_NODE_GET_CLASS(node)->set_name(node, "LassoProfile");
-  }
-  LASSO_NODE_GET_CLASS(node)->set_ns(node, lassoLassoHRef, NULL);
-
-  /* Add lasso version in the xml node */
-  LASSO_NODE_GET_CLASS(node)->set_prop(LASSO_NODE(node), "version", PACKAGE_VERSION);
-
-  if (ctx->request != NULL) {
-    request = lasso_node_copy(ctx->request);
-    LASSO_NODE_GET_CLASS(node)->add_child(node, request, FALSE);
-    lasso_node_destroy(request);
-  }
-  if (ctx->response != NULL) {
-    response = lasso_node_copy(ctx->response);
-    LASSO_NODE_GET_CLASS(node)->add_child(node, response, FALSE);
-    lasso_node_destroy(response);
-  }
-
-  if (ctx->nameIdentifier != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "NameIdentifier",
-					  ctx->nameIdentifier, FALSE);
-  }
-
-  if (ctx->remote_providerID != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "RemoteProviderID",
-					  ctx->remote_providerID, FALSE);
-  }
-
-  if (ctx->msg_url != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgUrl", ctx->msg_url, FALSE);
-  }
-  if (ctx->msg_body != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", ctx->msg_body, FALSE);
-  }
-  if (ctx->msg_relayState != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState",
-					  ctx->msg_relayState, FALSE);
-  }
-
-  g_snprintf(request_type, 6, "%d", ctx->request_type);
-  LASSO_NODE_GET_CLASS(node)->new_child(node, "RequestType", request_type, FALSE);
-  g_free(request_type);
-  g_snprintf(response_type, 6, "%d", ctx->response_type);
-  LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseType", response_type, FALSE);
-  g_free(response_type);
-  g_snprintf(provider_type, 6, "%d", ctx->provider_type);
-  LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderType", provider_type, FALSE);
-  g_free(provider_type);
-
-  dump = lasso_node_export(node);
-  lasso_node_destroy(node);
-
-  return dump;
-}
 
 LassoIdentity*
 lasso_profile_get_identity(LassoProfile *ctx)
 {
-  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
-
-  if (ctx->identity != NULL) {
-    /* return identity copy only if identity isn't empty */
-    if (ctx->identity->providerIDs->len > 0) {
-      return lasso_identity_copy(ctx->identity);
-    }
-  }
-
-  return NULL;
-}
-
-gchar*
-lasso_profile_get_remote_providerID(LassoProfile *ctx)
-{
-  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
-
-  if (ctx->remote_providerID != NULL) {
-    return g_strdup(ctx->remote_providerID);
-  }
-
-  return NULL;
+	if (ctx->identity && g_hash_table_size(ctx->identity->federations))
+		return ctx->identity;
+	return NULL;
 }
 
 LassoSession*
 lasso_profile_get_session(LassoProfile *ctx)
 {
-  g_return_val_if_fail(LASSO_IS_PROFILE(ctx), NULL);
-
-  if (ctx->session != NULL) {
-    /* return session copy only if session isn't empty */
-    if (ctx->session->providerIDs->len > 0) {
-      return lasso_session_copy(ctx->session);
-    }
-  }
-
-  return NULL;
+	if (ctx->session && g_hash_table_size(ctx->session->assertions))
+		return ctx->session;
+	return NULL;
 }
 
 gboolean
 lasso_profile_is_identity_dirty(LassoProfile *ctx)
 {
-  if (ctx->identity != NULL) {
-    return ctx->identity->is_dirty;
-  }
-  else {
-    return FALSE;
-  }
+	return (ctx->identity && ctx->identity->is_dirty);
 }
 
 gboolean
 lasso_profile_is_session_dirty(LassoProfile *ctx)
 {
-  if (ctx->session != NULL) {
-    return ctx->session->is_dirty;
-  }
-  else {
-    return FALSE;
-  }
-}
-
-gint
-lasso_profile_set_remote_providerID(LassoProfile *ctx,
-				    gchar        *providerID)
-{
-  g_free(ctx->remote_providerID);
-  ctx->remote_providerID = g_strdup(providerID);
-  
-  return 1;
+	return (ctx->session && ctx->session->is_dirty);
 }
 
 void
-lasso_profile_set_response_status(LassoProfile *ctx,
-				  const gchar  *statusCodeValue)
+lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue)
 {
-  LassoNode *status, *status_code;
+	LassoSamlpStatus *status;
+	/* XXX: cleanup before if necessary */
 
-  status = lasso_samlp_status_new();
+	status = lasso_samlp_status_new();
+	status->StatusCode = lasso_samlp_status_code_new();
+	status->StatusCode->Value = g_strdup(statusCodeValue);
 
-  status_code = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
-				    statusCodeValue);
+	if (LASSO_IS_SAMLP_RESPONSE(ctx->response)) {
+		LASSO_SAMLP_RESPONSE(ctx->response)->Status = status;
+		return;
+	}
+	if (LASSO_IS_LIB_STATUS_RESPONSE(ctx->response)) {
+		LASSO_LIB_STATUS_RESPONSE(ctx->response)->Status = status;
+		return;
+	}
 
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
-				    LASSO_SAMLP_STATUS_CODE(status_code));
+	message(G_LOG_LEVEL_CRITICAL, "Failed to set status");
+	g_assert_not_reached();
+} 
 
-  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(ctx->response),
-				  LASSO_SAMLP_STATUS(status));
-  lasso_node_destroy(status_code);
-  lasso_node_destroy(status);
+gint
+lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump)
+{
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	ctx->identity = lasso_identity_new_from_dump(dump);
+	if (ctx->identity == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump");
+		return -1;
+	}
+	ctx->identity->is_dirty = FALSE;
+
+	return 0;
 }
 
 gint
-lasso_profile_set_identity(LassoProfile  *ctx,
-			   LassoIdentity *identity)
+lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
 {
-  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  ctx->identity = lasso_identity_copy(identity);
-  ctx->identity->is_dirty = FALSE;
+	ctx->session = lasso_session_new_from_dump(dump);
+	if (ctx->session == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump");
+		return -1;
+	}
+	ctx->session->is_dirty = FALSE;
 
   return 0;
 }
 
-gint
-lasso_profile_set_identity_from_dump(LassoProfile *ctx,
-				     const gchar  *dump)
+
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
 {
-  g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	xmlNode *xmlnode, *t;
+	LassoProfile *profile = LASSO_PROFILE(node);
 
-  ctx->identity = lasso_identity_new_from_dump((gchar *)dump);
-  if (ctx->identity == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump\n");
-    return -1;
-  }
-  ctx->identity->is_dirty = FALSE;
+	xmlnode = xmlNewNode(NULL, "Profile");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
+	xmlSetProp(xmlnode, "Version", "2");
 
-  return 0;
+	/* XXX: server is not saved in profile dump */
+	/* (what was the reason ?)
+	if (profile->server) {
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(profile->server)));
+	}
+	*/
+
+	if (profile->request) {
+		t = xmlNewTextChild(xmlnode, NULL, "Request", NULL);
+		xmlAddChild(t, lasso_node_get_xmlNode(profile->request));
+	}
+	if (profile->response) {
+		t = xmlNewTextChild(xmlnode, NULL, "Response", NULL);
+		xmlAddChild(t, lasso_node_get_xmlNode(profile->response));
+	}
+	if (profile->nameIdentifier)
+		xmlNewTextChild(xmlnode, NULL, "NameIdentifier", profile->nameIdentifier);
+	if (profile->remote_providerID)
+		xmlNewTextChild(xmlnode, NULL, "RemoteProviderID", profile->remote_providerID);
+	if (profile->msg_url)
+		xmlNewTextChild(xmlnode, NULL, "MsgUrl", profile->msg_url);
+	if (profile->msg_body)
+		xmlNewTextChild(xmlnode, NULL, "MsgBody", profile->msg_body);
+	if (profile->msg_relayState)
+		xmlNewTextChild(xmlnode, NULL, "MsgRelayState", profile->msg_relayState);
+	/* XXX: save signature status ? */
+	
+	return xmlnode;
 }
 
-gint
-lasso_profile_set_session(LassoProfile *ctx,
-			  LassoSession *session)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  g_return_val_if_fail(LASSO_IS_SESSION(session), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	LassoProfile *profile = LASSO_PROFILE(node);
+	xmlNode *t;
 
-  ctx->session = lasso_session_copy(session);
-  ctx->session->is_dirty = FALSE;
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "NameIdentifier") == 0)
+			profile->nameIdentifier = xmlNodeGetContent(t);
+		if (strcmp(t->name, "RemoteProviderID") == 0)
+			profile->remote_providerID = xmlNodeGetContent(t);
+		if (strcmp(t->name, "MsgUrl") == 0)
+			profile->msg_url = xmlNodeGetContent(t);
+		if (strcmp(t->name, "MsgBody") == 0)
+			profile->msg_body = xmlNodeGetContent(t);
+		if (strcmp(t->name, "MsgRelayState") == 0)
+			profile->msg_relayState = xmlNodeGetContent(t);
 
-  return 0;
+		if (strcmp(t->name, "Server") == 0) {
+			LassoServer *s;
+			s = g_object_new(LASSO_TYPE_SERVER, NULL);
+			LASSO_NODE_GET_CLASS(s)->init_from_xml(LASSO_NODE(s), t);
+		}
+
+		if (strcmp(t->name, "Request") == 0) {
+			xmlNode *t2 = t->children;
+			while (t2 && t2->type != XML_ELEMENT_NODE)
+				t2 = t2->next;
+			if (t2)
+				profile->request = lasso_node_new_from_xmlNode(t2);
+		}
+		if (strcmp(t->name, "Response") == 0) {
+			xmlNode *t2 = t->children;
+			while (t2 && t2->type != XML_ELEMENT_NODE)
+				t2 = t2->next;
+			if (t2)
+				profile->response = lasso_node_new_from_xmlNode(t2);
+		}
+		t = t->next;
+	}
 }
 
-gint
-lasso_profile_set_session_from_dump(LassoProfile *ctx,
-				    const gchar  *dump)
-{
-  g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-  ctx->session = lasso_session_new_from_dump((gchar *)dump);
-  if (ctx->session == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump\n");
-    return -1;
-  }
-  ctx->session->is_dirty = FALSE;
-
-  return 0;
-}
 
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
 
 static void
-lasso_profile_dispose(LassoProfile *ctx)
+dispose(GObject *object)
 {
-  if (ctx->private->dispose_has_run) {
-    return;
-  }
-  ctx->private->dispose_has_run = TRUE;
+	LassoProfile *profile = LASSO_PROFILE(object);
 
-  debug("Profile object 0x%x disposed ...\n", ctx);
+	if (profile->private->dispose_has_run) {
+		return;
+	}
+	profile->private->dispose_has_run = TRUE;
 
-  /* unref reference counted objects */
-  lasso_server_destroy(ctx->server);
-  lasso_identity_destroy(ctx->identity);
-  lasso_session_destroy(ctx->session);
+	debug("Profile object 0x%x disposed ...\n", profile);
 
-  lasso_node_destroy(ctx->request);
-  lasso_node_destroy(ctx->response);
+	/* XXX unref reference counted objects */
+	/* lasso_server_destroy(profile->server);
+	lasso_identity_destroy(profile->identity);
+	lasso_session_destroy(profile->session);
 
-  parent_class->dispose(G_OBJECT(ctx));
+	lasso_node_destroy(profile->request);
+	lasso_node_destroy(profile->response);
+	*/
+
+	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(profile));
 }
 
 static void
-lasso_profile_finalize(LassoProfile *ctx)
+finalize(GObject *object)
 {
-  debug("Profile object 0x%x finalized ...\n", ctx);
+	LassoProfile *profile = LASSO_PROFILE(object);
 
-  g_free(ctx->nameIdentifier);
-  g_free(ctx->remote_providerID);
-  g_free(ctx->msg_url);
-  g_free(ctx->msg_body);
-  g_free(ctx->msg_relayState);
+	debug("Profile object 0x%x finalized ...\n", ctx);
 
-  g_free (ctx->private);
+	g_free(profile->nameIdentifier);
+	g_free(profile->remote_providerID);
+	g_free(profile->msg_url);
+	g_free(profile->msg_body);
+	g_free(profile->msg_relayState);
 
-  parent_class->finalize(G_OBJECT(ctx));
+	g_free (profile->private);
+
+	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-enum {
-  LASSO_PROFILE_SERVER = 1,
-  LASSO_PROFILE_IDENTITY,
-  LASSO_PROFILE_SESSION,
-  LASSO_PROFILE_PROVIDER_TYPE
-};
-
 static void
-lasso_profile_instance_init(GTypeInstance *instance,
-			    gpointer       g_class)
+instance_init(LassoProfile *profile)
 {
-  LassoProfile *ctx = LASSO_PROFILE(instance);
+	profile->private = g_new (LassoProfilePrivate, 1);
+	profile->private->dispose_has_run = FALSE;
 
-  ctx->private = g_new (LassoProfilePrivate, 1);
-  ctx->private->dispose_has_run = FALSE;
+	profile->server = NULL;
+	profile->request = NULL;
+	profile->response = NULL;
+	profile->nameIdentifier = NULL;
+	profile->remote_providerID = NULL;
+	profile->msg_url = NULL;
+	profile->msg_body = NULL;
+	profile->msg_relayState = NULL;
 
-  ctx->server = NULL;
-  ctx->request  = NULL;
-  ctx->response = NULL;
-  ctx->nameIdentifier = NULL;
-  ctx->remote_providerID = NULL;
-  ctx->msg_url        = NULL;
-  ctx->msg_body       = NULL;
-  ctx->msg_relayState = NULL;
-
-  ctx->identity = NULL;
-  ctx->session  = NULL;
-  ctx->request_type  = lassoMessageTypeNone;
-  ctx->response_type = lassoMessageTypeNone;
-  ctx->provider_type = lassoProviderTypeNone;
-  ctx->signature_status = 0;
+	profile->identity = NULL;
+	profile->session = NULL;
+	profile->signature_status = 0;
 }
 
 static void
-lasso_profile_set_property (GObject      *object,
-			    guint         property_id,
-			    const GValue *value,
-			    GParamSpec   *pspec)
+class_init(LassoProfileClass *klass)
 {
-  LassoProfile *self = LASSO_PROFILE(object);
+	parent_class = g_type_class_peek_parent(klass);
 
-  switch (property_id) {
-  case LASSO_PROFILE_SERVER: {
-    if (self->server) {
-      g_object_unref(self->server);
-    }
-    self->server = g_value_get_pointer (value);
-  }
-    break;
-  case LASSO_PROFILE_IDENTITY: {
-    if (self->identity) {
-      g_object_unref(self->identity);
-    }
-    self->identity = g_value_get_pointer (value);
-  }
-    break;
-  case LASSO_PROFILE_SESSION: {
-    if (self->session) {
-      g_object_unref(self->session);
-    }
-    self->session = g_value_get_pointer (value);
-  }
-    break;
-  case LASSO_PROFILE_PROVIDER_TYPE: {
-    self->provider_type = g_value_get_uint (value);
-  }
-    break;
-  default:
-    /* We don't have any other property... */
-    g_assert (FALSE);
-    break;
-  }
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
+	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
-static void
-lasso_profile_get_property(GObject    *object,
-			   guint       property_id,
-			   GValue     *value,
-			   GParamSpec *pspec)
+GType
+lasso_profile_get_type()
 {
-}
+	static GType this_type = 0;
 
-static void
-lasso_profile_class_init(gpointer g_class,
-			 gpointer g_class_data)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
-  GParamSpec *pspec;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof(LassoProfileClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoProfile),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
 
-  parent_class = g_type_class_peek_parent(g_class);
-  /* override parent class methods */
-  gobject_class->set_property = lasso_profile_set_property;
-  gobject_class->get_property = lasso_profile_get_property;
-
-  pspec = g_param_spec_pointer ("server",
-				"server metadata and keys/certs",
-				"Data of server",
-				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_SERVER,
-                                   pspec);
-
-  pspec = g_param_spec_pointer ("identity",
-				"user's federations",
-				"User's federations",
-				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_IDENTITY,
-                                   pspec);
-
-  pspec = g_param_spec_pointer ("session",
-				"user's assertions",
-				"User's assertions",
-				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_SESSION,
-                                   pspec);
-
-  pspec = g_param_spec_uint ("provider_type",
-			     "provider type",
-			     "The provider type",
-			     0,
-			     G_MAXINT,
-			     0,
-			     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_PROFILE_PROVIDER_TYPE,
-                                   pspec);
-
-  gobject_class->dispose  = (void *)lasso_profile_dispose;
-  gobject_class->finalize = (void *)lasso_profile_finalize;
-}
-
-GType lasso_profile_get_type() {
-  static GType this_type = 0;
-
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoProfileClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_profile_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoProfile),
-      0,
-      (GInstanceInitFunc) lasso_profile_instance_init,
-    };
-    
-    this_type = g_type_register_static(G_TYPE_OBJECT,
-				       "LassoProfile",
-				       &this_info, 0);
-  }
-  return this_type;
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoProfile", &this_info, 0);
+	}
+	return this_type;
 }
 
 LassoProfile*
-lasso_profile_new(LassoServer   *server,
-		  LassoIdentity *identity,
-		  LassoSession  *session)
+lasso_profile_new(LassoServer *server, LassoIdentity *identity, LassoSession *session)
 {
-  LassoProfile *ctx;
+	LassoProfile *profile = NULL;
 
-  g_return_val_if_fail(server != NULL, NULL);
+	g_return_val_if_fail(server != NULL, NULL);
 
-  ctx = LASSO_PROFILE(g_object_new(LASSO_TYPE_PROFILE,
-				   "server", lasso_server_copy(server),
-				   "identity", lasso_identity_copy(identity),
-				   "session", lasso_session_copy(session),
-				   NULL));
+	profile = g_object_new(LASSO_TYPE_PROFILE, NULL);
+	profile->identity = identity;
+	profile->session = session;
 
-  return ctx;
+	return profile;
 }
+
+gchar*
+lasso_profile_dump(LassoProfile *profile)
+{
+	return lasso_node_dump(LASSO_NODE(profile), NULL, 1);
+}
+

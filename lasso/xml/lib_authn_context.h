@@ -43,22 +43,19 @@ typedef struct _LassoLibAuthnContext LassoLibAuthnContext;
 typedef struct _LassoLibAuthnContextClass LassoLibAuthnContextClass;
 
 struct _LassoLibAuthnContext {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	/* <xs:element name="AuthnContextClassRef" type="xs:anyURI" minOccurs="0"/> */
+	char *AuthnContextClassRef;
+	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI"/> */
+	char *AuthnContextStatementRef;
 };
 
 struct _LassoLibAuthnContextClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_authn_context_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_authn_context_new(void);
-
-LASSO_EXPORT void lasso_lib_authn_context_set_authnContextClassRef     (LassoLibAuthnContext *node,
-									const xmlChar *authnContextClassRef);
-
-LASSO_EXPORT void lasso_lib_authn_context_set_authnContextStatementRef (LassoLibAuthnContext *node,
-									const xmlChar *authnContextStatementRef);
 
 #ifdef __cplusplus
 }

@@ -28,88 +28,120 @@
 
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_authn_response_envelope_set_extension(LassoLibAuthnResponseEnvelope *node,
-						LassoNode *extension)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE(node));
-  g_assert(LASSO_NODE(extension));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE(extension), extension, FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoLibAuthnResponseEnvelope *env = LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(node);
+
+	xmlnode = xmlNewNode(NULL, "AuthnResponseEnvelope");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (env->Extension)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->Extension)));
+	if (env->AuthnResponse)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(env->AuthnResponse)));
+	if (env->AssertionConsumerServiceURL)
+		xmlNewTextChild(xmlnode, NULL, "AssertionConsumerServiceURL",
+				env->AssertionConsumerServiceURL);
+
+	return xmlnode;
 }
 
-void
-lasso_lib_authn_response_envelope_set_authnResponse(LassoLibAuthnResponseEnvelope *node,
-						    LassoLibAuthnResponse         *authnResponse_node)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE(node));
-  g_assert(LASSO_IS_LIB_AUTHN_RESPONSE(authnResponse_node));
+	LassoLibAuthnResponseEnvelope *env = LASSO_LIB_AUTHN_RESPONSE_ENVELOPE(node);
+	xmlNode *t, *n;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE(node), LASSO_NODE(authnResponse_node), FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		n = t;
+		t = t->next;
+		if (n->type != XML_ELEMENT_NODE) {
+			continue;
+		}
+		if (strcmp(n->name, "Extension") == 0) {
+			/* XXX */
+			continue;
+		}
+		if (strcmp(n->name, "AuthnResponse") == 0) {
+			env->AuthnResponse = LASSO_LIB_AUTHN_RESPONSE(
+					lasso_node_new_from_xmlNode(n));
+			continue;
+		}
+		if (strcmp(n->name, "AssertionConsumerServiceURL") == 0) {
+			env->AssertionConsumerServiceURL = xmlNodeGetContent(n);
+			continue;
+		}
+	}
+
 }
 
-void
-lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL(LassoLibAuthnResponseEnvelope *node,
-								  const xmlChar                 *url)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE(node));
-  g_assert(url != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AssertionConsumerServiceURL",
-		   url, FALSE);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_authn_response_envelope_instance_init(LassoLibAuthnResponseEnvelope *node)
+instance_init(LassoLibAuthnResponseEnvelope *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "AuthnResponseEnvelope");
+	node->Extension = NULL;
+	node->AuthnResponse = NULL;
+	node->AssertionConsumerServiceURL = NULL;
 }
 
 static void
-lasso_lib_authn_response_envelope_class_init(LassoLibAuthnResponseEnvelopeClass *class)
+class_init(LassoLibAuthnResponseEnvelopeClass *klass)
+{	
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+}
+
+GType
+lasso_lib_authn_response_envelope_get_type()
 {
+	static GType this_type = 0;
+
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibAuthnResponseEnvelopeClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibAuthnResponseEnvelope),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoLibAuthnResponseEnvelope", &this_info, 0);
+	}
+	return this_type;
 }
 
-GType lasso_lib_authn_response_envelope_get_type() {
-  static GType this_type = 0;
+LassoNode*
+lasso_lib_authn_response_envelope_new(LassoLibAuthnResponse *response,
+		char *assertionConsumerServiceURL)
+{
+	LassoLibAuthnResponseEnvelope *envelope;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibAuthnResponseEnvelopeClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_authn_response_envelope_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibAuthnResponseEnvelope),
-      0,
-      (GInstanceInitFunc) lasso_lib_authn_response_envelope_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoLibAuthnResponseEnvelope",
-				       &this_info, 0);
-  }
-  return this_type;
+	envelope = g_object_new(LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE, NULL);
+	if (response) {
+		envelope->AuthnResponse = response;
+		envelope->AssertionConsumerServiceURL = g_strdup(assertionConsumerServiceURL);
+	}
+
+	return LASSO_NODE(envelope);
 }
 
-LassoNode* lasso_lib_authn_response_envelope_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE,
-				 NULL));
-}

@@ -41,97 +41,95 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-/**
- * lasso_lib_scoping_set_proxyCount:
- * @node      : the pointer to <lib:Scoping/> node object
- * @proxyCount: the value of "ProxyCount" element (should be superior or equal
- * to 0).
- * 
- * Sets the "ProxyCount" element [optional].
- *
- * It's the upper limit on the number of proxying steps the requester wishes to
- * specify for the authentication request.
- **/
-void
-lasso_lib_scoping_set_proxyCount(LassoLibScoping *node,
-				 gint proxyCount)
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
 {
-  gchar str[6];
-  LassoNodeClass *class;
+	xmlNode *xmlnode;
+	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
+	char s[20];
 
-  g_assert(LASSO_IS_LIB_SCOPING(node));
-  g_assert(proxyCount >= 0);
+	xmlnode = xmlNewNode(NULL, "Scoping");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
 
-  g_snprintf(str, 6, "%d", proxyCount);
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProxyCount", str, FALSE);
+	if (scoping->ProxyCount) {
+		snprintf(s, 19, "%d", scoping->ProxyCount);
+		xmlNewTextChild(xmlnode, NULL, "ProxyCount", s);
+	}
+	if (scoping->IDPList)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(scoping->IDPList)));
+
+	return xmlnode;
 }
 
-/**
- * lasso_lib_scoping_set_idpList:
- * @node   : the pointer to <lib:Scoping/> node object
- * @idpList: the value of "IDPList" element
- * 
- * Sets the "IDPList" element [optional].
- *
- * It's an ordered list of identity providers which the requester prefers to
- * use in authenticating the Principal. This list is a suggestion only, and may
- * be ignored or added to by the recipient of the message.
- **/
-void
-lasso_lib_scoping_set_idpList(LassoLibScoping *node,
-			      LassoLibIDPList *idpList)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_SCOPING(node));
-  g_assert(LASSO_IS_LIB_IDP_LIST(idpList));
+	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
+	xmlNode *t;
+	char *s;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(idpList), FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProxyCount") == 0) {
+			s = xmlNodeGetContent(t);
+			scoping->ProxyCount = atoi(s);
+			xmlFree(s);
+		}
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "IDPList") == 0)
+			scoping->IDPList = LASSO_LIB_IDP_LIST(lasso_node_new_from_xmlNode(t));
+		t = t->next;
+	}
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_scoping_instance_init(LassoLibScoping *node)
+instance_init(LassoLibScoping *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "Scoping");
+	node->ProxyCount = 0;
+	node->IDPList = NULL;
 }
 
 static void
-lasso_lib_scoping_class_init(LassoLibScopingClass *klass)
+class_init(LassoLibScopingClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_scoping_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_scoping_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibScopingClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_scoping_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibScoping),
-      0,
-      (GInstanceInitFunc) lasso_lib_scoping_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoLibScoping",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibScopingClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibScoping),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoLibScoping",
+				&this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -146,7 +144,9 @@ GType lasso_lib_scoping_get_type() {
  * 
  * Return value: a new @LassoLibScoping
  **/
-LassoNode* lasso_lib_scoping_new()
+LassoLibScoping*
+lasso_lib_scoping_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_SCOPING, NULL));
+	return g_object_new(LASSO_TYPE_LIB_SCOPING, NULL);
 }
+

@@ -43,23 +43,19 @@ typedef struct _LassoSamlSubjectLocality LassoSamlSubjectLocality;
 typedef struct _LassoSamlSubjectLocalityClass LassoSamlSubjectLocalityClass;
 
 struct _LassoSamlSubjectLocality {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	/* <attribute name="IPAddress" type="string" use="optional"/> */
+	char *IPAddress;
+	/* <attribute name="DNSAddress" type="string" use="optional"/> */
+	char *DNSAddress;
 };
 
 struct _LassoSamlSubjectLocalityClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_subject_locality_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_subject_locality_new(void);
-
-LASSO_EXPORT void lasso_saml_subject_locality_set_dnsAddress (LassoSamlSubjectLocality *node,
-							      const xmlChar *dnsAddress);
-
-LASSO_EXPORT void lasso_saml_subject_locality_set_ipAddress  (LassoSamlSubjectLocality *node,
-							      const xmlChar *ipAddress);
 
 #ifdef __cplusplus
 }

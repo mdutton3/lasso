@@ -32,8 +32,8 @@ extern "C" {
 
 #include <lasso/environs/profile.h>
 
-#include <lasso/protocols/name_identifier_mapping_request.h>
-#include <lasso/protocols/name_identifier_mapping_response.h>
+#include <lasso/xml/lib_name_identifier_mapping_request.h>
+#include <lasso/xml/lib_name_identifier_mapping_response.h>
 
 #define LASSO_TYPE_NAME_IDENTIFIER_MAPPING (lasso_name_identifier_mapping_get_type())
 #define LASSO_NAME_IDENTIFIER_MAPPING(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NAME_IDENTIFIER_MAPPING, LassoNameIdentifierMapping))
@@ -46,22 +46,18 @@ typedef struct _LassoNameIdentifierMapping LassoNameIdentifierMapping;
 typedef struct _LassoNameIdentifierMappingClass LassoNameIdentifierMappingClass;
 
 struct _LassoNameIdentifierMapping {
-  LassoProfile parent;
-
-  gchar *targetNameIdentifier;
-
-  /*< private >*/
+	LassoProfile parent;
+	gchar *targetNameIdentifier;
 };
 
 struct _LassoNameIdentifierMappingClass {
-  LassoProfileClass parent;
-
+	LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType                       lasso_name_identifier_mapping_get_type             (void);
 
-LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new                  (LassoServer       *server,
-											     lassoProviderType  provider_type);
+LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new(LassoServer *server);
+LASSO_EXPORT gchar * lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping*);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_request_msg    (LassoNameIdentifierMapping *mapping);
 
@@ -74,12 +70,10 @@ LASSO_EXPORT gint                        lasso_name_identifier_mapping_init_requ
 											     gchar                      *remote_providerID);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_request_msg  (LassoNameIdentifierMapping *mapping,
-											     gchar                      *request_msg,
-											     lassoHttpMethod             request_method);
+											     gchar                      *request_msg);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_response_msg (LassoNameIdentifierMapping *mapping,
-											     gchar                      *response_msg,
-											     lassoHttpMethod             response_method);
+											     gchar                      *response_msg);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_validate_request     (LassoNameIdentifierMapping *mapping);
 

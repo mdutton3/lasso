@@ -52,117 +52,98 @@ The schema fragment is as follows:
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_assertion_set_inResponseTo(LassoLibAssertion *node,
-				     const xmlChar *inResponseTo)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_ASSERTION(node));
-  g_assert(inResponseTo != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "InResponseTo", inResponseTo);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlSetProp(xmlnode, "InResponseTo", LASSO_LIB_ASSERTION(node)->InResponseTo);
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	return xmlnode;
+}
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+        parent_class->init_from_xml(node, xmlnode);
+	LASSO_LIB_ASSERTION(node)->InResponseTo = xmlGetProp(xmlnode, "InResponseTo");
 }
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-enum {
-  LASSO_LIB_ASSERTION_USE_XSITYPE = 1
-};
-
 static void
-lasso_lib_assertion_set_property (GObject      *object,
-				  guint         property_id,
-				  const GValue *value,
-				  GParamSpec   *pspec)
+instance_init(LassoLibAssertion *node)
 {
-  LassoLibAssertion *self = LASSO_LIB_ASSERTION(object);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(object));
-
-  switch (property_id) {
-  case LASSO_LIB_ASSERTION_USE_XSITYPE:
-    self->use_xsitype = g_value_get_boolean (value);
-    if (self->use_xsitype == TRUE) {
-      /* namespace and name were already set in parent class
-	 LassoSamlAssertion */
-      class->new_ns_prop(LASSO_NODE(object),
-			 "type", "lib:AssertionType",
-			 lassoXsiHRef, lassoXsiPrefix);
-    }
-    else {
-      /* node name was already set in parent class LassoSamlAssertion
-	 just change ns */
-      class->set_ns(LASSO_NODE(object), lassoLibHRef, lassoLibPrefix);
-    }
-    break;
-  default:
-    /* We don't have any other property... */
-    g_assert (FALSE);
-    break;
-  }
+	node->InResponseTo = NULL;
 }
 
 static void
-lasso_lib_assertion_instance_init(LassoLibAssertion *node)
+class_init(LassoLibAssertionClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-static void
-lasso_lib_assertion_class_init(LassoLibAssertionClass *g_class,
-			       gpointer                g_class_data)
+GType lasso_lib_assertion_get_type()
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
-  GParamSpec *pspec;
+	static GType this_type = 0;
 
-  /* override parent class methods */
-  gobject_class->set_property = lasso_lib_assertion_set_property;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibAssertionClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibAssertion),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
 
-  pspec = g_param_spec_boolean ("use_xsitype",
-				"use_xsitype",
-				"using xsi:type",
-				FALSE,
-				G_PARAM_CONSTRUCT_ONLY | G_PARAM_WRITABLE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_LIB_ASSERTION_USE_XSITYPE,
-                                   pspec);
+		this_type = g_type_register_static(LASSO_TYPE_SAML_ASSERTION,
+				"LassoLibAssertion", &this_info, 0);
+	}
+	return this_type;
 }
 
-GType lasso_lib_assertion_get_type() {
-  static GType this_type = 0;
-
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibAssertionClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_assertion_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibAssertion),
-      0,
-      (GInstanceInitFunc) lasso_lib_assertion_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAML_ASSERTION,
-				       "LassoLibAssertion",
-				       &this_info, 0);
-  }
-  return this_type;
-}
-
-LassoNode*
-lasso_lib_assertion_new(gboolean use_xsitype)
+LassoLibAssertion*
+lasso_lib_assertion_new_full(const char *issuer, const char *requestID,
+		const char *audience, const char *notBefore, const char *notOnOrAfter)
 {
-  LassoNode *node;
+	LassoSamlAssertion *assertion;
 
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_LIB_ASSERTION,
-				 "use_xsitype", use_xsitype,
-				 NULL));
+	g_return_val_if_fail(issuer != NULL, NULL);
 
-  return node;
+	assertion = LASSO_SAML_ASSERTION(g_object_new(LASSO_TYPE_LIB_ASSERTION, NULL));
+
+	assertion->AssertionID = lasso_build_unique_id(32);
+	assertion->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+	assertion->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	assertion->IssueInstant = lasso_get_current_time();
+	assertion->Issuer = g_strdup(issuer);
+	if (requestID != NULL)
+		LASSO_LIB_ASSERTION(assertion)->InResponseTo = g_strdup(requestID);
+
+	assertion->Conditions = lasso_saml_conditions_new();
+	assertion->Conditions->NotBefore = g_strdup(notBefore);
+	assertion->Conditions->NotOnOrAfter = g_strdup(notOnOrAfter);
+	if (audience) {
+		assertion->Conditions->AudienceRestrictionCondition = 
+			lasso_saml_audience_restriction_condition_new();
+		assertion->Conditions->AudienceRestrictionCondition->Audience = g_strdup(audience);
+	}
+
+	return LASSO_LIB_ASSERTION(assertion);
 }
+

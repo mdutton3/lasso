@@ -44,20 +44,17 @@ typedef struct _LassoSamlSubjectStatementAbstract LassoSamlSubjectStatementAbstr
 typedef struct _LassoSamlSubjectStatementAbstractClass LassoSamlSubjectStatementAbstractClass;
 
 struct _LassoSamlSubjectStatementAbstract {
-  LassoSamlStatementAbstract parent;
-  /*< private >*/
+	LassoSamlStatementAbstract parent;
+        /* <element ref="saml:Subject"/> */
+	LassoSamlSubject *Subject;
 };
 
 struct _LassoSamlSubjectStatementAbstractClass {
-  LassoSamlStatementAbstractClass parent;
-  /*< vtable >*/
+	LassoSamlStatementAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_subject_statement_abstract_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_subject_statement_abstract_new(const xmlChar *name);
-
-LASSO_EXPORT void lasso_saml_subject_statement_abstract_set_subject (LassoSamlSubjectStatementAbstract *node,
-								     LassoSamlSubject *subject);
+LASSO_EXPORT LassoNode* lasso_saml_subject_statement_abstract_new(void);
 
 #ifdef __cplusplus
 }

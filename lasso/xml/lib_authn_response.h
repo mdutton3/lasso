@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/samlp_response.h>
+#include <lasso/xml/lib_authn_request.h>
 #include <lasso/xml/lib_assertion.h>
 
 #define LASSO_TYPE_LIB_AUTHN_RESPONSE (lasso_lib_authn_response_get_type())
@@ -44,25 +45,25 @@ typedef struct _LassoLibAuthnResponse LassoLibAuthnResponse;
 typedef struct _LassoLibAuthnResponseClass LassoLibAuthnResponseClass;
 
 struct _LassoLibAuthnResponse {
-  LassoSamlpResponse parent;
-  /*< private >*/
+	LassoSamlpResponse parent;
+
+        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension;
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element ref="RelayState" minOccurs="0"/> */
+	char *RelayState;
+	/* <xs:attribute ref="consent" use="optional"/> */
+	char *consent;
 };
 
 struct _LassoLibAuthnResponseClass {
-  LassoSamlpResponseClass parent;
+	LassoSamlpResponseClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_authn_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_authn_response_new(void);
-
-LASSO_EXPORT void lasso_lib_authn_response_set_consent    (LassoLibAuthnResponse *,
-							   const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_response_set_providerID (LassoLibAuthnResponse *,
-							   const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_response_set_relayState (LassoLibAuthnResponse *,
-							   const xmlChar *);
+LASSO_EXPORT LassoNode* lasso_lib_authn_response_new(
+		char *providerID, LassoLibAuthnRequest *request);
 
 #ifdef __cplusplus
 }

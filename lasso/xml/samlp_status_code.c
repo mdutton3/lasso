@@ -38,64 +38,75 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_samlp_status_code_set_value(LassoSamlpStatusCode *node,
-				  const xmlChar *value)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_STATUS_CODE(node));
-  g_assert(value != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "Value", value);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+
+	xmlnode = xmlNewNode(NULL, "StatusCode");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
+	xmlSetProp(xmlnode, "Value", LASSO_SAMLP_STATUS_CODE(node)->Value);
+
+	return xmlnode;
+}
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LASSO_SAMLP_STATUS_CODE(node)->Value = xmlGetProp(xmlnode, "Value");
 }
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-static void
-lasso_samlp_status_code_instance_init(LassoSamlpStatusCode *node)
-{
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
 
-  class->set_ns(LASSO_NODE(node), lassoSamlProtocolHRef,
-		lassoSamlProtocolPrefix);
-  class->set_name(LASSO_NODE(node), "StatusCode");
+static void
+instance_init(LassoSamlpStatusCode *node)
+{
 }
 
 static void
-lasso_samlp_status_code_class_init(LassoSamlpStatusCodeClass *klass)
+class_init(LassoSamlpStatusCodeClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_samlp_status_code_get_type() {
-  static GType this_type = 0;
-
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlpStatusCodeClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_samlp_status_code_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlpStatusCode),
-      0,
-      (GInstanceInitFunc) lasso_samlp_status_code_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlpStatusCode",
-				       &this_info, 0);
-  }
-  return this_type;
-}
-
-LassoNode* lasso_samlp_status_code_new()
+GType
+lasso_samlp_status_code_get_type()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_STATUS_CODE, NULL));
+	static GType this_type = 0;
+
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlpStatusCodeClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlpStatusCode),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlpStatusCode",
+				&this_info, 0);
+	}
+	return this_type;
 }
+
+LassoSamlpStatusCode*
+lasso_samlp_status_code_new()
+{
+	return g_object_new(LASSO_TYPE_SAMLP_STATUS_CODE, NULL);
+}
+

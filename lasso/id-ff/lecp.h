@@ -32,8 +32,8 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 
-#include <lasso/protocols/authn_request_envelope.h>
-#include <lasso/protocols/authn_response_envelope.h>
+#include <lasso/xml/lib_authn_request_envelope.h>
+#include <lasso/xml/lib_authn_response_envelope.h>
 
 #include <lasso/environs/login.h>
 
@@ -74,19 +74,21 @@ LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLec
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp   *lecp,
-									gint         authentication_result,
-									gboolean     is_consent_obtained,
-									const gchar *authenticationMethod,
-									const gchar *reauthenticateOnOrAfter);
+LASSO_EXPORT gint lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
+		gint authentication_result,
+		gboolean     is_consent_obtained,
+		const char *authenticationMethod,
+		const char *authenticationInstant,
+		const char *reauthenticateOnOrAfter,
+		const char *notBefore,
+		const char *notOnOrAfter);
 
 LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_process_authn_request_msg           (LassoLecp       *lecp,
-									gchar           *authn_request_msg,
-									lassoHttpMethod  authn_request_method);
+									gchar           *authn_request_msg);
 
 LASSO_EXPORT gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
 									gchar     *request_msg);

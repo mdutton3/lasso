@@ -98,7 +98,7 @@
 #ifdef SWIGPYTHON
 %{
 	PyObject *lassoError;
-	PyObject *lassoWarning;
+	PyObject *LASSO_WARNING;
 %}
 
 %init %{
@@ -106,9 +106,9 @@
 	Py_INCREF(lassoError);
 	PyModule_AddObject(m, "Error", lassoError);
 
-	lassoWarning = PyErr_NewException("_lasso.Warning", lassoError, NULL);
-	Py_INCREF(lassoWarning);
-	PyModule_AddObject(m, "Warning", lassoWarning);
+	LASSO_WARNING = PyErr_NewException("_lasso.Warning", lassoError, NULL);
+	Py_INCREF(LASSO_WARNING);
+	PyModule_AddObject(m, "Warning", LASSO_WARNING);
 	
 	lasso_init();
 %}
@@ -233,178 +233,177 @@ int lasso_shutdown(void);
 
 /* HttpMethod */
 #ifndef SWIGPHP4
-%rename(httpMethodAny) lassoHttpMethodAny;
-%rename(httpMethodSelfAddressed) lassoHttpMethodSelfAddressed;
-%rename(httpMethodGet) lassoHttpMethodGet;
-%rename(httpMethodPost) lassoHttpMethodPost;
-%rename(httpMethodRedirect) lassoHttpMethodRedirect;
-%rename(httpMethodSoap) lassoHttpMethodSoap;
+%rename(httpMethodAny) LASSO_HTTP_METHOD_ANY;
+%rename(httpMethodIdpInitiated) LASSO_HTTP_METHOD_IDP_INITIATED;
+%rename(httpMethodGet) LASSO_HTTP_METHOD_GET;
+%rename(httpMethodPost) LASSO_HTTP_METHOD_POST;
+%rename(httpMethodRedirect) LASSO_HTTP_METHOD_REDIRECT;
+%rename(httpMethodSoap) LASSO_HTTP_METHOD_SOAP;
 #endif
 typedef enum {
-	lassoHttpMethodAny = -1,
-	lassoHttpMethodSelfAddressed,
-	lassoHttpMethodGet,
-	lassoHttpMethodPost,
-	lassoHttpMethodRedirect,
-	lassoHttpMethodSoap
+	LASSO_HTTP_METHOD_NONE = -1,
+	LASSO_HTTP_METHOD_ANY,
+	LASSO_HTTP_METHOD_IDP_INITIATED,
+	LASSO_HTTP_METHOD_GET,
+	LASSO_HTTP_METHOD_POST,
+	LASSO_HTTP_METHOD_REDIRECT,
+	LASSO_HTTP_METHOD_SOAP
 } lassoHttpMethod;
 
 /* Consent */
 #ifndef SWIGPHP4
-%rename(libConsentObtained) lassoLibConsentObtained;
-%rename(libConsentObtainedPrior) lassoLibConsentObtainedPrior;
-%rename(libConsentObtainedCurrentImplicit) lassoLibConsentObtainedCurrentImplicit;
-%rename(libConsentObtainedCurrentExplicit) lassoLibConsentObtainedCurrentExplicit;
-%rename(libConsentUnavailable) lassoLibConsentUnavailable;
-%rename(libConsentInapplicable) lassoLibConsentInapplicable;
+%rename(libConsentObtained) LASSO_LIB_CONSENT_OBTAINED;
+%rename(libConsentObtainedPrior) LASSO_LIB_CONSENT_OBTAINED_PRIOR;
+%rename(libConsentObtainedCurrentImplicit) LASSO_LIB_CONSENT_OBTAINED_CURRENT_IMPLICIT;
+%rename(libConsentObtainedCurrentExplicit) LASSO_LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT;
+%rename(libConsentUnavailable) LASSO_LIB_CONSENT_UNAVAILABLE;
+%rename(libConsentInapplicable) LASSO_LIB_CONSENT_INAPPLICABLE;
 #endif
-#define lassoLibConsentObtained "urn:liberty:consent:obtained"
-#define lassoLibConsentObtainedPrior "urn:liberty:consent:obtained:prior"
-#define lassoLibConsentObtainedCurrentImplicit "urn:liberty:consent:obtained:current:implicit"
-#define lassoLibConsentObtainedCurrentExplicit "urn:liberty:consent:obtained:current:explicit"
-#define lassoLibConsentUnavailable "urn:liberty:consent:unavailable"
-#define lassoLibConsentInapplicable "urn:liberty:consent:inapplicable"
+#define LASSO_LIB_CONSENT_OBTAINED "urn:liberty:consent:obtained"
+#define LASSO_LIB_CONSENT_OBTAINED_PRIOR "urn:liberty:consent:obtained:prior"
+#define LASSO_LIB_CONSENT_OBTAINED_CURRENT_IMPLICIT "urn:liberty:consent:obtained:current:implicit"
+#define LASSO_LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT "urn:liberty:consent:obtained:current:explicit"
+#define LASSO_LIB_CONSENT_UNAVAILABLE "urn:liberty:consent:unavailable"
+#define LASSO_LIB_CONSENT_INAPPLICABLE "urn:liberty:consent:inapplicable"
 
 /* NameIdPolicyType */
 #ifndef SWIGPHP4
-%rename(libNameIdPolicyTypeNone) lassoLibNameIDPolicyTypeNone;
-%rename(libNameIdPolicyTypeOneTime) lassoLibNameIDPolicyTypeOneTime;
-%rename(libNameIdPolicyTypeFederated) lassoLibNameIDPolicyTypeFederated;
-%rename(libNameIdPolicyTypeAny) lassoLibNameIDPolicyTypeAny;
+%rename(libNameIdPolicyTypeNone) LASSO_LIB_NAMEID_POLICY_TYPE_NONE;
+%rename(libNameIdPolicyTypeOneTime) LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME;
+%rename(libNameIdPolicyTypeFederated) LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED;
+%rename(libNameIdPolicyTypeAny) LASSO_LIB_NAMEID_POLICY_TYPE_ANY;
 #endif
-#define lassoLibNameIDPolicyTypeNone "none"
-#define lassoLibNameIDPolicyTypeOneTime "onetime"
-#define lassoLibNameIDPolicyTypeFederated "federated"
-#define lassoLibNameIDPolicyTypeAny "any"
+#define LASSO_LIB_NAMEID_POLICY_TYPE_NONE "none"
+#define LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME "onetime"
+#define LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED "federated"
+#define LASSO_LIB_NAMEID_POLICY_TYPE_ANY "any"
 
 /* ProtocolProfile */
 #ifndef SWIGPHP4
-%rename(libProtocolProfileBrwsArt) lassoLibProtocolProfileBrwsArt;
-%rename(libProtocolProfileBrwsPost) lassoLibProtocolProfileBrwsPost;
-%rename(libProtocolProfileFedTermIdpHttp) lassoLibProtocolProfileFedTermIdpHttp;
-%rename(libProtocolProfileFedTermIdpSoap) lassoLibProtocolProfileFedTermIdpSoap;
-%rename(libProtocolProfileFedTermSpHttp) lassoLibProtocolProfileFedTermSpHttp;
-%rename(libProtocolProfileFedTermSpSoap) lassoLibProtocolProfileFedTermSpSoap;
-%rename(libProtocolProfileRniIdpHttp) lassoLibProtocolProfileRniIdpHttp;
-%rename(libProtocolProfileRniIdpSoap) lassoLibProtocolProfileRniIdpSoap;
-%rename(libProtocolProfileRniSpHttp) lassoLibProtocolProfileRniSpHttp;
-%rename(libProtocolProfileRniSpSoap) lassoLibProtocolProfileRniSpSoap;
-%rename(libProtocolProfileSloIdpHttp) lassoLibProtocolProfileSloIdpHttp;
-%rename(libProtocolProfileSloIdpSoap) lassoLibProtocolProfileSloIdpSoap;
-%rename(libProtocolProfileSloSpHttp) lassoLibProtocolProfileSloSpHttp;
-%rename(libProtocolProfileSloSpSoap) lassoLibProtocolProfileSloSpSoap;
+%rename(libProtocolProfileBrwsArt) LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
+%rename(libProtocolProfileBrwsPost) LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
+%rename(libProtocolProfileFedTermIdpHttp) LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP;
+%rename(libProtocolProfileFedTermIdpSoap) LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_SOAP;
+%rename(libProtocolProfileFedTermSpHttp) LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_HTTP;
+%rename(libProtocolProfileFedTermSpSoap) LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_SOAP;
+%rename(libProtocolProfileRniIdpHttp) LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_HTTP;
+%rename(libProtocolProfileRniIdpSoap) LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_SOAP;
+%rename(libProtocolProfileRniSpHttp) LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_HTTP;
+%rename(libProtocolProfileRniSpSoap) LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_SOAP;
+%rename(libProtocolProfileSloIdpHttp) LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_HTTP;
+%rename(libProtocolProfileSloIdpSoap) LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_SOAP;
+%rename(libProtocolProfileSloSpHttp) LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_HTTP;
+%rename(libProtocolProfileSloSpSoap) LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_SOAP;
 #endif
-#define lassoLibProtocolProfileBrwsArt "http://projectliberty.org/profiles/brws-art"
-#define lassoLibProtocolProfileBrwsPost "http://projectliberty.org/profiles/brws-post"
-#define lassoLibProtocolProfileFedTermIdpHttp "http://projectliberty.org/profiles/fedterm-idp-http"
-#define lassoLibProtocolProfileFedTermIdpSoap "http://projectliberty.org/profiles/fedterm-idp-soap"
-#define lassoLibProtocolProfileFedTermSpHttp "http://projectliberty.org/profiles/fedterm-sp-http"
-#define lassoLibProtocolProfileFedTermSpSoap "http://projectliberty.org/profiles/fedterm-sp-soap"
-#define lassoLibProtocolProfileRniIdpHttp "http://projectliberty.org/profiles/rni-idp-http"
-#define lassoLibProtocolProfileRniIdpSoap "http://projectliberty.org/profiles/rni-idp-soap"
-#define lassoLibProtocolProfileRniSpHttp "http://projectliberty.org/profiles/rni-sp-http"
-#define lassoLibProtocolProfileRniSpSoap "http://projectliberty.org/profiles/rni-sp-soap"
-#define lassoLibProtocolProfileSloIdpHttp "http://projectliberty.org/profiles/slo-idp-http"
-#define lassoLibProtocolProfileSloIdpSoap "http://projectliberty.org/profiles/slo-idp-soap"
-#define lassoLibProtocolProfileSloSpHttp "http://projectliberty.org/profiles/slo-sp-http"
-#define lassoLibProtocolProfileSloSpSoap "http://projectliberty.org/profiles/slo-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART "http://projectliberty.org/profiles/brws-art"
+#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST "http://projectliberty.org/profiles/brws-post"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP "http://projectliberty.org/profiles/fedterm-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_SOAP "http://projectliberty.org/profiles/fedterm-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_HTTP "http://projectliberty.org/profiles/fedterm-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_SP_SOAP "http://projectliberty.org/profiles/fedterm-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_HTTP "http://projectliberty.org/profiles/rni-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_IDP_SOAP "http://projectliberty.org/profiles/rni-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_HTTP "http://projectliberty.org/profiles/rni-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_RNI_SP_SOAP "http://projectliberty.org/profiles/rni-sp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_HTTP "http://projectliberty.org/profiles/slo-idp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_IDP_SOAP "http://projectliberty.org/profiles/slo-idp-soap"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_HTTP "http://projectliberty.org/profiles/slo-sp-http"
+#define LASSO_LIB_PROTOCOL_PROFILE_SLO_SP_SOAP "http://projectliberty.org/profiles/slo-sp-soap"
 
 /* LoginProtocolProfile */
 #ifndef SWIGPHP4
-%rename(loginProtocolProfileBrwsArt) lassoLoginProtocolProfileBrwsArt;
-%rename(loginProtocolProfileBrwsPost) lassoLoginProtocolProfileBrwsPost;
+%rename(loginProtocolProfileBrwsArt) LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
+%rename(loginProtocolProfileBrwsPost) LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 #endif
 typedef enum {
-	lassoLoginProtocolProfileBrwsArt = 1,
-	lassoLoginProtocolProfileBrwsPost,
+	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
+	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST,
 } lassoLoginProtocolProfile;
 
 /* MessageType */
 #ifndef SWIGPHP4
-%rename(messageTypeNone) lassoMessageTypeNone;
-%rename(messageTypeAuthnRequest) lassoMessageTypeAuthnRequest;
-%rename(messageTypeAuthnResponse) lassoMessageTypeAuthnResponse;
-%rename(messageTypeRequest) lassoMessageTypeRequest;
-%rename(messageTypeResponse) lassoMessageTypeResponse;
-%rename(messageTypeArtifact) lassoMessageTypeArtifact;
+%rename(messageTypeNone) LASSO_MESSAGE_TYPE_NONE;
+%rename(messageTypeAuthnRequest) LASSO_MESSAGE_TYPE_AUTHN_REQUEST;
+%rename(messageTypeAuthnResponse) LASSO_MESSAGE_TYPE_AUTHN_RESPONSE;
+%rename(messageTypeRequest) LASSO_MESSAGE_TYPE_REQUEST;
+%rename(messageTypeResponse) LASSO_MESSAGE_TYPE_RESPONSE;
+%rename(messageTypeArtifact) LASSO_MESSAGE_TYPE_ARTIFACT;
 #endif
 typedef enum {
-	lassoMessageTypeNone = 0,
-	lassoMessageTypeAuthnRequest,
-	lassoMessageTypeAuthnResponse,
-	lassoMessageTypeRequest,
-	lassoMessageTypeResponse,
-	lassoMessageTypeArtifact
+	LASSO_MESSAGE_TYPE_NONE = 0,
+	LASSO_MESSAGE_TYPE_AUTHN_REQUEST,
+	LASSO_MESSAGE_TYPE_AUTHN_RESPONSE,
+	LASSO_MESSAGE_TYPE_REQUEST,
+	LASSO_MESSAGE_TYPE_RESPONSE,
+	LASSO_MESSAGE_TYPE_ARTIFACT
 } lassoMessageType;
 
-/* ProviderType */
+/* ProviderRole */
 #ifndef SWIGPHP4
-%rename(providerTypeNone) lassoProviderTypeNone;
-%rename(providerTypeSp) lassoProviderTypeSp;
-%rename(providerTypeIdp) lassoProviderTypeIdp;
+%rename(providerRoleNone) LASSO_PROVIDER_ROLE_NONE;
+%rename(providerRoleSp) LASSO_PROVIDER_ROLE_SP;
+%rename(providerRoleIdp) LASSO_PROVIDER_ROLE_IDP;
 #endif
 typedef enum {
-	lassoProviderTypeNone = 0,
-	lassoProviderTypeSp,
-	lassoProviderTypeIdp
-} lassoProviderType;
+	LASSO_PROVIDER_ROLE_NONE = 0,
+	LASSO_PROVIDER_ROLE_SP,
+	LASSO_PROVIDER_ROLE_IDP
+} LassoProviderRole;
 
 /* RequestType */
 #ifndef SWIGPHP4
-%rename(requestTypeInvalid) lassoRequestTypeInvalid;
-%rename(requestTypeLogin) lassoRequestTypeLogin;
-%rename(requestTypeLogout) lassoRequestTypeLogout;
-%rename(requestTypeDefederation) lassoRequestTypeDefederation;
-%rename(requestTypeRegisterNameIdentifier) lassoRequestTypeRegisterNameIdentifier; /* FIXME ABI : Obsolete */
-%rename(requestTypeNameRegistration) lassoRequestTypeNameRegistration;
-%rename(requestTypeNameIdentifierMapping) lassoRequestTypeNameIdentifierMapping;
-%rename(requestTypeLecp) lassoRequestTypeLecp;
+%rename(requestTypeInvalid) LASSO_REQUEST_TYPE_INVALID;
+%rename(requestTypeLogin) LASSO_REQUEST_TYPE_LOGIN;
+%rename(requestTypeLogout) LASSO_REQUEST_TYPE_LOGOUT;
+%rename(requestTypeDefederation) LASSO_REQUEST_TYPE_DEFEDERATION;
+%rename(requestTypeNameRegistration) LASSO_REQUEST_TYPE_NAME_REGISTRATION;
+%rename(requestTypeNameIdentifierMapping) LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
+%rename(requestTypeLecp) LASSO_REQUEST_TYPE_LECP;
 #endif
 typedef enum {
-	lassoRequestTypeInvalid = 0,
-	lassoRequestTypeLogin = 1,
-	lassoRequestTypeLogout = 2,
-	lassoRequestTypeDefederation = 3,
-	lassoRequestTypeRegisterNameIdentifier = 4, /* FIXME ABI : Obsolete */
-	lassoRequestTypeNameRegistration = 4,
-	lassoRequestTypeNameIdentifierMapping = 5,
-	lassoRequestTypeLecp = 6
+	LASSO_REQUEST_TYPE_INVALID = 0,
+	LASSO_REQUEST_TYPE_LOGIN = 1,
+	LASSO_REQUEST_TYPE_LOGOUT = 2,
+	LASSO_REQUEST_TYPE_DEFEDERATION = 3,
+	LASSO_REQUEST_TYPE_NAME_REGISTRATION = 4,
+	LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING = 5,
+	LASSO_REQUEST_TYPE_LECP = 6
 } lassoRequestType;
 
 /* SamlAuthenticationMethod */
 #ifndef SWIGPHP4
-%rename(samlAuthenticationMethodPassword) lassoSamlAuthenticationMethodPassword;
-%rename(samlAuthenticationMethodKerberos) lassoSamlAuthenticationMethodKerberos;
-%rename(samlAuthenticationMethodSecureRemotePassword) lassoSamlAuthenticationMethodSecureRemotePassword;
-%rename(samlAuthenticationMethodHardwareToken) lassoSamlAuthenticationMethodHardwareToken;
-%rename(samlAuthenticationMethodSmartcardPki) lassoSamlAuthenticationMethodSmartcardPki;
-%rename(samlAuthenticationMethodSoftwarePki) lassoSamlAuthenticationMethodSoftwarePki;
-%rename(samlAuthenticationMethodPgp) lassoSamlAuthenticationMethodPgp;
-%rename(samlAuthenticationMethodSpki) lassoSamlAuthenticationMethodSPki;
-%rename(samlAuthenticationMethodXkms) lassoSamlAuthenticationMethodXkms;
-%rename(samlAuthenticationMethodXmlDsig) lassoSamlAuthenticationMethodXmlDSig;
-%rename(samlAuthenticationMethodUnspecified) lassoSamlAuthenticationMethodUnspecified;
+%rename(samlAuthenticationMethodPassword) LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD;
+%rename(samlAuthenticationMethodKerberos) LASSO_SAML_AUTHENTICATION_METHOD_KERBEROS;
+%rename(samlAuthenticationMethodSecureRemotePassword) LASSO_SAML_AUTHENTICATION_METHOD_SECURE_REMOTE_PASSWORD;
+%rename(samlAuthenticationMethodHardwareToken) LASSO_SAML_AUTHENTICATION_METHOD_HARDWARE_TOKEN;
+%rename(samlAuthenticationMethodSmartcardPki) LASSO_SAML_AUTHENTICATION_METHOD_SMARTCARD_PKI;
+%rename(samlAuthenticationMethodSoftwarePki) LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI;
+%rename(samlAuthenticationMethodPgp) LASSO_SAML_AUTHENTICATION_METHOD_PGP;
+%rename(samlAuthenticationMethodSpki) LASSO_SAML_AUTHENTICATION_METHODS_PKI;
+%rename(samlAuthenticationMethodXkms) LASSO_SAML_AUTHENTICATION_METHOD_XKMS;
+%rename(samlAuthenticationMethodXmlDsig) LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG;
+%rename(samlAuthenticationMethodUnspecified) LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED;
 #endif
-#define lassoSamlAuthenticationMethodPassword "urn:oasis:names:tc:SAML:1.0:am:password"
-#define lassoSamlAuthenticationMethodKerberos "urn:ietf:rfc:1510"
-#define lassoSamlAuthenticationMethodSecureRemotePassword "urn:ietf:rfc:2945"
-#define lassoSamlAuthenticationMethodHardwareToken "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
-#define lassoSamlAuthenticationMethodSmartcardPki "urn:ietf:rfc:2246"
-#define lassoSamlAuthenticationMethodSoftwarePki "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
-#define lassoSamlAuthenticationMethodPgp "urn:oasis:names:tc:SAML:1.0:am:PGP"
-#define lassoSamlAuthenticationMethodSPki "urn:oasis:names:tc:SAML:1.0:am:SPKI"
-#define lassoSamlAuthenticationMethodXkms "urn:oasis:names:tc:SAML:1.0:am:XKMS"
-#define lassoSamlAuthenticationMethodXmlDSig "urn:ietf:rfc:3075"
-#define lassoSamlAuthenticationMethodUnspecified "urn:oasis:names:tc:SAML:1.0:am:unspecified"
+#define LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD "urn:oasis:names:tc:SAML:1.0:am:password"
+#define LASSO_SAML_AUTHENTICATION_METHOD_KERBEROS "urn:ietf:rfc:1510"
+#define LASSO_SAML_AUTHENTICATION_METHOD_SECURE_REMOTE_PASSWORD "urn:ietf:rfc:2945"
+#define LASSO_SAML_AUTHENTICATION_METHOD_HARDWARE_TOKEN "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+#define LASSO_SAML_AUTHENTICATION_METHOD_SMARTCARD_PKI "urn:ietf:rfc:2246"
+#define LASSO_SAML_AUTHENTICATION_METHOD_SOFTWARE_PKI "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+#define LASSO_SAML_AUTHENTICATION_METHOD_PGP "urn:oasis:names:tc:SAML:1.0:am:PGP"
+#define LASSO_SAML_AUTHENTICATION_METHODS_PKI "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+#define LASSO_SAML_AUTHENTICATION_METHOD_XKMS "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+#define LASSO_SAML_AUTHENTICATION_METHOD_XMLD_SIG "urn:ietf:rfc:3075"
+#define LASSO_SAML_AUTHENTICATION_METHOD_UNSPECIFIED "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 /* SignatureMethod */
 #ifndef SWIGPHP4
-%rename(signatureMethodRsaSha1) lassoSignatureMethodRsaSha1;
-%rename(signatureMethodDsaSha1) lassoSignatureMethodDsaSha1;
+%rename(signatureMethodRsaSha1) LASSO_SIGNATURE_METHOD_RSA_SHA1;
+%rename(signatureMethodDsaSha1) LASSO_SIGNATURE_METHOD_DSA_SHA1;
 #endif
 typedef enum {
-	lassoSignatureMethodRsaSha1 = 1,
-	lassoSignatureMethodDsaSha1
+	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
+	LASSO_SIGNATURE_METHOD_DSA_SHA1
 } lassoSignatureMethod;
 
 
@@ -477,6 +476,9 @@ typedef enum {
 %rename(PROFILE_ERROR_MISSING_REQUEST) LASSO_PROFILE_ERROR_MISSING_REQUEST;
 %rename(PROFILE_ERROR_INVALID_HTTP_METHOD) LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 %rename(PROFILE_ERROR_INVALID_PROTOCOLPROFILE) LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+%rename(PROFILE_ERROR_INVALID_MSG) LASSO_PROFILE_ERROR_INVALID_MSG;
+%rename(PROFILE_ERROR_MISSING_REMOTE_PROVIDERID) LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
+%rename(PROFILE_ERROR_UNSUPPORTED_PROFILE) LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 #endif
 #define LASSO_PROFILE_ERROR_INVALID_QUERY             -401
 #define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402
@@ -484,6 +486,9 @@ typedef enum {
 #define LASSO_PROFILE_ERROR_MISSING_REQUEST           -404
 #define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD       -405
 #define LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE   -406
+#define LASSO_PROFILE_ERROR_INVALID_MSG               -407
+#define LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID -408
+#define LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE       -409
 
 /* functions/methods parameters checking */
 #ifndef SWIGPHP4
@@ -526,7 +531,7 @@ void lasso_exception(int errorCode) {
 
 	if (errorCode > 0) {
 		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Warning");
-		PyErr_SetObject(lassoWarning, errorTuple);
+		PyErr_SetObject(LASSO_WARNING, errorTuple);
 		Py_DECREF(errorTuple);
 	}
 	else {
@@ -662,7 +667,7 @@ typedef struct {
 /* Methods implementations */
 
 gchar* LassoNode_dump(LassoNode *self) {
-	return lasso_node_export(LASSO_NODE(self));
+	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
 }
 
 %}
@@ -681,37 +686,38 @@ gchar* LassoNode_dump(LassoNode *self) {
 
 
 #ifndef SWIGPHP4
-%rename(Assertion) LassoAssertion;
+%rename(Assertion) LassoLibAssertion;
 #endif
 typedef struct {
 	%extend {
 		/* Constructor, Destructor & Static Methods */
 
-		LassoAssertion(xmlChar *issuer, xmlChar *requestId);
+		LassoLibAssertion(char *issuer, char *requestId, char *audience,
+				char *notBefore, char *notOnOrAfter);
 
-		~LassoAssertion();
+		~LassoLibAssertion();
 
 		/* Methods */
 
 		%newobject dump;
 		gchar *dump();
 	}
-} LassoAssertion;
+} LassoLibAssertion;
 
 %{
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoAssertion lasso_assertion_new
+#define new_LassoLibAssertion lasso_lib_assertion_new_full
 
-void delete_LassoAssertion(LassoAssertion *self) {
+void delete_LassoLibAssertion(LassoLibAssertion *self) {
 	lasso_node_destroy(LASSO_NODE(self));
 }
 
 /* Methods implementations */
 
-gchar* LassoAssertion_dump(LassoAssertion *self) {
-	return lasso_node_export(LASSO_NODE(self));
+gchar* LassoLibAssertion_dump(LassoLibAssertion *self) {
+	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
 }
 
 %}
@@ -723,12 +729,13 @@ gchar* LassoAssertion_dump(LassoAssertion *self) {
 
 
 #ifndef SWIGPHP4
-%rename(AuthnRequest) LassoAuthnRequest;
+%rename(AuthnRequest) LassoLibAuthnRequest;
 #endif
-%nodefault LassoAuthnRequest;
+%nodefault LassoLibAuthnRequest;
 typedef struct {
 	%extend {
-		/* Attributes inherited from LassoLibAuthnRequest */
+		/* XXX shouldn't need all of this now */
+		/* Attributes from LassoLibAuthnRequest */
 
 		xmlChar *affiliationId;
 		xmlChar *assertionConsumerServiceId;
@@ -740,103 +747,102 @@ typedef struct {
 		xmlChar *providerId;
 		xmlChar *relayState;
 	}
-} LassoAuthnRequest;
+} LassoLibAuthnRequest;
 
 %{
 
 /* Attributes Implementations */
 
 /* affiliationId */
-#define LassoAuthnRequest_get_affiliationId LassoAuthnRequest_affiliationId_get
-xmlChar *LassoAuthnRequest_affiliationId_get(LassoAuthnRequest *self) {
+#define LassoLibAuthnRequest_get_affiliationId LassoLibAuthnRequest_affiliationId_get
+xmlChar *LassoLibAuthnRequest_affiliationId_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoAuthnRequest_set_affiliationId LassoAuthnRequest_affiliationId_set
-void LassoAuthnRequest_affiliationId_set(LassoAuthnRequest *self, xmlChar *affiliationId) {
-	 lasso_lib_authn_request_set_affiliationID(LASSO_LIB_AUTHN_REQUEST(self), affiliationId);
+#define LassoLibAuthnRequest_set_affiliationId LassoLibAuthnRequest_affiliationId_set
+void LassoLibAuthnRequest_affiliationId_set(LassoLibAuthnRequest *self, xmlChar *affiliationId) {
+	LASSO_LIB_AUTHN_REQUEST(self)->AffiliationID = strdup(affiliationId);
 }
 
 /* assertionConsumerServiceId */
-#define LassoAuthnRequest_get_assertionConsumerServiceId LassoAuthnRequest_assertionConsumerServiceId_get
-xmlChar *LassoAuthnRequest_assertionConsumerServiceId_get(LassoAuthnRequest *self) {
+#define LassoLibAuthnRequest_get_assertionConsumerServiceId LassoLibAuthnRequest_assertionConsumerServiceId_get
+xmlChar *LassoLibAuthnRequest_assertionConsumerServiceId_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoAuthnRequest_set_assertionConsumerServiceId LassoAuthnRequest_assertionConsumerServiceId_set
-void LassoAuthnRequest_assertionConsumerServiceId_set(LassoAuthnRequest *self,
+#define LassoLibAuthnRequest_set_assertionConsumerServiceId LassoLibAuthnRequest_assertionConsumerServiceId_set
+void LassoLibAuthnRequest_assertionConsumerServiceId_set(LassoLibAuthnRequest *self,
 						      xmlChar *assertionConsumerServiceId) {
-	lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(self),
+	LASSO_LIB_AUTHN_REQUEST(self)->AssertionConsumerServiceID = strdup(
 							       assertionConsumerServiceId);
 }
 
 /* consent */
-#define LassoAuthnRequest_get_consent LassoAuthnRequest_consent_get
-xmlChar *LassoAuthnRequest_consent_get(LassoAuthnRequest *self) {
+#define LassoLibAuthnRequest_get_consent LassoLibAuthnRequest_consent_get
+xmlChar *LassoLibAuthnRequest_consent_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoAuthnRequest_set_consent LassoAuthnRequest_consent_set
-void LassoAuthnRequest_consent_set(LassoAuthnRequest *self, xmlChar *consent) {
-	 lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(self), consent);
+#define LassoLibAuthnRequest_set_consent LassoLibAuthnRequest_consent_set
+void LassoLibAuthnRequest_consent_set(LassoLibAuthnRequest *self, xmlChar *consent) {
+	 LASSO_LIB_AUTHN_REQUEST(self)->consent = strdup(consent);
 }
 
 /* forceAuthn */
-#define LassoAuthnRequest_get_forceAuthn LassoAuthnRequest_forceAuthn_get
-gboolean LassoAuthnRequest_forceAuthn_get(LassoAuthnRequest *self) {
+#define LassoLibAuthnRequest_get_forceAuthn LassoLibAuthnRequest_forceAuthn_get
+gboolean LassoLibAuthnRequest_forceAuthn_get(LassoLibAuthnRequest *self) {
 	return 0; /* FIXME */
 }
-#define LassoAuthnRequest_set_forceAuthn LassoAuthnRequest_forceAuthn_set
-void LassoAuthnRequest_forceAuthn_set(LassoAuthnRequest *self, gboolean forceAuthn) {
-	 lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(self), forceAuthn);
+#define LassoLibAuthnRequest_set_forceAuthn LassoLibAuthnRequest_forceAuthn_set
+void LassoLibAuthnRequest_forceAuthn_set(LassoLibAuthnRequest *self, gboolean forceAuthn) {
+	 LASSO_LIB_AUTHN_REQUEST(self)->ForceAuthn = forceAuthn;
 }
 
 /* isPassive */
-#define LassoAuthnRequest_get_isPassive LassoAuthnRequest_isPassive_get
-gboolean LassoAuthnRequest_isPassive_get(LassoAuthnRequest *self) {
-	return 0; /* FIXME */
+#define LassoLibAuthnRequest_get_isPassive LassoLibAuthnRequest_isPassive_get
+gboolean LassoLibAuthnRequest_isPassive_get(LassoLibAuthnRequest *self) {
+	return self->IsPassive;
 }
-#define LassoAuthnRequest_set_isPassive LassoAuthnRequest_isPassive_set
-void LassoAuthnRequest_isPassive_set(LassoAuthnRequest *self, gboolean isPassive) {
-	 lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(self), isPassive);
+#define LassoLibAuthnRequest_set_isPassive LassoLibAuthnRequest_isPassive_set
+void LassoLibAuthnRequest_isPassive_set(LassoLibAuthnRequest *self, gboolean isPassive) {
+	self->IsPassive = isPassive;
 }
 
 /* nameIdPolicy */
-#define LassoAuthnRequest_get_nameIdPolicy LassoAuthnRequest_nameIdPolicy_get
-xmlChar *LassoAuthnRequest_nameIdPolicy_get(LassoAuthnRequest *self) {
-	return NULL; /* FIXME */
+#define LassoLibAuthnRequest_get_nameIdPolicy LassoLibAuthnRequest_nameIdPolicy_get
+xmlChar *LassoLibAuthnRequest_nameIdPolicy_get(LassoLibAuthnRequest *self) {
+	return g_strdup(self->NameIDPolicy);
 }
-#define LassoAuthnRequest_set_nameIdPolicy LassoAuthnRequest_nameIdPolicy_set
-void LassoAuthnRequest_nameIdPolicy_set(LassoAuthnRequest *self, xmlChar *nameIdPolicy) {
-	 lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(self), nameIdPolicy);
+#define LassoLibAuthnRequest_set_nameIdPolicy LassoLibAuthnRequest_nameIdPolicy_set
+void LassoLibAuthnRequest_nameIdPolicy_set(LassoLibAuthnRequest *self, xmlChar *nameIdPolicy) {
+	self->NameIDPolicy = g_strdup(nameIdPolicy);
 }
 
 /* protocolProfile */
-#define LassoAuthnRequest_get_protocolProfile LassoAuthnRequest_protocolProfile_get
-xmlChar *LassoAuthnRequest_protocolProfile_get(LassoAuthnRequest *self) {
-	return NULL; /* FIXME */
+#define LassoLibAuthnRequest_get_protocolProfile LassoLibAuthnRequest_protocolProfile_get
+xmlChar *LassoLibAuthnRequest_protocolProfile_get(LassoLibAuthnRequest *self) {
+	return g_strdup(self->ProtocolProfile);
 }
-#define LassoAuthnRequest_set_protocolProfile LassoAuthnRequest_protocolProfile_set
-void LassoAuthnRequest_protocolProfile_set(LassoAuthnRequest *self, xmlChar *protocolProfile) {
-	 lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(self),
-						     protocolProfile);
+#define LassoLibAuthnRequest_set_protocolProfile LassoLibAuthnRequest_protocolProfile_set
+void LassoLibAuthnRequest_protocolProfile_set(LassoLibAuthnRequest *self, xmlChar *protocolProfile) {
+	self->ProtocolProfile = g_strdup(protocolProfile);
 }
 
 /* providerId */
-#define LassoAuthnRequest_get_providerId LassoAuthnRequest_providerId_get
-xmlChar *LassoAuthnRequest_providerId_get(LassoAuthnRequest *self) {
-	return NULL; /* FIXME */
+#define LassoLibAuthnRequest_get_providerId LassoLibAuthnRequest_providerId_get
+xmlChar *LassoLibAuthnRequest_providerId_get(LassoLibAuthnRequest *self) {
+	return g_strdup(self->ProviderID);
 }
-#define LassoAuthnRequest_set_providerId LassoAuthnRequest_providerId_set
-void LassoAuthnRequest_providerId_set(LassoAuthnRequest *self, xmlChar *providerId) {
-	 lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(self), providerId);
+#define LassoLibAuthnRequest_set_providerId LassoLibAuthnRequest_providerId_set
+void LassoLibAuthnRequest_providerId_set(LassoLibAuthnRequest *self, xmlChar *providerId) {
+	self->ProviderID = g_strdup(providerId);
 }
 
 /* relayState */
-#define LassoAuthnRequest_get_relayState LassoAuthnRequest_relayState_get
-xmlChar *LassoAuthnRequest_relayState_get(LassoAuthnRequest *self) {
-	return NULL; /* FIXME */
+#define LassoLibAuthnRequest_get_relayState LassoLibAuthnRequest_relayState_get
+xmlChar *LassoLibAuthnRequest_relayState_get(LassoLibAuthnRequest *self) {
+	return g_strdup(self->RelayState);
 }
-#define LassoAuthnRequest_set_relayState LassoAuthnRequest_relayState_set
-void LassoAuthnRequest_relayState_set(LassoAuthnRequest *self, xmlChar *relayState) {
-	 lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(self), relayState);
+#define LassoLibAuthnRequest_set_relayState LassoLibAuthnRequest_relayState_set
+void LassoLibAuthnRequest_relayState_set(LassoLibAuthnRequest *self, xmlChar *relayState) {
+	self->RelayState = g_strdup(relayState);
 }
 
 %}
@@ -848,11 +854,11 @@ void LassoAuthnRequest_relayState_set(LassoAuthnRequest *self, xmlChar *relaySta
 
 
 #ifndef SWIGPHP4
-%rename(AuthnResponse) LassoAuthnResponse;
+%rename(LibAuthnResponse) LassoLibAuthnResponse;
 #endif
-%nodefault LassoAuthnResponse;
+%nodefault LassoLibAuthnResponse;
 typedef struct {
-} LassoAuthnResponse;
+} LassoLibAuthnResponse;
 
 
 /***********************************************************************
@@ -861,12 +867,12 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(FederationTerminationNotification) LassoFederationTerminationNotification;
+%rename(LibFederationTerminationNotification) LassoLibFederationTerminationNotification;
 #endif
-%nodefault LassoFederationTerminationNotification;
+%nodefault LassoLibFederationTerminationNotification;
 typedef struct {
 	/* FIXME: Add a relayState when Lasso supports it. */
-} LassoFederationTerminationNotification;
+} LassoLibFederationTerminationNotification;
 
 
 /***********************************************************************
@@ -875,30 +881,32 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(LogoutRequest) LassoLogoutRequest;
+%rename(LibLogoutRequest) LassoLibLogoutRequest;
 #endif
-%nodefault LassoLogoutRequest;
+%nodefault LassoLibLogoutRequest;
 typedef struct {
 	%extend {
 		/* Attributes inherited from LassoLibLogoutRequest */
 
 		xmlChar *relayState;
 	}
-} LassoLogoutRequest;
+} LassoLibLogoutRequest;
 
 %{
 
 /* Attributes Implementations */
 
 /* relayState */
-#define LassoLogoutRequest_get_relayState LassoLogoutRequest_relayState_get
-xmlChar *LassoLogoutRequest_relayState_get(LassoLogoutRequest *self) {
+#define LassoLibLogoutRequest_get_relayState LassoLibLogoutRequest_relayState_get
+xmlChar *LassoLibLogoutRequest_relayState_get(LassoLibLogoutRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoLogoutRequest_set_relayState LassoLogoutRequest_relayState_set
-void LassoLogoutRequest_relayState_set(LassoLogoutRequest *self, xmlChar *relayState) {
-	 lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(self), relayState);
+#define LassoLibLogoutRequest_set_relayState LassoLibLogoutRequest_relayState_set
+void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, xmlChar *relayState) {
+	 LASSO_LIB_LOGOUT_REQUEST(self)->RelayState = g_strdup(relayState);
 }
+
+
 
 %}
 
@@ -909,11 +917,11 @@ void LassoLogoutRequest_relayState_set(LassoLogoutRequest *self, xmlChar *relayS
 
 
 #ifndef SWIGPHP4
-%rename(LogoutResponse) LassoLogoutResponse;
+%rename(LogoutResponse) LassoLibLogoutResponse;
 #endif
-%nodefault LassoLogoutResponse;
+%nodefault LassoLibLogoutResponse;
 typedef struct {
-} LassoLogoutResponse;
+} LassoLibLogoutResponse;
 
 
 /***********************************************************************
@@ -927,7 +935,7 @@ typedef struct {
 %nodefault LassoProvider;
 typedef struct {
 	%immutable metadata;
-	LassoNode *metadata;
+	/* XXX LassoNode *metadata; */
 
 	%extend {
 		/* Attributes */
@@ -945,7 +953,7 @@ typedef struct {
 /* providerId */
 #define LassoProvider_get_providerId  LassoProvider_providerId_get
 gchar *LassoProvider_providerId_get(LassoProvider *self) {
-	return lasso_provider_get_providerID(self);
+	return g_strdup(self->ProviderID);
 }
 
  %}
@@ -998,31 +1006,31 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(RegisterNameIdentifierRequest) LassoRegisterNameIdentifierRequest;
+%rename(LibRegisterNameIdentifierRequest) LassoLibRegisterNameIdentifierRequest;
 #endif
-%nodefault LassoRegisterNameIdentifierRequest;
+%nodefault LassoLibRegisterNameIdentifierRequest;
 typedef struct {
 	%extend {
 		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
 
 		xmlChar *relayState;
 	}
-} LassoRegisterNameIdentifierRequest;
+} LassoLibRegisterNameIdentifierRequest;
 
 %{
 
 /* Attributes Implementations */
 
 /* relayState */
-#define LassoRegisterNameIdentifierRequest_get_relayState LassoRegisterNameIdentifierRequest_relayState_get
-xmlChar *LassoRegisterNameIdentifierRequest_relayState_get(LassoRegisterNameIdentifierRequest *self) {
+#define LassoLibRegisterNameIdentifierRequest_get_relayState LassoLibRegisterNameIdentifierRequest_relayState_get
+xmlChar *LassoLibRegisterNameIdentifierRequest_relayState_get(LassoLibRegisterNameIdentifierRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoRegisterNameIdentifierRequest_set_relayState LassoRegisterNameIdentifierRequest_relayState_set
-void LassoRegisterNameIdentifierRequest_relayState_set(LassoRegisterNameIdentifierRequest *self,
-						       xmlChar *relayState) {
-	 lasso_lib_register_name_identifier_request_set_relayState(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self),
-								   relayState);
+#define LassoLibRegisterNameIdentifierRequest_set_relayState LassoLibRegisterNameIdentifierRequest_relayState_set
+void LassoLibRegisterNameIdentifierRequest_relayState_set(LassoLibRegisterNameIdentifierRequest *self,
+						       xmlChar *relayState)
+{
+	 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self)->RelayState = g_strdup(relayState);
 }
 
 %}
@@ -1034,11 +1042,11 @@ void LassoRegisterNameIdentifierRequest_relayState_set(LassoRegisterNameIdentifi
 
 
 #ifndef SWIGPHP4
-%rename(RegisterNameIdentifierResponse) LassoRegisterNameIdentifierResponse;
+%rename(RegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
 #endif
-%nodefault LassoRegisterNameIdentifierResponse;
+%nodefault LassoLibRegisterNameIdentifierResponse;
 typedef struct {
-} LassoRegisterNameIdentifierResponse;
+} LassoLibRegisterNameIdentifierResponse;
 
 
 /***********************************************************************
@@ -1047,11 +1055,11 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(Request) LassoRequest;
+%rename(SamlpRequest) LassoSamlpRequest;
 #endif
-%nodefault LassoRequest;
+%nodefault LassoSamlpRequest;
 typedef struct {
-} LassoRequest;
+} LassoSamlpRequest;
 
 
 /***********************************************************************
@@ -1060,11 +1068,11 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(Response) LassoResponse;
+%rename(SamlpResponse) LassoSamlpResponse;
 #endif
-%nodefault LassoResponse;
+%nodefault LassoSamlpResponse;
 typedef struct {
-} LassoResponse;
+} LassoSamlpResponse;
 
 
 /***********************************************************************
@@ -1110,7 +1118,7 @@ typedef struct {
 		/* Methods */
 
 	        THROW_ERROR
-		void addProvider(gchar *metadata, gchar *publicKey = NULL,
+		void addProvider(LassoProviderRole role, gchar *metadata, gchar *publicKey = NULL,
 				 gchar *caCertChain = NULL);
 		END_THROW_ERROR
 
@@ -1126,7 +1134,8 @@ typedef struct {
 /* metadata */
 #define LassoServer_get_metadata LassoServer_metadata_get
 LassoNode *LassoServer_metadata_get(LassoServer *self) {
-	return LASSO_PROVIDER(self)->metadata;
+	return NULL;
+	/* XXX return LASSO_PROVIDER(self)->metadata; */
 }
 
 /* Attributes implementations */
@@ -1134,13 +1143,13 @@ LassoNode *LassoServer_metadata_get(LassoServer *self) {
 /* providerId */
 #define LassoServer_get_providerId LassoServer_providerId_get
 gchar *LassoServer_providerId_get(LassoServer *self) {
-	return self->providerID;
+	return LASSO_PROVIDER(self)->ProviderID;
 }
 
 /* providers */
 #define LassoServer_get_providers LassoServer_providers_get
 LassoProviders *LassoServer_providers_get(LassoServer *self) {
-	return self->providers;
+	return NULL; /* XXX */
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1208,7 +1217,8 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 /* providerIDs */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
 LassoProviderIds *LassoIdentity_providerIds_get(LassoIdentity *self) {
-	return self->providerIDs;
+	return NULL;
+	/* return self->providerIDs; */
 }
 
 
@@ -1279,7 +1289,8 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 /* providerIDs */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
 LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
-	return self->providerIDs;
+	return NULL; /* XXX */
+	/* return self->providerIDs; */
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1359,14 +1370,14 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoFederationTerminationNotification *request;
+		LassoLibFederationTerminationNotification *request;
 
 		%newobject session_get;
 		LassoSession *session;
 
 		/* Constructor, Destructor & Static Methods */
 
-		LassoDefederation(LassoServer *server, lassoProviderType providerType);
+		LassoDefederation(LassoServer *server);
 
 		~LassoDefederation();
 
@@ -1388,11 +1399,11 @@ typedef struct {
 
 		THROW_ERROR
 		void initNotification(gchar *remoteProviderId = NULL,
-				      lassoHttpMethod httpMethod = lassoHttpMethodAny);
+				      lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processNotificationMsg(gchar *notificationMsg, lassoHttpMethod httpMethod);
+		void processNotificationMsg(gchar *notificationMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1412,7 +1423,8 @@ LassoIdentity *LassoDefederation_identity_get(LassoDefederation *self) {
 }
 #define LassoDefederation_set_identity LassoDefederation_identity_set
 gint LassoDefederation_identity_set(LassoDefederation *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -1454,17 +1466,17 @@ gchar *LassoDefederation_nameIdentifier_get(LassoDefederation *self) {
 /* remoteProviderId */
 #define LassoDefederation_get_remoteProviderId LassoDefederation_remoteProviderId_get
 gchar *LassoDefederation_remoteProviderId_get(LassoDefederation *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoDefederation_set_remoteProviderId LassoDefederation_remoteProviderId_set
 void LassoDefederation_remoteProviderId_set(LassoDefederation *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* request */
 #define LassoDefederation_get_request LassoDefederation_request_get
-LassoFederationTerminationNotification *LassoDefederation_request_get(LassoDefederation *self) {
-	return LASSO_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request);
+LassoLibFederationTerminationNotification *LassoDefederation_request_get(LassoDefederation *self) {
+	return LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request);
 }
 
 /* responseStatus */
@@ -1484,7 +1496,8 @@ LassoSession *LassoDefederation_session_get(LassoDefederation *self) {
 }
 #define LassoDefederation_set_session LassoDefederation_session_set
 gint LassoDefederation_session_set(LassoDefederation *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1531,10 +1544,10 @@ typedef struct {
 		/* Attributes inherited from LassoProfile */
 
 		%immutable authnRequest;
-		LassoAuthnRequest *authnRequest;
+		LassoLibAuthnRequest *authnRequest;
 
 		%immutable authnResponse;
-		LassoAuthnResponse *authnResponse;
+		LassoLibAuthnResponse *authnResponse;
 
 		%newobject identity_get;
 		LassoIdentity *identity;
@@ -1561,10 +1574,10 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoRequest *request;
+		LassoSamlpRequest *request;
 
 		%immutable response;
-		LassoResponse *response;
+		LassoSamlpResponse *response;
 
 		gchar *responseStatus;
 
@@ -1598,8 +1611,9 @@ typedef struct {
 
 		THROW_ERROR
 		void buildArtifactMsg(gboolean authenticationResult, gboolean isConsentObtained,
-				      gchar *authenticationMethod, gchar *reauthenticateOnOrAfter,
-				      lassoHttpMethod httpMethod);
+				char *authenticationMethod, char *authenticationInstant,
+				char *reauthenticateOnOrAfter, char *notBefore,
+				char *notOnOrAfter, lassoHttpMethod httpMethod);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1608,8 +1622,9 @@ typedef struct {
 
 		THROW_ERROR
 		void buildAuthnResponseMsg(gint authenticationResult, gboolean isConsentObtained,
-					   gchar *authenticationMethod,
-					   gchar *reauthenticateOnOrAfter);
+				char *authenticationMethod, char *authenticationInstant,
+				char *reauthenticateOnOrAfter, char *notBefore,
+				char *notOnOrAfter);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1629,11 +1644,11 @@ typedef struct {
 
 		THROW_ERROR
 		void initRequest(gchar *responseMsg,
-				 lassoHttpMethod httpMethod = lassoHttpMethodRedirect);
+				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void initSelfAddressedAuthnRequest(gchar *remoteProviderID = NULL);
+		void initIdpInitiatedAuthnRequest(gchar *remoteProviderID = NULL);
 		END_THROW_ERROR
 
 		gboolean mustAskForConsent();
@@ -1641,7 +1656,7 @@ typedef struct {
 		gboolean mustAuthenticate();
 
 		THROW_ERROR
-		void processAuthnRequestMsg(gchar *authnrequestMsg, lassoHttpMethod httpMethod);
+		void processAuthnRequestMsg(gchar *authnrequestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1664,22 +1679,20 @@ typedef struct {
 
 /* authnRequest */
 #define LassoLogin_get_authnRequest LassoLogin_authnRequest_get
-LassoAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
+LassoLibAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->request_type == lassoMessageTypeAuthnRequest)
-		return LASSO_AUTHN_REQUEST(profile->request);
-	else
-		return NULL;
+	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
+		return LASSO_LIB_AUTHN_REQUEST(profile->request);
+	return NULL;
 }
 
 /* authnResponse */
 #define LassoLogin_get_authnResponse LassoLogin_authnResponse_get
-LassoAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
+LassoLibAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->response_type == lassoMessageTypeAuthnResponse)
-		return LASSO_AUTHN_RESPONSE(profile->response);
-	else
-		return NULL;
+	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
+		return LASSO_LIB_AUTHN_RESPONSE(profile->response);
+	return NULL;
 }
 
 /* identity */
@@ -1689,7 +1702,8 @@ LassoIdentity *LassoLogin_identity_get(LassoLogin *self) {
 }
 #define LassoLogin_set_identity LassoLogin_identity_set
 gint LassoLogin_identity_set(LassoLogin *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -1731,31 +1745,29 @@ gchar *LassoLogin_nameIdentifier_get(LassoLogin *self) {
 /* remoteProviderId */
 #define LassoLogin_get_remoteProviderId LassoLogin_remoteProviderId_get
 gchar *LassoLogin_remoteProviderId_get(LassoLogin *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoLogin_set_remoteProviderId LassoLogin_remoteProviderId_set
 void LassoLogin_remoteProviderId_set(LassoLogin *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* request */
 #define LassoLogin_get_request LassoLogin_request_get
-LassoRequest *LassoLogin_request_get(LassoLogin *self) {
+LassoSamlpRequest *LassoLogin_request_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->request_type == lassoMessageTypeRequest)
-		return LASSO_REQUEST(profile->request);
-	else
-		return NULL;
+	if (LASSO_IS_SAMLP_REQUEST(profile->request))
+		return LASSO_SAMLP_REQUEST(profile->request);
+	return NULL;
 }
 
 /* response */
 #define LassoLogin_get_response LassoLogin_response_get
-LassoResponse *LassoLogin_response_get(LassoLogin *self) {
+LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->response_type == lassoMessageTypeResponse)
-		return LASSO_RESPONSE(profile->response);
-	else
-		return NULL;
+	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
+		return LASSO_SAMLP_RESPONSE(profile->response);
+	return NULL;
 }
 
 /* responseStatus */
@@ -1775,7 +1787,8 @@ LassoSession *LassoLogin_session_get(LassoLogin *self) {
 }
 #define LassoLogin_set_session LassoLogin_session_set
 gint LassoLogin_session_set(LassoLogin *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1809,7 +1822,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_dump lasso_login_dump
 #define LassoLogin_initAuthnRequest lasso_login_init_authn_request
 #define LassoLogin_initRequest lasso_login_init_request
-#define LassoLogin_initSelfAddressedAuthnRequest lasso_login_init_self_addressed_authn_request
+#define LassoLogin_initIdpInitiatedAuthnRequest lasso_login_init_idp_initiated_authn_request
 #define LassoLogin_mustAskForConsent lasso_login_must_ask_for_consent
 #define LassoLogin_mustAuthenticate lasso_login_must_authenticate
 #define LassoLogin_processAuthnRequestMsg lasso_login_process_authn_request_msg
@@ -1857,10 +1870,10 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoLogoutRequest *request;
+		LassoLibLogoutRequest *request;
 
 		%immutable response;
-		LassoLogoutResponse *response;
+		LassoLibLogoutResponse *response;
 
 		gchar *responseStatus;
 
@@ -1869,7 +1882,7 @@ typedef struct {
 
 		/* Constructor, Destructor & Static Methods */
 
-		LassoLogout(LassoServer *server, lassoProviderType providerType);
+		LassoLogout(LassoServer *server);
 
 		~LassoLogout();
 
@@ -1904,15 +1917,15 @@ typedef struct {
 
 		THROW_ERROR
 		void initRequest(gchar *remoteProviderId = NULL,
-				 lassoHttpMethod httpMethod = lassoHttpMethodAny);
+				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processRequestMsg(gchar *requestMsg, lassoHttpMethod httpMethod);
+		void processRequestMsg(gchar *requestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processResponseMsg(gchar *responseMsg, lassoHttpMethod httpMethod);
+		void processResponseMsg(gchar *responseMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1936,7 +1949,8 @@ LassoIdentity *LassoLogout_identity_get(LassoLogout *self) {
 }
 #define LassoLogout_set_identity LassoLogout_identity_set
 gint LassoLogout_identity_set(LassoLogout *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -1978,23 +1992,23 @@ gchar *LassoLogout_nameIdentifier_get(LassoLogout *self) {
 /* remoteProviderId */
 #define LassoLogout_get_remoteProviderId LassoLogout_remoteProviderId_get
 gchar *LassoLogout_remoteProviderId_get(LassoLogout *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoLogout_set_remoteProviderId LassoLogout_remoteProviderId_set
 void LassoLogout_remoteProviderId_set(LassoLogout *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* request */
 #define LassoLogout_get_request LassoLogout_request_get
-LassoLogoutRequest *LassoLogout_request_get(LassoLogout *self) {
-	return LASSO_LOGOUT_REQUEST(LASSO_PROFILE(self)->request);
+LassoLibLogoutRequest *LassoLogout_request_get(LassoLogout *self) {
+	return LASSO_LIB_LOGOUT_REQUEST(LASSO_PROFILE(self)->request);
 }
 
 /* response */
 #define LassoLogout_get_response LassoLogout_response_get
-LassoLogoutResponse *LassoLogout_response_get(LassoLogout *self) {
-	return LASSO_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response);
+LassoLibLogoutResponse *LassoLogout_response_get(LassoLogout *self) {
+	return LASSO_LIB_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response);
 }
 
 /* responseStatus */
@@ -2014,7 +2028,8 @@ LassoSession *LassoLogout_session_get(LassoLogout *self) {
 }
 #define LassoLogout_set_session LassoLogout_session_set
 gint LassoLogout_session_set(LassoLogout *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -2065,10 +2080,10 @@ typedef struct {
 		/* Attributes inherited from LassoProfile */
 
 		%immutable authnRequest;
-		LassoAuthnRequest *authnRequest;
+		LassoLibAuthnRequest *authnRequest;
 
 		%immutable authnResponse;
-		LassoAuthnResponse *authnResponse;
+		LassoLibAuthnResponse *authnResponse;
 
 		%newobject identity_get;
 		LassoIdentity *identity;
@@ -2095,10 +2110,10 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoRequest *request;
+		LassoSamlpRequest *request;
 
 		%immutable response;
-		LassoResponse *response;
+		LassoSamlpResponse *response;
 
 		gchar *responseStatus;
 
@@ -2133,9 +2148,9 @@ typedef struct {
 
 		THROW_ERROR
 		void buildAuthnResponseEnvelopeMsg(gboolean authenticationResult,
-						   gboolean isConsentObtained,
-						   gchar *authenticationMethod,
-						   gchar *reauthenticateOnOrAfter);
+				gboolean isConsentObtained, char *authenticationMethod,
+				char *authenticationInstant, char *reauthenticateOnOrAfter,
+				char *notBefore, char *notOnOrAfter);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2151,7 +2166,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processAuthnRequestMsg(gchar *authnRequestMsg, lassoHttpMethod httpMethod);
+		void processAuthnRequestMsg(gchar *authnRequestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2166,22 +2181,20 @@ typedef struct {
 
 /* authnRequest */
 #define LassoLecp_get_authnRequest LassoLecp_authnRequest_get
-LassoAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
+LassoLibAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->request_type == lassoMessageTypeAuthnRequest)
-		return LASSO_AUTHN_REQUEST(profile->request);
-	else
-		return NULL;
+	if (LASSO_IS_LIB_AUTHN_REQUEST(profile->request))
+		return LASSO_LIB_AUTHN_REQUEST(profile->request);
+	return NULL;
 }
 
 /* authnResponse */
 #define LassoLecp_get_authnResponse LassoLecp_authnResponse_get
-LassoAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
+LassoLibAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->response_type == lassoMessageTypeAuthnResponse)
-		return LASSO_AUTHN_RESPONSE(profile->response);
-	else
-		return NULL;
+	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response))
+		return LASSO_LIB_AUTHN_RESPONSE(profile->response);
+	return NULL;
 }
 
 /* identity */
@@ -2191,7 +2204,8 @@ LassoIdentity *LassoLecp_identity_get(LassoLecp *self) {
 }
 #define LassoLecp_set_identity LassoLecp_identity_set
 gint LassoLecp_identity_set(LassoLecp *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -2233,31 +2247,29 @@ gchar *LassoLecp_nameIdentifier_get(LassoLecp *self) {
 /* remoteProviderId */
 #define LassoLecp_get_remoteProviderId LassoLecp_remoteProviderId_get
 gchar *LassoLecp_remoteProviderId_get(LassoLecp *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoLecp_set_remoteProviderId LassoLecp_remoteProviderId_set
 void LassoLecp_remoteProviderId_set(LassoLecp *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* request */
 #define LassoLecp_get_request LassoLecp_request_get
-LassoRequest *LassoLecp_request_get(LassoLecp *self) {
+LassoSamlpRequest *LassoLecp_request_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->request_type == lassoMessageTypeRequest)
-		return LASSO_REQUEST(profile->request);
-	else
-		return NULL;
+	if (LASSO_IS_SAMLP_REQUEST(profile->request))
+		return LASSO_SAMLP_REQUEST(profile->request);
+	return NULL;
 }
 
 /* response */
 #define LassoLecp_get_response LassoLecp_response_get
-LassoResponse *LassoLecp_response_get(LassoLecp *self) {
+LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
-	if (profile->response_type == lassoMessageTypeResponse)
-		return LASSO_RESPONSE(profile->response);
-	else
-		return NULL;
+	if (LASSO_IS_SAMLP_RESPONSE(profile->response))
+		return LASSO_SAMLP_RESPONSE(profile->response);
+	return NULL;
 }
 
 /* responseStatus */
@@ -2277,7 +2289,8 @@ LassoSession *LassoLecp_session_get(LassoLecp *self) {
 }
 #define LassoLecp_set_session LassoLecp_session_set
 gint LassoLecp_session_set(LassoLecp *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -2349,7 +2362,7 @@ typedef struct {
 
 		/* Constructor, Destructor & Static Methods */
 
-		LassoNameIdentifierMapping(LassoServer *server, lassoProviderType provider_type);
+		LassoNameIdentifierMapping(LassoServer *server);
 
 		~LassoNameIdentifierMapping();
 
@@ -2381,11 +2394,11 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processRequestMsg(gchar *requestMsg, lassoHttpMethod httpMethod);
+		void processRequestMsg(gchar *requestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processResponseMsg(gchar *responseMsg, lassoHttpMethod httpMethod);
+		void processResponseMsg(gchar *responseMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2405,7 +2418,8 @@ LassoIdentity *LassoNameIdentifierMapping_identity_get(LassoNameIdentifierMappin
 }
 #define LassoNameIdentifierMapping_set_identity LassoNameIdentifierMapping_identity_set
 gint LassoNameIdentifierMapping_identity_set(LassoNameIdentifierMapping *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -2447,11 +2461,11 @@ gchar *LassoNameIdentifierMapping_targetNameIdentifier_get(LassoNameIdentifierMa
 /* remoteProviderId */
 #define LassoNameIdentifierMapping_get_remoteProviderId LassoNameIdentifierMapping_remoteProviderId_get
 gchar *LassoNameIdentifierMapping_remoteProviderId_get(LassoNameIdentifierMapping *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoNameIdentifierMapping_set_remoteProviderId LassoNameIdentifierMapping_remoteProviderId_set
 void LassoNameIdentifierMapping_remoteProviderId_set(LassoNameIdentifierMapping *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* session */
@@ -2461,7 +2475,8 @@ LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping 
 }
 #define LassoNameIdentifierMapping_set_session LassoNameIdentifierMapping_session_set
 gint LassoNameIdentifierMapping_session_set(LassoNameIdentifierMapping *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -2532,17 +2547,17 @@ typedef struct {
 		gchar *remoteProviderId;
 
 		%immutable request;
-		LassoRequest *request;
+		LassoLibRegisterNameIdentifierRequest *request;
 
 		%immutable response;
-		LassoResponse *response;
+		LassoLibRegisterNameIdentifierResponse *response;
 
 		%newobject session_get;
 		LassoSession *session;
 
 		/* Constructor, Destructor & Static Methods */
 
-		LassoNameRegistration(LassoServer *server, lassoProviderType providerType);
+		LassoNameRegistration(LassoServer *server);
 
 		~LassoNameRegistration();
 
@@ -2573,15 +2588,16 @@ typedef struct {
 		gchar *dump();
 
 		THROW_ERROR
-		void initRequest(gchar *remoteProviderId = NULL);
+		void initRequest(char *remoteProviderId,
+				lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processRequestMsg(gchar *requestMsg, lassoHttpMethod httpMethod);
+		void processRequestMsg(gchar *requestMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processResponseMsg(gchar *responseMsg, lassoHttpMethod httpMethod);
+		void processResponseMsg(gchar *responseMsg);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2601,7 +2617,8 @@ LassoIdentity *LassoNameRegistration_identity_get(LassoNameRegistration *self) {
 }
 #define LassoNameRegistration_set_identity LassoNameRegistration_identity_set
 gint LassoNameRegistration_identity_set(LassoNameRegistration *self, LassoIdentity *identity) {
-	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
+	LASSO_PROFILE(self)->identity = identity;
+	return 0;
 }
 
 /* isIdentityDirty */
@@ -2649,23 +2666,23 @@ gchar *LassoNameRegistration_oldNameIdentifier_get(LassoNameRegistration *self) 
 /* remoteProviderId */
 #define LassoNameRegistration_get_remoteProviderId LassoNameRegistration_remoteProviderId_get
 gchar *LassoNameRegistration_remoteProviderId_get(LassoNameRegistration *self) {
-	return lasso_profile_get_remote_providerID(LASSO_PROFILE(self));
+	return g_strdup(LASSO_PROFILE(self)->remote_providerID);
 }
 #define LassoNameRegistration_set_remoteProviderId LassoNameRegistration_remoteProviderId_set
 void LassoNameRegistration_remoteProviderId_set(LassoNameRegistration *self, gchar *remoteProviderId) {
-	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+	LASSO_PROFILE(self)->remote_providerID = g_strdup(remoteProviderId);
 }
 
 /* request */
 #define LassoNameRegistration_get_request LassoNameRegistration_request_get
-LassoRegisterNameIdentifierRequest *LassoNameRegistration_request_get(LassoNameRegistration *self) {
-	return LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->request);
+LassoLibRegisterNameIdentifierRequest *LassoNameRegistration_request_get(LassoNameRegistration *self) {
+	return LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->request);
 }
 
 /* response */
 #define LassoNameRegistration_get_response LassoNameRegistration_response_get
-LassoRegisterNameIdentifierResponse *LassoNameRegistration_response_get(LassoNameRegistration *self) {
-	return LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->response);
+LassoLibRegisterNameIdentifierResponse *LassoNameRegistration_response_get(LassoNameRegistration *self) {
+	return LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(LASSO_PROFILE(self)->response);
 }
 
 /* session */
@@ -2675,7 +2692,8 @@ LassoSession *LassoNameRegistration_session_get(LassoNameRegistration *self) {
 }
 #define LassoNameRegistration_set_session LassoNameRegistration_session_set
 gint LassoNameRegistration_session_set(LassoNameRegistration *self, LassoSession *session) {
-	return lasso_profile_set_session(LASSO_PROFILE(self), session);
+	LASSO_PROFILE(self)->session = session;
+	return 0;
 }
 
 /* Constructors, destructors & static methods implementations */

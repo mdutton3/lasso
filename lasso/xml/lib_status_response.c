@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/lib_status_response.h>
+#include <libxml/uri.h>
 
 /*
 Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
@@ -54,88 +55,162 @@ From liberty-metadata-v1.0.xsd:
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_status_response_set_providerID(LassoLibStatusResponse *node,
-					 const xmlChar *providerID)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_STATUS_RESPONSE(node));
-  g_assert(providerID != NULL);
-  /* FIXME : providerID length SHOULD be <= 1024 */
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "StatusResponse");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (response->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", response->ProviderID);
+
+	if (response->Status)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(response->Status)));
+
+	if (response->RelayState)
+		xmlNewTextChild(xmlnode, NULL, "RelayState", response->RelayState);
+
+	return xmlnode;
 }
 
-void
-lasso_lib_status_response_set_relayState(LassoLibStatusResponse *node,
-					 const xmlChar *relayState)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_STATUS_RESPONSE(node));
-  g_assert(relayState != NULL);
+	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderID") == 0)
+			response->ProviderID = xmlNodeGetContent(t);
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "Status") == 0)
+			response->Status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(t));
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "RelayState") == 0)
+			response->RelayState = xmlNodeGetContent(t);
+		t = t->next;
+	}
 }
 
-void
-lasso_lib_status_response_set_status(LassoLibStatusResponse *node,
-				     LassoSamlpStatus *status)
+static gchar*
+build_query(LassoNode *node)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_STATUS_RESPONSE(node));
-  g_assert(LASSO_IS_SAMLP_STATUS(status));
-  
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (status), FALSE);
+	char *str, *t;
+	GString *s;
+	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
+
+	str = parent_class->build_query(node);
+	s = g_string_new(str);
+	g_free(str);
+
+	/* XXX Extension */
+	if (response->ProviderID) {
+		t = xmlURIEscapeStr(response->ProviderID, NULL);
+		g_string_append_printf(s, "&ProviderID=%s", t);
+		xmlFree(t);
+	}
+	if (response->RelayState) {
+		t = xmlURIEscapeStr(response->RelayState, NULL);
+		g_string_append_printf(s, "&RelayState=%s", t);
+		xmlFree(t);
+	}
+	if (response->Status) {
+		t = xmlURIEscapeStr(response->Status->StatusCode->Value, NULL);
+		g_string_append_printf(s, "&Value=%s", t);
+		xmlFree(t);
+	}
+
+	str = s->str;
+	g_string_free(s, FALSE);
+
+	return str;
 }
+
+static void
+init_from_query(LassoNode *node, char **query_fields)
+{
+	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
+	int i;
+	char *t;
+
+	for (i=0; (t=query_fields[i]); i++) {
+		if (g_str_has_prefix(t, "ProviderID=")) {
+			response->ProviderID = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "RelayState=")) {
+			response->RelayState = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "Value=")) {
+			response->Status = lasso_samlp_status_new();
+			response->Status->StatusCode = lasso_samlp_status_code_new();
+			response->Status->StatusCode->Value = g_strdup(t+6);
+			continue;
+		}
+	}
+	parent_class->init_from_query(node, query_fields);
+}
+
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_status_response_instance_init(LassoLibStatusResponse *node)
+instance_init(LassoLibStatusResponse *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "StatusResponse");
+	node->ProviderID = NULL;
+	node->Status = NULL;
+	node->RelayState = NULL;
 }
 
 static void
-lasso_lib_status_response_class_init(LassoLibStatusResponseClass *klass)
+class_init(LassoLibStatusResponseClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LASSO_NODE_CLASS(klass)->build_query = build_query;
+	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 }
 
-GType lasso_lib_status_response_get_type() {
-  static GType status_response_type = 0;
+GType
+lasso_lib_status_response_get_type()
+{
+	static GType status_response_type = 0;
 
-  if (!status_response_type) {
-    static const GTypeInfo status_response_info = {
-      sizeof (LassoLibStatusResponseClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_status_response_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibStatusResponse),
-      0,
-      (GInstanceInitFunc) lasso_lib_status_response_instance_init,
-    };
-    
-    status_response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT,
-						 "LassoLibStatusResponse",
-						 &status_response_info, 0);
-  }
-  return status_response_type;
+	if (!status_response_type) {
+		static const GTypeInfo status_response_info = {
+			sizeof (LassoLibStatusResponseClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibStatusResponse),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		status_response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT,
+				"LassoLibStatusResponse", &status_response_info, 0);
+	}
+	return status_response_type;
 }
 
 LassoNode* lasso_lib_status_response_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_STATUS_RESPONSE, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_STATUS_RESPONSE, NULL));
 }
+

@@ -45,89 +45,110 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_request_authn_context_add_authnContextClassRef(LassoLibRequestAuthnContext *node,
-							 const xmlChar *authnContextClassRef)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_REQUEST_AUTHN_CONTEXT(node));
-  g_assert(authnContextClassRef != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AuthnContextClassRef",
-		   authnContextClassRef, TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "RequestAuthnContext");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (context->AuthnContextClassRef)
+		xmlNewTextChild(xmlnode, NULL,
+				"AuthnContextClassRef", context->AuthnContextClassRef);
+	if (context->AuthnContextStatementRef)
+		xmlNewTextChild(xmlnode, NULL,
+				"AuthnContextStatementRef", context->AuthnContextStatementRef);
+	if (context->AuthnContextComparisonType)
+		xmlNewTextChild(xmlnode, NULL,
+				"AuthnContextComparisonType", context->AuthnContextComparisonType);
+
+	return xmlnode;
 }
 
-void
-lasso_lib_request_authn_context_add_authnContextStatementRef(LassoLibRequestAuthnContext *node,
-							     const xmlChar *authnContextStatementRef)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_REQUEST_AUTHN_CONTEXT(node));
-  g_assert(authnContextStatementRef != NULL);
+	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node);
+	xmlNode *t, *n;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AuthnContextStatementRef",
-		   authnContextStatementRef, TRUE);
+        parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		n = t;
+		t = t->next;
+		if (n->type != XML_ELEMENT_NODE)
+			continue;
+		if (strcmp(n->name, "AuthnContextClassRef") == 0) {
+			context->AuthnContextClassRef = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "AuthnContextStatementRef") == 0) {
+			context->AuthnContextStatementRef = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "AuthnContextComparisonType") == 0) {
+			context->AuthnContextComparisonType = xmlNodeGetContent(n);
+			continue;
+		}
+	}
 }
 
-void
-lasso_lib_request_authn_context_set_authnContextComparison(LassoLibRequestAuthnContext *node,
-							   const xmlChar *authnContextComparison)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_REQUEST_AUTHN_CONTEXT(node));
-  g_assert(authnContextComparison != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AuthnContextComparison",
-		   authnContextComparison, FALSE);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_request_authn_context_instance_init(LassoLibRequestAuthnContext *node)
+instance_init(LassoLibRequestAuthnContext *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "RequestAuthnContext");
+	node->AuthnContextClassRef = NULL;
+	node->AuthnContextStatementRef = NULL;
+	node->AuthnContextComparisonType = NULL;
 }
 
 static void
-lasso_lib_request_authn_context_class_init(LassoLibRequestAuthnContextClass *klass)
+class_init(LassoLibRequestAuthnContextClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_request_authn_context_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_request_authn_context_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibRequestAuthnContextClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_request_authn_context_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibRequestAuthnContext),
-      0,
-      (GInstanceInitFunc) lasso_lib_request_authn_context_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoLibRequestAuthnContext",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibRequestAuthnContextClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibRequestAuthnContext),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoLibRequestAuthnContext", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_lib_request_authn_context_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT, NULL));
+LassoNode*
+lasso_lib_request_authn_context_new()
+{
+	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_REQUEST_AUTHN_CONTEXT, NULL));
 }

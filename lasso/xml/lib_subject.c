@@ -42,117 +42,98 @@ The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
-						LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_SUBJECT(node));
-  g_assert(LASSO_IS_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(idpProvidedNameIdentifier), FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode, *t;
+	LassoLibSubject *subject = LASSO_LIB_SUBJECT(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (subject->IDPProvidedNameIdentifier) {
+		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(subject->IDPProvidedNameIdentifier)));
+		xmlNodeSetName(xmlnode, "IDPProvidedNameIdentifier");
+		xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+	}
+
+	return xmlnode;
+}
+
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoLibSubject *subject = LASSO_LIB_SUBJECT(node);
+	xmlNode *t;
+
+        parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "IDPProvidedNameIdentifier") != 0) {
+			t = t->next;
+			continue;
+		}
+		subject->IDPProvidedNameIdentifier = lasso_saml_name_identifier_new_from_xmlNode(t);
+		break;
+	}
 }
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
-enum {
-  LASSO_LIB_SUBJECT_USE_XSITYPE = 1
-};
-
 static void
-lasso_lib_subject_set_property (GObject      *object,
-				guint         property_id,
-				const GValue *value,
-				GParamSpec   *pspec)
+instance_init(LassoLibSubject *node)
 {
-  LassoLibSubject *self = LASSO_LIB_SUBJECT(object);
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(object));
-
-  switch (property_id) {
-  case LASSO_LIB_SUBJECT_USE_XSITYPE:
-    self->use_xsitype = g_value_get_boolean (value);
-    if (self->use_xsitype == TRUE) {
-      /* namespace and name were already set in parent class
-	 LassoSamlAssertion */
-      class->new_ns_prop(LASSO_NODE(object),
-			 "type", "lib:SubjectType",
-			 lassoXsiHRef, lassoXsiPrefix);
-    }
-    else {
-      /* node name was already set in parent class LassoSamlAssertion
-	 just change ns */
-      class->set_ns(LASSO_NODE(object), lassoLibHRef, lassoLibPrefix);
-    }
-    break;
-  default:
-    /* We don't have any other property... */
-    g_assert (FALSE);
-    break;
-  }
+	node->IDPProvidedNameIdentifier = NULL;
 }
 
 static void
-lasso_lib_subject_instance_init(LassoLibSubject *node)
+class_init(LassoLibSubjectClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-static void
-lasso_lib_subject_class_init(LassoLibSubjectClass *g_class,
-			     gpointer              g_class_data)
+GType
+lasso_lib_subject_get_type()
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
-  GParamSpec *pspec;
+	static GType this_type = 0;
 
-  /* override parent class methods */
-  gobject_class->set_property = lasso_lib_subject_set_property;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibSubjectClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibSubject),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
 
-  pspec = g_param_spec_boolean ("use_xsitype",
-				"use_xsitype",
-				"using xsi:type",
-				FALSE,
-				G_PARAM_CONSTRUCT_ONLY | G_PARAM_WRITABLE);
-  g_object_class_install_property (gobject_class,
-                                   LASSO_LIB_SUBJECT_USE_XSITYPE,
-                                   pspec);
+		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT,
+				"LassoLibSubject", &this_info, 0);
+	}
+	return this_type;
 }
 
-GType lasso_lib_subject_get_type() {
-  static GType this_type = 0;
-
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibSubjectClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_subject_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibSubject),
-      0,
-      (GInstanceInitFunc) lasso_lib_subject_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT,
-				       "LassoLibSubject",
-				       &this_info, 0);
-  }
-  return this_type;
-}
-
-LassoNode*
-lasso_lib_subject_new(gboolean use_xsitype)
+LassoLibSubject*
+lasso_lib_subject_new()
 {
-  LassoNode *node;
-
-  node = LASSO_NODE(g_object_new(LASSO_TYPE_LIB_SUBJECT,
-				 "use_xsitype", use_xsitype,
-				 NULL));
-
-  return node;
+	return g_object_new(LASSO_TYPE_LIB_SUBJECT, NULL);
 }
+

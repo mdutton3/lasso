@@ -44,19 +44,18 @@ typedef struct _LassoLibIDPEntries LassoLibIDPEntries;
 typedef struct _LassoLibIDPEntriesClass LassoLibIDPEntriesClass;
 
 struct _LassoLibIDPEntries{
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	
+	/* <xs:element ref="IDPEntry" maxOccurs="unbounded"/> */
+	LassoLibIDPEntry *IDPEntry; /* XXX: should actually be a GList */
 };
 
 struct _LassoLibIDPEntriesClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_idp_entries_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_idp_entries_new(void);
-
-LASSO_EXPORT void lasso_lib_idp_entries_add_idpEntry (LassoLibIDPEntries *node,
-						      LassoLibIDPEntry *idpEntry);
 
 #ifdef __cplusplus
 }

@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/samlp_response.h>
+#include <libxml/tree.h>
 
 /*
 Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
@@ -43,74 +44,127 @@ Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_samlp_response_add_assertion(LassoSamlpResponse *node,
-				   gpointer assertion)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_RESPONSE(node));
-  /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(assertion), TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{ 
+	xmlNode *xmlnode, *t;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "Response");
+
+	if (LASSO_SAMLP_RESPONSE(node)->Status) /* XXX: is mandatory */
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+				LASSO_NODE(LASSO_SAMLP_RESPONSE(node)->Status)));
+
+	if (LASSO_SAMLP_RESPONSE(node)->Assertion) {
+		t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(LASSO_SAMLP_RESPONSE(node)->Assertion)));
+		if (strcmp(t->ns->href, LASSO_LIB_HREF) == 0) {
+			/* liberty nodes are not allowed in samlp nodes */
+			xmlSetNs(t, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF,
+						LASSO_SAML_ASSERTION_PREFIX));
+			xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
+					"type", "lib:AssertionType");
+		}
+	}
+
+	return xmlnode;
 }
 
-void
-lasso_samlp_response_set_status(LassoSamlpResponse *node,
-				LassoSamlpStatus *status)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_RESPONSE(node));
-  g_assert(LASSO_IS_SAMLP_STATUS(status));
+	xmlNode *t;
+	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(status), FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			if (strcmp(t->name, "Assertion") == 0) {
+				response->Assertion = LASSO_SAML_ASSERTION(
+						lasso_node_new_from_xmlNode(t));
+			}
+			if (strcmp(t->name, "Status") == 0) {
+				response->Status = LASSO_SAMLP_STATUS(
+						lasso_node_new_from_xmlNode(t));
+			}
+		}
+		t = t->next;
+	}
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_samlp_response_instance_init(LassoSamlpResponse *node)
+instance_init(LassoSamlpResponse *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  /* namespace herited from samlp:ResponseAbstract */
-  class->set_name(LASSO_NODE(node), "Response");
+	node->Assertion = NULL;
+	node->Status = NULL;
 }
 
 static void
-lasso_samlp_response_class_init(LassoSamlpResponseClass *klass) {
-}
-
-GType lasso_samlp_response_get_type() {
-  static GType response_type = 0;
-
-  if (!response_type) {
-    static const GTypeInfo response_info = {
-      sizeof (LassoSamlpResponseClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_samlp_response_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlpResponse),
-      0,
-      (GInstanceInitFunc) lasso_samlp_response_instance_init,
-    };
-    
-    response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT ,
-					   "LassoSamlpResponse",
-					   &response_info, 0);
-  }
-  return response_type;
-}
-
-LassoNode* lasso_samlp_response_new()
+class_init(LassoSamlpResponseClass *klass)
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_RESPONSE, NULL));
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
+
+GType
+lasso_samlp_response_get_type()
+{
+	static GType response_type = 0;
+
+	if (!response_type) {
+		static const GTypeInfo response_info = {
+			sizeof (LassoSamlpResponseClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlpResponse),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		response_type = g_type_register_static(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT ,
+				"LassoSamlpResponse", &response_info, 0);
+	}
+	return response_type;
+}
+
+LassoNode*
+lasso_samlp_response_new()
+{
+	LassoSamlpResponseAbstract *response;
+	LassoSamlpStatusCode *status_code;
+	LassoSamlpStatus *status;
+
+	response = LASSO_SAMLP_RESPONSE_ABSTRACT(g_object_new(LASSO_TYPE_SAMLP_RESPONSE, NULL));
+
+	response->ResponseID = lasso_build_unique_id(32);
+	response->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
+	response->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
+	response->IssueInstant = lasso_get_current_time();
+
+	/* Add Status */
+	status = LASSO_SAMLP_STATUS(lasso_samlp_status_new());
+	status_code = LASSO_SAMLP_STATUS_CODE(lasso_samlp_status_code_new());
+	status_code->Value = LASSO_SAML_STATUS_CODE_SUCCESS;
+	status->StatusCode = status_code;
+	LASSO_SAMLP_RESPONSE(response)->Status = status;
+
+	return LASSO_NODE(response);
+}
+

@@ -44,25 +44,27 @@ typedef struct _LassoLibFederationTerminationNotification LassoLibFederationTerm
 typedef struct _LassoLibFederationTerminationNotificationClass LassoLibFederationTerminationNotificationClass;
 
 struct _LassoLibFederationTerminationNotification {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
+	LassoSamlpRequestAbstract parent;
+
+        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension;
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+        /* <xs:element ref="saml:NameIdentifier"/> */
+	LassoSamlNameIdentifier *NameIdentifier;
+	/* <xs:attribute ref="consent" use="optional"/> */
+	char *consent;
 };
 
 struct _LassoLibFederationTerminationNotificationClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_federation_termination_notification_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_federation_termination_notification_new(void);
-
-LASSO_EXPORT void lasso_lib_federation_termination_notification_set_consent        (LassoLibFederationTerminationNotification *,
-										    const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_federation_termination_notification_set_providerID     (LassoLibFederationTerminationNotification *,
-										    const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_federation_termination_notification_set_nameIdentifier (LassoLibFederationTerminationNotification *,
-										    LassoSamlNameIdentifier *);
+LASSO_EXPORT LassoNode* lasso_lib_federation_termination_notification_new_full(
+		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

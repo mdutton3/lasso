@@ -48,63 +48,88 @@
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
-					  const xmlChar *assertionArtifact)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAMLP_REQUEST(node));
-  g_assert(assertionArtifact != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AssertionArtifact", assertionArtifact, FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{ 
+	xmlNode *xmlnode;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNewTextChild(xmlnode, NULL, "AssertionArtifact",
+			LASSO_SAMLP_REQUEST(node)->AssertionArtifact);
+	xmlNodeSetName(xmlnode, "Request");
+	return xmlnode;
 }
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	xmlNode *t;
+
+	parent_class->init_from_xml(node, xmlnode);
+	
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			if (strcmp(t->name, "AssertionArtifact") == 0) {
+				LASSO_SAMLP_REQUEST(node)->AssertionArtifact = xmlNodeGetContent(t);
+				break;
+			}
+		}
+		t = t->next;
+	}
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_samlp_request_instance_init(LassoSamlpRequest *node)
+instance_init(LassoSamlpRequest *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  /* namespace herited from samlp:RequestAbstract */
-  class->set_name(LASSO_NODE(node), "Request");
+	node->AssertionArtifact = NULL;
 }
 
 static void
-lasso_samlp_request_class_init(LassoSamlpRequestClass *klass)
+class_init(LassoSamlpRequestClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_samlp_request_get_type() {
-  static GType this_type = 0;
+GType
+lasso_samlp_request_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlpRequestClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_samlp_request_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlpRequest),
-      0,
-      (GInstanceInitFunc) lasso_samlp_request_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
-				       "LassoSamlpRequest",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlpRequestClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlpRequest),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
+				"LassoSamlpRequest", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_samlp_request_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_REQUEST,
-				 NULL));
+LassoNode*
+lasso_samlp_request_new()
+{
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_REQUEST, NULL));
 }
+

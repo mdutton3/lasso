@@ -45,22 +45,17 @@ typedef struct _LassoSamlSubject LassoSamlSubject;
 typedef struct _LassoSamlSubjectClass LassoSamlSubjectClass;
 
 struct _LassoSamlSubject {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	LassoSamlNameIdentifier *NameIdentifier;
+	LassoSamlSubjectConfirmation *SubjectConfirmation;
 };
 
 struct _LassoSamlSubjectClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_subject_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_subject_new(void);
-
-LASSO_EXPORT void lasso_saml_subject_set_nameIdentifier      (LassoSamlSubject *node,
-							      LassoSamlNameIdentifier *nameIdentifier);
-
-LASSO_EXPORT void lasso_saml_subject_set_subjectConfirmation (LassoSamlSubject *node,
-							      LassoSamlSubjectConfirmation *subjectConfirmation);
 
 #ifdef __cplusplus
 }

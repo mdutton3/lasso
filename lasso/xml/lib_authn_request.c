@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/lib_authn_request.h>
+#include <libxml/uri.h>
 
 /*
 The <AuthnRequest> is defined as an extension of samlp:RequestAbstractType.
@@ -40,7 +41,7 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
       <xs:sequence>
         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="ProviderID"/>
-        <xs:element ref="AffiliationID" minOccurs="0"/>
+	<xs:element ref="AffiliationID" minOccurs="0"/>
         <xs:element ref="NameIDPolicy" minOccurs="0"/>
         <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/>
         <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/>
@@ -79,218 +80,255 @@ From liberty-metadata-v1.0.xsd:
 <xs:element name="RelayState" type="xs:string"/>
 */
 
+
+static LassoNodeClass *parent_class = NULL;
+
+
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_authn_request_set_affiliationID(LassoLibAuthnRequest *node,
-					  const xmlChar *affiliationID)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(affiliationID != NULL);
-  /* FIXME : affiliationID length SHOULD be <= 1024 */
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{ 
+	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
+	xmlNode *xmlnode;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AffiliationID", affiliationID, FALSE);
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "AuthnRequest");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+	if (request->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
+	if (request->AffiliationID)
+		xmlNewTextChild(xmlnode, NULL, "AffiliationID", request->AffiliationID);
+	if (request->NameIDPolicy)
+		xmlNewTextChild(xmlnode, NULL, "NameIDPolicy", request->NameIDPolicy);
+	if (request->ProtocolProfile)
+		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", request->ProtocolProfile);
+	if (request->AssertionConsumerServiceID)
+		xmlNewTextChild(xmlnode, NULL, "AssertionConsumerServiceID",
+				request->AssertionConsumerServiceID);
+	if (request->RelayState)
+		xmlNewTextChild(xmlnode, NULL, "RelayState", request->RelayState);
+	if (request->consent)
+		xmlSetProp(xmlnode, "consent", request->consent);
+
+	xmlNewTextChild(xmlnode, NULL, "IsPassive", request->IsPassive ? "true" : "false");
+	xmlNewTextChild(xmlnode, NULL, "ForceAuthn", request->ForceAuthn ? "true" : "false");
+
+	if (request->RequestAuthnContext)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(request->RequestAuthnContext)));
+	if (request->Scoping)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(request->Scoping)));
+
+	return xmlnode;
 }
 
-void
-lasso_lib_authn_request_set_assertionConsumerServiceID(LassoLibAuthnRequest *node,
-						       const xmlChar *assertionConsumerServiceID)
+static gchar*
+build_query(LassoNode *node)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(assertionConsumerServiceID != NULL);
+	char *str, *t;
+	GString *s;
+	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AssertionConsumerServiceID",
-		   assertionConsumerServiceID, FALSE);
+	str = parent_class->build_query(node);
+	s = g_string_new(str);
+	g_free(str);
+
+	if (request->ProviderID) {
+		t = xmlURIEscapeStr(request->ProviderID, NULL);
+		g_string_append_printf(s, "&ProviderID=%s", t);
+		xmlFree(t);
+	}
+	if (request->AffiliationID)
+		g_string_append_printf(s, "&AffiliationID=%s", request->AffiliationID);
+	if (request->NameIDPolicy)
+		g_string_append_printf(s, "&NameIDPolicy=%s", request->NameIDPolicy);
+	if (request->ProtocolProfile) {
+		t = xmlURIEscapeStr(request->ProtocolProfile, NULL);
+		g_string_append_printf(s, "&ProtocolProfile=%s", t);
+		xmlFree(t);
+	}
+	if (request->RelayState)
+		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
+	if (request->consent)
+		g_string_append_printf(s, "&consent=%s", request->consent);
+	g_string_append_printf(s, "&ForceAuthn=%s", request->ForceAuthn ? "true" : "false");
+	g_string_append_printf(s, "&IsPassive=%s", request->IsPassive ? "true" : "false");
+
+	str = s->str;
+	g_string_free(s, FALSE);
+
+	return str;
 }
 
-void
-lasso_lib_authn_request_set_consent(LassoLibAuthnRequest *node,
-				    const xmlChar *consent)
+static void
+init_from_query(LassoNode *node, char **query_fields)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(consent != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "consent", consent);
+	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
+	int i;
+	char *t;
+	
+	for (i=0; (t=query_fields[i]); i++) {
+		if (strncmp(t, "ProviderID=", 11) == 0) {
+			request->ProviderID = g_strdup(t+11);
+			continue;
+		}
+		if (strncmp(t, "AffiliationID=", 14) == 0) {
+			request->AffiliationID = g_strdup(t+14);
+			continue;
+		}
+		if (strncmp(t, "NameIDPolicy=", 13) == 0) {
+			request->NameIDPolicy = g_strdup(t+13);
+			continue;
+		}
+		if (strncmp(t, "ProtocolProfile=", 16) == 0) {
+			request->ProtocolProfile = g_strdup(t+16);
+			continue;
+		}
+		if (strncmp(t, "RelayState=", 11) == 0) {
+			request->RelayState = g_strdup(t+11);
+			continue;
+		}
+		if (strncmp(t, "consent=", 8) == 0) {
+			request->consent =g_strdup(t+8);
+			continue;
+		}
+		if (strncmp(t, "ForceAuthn=", 11) == 0) {
+			request->ForceAuthn = (strcmp(t+11, "true") == 0);
+			continue;
+		}
+		if (strncmp(t, "IsPassive=", 10) == 0) {
+			request->IsPassive = (strcmp(t+10, "true") == 0);
+			continue;
+		}
+	}
+	parent_class->init_from_query(node, query_fields);
 }
 
-void
-lasso_lib_authn_request_set_forceAuthn(LassoLibAuthnRequest *node,
-				       gboolean forceAuthn)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(forceAuthn == FALSE || forceAuthn == TRUE);
+	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
+	xmlNode *t, *n;
+	char *s;
 
-  class = LASSO_NODE_GET_CLASS(node);
+	parent_class->init_from_xml(node, xmlnode);
 
-  if (forceAuthn == FALSE) {
-    class->new_child(LASSO_NODE (node), "ForceAuthn", "false", FALSE);
-  }
-  if (forceAuthn == TRUE) {
-    class->new_child(LASSO_NODE (node), "ForceAuthn", "true", FALSE);
-  }
+	t = xmlnode->children;
+	while (t) {
+		n = t;
+		t = t->next;
+		if (n->type != XML_ELEMENT_NODE) {
+			continue;
+		}
+		if (strcmp(n->name, "ProviderID") == 0) {
+			request->ProviderID = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "NameIDPolicy") == 0) {
+			request->NameIDPolicy = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "ForceAuthn") == 0) {
+			s = xmlNodeGetContent(n);
+			request->ForceAuthn = (strcmp(s, "true") == 0);
+			xmlFree(s);
+			continue;
+		}
+		if (strcmp(n->name, "IsPassive") == 0) {
+			s = xmlNodeGetContent(n);
+			request->IsPassive = (strcmp(s, "true") == 0);
+			xmlFree(s);
+			continue;
+		}
+		if (strcmp(n->name, "ProtocolProfile") == 0) {
+			request->ProtocolProfile = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "AssertionConsumerServiceID") == 0) {
+			request->AssertionConsumerServiceID = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "RequestAuthnContext") == 0) {
+			/* XXX */
+			continue;
+		}
+		if (strcmp(n->name, "RelayState") == 0) {
+			request->RelayState = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "Scoping") == 0) {
+			/* XXX */
+			continue;
+		}
+	}
+	request->consent = xmlGetProp(xmlnode, "consent");
+		
 }
 
-void
-lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *node,
-				      gboolean isPassive)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(isPassive == FALSE || isPassive == TRUE);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  if (isPassive == FALSE) {
-    class->new_child(LASSO_NODE (node), "IsPassive", "false", FALSE);
-  }
-  if (isPassive == TRUE) {
-    class->new_child(LASSO_NODE (node), "IsPassive", "true", FALSE);
-  }
-}
-
-/**
- * lasso_lib_authn_request_set_nameIDPolicy:
- * @node:         the pointer to <lib:AuthnRequest> node
- * @nameIDPolicy: the value of "NameIDPolicy" attribute.
- * 
- * Sets the "NameIDPolicy" attribute. It's an enumeration permitting requester
- * influence over name identifier policy at the identity provider.
- **/
-void
-lasso_lib_authn_request_set_nameIDPolicy(LassoLibAuthnRequest *node,
-					 const xmlChar *nameIDPolicy)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(nameIDPolicy != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "NameIDPolicy", nameIDPolicy, FALSE);
-}
-
-void
-lasso_lib_authn_request_set_protocolProfile(LassoLibAuthnRequest *node,
-					    const xmlChar *protocolProfile)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(protocolProfile != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProtocolProfile", protocolProfile, FALSE);
-}
-
-void
-lasso_lib_authn_request_set_providerID(LassoLibAuthnRequest *node,
-				       const xmlChar *providerID)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(providerID != NULL);
-  /* FIXME : providerID length SHOULD be <= 1024 */
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
-}
-
-void
-lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest *node,
-				       const xmlChar *relayState)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(relayState != NULL);
-  /* FIXME : RelayState length SHOULD be <= 80 */
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);
-}
-
-void
-lasso_lib_authn_request_set_requestAuthnContext(LassoLibAuthnRequest *node,
-						LassoLibRequestAuthnContext *requestAuthnContext)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(LASSO_IS_LIB_REQUEST_AUTHN_CONTEXT(requestAuthnContext));
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node),
-		   LASSO_NODE (requestAuthnContext),
-		   FALSE);
-}
-
-/**
- * lasso_lib_authn_request_set_scoping:
- * @node: the pointer to <lib:AuthnRequest/> node object
- * @scoping: the pointer to <lib:Scoping/> node object
- * 
- * Sets the "Scoping" element.
- **/
-void
-lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node,
-				    LassoLibScoping *scoping)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(LASSO_IS_LIB_SCOPING(scoping));
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node),
-		   LASSO_NODE (scoping),
-		   FALSE);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_authn_request_instance_init(LassoLibAuthnRequest *node)
+instance_init(LassoLibAuthnRequest *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "AuthnRequest");
+	node->ProviderID = NULL;
+	node->AffiliationID = NULL;
+	node->NameIDPolicy = NULL;
+	node->ForceAuthn = FALSE;
+	node->IsPassive = TRUE;
+	node->ProtocolProfile = NULL;
+	node->AssertionConsumerServiceID = NULL;
+	node->RequestAuthnContext = NULL;
+	node->RelayState = NULL;
+	node->Scoping = NULL;
+	node->consent = NULL;
 }
 
 static void
-lasso_lib_authn_request_class_init(LassoLibAuthnRequestClass *klass)
+class_init(LassoLibAuthnRequestClass *klass)
 {
+	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+
+	parent_class = g_type_class_peek_parent(klass);
+	nodeClass->build_query = build_query;
+	nodeClass->get_xmlNode = get_xmlNode;
+	nodeClass->init_from_query = init_from_query;
+	nodeClass->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_authn_request_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_authn_request_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibAuthnRequestClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_authn_request_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibAuthnRequest),
-      0,
-      (GInstanceInitFunc) lasso_lib_authn_request_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
-				       "LassoLibAuthnRequest",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibAuthnRequestClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibAuthnRequest),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
+				"LassoLibAuthnRequest", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_lib_authn_request_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST,
-				 NULL));
+LassoLibAuthnRequest*
+lasso_lib_authn_request_new()
+{
+	return g_object_new(LASSO_TYPE_LIB_AUTHN_REQUEST, NULL);
 }
+

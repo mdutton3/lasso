@@ -25,292 +25,133 @@
 
 #include <lasso/environs/identity.h>
 
-#include <lasso/lasso_config.h>
-
-#define LASSO_IDENTITY_NODE                   "Identity"
-#define LASSO_IDENTITY_FEDERATIONS_NODE       "Federations"
-#define LASSO_IDENTITY_FEDERATION_NODE        "Federation"
-#define LASSO_IDENTITY_REMOTE_PROVIDERID_ATTR "RemoteProviderID"
-
 struct _LassoIdentityPrivate
 {
-  gboolean dispose_has_run;
+	gboolean dispose_has_run;
 };
-
-static GObjectClass *parent_class = NULL;
-
-/*****************************************************************************/
-/* private functions                                                         */
-/*****************************************************************************/
-
-static void
-lasso_identity_copy_federation(gpointer key,
-			       gpointer value,
-			       gpointer federations)
-{
-  g_hash_table_insert((GHashTable *)federations, g_strdup((gchar *)key),
-		      lasso_federation_copy(LASSO_FEDERATION(value)));
-}
-
-static void
-lasso_identity_dump_federation(gpointer   key,
-			       gpointer   value,
-			       LassoNode *federations)
-{
-  LassoNode      *federation_node;
-  LassoNodeClass *federation_class;
-  xmlChar        *dump;
-
-  dump = lasso_federation_dump(LASSO_FEDERATION(value));
-  federation_node = lasso_node_new_from_dump(dump);
-  xmlFree(dump);
-  federation_class = LASSO_NODE_GET_CLASS(federation_node);
-  federation_class->add_child(federations, federation_node, TRUE);
-  lasso_node_destroy(federation_node);
-}
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
 gint
-lasso_identity_add_federation(LassoIdentity   *identity,
-			      gchar           *remote_providerID,
-			      LassoFederation *federation)
+lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federation)
 {
-  gboolean found = FALSE;
-  int i;
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
+	g_return_val_if_fail(LASSO_IS_FEDERATION(federation), -3);
 
-  g_return_val_if_fail(LASSO_IS_IDENTITY(identity), -1);
-  g_return_val_if_fail(remote_providerID != NULL, -2);
-  g_return_val_if_fail(LASSO_IS_FEDERATION(federation), -3);
+	/* add the federation, replace if one already exists */
+	g_hash_table_insert(identity->federations,
+			g_strdup(federation->remote_providerID), federation);
+	identity->is_dirty = TRUE;
 
-  /* add the remote provider id if not already saved */
-  for (i = 0; i<identity->providerIDs->len; i++) {
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
-      found = TRUE;
-      break;
-    }
-  }
-  if (found == TRUE) {
-    debug("A federation existed already for this providerID, it was replaced by the new one.\n");
-  }
-  else {
-    g_ptr_array_add(identity->providerIDs, g_strdup(remote_providerID));
-  }
-
-  /* add the federation, replace if one already exists */
-  g_hash_table_insert(identity->federations, g_strdup(remote_providerID),
-		      lasso_federation_copy(federation));
-
-  identity->is_dirty = TRUE;
-
-  return 0;
+	return 0;
 }
 
-LassoIdentity*
-lasso_identity_copy(LassoIdentity *identity)
+gint
+lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerID)
 {
-  LassoIdentity *copy;
-  guint i;
-
-  if (identity == NULL) {
-    return NULL;
-  }
-
-  copy = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
-
-  copy->providerIDs = g_ptr_array_new();
-  for(i=0; i<identity->providerIDs->len; i++) {
-    g_ptr_array_add(copy->providerIDs,
-		    g_strdup(g_ptr_array_index(identity->providerIDs, i)));
-  }
-  copy->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
-					    (GDestroyNotify)g_free,
-					    (GDestroyNotify)lasso_node_destroy);
-  g_hash_table_foreach(identity->federations, (GHFunc)lasso_identity_copy_federation,
-		       (gpointer)copy->federations);
-  copy->is_dirty = identity->is_dirty;
-
-  return copy;
+	if (g_hash_table_remove(identity->federations, remote_providerID) == FALSE) {
+		debug("Failed to remove federation for remote Provider %s", remote_providerID);
+		return -1;
+	}
+	identity->is_dirty = TRUE;
+	return 0;
 }
 
 void
 lasso_identity_destroy(LassoIdentity *identity)
 {
-  if (LASSO_IS_IDENTITY(identity)) {
-    g_object_unref(G_OBJECT(identity));
-  }
+	if (LASSO_IS_IDENTITY(identity)) {
+		g_object_unref(G_OBJECT(identity));
+	}
 }
 
-gchar*
-lasso_identity_dump(LassoIdentity *identity)
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static LassoNodeClass *parent_class = NULL;
+
+static void
+add_federation_childnode(gchar *key, LassoFederation *value, xmlNode *xmlnode)
 {
-  LassoNode *identity_node, *federations_node;
-  int table_size;
-  gchar *dump;
-
-  g_return_val_if_fail(identity != NULL, NULL);
-
-  identity_node = lasso_node_new();
-  LASSO_NODE_GET_CLASS(identity_node)->set_name(identity_node, LASSO_IDENTITY_NODE);
-  LASSO_NODE_GET_CLASS(identity_node)->set_ns(identity_node, lassoLassoHRef, NULL);
-
-  /* Add lasso version in the xml node */
-  LASSO_NODE_GET_CLASS(identity_node)->set_prop(LASSO_NODE(identity_node), "version", PACKAGE_VERSION);
-
-  /* dump the federations */
-  table_size = g_hash_table_size(identity->federations);
-  if (table_size > 0) {
-    federations_node = lasso_node_new();
-    LASSO_NODE_GET_CLASS(federations_node)->set_name(federations_node,
-						     LASSO_IDENTITY_FEDERATIONS_NODE);
-    g_hash_table_foreach(identity->federations, (GHFunc)lasso_identity_dump_federation,
-			 federations_node);
-    LASSO_NODE_GET_CLASS(identity_node)->add_child(identity_node, federations_node, FALSE);
-    lasso_node_destroy(federations_node);
-  }
-
-  dump = lasso_node_export(identity_node);
-
-  lasso_node_destroy(identity_node);
-
-  return dump;
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
 }
 
-LassoFederation*
-lasso_identity_get_federation(LassoIdentity *identity,
-			      gchar         *remote_providerID)
+static xmlNode*
+get_xmlNode(LassoNode *node)
 {
-  LassoFederation *federation;
+	xmlNode *xmlnode;
+	LassoIdentity *identity = LASSO_IDENTITY(node);
 
-  g_return_val_if_fail(identity != NULL, NULL);
-  g_return_val_if_fail(remote_providerID != NULL, NULL);
+	xmlnode = xmlNewNode(NULL, "Identity");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
+	xmlSetProp(xmlnode, "Version", "2");
 
-  federation = lasso_identity_get_federation_ref(identity, remote_providerID);
-  if (federation != NULL) {
-    return lasso_federation_copy(federation);
-  }
+	if (g_hash_table_size(identity->federations))
+		g_hash_table_foreach(identity->federations,
+				(GHFunc)add_federation_childnode, xmlnode);
 
-  return NULL;
+	return xmlnode;
 }
 
-LassoFederation*
-lasso_identity_get_federation_ref(LassoIdentity *identity,
-				  gchar         *remote_providerID)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoFederation *federation;
+	LassoIdentity *identity = LASSO_IDENTITY(node);
+	xmlNode *t;
 
-  g_return_val_if_fail(identity != NULL, NULL);
-  g_return_val_if_fail(remote_providerID != NULL, NULL);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
 
-  federation = (LassoFederation *)g_hash_table_lookup(identity->federations,
-						      remote_providerID);
-  if (federation == NULL) {
-    debug("No Federation found with remote ProviderID = %s\n", remote_providerID);
-    return NULL;
-  }
+		if (strcmp(t->name, "Federation") == 0) {
+			LassoFederation *federation;
+			federation = LASSO_FEDERATION(lasso_node_new_from_xmlNode(t));
+			g_hash_table_insert(
+					identity->federations,
+					g_strdup(federation->remote_providerID), federation);
+		}
 
-  return federation;
+		t = t->next;
+	}
 }
 
-gchar*
-lasso_identity_get_first_providerID(LassoIdentity *identity)
-{
-  gchar *remote_providerID;
-
-  g_return_val_if_fail(identity!=NULL, NULL);
-
-  if (identity->providerIDs->len == 0) {
-    return NULL;
-  }
-
-  remote_providerID = g_strdup(g_ptr_array_index(identity->providerIDs, 0));
-
-  return remote_providerID;
-}
-
-gchar*
-lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
-{
-  /* FIXME ABI : lasso_identity_get_next_federation_remote_providerID method is obsolete, use lasso_identity_get_first_providerID instead */
-
-  return lasso_identity_get_first_providerID(identity);
-}
-
-gint
-lasso_identity_remove_federation(LassoIdentity *identity,
-				 gchar         *remote_providerID)
-{
-  LassoFederation *federation;
-  int i;
-
-  g_return_val_if_fail(identity != NULL, -1);
-  g_return_val_if_fail(remote_providerID != NULL, -2);
-
-  /* remove the federation */
-  federation = lasso_identity_get_federation(identity, remote_providerID);
-  if (federation != NULL) {
-    g_hash_table_remove(identity->federations, remote_providerID);
-    lasso_federation_destroy(federation);
-  }
-  else {
-    debug("Failed to remove federation for remote Provider %s\n", remote_providerID);
-  }
-
-  /* remove the federation remote provider id */
-  for (i = 0; i<identity->providerIDs->len; i++) {
-    if (xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
-      debug("Remove federation of %s\n", remote_providerID);
-      g_ptr_array_remove_index(identity->providerIDs, i);
-      break;
-    }
-  }
-
-  identity->is_dirty = TRUE;
-
-  return 0;
-}
 
 /*****************************************************************************/
 /* overrided parent class methods                                            */
 /*****************************************************************************/
 
 static void
-lasso_identity_dispose(LassoIdentity *identity)
+dispose(GObject *object)
 {
-  if (identity->private->dispose_has_run == TRUE) {
-    return;
-  }
-  identity->private->dispose_has_run = TRUE;
+	LassoIdentity *identity = LASSO_IDENTITY(object);
 
-  debug("Identity object 0x%x disposed ...\n", identity);
+	if (identity->private->dispose_has_run == TRUE) {
+		return;
+	}
+	identity->private->dispose_has_run = TRUE;
 
-  g_hash_table_destroy(identity->federations);
-  identity->federations = NULL;
+	debug("Identity object 0x%x disposed ...\n", identity);
 
-  parent_class->dispose(G_OBJECT(identity));
+	/* XXX: here or in finalize ?
+	 * g_hash_table_destroy(identity->federations); */
+
+	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
 static void
-lasso_identity_finalize(LassoIdentity *identity)
+finalize(GObject *object)
 {
-  gint i;
+	LassoIdentity *identity = LASSO_IDENTITY(object);
 
-  debug("Identity object 0x%x finalized ...\n", identity);
-
-  /* free allocated memory for providerIDs array */
-  for (i=0; i<identity->providerIDs->len; i++) {
-    g_free(identity->providerIDs->pdata[i]);
-    identity->providerIDs->pdata[i] = NULL;
-  }
-  g_ptr_array_free(identity->providerIDs, TRUE);
-  identity->providerIDs = NULL;
-
-  g_free(identity->private);
-  identity->private = NULL;
-
-  parent_class->finalize(G_OBJECT(identity));
+	debug("Identity object 0x%x finalized ...\n", identity);
+	identity->private = NULL;
+	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
 /*****************************************************************************/
@@ -318,191 +159,79 @@ lasso_identity_finalize(LassoIdentity *identity)
 /*****************************************************************************/
 
 static void
-lasso_identity_instance_init(LassoIdentity *identity)
+instance_init(LassoIdentity *identity)
 {
-  identity->private = g_new (LassoIdentityPrivate, 1);
-  identity->private->dispose_has_run = FALSE;
+	identity->private = g_new (LassoIdentityPrivate, 1);
+	identity->private->dispose_has_run = FALSE;
 
-  identity->providerIDs = g_ptr_array_new();
-  identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
-						(GDestroyNotify)g_free,
-						(GDestroyNotify)lasso_federation_destroy);
-  identity->is_dirty = FALSE;
+	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
+			(GDestroyNotify)g_free,
+			(GDestroyNotify)lasso_federation_destroy);
+	identity->is_dirty = FALSE;
 }
 
 static void
-lasso_identity_class_init(LassoIdentityClass *class)
+class_init(LassoIdentityClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
-  
-  parent_class = g_type_class_peek_parent(class);
-  /* override parent class methods */
-  gobject_class->dispose  = (void *)lasso_identity_dispose;
-  gobject_class->finalize = (void *)lasso_identity_finalize;
+	parent_class = g_type_class_peek_parent(klass);
+
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
+	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
-GType lasso_identity_get_type() {
-  static GType this_type = 0;
+GType
+lasso_identity_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoIdentityClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_identity_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoIdentity),
-      0,
-      (GInstanceInitFunc) lasso_identity_instance_init,
-    };
-    
-    this_type = g_type_register_static(G_TYPE_OBJECT,
-				       "LassoIdentity",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoIdentityClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoIdentity),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoIdentity", &this_info, 0);
+	}
+	return this_type;
 }
 
 LassoIdentity*
 lasso_identity_new()
 {
-  LassoIdentity *identity;
-
-  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
-
-  return identity;
+	return g_object_new(LASSO_TYPE_IDENTITY, NULL);
 }
 
 LassoIdentity*
-lasso_identity_new_from_dump(gchar *dump)
+lasso_identity_new_from_dump(const gchar *dump)
 {
-  LassoNode *identity_node;
-  LassoNode *federations_node, *federation_node;
-  LassoNode *nis, *ni, *nameIdentifier;
+	LassoIdentity *identity;
+	xmlDoc *doc;
 
-  LassoNodeClass *federations_class;
+	identity = lasso_identity_new();
+	doc = xmlParseMemory(dump, strlen(dump));
+	init_from_xml(LASSO_NODE(identity), xmlDocGetRootElement(doc));
+	xmlFreeDoc(doc);
 
-  xmlNodePtr federations_xmlNode, federation_xmlNode;
-
-  LassoIdentity *identity;
-  LassoFederation  *federation;
-  xmlChar *str, *remote_providerID;
-  GError *err = NULL;
-
-  g_return_val_if_fail(dump != NULL, NULL);
-
-  /* new object */
-  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
-
-  /* get identity */
-  identity_node = lasso_node_new_from_dump(dump);
-  if (identity_node == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Can't create a identity from dump\n");
-    return NULL;
-  }
-
-  /* federations */
-  federations_node = lasso_node_get_child(identity_node,
-					  LASSO_IDENTITY_FEDERATIONS_NODE,
-					  lassoLassoHRef, NULL);
-  if (federations_node != NULL) {
-    federations_class = LASSO_NODE_GET_CLASS(federations_node);
-    federations_xmlNode = federations_class->get_xmlNode(federations_node);
-    federation_xmlNode = federations_xmlNode->children;
-
-    while (federation_xmlNode != NULL) {
-      if (federation_xmlNode->type==XML_ELEMENT_NODE && \
-	  xmlStrEqual(federation_xmlNode->name, LASSO_IDENTITY_FEDERATION_NODE)) {
-	federation_node = lasso_node_new_from_xmlNode(federation_xmlNode);
-	remote_providerID = lasso_node_get_attr_value(federation_node,
-						      LASSO_FEDERATION_REMOTE_PROVIDERID_NODE, &err);
-	if (remote_providerID == NULL) {
-	  message(G_LOG_LEVEL_WARNING, err->message);
-	  g_error_free(err);
-	  lasso_node_destroy(federation_node);
-	  federation_xmlNode = federation_xmlNode->next;
-	  continue;
-	}
-
-	/* new federation */
-	federation = lasso_federation_new(remote_providerID);
-
-	/* local name identifier */
-	nis = lasso_node_get_child(federation_node,
-				   LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE,
-				   lassoLassoHRef, NULL);
-	if (nis != NULL) {
-	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
-	  if (ni != NULL) {
-	    /* content */
-	    str = lasso_node_get_content(ni, NULL);
-	    nameIdentifier = lasso_saml_name_identifier_new(str);
-	    xmlFree(str);
-	    /* NameQualifier */
-	    str = lasso_node_get_attr_value(ni, "NameQualifier", NULL);
-	    if (str != NULL) {
-	      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
-	      xmlFree(str);
-	    }
-	    /* format */
-	    str = lasso_node_get_attr_value(ni, "Format", NULL);
-	    if (str != NULL) {
-	      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
-	      xmlFree(str);
-	    }
-	    lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-	    lasso_node_destroy(ni);
-	    lasso_node_destroy(nameIdentifier);
-	  }
-	  lasso_node_destroy(nis);
-	}
-
-	/* remote name identifier */
-	nis = lasso_node_get_child(federation_node,
-				   LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE,
-				   lassoLassoHRef, NULL);
-	if (nis != NULL) {
-	  ni = lasso_node_get_child(nis, "NameIdentifier", NULL, NULL);
-	  if (ni != NULL) {
-	    /* content */
-	    str = lasso_node_get_content(ni, NULL);
-	    nameIdentifier = lasso_saml_name_identifier_new(str);
-	    xmlFree(str);
-	    /* NameQualifier */
-	    str = lasso_node_get_attr_value(ni, "NameQualifier", NULL);
-	    if (str != NULL) {
-	      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
-	      xmlFree(str);
-	    }
-	    /* format */
-	    str = lasso_node_get_attr_value(ni, "Format", NULL);
-	    if (str != NULL) {
-	      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier), str);
-	      xmlFree(str);
-	    }
-	    lasso_federation_set_remote_nameIdentifier(federation, nameIdentifier);
-	    lasso_node_destroy(ni);
-	    lasso_node_destroy(nameIdentifier);
-	  }
-	  lasso_node_destroy(nis);
-	}
-
-	debug("Add federation for %s\n", remote_providerID);
-	lasso_identity_add_federation(identity, remote_providerID, federation);
-
-	xmlFree(remote_providerID);
-	lasso_node_destroy(federation_node);
-	lasso_federation_destroy(federation);
-      }
-
-      federation_xmlNode = federation_xmlNode->next;
-    }
-
-    lasso_node_destroy(federations_node);
-  }
-
-  lasso_node_destroy(identity_node);
-
-  return identity;
+	return identity;
 }
+
+gchar*
+lasso_identity_dump(LassoIdentity *identity)
+{
+	if (g_hash_table_size(identity->federations) == 0)
+		return g_strdup("");
+
+	return lasso_node_dump(LASSO_NODE(identity), NULL, 1);
+}
+

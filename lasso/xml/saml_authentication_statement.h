@@ -45,8 +45,16 @@ typedef struct _LassoSamlAuthenticationStatement LassoSamlAuthenticationStatemen
 typedef struct _LassoSamlAuthenticationStatementClass LassoSamlAuthenticationStatementClass;
 
 struct _LassoSamlAuthenticationStatement {
-  LassoSamlSubjectStatementAbstract parent;
-  /*< private >*/
+	LassoSamlSubjectStatementAbstract parent;
+	/* <element ref="saml:SubjectLocality" minOccurs="0"/> */
+	LassoSamlSubjectLocality *SubjectLocality;
+	/* <element ref="saml:AuthorityBinding" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoSamlAuthorityBinding *AuthorityBinding; /* XXX unbounded */
+	/* <attribute name="AuthenticationMethod" type="anyURI" use="required"/> */
+	char *AuthenticationMethod;
+	/* <attribute name="AuthenticationInstant" type="dateTime" use="required"/> */
+	char *AuthenticationInstant;
+
 };
 
 struct _LassoSamlAuthenticationStatementClass {
@@ -56,18 +64,6 @@ struct _LassoSamlAuthenticationStatementClass {
 
 LASSO_EXPORT GType lasso_saml_authentication_statement_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_authentication_statement_new(void);
-
-LASSO_EXPORT void lasso_saml_authentication_statement_add_authorityBinding      (LassoSamlAuthenticationStatement *node,
-										 LassoSamlAuthorityBinding *authorityBinding);
-
-LASSO_EXPORT void lasso_saml_authentication_statement_set_authenticationInstant (LassoSamlAuthenticationStatement *node,
-										 const xmlChar *authenticationInstant);
-
-LASSO_EXPORT void lasso_saml_authentication_statement_set_authenticationMethod  (LassoSamlAuthenticationStatement *node,
-										 const xmlChar *authenticationMethod);
-
-LASSO_EXPORT void lasso_saml_authentication_statement_set_subjectLocality       (LassoSamlAuthenticationStatement *node,
-										 LassoSamlSubjectLocality *subjectLocality);
 
 #ifdef __cplusplus
 }

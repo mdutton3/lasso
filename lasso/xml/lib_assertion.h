@@ -45,21 +45,19 @@ typedef struct _LassoLibAssertion LassoLibAssertion;
 typedef struct _LassoLibAssertionClass LassoLibAssertionClass;
 
 struct _LassoLibAssertion {
-  LassoSamlAssertion parent;
-  /*< private >*/
-  gboolean use_xsitype;
+	LassoSamlAssertion parent;
+	char *InResponseTo;
 };
 
 struct _LassoLibAssertionClass {
-  LassoSamlAssertionClass parent;
+	LassoSamlAssertionClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_assertion_get_type        (void);
 
-LASSO_EXPORT LassoNode* lasso_lib_assertion_new        (gboolean use_xsitype);
-
-LASSO_EXPORT void lasso_lib_assertion_set_inResponseTo (LassoLibAssertion *,
-							const xmlChar *);
+LASSO_EXPORT LassoLibAssertion* lasso_lib_assertion_new_full(
+		const char *issuer, const char *requestID, const char *audience,
+		const char *notBefore, const char *notOnOrAfter);
 
 #ifdef __cplusplus
 }

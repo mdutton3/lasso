@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/protocols/elements/assertion.h>
+#include <lasso/xml/lib_assertion.h>
 
 #define LASSO_TYPE_SESSION (lasso_session_get_type())
 #define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
@@ -45,51 +45,44 @@ typedef struct _LassoSessionClass LassoSessionClass;
 typedef struct _LassoSessionPrivate LassoSessionPrivate;
 
 struct _LassoSession {
-  GObject parent;
+	LassoNode parent;
 
-  /*< public >*/
-  GPtrArray  *providerIDs; /* list of the remote provider IDs for assertions hash table */
-  GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+	GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+	gboolean is_dirty;
 
-  gboolean is_dirty;
-
-  /*< private >*/
-  LassoSessionPrivate *private; /* Index of the current remote provider id in the providerIDs list */
+	/*< private >*/
+	LassoSessionPrivate *private;
 };
 
 struct _LassoSessionClass {
-  GObjectClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType          lasso_session_get_type                             (void);
 
 LASSO_EXPORT LassoSession*  lasso_session_new                                  (void);
 
-LASSO_EXPORT LassoSession*  lasso_session_new_from_dump                        (gchar *dump);
+LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
 
-LASSO_EXPORT gint           lasso_session_add_assertion                        (LassoSession *session,
-										gchar        *providerID,
-										LassoNode    *assertion);
+LASSO_EXPORT gint lasso_session_add_assertion(LassoSession *session,
+		gchar *providerID, LassoSamlAssertion *assertion);
   
-LASSO_EXPORT LassoSession*  lasso_session_copy                                 (LassoSession *session);
+LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
 
-LASSO_EXPORT void           lasso_session_destroy                              (LassoSession *session);
+LASSO_EXPORT LassoSamlAssertion* lasso_session_get_assertion(
+		LassoSession *session, gchar *providerID);
 
-LASSO_EXPORT gchar*         lasso_session_dump                                 (LassoSession *session);
+LASSO_EXPORT gchar* lasso_session_get_authentication_method(LassoSession *session,
+		gchar *providerID);
 
-LASSO_EXPORT LassoNode*     lasso_session_get_assertion                        (LassoSession *session,
-										gchar        *providerID);
+LASSO_EXPORT gchar* lasso_session_get_first_providerID(LassoSession *session);
 
-LASSO_EXPORT gchar*         lasso_session_get_authentication_method            (LassoSession *session,
-										gchar        *providerID);
+LASSO_EXPORT gchar* lasso_session_get_provider_index(LassoSession *session, gint index);
 
-LASSO_EXPORT gchar*         lasso_session_get_first_providerID                 (LassoSession *session);
+LASSO_EXPORT gint lasso_session_remove_assertion(LassoSession *session, gchar *providerID);
 
-LASSO_EXPORT gchar*         lasso_session_get_provider_index                   (LassoSession *session,
-										gint          index);
+LASSO_EXPORT void lasso_session_destroy(LassoSession *session);
 
-LASSO_EXPORT gint           lasso_session_remove_assertion                     (LassoSession *session,
-										gchar        *providerID);
 
 #ifdef __cplusplus
 }

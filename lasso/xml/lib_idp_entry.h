@@ -43,25 +43,22 @@ typedef struct _LassoLibIDPEntry LassoLibIDPEntry;
 typedef struct _LassoLibIDPEntryClass LassoLibIDPEntryClass;
 
 struct _LassoLibIDPEntry{
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+        /* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element name="ProviderName" type="xs:string" minOccurs="0"/> */
+	char *ProviderName;
+	/* <xs:element name="Loc" type="xs:anyURI"/> */
+	char *Loc;
 };
 
 struct _LassoLibIDPEntryClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_idp_entry_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_idp_entry_new(void);
-
-LASSO_EXPORT void lasso_lib_idp_entry_set_providerID   (LassoLibIDPEntry *node,
-							const xmlChar *providerID);
-
-LASSO_EXPORT void lasso_lib_idp_entry_set_providerName (LassoLibIDPEntry *node,
-							const xmlChar *providerName);
-
-LASSO_EXPORT void lasso_lib_idp_entry_set_loc          (LassoLibIDPEntry *node,
-							const xmlChar *loc);
 
 #ifdef __cplusplus
 }

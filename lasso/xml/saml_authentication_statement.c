@@ -44,96 +44,103 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_authentication_statement_add_authorityBinding(LassoSamlAuthenticationStatement *node,
-							 LassoSamlAuthorityBinding *authorityBinding)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
-  g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(authorityBinding));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(authorityBinding), TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "AuthenticationStatement");
+
+	if (statement->SubjectLocality)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(statement->SubjectLocality)));
+	if (statement->AuthorityBinding)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(statement->AuthorityBinding)));
+	if (statement->AuthenticationMethod)
+		xmlSetProp(xmlnode, "AuthenticationMethod", statement->AuthenticationMethod);
+	if (statement->AuthenticationInstant)
+		xmlSetProp(xmlnode, "AuthenticationInstant", statement->AuthenticationInstant);
+
+	return xmlnode;
 }
 
-void
-lasso_saml_authentication_statement_set_authenticationInstant(LassoSamlAuthenticationStatement *node,
-							      const xmlChar *authenticationInstant)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
-  g_assert(authenticationInstant != NULL);
+	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "AuthenticationInstant", authenticationInstant);
+        parent_class->init_from_xml(node, xmlnode);
+	statement->AuthenticationMethod = xmlGetProp(xmlnode, "AuthenticationMethod");
+	statement->AuthenticationInstant = xmlGetProp(xmlnode, "AuthenticationInstant");
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			if (strcmp(t->name, "SubjectLocality") == 0) {
+				statement->SubjectLocality = LASSO_SAML_SUBJECT_LOCALITY(
+						lasso_node_new_from_xmlNode(t));
+			}
+			if (strcmp(t->name, "AuthorityBinding") == 0) {
+				statement->AuthorityBinding = LASSO_SAML_AUTHORITY_BINDING(
+						lasso_node_new_from_xmlNode(t));
+			}
+		}
+		t = t->next;
+	}
 }
-
-void
-lasso_saml_authentication_statement_set_authenticationMethod(LassoSamlAuthenticationStatement *node,
-							     const xmlChar *authenticationMethod)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
-  g_assert(authenticationMethod != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "AuthenticationMethod", authenticationMethod);
-}
-
-void
-lasso_saml_authentication_statement_set_subjectLocality(LassoSamlAuthenticationStatement *node,
-							LassoSamlSubjectLocality *subjectLocality)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(node));
-  g_assert(LASSO_IS_SAML_SUBJECT_LOCALITY(subjectLocality));
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(subjectLocality), FALSE);
-}
-
+	
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_authentication_statement_instance_init(LassoSamlAuthenticationStatement *node)
+instance_init(LassoSamlAuthenticationStatement *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  /* namespace herited from SubjectStatementAbstract -> StatementAbstract */
-  class->set_name(LASSO_NODE(node), "AuthenticationStatement");
+	node->SubjectLocality = NULL;
+	node->AuthorityBinding = NULL;
+	node->AuthenticationMethod = NULL;
+	node->AuthenticationInstant = NULL;
 }
 
 static void
-lasso_saml_authentication_statement_class_init(LassoSamlAuthenticationStatementClass *klass)
+class_init(LassoSamlAuthenticationStatementClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_authentication_statement_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_authentication_statement_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlAuthenticationStatementClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_authentication_statement_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlAuthenticationStatement),
-      0,
-      (GInstanceInitFunc) lasso_saml_authentication_statement_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,
-				       "LassoSamlAuthenticationStatement",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlAuthenticationStatementClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlAuthenticationStatement),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAML_SUBJECT_STATEMENT_ABSTRACT,
+				"LassoSamlAuthenticationStatement", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -143,7 +150,9 @@ GType lasso_saml_authentication_statement_get_type() {
  * 
  * Return value: the new @LassoSamlAuthenticationStatement
  **/
-LassoNode* lasso_saml_authentication_statement_new()
+LassoNode*
+lasso_saml_authentication_statement_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHENTICATION_STATEMENT, NULL));
 }
+

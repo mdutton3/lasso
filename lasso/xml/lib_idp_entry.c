@@ -40,114 +40,95 @@ Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-/**
- * lasso_lib_idp_entry_set_providerID:
- * @node: the pointer to <lib:IDPEntry/> node object
- * @providerID: the value of "ProviderID" element
- * 
- * Sets the "ProviderID" element [required].
- *
- * It's the identity provider's unique identifier.
- **/
-void
-lasso_lib_idp_entry_set_providerID(LassoLibIDPEntry *node,
-				   const xmlChar *providerID)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
-  g_assert(providerID != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoLibIDPEntry *entry = LASSO_LIB_IDP_ENTRY(node);
+
+	xmlnode = xmlNewNode(NULL, "IDPEntry");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (entry->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", entry->ProviderID);
+	if (entry->ProviderName)
+		xmlNewTextChild(xmlnode, NULL, "ProviderName", entry->ProviderName);
+	if (entry->Loc)
+		xmlNewTextChild(xmlnode, NULL, "Loc", entry->Loc);
+
+	return xmlnode;
 }
 
-/**
- * lasso_lib_idp_entry_set_providerName:
- * @node: the pointer to <lib:IDPEntry/> node object
- * @providerName: the value of "ProviderName" element
- * 
- * Sets the "ProviderName" element [optional].
- *
- * It's the identity provider's human-readable name.
- **/
-void
-lasso_lib_idp_entry_set_providerName(LassoLibIDPEntry *node,
-				     const xmlChar *providerName)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
-  g_assert(providerName != NULL);
+	LassoLibIDPEntry *entry = LASSO_LIB_IDP_ENTRY(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderName", providerName, FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "Loc") == 0) {
+			entry->Loc = xmlNodeGetContent(t);
+		}
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderID") == 0) {
+			entry->ProviderID = xmlNodeGetContent(t);
+		}
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderName") == 0) {
+			entry->ProviderName = xmlNodeGetContent(t);
+		}
+		t = t->next;
+	}
+
 }
-
-/**
- * lasso_lib_idp_entry_set_loc:
- * @node: the pointer to <lib:IDPEntry/> node object
- * @loc: the value of "Loc" element
- * 
- * Sets the "Loc" element [optional].
- *
- * It's the identity provider's URI, to which authentication requests may be
- * sent. If present, this MUST be set to the value of the identity provider's
- * <SingleSignOnService> element, obtained from their metadata
- * ([LibertyMetadata]).
- **/
-void
-lasso_lib_idp_entry_set_loc(LassoLibIDPEntry *node,
-			    const xmlChar *loc)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_IDP_ENTRY(node));
-  g_assert(loc != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "Loc", loc, FALSE);
-}
-
+	
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_idp_entry_instance_init(LassoLibIDPEntry *node)
+instance_init(LassoLibIDPEntry *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "IDPEntry");
+	node->ProviderID = NULL;
+	node->ProviderName = NULL;
+	node->Loc = NULL;
 }
 
 static void
-lasso_lib_idp_entry_class_init(LassoLibIDPEntryClass *klass)
+class_init(LassoLibIDPEntryClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_idp_entry_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_idp_entry_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibIDPEntryClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_idp_entry_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibIDPEntry),
-      0,
-      (GInstanceInitFunc) lasso_lib_idp_entry_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoLibIDPEntry",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibIDPEntryClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibIDPEntry),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoLibIDPEntry", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -157,7 +138,9 @@ GType lasso_lib_idp_entry_get_type() {
  * 
  * Return value: the new @LassoLibIDPEntry
  **/
-LassoNode* lasso_lib_idp_entry_new()
+LassoNode*
+lasso_lib_idp_entry_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_IDP_ENTRY, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_IDP_ENTRY, NULL));
 }
+

@@ -42,76 +42,90 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_subject_confirmation_add_confirmationMethod(LassoSamlSubjectConfirmation *node,
-						       const xmlChar *confirmationMethod)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(node));
-  g_assert(confirmationMethod != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node),
-		   "ConfirmationMethod", confirmationMethod, TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlSubjectConfirmation *confirm = LASSO_SAML_SUBJECT_CONFIRMATION(node);
+
+	xmlnode = xmlNewNode(NULL, "SubjectConfirmation");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	if (confirm->ConfirmationMethod)
+		xmlNewTextChild(xmlnode, NULL, "ConfirmationMethod", confirm->ConfirmationMethod);
+	if (confirm->SubjectConfirmationData)
+		xmlNewTextChild(xmlnode, NULL, "SubjectConfirmationMethod",
+				confirm->SubjectConfirmationData);
+
+	return xmlnode;
 }
 
-void
-lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LassoSamlSubjectConfirmation *node,
-							      const xmlChar *subjectConfirmationMethod)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_SUBJECT_CONFIRMATION(node));
-  g_assert(subjectConfirmationMethod != NULL);
+	xmlNode *t;
+	LassoSamlSubjectConfirmation *confirm = LASSO_SAML_SUBJECT_CONFIRMATION(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node),
-		   "SubjectConfirmationMethod", subjectConfirmationMethod,
-		   FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		
+		if (strcmp(t->name, "ConfirmationMethod") == 0)
+			confirm->ConfirmationMethod = xmlNodeGetContent(t);
+		if (strcmp(t->name, "SubjectConfirmationData") == 0)
+			confirm->SubjectConfirmationData = xmlNodeGetContent(t);
+		t = t->next;
+	}
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_subject_confirmation_instance_init(LassoSamlSubjectConfirmation *node)
+instance_init(LassoSamlSubjectConfirmation *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "SubjectConfirmation");
 }
 
 static void
-lasso_saml_subject_confirmation_class_init(LassoSamlSubjectConfirmationClass *klass)
+class_init(LassoSamlSubjectConfirmationClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_subject_confirmation_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_subject_confirmation_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlSubjectConfirmationClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_subject_confirmation_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlSubjectConfirmation),
-      0,
-      (GInstanceInitFunc) lasso_saml_subject_confirmation_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlSubjectConfirmation",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlSubjectConfirmationClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlSubjectConfirmation),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlSubjectConfirmation", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -121,7 +135,8 @@ GType lasso_saml_subject_confirmation_get_type() {
  * 
  * Return value: the new @LassoSamlSubjectConfirmation
  **/
-LassoNode* lasso_saml_subject_confirmation_new()
+LassoSamlSubjectConfirmation*
+lasso_saml_subject_confirmation_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_SUBJECT_CONFIRMATION, NULL));
+	return g_object_new(LASSO_TYPE_SAML_SUBJECT_CONFIRMATION, NULL);
 }

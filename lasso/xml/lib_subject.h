@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/saml_subject.h>
-#include <lasso/xml/lib_idp_provided_name_identifier.h>
+#include <lasso/xml/saml_name_identifier.h>
 
 #define LASSO_TYPE_LIB_SUBJECT (lasso_lib_subject_get_type())
 #define LASSO_LIB_SUBJECT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_SUBJECT, LassoLibSubject))
@@ -44,21 +44,18 @@ typedef struct _LassoLibSubject LassoLibSubject;
 typedef struct _LassoLibSubjectClass LassoLibSubjectClass;
 
 struct _LassoLibSubject {
-  LassoSamlSubject parent;
-  /*< private >*/
-  gboolean use_xsitype;
+	LassoSamlSubject parent;
+        /* <xs:element ref="IDPProvidedNameIdentifier"/> */
+	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
 };
 
 struct _LassoLibSubjectClass {
-  LassoSamlSubjectClass parent;
+	LassoSamlSubjectClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_subject_get_type(void);
+LASSO_EXPORT LassoLibSubject* lasso_lib_subject_new(void);
 
-LASSO_EXPORT LassoNode* lasso_lib_subject_new(gboolean use_xsitype);
-
-LASSO_EXPORT void lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
-								  LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier);
 
 #ifdef __cplusplus
 }

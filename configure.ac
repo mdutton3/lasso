@@ -643,8 +643,6 @@ docs/tutorial/Makefile
 java/Makefile
 lasso/Makefile
 lasso/environs/Makefile
-lasso/protocols/elements/Makefile
-lasso/protocols/Makefile
 lasso/xml/Makefile
 php/Makefile
 php/examples/Makefile

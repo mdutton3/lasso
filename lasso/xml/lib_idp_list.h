@@ -44,22 +44,20 @@ typedef struct _LassoLibIDPList LassoLibIDPList;
 typedef struct _LassoLibIDPListClass LassoLibIDPListClass;
 
 struct _LassoLibIDPList {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <xs:element ref="IDPEntries"/> */
+	LassoLibIDPEntries *IDPEntries;
+	/* <xs:element ref="GetComplete" minOccurs="0"/> */
+	char *GetComplete;
 };
 
 struct _LassoLibIDPListClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_idp_list_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_idp_list_new(void);
-
-LASSO_EXPORT void lasso_lib_idp_list_set_getComplete (LassoLibIDPList *node,
-						      const xmlChar *getComplete);
-
-LASSO_EXPORT void lasso_lib_idp_list_set_idpEntries  (LassoLibIDPList *node,
-						      LassoLibIDPEntries *idpEntries);
 
 #ifdef __cplusplus
 }

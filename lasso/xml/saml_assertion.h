@@ -35,7 +35,7 @@ extern "C" {
 #include <lasso/xml/saml_authentication_statement.h>
 #include <lasso/xml/saml_conditions.h>
 #include <lasso/xml/saml_statement_abstract.h>
-#include <lasso/xml/saml_subject_statement_abstract.h>
+#include <lasso/xml/saml_subject_statement.h>
 
 #define LASSO_TYPE_SAML_ASSERTION (lasso_saml_assertion_get_type())
 #define LASSO_SAML_ASSERTION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAML_ASSERTION, LassoSamlAssertion))
@@ -48,51 +48,40 @@ typedef struct _LassoSamlAssertion LassoSamlAssertion;
 typedef struct _LassoSamlAssertionClass LassoSamlAssertionClass;
 
 struct _LassoSamlAssertion {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <element ref="saml:Conditions" minOccurs="0"/> */
+	LassoSamlConditions *Conditions;
+	/* <element ref="saml:Advice" minOccurs="0"/> */
+	LassoSamlAdvice *Advice;
+#if 0 /* missing from lasso */
+	LassoSamlStatement *Statement;
+#endif
+	LassoSamlSubjectStatement *SubjectStatement;
+	LassoSamlAuthenticationStatement *AuthenticationStatement;
+#if 0
+	LassoAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
+	LassoAttributeStatement *AttributeStatement;
+#endif
+
+	int MajorVersion;
+	int MinorVersion;
+	char *AssertionID;
+	char *Issuer;
+	char *IssueInstant;
 };
 
 struct _LassoSamlAssertionClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_assertion_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_assertion_new(void);
 
-LASSO_EXPORT void lasso_saml_assertion_add_authenticationStatement (LassoSamlAssertion *node,
-								    LassoSamlAuthenticationStatement *authenticationStatement);
-
-LASSO_EXPORT void lasso_saml_assertion_add_statement               (LassoSamlAssertion *node,
-								    LassoSamlStatementAbstract *statement);
-
-LASSO_EXPORT void lasso_saml_assertion_add_subjectStatement        (LassoSamlAssertion *node,
-								    LassoSamlSubjectStatementAbstract *subjectStatement);
-
-LASSO_EXPORT void lasso_saml_assertion_set_advice                  (LassoSamlAssertion *node,
-								    LassoSamlAdvice *advice);
-
-LASSO_EXPORT void lasso_saml_assertion_set_assertionID             (LassoSamlAssertion *node,
-								    const xmlChar *assertionID);
-
-LASSO_EXPORT void lasso_saml_assertion_set_conditions              (LassoSamlAssertion *node,
-								    LassoSamlConditions *conditions);
-
-LASSO_EXPORT void lasso_saml_assertion_set_issueInstant            (LassoSamlAssertion *node,
-								    const xmlChar *issueInstant);
-
-LASSO_EXPORT void lasso_saml_assertion_set_issuer                  (LassoSamlAssertion *node,
-								    const xmlChar *issuer);
-
-LASSO_EXPORT void lasso_saml_assertion_set_majorVersion            (LassoSamlAssertion *node,
-								    const xmlChar *majorVersion);
-
-LASSO_EXPORT void lasso_saml_assertion_set_minorVersion            (LassoSamlAssertion *node,
-								    const xmlChar *minorVersion);
-
-LASSO_EXPORT gint lasso_saml_assertion_set_signature               (LassoSamlAssertion  *node,
-								    gint                 sign_method,
-								    const xmlChar       *private_key_file,
-								    const xmlChar       *certificate_file);
+LASSO_EXPORT gint lasso_saml_assertion_set_signature(LassoSamlAssertion *node,
+		gint                 sign_method,
+		const xmlChar       *private_key_file,
+		const xmlChar       *certificate_file);
 
 #ifdef __cplusplus
 }

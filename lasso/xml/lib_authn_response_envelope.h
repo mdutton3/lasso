@@ -43,27 +43,21 @@ typedef struct _LassoLibAuthnResponseEnvelope LassoLibAuthnResponseEnvelope;
 typedef struct _LassoLibAuthnResponseEnvelopeClass LassoLibAuthnResponseEnvelopeClass;
 
 struct _LassoLibAuthnResponseEnvelope {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	LassoNode *Extension; /* XXX */
+	LassoLibAuthnResponse *AuthnResponse;
+	char *AssertionConsumerServiceURL;
 };
 
 struct _LassoLibAuthnResponseEnvelopeClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType      lasso_lib_authn_response_envelope_get_type                        (void);
-
-LASSO_EXPORT LassoNode* lasso_lib_authn_response_envelope_new                             (void);
-
-LASSO_EXPORT void       lasso_lib_authn_response_envelope_set_extension                   (LassoLibAuthnResponseEnvelope *node,
-											   LassoNode *extension);
-
-LASSO_EXPORT void       lasso_lib_authn_response_envelope_set_authnResponse               (LassoLibAuthnResponseEnvelope *node,
-											   LassoLibAuthnResponse *authnResponse);
-
-LASSO_EXPORT void       lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL (LassoLibAuthnResponseEnvelope *node,
-											   const xmlChar *url);
-
+LASSO_EXPORT GType      lasso_lib_authn_response_envelope_get_type (void);
+LASSO_EXPORT LassoNode* lasso_lib_authn_response_envelope_new(
+		LassoLibAuthnResponse *response,
+		char *assertionConsumerServiceURL);
 
 #ifdef __cplusplus
 }

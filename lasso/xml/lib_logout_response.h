@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/lib_status_response.h>
+#include <lasso/xml/lib_logout_request.h>
 
 #define LASSO_TYPE_LIB_LOGOUT_RESPONSE (lasso_lib_logout_response_get_type())
 #define LASSO_LIB_LOGOUT_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_LOGOUT_RESPONSE, LassoLibLogoutResponse))
@@ -43,16 +44,20 @@ typedef struct _LassoLibLogoutResponse LassoLibLogoutResponse;
 typedef struct _LassoLibLogoutResponseClass LassoLibLogoutResponseClass;
 
 struct _LassoLibLogoutResponse {
-  LassoLibStatusResponse parent;
-  /*< private >*/
+	LassoLibStatusResponse parent;
 };
 
 struct _LassoLibLogoutResponseClass {
-  LassoLibStatusResponseClass parent;
+	LassoLibStatusResponseClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_logout_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_logout_response_new(void);
+
+LASSO_EXPORT LassoNode* lasso_lib_logout_response_new_full(
+		char *providerID, const char *statusCodeValue,
+		LassoLibLogoutRequest *request,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

@@ -45,28 +45,24 @@ typedef struct _LassoSamlConditions LassoSamlConditions;
 typedef struct _LassoSamlConditionsClass LassoSamlConditionsClass;
 
 struct _LassoSamlConditions {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <element ref="saml:Condition"/> XXX: unbounded */
+	/* LassoSamlCondition *Condition;  XXX missing from lasso */ 
+	/* <element ref="saml:AudienceRestrictionCondition"/> XXX: unbounded */
+	LassoSamlAudienceRestrictionCondition *AudienceRestrictionCondition;
+	/* <attribute name="NotBefore" type="dateTime" use="optional"/> */
+	char *NotBefore;
+	/* <attribute name="NotOnOrAfter" type="dateTime" use="optional"/> */
+	char *NotOnOrAfter;
 };
 
 struct _LassoSamlConditionsClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_conditions_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_conditions_new(void);
-
-LASSO_EXPORT void lasso_saml_conditions_add_condition    (LassoSamlConditions *node,
-							  LassoSamlConditionAbstract *condition);
-
-LASSO_EXPORT void lasso_saml_conditions_add_audienceRestrictionCondition(LassoSamlConditions *node,
-									 LassoSamlAudienceRestrictionCondition *audienceRestrictionCondition);
-
-LASSO_EXPORT void lasso_saml_conditions_set_notBefore    (LassoSamlConditions *node,
-							  const xmlChar *notBefore);
-
-LASSO_EXPORT void lasso_saml_conditions_set_notOnOrAfter (LassoSamlConditions *node,
-							  const xmlChar *notOnOrAfter);
+LASSO_EXPORT LassoSamlConditions* lasso_saml_conditions_new(void);
 
 #ifdef __cplusplus
 }

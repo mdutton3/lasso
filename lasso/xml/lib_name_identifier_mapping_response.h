@@ -33,6 +33,7 @@ extern "C" {
 #include <lasso/xml/samlp_response_abstract.h>
 #include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_status.h>
+#include <lasso/xml/lib_name_identifier_mapping_request.h>
 
 #define LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE (lasso_lib_name_identifier_mapping_response_get_type())
 #define LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, LassoLibNameIdentifierMappingResponse))
@@ -45,26 +46,30 @@ typedef struct _LassoLibNameIdentifierMappingResponse LassoLibNameIdentifierMapp
 typedef struct _LassoLibNameIdentifierMappingResponseClass LassoLibNameIdentifierMappingResponseClass;
 
 struct _LassoLibNameIdentifierMappingResponse {
-  LassoSamlpResponseAbstract parent;
-  /*< private >*/
+	LassoSamlpResponseAbstract parent;
+
+        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension;
+        /* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+        /* <xs:element ref="samlp:Status"/> */
+	LassoSamlpStatus *Status;
+        /* <xs:element ref="saml:NameIdentifier" minOccurs="0"/> */
+	LassoSamlNameIdentifier *NameIdentifier;
 };
 
 struct _LassoLibNameIdentifierMappingResponseClass {
-  LassoSamlpResponseAbstractClass parent;
+	LassoSamlpResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_name_identifier_mapping_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_response_new(void);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_response_set_nameIdentifier (LassoLibNameIdentifierMappingResponse *node,
-										 LassoSamlNameIdentifier *nameIdentifier);
+LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_response_new_full(
+		char *provideRID, const char *statusCodeValue,
+		LassoLibNameIdentifierMappingRequest *request,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_response_set_providerID     (LassoLibNameIdentifierMappingResponse *node,
-										 const xmlChar *providerID);
-
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_response_set_status         (LassoLibNameIdentifierMappingResponse *node,
-										 LassoSamlpStatus *status);
-	 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -32,37 +32,10 @@
 
 #include <lasso/lasso_config.h>
 
-#define LASSO_SERVER_NODE                  "Server"
-#define LASSO_SERVER_METADATA_NODE         "ServerMetadata"
-#define LASSO_SERVER_PROVIDERS_NODE        "Providers"
-#define LASSO_SERVER_PROVIDERID_NODE       "ProviderID"
-#define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
-#define LASSO_SERVER_SECRET_KEY_NODE       "SecretKey"
-#define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
-#define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
-
 struct _LassoServerPrivate
 {
-  gboolean dispose_has_run;
+	gboolean dispose_has_run;
 };
-
-static GObjectClass *parent_class = NULL;
-
-/*****************************************************************************/
-/* private methods                                                           */
-/*****************************************************************************/
-
-static gint
-lasso_server_add_lasso_provider(LassoServer   *server,
-				LassoProvider *provider)
-{
-  g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
-  g_return_val_if_fail(LASSO_IS_PROVIDER(provider), -2);
-
-  g_ptr_array_add(server->providers, provider);
-
-  return 0;
-}
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -80,281 +53,181 @@ lasso_server_add_lasso_provider(LassoServer   *server,
  * Return value: 0 on success or a negative value if an error occurs.
  **/
 gint
-lasso_server_add_provider(LassoServer *server,
-			  gchar       *metadata,
-			  gchar       *public_key,
-			  gchar       *ca_cert_chain)
+lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
+		gchar *metadata, gchar *public_key, gchar *ca_cert_chain)
 {
-  LassoProvider *provider;
+	LassoProvider *provider;
 
-  g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-  g_return_val_if_fail(metadata != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_SERVER(server), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(metadata != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  provider = lasso_provider_new(metadata, public_key, ca_cert_chain);
-  if (provider != NULL) {
-    g_ptr_array_add(server->providers, provider);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
-    return LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
-  }
+	provider = lasso_provider_new(role, metadata, public_key, ca_cert_chain);
+	if (provider == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
+		return LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
+	}
 
-  return 0;
+	g_hash_table_insert(server->providers, g_strdup(provider->ProviderID), provider);
+
+	return 0;
 }
 
-LassoServer*
-lasso_server_copy(LassoServer *server)
+gchar*
+lasso_server_get_authnRequestsSigned(LassoServer *server, GError     **err)
 {
-  LassoServer *copy;
-  LassoProvider *p;
-  guint i;
-
-  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-
-  copy = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
-
-  /* herited provider attrs */
-  LASSO_PROVIDER(copy)->metadata = lasso_node_copy(LASSO_PROVIDER(server)->metadata);
-  LASSO_PROVIDER(copy)->public_key    = g_strdup(LASSO_PROVIDER(server)->public_key);
-  LASSO_PROVIDER(copy)->ca_cert_chain = g_strdup(LASSO_PROVIDER(server)->ca_cert_chain);
-  /* server attrs */
-  copy->providers = g_ptr_array_new();
-  for (i=0; i<server->providers->len; i++) {
-    p = g_ptr_array_index(server->providers, i);
-    g_ptr_array_add(copy->providers, lasso_provider_copy(p));
-  }
-  copy->providerID  = g_strdup(server->providerID);
-  copy->private_key = g_strdup(server->private_key);
-  copy->secret_key  = g_strdup(server->secret_key);
-  copy->certificate = g_strdup(server->certificate);
-  copy->signature_method = server->signature_method;
-
-  return copy;
+	/* XXX to do differently (add a boolean to struct) */
+	g_assert_not_reached();
+	return NULL;
 }
+
 
 void
 lasso_server_destroy(LassoServer *server)
 {
-  g_object_unref(G_OBJECT(server));
+	g_object_unref(G_OBJECT(server));
 }
 
-gchar *
-lasso_server_dump(LassoServer *server)
+
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static LassoNodeClass *parent_class = NULL;
+
+static void add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 {
-  LassoProvider  *provider;
-  LassoNode      *server_node, *providers_node, *provider_node, *metadata_copy, *metadata_node;
-  LassoNodeClass *metadata_class, *server_class, *providers_class;
-  xmlChar        *signature_method_str, *dump;
-  gint            i;
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+}
 
-  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	LassoServer *server = LASSO_SERVER(node);
+	char *signature_methods[] = { NULL, "RSA_SHA1", "DSA_SHA1"};
+	xmlNode *xmlnode;
 
-  server_node = lasso_node_new();
-  server_class = LASSO_NODE_GET_CLASS(server_node);
-  server_class->set_name(server_node, LASSO_SERVER_NODE);
-  server_class->set_ns(server_node, lassoLassoHRef, NULL);
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "Server");
+	xmlSetProp(xmlnode, "ServerDumpVersion", "2");
 
-  /* Add lasso version in the xml node */
-  server_class->set_prop(LASSO_NODE(server_node), "version", PACKAGE_VERSION);
+	xmlNewTextChild(xmlnode, NULL, "PrivateKeyFilePath", server->private_key);
+	if (server->secret_key)
+		xmlNewTextChild(xmlnode, NULL, "SecretKey", server->secret_key);
+	xmlNewTextChild(xmlnode, NULL, "CertificateFilePath", server->certificate);
+	xmlSetProp(xmlnode, "SignatureMethod", signature_methods[server->signature_method]);
 
-  /* signature method */
-  signature_method_str = g_new(gchar, 6);
-  g_snprintf(signature_method_str, 6, "%d", server->signature_method);
-  server_class->set_prop(server_node, LASSO_SERVER_SIGNATURE_METHOD_NODE, signature_method_str);
-  g_free(signature_method_str);
+	if (g_hash_table_size(server->providers)) {
+		xmlNode *t;
+		t = xmlNewTextChild(xmlnode, NULL, "Providers", NULL);
+		g_hash_table_foreach(server->providers,
+				(GHFunc)add_provider_childnode, t);
+	}
 
-  /* providerID */
-  if (server->providerID != NULL) {
-    server_class->set_prop(server_node, LASSO_SERVER_PROVIDERID_NODE, server->providerID);
-  }
-  /* private key */
-  if (server->private_key != NULL) {
-    server_class->set_prop(server_node, LASSO_SERVER_PRIVATE_KEY_NODE, server->private_key);
-  }
-  /* secret key */
-  if (server->secret_key != NULL) {
-    server_class->set_prop(server_node, LASSO_SERVER_SECRET_KEY_NODE, server->secret_key);
-  }
-  /* certificate */
-  if (server->certificate != NULL) {
-    server_class->set_prop(server_node, LASSO_SERVER_CERTIFICATE_NODE, server->certificate);
-  }
-  /* metadata */
-  provider = LASSO_PROVIDER(server);
-  if (provider->metadata != NULL) {
-    metadata_node = lasso_node_new();
-    metadata_class = LASSO_NODE_GET_CLASS(metadata_node);
-    metadata_class->set_name(metadata_node, LASSO_SERVER_METADATA_NODE);
-    metadata_class->set_ns(metadata_node, lassoLassoHRef, NULL);
+	return xmlnode;
+}
 
-    metadata_copy = lasso_node_copy(provider->metadata);
-    metadata_class->add_child(metadata_node, metadata_copy, FALSE);
-    lasso_node_destroy(metadata_copy);
-    server_class->add_child(server_node, metadata_node, FALSE);
-  }
 
-  /* providers */
-  providers_node = lasso_node_new();
-  providers_class = LASSO_NODE_GET_CLASS(providers_node);
-  providers_class->set_name(providers_node, LASSO_SERVER_PROVIDERS_NODE);
-  for (i = 0; i<server->providers->len; i++) {
-    dump = lasso_provider_dump(g_ptr_array_index(server->providers, i));
-    provider_node = lasso_node_new_from_dump(dump);
-    xmlFree(dump);
-    providers_class->add_child(providers_node, provider_node, TRUE);
-    lasso_node_destroy(provider_node);
-  }
-  server_class->add_child(server_node, providers_node, FALSE);
-  lasso_node_destroy(providers_node);
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoServer *server = LASSO_SERVER(node);
+	xmlNode *t;
+	xmlChar *s;
 
-  dump = lasso_node_export(server_node);
-  lasso_node_destroy(server_node);
+	parent_class->init_from_xml(node, xmlnode);
 
-  return dump;
+	s = xmlGetProp(xmlnode, "SignatureMethod");
+	if (s && strcmp(s, "RSA_SHA1") == 0)
+		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+	if (s && strcmp(s, "DSA_SHA1") == 0)
+		server->signature_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+	if (s)
+		xmlFree(s);
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		if (strcmp(t->name, "PrivateKeyFilePath") == 0)
+			server->private_key = xmlNodeGetContent(t);
+		if (strcmp(t->name, "SecretKey") == 0)
+			server->secret_key = xmlNodeGetContent(t);
+		if (strcmp(t->name, "CertificateFilePath") == 0)
+			server->certificate = xmlNodeGetContent(t);
+		if (strcmp(t->name, "Providers") == 0) {
+			xmlNode *t2 = t->children;
+			LassoProvider *p;
+			while (t2) {
+				if (t2->type != XML_ELEMENT_NODE) {
+					t2 = t2->next;
+					continue;
+				}
+				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
+				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
+				g_hash_table_insert(server->providers,
+						g_strdup(p->ProviderID), p);
+				t2 = t2->next;
+			}
+		}
+		t = t->next;
+	}
+}
+
+
+
+static gboolean
+get_first_providerID(gchar *key, gpointer value, char **providerID)
+{
+	*providerID = key;
+	return TRUE;
 }
 
 gchar*
 lasso_server_get_first_providerID(LassoServer *server)
 {
-  LassoProvider *provider;
+	gchar *providerID = NULL;
 
-  if (server->providers->len > 0) {
-    provider = (LassoProvider *)g_ptr_array_index(server->providers, 0);
-    return lasso_provider_get_providerID(provider);
-  }
-  else {
-    return NULL;
-  }
+	g_hash_table_find(server->providers, (GHRFunc)get_first_providerID, &providerID);
+	return g_strdup(providerID);
 }
 
 LassoProvider*
-lasso_server_get_provider(LassoServer  *server,
-			  gchar        *providerID,
-			  GError      **err)
+lasso_server_get_provider(LassoServer *server, gchar *providerID)
 {
-  LassoProvider *provider;
-  GError *tmp_err = NULL;
-
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-  }
-
-  provider = lasso_server_get_provider_ref(server, providerID, &tmp_err);
-
-  if (provider != NULL) {
-    return lasso_provider_copy(provider);
-  }
-  else {
-    g_propagate_error (err, tmp_err);
-  }
-
-  return NULL;
+	return g_hash_table_lookup(server->providers, providerID);
 }
 
-LassoProvider*
-lasso_server_get_provider_ref(LassoServer  *server,
-			      gchar        *providerID,
-			      GError      **err)
+
+static gboolean
+get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
 {
-  LassoProvider *provider;
-  xmlChar *id;
-  int index, len;
-  
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-  }
-  if (LASSO_IS_SERVER(server) == FALSE) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ));
-    g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  }
-  if (providerID == NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_INVALID_VALUE,
-		lasso_strerror(LASSO_PARAM_ERROR_INVALID_VALUE));
-    g_return_val_if_fail(providerID != NULL, NULL);
-  }
+	char *hash = *providerID;
+	char *hash_providerID, *b64_hash_providerID;
 
-  len = server->providers->len;
-  for (index = 0; index<len; index++) {
-    provider = g_ptr_array_index(server->providers, index);
+	hash_providerID = lasso_sha1(key);
+	b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
+	xmlFree(hash_providerID);
 
-    id = lasso_provider_get_providerID(provider);
-    if (id != NULL) {
-      if (xmlStrEqual(providerID, id)) {
-	xmlFree(id);
-	return provider;
-      }
-      xmlFree(id);
-    }
-  }
-
-  /* no provider was found */
-  g_set_error(err, g_quark_from_string("Lasso"),
-	      LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
-	      lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND),
-	      providerID);
-  /* print error msg here so that caller just check err->code */
-  message(G_LOG_LEVEL_CRITICAL, err[0]->message);
-
-  return NULL;
-}
-
-gchar *
-lasso_server_get_providerID_from_hash(LassoServer *server,
-				      gchar       *b64_hash)
-{
-  LassoProvider *provider;
-  xmlChar *providerID, *hash_providerID;
-  xmlChar *b64_hash_providerID;
-  int i;
-
-  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(b64_hash != NULL, NULL);
-
-  for (i=0; i<server->providers->len; i++) {
-    provider = g_ptr_array_index(server->providers, i);
-    providerID = lasso_provider_get_providerID(provider);
-    if (providerID != NULL) {
-      hash_providerID = lasso_sha1(providerID);
-      b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
-      xmlFree(hash_providerID);
-      if (xmlStrEqual(b64_hash_providerID, b64_hash)) {
+	if (strcmp(b64_hash_providerID, hash) == 0) {
+		xmlFree(b64_hash_providerID);
+		*providerID = key;
+		return TRUE;
+	}
 	xmlFree(b64_hash_providerID);
-	return providerID;
-      }
-      else {
-	xmlFree(b64_hash_providerID);
-	xmlFree(providerID);
-      }
-    }
-  }
 
-  /* failed to get the providerID */
-  message(G_LOG_LEVEL_CRITICAL,
-	  "Failed to get a providerID corresponding to the hash.\n")
-
-  return NULL;
+	return FALSE;
 }
 
-lassoSignatureMethod
-lasso_server_get_signature_method(LassoServer *server)
-{
-  return server->signature_method;
-}
 
-void
-lasso_server_set_signature_method(LassoServer          *server,
-				  lassoSignatureMethod  signature_method)
+gchar*
+lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)
 {
-  server->signature_method = signature_method;
+	gchar *providerID = b64_hash; /* kludge */
+
+	g_hash_table_find(server->providers, (GHRFunc)get_providerID_with_hash, &providerID);
+	return g_strdup(providerID);
 }
 
 /*****************************************************************************/
@@ -362,39 +235,37 @@ lasso_server_set_signature_method(LassoServer          *server,
 /*****************************************************************************/
 
 static void
-lasso_server_dispose(LassoServer *server)
+dispose(GObject *object)
 {
-  guint i;
+	LassoServer *server = LASSO_SERVER(object);
 
-  if (server->private->dispose_has_run == TRUE) {
-    return;
-  }
-  server->private->dispose_has_run = TRUE;
+	if (server->private->dispose_has_run == TRUE) {
+		return;
+	}
+	server->private->dispose_has_run = TRUE;
 
-  debug("Server object 0x%x disposed ...\n", server);
+	debug("Server object 0x%x disposed ...\n", server);
 
-  /* free allocated memory for providers array */
-  for (i=0; i<server->providers->len; i++) {
-    lasso_provider_destroy(server->providers->pdata[i]);
-  }
-  g_ptr_array_free(server->providers, TRUE);
+	/* free allocated memory for providers array */
+	/* XXX */
 
-  parent_class->dispose(G_OBJECT(server));
+	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(server));
 }
 
 static void
-lasso_server_finalize(LassoServer *server)
+finalize(GObject *object)
 {
-  debug("Server object 0x%x finalized ...\n", server);
+	LassoServer *server = LASSO_SERVER(object);
 
-  g_free(server->providerID);
-  g_free(server->private_key);
-  g_free(server->secret_key);
-  g_free(server->certificate);
+	debug("Server object 0x%x finalized ...\n", server);
 
-  g_free(server->private);
+	g_free(server->private_key);
+	g_free(server->secret_key);
+	g_free(server->certificate);
 
-  parent_class->finalize(G_OBJECT(server));
+	g_free(server->private);
+
+	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(server));
 }
 
 /*****************************************************************************/
@@ -402,50 +273,54 @@ lasso_server_finalize(LassoServer *server)
 /*****************************************************************************/
 
 static void
-lasso_server_instance_init(LassoServer *server)
+instance_init(LassoServer *server)
 {
-  server->private = g_new (LassoServerPrivate, 1);
-  server->private->dispose_has_run = FALSE;
+	server->private = g_new(LassoServerPrivate, 1);
+	server->private->dispose_has_run = FALSE;
 
-  server->providers = g_ptr_array_new();
-  server->providerID  = NULL;
-  server->private_key = NULL;
-  server->secret_key = NULL;
-  server->certificate = NULL;
-  server->signature_method = lassoSignatureMethodRsaSha1;
+	server->providers = g_hash_table_new_full(
+			g_str_hash, g_str_equal, g_free,
+			(GDestroyNotify)lasso_node_destroy);
+	server->private_key = NULL;
+	server->secret_key = NULL;
+	server->certificate = NULL;
+	server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 }
 
 static void
-lasso_server_class_init(LassoServerClass *class) {
-  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
-  
-  parent_class = g_type_class_peek_parent(class);
-  /* override parent class methods */
-  gobject_class->dispose  = (void *)lasso_server_dispose;
-  gobject_class->finalize = (void *)lasso_server_finalize;
+class_init(LassoServerClass *klass)
+{
+	parent_class = g_type_class_peek_parent(klass);
+
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
+	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
-GType lasso_server_get_type() {
-  static GType this_type = 0;
+GType
+lasso_server_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoServerClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_server_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoServer),
-      0,
-      (GInstanceInitFunc) lasso_server_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_PROVIDER,
-				       "LassoServer",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoServerClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoServer),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_PROVIDER,
+				"LassoServer", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -460,161 +335,46 @@ GType lasso_server_get_type() {
  * 
  * Return value: a newly allocated #LassoServer object or NULL if an error occurs.
  **/
-LassoServer *
+LassoServer*
 lasso_server_new(const gchar *metadata,
 		 const gchar *private_key,
 		 const gchar *secret_key,
 		 const gchar *certificate)
 {
-  LassoServer *server;
-  xmlDocPtr    doc;
-  xmlNodePtr   root;
-  LassoNode   *md_node = NULL;
-  gchar       *providerID = NULL;
-  GError      *err = NULL;
+	LassoServer *server;
 
-  /* metadata can be NULL (if server is a LECP) */
+	server = g_object_new(LASSO_TYPE_SERVER, NULL);
 
-  /* put server metadata in a LassoNode */
-  if (metadata != NULL) {
-    doc = xmlParseFile(metadata);
-    if (doc == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Failed to parse file \"%s\"\n", metadata);
-      return NULL;
-    }
-    root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-    xmlFreeDoc(doc);
-    md_node = lasso_node_new();
-    LASSO_NODE_GET_CLASS(md_node)->set_xmlNode(md_node, root);
- 
-    /* get ProviderID in metadata */
-    providerID = lasso_node_get_attr_value(md_node, "providerID", &err);
-    if (providerID == NULL) {
-      message(G_LOG_LEVEL_WARNING, err->message);
-      g_error_free(err);
-      lasso_node_destroy(md_node);
-      return NULL;
-    }
-  }
+	/* metadata can be NULL (if server is a LECP) */
+	if (metadata != NULL) {
+		lasso_provider_load_metadata(LASSO_PROVIDER(server), metadata);
+		/* XXX: error checking */
+	}
 
-  /* Ok, we can create server */
-  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+	server->private_key = g_strdup(private_key);
+	server->secret_key = g_strdup(secret_key);
+	server->certificate = g_strdup(certificate);
 
-  if (md_node != NULL) {
-    LASSO_PROVIDER(server)->metadata = md_node;
-  }
-  if (providerID != NULL) {
-    server->providerID = providerID;
-  }
-  server->private_key = g_strdup(private_key);
-  server->secret_key  = g_strdup(secret_key);
-  server->certificate = g_strdup(certificate);
-
-  return server;
+	return server;
 }
 
-LassoServer *
-lasso_server_new_from_dump(gchar *dump)
+LassoServer*
+lasso_server_new_from_dump(const gchar *dump)
 {
-  LassoNodeClass *server_class, *providers_class;
-  LassoNode      *server_node, *providers_node, *provider_node, *entity_node, *server_metadata_node;
-  LassoServer    *server;
-  LassoProvider  *provider;
-  xmlNodePtr      providers_xmlNode, provider_xmlNode;
-  xmlChar        *public_key, *ca_cert_chain, *signature_method;
+	LassoServer *server;
+	xmlDoc *doc;
 
-  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+	server = g_object_new(LASSO_TYPE_SERVER, NULL);
+	doc = xmlParseMemory(dump, strlen(dump));
+	init_from_xml(LASSO_NODE(server), xmlDocGetRootElement(doc)); 
+	xmlFreeDoc(doc);
 
-  server_node  = lasso_node_new_from_dump(dump);
-  if (server_node == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Error while loading server dump\n");
-    return NULL;
-  }
-  server_class = LASSO_NODE_GET_CLASS(server_node);
-  if (strcmp(server_class->get_name(server_node), LASSO_SERVER_NODE) != 0) {
-    message(G_LOG_LEVEL_WARNING, "XML is not a server dump\n");
-    lasso_node_destroy(server_node);
-    return NULL;
-  }
-
-  /* providerID */
-  server->providerID = lasso_node_get_attr_value(server_node, LASSO_SERVER_PROVIDERID_NODE, NULL);
-
-  /* private key */
-  server->private_key = lasso_node_get_attr_value(server_node, LASSO_SERVER_PRIVATE_KEY_NODE, NULL);
-
-  /* secret key */
-  server->secret_key = lasso_node_get_attr_value(server_node, LASSO_SERVER_SECRET_KEY_NODE, NULL);
-
-  /* certificate */
-  server->certificate = lasso_node_get_attr_value(server_node, LASSO_SERVER_CERTIFICATE_NODE, NULL);
-
-  /* signature method */
-  signature_method = lasso_node_get_attr_value(server_node, LASSO_SERVER_SIGNATURE_METHOD_NODE, NULL);
-  if (signature_method != NULL) {
-    server->signature_method = atoi(signature_method);
-    xmlFree(signature_method);
-  }
-
-  /* metadata */
-  server_metadata_node = lasso_node_get_child(server_node, LASSO_SERVER_METADATA_NODE, NULL, NULL);
-  if (server_metadata_node != NULL) {
-    entity_node = lasso_node_get_child(server_metadata_node, "EntityDescriptor", NULL, NULL);
-    LASSO_PROVIDER(server)->metadata = lasso_node_copy(entity_node);
-    lasso_node_destroy(entity_node);
-  }
-
-  /* public key */
-  LASSO_PROVIDER(server)->public_key = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, NULL);
-
-  /* ca_cert_chain */
-  LASSO_PROVIDER(server)->ca_cert_chain = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_CA_CERT_CHAIN_NODE, NULL);
-
-  /* providers */
-  providers_node  = lasso_node_get_child(server_node, LASSO_SERVER_PROVIDERS_NODE, lassoLassoHRef, NULL);
-  if (providers_node != NULL) {
-    providers_class = LASSO_NODE_GET_CLASS(providers_node);
-    providers_xmlNode = providers_class->get_xmlNode(providers_node);
-    provider_xmlNode = providers_xmlNode->children;
-
-    while (provider_xmlNode != NULL) {
-      if (provider_xmlNode->type == XML_ELEMENT_NODE && \
-	  xmlStrEqual(provider_xmlNode->name, LASSO_PROVIDER_NODE)) {
-	/* provider node */
-	provider_node = lasso_node_new_from_xmlNode(provider_xmlNode);
-
-	/*  metadata */
-	entity_node = lasso_node_get_child(provider_node, "EntityDescriptor", NULL, NULL);
-
-	/* public key */
-	public_key = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, NULL);
-
-	/* ca certificate */
-	ca_cert_chain = lasso_node_get_attr_value(provider_node, LASSO_PROVIDER_CA_CERT_CHAIN_NODE, NULL);
-
-	/* add provider */
-	provider = lasso_provider_new_from_metadata_node(entity_node);
-	lasso_node_destroy(entity_node);
-	if (public_key != NULL) {
-	  lasso_provider_set_public_key(provider, public_key);
-	  xmlFree(public_key);
-	}
-	if (ca_cert_chain != NULL) {
-	  lasso_provider_set_ca_cert_chain(provider, ca_cert_chain);
-	  xmlFree(ca_cert_chain);
-	}
-	lasso_server_add_lasso_provider(server, provider);
-
-	lasso_node_destroy(provider_node);
-      }
-
-      provider_xmlNode = provider_xmlNode->next;
-    }
-
-    lasso_node_destroy(providers_node);
-  }
-
-  lasso_node_destroy(server_node);
-
-  return server;
+	return server;
 }
+
+gchar*
+lasso_server_dump(LassoServer *server)
+{
+	return lasso_node_dump(LASSO_NODE(server), NULL, 1);
+}
+

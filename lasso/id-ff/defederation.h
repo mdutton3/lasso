@@ -31,7 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/environs/profile.h>
-#include <lasso/protocols/federation_termination_notification.h>
+#include <lasso/xml/lib_federation_termination_notification.h>
 
 #define LASSO_TYPE_DEFEDERATION (lasso_defederation_get_type())
 #define LASSO_DEFEDERATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DEFEDERATION, LassoDefederation))
@@ -45,22 +45,18 @@ typedef struct _LassoDefederationClass LassoDefederationClass;
 typedef struct _LassoDefederationPrivate LassoDefederationPrivate;
 
 struct _LassoDefederation {
-  LassoProfile parent;
-
-  /*< private >*/
-
-  LassoDefederationPrivate *private;
+	LassoProfile parent;
+	/*< private >*/
+	LassoDefederationPrivate *private;
 };
 
 struct _LassoDefederationClass {
-  LassoProfileClass parent;
-
+	LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType              lasso_defederation_get_type (void);
 
-LASSO_EXPORT LassoDefederation *lasso_defederation_new      (LassoServer       *server,
-							     lassoProviderType  provider_type);
+LASSO_EXPORT LassoDefederation *lasso_defederation_new      (LassoServer       *server);
   
 
 LASSO_EXPORT gint lasso_defederation_build_notification_msg   (LassoDefederation *defederation);
@@ -72,8 +68,7 @@ LASSO_EXPORT gint lasso_defederation_init_notification        (LassoDefederation
 							       lassoHttpMethod    notification_method);
 
 LASSO_EXPORT gint lasso_defederation_process_notification_msg (LassoDefederation *defederation,
-							       gchar             *notification_msg,
-							       lassoHttpMethod     notification_method);
+							       gchar             *notification_msg);
   
 LASSO_EXPORT gint lasso_defederation_validate_notification    (LassoDefederation *defederation);
 

@@ -30,6 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/xml/lib_register_name_identifier_request.h>
 #include <lasso/xml/lib_status_response.h>
 
 #define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE (lasso_lib_register_name_identifier_response_get_type())
@@ -43,16 +44,19 @@ typedef struct _LassoLibRegisterNameIdentifierResponse LassoLibRegisterNameIdent
 typedef struct _LassoLibRegisterNameIdentifierResponseClass LassoLibRegisterNameIdentifierResponseClass;
 
 struct _LassoLibRegisterNameIdentifierResponse {
-  LassoLibStatusResponse parent;
-  /*< private >*/
+	LassoLibStatusResponse parent;
 };
 
 struct _LassoLibRegisterNameIdentifierResponseClass {
-  LassoLibStatusResponseClass parent;
+	LassoLibStatusResponseClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_register_name_identifier_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_response_new(void);
+LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_response_new_full(
+		char *providerID,
+		const char *statusCodeValue,
+		LassoLibRegisterNameIdentifierRequest *request);
 
 #ifdef __cplusplus
 }

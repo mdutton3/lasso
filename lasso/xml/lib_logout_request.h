@@ -44,8 +44,19 @@ typedef struct _LassoLibLogoutRequest LassoLibLogoutRequest;
 typedef struct _LassoLibLogoutRequestClass LassoLibLogoutRequestClass;
 
 struct _LassoLibLogoutRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
+	LassoSamlpRequestAbstract parent;
+        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	char *Extension;
+        /* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+        /* <xs:element ref="saml:NameIdentifier"/> */
+	LassoSamlNameIdentifier *NameIdentifier;
+        /* <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/> */
+	char *SessionIndex;
+        /* <xs:element ref="RelayState" minOccurs="0"/> */
+	char *RelayState;
+        /* <xs:attribute ref="consent" use="optional"/> */
+	char *consent;
 };
 
 struct _LassoLibLogoutRequestClass {
@@ -55,20 +66,9 @@ struct _LassoLibLogoutRequestClass {
 LASSO_EXPORT GType lasso_lib_logout_request_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_logout_request_new(void);
 
-LASSO_EXPORT void lasso_lib_logout_request_set_consent        (LassoLibLogoutRequest *,
-							       const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_logout_request_set_nameIdentifier (LassoLibLogoutRequest *,
-							       LassoSamlNameIdentifier *);
-
-LASSO_EXPORT void lasso_lib_logout_request_set_providerID     (LassoLibLogoutRequest *,
-							       const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_logout_request_set_relayState     (LassoLibLogoutRequest *,
-							       const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_logout_request_set_sessionIndex   (LassoLibLogoutRequest *,
-							       const xmlChar *);
+LASSO_EXPORT LassoNode* lasso_lib_logout_request_new_full(
+		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
 #ifdef __cplusplus
 }

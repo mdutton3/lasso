@@ -45,49 +45,38 @@ typedef struct _LassoLibAuthnRequest LassoLibAuthnRequest;
 typedef struct _LassoLibAuthnRequestClass LassoLibAuthnRequestClass;
 
 struct _LassoLibAuthnRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
+	LassoSamlpRequestAbstract parent;
+
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element ref="AffiliationID" minOccurs="0"/> */
+	char *AffiliationID;
+	/* <xs:element ref="NameIDPolicy" minOccurs="0"/> */
+	char *NameIDPolicy; /* XXX: move to enum ?*/
+	/* <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/> */
+	gboolean ForceAuthn;
+	/* <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/> */
+	gboolean IsPassive;
+	/* <xs:element ref="ProtocolProfile" minOccurs="0"/> */
+	char *ProtocolProfile; /* XXX: move to enum */
+	/* <xs:element name="AssertionConsumerServiceID" type="xs:string" minOccurs="0"/> */
+	char *AssertionConsumerServiceID; /* XXX: move to enum? */
+	/* <xs:element ref="RequestAuthnContext" minOccurs="0"/> */
+	LassoLibRequestAuthnContext *RequestAuthnContext;
+	/* <xs:element ref="RelayState" minOccurs="0"/> */
+	char *RelayState;
+	/* <xs:element ref="Scoping" minOccurs="0 "/> */
+	LassoLibScoping *Scoping;
+	/* <xs:attribute ref="consent" use="optional"/> */
+	char *consent;
 };
 
 struct _LassoLibAuthnRequestClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_authn_request_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_authn_request_new(void);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_affiliationID              (LassoLibAuthnRequest *,
-									  const xmlChar *);
-  
-LASSO_EXPORT void lasso_lib_authn_request_set_assertionConsumerServiceID (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_consent                    (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_forceAuthn                 (LassoLibAuthnRequest *,
-									  gboolean);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_isPassive                  (LassoLibAuthnRequest *,
-									  gboolean);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_nameIDPolicy               (LassoLibAuthnRequest *node,
-									  const xmlChar   *nameIDPolicy);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_protocolProfile            (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_providerID                 (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_relayState                 (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_requestAuthnContext        (LassoLibAuthnRequest *,
-									  LassoLibRequestAuthnContext *);
-
-LASSO_EXPORT void lasso_lib_authn_request_set_scoping                    (LassoLibAuthnRequest *node,
-									  LassoLibScoping *scoping);
+LASSO_EXPORT LassoLibAuthnRequest* lasso_lib_authn_request_new(void);
 
 #ifdef __cplusplus
 }

@@ -53,33 +53,49 @@ From schema liberty-authentication-context-v1.2.xsd:
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_authn_context_set_authnContextClassRef(LassoLibAuthnContext *node,
-						 const xmlChar *authnContextClassRef)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_CONTEXT(node));
-  g_assert(authnContextClassRef != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AuthnContextClassRef",
-		   authnContextClassRef, FALSE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	if (LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextClassRef)
+		xmlNewTextChild(xmlnode, NULL, "AuthnContextClassRef",
+				LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextClassRef);
+	if (LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextStatementRef)
+		xmlNewTextChild(xmlnode, NULL, "AuthnContextStatementRef",
+				LASSO_LIB_AUTHN_CONTEXT(node)->AuthnContextStatementRef);
+
+	xmlNodeSetName(xmlnode, "AuthnContext");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	return xmlnode;
 }
 
-void
-lasso_lib_authn_context_set_authnContextStatementRef(LassoLibAuthnContext *node,
-						     const xmlChar *authnContextStatementRef)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_AUTHN_CONTEXT(node));
-  g_assert(authnContextStatementRef != NULL);
+	LassoLibAuthnContext *context = LASSO_LIB_AUTHN_CONTEXT(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "AuthnContextStatementRef",
-		   authnContextStatementRef, FALSE);
+        parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			if (strcmp(t->name, "AuthnContextClassRef") == 0)
+				context->AuthnContextClassRef = xmlNodeGetContent(t);
+			if (strcmp(t->name, "AuthnContextStatementRef") == 0 )
+				context->AuthnContextStatementRef = xmlNodeGetContent(t);
+		}
+		t = t->next;
+	}
+
 }
 
 /*****************************************************************************/
@@ -87,43 +103,46 @@ lasso_lib_authn_context_set_authnContextStatementRef(LassoLibAuthnContext *node,
 /*****************************************************************************/
 
 static void
-lasso_lib_authn_context_instance_init(LassoLibAuthnContext *node)
+instance_init(LassoLibAuthnContext *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "AuthnContext");
+	node->AuthnContextClassRef = NULL;
+	node->AuthnContextStatementRef = NULL;
 }
 
 static void
-lasso_lib_authn_context_class_init(LassoLibAuthnContextClass *klass)
+class_init(LassoLibAuthnContextClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_authn_context_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_authn_context_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibAuthnContextClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_authn_context_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibAuthnContext),
-      0,
-      (GInstanceInitFunc) lasso_lib_authn_context_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoLibAuthnContext",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibAuthnContextClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibAuthnContext),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoLibAuthnContext", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_lib_authn_context_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_AUTHN_CONTEXT,
-				 NULL));
+LassoNode*
+lasso_lib_authn_context_new() {
+	return g_object_new(LASSO_TYPE_LIB_AUTHN_CONTEXT, NULL);
 }
+

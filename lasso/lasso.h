@@ -48,14 +48,14 @@ LASSO_EXPORT int lasso_shutdown(void);
 
 /**
  * lassoCheckVersionMode:
- * @lassoCheckVersionExact:		the version should match exactly.
- * @lassoCheckVersionABICompatible:	the version should be ABI compatible.
+ * @LASSO_CHECK_VERSION_EXACT:		the version should match exactly.
+ * @LASSO_CHECK_VERSIONABI_COMPATIBLE:	the version should be ABI compatible.
  *
  * The lasso library version mode.
  */
 typedef enum {
-  lassoCheckVersionExact = 0,
-  lassoCheckVersionABICompatible
+  LASSO_CHECK_VERSION_EXACT = 0,
+  LASSO_CHECK_VERSIONABI_COMPATIBLE
 } lassoCheckVersionMode;
 
 /**
@@ -67,7 +67,7 @@ typedef enum {
  */
 #define lasso_check_version_exact()	\
     lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
-                            LASSO_VERSION_SUBMINOR, lassoCheckVersionExact)
+                            LASSO_VERSION_SUBMINOR, LASSO_CHECK_VERSION_EXACT)
 
 /**
  * lasso_check_version:
@@ -79,7 +79,7 @@ typedef enum {
 #define lasso_check_version()	\
     lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
 			    LASSO_VERSION_SUBMINOR, \
-			    lassoCheckVersionABICompatible)
+			    LASSO_CHECK_VERSIONABI_COMPATIBLE)
 
 LASSO_EXPORT int lasso_check_version_ext(int major,
 					 int minor,

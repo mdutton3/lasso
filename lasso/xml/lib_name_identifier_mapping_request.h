@@ -44,29 +44,31 @@ typedef struct _LassoLibNameIdentifierMappingRequest LassoLibNameIdentifierMappi
 typedef struct _LassoLibNameIdentifierMappingRequestClass LassoLibNameIdentifierMappingRequestClass;
 
 struct _LassoLibNameIdentifierMappingRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
+	LassoSamlpRequestAbstract parent;
+
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension; /* XXX */
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element ref="saml:NameIdentifier"/> */
+	LassoSamlNameIdentifier *NameIdentifier;
+	/* <xs:element name="TargetNamespace" type="md:entityIDType"/> */
+	char *TargetNamespace;
+	/* <xs:attribute ref="consent" use="optional"/> */
+	char *consent;
 };
 
 struct _LassoLibNameIdentifierMappingRequestClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_name_identifier_mapping_request_get_type(void);
-
 LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_request_new(void);
+LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_request_new_full(
+		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+		const char *targetNamespace,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method);
 
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_consent         (LassoLibNameIdentifierMappingRequest *,
-										 const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_providerID      (LassoLibNameIdentifierMappingRequest *,
-										 const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_nameIdentifier  (LassoLibNameIdentifierMappingRequest *,
-										 LassoSamlNameIdentifier *);
-
-LASSO_EXPORT void lasso_lib_name_identifier_mapping_request_set_targetNameSpace (LassoLibNameIdentifierMappingRequest *node,
-										 const xmlChar *targetNameSpace);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

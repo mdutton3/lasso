@@ -32,8 +32,8 @@ extern "C" {
 
 #include <lasso/environs/profile.h>
 
-#include <lasso/protocols/register_name_identifier_request.h>
-#include <lasso/protocols/register_name_identifier_response.h>
+#include <lasso/xml/lib_register_name_identifier_request.h>
+#include <lasso/xml/lib_register_name_identifier_response.h>
 
 #define LASSO_TYPE_NAME_REGISTRATION (lasso_name_registration_get_type())
 #define LASSO_NAME_REGISTRATION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NAME_REGISTRATION, LassoNameRegistration))
@@ -46,25 +46,20 @@ typedef struct _LassoNameRegistration LassoNameRegistration;
 typedef struct _LassoNameRegistrationClass LassoNameRegistrationClass;
 
 struct _LassoNameRegistration {
-  LassoProfile parent;
-
-  gchar *oldNameIdentifier;
-
-  /*< private >*/
+	LassoProfile parent;
+	gchar *oldNameIdentifier;
 };
 
 struct _LassoNameRegistrationClass {
-  LassoProfileClass parent;
-
+	LassoProfileClass parent;
 };
 
 LASSO_EXPORT GType                  lasso_name_registration_get_type      (void);
 
-LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new           (LassoServer       *server,
-									   lassoProviderType  provider_type);
+LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new(LassoServer *server);
 
-LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new_from_dump (LassoServer *server,
-									   gchar       *dump);
+LASSO_EXPORT LassoNameRegistration* lasso_name_registration_new_from_dump(
+		LassoServer *server, const char *dump);
 
 LASSO_EXPORT gint            lasso_name_registration_build_request_msg    (LassoNameRegistration *name_registration);
 
@@ -74,16 +69,14 @@ LASSO_EXPORT void            lasso_name_registration_destroy              (Lasso
 
 LASSO_EXPORT gchar*          lasso_name_registration_dump                 (LassoNameRegistration *name_registration);
 
-LASSO_EXPORT gint            lasso_name_registration_init_request         (LassoNameRegistration *name_registration,
-									   gchar                 *remote_providerID);
+LASSO_EXPORT gint lasso_name_registration_init_request(LassoNameRegistration *name_registration,
+		char *remote_providerID, lassoHttpMethod http_method);
 
 LASSO_EXPORT gint            lasso_name_registration_process_request_msg  (LassoNameRegistration *name_registration,
-									   gchar                 *request_msg,
-									   lassoHttpMethod        request_method);
+									   gchar                 *request_msg);
 
 LASSO_EXPORT gint            lasso_name_registration_process_response_msg (LassoNameRegistration *name_registration,
-									   gchar                 *response_msg,
-									   lassoHttpMethod        response_method);
+									   gchar                 *response_msg);
 
 LASSO_EXPORT gint            lasso_name_registration_validate_request     (LassoNameRegistration *name_registration);
   

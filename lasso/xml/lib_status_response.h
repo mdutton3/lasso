@@ -44,25 +44,22 @@ typedef struct _LassoLibStatusResponse LassoLibStatusResponse;
 typedef struct _LassoLibStatusResponseClass LassoLibStatusResponseClass;
 
 struct _LassoLibStatusResponse {
-  LassoSamlpResponseAbstract parent;
-  /*< private >*/
+	LassoSamlpResponseAbstract parent;
+
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+        /* <xs:element ref="samlp:Status"/> */
+	LassoSamlpStatus *Status;
+	/* <xs:element ref="RelayState" minOccurs="0"/> */
+	char *RelayState;
 };
 
 struct _LassoLibStatusResponseClass {
-  LassoSamlpResponseAbstractClass parent;
+	LassoSamlpResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_status_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_status_response_new(void);
-
-LASSO_EXPORT void lasso_lib_status_response_set_providerID (LassoLibStatusResponse *node,
-							    const xmlChar *providerID);
-
-LASSO_EXPORT void lasso_lib_status_response_set_relayState (LassoLibStatusResponse *node,
-							    const xmlChar *relayState);
-
-LASSO_EXPORT void lasso_lib_status_response_set_status     (LassoLibStatusResponse *node,
-							    LassoSamlpStatus *status);
 
 #ifdef __cplusplus
 }

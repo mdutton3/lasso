@@ -27,16 +27,25 @@
 
 #include <libxml/uri.h>
 
+#include <openssl/pem.h>
 #include <openssl/sha.h>
+#include <openssl/engine.h>
 
 #include <xmlsec/xmltree.h>
 #include <xmlsec/base64.h>
-#include <xmlsec/xmldsig.h>
-#include <xmlsec/templates.h>
 
 #include <lasso/xml/tools.h>
 #include <lasso/xml/errors.h>
+#include <lasso/xml/strings.h>
 
+/**
+ * lasso_build_random_sequence:
+ * @size: the sequence size in byte (character)
+ * 
+ * Builds a random sequence of [0-9A-F] characters of size @size.
+ * 
+ * Return value: a newly allocated string or NULL if an error occurs.
+ **/
 xmlChar *
 lasso_build_random_sequence(guint8 size)
 {
@@ -100,30 +109,6 @@ lasso_build_unique_id(guint8 size)
 }
 
 /**
- * lasso_doc_get_node_content:
- * @doc: a doc
- * @name: the name
- * 
- * Gets the value of the first node having given @name.
- * 
- * Return value: a node value or NULL if no node found or if no content is
- * available
- **/
-xmlChar *
-lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
-{
-  xmlNodePtr node;
-
-  /* FIXME: bad namespace used */
-  node = xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
-  if (node != NULL)
-    /* val returned must be xmlFree() */
-    return xmlNodeGetContent(node);
-  else
-    return NULL;
-}
-
-/**
  * lasso_g_ptr_array_index:
  * @a: a GPtrArray
  * @i: the index
@@ -178,7 +163,7 @@ lasso_get_pem_file_type(const gchar *pem_file)
   BIO* bio;
   EVP_PKEY *pkey;
   X509 *cert;
-  guint type = lassoPemFileTypeUnknown;
+  guint type = LASSO_PEM_FILE_TYPE_UNKNOWN;
 
   g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
@@ -191,21 +176,21 @@ lasso_get_pem_file_type(const gchar *pem_file)
 
   pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);
   if (pkey != NULL) {
-    type = lassoPemFileTypePubKey;
+    type = LASSO_PEM_FILE_TYPE_PUB_KEY;
     EVP_PKEY_free(pkey);
   }
   else {
     BIO_reset(bio);
     pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
     if (pkey != NULL) {
-      type = lassoPemFileTypePrivateKey;
+      type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
       EVP_PKEY_free(pkey);
     }
     else {
       BIO_reset(bio);
       cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
       if (cert != NULL) {
-	type = lassoPemFileTypeCert;
+	type = LASSO_PEM_FILE_TYPE_CERT;
 	X509_free(cert);
       }
     }
@@ -279,7 +264,6 @@ lasso_load_certs_from_pem_certs_chain_file(const gchar* pem_certs_chain_file)
 {
   xmlSecKeysMngrPtr keys_mngr;
   GIOChannel *gioc;
-  GIOStatus gios;
   gchar *line;
   gsize len, pos;
   GString *cert = NULL;
@@ -303,7 +287,7 @@ lasso_load_certs_from_pem_certs_chain_file(const gchar* pem_certs_chain_file)
   }    
 
   gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
-  while (gios = g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
+  while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
     if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
       cert = g_string_new(line);
     }
@@ -350,113 +334,120 @@ lasso_load_certs_from_pem_certs_chain_file(const gchar* pem_certs_chain_file)
 }
 
 /**
- * lasso_query_get_value:
+ * lasso_query_sign:
  * @query: a query (an url-encoded node)
- * @param: the parameter
+ * @sign_method: the Signature transform method
+ * @private_key_file: the private key
  * 
- * Returns the value of the given @param
+ * Signs a query (url-encoded message).
  * 
- * Return value: a string or NULL if no parameter found
+ * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
-GPtrArray *
-lasso_query_get_value(const gchar   *query,
-		      const xmlChar *param)
+xmlChar*
+lasso_query_sign(xmlChar              *query,
+		 lassoSignatureMethod  sign_method,
+		 const char           *private_key_file)
 {
-  guint i;
-  GData *gd;
-  GPtrArray *tmp_array, *array = NULL;
+  BIO *bio = NULL;
+  xmlChar *digest = NULL; /* 160 bit buffer */
+  RSA *rsa = NULL;
+  DSA *dsa = NULL;
+  unsigned char *sigret = NULL;
+  unsigned int siglen;
+  xmlChar *b64_sigret = NULL, *e_b64_sigret = NULL;
+  xmlChar *new_query = NULL, *s_new_query = NULL;
+  int status = 0;
+  char *t;
 
-  gd = lasso_query_to_dict(query);
-  tmp_array = (GPtrArray *)g_datalist_get_data(&gd, (gchar *)param);
-  /* create a copy of tmp_array */
-  if (tmp_array != NULL) {
-    array = g_ptr_array_new();
-    for(i=0; i<tmp_array->len; i++)
-      g_ptr_array_add(array, g_strdup(g_ptr_array_index(tmp_array, i)));
+  g_return_val_if_fail(query != NULL, NULL);
+  g_return_val_if_fail(sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 || \
+		       sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1, NULL);
+  g_return_val_if_fail(private_key_file != NULL, NULL);
+
+  bio = BIO_new_file(private_key_file, "rb");
+  if (bio == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file\n",
+	    private_key_file);
+    return NULL;
   }
-  g_datalist_clear(&gd);
-  return array;
-}
 
-static void
-gdata_query_to_dict_destroy_notify(gpointer data)
-{
-  guint i;
-  GPtrArray *array = data;
-
-  for (i=0; i<array->len; i++) {
-    g_free(array->pdata[i]);
+  /* add SigAlg */
+  switch (sign_method) {
+  case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+    t = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
+    new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
+    xmlFree(t);
+    break;
+  case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+    t = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+    new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
+    xmlFree(t);
+    break;
   }
-  g_ptr_array_free(array, TRUE);
-}
 
-/**
- * lasso_query_to_dict:
- * @query: the query (an url-encoded node)
- * 
- * Explodes query to build a dictonary.
- * Dictionary values are stored in GPtrArray.
- * The caller is responsible for freeing returned object by calling
- * g_datalist_clear() function.
- *
- * Return value: a dictonary
- **/
-GData *
-lasso_query_to_dict(const gchar *query)
-{
-  GData *gd = NULL;
-  gchar **sa1, **sa2, **sa3;
-  xmlChar *str_unescaped;
-  GPtrArray *gpa;
-  guint i, j;
-  
-  g_datalist_init(&gd);
-  
-  i = 0;
-  sa1 = g_strsplit(query, "&", 0);
+  /* build buffer digest */
+  digest = lasso_sha1(new_query);
+  if (digest == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest\n");
+    goto done;
+  }
 
-  while (sa1[i++] != NULL) {
-    /* split of key=value to get (key, value) sub-strings */
-    sa2 = g_strsplit(sa1[i-1], "=", 0);
-    /* if no key / value found, then continue */
-    if (sa2 == NULL) {
-      continue;
+  /* calculate signature value */
+  if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+    /* load private key */
+    rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
+    if (rsa == NULL) {
+      goto done;
     }
-    /* if only a key but no value, then continue */
-    if (sa2[1] == NULL || xmlStrEqual(sa2[1], "")) {
-      continue;
+    /* alloc memory for sigret */
+    sigret = (unsigned char *)g_malloc (RSA_size(rsa));
+    /* sign digest message */
+    status = RSA_sign(NID_sha1, digest, 20, sigret, &siglen, rsa);
+    RSA_free(rsa);
+  }
+  else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+    dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
+    if (dsa == NULL) {
+      goto done;
     }
+    sigret = (unsigned char *)g_malloc (DSA_size(dsa));
+    status = DSA_sign(NID_sha1, digest, 20, sigret, &siglen, dsa);
+    DSA_free(dsa);
+  }
+  if (status == 0) {
+    goto done;
+  }
 
-    /* split of value to get mutli values sub-strings separated by SPACE char */
-    str_unescaped = lasso_str_unescape(sa2[1]);
-    sa3 = g_strsplit(str_unescaped, " ", 0);
-    if (sa3 == NULL) {
-      g_strfreev(sa2);
-      continue;
-    }
+  /* Base64 encode the signature value */
+  b64_sigret = xmlSecBase64Encode(sigret, siglen, 0);
+  /* escape b64_sigret */
+  e_b64_sigret = xmlURIEscapeStr(b64_sigret, NULL);
 
-    xmlFree(str_unescaped);
-    gpa = g_ptr_array_new();
-    j = 0;
-    while (sa3[j++] != NULL) {
-      g_ptr_array_add(gpa, g_strdup(sa3[j-1]));
-    }
-    /* add key => values in dict */
-    g_datalist_set_data_full(&gd, sa2[0], gpa,
-			     gdata_query_to_dict_destroy_notify);
-    g_strfreev(sa3);
-    g_strfreev(sa2);
-  }  
-  g_strfreev(sa1);
+  /* add signature */
+  switch (sign_method) {
+  case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+    s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
+    break;
+  case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+    s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
+    break;
+  }
 
-  return gd;
+ done:
+  g_free(new_query);
+  xmlFree(digest);
+  BIO_free(bio);
+  free(sigret);
+  xmlFree(b64_sigret);
+  free(e_b64_sigret);
+
+  return s_new_query;
 }
 
 /**
  * lasso_query_verify_signature:
- * @query: a query  (an url-encoded and signed node)
- * @sender_public_key_file: the sender public key
- * @recipient_private_key_file: the recipient private key
+ * @query: a query (an url-encoded message)
+ * @sender_public_key_file: the query sender public key
  * 
  * Verifies the query signature.
  * 
@@ -466,116 +457,101 @@ lasso_query_to_dict(const gchar *query)
  **/
 int
 lasso_query_verify_signature(const gchar   *query,
-			     const xmlChar *sender_public_key_file,
-			     const xmlChar *recipient_private_key_file)
+			     const xmlChar *sender_public_key_file)
 {
-  GData *gd;
-  xmlDocPtr doc;
-  xmlNodePtr sigNode, sigValNode;
-  xmlSecDSigCtxPtr dsigCtx;
-  xmlChar *str_unescaped;
-  xmlChar *sigAlg;
-  gchar **str_split;
-  gint ret = 0;
+  BIO *bio = NULL;
+  RSA *rsa = NULL;
+  DSA *dsa = NULL;
+  gchar **str_split = NULL;
+  lassoSignatureMethod  sign_method;
+  xmlChar *digest = NULL, *b64_signature = NULL;
+  xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
+  xmlSecByte *signature;
+  int key_size, status = 0, ret = 0;
+
+  g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+  g_return_val_if_fail(sender_public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   /* split query, the signature MUST be the last param of the query */
   str_split = g_strsplit(query, "&Signature=", 0);
   if (str_split[1] == NULL) {
-    return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+    ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+    goto done;
   }
 
-  /* get SigAlg in query (left part) */
-  gd = lasso_query_to_dict(str_split[0]);
-  sigAlg = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SigAlg"), 0);
+  /* create bio to read public key */
+  bio = BIO_new_file(sender_public_key_file, "rb");
+  if (bio == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
+	    sender_public_key_file);
+    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+    goto done;
+  }  
 
-  /* sign the query (without the signature param) */
-  if (xmlStrEqual(sigAlg, xmlSecHrefRsaSha1)) {
-    doc = lasso_str_sign(str_split[0],
-			 lassoSignatureMethodRsaSha1,
-			 recipient_private_key_file);
+  /* get signature method (algorithm) and read public key */
+  e_rsa_alg = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
+  e_dsa_alg = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+  if (g_strrstr(str_split[0], e_rsa_alg) != NULL) {
+    sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+    rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
+    /* rsa = PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL); */
+    if (rsa == NULL) {
+      ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+      goto done;
+    }
+    key_size = RSA_size(rsa);
   }
-  else if (xmlStrEqual(sigAlg, xmlSecHrefDsaSha1)) {
-    doc = lasso_str_sign(str_split[0],
-			 lassoSignatureMethodDsaSha1,
-			 recipient_private_key_file);
+  else if (g_strrstr(str_split[0], e_dsa_alg) != NULL) {
+    sign_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+    dsa = PEM_read_bio_DSA_PUBKEY(bio, NULL, NULL, NULL);
+    if (dsa == NULL) {
+      ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+      goto done;
+    }
+    key_size = DSA_size(dsa);
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_INVALID_SIGALG));
     ret = LASSO_DS_ERROR_INVALID_SIGALG;
-    goto done;	
-  }
-
-  /* replace doc signature value by the TRUE signature value found in the query */
-  sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-			      xmlSecNodeSignatureValue,
-			      xmlSecDSigNs);
-  str_unescaped = lasso_str_unescape(str_split[1]);
-  xmlNodeSetContent(sigValNode, str_unescaped);
-  xmlFree(str_unescaped);
-
-  /* start to verify the signature */
-  /* find start node */
-  sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-			   xmlSecNodeSignature, xmlSecDSigNs);
-  if (sigNode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_NOT_FOUND),
-	    "");
-    ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-    goto done;	
-  }
-
-  /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(NULL);
-  if(dsigCtx == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
-    ret = LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
     goto done;
   }
-  
-  /* load public key */
-  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(sender_public_key_file,
-					    xmlSecKeyDataFormatPem,
-					    NULL, NULL, NULL);
-  if(dsigCtx->signKey == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
-	    sender_public_key_file);
-    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+
+  /* get signature (unescape + base64 decode) */
+  signature = (xmlSecByte *)xmlMalloc(key_size+1);
+  b64_signature = xmlURIUnescapeString(str_split[1], 0, NULL);
+  xmlSecBase64Decode(b64_signature, signature, key_size+1);
+
+  /* calculate signature digest */
+  digest = lasso_sha1(str_split[0]);
+  if (digest == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED));
+    ret = LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
     goto done;
   }
-  
-  /* verify signature */
-  if(xmlSecDSigCtxVerify(dsigCtx, sigNode) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED),
-	    "");
-    ret = LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-    goto done;
+
+  if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+    status = RSA_verify(NID_sha1, digest, 20, signature, RSA_size(rsa), rsa);
+    /* printf("OpenSSL %s\n", ERR_error_string(ERR_get_error(), NULL)); */
+    /* printf("OpenSSL %s\n", ERR_error_string(ERR_peek_last_error(), NULL)); */
   }
-  
-  if(dsigCtx->status == xmlSecDSigStatusSucceeded) {
-    ret = 0;
+  else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+    status = DSA_verify(NID_sha1, digest, 20, signature, DSA_size(dsa), dsa);
   }
-  else {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_INVALID_SIGNATURE),
-	    "");
+  if (status == 0) {
     ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
   }
-  
+
  done:
-  /* cleanup */
+  xmlFree(b64_signature);
+  xmlFree(signature);
+  xmlFree(digest);
+  xmlFree(e_rsa_alg);
+  xmlFree(e_dsa_alg);
   g_strfreev(str_split);
-  g_datalist_clear(&gd);
-  if(dsigCtx != NULL) {
-    xmlSecDSigCtxDestroy(dsigCtx);
-  }
-  
-  if(doc != NULL) {
-    xmlFreeDoc(doc);
-  }
+  BIO_free(bio);
+  RSA_free(rsa);
+  DSA_free(dsa);
+
   return ret;
 }
 
@@ -600,167 +576,29 @@ lasso_sha1(xmlChar *str)
   return NULL;
 }
 
-/**
- * lasso_str_escape:
- * @str: a string
- * 
- * Escapes the given string @str.
- * 
- * Return value: a new escaped string or NULL in case of error.
- **/
-xmlChar *
-lasso_str_escape(xmlChar *str)
+char** urlencoded_to_strings(const char *str)
 {
-  /* value returned must be xmlFree() */
-  return xmlURIEscapeStr(str, NULL);
+	int i, n=1;
+	char *st, *st2;
+	char **result;
+
+	st = (char*)str;
+	while (strchr(st, '&')) {
+		st = strchr(st, '&')+1;
+		n++;
+	}
+
+	result = malloc(sizeof(char*)*n+2);
+	result[n] = NULL;
+
+	st = (char*)str;
+	for (i=0; i<n; i++) {
+		st2 = strchr(st, '&');
+		st2 = st2 ? st2 : st+strlen(st);
+		result[i] = xmlURIUnescapeString(st, st2-st, NULL);
+		st = st2 + 1;
+	}
+	return result;
 }
 
-xmlChar *
-lasso_str_hash(xmlChar    *str,
-	       const char *private_key_file)
-{
-  xmlDocPtr doc;
-  xmlChar *b64_digest, *digest = g_new0(xmlChar, 21);
-  gint i;
 
-  doc = lasso_str_sign(str,
-		       lassoSignatureMethodRsaSha1,
-		       private_key_file);
-  b64_digest = xmlNodeGetContent(xmlSecFindNode(
-			  	 	xmlDocGetRootElement(doc),
-					xmlSecNodeDigestValue,
-					xmlSecDSigNs));
-  i = xmlSecBase64Decode(b64_digest, digest, 21);
-  xmlFree(b64_digest);
-  xmlFreeDoc(doc);
-  /* value returned must be xmlFree() */
-  return digest;
-}
-
-/**
- * lasso_str_sign:
- * @str: 
- * @sign_method: 
- * @private_key_file: 
- * 
- * 
- * 
- * Return value: 
- **/
-xmlDocPtr
-lasso_str_sign(xmlChar              *str,
-	       lassoSignatureMethod  sign_method,
-	       const char           *private_key_file)
-{
-  /* FIXME : renamed fct into lasso_query_add_signature
-     SHOULD returned a query (xmlChar) instead of xmlDoc */
-  xmlDocPtr  doc = xmlNewDoc("1.0");
-  xmlNodePtr envelope = xmlNewNode(NULL, "Envelope");
-  xmlNodePtr cdata, data = xmlNewNode(NULL, "Data");
-  xmlNodePtr signNode = NULL;
-  xmlNodePtr refNode = NULL;
-  xmlNodePtr keyInfoNode = NULL;
-  xmlSecDSigCtxPtr dsigCtx = NULL;
-
-  /* create doc */
-  xmlNewNs(envelope, "urn:envelope", NULL);
-  cdata = xmlNewCDataBlock(doc, str, strlen(str));
-  xmlAddChild(envelope, data);
-  xmlAddChild(data, cdata);
-  xmlAddChild((xmlNodePtr)doc, envelope);
-
-  /* create signature template for enveloped signature */
-  switch (sign_method) {
-  case lassoSignatureMethodRsaSha1:
-    signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-					 xmlSecTransformRsaSha1Id, NULL);
-    break;
-  case lassoSignatureMethodDsaSha1:
-    signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-					 xmlSecTransformDsaSha1Id, NULL);
-    break;
-  }
-
-  if (signNode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
-    goto done;		
-  }
-  
-  /* add <dsig:Signature/> node to the doc */
-  xmlAddChild(xmlDocGetRootElement(doc), signNode);
-  
-  /* add reference */
-  refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha1Id,
-					    NULL, NULL, NULL);
-  if (refNode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
-    goto done;		
-  }
-  
-  /* add enveloped transform */
-  if (xmlSecTmplReferenceAddTransform(refNode,
-				      xmlSecTransformEnvelopedId) == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add enveloped transform to reference\n");
-    goto done;		
-  }
-  
-  /* add <dsig:KeyInfo/> */
-  keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
-  if (keyInfoNode == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
-    goto done;		
-  }
-  
-  /* create signature context */
-  dsigCtx = xmlSecDSigCtxCreate(NULL);
-  if (dsigCtx == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature context\n");
-    goto done;
-  }
-
-  /* load private key */
-  dsigCtx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-					    xmlSecKeyDataFormatPem,
-					    NULL, NULL, NULL);
-  if (dsigCtx->signKey == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to load private pem key from \"%s\"\n",
-	    private_key_file);
-    goto done;
-  }
-
-  /* sign the template */
-  if (xmlSecDSigCtxSign(dsigCtx, signNode) < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "Signature failed\n");
-    goto done;
-  }
-  
-  /* xmlDocDump(stdout, doc); */
-  xmlSecDSigCtxDestroy(dsigCtx);
-  /* doc must be freed be caller */
-  return doc;
-
- done:    
-  /* cleanup */
-  if (dsigCtx != NULL) {
-    xmlSecDSigCtxDestroy(dsigCtx);
-  }
-  
-  if (doc != NULL) {
-    xmlFreeDoc(doc); 
-  }
-  return NULL;
-}
-
-/**
- * lasso_str_unescape:
- * @str: an escaped string
- * 
- * Unescapes the given string @str.
- * 
- * Return value: a new unescaped string or NULL in case of error.
- **/
-xmlChar *
-lasso_str_unescape(xmlChar *str)
-{
-  return xmlURIUnescapeString(str, 0, NULL);
-}

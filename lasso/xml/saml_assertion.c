@@ -57,204 +57,130 @@ From oasis-sstc-saml-schema-assertion-1.0.xsd:
 </simpleType>
 */
 
+
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_assertion_add_authenticationStatement(LassoSamlAssertion *node,
-						 LassoSamlAuthenticationStatement *authenticationStatement)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(LASSO_IS_SAML_AUTHENTICATION_STATEMENT(authenticationStatement));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(authenticationStatement), TRUE);
+static void
+insure_namespace(xmlNode *xmlnode, xmlNs *ns)
+{
+	/* insure children are kept in saml namespace */
+	char *typename;
+	xmlNode *t;
+	xmlNs *xsi_ns;
+
+	xsi_ns = xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX);
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		
+		if (xmlnode->ns && strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
+			typename = g_strdup_printf("lib:%sType", xmlnode->name);
+			xmlSetNs(xmlnode, ns);
+			xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+			g_free(typename);
+		}
+
+		insure_namespace(t, ns);
+
+		t = t->next;
+	}
 }
 
-void
-lasso_saml_assertion_add_statement(LassoSamlAssertion *node,
-				   LassoSamlStatementAbstract *statement)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(LASSO_IS_SAML_STATEMENT_ABSTRACT(statement));
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(statement), TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
+	xmlNs *ns;
+	char s[10];
+
+	xmlnode = xmlNewNode(NULL, "Assertion");
+	xmlSetProp(xmlnode, "AssertionID", assertion->AssertionID);
+	ns = xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	xmlSetNs(xmlnode, ns);
+	snprintf(s, 9, "%d", assertion->MajorVersion);
+	xmlSetProp(xmlnode, "MajorVersion", s);
+	snprintf(s, 9, "%d", assertion->MinorVersion);
+	xmlSetProp(xmlnode, "MinorVersion", s);
+	if (assertion->Issuer)
+		xmlSetProp(xmlnode, "Issuer", assertion->Issuer);
+	if (assertion->IssueInstant)
+		xmlSetProp(xmlnode, "IssueInstant", assertion->IssueInstant);
+
+	if (assertion->Conditions)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(assertion->Conditions)));
+	if (assertion->Advice)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(assertion->Advice)));
+	if (assertion->AuthenticationStatement)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(assertion->AuthenticationStatement)));
+	if (assertion->SubjectStatement)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(assertion->SubjectStatement)));
+
+	insure_namespace(xmlnode, ns);
+
+	return xmlnode;
 }
 
-void
-lasso_saml_assertion_add_subjectStatement(LassoSamlAssertion *node,
-					  LassoSamlSubjectStatementAbstract *subjectStatement)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(subjectStatement));
+        char *s;
+	xmlNode *t;
+        LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(subjectStatement), TRUE);
+	parent_class->init_from_xml(node, xmlnode);
+
+        assertion->AssertionID = xmlGetProp(xmlnode, "AssertionID");
+        assertion->Issuer = xmlGetProp(xmlnode, "Issuer");
+        assertion->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
+        s = xmlGetProp(xmlnode, "MajorVersion");
+        if (s) {
+                assertion->MajorVersion = atoi(s);
+                xmlFree(s);
+        }
+        s = xmlGetProp(xmlnode, "MinorVersion");
+        if (s) {
+                assertion->MinorVersion = atoi(s);
+                xmlFree(s);
+        }
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+
+		if (strcmp(t->name, "Conditions") == 0)
+			assertion->Conditions = LASSO_SAML_CONDITIONS(
+					lasso_node_new_from_xmlNode(t));
+		if (strcmp(t->name, "Advice") == 0)
+			assertion->Advice = LASSO_SAML_ADVICE(
+					lasso_node_new_from_xmlNode(t));
+		if (strcmp(t->name, "SubjectStatement") == 0)
+			assertion->SubjectStatement = LASSO_SAML_SUBJECT_STATEMENT(
+					lasso_node_new_from_xmlNode(t));
+		if (strcmp(t->name, "AuthenticationStatement") == 0)
+			assertion->AuthenticationStatement = LASSO_SAML_AUTHENTICATION_STATEMENT(
+					lasso_node_new_from_xmlNode(t));
+
+		t = t->next;
+	}
+
 }
 
-/**
- * lasso_saml_assertion_set_advice:
- * @node: the <saml:Assertion> node object
- * @advice: the <saml:Advice> node object
- * 
- * Sets the <Advice> element [optional].
- *
- * Additional information related to the assertion that assists processing in
- * certain situations but which MAY be ignored by applications that do not
- * support its use.
- **/
-void
-lasso_saml_assertion_set_advice(LassoSamlAssertion *node,
-				LassoSamlAdvice *advice)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(LASSO_IS_SAML_ADVICE(advice));
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(advice), FALSE);
-}
-
-/**
- * lasso_saml_assertion_set_assertionID:
- * @node: the <saml:Assertion> node object
- * @assertionID: the value of "AssertionID" attribute
- * 
- * Sets the "AssertionID" attribute [required].
- *
- * The identifier for this assertion. It is of type IDType, and MUST follow the
- * requirements specified by that type for identifier uniqueness.
- **/
-void
-lasso_saml_assertion_set_assertionID(LassoSamlAssertion *node,
-				     const xmlChar *assertionID)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(assertionID != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "AssertionID", assertionID);
-}
-
-/**
- * lasso_saml_assertion_set_conditions:
- * @node: the <saml:Assertion> node object
- * @conditions: the <saml:Conditions> node object
- * 
- * Sets the <Conditions> element [optional].
- *
- * Conditions that MUST be taken into account in assessing the validity of the
- * assertion.
- **/
-void
-lasso_saml_assertion_set_conditions(LassoSamlAssertion *node,
-				    LassoSamlConditions *conditions)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(LASSO_IS_SAML_CONDITIONS(conditions));
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(conditions), FALSE);
-}
-
-/**
- * lasso_saml_assertion_set_issueInstant:
- * @node: the <saml:Assertion> node object
- * @issueInstant: the value of "IssueInstant" attribute
- * 
- * Sets the "IssueInstant" attribute [required].
- *
- * The time instant of issue in UTC as described in Section 1.2.2
- * (oasis-sstc-saml-core-1.0.pdf).
- **/
-void
-lasso_saml_assertion_set_issueInstant(LassoSamlAssertion *node,
-				      const xmlChar *issueInstant)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(issueInstant != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "IssueInstant", issueInstant);
-}
-
-/**
- * lasso_saml_assertion_set_issuer:
- * @node: the <saml:Assertion> node object
- * @issuer: the value of "Issuer" attribute
- * 
- * Sets the "Issuer" attribute [required].
- *
- * The issuer of the assertion. The name of the issuer is provided as a string.
- * The issuer name SHOULD be unambiguous to the intended relying parties. SAML
- * authorities may use an identifier such as a URI reference that is designed
- * to be unambiguous regardless of context.
- **/
-void
-lasso_saml_assertion_set_issuer(LassoSamlAssertion *node,
-				const xmlChar *issuer)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(issuer != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "Issuer", issuer);
-}
-
-/**
- * lasso_saml_assertion_set_majorVersion:
- * @node: the <saml:Assertion> node object
- * @majorVersion: the value of "MajorVersion" attribute
- * 
- * Sets the "MajorVersion" attribute [required].
- *
- * The major version of the assertion. The identifier for the version of SAML
- * defined in this specification is 1. Processing of this attribute is
- * specified in Section 3.4.4 (oasis-sstc-saml-core-1.0.pdf).
- **/
-void
-lasso_saml_assertion_set_majorVersion(LassoSamlAssertion *node,
-				      const xmlChar *majorVersion)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(majorVersion != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "MajorVersion", majorVersion);
-}
-
-/**
- * lasso_saml_assertion_set_minorVersion:
- * @node: the <saml:Assertion> node object
- * @minorVersion: the value of "MinorVersion" attribute
- * 
- * Sets the "MinorVersion" attribute [required].
- *
- * The minor version of the assertion. The identifier for the version of SAML
- * defined in this specification is 0. Processing of this attribute is
- * specified in Section 3.4.4 (oasis-sstc-saml-core-1.0.pdf).
- **/
-void
-lasso_saml_assertion_set_minorVersion(LassoSamlAssertion *node,
-				      const xmlChar *minorVersion)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ASSERTION(node));
-  g_assert(minorVersion != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "MinorVersion", minorVersion);
-}
 
 gint
 lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
@@ -262,6 +188,8 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 				   const xmlChar       *private_key_file,
 				   const xmlChar       *certificate_file)
 {
+	return 0;
+#if 0 /* XXX: signatures are done differently */
   gint ret;
   LassoNodeClass *class;
 
@@ -274,6 +202,7 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 			     private_key_file, certificate_file);
 
   return ret;
+#endif
 }
 
 /*****************************************************************************/
@@ -281,41 +210,40 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_assertion_instance_init(LassoSamlAssertion *node)
+instance_init(LassoSamlAssertion *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "Assertion");
 }
 
 static void
-lasso_saml_assertion_class_init(LassoSamlAssertionClass *klass)
+class_init(LassoSamlAssertionClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_assertion_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_assertion_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlAssertionClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_assertion_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlAssertion),
-      0,
-      (GInstanceInitFunc) lasso_saml_assertion_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlAssertion",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlAssertionClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlAssertion),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlAssertion", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -325,7 +253,9 @@ GType lasso_saml_assertion_get_type() {
  * 
  * Return value: the new @LassoSamlAssertion
  **/
-LassoNode* lasso_saml_assertion_new()
+LassoNode*
+lasso_saml_assertion_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_ASSERTION, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_ASSERTION, NULL));
 }
+

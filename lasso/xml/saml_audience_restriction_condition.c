@@ -43,71 +43,87 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* publics methods                                                           */
+/* private methods                                                           */
 /*****************************************************************************/
 
-/**
- * lasso_saml_audience_restriction_condition_add_audience:
- * @node: the <saml:AudienceRestrictionCondition> node object
- * @audience: the value of "Audience" element
- * 
- * Adds an "Audience" element.
- *
- * A URI reference that identifies an intended audience. The URI reference MAY
- * identify a document that describes the terms and conditions of audience
- * membership.
- **/
-void
-lasso_saml_audience_restriction_condition_add_audience(LassoSamlAudienceRestrictionCondition *node,
-						       const xmlChar *audience)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(node));
-  g_assert(audience != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "Audience", audience, TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlAudienceRestrictionCondition *condition;
+
+	condition = LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "AudienceRestrictionCondition");
+	if (condition->Audience)
+		xmlNewTextChild(xmlnode, NULL, "Audience", condition->Audience);
+
+	return xmlnode;
 }
+
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoSamlAudienceRestrictionCondition *condition;
+	xmlNode *t;
+
+        parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE) {
+			if (strcmp(t->name, "Audience") == 0)
+				condition->Audience = xmlNodeGetContent(t);
+		}
+		t = t->next;
+	}
+}
+
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_audience_restriction_condition_instance_init(LassoSamlAudienceRestrictionCondition *node)
+instance_init(LassoSamlAudienceRestrictionCondition *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  /* namespace herited from saml:ConditionAbstract */
-  class->set_name(LASSO_NODE(node), "AudienceRestrictionCondition");
+	node->Audience = NULL;
 }
 
 static void
-lasso_saml_audience_restriction_condition_class_init(LassoSamlAudienceRestrictionConditionClass *klass)
+class_init(LassoSamlAudienceRestrictionConditionClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_audience_restriction_condition_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_audience_restriction_condition_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlAudienceRestrictionConditionClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_audience_restriction_condition_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlAudienceRestrictionCondition),
-      0,
-      (GInstanceInitFunc) lasso_saml_audience_restriction_condition_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAML_CONDITION_ABSTRACT,
-				       "LassoSamlAudienceRestrictionCondition",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlAudienceRestrictionConditionClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlAudienceRestrictionCondition),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAML_CONDITION_ABSTRACT,
+				"LassoSamlAudienceRestrictionCondition", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -133,7 +149,9 @@ GType lasso_saml_audience_restriction_condition_get_type() {
  *
  * Return value: the new @LassoSamlAudienceRestrictionCondition
  **/
-LassoNode* lasso_saml_audience_restriction_condition_new()
+LassoSamlAudienceRestrictionCondition*
+lasso_saml_audience_restriction_condition_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, NULL));
+	return g_object_new(LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, NULL);
 }
+

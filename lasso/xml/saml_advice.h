@@ -43,22 +43,20 @@ typedef struct _LassoSamlAdvice LassoSamlAdvice;
 typedef struct _LassoSamlAdviceClass LassoSamlAdviceClass;
 
 struct _LassoSamlAdvice {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	/* XXX: unbounded; both should be GList */
+	/* <element ref="saml:AssertionIDReference"/> */
+	char *AssertionIDReference;
+	/* <element ref="saml:Assertion"/> */
+	LassoNode *Assertion; /* actually LassoSamlAssertion* but it recurses */
 };
 
 struct _LassoSamlAdviceClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_advice_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_advice_new(void);
-
-LASSO_EXPORT void lasso_saml_advice_add_assertionIDReference (LassoSamlAdvice *node,
-							      const xmlChar *assertionIDReference);
-
-LASSO_EXPORT void lasso_saml_advice_add_assertion            (LassoSamlAdvice *node,
-							      gpointer *assertion);
 
 #ifdef __cplusplus
 }

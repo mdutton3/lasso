@@ -43,23 +43,20 @@ typedef struct _LassoSamlSubjectConfirmation LassoSamlSubjectConfirmation;
 typedef struct _LassoSamlSubjectConfirmationClass LassoSamlSubjectConfirmationClass;
 
 struct _LassoSamlSubjectConfirmation {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+
+	/* <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/> */
+	char *ConfirmationMethod; /* XXX: unbounded and should be enum */
+	/* <element ref="saml:SubjectConfirmationData" minOccurs="0"/> */
+	char *SubjectConfirmationData;
 };
 
 struct _LassoSamlSubjectConfirmationClass {
-  LassoNodeClass parent;
-  /*< vtable >*/
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_saml_subject_confirmation_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_subject_confirmation_new(void);
-
-LASSO_EXPORT void lasso_saml_subject_confirmation_add_confirmationMethod        (LassoSamlSubjectConfirmation *node,
-										 const xmlChar *confirmationMethod);
-
-LASSO_EXPORT void lasso_saml_subject_confirmation_set_subjectConfirmationMethod (LassoSamlSubjectConfirmation *node,
-										 const xmlChar *subjectConfirmationMethod);
+LASSO_EXPORT LassoSamlSubjectConfirmation* lasso_saml_subject_confirmation_new(void);
 
 #ifdef __cplusplus
 }

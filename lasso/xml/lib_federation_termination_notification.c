@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/lib_federation_termination_notification.h>
+#include <libxml/uri.h>
 
 /*
 Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
@@ -54,88 +55,212 @@ From liberty-metadata-v1.0.xsd:
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_lib_federation_termination_notification_set_consent(LassoLibFederationTerminationNotification *node,
-							  const xmlChar *consent)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
-  g_assert(consent != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "consent", consent);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoLibFederationTerminationNotification *ob;
+
+	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "FederationTerminationNotification");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+
+	if (ob->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", ob->ProviderID);
+	if (ob->NameIdentifier)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(ob->NameIdentifier)));
+
+	if (ob->consent)
+		xmlSetProp(xmlnode, "consent", ob->consent);
+
+	return xmlnode;
 }
 
-void
-lasso_lib_federation_termination_notification_set_providerID(LassoLibFederationTerminationNotification *node,
-							     const xmlChar *providerID)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
-  g_assert(providerID != NULL);
-  /* FIXME : providerId length SHOULD be <= 1024 */
+	LassoLibFederationTerminationNotification *ob;
+	xmlNode *t, *n;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
+	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+
+        parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		n = t;
+		t = t->next;
+		if (n->type != XML_ELEMENT_NODE)
+			continue;
+		if (strcmp(n->name, "ProviderID") == 0) {
+			ob->ProviderID = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "NameIdentifier") == 0) {
+			ob->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
+					lasso_node_new_from_xmlNode(n));
+			continue;
+		}
+	}
+	ob->consent = xmlGetProp(xmlnode, "consent");
 }
 
-void
-lasso_lib_federation_termination_notification_set_nameIdentifier(LassoLibFederationTerminationNotification *node,
-								 LassoSamlNameIdentifier *nameIdentifier)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(node));
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
+static gchar*
+build_query(LassoNode *node)
+{
+	char *str, *t;
+	GString *s;
+	LassoLibFederationTerminationNotification *request;
+	
+	request = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+
+	str = parent_class->build_query(node);
+	s = g_string_new(str);
+	g_free(str);
+
+	if (request->ProviderID) {
+		t = xmlURIEscapeStr(request->ProviderID, NULL);
+		g_string_append_printf(s, "&ProviderID=%s", t);
+		xmlFree(t);
+	}
+	if (request->NameIdentifier) {
+		t = lasso_node_build_query(LASSO_NODE(request->NameIdentifier));
+		g_string_append_printf(s, "&%s", t);
+		g_free(t);
+	}
+	if (request->consent)
+		g_string_append_printf(s, "&consent=%s", request->consent);
+
+	str = s->str;
+	g_string_free(s, FALSE);
+
+	return str;
 }
+
+static void
+init_from_query(LassoNode *node, char **query_fields)
+{
+	LassoLibFederationTerminationNotification *request;
+	int i;
+	char *t;
+
+	request = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
+
+	request->NameIdentifier = lasso_saml_name_identifier_new();
+	
+	for (i=0; (t=query_fields[i]); i++) {
+		if (g_str_has_prefix(t, "ProviderID=")) {
+			request->ProviderID = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "consent=")) {
+			request->consent = g_strdup(t+8);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameIdentifier=")) {
+			request->NameIdentifier->content = g_strdup(t+15);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameFormat=")) {
+			request->NameIdentifier->Format = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameQualifier=")) {
+			request->NameIdentifier->NameQualifier = g_strdup(t+14);
+			continue;
+		}
+	}
+	parent_class->init_from_query(node, query_fields);
+}
+
+
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_federation_termination_notification_instance_init(LassoLibFederationTerminationNotification *node)
+instance_init(LassoLibFederationTerminationNotification *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "FederationTerminationNotification");
+	node->ProviderID = NULL;
+	node->NameIdentifier = NULL;
+	node->consent = NULL;
 }
 
 static void
-lasso_lib_federation_termination_notification_class_init(LassoLibFederationTerminationNotificationClass *klass)
+class_init(LassoLibFederationTerminationNotificationClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LASSO_NODE_CLASS(klass)->build_query = build_query;
+	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 }
 
-GType lasso_lib_federation_termination_notification_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_federation_termination_notification_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibFederationTerminationNotificationClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_federation_termination_notification_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibFederationTerminationNotification),
-      0,
-      (GInstanceInitFunc) lasso_lib_federation_termination_notification_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
-				       "LassoLibFederationTerminationNotification",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibFederationTerminationNotificationClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibFederationTerminationNotification),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
+				"LassoLibFederationTerminationNotification", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_lib_federation_termination_notification_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION,
-				 NULL));
+LassoNode*
+lasso_lib_federation_termination_notification_new()
+{
+	return g_object_new(LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, NULL);
 }
+
+LassoNode*
+lasso_lib_federation_termination_notification_new_full(char *providerID,
+		LassoSamlNameIdentifier *nameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+{
+	LassoSamlpRequestAbstract *request;
+
+	request = g_object_new(LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, NULL);
+
+	request->RequestID = lasso_build_unique_id(32);
+	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	request->IssueInstant = lasso_get_current_time();
+
+	/* set the signature template */
+	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
+#if 0 /* XXX: signatures are done differently */
+		lasso_samlp_request_abstract_set_signature_tmpl(request, sign_type, sign_method, NULL);
+#endif
+	}
+
+	LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request)->ProviderID = g_strdup(providerID);
+	LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request)->NameIdentifier =
+		g_object_ref(nameIdentifier);
+
+	return LASSO_NODE(request);
+}
+

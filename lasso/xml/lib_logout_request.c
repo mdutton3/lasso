@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libxml/uri.h>
 #include <lasso/xml/lib_logout_request.h>
 
 /*
@@ -57,111 +58,231 @@ From liberty-metadata-v1.0.xsd:
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
-void
-lasso_lib_logout_request_set_consent(LassoLibLogoutRequest *node,
-				     const xmlChar *consent)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(consent != NULL);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "consent", consent);
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{ 
+	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
+	xmlNode *xmlnode;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	xmlNodeSetName(xmlnode, "LogoutRequest");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
+	if (request->Extension)
+		xmlNewTextChild(xmlnode, NULL, "Extension", request->Extension);
+	if (request->ProviderID)
+		xmlNewTextChild(xmlnode, NULL, "ProviderID", request->ProviderID);
+	if (request->NameIdentifier)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(request->NameIdentifier)));
+	if (request->SessionIndex)
+		xmlNewTextChild(xmlnode, NULL, "SessionIndex", request->SessionIndex);
+	if (request->RelayState)
+		xmlNewTextChild(xmlnode, NULL, "RelayState", request->RelayState);
+	if (request->consent)
+		xmlSetProp(xmlnode, "consent", request->consent);
+
+	return xmlnode;
 }
 
-void
-lasso_lib_logout_request_set_nameIdentifier(LassoLibLogoutRequest *node,
-					    LassoSamlNameIdentifier *nameIdentifier)
+static gchar*
+build_query(LassoNode *node)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
+	char *str, *t;
+	GString *s;
+	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
+	str = parent_class->build_query(node);
+	s = g_string_new(str);
+	g_free(str);
+
+	/* XXX Extension */
+
+	if (request->ProviderID) {
+		t = xmlURIEscapeStr(request->ProviderID, NULL);
+		g_string_append_printf(s, "&ProviderID=%s", t);
+		xmlFree(t);
+	}
+	if (request->NameIdentifier) {
+		t = lasso_node_build_query(LASSO_NODE(request->NameIdentifier));
+		g_string_append_printf(s, "&%s", t);
+		g_free(t);
+	}
+	if (request->SessionIndex)
+		g_string_append_printf(s, "&SessionIndex=%s", request->SessionIndex);
+	if (request->RelayState)
+		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
+	if (request->consent)
+		g_string_append_printf(s, "&consent=%s", request->consent);
+
+	str = s->str;
+	g_string_free(s, FALSE);
+
+	return str;
 }
 
-void
-lasso_lib_logout_request_set_providerID(LassoLibLogoutRequest *node,
-					const xmlChar *providerID)
+static void
+init_from_query(LassoNode *node, char **query_fields)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(providerID != NULL);
-  /* FIXME : providerID length SHOULD be <= 1024 */
+	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
+	int i;
+	char *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "ProviderID", providerID, FALSE);
+	request->NameIdentifier = lasso_saml_name_identifier_new();
+	
+	for (i=0; (t=query_fields[i]); i++) {
+		if (g_str_has_prefix(t, "ProviderID=")) {
+			request->ProviderID = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "SessionIndex=")) {
+			request->SessionIndex = g_strdup(t+16);
+			continue;
+		}
+		if (g_str_has_prefix(t, "RelayState=")) {
+			request->RelayState = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "consent=")) {
+			request->consent = g_strdup(t+8);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameIdentifier=")) {
+			request->NameIdentifier->content = g_strdup(t+15);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameFormat=")) {
+			request->NameIdentifier->Format = g_strdup(t+11);
+			continue;
+		}
+		if (g_str_has_prefix(t, "NameQualifier=")) {
+			request->NameIdentifier->NameQualifier = g_strdup(t+14);
+			continue;
+		}
+	}
+	parent_class->init_from_query(node, query_fields);
 }
 
-void
-lasso_lib_logout_request_set_relayState(LassoLibLogoutRequest *node,
-					const xmlChar *relayState)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(relayState != NULL);
+	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
+	xmlNode *t, *n;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);
+	parent_class->init_from_xml(node, xmlnode);
+
+	t = xmlnode->children;
+	while (t) {
+		n = t;
+		t = t->next;
+		if (n->type != XML_ELEMENT_NODE) {
+			continue;
+		}
+		if (strcmp(n->name, "ProviderID") == 0) {
+			request->ProviderID = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "NameIdentifier") == 0) {
+			request->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
+					lasso_node_new_from_xmlNode(n));
+			continue;
+		}
+		if (strcmp(n->name, "SessionIndex") == 0) {
+			request->SessionIndex = xmlNodeGetContent(n);
+			continue;
+		}
+		if (strcmp(n->name, "RelayState") == 0) {
+			request->RelayState = xmlNodeGetContent(n);
+			continue;
+		}
+	}
+	request->consent = xmlGetProp(xmlnode, "consent");
 }
 
-void
-lasso_lib_logout_request_set_sessionIndex(LassoLibLogoutRequest *node,
-					  const xmlChar *sessionIndex)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(sessionIndex != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node), "SessionIndex", sessionIndex, FALSE);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_lib_logout_request_instance_init(LassoLibLogoutRequest *node)
+instance_init(LassoLibLogoutRequest *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoLibHRef, lassoLibPrefix);
-  class->set_name(LASSO_NODE(node), "LogoutRequest");
+	node->Extension = NULL;
+	node->ProviderID = NULL;
+	node->NameIdentifier = NULL;
+	node->SessionIndex = NULL;
+	node->RelayState = NULL;
+	node->consent = NULL;
 }
 
 static void
-lasso_lib_logout_request_class_init(LassoLibLogoutRequestClass *klass)
+class_init(LassoLibLogoutRequestClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LASSO_NODE_CLASS(klass)->build_query = build_query;
+	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 }
 
-GType lasso_lib_logout_request_get_type() {
-  static GType this_type = 0;
+GType
+lasso_lib_logout_request_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoLibLogoutRequestClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_lib_logout_request_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoLibLogoutRequest),
-      0,
-      (GInstanceInitFunc) lasso_lib_logout_request_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
-				       "LassoLibLogoutRequest",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoLibLogoutRequestClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoLibLogoutRequest),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT,
+				"LassoLibLogoutRequest", &this_info, 0);
+	}
+	return this_type;
 }
 
-LassoNode* lasso_lib_logout_request_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST,
-				 NULL));
+LassoNode*
+lasso_lib_logout_request_new()
+{
+	return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST, NULL));
 }
+
+LassoNode*
+lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
+{
+	LassoSamlpRequestAbstract *request;
+
+	request = g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST, NULL);
+
+	request->RequestID = lasso_build_unique_id(32);
+	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	request->IssueInstant = lasso_get_current_time();
+
+	/* set the signature template */
+	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
+#if 0 /* XXX: signatures are done differently */
+		lasso_samlp_request_abstract_set_signature_tmpl(
+				request, sign_type, sign_method, NULL);
+#endif
+	}
+
+	/* ProviderID */
+	LASSO_LIB_LOGOUT_REQUEST(request)->ProviderID = g_strdup(providerID);
+	LASSO_LIB_LOGOUT_REQUEST(request)->NameIdentifier = g_object_ref(nameIdentifier);
+
+	return LASSO_NODE(request);
+}
+

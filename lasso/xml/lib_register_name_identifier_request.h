@@ -30,10 +30,8 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/xml/saml_name_identifier.h>
 #include <lasso/xml/samlp_request_abstract.h>
-#include <lasso/xml/lib_idp_provided_name_identifier.h>
-#include <lasso/xml/lib_old_provided_name_identifier.h>
-#include <lasso/xml/lib_sp_provided_name_identifier.h>
 
 #define LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST (lasso_lib_register_name_identifier_request_get_type())
 #define LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST, LassoLibRegisterNameIdentifierRequest))
@@ -46,31 +44,34 @@ typedef struct _LassoLibRegisterNameIdentifierRequest LassoLibRegisterNameIdenti
 typedef struct _LassoLibRegisterNameIdentifierRequestClass LassoLibRegisterNameIdentifierRequestClass;
 
 struct _LassoLibRegisterNameIdentifierRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
+	LassoSamlpRequestAbstract parent;
+
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoNode *Extension; /* TODO */
+	/* <xs:element ref="ProviderID"/> */
+	char *ProviderID;
+	/* <xs:element ref="IDPProvidedNameIdentifier"/> */
+	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
+	/* <xs:element ref="SPProvidedNameIdentifier"/> */
+	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
+	/* <xs:element ref="OldProvidedNameIdentifier"/> */
+	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
+	/* <xs:element ref="RelayState" minOccurs="0"/> */
+	char *RelayState;
+
 };
 
 struct _LassoLibRegisterNameIdentifierRequestClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_register_name_identifier_request_get_type(void);
 LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_request_new(void);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_relayState                (LassoLibRegisterNameIdentifierRequest *,
-											    const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_providerID                (LassoLibRegisterNameIdentifierRequest *,
-											    const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier (LassoLibRegisterNameIdentifierRequest *,
-											    LassoLibIDPProvidedNameIdentifier *);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier (LassoLibRegisterNameIdentifierRequest *,
-											    LassoLibOLDProvidedNameIdentifier *);
-
-LASSO_EXPORT void lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier  (LassoLibRegisterNameIdentifierRequest *,
-											    LassoLibSPProvidedNameIdentifier *);
+LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_request_new_full(
+		char *providerID,
+		LassoSamlNameIdentifier *idpNameIdentifier,
+		LassoSamlNameIdentifier *spNameIdentifier,
+		LassoSamlNameIdentifier *oldNameIdentifier);
 
 #ifdef __cplusplus
 }

@@ -30,7 +30,7 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/protocols/provider.h>
+#include <lasso/environs/provider.h>
 
 #define LASSO_TYPE_SERVER (lasso_server_get_type())
 #define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))
@@ -44,17 +44,17 @@ typedef struct _LassoServerClass LassoServerClass;
 typedef struct _LassoServerPrivate LassoServerPrivate;
 
 struct _LassoServer {
-  LassoProvider parent;
+	LassoProvider parent;
 
-  GPtrArray *providers;
-  
-  gchar *providerID;   
-  gchar *private_key;
-  gchar *secret_key;
-  gchar *certificate;
-  lassoSignatureMethod signature_method;
-  /*< private >*/
-  LassoServerPrivate *private;
+	GHashTable *providers;
+
+	gchar *private_key;
+	gchar *secret_key;
+	gchar *certificate;
+	lassoSignatureMethod signature_method;
+
+	/*< private >*/
+	LassoServerPrivate *private;
 };
 
 struct _LassoServerClass {
@@ -68,36 +68,25 @@ LASSO_EXPORT LassoServer*         lasso_server_new                      (const g
 									 const gchar *secret_key,
 									 const gchar *certificate);
 
-LASSO_EXPORT LassoServer*         lasso_server_new_from_dump            (gchar       *dump);
+LASSO_EXPORT LassoServer*         lasso_server_new_from_dump            (const gchar       *dump);
 
 LASSO_EXPORT gint                 lasso_server_add_provider             (LassoServer *server,
-									 gchar       *metadata,
-									 gchar       *public_key,
-									 gchar       *ca_cert_chain);
-
-LASSO_EXPORT LassoServer*         lasso_server_copy                     (LassoServer *server);
+		LassoProviderRole role,
+		gchar       *metadata,
+		gchar       *public_key,
+		gchar       *ca_cert_chain);
 
 LASSO_EXPORT void                 lasso_server_destroy                  (LassoServer *server);
-
-LASSO_EXPORT gchar*               lasso_server_dump                     (LassoServer *server);
 
 LASSO_EXPORT gchar*               lasso_server_get_first_providerID     (LassoServer *server);
 
 LASSO_EXPORT LassoProvider*       lasso_server_get_provider             (LassoServer  *server,
-									 gchar        *providerID,
-									 GError      **err);
-
-LASSO_EXPORT LassoProvider*       lasso_server_get_provider_ref         (LassoServer  *server,
-									 gchar        *providerID,
-									 GError      **err);
+									 gchar        *providerID);
 
 LASSO_EXPORT gchar*               lasso_server_get_providerID_from_hash (LassoServer *server,
 									 gchar       *b64_hash);
 
-LASSO_EXPORT lassoSignatureMethod lasso_server_get_signature_method     (LassoServer *server);
-
-LASSO_EXPORT void                 lasso_server_set_signature_method     (LassoServer          *server,
-									 lassoSignatureMethod  signature_method);
+LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 
 #ifdef __cplusplus
 }

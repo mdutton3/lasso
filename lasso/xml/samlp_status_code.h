@@ -43,19 +43,16 @@ typedef struct _LassoSamlpStatusCode LassoSamlpStatusCode;
 typedef struct _LassoSamlpStatusCodeClass LassoSamlpStatusCodeClass;
 
 struct _LassoSamlpStatusCode {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	char *Value;
 };
 
 struct _LassoSamlpStatusCodeClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_samlp_status_code_get_type(void);
-LASSO_EXPORT LassoNode* lasso_samlp_status_code_new(void);
-
-LASSO_EXPORT void lasso_samlp_status_code_set_value (LassoSamlpStatusCode *node,
-						     const xmlChar *value);
+LASSO_EXPORT LassoSamlpStatusCode* lasso_samlp_status_code_new(void);
 
 #ifdef __cplusplus
 }

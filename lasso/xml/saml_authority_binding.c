@@ -38,43 +38,38 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_authority_binding_set_authorityKind(LassoSamlAuthorityBinding *node,
-					       const xmlChar *authorityKind)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
-  g_assert(authorityKind != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "AuthorityKind", authorityKind);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node);
+
+	xmlnode = xmlNewNode(NULL, "AuthorityBinding");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	if (binding->AuthorityKind)
+		xmlSetProp(xmlnode, "AuthorityKind", binding->AuthorityKind);
+	if (binding->Location)
+		xmlSetProp(xmlnode, "Location", binding->Location);
+	if (binding->Binding)
+		xmlSetProp(xmlnode, "Binding", binding->Binding);
+
+	return xmlnode;
 }
 
-void
-lasso_saml_authority_binding_set_binding(LassoSamlAuthorityBinding *node,
-					 const xmlChar *binding)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
-  g_assert(binding != NULL);
+	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node);
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "Binding", binding);
-}
-
-void
-lasso_saml_authority_binding_set_location(LassoSamlAuthorityBinding *node,
-					  const xmlChar *location)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_AUTHORITY_BINDING(node));
-  g_assert(location != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "Location", location);
+	parent_class->init_from_xml(node, xmlnode);
+	binding->AuthorityKind = xmlGetProp(xmlnode, "AuthorityKind");
+	binding->Location = xmlGetProp(xmlnode, "Location");
+	binding->Binding = xmlGetProp(xmlnode, "Binding");
 }
 
 /*****************************************************************************/
@@ -82,41 +77,43 @@ lasso_saml_authority_binding_set_location(LassoSamlAuthorityBinding *node,
 /*****************************************************************************/
 
 static void
-lasso_saml_authority_binding_instance_init(LassoSamlAuthorityBinding *node)
+instance_init(LassoSamlAuthorityBinding *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "AuthorityBinding");
+	node->AuthorityKind = NULL;
+	node->Location = NULL;
+	node->Binding = NULL;
 }
 
 static void
-lasso_saml_authority_binding_class_init(LassoSamlAuthorityBindingClass *klass)
+class_init(LassoSamlAuthorityBindingClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_authority_binding_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_authority_binding_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlAuthorityBindingClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_authority_binding_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlAuthorityBinding),
-      0,
-      (GInstanceInitFunc) lasso_saml_authority_binding_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlAuthorityBinding",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlAuthorityBindingClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlAuthorityBinding),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlAuthorityBinding", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -126,7 +123,9 @@ GType lasso_saml_authority_binding_get_type() {
  * 
  * Return value: the new @LassoSamlAuthorityBinding
  **/
-LassoNode* lasso_saml_authority_binding_new()
+LassoNode*
+lasso_saml_authority_binding_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHORITY_BINDING, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_AUTHORITY_BINDING, NULL));
 }
+

@@ -44,22 +44,19 @@ typedef struct _LassoLibScoping LassoLibScoping;
 typedef struct _LassoLibScopingClass LassoLibScopingClass;
 
 struct _LassoLibScoping {
-  LassoNode parent;
-  /*< private >*/
+	LassoNode parent;
+	/* <xs:element name="ProxyCount" type="xs:nonNegativeInteger" minOccurs="0"/> */
+	int ProxyCount;
+	/* <xs:element ref="IDPList" minOccurs="0"/> */
+	LassoLibIDPList *IDPList;
 };
 
 struct _LassoLibScopingClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_scoping_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_scoping_new(void);
-
-LASSO_EXPORT void lasso_lib_scoping_set_proxyCount (LassoLibScoping *node,
-						    gint             proxyCount);
-
-LASSO_EXPORT void lasso_lib_scoping_set_idpList    (LassoLibScoping *node,
-						    LassoLibIDPList *idpList);
+LASSO_EXPORT LassoLibScoping* lasso_lib_scoping_new(void);
 
 #ifdef __cplusplus
 }

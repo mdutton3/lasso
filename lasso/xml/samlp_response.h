@@ -32,6 +32,7 @@ extern "C" {
 
 #include <lasso/xml/samlp_response_abstract.h>
 #include <lasso/xml/samlp_status.h>
+#include <lasso/xml/saml_assertion.h>
 
 #define LASSO_TYPE_SAMLP_RESPONSE (lasso_samlp_response_get_type())
 #define LASSO_SAMLP_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_RESPONSE, LassoSamlpResponse))
@@ -44,22 +45,24 @@ typedef struct _LassoSamlpResponse LassoSamlpResponse;
 typedef struct _LassoSamlpResponseClass LassoSamlpResponseClass;
 
 struct _LassoSamlpResponse {
-  LassoSamlpResponseAbstract parent;
-  /*< private >*/
+	LassoSamlpResponseAbstract parent;
+
+	/* <element ref="samlp:Status"/> */
+	LassoSamlpStatus *Status;
+
+	/* <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/> */
+	LassoSamlAssertion *Assertion; /* XXX: GList */
+
+	/*< private >*/
 };
 
 struct _LassoSamlpResponseClass {
-  LassoSamlpResponseAbstractClass parent;
+	LassoSamlpResponseAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_samlp_response_get_type(void);
 LASSO_EXPORT LassoNode* lasso_samlp_response_new(void);
 
-LASSO_EXPORT void lasso_samlp_response_add_assertion (LassoSamlpResponse *node,
-						      gpointer assertion);
-
-LASSO_EXPORT void lasso_samlp_response_set_status    (LassoSamlpResponse *node,
-						      LassoSamlpStatus *status);
 
 #ifdef __cplusplus
 }

@@ -40,134 +40,98 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-/**
- * lasso_saml_conditions_add_condition:
- * @node: the <saml:Conditions> node object
- * @condition: 
- * 
- * 
- **/
-void
-lasso_saml_conditions_add_condition(LassoSamlConditions *node,
-				    LassoSamlConditionAbstract *condition)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_CONDITIONS(node));
-  g_assert(LASSO_IS_SAML_CONDITION_ABSTRACT(condition));
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(condition), TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node);
+
+	xmlnode = xmlNewNode(NULL, "Conditions");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	if (conditions->AudienceRestrictionCondition)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+					LASSO_NODE(conditions->AudienceRestrictionCondition)));
+	if (conditions->NotBefore)
+		xmlSetProp(xmlnode, "NotBefore", conditions->NotBefore);
+	if (conditions->NotOnOrAfter)
+		xmlSetProp(xmlnode, "NotOnOrAfter", conditions->NotOnOrAfter);
+
+	return xmlnode;
 }
 
-/**
- * lasso_saml_conditions_add_audienceRestrictionCondition:
- * @node: the <saml:Conditions> node object
- * @audienceRestrictionCondition: 
- * 
- * 
- **/
-void
-lasso_saml_conditions_add_audienceRestrictionCondition(LassoSamlConditions *node,
-						       LassoSamlAudienceRestrictionCondition *audienceRestrictionCondition)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_CONDITIONS(node));
-  g_assert(LASSO_IS_SAML_AUDIENCE_RESTRICTION_CONDITION(audienceRestrictionCondition));
+	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE(audienceRestrictionCondition), TRUE);
+	parent_class->init_from_xml(node, xmlnode);
+	conditions->NotBefore = xmlGetProp(xmlnode, "NotBefore");
+	conditions->NotOnOrAfter = xmlGetProp(xmlnode, "NotOnOrAfter");
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+
+		if (strcmp(t->name, "AudienceRestrictionCondition") == 0) {
+			conditions->AudienceRestrictionCondition = 
+				LASSO_SAML_AUDIENCE_RESTRICTION_CONDITION(
+						lasso_node_new_from_xmlNode(t));
+		}
+		t = t->next;
+	}
 }
 
-/**
- * lasso_saml_conditions_set_notBefore:
- * @node: the <saml:Conditions> node object
- * @notBefore: the value of "NotBefore" attribute
- * 
- * Sets the "NotBefore" attribute.
- *
- * Specifies the earliest time instant at which the assertion is valid. The
- * time value is encoded in UTC as described in Section 1.2.2
- * (oasis-sstc-saml-core-1.0.pdf).
- **/
-void
-lasso_saml_conditions_set_notBefore(LassoSamlConditions *node,
-				    const xmlChar *notBefore)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_CONDITIONS(node));
-  g_assert(notBefore != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "NotBefore", notBefore);
-}
-
-/**
- * lasso_saml_conditions_set_notOnOrAfter:
- * @node: the <saml:Conditions> node object
- * @notOnOrAfter: the value of "NotOnOrAfter" attribute.
- * 
- * Sets the "NotOnOrAfter" attribute.
- *
- * Specifies the time instant at which the assertion has expired. The time
- * value is encoded in UTC as described in Section 1.2.2
- * (oasis-sstc-saml-core-1.0.pdf).
- **/
-void
-lasso_saml_conditions_set_notOnOrAfter(LassoSamlConditions *node,
-				       const xmlChar *notOnOrAfter)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_CONDITIONS(node));
-  g_assert(notOnOrAfter != NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "NotOnOrAfter", notOnOrAfter);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_conditions_instance_init(LassoSamlConditions *node)
+instance_init(LassoSamlConditions *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "Conditions");
+	node->AudienceRestrictionCondition = NULL;
+	node->NotBefore = NULL;
+	node->NotOnOrAfter = NULL;
 }
 
 static void
-lasso_saml_conditions_class_init(LassoSamlConditionsClass *klass)
+class_init(LassoSamlConditionsClass *klass)
 {
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_conditions_get_type()
+GType
+lasso_saml_conditions_get_type()
 {
-  static GType this_type = 0;
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlConditionsClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_conditions_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlConditions),
-      0,
-      (GInstanceInitFunc) lasso_saml_conditions_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlConditions",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlConditionsClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlConditions),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlConditions", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -177,7 +141,9 @@ GType lasso_saml_conditions_get_type()
  *
  * Return value: the new @LassoSamlConditions
  **/
-LassoNode* lasso_saml_conditions_new()
+LassoSamlConditions*
+lasso_saml_conditions_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_CONDITIONS, NULL));
+	return g_object_new(LASSO_TYPE_SAML_CONDITIONS, NULL);
 }
+

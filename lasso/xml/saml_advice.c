@@ -24,6 +24,7 @@
  */
 
 #include <lasso/xml/saml_advice.h>
+#include <lasso/xml/saml_assertion.h>
 
 /*
 The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
@@ -44,75 +45,86 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 */
 
 /*****************************************************************************/
-/* public methods                                                            */
+/* private methods                                                           */
 /*****************************************************************************/
 
-void
-lasso_saml_advice_add_assertionIDReference(LassoSamlAdvice *node,
-					   const xmlChar *assertionIDReference)
-{
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ADVICE(node));
-  g_assert(assertionIDReference != NULL);
+static LassoNodeClass *parent_class = NULL;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->new_child(LASSO_NODE (node),
-		   "AssertionIDReference",
-		   assertionIDReference,
-		   TRUE);
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
+
+	xmlnode = xmlNewNode(NULL, "Advice");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	if (advice->AssertionIDReference)
+		xmlNewTextChild(xmlnode, NULL, "AssertionIDReference", advice->AssertionIDReference);
+	if (advice->Assertion)
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(advice->Assertion)));
+
+	return xmlnode;
 }
 
-void
-lasso_saml_advice_add_assertion(LassoSamlAdvice *node,
-				gpointer *assertion)
+static void
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-  LassoNodeClass *class;
-  g_assert(LASSO_IS_SAML_ADVICE(node));
-  /* g_assert(LASSO_IS_SAML_ASSERTION(assertion)); */
+	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
+	xmlNode *t;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (assertion), TRUE);
+	parent_class->init_from_xml(node, xmlnode);
+	t = xmlnode->children;
+	while (t) {
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "AssertionIDReference") == 0)
+			advice->AssertionIDReference = xmlNodeGetContent(t);
+		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "Assertion") == 0)
+			advice->Assertion = lasso_node_new_from_xmlNode(t);
+		t = t->next;
+	}
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_saml_advice_instance_init(LassoSamlAdvice *node)
+instance_init(LassoSamlAdvice *node)
 {
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(node));
-
-  class->set_ns(LASSO_NODE(node), lassoSamlAssertionHRef,
-		lassoSamlAssertionPrefix);
-  class->set_name(LASSO_NODE(node), "Advice");
+	node->AssertionIDReference = NULL;
+	node->Assertion = NULL;
 }
 
 static void
-lasso_saml_advice_class_init(LassoSamlAdviceClass *klass) {
+class_init(LassoSamlAdviceClass *klass)
+{
+	parent_class = g_type_class_peek_parent(klass);
+	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
+	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_saml_advice_get_type() {
-  static GType this_type = 0;
+GType
+lasso_saml_advice_get_type()
+{
+	static GType this_type = 0;
 
-  if (!this_type) {
-    static const GTypeInfo this_info = {
-      sizeof (LassoSamlAdviceClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) lasso_saml_advice_class_init,
-      NULL,
-      NULL,
-      sizeof(LassoSamlAdvice),
-      0,
-      (GInstanceInitFunc) lasso_saml_advice_instance_init,
-    };
-    
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
-				       "LassoSamlAdvice",
-				       &this_info, 0);
-  }
-  return this_type;
+	if (!this_type) {
+		static const GTypeInfo this_info = {
+			sizeof (LassoSamlAdviceClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) class_init,
+			NULL,
+			NULL,
+			sizeof(LassoSamlAdvice),
+			0,
+			(GInstanceInitFunc) instance_init,
+		};
+
+		this_type = g_type_register_static(LASSO_TYPE_NODE,
+				"LassoSamlAdvice", &this_info, 0);
+	}
+	return this_type;
 }
 
 /**
@@ -138,7 +150,9 @@ GType lasso_saml_advice_get_type() {
  * 
  * Return value: the new @LassoSamlAdvice
  **/
-LassoNode* lasso_saml_advice_new()
+LassoNode*
+lasso_saml_advice_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_ADVICE, NULL));
+	return LASSO_NODE(g_object_new(LASSO_TYPE_SAML_ADVICE, NULL));
 }
+

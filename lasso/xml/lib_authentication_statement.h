@@ -46,28 +46,28 @@ typedef struct _LassoLibAuthenticationStatement LassoLibAuthenticationStatement;
 typedef struct _LassoLibAuthenticationStatementClass LassoLibAuthenticationStatementClass;
 
 struct _LassoLibAuthenticationStatement {
-  LassoSamlAuthenticationStatement parent;
-  /*< private >*/
-  gboolean use_xsitype;
+	LassoSamlAuthenticationStatement parent;
+
+        /* <xs:element ref="AuthnContext" minOccurs="0"/> */
+	LassoLibAuthnContext *AuthnContext;
+	/* <xs:attribute name="ReauthenticateOnOrAfter" type="xs:dateTime" use="optional"/> */
+	char *ReauthenticateOnOrAfter;
+	/* <xs:attribute name="SessionIndex" type="xs:string" use="required"/> */
+	char *SessionIndex;
 };
 
 struct _LassoLibAuthenticationStatementClass {
-  LassoSamlAuthenticationStatementClass parent;
-  /*< vtable >*/
+	LassoSamlAuthenticationStatementClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_authentication_statement_get_type                   (void);
-
-LASSO_EXPORT LassoNode* lasso_lib_authentication_statement_new                   (gboolean use_xsitype);
-
-LASSO_EXPORT void lasso_lib_authentication_statement_set_authnContext            (LassoLibAuthenticationStatement *node,
-										  LassoLibAuthnContext *authnContext);
-
-LASSO_EXPORT void lasso_lib_authentication_statement_set_reauthenticateOnOrAfter (LassoLibAuthenticationStatement *node,
-										  const xmlChar *reauthenticateOnOrAfter);
-
-LASSO_EXPORT void lasso_lib_authentication_statement_set_sessionIndex            (LassoLibAuthenticationStatement *node,
-										  const xmlChar *sessionIndex);
+LASSO_EXPORT LassoLibAuthenticationStatement* lasso_lib_authentication_statement_new(void);
+LASSO_EXPORT LassoLibAuthenticationStatement* lasso_lib_authentication_statement_new_full(
+		const char *authenticationMethod,
+		const char *authenticationInstant,
+		const char *reauthenticateOnOrAfter,
+		LassoSamlNameIdentifier *sp_identifier,
+		LassoSamlNameIdentifier *idp_identifier);
 
 #ifdef __cplusplus
 }
