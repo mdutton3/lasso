@@ -57,14 +57,14 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
   lecp->authnRequestEnvelope = lasso_authn_request_envelope_new(LASSO_AUTHN_REQUEST(profile->request),
 								profile->server->providerID,
 								assertionConsumerServiceURL);
-  if (lecp->authnRequestEnvelope==NULL) {
+  if (lecp->authnRequestEnvelope == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building AuthnRequestEnvelope\n");
     return(-1);
   }
 
   /* FIXME : export to base 64 or simple xml dump */
   profile->msg_body = lasso_node_export_to_base64(lecp->authnRequestEnvelope);
-  if (profile->msg_body==NULL) {
+  if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while exporting the AuthnRequestEnvelope to POST msg\n");
     return(-1);
   }
@@ -83,7 +83,7 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
   
   profile->msg_url  = NULL; /* Proxy knows the SOAP EndPoint of the IDP */
   profile->msg_body = lasso_node_export_to_soap(profile->request);
-  if (profile->msg_body==NULL) {
+  if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the AuthnRequest SOAP message\n");
     return(-1);
   }
@@ -100,12 +100,12 @@ lasso_lecp_build_authn_response_msg(LassoLecp   *lecp)
 
   profile = LASSO_PROFILE(lecp);
   profile->msg_url = g_strdup(lecp->assertionConsumerServiceURL);
-  if (profile->msg_url==NULL) {
+  if (profile->msg_url == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
     return(-1);
   }
   profile->msg_body = lasso_node_export_to_base64(profile->response);
-  if (profile->msg_body==NULL) {
+  if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnResponse base64 msg not found\n");
     return(-1);
   }
