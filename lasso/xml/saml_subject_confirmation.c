@@ -64,13 +64,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	xmlNode *t;
 	LassoSamlSubjectConfirmation *confirm = LASSO_SAML_SUBJECT_CONFIRMATION(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -84,6 +86,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			confirm->SubjectConfirmationData = xmlNodeGetContent(t);
 		t = t->next;
 	}
+	return 0;
 }
 
 

@@ -90,7 +90,9 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
+		return 0;
 	}
+
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the logout request QUERY message */
 		url = lasso_provider_get_metadata_one(remote_provider,
@@ -112,14 +114,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 		g_free(url);
 		g_free(query);
 		profile->msg_body = NULL;
+		return 0;
 	}
 
-	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
-	}
-
-	return 0;
+	message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
+	return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 }
 
 
@@ -147,61 +146,48 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 gint
 lasso_logout_build_response_msg(LassoLogout *logout)
 {
-	/* XXX function to update (working but ugly) */
-  LassoProfile  *profile;
-  LassoProvider *provider;
-  gchar         *url = NULL, *query = NULL;
-  GError        *err = NULL;
-  gint           ret = 0;
+	LassoProfile *profile;
+	LassoProvider *provider;
+	gchar *url, *query;
 
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-  
-  profile = LASSO_PROFILE(logout);
+	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
 
-  /* get the provider */
-  provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-  if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
-    goto done;
-  }
+	profile = LASSO_PROFILE(logout);
 
-  /* build logout response message */
-  switch (profile->http_request_method) {
-  case LASSO_HTTP_METHOD_SOAP:
-    profile->msg_url = NULL;
-    profile->msg_body = lasso_node_export_to_soap(profile->response,
-		    profile->server->private_key, profile->server->certificate);
-    break;
-  case LASSO_HTTP_METHOD_REDIRECT:
-    url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");
-    query = lasso_node_export_to_query(profile->response,
-				       profile->server->signature_method,
-				       profile->server->private_key);
-    if ( (url == NULL) || (query == NULL) ) {
-      message(G_LOG_LEVEL_CRITICAL, "Url %s or query %s not found", url, query);
-      ret = -1;
-      goto done;
-    }
+	/* get the provider */
+	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+	if (provider == NULL) {
+		return -1;
+	}
 
-    profile->msg_url = g_strdup_printf("%s?%s", url, query);
-    profile->msg_body = NULL;
-    break;
-  default:
-    ret = LASSO_PROFILE_ERROR_MISSING_REQUEST;
-    goto done;
-  }
+	/* build logout response message */
+	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
+		profile->msg_url = NULL;
+		profile->msg_body = lasso_node_export_to_soap(profile->response,
+				profile->server->private_key, profile->server->certificate);
+		return 0;
+	}
 
-  done:
-  if (url != NULL) {
-    xmlFree(url);
-  }
-  if (query != NULL) {
-    xmlFree(query);
-  }
+	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
+		url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");
+		if (url == NULL) {
+			return -1;
+		}
+		query = lasso_node_export_to_query(profile->response,
+				profile->server->signature_method,
+				profile->server->private_key);
+		if (query == NULL) {
+			g_free(url);
+			return -1;
+		}
+		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_body = NULL;
+		g_free(url);
+		g_free(query);
+		return 0;
+	}
 
-  return ret;
+	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 }
 
 /**
@@ -221,33 +207,39 @@ lasso_logout_destroy(LassoLogout *logout)
  * lasso_logout_get_next_providerID:
  * @logout: the logout object
  * 
- * This method returns the provider id from providerID_index in list of providerIDs in session object.
+ * This method returns the provider id from providerID_index in list of
+ * providerIDs in session object.
+ *
  * excepted the initial service provider id :
- *    It gets the remote provider id in session from the logout providerID_index.
- *    If it is the initial remote provider id, then it asks the next provider id
- *    from providerID_index + 1;
+ *    It gets the remote provider id in session from the logout provider index
+ *
+ *    If it is the initial remote provider id, then it asks the next provider
+ *    id from providerID_index + 1;
  * 
  * Return value: a newly allocated string or NULL
  **/
 gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)
 {
-  LassoProfile *profile;
-  gchar        *providerID;
+	LassoProfile *profile;
+	gchar        *providerID;
 
-  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
-  profile = LASSO_PROFILE(logout);
+	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+	profile = LASSO_PROFILE(logout);
 
-  g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
-  providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
-  logout->providerID_index++;
-  /* if it is the provider id of the SP requester, then get the next */
-  if (logout->initial_remote_providerID && xmlStrEqual(providerID, logout->initial_remote_providerID)) {
-    providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
-    logout->providerID_index++;
-  }
-  
-  return providerID;
+	g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
+	providerID = lasso_session_get_provider_index(
+			profile->session, logout->providerID_index);
+	logout->providerID_index++;
+	/* if it is the provider id of the SP requester, then get the next */
+	if (logout->initial_remote_providerID && providerID &&
+			strcmp(providerID, logout->initial_remote_providerID) == 0) {
+		providerID = lasso_session_get_provider_index(
+				profile->session, logout->providerID_index);
+		logout->providerID_index++;
+	}
+
+	return providerID;
 }
 
 /**
@@ -843,13 +835,14 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLogout *logout = LASSO_LOGOUT(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -870,6 +863,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

@@ -148,7 +148,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSession *session = LASSO_SESSION(node);
@@ -176,6 +176,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 

@@ -63,13 +63,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibIDPList *list = LASSO_LIB_IDP_LIST(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "IDPEntries") == 0) {
@@ -80,6 +82,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
   

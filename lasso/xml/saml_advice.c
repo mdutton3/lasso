@@ -66,13 +66,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "AssertionIDReference") == 0)
@@ -81,6 +83,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			advice->Assertion = lasso_node_new_from_xmlNode(t);
 		t = t->next;
 	}
+	return 0;
 }
 
 

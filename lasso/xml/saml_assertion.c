@@ -132,14 +132,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	char *s;
 	xmlNode *t;
 	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	assertion->AssertionID = xmlGetProp(xmlnode, "AssertionID");
 	assertion->Issuer = xmlGetProp(xmlnode, "Issuer");
@@ -177,9 +178,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		t = t->next;
 	}
-
+	return 0;
 }
-
 
 
 gint

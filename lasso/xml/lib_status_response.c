@@ -82,13 +82,14 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 	t = xmlnode->children;
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProviderID") == 0)
@@ -99,6 +100,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			response->RelayState = xmlNodeGetContent(t);
 		t = t->next;
 	}
+	return 0;
 }
 
 static gchar*

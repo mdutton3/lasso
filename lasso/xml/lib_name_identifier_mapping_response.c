@@ -72,7 +72,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibNameIdentifierMappingResponse *response;
@@ -80,7 +80,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -99,6 +101,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

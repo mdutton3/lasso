@@ -90,14 +90,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthnRequestEnvelope *env = LASSO_LIB_AUTHN_REQUEST_ENVELOPE(node);
 	xmlNode *t, *n;
 	char *s;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -133,6 +134,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		env->IsPassive = (strcmp(s, "true") == 0);
 		xmlFree(s);
 	}
+	return 0;
 }
 	
 		

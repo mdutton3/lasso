@@ -127,14 +127,17 @@ get_xmlNode(LassoNode *node)
 }
 
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoServer *server = LASSO_SERVER(node);
 	xmlNode *t;
 	xmlChar *s;
+	int rc;
 
-	parent_class->init_from_xml(node, xmlnode);
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if (rc)
+		return rc;
 
 	s = xmlGetProp(xmlnode, "SignatureMethod");
 	if (s && strcmp(s, "RSA_SHA1") == 0)
@@ -173,6 +176,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 
@@ -361,15 +365,16 @@ lasso_server_new(const gchar *metadata,
 LassoServer*
 lasso_server_new_from_dump(const gchar *dump)
 {
-	LassoServer *server;
-	xmlDoc *doc;
+	LassoNode *server;
+	server = lasso_node_new_from_dump(dump);
+	if (server == NULL)
+		return NULL;
 
-	server = g_object_new(LASSO_TYPE_SERVER, NULL);
-	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(server), xmlDocGetRootElement(doc)); 
-	xmlFreeDoc(doc);
-
-	return server;
+	if (LASSO_IS_SERVER(server) == FALSE) {
+		g_object_unref(server);
+		return NULL;
+	}
+	return LASSO_SERVER(server);
 }
 
 gchar*

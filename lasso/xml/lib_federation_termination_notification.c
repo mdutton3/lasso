@@ -83,7 +83,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibFederationTerminationNotification *ob;
@@ -91,7 +91,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return 1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -110,6 +111,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 	}
 	ob->consent = xmlGetProp(xmlnode, "consent");
+	return 0;
 }
 
 

@@ -65,13 +65,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	xmlNode *t;
 	LassoSamlpStatus *status = LASSO_SAMLP_STATUS(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -86,6 +88,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

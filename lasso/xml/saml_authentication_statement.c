@@ -72,13 +72,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	statement->AuthenticationMethod = xmlGetProp(xmlnode, "AuthenticationMethod");
 	statement->AuthenticationInstant = xmlGetProp(xmlnode, "AuthenticationInstant");
 
@@ -96,6 +98,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 	
 /*****************************************************************************/

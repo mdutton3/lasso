@@ -40,12 +40,6 @@
 #include <lasso/xml/strings.h>
 
 
-static int debug_type;
-static int debug_line;
-static char debug_filename[512];
-static char debug_function[512];
-
-
 /**
  * lasso_build_random_sequence:
  * @buffer: buffer to fill with random sequence
@@ -185,42 +179,41 @@ lasso_get_pem_file_type(const char *pem_file)
 xmlSecKeyPtr
 lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 {
-  FILE *fd;
-  X509 *pem_cert;
-  xmlSecKeyDataPtr data;
-  xmlSecKeyPtr key = NULL;
+	FILE *fd;
+	X509 *pem_cert;
+	xmlSecKeyDataPtr data;
+	xmlSecKeyPtr key = NULL;
 
-  g_return_val_if_fail(pem_cert_file != NULL, NULL);
+	g_return_val_if_fail(pem_cert_file != NULL, NULL);
 
-  /* load pem certificate from file */
-  fd = fopen(pem_cert_file, "r");
-  if (fd == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file",
-	    pem_cert_file);
-    return NULL;
-  }
-  /* read the pem X509 certificate */
-  pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
-  fclose(fd);
-  if (pem_cert == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate");
-    return NULL;
-  }
+	/* load pem certificate from file */
+	fd = fopen(pem_cert_file, "r");
+	if (fd == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file",
+				pem_cert_file);
+		return NULL;
+	}
+	/* read the pem X509 certificate */
+	pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
+	fclose(fd);
+	if (pem_cert == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate");
+		return NULL;
+	}
 
-  /* get public key value in certificate */
-  data = xmlSecOpenSSLX509CertGetKey(pem_cert);
-  if (data != NULL) {
-    /* create key and set key value */
-    key = xmlSecKeyCreate();
-    xmlSecKeySetValue(key, data);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL,
-	    "Failed to get the public key in the X509 certificate");
-  }
-  X509_free(pem_cert);
+	/* get public key value in certificate */
+	data = xmlSecOpenSSLX509CertGetKey(pem_cert);
+	if (data != NULL) {
+		/* create key and set key value */
+		key = xmlSecKeyCreate();
+		xmlSecKeySetValue(key, data);
+	} else {
+		message(G_LOG_LEVEL_CRITICAL,
+				"Failed to get the public key in the X509 certificate");
+	}
+	X509_free(pem_cert);
 
-  return key;
+	return key;
 }
 
 /**
@@ -236,75 +229,67 @@ lasso_get_public_key_from_pem_cert_file(const char *pem_cert_file)
 xmlSecKeysMngrPtr
 lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 {
-  xmlSecKeysMngrPtr keys_mngr;
-  GIOChannel *gioc;
-  gchar *line;
-  gsize len, pos;
-  GString *cert = NULL;
-  gint ret;
+	xmlSecKeysMngrPtr keys_mngr;
+	GIOChannel *gioc;
+	gchar *line;
+	gsize len, pos;
+	GString *cert = NULL;
+	gint ret;
 
-  g_return_val_if_fail(pem_certs_chain_file != NULL, NULL);
+	g_return_val_if_fail(pem_certs_chain_file != NULL, NULL);
 
-  /* create keys manager */
-  keys_mngr = xmlSecKeysMngrCreate();
-  if (keys_mngr == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
-    return NULL;
-  }
-  /* initialize keys manager */
-  if (xmlSecCryptoAppDefaultKeysMngrInit(keys_mngr) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
-    xmlSecKeysMngrDestroy(keys_mngr);
-    return NULL;
-  }    
+	/* create keys manager */
+	keys_mngr = xmlSecKeysMngrCreate();
+	if (keys_mngr == NULL) {
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
+		return NULL;
+	}
+	/* initialize keys manager */
+	if (xmlSecCryptoAppDefaultKeysMngrInit(keys_mngr) < 0) {
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
+		xmlSecKeysMngrDestroy(keys_mngr);
+		return NULL;
+	}    
 
-  gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
-  while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
-    if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
-      cert = g_string_new(line);
-    }
-    else if (g_strstr_len(line, 64, "END CERTIFICATE") != NULL) {
-      g_string_append(cert, line);
-      /* load the new certificate found in the keys manager */
-      ret = xmlSecCryptoAppKeysMngrCertLoadMemory(keys_mngr,
-						  (const xmlSecByte*) cert->str,
-						  (xmlSecSize) cert->len,
-						  xmlSecKeyDataFormatPem,
-						  xmlSecKeyDataTypeTrusted);
-      g_string_free(cert, TRUE);
-      cert = NULL;
-      if (ret < 0) {
-	goto error;
-      }
-    }
-    else if (cert != NULL && line != NULL && line[0] != '\0') {
-      g_string_append(cert, line);
-    }
-    else {
-      debug("Empty line found in the CA certificate chain file")
-    }
-    /* free last line read */
-    if (line != NULL) {
-      g_free(line);
-      line = NULL;
-    }
-  }
-  goto done;
+	gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
+	while (g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
+		if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
+			cert = g_string_new(line);
+		} else if (g_strstr_len(line, 64, "END CERTIFICATE") != NULL) {
+			g_string_append(cert, line);
+			/* load the new certificate found in the keys manager */
+			ret = xmlSecCryptoAppKeysMngrCertLoadMemory(keys_mngr,
+					(const xmlSecByte*) cert->str,
+					(xmlSecSize) cert->len,
+					xmlSecKeyDataFormatPem,
+					xmlSecKeyDataTypeTrusted);
+			g_string_free(cert, TRUE);
+			cert = NULL;
+			if (ret < 0) {
+				if (line) {
+					g_free(line);
+					xmlSecKeysMngrDestroy(keys_mngr);
+				}
+				g_io_channel_shutdown(gioc, TRUE, NULL);
+				return NULL;
+			}
+		} else if (cert != NULL && line != NULL && line[0] != '\0') {
+			g_string_append(cert, line);
+		} else {
+			debug("Empty line found in the CA certificate chain file")
+		}
+		/* free last line read */
+		if (line != NULL) {
+			g_free(line);
+			line = NULL;
+		}
+	}
 
- error:
-  if (line != NULL) {
-    g_free(line);
-    line = NULL;
-  }
-  xmlSecKeysMngrDestroy(keys_mngr);
-  keys_mngr = NULL;
+	g_io_channel_shutdown(gioc, TRUE, NULL);
 
- done:
-  g_io_channel_shutdown(gioc, TRUE, NULL);
-
-  return keys_mngr;
+	return keys_mngr;
 }
 
 /**
@@ -574,41 +559,25 @@ char** urlencoded_to_strings(const char *str)
 	return result;
 }
 
-
 void
-set_debug_info(int line, char *filename, char *function, int type)
-{
-	debug_type = type;
-	debug_line = line;
-	debug_filename[511] = 0;
-	debug_function[511] = 0;
-	strncpy(debug_filename, filename, 511);
-	strncpy(debug_function, function, 511);
-}
-
-void
-_debug(GLogLevelFlags level, const char *format, ...) 
+_debug(GLogLevelFlags level, const char *filename, int line,
+		const char *function, const char *format, ...) 
 {
 	char debug_string[1024];
 	time_t ts;
 	char date[20];
 	va_list args;
 
-	if (level == G_LOG_LEVEL_DEBUG && debug_type == 0) {
-		g_warning("message() function should not be used with G_LOG_LEVEL_DEBUG level. Use debug() function rather.");
-	}
-	debug_type = 0;
-
 	va_start(args, format);
-	vsnprintf(debug_string, sizeof(debug_string), format, args);
+	vsnprintf(debug_string, 1024, format, args);
 	va_end(args);
 
 	time(&ts);
-	strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
+	strftime(date, 20, "%Y-%m-%d %H:%M:%S", localtime(&ts));
 
 	if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
 		g_log("Lasso", level, "%s (%s/%s:%d)\n======> %s",
-				date, debug_filename, debug_function, debug_line, debug_string);
+				date, filename, function, line, debug_string);
 	} else {
 		g_log("Lasso", level, "%s\t%s", date, debug_string);
 	}

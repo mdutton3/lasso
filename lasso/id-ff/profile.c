@@ -298,11 +298,14 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoProfile *profile = LASSO_PROFILE(node);
 	xmlNode *t;
+
+	if (xmlnode == NULL)
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -343,6 +346,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 

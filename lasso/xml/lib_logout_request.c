@@ -166,13 +166,14 @@ init_from_query(LassoNode *node, char **query_fields)
 	parent_class->init_from_query(node, query_fields);
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node);
 	xmlNode *t, *n;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -200,6 +201,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 	}
 	request->consent = xmlGetProp(xmlnode, "consent");
+	return 0;
 }
 
 

@@ -76,7 +76,9 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 		profile->msg_body = lasso_node_export_to_soap(profile->request,
 				profile->server->private_key, profile->server->certificate);
+		return 0;
 	}
+
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the query message and build the
 		 * register name identifier request url */
@@ -96,17 +98,14 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		}
 		/* build the msg_url */
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_body = NULL;
 		g_free(url);
 		g_free(query);
-		profile->msg_body = NULL;
+		return 0;
 	}
 
-	if (profile->msg_url == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
-	}
-
-	return 0;
+	message(G_LOG_LEVEL_CRITICAL, "Invalid http method");
+	return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 }
 
 gint
@@ -132,6 +131,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 		profile->msg_body = lasso_node_export_to_soap(profile->response, NULL, NULL);
 		return 0;
 	}
+
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		url = lasso_provider_get_metadata_one(remote_provider,
 				"RegisterNameIdentifierServiceReturnURL");
@@ -157,7 +157,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	}
 
 	message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP request method");
-	return -1;
+	return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 }
 
 void
@@ -554,13 +554,14 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoNameRegistration *name_registration = LASSO_NAME_REGISTRATION(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -573,6 +574,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

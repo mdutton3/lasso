@@ -111,7 +111,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	xmlNode *t, *n;
@@ -119,7 +119,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 	
 	t = xmlnode->children;
 	while (t) {
@@ -151,7 +152,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 	}
-
+	return 0;
 }
 
 static gchar*

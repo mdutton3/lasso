@@ -67,13 +67,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node);
 	xmlNode *t;
+	int rc;
 
-	parent_class->init_from_xml(node, xmlnode);
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if (rc) return rc;
 
 	t = xmlnode->children;
 	while (t) {
@@ -87,6 +89,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	statement->ReauthenticateOnOrAfter = xmlGetProp(xmlnode, "ReauthenticateOnOrAfter");
 	statement->SessionIndex = xmlGetProp(xmlnode, "SessionIndex");
+
+	return 0;
 }
 
 /*****************************************************************************/

@@ -61,7 +61,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	xmlNode *t;
@@ -69,7 +69,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	
 	statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -82,6 +84,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					lasso_node_new_from_xmlNode(t));
 		t = t->next;
 	}
+	return 0;
 }
 
 

@@ -156,7 +156,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoFederation *federation = LASSO_FEDERATION(node);
@@ -187,9 +187,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						lasso_node_new_from_xmlNode(n));
 			}
 		}
-
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

@@ -77,13 +77,16 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibAuthnContext *context = LASSO_LIB_AUTHN_CONTEXT(node);
 	xmlNode *t;
+	int rc;
 
-	parent_class->init_from_xml(node, xmlnode);
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if (rc)
+		return rc;
 
 	t = xmlnode->children;
 	while (t) {
@@ -95,7 +98,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
-
+	return 0;
 }
 
 /*****************************************************************************/

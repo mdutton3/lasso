@@ -152,13 +152,14 @@ init_from_query(LassoNode *node, char **query_fields)
 	parent_class->init_from_query(node, query_fields);
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	char *t;
 	LassoSamlpRequestAbstract *request = LASSO_SAMLP_REQUEST_ABSTRACT(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	request->RequestID = xmlGetProp(xmlnode, "RequestID");
 	request->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
@@ -172,6 +173,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		request->MinorVersion = atoi(t);
 		xmlFree(t);
 	}
+	return 0;
 }
 
 

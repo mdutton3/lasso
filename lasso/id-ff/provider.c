@@ -262,12 +262,15 @@ get_xmlNode(LassoNode *node)
 }
 
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoProvider *provider = LASSO_PROVIDER(node);
 	xmlNode *t;
 	xmlChar *s;
+
+	if (xmlnode == NULL)
+		return -1;
 
 	s = xmlGetProp(xmlnode, "ProviderRole");
 	if (s && strcmp(s, "SP") == 0)
@@ -295,7 +298,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			load_descriptor(t, provider->private->IDPDescriptor);
 		t = t->next;
 	}
-
+	return 0;
 }
 
 /*****************************************************************************/

@@ -55,10 +55,11 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LASSO_SAMLP_STATUS_CODE(node)->Value = xmlGetProp(xmlnode, "Value");
+	return 0;
 }
 
 /*****************************************************************************/

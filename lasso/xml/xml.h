@@ -72,7 +72,7 @@ struct _LassoNodeClass {
 	void     (* destroy)            (LassoNode *node);
 	char*    (* build_query)        (LassoNode *node);
 	void     (* init_from_query)    (LassoNode *node, char **query_fields);
-	void     (* init_from_xml)      (LassoNode *node, xmlNode *xmlnode);
+	int      (* init_from_xml)      (LassoNode *node, xmlNode *xmlnode);
 	xmlNode* (* get_xmlNode)        (LassoNode *node);
 
 	char*    (* get_sign_attr_name) ();
@@ -99,7 +99,7 @@ LASSO_EXPORT xmlNode*   lasso_node_get_xmlNode(LassoNode *node);
 
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
 LASSO_EXPORT void       lasso_node_init_from_query(LassoNode *node, const char *query);
-LASSO_EXPORT void       lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
+LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
 LASSO_EXPORT gint       lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file);

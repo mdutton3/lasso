@@ -66,14 +66,16 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node);
 	xmlNode *t;
 	char *s;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	t = xmlnode->children;
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && strcmp(t->name, "ProxyCount") == 0) {
@@ -85,6 +87,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			scoping->IDPList = LASSO_LIB_IDP_LIST(lasso_node_new_from_xmlNode(t));
 		t = t->next;
 	}
+	return 0;
 }
 
 

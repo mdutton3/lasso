@@ -57,14 +57,16 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlSubjectLocality *locality = LASSO_SAML_SUBJECT_LOCALITY(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 	locality->IPAddress = xmlGetProp(xmlnode, "IPAddress");
 	locality->DNSAddress = xmlGetProp(xmlnode, "DNSAddress");
+	return 0;
 }
 
 

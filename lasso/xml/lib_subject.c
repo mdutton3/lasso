@@ -67,13 +67,14 @@ get_xmlNode(LassoNode *node)
 }
 
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoLibSubject *subject = LASSO_LIB_SUBJECT(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
@@ -87,6 +88,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		subject->IDPProvidedNameIdentifier = lasso_saml_name_identifier_new_from_xmlNode(t);
 		break;
 	}
+	return 0;
 }
 
 /*****************************************************************************/

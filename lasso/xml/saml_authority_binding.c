@@ -61,15 +61,19 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	binding->AuthorityKind = xmlGetProp(xmlnode, "AuthorityKind");
 	binding->Location = xmlGetProp(xmlnode, "Location");
 	binding->Binding = xmlGetProp(xmlnode, "Binding");
+
+	return 0;
 }
 
 /*****************************************************************************/

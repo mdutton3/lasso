@@ -270,15 +270,15 @@ lasso_node_init_from_query(LassoNode *node, const char *query)
 	free(query_fields);
 }
 
-void
+int
 lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoNodeClass *class;
 
-	g_return_if_fail(LASSO_IS_NODE(node));
+	g_return_val_if_fail(LASSO_IS_NODE(node), -1);
 	class = LASSO_NODE_GET_CLASS(node);
 
-	class->init_from_xml(node, xmlnode);
+	return class->init_from_xml(node, xmlnode);
 }
 
 
@@ -456,10 +456,10 @@ lasso_node_impl_init_from_query(LassoNode *node, char **query_fields)
 	;
 }
 
-static void
+static int
 lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	;
+	return 0;
 }
 
 /*** private methods **********************************************************/
@@ -551,6 +551,18 @@ lasso_node_new()
 }
 
 LassoNode*
+lasso_node_new_from_dump(const char *dump)
+{
+	LassoNode *node;
+	xmlDoc *doc;
+
+	doc = xmlParseMemory(dump, strlen(dump));
+	node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc));
+	xmlFreeDoc(doc);
+	return node;
+}
+
+LassoNode*
 lasso_node_new_from_soap(const char *soap)
 {
 	xmlDoc *doc;
@@ -590,6 +602,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	GType gtype;
 	LassoNode *node;
 	char *xsitype;
+	int rc;
 
 	/* XXX I'm not sure I can access ->ns like this */
 
@@ -628,7 +641,11 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 
 	node = g_object_new(gtype, NULL);
-	lasso_node_init_from_xml(node, xmlnode);
+	rc = lasso_node_init_from_xml(node, xmlnode);
+	if (rc) {
+		g_object_unref(node);
+		return NULL;
+	}
 
 	return node;
 }

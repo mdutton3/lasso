@@ -98,15 +98,19 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	identifier->content = xmlNodeGetContent(xmlnode);
 	identifier->Format = xmlGetProp(xmlnode, "Format");
 	identifier->NameQualifier = xmlGetProp(xmlnode, "NameQualifier");
+
+	return 0;
 }
 
 static gchar*

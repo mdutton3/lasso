@@ -64,13 +64,15 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlConditions *conditions = LASSO_SAML_CONDITIONS(node);
 	xmlNode *t;
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
+
 	conditions->NotBefore = xmlGetProp(xmlnode, "NotBefore");
 	conditions->NotOnOrAfter = xmlGetProp(xmlnode, "NotOnOrAfter");
 	t = xmlnode->children;
@@ -87,6 +89,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 

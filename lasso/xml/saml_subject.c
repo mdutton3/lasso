@@ -66,13 +66,14 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 }
 
-static void
+static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	xmlNode *t;
 	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node);
 
-	parent_class->init_from_xml(node, xmlnode);
+	if (parent_class->init_from_xml(node, xmlnode))
+		return -1;
 
 	t = xmlnode->children;
 	while (t) {
@@ -90,6 +91,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		t = t->next;
 	}
+	return 0;
 }
 
 /*****************************************************************************/
