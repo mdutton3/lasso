@@ -165,8 +165,8 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
       return(providerID);
     }
     else{
-      xmlFree(providerID);
-      xmlFree(hash_providerID);
+/*       xmlFree(providerID); */
+/*       xmlFree(hash_providerID); */
     }
   }
 
@@ -354,17 +354,17 @@ lasso_server_new_from_dump(gchar *dump)
 	}
 	lasso_server_add_lasso_provider(server, provider);
 
-	//lasso_node_destroy(provider_node);
+	lasso_node_destroy(provider_node);
       }
 
       provider_xmlNode = provider_xmlNode->next;
     }
 
-    //lasso_node_destroy(providers_node);
+    lasso_node_destroy(providers_node);
   }
 
-  //lasso_node_destroy(server_metadata_node);
-  //lasso_node_destroy(server_node);
+  lasso_node_destroy(server_metadata_node);
+  lasso_node_destroy(server_node);
 
   return(server);
 }
