@@ -66,6 +66,9 @@ lasso_strerror(int error_code)
   case LASSO_SERVER_ERROR_PROVIDER_NOTFOUND:
     return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
 
+  case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILLE:
+    return "Unsupported SOAP profile\n";
+
   case LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ:
     return "An object type provided as parameter is invalid or object is NULL.\n";
   case LASSO_PARAM_ERROR_INVALID_VALUE:
