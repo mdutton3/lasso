@@ -63,6 +63,22 @@ PyObject *server_new(PyObject *self, PyObject *args) {
   return (LassoServer_wrap(LASSO_SERVER(server)));
 }
 
+PyObject *server_new_from_dump(PyObject *self, PyObject *args) {
+  LassoServer *server;
+  gchar *dump;
+
+  if (CheckArgs(args, "S:server_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:server_new_from_dump",
+			 &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  server = lasso_server_new_from_dump(dump);
+
+  return (LassoServer_wrap(LASSO_SERVER(server)));
+}
+
 PyObject *server_add_provider(PyObject *self, PyObject *args) {
   PyObject *server_obj;
   gchar       *metadata;
@@ -81,4 +97,20 @@ PyObject *server_add_provider(PyObject *self, PyObject *args) {
 
   Py_INCREF(Py_None);
   return (Py_None);
+}
+
+PyObject *server_dump(PyObject *self, PyObject *args) {
+  PyObject *server_obj;
+  gchar *ret;
+
+  if (CheckArgs(args, "O:server_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:server_dump",
+			 &server_obj))
+      return NULL;
+  }
+  else return NULL;
+  
+  ret = lasso_server_dump(LassoServer_get(server_obj));
+
+  return (charPtrConst_wrap(ret));
 }

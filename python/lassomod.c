@@ -210,8 +210,8 @@ static PyMethodDef lasso_methods[] = {
   {"login_build_authn_response_msg",    login_build_authn_response_msg,    METH_VARARGS},
   {"login_build_request_msg",           login_build_request_msg,           METH_VARARGS},
   {"login_dump",                        login_dump,                        METH_VARARGS},
-  {"login_handle_authn_response_msg",   login_handle_authn_response_msg,   METH_VARARGS},
-  {"login_handle_request_msg",          login_handle_request_msg,          METH_VARARGS},
+  {"login_process_authn_response_msg",  login_process_authn_response_msg,  METH_VARARGS},
+  {"login_process_request_msg",         login_process_request_msg,         METH_VARARGS},
   {"login_init_authn_request",          login_init_authn_request,          METH_VARARGS},
   {"login_init_from_authn_request_msg", login_init_from_authn_request_msg, METH_VARARGS},
   {"login_init_request",                login_init_request,                METH_VARARGS},
@@ -226,8 +226,10 @@ static PyMethodDef lasso_methods[] = {
   {"logout_handle_response_msg",    logout_handle_response_msg,    METH_VARARGS},
 
   /* py_server.h */
-  {"server_new",          server_new,          METH_VARARGS},
-  {"server_add_provider", server_add_provider, METH_VARARGS},
+  {"server_new",           server_new,           METH_VARARGS},
+  {"server_new_from_dump", server_new_from_dump, METH_VARARGS},
+  {"server_add_provider",  server_add_provider,  METH_VARARGS},
+  {"server_dump",          server_dump,          METH_VARARGS},
   
   /* py_user.h */
   {"user_new",           user_new,           METH_VARARGS},

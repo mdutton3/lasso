@@ -820,9 +820,17 @@ class Server:
         return Server(obj)
     new = classmethod(new)
 
+    def new_from_dump(cls, dump):
+        obj = lassomod.server_new_from_dump(dump)
+        return Server(obj)
+    new_from_dump = classmethod(new_from_dump)
+
     def add_provider(self, metadata, public_key=None, certificate=None):
         lassomod.server_add_provider(self, metadata,
                                      public_key, certificate)
+
+    def dump(self):
+        return lassomod.server_dump(self)
 
 
 class Login:
@@ -888,11 +896,11 @@ class Login:
     def dump(self):
         return lassomod.login_dump(self)
 
-    def handle_authn_response_msg(self, authn_response_msg):
-        return lassomod.login_handle_authn_response_msg(self, authn_response_msg)
+    def process_authn_response_msg(self, authn_response_msg):
+        return lassomod.login_process_authn_response_msg(self, authn_response_msg)
 
-    def handle_request_msg(self, request_msg):
-        return lassomod.login_handle_request_msg(self, request_msg)
+    def process_request_msg(self, request_msg):
+        return lassomod.login_process_request_msg(self, request_msg)
 
     def init_authn_request(self, remote_providerID):
         return lassomod.login_init_authn_request(self, remote_providerID)

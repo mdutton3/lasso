@@ -73,10 +73,10 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 /*     cdata = xmlNewCDataBlock(doc, ctx->msg_url, strlen(ctx->msg_url)); */
 /*     xmlAddChild(data, cdata); */
 /*     xmlAddChild(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node), data); */
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_url", lasso_str_escape(ctx->msg_url), FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgUrl", lasso_str_escape(ctx->msg_url), FALSE);
   }
   if (ctx->msg_body != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_body", lasso_str_escape(ctx->msg_body), FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", lasso_str_escape(ctx->msg_body), FALSE);
   }
 
   dump = lasso_node_export(node);

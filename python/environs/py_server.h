@@ -37,6 +37,8 @@ typedef struct {
 PyObject *LassoServer_wrap(LassoServer *server);
 
 PyObject *server_new(PyObject *self, PyObject *args);
+PyObject *server_new_from_dump(PyObject *self, PyObject *args);
 PyObject *server_add_provider(PyObject *self, PyObject *args);
+PyObject *server_dump(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_SERVER_H__ */

@@ -17,8 +17,11 @@ server = lasso.Server.new("../../examples/sp.xml",
                           lasso.signatureMethodRsaSha1)
 
 server.add_provider("../../examples/idp.xml", None, None)
+server_dump = server.dump()
+print server_dump
 
 # create AuthnRequest
+server = lasso.Server.new_from_dump(server_dump)
 splogin = lasso.Login.new(server, None)
 ret = splogin.init_authn_request("https://identity-provider:2003/liberty-alliance/metadata")
 splogin.request.set_isPassive(0)
@@ -96,5 +99,5 @@ server.add_provider("../../examples/sp.xml",
 # create Response
 idplogin = lasso.Login.new(server, None)
 
-ret = idplogin.handle_request_msg(splogin.msg_body)
+ret = idplogin.process_request_msg(splogin.msg_body)
 print "samlp:AssertionArtifact = %s" % idplogin.assertionArtifact

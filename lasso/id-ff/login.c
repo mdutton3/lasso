@@ -318,18 +318,18 @@ lasso_login_dump(LassoLogin *login)
   if (login->protocolProfile > 0) {
     str = g_new0(gchar, 6);
     sprintf(str, "%d", login->protocolProfile);
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "protocolProfile", str, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", str, FALSE);
     g_free(str);
   }
 
   if (login->assertionArtifact != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "assertionArtifact", login->assertionArtifact, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "AssertionArtifact", login->assertionArtifact, FALSE);
   }
   if (login->response_dump != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "response_dump", login->response_dump, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseDump", login->response_dump, FALSE);
   }
   if (login->msg_relayState != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "msg_relayState", login->msg_relayState, FALSE);
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", login->msg_relayState, FALSE);
   }
 
   dump = lasso_node_export(node);
@@ -487,8 +487,8 @@ lasso_login_init_request(LassoLogin       *login,
 }
 
 gint
-lasso_login_handle_authn_response_msg(LassoLogin *login,
-				      gchar      *authn_response_msg)
+lasso_login_process_authn_response_msg(LassoLogin *login,
+				       gchar      *authn_response_msg)
 {
   LassoNode *assertion, *status, *statusCode;
   LassoProvider *idp;
@@ -534,8 +534,8 @@ lasso_login_handle_authn_response_msg(LassoLogin *login,
 }
 
 gint
-lasso_login_handle_request_msg(LassoLogin *login,
-			       gchar      *request_msg)
+lasso_login_process_request_msg(LassoLogin *login,
+				gchar      *request_msg)
 {
   LassoNode *node;
 

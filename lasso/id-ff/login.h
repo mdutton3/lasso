@@ -57,9 +57,9 @@ struct _LassoLogin {
   LassoProfileContext parent;
   /*< public >*/
   lassoLoginProtocolProfiles  protocolProfile;
-  gchar                      *assertionArtifact;
   gchar                      *nameIdentifier;
 
+  gchar                      *assertionArtifact;
   gchar                      *response_dump;
 
   gchar                      *msg_relayState;
@@ -108,11 +108,11 @@ LASSO_EXPORT gint                 lasso_login_init_request                (Lasso
 									   lassoHttpMethods  response_method,
 									   const gchar      *remote_providerID);
 
-LASSO_EXPORT gint                 lasso_login_handle_authn_response_msg   (LassoLogin *login,
-									   gchar      *authn_response_msg);
+LASSO_EXPORT gint                 lasso_login_process_authn_response_msg   (LassoLogin *login,
+									    gchar      *authn_response_msg);
 
-LASSO_EXPORT gint                 lasso_login_handle_request_msg          (LassoLogin *login,
-									   gchar      *request_msg);
+LASSO_EXPORT gint                 lasso_login_process_request_msg          (LassoLogin *login,
+									    gchar      *request_msg);
 
 LASSO_EXPORT gboolean             lasso_login_must_authenticate           (LassoLogin *login);
 
