@@ -217,8 +217,8 @@ PyObject *lecp_process_authn_request_envelope_msg(PyObject *self, PyObject *args
   }
   else return NULL;
   
-  ret = lecp_process_authn_request_envelope_msg(LassoLecp_get(lecp_obj),
-						remote_providerID);
+  ret = lasso_lecp_process_authn_request_envelope_msg(LassoLecp_get(lecp_obj),
+						      remote_providerID);
   
   return (int_wrap(ret));
 }
@@ -235,8 +235,8 @@ PyObject *lecp_process_authn_response_envelope_msg(PyObject *self, PyObject *arg
   }
   else return NULL;
   
-  ret = lecp_process_authn_response_envelope_msg(LassoLecp_get(lecp_obj),
-						remote_providerID);
+  ret = lasso_lecp_process_authn_response_envelope_msg(LassoLecp_get(lecp_obj),
+						       remote_providerID);
   
   return (int_wrap(ret));
 }
