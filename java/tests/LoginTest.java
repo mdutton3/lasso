@@ -24,13 +24,13 @@
  */
 
 // To run it:
-// $ export LD_LIBRARY_PATH=../target/
-// $ javac -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest.java
-// $ java -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest
+// $ export LD_LIBRARY_PATH=../
+// $ javac -classpath /usr/share/java/junit.jar:../lasso.jar:. LoginTest.java
+// $ java -classpath /usr/share/java/junit.jar:../lasso.jar:. LoginTest
 // or for gcj:
-// $ export LD_LIBRARY_PATH=../target/
-// $ gcj -C -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest.java
-// $ gij -classpath /usr/share/java/junit.jar:../target/lasso.jar:. LoginTest
+// $ export LD_LIBRARY_PATH=../
+// $ gcj -C -classpath /usr/share/java/junit.jar:../lasso.jar:. LoginTest.java
+// $ gij -classpath /usr/share/java/junit.jar:../lasso.jar:. LoginTest
 
 
 import junit.framework.Test;
