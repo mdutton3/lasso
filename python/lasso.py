@@ -39,6 +39,7 @@ def init():
     """
     """
     return lassomod.init()
+
 def shutdown():
     """
     Shutdown Lasso Library
@@ -390,6 +391,7 @@ class FederationTerminationNotification(Node):
     def __init__(self,
                  providerID,
                  nameIdentifier, nameQualifier, format,
+                 consent = None,
 		 _obj=None):
         """
         """
@@ -399,6 +401,9 @@ class FederationTerminationNotification(Node):
         self._o = lassomod.federation_termination_notification(providerID,
                                                                nameIdentifier, nameQualifier, format)
         if self._o is None: raise Error('lasso_federation_termination_notification() failed')
+
+        if consent:
+            lassomod.federation_termination_notification_set_consent(self, consent)
 
     def __isprivate(self, name):
         return name == '_o'

@@ -78,3 +78,17 @@ PyObject *federation_termination_notification(PyObject *self, PyObject *args) {
 
   return (lassoFederationTerminationNotification_wrap(notification));
 }
+
+PyObject *federation_termination_notification_set_consent(PyObject *self, PyObject *args){
+     PyObject      *request_obj;
+     const xmlChar *consent;
+     
+     if(!PyArg_ParseTuple(args, (char *) "Os:federation_termination_notification_set_consent",
+			  &request_obj, &consent))
+	  return NULL;
+
+     lasso_lib_federation_termination_notification_set_consent(lassoFederationTerminationNotification_get(request_obj),
+							       consent);
+     
+     return (int_wrap(1));
+}

@@ -38,5 +38,6 @@ PyObject *lassoFederationTerminationNotification_wrap(LassoFederationTermination
 
 PyObject *federation_termination_notification_getattr(PyObject *self, PyObject *args);
 PyObject *federation_termination_notification(PyObject *self, PyObject *args);
+PyObject *federation_termination_notification_set_consent(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_FEDERATION_TERMINATION_NOTIFICATION_H__ */

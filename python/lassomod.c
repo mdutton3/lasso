@@ -94,7 +94,7 @@ static PyMethodDef lasso_methods[] = {
   /* py_federation_termination_notification.h */
   {"federation_termination_notification_getattr", federation_termination_notification_getattr, METH_VARARGS},
   {"federation_termination_notification",  federation_termination_notification,  METH_VARARGS},
-
+  {"federation_termination_notification_set_consent",  federation_termination_notification_set_consent,  METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
