@@ -66,11 +66,13 @@ lasso_provider_dump(LassoProvider *provider)
   gchar *provider_dump;
 
   provider_node = lasso_node_new();
-  metadata_node = lasso_node_copy(provider->metadata);
 
   /* set the public key, ca_certificate, metadata */
   provider_class = LASSO_NODE_GET_CLASS(provider_node);
   provider_class->set_name(provider_node, LASSO_PROVIDER_NODE);
+  provider_class->set_ns(provider_node, lassoLassoHRef, NULL);
+  
+  metadata_node = lasso_node_copy(provider->metadata);
   provider_class->add_child(provider_node, metadata_node, FALSE);
   lasso_node_destroy(metadata_node);
   if(provider->public_key != NULL) {
