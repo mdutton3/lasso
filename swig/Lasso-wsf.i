@@ -32,6 +32,9 @@
 
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/profile_service.h>
+#include <lasso/xml/is_interaction_request.h>
+#include <lasso/xml/is_interaction_response.h>
+#include <lasso/xml/is_inquiry.h>
 #include <lasso/xml/dst_new_data.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
@@ -963,6 +966,82 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 
 %}
 
+
+/***********************************************************************
+ ***********************************************************************
+ LassoIs domain
+ ***********************************************************************
+ ***********************************************************************/
+
+/***********************************************************************
+ * ID-WSF XML LassoIsInteractionRequest
+ ***********************************************************************/
+
+#ifndef SWIGPHP4
+%rename(InteractionRequest) LassoIsInteractionRequest;
+#endif
+typedef struct {
+	%extend {
+		/* Attributes */
+		LassoDiscoResourceID *resourceID;
+
+		LassoIsInquiry *inquiry;
+
+		int maxInteractTime;
+
+		/* Constructor, Destructor & Static Methods */
+		LassoIsInteractionRequest();
+
+		/* Methods */
+
+	}
+} LassoIsInteractionRequest;
+
+%{
+
+/* Attributes Implementations */
+/* resourceID */
+#define LassoIsInteractionRequest_get_resourceID LassoIsInteractionRequest_resourceID_get
+LassoDiscoResourceID *LassoIsInteractionRequest_resourceID_get(LassoIsInteractionRequest *self) {
+	return self->ResourceID;
+}
+
+#define LassoIsInteractionRequest_set_resourceID LassoIsInteractionRequest_resourceID_set
+void LassoIsInteractionRequest_resourceID_set(LassoIsInteractionRequest *self, LassoDiscoResourceID *resourceID) {
+	self->ResourceID = resourceID;
+}
+
+/* inquiry */
+#define LassoIsInteractionRequest_get_inquiry LassoIsInteractionRequest_inquiry_get
+LassoIsInquiry *LassoIsInteractionRequest_inquiry_get(LassoIsInteractionRequest *self) {
+	if (self->Inquiry == NULL) {
+		return NULL;
+	}
+	return LASSO_IS_INQUIRY(self->Inquiry->data);
+}
+
+#define LassoIsInteractionRequest_set_inquiry LassoIsInteractionRequest_inquiry_set
+void LassoIsInteractionRequest_inquiry_set(LassoIsInteractionRequest *self, LassoIsInquiry *inquiry) {
+	self->Inquiry = g_list_append(self->Inquiry, LASSO_NODE(inquiry));
+}
+
+/* maxInteractTime */
+#define LassoIsInteractionRequest_get_maxInteractTime LassoIsInteractionRequest_maxInteractTime_get
+int LassoIsInteractionRequest_maxInteractTime_get(LassoIsInteractionRequest *self) {
+	return self->maxInteractTime;
+}
+
+#define LassoIsInteractionRequest_set_maxInteractTime LassoIsInteractionRequest_maxInteractTime_set
+void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *self, int maxInteractTime) {
+	self->maxInteractTime = maxInteractTime;
+}
+
+/* Constructors, destructors & static methods implementations */
+#define new_LassoIsInteractionRequest lasso_is_interaction_request_new
+
+/* Methods implementations */
+
+%}
 
 /***********************************************************************
  ***********************************************************************
