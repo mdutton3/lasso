@@ -79,112 +79,45 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
+static struct QuerySnippet query_snippets[] = {
+	{ "RequestID", NULL },
+	{ "MajorVersion", NULL },
+	{ "MinorVersion", NULL },
+	{ "IssueInstant", NULL },
+	{ "ProviderID", NULL },
+	{ "IDPProvidedNameIdentifier/NameQualifier", "IDPNameQualifier"},
+	{ "IDPProvidedNameIdentifier/Format", "IDPNameFormat"},
+	{ "IDPProvidedNameIdentifier/content", "IDPProvidedNameIdentifier"},
+	{ "SPProvidedNameIdentifier/NameQualifier", "SPNameQualifier"},
+	{ "SPProvidedNameIdentifier/Format", "SPNameFormat"},
+	{ "SPProvidedNameIdentifier/content", "SPProvidedNameIdentifier"},
+	{ "OldProvidedNameIdentifier/NameQualifier", "OldNameQualifier"},
+	{ "OldProvidedNameIdentifier/Format", "OldNameFormat"},
+	{ "OldProvidedNameIdentifier/content", "OldProvidedNameIdentifier"},
+	{ "RelayState", NULL },
+	{ NULL }
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static gchar*
 build_query(LassoNode *node)
 {
-	char *str, *t;
-	GString *s;
-	LassoLibRegisterNameIdentifierRequest *request;
-
-	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
-
-	str = parent_class->build_query(node);
-	s = g_string_new(str);
-	g_free(str);
-
-	if (request->ProviderID) {
-		t = xmlURIEscapeStr(request->ProviderID, NULL);
-		g_string_append_printf(s, "&ProviderID=%s", t);
-		xmlFree(t);
-	}
-	if (request->IDPProvidedNameIdentifier) {
-		t = lasso_saml_name_identifier_build_query(
-				request->IDPProvidedNameIdentifier, "IDP", "IDPProvided");
-		g_string_append_printf(s, "&%s", t);
-		g_free(t);
-	}
-	if (request->SPProvidedNameIdentifier) {
-		t = lasso_saml_name_identifier_build_query(
-				request->SPProvidedNameIdentifier, "SP", "SPProvided");
-		g_string_append_printf(s, "&%s", t);
-		g_free(t);
-	}
-	if (request->OldProvidedNameIdentifier) {
-		t = lasso_saml_name_identifier_build_query(
-				request->OldProvidedNameIdentifier, "Old", "OldProvided");
-		g_string_append_printf(s, "&%s", t);
-		g_free(t);
-	}
-	if (request->RelayState)
-		g_string_append_printf(s, "&RelayState=%s", request->RelayState);
-
-	str = s->str;
-	g_string_free(s, FALSE);
-
-	return str;
+	return lasso_node_build_query_from_snippets(node);
 }
 
 static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibRegisterNameIdentifierRequest *request;
-	int i;
-	char *t;
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node);
 
 	request->IDPProvidedNameIdentifier = lasso_saml_name_identifier_new();
 	request->SPProvidedNameIdentifier = lasso_saml_name_identifier_new();
 	request->OldProvidedNameIdentifier = lasso_saml_name_identifier_new();
-	
-	for (i=0; (t=query_fields[i]); i++) {
-		if (g_str_has_prefix(t, "ProviderID=")) {
-			request->ProviderID = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "RelayState=")) {
-			request->RelayState = g_strdup(t+11);
-			continue;
-		}
-		if (g_str_has_prefix(t, "IDPProvidedNameIdentifier=")) {
-			request->IDPProvidedNameIdentifier->content = g_strdup(t+26);
-			continue;
-		}
-		if (g_str_has_prefix(t, "IDPNameFormat=")) {
-			request->IDPProvidedNameIdentifier->Format = g_strdup(t+14);
-			continue;
-		}
-		if (g_str_has_prefix(t, "IDPNameQualifier=")) {
-			request->IDPProvidedNameIdentifier->NameQualifier = g_strdup(t+17);
-			continue;
-		}
-		if (g_str_has_prefix(t, "SPProvidedNameIdentifier=")) {
-			request->SPProvidedNameIdentifier->content = g_strdup(t+25);
-			continue;
-		}
-		if (g_str_has_prefix(t, "SPNameFormat=")) {
-			request->SPProvidedNameIdentifier->Format = g_strdup(t+13);
-			continue;
-		}
-		if (g_str_has_prefix(t, "SPNameQualifier=")) {
-			request->SPProvidedNameIdentifier->NameQualifier = g_strdup(t+16);
-			continue;
-		}
-		if (g_str_has_prefix(t, "OldProvidedNameIdentifier=")) {
-			request->OldProvidedNameIdentifier->content = g_strdup(t+26);
-			continue;
-		}
-		if (g_str_has_prefix(t, "OldNameFormat=")) {
-			request->OldProvidedNameIdentifier->Format = g_strdup(t+14);
-			continue;
-		}
-		if (g_str_has_prefix(t, "OldNameQualifier=")) {
-			request->OldProvidedNameIdentifier->NameQualifier = g_strdup(t+17);
-			continue;
-		}
-	}
+
+	lasso_node_init_from_query_fields(node, query_fields);
 
 	if (request->IDPProvidedNameIdentifier->content == NULL) {
 		g_object_unref(request->IDPProvidedNameIdentifier);
@@ -205,10 +138,8 @@ init_from_query(LassoNode *node, char **query_fields)
 		return FALSE;
 	}
 	
-	return parent_class->init_from_query(node, query_fields);
+	return TRUE;
 }
-
-
 
 
 /*****************************************************************************/
@@ -237,6 +168,7 @@ class_init(LassoLibRegisterNameIdentifierRequestClass *klass)
 	lasso_node_class_set_nodename(nclass, "RegisterNameIdentifierRequest");
 	lasso_node_class_set_ns(nclass, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	lasso_node_class_add_query_snippets(nclass, query_snippets);
 }
 
 GType
@@ -293,7 +225,6 @@ lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 	request->IDPProvidedNameIdentifier = idpNameIdentifier;
 	request->SPProvidedNameIdentifier = spNameIdentifier;
 	request->OldProvidedNameIdentifier = oldNameIdentifier;
-
 
 	return LASSO_NODE(request);
 }

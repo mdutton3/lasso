@@ -53,9 +53,15 @@ struct XmlSnippet {
 	guint offset;
 };
 
+struct QuerySnippet {
+	char *path;
+	char *field_name;
+};
+
 struct _LassoNodeClassData
 {
 	struct XmlSnippet *snippets;
+	struct QuerySnippet *query_snippets;
 	char *node_name;
 	xmlNs *ns;
 };
@@ -63,6 +69,10 @@ struct _LassoNodeClassData
 void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);
 void lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix);
 void lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets);
+void lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnippet *snippets);
+
+gchar* lasso_node_build_query_from_snippets(LassoNode *node);
+void lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
 
 #ifdef __cplusplus
 }

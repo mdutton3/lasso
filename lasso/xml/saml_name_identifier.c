@@ -83,7 +83,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "NameQualifier", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlNameIdentifier, NameQualifier) },
 	{ "Format", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlNameIdentifier, Format) },
-	{ "", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoSamlNameIdentifier, content) },
+	{ "content", SNIPPET_TEXT_CHILD, G_STRUCT_OFFSET(LassoSamlNameIdentifier, content) },
 	{ NULL, 0, 0 }
 };
 

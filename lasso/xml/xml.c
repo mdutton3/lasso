@@ -41,6 +41,11 @@
 
 static void lasso_node_build_xmlNode_from_snippets(
 		LassoNode *node, xmlNode *xmlnode, struct XmlSnippet *snippets);
+static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
+static int set_value_at_path(LassoNode *node, char *path, char *query_value);
+static char* get_value_by_path(LassoNode *node, char *path);
+static int find_path(LassoNode *node, char *path, LassoNode **value_node,
+		struct XmlSnippet **snippet);
 
 
 /*****************************************************************************/
@@ -977,6 +982,16 @@ lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets
 	klass->node_data->snippets = snippets;
 }
 
+/**
+ * lasso_node_class_add_snippets
+ * @klass: object class
+ * @snippets: array of QuerySnippet (NULL terminated)
+ **/
+void
+lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnippet *snippets)
+{
+	klass->node_data->query_snippets = snippets;
+}
 
 /**
  * lasso_node_class_set_nodename
@@ -1026,6 +1041,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					snippet->type & SNIPPET_INTEGER) )
 			continue;
 
+		/* XXX: not sure it is 64-bits clean */
 		if (snippet->type & SNIPPET_BOOLEAN)
 			str = GPOINTER_TO_INT(value) ? "true" : "false";
 		if (snippet->type & SNIPPET_INTEGER)
@@ -1088,5 +1104,178 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		if (snippet->type & SNIPPET_INTEGER)
 			g_free(str);
 	}
+}
+
+static struct XmlSnippet*
+find_xml_snippet_by_name(LassoNode *node, char *name)
+{
+	LassoNodeClass *class;
+	struct XmlSnippet *snippet;
+
+	class = LASSO_NODE_GET_CLASS(node);
+	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		for (snippet = class->node_data->snippets;
+				snippet->name && strcmp(snippet->name, name) != 0;
+				snippet++) ;
+		if (snippet->name)
+			return snippet;
+		class = g_type_class_peek_parent(class);
+	}
+
+	return NULL;
+}
+
+static int
+find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet **snippet)
+{
+	char *s, *t;
+	struct XmlSnippet *tsnippet = NULL;
+	LassoNode *tnode = node;
+	
+	s = path;
+	while (s-1) {
+		t = strchr(s, '/');
+		if (t) *t = 0;
+		tsnippet = find_xml_snippet_by_name(tnode, s);
+		if (t) {
+			tnode = G_STRUCT_MEMBER(LassoNode*, tnode, tsnippet->offset);
+			if (tnode == NULL)
+				return -1;
+		}
+		s = t+1;
+	}
+
+	*snippet = tsnippet;
+	*value_node = tnode;
+	return 0;
+}
+
+
+static char*
+get_value_by_path(LassoNode *node, char *path)
+{
+	struct XmlSnippet *snippet;
+	LassoNode *value_node;
+	void *value;
+	
+	if (find_path(node, path, &value_node, &snippet) != 0)
+		return NULL;
+
+	if (snippet->type & SNIPPET_BOOLEAN) {
+		gboolean v = G_STRUCT_MEMBER(gboolean, value_node, snippet->offset);
+		return v ? g_strdup("true") : g_strdup("false");
+	} else if (snippet->type & SNIPPET_INTEGER) {
+		int v = G_STRUCT_MEMBER(int, value_node, snippet->offset);
+		return g_strdup_printf("%d", v);
+	} else {
+		value = G_STRUCT_MEMBER(char*, value_node, snippet->offset);
+		if (value == NULL) return NULL;
+		return g_strdup(value);
+	}
+	return NULL;
+}
+
+static int
+set_value_at_path(LassoNode *node, char *path, char *query_value)
+{
+	struct XmlSnippet *snippet;
+	LassoNode *value_node;
+	void *value;
+	
+	if (find_path(node, path, &value_node, &snippet) != 0)
+		return -1;
+
+	value = G_STRUCT_MEMBER_P(value_node, snippet->offset);
+
+	if (snippet->type & SNIPPET_INTEGER) {
+		int val = atoi(query_value);
+		(*(int*)value) = val;
+	} else if (snippet->type & SNIPPET_BOOLEAN) {
+		int val = (strcmp(query_value, "true") == 0);
+		(*(int*)value) = val;
+	} else {
+		(*(char**)value) = g_strdup(query_value);
+	}
+
+	return 0;
+}
+
+
+gchar*
+lasso_node_build_query_from_snippets(LassoNode *node)
+{
+	int i;
+	char path[100];
+	char *v;
+	GString *s;
+	xmlChar *t;
+	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+	struct QuerySnippet *query_snippets;
+
+	query_snippets = class->node_data->query_snippets;
+
+	s = g_string_sized_new(2000);
+
+	for (i=0; query_snippets[i].path; i++) {
+#if 0
+		fprintf(stderr, "getting value at %s\n", query_snippets[i].path);
+#endif
+		memset(path, 0, 100);
+		strncpy(path, query_snippets[i].path, 100);
+		v = get_value_by_path(node, path);
+		if (v) {
+			char *field_name = query_snippets[i].field_name;
+			if (field_name == NULL)
+				field_name = query_snippets[i].path;
+			if (s->len)
+				g_string_append(s, "&");
+			g_string_append(s, field_name);
+			g_string_append(s, "=");
+			t = xmlURIEscapeStr(v, NULL);
+			g_string_append(s, t);
+			xmlFree(t);
+		}
+	}
+
+	v = s->str;
+	g_string_free(s, FALSE);
+
+	return v;
+}
+
+
+void
+lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
+{
+	int i, j;
+	char *field, *t;
+	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+	struct QuerySnippet *query_snippets;
+
+	query_snippets = class->node_data->query_snippets;
+
+	for (i=0; (field=query_fields[i]); i++) {
+		t = strchr(field, '=');
+		if (t == NULL)
+			continue;
+		*t = 0;
+
+		for (j=0; query_snippets[j].path; j++) {
+			char *field_name = query_snippets[j].field_name;
+			char path[100];
+
+			memset(path, 0, 100);
+			strncpy(path, query_snippets[j].path, 100);
+
+			if (field_name == NULL)
+				field_name = query_snippets[j].path;
+			if (strcmp(field, field_name) != 0)
+				continue;
+			set_value_at_path(node, path, t+1);
+			break;
+		}
+		*t = '=';
+	}
+
 }
 
