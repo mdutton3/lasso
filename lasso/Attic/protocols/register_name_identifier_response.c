@@ -36,7 +36,7 @@
 static LassoNode*
 lasso_register_name_identifier_response_new_from_query(gchar *query)
 {
-  LassoNode *response, *ss, *ssc;;
+  LassoNode *response, *ss, *ssc;
   xmlChar   *relayState;
   xmlChar   *str;
   GData     *gd;
