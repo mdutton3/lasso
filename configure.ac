@@ -206,7 +206,7 @@ AC_ARG_ENABLE(tests,
 esac], tests_val=true)
 
 if $tests_val ; then
-  AM_PATH_CHECK
+  AM_PATH_CHECK(0.9.0)
 fi
 
 AM_CONDITIONAL(WITH_TESTS, $tests_val)
