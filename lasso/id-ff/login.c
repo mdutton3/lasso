@@ -505,6 +505,8 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
       LASSO_PROFILE(login)->msg_relayState = g_strdup(relayState);
     }
     break;
+  default:
+    break;
   }
   login->assertionArtifact = g_strdup(b64_samlArt);
   xmlFree(url);
@@ -841,6 +843,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeSoap);
     break;
+  default:
+    break;
   }
   /* verify ASSO_PROFILE(login)-request is an AuthnRequest object */
   if ( LASSO_IS_AUTHN_REQUEST(LASSO_PROFILE(login)->request) == FALSE ) {
@@ -923,6 +927,9 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
       ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
 					remote_provider->public_key);
       break;
+    default:
+      ret = 0;
+      break;
     }
     
     /* Modify StatusCode if signature is not OK */
@@ -971,6 +978,8 @@ lasso_login_init_request(LassoLogin      *login,
   case lassoHttpMethodPost:
     /* artifact by POST */
     response = lasso_artifact_new_from_lares(response_msg, NULL);
+    break;
+  default:
     break;
   }
   LASSO_PROFILE(login)->response = response;
