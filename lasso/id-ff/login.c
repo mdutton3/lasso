@@ -613,6 +613,9 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 			query = lasso_node_export_to_query(LASSO_PROFILE(login)->request,
 					LASSO_PROFILE(login)->server->signature_method,
 					LASSO_PROFILE(login)->server->private_key);
+		} else {
+			query = lasso_node_export_to_query(LASSO_PROFILE(login)->request,
+					0, NULL);
 		}
 		if (query == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Failed to create AuthnRequest query");
