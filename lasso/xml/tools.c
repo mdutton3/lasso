@@ -423,7 +423,7 @@ lasso_query_to_dict(const gchar *query)
       continue;
     }
     /* if only a key but no value, then continue */
-    if (sa2[1] == NULL) {
+    if (sa2[1] == NULL || xmlStrEqual(sa2[1], "")) {
       continue;
     }
 
