@@ -73,7 +73,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
     debug(DEBUG, "building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
-    profileContext->msg_url = lasso_node_export_to_query(profileContext->request);
+    //profileContext->msg_url = lasso_node_export_to_query(profileContext->request);
     profileContext->msg_body = NULL;
   }
 
