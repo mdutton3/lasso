@@ -86,6 +86,10 @@ LASSO_EXPORT gchar         *lasso_user_get_next_providerID   (LassoUser *user);
 
 LASSO_EXPORT gint           lasso_user_remove_assertion      (LassoUser *user,
 							      gchar     *remote_providerID);
+
+LASSO_EXPORT gint           lasso_user_remove_identity       (LassoUser *user,
+							      gchar     *remote_providerID);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

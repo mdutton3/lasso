@@ -78,6 +78,14 @@ lasso_user_add_identity(LassoUser     *user,
   g_return_val_if_fail(remote_providerID!=NULL, -2);
   g_return_val_if_fail(identity!=NULL, -3);
 
+  LassoIdentity *old_identity;
+
+  old_identity = lasso_user_get_identity(user, remote_providerID);
+  if (old_identity != NULL) {
+    lasso_user_remove_identity(user, remote_providerID);
+    lasso_identity_destroy(old_identity);
+  }
+
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 
   return(0);
@@ -195,7 +203,14 @@ lasso_user_get_identity(LassoUser *user,
   g_return_val_if_fail(user!=NULL, NULL);
   g_return_val_if_fail(remote_providerID!=NULL, NULL);
 
-  return(g_hash_table_lookup(user->identities, remote_providerID));
+  LassoIdentity *id;
+
+  id = (LassoIdentity*)g_hash_table_lookup(user->identities, remote_providerID);
+  if (id == NULL) {
+    debug(DEBUG, "No Identity found with remote ProviderID = %s\n", remote_providerID);
+  }
+
+  return(id);
 }
 
 gint
@@ -210,7 +225,10 @@ lasso_user_remove_assertion(LassoUser     *user,
 
   /* remove the assertion */
   assertion = lasso_user_get_assertion(user, remote_providerID);
-  g_hash_table_steal(user->assertions, remote_providerID);
+  if (assertion != NULL) {
+    g_hash_table_steal(user->assertions, remote_providerID);
+    lasso_node_destroy(assertion);
+  }
 
   /* remove the remote provider id */
   for(i = 0; i<user->assertion_providerIDs->len; i++){
@@ -219,6 +237,27 @@ lasso_user_remove_assertion(LassoUser     *user,
       g_ptr_array_remove_index(user->assertion_providerIDs, i);
       break;
     }
+  }
+
+  return(0);
+}
+
+gint
+lasso_user_remove_identity(LassoUser *user,
+			   gchar     *remote_providerID)
+{
+  LassoIdentity *identity;
+
+  g_return_val_if_fail(user!=NULL, -1);
+  g_return_val_if_fail(remote_providerID!=NULL, -2);
+
+  /* remove the identity */
+  identity = lasso_user_get_identity(user, remote_providerID);
+  if (identity != NULL) {
+    g_hash_table_steal(user->identities, remote_providerID);
+  }
+  else {
+    debug(DEBUG, "Failed to remove identity for remote Provider %s\n", remote_providerID);
   }
 
   return(0);
