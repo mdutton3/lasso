@@ -45,12 +45,14 @@ except NameError:
 
 class ErrorCheckingTestCase(unittest.TestCase):
     def test01(self):
+        """Instanciate Login with None as Server"""
         try:
             lasso.Login(None).msgUrl
         except:
             pass
 
     def test02(self):
+        """Instanciate Logout with None as Server"""
         # Same as test01; replace Login by Logout
         try:
             lasso.Logout(None, lasso.providerTypeSp).msgUrl
@@ -58,6 +60,7 @@ class ErrorCheckingTestCase(unittest.TestCase):
             pass
 
     def test03(self):
+        """Process empty string as authnrequest msg"""
         # This time; we got something wrong as query string; we pass it to
         # initFromAuthnRequestMsg; surely it shouldn't segfault
         server = lasso.Server(
