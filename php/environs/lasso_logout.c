@@ -62,17 +62,18 @@ PHP_FUNCTION(lasso_logout_new) {
 PHP_FUNCTION(lasso_logout_init_request) {
 
   	LassoLogout *logout;
-	char *remote_providerid;
-	int remote_providerid_len;
+	char *remote_providerid = 0;
+	int remote_providerid_len = 0;
 	zval *param;
 	long provider_type;
 
 	int num_args;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 1) 
+	num_args = ZEND_NUM_ARGS();
+	if ((num_args == 1) && (num_args == 2)) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", 
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z|s", 
 		  &param, &remote_providerid, &remote_providerid_len) == FAILURE) {
 		return;
 	}

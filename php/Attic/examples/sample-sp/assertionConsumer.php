@@ -50,9 +50,6 @@
   $msg_url = lasso_profile_get_msg_url($profile);
   $msg_body = lasso_profile_get_msg_body($profile);
 
-  /*print "msg_url : " . $msg_url . "\n<br>";
-  print "msg_body : " . $msg_body . "\n<br>"; */
-
   $url = parse_url($msg_url);
 
   $soap = sprintf(
@@ -80,9 +77,6 @@
   lasso_login_process_response_msg($login, $body); 
   $nameidentifier = lasso_profile_get_nameidentifier($profile);
 
-  // print "nameidentifier: " . $nameidentifier . "<br>\n";
-
-
   # Look for the name_identifier in user db.
   $options = array(
     	'debug'       => 2,
@@ -100,6 +94,7 @@
 
   if ($res->numRows() > 0)
   {
+	// User already exist in the database
 	$row =& $res->fetchRow();
     $user_id = $row[0];
 
@@ -119,11 +114,15 @@
   	
 	lasso_login_accept_sso($login);
 	
+	$session = lasso_profile_get_session($profile); 
+	$session_dump = lasso_session_dump($session);
+  
 	$_SESSION["nameidentifier"] = $nameidentifier;
 	$_SESSION["session_dump"] = $session_dump;
 	$_SESSION["user_id"] = $user_id;
 
-	$url = "index.php";
+	
+	$url = "index.php?SID=". $SID;
   }
   else 
   {
@@ -165,7 +164,7 @@
 	$_SESSION["session_dump"] = $session_dump;
 	$_SESSION["user_id"] = $user_id;
 
-	$url = "register.php";
+	$url = "register.php?SID=". $SID;
   }
   
   // Update last_login

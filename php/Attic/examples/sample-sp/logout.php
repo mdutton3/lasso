@@ -26,8 +26,10 @@
 
  require_once 'DB.php';
 
-  
-  session_start();
+  if (!empty($_GET['SID'])) 
+	session_start($_GET['SID']);
+  else
+	session_start();
 
   if (!isset($_SESSION["nameidentifier"])) {
 	print "User is not logged in";
@@ -49,7 +51,6 @@
 
   $profile = lasso_cast_to_profile($logout);
 
-  lasso_profile_set_session_from_dump($profile, $_SESSION['session_dump']);
 
   $query = "SELECT identity_dump FROM users WHERE user_id='" . $_SESSION['user_id'] . "'";
 
@@ -60,14 +61,53 @@
  
   $row = $res->fetchRow();
   $identity_dump = $row[0];
+  $session_dump = $_SESSION['session_dump'];
 
   lasso_profile_set_identity_from_dump($profile, $identity_dump);
+  lasso_profile_set_session_from_dump($profile, $session_dump);
+  
+  lasso_logout_init_request($logout);
 
-  lasso_logout_init_request($logout, "");
   lasso_logout_build_request_msg($logout); 
 
+
+  $msg_url = lasso_profile_get_msg_url($profile);
+  $msg_body = lasso_profile_get_msg_body($profile);
+
+  $url = parse_url($msg_url);
+
+  $soap = sprintf(
+	"POST %s HTTP/1.1\r\nHost: %s:%d\r\nAccept-Encoding: identity\r\nContent-Length: %d\r\nContent-Type: text/xml\r\nAccept: text/xml,application/xml,application/xhtml+xml,text/html\r\nConnection: close\r\n\r\n%s\r\n",
+  $url['path'], $url['host'], $url['port'], strlen($msg_body), $msg_body);
+
+  # PHP 4.3.0 with OpenSSL support required
+  $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));
+ 
+  fwrite($fp, $soap);
+  $ret = fgets($fp);
+
+  if (!preg_match("/^HTTP\/1\\.. 200/i", $ret)) {
+	die("User is already logged out");
+  }
+
+  while (!feof($fp)) {
+  	$reponse .= @fread($fp, 8192);
+  }
+
+  fclose($fp);
+
+  # Destroy PHP Session
+  $_SESSION = array();
+
+  session_destroy();
+
+  
   $db->disconnect();
-
-
   lasso_shutdown();
+
+  $url = "index.php";
+  
+  header("Request-URI: $url");
+  header("Content-Location: $url");
+  header("Location: $url");
 ?>

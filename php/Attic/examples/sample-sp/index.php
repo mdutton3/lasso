@@ -38,7 +38,7 @@
 
  require_once 'DB.php';
 
- session_start();
+ session_start($SID);
 
  lasso_init();
  
@@ -83,7 +83,7 @@
 </tr>
 <?php } else { ?>
 <tr>
-  <td><a href="logout.php">Logout!</a></td>
+  <td><a href="logout.php?SID=<?php echo $SID ?>">Logout!</a></td>
 </tr>
 <?php } ?>
 </table>
@@ -128,6 +128,9 @@
 </tr>
 <tr>
 	<td><b>First Name:</b></td><td><?php echo $first_name; ?></td>
+</tr>
+<tr>
+	<td><b>PHP Session ID:</b></td><td><?php echo session_id(); ?></td>
 </tr>
 <tr>
 	<td><b>Account Created:</b></td><td><?php echo $created; ?></td>
