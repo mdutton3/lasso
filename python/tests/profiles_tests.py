@@ -117,6 +117,58 @@ class BindingTestCase(unittest.TestCase):
 
         del authnRequest
 
+    def test04(self):
+        """Get & set attributes of nodes of type node list."""
+
+        response = lasso.SamlpResponse()
+
+        self.failUnlessEqual(response.assertion, None)
+
+        assertions = lasso.NodeList()
+        self.failUnlessEqual(len(assertions), 0)
+        assertion1 = lasso.SamlAssertion()
+        assertion1.assertionId = 'assertion 1'
+        assertions.append(assertion1)
+        self.failUnlessEqual(len(assertions), 1)
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        assertion2 = lasso.SamlAssertion()
+        assertion2.assertionId = 'assertion 2'
+        assertions.append(assertion2)
+        self.failUnlessEqual(len(assertions), 2)
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
+        assertion3 = lasso.SamlAssertion()
+        assertion3.assertionId = 'assertion 3'
+        assertions.append(assertion3)
+        self.failUnlessEqual(len(assertions), 3)
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
+        response.assertion = assertions
+        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
+        del assertions
+        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
+        assertions = response.assertion
+        self.failUnlessEqual(assertions[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(assertions[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(assertions[2].assertionId, 'assertion 3')
+        del assertions
+        self.failUnlessEqual(response.assertion[0].assertionId, 'assertion 1')
+        self.failUnlessEqual(response.assertion[1].assertionId, 'assertion 2')
+        self.failUnlessEqual(response.assertion[2].assertionId, 'assertion 3')
+        response.assertion = None
+        self.failUnlessEqual(response.assertion, None)
+
+        del response
+
 
 class ServerTestCase(unittest.TestCase):
     def test01(self):
