@@ -121,7 +121,7 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(strlen(authnRequestQuery) > 0,
 			"authnRequestRequest shouldn't be an empty string");
 
-        /* Identity provider singleSignOn, for a user having no federation. */
+	/* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLoginContext = lasso_login_new(idpContext);
@@ -161,7 +161,7 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
 
-        /* Service provider assertion consumer */
+	/* Service provider assertion consumer */
 	lasso_server_destroy(spContext);
 	lasso_login_destroy(spLoginContext);
 
@@ -196,7 +196,7 @@ START_TEST(test02_serviceProviderLogin)
 	soapResponseMsg =  LASSO_PROFILE(idpLoginContext)->msg_body;
 	fail_unless(soapResponseMsg != NULL, "soapResponseMsg must not be NULL");
 
-        /* Service provider assertion consumer (step 2: process SOAP response) */
+	/* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
 	fail_unless(rc == 0, "lasso_login_process_response_msg failed");
 	rc = lasso_login_accept_sso(spLoginContext);
