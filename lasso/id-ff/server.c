@@ -324,8 +324,9 @@ lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash)
 {
 	gchar *providerID = b64_hash; /* kludge */
 
-	g_hash_table_find(server->providers, (GHRFunc)get_providerID_with_hash, &providerID);
-	return g_strdup(providerID);
+	if (g_hash_table_find(server->providers, (GHRFunc)get_providerID_with_hash, &providerID))
+		return g_strdup(providerID);
+	return NULL;
 }
 
 /*****************************************************************************/
