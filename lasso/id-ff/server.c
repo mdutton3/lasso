@@ -112,6 +112,13 @@ lasso_server_destroy(LassoServer *server)
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key) },
+	{ "SecretKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, secret_key) },
+	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static void
@@ -137,15 +144,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlNodeSetName(xmlnode, "Server");
 	xmlSetProp(xmlnode, "ServerDumpVersion", "2");
-
-	if (server->private_key && server->private_key[0])
-		xmlNewTextChild(xmlnode, NULL, "PrivateKeyFilePath", server->private_key);
-	if (server->secret_key && server->secret_key[0])
-		xmlNewTextChild(xmlnode, NULL, "SecretKey", server->secret_key);
-	if (server->certificate && server->certificate[0])
-		xmlNewTextChild(xmlnode, NULL, "CertificateFilePath", server->certificate);
 	xmlSetProp(xmlnode, "SignatureMethod", signature_methods[server->signature_method]);
 
 	/* Providers */
@@ -189,30 +188,22 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	t = xmlnode->children;
 	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
+		xmlNode *t2 = t->children;
+		LassoProvider *p;
+
+		if (t->type != XML_ELEMENT_NODE || strcmp(t->name, "Providers") != 0) {
 			t = t->next;
 			continue;
 		}
-		if (strcmp(t->name, "PrivateKeyFilePath") == 0)
-			server->private_key = xmlNodeGetContent(t);
-		if (strcmp(t->name, "SecretKey") == 0)
-			server->secret_key = xmlNodeGetContent(t);
-		if (strcmp(t->name, "CertificateFilePath") == 0)
-			server->certificate = xmlNodeGetContent(t);
-		if (strcmp(t->name, "Providers") == 0) {
-			xmlNode *t2 = t->children;
-			LassoProvider *p;
-			while (t2) {
-				if (t2->type != XML_ELEMENT_NODE) {
-					t2 = t2->next;
-					continue;
-				}
-				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
-				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
-				g_hash_table_insert(server->providers,
-						g_strdup(p->ProviderID), p);
+		while (t2) {
+			if (t2->type != XML_ELEMENT_NODE) {
 				t2 = t2->next;
+				continue;
 			}
+			p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
+			LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
+			g_hash_table_insert(server->providers, g_strdup(p->ProviderID), p);
+			t2 = t2->next;
 		}
 		t = t->next;
 	}
@@ -365,10 +356,16 @@ instance_init(LassoServer *server)
 static void
 class_init(LassoServerClass *klass)
 {
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+	
 	parent_class = g_type_class_peek_parent(klass);
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Server");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;

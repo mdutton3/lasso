@@ -310,6 +310,14 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 /* private methods                                                           */
 /*****************************************************************************/
 
+static struct XmlSnippet schema_snippets[] = {
+	{ "PublicKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, public_key) },
+	{ "CaCertChainFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, ca_cert_chain) },
+	{ "MetadataFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProvider, metadata_filename) },
+	{ "ProviderID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoProvider, ProviderID) },
+	{ NULL, 0, 0}
+};
+
 static LassoNodeClass *parent_class = NULL;
 
 static void
@@ -353,20 +361,10 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoProvider *provider = LASSO_PROVIDER(node);
 	char *roles[] = { "None", "SP", "IdP"};
 
-	xmlnode = xmlNewNode(NULL, "Provider");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, "ProviderDumpVersion", "2");
 	if (provider->role)
 		xmlSetProp(xmlnode, "ProviderRole", roles[provider->role]);
-	xmlSetProp(xmlnode, "ProviderID", provider->ProviderID);
-
-	if (provider->public_key)
-		xmlNewTextChild(xmlnode, NULL, "PublicKeyFilePath", provider->public_key);
-	if (provider->ca_cert_chain)
-		xmlNewTextChild(xmlnode, NULL, "CaCertChainFilePath", provider->ca_cert_chain);
-
-	if (provider->metadata_filename)
-		xmlNewTextChild(xmlnode, NULL, "MetadataFilePath", provider->metadata_filename);
 
 	return xmlnode;
 }
@@ -379,6 +377,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlNode *t;
 	xmlChar *s;
 
+	parent_class->init_from_xml(node, xmlnode);
+	
 	if (xmlnode == NULL)
 		return LASSO_ERROR_UNDEFINED;
 
@@ -390,25 +390,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (s)
 		xmlFree(s);
 
-	provider->ProviderID = xmlGetProp(xmlnode, "ProviderID");
+	if (provider->metadata_filename)
+		lasso_provider_load_metadata(provider, provider->metadata_filename);
 
-	t = xmlnode->children;
-	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (strcmp(t->name, "PublicKeyFilePath") == 0)
-			provider->public_key = xmlNodeGetContent(t);
-		if (strcmp(t->name, "CaCertChainFilePath") == 0)
-			provider->ca_cert_chain = xmlNodeGetContent(t);
-		if (strcmp(t->name, "MetadataFilePath") == 0) {
-			xmlChar *s = xmlNodeGetContent(t);
-			lasso_provider_load_metadata(provider, s);
-			xmlFree(s);
-		};
-		t = t->next;
-	}
 	return 0;
 }
 
@@ -501,10 +485,15 @@ instance_init(LassoProvider *provider)
 static void
 class_init(LassoProviderClass *klass)
 {
-	parent_class = g_type_class_peek_parent(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Provider");
+	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
+	lasso_node_class_add_snippets(nclass, schema_snippets);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
