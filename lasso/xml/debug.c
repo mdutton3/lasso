@@ -40,12 +40,6 @@ int  debug_type;
 int  debug_line;
 char debug_filename[512];
 char debug_function[512];
-/* static const char *levels[4] = { */
-/*   "DEBUG:", */
-/*   "INFO:",  */
-/*   "WARNING:", */
-/*   "ERROR:" */
-/* }; */
 
 void
 set_debug_info(int   line,
@@ -66,7 +60,6 @@ _debug(GLogLevelFlags level,
   time_t ts;
   char date[20];
   va_list args;
-  /* char new_debug_string[2048]; */
   /* char *color = NULL; */
   
   if (level == G_LOG_LEVEL_DEBUG && debug_type == 0) {
@@ -80,18 +73,6 @@ _debug(GLogLevelFlags level,
 
   time(&ts);
   strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
-
-  if (level == G_LOG_LEVEL_DEBUG) {
-    g_log("Lasso", level,
-	  "%s (%s/%s:%d)\n======> %s",
-	  date, debug_filename, debug_function, debug_line,
-	  debug_string);
-  }
-  else {
-    g_log("Lasso", level,
-	  "%s\t%s",
-	  date, debug_string);
-  }
 
   /*   switch (level) { */
   /*   case ERROR: */
@@ -108,14 +89,15 @@ _debug(GLogLevelFlags level,
   /*     break; */
   /*   } */
 
-  /*   sprintf(new_debug_string,  */
-  /* 	  "%s%s%s %s (%s/%s:%d)\t%s",  */
-  /* 	  color, */
-  /* 	  levels[level], */
-  /* 	  normal, */
-  /* 	  date, */
-  /* 	  debug_filename, debug_function, */
-  /* 	  debug_line, debug_string); */
-  /*   printf("%s", new_debug_string); */
-  /*   fflush(stdout); */
+  if (level == G_LOG_LEVEL_DEBUG) {
+    g_log("Lasso", level,
+	  "%s (%s/%s:%d)\n======> %s",
+	  date, debug_filename, debug_function, debug_line,
+	  debug_string);
+  }
+  else {
+    g_log("Lasso", level,
+	  "%s\t%s",
+	  date, debug_string);
+  }
 }

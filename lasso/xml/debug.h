@@ -32,11 +32,6 @@ extern "C" {
 
 #include <glib.h>
 
-#define DEBUG   0 /* for debug - print only if flags LASSO_DEBUG is defined */
-#define INFO    1 /* just print info */
-#define WARNING 2 /* non fatal errors */
-#define ERROR   3 /* criticial/fatal errors */
-
 void set_debug_info(int line, char *filename, char *function);
 void _debug(GLogLevelFlags level, const char *format, ...);
 
