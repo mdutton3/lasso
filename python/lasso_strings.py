@@ -97,6 +97,12 @@ libProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap"
 libProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http"
 libProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap"
 
+# * NameIdentifier formats */
+libNameIdentifierFormatFederated = "urn:liberty:iff:nameid:federated"
+libNameIdentifierFormatOneTime = "urn:liberty:iff:nameid:one-time"
+libNameIdentifierFormatEncrypted = "urn:liberty:iff:nameid:encrypted"
+libNameIdentifierFormatEntityID = "urn:liberty:iff:nameid:entityID"
+
 # *****************************************************************************/
 # * SAML                                                                      */
 # *****************************************************************************/
@@ -109,7 +115,7 @@ samlProtocolPrefix = "samlp"
 
 # * Versioning */
 samlMajorVersion = "1"
-samlMinorVersion = "0"
+samlMinorVersion = "1"
 
 # * StatusCodes */
 samlStatusCodeRequestDenied = "Samlp:RequestDenied"
@@ -122,15 +128,15 @@ samlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
 samlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
 samlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
 samlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
-samlAuthenticationMethodPGP = "urn:oasis:names:tc:SAML:1.0:am:PGP"
+samlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP"
 samlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
 samlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
-samlAuthenticationMethodXmlSign = "urn:ietf:rfc:3075"
+samlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075"
 samlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 # * ConfirmationMethods */
 samlConfirmationMethodArtifact01 = "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
-samlConfirmationMethodBearer = "urn:oasis:names:tc:SAML:1.1:cm:bearer"
+samlConfirmationMethodBearer = "urn:oasis:names:tc:SAML:1.0:cm:bearer"
 samlConfirmationMethodHolderOfKey = "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
 samlConfirmationMethodSenderVouches = "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
 
