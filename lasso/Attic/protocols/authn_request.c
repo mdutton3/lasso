@@ -177,16 +177,15 @@ lasso_authn_request_new(const xmlChar        *providerID,
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						(const xmlChar *)time);
   xmlFree(time);
-  /* ProviderID */
-  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
-					 providerID);
-
   /* Signature template */
   if (sign_type != lassoSignatureTypeNone) {
     lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						    sign_type,
 						    sign_method);
- }
+  }
+  /* ProviderID */
+  lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
+					 providerID);
 
   return (request);
 }
