@@ -136,6 +136,7 @@ lasso_user_dump(LassoUser *user)
 {
   LassoNode      *user_node, *assertions_node, *identities_node;
   LassoNodeClass *user_class, *assertions_class, *identities_class;
+  int table_size;
 
   g_return_val_if_fail(user!=NULL, NULL);
 
@@ -144,18 +145,24 @@ lasso_user_dump(LassoUser *user)
   user_class->set_name(user_node, LASSO_USER_NODE);
 
   /* dump the assertions */
-  assertions_node = lasso_node_new();
-  assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
-  assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
-  g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
-  user_class->add_child(user_node, assertions_node, FALSE);
+  table_size = g_hash_table_size(user->assertions);
+  if(table_size>0){
+    assertions_node = lasso_node_new();
+    assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
+    assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
+    g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
+    user_class->add_child(user_node, assertions_node, FALSE);
+  }
   
   /* dump the identities */
-  identities_node = lasso_node_new();
-  identities_class = LASSO_NODE_GET_CLASS(identities_node);
-  identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
-  g_hash_table_foreach(user->identities, lasso_user_dump_identity, identities_node);
-  user_class->add_child(user_node, identities_node, FALSE);
+  table_size = g_hash_table_size(user->identities);
+  if(table_size>0){
+    identities_node = lasso_node_new();
+    identities_class = LASSO_NODE_GET_CLASS(identities_node);
+    identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
+    g_hash_table_foreach(user->identities, lasso_user_dump_identity, identities_node);
+    user_class->add_child(user_node, identities_node, FALSE);
+  }
 
   return(lasso_node_export(user_node));
 }
