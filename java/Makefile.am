@@ -27,41 +27,27 @@ libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 javashare_DATA = lasso.jar
 JAVA_JAR = lasso.jar
 
-SWIG_OUTPUTS = $(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in
+SWIG_OUTPUTS = $(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE)JNI.java
 JAVA_CRUFT = $(JAVA_PATH)$(JAVA_MODULE).class $(JAVA_MODULE)_wrap.o \
 	$(JAVA_JAR) \
-	$(JAVA_PATH)$(JAVA_MODULE)JNI.java
+	$(JAVA_PATH)$(JAVA_MODULE).java
 
 # The SWIG outputs are included in the distribution so SWIG is not
 # required to use the Java interface
-EXTRA_DIST = lasso-fragment.java $(SWIG_OUTPUTS)
+EXTRA_DIST = $(SWIG_OUTPUTS)
 
 CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
-$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(top_srcdir)/swig/Lasso.i
+$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java: $(top_srcdir)/swig/Lasso.i
 	here=`pwd`; \
-	$(SWIG) -v -java -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
-	if test -r $(JAVA_MODULE)JNI.java; then \
-	  echo "Fixing SWIG 1.3.15+ broken Java API"; \
-	  rm -f $(JAVA_MODULE).java SWIGTYPE_*; \
-	  sed -e 's/class $(JAVA_MODULE)JNI/public class $(JAVA_MODULE)/' $(JAVA_MODULE)JNI.java > $(JAVA_MODULE).java; \
-	  sed -e 's/$(JAVA_MODULE)JNI/$(JAVA_MODULE)/g' $(JAVA_MODULE)_wrap.c > $(JAVA_MODULE)_wrap.c.new; \
-	  rm -f $(JAVA_MODULE)_wrap.c $(JAVA_MODULE)JNI.java; \
-	  mv $(JAVA_MODULE)_wrap.c.new $(JAVA_MODULE)_wrap.c; \
-	fi; \
-	mv $(JAVA_MODULE).java $(JAVA_MODULE).java.in
+	$(SWIG) -v -java -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<
 
 # FIXME There must be a better way to do this with SWIG
-$(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java.in lasso-fragment.java
-	mkdir -p $(JAVA_PATH) 
-	cd $(JAVA_PATH) 
-	sed -e 's/^}//' $(JAVA_MODULE).java.in > $(JAVA_PATH)$(JAVA_MODULE).java.tmp
-	cat $(JAVA_PATH)$(JAVA_MODULE).java.tmp lasso-fragment.java > $@
-	echo "}" >> $@
-	rm -f $(JAVA_PATH)$(JAVA_MODULE).java.tmp
-
+$(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java
+	mkdir -p $(JAVA_PATH)
+	test -f $(JAVA_PATH)$(JAVA_MODULE).java || cp *.java $(JAVA_PATH)
 
 clean-local:
 	rm -f *.class
@@ -70,13 +56,11 @@ clean-local:
 all-local: $(JAVA_JAR)
 
 $(JAVA_PATH)$(JAVA_MODULE).class: $(JAVA_PATH)$(JAVA_MODULE).java
-	mkdir -p $(JAVA_PATH)
-	test -f $(JAVA_PATH)$(JAVA_MODULE).java || cp $(srcdir)/$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_PATH)
-	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)$(JAVA_MODULE).java
+	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)*.java
 
 $(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class 
 	rm -f $@
-	jar cf $@ $(JAVA_PATH)$(JAVA_MODULE).class 
+	jar cf $@ $(JAVA_PATH)*.class 
 
 $(DEPDIR)/libjlasso_la-lasso_wrap.Plo:
 	mkdir -p $(DEPDIR)

@@ -45,20 +45,20 @@ except NameError:
 class ErrorCheckingTestCase(unittest.TestCase):
     def test01(self):
         try:
-            lasso.Login(None).msg_url
+            lasso.Login(None).msgUrl
         except:
             pass
 
     def test02(self):
         # Same as test01; replace Login by Logout
         try:
-            lasso.Logout(None, lasso.providerTypeSp).msg_url
+            lasso.Logout(None, lasso.providerTypeSp).msgUrl
         except:
             pass
 
     def test03(self):
         # This time; we got something wrong as query string; we pass it to
-        # init_from_authn_request_msg; surely it shouldn't segfault
+        # initFromAuthnRequestMsg; surely it shouldn't segfault
         server = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
@@ -67,7 +67,7 @@ class ErrorCheckingTestCase(unittest.TestCase):
             lasso.signatureMethodRsaSha1)
         login = lasso.Login(server)
         try:
-            login.init_from_authn_request_msg("", lasso.httpMethodRedirect)
+            login.initFromAuthnRequestMsg("", lasso.httpMethodRedirect)
         except:
             pass
 

@@ -44,7 +44,7 @@ except NameError:
 
 class ServerTestCase(unittest.TestCase):
     def test01(self):
-        """Server construction, dump & new_from_dump."""
+        """Server construction, dump & newFromDump."""
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
@@ -52,22 +52,22 @@ class ServerTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
+        lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         dump = lassoServer.dump()
-        lassoServer2 = lassoServer.new_from_dump(dump)
+        lassoServer2 = lassoServer.newFromDump(dump)
         dump2 = lassoServer2.dump()
         self.failUnlessEqual(dump, dump2)
 
     def test02(self):
-        """Server construction without argument, dump & new_from_dump."""
+        """Server construction without argument, dump & newFromDump."""
 
         lassoServer = lasso.Server()
-        lassoServer.add_provider(os.path.join(dataDir, 'idp1-la/metadata.xml'))
+        lassoServer.addProvider(os.path.join(dataDir, 'idp1-la/metadata.xml'))
         dump = lassoServer.dump()
-        lassoServer2 = lassoServer.new_from_dump(dump)
+        lassoServer2 = lassoServer.newFromDump(dump)
         dump2 = lassoServer2.dump()
         self.failUnlessEqual(dump, dump2)
 
@@ -82,19 +82,19 @@ class LoginTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
+        lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(lassoServer)
-        login.init_authn_request(lasso.httpMethodRedirect)
-        login.authn_request
-        login.authn_request.protocolProfile = lasso.libProtocolProfileBrwsArt
+        login.initAuthnRequest(lasso.httpMethodRedirect)
+        login.authnRequest
+        login.authnRequest.protocolProfile = lasso.libProtocolProfileBrwsArt
 
 
 class LogoutTestCase(unittest.TestCase):
     def test01(self):
-        """SP logout without session and identity; testing init_request."""
+        """SP logout without session and identity; testing initRequest."""
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
@@ -102,22 +102,22 @@ class LogoutTestCase(unittest.TestCase):
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
+        lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         logout = lasso.Logout(lassoServer, lasso.providerTypeSp)
         try:
-            logout.init_request()
+            logout.initRequest()
         except RuntimeError, error:
             errorCode = int(error.args[0].split(' ', 1)[0])
             if errorCode != -1:
                 raise
         else:
-            self.fail('logout.init_request without having set identity before should fail')
+            self.fail('logout.initRequest without having set identity before should fail')
 
     def test02(self):
-        """IDP logout without session and identity; testing logout.get_next_providerID."""
+        """IDP logout without session and identity; testing logout.getNextProviderId."""
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
@@ -125,17 +125,17 @@ class LogoutTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
+        lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
-        self.failIf(logout.get_next_providerID())
+        self.failIf(logout.getNextProviderId())
 
 
 class DefederationTestCase(unittest.TestCase):
     def test01(self):
-        """IDP initiated defederation; testing process_notification_msg with non Liberty query."""
+        """IDP initiated defederation; testing processNotificationMsg with non Liberty query."""
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
@@ -143,18 +143,18 @@ class DefederationTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'),
             lasso.signatureMethodRsaSha1)
-        lassoServer.add_provider(
+        lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         defederation = lasso.Defederation(lassoServer, lasso.providerTypeIdp)
-        # The process_notification_msg should failt but not abort.
+        # The processNotificationMsg should failt but not abort.
         try:
-            defederation.process_notification_msg('nonLibertyQuery=1', lasso.httpMethodRedirect)
+            defederation.processNotificationMsg('nonLibertyQuery=1', lasso.httpMethodRedirect)
         except SyntaxError:
             pass
         else:
-            self.fail('Defederation process_notification_msg should have failed.')
+            self.fail('Defederation processNotificationMsg should have failed.')
 
 
 suite1 = unittest.makeSuite(ServerTestCase, 'test')

@@ -1,3 +1,5 @@
+lasso.py
+lasso_wrap.c
 *.pyc
 .deps
 .libs

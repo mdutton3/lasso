@@ -26,7 +26,7 @@
  * Simple wrapper for JLasso, to ease its use by ColdFusion applications.
  *
  * To use it:
- * $ javac -classpath ../lasso-devel/java/target/lasso.jar CFLasso.java
+ * $ javac -classpath ../../lasso.jar CFLasso.java
  * Edit ColdFusion file bin/jvm.config:
  *   - Add libjlasso.so directory to java.library.path variable.
  *   - Add classes directory to java.class.path variable.
@@ -34,41 +34,41 @@
 
 
 public class CFLasso {
-    protected com.entrouvert.lasso.LassoServer getServerContext() {
-        com.entrouvert.lasso.LassoServer serverContext = new com.entrouvert.lasso.LassoServer(
+    protected com.entrouvert.lasso.Server getServer() {
+        com.entrouvert.lasso.Server server = new com.entrouvert.lasso.Server(
             "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/metadata.xml'",
-	    NULL, //"/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/public-key.pem",
+	    null, //"/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/public-key.pem",
             "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/private-key-raw.pem",
             "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/certificate.pem",
-            com.entrouvert.lasso.Lasso.signatureMethodRsaSha1);
-        serverContext.addProvider(
+            com.entrouvert.lasso.lasso.signatureMethodRsaSha1);
+        server.addProvider(
             "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/metadata.xml",
             "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/public-key.pem",
             "/home/manou/projects/lasso/lasso-devel/tests/data/ca1-la/certificate.pem");
-	return serverContext;
+	return server;
     }
 
     public String login(String relayState) {
-	com.entrouvert.lasso.LassoAuthnRequest authnRequest;
-	com.entrouvert.lasso.LassoLogin loginContext;
-	com.entrouvert.lasso.LassoServer serverContext;
+	com.entrouvert.lasso.AuthnRequest authnRequest;
+	com.entrouvert.lasso.Login login;
+	com.entrouvert.lasso.Server server;
 	String authnRequestUrl;
 
-	com.entrouvert.lasso.Lasso.init();
+	// com.entrouvert.lasso.lasso.init();
 
-	serverContext = getServerContext();
-        loginContext = new com.entrouvert.lasso.LassoLogin(serverContext, null);
-        loginContext.initAuthnRequest("https://idp1:1998/metadata");
-	authnRequest = (com.entrouvert.lasso.LassoAuthnRequest) loginContext.getRequest();
-        authnRequest.setPassive(false);
-        authnRequest.setNameIdPolicy(com.entrouvert.lasso.Lasso.libNameIdPolicyTypeFederated);
-        authnRequest.setConsent(com.entrouvert.lasso.Lasso.libConsentObtained);
+	server = getServer();
+        login = new com.entrouvert.lasso.Login(server);
+        login.initAuthnRequest(com.entrouvert.lasso.lasso.httpMethodRedirect);
+	authnRequest = login.getAuthnRequest();
+        authnRequest.setIsPassive(false);
+        authnRequest.setNameIdPolicy(com.entrouvert.lasso.lasso.libNameIdPolicyTypeFederated);
+        authnRequest.setConsent(com.entrouvert.lasso.lasso.libConsentObtained);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
-        loginContext.buildAuthnRequestMsg();
-        authnRequestUrl = loginContext.getMsgUrl();
+        login.buildAuthnRequestMsg("https://sp1/metadata");
+        authnRequestUrl = login.getMsgUrl();
 
-	com.entrouvert.lasso.Lasso.shutdown();
+	// com.entrouvert.lasso.lasso.shutdown();
 
 	return authnRequestUrl;
     }
