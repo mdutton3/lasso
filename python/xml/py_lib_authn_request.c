@@ -49,6 +49,24 @@ PyObject *lib_authn_request_new(PyObject *self, PyObject *args) {
   return (LassoLibAuthnRequest_wrap(LASSO_LIB_AUTHN_REQUEST(request)));
 }
 
+PyObject *lib_authn_request_set_consent(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  const xmlChar *consent;
+
+  if (CheckArgs(args, "OS:lib_authn_request_set_consent")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:lib_authn_request_set_forceAuthn",
+			 &node_obj, &consent))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_lib_authn_request_set_consent(LassoLibAuthnRequest_get(node_obj),
+				      consent);
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *lib_authn_request_set_forceAuthn(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   gint      forceAuthn;

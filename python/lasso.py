@@ -290,6 +290,9 @@ class LibAuthnRequest(Node):
         if _obj is None: raise Error('lasso_lib_authn_request_new() failed')
         Node.__init__(self, _obj=_obj)
         
+    def set_consent(self, consent):
+        lassomod.lib_authn_request_set_consent(self, consent)
+
     def set_forceAuthn(self, forceAuthn):
         lassomod.lib_authn_request_set_forceAuthn(self, forceAuthn)
 

@@ -37,6 +37,7 @@ typedef struct {
 PyObject *LassoLibAuthnRequest_wrap(LassoLibAuthnRequest *request);
 
 PyObject *lib_authn_request_new(PyObject *self, PyObject *args);
+PyObject *lib_authn_request_set_consent(PyObject *self, PyObject *args);
 PyObject *lib_authn_request_set_forceAuthn(PyObject *self, PyObject *args);
 PyObject *lib_authn_request_set_isPassive(PyObject *self, PyObject *args);
 PyObject *lib_authn_request_set_nameIDPolicy(PyObject *self, PyObject *args);
