@@ -23,6 +23,8 @@
  */
 
 #include <xmlsec/base64.h>
+
+#include <lasso/lasso_config.h>
 #include <lasso/id-ff/server.h>
 
 #include <lasso/id-ff/providerprivate.h>

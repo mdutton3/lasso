@@ -24,6 +24,7 @@
 
 #include <xmlsec/base64.h>
 
+#include <lasso/lasso_config.h>
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
 #include <lasso/xml/saml_attribute.h>
