@@ -774,7 +774,6 @@ is_base64(const char *message)
  *
  * Return value: message format
  **/
-int
 LassoMessageFormat
 lasso_node_init_from_message(LassoNode *node, const char *message)
 {
