@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "errors.h"
+
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
@@ -34,19 +36,24 @@ The schema fragment ():
 */
 
 gint
-lasso_ds_signature_sign(LassoDsSignature *node,
-			const xmlChar    *private_key_file,
-			const xmlChar    *certificate_file)
+lasso_ds_signature_sign(LassoDsSignature  *node,
+			const xmlChar     *private_key_file,
+			const xmlChar     *certificate_file,
+			GError           **err)
 {
   xmlNodePtr signature = LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node));
   xmlSecDSigCtxPtr dsig_ctx;
   gint ret = 0;
 
+  g_return_val_if_fail (err == NULL || *err == NULL, LASSO_ERR_ERROR_CHECK_FAILED);
+
   /* create signature context */
   dsig_ctx = xmlSecDSigCtxCreate(NULL);
   if(dsig_ctx == NULL) {
-    debug("Failed to create signature context.\n");
-    return(-1);
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_DS_ERROR_CONTEXT_CREATION_FAILED,
+		lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
+    return(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
   }
   
   /* load private key, assuming that there is not password */
@@ -54,22 +61,31 @@ lasso_ds_signature_sign(LassoDsSignature *node,
 					     xmlSecKeyDataFormatPem,
 					     NULL, NULL, NULL);
   if(dsig_ctx->signKey == NULL) {
-    ret = -2;
-    debug("Failed to load private pem key from \"%s\"\n", private_key_file);
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED,
+		lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
+		private_key_file);
+    ret = LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
     goto done;
   }
   
   /* load certificate and add to the key */
   if(xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
 				xmlSecKeyDataFormatPem) < 0) {
-    ret = -3;
-    debug("Failed to load pem certificate \"%s\"\n", certificate_file);
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED,
+		lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
+		certificate_file);
+    ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
     goto done;
   }
 
   /* sign the template */
   if(xmlSecDSigCtxSign(dsig_ctx, signature) < 0) {
-    debug("Signature failed.\n");
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_DS_ERROR_SIGNATURE_FAILED,
+		lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED));
+    ret = LASSO_DS_ERROR_SIGNATURE_FAILED;
   }
 
  done:
@@ -140,28 +156,28 @@ LassoNode* lasso_ds_signature_new(LassoNode        *node,
   signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
 					sign_method, NULL);
   if (signature == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to create signature template\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
   }
   reference = xmlSecTmplSignatureAddReference(signature,
 					      xmlSecTransformSha1Id,
 					      NULL, NULL, NULL);
   if (reference == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to add reference to signature template\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
   }
 
   /* add enveloped transform */
   if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to add enveloped transform to reference\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add enveloped transform to reference\n");
   }
 
   /* add <dsig:KeyInfo/> and <dsig:X509Data/> */
   key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
   if(key_info == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to add key info\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
   }
   
   if(xmlSecTmplKeyInfoAddX509Data(key_info) == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to add X509Data node\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to add X509Data node\n");
   }
 
   LASSO_NODE_GET_CLASS(sign_node)->set_xmlNode(sign_node, signature);

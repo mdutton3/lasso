@@ -57,9 +57,10 @@ LASSO_EXPORT GType lasso_ds_signature_get_type(void);
 LASSO_EXPORT LassoNode* lasso_ds_signature_new(LassoNode        *node,
 					       xmlSecTransformId sign_method);
 
-LASSO_EXPORT gint lasso_ds_signature_sign (LassoDsSignature *node,
-					   const xmlChar    *private_key_file,
-					   const xmlChar    *certificate_file);
+LASSO_EXPORT gint lasso_ds_signature_sign (LassoDsSignature  *node,
+					   const xmlChar     *private_key_file,
+					   const xmlChar     *certificate_file,
+					   GError           **err);
 
 #ifdef __cplusplus
 }

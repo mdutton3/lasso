@@ -70,10 +70,11 @@ LASSO_EXPORT void lasso_samlp_request_abstract_set_minorVersion  (LassoSamlpRequ
 LASSO_EXPORT void lasso_samlp_request_abstract_set_requestID     (LassoSamlpRequestAbstract *node,
 								  const xmlChar *requestID);
 
-LASSO_EXPORT void lasso_samlp_request_abstract_set_signature     (LassoSamlpRequestAbstract *node,
-								  gint                       sign_method,
-								  const xmlChar             *private_key_file,
-								  const xmlChar             *certificate_file);
+LASSO_EXPORT gint lasso_samlp_request_abstract_set_signature     (LassoSamlpRequestAbstract  *node,
+								  gint                        sign_method,
+								  const xmlChar              *private_key_file,
+								  const xmlChar              *certificate_file,
+								  GError                    **err);
 
 #ifdef __cplusplus
 }

@@ -94,7 +94,8 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     lasso_samlp_request_abstract_set_signature(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request),
 					       profile->server->signature_method,
 					       profile->server->private_key,
-					       profile->server->certificate);
+					       profile->server->certificate,
+					       NULL);
     
     profile->msg_url  = lasso_provider_get_soapEndpoint(provider);
     profile->msg_body = lasso_node_export_to_soap(profile->request);

@@ -72,6 +72,7 @@ PyObject *saml_assertion_set_signature(PyObject *self, PyObject *args) {
   gint           sign_method;
   const xmlChar *private_key_file;
   const xmlChar *certificate_file;
+  int ret;
 
   if (CheckArgs(args, "OISS:saml_assertion_set_signature")) {
     if(!PyArg_ParseTuple(args, (char *) "Oiss:saml_assertion_set_signature",
@@ -81,9 +82,12 @@ PyObject *saml_assertion_set_signature(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  lasso_saml_assertion_set_signature(LassoSamlAssertion_get(node_obj),
-				     sign_method,
-				     private_key_file, certificate_file);
+  ret = lasso_saml_assertion_set_signature(LassoSamlAssertion_get(node_obj),
+					   sign_method,
+					   private_key_file, certificate_file,
+					   NULL);
+  /* FIXME generate an exception here */
+
   Py_INCREF(Py_None);
   return (Py_None);
 }

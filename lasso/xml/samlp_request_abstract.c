@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "errors.h"
+
 #include <lasso/xml/samlp_request_abstract.h>
 
 /*
@@ -111,19 +113,30 @@ lasso_samlp_request_abstract_set_requestID(LassoSamlpRequestAbstract *node,
   class->set_prop(LASSO_NODE (node), "RequestID", requestID);
 }
 
-void
-lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract *node,
-					   gint                       sign_method,
-					   const xmlChar             *private_key_file,
-					   const xmlChar             *certificate_file)
+gint
+lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract  *node,
+					   gint                        sign_method,
+					   const xmlChar              *private_key_file,
+					   const xmlChar              *certificate_file,
+					   GError                    **err)
 {
+  gint ret;
+  GError *tmp_err = NULL;
+
   g_assert(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node));
   g_assert(private_key_file != NULL);
   g_assert(certificate_file != NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, LASSO_ERR_ERROR_CHECK_FAILED);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->add_signature(LASSO_NODE (node), sign_method,
-		       private_key_file, certificate_file);
+
+  ret = class->add_signature(LASSO_NODE (node), sign_method,
+			     private_key_file, certificate_file, &tmp_err);
+  if (ret < 0) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (ret);
 }
 
 /*****************************************************************************/

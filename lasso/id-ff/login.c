@@ -47,9 +47,12 @@ struct _LassoLoginPrivate
 /*****************************************************************************/
 
 static gchar*
-lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
+lasso_login_get_assertion_nameIdentifier(LassoNode  *assertion,
+					 GError    **err)
 {
   xmlChar *ni, *idp_ni;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   ni = lasso_node_get_child_content(assertion, "NameIdentifier", NULL, NULL);
   idp_ni = lasso_node_get_child_content(assertion, "IDPProvidedNameIdentifier",
@@ -65,7 +68,9 @@ lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
       return (ni);
     }
     else {
-      message(G_LOG_LEVEL_CRITICAL, "NameIdentifier value not found in AuthenticationStatement element.\n");
+      g_set_error(err, g_quark_from_string("Lasso"),
+		  LASSO_XML_ERROR_UNDEFINED,
+		  "NameIdentifier value not found in Assertion element.\n");
       return (NULL);
     }
   }
@@ -89,7 +94,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
     message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
-    return(ret);
+    return(-1);
   }
 
   assertion = lasso_assertion_new(LASSO_PROFILE(login)->server->providerID,
@@ -105,16 +110,25 @@ lasso_login_add_response_assertion(LassoLogin      *login,
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Failed to build the AuthenticationStatement element of the Assertion.\n");
-    lasso_node_destroy(assertion);
-    return(-3);
+    ret = -2;
+    goto done;
   }
-  /* store NameIdentifier */
-  LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
 
+  /* store NameIdentifier */
+  LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion, &err);
+  if (LASSO_PROFILE(login)->nameIdentifier == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
+    goto done;
+  }
+
+  /* FIXME : How to know if the assertion must be signed or unsigned ? */
   ret = lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 					   LASSO_PROFILE(login)->server->signature_method,
 					   LASSO_PROFILE(login)->server->private_key,
-					   LASSO_PROFILE(login)->server->certificate);
+					   LASSO_PROFILE(login)->server->certificate,
+					   &err);
   if (ret == 0) {
     lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response),
 				       assertion);
@@ -127,7 +141,13 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 				LASSO_PROFILE(login)->remote_providerID,
 				assertion);
   }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
+  }
 
+ done:
   lasso_node_destroy(authentication_statement);
   lasso_node_destroy(assertion);
 
@@ -225,58 +245,63 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   assertion = lasso_node_get_child(LASSO_PROFILE(login)->response,
 				   "Assertion",
 				   lassoLibHRef,
-				   NULL);
+				   &err);
   idp = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 				  LASSO_PROFILE(login)->remote_providerID);
 
   if (assertion != NULL) {
     /* verify signature */
     if (idp->ca_certificate != NULL) {
-      signature_check = lasso_node_verify_signature(assertion, idp->ca_certificate);
+      signature_check = lasso_node_verify_signature(assertion, idp->ca_certificate, &err);
       if (signature_check < 0) {
-	/* ret = -1 or -2 or -3 */
-	ret = signature_check;
-	goto done;
+	message(G_LOG_LEVEL_CRITICAL, err->message);
+	ret = err->code;
+	g_clear_error(&err);
+	/* we continue */
       }
     }
 
     /* store NameIdentifier */
-    LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+    LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion, &err);
     if (LASSO_PROFILE(login)->nameIdentifier == NULL) {
-      message(G_LOG_LEVEL_ERROR, "NameIdentifier element not found in Assertion.\n");
-      ret = -4;
-      goto done;
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_clear_error(&err);
+      /* we continue */
     }
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_clear_error(&err);
+    /* we continue */
   }
 
   /* check StatusCode value */
   status = lasso_node_get_child(LASSO_PROFILE(login)->response,
-				"Status", lassoSamlProtocolHRef, NULL);
+				"Status", lassoSamlProtocolHRef, &err);
   if (status == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Status element not found in response.\n");
-    ret = -9;
     goto done;
   }
-  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, NULL);
-    
+  statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef, &err);
   if (statusCode == NULL) {
-    message(G_LOG_LEVEL_ERROR, "StatusCode element not found in Status.\n");
-    ret = -8;
     goto done;
   }
   statusCode_value = lasso_node_get_attr_value(statusCode, "Value", &err);
-  if (err == NULL) {
+  if (statusCode_value != NULL) {
     if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
       ret = -7;
     }
   }
-  else {
-    message(G_LOG_LEVEL_ERROR, err->message);
-    ret = err->code;
-    g_error_free(err);
-  }
 
  done:
+  if (err != NULL) {
+    if (err->code < 0) {
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_clear_error(&err);
+    }
+  }
   xmlFree(statusCode_value);
   lasso_node_destroy(statusCode);
   lasso_node_destroy(status);
@@ -665,7 +690,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   gchar *protocolProfile;
   xmlChar *md_authnRequestsSigned;
   gboolean must_verify_signature = FALSE;
-  gint signature_status = 0;
+  gint ret = 0;
+  GError *err = NULL;
 
   if (authn_request_method != lassoHttpMethodRedirect && \
       authn_request_method != lassoHttpMethodGet && \
@@ -744,26 +770,27 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     case lassoHttpMethodGet:
     case lassoHttpMethodRedirect:
       debug("Query signature has been verified\n");
-      signature_status = lasso_query_verify_signature(authn_request_msg,
-						      remote_provider->public_key,
-						      LASSO_PROFILE(login)->server->private_key);
+      ret = lasso_query_verify_signature(authn_request_msg,
+					 remote_provider->public_key,
+					 LASSO_PROFILE(login)->server->private_key);
       break;
     case lassoHttpMethodPost:
-      signature_status = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
-						     remote_provider->ca_certificate);
+      ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
+					remote_provider->ca_certificate,
+					NULL);
       break;
     }
     
     /* Modify StatusCode if signature is not OK */
-    if (signature_status == 0 || signature_status == 2) {
-      switch (signature_status) {
-      case 0: /* Invalid Signature */
+    if (ret == LASSO_DS_ERROR_INVALID_SIGNATURE || ret == LASSO_DS_ERROR_SIGNATURE_NOTFOUND) {
+      switch (ret) {
+      case LASSO_DS_ERROR_INVALID_SIGNATURE:
 	lasso_profile_set_response_status(LASSO_PROFILE(login),
-						  lassoLibStatusCodeInvalidSignature);
+					  lassoLibStatusCodeInvalidSignature);
 	break;
-      case 2: /* Unsigned AuthnRequest */
+      case LASSO_DS_ERROR_SIGNATURE_NOTFOUND: /* Unsigned AuthnRequest */
 	lasso_profile_set_response_status(LASSO_PROFILE(login),
-						  lassoLibStatusCodeUnsignedAuthnRequest);
+					  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
       }
       return (-2);
@@ -871,7 +898,7 @@ lasso_login_process_request_msg(LassoLogin *login,
 				gchar      *request_msg)
 {
   LASSO_PROFILE(login)->request = lasso_request_new_from_export(request_msg,
-									lassoNodeExportTypeSoap);
+								lassoNodeExportTypeSoap);
   LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
 
   login->assertionArtifact = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
@@ -886,7 +913,7 @@ lasso_login_process_response_msg(LassoLogin  *login,
 				 gchar       *response_msg)
 {
   LASSO_PROFILE(login)->response = lasso_response_new_from_export(response_msg,
-									  lassoNodeExportTypeSoap);
+								  lassoNodeExportTypeSoap);
   LASSO_PROFILE(login)->response_type = lassoMessageTypeResponse;
 
   return (lasso_login_process_response_status_and_assertion(login));

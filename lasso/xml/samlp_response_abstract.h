@@ -73,10 +73,11 @@ LASSO_EXPORT void lasso_samlp_response_abstract_set_recipient     (LassoSamlpRes
 LASSO_EXPORT void lasso_samlp_response_abstract_set_responseID    (LassoSamlpResponseAbstract *node,
 								   const xmlChar *responseID);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_signature     (LassoSamlpResponseAbstract *node,
-								   gint                        sign_method,
-								   const xmlChar              *private_key_file,
-								   const xmlChar              *certificate_file);
+LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature     (LassoSamlpResponseAbstract  *node,
+								   gint                         sign_method,
+								   const xmlChar               *private_key_file,
+								   const xmlChar               *certificate_file,
+								   GError                     **err);
 
 #ifdef __cplusplus
 }

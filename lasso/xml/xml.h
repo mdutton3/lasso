@@ -106,15 +106,17 @@ struct _LassoNodeClass {
 				       const xmlChar *old_name,
 				       const xmlChar *new_name);
   gint           (* verify_signature) (LassoNode     *node,
-				       const gchar   *certificate_file);
+				       const gchar   *certificate_file,
+				       GError       **err);
   /*< private >*/
   void       (* add_child)     (LassoNode     *node,
 				LassoNode     *child,
 				gboolean       unbounded);
-  gint       (* add_signature) (LassoNode     *node,
-				gint           sign_method,
-				const xmlChar *private_key_file,
-				const xmlChar *certificate_file);
+  gint       (* add_signature) (LassoNode      *node,
+				gint            sign_method,
+				const xmlChar  *private_key_file,
+				const xmlChar  *certificate_file,
+				GError        **err);
   gchar*     (* build_query)   (LassoNode     *node);
   xmlNodePtr (* get_xmlNode)   (LassoNode     *node);
   void       (* new_child)     (LassoNode     *node,
@@ -192,12 +194,13 @@ LASSO_EXPORT void           lasso_node_import           (LassoNode     *node,
 LASSO_EXPORT void           lasso_node_import_from_node (LassoNode *node,
 							 LassoNode *imported_node);
 
-LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode *node,
+LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode     *node,
 							 const xmlChar *old_name,
 							 const xmlChar *new_name);
 
-LASSO_EXPORT gint           lasso_node_verify_signature (LassoNode *node,
-							 const gchar *certificate_file);
+LASSO_EXPORT gint           lasso_node_verify_signature (LassoNode    *node,
+							 const gchar  *certificate_file,
+							 GError      **err);
 
 #ifdef __cplusplus
 }
