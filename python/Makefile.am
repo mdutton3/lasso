@@ -1,29 +1,45 @@
-SUBDIRS = doc environs examples protocols tests xml
+NULL=
 
-lassomod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/lasso/.libs
+INCLUDES=-I$(top_srcdir)
 
-INCLUDES = \
-	-DPACKAGE=\"@PACKAGE@\" \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/lasso \
-	$(LASSO_DEFINES) \
-	$(LASSO_CFLAGS) \
-	$(PY_CFLAGS)
+pythondir= $(PY_SITE_PACKAGES)
+python_DATA=lassomod.py
+python_LTLIBRARIES=_lassomod.la
 
-pythondir = $(PY_SITE_PACKAGES)
-python_LTLIBRARIES = lassomod.la
-python_DATA = lasso.py lasso_strings.py
+PYTHON_PACKAGE=lassomod
+_lassomod_la_SOURCES=$(PYTHON_PACKAGE)_wrap.c
+_lassomod_la_CFLAGS=	$(LASSO_CFLAGS) \
+			-DSWIG_COBJECT_TYPES \
+			$(PY_CFLAGS) \
+			$(NULL)
+_lassomod_la_LIBADD=	$(top_srcdir)/lasso/liblasso.la \
+				$(LASSO_LIBS) \
+				$(NULL)
+_lassomod_la_LDFLAGS=	-module -avoid-version \
+			-version-info @LASSO_VERSION_INFO@ \
+				$(NULL)
 
-mylibs = $(top_builddir)/lasso/liblasso.la
+$(PYTHON_PACKAGE)_wrap.c: $(srcdir)/../swig/Lasso.i
+	swig -v -python -module $(PYTHON_PACKAGE) -o $@ $<
 
-lassomod_la_SOURCES = lassomod.c  py_lasso.c  utils.c  wrap_objs.c
-lassomod_la_LIBADD = $(mylibs) \
-	./protocols/elements/libelements.la \
-	./protocols/libprotocols.la \
-	./xml/libxml.la \
-	./environs/libenvirons.la
+# Dirty hack, another better way ?
+.deps/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo:
+	mkdir -p .deps
+	echo "#dummy" > .deps/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo
 
-EXTRA_DIST = lassomod.h  py_lasso.h  utils.h  wrap_objs.h \
-		generator_lasso_strings.py  lasso.py  lasso_strings.py \
-		lassomod.c  py_lasso.c  utils.c  wrap_objs.c
+SWIG_OUTPUTS=$(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py
+
+
+SUBDIRS= \
+	$(NULL)
+
+# In distribution, swig generated files are present.
+EXTRA_DIST= $(SWIG_OUTPUTS)\
+            $(NULL)
+
+# In case of....
+CLEANFILES=lassomod.pyc
+
+# Maintainer clean the swig generated files, because he/she maintains them.
+MAINTAINERCLEANFILES=$(SWIG_OUTPUTS)
 
