@@ -79,7 +79,7 @@ int _debug(GLogLevelFlags level, const char *filename, int line,
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, format, ##args)
 
 #define error_code(level, errorcode, args...) \
-	(message(level, lasso_strerror(errorcode), ##args) || errorcode);
+	(message(level, lasso_strerror(errorcode), ##args) || errorcode)
 
 #ifdef __cplusplus
 }
