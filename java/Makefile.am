@@ -46,7 +46,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	LibStatusResponse.java Login.java Logout.java NameIdentifierMapping.java \
 	NameRegistration.java Node.java NodeList.java ProfileService.java Provider.java \
 	SamlAdvice.java SamlAssertion.java SamlAttributeDesignator.java SamlAttribute.java \
-	SamlAttributeStatement.java SamlAudienceRestrictionCondition.java \
+	SamlAttributeStatement.java SamlAttributeValue.java SamlAudienceRestrictionCondition.java \
 	SamlAuthenticationStatement.java SamlAuthorityBinding.java \
 	SamlConditionAbstract.java SamlConditions.java SamlNameIdentifier.java \
 	SamlpRequestAbstract.java SamlpRequest.java SamlpResponseAbstract.java \

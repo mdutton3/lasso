@@ -57,6 +57,7 @@ SWIGTYPE_p_void.java
 SamlAdvice.java
 SamlAssertion.java
 SamlAttributeStatement.java
+SamlAttributeValue.java
 SamlAuthenticationStatement.java
 SamlConditions.java
 SamlNameIdentifier.java

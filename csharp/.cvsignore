@@ -91,6 +91,7 @@ SamlAuthorityBinding.cs
 SamlAudienceRestrictionCondition.cs
 SamlAttributeDesignator.cs
 SamlAttribute.cs
+SamlAttributeValue.cs
 NodeList.cs
 LibRequestAuthnContext.cs
 DiscoCredentials.cs

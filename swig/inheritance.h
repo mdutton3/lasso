@@ -36,6 +36,7 @@
 SET_NODE_INFO(SamlAdvice, Node)
 SET_NODE_INFO(SamlAssertion, Node)
 SET_NODE_INFO(SamlAttributeDesignator, Node)
+SET_NODE_INFO(SamlAttributeValue, Node)
 SET_NODE_INFO(SamlAuthorityBinding, Node)
 SET_NODE_INFO(SamlConditionAbstract, Node)
 SET_NODE_INFO(SamlConditions, Node)

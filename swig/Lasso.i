@@ -46,6 +46,7 @@
 #include <lasso/lasso_config.h>
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
+#include <lasso/xml/saml_attribute_value.h>
 
 #include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/disco_encrypted_resource_id.h>
@@ -691,7 +692,14 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(WSF_ENABLED) LASSO_WSF_ENABLED;
 #endif
 %include "../lasso/lasso_config.h"
-#ifndef LASSO_WSF_ENABLED
+#ifdef LASSO_WSF_ENABLED
+%{
+#undef LASSO_WSF_ENABLED
+#define LASSO_WSF_ENABLED 1
+%}
+#undef LASSO_WSF_ENABLED
+#define LASSO_WSF_ENABLED 1
+#else
 %{
 #define LASSO_WSF_ENABLED 0
 %}
@@ -1975,6 +1983,56 @@ typedef struct {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoSamlAttributeStatement_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:AttributeValue
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlAttributeValue) LassoSamlAttributeValue;
+#endif
+typedef struct {
+} LassoSamlAttributeValue;
+%extend LassoSamlAttributeValue {
+	/* Attributes */
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlAttributeValue();
+
+	~LassoSamlAttributeValue();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* any */
+#define LassoSamlAttributeValue_get_any(self) get_node_list((self)->any)
+#define LassoSamlAttributeValue_any_get(self) get_node_list((self)->any)
+#define LassoSamlAttributeValue_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoSamlAttributeValue_any_set(self, value) set_node_list(&(self)->any, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlAttributeValue lasso_saml_attribute_value_new
+#define delete_LassoSamlAttributeValue(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlAttributeValue_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 

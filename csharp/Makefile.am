@@ -60,7 +60,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	LibStatusResponse.cs Login.cs Logout.cs NameIdentifierMapping.cs \
 	NameRegistration.cs Node.cs NodeList.cs ProfileService.cs Provider.cs \
 	SamlAdvice.cs SamlAssertion.cs SamlAttribute.cs SamlAttributeDesignator.cs \
-	SamlAttributeStatement.cs SamlAudienceRestrictionCondition.cs \
+	SamlAttributeStatement.cs SamlAttributeValue.cs SamlAudienceRestrictionCondition.cs \
 	SamlAuthenticationStatement.cs SamlAuthorityBinding.cs SamlConditionAbstract.cs \
 	SamlConditions.cs SamlNameIdentifier.cs SamlpRequestAbstract.cs SamlpRequest.cs \
 	SamlpResponseAbstract.cs SamlpResponse.cs SamlpStatusCode.cs SamlpStatus.cs \
