@@ -67,7 +67,7 @@ struct _LassoLibRequestAuthnContextClass {
 };
 
 LASSO_EXPORT GType lasso_lib_request_authn_context_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_request_authn_context_new(void);
+LASSO_EXPORT LassoLibRequestAuthnContext* lasso_lib_request_authn_context_new(void);
 
 #ifdef __cplusplus
 }
