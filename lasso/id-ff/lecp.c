@@ -106,7 +106,7 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
   remote_provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
   profile->msg_url  = lasso_provider_get_metadata_one(remote_provider, "SingleSignOnServiceURL");
-  profile->msg_body = lasso_node_export_to_soap(profile->request);
+  profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the AuthnRequest SOAP message");
     return -1;
@@ -190,7 +190,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
   lecp->authnResponseEnvelope = lasso_lib_authn_response_envelope_new(
 		  LASSO_LIB_AUTHN_RESPONSE(profile->response),
 		  assertionConsumerServiceURL);
-  LASSO_PROFILE(lecp)->msg_body = lasso_node_export_to_soap(lecp->authnResponseEnvelope);
+  LASSO_PROFILE(lecp)->msg_body = lasso_node_export_to_soap(lecp->authnResponseEnvelope, NULL, NULL);
 
   if (LASSO_PROFILE(lecp)->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while exporting the AuthnResponseEnvelope to SOAP msg");

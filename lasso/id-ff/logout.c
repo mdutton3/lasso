@@ -95,7 +95,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 #endif
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request);
+		profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
 	}
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the logout request QUERY message */
@@ -187,7 +187,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     }
 
     profile->msg_url = NULL;
-    profile->msg_body = lasso_node_export_to_soap(profile->response);
+    profile->msg_body = lasso_node_export_to_soap(profile->response, NULL, NULL);
     break;
   case LASSO_HTTP_METHOD_REDIRECT:
     url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");

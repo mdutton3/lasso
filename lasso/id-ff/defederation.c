@@ -94,7 +94,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request);
+		profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
 	}
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* build and optionaly sign the query message and build the

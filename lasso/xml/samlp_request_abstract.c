@@ -25,6 +25,9 @@
 
 #include "errors.h"
 
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+
 #include <lasso/xml/samlp_request_abstract.h>
 
 /*
@@ -56,51 +59,6 @@ From oasis-sstc-saml-schema-assertion-1.0.xsd:
 
 static LassoNodeClass *parent_class = NULL;
 
-#if 0
-gint
-lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract *node,
-		gint sign_method, const xmlChar *private_key_file, const xmlChar *certificate_file)
-{
-	return 0;
-}
-
-gint
-lasso_samlp_request_abstract_set_signature_tmpl(LassoSamlpRequestAbstract *node,
-		lassoSignatureType sign_type, lassoSignatureMethod sign_method,
-		xmlChar *reference_id)
-{
-	LassoNodeClass *class;
-
-	g_return_val_if_fail(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	class = LASSO_NODE_GET_CLASS(node);
-
-	return class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method, reference_id);
-}
-
-gint
-lasso_samlp_request_abstract_sign_signature_tmpl(LassoSamlpRequestAbstract *node,
-		const xmlChar *private_key_file, const xmlChar *certificate_file)
-{
-	LassoNodeClass *class;
-	gint result;
-	char t[10];
-
-	return 0; /* FIXME (signature is broken) */
-
-	g_return_val_if_fail(LASSO_IS_SAMLP_REQUEST_ABSTRACT(node),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	class = LASSO_NODE_GET_CLASS(node);
-	
-	result = class->sign_signature_tmpl(LASSO_NODE(node), private_key_file, certificate_file);
-	return result;
-
-}
-#endif
-
-
 static gchar*
 build_query(LassoNode *node)
 {
@@ -130,6 +88,37 @@ get_xmlNode(LassoNode *node)
 	snprintf(t, 9, "%d", request->MinorVersion);
 	xmlSetProp(xmlnode, "MinorVersion", t);
 	xmlSetProp(xmlnode, "IssueInstant", request->IssueInstant);
+
+	/* signature stuff */
+	if (request->sign_type != LASSO_SIGNATURE_TYPE_NONE) {
+		xmlDoc *doc;
+		xmlNode *signature = NULL, *reference, *key_info;
+		char *uri;
+
+		if (request->sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+			signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
+					xmlSecTransformRsaSha1Id, NULL);
+		}
+		if (request->sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+			signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					xmlSecTransformDsaSha1Id, NULL);
+		}
+		/* get out if signature == NULL ? */
+		xmlAddChild(xmlnode, signature);
+
+		uri = g_strdup_printf("#%s", request->RequestID);
+		reference = xmlSecTmplSignatureAddReference(signature,
+				xmlSecTransformSha1Id, NULL, uri, NULL);
+		g_free(uri);
+
+		/* add enveloped transform */
+		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+		/* add <dsig:KeyInfo/> */
+		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+		if (request->sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
+			xmlSecTmplKeyInfoAddX509Data(key_info);
+		}
+	}
 
 	return xmlnode;
 } 
@@ -185,6 +174,12 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 }
 
 
+char*
+get_sign_attr_name()
+{
+	return "RequestID";
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -198,6 +193,7 @@ instance_init(LassoSamlpRequestAbstract *node)
 	node->MajorVersion = 0;
 	node->MinorVersion = 0;
 	node->IssueInstant = NULL;
+	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 }
 
 static void
@@ -208,6 +204,7 @@ class_init(LassoSamlpRequestAbstractClass *klass)
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
   	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
+	LASSO_NODE_CLASS(klass)->get_sign_attr_name = get_sign_attr_name;
 }
 
 GType
@@ -239,3 +236,4 @@ lasso_samlp_request_abstract_new()
 {
 	return g_object_new(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT, NULL);
 }
+

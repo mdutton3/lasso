@@ -74,6 +74,8 @@ struct _LassoNodeClass {
 	void     (* init_from_query)    (LassoNode *node, char **query_fields);
 	void     (* init_from_xml)      (LassoNode *node, xmlNode *xmlnode);
 	xmlNode* (* get_xmlNode)        (LassoNode *node);
+
+	char*    (* get_sign_attr_name) ();
 };
 
 LASSO_EXPORT GType      lasso_node_get_type(void);
@@ -90,7 +92,8 @@ LASSO_EXPORT char*      lasso_node_build_query(LassoNode *node);
 LASSO_EXPORT char*      lasso_node_export_to_base64(LassoNode *node);
 LASSO_EXPORT char*      lasso_node_export_to_query(LassoNode *node,
 		lassoSignatureMethod  sign_method, const char *private_key_file);
-LASSO_EXPORT char*      lasso_node_export_to_soap(LassoNode *node);
+LASSO_EXPORT char*      lasso_node_export_to_soap(LassoNode *node,
+		const char *private_key_file, const char *certificate_file);
 
 LASSO_EXPORT xmlNode*   lasso_node_get_xmlNode(LassoNode *node);
 

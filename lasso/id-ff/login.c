@@ -770,26 +770,22 @@ gint
 lasso_login_build_request_msg(LassoLogin *login)
 {
 	LassoProvider *remote_provider;
+	LassoProfile *profile;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	/* sign request */
-#if 0 /* XXX: signatures are done differently */
-	ret = lasso_samlp_request_abstract_sign_signature_tmpl(
-			LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
-			LASSO_PROFILE(login)->server->private_key,
-			LASSO_PROFILE(login)->server->certificate);
-#endif
-	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->request);
+	profile = LASSO_PROFILE(login);
 
-	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(profile->request,
+			profile->server->private_key, profile->server->certificate);
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 	if (remote_provider == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
 		return -1;
 	}
-	LASSO_PROFILE(login)->msg_url = lasso_provider_get_metadata_one(
-			remote_provider, "SoapEndpoint");
+	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
 	return 0;
 }
 
@@ -847,7 +843,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 	}
 
-	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->response);
+	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(
+			LASSO_PROFILE(login)->response, NULL, NULL);
 
 	return ret;
 }
@@ -970,9 +967,10 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	request->IssueInstant = lasso_get_current_time();
 
 	LASSO_SAMLP_REQUEST(request)->AssertionArtifact = artifact_b64;
+	request->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	request->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	LASSO_PROFILE(login)->request = LASSO_NODE(request);
-
 	
 	return ret;
 }

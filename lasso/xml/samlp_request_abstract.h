@@ -55,6 +55,10 @@ struct _LassoSamlpRequestAbstract {
 	int MinorVersion;
 	/* <attribute name="IssueInstant" type="dateTime" use="required"/> */
 	char *IssueInstant;
+
+	/* ds:Signature stuffs */
+	lassoSignatureType sign_type;
+	lassoSignatureMethod sign_method;
 };
 
 struct _LassoSamlpRequestAbstractClass {

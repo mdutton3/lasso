@@ -159,26 +159,85 @@ lasso_node_export_to_query(LassoNode *node,
 /**
  * lasso_node_export_to_soap:
  * @node: a LassoNode
+ * @private_key_file: path to private key for signature
+ * @certificate_file: path to certificate for signature
  * 
  * Like lasso_node_export() method except that result is SOAP enveloped.
  * 
  * Return value: a SOAP enveloped export of the LassoNode
  **/
 char*
-lasso_node_export_to_soap(LassoNode *node)
+lasso_node_export_to_soap(LassoNode *node,
+		const char *private_key_file, const char *certificate_file)
 {
-	xmlNode *envelope, *body;
+	xmlDoc *doc;
+	xmlNode *envelope, *body, *message, *sign_tmpl;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
+	xmlSecDSigCtx *dsig_ctx;
 	char *ret;
+	char *id_attr_name = NULL;
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	message = lasso_node_get_xmlNode(node);
+
+	sign_tmpl = xmlSecFindNode(message, xmlSecNodeSignature, xmlSecDSigNs);
+	if (sign_tmpl && private_key_file) {
+		doc = xmlNewDoc("1.0");
+		xmlDocSetRootElement(doc, message);
+		xmlSetTreeDoc(sign_tmpl, doc);
+		if (LASSO_NODE_GET_CLASS(node)->get_sign_attr_name)
+			id_attr_name = LASSO_NODE_GET_CLASS(node)->get_sign_attr_name();
+		if (id_attr_name) {
+			char *id_value = xmlGetProp(message, id_attr_name);
+			xmlAttr *id_attr = xmlHasProp(message, id_attr_name);
+			if (id_value) {
+				xmlAddID(NULL, doc, id_value, id_attr);
+				xmlFree(id_value);
+			}
+		}
+
+		dsig_ctx = xmlSecDSigCtxCreate(NULL);
+		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+				xmlSecKeyDataFormatPem,
+				NULL, NULL, NULL);
+		if (dsig_ctx->signKey == NULL) {
+			/* XXX: file existence should actually be tested on
+			 * LassoServer creation */
+			message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
+					private_key_file);
+			xmlSecDSigCtxDestroy(dsig_ctx);
+			return NULL;
+		}
+		if (certificate_file != NULL && certificate_file[0] != 0) {
+			if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+						xmlSecKeyDataFormatPem) < 0) {
+				message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
+					certificate_file);
+				xmlSecDSigCtxDestroy(dsig_ctx);
+				return NULL;
+			}
+		}
+		if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
+			message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
+					message->name);
+			xmlSecDSigCtxDestroy(dsig_ctx);
+			return NULL;
+		}
+		xmlSecDSigCtxDestroy(dsig_ctx);
+		xmlUnlinkNode(message);
+		xmlFreeDoc(doc);
+	}
 
 	envelope = xmlNewNode(NULL, "Envelope");
 	xmlSetNs(envelope, xmlNewNs(envelope, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX));
 
 	body = xmlNewTextChild(envelope, NULL, "Body", NULL);
-	xmlAddChild(body, lasso_node_get_xmlNode(node));
+	xmlAddChild(body, message);
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
@@ -240,7 +299,7 @@ lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file)
 {
 	return 0;
-#if 0 /* XXX: signature should be verified in relevant nodes */
+#if 0 /* XXX: signature should be verified when importing request */
   xmlDocPtr doc = NULL;
   xmlNodePtr xmlNode = NULL;
   xmlNodePtr signature = NULL;
@@ -405,201 +464,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 /*** private methods **********************************************************/
 
-#if 0 /* XXX: signature stuff done differently */
-static gint
-lasso_node_impl_add_signature(LassoNode     *node,
-			      gint           sign_method,
-			      const xmlChar *private_key_file,
-			      const xmlChar *certificate_file)
-{
-  gint ret = 0;
-
-  g_return_val_if_fail (private_key_file != NULL,
-			LASSO_PARAM_ERROR_INVALID_VALUE);
- 
-  if (certificate_file != NULL) {
-    ret = lasso_node_add_signature_tmpl(node, LASSO_SIGNATURE_TYPE_WITHX509, sign_method, 0);
-  }
-  else {
-    ret = lasso_node_add_signature_tmpl(node, LASSO_SIGNATURE_TYPE_SIMPLE, sign_method, 0);
-  }
-  if (ret == 0) {
-    ret = lasso_node_sign_signature_tmpl(node, private_key_file, certificate_file);
-  }
-
-  return ret;
-}
-#endif
-
-#if 0 /* XXX: signature_tmpl are hopefully unnecessary now */
-static gint
-lasso_node_impl_add_signature_tmpl(LassoNode            *node,
-				   lassoSignatureType    sign_type,
-				   lassoSignatureMethod  sign_method,
-				   xmlChar              *reference_uri)
-{
-  LassoNode *sign_node;
-  xmlDocPtr  doc;
-  xmlNodePtr signature, reference, key_info;
-  char   *uri;
-
-  g_return_val_if_fail(sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 || \
-		       sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1,
-		       LASSO_PARAM_ERROR_INVALID_VALUE);
-
-  doc = xmlNewDoc("1.0");
-  xmlAddChild((xmlNodePtr)doc, lasso_node_get_xmlNode(node));
-
-  switch (sign_method) {
-  case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-    signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-					  xmlSecTransformRsaSha1Id, NULL);
-    break;
-  case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-    signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-					  xmlSecTransformDsaSha1Id, NULL);
-    break;
-  default:
-    signature = NULL;
-  }
- 
-  if (signature == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
-    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-  }
-
-  if (reference_uri != NULL) {
-    uri = g_strdup_printf("#%s", reference_uri);
-  }
-  else {
-    uri = NULL;
-  }
-  reference = xmlSecTmplSignatureAddReference(signature,
-					      xmlSecTransformSha1Id,
-					      NULL, uri, NULL);
-  g_free(uri);
-
-  if (reference == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
-    xmlFreeNode(signature);
-    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-  }
-
-  /* add enveloped transform */
-  if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add enveloped transform to reference\n");
-    xmlFreeNode(signature);
-    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-  }
-
-  /* add <dsig:KeyInfo/> */
-  key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-  if (key_info == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
-    xmlFreeNode(signature);
-    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-  }
-  
-  /* add <dsig:X509Data/> */
-  if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
-    if (xmlSecTmplKeyInfoAddX509Data(key_info) == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Failed to add X509Data node\n");
-      xmlFreeNode(signature);
-      return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-    }
-  }
-
-  sign_node = lasso_node_new();
-  lasso_node_set_xmlNode(sign_node, signature);
-  lasso_node_add_child(node, sign_node, TRUE);
-  lasso_node_destroy(sign_node);
-
-  /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
-  /* xmlFreeDoc(doc); */
-
-  return 0;
-}
-#endif
-
 static char*
 lasso_node_impl_build_query(LassoNode *node)
 {
 	g_assert_not_reached();
 	return NULL;
 }
-
-
-#if 0 /* probably no longer necessary with the move to structures */
-gint
-lasso_node_impl_sign_signature_tmpl(LassoNode     *node,
-				    const xmlChar *private_key_file,
-				    const xmlChar *certificate_file)
-{
-  xmlDocPtr doc;
-  xmlNodePtr signature_tmpl;
-  xmlSecDSigCtxPtr dsig_ctx;
-  gint ret = 0;
-  xmlNode *xmlnode;
-
-  g_return_val_if_fail(private_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-  doc = xmlNewDoc("1.0");
-  xmlnode = lasso_node_get_xmlNode(node);
-  xmlAddChild((xmlNodePtr)doc, xmlnode);
-  signature_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
-  if (signature_tmpl == NULL) {
-	  /* it had no signature_tmpl; we add it one now */
-  }
-
-  /* create signature context */
-  dsig_ctx = xmlSecDSigCtxCreate(NULL);
-  if (dsig_ctx == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
-    return LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
-  }
-  
-  /* load private key, assuming that there is not password */
-  dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-					     xmlSecKeyDataFormatPem,
-					     NULL, NULL, NULL);
-  if (dsig_ctx->signKey == NULL) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
-	    private_key_file);
-    ret = LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
-    goto done;
-  }
-  
-  /* load certificate and add to the key */
-  if (certificate_file != NULL) {
-    if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
-				   xmlSecKeyDataFormatPem) < 0) {
-      message(G_LOG_LEVEL_CRITICAL,
-	      lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
-	      certificate_file);
-      ret = LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-      goto done;
-    }
-  }
-
-  /* sign the template */
-  if (xmlSecDSigCtxSign(dsig_ctx, signature_tmpl) < 0) {
-    message(G_LOG_LEVEL_CRITICAL,
-	    lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
-	    node->private->node->name);
-    ret = LASSO_DS_ERROR_SIGNATURE_FAILED;
-  }
-
- done:
-  xmlSecDSigCtxDestroy(dsig_ctx);
-  /* FIXME */
-  /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
-  /* xmlFreeDoc(doc); */
-
-  return ret;
-}
-#endif
 
 /*****************************************************************************/
 /* overrided parent class methods                                            */
@@ -634,6 +504,7 @@ class_init(LassoNodeClass *class)
 	class->destroy = lasso_node_impl_destroy;
 	class->init_from_query = lasso_node_impl_init_from_query;
 	class->init_from_xml = lasso_node_impl_init_from_xml;
+	class->get_sign_attr_name = NULL;
 
 	/* virtual private methods */
 	class->build_query = lasso_node_impl_build_query;
