@@ -15,9 +15,9 @@ if PERL_ENABLED
 endif
 
 SUBDIRS		= lasso \
+		  swig \
 		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(CSHARP_SD) $(PERL_SD) \
 		  tests \
-		  swig \
 		  win32 \
 		  docs
 
