@@ -181,8 +181,8 @@ dispose(GObject *object)
 
 	debug("Identity object 0x%p disposed ...", identity);
 
-	/* XXX: here or in finalize ?
-	 * g_hash_table_destroy(identity->federations); */
+	g_hash_table_destroy(identity->federations);
+	identity->federations = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
@@ -193,6 +193,7 @@ finalize(GObject *object)
 	LassoIdentity *identity = LASSO_IDENTITY(object);
 
 	debug("Identity object 0x%p finalized ...", identity);
+	g_free(identity->private_data);
 	identity->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
