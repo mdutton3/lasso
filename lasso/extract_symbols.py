@@ -11,7 +11,7 @@ else:
 
 symbols = []
 for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir):
-    symbols.extend(re.findall('LASSO_EXPORT.*(lasso_[a-zA-Z_]+)', file(header_file).read()))
+    symbols.extend(re.findall('LASSO_EXPORT.*(lasso_[a-zA-Z0-9_]+).*\(', file(header_file).read()))
 
 for s in symbols:
     print s
