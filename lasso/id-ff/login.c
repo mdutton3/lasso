@@ -187,7 +187,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
       if (signature_check < 0) {
 	/* ret = -1 or -2 or -3 */
 	ret = signature_check;
-	goto error;
+	goto done;
       }
     }
 
@@ -196,7 +196,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     if (login->nameIdentifier == NULL) {
       debug(ERROR, "NameIdentifier element not found in Assertion.\n");
       ret = -4;
-      goto error;
+      goto done;
     }
   }
 
@@ -206,22 +206,22 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   if (status == NULL) {
     debug(ERROR, "Status element not found in response.\n");
     ret = -9;
-    goto error;
+    goto done;
   }
   statusCode = lasso_node_get_child(status, "StatusCode", lassoSamlProtocolHRef);
     
   if (statusCode == NULL) {
     debug(ERROR, "StatusCode element not found in Status.\n");
     ret = -8;
-    goto error;
+    goto done;
   }
   statusCode_value = lasso_node_get_attr_value(statusCode, "Value");
   if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
     ret = -7;
-    goto error;
+    goto done;
   }
 
-error:
+ done:
   xmlFree(statusCode_value);
   lasso_node_destroy(statusCode);
   lasso_node_destroy(status);
@@ -472,28 +472,76 @@ gint
 lasso_login_create_user(LassoLogin *login,
 			gchar      *user_dump)
 {
-  LassoNode *assertion;
+  LassoNode *assertion, *nameIdentifier, *idpProvidedNameIdentifier, *copy_idpProvidedNameIdentifier;
+  LassoIdentity *identity;
+  gint ret = 0;
 
   if (user_dump != NULL) {
     LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new_from_dump(user_dump);
     if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
-      debug(ERROR, "Failed create user from the user dump\n");
-      return (-1);
+      debug(ERROR, "Failed to create the user from the user dump\n");
+      ret = -1;
+      goto done;
     }
   }
   else {
     LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new();
   }
 
-  /* put response assertion in user object */
-  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
-				   "Assertion", lassoLibHRef);
-  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
-			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
-			   lasso_node_copy(assertion));
+  if (LASSO_PROFILE_CONTEXT(login)->response != NULL) {
+    assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				     "Assertion", lassoLibHRef);
+    if (assertion == NULL) {
+      debug(ERROR, "Assertion element not found in response.\n");
+      ret = -2;
+      goto done;
+    }
+
+    /* put response assertion in user object */
+    lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
+			     LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			     lasso_node_copy(assertion));
+
+    /* put the 2 NameIdentifiers in user object */
+    nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
+    if (nameIdentifier == NULL) {
+      debug(ERROR, "NameIdentifier element not found in assertion.\n");
+      ret = -3;
+      goto done;
+    }
+
+    idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", lassoLibHRef);
+    if (idpProvidedNameIdentifier == NULL) {
+      debug(ERROR, "IDPProvidedNameIdentifier element not found in assertion.\n");
+      ret = -4;
+      goto done;
+    }
+    copy_idpProvidedNameIdentifier = lasso_node_copy(idpProvidedNameIdentifier);
+    lasso_node_destroy(idpProvidedNameIdentifier);
+    /* transform the lib:IDPProvidedNameIdentifier into a saml:NameIdentifier */
+    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_name(copy_idpProvidedNameIdentifier, "NameIdentifier");
+    LASSO_NODE_GET_CLASS(copy_idpProvidedNameIdentifier)->set_ns(copy_idpProvidedNameIdentifier,
+								 lassoSamlAssertionHRef,
+								 lassoSamlAssertionPrefix);
+
+    /* create identity */
+    identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+    lasso_identity_set_local_nameIdentifier(identity, nameIdentifier);
+    lasso_identity_set_remote_nameIdentifier(identity, copy_idpProvidedNameIdentifier);
+    lasso_user_add_identity(LASSO_PROFILE_CONTEXT(login)->user,
+			    LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			    identity);
+  }
+  else {
+    debug(ERROR, "response attribute is empty.\n");
+  }
+  
+ done:
+  lasso_node_destroy(nameIdentifier);
+  lasso_node_destroy(copy_idpProvidedNameIdentifier);
   lasso_node_destroy(assertion);
 
-  return (0);
+  return (ret);
 }
 
 void
