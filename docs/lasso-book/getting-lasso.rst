@@ -71,7 +71,7 @@ output (useful mainly for debugging ``configure``).
 ``--help`` flag: ``./configure --help``
 
 Installation Directories
-````````````````````````
+........................
 
 By default, Lasso will be installed in ``/usr/local/lib``.  It is possible to
 specify an installation prefix other than ``/usr/local`` by giving the option
@@ -79,7 +79,7 @@ specify an installation prefix other than ``/usr/local`` by giving the option
 
 
 Optional Features
-`````````````````
+.................
 
 There are optional features that you may want not to build, things like unit
 tests, bindings for different languages, etc.

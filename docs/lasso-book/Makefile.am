@@ -17,6 +17,6 @@ endif
 %.html: %.rst
 	$(REST2HTML) $? > $@
 
-CLEANFILES = writing-a-c-sp.html
+CLEANFILES = writing-a-c-sp.html book.html
 EXTRA_DIST = lasso-book.txt writing-a-c-sp.txt $(LASSOBOOK_FILES)
 

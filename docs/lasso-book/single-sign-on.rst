@@ -84,17 +84,126 @@ Metadata would be::
 Implementing the service provider parts
 =======================================
 
+.. warning:: The source code presented in the "implementing" section has for
+             sole purpose to explain the different steps necessary to implement
+             the profiles; they notably lack proper error checking.  See
+             XXX for details on error checking.
+
+
 Sending the user to the identity provider
 -----------------------------------------
 
-XXX
+``server`` is a *LassoServer* object as seen earlier (`LassoServer`_) and
+``idpProviderId`` is a string with the identity provider Id (the string must
+match a providerID defined in the metadata file).
+
+::
+
+  LassoLogin *login;
+  
+  /* create login object */
+  login = lasso_login_new(server);
+
+
+Select profile to use, HTTP Redirect::
+
+  lasso_login_init_authn_request(login, lassoHttpMethodRedirect);
+
+or HTTP POST::
+
+  lasso_login_init_authn_request(login, lassoHttpMethodPost);
+  
+
+Parametrize request::
+
+  /* will force authentication on the identity provider */
+  lasso_lib_authn_request_set_forceAuthn(
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
+  
+  /* ask for identity federation */
+  lasso_lib_authn_request_set_nameIDPolicy(
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
+
+  /* the user consents with the idea of identity federation */
+  lasso_lib_authn_request_set_consent(
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
+
+(see API reference for other possible values)
+
+
+Create the authentication request::
+
+  lasso_login_build_authn_request_msg(login, idpProviderId);
+
+
+An URL is then defined in ``LASSO_PROFILE(login)->msg_url``; the user must be
+redirected to it; for example, in a CGI::
+  
+  printf("Location: %s\n", LASSO_PROFILE(login)->msg_url);
+
 
 
 Receiving an answer from the identity provider
 ----------------------------------------------
 
-XXX
+This part is handled on the *AssertionConsumerURL*.
 
+
+GET request
+...........
+
+
+The user has been redirected to this URL.  The query string (the part of the
+URL after the question mark) is used to initialize the *LassoLogin* object.
+
+::
+
+  LassoLogin *login;
+  
+  login = lasso_login_new(server);
+  lasso_login_init_request(login, query_string, lassoHttpMethodRedirect);
+  lasso_login_build_request_msg(login);
+
+The service provider must check this artifact using a SOAP request to the
+identity provider.  The URL is ``LASSO_PROFILE(login)->msg_url`` while the
+request is ``LASSO_PROFILE(login)->msg_body``.  The request must succeed with
+an HTTP 200 status code.  The SOAP answer body must then be passed to::
+
+  lasso_login_process_response_msg(login, answer);
+
+There is then a ``nameIdentifier`` (accessible through
+``LASSO_PROFILE(login)->nameIdentifier``) for the user identifying.  If this
+name identifier is already known by the service provider the corresponding
+identity and session must be restored.
+
+::
+
+  if (session_dump != NULL) {
+      lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump);
+  }
+  if (identity_dump != NULL) {
+      lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump);
+  }
+
+
+Process the authentication request, this will update (or create) the identity
+and session.
+
+::
+  lasso_login_accept_sso(login);
+
+Identity and session must then be saved and finally the ``login`` object can be
+destroyed::
+
+  lasso_login_destroy(login);
+
+And a success web page displayed.
+
+
+POST request
+............
+
+XXX
 
 
 Implementing the identity provider parts
