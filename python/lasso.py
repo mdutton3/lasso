@@ -64,6 +64,12 @@ class Node:
     def dump(self, encoding="utf8", format=1):
         return lassomod.node_dump(self, encoding, format)
 
+    def export(self):
+        return lassomod.node_export(self)
+
+    def export_to_base64(self):
+        return lassomod.node_export_to_base64(self)
+
     def export_to_query(self, sign_method, private_key_file):
         return lassomod.node_export_to_query(self, sign_method, private_key_file)
 
@@ -343,6 +349,11 @@ class AuthnResponse(SamlpResponse):
         obj = lassomod.authn_response_new_from_dump(buffer)
         return AuthnResponse(obj)
     new_from_dump = classmethod(new_from_dump)
+
+    def new_from_export(cls, buffer, type=0):
+        obj = lassomod.authn_response_new_from_export(buffer, type)
+        return AuthnResponse(obj)
+    new_from_export = classmethod(new_from_export)
 
     def new_from_request_query(cls, query, providerID):
         obj = lassomod.authn_response_new_from_request_query(query, providerID)

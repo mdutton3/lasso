@@ -64,6 +64,8 @@ static PyMethodDef lasso_methods[] = {
   /* xml */
   /* py_xml.h */
   {"node_dump",             node_dump,             METH_VARARGS},
+  {"node_export",           node_export,           METH_VARARGS},
+  {"node_export_to_base64", node_export_to_base64, METH_VARARGS},
   {"node_export_to_query",  node_export_to_query,  METH_VARARGS},
   {"node_export_to_soap",   node_export_to_soap,   METH_VARARGS},
   {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
@@ -136,8 +138,8 @@ static PyMethodDef lasso_methods[] = {
   /* py_authn_response.h */
   {"authn_response_getattr",                       authn_response_getattr,                       METH_VARARGS},
   {"authn_response_new_from_dump",                 authn_response_new_from_dump,                 METH_VARARGS},
+  {"authn_response_new_from_export",               authn_response_new_from_export,               METH_VARARGS},
   {"authn_response_new_from_request_query",        authn_response_new_from_request_query,        METH_VARARGS},
-/*   {"authn_response_add_assertion",                 authn_response_add_assertion,                 METH_VARARGS}, */
   {"authn_response_must_authenticate",             authn_response_must_authenticate,             METH_VARARGS},
   {"authn_response_process_authentication_result", authn_response_process_authentication_result, METH_VARARGS},
   {"authn_response_verify_signature",              authn_response_verify_signature,              METH_VARARGS},
