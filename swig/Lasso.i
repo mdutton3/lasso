@@ -966,23 +966,33 @@ gchar *LassoProvider_providerId_get(LassoProvider *self) {
  * Providers
  ***********************************************************************/
 
+%{
+static void
+add_provider(gchar *key, LassoProvider *provider, LassoProvider **providers)
+{
+	/* add provider at the end of providers */
+	int i=0;
+	while (providers[i]) i++;
+	providers[i] = provider;
+}
+%}
 
 #ifndef SWIGPHP4
 %rename(Providers) LassoProviders;
 #endif
 %nodefault LassoProviders;
 %{
-typedef GPtrArray LassoProviders;
+typedef GHashTable LassoProviders;
 %}
 typedef struct {
 	%extend {
 		/* Methods */
 
-		GPtrArray *cast() {
+		GHashTable *cast() {
 			return self;
 		}
 
-		static LassoProviders *frompointer(GPtrArray *providers) {
+		static LassoProviders *frompointer(GHashTable *providers) {
 			return (LassoProviders *) providers;
 		}
 
@@ -990,14 +1000,21 @@ typedef struct {
 		%rename(__getitem__) getItem;
 #endif
 		LassoProvider *getItem(int index) {
-			return g_ptr_array_index(self, index);
+			LassoProvider **providers;
+			LassoProvider *item;
+			int l = g_hash_table_size(self);
+			providers = g_malloc0(sizeof(LassoProvider*) * (l+1));
+			g_hash_table_foreach(self, (GHFunc)add_provider, providers);
+			item = providers[index];
+			g_free(providers);
+			return item;
 		}
 
 #if defined(SWIGPYTHON)
 		%rename(__len__) length;
 #endif
 		gint length() {
-			return self->len;
+			return g_hash_table_size(self);
 		}
 	}
 } LassoProviders;
@@ -1152,7 +1169,7 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 /* providers */
 #define LassoServer_get_providers LassoServer_providers_get
 LassoProviders *LassoServer_providers_get(LassoServer *self) {
-	return NULL; /* XXX */
+	return self->providers;
 }
 
 /* Constructors, destructors & static methods implementations */
