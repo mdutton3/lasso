@@ -51,6 +51,10 @@ static PyMethodDef lasso_methods[] = {
   {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
   {"logout_request_create",  logout_request_create,  METH_VARARGS},
 
+  {"logout_response_getattr", logout_response_getattr, METH_VARARGS},
+  {"logout_response_create",  logout_response_create,  METH_VARARGS},
+  {"logout_response_init",    logout_response_init,  METH_VARARGS},
+
   /* py_single_sign_on_and_federation.h */
   {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
   {"authn_request_create",  authn_request_create,  METH_VARARGS},

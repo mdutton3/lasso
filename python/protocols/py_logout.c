@@ -96,3 +96,89 @@ PyObject *logout_request_create(PyObject *self, PyObject *args) {
 
   return (lassoLogoutRequest_wrap(request));
 }
+
+/******************************************************************************/
+/* lassoLogoutResponse                                                        */
+/******************************************************************************/
+
+PyObject *lassoLogoutResponse_wrap(lassoLogoutResponse *response) {
+  PyObject *ret;
+
+  if (response == NULL) {
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
+  ret = PyCObject_FromVoidPtrAndDesc((void *) response,
+                                     (char *) "lassoLogoutResponse *", NULL);
+  return (ret);
+}
+
+PyObject *logout_response_getattr(PyObject *self, PyObject *args) {
+  PyObject *response_obj;
+  lassoLogoutResponse *response;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:logout_response_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:logout_response_get_attr", &response_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lassoLogoutResponse_get(response_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[s]", "node");
+  if (!strcmp(attr, "node"))
+    return (LassoNode_wrap(response->node));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+PyObject *logout_response_create(PyObject *self, PyObject *args) {
+  char *query;
+  int   verifySignature;
+  char *public_key;
+  char *private_key;
+  char *certificate;
+
+  lassoLogoutResponse *response;
+
+  if(!PyArg_ParseTuple(args, (char *) "sisss:logout_response_create",
+		       &query,
+		       &verifySignature,
+		       &public_key,
+		       &private_key,
+		       &certificate))
+    return NULL;
+
+  response = lasso_logout_response_create(query,
+					  verifySignature,
+					  public_key,
+					  private_key,
+					  certificate);
+
+  return (lassoLogoutResponse_wrap(response));
+}
+
+PyObject *logout_response_init(PyObject *self, PyObject *args) {
+  PyObject      *response_obj;
+  char          *providerID;
+  char          *statusCodeValue;
+  char          *relayState;
+  int            ret;
+
+  if(!PyArg_ParseTuple(args, (char *) "Osss:response_init",
+		       &response_obj,
+		       &providerID,
+		       &statusCodeValue,
+		       &relayState))
+    return NULL;
+
+  ret = lasso_logout_response_init(lassoLogoutResponse_get(response_obj),
+				   providerID,
+				   statusCodeValue,
+				   relayState);
+
+  return (int_wrap(ret));
+}

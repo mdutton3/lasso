@@ -38,4 +38,17 @@ PyObject *lassoLogoutRequest_wrap(lassoLogoutRequest *request);
 PyObject *logout_request_getattr(PyObject *self, PyObject *args);
 PyObject *logout_request_create(PyObject *self, PyObject *args);
 
+typedef struct {
+    PyObject_HEAD
+    lassoLogoutResponse *obj;
+} lassoLogoutResponse_object;
+
+#define lassoLogoutResponse_get(v) (((v) == Py_None) ? NULL : (((lassoLogoutResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *lassoLogoutResponse_wrap(lassoLogoutResponse *response);
+
+PyObject *logout_response_getattr(PyObject *self, PyObject *args);
+PyObject *logout_response_create(PyObject *self, PyObject *args);
+PyObject *logout_response_init(PyObject *self, PyObject *args);
+
+
 #endif /* __PYLASSO_PY_LOGOUT_H__ */
