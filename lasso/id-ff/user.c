@@ -31,6 +31,8 @@
 #define LASSO_USER_ASSERTION_NODE         "LassoAssertion"
 #define LASSO_USER_REMOTE_PROVIDERID_NODE "RemoteProviderID"
 
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -123,7 +125,7 @@ lasso_user_dump_identity(gpointer   key,
 void
 lasso_user_destroy(LassoUser *user)
 {
-
+  g_object_unref(G_OBJECT(user));
 }
 
 gchar*
@@ -222,6 +224,17 @@ lasso_user_remove_assertion(LassoUser     *user,
   return(0);
 }
 
+/*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_user_finalize(LassoUser *user)
+{  
+  debug(INFO, "User object 0x%x finalized ...\n", user);
+
+  parent_class->finalize(G_OBJECT(user));
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -236,9 +249,13 @@ lasso_user_instance_init(LassoUser *user)
 }
 
 static void
-lasso_user_class_init(LassoUserClass *klass)
+lasso_user_class_init(LassoUserClass *class)
 {
-
+  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
+  
+  parent_class = g_type_class_peek_parent(class);
+  /* override parent class methods */
+  gobject_class->finalize = (void *)lasso_user_finalize;
 }
 
 GType lasso_user_get_type() {
@@ -300,7 +317,7 @@ lasso_user_new_from_dump(gchar *dump)
   /* get user */
   user_node = lasso_node_new_from_dump(dump);
   if (user_node == NULL) {
-    debug(WARNING, "Can't create a user from dump.\n");
+    debug(WARNING, "Can't create a user from dump\n");
     return (NULL);
   }
 
