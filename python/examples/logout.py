@@ -37,8 +37,15 @@ idpuser_dump = "<LassoUser><LassoAssertions><LassoAssertion RemoteProviderID=\"h
 # SP1 build a request :
 sp1user = lasso.User.new_from_dump(sp1user_dump)
 
-sp1logout = lasso.Logout.new(lasso.providerTypeSp, sp1server, sp1user)
+sp1logout = lasso.Logout.new(sp1server, lasso.providerTypeSp)
+
+sp1logout.load_user_dump(sp1user_dump)
+
 sp1logout.init_request()
+
+request = sp1logout.request
+request.set_relayState("http://relaystate.com")
+
 sp1logout.build_request_msg()
 
 msg_url  = sp1logout.msg_url
@@ -48,7 +55,7 @@ sp1logout.destroy()
 
 # IDP process request and return a response :
 idpuser = lasso.User.new_from_dump(idpuser_dump)
-idplogout = lasso.Logout.new(lasso.providerTypeIdp, idpserver)
+idplogout = lasso.Logout.new(idpserver, lasso.providerTypeIdp)
 
 if lasso.get_request_type_from_soap_msg(msg_body)==lasso.requestTypeLogout:
     print "it's a logout request !"
@@ -61,6 +68,8 @@ nameIdentifier = idplogout.nameIdentifier
 print "get the user dump from NameIdentifier : ", nameIdentifier
 idplogout.load_user_dump(idpuser_dump)
 idplogout.process_request()
+
+print "RelayState :", idplogout.msg_relayState
 
 next_provider_id = idplogout.get_next_providerID()
 while next_provider_id:
