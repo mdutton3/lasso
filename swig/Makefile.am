@@ -1,2 +1,2 @@
-EXTRA_DIST = Lasso.i Lasso-wsf.i
+EXTRA_DIST = Lasso.i Lasso-wsf.i inheritance.h
 

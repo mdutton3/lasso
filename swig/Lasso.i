@@ -51,6 +51,31 @@
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
 
+%}
+
+/* GLib types */
+
+#define gboolean bool
+%{
+#define bool int
+#define false 0
+#define true 1
+%}
+#define gchar char
+#define gint int
+#define gpointer void*
+#define GPtrArray void
+
+
+
+/***********************************************************************
+ ***********************************************************************
+ * SWIG Tuning
+ ***********************************************************************
+ ***********************************************************************/
+
+
+%{
 
 /* 
  * Thanks to the patch in this Debian bug for the solution
@@ -72,95 +97,23 @@
 
 %}
 
-#ifdef SWIGJAVA
-#if SWIG_VERSION >= 0x010322
-  %include "enumsimple.swg"
-#endif
-%pragma(java) jniclasscode=%{
-  static {
-    try {
-      // Load a library whose "core" name is "jlasso".
-      // Operating system specific stuff will be added to make an
-      // actual filename from this: Under Unix this will become
-      // libjlasso.so while under Windows it will likely become
-      // something like jlasso.dll.
-      System.loadLibrary("jlasso");
-    }
-    catch (UnsatisfiedLinkError e) {
-      System.err.println("Native code library failed to load. \n" + e);
-      System.exit(1);
-    }
-    // Initialize Lasso.
-    init();
-  }
-%}
-#else
-
-#ifdef SWIGPYTHON
-%{
-	PyObject *lassoError;
-	PyObject *LASSO_WARNING;
-%}
-
-%init %{
-	lassoError = PyErr_NewException("_lasso.Error", NULL, NULL);
-	Py_INCREF(lassoError);
-	PyModule_AddObject(m, "Error", lassoError);
-
-	LASSO_WARNING = PyErr_NewException("_lasso.Warning", lassoError, NULL);
-	Py_INCREF(LASSO_WARNING);
-	PyModule_AddObject(m, "Warning", LASSO_WARNING);
-	
-	lasso_init();
-%}
-
-%pythoncode %{
-Error = _lasso.Error
-Warning = _lasso.Warning
-%}
-
-#else
-/* Apache fails when lasso_init is called too early in PHP binding. */
-/* FIXME: To investigate. */
-#ifndef SWIGPHP4
-%init %{
-	lasso_init();
-%}
-#endif
-#endif
-#endif
-
-
-/***********************************************************************
- ***********************************************************************
- * Common
- ***********************************************************************
- ***********************************************************************/
-
-
-/* GLib types */
-
-#define gboolean bool
-%{
-#define bool int
-#define false 0
-#define true 1
-%}
-#define gchar char
-#define gint int
-#define gpointer void*
-#define GPtrArray void
-
-
-/***********************************************************************
- * Swig Tuning
- ***********************************************************************/
-
 #define %nonewobject %feature("new","")
+
+
+/***********************************************************************
+ * Python Tuning
+ ***********************************************************************/
+
 
 #if defined(SWIGPYTHON)
 %typemap(in,parse="z") char * "";
 #endif
+
+
+/***********************************************************************
+ * PHP Tuning
+ ***********************************************************************/
+
 
 #if defined(SWIGPHP4)
 
@@ -222,6 +175,9 @@ Warning = _lasso.Warning
 
 %{
 
+PyObject *lassoError;
+PyObject *LASSO_WARNING;
+
 static void lasso_exception(int errorCode) {
 	PyObject *errorTuple;
 
@@ -237,6 +193,21 @@ static void lasso_exception(int errorCode) {
 	}
 }
 
+%}
+
+%init %{
+	lassoError = PyErr_NewException("_lasso.Error", NULL, NULL);
+	Py_INCREF(lassoError);
+	PyModule_AddObject(m, "Error", lassoError);
+
+	LASSO_WARNING = PyErr_NewException("_lasso.Warning", lassoError, NULL);
+	Py_INCREF(LASSO_WARNING);
+	PyModule_AddObject(m, "Warning", LASSO_WARNING);
+%}
+
+%pythoncode %{
+Error = _lasso.Error
+Warning = _lasso.Warning
 %}
 
 %define THROW_ERROR
@@ -521,85 +492,7 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
 %typemap(javabase) LassoNode "DowncastableNode";
 
-/* saml prefix */
-
-SET_NODE_INFO(SamlAdvice, Node)
-SET_NODE_INFO(SamlAssertion, Node)
-SET_NODE_INFO(SamlAttributeDesignator, Node)
-SET_NODE_INFO(SamlAuthorityBinding, Node)
-SET_NODE_INFO(SamlConditionAbstract, Node)
-SET_NODE_INFO(SamlConditions, Node)
-SET_NODE_INFO(SamlNameIdentifier, Node)
-SET_NODE_INFO(SamlStatementAbstract, Node)
-SET_NODE_INFO(SamlSubject, Node)
-SET_NODE_INFO(SamlSubjectConfirmation, Node)
-SET_NODE_INFO(SamlSubjectLocality, Node)
-
-SET_NODE_INFO(SamlAttribute, SamlAttributeDesignator)
-SET_NODE_INFO(SamlAudienceRestrictionCondition, SamlConditionAbstract)
-SET_NODE_INFO(SamlSubjectStatementAbstract, SamlStatementAbstract)
-
-SET_NODE_INFO(SamlAttributeStatement, SamlSubjectStatementAbstract)
-SET_NODE_INFO(SamlAuthenticationStatement, SamlSubjectStatementAbstract)
-SET_NODE_INFO(SamlSubjectStatement, SamlSubjectStatementAbstract)
-
-/* samlp prefix */
-
-SET_NODE_INFO(SamlpRequestAbstract, Node)
-SET_NODE_INFO(SamlpResponseAbstract, Node)
-SET_NODE_INFO(SamlpStatus, Node)
-SET_NODE_INFO(SamlpStatusCode, Node)
-
-SET_NODE_INFO(SamlpRequest, SamlpRequestAbstract)
-SET_NODE_INFO(SamlpResponse, SamlpResponseAbstract)
-
-/* lib prefix */
-
-SET_NODE_INFO(LibAssertion, SamlAssertion)
-SET_NODE_INFO(LibAuthnRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibAuthnResponse, SamlpResponse)
-SET_NODE_INFO(LibFederationTerminationNotification, SamlpRequestAbstract)
-SET_NODE_INFO(LibLogoutRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibRegisterNameIdentifierRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibRequestAuthnContext, Node)
-SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
-
-SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
-SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
-
-/* ID-WSF FIXME: Check inheritance */
-#if 0
-/* disco prefix */
-
-SET_NODE_INFO(DiscoCredentials, Node)
-SET_NODE_INFO(DiscoDescription, Node)
-SET_NODE_INFO(DiscoEncryptedResourceID, Node)
-SET_NODE_INFO(DiscoInsertEntry, Node)
-SET_NODE_INFO(DiscoModify, Node)
-SET_NODE_INFO(DiscoModifyResponse, Node)
-SET_NODE_INFO(DiscoOptions, Node)
-SET_NODE_INFO(DiscoQuery, Node)
-SET_NODE_INFO(DiscoQueryResponse, Node)
-SET_NODE_INFO(DiscoRemoveEntry, Node)
-SET_NODE_INFO(DiscoRequestedServiceType, Node)
-SET_NODE_INFO(DiscoResourceID, Node)
-SET_NODE_INFO(DiscoResourceOffering, Node)
-SET_NODE_INFO(DiscoServiceInstance, Node)
-
-/* dst prefix */
-
-SET_NODE_INFO(DstModification, Node)
-SET_NODE_INFO(DstModify, Node)
-SET_NODE_INFO(DstModifyResponse, Node)
-SET_NODE_INFO(DstNewData, Node)
-SET_NODE_INFO(DstQuery, Node)
-SET_NODE_INFO(DstQueryItem, Node)
-SET_NODE_INFO(DstQueryResponse, Node)
-
-/* pp prefix */
-
-SET_NODE_INFO(PPMsgContact, Node)
-#endif
+%include inheritance.h
 
 #else /* if !defined(SWIGCSHARP) && !defined(SWIGJAVA) */
 
@@ -610,99 +503,17 @@ SET_NODE_INFO(PPMsgContact, Node)
 	info = node_infos;
 #ifdef PHP_VERSION
 	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode, &ce_swig_LassoNode);
-#else
-	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
-#endif
-
-#ifdef PHP_VERSION
 #define SET_NODE_INFO(className, superClassName)\
 	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
 			SWIGTYPE_p_Lasso##className, &ce_swig_Lasso##className);
 #else
+	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
 #define SET_NODE_INFO(className, superClassName)\
 	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
 			SWIGTYPE_p_Lasso##className);
 #endif
 
-/* saml prefix */
-
-SET_NODE_INFO(SamlAdvice, Node)
-SET_NODE_INFO(SamlAssertion, Node)
-SET_NODE_INFO(SamlAttributeDesignator, Node)
-SET_NODE_INFO(SamlAuthorityBinding, Node)
-SET_NODE_INFO(SamlConditionAbstract, Node)
-SET_NODE_INFO(SamlConditions, Node)
-SET_NODE_INFO(SamlNameIdentifier, Node)
-SET_NODE_INFO(SamlStatementAbstract, Node)
-SET_NODE_INFO(SamlSubject, Node)
-SET_NODE_INFO(SamlSubjectConfirmation, Node)
-SET_NODE_INFO(SamlSubjectLocality, Node)
-
-SET_NODE_INFO(SamlAttribute, SamlAttributeDesignator)
-SET_NODE_INFO(SamlAudienceRestrictionCondition, SamlConditionAbstract)
-SET_NODE_INFO(SamlSubjectStatementAbstract, SamlStatementAbstract)
-
-SET_NODE_INFO(SamlAttributeStatement, SamlSubjectStatementAbstract)
-SET_NODE_INFO(SamlAuthenticationStatement, SamlSubjectStatementAbstract)
-SET_NODE_INFO(SamlSubjectStatement, SamlSubjectStatementAbstract)
-
-/* samlp prefix */
-
-SET_NODE_INFO(SamlpRequestAbstract, Node)
-SET_NODE_INFO(SamlpResponseAbstract, Node)
-SET_NODE_INFO(SamlpStatus, Node)
-SET_NODE_INFO(SamlpStatusCode, Node)
-
-SET_NODE_INFO(SamlpRequest, SamlpRequestAbstract)
-SET_NODE_INFO(SamlpResponse, SamlpResponseAbstract)
-
-/* lib prefix */
-
-SET_NODE_INFO(LibAssertion, SamlAssertion)
-SET_NODE_INFO(LibAuthnRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibAuthnResponse, SamlpResponse)
-SET_NODE_INFO(LibFederationTerminationNotification, SamlpRequestAbstract)
-SET_NODE_INFO(LibLogoutRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibRegisterNameIdentifierRequest, SamlpRequestAbstract)
-SET_NODE_INFO(LibRequestAuthnContext, Node)
-SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
-
-SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
-SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
-
-/* ID-WSF FIXME: Check inheritance */
-#if 0
-/* disco prefix */
-
-SET_NODE_INFO(DiscoCredentials, Node)
-SET_NODE_INFO(DiscoDescription, Node)
-SET_NODE_INFO(DiscoEncryptedResourceID, Node)
-SET_NODE_INFO(DiscoInsertEntry, Node)
-SET_NODE_INFO(DiscoModify, Node)
-SET_NODE_INFO(DiscoModifyResponse, Node)
-SET_NODE_INFO(DiscoOptions, Node)
-SET_NODE_INFO(DiscoQuery, Node)
-SET_NODE_INFO(DiscoQueryResponse, Node)
-SET_NODE_INFO(DiscoRemoveEntry, Node)
-SET_NODE_INFO(DiscoRequestedServiceType, Node)
-SET_NODE_INFO(DiscoResourceID, Node)
-SET_NODE_INFO(DiscoResourceOffering, Node)
-SET_NODE_INFO(DiscoServiceInstance, Node)
-
-/* dst prefix */
-
-SET_NODE_INFO(DstModification, Node)
-SET_NODE_INFO(DstModify, Node)
-SET_NODE_INFO(DstModifyResponse, Node)
-SET_NODE_INFO(DstNewData, Node)
-SET_NODE_INFO(DstQuery, Node)
-SET_NODE_INFO(DstQueryItem, Node)
-SET_NODE_INFO(DstQueryResponse, Node)
-
-/* pp prefix */
-
-SET_NODE_INFO(PPMsgContact, Node)
-#endif
+#include <swig/inheritance.h>
 
 	info->name = NULL;
 	info->swig = NULL;
@@ -1020,6 +831,11 @@ typedef enum {
  ***********************************************************************/
 
 
+/***********************************************************************
+ * Public Functions
+ ***********************************************************************/
+
+
 #ifndef SWIGPHP4
 %rename(init) lasso_init;
 #endif
@@ -1032,9 +848,7 @@ int lasso_shutdown(void);
 
 
 /***********************************************************************
- ***********************************************************************
  * Utility functions to handle nodes, strings, lists...
- ***********************************************************************
  ***********************************************************************/
 
 
@@ -1237,6 +1051,47 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 }
 
 %}
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Initialization
+ ***********************************************************************
+ ***********************************************************************/
+
+
+#ifdef SWIGJAVA
+#if SWIG_VERSION >= 0x010322
+  %include "enumsimple.swg"
+#endif
+%pragma(java) jniclasscode=%{
+  static {
+    try {
+      // Load a library whose "core" name is "jlasso".
+      // Operating system specific stuff will be added to make an
+      // actual filename from this: Under Unix this will become
+      // libjlasso.so while under Windows it will likely become
+      // something like jlasso.dll.
+      System.loadLibrary("jlasso");
+    }
+    catch (UnsatisfiedLinkError e) {
+      System.err.println("Native code library failed to load. \n" + e);
+      System.exit(1);
+    }
+    // Initialize Lasso.
+    init();
+  }
+%}
+#else
+
+/* Apache fails when lasso_init is called too early in PHP binding. */
+/* FIXME: To investigate. */
+#ifndef SWIGPHP4
+%init %{
+	lasso_init();
+%}
+#endif
+#endif
 
 
 /***********************************************************************

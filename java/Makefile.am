@@ -69,7 +69,8 @@ CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
-lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
+lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
+		$(top_srcdir)/swig/inheritance.h
 	$(SWIG) -v -java -module lasso -package com.entrouvert.lasso -o lasso_wrap.c \
 		$(top_srcdir)/swig/Lasso.i
 
