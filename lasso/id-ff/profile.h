@@ -51,20 +51,21 @@ typedef struct _LassoProfilePrivate LassoProfilePrivate;
 
 /* Request types (used by SOAP endpoint) */
 typedef enum {
-  lassoRequestTypeLogin = 1,
+  lassoRequestTypeInvalid = 0,
+  lassoRequestTypeLogin,
   lassoRequestTypeLogout,
   lassoRequestTypeFederationTermination,
   lassoRequestTypeRegisterNameIdentifier,
   lassoRequestTypeNameIdentifierMapping,
-  lassoRequestTypeLecp,
-} lassoRequestTypes;
+  lassoRequestTypeLecp
+} lassoRequestType;
 
 typedef enum {
   lassoHttpMethodGet = 1,
   lassoHttpMethodPost,
   lassoHttpMethodRedirect,
-  lassoHttpMethodSoap,
-} lassoHttpMethods;
+  lassoHttpMethodSoap
+} lassoHttpMethod;
 
 typedef enum {
   lassoMessageTypeNone = 0,
@@ -72,8 +73,8 @@ typedef enum {
   lassoMessageTypeAuthnResponse,
   lassoMessageTypeRequest,
   lassoMessageTypeResponse,
-  lassoMessageTypeArtifact,
-} lassoMessageTypes;
+  lassoMessageTypeArtifact
+} lassoMessageType;
 
 struct _LassoProfile {
   GObject parent;
@@ -96,8 +97,8 @@ struct _LassoProfile {
 
   /*< private >*/
   LassoProfilePrivate *private;
-  lassoMessageTypes request_type;
-  lassoMessageTypes response_type;
+  lassoMessageType  request_type;
+  lassoMessageType  response_type;
   lassoProviderType provider_type;
 };
 
@@ -105,7 +106,7 @@ struct _LassoProfileClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT gint           lasso_profile_get_request_type_from_soap_msg (gchar *soap);
+LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg (gchar *soap);
 
 
 LASSO_EXPORT GType          lasso_profile_get_type                       (void);
@@ -131,17 +132,17 @@ LASSO_EXPORT gint           lasso_profile_set_remote_providerID          (LassoP
 LASSO_EXPORT void           lasso_profile_set_response_status            (LassoProfile *ctx,
 									  const gchar  *statusCodeValue);
 
-LASSO_EXPORT gint           lasso_profile_set_identity                   (LassoProfile *ctx,
+LASSO_EXPORT gint           lasso_profile_set_identity                   (LassoProfile  *ctx,
 									  LassoIdentity *identity);
 
 LASSO_EXPORT gint           lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
-									  const gchar   *dump);
+									  const gchar  *dump);
 
 LASSO_EXPORT gint           lasso_profile_set_session                    (LassoProfile *ctx,
-									  LassoSession  *session);
+									  LassoSession *session);
 
 LASSO_EXPORT gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
-									  const gchar   *dump);
+									  const gchar  *dump);
 
 #ifdef __cplusplus
 }

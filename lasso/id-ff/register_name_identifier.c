@@ -269,7 +269,7 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 
 gint lasso_register_name_identifier_load_request_msg(LassoRegisterNameIdentifier *register_name_identifier,
 						     gchar                       *request_msg,
-						     lassoHttpMethods             request_method)
+						     lassoHttpMethod              request_method)
 {
   LassoProfile *profile;
 
@@ -383,7 +383,7 @@ lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier *regi
 gint
 lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier *register_name_identifier,
 						    gchar                       *response_msg,
-						    lassoHttpMethods             response_method)
+						    lassoHttpMethod              response_method)
 {
   LassoProfile *profile;
   xmlChar   *statusCodeValue;

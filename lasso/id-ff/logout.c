@@ -290,16 +290,16 @@ lasso_logout_init_request(LassoLogout *logout,
 
 gint lasso_logout_process_request_msg(LassoLogout     *logout,
 				      gchar           *request_msg,
-				      lassoHttpMethods request_method)
+				      lassoHttpMethod  request_method)
 {
   LassoProfile *profile;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-  g_return_val_if_fail(request_msg!=NULL, -2);
+  g_return_val_if_fail(request_msg != NULL, -2);
 
   profile = LASSO_PROFILE(logout);
 
-  switch(request_method){
+  switch(request_method) {
   case lassoHttpMethodSoap:
     debug("Build a logout request from soap msg\n");
     profile->request = lasso_logout_request_new_from_export(request_msg,
@@ -437,9 +437,9 @@ lasso_logout_validate_request(LassoLogout *logout)
 }
 
 gint
-lasso_logout_process_response_msg(LassoLogout      *logout,
-				  gchar            *response_msg,
-				  lassoHttpMethods  response_method)
+lasso_logout_process_response_msg(LassoLogout     *logout,
+				  gchar           *response_msg,
+				  lassoHttpMethod  response_method)
 {
   LassoProfile *profile;
   xmlChar   *statusCodeValue;

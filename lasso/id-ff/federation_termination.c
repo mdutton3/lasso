@@ -189,7 +189,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
 gint
 lasso_federation_termination_load_notification_msg(LassoFederationTermination *defederation,
 						   gchar                      *notification_msg,
-						   lassoHttpMethods            notification_method)
+						   lassoHttpMethod             notification_method)
 {
   LassoProfile *profile;
 

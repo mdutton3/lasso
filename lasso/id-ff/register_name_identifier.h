@@ -72,13 +72,13 @@ LASSO_EXPORT gint            lasso_register_name_identifier_init_request        
 
 LASSO_EXPORT gint            lasso_register_name_identifier_load_request_msg      (LassoRegisterNameIdentifier *register_name_identifier,
 										   gchar                       *request_msg,
-										   lassoHttpMethods             request_method);
+										   lassoHttpMethod              request_method);
 
 LASSO_EXPORT gint            lasso_register_name_identifier_process_request       (LassoRegisterNameIdentifier *register_name_identifier);
 
 LASSO_EXPORT gint            lasso_register_name_identifier_process_response_msg  (LassoRegisterNameIdentifier *register_name_identifier,
 										   gchar                       *response_msg,
-										   lassoHttpMethods             response_method);
+										   lassoHttpMethod              response_method);
   
 #ifdef __cplusplus
 }

@@ -71,11 +71,11 @@ LASSO_EXPORT gint                        lasso_name_identifier_mapping_init_requ
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_request_msg  (LassoNameIdentifierMapping *mapping,
 											     gchar                      *request_msg,
-											     lassoHttpMethods            request_method);
+											     lassoHttpMethod             request_method);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_response_msg (LassoNameIdentifierMapping *mapping,
 											     gchar                      *response_msg,
-											     lassoHttpMethods            response_method);
+											     lassoHttpMethod             response_method);
 
 #ifdef __cplusplus
 }

@@ -68,7 +68,7 @@ LASSO_EXPORT gint                        lasso_federation_termination_init_notif
 
 LASSO_EXPORT gint                        lasso_federation_termination_load_notification_msg  (LassoFederationTermination *defederation,
 											      gchar                      *request_msg,
-											      lassoHttpMethods            request_method);
+											      lassoHttpMethod             request_method);
   
 LASSO_EXPORT gint                        lasso_federation_termination_process_notification   (LassoFederationTermination *defederation);
 

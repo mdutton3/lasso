@@ -92,7 +92,7 @@ lasso_identity_add_federation(LassoIdentity   *identity,
     }
   }
   if(found == TRUE) {
-    message(G_LOG_LEVEL_CRITICAL, "A federation existed already for this providerID, it was replaced by the new one.\n");
+    debug("A federation existed already for this providerID, it was replaced by the new one.\n");
   }
   else {
     g_ptr_array_add(identity->providerIDs, g_strdup(remote_providerID));

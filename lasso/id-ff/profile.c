@@ -43,13 +43,13 @@ static GObjectClass *parent_class = NULL;
 /* public functions                                                          */
 /*****************************************************************************/
 
-gint
+lassoRequestType
 lasso_profile_get_request_type_from_soap_msg(gchar *soap)
 {
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
   xmlChar *name;
-  int type = 0;
+  lassoRequestType type = lassoRequestTypeInvalid;
 
   soap_node = lasso_node_new_from_dump(soap);
   if (soap_node == NULL) {
@@ -64,29 +64,29 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
   }
 
   children = lasso_node_get_children(body_node);
-  if(children->len>0) {
+  if(children->len > 0) {
     request_node = g_ptr_array_index(children, 0);
     name = lasso_node_get_name(request_node);
 
-    if(xmlStrEqual(name, "Request")){
+    if(xmlStrEqual(name, "Request")) {
       type = lassoRequestTypeLogin;
     }
-    else if(xmlStrEqual(name, "LogoutRequest")){
+    else if(xmlStrEqual(name, "LogoutRequest")) {
       type = lassoRequestTypeLogout;
     }
-    else if(xmlStrEqual(name, "FederationTerminationNotification")){
+    else if(xmlStrEqual(name, "FederationTerminationNotification")) {
       type = lassoRequestTypeFederationTermination;
     }
-    else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")){
+    else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
       type = lassoRequestTypeRegisterNameIdentifier;
     }
-    else if(xmlStrEqual(name, "NameIdentifierMappingRequest")){
+    else if(xmlStrEqual(name, "NameIdentifierMappingRequest")) {
       type = lassoRequestTypeNameIdentifierMapping;
     }
-    else if(xmlStrEqual(name, "AuthnRequest")){
+    else if(xmlStrEqual(name, "AuthnRequest")) {
       type = lassoRequestTypeLecp;
     }
-    else{
+    else {
       message(G_LOG_LEVEL_ERROR, "Unkown node name : %s\n", name);
     }
     xmlFree(name);
@@ -102,7 +102,7 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
 
 gchar*
 lasso_profile_dump(LassoProfile *ctx,
-			   const gchar         *name)
+		   const gchar  *name)
 {
   LassoNode *node;
   LassoNode *request, *response = NULL;
@@ -325,8 +325,8 @@ enum {
 };
 
 static void
-lasso_profile_instance_init(GTypeInstance   *instance,
-				    gpointer         g_class)
+lasso_profile_instance_init(GTypeInstance *instance,
+			    gpointer       g_class)
 {
   LassoProfile *ctx = LASSO_PROFILE(instance);
 
@@ -392,10 +392,10 @@ lasso_profile_set_property (GObject      *object,
 }
 
 static void
-lasso_profile_get_property (GObject    *object,
-			    guint       property_id,
-			    GValue     *value,
-			    GParamSpec *pspec)
+lasso_profile_get_property(GObject    *object,
+			   guint       property_id,
+			   GValue     *value,
+			   GParamSpec *pspec)
 {
 }
 
