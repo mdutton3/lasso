@@ -93,7 +93,7 @@ public class LoginTest extends TestCase {
         spContextDump = generateServiceProviderContextDump();
 	assertNotNull(spContextDump);
         spContext = new LassoServer(spContextDump);
-        spLoginContext = new LassoLogin(spContext, null);
+        spLoginContext = new LassoLogin(spContext);
         assertEquals(0, spLoginContext.initAuthnRequest(
             "https://identity-provider:1998/liberty-alliance/metadata"));
         assertEquals(Lasso.messageTypeAuthnRequest, spLoginContext.getRequestType());
@@ -112,7 +112,7 @@ public class LoginTest extends TestCase {
         idpContextDump = generateIdentityProviderContextDump();
         assertNotNull(idpContextDump);
         idpContext = new LassoServer(idpContextDump);
-        idpLoginContext = new LassoLogin(idpContext, null);
+        idpLoginContext = new LassoLogin(idpContext);
         assertEquals(0, idpLoginContext.initFromAuthnRequestMsg(authnRequestQuery, method));
         assertTrue(idpLoginContext.mustAuthenticate());
 
@@ -135,7 +135,7 @@ public class LoginTest extends TestCase {
         spContextDump = generateServiceProviderContextDump();
 	assertNotNull(spContextDump);
         spContext = new LassoServer(spContextDump);
-        spLoginContext = new LassoLogin(spContext, null);
+        spLoginContext = new LassoLogin(spContext);
         assertEquals(0, spLoginContext.initRequest(responseQuery, method));
         assertEquals(0, spLoginContext.buildRequestMsg());
         soapEndpoint = spLoginContext.getMsgUrl();
@@ -162,10 +162,9 @@ public class LoginTest extends TestCase {
         assertNotNull(spContextDump);
         spContext = new LassoServer(spContextDump);
         assertNotNull(spContext);
+        spLogoutContext = new LassoLogout(spContext, Lasso.providerTypeSp);
         assertNotNull(spUserContextDump);
-        spUserContext = new LassoUser(spUserContextDump);
-        assertNotNull(spUserContext);
-        spLogoutContext = new LassoLogout(Lasso.providerTypeSp, spContext, spUserContext);
+	spLogoutContext.setUserFromDump(spUserContextDump);
         assertEquals(0, spLogoutContext.initRequest(null));
         assertEquals(0, spLogoutContext.buildRequestMsg());
         soapEndpoint = spLogoutContext.getMsgUrl();
@@ -178,11 +177,11 @@ public class LoginTest extends TestCase {
         assertNotNull(idpContextDump);
         idpContext = new LassoServer(idpContextDump);
         assertNotNull(idpContext);
-        idpLogoutContext = new LassoLogout(Lasso.providerTypeIdp, idpContext, null);
+        idpLogoutContext = new LassoLogout(idpContext, Lasso.providerTypeIdp);
 	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.httpMethodSoap));
         assertEquals(nameIdentifier, idpLogoutContext.getNameIdentifier());
         assertNotNull(idpUserContextDump);
-        assertEquals(0, idpLogoutContext.loadUserDump(idpUserContextDump));
+        assertEquals(0, idpLogoutContext.setUserFromDump(idpUserContextDump));
 	assertEquals(0, idpLogoutContext.processRequest());
         idpUserContext = idpLogoutContext.getUser();
         assertNotNull(idpUserContext);

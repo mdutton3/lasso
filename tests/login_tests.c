@@ -224,8 +224,8 @@ START_TEST(test02_serviceProviderLogin)
 			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body,
 			lassoHttpMethodSoap);
 	fail_unless(rc == 0, "lasso_logout_load_request_msg failed");
-	rc = lasso_logout_load_user_dump(idpLogoutContext, idpUserContextDump);
-	fail_unless(rc == 0, "lasso_logout_load_user_dump failed");
+	rc = lasso_profile_context_set_user_from_dump(idpLogoutContext, idpUserContextDump);
+	fail_unless(rc == 0, "lasso_profile_context_set_user_from_dump failed");
 	rc = lasso_logout_process_request(idpLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_process_request failed");
 	fail_unless(lasso_logout_get_next_providerID(idpLogoutContext) == NULL,

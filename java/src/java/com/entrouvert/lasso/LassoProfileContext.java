@@ -72,4 +72,6 @@ public abstract class LassoProfileContext extends LassoObject { // LassoProfileC
         return user;
     }
 
+    native public int setUserFromDump(String userDump);
+
 } // LassoProfileContext

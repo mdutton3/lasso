@@ -47,7 +47,6 @@ PyObject *logout_destroy(PyObject *self, PyObject *args);
 PyObject *logout_get_next_providerID(PyObject *self, PyObject *args);
 PyObject *logout_init_request(PyObject *self, PyObject *args);
 PyObject *logout_load_request_msg(PyObject *self, PyObject *args);
-PyObject *logout_load_user_dump(PyObject *self, PyObject *args);
 PyObject *logout_new(PyObject *self, PyObject *args);
 PyObject *logout_process_request(PyObject *self, PyObject *args);
 PyObject *logout_process_response_msg(PyObject *self, PyObject *args);

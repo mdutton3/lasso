@@ -194,24 +194,6 @@ PyObject *logout_load_request_msg(PyObject *self, PyObject *args){
   return(int_wrap(codeError));
 }
 
-PyObject *logout_load_user_dump(PyObject *self, PyObject *args){
-  PyObject *logout_obj;
-  gchar    *user_dump;
-  gint      codeError;
-
-  if (CheckArgs(args, "OS:logout_load_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:logout_load_request_msg",
-			 &logout_obj, &user_dump))
-      return NULL;
-  }
-  else return NULL;
-
-  codeError = lasso_logout_load_user_dump(LassoLogout_get(logout_obj), user_dump);
-
-  return(int_wrap(codeError));
-}
-
-
 PyObject *logout_process_request(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gint      codeError;

@@ -1058,9 +1058,6 @@ class Logout(ProfileContext):
     def load_request_msg(self, request_msg, request_method):
         return lassomod.logout_load_request_msg(self, request_msg, request_method);
 
-    def load_user_dump(self, user_dump):
-        return lassomod.logout_load_user_dump(self, user_dump);
-
     def process_request(self):
         return lassomod.logout_process_request(self);
 

@@ -178,3 +178,16 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initUserFie
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
 }
 
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoProfileContext_setUserFromDump
+(JNIEnv * env, jobject this, jstring _dump) {
+    int result;
+    LassoProfileContext *profileContext;
+    char *dump;
+
+    profileContext = getCObject(env, this);
+    dump = (char*)(*env)->GetStringUTFChars(env, _dump, NULL);
+    result = lasso_profile_context_set_user_from_dump(profileContext, dump);
+    (*env)->ReleaseStringUTFChars(env, _dump, dump);
+    return result;
+}
+

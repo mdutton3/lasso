@@ -28,16 +28,12 @@
 #include <lasso/lasso.h>
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoLogout_init
-(JNIEnv * env, jobject this, jint _providerType, jobject _server, jobject _user){
+(JNIEnv * env, jobject this, jobject _server, jint _providerType){
     LassoLogout *logout;
     LassoServer* server;
-    LassoUser* user = NULL;
 
     server = (LassoServer*)getCObject(env, _server);
-    if (_user != NULL)
-      user = (LassoUser*)getCObject(env, _user);
-
-    logout = lasso_logout_new(_providerType, server, user);
+    logout = lasso_logout_new(server, _providerType);
 
     storeCObject(env, this, logout);
 }
@@ -123,22 +119,6 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_loadRequestMsg
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_loadUserDump
-(JNIEnv * env, jobject this, jstring _userDump){
-    int result;
-    LassoLogout* logout;
-    char *userDump;
-
-    userDump = (char*)(*env)->GetStringUTFChars(env, _userDump, NULL);
-
-    logout = getCObject(env, this);
-    result = lasso_logout_load_user_dump(logout, userDump);
-
-    (*env)->ReleaseStringUTFChars(env, _userDump, userDump);
-
-    return result;
-}
-
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_processRequest
 (JNIEnv * env, jobject this){
     LassoLogout* logout;
@@ -162,5 +142,3 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_processResponseMsg
 
     return result;
 }
-
-

@@ -39,7 +39,7 @@ sp1user = lasso.User.new_from_dump(sp1user_dump)
 
 sp1logout = lasso.Logout.new(sp1server, lasso.providerTypeSp)
 
-sp1logout.load_user_dump(sp1user_dump)
+sp1logout.set_user_from_dump(sp1user_dump)
 
 sp1logout.init_request()
 
@@ -66,7 +66,7 @@ response_msg_body = "<Envelope><LogoutResponse><ProviderID>https://service-provi
 idplogout.load_request_msg(msg_body, lasso.httpMethodSoap)
 nameIdentifier = idplogout.nameIdentifier
 print "get the user dump from NameIdentifier : ", nameIdentifier
-idplogout.load_user_dump(idpuser_dump)
+idplogout.set_user_from_dump(idpuser_dump)
 idplogout.process_request()
 
 print "RelayState :", idplogout.msg_relayState

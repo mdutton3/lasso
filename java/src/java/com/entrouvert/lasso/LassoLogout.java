@@ -26,13 +26,12 @@ package com.entrouvert.lasso;
 
 public class LassoLogout extends LassoProfileContext { // LassoLogout
 
-    public LassoLogout(int providerType, LassoServer server, LassoUser user){
+    public LassoLogout(LassoServer server, int providerType){
         this.server = server;
-        this.user = user;
-        init(providerType, server, user);
+        init(server, providerType);
     }
 
-    native protected void init(int providerType, LassoServer server, LassoUser user);
+    native protected void init(LassoServer server, int providerType);
 
     native public int buildRequestMsg();
 
@@ -45,8 +44,6 @@ public class LassoLogout extends LassoProfileContext { // LassoLogout
     native public int initRequest(String providerId);
 
     native public int loadRequestMsg(String requestMsg, int requestMethod);
-
-    native public int loadUserDump(String userDump);
 
     native public int processRequest();
 

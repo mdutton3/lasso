@@ -3,3 +3,4 @@ login_tests
 .libs
 Makefile.in
 Makefile
+out.xml

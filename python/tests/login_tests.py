@@ -157,10 +157,9 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(spContextDump)
         spContext = lasso.Server.new_from_dump(spContextDump)
         self.failUnless(spContext)
+        spLogoutContext = lasso.Logout.new(spContext, lasso.providerTypeSp)
         self.failUnless(spUserContextDump)
-        spUserContext = lasso.User.new_from_dump(spUserContextDump)
-        self.failUnless(spUserContext)
-        spLogoutContext = lasso.Logout.new(lasso.providerTypeSp, spContext, spUserContext)
+        spLogoutContext.set_user_from_dump(spUserContextDump)
         self.failUnlessEqual(spLogoutContext.init_request(), 0)
         self.failUnlessEqual(spLogoutContext.build_request_msg(), 0)
         soapEndpoint = spLogoutContext.msg_url
@@ -173,12 +172,12 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpContextDump)
         idpContext = lasso.Server.new_from_dump(idpContextDump)
         self.failUnless(idpContext)
-        idpLogoutContext = lasso.Logout.new(lasso.providerTypeIdp, idpContext)
+        idpLogoutContext = lasso.Logout.new(idpContext, lasso.providerTypeIdp)
         self.failUnlessEqual(
             idpLogoutContext.load_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
         self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
         self.failUnless(idpUserContextDump)
-        self.failUnlessEqual(idpLogoutContext.load_user_dump(idpUserContextDump), 0)
+        self.failUnlessEqual(idpLogoutContext.set_user_from_dump(idpUserContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.process_request(), 0)
         idpUserContext = idpLogoutContext.user
         self.failUnless(idpUserContext)

@@ -26,19 +26,18 @@ package com.entrouvert.lasso;
 
 public class LassoLogin extends LassoProfileContext { // LassoLogin
 
-    public LassoLogin(LassoServer server, LassoUser user){
+    public LassoLogin(LassoServer server){
         this.server = server;
-        this.user = user;
-        init(server, user);
+        init(server);
     }
 
     public LassoLogin(LassoServer server, LassoUser user, String dump){
         this.server = server;
-        this.user = user;
+	this.user = user;
         initFromDump(server, user, dump);
     }
 
-    native protected void init(LassoServer server, LassoUser user);
+    native protected void init(LassoServer server);
 
     native protected void initFromDump(LassoServer server,
                                        LassoUser user,

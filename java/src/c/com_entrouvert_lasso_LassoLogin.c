@@ -27,19 +27,12 @@
 #include <com_entrouvert_lasso_LassoLogin.h>
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoLogin_init
-(JNIEnv * env, jobject this, jobject _server,
-                             jobject _user){
+(JNIEnv * env, jobject this, jobject _server){
     LassoLogin *login;
     LassoServer* server;
-    LassoUser* user = NULL;
 
     server = (LassoServer*)getCObject(env, _server);
-    if(_user != NULL){
-        user = (LassoUser*)getCObject(env, _user);
-    }
-
-     login = LASSO_LOGIN(lasso_login_new(server, user));
-
+    login = LASSO_LOGIN(lasso_login_new(server));
     storeCObject(env, this, login);
 }
 
