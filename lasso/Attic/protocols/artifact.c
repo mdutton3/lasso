@@ -29,6 +29,39 @@
 /* functions                                                                 */
 /*****************************************************************************/
 
+static gint
+lasso_artifact_split_samlArt(gchar *b64_samlArt,
+			     gchar *byteCode,
+			     gchar *identityProviderSuccinctID,
+			     gchar *assertionHandle)
+{
+  gchar *samlArt;
+  gint i, j, byte_code = 0;
+
+  samlArt = (gchar *) g_new0(gchar, 42+1);
+
+  /* decode samlArt */
+  i = xmlSecBase64Decode(b64_samlArt, samlArt, 42+1);
+  if (i<0 || i>42) {
+    return(-1);
+  }
+  /* extract ByteCode, IdentityProviderSuccinctID and AssertionHandle */
+  for(j=0; j<42; j++) {
+    if (j<2) {
+      byte_code += (gint)samlArt[j];
+    }
+    else if (j>=2 && j<22) {
+      identityProviderSuccinctID[j-2] = samlArt[j];
+    }
+    else if (j>=22) {
+      assertionHandle[j-22] = samlArt[j];
+    }
+  }
+  sprintf(byteCode, "%d", byte_code);
+  xmlFree(samlArt);
+  return(0);
+}
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -101,48 +134,87 @@ GType lasso_artifact_get_type() {
 }
 
 LassoNode*
-lasso_artifact_new(const xmlChar *query)
+lasso_artifact_new(gchar *byteCode,
+		   gchar *identityProviderSuccinctID,
+		   gchar *assertionHandle,
+		   gchar *relayState)
 {
+  g_return_val_if_fail(byteCode != NULL, NULL);
+  g_return_val_if_fail(identityProviderSuccinctID != NULL, NULL);
+  g_return_val_if_fail(assertionHandle != NULL, NULL);
+
   LassoNode *artifact;
   LassoNodeClass *class;
-  GData *gd;
-  gchar *b64_samlArt, *samlArt, *relayState, *byteCode, *identityProviderSuccinctID, *assertionHandle;
-  gint i, j, byte_code=0;
 
   artifact = LASSO_NODE(g_object_new(LASSO_TYPE_ARTIFACT, NULL));
+
+  class = LASSO_NODE_GET_CLASS(artifact);
+  class->new_child(artifact, "ByteCode", byteCode, FALSE);
+  class->new_child(artifact, "IdentityProviderSuccinctID", identityProviderSuccinctID, FALSE);
+  class->new_child(artifact, "AssertionHandle", assertionHandle, FALSE);
+  if (relayState != NULL) {
+    class->new_child(artifact, "RelayState", relayState, FALSE);
+  }
+
+  return (artifact);
+}
+
+LassoNode*
+lasso_artifact_new_from_query(const xmlChar *query)
+{
+  g_return_val_if_fail(query != NULL, NULL);
+
+  LassoNode *artifact = NULL;
+  GData *gd;
+  gchar *b64_samlArt, *relayState;
+  gchar *byteCode, *identityProviderSuccinctID, *assertionHandle;
+  gint ret;
 
   gd = lasso_query_to_dict(query);
   b64_samlArt = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SAMLArt"), 0));
   relayState  = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0));
   g_datalist_clear(&gd);
 
-  /* extract ByteCode, IdentityProviderSuccinctID and AssertionHandle */
-  samlArt = (gchar *) g_new0(gchar, 42+1);
   byteCode = (gchar *) g_new0(gchar, 5+1);
   identityProviderSuccinctID = (gchar *) g_new0(gchar, 20+1);
   assertionHandle = (gchar *) g_new0(gchar, 20+1);
-
-  i = xmlSecBase64Decode(b64_samlArt, samlArt, 42+1);
-  xmlFree(b64_samlArt);
-  for(j=0; j<42; j++) {
-    if (j<2) {
-      byte_code += (gint)samlArt[j];
-    }
-    else if (j>=2 && j<22) {
-      identityProviderSuccinctID[j-2] = samlArt[j];
-    }
-    else if (j>=22) {
-      assertionHandle[j-22] = samlArt[j];
-    }
+  ret = lasso_artifact_split_samlArt(b64_samlArt, byteCode,
+				     identityProviderSuccinctID, assertionHandle);
+  if (ret >= 0) {
+    artifact = lasso_artifact_new(byteCode, identityProviderSuccinctID,
+				  assertionHandle, relayState);
   }
-  sprintf(byteCode, "%d", byte_code);
-  xmlFree(samlArt);
+  g_free(byteCode);
+  g_free(identityProviderSuccinctID);
+  g_free(assertionHandle);
+  xmlFree(b64_samlArt);
+  xmlFree(relayState);
 
-  class = LASSO_NODE_GET_CLASS(artifact);
-  class->new_child(artifact, "RelayState", relayState, FALSE);
-  class->new_child(artifact, "ByteCode", byteCode, FALSE);
-  class->new_child(artifact, "IdentityProviderSuccinctID", identityProviderSuccinctID, FALSE);
-  class->new_child(artifact, "AssertionHandle", assertionHandle, FALSE);
+  return (artifact);
+}
+
+LassoNode*
+lasso_artifact_new_from_lares(const xmlChar *lares,
+			      const xmlChar *relayState)
+{
+  g_return_val_if_fail(lares != NULL, NULL);
+
+  LassoNode *artifact = NULL;
+  gchar *byteCode, *identityProviderSuccinctID, *assertionHandle;
+  gint ret;
+
+  byteCode = (gchar *) g_new0(gchar, 5+1);
+  identityProviderSuccinctID = (gchar *) g_new0(gchar, 20+1);
+  assertionHandle = (gchar *) g_new0(gchar, 20+1);
+  ret = lasso_artifact_split_samlArt(lares, byteCode,
+				     identityProviderSuccinctID, assertionHandle);
+  if (ret >= 0) {
+    artifact = lasso_artifact_new(byteCode, identityProviderSuccinctID,
+				  assertionHandle, relayState);
+  }
+  g_free(byteCode);
+  g_free(identityProviderSuccinctID);
+  g_free(assertionHandle);
 
   return (artifact);
 }

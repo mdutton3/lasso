@@ -54,7 +54,15 @@ struct _LassoArtifactClass {
 
 LASSO_EXPORT GType      lasso_artifact_get_type (void);
 
-LASSO_EXPORT LassoNode* lasso_artifact_new      (const xmlChar *query);
+LASSO_EXPORT LassoNode* lasso_artifact_new            (gchar *byteCode,
+						       gchar *identityProviderSuccinctID,
+						       gchar *assertionHandle,
+						       gchar *relayState);
+
+LASSO_EXPORT LassoNode* lasso_artifact_new_from_query (const xmlChar *query);
+
+LASSO_EXPORT LassoNode* lasso_artifact_new_from_lares (const xmlChar *lares,
+						       const xmlChar *relayState);
 
 LASSO_EXPORT xmlChar*   lasso_artifact_get_assertionHandle            (LassoArtifact *artifact);
 
