@@ -208,9 +208,9 @@ lasso_lecp_init_authn_request(LassoLecp *lecp)
 }
 
 gint
-lasso_lecp_init_from_authn_request_msg(LassoLecp       *lecp,
-				       gchar           *authn_request_msg,
-				       lassoHttpMethod  authn_request_method)
+lasso_lecp_process_authn_request_msg(LassoLecp       *lecp,
+				     gchar           *authn_request_msg,
+				     lassoHttpMethod  authn_request_method)
 {
   gint res;
 
@@ -221,7 +221,7 @@ lasso_lecp_init_from_authn_request_msg(LassoLecp       *lecp,
     message(G_LOG_LEVEL_CRITICAL, "Invalid authentication request method\n");
     return -1;
   }
-  res = lasso_login_init_from_authn_request_msg(LASSO_LOGIN(lecp), authn_request_msg, authn_request_method);
+  res = lasso_login_process_authn_request_msg(LASSO_LOGIN(lecp), authn_request_msg, authn_request_method);
   return res;
 }
 

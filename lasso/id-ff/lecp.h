@@ -83,7 +83,7 @@ LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLec
 
 LASSO_EXPORT gint       lasso_lecp_init_authn_request                  (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_init_from_authn_request_msg         (LassoLecp       *lecp,
+LASSO_EXPORT gint       lasso_lecp_process_authn_request_msg           (LassoLecp       *lecp,
 									gchar           *authn_request_msg,
 									lassoHttpMethod  authn_request_method);
 
