@@ -130,44 +130,41 @@ lasso_get_current_time()
 lassoPemFileType
 lasso_get_pem_file_type(const char *pem_file)
 {
-  BIO* bio;
-  EVP_PKEY *pkey;
-  X509 *cert;
-  guint type = LASSO_PEM_FILE_TYPE_UNKNOWN;
+	BIO* bio;
+	EVP_PKEY *pkey;
+	X509 *cert;
+	lassoPemFileType type = LASSO_PEM_FILE_TYPE_UNKNOWN;
 
-  g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  bio = BIO_new_file(pem_file, "rb");
-  if (bio == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file",
-	    pem_file);
-    return -1;
-  }
+	bio = BIO_new_file(pem_file, "rb");
+	if (bio == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file", pem_file);
+		return -1;
+	}
 
-  pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);
-  if (pkey != NULL) {
-    type = LASSO_PEM_FILE_TYPE_PUB_KEY;
-    EVP_PKEY_free(pkey);
-  }
-  else {
-    BIO_reset(bio);
-    pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-    if (pkey != NULL) {
-      type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
-      EVP_PKEY_free(pkey);
-    }
-    else {
-      BIO_reset(bio);
-      cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
-      if (cert != NULL) {
-	type = LASSO_PEM_FILE_TYPE_CERT;
-	X509_free(cert);
-      }
-    }
-  }
-  BIO_free(bio);
+	pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);
+	if (pkey != NULL) {
+		type = LASSO_PEM_FILE_TYPE_PUB_KEY;
+		EVP_PKEY_free(pkey);
+	} else {
+		BIO_reset(bio);
+		pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+		if (pkey != NULL) {
+			type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
+			EVP_PKEY_free(pkey);
+		} else {
+			BIO_reset(bio);
+			cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
+			if (cert != NULL) {
+				type = LASSO_PEM_FILE_TYPE_CERT;
+				X509_free(cert);
+			}
+		}
+	}
+	BIO_free(bio);
 
-  return type;
+	return type;
 }
 
 /**

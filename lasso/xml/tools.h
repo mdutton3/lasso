@@ -41,23 +41,21 @@ extern "C" {
 #include <lasso/xml/debug.h>
 
 typedef enum {
-  LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
-  LASSO_SIGNATURE_METHOD_DSA_SHA1
+	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
+	LASSO_SIGNATURE_METHOD_DSA_SHA1
 } lassoSignatureMethod;
 
 typedef enum {
-  LASSO_PEM_FILE_TYPE_UNKNOWN = 0,
-  LASSO_PEM_FILE_TYPE_PUB_KEY,
-  LASSO_PEM_FILE_TYPE_PRIVATE_KEY,
-  LASSO_PEM_FILE_TYPE_CERT
+	LASSO_PEM_FILE_TYPE_UNKNOWN,
+	LASSO_PEM_FILE_TYPE_PUB_KEY,
+	LASSO_PEM_FILE_TYPE_PRIVATE_KEY,
+	LASSO_PEM_FILE_TYPE_CERT
 } lassoPemFileType;
 
 LASSO_EXPORT void  lasso_build_random_sequence(char *buffer, unsigned int size);
 LASSO_EXPORT char* lasso_build_unique_id(unsigned int size);
-
 LASSO_EXPORT char* lasso_get_current_time(void);
-
-LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const char *pem_file);
+LASSO_EXPORT lassoPemFileType lasso_get_pem_file_type(const char *pem_file);
 
 LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const char *pem_cert_file);
 
