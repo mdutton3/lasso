@@ -514,8 +514,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					*location = g_list_append(*location, n);
 				} else if (snippet->type == SNIPPET_LIST_CONTENT) {
 					GList **location = value;
-					LassoNode *n = xmlNodeGetContent(t);
-					*location = g_list_append(*location, n);
+					xmlChar *s = xmlNodeGetContent(t);
+					*location = g_list_append(*location, s);
 				}
 				break;
 			}
