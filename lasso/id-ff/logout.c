@@ -30,6 +30,8 @@
 #include <lasso/environs/logout.h>
 #include <lasso/xml/errors.h>
 
+#include <lasso/lasso_config.h>
+
 #define LASSO_LOGOUT_NODE            "LassoLogout"
 #define LASSO_REMOTE_PROVIDERID_NODE "RemoteProviderID"
 
@@ -64,6 +66,9 @@ lasso_logout_dump(LassoLogout *logout)
   parent_dump = lasso_profile_dump(LASSO_PROFILE(logout), "Logout");
   node = lasso_node_new_from_dump(parent_dump);
   g_free(parent_dump);
+
+  /* Add lasso version in the xml node */
+  LASSO_NODE_GET_CLASS(node)->set_prop(LASSO_NODE(node), "version", PACKAGE_VERSION);
 
   if (logout->initial_request != NULL) {
     initial_node = lasso_node_new();

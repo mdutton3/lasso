@@ -30,6 +30,8 @@
 #include <lasso/xml/errors.h>
 #include <lasso/environs/server.h>
 
+#include <lasso/lasso_config.h>
+
 #define LASSO_SERVER_NODE                  "Server"
 #define LASSO_SERVER_METADATA_NODE         "ServerMetadata"
 #define LASSO_SERVER_PROVIDERS_NODE        "Providers"
@@ -138,6 +140,9 @@ lasso_server_dump(LassoServer *server)
   server_class = LASSO_NODE_GET_CLASS(server_node);
   server_class->set_name(server_node, LASSO_SERVER_NODE);
   server_class->set_ns(server_node, lassoLassoHRef, NULL);
+
+  /* Add lasso version in the xml node */
+  server_class->set_prop(LASSO_NODE(server_node), "version", PACKAGE_VERSION);
 
   /* signature method */
   signature_method_str = g_new(gchar, 6);

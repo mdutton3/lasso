@@ -24,6 +24,7 @@
  */
 
 #include <lasso/environs/session.h>
+#include <lasso/lasso_config.h>
 
 #define LASSO_SESSION_NODE                   "Session"
 #define LASSO_SESSION_ASSERTIONS_NODE        "Assertions"
@@ -177,6 +178,9 @@ lasso_session_dump(LassoSession *session)
     session_class->add_child(session_node, assertions_node, FALSE);
     lasso_node_destroy(assertions_node);
   }
+
+  /* Add lasso version in the xml node */
+  session_class->set_prop(LASSO_NODE(session_node), "version", PACKAGE_VERSION);
 
   dump = lasso_node_export(session_node);
 

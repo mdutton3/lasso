@@ -25,6 +25,8 @@
 
 #include <lasso/environs/identity.h>
 
+#include <lasso/lasso_config.h>
+
 #define LASSO_IDENTITY_NODE                   "Identity"
 #define LASSO_IDENTITY_FEDERATIONS_NODE       "Federations"
 #define LASSO_IDENTITY_FEDERATION_NODE        "Federation"
@@ -153,6 +155,9 @@ lasso_identity_dump(LassoIdentity *identity)
   identity_node = lasso_node_new();
   LASSO_NODE_GET_CLASS(identity_node)->set_name(identity_node, LASSO_IDENTITY_NODE);
   LASSO_NODE_GET_CLASS(identity_node)->set_ns(identity_node, lassoLassoHRef, NULL);
+
+  /* Add lasso version in the xml node */
+  LASSO_NODE_GET_CLASS(identity_node)->set_prop(LASSO_NODE(identity_node), "version", PACKAGE_VERSION);
 
   /* dump the federations */
   table_size = g_hash_table_size(identity->federations);
