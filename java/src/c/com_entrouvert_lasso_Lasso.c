@@ -36,3 +36,13 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_Lasso_shutdown
     return lasso_shutdown();
 }
 
+JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_Lasso_getRequestTypeFromSoapMsg
+(JNIEnv * env, jclass clazz, jstring _value){
+    int result;
+    char *value;
+
+    value = (char*)(*env)->GetStringUTFChars(env, _value, NULL);
+    result = lasso_get_request_type_from_soap_msg(value);
+    (*env)->ReleaseStringUTFChars(env, _value, value);
+    return result;
+}

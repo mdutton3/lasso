@@ -49,6 +49,13 @@ public class Lasso { // Lasso
     static final public int loginProtocolProfileBrwsArt = 1;
     static final public int loginProtocolProfileBrwsPost = 2;
 
+    /* Request types */
+    static final public int requestTypeLogin = 1;
+    static final public int requestTypeLogout = 2;
+    static final public int requestTypeFederationTermination  = 3;
+    static final public int requestTypeRegisterNameIdentifier = 4;
+    static final public int requestTypeNameIdentifierMapping  = 5;
+
     /* AuthenticationMethods */
     static final public String samlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password";
     static final public String samlAuthenticationMethodKerberos = "urn:ietf:rfc:1510";
@@ -66,6 +73,7 @@ public class Lasso { // Lasso
     static final public int signatureMethodDsaSha1 = 2;
 
     native static public int init();
+    native static public int getRequestTypeFromSoapMsg(String soapRequestMsg);
     native static public int shutdown();
 
 } // Lasso
