@@ -706,7 +706,6 @@ SET_NODE_INFO(Node, DowncastableNode)
 #define LASSO_WSF_ENABLED 0
 #endif
 
-
 /* HttpMethod */
 #ifndef SWIGPHP4
 %rename(HTTP_METHOD_NONE) LASSO_HTTP_METHOD_NONE;
@@ -6559,7 +6558,7 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 %}
 
-#ifdef LASSO_WSF_ENABLED
+#if LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 #endif
 

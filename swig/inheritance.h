@@ -78,7 +78,7 @@ SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
 SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
 SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
 
-#ifdef LASSO_WSF_ENABLED
+#if LASSO_WSF_ENABLED
 
 /* ID-WSF */
 
