@@ -349,8 +349,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_WITHX509,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
-	}
-	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
+	} else { /* http_method == LASSO_HTTP_METHOD_REDIRECT */
 		is_http_redirect_get_method = TRUE;
 		profile->request = lasso_lib_logout_request_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
@@ -358,9 +357,9 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
 	}
-	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
-	}
+	if (profile->msg_relayState)
+		LASSO_LIB_LOGOUT_REQUEST(profile->request)->RelayState =
+			g_strdup(profile->msg_relayState);
 
 	/* Set the name identifier attribute with content local variable */
 	profile->nameIdentifier = g_object_ref(nameIdentifier);

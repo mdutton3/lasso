@@ -271,6 +271,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	if (profile->request == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
+	LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request)->RelayState = 
+			g_strdup(profile->msg_relayState);
 
 	profile->http_request_method = http_method;
 

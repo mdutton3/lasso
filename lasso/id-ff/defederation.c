@@ -53,9 +53,9 @@
 gint
 lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 {
-	LassoProfile      *profile;
-	LassoProvider     *remote_provider;
-	gchar             *url = NULL, *query = NULL;
+	LassoProfile *profile;
+	LassoProvider *remote_provider;
+	gchar *url, *query;
 
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -143,7 +143,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	LassoProfile*profile;
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
-	LassoSamlNameIdentifier *nameIdentifier = NULL;
+	LassoSamlNameIdentifier *nameIdentifier;
 
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -200,16 +200,20 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_WITHX509,
 				LASSO_SIGNATURE_METHOD_RSA_SHA1);
-	}
-	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
+		if (profile->msg_relayState) {
+			message(G_LOG_LEVEL_WARNING,
+					"RelayState was defined but can't be used "\
+					"in SOAP Federation Termination Notification");
+		}
+
+	} else { /* LASSO_HTTP_METHOD_REDIRECT */
 		profile->request = lasso_lib_federation_termination_notification_new_full(
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				nameIdentifier,
 				LASSO_SIGNATURE_TYPE_NONE,
 				0);
-	}
-	if (LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
+		LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState = 
+			g_strdup(profile->msg_relayState);
 	}
 
 	/* Set the nameIdentifier attribute from content local variable */

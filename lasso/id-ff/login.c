@@ -794,6 +794,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	LASSO_SAMLP_REQUEST_ABSTRACT(request)->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	LASSO_SAMLP_REQUEST_ABSTRACT(request)->IssueInstant = lasso_get_current_time();
 	request->ProviderID = g_strdup(LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
+	request->RelayState = g_strdup(LASSO_PROFILE(login)->msg_relayState);
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
 		LASSO_SAMLP_REQUEST_ABSTRACT(request)->sign_method =
@@ -804,7 +805,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	LASSO_PROFILE(login)->request = LASSO_NODE(request);
 
 	if (LASSO_PROFILE(login)->request == NULL) {
-		return -2;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
 	return 0;
@@ -867,7 +868,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 			LASSO_PROFILE(login)->server, provider_succint_id_b64);
 	xmlFree(provider_succint_id_b64);
 
-	request = LASSO_SAMLP_REQUEST_ABSTRACT(g_object_new(LASSO_TYPE_SAMLP_REQUEST, NULL));
+	request = LASSO_SAMLP_REQUEST_ABSTRACT(lasso_samlp_request_new());
 	request->RequestID = lasso_build_unique_id(32);
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
