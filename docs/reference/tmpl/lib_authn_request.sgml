@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthnRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthnRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Authentication requests are sent from a service provider to an identity
+provider.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#LassoLogin</term>
+<listitem><para>Class for Single Sign-On and Federation
+profile.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### STRUCT LassoLibAuthnRequest ##### -->
+<para>
+@nameIDPolicy must be one of #LASSO_LIB_NAMEID_POLICY_TYPE_NONE,
+#LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME, #LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED
+or #LASSO_LIB_NAMEID_POLICY_TYPE_ANY.
+</para>
+
+@Extension: 
+@ProviderID: 
+@AffiliationID: 
+@NameIDPolicy: 
+@ForceAuthn: 
+@IsPassive: 
+@ProtocolProfile: 
+@AssertionConsumerServiceID: 
+@RequestAuthnContext: 
+@RelayState: 
+@Scoping: 
+@consent: 
+
+<!-- ##### FUNCTION lasso_lib_authn_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
