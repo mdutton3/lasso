@@ -40,18 +40,31 @@
  */
 
 import com.entrouvert.lasso.AuthnRequest;
+import com.entrouvert.lasso.Identity;
 import com.entrouvert.lasso.lassoConstants;
 import com.entrouvert.lasso.lasso;
 import com.entrouvert.lasso.Login;
 import com.entrouvert.lasso.Server;
+import com.entrouvert.lasso.Session;
 
 
 public class CFLasso {
     /* A simple service provider */
 
+    protected Login login = null;
     protected Server server = null;
 
     public String idpProviderId = null;
+
+    public void acceptSso() {
+	login.acceptSso();
+    }
+
+    public void assertionConsumer(String queryString) {
+        login = new Login(server);
+	login.initRequest(queryString, lassoConstants.httpMethodRedirect);
+	login.buildRequestMsg();
+    }
 
     public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
 			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
@@ -61,9 +74,40 @@ public class CFLasso {
         server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
     }
 
+    public String getIdentityDump() {
+	Identity identity = login.getIdentity();
+	if (identity != null)
+	    return identity.dump();
+	else
+	    return null;
+    }
+
+    public String getMsgBody() {
+	return login.getMsgBody();
+    }
+
+    public String getMsgRelayState() {
+	return login.getMsgRelayState();
+    }
+
+    public String getMsgUrl() {
+	return login.getMsgUrl();
+    }
+
+    public String getNameIdentifier() {
+	return login.getNameIdentifier();
+    }
+
+    public String getSessionDump() {
+	Session session = login.getSession();
+	if (session != null)
+	    return session.dump();
+	else
+	    return null;
+    }
+
     public String login(String relayState) {
 	AuthnRequest authnRequest;
-	Login login;
 	String authnRequestUrl;
 
         login = new Login(server);
@@ -91,5 +135,17 @@ public class CFLasso {
 	System.out.println("Test");
 	System.out.print("Identity provider single sign-on URL = ");
 	System.out.println(ssoUrl);
+    }
+
+    public void processResponseMsg(String responseMsg) {
+	login.processResponseMsg(responseMsg);
+    }
+
+    public void setIdentityFromDump(String identityDump) {
+	login.setIdentityFromDump(identityDump);
+    }
+
+    public void setSessionFromDump(String sessionDump) {
+	login.setSessionFromDump(sessionDump);
     }
 }
