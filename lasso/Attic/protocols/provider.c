@@ -98,6 +98,8 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
   LassoNode *descriptor;
   GError *tmp_err = NULL;
 
+  g_return_val_if_fail (LASSO_IS_PROVIDER(provider), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
   if (xmlStrEqual(name, "ProviderID")) {
