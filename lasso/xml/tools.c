@@ -25,6 +25,7 @@
 
 #include <lasso/xml/tools.h>
 #include <xmlsec/xmltree.h>
+#include <xmlsec/base64.h>
 
 xmlChar *
 lasso_build_random_sequence(guint8 size)
@@ -86,7 +87,7 @@ lasso_build_unique_id(guint8 size)
   id[size] = '\0';
 
   /* base64 encoding of build string */
-  enc_id = (xmlChar*)xmlSecBase64Encode((const xmlChar *)id, size, 0);
+  enc_id = xmlSecBase64Encode((const xmlChar *)id, size, 0);
 
   g_free(id);
   return (enc_id);
