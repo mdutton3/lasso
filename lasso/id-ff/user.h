@@ -32,6 +32,7 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 #include <lasso/protocols/identity.h>
+#include <lasso/protocols/elements/assertion.h>
 
 #define LASSO_TYPE_USER (lasso_user_get_type())
 #define LASSO_USER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_USER, LassoUser))
@@ -47,8 +48,9 @@ struct _LassoUser {
   GObject parent;
 
   /*< public >*/
-  GPtrArray *assertions;
-  GPtrArray *identities;
+  GHashTable *assertions;          /* hash for assertions with nameIdentifier as key */
+  GHashTable *identities;          /* hash for identities with remote ProviderID as key */
+  GHashTable *assertion_artifacts; /* has for temporary assertions with AssertionArtifact as key */
 
   /*< private >*/
 };
@@ -57,11 +59,29 @@ struct _LassoUserClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT GType          lasso_user_get_type      (void);
-LASSO_EXPORT LassoUser*     lasso_user_new           (void);
+LASSO_EXPORT GType          lasso_user_get_type              (void);
+LASSO_EXPORT LassoUser*     lasso_user_new                   (xmlChar *user_str);
 
-LASSO_EXPORT LassoIdentity* lasso_user_find_identity (LassoUser *user,
-						      gchar     *remote_providerID);
+LASSO_EXPORT void           lasso_user_add_assertion         (LassoUser *user,
+							      xmlChar   *remote_providerID,
+							      LassoNode *assertion);
+
+LASSO_EXPORT LassoNode     *lasso_user_get_assertion         (LassoUser *user,
+							      xmlChar   *nameIdentifier);
+
+LASSO_EXPORT void           lasso_user_add_assertionArtifact (LassoUser      *user,
+							      xmlChar        *assertionArtifact,
+							      LassoAssertion *assertion);
+
+LASSO_EXPORT LassoNode     *lasso_user_get_assertionArtifact (LassoUser *user,
+							      xmlChar   *artifact);
+
+LASSO_EXPORT void           lasso_user_add_identity          (LassoUser     *user,
+							      xmlChar       *remote_providerID,
+							      LassoIdentity *identity);
+
+LASSO_EXPORT LassoIdentity *lasso_user_get_identity          (LassoUser *user,
+							      xmlChar   *remote_providerID);
 
 #ifdef __cplusplus
 }

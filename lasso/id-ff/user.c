@@ -28,38 +28,104 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-LassoIdentity*
-lasso_user_find_identity(LassoUser *user,
-			 gchar     *remote_providerID)
+static void
+lasso_user_node_identity_add(xmlChar *key, LassoIdentity *identity, LassoNode *userNode)
 {
-  LassoIdentity *identity;
-  int index;
+  LassoNode *node, *child;
+  LassoNodeClass *class;
+
+  /* set the Identity node */
+/*   node = lasso_node_new(); */
+/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
+/*   class->set_name(LASSO_NODE(node), "Identity"); */
+
+  /* add the remote provider id */
+/*   class->new_child(node, "RemoteProviderID", key, FALSE); */
+
+  /* add the local name identifier */
+/*   child = lasso_node_new(); */
+/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
+/*   class->set_name(LASSO_NODE(node), "LocalNameIdentifier"); */
+/*   class->lasso_node_add_child(child, identity->local_nameIdentifier); */
+/*   class->lasso_node_add_child(node, child); */
   
-  printf("nb identity %d\n", user->identities->len);
-  for(index = 0; index<user->identities->len; index++){
-    identity = g_ptr_array_index(user->identities, index);
-    printf("provider id : %s\n", identity->remote_providerID);
-    if(!strcmp(identity->remote_providerID, remote_providerID)){
-      return(identity);
-    }
-  }
-     
-  return(NULL);
+  /* add the remote provider id */
+/*   child = lasso_node_new(); */
+/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
+/*   class->set_name(LASSO_NODE(node), "RemoteNameIdentifier"); */
+/*   lasso_node_add_child(child, identity->remote_nameIdentifier); */
+/*   lasso_node_add_child(node, child); */
+
+  /* add the identity node to the user node */
+/*   lasso_node_add_child(userNode, identity); */
 }
 
-gint 
-lasso_user_add_assertion()
+xmlChar *
+lasso_user_export(LassoUser *user)
 {
+  LassoNode *user_node, identities, *assertions, *assertion_artifacts;
+  LassoNodeClass *class;
 
+  /* set the user node  */
+  user_node = lasso_node_new();
+  class = LASSO_NODE_GET_CLASS(LASSO_NODE(user_node));
+  class->set_name(LASSO_NODE(user_node), "User");
+
+  /* insert all of the identity of the user */
+  g_hash_table_foreach(user->identities, lasso_user_node_identity_add, user);
+  
+  return(lasso_node_export(user));
 }
 
-gint
+void
+lasso_user_add_assertion(LassoUser *user,
+			 xmlChar   *remote_providerID,
+			 LassoNode *assertion)
+{
+  g_hash_table_insert(user->assertions, remote_providerID, assertion);
+}
+
+LassoNode *
+lasso_user_get_assertion(LassoUser *user,
+			 xmlChar   *nameIdentifier)
+{
+  return(g_hash_table_lookup(user->assertions, nameIdentifier));
+}
+
+void
+lasso_user_add_assertionArtifact(LassoUser      *user,
+				 xmlChar        *assertionArtifact,
+				 LassoAssertion *assertion)
+{
+  g_hash_table_insert(user->assertion_artifacts, assertionArtifact, assertion);
+}
+
+LassoNode *lasso_user_get_assertionArtifact(LassoUser *user,
+					    xmlChar   *artifact)
+{
+  LassoNode *assertion;
+
+  assertion = g_hash_table_lookup(user->assertion_artifacts, artifact);
+  if(assertion){
+    g_hash_table_steal(user->assertion_artifacts, artifact);
+  }
+
+  return(assertion);
+}
+
+void
 lasso_user_add_identity(LassoUser     *user,
+			xmlChar       *remote_providerID,
 			LassoIdentity *identity)
 {
-  g_ptr_array_add(user->identities, identity);
-  
-  return(1);
+  g_hash_table_insert(user->identities, remote_providerID, identity);
+}
+
+LassoIdentity*
+lasso_user_get_identity(LassoUser *user,
+			xmlChar   *remote_providerID)
+{
+  return(g_hash_table_lookup(user->identities, remote_providerID));
 }
 
 /*****************************************************************************/
@@ -69,13 +135,15 @@ lasso_user_add_identity(LassoUser     *user,
 static void
 lasso_user_instance_init(LassoUser *user)
 {
-  user->identities = g_ptr_array_new();
-  user->assertions = g_ptr_array_new();
+  user->identities = g_hash_table_new(g_str_hash,  g_str_equal);
+  user->assertions = g_hash_table_new(g_str_hash,  g_str_equal);
+  user->assertion_artifacts = g_hash_table_new(g_str_hash,  g_str_equal);
 }
 
 static void
 lasso_user_class_init(LassoUserClass *klass)
 {
+
 }
 
 GType lasso_user_get_type() {
@@ -102,11 +170,15 @@ GType lasso_user_get_type() {
 }
 
 LassoUser*
-lasso_user_new()
+lasso_user_new(xmlChar *user_str)
 {
   LassoUser *user;
 
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
+
+  if(user_str){
+    /* parse the user str */
+  }
 
   return(user);
 }
