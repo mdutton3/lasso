@@ -71,7 +71,7 @@ class Node:
         """
         lassomod.node_destroy(self)
 
-    def dump(self, encoding="utf8", format=1):
+    def dump(self, encoding="utf8", format=0):
         """
         Dumps the node. All datas in object are dumped in an XML format.
 
