@@ -26,22 +26,6 @@
 #include <lasso/protocols/authn_response.h>
 
 /*****************************************************************************/
-/* functions                                                                 */
-/*****************************************************************************/
-
-xmlChar *
-lasso_authn_response_get_protocolProfile(xmlChar *query)
-{
-  xmlChar *protocolProfile;
-
-  protocolProfile = lasso_g_ptr_array_index(lasso_query_get_value(query, "ProtocolProfile"), 0);
-  if (protocolProfile == NULL)
-    protocolProfile = lassoLibProtocolProfileArtifact;
-
-  return (protocolProfile);
-}
-
-/*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
@@ -94,6 +78,24 @@ lasso_authn_response_must_authenticate(LassoAuthnResponse *response,
                                                                                                                           
   g_datalist_clear(&gd);
   return (must_authenticate);
+}
+
+void
+lasso_authn_response_process_authentication_result(LassoAuthnResponse *response,
+						   gboolean            authentication_result)
+{
+  LassoNode *status, *status_code;
+
+  if (authentication_result == FALSE) {
+    status = lasso_samlp_status_new();
+    status_code = lasso_samlp_status_code_new();
+    lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
+				      lassoLibStatusCodeUnknownPrincipal);
+    lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
+				      LASSO_SAMLP_STATUS_CODE(status_code));
+    lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
+				    LASSO_SAMLP_STATUS(status));
+  }
 }
 
 gboolean
@@ -172,13 +174,13 @@ GType lasso_authn_response_get_type() {
 
 LassoNode*
 lasso_authn_response_new(xmlChar       *query,
-			 const xmlChar *providerID,
-			 gboolean       signature_status,
-			 gboolean       authentication_status)
+			 const xmlChar *providerID)
 {
   GData         *gd;
   LassoNode     *response, *status, *status_code;
-  const xmlChar *nameIDPolicy;
+
+  g_return_val_if_fail(query != NULL, NULL);
+  g_return_val_if_fail(providerID != NULL, NULL);
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_RESPONSE, NULL));
 
@@ -211,7 +213,7 @@ lasso_authn_response_new(xmlChar       *query,
   if (lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0) != NULL) {
     lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0));
-    LASSO_AUTHN_RESPONSE(response)->requestID = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
+    LASSO_AUTHN_RESPONSE(response)->requestID = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0));
   }
 
   /* consent */
@@ -233,6 +235,8 @@ lasso_authn_response_new(xmlChar       *query,
 				    LASSO_SAMLP_STATUS_CODE(status_code));
   lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
 				  LASSO_SAMLP_STATUS(status));
+
+  g_datalist_clear(&gd);
 
   return (response);
 }
