@@ -195,7 +195,7 @@ identity provider Id (defined in metadata).
   
   lasso_lib_authn_request_set_nameIDPolicy(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
-  lasso_lib_authn_response_set_consent(
+  lasso_lib_authn_request_set_consent(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibConsentObtained);
   lasso_login_build_authn_request_msg(login, idpProviderId);
 
