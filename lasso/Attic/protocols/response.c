@@ -113,7 +113,6 @@ LassoNode*
 lasso_response_new_from_export(xmlChar              *buffer,
 			       lassoNodeExportTypes  export_type)
 {
-  xmlChar *buffer_decoded = xmlMalloc(strlen(buffer));
   LassoNode *response = NULL, *soap_node, *response_node;
 
   g_return_val_if_fail(buffer != NULL, NULL);
@@ -121,6 +120,9 @@ lasso_response_new_from_export(xmlChar              *buffer,
   response = LASSO_NODE(g_object_new(LASSO_TYPE_RESPONSE, NULL));
 
   switch (export_type) {
+  case lassoNodeExportTypeXml:
+    lasso_node_import(response, buffer);
+    break;
   case lassoNodeExportTypeBase64:
   case lassoNodeExportTypeQuery:
     break;
