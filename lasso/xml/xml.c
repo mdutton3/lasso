@@ -111,77 +111,14 @@ lasso_node_destroy(LassoNode *node)
 	}
 }
 
-/**
- * lasso_node_export_to_base64:
- * @node: a LassoNode
- * 
- * Base64 XML dump
- * 
- * Return value: a Base64 encoded export of the LassoNode
- **/
-char*
-lasso_node_export_to_base64(LassoNode *node)
-{
-	char *buffer, *ret;
-
-	buffer = lasso_node_dump(node, "utf-8", 0);
-	ret = xmlSecBase64Encode(buffer, strlen(buffer), 0);
-	g_free(buffer);
-	return ret;
-}
-
-/**
- * lasso_node_export_to_query:
- * @node: a LassoNode
- * @sign_method: the Signature transform method
- * @private_key_file: a private key (may be NULL)
- * 
- * URL-encodes and signes the LassoNode.
- * If private_key_file is NULL, query won't be signed.
- * 
- * Return value: URL-encoded and signed LassoNode
- **/
-char*
-lasso_node_export_to_query(LassoNode *node,
-		lassoSignatureMethod sign_method, const char *private_key_file)
-{
-	char *unsigned_query, *query;
-
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-	unsigned_query = lasso_node_build_query(node);
-	if (private_key_file)
-		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
-	else
-		query = g_strdup(unsigned_query);
-	g_free(unsigned_query);
-
-	return query;
-}
-
-/**
- * lasso_node_export_to_soap:
- * @node: a LassoNode
- * @private_key_file: path to private key for signature
- * @certificate_file: path to certificate for signature
- * 
- * Like lasso_node_export() method except that result is SOAP enveloped.
- * 
- * Return value: a SOAP enveloped export of the LassoNode
- **/
-char*
-lasso_node_export_to_soap(LassoNode *node,
+static xmlNode*
+lasso_node_export_to_signed_xmlnode(LassoNode *node,
 		const char *private_key_file, const char *certificate_file)
 {
 	xmlDoc *doc;
-	xmlNode *envelope, *body, *message, *sign_tmpl;
-	xmlOutputBuffer *buf;
-	xmlCharEncodingHandler *handler;
+	xmlNode *message, *sign_tmpl;
 	xmlSecDSigCtx *dsig_ctx;
-	char *ret;
 	char *id_attr_name = NULL;
-
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
 	message = lasso_node_get_xmlNode(node);
 
@@ -236,6 +173,96 @@ lasso_node_export_to_soap(LassoNode *node,
 		xmlFreeDoc(doc);
 	}
 
+	return message;
+}
+
+
+/**
+ * lasso_node_export_to_base64:
+ * @node: a LassoNode
+ * @private_key_file: path to private key for signature
+ * @certificate_file: path to certificate for signature
+ * 
+ * Base64 XML dump
+ * 
+ * Return value: a Base64 encoded export of the LassoNode
+ **/
+char*
+lasso_node_export_to_base64(LassoNode *node,
+		const char *private_key_file, const char *certificate_file)
+{
+	xmlNode *message;
+	xmlOutputBufferPtr buf;
+	xmlCharEncodingHandlerPtr handler = NULL;
+	char *buffer;
+	char *ret;
+
+	message = lasso_node_export_to_signed_xmlnode(node, private_key_file, certificate_file);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+
+	ret = xmlSecBase64Encode(buffer, strlen(buffer), 0);
+	xmlOutputBufferClose(buf);
+
+	return ret;
+}
+
+/**
+ * lasso_node_export_to_query:
+ * @node: a LassoNode
+ * @sign_method: the Signature transform method
+ * @private_key_file: a private key (may be NULL)
+ * 
+ * URL-encodes and signes the LassoNode.
+ * If private_key_file is NULL, query won't be signed.
+ * 
+ * Return value: URL-encoded and signed LassoNode
+ **/
+char*
+lasso_node_export_to_query(LassoNode *node,
+		lassoSignatureMethod sign_method, const char *private_key_file)
+{
+	char *unsigned_query, *query;
+
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	unsigned_query = lasso_node_build_query(node);
+	if (private_key_file)
+		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
+	else
+		query = g_strdup(unsigned_query);
+	g_free(unsigned_query);
+
+	return query;
+}
+
+/**
+ * lasso_node_export_to_soap:
+ * @node: a LassoNode
+ * @private_key_file: path to private key for signature
+ * @certificate_file: path to certificate for signature
+ * 
+ * Like lasso_node_export() method except that result is SOAP enveloped.
+ * 
+ * Return value: a SOAP enveloped export of the LassoNode
+ **/
+char*
+lasso_node_export_to_soap(LassoNode *node,
+		const char *private_key_file, const char *certificate_file)
+{
+	xmlNode *envelope, *body, *message;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
+	char *ret;
+
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	message = lasso_node_export_to_signed_xmlnode(node, private_key_file, certificate_file);
+
 	envelope = xmlNewNode(NULL, "Envelope");
 	xmlSetNs(envelope, xmlNewNs(envelope, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX));
 
@@ -244,7 +271,7 @@ lasso_node_export_to_soap(LassoNode *node,
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, envelope, 0, 1, "utf-8");
+	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 	ret = g_strdup( buf->conv ? buf->conv->content : buf->buffer->content );
 	xmlOutputBufferClose(buf);

@@ -124,7 +124,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 		message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found");
 		return -1;
 	}
-	profile->msg_body = lasso_node_export_to_base64(profile->response);
+	profile->msg_body = lasso_node_export_to_base64(profile->response, NULL, NULL);
 	if (profile->msg_body == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "AuthnResponse Base64 msg not found");
 		return -1;

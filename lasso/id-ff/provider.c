@@ -26,6 +26,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include <xmlsec/base64.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
 
@@ -504,79 +505,113 @@ lasso_provider_new_from_dump(const gchar *dump)
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format)
 {
+	/* this duplicates some code from lasso_node_init_from_message;
+	 * reflection about code reuse is under way...
+	 */
+	char *msg;
+	xmlDoc *doc;
+	xmlNode *xmlnode = NULL, *sign, *x509data;
+	xmlSecKeysMngr *keys_mngr = NULL;
+	xmlSecDSigCtx *dsigCtx;
+	lassoPemFileType public_key_file_type;
+	int rc;
+
+	msg = (char*)message;
+
 	if (format == LASSO_MESSAGE_FORMAT_ERROR)
 		return -2;
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN)
 		return -2;
 
-	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
-		/* XXX: checking signature in base64 mode (probably going back
-		 * to XML mode)*/
-		return 0;
-	}
-
-	if (format == LASSO_MESSAGE_FORMAT_XML || format == LASSO_MESSAGE_FORMAT_SOAP) {
-		xmlDoc *doc;
-		xmlNode *xmlnode, *sign, *x509data;
-		xmlSecKeysMngr *keys_mngr = NULL;
-		xmlSecDSigCtx *dsigCtx;
-		lassoPemFileType public_key_file_type;
-
-		return 0; /* XXX: enable back signature check on xml messages */
-
-		doc = xmlParseMemory(message, strlen(message));
-		xmlnode = xmlDocGetRootElement(doc);
-		sign = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
-		if (sign == NULL) {
-			xmlFreeDoc(doc);
-			return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-		}
-
-		x509data = xmlSecFindNode(xmlnode, xmlSecNodeX509Data, xmlSecDSigNs);
-		if (x509data != NULL && provider->ca_cert_chain != NULL) {
-			keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
-					provider->ca_cert_chain);
-			if (keys_mngr == NULL)
-				return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
-		}
-
-		dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
-		if (keys_mngr == NULL) {
-			if (provider->public_key) {
-				public_key_file_type = lasso_get_pem_file_type(
-						provider->public_key);
-				if (public_key_file_type == LASSO_PEM_FILE_TYPE_CERT) {
-					/* public_key_file is a certificate file
-					 * => get public key in it */
-					dsigCtx->signKey = lasso_get_public_key_from_pem_cert_file(
-							provider->public_key);
-				} else {
-					/* load public key */
-					dsigCtx->signKey = xmlSecCryptoAppKeyLoad(
-							provider->public_key,
-							xmlSecKeyDataFormatPem,
-							NULL, NULL, NULL);
-				}
-			}
-			if (dsigCtx->signKey == NULL) {
-				return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-			}
-		}
-
-		if (xmlSecDSigCtxVerify(dsigCtx, sign) < 0) {
-			return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-		}
-		if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
-			return LASSO_DS_ERROR_INVALID_SIGNATURE;
-		}
-
-		return 0;
-	}
-
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
 		return lasso_query_verify_signature(message, provider->public_key);
 	}
 
-	return -1;
-}
+	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
+		msg = g_malloc(strlen(message));
+		rc = xmlSecBase64Decode(message, msg, strlen(message));
+		if (rc < 0) {
+			g_free(msg);
+			return -3;
+		}
+	}
 
+	doc = xmlParseMemory(msg, strlen(msg));
+	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
+		g_free(msg);
+		msg = NULL;
+	}
+
+	if (format == LASSO_MESSAGE_FORMAT_SOAP) {
+		xmlXPathContext *xpathCtx = NULL;
+		xmlXPathObject *xpathObj;
+
+		xpathCtx = xmlXPathNewContext(doc);
+		xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
+		xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
+		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
+			xmlnode = xpathObj->nodesetval->nodeTab[0];
+		}
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
+		if (xmlnode == NULL)
+			return -4;
+	} else {
+		xmlnode = xmlDocGetRootElement(doc);
+	}
+
+	if (id_attr_name) {
+		char *id_value = xmlGetProp(xmlnode, id_attr_name);
+		xmlAttr *id_attr = xmlHasProp(xmlnode, id_attr_name);
+		if (id_value) {
+			xmlAddID(NULL, doc, id_value, id_attr);
+			xmlFree(id_value);
+		}
+	}
+
+	sign = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+	if (sign == NULL) {
+		xmlFreeDoc(doc);
+		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+	}
+
+	x509data = xmlSecFindNode(xmlnode, xmlSecNodeX509Data, xmlSecDSigNs);
+	if (x509data != NULL && provider->ca_cert_chain != NULL) {
+		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
+				provider->ca_cert_chain);
+		if (keys_mngr == NULL)
+			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
+	}
+
+	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
+	if (keys_mngr == NULL) {
+		if (provider->public_key) {
+			public_key_file_type = lasso_get_pem_file_type(
+					provider->public_key);
+			if (public_key_file_type == LASSO_PEM_FILE_TYPE_CERT) {
+				/* public_key_file is a certificate file
+				 * => get public key in it */
+				dsigCtx->signKey = lasso_get_public_key_from_pem_cert_file(
+						provider->public_key);
+			} else {
+				/* load public key */
+				dsigCtx->signKey = xmlSecCryptoAppKeyLoad(
+						provider->public_key,
+						xmlSecKeyDataFormatPem,
+						NULL, NULL, NULL);
+			}
+		}
+		if (dsigCtx->signKey == NULL) {
+			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+		}
+	}
+
+	if (xmlSecDSigCtxVerify(dsigCtx, sign) < 0) {
+		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
+	}
+	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
+		return LASSO_DS_ERROR_INVALID_SIGNATURE;
+	}
+
+	return 0;
+}

@@ -99,7 +99,8 @@ LASSO_EXPORT LassoNode* lasso_node_new_from_xmlNode(xmlNode* node);
 LASSO_EXPORT void lasso_node_destroy(LassoNode *node);
 LASSO_EXPORT char* lasso_node_dump(LassoNode *node, const char *encoding, int format);
 LASSO_EXPORT char* lasso_node_build_query(LassoNode *node);
-LASSO_EXPORT char* lasso_node_export_to_base64(LassoNode *node);
+LASSO_EXPORT char* lasso_node_export_to_base64(LassoNode *node,
+		const char *private_key_file, const char *certificate_file);
 
 LASSO_EXPORT char* lasso_node_export_to_query(LassoNode *node,
 		lassoSignatureMethod  sign_method, const char *private_key_file);
