@@ -544,7 +544,7 @@ urlencoded_to_strings(const char *str)
 		n++;
 	}
 
-	result = g_malloc(sizeof(char*)*n+2);
+	result = g_malloc(sizeof(char*)*(n+1));
 	result[n] = NULL;
 
 	st = (char*)str;
