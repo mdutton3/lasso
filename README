@@ -7,8 +7,7 @@ Lasso Overview
 Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
 of the Liberty Alliance specifications.  Those define processes for
 federated identities, single sign-on and related protocols.  Lasso provides
-both a C library and bindings for different languages (Python and Java for
-now).
+both a C library and bindings for different languages.
 
   Liberty Alliance Project homepage: <http://www.project-liberty.org>
 
