@@ -488,9 +488,6 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
   profile->msg_url  = NULL;
   profile->msg_body = NULL;
   if (profile->http_request_method == lassoHttpMethodRedirect) {
-    /* temporary vars */
-    gchar *url = NULL, *query = NULL;
-
     provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
     if (provider == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Provider not found\n");
