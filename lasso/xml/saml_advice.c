@@ -104,25 +104,9 @@ lasso_saml_advice_get_type()
 /**
  * lasso_saml_advice_new:
  * 
- * Creates a new <saml:Advice> node object.
+ * Creates a new saml:Advice node object.
  *
- * The <Advice> element contains any additional information that the issuer
- * wishes to provide. This information MAY be ignored by applications without
- * affecting either the semantics or the validity of the assertion.
- * The <Advice> element contains a mixture of zero or more <Assertion>
- * elements, <AssertionIDReference> elements and elements in other namespaces,
- * with lax schema validation in effect for these other elements.
- * Following are some potential uses of the <Advice> element:
- *
- * - Include evidence supporting the assertion claims to be cited, either
- * directly (through incorporating the claims) or indirectly (by reference to
- * the supporting assertions).
- *
- * - State a proof of the assertion claims.
- *
- * - Specify the timing and distribution points for updates to the assertion.
- * 
- * Return value: the new @LassoSamlAdvice
+ * Return value: the new #LassoSamlAdvice
  **/
 LassoNode*
 lasso_saml_advice_new()
