@@ -26,34 +26,34 @@
 #include <lasso/xml/disco_description.h>
 
 /*
-The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
-
-<xs:complexType name="DescriptionType">
-   <xs:sequence>
-      <xs:element name="SecurityMechID" type="xs:anyURI" minOccurs="1" maxOccurs="unbounded"/>
-      <xs:element name="CredentialRef" type="xs:IDREF" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:choice>
-         <xs:group ref="WsdlRef"/>
-         <xs:group ref="BriefSoapHttpDescription"/>
-      </xs:choice>
-   </xs:sequence>
-   <xs:attribute name="id" type="xs:ID"/>
-</xs:complexType>
-
-<xs:group name="WsdlRef">
-   <xs:sequence>
-      <xs:element name="WsdlURI" type="xs:anyURI"/>
-      <xs:element name="ServiceNameRef" type="xs:QName"/>
-   </xs:sequence>
-</xs:group>
-
-<xs:group name="BriefSoapHttpDescription">
-   <xs:sequence>
-      <xs:element name="Endpoint" type="xs:anyURI"/>
-      <xs:element name="SoapAction" type="xs:anyURI" minOccurs="0"/>
-   </xs:sequence>
-</xs:group>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+ * 
+ * <xs:complexType name="DescriptionType">
+ *   <xs:sequence>
+ *     <xs:element name="SecurityMechID" type="xs:anyURI" minOccurs="1" maxOccurs="unbounded"/>
+ *     <xs:element name="CredentialRef" type="xs:IDREF" minOccurs="0" maxOccurs="unbounded"/>
+ *     <xs:choice>
+ *       <xs:group ref="WsdlRef"/>
+ *       <xs:group ref="BriefSoapHttpDescription"/>
+ *     </xs:choice>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs:ID"/>
+ * </xs:complexType>
+ * 
+ * <xs:group name="WsdlRef">
+ *   <xs:sequence>
+ *     <xs:element name="WsdlURI" type="xs:anyURI"/>
+ *     <xs:element name="ServiceNameRef" type="xs:QName"/>
+ *   </xs:sequence>
+ * </xs:group>
+ * 
+ * <xs:group name="BriefSoapHttpDescription">
+ *   <xs:sequence>
+ *     <xs:element name="Endpoint" type="xs:anyURI"/>
+ *     <xs:element name="SoapAction" type="xs:anyURI" minOccurs="0"/>
+ *   </xs:sequence>
+ * </xs:group>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

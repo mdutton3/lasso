@@ -26,34 +26,34 @@
 #include <lasso/xml/disco_resource_offering.h>
 
 /*
-Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-
-<xs:element name="ResourceOffering" type="ResourceOfferingType"/>
-<xs:complexType name="ResourceOfferingType">
-   <xs:sequence>
-      <xs:group ref="ResourceIDGroup"/>
-      <xs:element name="ServiceInstance" type="ServiceInstanceType"/>
-      <xs:element ref="Options" minOccurs="0"/>
-      <xs:element name="Abstract" type="xs:string" minOccurs="0"/>
-   </xs:sequence>
-   <xs:attribute name="entryID" type="IDType" use="optional"/>
-</xs:complexType>
-
-<xs:group name="ResourceIDGroup">
-   <xs:sequence>
-      <xs:choice minOccurs="0" maxOccurs="1">
-         <xs:element ref="ResourceID"/>
-         <xs:element ref="EncryptedResourceID"/>
-      </xs:choice>
-   </xs:sequence>
-</xs:group>
-
-Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
-
-<xs:simpleType name="IDType">
-   <xs:restriction base="xs:string"/>
-</xs:simpleType>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * 
+ * <xs:element name="ResourceOffering" type="ResourceOfferingType"/>
+ * <xs:complexType name="ResourceOfferingType">
+ *   <xs:sequence>
+ *     <xs:group ref="ResourceIDGroup"/>
+ *     <xs:element name="ServiceInstance" type="ServiceInstanceType"/>
+ *     <xs:element ref="Options" minOccurs="0"/>
+ *     <xs:element name="Abstract" type="xs:string" minOccurs="0"/>
+ *   </xs:sequence>
+ *   <xs:attribute name="entryID" type="IDType" use="optional"/>
+ * </xs:complexType>
+ * 
+ * <xs:group name="ResourceIDGroup">
+ *   <xs:sequence>
+ *     <xs:choice minOccurs="0" maxOccurs="1">
+ *       <xs:element ref="ResourceID"/>
+ *       <xs:element ref="EncryptedResourceID"/>
+ *     </xs:choice>
+ *   </xs:sequence>
+ * </xs:group>
+ * 
+ * Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
+ * 
+ * <xs:simpleType name="IDType">
+ *   <xs:restriction base="xs:string"/>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

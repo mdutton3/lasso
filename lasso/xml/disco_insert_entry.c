@@ -26,15 +26,15 @@
 #include <lasso/xml/disco_insert_entry.h>
 
 /*
-Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-
-<xs:complexType name="InsertEntryType">
-   <xs:sequence>
-      <xs:element ref="ResourceOffering"/>
-      <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-   </xs:sequence>
-</xs:complexType>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * 
+ * <xs:complexType name="InsertEntryType">
+ *   <xs:sequence>
+ *     <xs:element ref="ResourceOffering"/>
+ *     <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

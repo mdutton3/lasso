@@ -26,22 +26,22 @@
 #include <lasso/xml/disco_modify_response.h>
 
 /*
-The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
-
-<xs:element name="ModifyResponse" type="ModifyResponseType"/>
-<xs:complexType name="ModifyResponseType">
-   <xs:sequence>
-      <xs:element ref="Status"/>
-      <xs:element ref="Extension" minOccurs="0" maxOccurs="1"/>
-   </xs:sequence>
-   <xs:attribute name="id" type="xs:ID" use="optional"/>
-   <xs:attribute name="newEntryIDs" use="optional">
-      <xs:simpleType>
-         <xs:list itemType="IDReferenceType"/>
-      </xs:simpleType>
-   </xs:attribute>
-</xs:complexType>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+ * 
+ * <xs:element name="ModifyResponse" type="ModifyResponseType"/>
+ * <xs:complexType name="ModifyResponseType">
+ *   <xs:sequence>
+ *     <xs:element ref="Status"/>
+ *     <xs:element ref="Extension" minOccurs="0" maxOccurs="1"/>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs:ID" use="optional"/>
+ *   <xs:attribute name="newEntryIDs" use="optional">
+ *     <xs:simpleType>
+ *       <xs:list itemType="IDReferenceType"/>
+ *     </xs:simpleType>
+ *   </xs:attribute>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

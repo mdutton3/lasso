@@ -25,6 +25,29 @@
 
 #include <lasso/xml/disco_modify.h>
 
+/*
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+ * 
+ * <xs:element name="Modify" type="ModifyType"/>
+ * <xs:complexType name="ModifyType">
+ *   <xs:sequence>
+ *     <xs:group ref="ResourceIDGroup"/>
+ *     <xs:element name="InsertEntry" type="InsertEntryType" minOccurs="0" maxOccurs="unbounded"/>
+ *     <xs:element name="RemoveEntry" type="RemoveEntryType" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs:ID" use="optional"/>
+ * </xs:complexType>
+ * 
+ * <xs:group name="ResourceIDGroup">
+ *   <xs:sequence>
+ *     <xs:choice minOccurs="0" maxOccurs="1">
+ *       <xs:element ref="ResourceID"/>
+ *       <xs:element ref="EncryptedResourceID"/>
+ *     </xs:choice>
+ *   </xs:sequence>
+ * </xs:group>
+ */
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/

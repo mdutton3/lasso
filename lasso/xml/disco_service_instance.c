@@ -26,18 +26,18 @@
 #include <lasso/xml/disco_service_instance.h>
 
 /*
-Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-
-<xs:complexType name="ServiceInstanceType">
-   <xs:sequence>
-      <xs:element ref="ServiceType"/>
-      <xs:element name="ProviderID" type="md:entityIDType"/>
-      <xs:element name="Description" type="DescriptionType" minOccurs="1" maxOccurs="unbounded"/>
-   </xs:sequence>
-</xs:complexType>
-
-<xs:element name="ServiceType" type="xs:anyURI"/>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * 
+ * <xs:complexType name="ServiceInstanceType">
+ *   <xs:sequence>
+ *     <xs:element ref="ServiceType"/>
+ *     <xs:element name="ProviderID" type="md:entityIDType"/>
+ *     <xs:element name="Description" type="DescriptionType" minOccurs="1" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ServiceType" type="xs:anyURI"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

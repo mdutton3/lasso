@@ -26,15 +26,15 @@
 #include <lasso/xml/disco_options.h>
 
 /*
-The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
-
-<xs:element name="Options" type="OptionsType"/>
-<xs:complexType name="OptionsType">
-   <xs:sequence>
-      <xs:element name="Option" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
-   </xs:sequence>
-</xs:complexType>
-*/
+ * Schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
+ * 
+ * <xs:element name="Options" type="OptionsType"/>
+ * <xs:complexType name="OptionsType">
+ *   <xs:sequence>
+ *     <xs:element name="Option" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
