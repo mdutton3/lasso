@@ -42,10 +42,6 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAs
 	g_return_val_if_fail(providerID != NULL, -2);
 	g_return_val_if_fail(assertion != NULL, -3);
 
-	if (g_hash_table_lookup(session->assertions, providerID)) {
-		debug("An assertion existed already for this providerID, replaced by new one.");
-	}
-
 	g_hash_table_insert(session->assertions, g_strdup(providerID), assertion);
 
 	session->is_dirty = TRUE;
@@ -304,5 +300,5 @@ lasso_session_dump(LassoSession *session)
 
 void lasso_session_destroy(LassoSession *session)
 {
-	g_object_unref(G_OBJECT(session));
+	lasso_node_destroy(LASSO_NODE(session));
 }

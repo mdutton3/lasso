@@ -68,9 +68,7 @@ lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerI
 void
 lasso_identity_destroy(LassoIdentity *identity)
 {
-	if (LASSO_IS_IDENTITY(identity)) {
-		g_object_unref(G_OBJECT(identity));
-	}
+	lasso_node_destroy(LASSO_NODE(identity));
 }
 
 /*****************************************************************************/

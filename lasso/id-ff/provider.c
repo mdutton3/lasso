@@ -479,7 +479,7 @@ lasso_provider_new(LassoProviderRole role, char *metadata, char *public_key, cha
 	provider->role = role;
 	if (lasso_provider_load_metadata(provider, metadata) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to load metadata from %s.", metadata);
-		g_object_unref(provider);
+		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
 
@@ -557,8 +557,10 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		}
 		xmlXPathFreeObject(xpathObj);
 		xmlXPathFreeContext(xpathCtx);
-		if (xmlnode == NULL)
+		if (xmlnode == NULL) {
+			xmlFreeDoc(doc);
 			return -4;
+		}
 	} else {
 		xmlnode = xmlDocGetRootElement(doc);
 	}
@@ -582,8 +584,10 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	if (x509data != NULL && provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				provider->ca_cert_chain);
-		if (keys_mngr == NULL)
+		if (keys_mngr == NULL) {
+			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
+		}
 	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
@@ -605,16 +609,27 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 			}
 		}
 		if (dsigCtx->signKey == NULL) {
+			xmlSecDSigCtxDestroy(dsigCtx);
+			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
 		}
 	}
 
 	if (xmlSecDSigCtxVerify(dsigCtx, sign) < 0) {
+		xmlSecDSigCtxDestroy(dsigCtx);
+		if (keys_mngr)
+			xmlSecKeysMngrDestroy(keys_mngr);
+		xmlFreeDoc(doc);
 		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
+	if (keys_mngr)
+		xmlSecKeysMngrDestroy(keys_mngr);
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
+		xmlSecDSigCtxDestroy(dsigCtx);
+		xmlFreeDoc(doc);
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
 
+	xmlFreeDoc(doc);
 	return 0;
 }

@@ -105,6 +105,10 @@ lasso_node_dump(LassoNode *node, const char *encoding, int format)
 void
 lasso_node_destroy(LassoNode *node)
 {
+	if (node == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "lasso_node_destroy of NULL!!!");
+		return;
+	}
 	if (LASSO_IS_NODE(node)) {
 		LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 		class->destroy(node);
@@ -653,8 +657,10 @@ lasso_node_dispose(GObject *object)
 			fprintf(stderr, "freeing %s/%s (at %p)\n",
 					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
 #endif
-			if (snippet->type & SNIPPET_NODE) {
-				g_object_unref(*value);
+			if (snippet->type == SNIPPET_NODE ||
+					snippet->type == SNIPPET_NAME_IDENTIFIER ||
+					snippet->type == SNIPPET_NODE_IN_CHILD) {
+				lasso_node_destroy(*value);
 			} else {
 				g_free(*value);
 			}
@@ -848,7 +854,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	node = g_object_new(gtype, NULL);
 	rc = lasso_node_init_from_xml(node, xmlnode);
 	if (rc) {
-		g_object_unref(node);
+		lasso_node_destroy(node);
 		return NULL;
 	}
 

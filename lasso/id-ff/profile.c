@@ -195,13 +195,13 @@ lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue
 
 	if (LASSO_IS_SAMLP_RESPONSE(ctx->response)) {
 		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(ctx->response);
-		if (response->Status) g_object_unref(response->Status);
+		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
 		response->Status = status;
 		return;
 	}
 	if (LASSO_IS_LIB_STATUS_RESPONSE(ctx->response)) {
 		LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(ctx->response);
-		if (response->Status) g_object_unref(response->Status);
+		if (response->Status) lasso_node_destroy(LASSO_NODE(response->Status));
 		response->Status = status;
 		return;
 	}

@@ -127,16 +127,18 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
-		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = 
+		LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
 			LASSO_SAML_ASSERTION(assertion);
 	}
 	/* store assertion in session object */
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
 	}
-	login->assertion = LASSO_SAML_ASSERTION(assertion);
+	if (login->assertion)
+		lasso_node_destroy(LASSO_NODE(login->assertion));
+	login->assertion = LASSO_SAML_ASSERTION(g_object_ref(assertion));
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
-			LASSO_SAML_ASSERTION(assertion));
+			LASSO_SAML_ASSERTION(g_object_ref(assertion)));
 	return 0;
 }
 
@@ -401,7 +403,8 @@ lasso_login_accept_sso(LassoLogin *login)
 	if (assertion == NULL)
 		return -1;
 
-	lasso_session_add_assertion(profile->session, profile->remote_providerID, assertion);
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
+			g_object_ref(assertion));
 
 	authentication_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 			LASSO_SAMLP_RESPONSE(profile->response
@@ -760,7 +763,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 void
 lasso_login_destroy(LassoLogin *login)
 {
-	g_object_unref(G_OBJECT(login));
+	lasso_node_destroy(LASSO_NODE(login));
 }
 
 gint
@@ -1083,6 +1086,9 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	
+	if (LASSO_PROFILE(login)->response)
+		lasso_node_destroy(LASSO_PROFILE(login)->response);
 
 	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(NULL, NULL);
 	format = lasso_node_init_from_message(LASSO_PROFILE(login)->response, authn_response_msg);

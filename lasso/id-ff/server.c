@@ -94,7 +94,7 @@ lasso_server_add_service(LassoServer *server,
 void
 lasso_server_destroy(LassoServer *server)
 {
-	g_object_unref(G_OBJECT(server));
+	lasso_node_destroy(LASSO_NODE(server));
 }
 
 
@@ -388,7 +388,7 @@ lasso_server_new(const gchar *metadata,
 		if (lasso_provider_load_metadata(LASSO_PROVIDER(server), metadata) == FALSE) {
 			message(G_LOG_LEVEL_CRITICAL,
 					"Failed to load metadata from %s.", metadata);
-			g_object_unref(server);
+			lasso_node_destroy(LASSO_NODE(server));
 			return NULL;
 		}
 	}
@@ -409,7 +409,7 @@ lasso_server_new_from_dump(const gchar *dump)
 		return NULL;
 
 	if (LASSO_IS_SERVER(server) == FALSE) {
-		g_object_unref(server);
+		lasso_node_destroy(LASSO_NODE(server));
 		return NULL;
 	}
 	return LASSO_SERVER(server);
