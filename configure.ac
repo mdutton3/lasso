@@ -343,7 +343,7 @@ if test "X$with_php" != Xno ; then
   with_php=yes
 fi
 
-PHP_VERSION=`php-config --version 2>/dev/null`
+PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 if test "X$PHP_VERSION" != X; then
   languages_available="$languages_available php($PHP_VERSION)"
   if test $with_php = yes; then
