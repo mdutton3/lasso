@@ -1,4 +1,4 @@
-LIBRARY lasso
+LIBRARY liblasso.dll
 
 DESCRIPTION "Free implementation of the Liberty Alliance specifications."
 
@@ -37,6 +37,7 @@ EXPORTS
     lasso_ds_signature_sign
     lasso_error_msg
     lasso_federation_termination_build_notification_msg
+    lasso_federation_termination_destroy
     lasso_federation_termination_dump
     lasso_federation_termination_get_type
     lasso_federation_termination_init_notification
@@ -48,6 +49,7 @@ EXPORTS
     lasso_federation_termination_process_notification_msg
     lasso_get_current_time
     lasso_g_ptr_array_index
+    lasso_identity_destroy
     lasso_identity_dump
     lasso_identity_get_local_nameIdentifier
     lasso_identity_get_remote_nameIdentifier
@@ -184,15 +186,14 @@ EXPORTS
     lasso_logout_process_response_msg
     lasso_logout_request_get_type
     lasso_logout_request_new
-    lasso_logout_request_new_from_query
-    lasso_logout_request_new_from_soap
+    lasso_logout_request_new_from_export
     lasso_logout_response_get_status_code_value
     lasso_logout_response_get_type
     lasso_logout_response_new
     lasso_logout_response_new_from_dump
+    lasso_logout_response_new_from_export
     lasso_logout_response_new_from_query
-    lasso_logout_response_new_from_request_query
-    lasso_logout_response_new_from_request_soap
+    lasso_logout_response_new_from_request_export
     lasso_logout_response_new_from_soap
     lasso_name_identifier_mapping_build_request_msg
     lasso_name_identifier_mapping_build_response_msg
@@ -230,6 +231,7 @@ EXPORTS
     lasso_node_get_name
     lasso_node_get_type
     lasso_node_import
+    lasso_node_import_from_node
     lasso_node_new
     lasso_node_new_from_dump
     lasso_node_new_from_xmlNode
@@ -243,7 +245,8 @@ EXPORTS
     lasso_provider_dump
     lasso_provider_get_assertionConsumerServiceURL
     lasso_provider_get_federationTerminationNotificationProtocolProfile
-    lasso_provider_get_federationTerminationNotificationServiceURL
+    lasso_provider_get_federationTerminationReturnServiceURL
+    lasso_provider_get_federationTerminationServiceURL
     lasso_provider_get_nameIdentifierMappingProtocolProfile
     lasso_provider_get_nameIdentifierMappingServiceReturnURL
     lasso_provider_get_nameIdentifierMappingServiceURL
@@ -267,12 +270,13 @@ EXPORTS
     lasso_query_verify_signature
     lasso_register_name_identifier_build_request_msg
     lasso_register_name_identifier_build_response_msg
+    lasso_register_name_identifier_destroy
     lasso_register_name_identifier_dump
     lasso_register_name_identifier_get_type
-    lasso_register_name_identifier_handle_request_msg
-    lasso_register_name_identifier_handle_response_msg
     lasso_register_name_identifier_init_request
     lasso_register_name_identifier_new
+    lasso_register_name_identifier_process_request_msg
+    lasso_register_name_identifier_process_response_msg
     lasso_register_name_identifier_rename_attributes_for_query
     lasso_register_name_identifier_request_get_type
     lasso_register_name_identifier_request_new
@@ -287,6 +291,7 @@ EXPORTS
     lasso_register_name_identifier_response_new_from_soap
     lasso_request_get_type
     lasso_request_new
+    lasso_request_new_from_export
     lasso_response_get_type
     lasso_response_new
     lasso_response_new_from_export
@@ -412,6 +417,7 @@ EXPORTS
     lasso_user_new
     lasso_user_new_from_dump
     lasso_user_remove_assertion
+    lasso_user_remove_identity
     set_debug_info
 
 ; Var exports
