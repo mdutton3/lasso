@@ -134,7 +134,6 @@
     &lasso-export;
     &lasso-lasso;
     &lasso-version;
-<br>
     &LassoArtifact;
     &LassoAssertion;
     &LassoAuthenticationStatement;
