@@ -72,7 +72,7 @@ LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar       *me
 
 LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (gchar       *dump);
 
-LASSO_EXPORT void           lasso_server_add_provider           (LassoServer *server,
+LASSO_EXPORT gint           lasso_server_add_provider           (LassoServer *server,
 								 gchar       *metadata,
 								 gchar       *public_key,
 								 gchar       *ca_certificate);

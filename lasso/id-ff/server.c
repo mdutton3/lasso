@@ -39,6 +39,8 @@ lasso_server_dump(LassoServer *server)
   xmlChar        *signature_method_str, *dump;
   gint            i;
 
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+
   server_node = lasso_node_new();
   server_class = LASSO_NODE_GET_CLASS(server_node);
   server_class->set_name(server_node, LASSO_SERVER_NODE);
@@ -85,10 +87,13 @@ void
 lasso_server_add_lasso_provider(LassoServer   *server,
 				LassoProvider *provider)
 {
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(LASSO_IS_PROVIDER(provider), NULL);
+
   g_ptr_array_add(server->providers, provider);
 }
 
-void
+gint
 lasso_server_add_provider(LassoServer *server,
 			  gchar       *metadata,
 			  gchar       *public_key,
@@ -96,9 +101,15 @@ lasso_server_add_provider(LassoServer *server,
 {
   LassoProvider *provider;
 
+  g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
+  g_return_val_if_fail(metadata!=NULL, -2);
+
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
+  g_return_val_if_fail(provider!=NULL, -5);
 
   g_ptr_array_add(server->providers, provider);
+
+  return(0);
 }
 
 void
@@ -115,12 +126,15 @@ lasso_server_get_provider(LassoServer *server,
   char *id;
   int index, len;
   
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(providerID!=NULL, NULL);
+
   len = server->providers->len;
   for(index = 0; index<len; index++) {
     provider = g_ptr_array_index(server->providers, index);
     
     id = lasso_provider_get_providerID(provider);
-    if (!strcmp(providerID, id)) {
+    if (xmlStrEqual(providerID, id)) {
       return(provider);
     }
   }
