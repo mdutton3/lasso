@@ -189,6 +189,24 @@ int lasso_shutdown(void);
 
 %{
 
+void add_extension_to_array(xmlNode *xmlnode, GPtrArray *array)
+{
+	xmlOutputBufferPtr buf;
+	gchar *extensionString;
+
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf != NULL) {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL)
+			extensionString = g_strdup(buf->buffer->content);
+		else
+			extensionString = g_strdup(buf->conv->content);
+		xmlOutputBufferClose(buf);
+		g_ptr_array_add(array, extensionString);
+	}
+}
+
 void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
 {
         g_ptr_array_add(array, g_strdup(key));
@@ -199,9 +217,43 @@ void free_xml_list_element(xmlNode *xmlnode, gpointer unused)
 	xmlFreeNode(xmlnode);
 }
 
+GPtrArray *get_extension(GList *extensionList) {
+	GPtrArray *extensionArray;
+
+	if (extensionList == NULL)
+		return NULL;
+	extensionArray = g_ptr_array_sized_new(g_list_length(extensionList));
+	g_list_foreach(extensionList, (GFunc) add_extension_to_array, extensionArray);
+	return extensionArray;
+}
+
 gpointer get_object(gpointer value)
 {
 	return value == NULL ? NULL : g_object_ref(value);
+}
+
+void set_extension(GList **pointer, GPtrArray *extension) {
+	if (*pointer != NULL) {
+		g_list_foreach(*pointer, (GFunc) free_xml_list_element, NULL);
+		g_list_free(*pointer);
+	}
+	if (extension == NULL)
+		*pointer = NULL;
+	else {
+		int index;
+		for (index = 0; index < extension->len; index ++) {
+			xmlDoc *doc;
+			xmlNode *node;
+			doc = xmlReadDoc(g_ptr_array_index(extension, index), NULL, NULL,
+					XML_PARSE_NONET);
+			if (doc == NULL)
+				continue;
+			node = xmlDocGetRootElement(doc);
+			if (node != NULL)
+				*pointer = g_list_append(*pointer, xmlCopyNode(node, 1));
+			xmlFreeDoc(doc);
+		}
+	}
 }
 
 void set_object(gpointer *pointer, gpointer value)
@@ -630,7 +682,6 @@ typedef struct {
 #if defined(SWIGPYTHON)
 		%rename(__getitem__) getitem;
 #endif
-		%newobject getitem;
 		%exception getitem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
@@ -947,6 +998,7 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
+	%newobject Status_get;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1005,6 +1057,7 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(statusCode) StatusCode;
 #endif
+	%newobject StatusCode_get;
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1063,6 +1116,7 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(statusCode) StatusCode;
 #endif
+	%newobject StatusCode_get;
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1230,10 +1284,8 @@ typedef struct {
 %extend LassoLibAuthnRequest {
 	/* Attributes */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	LassoStringArray *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
 	// FIXME: LassoLibScoping *Scoping;
@@ -1255,43 +1307,10 @@ typedef struct {
 /* Attributes Implementations */
 
 /* extension */
-#define LassoLibAuthnRequest_get_Extension LassoLibAuthnRequest_Extension_get
-LassoStringArray *LassoLibAuthnRequest_Extension_get(LassoLibAuthnRequest *self) {
-	return NULL; /* FIXME */
-}
-#define LassoLibAuthnRequest_set_Extension LassoLibAuthnRequest_Extension_set
-void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringArray *Extension) {
-	if (self->Extension != NULL) {
-		g_list_foreach(self->Extension, (GFunc) free_xml_list_element, NULL);
-		g_list_free(self->Extension);
-	}
-	if (Extension == NULL)
-		self->Extension = NULL;
-	else {
-		int index;
-		for (index = 0; index < Extension->len; index ++) {
-			xmlDoc *doc;
-			xmlNode *node;
-			doc = xmlReadDoc(g_ptr_array_index(Extension, index), NULL, NULL,
-					XML_PARSE_NONET);
-			if (doc == NULL)
-				continue;
-			node = xmlDocGetRootElement(doc);
-			if (node != NULL) {
-				xmlNode *extensionNode;
-				xmlNs *libertyNamespace;
-				extensionNode = xmlNewNode(NULL, "Extension");
-				libertyNamespace = xmlNewNs(extensionNode, LASSO_LIB_HREF,
-						LASSO_LIB_PREFIX);
-				xmlSetNs(extensionNode, libertyNamespace);
-				xmlAddChild(extensionNode, xmlCopyNode(node, 1));
-				self->Extension = g_list_append(self->Extension, extensionNode);
-						
-			}
-			xmlFreeDoc(doc);
-		}
-	}
-}
+#define LassoLibAuthnRequest_get_extension(self) get_extension((self)->Extension)
+#define LassoLibAuthnRequest_extension_get(self) get_extension((self)->Extension)
+#define LassoLibAuthnRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibAuthnRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1333,14 +1352,13 @@ typedef struct {
 
 	// FIXME: LassoSamlAssertion *Assertion;
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
+	%newobject Status_get;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1358,6 +1376,12 @@ typedef struct {
 %{
 
 /* Attributes inherited from LassoSamlpResponse implementations */
+
+/* extension */
+#define LassoLibAuthnResponse_get_extension(self) get_extension((self)->Extension)
+#define LassoLibAuthnResponse_extension_get(self) get_extension((self)->Extension)
+#define LassoLibAuthnResponse_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibAuthnResponse_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* Status */
 #define LassoLibAuthnResponse_get_Status(self) get_object(LASSO_SAMLP_RESPONSE(self)->Status)
@@ -1403,14 +1427,13 @@ typedef struct {
 %extend LassoLibFederationTerminationNotification {
 	/* Attributes */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
 #endif
+	%newobject NameIdentifier_get;
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1430,6 +1453,12 @@ typedef struct {
 %{
 
 /* Attributes implementations */
+
+/* extension */
+#define LassoLibFederationTerminationNotification_get_extension(self) get_extension((self)->Extension)
+#define LassoLibFederationTerminationNotification_extension_get(self) get_extension((self)->Extension)
+#define LassoLibFederationTerminationNotification_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibFederationTerminationNotification_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* NameIdentifier */
 #define LassoLibFederationTerminationNotification_get_NameIdentifier(self) get_object((self)->NameIdentifier)
@@ -1485,14 +1514,13 @@ typedef struct {
 %extend LassoLibLogoutRequest {
 	/* Attributes */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
 #endif
+	%newobject NameIdentifier_get;
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1512,6 +1540,12 @@ typedef struct {
 %{
 
 /* Attributes implementations */
+
+/* extension */
+#define LassoLibLogoutRequest_get_extension(self) get_extension((self)->Extension)
+#define LassoLibLogoutRequest_extension_get(self) get_extension((self)->Extension)
+#define LassoLibLogoutRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibLogoutRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* nameIdentifier */
 #define LassoLibLogoutRequest_get_NameIdentifier(self) get_object((self)->NameIdentifier)
@@ -1544,10 +1578,8 @@ typedef struct {
 %extend LassoLibLogoutResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -1562,6 +1594,7 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
+	%newobject Status_get;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1582,6 +1615,12 @@ typedef struct {
 %{
 
 /* Implementations of attributes inherited from LassoLibStatusResponse */
+
+/* extension */
+#define LassoLibLogoutResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_extension_get(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_set_extension(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibLogoutResponse_extension_set(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibLogoutResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -1637,24 +1676,25 @@ typedef struct {
 %extend LassoLibRegisterNameIdentifierRequest {
 	/* Attributes */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(idpProvidedNameIdentifier) IDPProvidedNameIdentifier;
 #endif
+	%newobject IDPProvidedNameIdentifier_get;
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
 
 #ifndef SWIGPHP4
 	%rename(oldProvidedNameIdentifier) OldProvidedNameIdentifier;
 #endif
+	%newobject OldProvidedNameIdentifier_get;
 	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
 
 #ifndef SWIGPHP4
 	%rename(spProvidedNameIdentifier) SPProvidedNameIdentifier;
 #endif
+	%newobject SPProvidedNameIdentifier_get;
 	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1677,6 +1717,12 @@ typedef struct {
 %{
 
 /* Attributes implementations */
+
+/* extension */
+#define LassoLibRegisterNameIdentifierRequest_get_extension(self) get_extension((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_extension_get(self) get_extension((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierRequest_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* idpProvidedNameIdentifier */
 #define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_object((self)->IDPProvidedNameIdentifier)
@@ -1721,10 +1767,8 @@ typedef struct {
 %extend LassoLibRegisterNameIdentifierResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -1739,6 +1783,7 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
+	%newobject Status_get;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1759,6 +1804,12 @@ typedef struct {
 %{
 
 /* Attributes inherited from LassoLibStatusResponse implementations */
+
+/* extension */
+#define LassoLibRegisterNameIdentifierResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_extension_get(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_set_extension(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierResponse_extension_set(self, value) set_extension(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibRegisterNameIdentifierResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -1814,14 +1865,13 @@ typedef struct {
 %extend LassoLibStatusResponse {
 	/* Attributes */
 
-#ifndef SWIGPHP4
-	%rename(extension) Extension;
-#endif
-	// FIXME: GList *Extension;
+	%newobject extension_get;
+	LassoStringArray *extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
+	%newobject Status_get;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1839,6 +1889,12 @@ typedef struct {
 %{
 
 /* Attributes implementations */
+
+/* extension */
+#define LassoLibStatusResponse_get_extension(self) get_extension((self)->Extension)
+#define LassoLibStatusResponse_extension_get(self) get_extension((self)->Extension)
+#define LassoLibStatusResponse_set_extension(self, value) set_extension(&(self)->Extension, (value))
+#define LassoLibStatusResponse_extension_set(self, value) set_extension(&(self)->Extension, (value))
 
 /* Status */
 #define LassoLibStatusResponse_get_Status(self) get_object((self)->Status)
@@ -2156,11 +2212,13 @@ typedef struct {
 #ifndef SWIGPHP4
 	%rename(localNameIdentifier) local_nameIdentifier;
 #endif
+	%newobject local_nameIdentifier_get;
 	LassoSamlNameIdentifier *local_nameIdentifier;
 
 #ifndef SWIGPHP4
 	%rename(remoteNameIdentifier) remote_nameIdentifier;
 #endif
+	%newobject remote_nameIdentifier_get;
 	LassoSamlNameIdentifier *remote_nameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -2417,9 +2475,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%immutable request;
@@ -2591,9 +2649,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%immutable request;
@@ -2865,9 +2923,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%immutable request;
@@ -3075,9 +3133,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%immutable request;
@@ -3317,9 +3375,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%newobject session_get;
@@ -3480,9 +3538,9 @@ typedef struct {
 	%immutable msgUrl;
 	char *msgUrl;
 
+	%newobject nameIdentifier_get;
 	LassoSamlNameIdentifier *nameIdentifier;
 
-	%newobject remoteProviderId_get;
 	char *remoteProviderId;
 
 	%immutable request;
@@ -3496,6 +3554,7 @@ typedef struct {
 
 	/* Attributes */
 
+	%newobject oldNameIdentifier_get;
 	LassoSamlNameIdentifier *oldNameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */

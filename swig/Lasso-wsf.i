@@ -4,10 +4,13 @@
  *
  * SWIG bindings for Lasso Library
  *
- * Copyright (C) 2004 Entr'ouvert
+ * Copyright (C) 2004, 2005 Entr'ouvert
  * http://lasso.entrouvert.org
  *
  * Authors: Romain Chantereau <rchantereau@entrouvert.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
+ *          Valery Febvre <vfebvre@easter-eggs.com>
+ *          Frederic Peters <fpeters@entrouvert.com>
  *          Emmanuel Raviart <eraviart@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -26,6 +29,7 @@
  */
 
 %{
+
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 #include <lasso/xml/dst_new_data.h>
@@ -34,6 +38,7 @@
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
 #include <lasso/xml/pp_msg_contact.h>
+
 %}
 
 /* wsf prefix & href */
