@@ -373,7 +373,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   case lassoHttpMethodGet:
   case lassoHttpMethodRedirect:
     /* LibAuthnRequest send by method GET */
-    LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new_from_query(authn_request_msg);
+    LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+										lassoNodeExportTypeQuery);
     break;
   case lassoHttpMethodPost:
     /* TODO LibAuthnRequest send by method POST */

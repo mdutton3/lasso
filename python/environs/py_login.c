@@ -165,6 +165,29 @@ PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args) {
   return (int_wrap(ret));
 }
 
+PyObject *login_build_authn_response_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gint         authentication_result;
+  const gchar *authenticationMethod;
+  const gchar *reauthenticateOnOrAfter;
+  gint ret;
+
+  if (CheckArgs(args, "OISS:login_build_artifact_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oiss:login_build_artifact_msg",
+			 &login_obj, &authentication_result,
+			 &authenticationMethod, &reauthenticateOnOrAfter))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_build_authn_response_msg(LassoLogin_get(login_obj),
+					     authentication_result,
+					     authenticationMethod,
+					     reauthenticateOnOrAfter);
+
+  return (int_wrap(ret));
+}
+
 PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gint ret;
@@ -177,6 +200,40 @@ PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
   else return NULL;
 
   ret = lasso_login_build_request_msg(LassoLogin_get(login_obj));
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_dump(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar *ret;
+
+  if (CheckArgs(args, "O:login_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_dump",
+			 &login_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_dump(LassoLogin_get(login_obj));
+
+  return (charPtrConst_wrap(ret));
+}
+
+PyObject *login_handle_authn_response_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar    *authn_response_msg;
+  gboolean ret;
+
+  if (CheckArgs(args, "OS:login_handle_authn_response_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_handle_authn_response_msg",
+			 &login_obj, &authn_response_msg))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_handle_authn_response_msg(LassoLogin_get(login_obj),
+					      authn_response_msg);
 
   return (int_wrap(ret));
 }

@@ -154,7 +154,7 @@ lasso_authn_response_new_from_export(xmlChar              *buffer,
 				     lassoNodeExportTypes  export_type)
 {
   xmlChar *buffer_decoded = xmlMalloc(strlen(buffer));
-  LassoNode *response;
+  LassoNode *response = NULL;
 
   g_return_val_if_fail(buffer != NULL, NULL);
 
@@ -163,14 +163,13 @@ lasso_authn_response_new_from_export(xmlChar              *buffer,
   switch (export_type) {
   case lassoNodeExportTypeBase64:
     xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));
+    lasso_node_import(response, buffer_decoded);
+    xmlFree(buffer_decoded);
     break;
   case lassoNodeExportTypeQuery:
   case lassoNodeExportTypeSoap:
     break;
   }
-
-  lasso_node_import(response, buffer_decoded);
-  xmlFree(buffer_decoded);
 
   return (response);
 }

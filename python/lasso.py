@@ -874,6 +874,9 @@ class Login:
     def build_request_msg(self):
         return lassomod.login_build_request_msg(self)
 
+    def handle_authn_response_msg(self, authn_response_msg):
+        return lassomod.login_handle_authn_response_msg(self, authn_response_msg)
+
     def handle_request_msg(self, request_msg):
         return lassomod.login_handle_request_msg(self, request_msg)
 
