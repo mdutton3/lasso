@@ -7,16 +7,21 @@ javalibdir = $(prefix)/lib/java
 javasharedir = $(prefix)/share/java
 
 # Shared library.
+if MINGW
 javalib_LTLIBRARIES = jlasso.la
+else
+javalib_LTLIBRARIES = libjlasso.la
+endif
 
 jlasso_la_SOURCES =	lasso_wrap.c
 jlasso_la_CFLAGS = $(JDK_INCLUDES) $(LASSO_CFLAGS) -I$(top_srcdir)
 jlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
-if MINGW
 jlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
-else
-jlasso_la_LDFLAGS =	-no-undefined -avoid-version
-endif
+
+libjlasso_la_SOURCES =	lasso_wrap.c
+libjlasso_la_CFLAGS = $(JDK_INCLUDES) $(LASSO_CFLAGS) -I$(top_srcdir)
+libjlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
+libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 
 javashare_DATA = lasso.jar
 
