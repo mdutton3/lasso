@@ -227,7 +227,7 @@ add_descriptor_childnodes(gchar *key, GList *value, xmlNode *xmlnode)
 }
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode, *t;
 	LassoProvider *provider = LASSO_PROVIDER(node);

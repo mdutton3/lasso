@@ -55,11 +55,11 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 { 
 	xmlNode *xmlnode, *t;
 
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
 	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
 

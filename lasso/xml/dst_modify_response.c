@@ -74,12 +74,12 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 }
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	xmlNs *ns;
 
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlNewNs(xmlnode, LASSO_DST_MODIFY_RESPONSE(node)->hrefServiceType,
 		      LASSO_DST_MODIFY_RESPONSE(node)->prefixServiceType);
 	xmlSetNs(xmlnode, ns);

@@ -107,26 +107,26 @@ static LassoNodeClass *parent_class = NULL;
 static void
 add_provider_childnode(gchar *key, LassoProvider *value, xmlNode *xmlnode)
 {
-	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
 static void
 add_service_childnode(gchar *key, GList *value, xmlNode *xmlnode)
 {
 	while (value != NULL) {
-		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value->data)));
+		xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value->data), TRUE));
 		value = g_list_next(value);
 	}
 }
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoServer *server = LASSO_SERVER(node);
 	char *signature_methods[] = { NULL, "RSA_SHA1", "DSA_SHA1"};
 	xmlNode *xmlnode;
 
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlNodeSetName(xmlnode, "Server");
 	xmlSetProp(xmlnode, "ServerDumpVersion", "2");
 

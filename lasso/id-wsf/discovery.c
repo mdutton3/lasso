@@ -333,12 +333,12 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoDiscovery *discovery = LASSO_DISCOVERY(node);
 
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlNodeSetName(xmlnode, "Discovery");
 	xmlSetProp(xmlnode, "DiscoveryDumpVersion", "2");
 

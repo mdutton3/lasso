@@ -39,8 +39,8 @@
 
 
 
-static void lasso_node_build_xmlNode_from_snippets(
-		LassoNode *node, xmlNode *xmlnode, struct XmlSnippet *snippets);
+static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
 static int set_value_at_path(LassoNode *node, char *path, char *query_value);
 static char* get_value_by_path(LassoNode *node, char *path);
@@ -84,7 +84,7 @@ lasso_node_dump(LassoNode *node, const char *encoding, int format)
 	if (buf == NULL) {
 		return NULL;
 	}
-	xmlnode = lasso_node_get_xmlNode(node);
+	xmlnode = lasso_node_get_xmlNode(node, TRUE);
 	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, format, encoding);
 	xmlOutputBufferFlush(buf);
 	if (buf->conv != NULL) {
@@ -129,7 +129,7 @@ lasso_node_export_to_signed_xmlnode(LassoNode *node,
 	xmlSecDSigCtx *dsig_ctx;
 	char *id_attr_name = NULL;
 
-	message = lasso_node_get_xmlNode(node);
+	message = lasso_node_get_xmlNode(node, FALSE);
 
 	sign_tmpl = xmlSecFindNode(message, xmlSecNodeSignature, xmlSecDSigNs);
 	if (sign_tmpl && private_key_file) {
@@ -471,12 +471,12 @@ lasso_node_build_query(LassoNode *node)
 }
 
 xmlNodePtr
-lasso_node_get_xmlNode(LassoNode *node)
+lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class;
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 	class = LASSO_NODE_GET_CLASS(node);
-	return class->get_xmlNode(node);
+	return class->get_xmlNode(node, lasso_dump);
 }
 
 /*****************************************************************************/
@@ -602,7 +602,7 @@ lasso_node_impl_build_query(LassoNode *node)
 }
 
 static xmlNode*
-lasso_node_impl_get_xmlNode(LassoNode *node)
+lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 	xmlNode *xmlnode;
@@ -623,7 +623,8 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 	t = g_list_last(list_classes);
 	while (t) {
 		class = t->data;
-		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
+		lasso_node_build_xmlNode_from_snippets(node, xmlnode,
+				class->node_data->snippets, lasso_dump);
 		t = g_list_previous(t);
 	}
 
@@ -1033,7 +1034,7 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 
 static void
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
-		struct XmlSnippet *snippets)
+		struct XmlSnippet *snippets, gboolean lasso_dump)
 {
 	struct XmlSnippet *snippet;
 	SnippetType type;
@@ -1045,6 +1046,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		void *value = G_STRUCT_MEMBER(void*, node, snippet->offset);
 		char *str = value;
 		type = snippet->type & 0xff;
+
+		if (lasso_dump == FALSE && snippet->type & SNIPPET_LASSO_DUMP)
+			continue;
 
 		if (value == NULL && ! (snippet->type & SNIPPET_BOOLEAN ||
 					snippet->type & SNIPPET_INTEGER) )
@@ -1064,7 +1068,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				xmlAddChild(xmlnode, xmlNewText(str));
 				break;
 			case SNIPPET_NODE:
-				xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+				xmlAddChild(xmlnode, lasso_node_get_xmlNode(
+							LASSO_NODE(value), lasso_dump));
 				break;
 			case SNIPPET_CONTENT:
 				xmlNewTextChild(xmlnode, NULL, snippet->name, str);
@@ -1073,19 +1078,21 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				xmlns = xmlNewNs(NULL, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 
 				t = xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-							LASSO_NODE(value)));
+							LASSO_NODE(value), lasso_dump));
 				xmlNodeSetName(t, snippet->name);
 				xmlSetNs(t, xmlns);
 				break;
 			case SNIPPET_NODE_IN_CHILD:
 				t = xmlNewTextChild(xmlnode, NULL, snippet->name, NULL);
-				xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value)));
+				xmlAddChild(t, lasso_node_get_xmlNode(
+							LASSO_NODE(value), lasso_dump));
 				break;
 			case SNIPPET_LIST_NODES:
 				elem = (GList *)value;
 				while (elem) {
 					xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-								LASSO_NODE(elem->data)));
+								LASSO_NODE(elem->data),
+								lasso_dump));
 					elem = g_list_next(elem);
 				}
 				break;
@@ -1114,6 +1121,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				xmlNode *signature = NULL, *reference, *key_info;
 				char *uri;
 				char *id;
+
+				if (lasso_dump)
+					break; /* no signature in lasso dumps */
 
 				while (klass && LASSO_IS_NODE_CLASS(klass) && klass->node_data) {
 					if (klass->node_data->sign_type_offset)
@@ -1168,6 +1178,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			} break;
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
+			case SNIPPET_LASSO_DUMP:
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)

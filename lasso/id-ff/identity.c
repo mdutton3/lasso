@@ -80,11 +80,11 @@ static LassoNodeClass *parent_class = NULL;
 static void
 add_federation_childnode(gchar *key, LassoFederation *value, xmlNode *xmlnode)
 {
-	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value)));
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoIdentity *identity = LASSO_IDENTITY(node);

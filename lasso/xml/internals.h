@@ -45,7 +45,8 @@ typedef enum {
 	/* transformers for content transformation */
 	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */
 	SNIPPET_BOOLEAN = 1 << 20,
-	SNIPPET_INTEGER = 1 << 21
+	SNIPPET_INTEGER = 1 << 21,
+	SNIPPET_LASSO_DUMP = 1 << 22,
 } SnippetType;
 
 struct XmlSnippet {

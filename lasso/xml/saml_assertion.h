@@ -75,6 +75,12 @@ struct _LassoSamlAssertion {
 	char *AssertionID;
 	char *Issuer;
 	char *IssueInstant;
+
+	/* ds:Signature stuff */
+	lassoSignatureType sign_type;
+	lassoSignatureMethod sign_method;
+	char *private_key_file;
+	char *certificate_file;
 };
 
 struct _LassoSamlAssertionClass {
@@ -83,11 +89,6 @@ struct _LassoSamlAssertionClass {
 
 LASSO_EXPORT GType lasso_saml_assertion_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_assertion_new(void);
-
-LASSO_EXPORT gint lasso_saml_assertion_set_signature(LassoSamlAssertion *node,
-		gint                 sign_method,
-		const xmlChar       *private_key_file,
-		const xmlChar       *certificate_file);
 
 #ifdef __cplusplus
 }

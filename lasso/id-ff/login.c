@@ -68,7 +68,7 @@ lasso_login_build_assertion(LassoLogin *login,
 		const char *notBefore,
 		const char *notOnOrAfter)
 {
-	LassoLibAssertion *assertion;
+	LassoSamlAssertion *assertion;
 	LassoLibAuthenticationStatement *as;
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoProfile *profile;
@@ -88,11 +88,10 @@ lasso_login_build_assertion(LassoLogin *login,
 	 in this case, no InResponseTo will be added in assertion
 	 (XXX: what does that mean ?  would profile->request also be NULL?)
 	 */
-	assertion = lasso_lib_assertion_new_full(
+	assertion = LASSO_SAML_ASSERTION(lasso_lib_assertion_new_full(
 			LASSO_PROVIDER(profile->server)->ProviderID,
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID,
-			profile->remote_providerID,
-			notBefore, notOnOrAfter);
+			profile->remote_providerID, notBefore, notOnOrAfter));
 
 	if (strcmp(login->nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0) {
 		/* if NameIDPolicy is 'onetime', don't use a federation */
@@ -115,15 +114,14 @@ lasso_login_build_assertion(LassoLogin *login,
 	LASSO_SAML_ASSERTION(assertion)->AuthenticationStatement = 
 				LASSO_SAML_AUTHENTICATION_STATEMENT(as);
 
-	/* FIXME : How to know if the assertion must be signed or unsigned ? */
-#if 0
-	/* signature should be added at end (i.e. move this to
-	 * build_response_msg and build_authn_response_msg) */
-	ret = lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
-			profile->server->signature_method,
-			profile->server->private_key,
-			profile->server->certificate);
-#endif
+	if (profile->server->certificate) {
+		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	} else {
+		assertion->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
+	assertion->sign_method = profile->server->signature_method;
+	assertion->private_key_file = g_strdup(profile->server->private_key);
+	assertion->certificate_file = g_strdup(profile->server->certificate);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		/* only add assertion if response is an AuthnResponse */
@@ -639,7 +637,8 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	/* XXX: not sure this was signed in Lasso 0.5.0 */
+	/* Countermeasure: The issuer should sign <lib:AuthnResponse> messages.
+	 * (binding and profiles (1.2errata2, page 65) */
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -1175,12 +1174,12 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoLogin *login = LASSO_LOGIN(node);
 
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	xmlSetProp(xmlnode, "LoginDumpVersion", "2");
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)

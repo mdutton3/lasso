@@ -124,11 +124,11 @@ add_assertion_childnode(gchar *key, LassoLibAssertion *value, xmlNode *xmlnode)
 	xmlNode *t;
 	t = xmlNewTextChild(xmlnode, NULL, "Assertion", NULL);
 	xmlSetProp(t, "RemoteProviderID", key);
-	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value)));
+	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	xmlNode *xmlnode;
 	LassoSession *session = LASSO_SESSION(node);

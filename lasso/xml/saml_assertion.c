@@ -23,6 +23,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/xmltree.h>
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+
 #include <lasso/xml/saml_assertion.h>
 
 /*
@@ -68,6 +72,8 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSamlAssertion, AuthenticationStatement) },
 	{ "AttributeStatement", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlAssertion, AttributeStatement) },
+	{ "Signature", SNIPPET_SIGNATURE,
+		G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoSamlAssertion, MajorVersion) },
 	{ "MinorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
@@ -75,6 +81,17 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "AssertionID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, AssertionID) },
 	{ "Issuer", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, Issuer) },
 	{ "IssueInstant", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlAssertion, IssueInstant) },
+
+	/* hidden fields; use in lasso dumps */
+	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlAssertion, sign_type) },
+	{ "SignMethod", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlAssertion, sign_method) },
+	{ "PrivateKeyFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlAssertion, private_key_file) },
+	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlAssertion, certificate_file) },
+
 	{ NULL, 0, 0}
 };
 
@@ -114,39 +131,77 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 
 
 static xmlNode*
-get_xmlNode(LassoNode *node)
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
+	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	
-	xmlnode = parent_class->get_xmlNode(node);
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlSearchNs(NULL, xmlnode, "saml");
 	insure_namespace(xmlnode, ns);
 
+	if (lasso_dump == FALSE && assertion->sign_type) {
+		/* sign assertion now */
+		/* code could be refactored with lasso_node_export_to_signed_xmlnode */
+		xmlDoc *doc;
+		xmlNode *sign_tmpl;
+		xmlSecDSigCtx *dsig_ctx;
+		char *id_value;
+		xmlAttr *id_attr;
+
+		sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+		if (sign_tmpl == NULL)
+			return xmlnode;
+
+		doc = xmlNewDoc("1.0");
+		xmlDocSetRootElement(doc, xmlnode);
+		xmlSetTreeDoc(sign_tmpl, doc);
+
+		id_value = xmlGetProp(xmlnode, "AssertionID");
+		id_attr = xmlHasProp(xmlnode, "AssertionID");
+		if (id_value) {
+			xmlAddID(NULL, doc, id_value, id_attr);
+			xmlFree(id_value);
+		}
+
+		dsig_ctx = xmlSecDSigCtxCreate(NULL);
+		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(assertion->private_key_file,
+				xmlSecKeyDataFormatPem,
+				NULL, NULL, NULL);
+		if (dsig_ctx->signKey == NULL) {
+			/* XXX: file existence should actually be tested on
+			 * LassoServer creation */
+			message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
+					assertion->private_key_file);
+			xmlSecDSigCtxDestroy(dsig_ctx);
+			return NULL;
+		}
+		if (assertion->certificate_file != NULL && assertion->certificate_file[0] != 0) {
+			if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey,
+						assertion->certificate_file,
+						xmlSecKeyDataFormatPem) < 0) {
+				message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
+					assertion->certificate_file);
+				xmlSecDSigCtxDestroy(dsig_ctx);
+				return NULL;
+			}
+		}
+		if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
+			message(G_LOG_LEVEL_CRITICAL,
+					lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
+					xmlnode->name);
+			xmlSecDSigCtxDestroy(dsig_ctx);
+			return NULL;
+		}
+		xmlSecDSigCtxDestroy(dsig_ctx);
+		xmlUnlinkNode(xmlnode);
+		xmlFreeDoc(doc);
+	}
+
 	return xmlnode;
-}
-
-gint
-lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
-				   gint                 sign_method,
-				   const xmlChar       *private_key_file,
-				   const xmlChar       *certificate_file)
-{
-	return 0;
-#if 0 /* XXX: signatures are done differently */
-	gint ret;
-	LassoNodeClass *class;
-
-	g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
-			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	class = LASSO_NODE_GET_CLASS(node);
-
-	ret = class->add_signature(LASSO_NODE (node), sign_method,
-			private_key_file, certificate_file);
-
-	return ret;
-#endif
 }
 
 /*****************************************************************************/
@@ -169,6 +224,8 @@ class_init(LassoSamlAssertionClass *klass)
 	lasso_node_class_set_nodename(nclass, "Assertion");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(LassoSamlAssertion, sign_type);
+	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(LassoSamlAssertion, sign_method);
 }
 
 GType

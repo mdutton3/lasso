@@ -58,6 +58,8 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
+	/* XXX: should not use lasso_node_dump; it is not a dump, it will go
+	 * on the wire */
 	profile->msg_body = lasso_node_dump(LASSO_NODE(lecp->authnRequestEnvelope), "utf-8", 0);
 	if (profile->msg_body == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
