@@ -162,6 +162,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				(GHFunc)add_service_childnode, t);
 	}
 
+	xmlCleanNs(xmlnode);
+
 	return xmlnode;
 }
 

@@ -51,8 +51,6 @@ static
 void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature);
 
-static void xmlCleanNs(xmlNode *root_node);
-
 /*****************************************************************************/
 /* virtual public methods                                                    */
 /*****************************************************************************/
@@ -1287,8 +1285,9 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
 	xmlNode *t;
 	xmlNs *ns2, *ns3;
 
-	if (sameNs(ns, node->ns))
+	if (sameNs(ns, node->ns)) {
 		node->ns = ns;
+	}
 
 	for (t = node->children; t; t = t->next) {
 		if (t->type == XML_ELEMENT_NODE)
@@ -1317,7 +1316,7 @@ xmlUseNsDef(xmlNs *ns, xmlNode *node)
  * xmlCleanNs removes duplicate xml namespace declarations and merge them on
  * the @root_node.
  **/
-static void
+void
 xmlCleanNs(xmlNode *root_node)
 {
 	xmlNs *ns;
