@@ -19,7 +19,7 @@ liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-ws
 	$(SWIG) -v -csharp -namespace lasso -module lasso \
 		-o liblassosharpglue_wrap.c $(top_srcdir)/swig/Lasso.i
 	cp liblassosharpglue_wrap.c liblassosharpglue_wrap.c.bak
-	sed -e 's/(char \*) "\(.*\)"/malloc("\1")/' \
+	sed -e 's/(char \*) "\(.*\)"/strdup("\1")/' \
 		< liblassosharpglue_wrap.c.bak > liblassosharpglue_wrap.c
 
 dotnetlibdir = $(datadir)/dotnet/lasso/
