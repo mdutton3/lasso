@@ -181,47 +181,82 @@ LassoNode *
 lasso_logout_response_new_from_query(gchar *query)
 {
   LassoNode *response, *ss, *ssc;
-  xmlChar *relayState, *statusCodeValue;
-  GData *gd;
+  xmlChar   *str;
+  GData     *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
 
   gd = lasso_query_to_dict(query);
   
   /* ResponseID */
-  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
   /* MajorVersion */
-  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
   /* MinorVersion */
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
   
   /* IssueInstant */
-  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
   /* InResponseTo */
-  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
   /* Recipient */
-  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
   /* ProviderID */
-  lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
-					   lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
+  lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response), str);
   
   /* StatusCode */
-  statusCodeValue = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Value"), 0);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Value"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return (NULL);
+  }
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
   lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
-				    statusCodeValue);
+				    str);
   lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
 				    LASSO_SAMLP_STATUS_CODE(ssc));
   lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
@@ -231,43 +266,14 @@ lasso_logout_response_new_from_query(gchar *query)
 
 
   /* RelayState */
-  relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
-  if (relayState != NULL)
-    lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response), relayState);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
+  if (str != NULL)
+    lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response), str);
   
   g_datalist_clear(&gd);
 
   return(response);
 }
-
-/* LassoNode * */
-/* lasso_logout_response_new_from_request_export(gchar               *buffer, */
-/* 					      lassoNodeExportType  export_type, */
-/* 					      gchar               *providerID, */
-/* 					      gchar               *statusCodeValue) */
-/* { */
-/*   LassoNode *request, *response; */
-
-/*   g_return_val_if_fail(buffer != NULL, NULL); */
-
-/*   switch(export_type){ */
-/*   case lassoNodeExportTypeQuery: */
-/*     request = lasso_logout_request_new_from_export(buffer, export_type); */
-/*     break; */
-/*   case lassoNodeExportTypeSoap: */
-/*     request = lasso_logout_request_new_from_export(buffer, export_type); */
-/*     break; */
-/*   default: */
-/*     message(G_LOG_LEVEL_WARNING, "Invalid export type\n"); */
-/*     return(NULL); */
-/*   } */
-
-/*   response = lasso_logout_response_new(providerID, */
-/* 				       statusCodeValue, */
-/* 				       request); */
-
-/*   return(response); */
-/* } */
 
 LassoNode *
 lasso_logout_response_new_from_soap(gchar *buffer)
