@@ -234,13 +234,15 @@ int lasso_shutdown(void);
 /* HttpMethod */
 #ifndef SWIGPHP4
 %rename(httpMethodAny) lassoHttpMethodAny;
+%rename(httpMethodSelfAddressed) lassoHttpMethodSelfAddressed;
 %rename(httpMethodGet) lassoHttpMethodGet;
 %rename(httpMethodPost) lassoHttpMethodPost;
 %rename(httpMethodRedirect) lassoHttpMethodRedirect;
 %rename(httpMethodSoap) lassoHttpMethodSoap;
 #endif
 typedef enum {
-	lassoHttpMethodAny = 0,
+	lassoHttpMethodAny = -1,
+	lassoHttpMethodSelfAddressed,
 	lassoHttpMethodGet,
 	lassoHttpMethodPost,
 	lassoHttpMethodRedirect,
@@ -474,12 +476,14 @@ typedef enum {
 %rename(PROFILE_ERROR_INVALID_SOAP_MSG) LASSO_PROFILE_ERROR_INVALID_SOAP_MSG;
 %rename(PROFILE_ERROR_MISSING_REQUEST) LASSO_PROFILE_ERROR_MISSING_REQUEST;
 %rename(PROFILE_ERROR_INVALID_HTTP_METHOD) LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+%rename(PROFILE_ERROR_INVALID_PROTOCOLPROFILE) LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 #endif
 #define LASSO_PROFILE_ERROR_INVALID_QUERY              401
 #define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402
 #define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG          -403
 #define LASSO_PROFILE_ERROR_MISSING_REQUEST           -404
-#define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD       -404
+#define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD       -405
+#define LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE   -406
 
 /* functions/methods parameters checking */
 #ifndef SWIGPHP4
@@ -1581,6 +1585,10 @@ typedef struct {
 				 lassoHttpMethod httpMethod = lassoHttpMethodRedirect);
 		END_THROW_ERROR
 
+		THROW_ERROR
+		void initSelfAddressedAuthnRequest(gchar *remoteProviderID = NULL);
+		END_THROW_ERROR
+
 		gboolean mustAskForConsent();
 
 		gboolean mustAuthenticate();
@@ -1599,11 +1607,6 @@ typedef struct {
 
 		THROW_ERROR
 		void processResponseMsg(gchar *responseMsg);
-		END_THROW_ERROR
-
-		THROW_ERROR
-		void processWithoutAuthnRequestMsg(gchar *remoteProviderID = NULL,
-						   gchar *relayState = NULL);
 		END_THROW_ERROR
 	}
 } LassoLogin;
@@ -1759,13 +1762,13 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 #define LassoLogin_dump lasso_login_dump
 #define LassoLogin_initAuthnRequest lasso_login_init_authn_request
 #define LassoLogin_initRequest lasso_login_init_request
+#define LassoLogin_initSelfAddressedAuthnRequest lasso_login_init_self_addressed_authn_request
 #define LassoLogin_mustAskForConsent lasso_login_must_ask_for_consent
 #define LassoLogin_mustAuthenticate lasso_login_must_authenticate
 #define LassoLogin_processAuthnRequestMsg lasso_login_process_authn_request_msg
 #define LassoLogin_processAuthnResponseMsg lasso_login_process_authn_response_msg
 #define LassoLogin_processRequestMsg lasso_login_process_request_msg
 #define LassoLogin_processResponseMsg lasso_login_process_response_msg
-#define LassoLogin_processWithoutAuthnRequestMsg lasso_login_process_without_authn_request_msg
 
 %}
 

@@ -62,7 +62,8 @@ typedef enum {
 } lassoRequestType;
 
 typedef enum {
-  lassoHttpMethodAny = 0,
+  lassoHttpMethodAny = -1,
+  lassoHttpMethodSelfAddressed,
   lassoHttpMethodGet,
   lassoHttpMethodPost,
   lassoHttpMethodRedirect,

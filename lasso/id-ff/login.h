@@ -110,6 +110,8 @@ LASSO_EXPORT gint        lasso_login_init_authn_request         (LassoLogin     
 LASSO_EXPORT gint        lasso_login_init_request               (LassoLogin      *login,
 								 gchar           *response_msg,
 								 lassoHttpMethod  response_http_method);
+LASSO_EXPORT gint        lasso_login_init_self_addressed_authn_request (LassoLogin  *login,
+									const gchar *remote_providerID);
 
 LASSO_EXPORT gboolean    lasso_login_must_ask_for_consent       (LassoLogin *login);
 
@@ -127,11 +129,6 @@ LASSO_EXPORT gint        lasso_login_process_request_msg        (LassoLogin *log
 
 LASSO_EXPORT gint        lasso_login_process_response_msg        (LassoLogin  *login,
 								  gchar       *response_msg);
-
-
-LASSO_EXPORT gint        lasso_login_process_without_authn_request_msg (LassoLogin  *login,
-									const gchar *remote_providerID,
-									const gchar *relayState);
 
 #ifdef __cplusplus
 }

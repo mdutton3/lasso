@@ -67,9 +67,6 @@ lasso_strerror(int error_code)
   case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
     return "Failed to get LassoProvider object with providerID %s in LassoServer object.\n";
 
-  case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
-    return "Invalid NameIDPolicy in lib:AuthnRequest : %s\n";
-
   case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
     return "Unsupported logout protocol profile\n";
 
@@ -83,6 +80,8 @@ lasso_strerror(int error_code)
     return "Missing request\n";
   case LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD:
     return "Invalid HTTP method\n";
+  case LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE:
+    return "Invalid protocol profile\n";
 
   case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
     return "An object type provided as parameter is invalid or object is NULL.\n";
@@ -90,6 +89,9 @@ lasso_strerror(int error_code)
     return "A parameter value is invalid.\n";
   case LASSO_PARAM_ERROR_CHECK_FAILED:
     return "The error return location should be either NULL or contains a NULL error.\n";
+
+  case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
+    return "Invalid NameIDPolicy in lib:AuthnRequest: %s\n";
 
   default:
     return g_strdup_printf("Undefined error code %d.", error_code);
