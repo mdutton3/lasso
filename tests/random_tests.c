@@ -31,6 +31,7 @@
 #include <lasso/xml/lib_assertion.h>
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/saml_name_identifier.h>
+#include <lasso/xml/samlp_response.h>
 
 
 Suite* random_suite();
@@ -80,7 +81,6 @@ START_TEST(test01_server_new)
 			TESTSDATADIR "/idp1-la/certificate.pem");
 
 	dump = lasso_node_dump(LASSO_NODE(server));
-	printf("dump:\n%s\n", dump);
 }
 END_TEST
 
@@ -102,7 +102,6 @@ START_TEST(test02_server_add_provider)
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
 	dump = lasso_node_dump(LASSO_NODE(server));
-	printf("dump:\n%s\n", dump);
 }
 END_TEST
 
@@ -127,7 +126,6 @@ START_TEST(test03_server_new_from_dump)
 
 	server2 = lasso_server_new_from_dump(dump);
 	dump = lasso_node_dump(LASSO_NODE(server2));
-	printf("dump:\n%s\n", dump);
 }
 END_TEST
 
@@ -157,7 +155,8 @@ START_TEST(test05_xsi_type)
 	/* check lib:AuthnContext element is not converted to
 	 * saml:AuthnContext xsi:type="lib:AuthnContextType" and
 	 * lib:AuthenticationStatement is converted to
-	 * saml:AuthenticationStatement * xsi:type="lib:AuthenticationStatementType"*/
+	 * saml:AuthenticationStatement * xsi:type="lib:AuthenticationStatementType"
+	 */
 
 	LassoSamlAssertion *assertion;
 	LassoLibAuthenticationStatement *stmt;
@@ -182,6 +181,26 @@ START_TEST(test05_xsi_type)
 }
 END_TEST
 
+START_TEST(test06_lib_statuscode)
+{
+	/* check status code value in samlp:Response; it is a QName, if it
+	 * starts with lib:, that namespace must be defined.  (was bug#416)
+	 */
+	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(lasso_samlp_response_new());
+
+	response->Status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_SUCCESS);
+	fail_unless(strstr(lasso_node_dump(LASSO_NODE(response)), "xmlns:lib=") == NULL,
+			"liberty namespace should not be defined");
+
+	response->Status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_RESPONDER);
+	response->Status->StatusCode->StatusCode = lasso_samlp_status_code_new();
+	response->Status->StatusCode->StatusCode->Value = g_strdup(
+			LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
+	fail_unless(strstr(lasso_node_dump(LASSO_NODE(response)), "xmlns:lib=") != NULL,
+			"liberty namespace should be defined");
+}
+END_TEST
+
 Suite*
 random_suite()
 {
@@ -202,6 +221,7 @@ random_suite()
 	suite_add_tcase(s, tc_node);
 	tcase_add_test(tc_node, test04_node_new_from_dump);
 	tcase_add_test(tc_node, test05_xsi_type);
+	tcase_add_test(tc_node, test06_lib_statuscode);
 
 	return s;
 }
