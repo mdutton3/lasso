@@ -138,31 +138,6 @@ Warning = _lasso.Warning
  ***********************************************************************/
 
 
-#define %nonewobject %feature("new","")
-
-#if defined(SWIGPYTHON)
-%typemap(in,parse="z") char *, char [ANY] "";
-#endif
-
-
-#if defined(SWIGPHP4)
-%{
-/* ZVAL_STRING segfault when s is null */
-#undef ZVAL_STRING
-#define ZVAL_STRING(z, s, duplicate) {	\
-		char *__s=(s);					\
-        if (__s) {                      \
-		  (z)->value.str.len = strlen(__s);	\
-		  (z)->value.str.val = (duplicate?estrndup(__s, (z)->value.str.len):__s);	\
-		} else {                        \
-		  (z)->value.str.len = 0;	    \
-		  (z)->value.str.val = empty_string; \
-		}                               \
-		(z)->type = IS_STRING;	        \
-	}
-%}
-#endif
-
 /* GLib types */
 
 #define gboolean bool
@@ -188,7 +163,65 @@ int lasso_init(void);
 #endif
 int lasso_shutdown(void);
 
-/* Helper variables and functions */
+/* Swig tuning */
+
+#define %nonewobject %feature("new","")
+
+#if defined(SWIGPYTHON)
+%typemap(in,parse="z") char * "";
+#endif
+
+#if defined(SWIGPHP4)
+
+%{
+/* ZVAL_STRING segfault when s is null */
+#undef ZVAL_STRING
+#define ZVAL_STRING(z, s, duplicate) {	\
+	char *__s=(s);					\
+	if (__s) {                      \
+		(z)->value.str.len = strlen(__s);	\
+		(z)->value.str.val = (duplicate?estrndup(__s, (z)->value.str.len):__s);	\
+	} else {                        \
+		(z)->value.str.len = 0;	    \
+		(z)->value.str.val = empty_string; \
+	}                               \
+	(z)->type = IS_STRING;	        \
+}
+%}
+
+/* Override default typemap, to accept NULL pointer. Because SWIG_ConvertPtr doesn't accept NULL */
+/* values. */
+%typemap(in) SWIGTYPE * %{
+	if (SWIG_ConvertPtr(*$input, (void **) &$1, $1_descriptor) < 0) {
+		if ((*$input)->type == IS_NULL)
+			$1 = 0;
+		else
+			zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
+				   $argnum-argbase, $1_descriptor->name);
+	}
+%}
+
+/* Override default typemap, to be able to return NULL pointers. */
+%typemap(out) SWIGTYPE * %{
+	if (!$1) {
+		ZVAL_NULL(return_value);
+	} else {
+		SWIG_SetPointerZval(return_value, (void *)$1, $1_descriptor, $owner);
+	}
+%}
+
+%typemap(out) SWIGTYPE *DYNAMIC %{
+	if (!$1) {
+		ZVAL_NULL(return_value);
+	} else {
+		swig_type_info *ty = SWIG_TypeDynamicCast($1_descriptor, (void **) &$1);
+		SWIG_SetPointerZval(return_value, (void *)$1, ty, $owner);
+	}
+%}
+
+#endif /* if defined(SWIGPHP4) */
+
+/* Dynamic casting handling */
 
 #if defined(SWIGCSHARP) || defined(SWIGJAVA)
 

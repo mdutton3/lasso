@@ -58,11 +58,15 @@ class BindingTestCase(unittest.TestCase):
         self.failUnlessEqual(authnRequest.consent, None)
         authnRequest.consent = lasso.libConsentObtained
         self.failUnlessEqual(authnRequest.consent, lasso.libConsentObtained)
+        authnRequest.consent = None
+        self.failUnlessEqual(authnRequest.consent, None)
 
         # Test a renamed string attribute.
         self.failUnlessEqual(authnRequest.relayState, None)
         authnRequest.relayState = 'Hello World!'
         self.failUnlessEqual(authnRequest.relayState, 'Hello World!')
+        authnRequest.relayState = None
+        self.failUnlessEqual(authnRequest.relayState, None)
 
         # Test an integer attribute.
         self.failUnlessEqual(authnRequest.majorVersion, 0)
