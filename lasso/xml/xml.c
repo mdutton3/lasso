@@ -143,13 +143,13 @@ lasso_node_get_name(LassoNode *node)
 }
 
 void
-lasso_node_parse_memory(LassoNode  *node,
-			const char *buffer)
+lasso_node_load_from_buffer(LassoNode  *node,
+			    const char *buffer)
 {
   g_return_if_fail(LASSO_IS_NODE(node));
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->parse_memory(node, buffer);
+  class->load_from_buffer(node, buffer);
 }
 
 void
@@ -373,7 +373,7 @@ lasso_node_impl_build_query(LassoNode *node)
 static LassoNode *
 lasso_node_impl_copy(LassoNode *node)
 {
-  return (lasso_node_new(xmlCopyNode(lasso_node_get_xmlNode(node), 1)));
+  return (lasso_node_new_from_xmlNode(xmlCopyNode(lasso_node_get_xmlNode(node), 1)));
 }
 
 static xmlChar *
@@ -477,7 +477,7 @@ lasso_node_impl_get_child(LassoNode     *node,
   /*   while (cur != NULL) { */
   /*     if(cur->type == XML_ELEMENT_NODE) { */
   /*       if (xmlStrEqual(cur->name, name)) { */
-  /*   	return (lasso_node_new(cur)); */
+  /*   	return (lasso_node_new_from_xmlNode(cur)); */
   /*       } */
   /*     } */
   /*     cur = cur->next; */
@@ -494,10 +494,11 @@ lasso_node_impl_get_child(LassoNode     *node,
   cur = node->private->node;
   while (cur != NULL) {
     if ((cur->type == XML_ELEMENT_NODE) && xmlStrEqual(cur->name, name)) {
-      return (lasso_node_new(cur));
+      return (lasso_node_new_from_xmlNode(cur));
     }
     if (cur->children != NULL) {
-      ret = lasso_node_get_child(lasso_node_new(cur->children), name);
+      ret = lasso_node_get_child(lasso_node_new_from_xmlNode(cur->children),
+				 name);
       if (ret != NULL) {
 	return (ret);
       }
@@ -520,7 +521,7 @@ lasso_node_impl_get_children(LassoNode *node)
     children = g_ptr_array_new();
   
   while (cur != NULL) {
-    g_ptr_array_add(children, lasso_node_new(cur));
+    g_ptr_array_add(children, lasso_node_new_from_xmlNode(cur));
     cur = cur->next;
   }
 
@@ -543,16 +544,9 @@ lasso_node_impl_get_name(LassoNode *node)
   return (node->private->node->name);
 }
 
-/**
- * lasso_node_impl_parse_memory:
- * @node: a LassoNode instance
- * @buffer: a string containing xml
- * 
- *
- **/
 static void
-lasso_node_impl_parse_memory(LassoNode  *node,
-			     const char *buffer)
+lasso_node_impl_load_from_buffer(LassoNode  *node,
+				 const char *buffer)
 {
   xmlDocPtr doc;
   xmlNodePtr root;
@@ -668,11 +662,11 @@ lasso_node_impl_soap_envelop(LassoNode *node)
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   
-  envelope = lasso_node_new(NULL);
+  envelope = lasso_node_new();
   lasso_node_set_name(envelope, "Envelope");
   lasso_node_set_ns(envelope, lassoSoapEnvHRef, lassoSoapEnvPrefix);
   
-  body = lasso_node_new(NULL);
+  body = lasso_node_new();
   lasso_node_set_name(body, "Body");
   lasso_node_set_ns(body, lassoSoapEnvHRef, lassoSoapEnvPrefix);
   
@@ -993,7 +987,7 @@ lasso_node_class_init(LassoNodeClass *class)
   class->get_children     = lasso_node_impl_get_children;
   class->get_content      = lasso_node_impl_get_content;
   class->get_name         = lasso_node_impl_get_name;
-  class->parse_memory     = lasso_node_impl_parse_memory;
+  class->load_from_buffer = lasso_node_impl_load_from_buffer;
   class->rename_prop      = lasso_node_impl_rename_prop;
   class->serialize        = lasso_node_impl_serialize;
   class->soap_envelop     = lasso_node_impl_soap_envelop;
@@ -1035,15 +1029,41 @@ GType lasso_node_get_type() {
   return this_type;
 }
 
-LassoNode* lasso_node_new(xmlNodePtr node) {
+LassoNode*
+lasso_node_new()
+{
+  return (LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL)));
+}
+
+LassoNode*
+lasso_node_new_from_dump(xmlChar *buffer)
+{
+  LassoNode *node;
+  xmlDocPtr  doc;
+  xmlNodePtr root;
+
+  g_return_val_if_fail (buffer != NULL, NULL);
+
+  node = lasso_node_new();
+  doc = xmlParseMemory(buffer, strlen(buffer));
+  /* get root element of doc and duplicate it */
+  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+  lasso_node_set_xmlNode(node, root);
+  /* free doc */
+  xmlFreeDoc(doc);
+
+  return (node);
+}
+
+LassoNode*
+lasso_node_new_from_xmlNode(xmlNodePtr node)
+{
   LassoNode *lasso_node;
 
-  lasso_node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
+  g_return_val_if_fail (node != NULL, NULL);
 
-  if (node != NULL) {
-    xmlFreeNode(lasso_node->private->node);
-    lasso_node->private->node = node;
-  }
+  lasso_node = lasso_node_new();
+  lasso_node_set_xmlNode(lasso_node, node);
 
   return (lasso_node);
 }

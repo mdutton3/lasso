@@ -74,9 +74,9 @@ struct _LassoNodeClass {
 				       const xmlChar *);
   GPtrArray*     (* get_children)     (LassoNode     *);
   xmlChar *      (* get_content)      (LassoNode     *);
-  void           (* parse_memory)     (LassoNode     *node,
-				       const char    *buffer);
   const xmlChar* (* get_name)         (LassoNode     *);
+  void           (* load_from_buffer) (LassoNode     *node,
+                                       const char    *buffer);
   void           (* rename_prop)      (LassoNode     *node,
 				       const xmlChar *old_name,
 				       const xmlChar *new_name);
@@ -119,7 +119,9 @@ typedef enum {
 
 LASSO_EXPORT GType          lasso_node_get_type         (void);
 
-LASSO_EXPORT LassoNode*     lasso_node_new              (xmlNodePtr node);
+LASSO_EXPORT LassoNode*     lasso_node_new              (void);
+LASSO_EXPORT LassoNode*     lasso_node_new_from_dump    (xmlChar *buffer);
+LASSO_EXPORT LassoNode*     lasso_node_new_from_xmlNode (xmlNodePtr node);
 
 LASSO_EXPORT GString*       lasso_node_build_query      (LassoNode *node);
 
@@ -146,7 +148,7 @@ LASSO_EXPORT xmlChar*       lasso_node_get_content      (LassoNode *node);
 
 LASSO_EXPORT const xmlChar* lasso_node_get_name         (LassoNode *node);
 
-LASSO_EXPORT void           lasso_node_parse_memory     (LassoNode  *node,
+LASSO_EXPORT void           lasso_node_load_from_buffer (LassoNode  *node,
 							 const char *buffer);
 
 LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode *node,
