@@ -511,8 +511,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					xmlChar *s = xmlNodeGetContent(t);
 					*location = g_list_append(*location, s);
 				} else if (type == SNIPPET_EXTENSION) {
-					GList **location = value;
-					*location = g_list_append(*location, xmlCopyNode(t, 2));
+					xmlNode **extension = value;
+					if (*extension) {
+						xmlAddNextSibling(*extension, t);
+					} else {
+						*extension = xmlCopyNode(t, 2);
+					}
 				}
 
 				if (tmp == NULL)
@@ -653,12 +657,12 @@ lasso_node_dispose(GObject *object)
 					lasso_node_destroy(*value);
 					break;
 				case SNIPPET_EXTENSION:
+					xmlFreeNodeList(*value);
+					break;
 				case SNIPPET_LIST_NODES:
 				case SNIPPET_LIST_CONTENT:
 					elem = (GList*)(*value);
 					while (elem) {
-						if (type == SNIPPET_EXTENSION)
-							xmlFreeNode(elem->data);
 						if (type == SNIPPET_LIST_NODES)
 							lasso_node_destroy(elem->data);
 						if (type == SNIPPET_LIST_CONTENT)
@@ -1090,11 +1094,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				}
 				break;
 			case SNIPPET_EXTENSION:
-				elem = (GList *)value;
-				while (elem) {
-					xmlAddChild(xmlnode, xmlCopyNode(elem->data, 2));
-					elem = g_list_next(elem);
-				}
+				xmlAddChild(xmlnode, xmlCopyNode((xmlNode*)value, 2));
 				break;
 			case SNIPPET_SIGNATURE:
 				lasso_node_add_signature_template(node, xmlnode, snippet);

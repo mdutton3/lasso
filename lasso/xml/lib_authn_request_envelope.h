@@ -57,7 +57,7 @@ struct _LassoLibAuthnRequestEnvelope {
 
 	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	GList *Extension;
+	xmlNode *Extension;
 	/* <xs:element ref="AuthnRequest"/> */
 	LassoLibAuthnRequest *AuthnRequest;
 	/* <xs:element ref="ProviderID"/> */

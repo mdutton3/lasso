@@ -59,7 +59,7 @@ struct _LassoLibFederationTerminationNotification {
 
 	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	GList *Extension;
+	xmlNode *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="saml:NameIdentifier"/> */
