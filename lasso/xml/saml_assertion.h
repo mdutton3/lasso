@@ -61,14 +61,11 @@ struct _LassoSamlAssertion {
 	LassoSamlConditions *Conditions;
 	/* <element ref="saml:Advice" minOccurs="0"/> */
 	LassoSamlAdvice *Advice;
-#if 0 /* missing from lasso */
-	LassoSamlStatement *Statement;
-#endif
+	void *Statement; /* XXX LassoSamlStatement missing from lasso */
 	LassoSamlSubjectStatement *SubjectStatement;
 	LassoSamlAuthenticationStatement *AuthenticationStatement;
-#if 0
-	LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
-#endif
+	void *AuthorizationDecisionStatement;
+		/* XXX LassoSamlAuthorizationDecisionStatement missing from lasso*/
 	LassoSamlAttributeStatement *AttributeStatement;
 
 	int MajorVersion;
