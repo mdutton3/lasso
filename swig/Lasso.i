@@ -8,6 +8,9 @@
  * http://lasso.entrouvert.org
  *
  * Authors: Romain Chantereau <rchantereau@entrouvert.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
+ *          Valery Febvre <vfebvre@easter-eggs.com>
+ *          Frederic Peters <fpeters@entrouvert.com>
  *          Emmanuel Raviart <eraviart@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -744,31 +747,49 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(assertionId) AssertionID;
+#endif
 	char *AssertionID;
 
+#ifndef SWIGPHP4
 	%rename(certificateFile) certificate_file;
+#endif
 	char *certificate_file;
 
+#ifndef SWIGPHP4
 	%rename(issuer) Issuer;
+#endif
 	char *Issuer;
 
+#ifndef SWIGPHP4
 	%rename(issueInstant) IssueInstant;
+#endif
 	char *IssueInstant;
 
+#ifndef SWIGPHP4
 	%rename(majorVersion) MajorVersion;
+#endif
 	int MajorVersion;
 
+#ifndef SWIGPHP4
 	%rename(minorVersion) MinorVersion;
+#endif
 	int MinorVersion;
 
+#ifndef SWIGPHP4
 	%rename(privateKeyFile) private_key_file;
+#endif
 	char *private_key_file;
 
+#ifndef SWIGPHP4
 	%rename(signType) sign_type;
+#endif
 	LassoSignatureType sign_type;
 
+#ifndef SWIGPHP4
 	%rename(signMethod) sign_method;
+#endif
 	LassoSignatureMethod sign_method;
 } LassoSamlAssertion;
 %extend LassoSamlAssertion {
@@ -821,10 +842,14 @@ typedef struct {
 
 	char *content;
 
+#ifndef SWIGPHP4
 	%rename(format) Format;
+#endif
 	char *Format;
 
+#ifndef SWIGPHP4
 	%rename(nameQualifier) NameQualifier;
+#endif
 	char *NameQualifier;
 } LassoSamlNameIdentifier;
 %extend LassoSamlNameIdentifier {
@@ -872,7 +897,9 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(assertionArtifact) AssertionArtifact;
+#endif
 	char *AssertionArtifact;
 } LassoSamlpRequest;
 %extend LassoSamlpRequest {
@@ -917,7 +944,9 @@ typedef struct {
 
 	// FIXME: LassoSamlAssertion *Assertion;
 
+#ifndef SWIGPHP4
 	%rename(status) Status;
+#endif
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -965,13 +994,17 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(statusMessage) StatusMessage;
+#endif
 	char *StatusMessage;
 } LassoSamlpStatus;
 %extend LassoSamlpStatus {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(statusCode) StatusCode;
+#endif
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1019,13 +1052,17 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(value) Value;
+#endif
 	char *Value;
 } LassoSamlpStatusCode;
 %extend LassoSamlpStatusCode {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(statusCode) StatusCode;
+#endif
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1147,37 +1184,55 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(affiliationId) AffiliationID;
+#endif
 	char *AffiliationID;
 
+#ifndef SWIGPHP4
 	%rename(assertionConsumerServiceId) AssertionConsumerServiceID;
+#endif
 	char *AssertionConsumerServiceID;
 
 	char *consent;
 
+#ifndef SWIGPHP4
 	%rename(forceAuthn) ForceAuthn;
+#endif
 	gboolean ForceAuthn;
 
+#ifndef SWIGPHP4
 	%rename(isPassive) IsPassive;
+#endif
 	gboolean IsPassive;
 
+#ifndef SWIGPHP4
 	%rename(nameIdPolicy) NameIDPolicy;
+#endif
 	char *NameIDPolicy;
 
+#ifndef SWIGPHP4
 	%rename(protocolProfile) ProtocolProfile;
+#endif
 	char *ProtocolProfile;	
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 
 } LassoLibAuthnRequest;
 %extend LassoLibAuthnRequest {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	LassoStringArray *Extension;
 
 	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
@@ -1263,10 +1318,14 @@ typedef struct {
 
 	char *consent;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 } LassoLibAuthnResponse;
 %extend LassoLibAuthnResponse {
@@ -1274,10 +1333,14 @@ typedef struct {
 
 	// FIXME: LassoSamlAssertion *Assertion;
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(status) Status;
+#endif
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1327,19 +1390,27 @@ typedef struct {
 
 	char *consent;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;	/* not in schema but allowed in redirects */
 } LassoLibFederationTerminationNotification;
 %extend LassoLibFederationTerminationNotification {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
+#endif
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1391,25 +1462,37 @@ typedef struct {
 
 	char *consent;
 
+#ifndef SWIGPHP4
 	%rename(notOnOrAfter) NotOnOrAfter;
+#endif
 	char *NotOnOrAfter;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 
+#ifndef SWIGPHP4
 	%rename(sessionIndex) SessionIndex;
+#endif
 	char *SessionIndex;
 } LassoLibLogoutRequest;
 %extend LassoLibLogoutRequest {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
+#endif
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1461,16 +1544,24 @@ typedef struct {
 %extend LassoLibLogoutResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 
+#ifndef SWIGPHP4
 	%rename(status) Status;
+#endif
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1533,25 +1624,37 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 } LassoLibRegisterNameIdentifierRequest;
 %extend LassoLibRegisterNameIdentifierRequest {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(idpProvidedNameIdentifier) IDPProvidedNameIdentifier;
+#endif
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
 
+#ifndef SWIGPHP4
 	%rename(oldProvidedNameIdentifier) OldProvidedNameIdentifier;
+#endif
 	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
 
+#ifndef SWIGPHP4
 	%rename(spProvidedNameIdentifier) SPProvidedNameIdentifier;
+#endif
 	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1618,16 +1721,24 @@ typedef struct {
 %extend LassoLibRegisterNameIdentifierResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 
+#ifndef SWIGPHP4
 	%rename(status) Status;
+#endif
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1690,19 +1801,27 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(relayState) RelayState;
+#endif
 	char *RelayState;
 } LassoLibStatusResponse;
 %extend LassoLibStatusResponse {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(extension) Extension;
+#endif
 	// FIXME: GList *Extension;
 
+#ifndef SWIGPHP4
 	%rename(status) Status;
+#endif
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1755,16 +1874,24 @@ typedef struct {
 %rename(Provider) LassoProvider;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
 	%rename(caCertChain) ca_cert_chain;
+#endif
 	char *ca_cert_chain;
 
+#ifndef SWIGPHP4
 	%rename(metadataFilename) metadata_filename;
+#endif
 	char *metadata_filename;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(publicKey) public_key;
+#endif
 	char *public_key;
 
 	LassoProviderRole role;
@@ -1847,28 +1974,42 @@ typedef struct {
 typedef struct {
 	char *certificate;
 
+#ifndef SWIGPHP4
 	%rename(privateKey) private_key;
+#endif
 	char *private_key;
 
+#ifndef SWIGPHP4
 	%rename(secretKey) secret_key;
+#endif
 	char *secret_key;
 
+#ifndef SWIGPHP4
 	%rename(signatureMethod) signature_method;
+#endif
 	LassoSignatureMethod signature_method;
 } LassoServer;
 %extend LassoServer {
 	/* Attributes inherited from LassoProvider */
 
+#ifndef SWIGPHP4
 	%rename(caCertChain) ca_cert_chain;
+#endif
 	char *ca_cert_chain;
 
+#ifndef SWIGPHP4
 	%rename(metadataFilename) metadata_filename;
+#endif
 	char *metadata_filename;
 
+#ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
 
+#ifndef SWIGPHP4
 	%rename(publicKey) public_key;
+#endif
 	char *public_key;
 
 	/* Attributes */
@@ -2004,16 +2145,22 @@ LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(remoteProviderId) remote_providerID;
+#endif
 	gchar *remote_providerID;
 } LassoFederation;
 %extend LassoFederation {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(localNameIdentifier) local_nameIdentifier;
+#endif
 	LassoSamlNameIdentifier *local_nameIdentifier;
 
+#ifndef SWIGPHP4
 	%rename(remoteNameIdentifier) remote_nameIdentifier;
+#endif
 	LassoSamlNameIdentifier *remote_nameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -2078,7 +2225,9 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(isDirty) is_dirty;
+#endif
 	%immutable is_dirty;
 	gboolean is_dirty;
 } LassoIdentity;
@@ -2158,7 +2307,9 @@ LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
 	%rename(isDirty) is_dirty;
+#endif
 	%immutable is_dirty;
 	gboolean is_dirty;
 } LassoSession;
