@@ -23,11 +23,12 @@
  */
 
 #include <lasso/id-wsf/wsf_profile.h>
+#include <lasso/xml/disco_modify.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
-#include <lasso/xml/disco_modify.h>
+
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
@@ -43,13 +44,6 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 	profile->msg_body = lasso_node_export_to_soap(profile->response);
 	return 0;
 }
-
-/*****************************************************************************/
-/* private methods                                                           */
-/*****************************************************************************/
-
-static LassoNodeClass *parent_class = NULL;
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
