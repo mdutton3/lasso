@@ -1,16 +1,48 @@
+/* $Id$ 
+ *
+ * Lasso - A free implementation of the Liberty Alliance specifications.
+ *
+ * Copyright (C) 2004 Entr'ouvert
+ * http://lasso.entrouvert.org
+ * 
+ * Authors: Valery Febvre   <vfebvre@easter-eggs.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include <lasso/protocols/logout.h>
 
-LassoNode *lasso_build_full_logoutRequest(const char    *requestID,
-					  const xmlChar *majorVersion,
-					  const xmlChar *minorVersion,
-					  const xmlChar *issueInstant,
-					  const xmlChar *providerID,
-					  LassoNode     *nameIdentifier,
-					  const xmlChar *sessionIndex,
-					  const xmlChar *relayState,
-					  const xmlChar *consent)
+/*****************************************************************************/
+/* LogoutRequest                                                             */
+/*****************************************************************************/
+
+static LassoNode *
+lasso_logout_request_build_full(const char    *requestID,
+			       const xmlChar *majorVersion,
+			       const xmlChar *minorVersion,
+			       const xmlChar *issueInstant,
+			       const xmlChar *providerID,
+			       const xmlChar *nameIdentifier,
+			       const xmlChar *nameQualifier,
+			       const xmlChar *format,
+			       const xmlChar *sessionIndex,
+			       const xmlChar *relayState,
+			       const xmlChar *consent)
 {
-     LassoNode *request;
+     LassoNode *request, *identifier;
 
      request = lasso_lib_logout_request_new();
 
@@ -52,10 +84,14 @@ LassoNode *lasso_build_full_logoutRequest(const char    *requestID,
 
      lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request),
 					     providerID);
-     
-     
+
+     identifier = lasso_saml_name_identifier_new(nameIdentifier);
+     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
+						  nameQualifier);
+     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
+					   format);
      lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
-						 LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
+						 LASSO_SAML_NAME_IDENTIFIER(identifier));
 
      if(sessionIndex){
 	  lasso_lib_logout_request_set_sessionIndex(LASSO_LIB_LOGOUT_REQUEST(request),
@@ -72,38 +108,74 @@ LassoNode *lasso_build_full_logoutRequest(const char    *requestID,
 					       consent);
      }
 
-}
-
-LassoNode *lasso_build_logoutRequest(const xmlChar *providerID,
-				     LassoNode     *nameIdentifier,
-				     const xmlChar *sessionIndex,
-				     const xmlChar *relayState,
-				     const xmlChar *consent)
-{
-     LassoNode *request;
-
-     request = lasso_build_full_logoutRequest(NULL,
-					      NULL,
-					      NULL,
-					      NULL,
-					      providerID,
-					      nameIdentifier,
-					      sessionIndex,
-					      relayState,
-					      consent);
      return(request);
 
 }
 
-LassoNode *lasso_build_full_logoutResponse(const xmlChar *responseID,
-					   const xmlChar *majorVersion,
-					   const xmlChar *minorVersion,
-					   const xmlChar *issueInstant,
-					   const xmlChar *inResponseTo,
-					   const xmlChar *recipient,
-					   const xmlChar *providerID,
-					   const xmlChar *statusCodeValue,
-					   const xmlChar *relayState)
+lassoLogoutRequest *
+lasso_logout_request_create(const xmlChar *providerID,
+			    const xmlChar *nameIdentifier,
+			    const xmlChar *nameQualifier,
+			    const xmlChar *format,
+			    const xmlChar *sessionIndex,
+			    const xmlChar *relayState,
+			    const xmlChar *consent)
+{
+     lassoLogoutRequest *lareq;
+
+     lareq = g_malloc(sizeof(lassoLogoutRequest));
+     lareq->node = lasso_logout_request_build_full(NULL,
+						  NULL,
+						  NULL,
+						  NULL,
+						  providerID,
+						  nameIdentifier,
+						  nameQualifier,
+						  format,
+						  sessionIndex,
+						  relayState,
+						  consent);
+     return(lareq);
+}
+
+LassoNode *
+lasso_logout_request_rebuild(const xmlChar *query)
+{
+     LassoNode *request = NULL;
+     GData     *gd;
+
+     gd = lasso_query_to_dict(query);
+     if (gd != NULL) {
+	  request = lasso_logout_request_build_full(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SessionIndex"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
+						    lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
+     }
+
+     return(request);
+}
+
+/*****************************************************************************/
+/* LogoutResponse                                                            */
+/*****************************************************************************/
+
+static LassoNode *
+lasso_logout_response_build_full(const xmlChar *responseID,
+				 const xmlChar *majorVersion,
+				 const xmlChar *minorVersion,
+				 const xmlChar *issueInstant,
+				 const xmlChar *inResponseTo,
+				 const xmlChar *recipient,
+				 const xmlChar *providerID,
+				 const xmlChar *statusCodeValue,
+				 const xmlChar *relayState)
 {
 	 LassoNode *response, *ss, *ssc;
 
@@ -158,7 +230,7 @@ LassoNode *lasso_build_full_logoutResponse(const xmlChar *responseID,
 	 ssc = lasso_samlp_status_code_new();
 	 lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc), statusCodeValue);
 	 lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss), LASSO_SAMLP_STATUS_CODE(ssc));
-	 lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response), LASSO_SAMLP_STATUS(ss));
+	 lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response), LASSO_SAMLP_STATUS(ss));
 
 	 if(relayState){
 		 lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
@@ -168,22 +240,44 @@ LassoNode *lasso_build_full_logoutResponse(const xmlChar *responseID,
 	 return(response);
 }
 
-LassoNode *lasso_build_logoutResponse(LassoNode     *request,
-				      const xmlChar *providerID,
-				      const xmlChar *statusCodeValue,
-				      const xmlChar *relayState)
+lassoLogoutResponse *
+lasso_logout_response_create(const xmlChar *query)
 {
-     LassoNode *response;
+     lassoLogoutResponse *lares;
 
-     response = lasso_build_full_logoutResponse(NULL,
-						NULL,
-						NULL,
-						NULL,
-						NULL,
-						NULL,
-						providerID,
-						statusCodeValue,
-						relayState);
-     return(response);
+     lares = g_malloc(sizeof(lassoLogoutResponse));
+     lares->request_query = NULL;
+     if(query!=NULL){
+	  lares->request_query = query;
+	  lares->request_node = lasso_logout_request_rebuild(query);
+     }
+
+     return(lares);
 }
 
+gint
+lasso_logout_response_build(lassoLogoutResponse *lares,
+			    const xmlChar *providerID,
+			    const xmlChar *statusCodeValue,
+			    const xmlChar *relayState)
+{
+     LassoNode *response;
+     xmlChar *inResponseTo, *recipient;
+
+     inResponseTo = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(lares->request_node, "RequestID"));
+     recipient = lasso_node_get_content(lasso_node_get_child(lares->request_node, "ProviderID"));
+
+     response = lasso_logout_response_build_full(NULL,
+						 NULL,
+						 NULL,
+						 NULL,
+						 inResponseTo,
+						 recipient,
+						 providerID,
+						 statusCodeValue,
+						 relayState);
+
+     lares->node = response;
+
+     return(1);
+}
