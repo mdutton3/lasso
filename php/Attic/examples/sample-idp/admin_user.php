@@ -124,7 +124,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-<title>Lasso Service Provider Example : Users Management</title>
+<title>Lasso Identity Provider Example : Users Management</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
 <script language="JavaScript" type="text/javascript">
 <!-- 
@@ -254,12 +254,11 @@
         // get all federations for this user
         if (!empty($identity_dump))
         {
-	    if (!empty($session_dump))
-		$login->setSessionFromDump($session_dump);
             $login->setIdentityFromDump($identity_dump);
 
             $identity = $login->identity;
-            $providerIDs = $identity->providerIDs;
+	    // FIXME : providerIds is empty
+            // var_dump($identity->providerIds);
 ?>
 <table width="100%">
 <?php

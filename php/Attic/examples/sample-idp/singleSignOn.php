@@ -87,7 +87,10 @@
 
 			$login->setIdentityFromDump($array['identity_dump']);
 			if (!empty($array['session_dump']))
+			{
+				$logger->log("Update Session from dump for User '$user_id'", PEAR_LOG_CRIT);
 				$login->setSessionFromDump($array['session_dump']);
+			}
 	  
 			doneSingleSignOn($db, $login, $user_id);
 			exit;
@@ -104,11 +107,17 @@
                 $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
                 $is_first_sso = (isset($array['identity_dump']) ? FALSE : TRUE);
 
-                /*if (!$is_first_sso)
-                    $login->setIdentityFromDump($array['identity_dump']); */
+                if (!$is_first_sso)
+		{
+			$login->setIdentityFromDump($array['identity_dump']); 
+			$logger->log("Update Identity dump for user '$user_id' :" . $array['identity_dump'], PEAR_LOG_DEBUG);
+		}
 
 		if (!empty($array['session_dump']))
+		{
 			$login->setSessionFromDump($array['session_dump']);
+			$logger->log("Update Session dump for user '$user_id' :" . $array['session_dump'], PEAR_LOG_DEBUG);
+		}
 
                 doneSingleSignOn($db, $login, $user_id, $is_first_sso);
             }
@@ -156,11 +165,11 @@
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
         {
-            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
             $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
             die("Internal Server Error");
         }
-        $logger->log("Update user '$user_id' identity dump", PEAR_LOG_DEBUG);
+        $logger->log("Update user '$user_id' identity dump in the database : $identity_dump", PEAR_LOG_DEBUG);
    }
 
    /*
@@ -176,11 +185,11 @@
 	$res =& $db->query($query);
         if (DB::isError($res)) 
         {
-            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
             die("Internal Server Error");
         }
-        $logger->log("Update user '$user_id' session dump", PEAR_LOG_DEBUG);
+        $logger->log("Update user '$user_id' Session dump in the database : $session_dump", PEAR_LOG_DEBUG);
    }
 
    /*
@@ -189,7 +198,10 @@
    function saveAssertionArtifact($db, $artifact, $assertion)
    {
 	global $logger;
-
+	/* 
+	var_dump($assertion);
+	if ($assertion->_cPtr == NULL)
+		print "null"; */
 	$assertion_dump = $assertion->dump();
 
 	if (empty($assertion_dump))
@@ -205,7 +217,7 @@
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	{
-		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
 		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
 		die("Internal Server Error");
 	}
@@ -237,15 +249,25 @@
    */
   function initFromAuthnRequest(&$login)
   {
+	global $logger;
+
 	switch ($_SERVER['REQUEST_METHOD'])
 	{
 	  case 'GET':
 		$login->initFromAuthnRequestMsg($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
+		$logger->log("initFromAuthnRequest with method GET : " . $_SERVER['QUERY_STRING'], PEAR_LOG_DEBUG);
 		break;
 	  case 'POST':
-		die("methode POST not implemented"); // TODO
+		if (empty($_POST['LAREQ']))
+		{
+			$logger->log("POST LARQ value is empty");
+			die("POST LARQ value is empty");
+		}
+                $login->initFromAuthnRequestMsg($_POST['LAREQ'], lassoHttpMethodPost);
+		$logger->log("initFromAuthnRequest with method POST", PEAR_LOG_DEBUG);
 		break;
 	  default:
+		$logger->log("initFromAuthnRequest with called an unknown method", PEAR_LOG_CRIT);
 		die("Unknown request method"); 
 	}
   }
@@ -263,8 +285,8 @@
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	{
-	  $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-          $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+	  $logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+          $logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 	  die($res->getMessage());
 	}
 
@@ -287,8 +309,8 @@
 	$res =& $db->query($query);
        	if (DB::isError($res)) 
 	{
-		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-	      	$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+	      	$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 		die($res->getMessage());
 	}
 		
@@ -323,7 +345,7 @@
   /*
    * 
    */
-  function doneSingleSignOn($db, &$login, $user_id, $is_first_sso = FALSE)
+  function doneSingleSignOn($db, &$login, $user_id)
   {
 	global $logger;
 
@@ -344,19 +366,31 @@
 		die("Unknown protocol profile\n"); 
 	  }
 
-	  if ($is_first_sso)
-	  {
-		// name_identifier
-		$query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
-	  	$query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
+	  $query = "SELECT * FROM nameidentifiers WHERE name_identifier='";
+	  $query .= $login->nameIdentifier."' AND user_id='$user_id'";
 
+	  $res =& $db->query($query);
+	  if (DB::isError($res)) 
+	  {
+      		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+    		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
+      		die($res->getMessage());
+	  }  
+
+	  if (!$res->numRows()) 
+	  {
+		// register new name_identifier 
+		$query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
+		$query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
+	  
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
 		{
-	      		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-	    		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-	      		die($res->getMessage());
-		}
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
+			die($res->getMessage());
+		}  
+    		$logger->log("Register Name Identifier '" . $login->nameIdentifier ."' for User '$user_id'", PEAR_LOG_INFO);
 	  }
 
 	  $identity = $login->identity;
@@ -375,6 +409,8 @@
 		die("assertion Artifact is empty");
 	  }
 
+    	  $logger->log("Assertion Artifact is '" . $login->assertionArtifact . "'", PEAR_LOG_DEBUG);
+
 	  saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
 
 
@@ -382,8 +418,6 @@
 	  $query = "INSERT INTO sso_sessions(name_identifier, session_id, ip)";
 	  $query .= " VALUES('" . $login->nameIdentifier . "','" . session_id() . "','";
 	  $query .= ip2long($_SERVER['REMOTE_ADDR']) . "')";
-
-	  echo $query;
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
@@ -412,7 +446,7 @@
 		case lassoLoginProtocolProfileBrwsPost:
 		  // TODO : lassoLoginProtocolProfileBrwsPost
 		default:
-			$logger->log("Unknown Login Protocol Profile :" . $db->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("Unknown Login Protocol Profile :" . $login->protocolProfile, PEAR_LOG_CRIT);
 			die("Unknown Login Protocol Profile");
 	  }
   }
@@ -435,17 +469,25 @@
 		$is_first_sso = (isset($array['identity_dump']) ? FALSE : TRUE);
 	
 		if (!empty($array['identity_dump']))
+		{
+			$logger->log("Update Identity dump for user '$user_id' from the database", PEAR_LOG_INFO);
 			$login->setIdentityFromDump($array['identity_dump']);
+		}
 
-		/* if (!$is_first_sso)
+		if (!empty($array['identity_dump']))
+		{
+			$logger->log("Update Identity dump for user '$user_id' from the database", PEAR_LOG_INFO);
 			$login->setIdentityFromDump($array['identity_dump']);
-		else
-			$logger->log("First SingleSignOn for user '$user_id'", PEAR_LOG_INFO); */
+		}
+
 			
 		if (!empty($array['session_dump']))
+		{
+			$logger->log("Update Session dump for user '$user_id' from the database", PEAR_LOG_INFO);
 			$login->setSessionFromDump($array['session_dump']);
+		}
 
-		doneSingleSignOn($db, $login, $user_id, $is_first_sso);
+		doneSingleSignOn($db, $login, $user_id);
 		exit;
 	}
 	else

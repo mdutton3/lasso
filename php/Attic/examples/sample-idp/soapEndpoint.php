@@ -43,6 +43,14 @@
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
+  // shutdown function
+  function close_logger()
+  {
+	global $logger;
+	$logger->close();
+  }
+  register_shutdown_function("close_logger");
+
   // session handler
   session_set_save_handler("open_session", "close_session", 
    "read_session", "write_session", "destroy_session", "gc_session");
@@ -76,8 +84,8 @@
 	  if (DB::isError($res)) 
 	  {
 		header("HTTP/1.0 500 Internal Server Error");
-		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 		exit;
 	  }
 
@@ -86,14 +94,16 @@
 	  {
 		$row = $res->fetchRow();
 		
+		$logger->log("Good artifact send by " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_INFO);        
+		
+		// Delete assertion from the database
 		$query = "DELETE FROM assertions WHERE assertion='" . $artifact . "'";
 		$res =& $db->query($query);
-
 		if (DB::isError($res)) 
 		{
 		      	header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 			exit;
 		}
 		$logger->log("Delete assertion '$artifact'", PEAR_LOG_DEBUG);
@@ -102,7 +112,6 @@
 		$login->buildResponseMsg();
 		header("Content-Length: " . strlen($login->msgBody) . "\r\n");
 		echo $login->msgBody;
-
 		exit;
 	  }
 	  else
@@ -122,7 +131,6 @@
 		$logout->processRequestMsg($HTTP_RAW_POST_DATA, lassoHttpMethodSoap);
 		$nameIdentifier = $logout->nameIdentifier; 
 
-      
 		// name identifier is empty, wrong request
 		if (empty($nameIdentifier))
 		{
@@ -139,8 +147,8 @@
 		if (DB::isError($res)) 
 		{
 			header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 			exit;
 		}
 	  
@@ -162,8 +170,8 @@
 		if (DB::isError($res)) 
 		{
 			header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 			exit;
 		} 
 	  
@@ -178,7 +186,11 @@
 		$user_dump = $row[0];
 		$session_dump = $row[1];
 
-		$logout->setSessionFromDump($session_dump);
+		if (!empty($session_dump))
+		{
+			$logout->setSessionFromDump($session_dump);
+			$logger->log("Update session from dump", PEAR_LOG_DEBUG);
+		}
 		$logout->setIdentityFromDump($user_dump);
 
 		// TODO : handle bad validate request
@@ -189,14 +201,13 @@
 			$identity = $logout->identity;
 			$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity->dump());
 			$query .= " WHERE user_id='$user_id'";
-			$logger->log("ici3", PEAR_LOG_DEBUG);
 
 			$res =& $db->query($query);
 			if (DB::isError($res)) 
 			{
 				header("HTTP/1.0 500 Internal Server Error");
-				$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-				$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+				$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+				$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 				exit;
 			}
 			$logger->log("Update identity dump for user '$user_id'", PEAR_LOG_DEBUG);
@@ -205,22 +216,26 @@
 		if ($logout->isSessionDirty)
 		{
 			$session = $logout->session;
-			$query = "UPDATE users SET session_dump=".$db->quoteSmart($session->dump());
-			$query .= " WHERE user_id='$user_id'";
+			$query = "UPDATE users SET session_dump=";
+			$query .= (($session == NULL) ? "''" : $db->quoteSmart($session->dump()));
+			$query .= " WHERE user_id='$user_id'"; 
 
 			$res =& $db->query($query);
 			if (DB::isError($res)) 
 			{
 				header("HTTP/1.0 500 Internal Server Error");
-				$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-				$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+				$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+				$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 				exit;
 			}
-			$logger->log("Update session dump for user '$user_id'", PEAR_LOG_DEBUG);
+			if ($session)
+				$logger->log("Update session dump for user '$user_id'", PEAR_LOG_DEBUG);
+			else
+				$logger->log("Delete session dump for user '$user_id'", PEAR_LOG_DEBUG);
 		} 
 
 	  
-		// TODO : try multiple sp logout
+		/* TODO : try multiple sp logout
 		while(($providerID = $logout->getNextProviderId()))
 		{
 			$logout->initRequest($providerID, lassoHttpMethodAny); // FIXME
@@ -280,13 +295,9 @@
 				continue;
 			}
 			$logout->processResponseMsg($response, lassoHttpMethodSoap);
-		} 
+		} */
 
-	  
 		$logout->buildResponseMsg();
-		header("Content-Length: " . strlen($logout->msgBody) . "\r\n");
-		echo $logout->msgBody;
-
 
                 // Get PHP session ID
 		$query = "SELECT session_id FROM sso_sessions WHERE name_identifier='$nameIdentifier'";
@@ -294,8 +305,8 @@
 		if (DB::isError($res)) 
 		{
 			header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 			exit;
 		}
 		$row = $res->fetchRow();
@@ -303,25 +314,27 @@
 		
 		$logger->log("Name Identifier '$nameIdentifier' match PHP Session ID '$session_id'", PEAR_LOG_DEBUG);
 		
-		session_id($session_id);
-		
-		// Destroy The PHP Session
-		$_SESSION = array();
-		session_destroy();
-
 		// Delete SSO Session from table 'sso_sessions'
 		$query = "DELETE FROM sso_sessions WHERE name_identifier='$nameIdentifier'";
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
 		{
 			header("HTTP/1.0 500 Internal Server Error");
-			$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-			$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+			$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+			$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 			exit;
 		}
-		$logger->log("Destroy PHP Session '$session_id'", PEAR_LOG_DEBUG);
 	 	
+		$logger->log("Destroy PHP Session '$session_id'", PEAR_LOG_DEBUG);
 		$logger->log("User '$user_id' is logged out", PEAR_LOG_INFO);
+
+		// Destroy The PHP Session
+		session_id($session_id);
+		$_SESSION = array();
+		session_destroy();
+
+		header("Content-Length: " . strlen($logout->msgBody) . "\r\n");
+		echo $logout->msgBody;
 		break;
 	case lassoRequestTypeDefederation:
 
