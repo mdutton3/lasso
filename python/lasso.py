@@ -63,6 +63,12 @@ class Node:
     def dump(self, encoding="utf8", format=1):
         return lassomod.node_dump(self, encoding, format)
 
+    def export_to_query(self, sign_method, private_key_file):
+        return lassomod.node_export_to_query(self, sign_method, private_key_file)
+
+    def export_to_soap(self):
+        return lassomod.node_export_to_soap(self)
+
     def destroy(self):
         lassomod.node_unref(self)
 
@@ -77,12 +83,6 @@ class Node:
 
     def get_content(self):
         return lassomod.node_get_content(self)
-
-    def url_encode(self, sign_method, private_key_file):
-        return lassomod.node_url_encode(self, sign_method, private_key_file)
-
-    def soap_envelop(self):
-        return lassomod.node_soap_envelop(self)
 
     def verify_signature(self, certificate_file):
         return lassomod.node_verify_signature(self, certificate_file)
@@ -103,6 +103,10 @@ class SamlAssertion(Node):
         lassomod.saml_assertion_add_authenticationStatement(self,
                                                             authenticationStatement)
 
+    def set_signature(self, sign_method, private_key_file, certificate_file):
+        lassomod.saml_assertion_set_signature(self, sign_method,
+                                              private_key_file, certificate_file)
+
 
 class SamlAuthenticationStatement(Node):
     def __init__(self, _obj=None):
@@ -114,6 +118,39 @@ class SamlAuthenticationStatement(Node):
         _obj = lassomod.saml_authentication_statement_new()
         if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
         Node.__init__(self, _obj=_obj)
+
+
+class SamlNameIdentifier(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.saml_name_identifier_new()
+        if _obj is None: raise Error('lasso_saml_name_identifier_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def set_format(self, format):
+        lassomod.saml_name_identifier_set_format(self, format)
+    
+    def set_nameQualifier(self, nameQualifier):
+        lassomod.saml_name_identifier_set_nameQualifier(self, nameQualifier)
+
+
+class SamlpResponse(Node):
+    def __init__(self, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.samlp_response_new()
+        if _obj is None: raise Error('lasso_samlp_response_new() failed')
+        Node.__init__(self, _obj=_obj)
+
+    def add_assertion(self, assertion):
+        lassomod.samlp_response_add_assertion(self, assertion)
 
 
 class LibAuthenticationStatement(SamlAuthenticationStatement):
@@ -264,24 +301,6 @@ class LibRegisterNameIdentifierResponse(Node):
             raise Error('lasso_lib_register_name_identifier_response_new() failed')
         Node.__init__(self, _obj=_obj)
 
-        
-class SamlNameIdentifier(Node):
-    def __init__(self, _obj=None):
-        """
-        """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.saml_name_identifier_new()
-        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
-        Node.__init__(self, _obj=_obj)
-
-    def set_format(self, format):
-        lassomod.saml_name_identifier_set_format(self, format)
-    
-    def set_nameQualifier(self, nameQualifier):
-        lassomod.saml_name_identifier_set_nameQualifier(self, nameQualifier)
-
 ################################################################################
 # protocols : high level classes
 ################################################################################
@@ -311,12 +330,12 @@ class AuthnRequest(LibAuthnRequest):
         lassomod.authn_request_set_scoping(self, proxyCount)
 
 
-class AuthnResponse(Node):
+class AuthnResponse(SamlpResponse):
     def __init__(self, _obj):
         """
         """
         self._o = _obj
-        Node.__init__(self, _obj=_obj)
+        SamlpResponse.__init__(self, _obj=_obj)
 
     def new_from_dump(cls, buffer):
         obj = lassomod.authn_response_new_from_dump(buffer)
@@ -342,11 +361,6 @@ class AuthnResponse(Node):
         if name == "request":
             ret = AuthnRequest(None, _obj=ret)
         return ret
-
-    def add_assertion(self, assertion, private_key_file, certificate_file):
-        lassomod.authn_response_add_assertion(self, assertion,
-                                              private_key_file,
-                                              certificate_file)
 
     def must_authenticate(self, is_authenticated):
         return lassomod.authn_response_must_authenticate(self,
