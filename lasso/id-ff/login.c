@@ -107,6 +107,7 @@ lasso_login_build_assertion(LassoLogin      *login,
 					   LASSO_PROFILE(login)->server->signature_method,
 					   LASSO_PROFILE(login)->server->private_key,
 					   LASSO_PROFILE(login)->server->certificate);
+
   if (ret == 0) {
     if (login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
       /* only add assertion if response is an AuthnResponse */
@@ -1203,7 +1204,7 @@ lasso_login_instance_init(GTypeInstance   *instance,
 
   login->protocolProfile = 0;
   login->assertionArtifact = NULL;
-  login->signature_status = TRUE;
+  login->signature_status = 0;
 }
 
 static void
