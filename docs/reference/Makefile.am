@@ -133,7 +133,7 @@ clean: clean-sources clean-local
 	-@rm -rf tmpl
 	-@rm -rf sgml
 	-@rm -rf html
-	-@rm -f  lasso-decl-list.txt lasso-decl.txt lasso-undocumented.txt lasso-unused.txt lasso-sections.txt
+	-@rm -f  lasso-decl-list.txt lasso-decl.txt lasso-undocumented.txt lasso-unused.txt
 	-@rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
 
 clean-sources:
@@ -143,7 +143,5 @@ clean-local:
 	-@rm -rf  $(SCANOBJ_FILES) *.o *~ *.bak *.stamp
 
 maintainer-clean-local: clean
-	-@rm *.html *.txt
 	-@rm -rf `find sgml -name "*.sgml" -print`
 
-lasso-sections.txt: scan
