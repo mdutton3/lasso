@@ -44,7 +44,6 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-/* FIXME : implement includeCommonAttributes attribute in snippets */
 static struct XmlSnippet schema_snippets[] = {
 	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQueryItem, Select) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, id) },
