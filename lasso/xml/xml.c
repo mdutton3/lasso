@@ -440,13 +440,15 @@ lasso_node_impl_get_attr_value(LassoNode     *node,
 static GPtrArray *
 lasso_node_impl_get_attrs(LassoNode *node)
 {
-  GPtrArray *attributs;
+  GPtrArray *attributs = NULL;
   LassoAttr *prop;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  attributs = g_ptr_array_new();
   prop = node->private->node->properties;
+  if (prop != NULL)
+    attributs = g_ptr_array_new();
+
   while (prop != NULL) {
     g_ptr_array_add(attributs, prop);
     prop = prop->next;
@@ -500,7 +502,7 @@ lasso_node_impl_get_child(LassoNode     *node,
 static GPtrArray *
 lasso_node_impl_get_children(LassoNode *node)
 {
-  GPtrArray *children;
+  GPtrArray *children = NULL;
   xmlNodePtr cur;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -598,17 +600,19 @@ lasso_node_impl_serialize(LassoNode *node,
   }
 
   attrs = lasso_node_get_attrs(node);
-  for(i=0; i<attrs->len; i++) {
-    values = g_ptr_array_new();
-    name = (xmlChar *)((LassoAttr *)g_ptr_array_index(attrs, i))->name;
-    /* xmlGetProp returns a COPY of attr value
-       each val must be xmlFree in gdata_serialize_destroy_notify()
-       which is called by g_datalist_clear() */
-    val = xmlGetProp(node->private->node, name);
-    g_ptr_array_add(values, val);
-    g_datalist_set_data_full(&gd, name, values, gdata_serialize_destroy_notify);
+  if (attrs != NULL) {
+    for(i=0; i<attrs->len; i++) {
+      values = g_ptr_array_new();
+      name = (xmlChar *)((LassoAttr *)g_ptr_array_index(attrs, i))->name;
+      /* xmlGetProp returns a COPY of attr value
+	 each val must be xmlFree in gdata_serialize_destroy_notify()
+	 which is called by g_datalist_clear() */
+      val = xmlGetProp(node->private->node, name);
+      g_ptr_array_add(values, val);
+      g_datalist_set_data_full(&gd, name, values, gdata_serialize_destroy_notify);
+    }
+    g_ptr_array_free(attrs, TRUE);
   }
-  g_ptr_array_free(attrs, TRUE);
 
   children = lasso_node_get_children(node);
   if (children != NULL) {
@@ -624,6 +628,8 @@ lasso_node_impl_serialize(LassoNode *node,
 	   each val must be xmlFree in gdata_serialize_destroy_notify()
 	   which is called by g_datalist_clear() */
 	val    = xmlNodeGetContent(node->private->node);
+	if (val == NULL)
+	  break;
 	values = (GPtrArray *)g_datalist_get_data(&gd, name);
 	if (values == NULL) {
 	  values = g_ptr_array_new();
@@ -637,8 +643,8 @@ lasso_node_impl_serialize(LassoNode *node,
 	break;
       }
     }
+    g_ptr_array_free(children, TRUE);
   }
-  g_ptr_array_free(children, TRUE);
     
   return (gd);
 }
