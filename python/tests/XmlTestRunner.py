@@ -32,6 +32,14 @@ class XmlTestResult(unittest.TestResult):
       <description>%s</description>
     </test>""" % (test.id(), test.shortDescription())
 
+    def addError(self, test, err):
+        unittest.TestResult.addError(self, test, err)
+        print """    <test result="error">
+      <id>%s</id>
+      <description>%s</description>
+    </test>""" % (test.id(), test.shortDescription())
+        # TODO: add err
+
     def addFailure(self, test, err):
         unittest.TestResult.addFailure(self, test, err)
         print """    <test result="failure">
