@@ -734,13 +734,124 @@ void delete_LassoStringArray(LassoStringArray *self) {
 
 /***********************************************************************
  ***********************************************************************
- * XML
+ * XML Elements without namespace
  ***********************************************************************
  ***********************************************************************/
 
 
 /***********************************************************************
- * Assertion
+ * Node
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Node) LassoNode;
+#endif
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoNode();
+
+		~LassoNode();
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
+	}
+} LassoNode;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNode lasso_node_new
+#define delete_LassoNode lasso_node_destroy
+
+/* Methods implementations */
+
+gchar* LassoNode_dump(LassoNode *self) {
+	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
+}
+
+%}
+
+
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in SAML Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * samlp:Request
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpRequest) LassoSamlpRequest;
+#endif
+%nodefault LassoSamlpRequest;
+typedef struct {
+} LassoSamlpRequest;
+
+
+/***********************************************************************
+ * samlp:Response
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpResponse) LassoSamlpResponse;
+#endif
+%nodefault LassoSamlpResponse;
+typedef struct {
+	LassoSamlpStatus *Status;
+	// FIXME: LassoSamlAssertion *Assertion;
+} LassoSamlpResponse;
+
+
+/***********************************************************************
+ * samlp:Status
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpStatus) LassoSamlpStatus;
+#endif
+%nodefault LassoSamlpStatus;
+typedef struct {
+	LassoSamlpStatusCode *StatusCode;
+	char *StatusMessage;
+} LassoSamlpStatus;
+
+
+/***********************************************************************
+ * samlp:StatusCode
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlpStatusCode) LassoSamlpStatusCode;
+#endif
+%nodefault LassoSamlpStatusCode;
+typedef struct {
+	LassoSamlpStatusCode *StatusCode;
+	char *Value;
+} LassoSamlpStatusCode;
+
+
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in Liberty Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * lib:Assertion
  ***********************************************************************/
 
 
@@ -783,7 +894,7 @@ gchar* LassoLibAssertion_dump(LassoLibAssertion *self) {
 
 
 /***********************************************************************
- * AuthnRequest
+ * lib:AuthnRequest
  ***********************************************************************/
 
 
@@ -954,7 +1065,7 @@ void LassoLibAuthnRequest_relayState_set(LassoLibAuthnRequest *self, gchar *rela
 
 
 /***********************************************************************
- * AuthnResponse
+ * lib:AuthnResponse
  ***********************************************************************/
 
 
@@ -988,7 +1099,7 @@ void LassoLibAuthnResponse_Status_set(LassoLibAuthnResponse *self, LassoSamlpSta
 
 
 /***********************************************************************
- * FederationTerminationNotification
+ * lib:FederationTerminationNotification
  ***********************************************************************/
 
 
@@ -1002,7 +1113,7 @@ typedef struct {
 
 
 /***********************************************************************
- * LogoutRequest
+ * lib:LogoutRequest
  ***********************************************************************/
 
 
@@ -1035,7 +1146,7 @@ void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, gchar *re
 
 
 /***********************************************************************
- * LogoutResponse
+ * lib:LogoutResponse
  ***********************************************************************/
 
 
@@ -1044,50 +1155,106 @@ void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, gchar *re
 #endif
 %nodefault LassoLibLogoutResponse;
 typedef struct {
-} LassoLibLogoutResponse;
-
-
-/***********************************************************************
- * Node
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(Node) LassoNode;
-#endif
-typedef struct {
 	%extend {
-		/* Constructor, Destructor & Static Methods */
-
-		LassoNode();
-
-		~LassoNode();
-
-		/* Methods */
-
-		%newobject dump;
-		gchar *dump();
+		/* Attributes inherited from LassoLibStatusResponse */
+		LassoSamlpStatus *Status;
+		// FIXME: LassoSamlAssertion *Assertion;
 	}
-} LassoNode;
+} LassoLibLogoutResponse;
 
 %{
 
-/* Constructors, destructors & static methods implementations */
+/* Attributes inherited from LassoLibStatusResponse implementations */
 
-#define new_LassoNode lasso_node_new
-#define delete_LassoNode lasso_node_destroy
-
-/* Methods implementations */
-
-gchar* LassoNode_dump(LassoNode *self) {
-	return lasso_node_dump(LASSO_NODE(self), NULL, 1);
+/* Status */
+#define LassoLibLogoutResponse_get_Status LassoLibLogoutResponse_Status_get
+LassoSamlpStatus *LassoLibLogoutResponse_Status_get(LassoLibLogoutResponse *self) {
+	return LASSO_LIB_STATUS_RESPONSE(self)->Status;
+}
+#define LassoLibLogoutResponse_set_Status LassoLibLogoutResponse_Status_set
+void LassoLibLogoutResponse_Status_set(LassoLibLogoutResponse *self, LassoSamlpStatus *Status) {
+	 LASSO_LIB_STATUS_RESPONSE(self)->Status = Status;
 }
 
 %}
 
 
 /***********************************************************************
- * Provider
+ * lib:RegisterNameIdentifierRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(LibRegisterNameIdentifierRequest) LassoLibRegisterNameIdentifierRequest;
+#endif
+%nodefault LassoLibRegisterNameIdentifierRequest;
+typedef struct {
+	%extend {
+		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
+
+		gchar *relayState;
+	}
+} LassoLibRegisterNameIdentifierRequest;
+
+%{
+
+/* Attributes Implementations */
+
+/* relayState */
+#define LassoLibRegisterNameIdentifierRequest_get_relayState LassoLibRegisterNameIdentifierRequest_relayState_get
+gchar *LassoLibRegisterNameIdentifierRequest_relayState_get(
+		LassoLibRegisterNameIdentifierRequest *self) {
+	return NULL; /* FIXME */
+}
+#define LassoLibRegisterNameIdentifierRequest_set_relayState LassoLibRegisterNameIdentifierRequest_relayState_set
+void LassoLibRegisterNameIdentifierRequest_relayState_set(
+		LassoLibRegisterNameIdentifierRequest *self, gchar *relayState)
+{
+	 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self)->RelayState = g_strdup(relayState);
+}
+
+%}
+
+
+/***********************************************************************
+ * lib:RegisterNameIdentifierResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(LibRegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
+#endif
+%nodefault LassoLibRegisterNameIdentifierResponse;
+typedef struct {
+} LassoLibRegisterNameIdentifierResponse;
+
+
+/***********************************************************************
+ * lib:StatusResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(LibStatusResponse) LassoLibStatusResponse;
+#endif
+%nodefault LassoLibStatusResponse;
+typedef struct {
+	// FIXME: GList *Extension;
+	// FIXME: char *ProviderID;
+	LassoSamlpStatus *Status;
+	// FIXME: char *RelayState;
+} LassoLibStatusResponse;
+
+
+/***********************************************************************
+ ***********************************************************************
+ * ID-FF
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * lasso:Provider
  ***********************************************************************/
 
 
@@ -1126,122 +1293,7 @@ gchar *LassoProvider_providerId_get(LassoProvider *self) {
 
 
 /***********************************************************************
- * RegisterNameIdentifierRequest
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(LibRegisterNameIdentifierRequest) LassoLibRegisterNameIdentifierRequest;
-#endif
-%nodefault LassoLibRegisterNameIdentifierRequest;
-typedef struct {
-	%extend {
-		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
-
-		gchar *relayState;
-	}
-} LassoLibRegisterNameIdentifierRequest;
-
-%{
-
-/* Attributes Implementations */
-
-/* relayState */
-#define LassoLibRegisterNameIdentifierRequest_get_relayState LassoLibRegisterNameIdentifierRequest_relayState_get
-gchar *LassoLibRegisterNameIdentifierRequest_relayState_get(
-		LassoLibRegisterNameIdentifierRequest *self) {
-	return NULL; /* FIXME */
-}
-#define LassoLibRegisterNameIdentifierRequest_set_relayState LassoLibRegisterNameIdentifierRequest_relayState_set
-void LassoLibRegisterNameIdentifierRequest_relayState_set(
-		LassoLibRegisterNameIdentifierRequest *self, gchar *relayState)
-{
-	 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self)->RelayState = g_strdup(relayState);
-}
-
-%}
-
-
-/***********************************************************************
- * RegisterNameIdentifierResponse
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(LibRegisterNameIdentifierResponse) LassoLibRegisterNameIdentifierResponse;
-#endif
-%nodefault LassoLibRegisterNameIdentifierResponse;
-typedef struct {
-} LassoLibRegisterNameIdentifierResponse;
-
-
-/***********************************************************************
- * Request
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(SamlpRequest) LassoSamlpRequest;
-#endif
-%nodefault LassoSamlpRequest;
-typedef struct {
-} LassoSamlpRequest;
-
-
-/***********************************************************************
- * Response
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(SamlpResponse) LassoSamlpResponse;
-#endif
-%nodefault LassoSamlpResponse;
-typedef struct {
-	LassoSamlpStatus *Status;
-	// FIXME: LassoSamlAssertion *Assertion;
-} LassoSamlpResponse;
-
-
-/***********************************************************************
- * Status
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(SamlpStatus) LassoSamlpStatus;
-#endif
-%nodefault LassoSamlpStatus;
-typedef struct {
-	LassoSamlpStatusCode *StatusCode;
-	char *StatusMessage;
-} LassoSamlpStatus;
-
-
-/***********************************************************************
- * StatusCode
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(SamlpStatusCode) LassoSamlpStatusCode;
-#endif
-%nodefault LassoSamlpStatusCode;
-typedef struct {
-	LassoSamlpStatusCode *StatusCode;
-	char *Value;
-} LassoSamlpStatusCode;
-
-
-/***********************************************************************
- ***********************************************************************
- * ID-FF
- ***********************************************************************
- ***********************************************************************/
-
-
-/***********************************************************************
- * Server
+ * lasso:Server
  ***********************************************************************/
 
 
@@ -1335,7 +1387,7 @@ LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 
 
 /***********************************************************************
- * Identity
+ * lasso:Identity
  ***********************************************************************/
 
 
@@ -1406,7 +1458,7 @@ LassoStringArray *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 
 /***********************************************************************
- * Session
+ * lasso:Session
  ***********************************************************************/
 
 
@@ -1476,7 +1528,7 @@ LassoStringArray *LassoSession_providerIds_get(LassoSession *self) {
 
 
 /***********************************************************************
- * Profile
+ * lasso:Profile
  ***********************************************************************/
 
 
@@ -1498,7 +1550,7 @@ gboolean lasso_profile_is_liberty_query(gchar *query);
 
 
 /***********************************************************************
- * Defederation
+ * lasso:Defederation
  ***********************************************************************/
 
 
@@ -1692,7 +1744,7 @@ gint LassoDefederation_setSessionFromDump(LassoDefederation *self, gchar *dump) 
 
 
 /***********************************************************************
- * Login
+ * lasso:Login
  ***********************************************************************/
 
 
@@ -2010,7 +2062,7 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 
 
 /***********************************************************************
- * Logout
+ * lasso:Logout
  ***********************************************************************/
 
 
@@ -2246,7 +2298,7 @@ gint LassoLogout_setSessionFromDump(LassoLogout *self, gchar *dump) {
 
 
 /***********************************************************************
- * LECP
+ * lasso:LECP
  ***********************************************************************/
 
 
@@ -2527,7 +2579,7 @@ gint LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult
 %}
 
 /***********************************************************************
- * NameIdentifierMapping
+ * lasso:NameIdentifierMapping
  ***********************************************************************/
 
 
@@ -2715,7 +2767,7 @@ gint LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *s
 
 
 /***********************************************************************
- * NameRegistration
+ * lasso:NameRegistration
  ***********************************************************************/
 
 
