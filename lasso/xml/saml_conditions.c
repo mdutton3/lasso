@@ -48,6 +48,8 @@
 	struct XmlSnippet snippets[] = { \
 		{ "AudienceRestrictionCondition", 'n', \
 			(void**)&(conditions->AudienceRestrictionCondition) }, \
+		{ "NotBefore", 'a', (void**)&(conditions->NotBefore) }, \
+		{ "NotOnOrAfter", 'a', (void**)&(conditions->NotOnOrAfter) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -63,11 +65,6 @@ get_xmlNode(LassoNode *node)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (conditions->NotBefore)
-		xmlSetProp(xmlnode, "NotBefore", conditions->NotBefore);
-	if (conditions->NotOnOrAfter)
-		xmlSetProp(xmlnode, "NotOnOrAfter", conditions->NotOnOrAfter);
-
 	return xmlnode;
 }
 
@@ -79,8 +76,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);
-	conditions->NotBefore = xmlGetProp(xmlnode, "NotBefore");
-	conditions->NotOnOrAfter = xmlGetProp(xmlnode, "NotOnOrAfter");
+
 	return 0;
 }
 
