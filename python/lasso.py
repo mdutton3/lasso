@@ -887,8 +887,10 @@ class Login:
         ret = lassomod.login_getattr(self, name)
         if ret is None:
             raise AttributeError, name
+        if name == "user":
+            ret = LassoUser(_obj=ret)
         if name == "request":
-            print "request_type =", lassomod.login_getattr(self, "request_type")
+            # print "request_type =", lassomod.login_getattr(self, "request_type")
             if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
                 ret = AuthnRequest(None, _obj=ret)
             # TODO
@@ -925,6 +927,9 @@ class Login:
     def build_request_msg(self):
         return lassomod.login_build_request_msg(self)
 
+    def create_user(self, user_dump):
+        return lassomod.login_create_user(self, user_dump)
+
     def dump(self):
         return lassomod.login_dump(self)
 
@@ -935,9 +940,8 @@ class Login:
         return lassomod.login_init_from_authn_request_msg(self, authn_request_msg,
                                                           authn_request_method)
 
-    def init_request(self, response_msg, response_method, remote_providerID):
-        return lassomod.login_init_request(self, response_msg,
-                                           response_method, remote_providerID)
+    def init_request(self, response_msg, response_method):
+        return lassomod.login_init_request(self, response_msg, response_method)
 
     def must_authenticate(self):
         return lassomod.login_must_authenticate(self)

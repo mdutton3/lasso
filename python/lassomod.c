@@ -210,6 +210,7 @@ static PyMethodDef lasso_methods[] = {
   {"login_build_authn_response_msg",    login_build_authn_response_msg,    METH_VARARGS},
   {"login_build_request_msg",           login_build_request_msg,           METH_VARARGS},
   {"login_dump",                        login_dump,                        METH_VARARGS},
+  {"login_create_user",                 login_create_user,                 METH_VARARGS},
   {"login_init_authn_request",          login_init_authn_request,          METH_VARARGS},
   {"login_init_from_authn_request_msg", login_init_from_authn_request_msg, METH_VARARGS},
   {"login_init_request",                login_init_request,                METH_VARARGS},
