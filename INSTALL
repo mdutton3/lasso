@@ -2,9 +2,6 @@
 Installing Lasso
 ================
 
-Configuring and Building
-========================
-
 Lasso uses the GNU automake and autoconf to handle system dependency
 checking.  It is developed and built locally on GNU/Linux (Debian) both
 on x86 and PowerPC processors, but is also compiled via Debian
@@ -61,6 +58,25 @@ The simplest way to compile this package is:
      all sorts of other programs in order to regenerate files that came
      with the distribution.
 
+Creating 'configure' Program
+----------------------------
+
+If there is no 'configure' program, you can create it by running the
+'autogen.sh' script, as long as you have the 'automake' and 'autoconf'
+tools.  This is done by::
+
+  ./autogen.sh
+
+and you can also pass along arguments intended for 'configure' (see
+below for what these are)::
+
+  ./autogen.sh --prefix=/usr/local/somewhere
+
+The 'automake' and 'autoconf' tools have many different versions and
+at present development is being done with automake 1.4, autoconf 2.59
+and libtool 1.5.6.  These are only needed when compiling from CVS sources.
+'autogen.sh' enforces the requirements.
+
 Compilers and Options
 =====================
 
@@ -68,11 +84,11 @@ Some systems require unusual options for compilation or linking that
 the 'configure' script does not know about.  You can give 'configure'
 initial values for variables by setting them in the environment.  Using
 a Bourne-compatible shell, you can do that on the command line like
-this:
+this::
 
      CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
 
-Or on systems that have the 'env' program, you can do it like this:
+Or on systems that have the 'env' program, you can do it like this::
 
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
@@ -128,9 +144,6 @@ PACKAGE is something like 'gnu-ld' or 'pic'.
 
 coldfusion
     Build Lasso ColdFusion binding (enabled by default).
-
-csharp
-    Build Lasso C# binding (enabled by default).
 
 debugging
     Display debugging messages in 'stderr'.
@@ -210,3 +223,4 @@ Operation Controls
      script, and exit.
 
 'configure' also accepts some other, not widely useful, options.
+
