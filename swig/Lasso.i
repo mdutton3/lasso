@@ -560,10 +560,6 @@ void build_exception_msg(int errorCode, char *errorMsg) {
 		sprintf(errorMsg, "%d / Lasso Error", errorCode);
 }
 
-int get_exception_type(int errorCode) {
-	return errorCode > 0 ? SWIG_Warning : SWIG_UnknownError;
-}
-
 %}
 
 %define THROW_ERROR
@@ -572,8 +568,7 @@ int get_exception_type(int errorCode) {
 	errorCode = $action
 	if (errorCode) {
 		char errorMsg[256];
-		SWIG_exception(get_exception_type(errorCode),
-			       build_exception_msg(errorCode, errorMsg));
+		SWIG_exception(SWIG_UnknownError, build_exception_msg(errorCode, errorMsg));
 	}
 }
 %enddef

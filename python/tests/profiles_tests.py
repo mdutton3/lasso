@@ -143,8 +143,9 @@ class LogoutTestCase(unittest.TestCase):
         # The processRequestMsg should fail but not abort.
         try:
             logout.processRequestMsg('passport=0&lasso=1', lasso.httpMethodRedirect)
-        except lasso.SyntaxError:
-            pass
+        except lasso.Error, error:
+            if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
+                raise
         else:
             self.fail('Logout processRequestMsg should have failed.')
 
@@ -164,8 +165,9 @@ class LogoutTestCase(unittest.TestCase):
         # The processResponseMsg should fail but not abort.
         try:
             logout.processResponseMsg('liberty=&alliance', lasso.httpMethodRedirect)
-        except lasso.SyntaxError:
-            pass
+        except lasso.Error, error:
+            if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
+                raise
         else:
             self.fail('Logout processResponseMsg should have failed.')
 
@@ -200,8 +202,9 @@ class DefederationTestCase(unittest.TestCase):
         # The processNotificationMsg should fail but not abort.
         try:
             defederation.processNotificationMsg('nonLibertyQuery=1', lasso.httpMethodRedirect)
-        except lasso.SyntaxError:
-            pass
+        except lasso.Error, error:
+            if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
+                raise
         else:
             self.fail('Defederation processNotificationMsg should have failed.')
 
