@@ -48,7 +48,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-full.exe"
+OutFile "Install-full-0_4.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show

@@ -48,7 +48,7 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-deps.exe"
+OutFile "Install-deps-0_4.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show
