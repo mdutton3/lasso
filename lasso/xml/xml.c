@@ -835,6 +835,8 @@ lasso_node_impl_get_child(LassoNode      *node,
       child = xmlSecFindNode(node->private->node, name, lassoSoapEnvHRef);
     if (child == NULL)
       child = xmlSecFindNode(node->private->node, name, lassoMetadataHRef);
+    if (child == NULL)
+      child = xmlSecFindNode(node->private->node, name, lassoLassoHRef);
   }
   if (child != NULL) {
     return (lasso_node_new_from_xmlNode(child));
@@ -1347,8 +1349,7 @@ lasso_node_impl_set_ns(LassoNode     *node,
   xmlNsPtr new_ns;
 
   g_return_if_fail (LASSO_IS_NODE(node));
-  /* href may be NULL */
-  g_return_if_fail (prefix != NULL);
+  g_return_if_fail (href != NULL || prefix != NULL);
 
   /*   xmlNsPtr cur; */
   /*   cur = node->private->node->ns; */
