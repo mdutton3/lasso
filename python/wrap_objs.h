@@ -47,7 +47,9 @@ typedef struct {
 
 /* Functions to wrap Python objects -> C objects */
 #define PythonFile_get(v) (((v) == Py_None) ? NULL : (PyFile_Check(v) ? (PyFile_AsFile(v)) : stdout))
+
 xmlChar **PythonStringList_get(PyObject *list_obj);
+GPtrArray *PythonStringList2_get(PyObject *list_obj);
 
 PyObject *wrap_int(int val);
 PyObject *wrap_charPtr(char *str);

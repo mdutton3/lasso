@@ -19,6 +19,20 @@ xmlChar **PythonStringList_get(PyObject *list_obj) {
   return list;
 }
 
+GPtrArray *PythonStringList2_get(PyObject *list_obj) {
+  int i;
+  GPtrArray *list = NULL;
+
+  if (list_obj == Py_None) return NULL;
+
+  /* convert Python list into a GLib GPtrArray */
+  list = g_ptr_array_new();
+  for (i=0; i<PyList_Size(list_obj); i++)
+    g_ptr_array_add(list, PyString_AsString(PyList_GetItem(list_obj, i)));
+
+  return list;
+}
+
 /*****************************************************************************/
 /* Functions to wrap C objects -> Python objects                             */
 /*****************************************************************************/

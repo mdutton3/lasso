@@ -172,7 +172,7 @@ lasso_authn_request_build_full(const xmlChar *requestID,
   return (request);
 }
 
-LassoAuthnRequest *
+lassoAuthnRequest *
 lasso_authn_request_build(const xmlChar *providerID,
 			  const xmlChar *nameIDPolicy,
 			  const xmlChar *forceAuthn,
@@ -187,9 +187,9 @@ lasso_authn_request_build(const xmlChar *providerID,
 			  GPtrArray     *idpList,
 			  const xmlChar *consent)
 {
-  LassoAuthnRequest *lareq;
+  lassoAuthnRequest *lareq;
 
-  lareq = g_malloc(sizeof(LassoAuthnRequest));
+  lareq = g_malloc(sizeof(lassoAuthnRequest));
   lareq->node = lasso_authn_request_build_full(NULL,
 					       NULL,
 					       NULL,
@@ -214,7 +214,7 @@ lasso_authn_request_build(const xmlChar *providerID,
 /* AuthnResponse                                                             */
 /*****************************************************************************/
 
-LassoAuthnResponse *
+lassoAuthnResponse *
 lasso_authn_response_create(xmlChar       *query,
 			    gboolean       verifySignature,
 			    const xmlChar *public_key,
@@ -225,12 +225,12 @@ lasso_authn_response_create(xmlChar       *query,
 			    GPtrArray     *authenticationMethods,
 			    xmlChar       *authnContextComparison)
 {
-  LassoAuthnResponse *lares;
+  lassoAuthnResponse *lares;
   GData     *gd;
   gboolean   forceAuthn = FALSE;
   gint       proxyCount = 0;
 
-  lares = g_malloc(sizeof(LassoAuthnResponse));
+  lares = g_malloc(sizeof(lassoAuthnResponse));
   lares->request_query = query;
 
   if (verifySignature == TRUE) {
@@ -297,7 +297,7 @@ lasso_authn_response_create(xmlChar       *query,
 }
 
 gint
-lasso_authn_response_build(LassoAuthnResponse *lares,
+lasso_authn_response_build(lassoAuthnResponse *lares,
 			   const xmlChar      *providerID,
 			   gboolean            authentication_result,
 			   GPtrArray          *nameIdentifiers)

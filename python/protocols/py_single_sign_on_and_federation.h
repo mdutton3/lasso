@@ -29,11 +29,11 @@
 
 typedef struct {
     PyObject_HEAD
-    LassoAuthnRequest *obj;
-} LassoAuthnRequest_object;
+    lassoAuthnRequest *obj;
+} lassoAuthnRequest_object;
 
-#define LassoAuthnRequest_get(v) (((v) == Py_None) ? NULL : (((LassoAuthnRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *LassoAuthnRequest_wrap(LassoAuthnRequest *request);
+#define lassoAuthnRequest_get(v) (((v) == Py_None) ? NULL : (((lassoAuthnRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *lassoAuthnRequest_wrap(lassoAuthnRequest *request);
 
 PyObject *authn_request_getattr(PyObject *self, PyObject *args);
 PyObject *authn_request_build(PyObject *self, PyObject *args);

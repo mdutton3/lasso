@@ -32,15 +32,15 @@ extern "C" {
 
 #include <lasso/lasso.h>
 
-typedef struct _LassoAuthnRequest LassoAuthnRequest;
+typedef struct _lassoAuthnRequest lassoAuthnRequest;
 
-struct _LassoAuthnRequest {
+struct _lassoAuthnRequest {
   LassoNode  *node;
 };
 
-typedef struct _LassoAuthnResponse LassoAuthnResponse;
+typedef struct _lassoAuthnResponse lassoAuthnResponse;
 
-struct _LassoAuthnResponse {
+struct _lassoAuthnResponse {
   LassoNode     *node;
   xmlChar       *request_query;
   LassoNode     *request_node;
@@ -48,7 +48,7 @@ struct _LassoAuthnResponse {
   const xmlChar *private_key;
 };
 
-LassoAuthnRequest *lasso_authn_request_build(const xmlChar *providerID,
+lassoAuthnRequest *lasso_authn_request_build(const xmlChar *providerID,
 					     const xmlChar *nameIDPolicy,
 					     const xmlChar *forceAuthn,
 					     const xmlChar *isPassive,
@@ -62,7 +62,7 @@ LassoAuthnRequest *lasso_authn_request_build(const xmlChar *providerID,
 					     GPtrArray     *idpList,
 					     const xmlChar *consent);
 
-LassoAuthnResponse *lasso_authn_response_create(xmlChar       *query,
+lassoAuthnResponse *lasso_authn_response_create(xmlChar       *query,
 						gboolean       verifySignature,
 						const xmlChar *public_key,
 						const xmlChar *private_key,
@@ -72,7 +72,7 @@ LassoAuthnResponse *lasso_authn_response_create(xmlChar       *query,
 						GPtrArray     *authenticationMethods,
 						xmlChar       *authnContextComparison);
 
-gint lasso_authn_response_build(LassoAuthnResponse *lares,
+gint lasso_authn_response_build(lassoAuthnResponse *lares,
 				const xmlChar *providerID,
 				gboolean       authentication_result,
 				GPtrArray     *nameIdentifiers);

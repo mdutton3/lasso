@@ -27,7 +27,7 @@
 #include "../xml/py_xml.h"
 #include "py_single_sign_on_and_federation.h"
 
-PyObject *wrap_LassoAuthnRequest(LassoAuthnRequest *request) {
+PyObject *lassoAuthnRequest_wrap(lassoAuthnRequest *request) {
   PyObject *ret;
 
   if (request == NULL) {
@@ -35,17 +35,17 @@ PyObject *wrap_LassoAuthnRequest(LassoAuthnRequest *request) {
     return (Py_None);
   }
   ret = PyCObject_FromVoidPtrAndDesc((void *) request,
-                                     (char *) "LassoAuthnRequest *", NULL);
+                                     (char *) "lassoAuthnRequest *", NULL);
   return (ret);
 }
 
 /******************************************************************************/
-/* LassoAuthnRequest                                                          */
+/* lassoAuthnRequest                                                          */
 /******************************************************************************/
 
 PyObject *authn_request_getattr(PyObject *self, PyObject *args) {
   PyObject *lareq_obj;
-  LassoAuthnRequest *lareq;
+  lassoAuthnRequest *lareq;
   const char *attr;
 
   if (CheckArgs(args, "OS:authn_request_get_attr")) {
@@ -54,7 +54,7 @@ PyObject *authn_request_getattr(PyObject *self, PyObject *args) {
   }
   else return NULL;
 
-  lareq = LassoAuthnRequest_get(lareq_obj);
+  lareq = lassoAuthnRequest_get(lareq_obj);
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[s]", "node");
@@ -84,7 +84,7 @@ PyObject *authn_request_build(PyObject *self, PyObject *args) {
   GPtrArray     *idpList = NULL;
   const xmlChar *consent;
 
-  LassoAuthnRequest *request;
+  lassoAuthnRequest *request;
 
   if(!PyArg_ParseTuple(args, (char *) "ssssssOOssiOs:build_authn_request",
 		       &providerID, &nameIDPolicy, &forceAuthn, &isPassive,
@@ -108,5 +108,5 @@ PyObject *authn_request_build(PyObject *self, PyObject *args) {
 				      NULL,
 				      consent);
 
-  return (wrap_LassoAuthnRequest(request));
+  return (lassoAuthnRequest_wrap(request));
 }
