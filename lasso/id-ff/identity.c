@@ -198,7 +198,7 @@ lasso_identity_get_federation(LassoIdentity *identity,
 }
 
 gchar*
-lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
+lasso_identity_get_first_providerID(LassoIdentity *identity)
 {
   gchar *remote_providerID;
 
@@ -211,6 +211,14 @@ lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
   remote_providerID = g_strdup(g_ptr_array_index(identity->providerIDs, 0));
 
   return remote_providerID;
+}
+
+gchar*
+lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
+{
+  /* FIXME ABI : lasso_identity_get_next_federation_remote_providerID method is obsolete, use lasso_identity_get_first_providerID instead */
+
+  return lasso_identity_get_first_providerID(identity);
 }
 
 gint
