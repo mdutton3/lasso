@@ -1,5 +1,3 @@
-lassomod.py
-lassomod_wrap.c
 *.pyc
 .deps
 .libs
