@@ -76,7 +76,7 @@ case "${host}" in
 esac
 
 dnl ==========================================================================
-dnl Check for __FUNCTION__ or __FUNCTION__
+dnl Check for __FUNCTION__ or __func__
 dnl ==========================================================================
 AC_MSG_CHECKING(for __FUNCTION__ or __func__)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
@@ -211,13 +211,6 @@ if test "z$LIBXML_FOUND" = "zno" ; then
     fi
 fi
 
-if test "z$LIBXML_FOUND" = "zyes" ; then
-    if test "z$LIBXML262_FOUND" = "zyes" ; then
-	LASSO_DEFINES="-DLASSO_LIBXML_260=1 $LASSO_DEFINES"
-    elif test "z$ac_cv_func_snprintf" != "zyes" -o "z$ac_cv_func_vsnprintf" != "zyes" ; then
-	AC_MSG_ERROR(Functions snprintf and/or vsnprintf are not available on your platform. You need at least libxml2 2.6.2 for this version of $PACKAGE)
-    fi
-fi
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CONFIG)
@@ -447,6 +440,7 @@ dnl ==========================================================================
 dnl Writing result files
 dnl ==========================================================================
 AC_OUTPUT([
+lasso.pc:lasso.pc.in
 lasso/version.h
 Makefile
 lasso/Makefile
