@@ -46,9 +46,11 @@ struct _LassoServer {
   LassoProvider parent;
 
   GPtrArray *providers;
-  gchar     *private_key;
-  gchar     *certificate;
-  guint      signature_method;
+  
+  gchar *providerID;   
+  gchar *private_key;
+  gchar *certificate;
+  guint  signature_method;
   /*< private >*/
 };
 

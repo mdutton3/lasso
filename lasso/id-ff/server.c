@@ -26,6 +26,7 @@
 
 #define LASSO_SERVER_NODE                  "LassoServer"
 #define LASSO_SERVER_PROVIDERS_NODE        "LassoProviders"
+#define LASSO_SERVER_PROVIDERID_NODE       "ProviderID"
 #define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
 #define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
 #define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
@@ -55,6 +56,10 @@ lasso_server_dump(LassoServer *server)
   signature_method_str = g_new(gchar, 6);
   sprintf(signature_method_str, "%d", server->signature_method);
   server_class->set_prop(server_node, LASSO_SERVER_SIGNATURE_METHOD_NODE, signature_method_str);
+
+  /* providerID */
+  if(server->providerID)
+    server_class->set_prop(server_node, LASSO_SERVER_PROVIDERID_NODE, server->providerID);
 
   /* private key */
   if(server->private_key)
@@ -202,6 +207,7 @@ lasso_server_finalize(LassoServer *server)
 {
   debug(DEBUG, "Server object 0x%x finalized ...\n", server);
 
+  g_free(server->providerID);
   g_free(server->private_key);
   g_free(server->certificate);
 
@@ -216,6 +222,7 @@ static void
 lasso_server_instance_init(LassoServer *server)
 {
   server->providers = g_ptr_array_new();
+  server->providerID  = NULL;
   server->private_key = NULL;
   server->certificate = NULL;
   server->signature_method = lassoSignatureMethodRsaSha1;
@@ -264,25 +271,39 @@ lasso_server_new(gchar *metadata,
   LassoServer *server;
   xmlDocPtr    doc;
   xmlNodePtr   root;
-  LassoNode   *metadata_node;
+  LassoNode   *md_node;
+  gchar       *providerID;
 
-  g_return_val_if_fail(metadata!=NULL, NULL);
+  g_return_val_if_fail(metadata != NULL, NULL);
 
-  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER,
-				     NULL));
+  /* put server metadata in a LassoNode */
+  doc = xmlParseFile(metadata);
+  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+  xmlFreeDoc(doc);
+  md_node = lasso_node_new();
+  LASSO_NODE_GET_CLASS(md_node)->set_xmlNode(md_node, root);
+  /* md_node = lasso_node_new_from_xmlNode(root); */
+ 
+  /* get ProviderID in metadata */
+  providerID = lasso_node_get_attr_value(md_node, "ProviderID");
+  if (providerID == NULL) {
+    debug(ERROR, "ProviderID is missing in server metadata.\n");
+    lasso_node_destroy(md_node);
+    return (NULL);
+  }
 
+  /* Ok, we can create server */
+  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+
+  LASSO_PROVIDER(server)->metadata = md_node;
+
+  server->providerID = providerID;
   server->private_key = g_strdup(private_key);
   server->certificate = g_strdup(certificate);
   server->signature_method = signature_method;
 
-  doc = xmlParseFile(metadata);
-  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-  xmlFreeDoc(doc);
-  metadata_node = lasso_node_new_from_xmlNode(root);
-
   LASSO_PROVIDER(server)->public_key = g_strdup(public_key);
   LASSO_PROVIDER(server)->ca_certificate = NULL;
-  LASSO_PROVIDER(server)->metadata = metadata_node;
 
   return(server);
 }
@@ -306,6 +327,9 @@ lasso_server_new_from_dump(gchar *dump)
     return(NULL);
   }
   server_class = LASSO_NODE_GET_CLASS(server_node);
+
+  /* providerID */
+  server->providerID = lasso_node_get_attr_value(server_node, LASSO_SERVER_PROVIDERID_NODE);
 
   /* private key */
   server->private_key = lasso_node_get_attr_value(server_node, LASSO_SERVER_PRIVATE_KEY_NODE);
