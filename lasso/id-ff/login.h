@@ -70,10 +70,10 @@ struct _LassoLoginClass {
 
 LASSO_EXPORT GType                lasso_login_get_type                    (void);
 
-LASSO_EXPORT LassoProfileContext* lasso_login_new                         (LassoServer *server,
+LASSO_EXPORT LassoLogin*          lasso_login_new                         (LassoServer *server,
 									   LassoUser   *user);
 
-LASSO_EXPORT LassoProfileContext* lasso_login_new_from_dump               (LassoServer *server,
+LASSO_EXPORT LassoLogin*          lasso_login_new_from_dump               (LassoServer *server,
 									   LassoUser   *user,
 									   gchar       *dump);
 
