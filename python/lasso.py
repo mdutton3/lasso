@@ -511,7 +511,7 @@ class AuthnRequest(LibAuthnRequest):
         lassomod.authn_request_set_scoping(self, proxyCount)
 
 
-class AuthnResponse(LibAuthnResponse):
+class AuthnResponse(SamlpResponse):
     """\brief Blabla
 
     Bla bla
@@ -521,7 +521,7 @@ class AuthnResponse(LibAuthnResponse):
         The constructor
         """
         self._o = _obj
-        LibAuthnResponse.__init__(self, _obj=_obj)
+        SamlpResponse.__init__(self, _obj=_obj)
 
     def new_from_export(cls, buffer, type=0):
         obj = lassomod.authn_response_new_from_export(buffer, type)
@@ -1241,8 +1241,8 @@ class Lecp:
             return None
         return ret
 
-    def new(cls):
-        obj = lassomod.lecp_new()
+    def new(cls, server = None):
+        obj = lassomod.lecp_new(server)
         return Lecp(obj)
     new = classmethod(new)
 
@@ -1261,11 +1261,11 @@ class Lecp:
     def destroy(self):
         lassomod.lecp_destroy(self)
 
-    def init_authn_request_envelope(self, server, authnRequest):
-        return lassomod.lecp_init_authn_request_envelope(self, server, authnRequest)
+    def init_authn_request_envelope(self, authnRequest):
+        return lassomod.lecp_init_authn_request_envelope(self, authnRequest)
 
-    def init_authn_response_envelope(self, server, authnRequest, authnResponse):
-        return lassomod.lecp_init_authn_response_envelope(self, server, authnRequest, authnResponse)
+    def init_authn_response_envelope(self, authnRequest, authnResponse):
+        return lassomod.lecp_init_authn_response_envelope(self, authnRequest, authnResponse)
 
     def process_authn_request_envelope_msg(self, request_msg):
         return lassomod.lecp_process_authn_request_envelope_msg(self, request_msg)
