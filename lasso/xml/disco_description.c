@@ -62,8 +62,9 @@ The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
 #define snippets() \
 	LassoDiscoDescription *description = LASSO_DISCO_DESCRIPTION(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "SecurityMechID", 'c', (void**)&(description->SecurityMechID) },	\
-		{ "CredentialRef", 'c', (void**)&(description->CredentialRef) }, \
+		{ "SecurityMechID", SNIPPET_CONTENT, (void**)&(description->SecurityMechID) },	\
+		{ "CredentialRef", SNIPPET_CONTENT, (void**)&(description->CredentialRef) }, \
+		{ "id", SNIPPET_ATTRIBUTE, (void**)&(description->id) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -77,10 +78,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Description");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
-	if (description->id) {
-		xmlSetProp(xmlnode, "id", description->id);
-	}
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -94,8 +92,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return -1;
 	}
 
-	description->id = xmlGetProp(xmlnode, "id");
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

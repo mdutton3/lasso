@@ -47,9 +47,9 @@ Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
 	LassoDiscoServiceInstance *instance = \
 		LASSO_DISCO_SERVICE_INSTANCE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ServiceType", 'c', (void**)&(instance->ServiceType) }, \
-		{ "ProviderID",  'c', (void**)&(instance->ProviderID) }, \
-		{ "Description", 's', (void**)&(instance->Description) }, \
+		{ "ServiceType", SNIPPET_CONTENT, (void**)&(instance->ServiceType) }, \
+		{ "ProviderID",  SNIPPET_CONTENT, (void**)&(instance->ProviderID) }, \
+		{ "Description", SNIPPET_LIST_NODES, (void**)&(instance->Description) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -63,7 +63,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "ServiceInstance");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -75,7 +75,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	
 	return 0;
 }

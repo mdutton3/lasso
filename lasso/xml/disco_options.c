@@ -43,7 +43,7 @@ The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
 #define snippets() \
 	LassoDiscoOptions *options = LASSO_DISCO_OPTIONS(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Option", 't', (void**)&(options->Option) },	\
+		{ "Option", SNIPPET_LIST_CONTENT, (void**)&(options->Option) },	\
 		{ NULL, 0, NULL} \
 	};
 
@@ -57,7 +57,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Options");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -65,9 +65,13 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
+	snippets();
+
 	if (parent_class->init_from_xml(node, xmlnode)) {
 		return -1;
 	}
+
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

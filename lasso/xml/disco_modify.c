@@ -32,11 +32,11 @@
 #define snippets() \
 	LassoDiscoModify *modify = LASSO_DISCO_MODIFY(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ResourceID", 'c', (void**)&(modify->ResourceID) },	\
-		{ "EncryptedResourceID", 'c', (void**)&(modify->EncryptedResourceID) }, \
-		{ "InsertEntry", 's', (void**)&(modify->InsertEntry) }, \
-		{ "RemoveEntry", 's', (void**)&(modify->RemoveEntry) }, \
-		{ "id", 'a', (void**)&(modify->id) }, \
+		{ "ResourceID", SNIPPET_CONTENT, (void**)&(modify->ResourceID) },	\
+		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&(modify->EncryptedResourceID) }, \
+		{ "InsertEntry", SNIPPET_LIST_NODES, (void**)&(modify->InsertEntry) }, \
+		{ "RemoveEntry", SNIPPET_LIST_NODES, (void**)&(modify->RemoveEntry) }, \
+		{ "id", SNIPPET_ATTRIBUTE, (void**)&(modify->id) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -50,7 +50,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Modify");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -64,7 +64,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return -1;
 	}
 
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

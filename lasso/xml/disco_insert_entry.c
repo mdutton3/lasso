@@ -44,8 +44,8 @@ Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
 	LassoDiscoInsertEntry *entry = \
 		LASSO_DISCO_INSERT_ENTRY(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ResourceOffering", 'n', (void**)&(entry->ResourceOffering) }, \
-		{ "any", 's', (void**)&(entry->any) }, \
+		{ "ResourceOffering", SNIPPET_NODE, (void**)&(entry->ResourceOffering) }, \
+		{ "any", SNIPPET_LIST_NODES, (void**)&(entry->any) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -59,7 +59,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "InsertEntry");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -72,7 +72,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode)) {
 		return -1;
 	}
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+
+	init_xml_with_snippets(xmlnode, snippets);
 	
 	return 0;
 }

@@ -50,7 +50,9 @@ The schema fragment (liberty-idwsf-disco-svc-1.0-errata-v1.0.xsd):
 #define snippets() \
 	LassoDiscoModifyResponse *response = LASSO_DISCO_MODIFY_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Status", 'n', (void**)&(response->Status) },	\
+		{ "Status", SNIPPET_NODE, (void**)&(response->Status) },	\
+		{ "id", SNIPPET_ATTRIBUTE, (void**)&(response->id) },	\
+		{ "newEntryIDs", SNIPPET_ATTRIBUTE, (void**)&(response->newEntryIDs) },	\
 		{ NULL, 0, NULL} \
 	};
 
@@ -62,16 +64,9 @@ get_xmlNode(LassoNode *node)
 	xmlNode *xmlnode;
 	snippets();
 
-	xmlnode = parent_class->get_xmlNode(node);
-	xmlNodeSetName(xmlnode, "ModifyResponse");
+	xmlnode = xmlNewNode(NULL, "ModifyResponse");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
-	if (response->id) {
-		xmlSetProp(xmlnode, "id", response->id);
-	}
-	if (response->newEntryIDs) {
-		xmlSetProp(xmlnode, "newEntryIDs", response->newEntryIDs);
-	}
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -85,9 +80,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		return -1;
 	}
 
-	response->id = xmlGetProp(xmlnode, "id");
-	response->newEntryIDs = xmlGetProp(xmlnode, "newEntryIDs");
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

@@ -63,11 +63,12 @@ Schema fragment (liberty-idwsf-utility-1.0-errata-v1.0.xsd)
 	LassoDiscoResourceOffering *resource = \
 		LASSO_DISCO_RESOURCE_OFFERING(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ResourceID", 'c', (void**)&(resource->ResourceID) },	\
-		{ "EncryptedResourceID", 'c', (void**)&(resource->EncryptedResourceID) }, \
-		{ "ServiceInstance", 'n', (void**)&(resource->ServiceInstance) }, \
-		{ "Options", 'n', (void**)&(resource->Options) }, \
-		{ "Abstract", 'c', (void**)&(resource->Abstract) }, \
+		{ "ResourceID", SNIPPET_CONTENT, (void**)&(resource->ResourceID) },	\
+		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&(resource->EncryptedResourceID) }, \
+		{ "ServiceInstance", SNIPPET_NODE, (void**)&(resource->ServiceInstance) }, \
+		{ "Options", SNIPPET_NODE, (void**)&(resource->Options) }, \
+		{ "Abstract", SNIPPET_CONTENT, (void**)&(resource->Abstract) }, \
+		{ "entryID", SNIPPET_ATTRIBUTE, (void**)&(resource->entryID) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -79,13 +80,9 @@ get_xmlNode(LassoNode *node)
 	xmlNode *xmlnode;
 	snippets();
 
-	xmlnode = xmlNewNode(NULL, "InsertEntry");
-	xmlNodeSetName(xmlnode, "ResourceOffering");
+	xmlnode = xmlNewNode(NULL, "ResourceOffering");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
-	if (resource->entryID) {
-		xmlSetProp(xmlnode, "entryID", resource->entryID);
-	}
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -98,8 +95,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode)) {
 		return -1;
 	}
-	resource->entryID = xmlGetProp(xmlnode, "entryID");
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+
+	init_xml_with_snippets(xmlnode, snippets);
 	
 	return 0;
 }
