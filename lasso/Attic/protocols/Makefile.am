@@ -32,7 +32,8 @@ liblasso_protocols_la_SOURCES = \
 	name_identifier_mapping_response.c \
 	register_name_identifier_request.c \
 	register_name_identifier_response.c \
-	request.c
+	request.c \
+	response.c
 
 liblassoinclude_HEADERS = \
 	protocols.h \
@@ -45,4 +46,5 @@ liblassoinclude_HEADERS = \
 	name_identifier_mapping_response.h \
 	register_name_identifier_request.h \
 	register_name_identifier_response.h \
-	request.h
+	request.h \
+	response.h
