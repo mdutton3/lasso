@@ -22,14 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifdef HAVE_CONFIG_H
-#include "lasso_config.h"
-#endif
-
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "../php_lasso.h"
+
+#ifdef HAVE_CONFIG_H
+#include "lasso_config.h"
+#endif
+
 
 #include "lasso.h"
 

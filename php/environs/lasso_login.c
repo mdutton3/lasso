@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifdef HAVE_CONFIG_H
-#include "lasso_config.h"
-#endif
-
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "../php_lasso.h"
+
+#ifdef HAVE_CONFIG_H
+#include "lasso_config.h"
+#endif
 
 #include "lasso.h"
 
@@ -60,14 +60,14 @@ PHP_FUNCTION(lasso_login_new) {
 }
 /* }}} */
 
-/* {{{ proto resource lasso_login_init_authn_request(resource login, string metadata) */
+/* {{{ proto resource lasso_login_init_authn_request(resource login) */
 PHP_FUNCTION(lasso_login_init_authn_request) {
 	LassoLogin *login;
 	zval *param;
 	char *meta;
 	int meta_len;
 
-	zend_printf("DEBUG: lasso_login_new\n");
+	zend_printf("DEBUG: lasso_login_init_authn_request\n");
 
 	int num_args;
 	int ret;
@@ -75,8 +75,7 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	if ((num_args = ZEND_NUM_ARGS()) != 2) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &param, 
-				&meta, &meta_len) == FAILURE) {
+	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &param) == FAILURE) {
 		return;
 	}
 
@@ -85,7 +84,7 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	
 	zend_printf("DEBUG: login at 0x%p\n", login);
 
-	ret = lasso_login_init_authn_request(login, meta);
+	ret = lasso_login_init_authn_request(login);
 
 	(ret) ? (RETURN_FALSE) : (RETURN_TRUE);
 }
@@ -181,10 +180,12 @@ PHP_FUNCTION(lasso_login_build_request_msg) {
 }
 /* }}} */
 
-/* {{{ proto lasso_login_build_authn_request_msg(resource login) */
+/* {{{ proto lasso_login_build_authn_request_msg(resource login, string remote_providerID) */
 PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 
   	LassoLogin   *login;  
+	char *remote_providerID;
+	int remote_providerID_len;
 
 	zend_printf("DEBUG: lasso_login_build_authn_request_msg\n");
 
@@ -196,7 +197,8 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT
 
-	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &parm) == FAILURE) {
+	if (zend_parse_parameters(num_args TSRMLS_CC, "zs", &parm,
+		  &remote_providerID, &remote_providerID_len) == FAILURE) {
 		return;
 	}
 
@@ -204,6 +206,6 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg) {
 	
 	zend_printf("DEBUG: login at 0x%p\n", login);
 
-	lasso_login_build_authn_request_msg(login);
+	lasso_login_build_authn_request_msg(login, remote_providerID);
 }
 /* }}} */

@@ -22,14 +22,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifdef HAVE_CONFIG_H
-#include "lasso_config.h"
-#endif
-
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_lasso.h"
+
+#ifdef HAVE_CONFIG_H
+#include "lasso_config.h"
+#endif
+
 
 #include "lasso.h"
 
@@ -222,9 +223,9 @@ PHP_MINIT_FUNCTION(lasso)
 
 	/* Constants */
 	REGISTER_LONG_CONSTANT("lassoSignatureMethodRsaSha1", 1, CONST_CS | CONST_PERSISTENT);
-	REGISTER_STRING_CONSTANT("lassoLibConsentObtained", lassoLibConsentObtained, CONST_CS | CONST_PERSISTENT);
-	REGISTER_STRING_CONSTANT("lassoLibNameIDPolicyTypeFederated", lassoLibNameIDPolicyTypeFederated, CONST_CS | CONST_PERSISTENT);
-	REGISTER_STRING_CONSTANT("lassoLibProtocolProfileBrwsArt", lassoLibProtocolProfileBrwsArt, CONST_CS | CONST_PERSISTENT);
+	REGISTER_STRING_CONSTANT("lassoLibConsentObtained", (char *) lassoLibConsentObtained, CONST_CS | CONST_PERSISTENT);
+	REGISTER_STRING_CONSTANT("lassoLibNameIDPolicyTypeFederated", (char *)lassoLibNameIDPolicyTypeFederated, CONST_CS | CONST_PERSISTENT);
+	REGISTER_STRING_CONSTANT("lassoLibProtocolProfileBrwsArt", (char *) lassoLibProtocolProfileBrwsArt, CONST_CS | CONST_PERSISTENT);
 
 		
 	return SUCCESS;

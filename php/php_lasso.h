@@ -34,6 +34,13 @@ extern zend_module_entry lasso_module_entry;
 #include "TSRM.h"
 #endif
 
+/* Avoid warning about multiple definitions */
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+
 /* Resource */
 #define le_lassonode_name  "LASSO Node Resource"
 #define le_lassoserver_name  "LASSO Server Resource"
