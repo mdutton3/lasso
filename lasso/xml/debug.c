@@ -49,8 +49,10 @@ set_debug_info(int   line,
 {
   debug_type = type;
   debug_line = line;
-  strncpy(debug_filename, filename, 512);
-  strncpy(debug_function, function, 512);
+  debug_filename[511] = 0;
+  debug_function[511] = 0;
+  strncpy(debug_filename, filename, 511);
+  strncpy(debug_function, function, 511);
 }
 
 void
