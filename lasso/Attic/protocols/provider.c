@@ -278,7 +278,13 @@ lasso_provider_get_providerID(LassoProvider  *provider)
   GError  *err = NULL;
 
   descriptor = lasso_node_get_child(provider->metadata,
-				    "EntityDescriptor", NULL, NULL);    
+				    "EntityDescriptor", NULL, &err);    
+  if (descriptor == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    g_error_free(err);
+    return (NULL);
+  }
+
   value = lasso_node_get_attr_value(descriptor, "providerID", &err);
   lasso_node_destroy(descriptor);
 
