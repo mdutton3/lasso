@@ -49,7 +49,6 @@ extern "C" {
 
 typedef struct _LassoLogin LassoLogin;
 typedef struct _LassoLoginClass LassoLoginClass;
-typedef struct _LassoLoginPrivate LassoLoginPrivate;
 
 typedef enum {
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
@@ -65,7 +64,6 @@ struct _LassoLogin {
 	/*< private >*/
 	gchar *nameIDPolicy;
 	lassoHttpMethod http_method;
-	LassoLoginPrivate *private_data;
 };
 
 struct _LassoLoginClass {
