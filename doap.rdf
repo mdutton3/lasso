@@ -28,13 +28,13 @@
     <maintainer>
       <foaf:Person>
         <foaf:name>Nicolas Clapiès</foaf:name>
-	<foaf:mbox rdf:resource="mailto:nclapies@entrouvert.com"/>
+        <foaf:mbox rdf:resource="mailto:nclapies@entrouvert.com"/>
       </foaf:Person>
     </maintainer>
     <maintainer>
       <foaf:Person>
         <foaf:name>Valéry Febvre</foaf:name>
-	<foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com"/>
+        <foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com"/>
       </foaf:Person>
     </maintainer>
     <repository>
@@ -45,6 +45,10 @@
       </CVSRepository>
     </repository>
     <release>
+      <Version>
+        <created>2004-11-09</created>
+        <revision>0.5.0</revision>
+      </Version>
       <Version>
         <created>2004-09-07</created>
         <revision>0.4.1</revision>

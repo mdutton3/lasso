@@ -1,6 +1,19 @@
 NEWS
 ====
 
+0.5.0 - November 9th 2004
+-------------------------
+
+All features of SP Basic, SP, IDP, and LECP profiles for Liberty IDFF 1.2
+Static Conformance are now implemented, except for "Backward Compatibility".
+Extended features are also supported, except for "Affiliations".  Compatible
+with the demo application of the last Beta version of SourceID Liberty 2.0.
+
+Improved metadata support, a lot of new feature and bugfixes.
+
+API, ABI, and dump format of messages have changed, so this release is not
+compatible with previous versions.
+
 0.4.1 - September 7th 2004
 --------------------------
 
