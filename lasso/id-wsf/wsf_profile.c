@@ -32,16 +32,34 @@
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	/* FIXME : set keys */
-	profile->msg_body = lasso_node_export_to_soap(profile->request);
+       	if (LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request) == TRUE) {
+		profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_request));
+	}
+	else {
+		profile->msg_body = lasso_node_export_to_soap(profile->request);
+	}
+
 	return 0;
 }
 
 gint
 lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 {
+	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
 	/* FIXME : set keys */
-	profile->msg_body = lasso_node_export_to_soap(profile->response);
+       	if (LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_response) == TRUE) {
+		profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_response));
+	}
+	else {
+		profile->msg_body = lasso_node_export_to_soap(profile->response);
+	}
+
 	return 0;
 }
 
@@ -55,6 +73,8 @@ instance_init(LassoWsfProfile *profile)
 	profile->server = NULL;
 	profile->request = NULL;
 	profile->response = NULL;
+	profile->soap_envelope_request = NULL;
+	profile->soap_envelope_response = NULL;
 	profile->msg_url = NULL;
 	profile->msg_body = NULL;
 }

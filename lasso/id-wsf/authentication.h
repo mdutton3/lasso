@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <sasl.h>
+#include <sasl/sasl.h>
 
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_description.h>
@@ -83,12 +83,12 @@ LASSO_EXPORT char *lasso_authentication_get_mechanism_list(LassoAuthentication *
 
 LASSO_EXPORT gint lasso_authentication_init_request(LassoAuthentication *authentication,
 						    LassoDiscoDescription *description,
-						    const char *mechanisms,
+						    const gchar *mechanisms,
 						    sasl_callback_t *callbacks);
 
 LASSO_EXPORT gint lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 							   const gchar *soap_msg);
-	
+
 LASSO_EXPORT gint lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 							    const gchar *soap_msg);
 

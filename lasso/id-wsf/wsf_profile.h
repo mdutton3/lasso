@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-ff/server.h>
+#include <lasso/xml/soap_envelope.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -54,6 +55,9 @@ struct _LassoWsfProfile {
 
 	LassoNode *request;
 	LassoNode *response;
+
+	LassoSoapEnvelope *soap_envelope_request;
+	LassoSoapEnvelope *soap_envelope_response;
 
 	gchar *msg_url;
 	gchar *msg_body;
