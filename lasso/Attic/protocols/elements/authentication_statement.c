@@ -72,13 +72,17 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 				   LassoSamlNameIdentifier *identifier,
 				   LassoSamlNameIdentifier *idp_identifier)
 {
-  g_return_val_if_fail(idp_identifier != NULL, NULL);
-
   LassoNode *statement;
   LassoNode *new_identifier, *new_idp_identifier;
   LassoNode *subject, *subject_confirmation;
   gchar     *str;
   xmlChar   *time;
+
+  if (identifier != NULL) {
+    g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(identifier), NULL);
+  }
+  g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(idp_identifier), NULL);
+
 
   statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
 
