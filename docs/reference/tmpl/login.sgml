@@ -58,6 +58,72 @@ printf("Location: %s\n\nRedirected to IdP\n", LASSO_PROFILE(login)->msg_url);
 </programlisting>
 </example>
 
+<example>
+<title>Service Provider Assertion Consumer URL</title>
+<programlisting>
+LassoLogin *login;
+char *request_method = getenv("REQUEST_METHOD");
+char *artifact_msg = NULL, *lares = NULL, *lareq = NULL;
+char *name_identifier;
+lassoHttpMethod method;
+
+login = lasso_login_new(server);
+if (strcmp(request_method, "GET") == 0) {
+	artifact_msg = getenv("QUERY_STRING");
+	method = LASSO_HTTP_METHOD_REDIRECT;
+} else {
+	/* read submitted form; if it has a LAREQ field, put it in lareq,
+	 * if it has a LARES field, put it in lares */
+	if (lareq) {
+		artifact_msg = lareq;
+	} else if (lares) {
+		response_msg = lares;
+	} else {
+		/* bail out */
+	}
+	method = LASSO_HTTP_METHOD_POST;
+}
+
+if (artifact_msg) {
+	lasso_login_init_request(login, artifact_msg, method);
+	lasso_login_build_request_msg(login);
+	/* makes a SOAP call, soap_call is NOT a Lasso function */
+	soap_answer_msg = soap_call(LASSO_PROFILE(login)->msg_url,
+			LASSO_PROFILE(login)->msg_body);
+	lasso_login_process_response_msg(login, soap_answer_msg);
+} else if (response_msg) {
+	lasso_login_process_authn_response_msg(login, response_msg);
+}
+
+/* looks up name_identifier in local file, database, whatever and gets back
+ * two things: identity_dump and session_dump */
+name_identifier = LASSO_PROFILE(login)->nameIdentifier
+lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump);
+lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump);
+
+lasso_login_accept_sso(login);
+
+if (lasso_profile_is_identity_dirty(LASSO_PROFILE(login))) {
+	LassoIdentity *identity;
+	char *identity_dump;
+	identity = lasso_profile_get_identity(LASSO_PROFILE(login));
+	identity_dump = lasso_identity_dump(identity);
+	/* record identity_dump in file, database... */
+}
+
+if (lasso_profile_is_session_dirty(LASSO_PROFILE(login))) {
+	LassoSession *session;
+	char *session_dump;
+	session = lasso_profile_get_session(LASSO_PROFILE(login));
+	session_dump = lasso_session_dump(session);
+	/* record session_dump in file, database... */
+}
+
+/* redirect user anywhere */
+printf("Location: /\n\nRedirected to site root\n");
+</programlisting>
+</example>
+
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
