@@ -30,6 +30,7 @@ lib_LTLIBRARIES = \
 liblassoinclude_HEADERS = \
 	export.h	\
 	lasso.h	\
+        lasso_config.h \
 	$(NULL)
 
 liblasso_la_SOURCES = \
