@@ -1513,9 +1513,6 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 		ret = lasso_login_process_federation(login, is_consent_obtained);
 		if (ret < 0)
 			return ret;
-
-		/* XXX: what should be done if ret was > 0 ?  I would return
-		 * that code */
 	}
 
 	lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_SUCCESS);
