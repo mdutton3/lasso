@@ -54,6 +54,8 @@ typedef struct _LassoSamlSubjectStatementAbstractClass LassoSamlSubjectStatement
 
 struct _LassoSamlSubjectStatementAbstract {
 	LassoSamlStatementAbstract parent;
+
+	/*< public >*/
 	/* <element ref="saml:Subject"/> */
 	LassoSamlSubject *Subject;
 };
@@ -63,7 +65,6 @@ struct _LassoSamlSubjectStatementAbstractClass {
 };
 
 LASSO_EXPORT GType lasso_saml_subject_statement_abstract_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_subject_statement_abstract_new(void);
 
 #ifdef __cplusplus
 }

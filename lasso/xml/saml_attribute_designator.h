@@ -53,6 +53,7 @@ typedef struct _LassoSamlAttributeDesignatorClass LassoSamlAttributeDesignatorCl
 struct _LassoSamlAttributeDesignator {
 	LassoNode parent;
 
+	/*< public >*/
 	char *AttributeName;
 	char *AttributeNamespace;
 };

@@ -53,6 +53,7 @@ typedef struct _LassoSamlAttributeStatementClass LassoSamlAttributeStatementClas
 struct _LassoSamlAttributeStatement {
 	LassoSamlSubjectStatementAbstract parent;
 
+	/*< public >*/
 	GList *Attribute;
 };
 

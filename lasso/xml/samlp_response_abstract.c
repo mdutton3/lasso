@@ -148,10 +148,3 @@ lasso_samlp_response_abstract_fill(LassoSamlpResponseAbstract *response,
 	response->InResponseTo = g_strdup(InResponseTo);
 	response->Recipient = g_strdup(Recipient);
 }
-
-LassoNode*
-lasso_samlp_response_abstract_new()
-{
-	return g_object_new(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT, NULL);
-}
-

@@ -52,6 +52,7 @@ typedef struct _LassoLibAuthnResponseEnvelopeClass LassoLibAuthnResponseEnvelope
 struct _LassoLibAuthnResponseEnvelope {
 	LassoNode parent;
 
+	/*< public >*/
 	LassoNode *Extension; /* XXX */
 	LassoLibAuthnResponse *AuthnResponse;
 	char *AssertionConsumerServiceURL;

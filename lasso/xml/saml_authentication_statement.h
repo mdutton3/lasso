@@ -54,6 +54,8 @@ typedef struct _LassoSamlAuthenticationStatementClass LassoSamlAuthenticationSta
 
 struct _LassoSamlAuthenticationStatement {
 	LassoSamlSubjectStatementAbstract parent;
+
+	/*< public >*/
 	/* <element ref="saml:SubjectLocality" minOccurs="0"/> */
 	LassoSamlSubjectLocality *SubjectLocality;
 	/* <element ref="saml:AuthorityBinding" minOccurs="0" maxOccurs="unbounded"/> */

@@ -51,6 +51,7 @@ typedef struct _LassoLibIDPEntriesClass LassoLibIDPEntriesClass;
 struct _LassoLibIDPEntries{
 	LassoNode parent;
 	
+	/*< public >*/
 	/* <xs:element ref="IDPEntry" maxOccurs="unbounded"/> */
 	GList *IDPEntry;
 };

@@ -49,6 +49,8 @@ typedef struct _LassoSamlpStatusCodeClass LassoSamlpStatusCodeClass;
 
 struct _LassoSamlpStatusCode {
 	LassoNode parent;
+	
+	/*< public >*/
 	/* <element ref="samlp:StatusCode" minOccurs="0"/> */
 	LassoSamlpStatusCode *StatusCode;
 	/* <attribute name="Value" type="QName" use="required"/> */

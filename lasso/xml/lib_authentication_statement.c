@@ -106,6 +106,12 @@ lasso_lib_authentication_statement_get_type()
 }
 
 LassoLibAuthenticationStatement*
+lasso_lib_authentication_statement_new(void)
+{
+	return g_object_new(LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, NULL);
+}
+
+LassoLibAuthenticationStatement*
 lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 		const char *authenticationInstant,
 		const char *reauthenticateOnOrAfter,

@@ -50,6 +50,8 @@ typedef struct _LassoSamlSubjectClass LassoSamlSubjectClass;
 
 struct _LassoSamlSubject {
 	LassoNode parent;
+
+	/*< public >*/
 	LassoSamlNameIdentifier *NameIdentifier;
 	LassoSamlSubjectConfirmation *SubjectConfirmation;
 };

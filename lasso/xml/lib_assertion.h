@@ -49,6 +49,8 @@ typedef struct _LassoLibAssertionClass LassoLibAssertionClass;
 
 struct _LassoLibAssertion {
 	LassoSamlAssertion parent;
+
+	/*< public >*/
 	char *InResponseTo;
 };
 
@@ -58,6 +60,7 @@ struct _LassoLibAssertionClass {
 
 LASSO_EXPORT GType lasso_lib_assertion_get_type        (void);
 
+LASSO_EXPORT LassoLibAssertion* lasso_lib_assertion_new(void);
 LASSO_EXPORT LassoLibAssertion* lasso_lib_assertion_new_full(
 		const char *issuer, const char *requestID, const char *audience,
 		const char *notBefore, const char *notOnOrAfter);

@@ -79,16 +79,3 @@ lasso_saml_statement_abstract_get_type()
 	}
 	return this_type;
 }
-
-/**
- * lasso_saml_statement_abstract_new:
- *
- * Creates a new saml:StatementAbstract node object.
- * 
- * Return value: the new @LassoSamlStatementAbstract
- **/
-LassoNode* lasso_saml_statement_abstract_new()
-{
-	return g_object_new(LASSO_TYPE_SAML_STATEMENT_ABSTRACT, NULL);
-}
-

@@ -50,6 +50,7 @@ typedef struct _LassoSamlAttributeClass LassoSamlAttributeClass;
 struct _LassoSamlAttribute {
 	LassoSamlAttributeDesignator parent;
 
+	/*< public >*/
 	GList *AttributeValue;
 };
 

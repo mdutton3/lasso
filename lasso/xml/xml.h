@@ -97,7 +97,7 @@ struct _LassoNodeClass {
 LASSO_EXPORT GType lasso_node_get_type(void);
 
 LASSO_EXPORT LassoNode* lasso_node_new(void);
-LASSO_EXPORT LassoNode* lasso_node_new_from_dump(const char *buffer);
+LASSO_EXPORT LassoNode* lasso_node_new_from_dump(const char *dump);
 LASSO_EXPORT LassoNode* lasso_node_new_from_soap(const char *soap);
 LASSO_EXPORT LassoNode* lasso_node_new_from_xmlNode(xmlNode* node);
 

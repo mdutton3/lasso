@@ -56,6 +56,7 @@ typedef struct _LassoSamlAssertionClass LassoSamlAssertionClass;
 struct _LassoSamlAssertion {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <element ref="saml:Conditions" minOccurs="0"/> */
 	LassoSamlConditions *Conditions;
 	/* <element ref="saml:Advice" minOccurs="0"/> */

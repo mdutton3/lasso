@@ -50,6 +50,7 @@ typedef struct _LassoSamlpRequestClass LassoSamlpRequestClass;
 struct _LassoSamlpRequest {
 	LassoSamlpRequestAbstract parent;
 
+	/*< public >*/
 	/* <element name="AssertionArtifact" type="string"/> */
 	char *AssertionArtifact;
 };

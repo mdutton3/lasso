@@ -106,6 +106,12 @@ lasso_lib_assertion_get_type()
 }
 
 LassoLibAssertion*
+lasso_lib_assertion_new()
+{
+	return g_object_new(LASSO_TYPE_LIB_ASSERTION, NULL);
+}
+
+LassoLibAssertion*
 lasso_lib_assertion_new_full(const char *issuer, const char *requestID,
 		const char *audience, const char *notBefore, const char *notOnOrAfter)
 {

@@ -52,6 +52,7 @@ typedef struct _LassoSamlConditionsClass LassoSamlConditionsClass;
 struct _LassoSamlConditions {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <element ref="saml:Condition"/> XXX: unbounded */
 	/* LassoSamlCondition *Condition;  XXX missing from lasso */ 
 	/* <element ref="saml:AudienceRestrictionCondition"/> XXX: unbounded */

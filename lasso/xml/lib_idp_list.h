@@ -50,6 +50,7 @@ typedef struct _LassoLibIDPListClass LassoLibIDPListClass;
 struct _LassoLibIDPList {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <xs:element ref="IDPEntries"/> */
 	LassoLibIDPEntries *IDPEntries;
 	/* <xs:element ref="GetComplete" minOccurs="0"/> */

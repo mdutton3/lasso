@@ -52,6 +52,7 @@ typedef struct _LassoSamlpResponseClass LassoSamlpResponseClass;
 struct _LassoSamlpResponse {
 	LassoSamlpResponseAbstract parent;
 
+	/*< public >*/
 	/* <element ref="samlp:Status"/> */
 	LassoSamlpStatus *Status;
 	/* <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/> */

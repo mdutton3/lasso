@@ -48,6 +48,8 @@ typedef struct _LassoSamlAdviceClass LassoSamlAdviceClass;
 
 struct _LassoSamlAdvice {
 	LassoNode parent;
+
+	/*< public >*/
 	/* XXX: unbounded; both should be GList */
 	/* <element ref="saml:AssertionIDReference"/> */
 	char *AssertionIDReference;

@@ -53,6 +53,7 @@ typedef struct _LassoSamlAuthorityBindingClass LassoSamlAuthorityBindingClass;
 struct _LassoSamlAuthorityBinding {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <attribute name="AuthorityKind" type="QName" use="required"/> */
 	char *AuthorityKind;
 	/* <attribute name="Location" type="anyURI" use="required"/> */

@@ -56,6 +56,7 @@ typedef struct _LassoLibNameIdentifierMappingRequestClass \
 struct _LassoLibNameIdentifierMappingRequest {
 	LassoSamlpRequestAbstract parent;
 
+	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */

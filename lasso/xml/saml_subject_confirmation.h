@@ -53,6 +53,7 @@ typedef struct _LassoSamlSubjectConfirmationClass LassoSamlSubjectConfirmationCl
 struct _LassoSamlSubjectConfirmation {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/> */
 	char *ConfirmationMethod; /* XXX: unbounded and should be enum */
 	/* <element ref="saml:SubjectConfirmationData" minOccurs="0"/> */

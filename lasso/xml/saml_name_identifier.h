@@ -52,6 +52,8 @@ typedef struct _LassoSamlNameIdentifierClass LassoSamlNameIdentifierClass;
 
 struct _LassoSamlNameIdentifier {
 	LassoNode parent;
+	
+	/*< public >*/
 	char *NameQualifier;
 	char *Format;
 	char *content;

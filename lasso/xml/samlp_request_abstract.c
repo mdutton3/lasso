@@ -129,9 +129,3 @@ lasso_samlp_request_abstract_get_type()
 	return this_type;
 }
 
-LassoNode*
-lasso_samlp_request_abstract_new()
-{
-	return g_object_new(LASSO_TYPE_SAMLP_REQUEST_ABSTRACT, NULL);
-}
-

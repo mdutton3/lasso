@@ -59,10 +59,11 @@ static void xmlCleanNs(xmlNode *root_node);
 /**
  * lasso_node_dump:
  * @node: a #LassoNode
- * @encoding: the name of the encoding to use or NULL.
+ * @encoding: the name of character set encoding to use or NULL for default
+ *      (UTF-8).
  * @format: whether formatting is allowed
  * 
- * Dumps @node. All datas in object are dumped in an XML format.
+ * Dumps @node.  All datas in object are dumped in an XML format.
  * 
  * Return value: a full XML dump of @node.  The string must be freed by the
  *     caller.
@@ -752,7 +753,7 @@ lasso_node_get_type()
  * 
  * Creates a new #LassoNode.
  * 
- * Return value: a new node
+ * Return value: a newly created #LassoNode object
  **/
 LassoNode*
 lasso_node_new()
@@ -760,6 +761,14 @@ lasso_node_new()
 	return g_object_new(LASSO_TYPE_NODE, NULL);
 }
 
+/**
+ * lasso_node_new_from_dump:
+ * @dump: XML object dump
+ *
+ * Restores the @dump to a new #LassoNode subclass.
+ *
+ * Return value: a newly created object; or NULL if an error occured.
+ **/
 LassoNode*
 lasso_node_new_from_dump(const char *dump)
 {
@@ -957,7 +966,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 
 
 /**
- * lasso_node_class_add_snippets
+ * lasso_node_class_add_snippets:
  * @klass: object class
  * @snippets: array of XmlSnippet (NULL terminated)
  **/
@@ -968,7 +977,7 @@ lasso_node_class_add_snippets(LassoNodeClass *klass, struct XmlSnippet *snippets
 }
 
 /**
- * lasso_node_class_add_snippets
+ * lasso_node_class_add_snippets:
  * @klass: object class
  * @snippets: array of QuerySnippet (NULL terminated)
  **/
@@ -979,7 +988,7 @@ lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnippet *
 }
 
 /**
- * lasso_node_class_set_nodename
+ * lasso_node_class_set_nodename:
  * @klass: object class
  * @name: name for element node
  **/
@@ -993,7 +1002,7 @@ lasso_node_class_set_nodename(LassoNodeClass *klass, char *name)
 
 
 /**
- * lasso_node_class_set_ns
+ * lasso_node_class_set_ns:
  * @klass: object class
  * @href: namespace uri
  * @prefix: namespace prefix
@@ -1362,7 +1371,8 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 	return TRUE;
 }
 
-static void xmlDeclareNs(xmlNode *root_node, xmlNode *node)
+static void
+xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 {
 	xmlNs *ns;
 	xmlNode *t;
@@ -1378,12 +1388,14 @@ static void xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 			xmlDeclareNs(root_node, t);
 }
 
-static int sameNs(xmlNs *ns1, xmlNs *ns2)
+static int
+sameNs(xmlNs *ns1, xmlNs *ns2)
 {
 	return (ns1 == NULL && ns2 == NULL) || (ns1 && ns2 && strcmp(ns1->href, ns2->href) == 0);
 }
 
-static void xmlUseNsDef(xmlNs *ns, xmlNode *node)
+static void
+xmlUseNsDef(xmlNs *ns, xmlNode *node)
 {
 	xmlNode *t;
 	xmlNs *ns2, *ns3;
@@ -1418,7 +1430,8 @@ static void xmlUseNsDef(xmlNs *ns, xmlNode *node)
  * xmlCleanNs removes duplicate xml namespace declarations and merge them on
  * the @root_node.
  **/
-static void xmlCleanNs(xmlNode *root_node)
+static void
+xmlCleanNs(xmlNode *root_node)
 {
 	xmlNs *ns;
 	xmlNode *t;
@@ -1433,4 +1446,3 @@ static void xmlCleanNs(xmlNode *root_node)
 				xmlUseNsDef(ns, t);
 	}
 }
-

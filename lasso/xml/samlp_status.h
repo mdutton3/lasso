@@ -50,6 +50,7 @@ typedef struct _LassoSamlpStatusClass LassoSamlpStatusClass;
 struct _LassoSamlpStatus {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <element ref="samlp:StatusCode"/> */
 	LassoSamlpStatusCode *StatusCode;
 	/* <element ref="samlp:StatusMessage" minOccurs="0" maxOccurs="1"/> */

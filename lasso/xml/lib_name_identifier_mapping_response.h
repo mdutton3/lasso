@@ -58,6 +58,7 @@ typedef struct _LassoLibNameIdentifierMappingResponseClass \
 struct _LassoLibNameIdentifierMappingResponse {
 	LassoSamlpResponseAbstract parent;
 
+	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */

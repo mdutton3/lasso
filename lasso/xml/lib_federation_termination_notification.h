@@ -57,6 +57,7 @@ typedef struct _LassoLibFederationTerminationNotificationClass \
 struct _LassoLibFederationTerminationNotification {
 	LassoSamlpRequestAbstract parent;
 
+	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */

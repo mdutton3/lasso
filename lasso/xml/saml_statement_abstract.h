@@ -59,7 +59,6 @@ struct _LassoSamlStatementAbstractClass {
 };
 
 LASSO_EXPORT GType lasso_saml_statement_abstract_get_type(void);
-LASSO_EXPORT LassoNode* lasso_saml_statement_abstract_new(void);
 
 #ifdef __cplusplus
 }

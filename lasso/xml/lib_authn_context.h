@@ -49,6 +49,8 @@ typedef struct _LassoLibAuthnContextClass LassoLibAuthnContextClass;
 
 struct _LassoLibAuthnContext {
 	LassoNode parent;
+
+	/*< public >*/
 	/* <xs:element name="AuthnContextClassRef" type="xs:anyURI" minOccurs="0"/> */
 	char *AuthnContextClassRef;
 	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI"/> */

@@ -50,6 +50,7 @@ typedef struct _LassoLibIDPEntryClass LassoLibIDPEntryClass;
 struct _LassoLibIDPEntry{
 	LassoNode parent;
 
+	/*< public >*/
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element name="ProviderName" type="xs:string" minOccurs="0"/> */

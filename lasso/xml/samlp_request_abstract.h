@@ -53,6 +53,7 @@ typedef struct _LassoSamlpRequestAbstractClass LassoSamlpRequestAbstractClass;
 struct _LassoSamlpRequestAbstract {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/> */
 	char *RespondWith; /* XXX: turn into a GList */
 	/* <attribute name="RequestID" type="saml:IDType" use="required"/> */
@@ -75,8 +76,6 @@ struct _LassoSamlpRequestAbstractClass {
 };
 
 LASSO_EXPORT GType lasso_samlp_request_abstract_get_type           (void);
-
-LASSO_EXPORT LassoNode* lasso_samlp_request_abstract_new           (void);
 
 #ifdef __cplusplus
 }

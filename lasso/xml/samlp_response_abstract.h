@@ -53,6 +53,7 @@ typedef struct _LassoSamlpResponseAbstractClass LassoSamlpResponseAbstractClass;
 struct _LassoSamlpResponseAbstract {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <attribute name="ResponseID" type="saml:IDType" use="required"/> */
 	char *ResponseID;
 	/* <attribute name="InResponseTo" type="saml:IDReferenceType" use="optional"/> */
@@ -76,7 +77,6 @@ struct _LassoSamlpResponseAbstractClass {
 };
 
 LASSO_EXPORT GType lasso_samlp_response_abstract_get_type           (void);
-LASSO_EXPORT LassoNode* lasso_samlp_response_abstract_new           (void);
 LASSO_EXPORT void lasso_samlp_response_abstract_fill(LassoSamlpResponseAbstract *response,
 		const char *InResponseTo, const char *Recipient);
 

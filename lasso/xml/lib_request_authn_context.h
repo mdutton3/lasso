@@ -52,6 +52,8 @@ typedef struct _LassoLibRequestAuthnContextClass LassoLibRequestAuthnContextClas
 
 struct _LassoLibRequestAuthnContext {
 	LassoNode parent;
+
+	/*< public >*/
 	/* <xs:element name="AuthnContextClassRef" type="xs:anyURI" maxOccurs="unbounded"/> */
 	char *AuthnContextClassRef; /* XXX: should actually be a list */
 	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/> */

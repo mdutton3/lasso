@@ -52,6 +52,8 @@ typedef struct _LassoSamlSubjectLocalityClass LassoSamlSubjectLocalityClass;
 
 struct _LassoSamlSubjectLocality {
 	LassoNode parent;
+
+	/*< public >*/
 	/* <attribute name="IPAddress" type="string" use="optional"/> */
 	char *IPAddress;
 	/* <attribute name="DNSAddress" type="string" use="optional"/> */

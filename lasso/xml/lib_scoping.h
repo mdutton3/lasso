@@ -50,6 +50,8 @@ typedef struct _LassoLibScopingClass LassoLibScopingClass;
 
 struct _LassoLibScoping {
 	LassoNode parent;
+
+	/*< public >*/
 	/* <xs:element name="ProxyCount" type="xs:nonNegativeInteger" minOccurs="0"/> */
 	int ProxyCount;
 	/* <xs:element ref="IDPList" minOccurs="0"/> */

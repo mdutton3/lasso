@@ -55,6 +55,7 @@ typedef struct _LassoLibAuthnRequestEnvelopeClass LassoLibAuthnRequestEnvelopeCl
 struct _LassoLibAuthnRequestEnvelope {
 	LassoNode parent;
 
+	/*< public >*/
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	GList *Extension;
 	/* <xs:element ref="AuthnRequest"/> */

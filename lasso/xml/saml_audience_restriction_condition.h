@@ -54,6 +54,8 @@ typedef struct _LassoSamlAudienceRestrictionConditionClass \
 
 struct _LassoSamlAudienceRestrictionCondition {
 	LassoSamlConditionAbstract parent;
+
+	/*< public >*/
 	/* <element ref="saml:Audience" maxOccurs="unbounded"/> */
 	char *Audience;	/* XXX: unbounded -> GList */
 };
