@@ -40,22 +40,27 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+#define snippets() \
+	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node); \
+	struct XmlSnippet snippets[] = { \
+		{ "AuthorityKind", 'a', (void**)&(binding->AuthorityKind) }, \
+		{ "Location", 'a', (void**)&(binding->Location) }, \
+		{ "Binding", 'a', (void**)&(binding->Binding) }, \
+		{ NULL, 0, NULL} \
+	};
+	
+
 static LassoNodeClass *parent_class = NULL;
 
 static xmlNode*
 get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
-	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node);
+	snippets();
 
 	xmlnode = xmlNewNode(NULL, "AuthorityBinding");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	if (binding->AuthorityKind)
-		xmlSetProp(xmlnode, "AuthorityKind", binding->AuthorityKind);
-	if (binding->Location)
-		xmlSetProp(xmlnode, "Location", binding->Location);
-	if (binding->Binding)
-		xmlSetProp(xmlnode, "Binding", binding->Binding);
+	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -63,14 +68,11 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	LassoSamlAuthorityBinding *binding = LASSO_SAML_AUTHORITY_BINDING(node);
+	snippets();
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	binding->AuthorityKind = xmlGetProp(xmlnode, "AuthorityKind");
-	binding->Location = xmlGetProp(xmlnode, "Location");
-	binding->Binding = xmlGetProp(xmlnode, "Binding");
+	lasso_node_init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }
