@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
 #include <lasso/id-ff/lecp.h>
 
 /*****************************************************************************/
@@ -34,6 +37,10 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 {
 	LassoProfile *profile;
 	gchar *assertionConsumerServiceURL;
+	xmlNode *message, *authn_request_node;
+	xmlOutputBufferPtr buf;
+	xmlCharEncodingHandlerPtr handler = NULL;
+	int rc;
 
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
@@ -58,9 +65,28 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
-	/* XXX: should not use lasso_node_dump; it is not a dump, it will go
-	 * on the wire */
-	profile->msg_body = lasso_node_dump(LASSO_NODE(lecp->authnRequestEnvelope), "utf-8", 0);
+	message = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
+	for (authn_request_node = message->children;
+			authn_request_node && strcmp(authn_request_node->name, "AuthnRequest") != 0;
+			authn_request_node = authn_request_node->next);
+
+	if (authn_request_node == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
+	
+	rc = lasso_sign_node(authn_request_node, "RequestID",
+			LASSO_SAMLP_REQUEST_ABSTRACT(
+				lecp->authnRequestEnvelope->AuthnRequest)->RequestID,
+			LASSO_PROFILE(lecp)->server->private_key,
+			LASSO_PROFILE(lecp)->server->certificate);
+	
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler); 
+	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+
+	profile->msg_body = g_strdup(buf->conv ? buf->conv->content : buf->buffer->content);
+	xmlOutputBufferClose(buf);
+
 	if (profile->msg_body == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Error while exporting the AuthnRequestEnvelope to POST msg");
@@ -94,10 +120,11 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 
 	profile->msg_url  = lasso_provider_get_metadata_one(
 			remote_provider, "SingleSignOnServiceURL");
-	profile->msg_body = lasso_node_export_to_soap(profile->request, NULL, NULL);
-	if (profile->msg_body == NULL) {
+	if (profile->msg_body == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-	}
+
+	/* msg_body should have been set in
+	 * lasso_lecp_process_authn_request_envelope_msg() */
 
 	return 0;
 }
@@ -127,7 +154,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 {
 	LassoProfile  *profile;
 	LassoProvider *provider;
-	gchar         *assertionConsumerServiceURL;
+	gchar *assertionConsumerServiceURL;
 
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
@@ -172,13 +199,12 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	return 0;
 }
 
-/*
+/**
  * lasso_lecp_init_authn_request:
  * @lecp: a LassoLecp
- * @remote_providerID: the providerID of the identity provider. When NULL, the first
- *                     identity provider is used.
- *
- */
+ * @remote_providerID: the providerID of the identity provider. When NULL, the
+ *     firstidentity provider is used.
+ **/
 int
 lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
 {
@@ -207,23 +233,48 @@ lasso_lecp_process_authn_request_msg(LassoLecp *lecp, const char *authn_request_
 int
 lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *request_msg)
 {
-	LassoMessageFormat format;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	xmlNode *soap_envelope, *soap_body, *authn_request;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
-	g_return_val_if_fail(request_msg!=NULL, -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-	lecp->authnRequestEnvelope = lasso_lib_authn_request_envelope_new();
-	format = lasso_node_init_from_message(LASSO_NODE(lecp->authnRequestEnvelope), request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
+	doc = xmlParseMemory(request_msg, strlen(request_msg));
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
+	xpathObj = xmlXPathEvalExpression("//lib:AuthnRequest", xpathCtx);
+
+	if (xpathObj == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+
+	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+		xmlXPathFreeObject(xpathObj);
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	LASSO_PROFILE(lecp)->request = LASSO_NODE(g_object_ref(
-			lecp->authnRequestEnvelope->AuthnRequest));
-	if (LASSO_PROFILE(lecp)->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "AuthnRequest not found");
-		return LASSO_ERROR_UNDEFINED;
-	}
+	authn_request = xmlCopyNode(xpathObj->nodesetval->nodeTab[0], 1);
+	xmlFreeDoc(doc);
+
+	soap_envelope = xmlNewNode(NULL, "Envelope");
+	xmlSetNs(soap_envelope,
+			xmlNewNs(soap_envelope, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX));
+
+	soap_body = xmlNewTextChild(soap_envelope, NULL, "Body", NULL);
+	xmlAddChild(soap_body, authn_request);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, soap_envelope, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	LASSO_PROFILE(lecp)->msg_body = g_strdup(
+			buf->conv ? buf->conv->content : buf->buffer->content);
+	xmlOutputBufferClose(buf);
+	xmlFreeNode(soap_envelope);
+
 
 	return 0;
 }
