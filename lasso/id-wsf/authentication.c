@@ -169,8 +169,9 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(authentication)->msg_url = g_strdup(description->Endpoint);
 	}
+	/* TODO: get Endpoint at WsdlURI */
 	else if (description->WsdlURI != NULL) {
-		/* TODO: get Endpoint at WsdlURI */
+
 	}
 
 	/* init soap envelope and add previous request */
@@ -404,6 +405,10 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 		outbase64 = xmlSecBase64Encode(out, outlen, 0);
 		response->Data = g_list_append(response->Data, outbase64);
 	}
+
+	/* connection must be saved in application to be restore next exchange */
+	/* ref count on it */
+	g_object_ref(authentication->connection);
 
 	return res;
 }
