@@ -606,7 +606,7 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 		const char *private_key_file, const char *certificate_file)
 {
 	xmlDoc *doc;
-	xmlNode *sign_tmpl, *tnode;
+	xmlNode *sign_tmpl;
 	xmlSecDSigCtx *dsig_ctx;
 
 	sign_tmpl = NULL;
