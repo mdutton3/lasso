@@ -669,7 +669,6 @@ lasso_node_impl_get_attr(LassoNode     *node,
 
   prop = node->private->node->properties;
   while (prop != NULL) {
-    //debug(ERROR, "%s - %s\n", prop->name, name);
     if (xmlStrEqual(prop->name, name)) {
       return (prop);
     }
@@ -688,12 +687,7 @@ lasso_node_impl_get_attr_value(LassoNode     *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
 
-  prop = lasso_node_get_attr(node, name);
-  if (prop == NULL) {
-    return(NULL);
-  }
-
-  return (prop->children->content);
+  return (xmlGetProp(node->private->node, name));
 }
 
 static GPtrArray *
@@ -1268,7 +1262,7 @@ lasso_node_dispose(LassoNode *node)
   }
   node->private->dispose_has_run = TRUE;
 
-  debug(INFO, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
+  debug(DEBUG, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
 
   /* unref reference counted objects */
   /* we don't have any here */
@@ -1279,7 +1273,7 @@ lasso_node_dispose(LassoNode *node)
 static void
 lasso_node_finalize(LassoNode *node)
 {
-  debug(INFO, "%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
+  debug(DEBUG, "%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   
   if (node->private->node_is_weak_ref == FALSE) {
     xmlUnlinkNode(node->private->node);

@@ -92,6 +92,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
   xmlChar *ni, *idp_ni;
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
+  printf("ProviderID = %s\n", providerID);
   assertion = lasso_assertion_new(providerID,
 				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
   xmlFree(providerID);
@@ -110,8 +111,12 @@ lasso_login_add_response_assertion(LassoLogin    *login,
     login->nameIdentifier = ni;
     xmlFree(idp_ni);
   }
+  printf("Start add_authenticationStatement 0x%x, 0x%x\n", assertion, authentication_statement);
+  printf("%s\n", lasso_node_export(assertion));
+  printf("%s\n", lasso_node_export(authentication_statement));
   lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+  printf("Finish add_authenticationStatement\n");
   lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
 				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
@@ -151,6 +156,8 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
 				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
+  printf(DEBUG, "ProviderID -> %s\n", lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server)));
+ 
   /* fill the response with the assertion */
   if (identity != NULL && authentication_result == 1) {
     printf("DEBUG - an identity found, so build an assertion\n");
@@ -205,6 +212,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
     }
     break;
   }
+  login->assertionArtifact = g_strdup(b64_samlArt);
   xmlFree(url);
   xmlFree(b64_samlArt);
   xmlFree(relayState);
@@ -228,7 +236,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   /* get SingleSignOnServiceURL metadata */
   url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
   if (url == NULL) {
-    debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider");
+    debug(ERROR, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider\n");
     return (-1);
   }
 
@@ -239,7 +247,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 					 LASSO_PROFILE_CONTEXT(login)->server->signature_method,
 					 LASSO_PROFILE_CONTEXT(login)->server->private_key);
       if (query == NULL) {
-	debug(ERROR, "Signature failed");
+	debug(ERROR, "Query signature failed\n");
 	return (-2);
       }
     }
