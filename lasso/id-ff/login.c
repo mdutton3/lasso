@@ -82,31 +82,31 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 				   const gchar     *authenticationMethod,
 				   const gchar     *reauthenticateOnOrAfter)
 {
-  LassoNode *assertion = NULL, *authentication_statement;
+  LassoNode *assertion = NULL, *as;
   xmlChar *requestID;
   GError *err = NULL;
   gint ret = 0;
 
+  /* get RequestID to build Assertion */
   requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE(login)->request),
 					"RequestID", &err);
-
   if (requestID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
-    return(-1);
+    return(ret);
   }
-
   assertion = lasso_assertion_new(LASSO_PROFILE(login)->server->providerID,
 				  requestID);
   xmlFree(requestID);
-  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
-								reauthenticateOnOrAfter,
-								LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier),
-								LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
-  if (authentication_statement != NULL) {
+
+  as = lasso_authentication_statement_new(authenticationMethod,
+					  reauthenticateOnOrAfter,
+					  LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier),
+					  LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+  if (as != NULL) {
     lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
-						     LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+						     LASSO_SAML_AUTHENTICATION_STATEMENT(as));
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Failed to build the AuthenticationStatement element of the Assertion.\n");
@@ -148,7 +148,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
   }
 
  done:
-  lasso_node_destroy(authentication_statement);
+  lasso_node_destroy(as);
   lasso_node_destroy(assertion);
 
   return (ret);
@@ -170,11 +170,11 @@ lasso_login_process_federation(LassoLogin *login)
   federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
 					     LASSO_PROFILE(login)->remote_providerID);
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
-					      "NameIDPolicy", NULL, NULL);
+					      "NameIDPolicy", lassoLibHRef, NULL);
   if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
     if (federation == NULL) {
       lasso_profile_set_response_status(LASSO_PROFILE(login),
-						lassoLibStatusCodeFederationDoesNotExist);
+					lassoLibStatusCodeFederationDoesNotExist);
       ret = -2;
       goto done;
     }
@@ -186,7 +186,7 @@ lasso_login_process_federation(LassoLogin *login)
     if (consent != NULL) {
       if (!xmlStrEqual(consent, lassoLibConsentObtained)) {
 	lasso_profile_set_response_status(LASSO_PROFILE(login),
-						  lassoSamlStatusCodeRequestDenied);
+					  lassoSamlStatusCodeRequestDenied);
 	message(G_LOG_LEVEL_WARNING, "Consent not obtained");
 	ret = -3;
 	goto done;
@@ -194,7 +194,7 @@ lasso_login_process_federation(LassoLogin *login)
     }
     else {
       lasso_profile_set_response_status(LASSO_PROFILE(login),
-						lassoSamlStatusCodeRequestDenied);
+					lassoSamlStatusCodeRequestDenied);
       message(G_LOG_LEVEL_WARNING, err->message);
       ret = err->code;
       g_error_free(err);
@@ -440,7 +440,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 					      LASSO_PROFILE(login)->remote_providerID);
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
-  url = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
+  url = lasso_provider_get_assertionConsumerServiceURL(remote_provider, lassoProviderTypeSp, NULL);
   samlArt = g_new(gchar, 2+20+20+1);
   identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE(login)->server->providerID,
 					      LASSO_PROFILE(login)->server->private_key);
@@ -489,42 +489,43 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   xmlChar *lareq = NULL;
   gboolean must_sign;
   gint ret = 0;
+  GError *err = NULL;
   
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
   remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 					      LASSO_PROFILE(login)->remote_providerID);
 
   /* check if authnRequest must be signed */
-  md_authnRequestsSigned = lasso_node_get_child_content(provider->metadata,
-							"AuthnRequestsSigned",
-							NULL, NULL);
+  md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(provider, &err);
   if (md_authnRequestsSigned != NULL) {
     must_sign = xmlStrEqual(md_authnRequestsSigned, "true");
     xmlFree(md_authnRequestsSigned);
   }
   else {
-    /* AuthnRequestsSigned metadata is required */
-    must_sign = FALSE;
-    message(G_LOG_LEVEL_CRITICAL, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
-    ret = -1;
+    /* AuthnRequestsSigned metadata is required in metadata */
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
 
   /* export request depending on the request ProtocolProfile */
-  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider);
+  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider, &err);
   if (request_protocolProfile == NULL) {
     /* SingleSignOnProtocolProfile metadata is required */
-    message(G_LOG_LEVEL_CRITICAL, "The element 'SingleSignOnProtocolProfile' is missing in metadata of remote provider.\n");    
-    ret = -2;
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
 
   /* get SingleSignOnServiceURL metadata */
-  url = lasso_provider_get_singleSignOnServiceURL(remote_provider);
+  url = lasso_provider_get_singleSignOnServiceURL(remote_provider, &err);
   if (url == NULL) {
     /* SingleSignOnServiceURL metadata is required */
-    message(G_LOG_LEVEL_CRITICAL, "The element 'SingleSignOnServiceURL' is missing in metadata of remote provider.\n");
-    ret = -3;
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
   
@@ -611,7 +612,9 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 					      LASSO_PROFILE(login)->remote_providerID);
   /* return an authnResponse (base64 encoded) */
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE(login)->response);
-  LASSO_PROFILE(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
+  LASSO_PROFILE(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider,
+										  lassoProviderTypeSp,
+										  NULL);
 
   return (0);
 }
@@ -624,7 +627,8 @@ lasso_login_build_request_msg(LassoLogin *login)
   remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 					      LASSO_PROFILE(login)->remote_providerID);
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->request);
-  LASSO_PROFILE(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider);
+  LASSO_PROFILE(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider,
+								  lassoProviderTypeIdp, NULL);
 
   return (0);
 }
@@ -753,15 +757,16 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
   remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
 					      LASSO_PROFILE(login)->remote_providerID);
   /* Is authnRequest signed ? */
-  md_authnRequestsSigned = lasso_node_get_child_content(remote_provider->metadata,
-							"AuthnRequestsSigned", NULL, NULL);
+  md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
   if (md_authnRequestsSigned != NULL) {
     must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
     xmlFree(md_authnRequestsSigned);
   }
   else {
-    message(G_LOG_LEVEL_CRITICAL, "The element 'AuthnRequestsSigned' is missing in metadata of server.\n");
-    return (-3);
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return (ret);
   }
 
   /* verify request signature */

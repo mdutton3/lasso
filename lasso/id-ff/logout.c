@@ -72,15 +72,17 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   profile = LASSO_PROFILE(logout);
 
   provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
-  if(provider==NULL){
+  if(provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
   }
 
   /* get the prototocol profile of the logout request */
-  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
+  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
+								   lassoProviderTypeIdp,
+								   NULL);
 
-  if(protocolProfile==NULL){
+  if(protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
     return(-3);
   }
@@ -97,14 +99,18 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 					       profile->server->certificate,
 					       NULL);
     
-    profile->msg_url  = lasso_provider_get_soapEndpoint(provider);
+    profile->msg_url  = lasso_provider_get_soapEndpoint(provider,
+							lassoProviderTypeIdp,
+							NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	  xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
     debug("Building a http get request message\n");
     profile->request_type = lassoHttpMethodRedirect;
-    profile->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
+    profile->msg_url = lasso_provider_get_singleLogoutServiceURL(provider,
+								 lassoProviderTypeIdp,
+								 NULL);
     profile->msg_url = lasso_node_export_to_query(profile->request,
 						  profile->server->signature_method,
 						  profile->server->private_key);
@@ -134,7 +140,9 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
+  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
+								   lassoProviderTypeSp,
+								   NULL);
   if(protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
     return(-3);

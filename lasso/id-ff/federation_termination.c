@@ -35,6 +35,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   LassoProfile  *profile;
   LassoProvider *provider;
   xmlChar       *protocolProfile;
+  lassoProviderTypes provider_type; /* use to get metadata */
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
   
@@ -46,8 +47,17 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
     return(-2);
   }
 
+  if (profile->provider_type == lassoProviderTypeSp) {
+    provider_type = lassoProviderTypeIdp;
+  }
+  else {
+    provider_type = lassoProviderTypeSp;
+  }
+
   /* get the prototocol profile of the federation termination notification */
-  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider);
+  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+											provider_type,
+											NULL);
   if(protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Federation termination notification protocol profile not found\n");
     return(-3);
@@ -56,7 +66,9 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
      xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     profile->request_type = lassoHttpMethodSoap;
-    profile->msg_url = lasso_provider_get_federationTerminationServiceURL(provider);
+    profile->msg_url = lasso_provider_get_federationTerminationServiceURL(provider,
+									    lassoProviderTypeIdp,
+									    NULL);
     if(profile->msg_url == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Federation Termination Notification url not found\n");
       return(-4);
@@ -71,7 +83,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 						  profile->server->private_key);
     profile->msg_body = NULL;
   }
-  else{
+  else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid protocol profile\n");
     return(-5);
   }

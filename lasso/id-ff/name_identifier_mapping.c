@@ -59,7 +59,9 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
+  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
+									    lassoProviderTypeIdp,
+									    &err);
   if(err != NULL){
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
@@ -71,7 +73,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
      xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     debug("building a soap request message\n");
     profile->request_type = lassoHttpMethodSoap;
-    profile->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
+    /* profile->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL); */
     profile->msg_body = lasso_node_export_to_soap(profile->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
@@ -106,7 +108,9 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
+  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
+									    lassoProviderTypeSp,
+									    &err);
   if(err != NULL) {
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
@@ -117,7 +121,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
      xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     debug("building a soap response message\n");
-    profile->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
+    /* profile->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL); */
     profile->msg_body = lasso_node_export_to_soap(profile->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \

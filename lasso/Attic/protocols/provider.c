@@ -74,10 +74,12 @@ lasso_provider_dump(LassoProvider *provider)
   provider_class->add_child(provider_node, metadata_node, FALSE);
   lasso_node_destroy(metadata_node);
   if(provider->public_key != NULL) {
-    provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
+    provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE,
+			     provider->public_key);
   }
   if(provider->ca_certificate != NULL) {
-    provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
+    provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE,
+			     provider->ca_certificate);
   }
   provider_dump = lasso_node_export(provider_node);
 
@@ -87,83 +89,167 @@ lasso_provider_dump(LassoProvider *provider)
 }
 
 gchar *
-lasso_provider_get_assertionConsumerServiceURL(LassoProvider  *provider)
+lasso_provider_get_metadata_value(LassoProvider       *provider,
+				  lassoProviderTypes   provider_type,
+				  gchar               *name,
+				  GError             **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL, NULL));
-}
-
-gchar *
-lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider  *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL, NULL));
-}
-
-gchar *
-lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider  *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationReturnServiceURL", NULL, NULL));
-}
-
-gchar *
-lasso_provider_get_federationTerminationServiceURL(LassoProvider  *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "FederationTerminationServiceURL", NULL, NULL));
-}
-
-gchar *
-lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider  *provider,
-							GError        **err)
-{
-  GError *tmp_err = NULL;
   xmlChar *value;
+  LassoNode *descriptor;
+  GError *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  if (xmlStrEqual(name, "ProviderID")) {
+    descriptor = lasso_node_get_child(provider->metadata,
+				      "EntityDescriptor", NULL, NULL);    
+    value = lasso_node_get_attr_value(descriptor, name, &tmp_err);
+  }
+  else {
+    switch (provider_type) {
+    case lassoProviderTypeSp:
+      descriptor = lasso_node_get_child(provider->metadata,
+					"SPDescriptor", NULL, NULL);
+      break;
+    case lassoProviderTypeIdp:
+      descriptor = lasso_node_get_child(provider->metadata,
+					"IDPDescriptor", NULL, NULL);      
+      break;
+    }
+    value = lasso_node_get_child_content(descriptor, name, NULL,
+					 &tmp_err);
+  }
+  lasso_node_destroy(descriptor);
+
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_assertionConsumerServiceURL(LassoProvider       *provider,
+					       lassoProviderTypes   provider_type,
+					       GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "AssertionConsumerServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_authnRequestsSigned(LassoProvider  *provider,
+				       GError        **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_provider_get_metadata_value(provider,
+					    lassoProviderTypeSp,
+					    "AuthnRequestsSigned",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider       *provider,
+								    lassoProviderTypes   provider_type,
+								    GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "FederationTerminationNotificationProtocolProfile",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider       *provider,
+							 lassoProviderTypes   provider_type,
+							 GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "FederationTerminationReturnServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_federationTerminationServiceURL(LassoProvider       *provider,
+						   lassoProviderTypes   provider_type,
+						   GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "FederationTerminationServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider       *provider,
+							lassoProviderTypes   provider_type,
+							GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
 
   g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   
-  value = lasso_node_get_attr_value(provider->metadata,
-				    "NameIdentifierMappingProtocolProfile",
-				    &tmp_err);
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "NameIdentifierMappingProtocolProfile",
+					    &tmp_err);
   if (value == NULL) {
     g_propagate_error (err, tmp_err);
-    return (NULL);
   }
-  return (value);
-}
 
-gchar *
-lasso_provider_get_nameIdentifierMappingServiceURL(LassoProvider  *provider,
-						   GError        **err)
-{
-  GError *tmp_err = NULL;
-  xmlChar *value;
-
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-
-  value = lasso_node_get_attr_value(provider->metadata,
-				    "NameIdentifierMappingServiceURL",
-				    &tmp_err);
-  if (value == NULL) {
-    g_propagate_error (err, tmp_err);
-    return (NULL);
-  }
-  return (value);
-}
-
-gchar *
-lasso_provider_get_nameIdentifierMappingServiceReturnURL(LassoProvider  *provider,
-							 GError        **err)
-{
-  GError *tmp_err = NULL;
-  xmlChar *value;
-
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-
-  value = lasso_node_get_attr_value(provider->metadata,
-				    "NameIdentifierMappingServiceReturnURL",
-				    &tmp_err);
-  if (value == NULL) {
-    g_propagate_error (err, tmp_err);
-    return (NULL);
-  }
   return (value);
 }
 
@@ -171,63 +257,184 @@ gchar *
 lasso_provider_get_providerID(LassoProvider  *provider,
 			      GError        **err)
 {
-  GError *tmp_err = NULL;
   xmlChar *value;
+  GError  *tmp_err = NULL;
 
   g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-
-  value = lasso_node_get_attr_value(provider->metadata, "ProviderID",
-				    &tmp_err);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    lassoProviderTypeSp, /* bidon */
+					    "ProviderID",
+					    &tmp_err);
   if (value == NULL) {
     g_propagate_error (err, tmp_err);
-    return (NULL);
   }
+
   return (value);
 }
 
 gchar *
-lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider *provider)
+lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider       *provider,
+							 lassoProviderTypes   provider_type,
+							 GError             **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierProtocolProfile", NULL, NULL));
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "RegisterNameIdentifierProtocolProfile",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
 }
 
 gchar *
-lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider *provider)
+lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider       *provider,
+						    lassoProviderTypes   provider_type,
+						    GError             **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierServiceURL", NULL, NULL));
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "RegisterNameIdentifierServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
 }
 
 gchar *
-lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider)
+lasso_provider_get_singleSignOnProtocolProfile(LassoProvider  *provider,
+					       GError        **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL, NULL));
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    lassoProviderTypeIdp,
+					    "SingleSignOnProtocolProfile",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
 }
 
 gchar *
-lasso_provider_get_singleSignOnServiceURL(LassoProvider *provider)
+lasso_provider_get_singleSignOnServiceURL(LassoProvider  *provider,
+					  GError        **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SingleSignOnServiceURL", NULL, NULL));
-}
+  xmlChar *value;
+  GError  *tmp_err = NULL;
 
-gchar *lasso_provider_get_singleLogoutProtocolProfile(LassoProvider *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutProtocolProfile", NULL, NULL));
-}
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    lassoProviderTypeIdp,
+					    "SingleSignOnServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
 
-gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceURL", NULL, NULL));
-}
-
-gchar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider *provider)
-{
-  return(lasso_node_get_child_content(provider->metadata, "SingleLogoutServiceReturnURL", NULL, NULL));
+  return (value);
 }
 
 gchar *
-lasso_provider_get_soapEndpoint(LassoProvider *provider)
+lasso_provider_get_singleLogoutProtocolProfile(LassoProvider       *provider,
+					       lassoProviderTypes   provider_type,
+					       GError             **err)
 {
-  return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL, NULL));
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "SingleLogoutProtocolProfile",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *lasso_provider_get_singleLogoutServiceURL(LassoProvider     *provider,
+					       lassoProviderTypes   provider_type,
+					       GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "SingleLogoutServiceURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider       *provider,
+						       lassoProviderTypes   provider_type,
+						       GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "SingleLogoutServiceReturnURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
+}
+
+gchar *
+lasso_provider_get_soapEndpoint(LassoProvider       *provider,
+				lassoProviderTypes   provider_type,
+				GError             **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "SoapEndpoint",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return (value);
 }
 
 void

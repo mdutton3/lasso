@@ -61,8 +61,10 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
   }
 
   /* get the prototocol profile of the register_name_identifier */
-  protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider);
-  if(protocolProfile == NULL){
+  protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider,
+									     lassoProviderTypeIdp,
+									     NULL);
+  if(protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Register_Name_Identifier Protocol profile not found\n");
     return(-3);
   }
@@ -78,7 +80,9 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
 					       profile->server->certificate,
 					       NULL);
     
-    profile->msg_url  = lasso_provider_get_soapEndpoint(provider);
+    profile->msg_url  = lasso_provider_get_soapEndpoint(provider,
+							lassoProviderTypeIdp,
+							NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp) || \
@@ -109,7 +113,9 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider);
+  protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider,
+									     lassoProviderTypeSp,
+									     NULL);
   if(protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Register name identifier protocol profile not found\n");
     return(-3);
@@ -118,7 +124,9 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
      xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
     debug("building a soap response message\n");
-    profile->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider);
+    profile->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider,
+									   lassoProviderTypeSp,
+									   NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \

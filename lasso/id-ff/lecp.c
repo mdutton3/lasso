@@ -104,7 +104,9 @@ lasso_lecp_init_authn_request_envelope(LassoLecp         *lecp,
 
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
-  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(LASSO_PROVIDER(server));
+  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(LASSO_PROVIDER(server),
+									       lassoProviderTypeSp,
+									       NULL);
 
   lecp->request = lasso_authn_request_envelope_new(authnRequest,
 						   server->providerID,
@@ -140,7 +142,9 @@ lasso_lecp_init_authn_response_envelope(LassoLecp          *lecp,
   }
 
   provider = lasso_server_get_provider(lecp->server, providerID);
-  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(provider);
+  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(provider,
+									       lassoProviderTypeSp,
+									       NULL);
   if(providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
     return(-1);
