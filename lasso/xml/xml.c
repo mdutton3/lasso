@@ -38,8 +38,7 @@
 #include <lasso/xml/saml_name_identifier.h>
 
 
-
-static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
+static struct XmlSnippet* lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
 static int set_value_at_path(LassoNode *node, char *path, char *query_value);
@@ -47,6 +46,11 @@ static char* get_value_by_path(LassoNode *node, char *path);
 static int find_path(LassoNode *node, char *path, LassoNode **value_node,
 		struct XmlSnippet **snippet);
 
+static
+void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
+		struct XmlSnippet *snippet_signature);
+
+static void xmlCleanNs(xmlNode *root_node);
 
 /*****************************************************************************/
 /* virtual public methods                                                    */
@@ -571,6 +575,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	xmlNs *ns;
 	GList *list_ns = NULL, *list_classes = NULL, *t;
+	struct XmlSnippet *snippet_signature = NULL, *tmps;
 
 	if (class->node_data == NULL)
 		return NULL;
@@ -583,14 +588,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 		class = g_type_class_peek_parent(class);
 	}
 
-	t = g_list_last(list_classes);
-	while (t) {
-		class = t->data;
-		lasso_node_build_xmlNode_from_snippets(node, xmlnode,
-				class->node_data->snippets, lasso_dump);
-		t = g_list_previous(t);
-	}
-
 	t = g_list_first(list_ns);
 	while (t) {
 		ns = t->data;
@@ -599,6 +596,21 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	}
 
 	xmlSetNs(xmlnode, xmlnode->nsDef);
+
+	t = g_list_last(list_classes);
+	while (t) {
+		class = t->data;
+		tmps = lasso_node_build_xmlNode_from_snippets(node, xmlnode,
+				class->node_data->snippets, lasso_dump);
+		if (tmps)
+			snippet_signature = tmps;
+		t = g_list_previous(t);
+	}
+
+	xmlCleanNs(xmlnode);
+
+	if (snippet_signature)
+		lasso_node_add_signature_template(node, xmlnode, snippet_signature);
 
 	return xmlnode;
 }
@@ -992,12 +1004,11 @@ lasso_node_class_set_ns(LassoNodeClass *klass, char *href, char *prefix)
 	klass->node_data->ns = xmlNewNs(NULL, href, prefix);
 }
 
-
-static void
+static struct XmlSnippet*
 lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump)
 {
-	struct XmlSnippet *snippet;
+	struct XmlSnippet *snippet, *snippet_signature = NULL;
 	SnippetType type;
 	xmlNode *t;
 	xmlNs *xmlns;
@@ -1075,68 +1086,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				}
 				break;
 			case SNIPPET_SIGNATURE:
-			{
-				LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
-				lassoSignatureType sign_type;
-				lassoSignatureType sign_method;
-				xmlNode *signature = NULL, *reference, *key_info;
-				char *uri;
-				char *id;
-
-				if (lasso_dump)
-					break; /* no signature in lasso dumps */
-
-				while (klass && LASSO_IS_NODE_CLASS(klass) && klass->node_data) {
-					if (klass->node_data->sign_type_offset)
-						break;
-					klass = g_type_class_peek_parent(klass);
-				}
-
-				if (klass->node_data->sign_type_offset == 0)
-					break;
-				
-				sign_type = G_STRUCT_MEMBER(
-						lassoSignatureType, node,
-						klass->node_data->sign_type_offset);
-				sign_method = G_STRUCT_MEMBER(
-						lassoSignatureType, node,
-						klass->node_data->sign_method_offset);
-
-				if (sign_type == LASSO_SIGNATURE_TYPE_NONE)
-					break;
-
-				if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-					signature = xmlSecTmplSignatureCreate(NULL,
-							xmlSecTransformExclC14NId,
-							xmlSecTransformRsaSha1Id, NULL);
-				} else {
-					signature = xmlSecTmplSignatureCreate(NULL,
-							xmlSecTransformExclC14NId,
-							xmlSecTransformDsaSha1Id, NULL);
-				}
-				/* XXX: get out if signature == NULL ? */
-				xmlAddChild(xmlnode, signature);
-
-				id = G_STRUCT_MEMBER(char*, node, snippet->offset);
-				uri = g_strdup_printf("#%s", id);
-				reference = xmlSecTmplSignatureAddReference(signature,
-						xmlSecTransformSha1Id, NULL, uri, NULL);
-				g_free(uri);
-
-				/* add enveloped transform */
-				xmlSecTmplReferenceAddTransform(reference,
-						xmlSecTransformEnvelopedId);
-				/* add exclusive C14N transform */
-				xmlSecTmplReferenceAddTransform(reference,
-						xmlSecTransformExclC14NId);
-
-				if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
-					/* add <dsig:KeyInfo/> */
-					key_info = xmlSecTmplSignatureEnsureKeyInfo(
-							signature, NULL);
-					xmlSecTmplKeyInfoAddX509Data(key_info);
-				}
-			} break;
+				snippet_signature = snippet;
+				break;
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
 			case SNIPPET_LASSO_DUMP:
@@ -1144,6 +1095,71 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		}
 		if (snippet->type & SNIPPET_INTEGER)
 			g_free(str);
+	}
+
+	return snippet_signature;
+}
+
+static
+void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
+		struct XmlSnippet *snippet_signature)
+{
+	LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
+	lassoSignatureType sign_type;
+	lassoSignatureType sign_method;
+	xmlNode *signature = NULL, *reference, *key_info;
+	char *uri;
+	char *id;
+
+	while (klass && LASSO_IS_NODE_CLASS(klass) && klass->node_data) {
+		if (klass->node_data->sign_type_offset)
+			break;
+		klass = g_type_class_peek_parent(klass);
+	}
+
+	if (klass->node_data->sign_type_offset == 0)
+		return;
+
+	sign_type = G_STRUCT_MEMBER(
+			lassoSignatureType, node,
+			klass->node_data->sign_type_offset);
+	sign_method = G_STRUCT_MEMBER(
+			lassoSignatureType, node,
+			klass->node_data->sign_method_offset);
+
+	if (sign_type == LASSO_SIGNATURE_TYPE_NONE)
+		return;
+
+	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+		signature = xmlSecTmplSignatureCreate(NULL,
+				xmlSecTransformExclC14NId,
+				xmlSecTransformRsaSha1Id, NULL);
+	} else {
+		signature = xmlSecTmplSignatureCreate(NULL,
+				xmlSecTransformExclC14NId,
+				xmlSecTransformDsaSha1Id, NULL);
+	}
+	/* XXX: get out if signature == NULL ? */
+	xmlAddChild(xmlnode, signature);
+
+	id = G_STRUCT_MEMBER(char*, node, snippet_signature->offset);
+	uri = g_strdup_printf("#%s", id);
+	reference = xmlSecTmplSignatureAddReference(signature,
+			xmlSecTransformSha1Id, NULL, uri, NULL);
+	g_free(uri);
+
+	/* add enveloped transform */
+	xmlSecTmplReferenceAddTransform(reference,
+			xmlSecTransformEnvelopedId);
+	/* add exclusive C14N transform */
+	xmlSecTmplReferenceAddTransform(reference,
+			xmlSecTransformExclC14NId);
+
+	if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
+		/* add <dsig:KeyInfo/> */
+		key_info = xmlSecTmplSignatureEnsureKeyInfo(
+				signature, NULL);
+		xmlSecTmplKeyInfoAddX509Data(key_info);
 	}
 }
 
@@ -1344,5 +1360,77 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 	}
 
 	return TRUE;
+}
+
+static void xmlDeclareNs(xmlNode *root_node, xmlNode *node)
+{
+	xmlNs *ns;
+	xmlNode *t;
+
+	if (strcmp(node->name, "Signature") == 0)
+		return;
+
+	for (ns = node->nsDef; ns; ns = ns->next)
+		if (strcmp(ns->prefix, "xsi") != 0)
+			xmlNewNs(root_node, ns->href, ns->prefix);
+	for (t = node->children; t; t = t->next)
+		if (t->type == XML_ELEMENT_NODE)
+			xmlDeclareNs(root_node, t);
+}
+
+static int sameNs(xmlNs *ns1, xmlNs *ns2)
+{
+	return (ns1 == NULL && ns2 == NULL) || (ns1 && ns2 && strcmp(ns1->href, ns2->href) == 0);
+}
+
+static void xmlUseNsDef(xmlNs *ns, xmlNode *node)
+{
+	xmlNode *t;
+	xmlNs *ns2, *ns3;
+
+	if (sameNs(ns, node->ns))
+		node->ns = ns;
+
+	for (t = node->children; t; t = t->next) {
+		if (t->type == XML_ELEMENT_NODE)
+			xmlUseNsDef(ns, t);
+	}
+
+	if (sameNs(node->nsDef, ns)) {
+		ns3 = node->nsDef;
+		node->nsDef = node->nsDef->next;
+		xmlFreeNs(ns3);
+	} else if (node->nsDef) {
+		for (ns2 = node->nsDef; ns2->next; ns2 = ns2->next) {
+			if (sameNs(ns2->next, ns)) {
+				ns3 = ns2;
+				ns2->next = ns2->next->next;
+				xmlFreeNs(ns3);
+			}
+		}
+	}
+}
+
+/**
+ * xmlCleanNs
+ * @root_node
+ *
+ * xmlCleanNs removes duplicate xml namespace declarations and merge them on
+ * the @root_node.
+ **/
+static void xmlCleanNs(xmlNode *root_node)
+{
+	xmlNs *ns;
+	xmlNode *t;
+
+	for (t = root_node->children; t; t = t->next)
+		if (t->type == XML_ELEMENT_NODE)
+			xmlDeclareNs(root_node, t);
+
+	for (ns = root_node->nsDef; ns; ns = ns->next) {
+		for (t = root_node->children; t; t = t->next)
+			if (t->type == XML_ELEMENT_NODE)
+				xmlUseNsDef(ns, t);
+	}
 }
 

@@ -606,10 +606,15 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 		const char *private_key_file, const char *certificate_file)
 {
 	xmlDoc *doc;
-	xmlNode *sign_tmpl;
+	xmlNode *sign_tmpl, *tnode;
 	xmlSecDSigCtx *dsig_ctx;
 
-	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+	sign_tmpl = NULL;
+	for (sign_tmpl = xmlnode->children; sign_tmpl; sign_tmpl = sign_tmpl->next) {
+		if (strcmp(sign_tmpl->name, "Signature") == 0)
+			break;
+	}
+
 	if (sign_tmpl == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
 

@@ -76,13 +76,8 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 	t = xmlnode->children;
 	xmlSetNs(xmlnode, ns);
 	while (t) {
-		if (t->type != XML_ELEMENT_NODE) {
-			t = t->next;
-			continue;
-		}
-		if (t->ns == NULL)
-			xmlSetNs(xmlnode, ns);
-		insure_namespace(t, ns);
+		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
+			insure_namespace(t, ns);
 		t = t->next;
 	}
 }
@@ -94,7 +89,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNs *ns;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(xmlnode, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
+	ns = xmlNewNs(NULL, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
 			LASSO_DST_QUERY_RESPONSE(node)->prefixServiceType);
 	insure_namespace(xmlnode, ns);
 
