@@ -60,13 +60,13 @@ struct _LassoLibAuthnRequest {
 	/* <xs:element ref="AffiliationID" minOccurs="0"/> */
 	char *AffiliationID;
 	/* <xs:element ref="NameIDPolicy" minOccurs="0"/> */
-	char *NameIDPolicy; /* XXX: move to enum ?*/
+	char *NameIDPolicy;
 	/* <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/> */
 	gboolean ForceAuthn;
 	/* <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/> */
 	gboolean IsPassive;
 	/* <xs:element ref="ProtocolProfile" minOccurs="0"/> */
-	char *ProtocolProfile; /* XXX: move to enum */
+	char *ProtocolProfile;
 	/* <xs:element name="AssertionConsumerServiceID" type="xs:string" minOccurs="0"/> */
 	char *AssertionConsumerServiceID;
 	/* <xs:element ref="RequestAuthnContext" minOccurs="0"/> */

@@ -50,9 +50,8 @@ struct _LassoSamlAdvice {
 	LassoNode parent;
 
 	/*< public >*/
-	/* XXX: unbounded; both should be GList */
 	/* <element ref="saml:AssertionIDReference"/> */
-	char *AssertionIDReference;
+	GList *AssertionIDReference;
 	/* <element ref="saml:Assertion"/> */
 	LassoNode *Assertion; /* actually LassoSamlAssertion* but it recurses */
 };

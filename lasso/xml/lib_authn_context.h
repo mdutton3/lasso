@@ -56,7 +56,7 @@ struct _LassoLibAuthnContext {
 	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI"/> */
 	char *AuthnContextStatementRef;
 	/* <xs:element ref="ac:AuthenticationContextStatement"/> */
-	/* XXX: LassoLibAuthenticationContextStatement ... */
+	void *AuthenticationContextStatement; /* TODO: support that element */
 };
 
 struct _LassoLibAuthnContextClass {

@@ -55,7 +55,7 @@ struct _LassoSamlSubjectConfirmation {
 
 	/*< public >*/
 	/* <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/> */
-	char *ConfirmationMethod; /* XXX: unbounded and should be enum */
+	GList *ConfirmationMethod;
 	/* <element ref="saml:SubjectConfirmationData" minOccurs="0"/> */
 	char *SubjectConfirmationData;
 };

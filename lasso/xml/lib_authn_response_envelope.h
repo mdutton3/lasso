@@ -53,7 +53,7 @@ struct _LassoLibAuthnResponseEnvelope {
 	LassoNode parent;
 
 	/*< public >*/
-	LassoNode *Extension; /* XXX */
+	GList *Extension;
 	LassoLibAuthnResponse *AuthnResponse;
 	char *AssertionConsumerServiceURL;
 };

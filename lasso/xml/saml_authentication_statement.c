@@ -50,7 +50,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "SubjectLocality", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, SubjectLocality) },
-	{ "AuthorityBinding", SNIPPET_NODE,
+	{ "AuthorityBinding", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthorityBinding) },
 	{ "AuthenticationMethod", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlAuthenticationStatement, AuthenticationMethod) },

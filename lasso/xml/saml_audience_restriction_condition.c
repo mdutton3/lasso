@@ -47,7 +47,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "Audience", SNIPPET_CONTENT,
+	{ "Audience", SNIPPET_LIST_CONTENT,
 		G_STRUCT_OFFSET(LassoSamlAudienceRestrictionCondition, Audience) },
 	{ NULL, 0, 0 }
 };
@@ -108,4 +108,26 @@ LassoSamlAudienceRestrictionCondition*
 lasso_saml_audience_restriction_condition_new()
 {
 	return g_object_new(LASSO_TYPE_SAML_AUDIENCE_RESTRICTION_CONDITION, NULL);
+}
+
+
+/**
+ * lasso_saml_audience_restriction_condition_new_full:
+ * @audience:
+ * 
+ * Creates a new #LassoSamlAudienceRestrictionCondition object and initializes
+ * it with the parameters.
+ * 
+ * Return value: a newly created #LassoSamlAudienceRestrictionCondition
+ **/
+LassoSamlAudienceRestrictionCondition*
+lasso_saml_audience_restriction_condition_new_full(const char *audience)
+{
+	LassoSamlAudienceRestrictionCondition *condition;
+
+	condition = lasso_saml_audience_restriction_condition_new();
+	if (audience != NULL) {
+		condition->Audience = g_list_append(condition->Audience, g_strdup(audience));
+	}
+	return condition;
 }

@@ -59,7 +59,7 @@ struct _LassoSamlAuthenticationStatement {
 	/* <element ref="saml:SubjectLocality" minOccurs="0"/> */
 	LassoSamlSubjectLocality *SubjectLocality;
 	/* <element ref="saml:AuthorityBinding" minOccurs="0" maxOccurs="unbounded"/> */
-	LassoSamlAuthorityBinding *AuthorityBinding; /* XXX unbounded */
+	GList *AuthorityBinding;
 	/* <attribute name="AuthenticationMethod" type="anyURI" use="required"/> */
 	char *AuthenticationMethod;
 	/* <attribute name="AuthenticationInstant" type="dateTime" use="required"/> */

@@ -57,7 +57,7 @@ struct _LassoSamlAudienceRestrictionCondition {
 
 	/*< public >*/
 	/* <element ref="saml:Audience" maxOccurs="unbounded"/> */
-	char *Audience;	/* XXX: unbounded -> GList */
+	GList *Audience;
 };
 
 struct _LassoSamlAudienceRestrictionConditionClass {
@@ -67,6 +67,8 @@ struct _LassoSamlAudienceRestrictionConditionClass {
 LASSO_EXPORT GType lasso_saml_audience_restriction_condition_get_type(void);
 LASSO_EXPORT LassoSamlAudienceRestrictionCondition*
 		lasso_saml_audience_restriction_condition_new(void);
+LASSO_EXPORT LassoSamlAudienceRestrictionCondition*
+		lasso_saml_audience_restriction_condition_new_full(const char *audience);
 
 #ifdef __cplusplus
 }
