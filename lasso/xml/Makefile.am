@@ -102,7 +102,11 @@ liblasso_xml_la_SOURCES = \
 	samlp_response_abstract.c \
 	samlp_status.c \
 	samlp_status_code.c \
+	soap_binding_consent.c \
 	soap_binding_correlation.c \
+	soap_binding_processing_context.c \
+	soap_binding_provider.c \
+	soap_binding_usage_directive.c \
 	soap_binding_ext_credential.c \
 	soap_binding_ext_credentials_context.c \
 	soap_binding_ext_service_instance_update.c \
@@ -206,7 +210,11 @@ liblassoinclude_HEADERS = \
 	samlp_response_abstract.h \
 	samlp_status.h \
 	samlp_status_code.h \
+	soap_binding_consent.h \
 	soap_binding_correlation.h \
+	soap_binding_processing_context.h \
+	soap_binding_provider.h \
+	soap_binding_usage_directive.h \
 	soap_binding_ext_credential.h \
 	soap_binding_ext_credentials_context.h \
 	soap_binding_ext_service_instance_update.h \
