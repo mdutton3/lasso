@@ -55,9 +55,6 @@ struct _LassoSession {
 
   /*< private >*/
   LassoSessionPrivate *private; /* Index of the current remote provider id in the providerIDs list */
-
-  gint index_providerID;
-
 };
 
 struct _LassoSessionClass {
@@ -88,12 +85,11 @@ LASSO_EXPORT gchar*         lasso_session_get_authentication_method            (
 
 LASSO_EXPORT gchar*         lasso_session_get_first_providerID                 (LassoSession *session);
 
-LASSO_EXPORT gchar*         lasso_session_get_next_providerID                  (LassoSession *session);
+LASSO_EXPORT gchar*         lasso_session_get_provider_index                   (LassoSession *session,
+										gint index);
 
 LASSO_EXPORT gint           lasso_session_remove_assertion                     (LassoSession *session,
 										gchar        *providerID);
-
-LASSO_EXPORT gint           lasso_session_reset_index_providerID               (LassoSession *session);
 
 #ifdef __cplusplus
 }

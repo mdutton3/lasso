@@ -1421,7 +1421,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void resetSessionIndex();
+		void resetProviderIdIndex();
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1535,7 +1535,7 @@ gint LassoLogout_setSessionFromDump(LassoLogout *self, gchar *dump) {
 #define LassoLogout_initRequest lasso_logout_init_request
 #define LassoLogout_processRequestMsg lasso_logout_process_request_msg
 #define LassoLogout_processResponseMsg lasso_logout_process_response_msg
-#define LassoLogout_resetSessionIndex lasso_logout_reset_session_index
+#define LassoLogout_resetProviderIdIndex lasso_logout_reset_providerID_index
 #define LassoLogout_validateRequest lasso_logout_validate_request
 
 %}

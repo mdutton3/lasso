@@ -51,9 +51,11 @@ struct _LassoLogout {
   /*< public >*/
 
   /*< private >*/
-  LassoNode      *initial_request;
-  LassoNode      *initial_response;
-  gchar          *initial_remote_providerID;
+  LassoNode *initial_request;
+  LassoNode *initial_response;
+  gchar     *initial_remote_providerID;
+
+  gint       providerID_index;
 
   LassoLogoutPrivate *private;
 };
@@ -63,34 +65,34 @@ struct _LassoLogoutClass {
 
 };
 
-LASSO_EXPORT GType        lasso_logout_get_type             (void);
+LASSO_EXPORT GType        lasso_logout_get_type               (void);
 
-LASSO_EXPORT LassoLogout* lasso_logout_new                  (LassoServer       *server,
-							     lassoProviderType  provider_type);
+LASSO_EXPORT LassoLogout* lasso_logout_new                    (LassoServer       *server,
+							       lassoProviderType  provider_type);
   
-LASSO_EXPORT gint         lasso_logout_build_request_msg    (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_build_request_msg      (LassoLogout *logout);
 
-LASSO_EXPORT gint         lasso_logout_build_response_msg   (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_build_response_msg     (LassoLogout *logout);
 
-LASSO_EXPORT void         lasso_logout_destroy              (LassoLogout *logout);
+LASSO_EXPORT void         lasso_logout_destroy                (LassoLogout *logout);
 
-LASSO_EXPORT gchar*       lasso_logout_get_next_providerID  (LassoLogout *logout);
+LASSO_EXPORT gchar*       lasso_logout_get_next_providerID    (LassoLogout *logout);
 
-LASSO_EXPORT gint         lasso_logout_init_request         (LassoLogout    *logout,
-							     gchar          *remote_providerID,
-							     lassoHttpMethod request_method);
+LASSO_EXPORT gint         lasso_logout_init_request           (LassoLogout    *logout,
+							       gchar          *remote_providerID,
+							       lassoHttpMethod request_method);
 
-LASSO_EXPORT gint         lasso_logout_process_request_msg  (LassoLogout     *logout,
-							     gchar           *request_msg,
-							     lassoHttpMethod  request_method);
+LASSO_EXPORT gint         lasso_logout_process_request_msg    (LassoLogout     *logout,
+							       gchar           *request_msg,
+							       lassoHttpMethod  request_method);
 
-LASSO_EXPORT gint         lasso_logout_process_response_msg (LassoLogout     *logout,
-							     gchar           *response_msg,
-							     lassoHttpMethod  response_method);
+LASSO_EXPORT gint         lasso_logout_process_response_msg   (LassoLogout     *logout,
+							       gchar           *response_msg,
+							       lassoHttpMethod  response_method);
 
-LASSO_EXPORT gint         lasso_logout_reset_session_index  (LassoLogout     *logout);
+LASSO_EXPORT gint         lasso_logout_reset_providerID_index (LassoLogout     *logout);
 
-LASSO_EXPORT gint         lasso_logout_validate_request     (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_validate_request       (LassoLogout *logout);
 
 
 #ifdef __cplusplus

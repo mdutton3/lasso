@@ -111,11 +111,6 @@ lasso_session_add_assertion(LassoSession *session,
   g_hash_table_insert(session->assertions, g_strdup(providerID),
 		      lasso_node_copy(assertion));
 
-  /* If index_providerID is -1, then set to 0 (now there is at least one  assertion) */
-  if (session->index_providerID < 0) {
-    session->index_providerID = 0;
-  }
-
   session->is_dirty = TRUE;
 
   return 0;
@@ -162,7 +157,7 @@ lasso_session_dump(LassoSession *session)
   LassoNode      *session_node, *assertions_node;
   LassoNodeClass *session_class, *assertions_class;
   int             table_size;
-  gchar          *index_str, *dump;
+  gchar          *dump;
 
   g_return_val_if_fail(session != NULL, NULL);
 
@@ -182,10 +177,6 @@ lasso_session_dump(LassoSession *session)
     session_class->add_child(session_node, assertions_node, FALSE);
     lasso_node_destroy(assertions_node);
   }
-
-  index_str = g_new(gchar, 5 + 1); /* length of gint in a string + end if line*/
-  g_sprintf(index_str, "%d", session->index_providerID);
-  session_class->new_child(session_node, "IndexProviderID", index_str, FALSE);
 
   dump = lasso_node_export(session_node);
 
@@ -262,31 +253,31 @@ lasso_session_get_first_providerID(LassoSession *session)
 }
 
 gchar*
-lasso_session_get_next_providerID(LassoSession *session)
+lasso_session_get_provider_index(LassoSession *session,
+				  gint          index)
 {
   gchar *providerID;
 
-  g_return_val_if_fail(session!=NULL, NULL);
+  LassoNode *assertion;
 
-  if(session->providerIDs->len == 0) {
+  g_return_val_if_fail(session != NULL, NULL);
+  g_return_val_if_fail(providerID != NULL, NULL);
+
+  /* verify index is valid */
+  if ( (session->providerIDs == NULL) && (session->providerIDs->len < 0) ) {
+    return NULL;
+  }
+  if ( (index < 0) || (index >= session->providerIDs->len) ) {
     return NULL;
   }
 
-  if (session->index_providerID < 0) {
+  /* get the provider id */
+  providerID = g_ptr_array_index(session->providerIDs, index);
+  if (providerID == NULL) {
     return NULL;
   }
 
-  if (session->index_providerID>=session->providerIDs->len) {
-    return NULL;
-  }
-
-  /* get the next provider id and increments the index */
-  //printf("get provider id from %d\n", session->index_providerID);
-  providerID = g_strdup(g_ptr_array_index(session->providerIDs, session->index_providerID));
-  session->index_providerID++;
-  //printf("return provider id %s\n", providerID);
-
-  return providerID;
+  return g_strdup(providerID);
 }
 
 gint
@@ -316,22 +307,7 @@ lasso_session_remove_assertion(LassoSession *session,
     }
   }
 
-  /* decrements the index of provider id */
-  session->index_providerID--;
-
   session->is_dirty = TRUE;
-
-  return 0;
-}
-
-gint
-lasso_session_reset_index_providerID(LassoSession *session)
-{
-  g_return_val_if_fail(session != NULL, -1);
-
-  if (session->index_providerID >= 0) {
-    session->index_providerID = 0;
-  }
 
   return 0;
 }
@@ -391,7 +367,6 @@ lasso_session_instance_init(LassoSession *session)
   session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      (GDestroyNotify)g_free,
 					      (GDestroyNotify)lasso_node_destroy);
-  session->index_providerID = -1; /* There is no assertion yet, so index_providerID is set to -1 */
   session->is_dirty = TRUE;
 }
 
@@ -446,7 +421,7 @@ lasso_session_new_from_dump(gchar *dump)
   LassoNode      *session_node;
   LassoNode      *assertions_node, *assertion_node, *assertion;
   xmlNodePtr      assertions_xmlNode, assertion_xmlNode;
-  xmlChar        *providerID, *index_providerID;
+  xmlChar        *providerID;
   GError         *err = NULL;
 
   g_return_val_if_fail(dump != NULL, NULL);
@@ -501,18 +476,6 @@ lasso_session_new_from_dump(gchar *dump)
       assertion_xmlNode = assertion_xmlNode->next;
     }
   }
-
-  /* set the index providerID */
-  printf("At session new from dump()\n");
-  index_providerID = lasso_node_get_child_content(session_node, "IndexProviderID", NULL, NULL);
-  if (index_providerID != NULL) {
-    session->index_providerID = atoi(index_providerID);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, "Index providerID not found\n");
-  }
-
-  /* free temporary nodes */
   lasso_node_destroy(assertions_node);
   lasso_node_destroy(session_node);
 

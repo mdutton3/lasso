@@ -56,7 +56,7 @@ gchar *
 lasso_logout_dump(LassoLogout *logout)
 {
   LassoNode      *initial_node = NULL, *child_node = NULL;
-  gchar          *dump = NULL, *parent_dump = NULL;
+  gchar          *dump = NULL, *parent_dump = NULL, *providerID_index_str;
   LassoNode      *node = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
@@ -90,6 +90,11 @@ lasso_logout_dump(LassoLogout *logout)
 					  logout->initial_remote_providerID, FALSE);
   }
   
+  /* add providerID_index */
+  providerID_index_str = g_strdup_printf("%d", logout->providerID_index);
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "IndexProviderID",
+					providerID_index_str, FALSE);
+
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
 
@@ -342,20 +347,21 @@ gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)
 {
   LassoProfile *profile;
-  gchar        *provider_id;
+  gchar        *providerID;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
   profile = LASSO_PROFILE(logout);
 
   g_return_val_if_fail(LASSO_IS_SESSION(profile->session), NULL);
-
-  provider_id = lasso_session_get_next_providerID(profile->session);
-  /* if initial provider id, then get a next provider id */
-  if (xmlStrEqual(logout->initial_remote_providerID, provider_id)) {
-    provider_id = lasso_session_get_next_providerID(profile->session);
+  providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
+  logout->providerID_index++;
+  /* if it is the provider id of the SP requester, then get the next */
+  if (logout->initial_remote_providerID && xmlStrEqual(providerID, logout->initial_remote_providerID)) {
+    providerID = lasso_session_get_provider_index(profile->session, logout->providerID_index);
+    logout->providerID_index++;
   }
   
-  return provider_id;
+  return providerID;
 }
 
 /**
@@ -520,7 +526,7 @@ lasso_logout_init_request(LassoLogout    *logout,
   profile->nameIdentifier = content;
 
   /* if logout request from a SP and if an HTTP Redirect / GET method, then remove assertion */
-  if ( (profile->provider_type == lassoProviderTypeSp) && (is_http_redirect_get_method == TRUE) ) {
+  if (is_http_redirect_get_method == TRUE) {
     lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   }
 
@@ -756,17 +762,24 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   /* Only if SOAP method, then remove assertion */
   if (response_method == lassoHttpMethodSoap) {
     lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+    if (profile->provider_type == lassoProviderTypeIdp && logout->providerID_index > 0) {
+      logout->providerID_index--;
+    }
   }
 
   switch (profile->provider_type) {
   case lassoProviderTypeSp:
-    /* */
+    /* TODO : is it */
     break;
   case lassoProviderTypeIdp:
     /* At IDP, if no more assertion for other providers and if initial remote provider id is set,
        then remove his assertion and restore his original requester infos */
     if(logout->initial_remote_providerID && profile->session->providerIDs->len == 1){
       lasso_session_remove_assertion(profile->session, logout->initial_remote_providerID);
+      if (logout->providerID_index > 0) {
+	logout->providerID_index--;
+      }
+
       profile->remote_providerID = logout->initial_remote_providerID;
       profile->request = logout->initial_request;
       profile->response = logout->initial_response;
@@ -782,14 +795,14 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
 }
 
 /**
- * lasso_logout_reset_session_index:
+ * lasso_logout_reset_providerID_index:
  * @logout: the logout object
  * 
  * Call the reset of the index provider id in session object
  * 
  * Return value: 0 if OK else < 0
  **/
-gint lasso_logout_reset_session_index(LassoLogout *logout)
+gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 {
   LassoProfile *profile;
 
@@ -798,7 +811,7 @@ gint lasso_logout_reset_session_index(LassoLogout *logout)
 
   g_return_val_if_fail(LASSO_IS_SESSION(profile->session), -1);
 
-  lasso_session_reset_index_providerID(profile->session);
+  logout->providerID_index = 0;
 
   return 0;
 }
@@ -981,6 +994,10 @@ lasso_logout_validate_request(LassoLogout *logout)
   /* authentication is ok, federation is ok, propagation support is ok, remove federation */
   /* verification is ok, save name identifier in logout object */
   lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+  if (profile->provider_type == lassoProviderTypeIdp && logout->providerID_index > 0) {
+    logout->providerID_index--;
+  }
+
   if (profile->provider_type == lassoProviderTypeIdp) {
     logout->initial_remote_providerID = g_strdup(profile->remote_providerID);
     if (profile->session->providerIDs->len>1) {
@@ -1046,6 +1063,8 @@ lasso_logout_instance_init(GTypeInstance   *instance,
   logout->initial_request = NULL;
   logout->initial_response = NULL;
   logout->initial_remote_providerID = NULL;
+
+  logout->providerID_index = 0;
 }
 
 static void
@@ -1116,7 +1135,7 @@ lasso_logout_new_from_dump(LassoServer *server,
   LassoProfile *profile;
   LassoNode    *node_dump, *request_node, *response_node;
   LassoNode    *initial_request_node, *initial_response_node;
-  gchar        *type, *export, *initial_remote_providerID;
+  gchar        *type, *export, *initial_remote_providerID, *providerID_index_str;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(dump != NULL, NULL);
@@ -1193,6 +1212,13 @@ lasso_logout_new_from_dump(LassoServer *server,
 
   /* Initial logout remote provider id */
   logout->initial_remote_providerID = lasso_node_get_child_content(node_dump, "InitialRemoteProviderID", lassoLassoHRef, NULL);
+
+  /* index provider id */
+  providerID_index_str = lasso_node_get_child_content(node_dump, "IndexProviderID", lassoLassoHRef, NULL);
+  if (providerID_index_str == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Index ProviderID not found\n");
+  }
+  logout->providerID_index = atoi(providerID_index_str);
 
   return logout;
 }
