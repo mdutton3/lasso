@@ -13,7 +13,6 @@ liblasso_xml_la_SOURCES = \
 	strings.c \
 	tools.c \
 	debug.c \
-	ds_signature.c \
 	errors.c \
 	xml.c \
 	lib_assertion.c	\
@@ -66,7 +65,6 @@ liblassoinclude_HEADERS = \
 	strings.h \
 	tools.h \
 	debug.h \
-	ds_signature.h \
 	errors.h \
 	lib.h \
 	saml.h \
