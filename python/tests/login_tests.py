@@ -172,6 +172,8 @@ class LoginTestCase(unittest.TestCase):
         idpLogoutContext = lasso.Logout.new(idpContext, idpUserContext, lasso.providerTypeIdp)
         self.failUnlessEqual(
             idpLogoutContext.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+        # There is no other service provider from which the user must be logged out.
+        self.failUnlessEqual(idpLogoutContext.get_next_providerID(), None)
         self.failUnlessEqual(idpLogoutContext.build_response_msg(), 0)
         soapResponseMsg = idpLogoutContext.msg_body
 

@@ -69,6 +69,19 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_buildResponseMsg
 }
 
 
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoLogout_getNextProviderId
+(JNIEnv * env, jobject this){
+    char* result;
+    LassoLogout* logout;
+
+    logout = getCObject(env, this);
+    result = lasso_logout_get_next_providerID(logout);
+    if (! result)
+      return NULL;
+    return (*env)->NewStringUTF(env, result);
+}
+
+
 JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogout_initRequest
 (JNIEnv * env, jobject this, jstring _providerID){
     int result;

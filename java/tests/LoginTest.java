@@ -183,6 +183,8 @@ public class LoginTest extends TestCase {
         assertNotNull(idpUserContext);
         idpLogoutContext = new LassoLogout(idpContext, idpUserContext, Lasso.providerTypeIdp);
 	assertEquals(idpLogoutContext.processRequestMsg(soapRequestMsg, Lasso.httpMethodSoap), 0);
+	// There is no other service provider from which the user must be logged out.
+        assertEquals(idpLogoutContext.getNextProviderId(), null);
         assertEquals(idpLogoutContext.buildResponseMsg(), 0);
         soapResponseMsg = idpLogoutContext.getMsgBody();
 

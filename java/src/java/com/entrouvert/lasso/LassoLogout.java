@@ -38,6 +38,8 @@ public class LassoLogout extends LassoProfileContext { // LassoLogout
 
     native public int buildResponseMsg();
 
+    native public String getNextProviderId();
+
     native public int initRequest(String providerId);
 
     native public int processRequestMsg(String requestMsg, int requestMethod);
