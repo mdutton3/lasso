@@ -10,7 +10,11 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-id-wsf.la
 
 liblasso_id_wsf_la_SOURCES = \
-	wsf_profile.c
+	abstract_service.c \
+	personal_profile_service.c \
+	wsf_profile.c	
 
 liblassoinclude_HEADERS = \
+	abstract_service.h \
+	personal_profile_service.h \
 	wsf_profile.h
