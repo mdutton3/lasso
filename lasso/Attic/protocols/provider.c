@@ -24,6 +24,10 @@
 
 #include <lasso/protocols/provider.h>
 
+#define LASSO_PROVIDER_NODE                "LassoProvider"
+#define LASSO_PROVIDER_PUBLIC_KEY_NODE     "PublicKey"
+#define LASSO_PROVIDER_CA_CERTIFICATE_NODE "CaCertificate"
+
 struct _LassoProviderPrivate
 {
   gboolean dispose_has_run;
@@ -287,7 +291,10 @@ lasso_provider_new_metadata_filename(gchar *metadata_filename)
   doc = xmlParseFile(metadata_filename);
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   xmlFreeDoc(doc);
-  provider->metadata = lasso_node_new_from_xmlNode(root);
+  
+  provider->metadata = lasso_node_new();
+  LASSO_NODE_GET_CLASS(provider->metadata)->set_xmlNode(provider->metadata, root);
+  //provider->metadata = lasso_node_new_from_xmlNode(root);
 
   return(provider);
 }
