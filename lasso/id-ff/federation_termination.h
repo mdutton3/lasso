@@ -68,8 +68,8 @@ LASSO_EXPORT gint lasso_federation_termination_init_notification        (LassoFe
 									 gchar                      *remote_providerID);
 
 LASSO_EXPORT gint lasso_federation_termination_process_notification_msg (LassoFederationTermination *defederation,
-									 gchar                      *request_msg,
-									 lassoHttpMethod             request_method);
+									 gchar                      *notification_msg,
+									 lassoHttpMethod             notification_method);
   
 LASSO_EXPORT gint lasso_federation_termination_validate_notification    (LassoFederationTermination *defederation);
 

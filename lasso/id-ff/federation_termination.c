@@ -65,14 +65,14 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 
   /* get the protocol profile of the remote provider ( if the notifier is a IDP, then get with IDP type else if IDP, SP ) */
   if (profile->provider_type == lassoProviderTypeSp) {
-  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
-											lassoProviderTypeIdp,
-											NULL);
+    protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+											  lassoProviderTypeIdp,
+											  NULL);
   }
   else if (profile->provider_type == lassoProviderTypeIdp) {
-  protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
-											lassoProviderTypeSp,
-											NULL);    
+    protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+											  lassoProviderTypeSp,
+											  NULL);    
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
@@ -173,9 +173,11 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
 					       gchar                      *remote_providerID)
 {
   LassoProfile    *profile;
+  LassoProvider   *provider;
   LassoFederation *federation;
   LassoNode       *nameIdentifier = NULL;
   xmlChar         *content = NULL, *nameQualifier = NULL, *format = NULL;
+  xmlChar         *federationTerminationProtocolProfile;
   gint             ret = 0;
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
@@ -233,10 +235,56 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
-  profile->request = lasso_federation_termination_notification_new(profile->server->providerID,
-								   content,
-								   nameQualifier,
-								   format);
+
+  /* get the protocol profile and set a new federation termination notification object */
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
+  if (provider == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
+    ret = -1;
+    goto done;
+  }
+
+  if (profile->provider_type == lassoProviderTypeIdp) {
+    federationTerminationProtocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+													       lassoProviderTypeSp,
+													       NULL);
+  }
+  else if (profile->provider_type == lassoProviderTypeSp) {
+    federationTerminationProtocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider,
+													       lassoProviderTypeIdp,
+													       NULL);
+
+  }
+
+  if (federationTerminationProtocolProfile == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Federation termination notification protocol profile not found\n");
+    ret = -1;
+    goto done;
+  }
+
+  if (xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermSpSoap) || \
+      xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermIdpSoap)) {
+    profile->request = lasso_federation_termination_notification_new(profile->server->providerID,
+								     content,
+								     nameQualifier,
+								     format,
+								     lassoSignatureTypeWithX509,
+								     lassoSignatureMethodRsaSha1);
+  }
+  else if (xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermSpHttp) || \
+	   xmlStrEqual(federationTerminationProtocolProfile, lassoLibProtocolProfileFedTermIdpHttp)) {
+    profile->request = lasso_federation_termination_notification_new(profile->server->providerID,
+								     content,
+								     nameQualifier,
+								     format,
+								     lassoSignatureTypeNone,
+								     0);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid federation termination notification protocol profile\n");
+    ret = -1;
+    goto done;    
+  }
 
   if (profile->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while creating the notification\n");
