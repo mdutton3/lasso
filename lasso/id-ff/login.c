@@ -475,16 +475,13 @@ lasso_login_build_artifact_msg(LassoLogin *login,
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
-		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+		return error_code(G_LOG_LEVEL_CRITICAL,
+				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* process federation and build assertion only if signature is OK */
@@ -702,9 +699,8 @@ lasso_login_build_authn_response_msg(LassoLogin *login,
 
 	/* ProtocolProfile must be BrwsPost */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
-		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+		return error_code(G_LOG_LEVEL_CRITICAL,
+				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* create LibAuthnResponse */
@@ -878,9 +874,7 @@ lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT && http_method != LASSO_HTTP_METHOD_POST) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	login->http_method = http_method;
@@ -926,9 +920,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	if (response_http_method != LASSO_HTTP_METHOD_REDIRECT &&
 			response_http_method != LASSO_HTTP_METHOD_POST) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
-		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
 	/* rebuild response (artifact) */
@@ -1058,29 +1050,25 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 gboolean
 lasso_login_must_authenticate(LassoLogin *login)
 {
-	gboolean must_authenticate = FALSE;
 	LassoLibAuthnRequest *request;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	
 	request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
 
-	/* verify if the user must be authenticated or not */
-
 	/* get IsPassive and ForceAuthn in AuthnRequest if exists */
-
-	if ((request->ForceAuthn || LASSO_PROFILE(login)->session == NULL) && \
-			request->IsPassive == FALSE) {
-		must_authenticate = TRUE;
-	}
-	else if (LASSO_PROFILE(login)->identity == NULL && \
-			request->IsPassive && \
+	if ((request->ForceAuthn || LASSO_PROFILE(login)->session == NULL) &&
+			request->IsPassive == FALSE)
+		return TRUE;
+	
+	if (LASSO_PROFILE(login)->identity == NULL && request->IsPassive &&
 			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		lasso_profile_set_response_status(LASSO_PROFILE(login),
 				LASSO_LIB_STATUS_CODE_NO_PASSIVE);
+		return FALSE;
 	}
 
-	return must_authenticate;
+	return FALSE;
 }
 
 gint
@@ -1098,9 +1086,8 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	if (authn_request_msg == NULL) {
 		if (LASSO_PROFILE(login)->request == NULL) {
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_PROFILE_ERROR_MISSING_REQUEST));
-			return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+			return error_code(G_LOG_LEVEL_CRITICAL,
+					LASSO_PROFILE_ERROR_MISSING_REQUEST);
 		}
 
 		/* LibAuthnRequest already set by lasso_login_init_idp_initiated_authn_request() */
@@ -1134,9 +1121,8 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 	} else {
-		message(G_LOG_LEVEL_CRITICAL, 
-				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
-		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+		return error_code(G_LOG_LEVEL_CRITICAL,
+				LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
 	/* check if requested single sign on protocol profile is supported */
@@ -1145,9 +1131,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				LASSO_PROVIDER(LASSO_PROFILE(login)->server),
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
 				protocolProfile) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE));
-		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 	}
 
 	/* get remote ProviderID */
@@ -1207,8 +1191,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 			LASSO_LIB_AUTHN_RESPONSE(LASSO_PROFILE(login)->response)->ProviderID);
 
 	if (LASSO_PROFILE(login)->remote_providerID == NULL) {
-		ret1 = error_code(G_LOG_LEVEL_CRITICAL,
-				lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND));
+		ret1 = error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
