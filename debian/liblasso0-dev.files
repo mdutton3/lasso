@@ -1,5 +1,5 @@
-usr/include/*
-usr/lib/lib*.a
-usr/lib/lib*.so
-usr/lib/pkgconfig/*
-/usr/lib/*.la
+usr/include/lasso
+usr/lib/liblasso.a
+usr/lib/liblasso.so
+usr/lib/liblasso.la
+usr/lib/pkgconfig/lasso.pc
