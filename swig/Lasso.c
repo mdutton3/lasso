@@ -125,6 +125,22 @@ LassoResponse* lasso_profile_get_response_ref(LassoProfile *profile)
 
 
 /***********************************************************************
+ * Defederation
+ ***********************************************************************/
+
+
+LassoDefederation *new_LassoDefederation(LassoServer *server, lassoProviderType provider_type)
+{
+	return lasso_defederation_new(server, provider_type);
+}
+
+void delete_LassoDefederation(LassoDefederation *defederation)
+{
+	lasso_defederation_destroy(defederation);
+}
+
+
+/***********************************************************************
  * Login
  ***********************************************************************/
 

@@ -524,6 +524,42 @@ lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
 
 
 /***********************************************************************
+ * Defederation
+ ***********************************************************************/
+
+
+typedef struct {
+	LassoProfile parent;
+
+	%extend {
+		LassoDefederation(LassoServer *server);
+		~LassoDefederation();
+	}
+} LassoDefederation;
+
+/* Constructors */
+
+LassoDefederation* lasso_defederation_new(LassoServer *server, lassoProviderType provider_type);
+
+/* Destructor */
+
+void lasso_defederation_destroy(LassoDefederation *defederation);
+
+/* Methods */
+
+gint lasso_defederation_build_notification_msg(LassoDefederation *defederation);
+
+gint lasso_defederation_init_notification(LassoDefederation *defederation,
+					  gchar *remote_providerID);
+
+gint lasso_defederation_process_notification_msg(LassoDefederation *defederation,
+						 gchar *notification_msg,
+						 lassoHttpMethod notification_method);
+
+gint lasso_defederation_validate_notification(LassoDefederation *defederation);
+
+
+/***********************************************************************
  * Login
  ***********************************************************************/
 
