@@ -252,11 +252,22 @@ main(int argc, char *argv[])
 	int rc;
 	Suite *s;
 	SRunner *sr;
+	int i;
+	int dont_fork = 0;
+
+	for (i=1; i<argc; i++) {
+		if (strcmp(argv[i], "--dontfork") == 0) {
+			dont_fork = 1;
+		}
+	}
 
 	lasso_init();
 	
 	s = login_suite();
 	sr = srunner_create(s);
+	if (dont_fork) {
+		srunner_set_fork_status(sr, CK_NOFORK);
+	}
 	srunner_set_xml(sr, "out.xml");
 	srunner_run_all (sr, CK_VERBOSE);
 	rc = srunner_ntests_failed(sr);
