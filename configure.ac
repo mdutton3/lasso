@@ -385,6 +385,11 @@ else
 fi
 AC_SUBST(HTML_DIR)
 
+AC_CHECK_PROGS(REST2HTML, rest2html)
+
+AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
+
+
 dnl pkg-config path
 AC_ARG_WITH(pkg-config-path, [  --with-pkg-config=PATH Set pkg-config metadata search path.],
             PKG_CONFIG_PATH="${withval}", PKG_CONFIG_PATH="")
@@ -474,7 +479,7 @@ AC_SUBST(LASSO_STATIC_BINARIES)
 dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
-LASSO_CORE_CFLAGS="$LASSO_DEFINES -I${includedir}/lasso"
+LASSO_CORE_CFLAGS="$LASSO_DEFINES -I${includedir}"
 if test $MINGW -eq 1; then 
 LASSO_CORE_LIBS="-llasso-0"
 else
