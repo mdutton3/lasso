@@ -76,12 +76,17 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
 				   const gchar *remote_providerID)
 {
   LassoProfile *profile;
+  LassoProvider *remote_provider;
 
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
   profile = LASSO_PROFILE(lecp);
-  
-  profile->msg_url  = NULL; /* FIXME use remote_providerID to get url */
+ 
+  LASSO_PROFILE(lecp)->remote_providerID = g_strdup(remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(lecp)->server,
+						  LASSO_PROFILE(lecp)->remote_providerID);
+
+  profile->msg_url  = lasso_provider_get_singleSignOnServiceURL(remote_provider, NULL);
   profile->msg_body = lasso_node_export_to_soap(profile->request);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the AuthnRequest SOAP message\n");
