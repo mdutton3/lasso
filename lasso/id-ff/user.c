@@ -163,31 +163,50 @@ lasso_user_new()
 LassoUser*
 lasso_user_new_from_dump(xmlChar *dump)
 {
-  LassoNode *user_node, *identities_node;
-  LassoNodeClass *identities_class;
-  LassoIdentity *identity;
-  xmlNodePtr xmlNode;
-  LassoUser *user;
-  xmlChar *remote_providerID;
+  LassoNode      *user_node, *identities_node, *assertions_node;
+  LassoNodeClass *identities_class, *assertions_class;
+  LassoIdentity  *identity;
+  xmlNodePtr      xmlNode;
+  LassoUser      *user;
+  xmlChar        *remote_providerID;
 
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
 
   user_node = lasso_node_new_from_dump(dump);
 
+  printf("dump from user_node :\n%s\n", lasso_node_export(user_node));
+
   /* set the assertions */
+  printf("get the assertion\n");
+  assertions_node = lasso_node_get_child(user_node, "Assertions", NULL);
+  assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
+  xmlNode = assertions_class->get_xmlNode(assertions_node);
+  printf("get children of assertions\n");
+  if(xmlNode){
+    xmlNode = xmlNode->children;
+    while(xmlNode){
+      if(xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(xmlNode->name, "Assertion")){
+	
+      }
+    }
+  }
 
   /* set the identities */
-  identities_node = lasso_node_get_child(user, "Identities", NULL);
-  identities_class = LASSO_NODE_GET_CLASS(user_node);
+  printf("get children of the identities\n");
+  identities_node = lasso_node_get_child(user_node, "Identities", NULL);
+  identities_class = LASSO_NODE_GET_CLASS(identities_node);
   xmlNode = identities_class->get_xmlNode(identities_node);
+  if(xmlNode==NULL){
+    return(NULL);
+  }
   xmlNode = xmlNode->children;
   while(xmlNode){
     if(xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(xmlNode->name, "Identity")){
       identity = lasso_identity_new(xmlGetProp(xmlNode, "RemoteProviderID"));
-      lasso_identity_set_localNameIdentifier(user);
+      lasso_identity_set_local_nameIdentifier(user, identity);
+      xmlNode = xmlNode->next;
     }
   }
-
 
   return(user);
 }
