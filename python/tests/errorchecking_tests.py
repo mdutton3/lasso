@@ -37,10 +37,10 @@ import lasso
 
 class ErrorCheckingTestCase(unittest.TestCase):
     def test01(self):
-        lasso.Login.new(None).msg_url
+        lasso.Login(None).msg_url
 
     def test02(self):
-        lasso.Logout.new(None, lasso.providerTypeSp).msg_url
+        lasso.Logout(None, lasso.providerTypeSp).msg_url
 
 suite1 = unittest.makeSuite(ErrorCheckingTestCase, 'test')
 
