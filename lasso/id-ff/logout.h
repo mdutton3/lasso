@@ -58,9 +58,9 @@ struct _LassoLogoutClass {
 
 LASSO_EXPORT GType        lasso_logout_get_type                (void);
 
-LASSO_EXPORT LassoLogout* lasso_logout_new                     (LassoServer *server,
-								LassoUser   *user,
-								gint         provider_type);
+LASSO_EXPORT LassoLogout* lasso_logout_new                     (LassoServer        *server,
+								LassoUser          *user,
+								lassoProviderTypes  provider_type);
  
 LASSO_EXPORT gint         lasso_logout_build_request_msg       (LassoLogout *logout);
 

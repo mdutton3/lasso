@@ -245,11 +245,13 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
+    debug(WARNING, "No identity for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-6);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
+    debug(WARNING, "No name identifier in identity for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-7);
   }
@@ -257,6 +259,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   /* verify authentication (if ok, delete assertion) */
   assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
   if(assertion==NULL){
+    debug(WARNING, "%s has no assertion\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
     return(-8);
   }
@@ -334,9 +337,9 @@ GType lasso_logout_get_type() {
 }
 
 LassoLogout *
-lasso_logout_new(LassoServer *server,
-		 LassoUser   *user,
-		 gint         provider_type)
+lasso_logout_new(LassoServer        *server,
+		 LassoUser          *user,
+		 lassoProviderTypes  provider_type)
 {
   LassoLogout *logout;
 
