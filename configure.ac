@@ -40,7 +40,7 @@ case "${host}" in
     *aix* )
 	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
 	;;
-    *-pc-*)
+    *-pc-*gw*)
         CC="gcc -mno-cygwin"
         CFLAGS="-I/usr/local/include -D_MSC_VER=1 -DIN_LASSO=1"
 #        CFLAGS="-I/usr/local/include"
