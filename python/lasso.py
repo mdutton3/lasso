@@ -61,6 +61,9 @@ class Node:
 ##         #self._o = lassomod.(size)
 ##         if self._o is None: raise Error('lasso_node_new() failed')
 
+    def destroy(self):
+        lassomod.node_destroy(self)
+
     def dump(self, encoding="utf8", format=1):
         return lassomod.node_dump(self, encoding, format)
 
@@ -75,9 +78,6 @@ class Node:
 
     def export_to_soap(self):
         return lassomod.node_export_to_soap(self)
-
-    def destroy(self):
-        lassomod.node_unref(self)
 
     def get_attr_value(self, name):
         return lassomod.node_get_attr_value(self, name)

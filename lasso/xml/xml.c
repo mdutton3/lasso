@@ -56,6 +56,15 @@ lasso_node_dump(LassoNode     *node,
   return (class->dump(node, encoding, format));
 }
 
+void
+lasso_node_destroy(LassoNode *node)
+{
+  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->destroy(node));
+}
+
 xmlChar *
 lasso_node_export(LassoNode *node)
 {
@@ -332,6 +341,12 @@ static LassoNode *
 lasso_node_impl_copy(LassoNode *node)
 {
   return (lasso_node_new_from_xmlNode(xmlCopyNode(lasso_node_get_xmlNode(node), 1)));
+}
+
+static void
+lasso_node_impl_destroy(LassoNode *node)
+{
+  g_object_unref(G_OBJECT(node));
 }
 
 static xmlChar *
@@ -724,7 +739,6 @@ lasso_node_impl_add_child(LassoNode *node,
 
   /* if child is not unbounded, we search it */
   if (!unbounded) {
-    //old_child = lasso_node_get_child(node, child->private->node->name);
     old_child = xmlSecFindNode(node->private->node,
 			       child->private->node->name, NULL);
   }
@@ -746,7 +760,7 @@ lasso_node_impl_add_child(LassoNode *node,
     /* else child is added */
     xmlAddChild(node->private->node, child->private->node);
   }
-  /* child added in children array */
+  /* child added in childrens' array */
   g_ptr_array_add(node->private->children, (gpointer)child);
 }
 
@@ -1034,13 +1048,17 @@ lasso_node_finalize(LassoNode *node)
   LassoNode *child;
 
   g_print("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
-  for(i=0;i<node->private->children->len;i++) {
+
+  for(i=0; i<node->private->children->len; i++) {
     child = LASSO_NODE(g_ptr_array_index(node->private->children, i));
     g_ptr_array_remove_index(node->private->children, i);
     g_object_unref(G_OBJECT(child));
   }
+  g_ptr_array_free(node->private->children, TRUE);
+
   xmlUnlinkNode(node->private->node);
   xmlFreeNode(node->private->node);
+
   g_free (node->private);
 }
 
@@ -1066,6 +1084,7 @@ lasso_node_class_init(LassoNodeClass *class)
   
   /* virtual public methods */
   class->copy             = lasso_node_impl_copy;
+  class->destroy          = lasso_node_impl_destroy;
   class->dump             = lasso_node_impl_dump;
   class->export           = lasso_node_impl_export;
   class->export_to_base64 = lasso_node_impl_export_to_base64;

@@ -61,6 +61,7 @@ struct _LassoNodeClass {
   /*< vtable >*/
   /*< public >*/
   LassoNode*     (* copy)             (LassoNode     *node);
+  void           (* destroy)          (LassoNode     *node);
   xmlChar*       (* dump)             (LassoNode     *node,
 				       const xmlChar *encoding,
 				       int            format);
@@ -127,6 +128,8 @@ LASSO_EXPORT LassoNode*     lasso_node_new_from_dump    (const xmlChar *buffer);
 LASSO_EXPORT LassoNode*     lasso_node_new_from_xmlNode (xmlNodePtr node);
 
 LASSO_EXPORT LassoNode*     lasso_node_copy             (LassoNode *node);
+
+LASSO_EXPORT void           lasso_node_destroy          (LassoNode *node);
 
 LASSO_EXPORT xmlChar*       lasso_node_dump             (LassoNode     *node,
 							 const xmlChar *encoding,

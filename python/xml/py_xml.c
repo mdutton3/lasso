@@ -43,6 +43,21 @@ PyObject *LassoNode_wrap(LassoNode *node) {
 /* LassoNode                                                                  */
 /******************************************************************************/
 
+PyObject *node_destroy(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+
+  if (CheckArgs(args, "O:node_destroy")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_destroy", &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_node_destroy(LassoNode_get(node_obj));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *node_dump(PyObject *self, PyObject *args) {
   PyObject *node_obj;
   xmlChar *encoding;
@@ -174,22 +189,6 @@ PyObject *node_get_content(PyObject *self, PyObject *args) {
   ret = lasso_node_get_content(LassoNode_get(node_obj));
 
   return (xmlCharPtr_wrap(ret));
-}
-
-PyObject *node_unref(PyObject *self, PyObject *args) {
-  PyObject *node_obj;
-
-  if (CheckArgs(args, "O:node_unref")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:node_unref", &node_obj))
-      return NULL;
-  }
-  else return NULL;
-
-  /* FIXME: should used a fct lasso_node_unref() ??? */
-  g_object_unref (G_OBJECT (LassoNode_get(node_obj)));
-
-  Py_INCREF(Py_None);
-  return (Py_None);
 }
 
 PyObject *node_verify_signature(PyObject *self, PyObject *args) {

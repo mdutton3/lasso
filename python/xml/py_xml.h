@@ -36,6 +36,7 @@ typedef struct {
 #define LassoNode_get(v) (((v) == Py_None) ? NULL : (((LassoNode_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoNode_wrap(LassoNode *node);
 
+PyObject *node_destroy(PyObject *self, PyObject *args);
 PyObject *node_dump(PyObject *self, PyObject *args);
 PyObject *node_export(PyObject *self, PyObject *args);
 PyObject *node_export_to_base64(PyObject *self, PyObject *args);
@@ -44,7 +45,6 @@ PyObject *node_export_to_soap(PyObject *self, PyObject *args);
 PyObject *node_get_attr_value(PyObject *self, PyObject *args);
 PyObject *node_get_child(PyObject *self, PyObject *args);
 PyObject *node_get_content(PyObject *self, PyObject *args);
-PyObject *node_unref(PyObject *self, PyObject *args);
 PyObject *node_verify_signature(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_XML_H__ */

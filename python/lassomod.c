@@ -63,6 +63,7 @@ static PyMethodDef lasso_methods[] = {
 
   /* xml */
   /* py_xml.h */
+  {"node_destroy",          node_destroy,          METH_VARARGS},
   {"node_dump",             node_dump,             METH_VARARGS},
   {"node_export",           node_export,           METH_VARARGS},
   {"node_export_to_base64", node_export_to_base64, METH_VARARGS},
@@ -71,7 +72,6 @@ static PyMethodDef lasso_methods[] = {
   {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
   {"node_get_child",        node_get_child,        METH_VARARGS},
   {"node_get_content",      node_get_content,      METH_VARARGS},
-  {"node_unref",            node_unref,            METH_VARARGS},
   {"node_verify_signature", node_verify_signature, METH_VARARGS},
 
   /* py_lib_authentication_statement.h */
