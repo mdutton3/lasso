@@ -31,11 +31,11 @@
 xmlChar *
 lasso_server_dump(LassoServer *server)
 {
-  LassoProvider *provider;
-  LassoNode *server_node, *providers_node;
+  LassoProvider  *provider;
+  LassoNode      *server_node, *providers_node;
   LassoNodeClass *server_class, *providers_class;
-  xmlChar *signature_method_str, *dump;
-  gint i;
+  xmlChar        *signature_method_str, *dump;
+  gint            i;
 
   server_node = lasso_node_new();
   server_class = LASSO_NODE_GET_CLASS(server_node);
@@ -71,18 +71,11 @@ lasso_server_dump(LassoServer *server)
   return(lasso_node_export(server_node));
 }
 
-gint
+void
 lasso_server_add_provider(LassoServer *server,
-			  gchar       *metadata,
-			  const gchar *public_key,
-			  const gchar *certificate)
+			  LassoProvider *provider)
 {
-  LassoProvider *provider;
-  
-  provider = lasso_provider_new(metadata, public_key, certificate);
   g_ptr_array_add(server->providers, provider);
-  
-  return (1);
 }
 
 LassoProvider*
@@ -145,15 +138,15 @@ GType lasso_server_get_type() {
 }
 
 LassoServer *
-lasso_server_new(const gchar *metadata,
-		 const gchar *public_key,
-		 const gchar *private_key,
-		 const gchar *certificate,
-		 guint        signature_method)
+lasso_server_new(gchar *metadata,
+		 gchar *public_key,
+		 gchar *private_key,
+		 gchar *certificate,
+		 guint  signature_method)
 {
   LassoServer *server;
-  xmlDocPtr  doc;
-  xmlNodePtr root;
+  xmlDocPtr    doc;
+  xmlNodePtr   root;
 
   server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
 
@@ -165,8 +158,6 @@ lasso_server_new(const gchar *metadata,
   doc = xmlParseFile(metadata);
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   xmlFreeDoc(doc);
-  //LASSO_PROVIDER(server)->metadata = lasso_node_new();
-  //LASSO_NODE_CLASS(LASSO_PROVIDER(server)->metadata)->set_xmlNode(LASSO_PROVIDER(server)->metadata, root); 
   LASSO_PROVIDER(server)->metadata = lasso_node_new_from_xmlNode(root);
 
   return(server);
@@ -175,9 +166,67 @@ lasso_server_new(const gchar *metadata,
 LassoServer *
 lasso_server_new_from_dump(xmlChar *dump)
 {
-  LassoServer *server;
+  LassoNodeClass *server_class, *providers_class;
+  LassoNode      *server_node, *providers_node, *metadata;
+  LassoServer    *server;
+  LassoProvider  *provider;
+  xmlNodePtr      xmlNode, providers_xmlNode, provider_xmlNode, entity_xmlNode;
+  xmlChar        *content, *public_key, *certificate;
 
   server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+
+  server_node  = lasso_node_new_from_dump(dump);
+  server_class = LASSO_NODE_GET_CLASS(server_node);
+
+  /* set private key and signature method */
+  xmlNode = server_class->get_xmlNode(server_node);
+  if(xmlNode==NULL){
+    return(NULL);
+  }
+
+  content = xmlGetProp(xmlNode, "PrivateKey");
+  if(content){
+    server->private_key = content;
+  }
+
+  content = xmlGetProp(xmlNode, "SignatureMethod");
+  if(content){
+    server->signature_method = atoi(content);
+  }
+
+  /* set providers */
+  providers_node  = lasso_node_get_child(server_node, "Providers", NULL);
+  providers_class = LASSO_NODE_GET_CLASS(providers_node);
+  if(providers_node){
+    providers_xmlNode = providers_class->get_xmlNode(providers_node);
+    provider_xmlNode = providers_xmlNode->children;
+    while(provider_xmlNode){
+      /* a provider node, get the public key, certifcate and metadata */
+      if(provider_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(provider_xmlNode->name, "Provider")){
+	/* get the metadata child node */
+	entity_xmlNode = provider_xmlNode->children;
+	while(entity_xmlNode){
+	  if(entity_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(entity_xmlNode->name, "EntityDescriptor"))
+	    break;
+	  entity_xmlNode = entity_xmlNode->next;
+	}
+	public_key  = xmlGetProp(provider_xmlNode, "PublicKey");
+	certificate = xmlGetProp(provider_xmlNode, "Certificate");
+	
+	/* add a new provider */
+	provider = lasso_provider_new_metadata_xmlNode(metadata);
+	if(public_key){
+	  lasso_provider_set_public_key(provider, public_key);
+	}
+	if(certificate){
+	  lasso_provider_set_public_key(provider, certificate);
+	}
+	lasso_server_add_provider(server, provider);
+      }
+
+      provider_xmlNode = provider_xmlNode->next;
+    }
+  }
 
   return(server);
 }

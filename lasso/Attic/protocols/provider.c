@@ -93,6 +93,18 @@ lasso_provider_get_soapEndpoint(LassoProvider *provider)
   return(lasso_node_get_child_content(provider->metadata, "SoapEndpoint", NULL));
 }
 
+void
+lasso_provider_set_public_key(LassoProvider *provider, xmlChar *public_key)
+{
+  provider->public_key = gstrdup(public_key);
+}
+
+void
+lasso_provider_set_certificate(LassoProvider *provider, xmlChar *certificate)
+{
+  provider->certificate = gstrdup(certificate);
+}
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -146,10 +158,20 @@ GType lasso_provider_get_type() {
   return this_type;
 }
 
+
 LassoProvider*
-lasso_provider_new(gchar       *metadata,
-		   const gchar *public_key,
-		   const gchar *certificate)
+lasso_provider_new_metadata_xmlNode(xmlNodePtr metadata_xmlNode)
+{
+  LassoProvider *provider;
+  
+  provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+  provider->metadata = lasso_node_new_from_xmlNode(metadata_xmlNode);
+  
+  return(provider);
+}
+
+LassoProvider*
+lasso_provider_new_metadata_filename(xmlChar *metadata_filename)
 {
   LassoProvider *provider;
   xmlDocPtr  doc;
@@ -158,13 +180,10 @@ lasso_provider_new(gchar       *metadata,
   provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
   
   /* get root element of doc and duplicate it */
-  doc = xmlParseFile(metadata);
+  doc = xmlParseFile(metadata_filename);
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   xmlFreeDoc(doc);
   provider->metadata = lasso_node_new_from_xmlNode(root);
-  
-  provider->public_key = public_key;
-  provider->certificate = certificate;
-  
+
   return(provider);
 }

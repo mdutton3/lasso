@@ -56,17 +56,17 @@ struct _LassoServerClass {
 };
 
 LASSO_EXPORT GType          lasso_server_get_type               (void);
-LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *metadata,
-								 const gchar *public_key,
-								 const gchar *private_key,
-								 const gchar *certificate,
-								 guint        signature_method);
-LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (xmlChar *dump);
 
-LASSO_EXPORT gint           lasso_server_add_provider           (LassoServer *server,
-								 gchar       *metadata,
-								 const gchar *public_key,
-								 const gchar *certificate);
+LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar *metadata,
+								 gchar *public_key,
+								 gchar *private_key,
+								 gchar *certificate,
+								 guint  signature_method);
+
+LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (xmlChar     *dump);
+
+LASSO_EXPORT void           lasso_server_add_provider           (LassoServer   *server,
+								 LassoProvider *provider);
 
 LASSO_EXPORT xmlChar       *lasso_server_dump                   (LassoServer *server);
 

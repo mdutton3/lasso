@@ -57,11 +57,11 @@ struct _LassoProviderClass {
 };
 
 LASSO_EXPORT GType          lasso_provider_get_type                         (void);
-LASSO_EXPORT LassoProvider* lasso_provider_new                              (gchar       *metadata,
-									     const gchar *public_key,
-									     const gchar *certificate);
-
+LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_xmlNode             (xmlNodePtr metadata_xmlNode);
+LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename            (xmlChar *metadata_filename);
 LASSO_EXPORT xmlChar       *lasso_provider_get_assertionConsumerServiceURL  (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_dump                             (LassoProvider *provider);
 
 LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                   (LassoProvider *provider);
 

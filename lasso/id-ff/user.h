@@ -32,7 +32,6 @@ extern "C" {
 
 #include <lasso/xml/xml.h>
 #include <lasso/protocols/identity.h>
-#include <lasso/protocols/response.h>
 #include <lasso/protocols/elements/assertion.h>
 
 #define LASSO_TYPE_USER (lasso_user_get_type())
