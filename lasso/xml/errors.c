@@ -69,6 +69,9 @@ lasso_strerror(int error_code)
   case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
     return "Unsupported logout protocol profile\n";
 
+  case LASSO_PROFILE_ERROR_INVALID_QUERY:
+    return "Error while parsing query message\n";
+
   case LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ:
     return "An object type provided as parameter is invalid or object is NULL.\n";
   case LASSO_PARAM_ERROR_INVALID_VALUE:

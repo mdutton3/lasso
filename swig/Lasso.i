@@ -233,6 +233,8 @@ typedef enum {
 
 #define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE -301
 
+#define LASSO_PROFILE_ERROR_INVALID_QUERY      -401
+
 #define LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ -501
 #define LASSO_PARAM_ERROR_INVALID_VALUE       -502
 #define LASSO_PARAM_ERROR_ERR_CHECK_FAILED    -503
@@ -772,6 +774,8 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, gchar *request_msg,
 
 gint lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg,
 				       lassoHttpMethod response_method);
+
+gint lasso_logout_reset_session_index(LassoLogout *logout);
 
 gint lasso_logout_validate_request(LassoLogout *logout);
 
