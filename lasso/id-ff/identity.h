@@ -51,6 +51,8 @@ struct _LassoIdentity {
   GPtrArray  *providerIDs; /* list of the remote provider ids for federations hash table */
   GHashTable *federations; /* hash for federations with remote ProviderID as key */
 
+  gboolean is_durty;
+
   /*< private >*/
   LassoIdentityPrivate *private;
 };

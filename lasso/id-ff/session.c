@@ -111,6 +111,8 @@ lasso_session_add_assertion(LassoSession *session,
   g_hash_table_insert(session->assertions, g_strdup(remote_providerID),
 		      lasso_node_copy(assertion));
 
+  session->is_durty = TRUE;
+
   return(0);
 }
 
@@ -136,6 +138,7 @@ lasso_session_copy(LassoSession *session)
 					   (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->assertions, (GHFunc)lasso_session_copy_assertion,
 		       (gpointer)copy->assertions);
+  copy->is_durty = FALSE;
 
   return(copy);
 }
@@ -252,9 +255,8 @@ lasso_session_remove_assertion(LassoSession *session,
   LassoNode *assertion;
   int i;
 
-  g_return_val_if_fail(session!=NULL, -1);
-
-  g_return_val_if_fail(remote_providerID!=NULL, -2);
+  g_return_val_if_fail(session != NULL, -1);
+  g_return_val_if_fail(remote_providerID != NULL, -2);
 
   /* remove the assertion */
   assertion = lasso_session_get_assertion(session, remote_providerID);
@@ -264,12 +266,14 @@ lasso_session_remove_assertion(LassoSession *session,
   }
 
   /* remove the remote provider id */
-  for(i = 0; i<session->providerIDs->len; i++){
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(session->providerIDs, i))){
+  for(i = 0; i<session->providerIDs->len; i++) {
+    if(xmlStrEqual(remote_providerID, g_ptr_array_index(session->providerIDs, i))) {
       g_ptr_array_remove_index(session->providerIDs, i);
       break;
     }
   }
+
+  session->is_durty = TRUE;
 
   return(0);
 }
@@ -329,6 +333,7 @@ lasso_session_instance_init(LassoSession *session)
   session->assertions = g_hash_table_new_full(g_str_hash, g_str_equal,
 					      (GDestroyNotify)g_free,
 					      (GDestroyNotify)lasso_node_destroy);
+  session->is_durty = TRUE;
 }
 
 static void

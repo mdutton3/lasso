@@ -86,11 +86,12 @@ lasso_identity_add_federation(LassoIdentity   *identity,
 
   /* add the remote provider id if not already saved */
   found = FALSE;
-  for(i = 0; i<identity->providerIDs->len; i++){
-    if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i)))
+  for(i = 0; i<identity->providerIDs->len; i++) {
+    if(xmlStrEqual(remote_providerID, g_ptr_array_index(identity->providerIDs, i))) {
       found = TRUE;
+    }
   }
-  if(found == FALSE){
+  if (found == FALSE) {
     g_ptr_array_add(identity->providerIDs, g_strdup(remote_providerID));
   }  
 
@@ -102,6 +103,8 @@ lasso_identity_add_federation(LassoIdentity   *identity,
        It's not a copy. But it must change */
   }
   g_hash_table_insert(identity->federations, g_strdup(remote_providerID), federation);
+
+  identity->is_durty = TRUE;
 
   return(0);
 }
@@ -128,6 +131,7 @@ lasso_identity_copy(LassoIdentity *identity)
 					    (GDestroyNotify)lasso_node_destroy);
   g_hash_table_foreach(copy->federations, (GHFunc)lasso_identity_copy_federation,
 		       (gpointer)copy->federations);
+  copy->is_durty = FALSE;
 
   return(copy);
 }
@@ -175,8 +179,8 @@ LassoFederation*
 lasso_identity_get_federation(LassoIdentity *identity,
 			      gchar         *remote_providerID)
 {
-  g_return_val_if_fail(identity!=NULL, NULL);
-  g_return_val_if_fail(remote_providerID!=NULL, NULL);
+  g_return_val_if_fail(identity != NULL, NULL);
+  g_return_val_if_fail(remote_providerID != NULL, NULL);
 
   LassoFederation *federation;
 
@@ -233,6 +237,8 @@ lasso_identity_remove_federation(LassoIdentity *identity,
       break;
     }
   }
+
+  identity->is_durty = TRUE;
 
   return(0);
 }
@@ -292,6 +298,7 @@ lasso_identity_instance_init(LassoIdentity *identity)
   identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,
 						(GDestroyNotify)g_free,
 						(GDestroyNotify)lasso_federation_destroy);
+  identity->is_durty = TRUE;
 }
 
 static void

@@ -51,6 +51,8 @@ struct _LassoSession {
   GPtrArray  *providerIDs; /* list of the remote provider IDs for assertions hash table */
   GHashTable *assertions;  /* hash for assertions with remote providerID as key */
 
+  gboolean is_durty;
+
   /*< private >*/
   LassoSessionPrivate *private;
 };
