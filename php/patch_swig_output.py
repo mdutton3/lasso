@@ -126,6 +126,10 @@ with:
     }}
 
 This program corrects (3), by replacing things like:
+    if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SUCCESS)
+with:
+    if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)
+and by replacing:
     if(arg_count > 1) {
 with:
     if(arg_count > 1 - argbase) {
@@ -178,6 +182,8 @@ while i >= 0:
     i = wrap.find(begin, i + len(segment))
 
 # (3)
+wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SUCCESS)',
+                    'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
 for i in range(10):
     wrap = wrap.replace('if(arg_count > %d) {' % i, 'if(arg_count > %d - argbase) {' % i)
 
