@@ -29,72 +29,72 @@
 /*****************************************************************************/
 
 /* prefix & href */
-const gchar lassoLibHRef[]   = "urn:liberty:iff:2003-08";
-const gchar lassoLibPrefix[] = "lib";
+const xmlChar lassoLibHRef[]   = "urn:liberty:iff:2003-08";
+const xmlChar lassoLibPrefix[] = "lib";
 
 /* Versioning */
-const gchar lassoLibMajorVersion[] = "1";
-const gchar lassoLibMinorVersion[] = "2";
+const xmlChar lassoLibMajorVersion[] = "1";
+const xmlChar lassoLibMinorVersion[] = "2";
 
 /* NameIDPolicyType */
-const gchar lassoLibNameIDPolicyTypeNone[]      = "none";
-const gchar lassoLibNameIDPolicyTypeOneTime[]   = "onetime";
-const gchar lassoLibNameIDPolicyTypeFederated[] = "federated";
-const gchar lassoLibNameIDPolicyTypeAny[]       = "any";
+const xmlChar lassoLibNameIDPolicyTypeNone[]      = "none";
+const xmlChar lassoLibNameIDPolicyTypeOneTime[]   = "onetime";
+const xmlChar lassoLibNameIDPolicyTypeFederated[] = "federated";
+const xmlChar lassoLibNameIDPolicyTypeAny[]       = "any";
 
 /* AuthnContextComparison */
-const gchar lassoLibAuthnContextComparisonExact[]   = "exact";
-const gchar lassoLibAuthnContextComparisonMinimum[] = "minimum";
-const gchar lassoLibAuthnContextComparisonBetter[]  = "better";
+const xmlChar lassoLibAuthnContextComparisonExact[]   = "exact";
+const xmlChar lassoLibAuthnContextComparisonMinimum[] = "minimum";
+const xmlChar lassoLibAuthnContextComparisonBetter[]  = "better";
 
 /* StatusCodes */
-const gchar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
-const gchar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
+const xmlChar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
+const xmlChar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
 
 /* ProtocolProfile */
-const gchar lassoLibProtocolProfileArtifact[]       = "http://projectliberty.org/profiles/brws-art";
-const gchar lassoLibProtocolProfilePost[]           = "http://projectliberty.org/profiles/brws-post";
-const gchar lassoLibProtocolProfileFedTermIdpHttp[] = "http://projectliberty.org/profiles/fedterm-idp-http";
-const gchar lassoLibProtocolProfileFedTermIdpSoap[] = "http://projectliberty.org/profiles/fedterm-idp-soap";
-const gchar lassoLibProtocolProfileFedTermSpHttp[]  = "http://projectliberty.org/profiles/fedterm-sp-http";
-const gchar lassoLibProtocolProfileFedTermSpSoap[]  = "http://projectliberty.org/profiles/fedterm-sp-soap";
-const gchar lassoLibProtocolProfileRniIdpHttp[]     = "http://projectliberty.org/profiles/rni-idp-http";
-const gchar lassoLibProtocolProfileRniIdpSoap[]     = "http://projectliberty.org/profiles/rni-idp-soap";
-const gchar lassoLibProtocolProfileRniSpHttp[]      = "http://projectliberty.org/profiles/rni-sp-http";
-const gchar lassoLibProtocolProfileRniSpSoap[]      = "http://projectliberty.org/profiles/rni-sp-soap";
-const gchar lassoLibProtocolProfileSloSpHttp[]      = "http://projectliberty.org/profiles/slo-sp-http";
-const gchar lassoLibProtocolProfileSloSpSoap[]      = "http://projectliberty.org/profiles/slo-sp-soap";
-const gchar lassoLibProtocolProfileSloIdpHttp[]     = "http://projectliberty.org/profiles/slo-idp-http";
-const gchar lassoLibProtocolProfileSloIdpSoap[]     = "http://projectliberty.org/profiles/slo-idp-soap";
+const xmlChar lassoLibProtocolProfileArtifact[]       = "http://projectliberty.org/profiles/brws-art";
+const xmlChar lassoLibProtocolProfilePost[]           = "http://projectliberty.org/profiles/brws-post";
+const xmlChar lassoLibProtocolProfileFedTermIdpHttp[] = "http://projectliberty.org/profiles/fedterm-idp-http";
+const xmlChar lassoLibProtocolProfileFedTermIdpSoap[] = "http://projectliberty.org/profiles/fedterm-idp-soap";
+const xmlChar lassoLibProtocolProfileFedTermSpHttp[]  = "http://projectliberty.org/profiles/fedterm-sp-http";
+const xmlChar lassoLibProtocolProfileFedTermSpSoap[]  = "http://projectliberty.org/profiles/fedterm-sp-soap";
+const xmlChar lassoLibProtocolProfileRniIdpHttp[]     = "http://projectliberty.org/profiles/rni-idp-http";
+const xmlChar lassoLibProtocolProfileRniIdpSoap[]     = "http://projectliberty.org/profiles/rni-idp-soap";
+const xmlChar lassoLibProtocolProfileRniSpHttp[]      = "http://projectliberty.org/profiles/rni-sp-http";
+const xmlChar lassoLibProtocolProfileRniSpSoap[]      = "http://projectliberty.org/profiles/rni-sp-soap";
+const xmlChar lassoLibProtocolProfileSloSpHttp[]      = "http://projectliberty.org/profiles/slo-sp-http";
+const xmlChar lassoLibProtocolProfileSloSpSoap[]      = "http://projectliberty.org/profiles/slo-sp-soap";
+const xmlChar lassoLibProtocolProfileSloIdpHttp[]     = "http://projectliberty.org/profiles/slo-idp-http";
+const xmlChar lassoLibProtocolProfileSloIdpSoap[]     = "http://projectliberty.org/profiles/slo-idp-soap";
 
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
 
 /* prefix & href */
-const gchar lassoSamlAssertionHRef[]   = "urn:oasis:names:tc:SAML:1.0:assertion";
-const gchar lassoSamlAssertionPrefix[] = "saml";
-const gchar lassoSamlProtocolHRef[]    = "urn:oasis:names:tc:SAML:1.0:protocol";
-const gchar lassoSamlProtocolPrefix[]  = "samlp";
+const xmlChar lassoSamlAssertionHRef[]   = "urn:oasis:names:tc:SAML:1.0:assertion";
+const xmlChar lassoSamlAssertionPrefix[] = "saml";
+const xmlChar lassoSamlProtocolHRef[]    = "urn:oasis:names:tc:SAML:1.0:protocol";
+const xmlChar lassoSamlProtocolPrefix[]  = "samlp";
 
 /* Versioning */
-const gchar lassoSamlMajorVersion[] = "1";
-const gchar lassoSamlMinorVersion[] = "0";
+const xmlChar lassoSamlMajorVersion[] = "1";
+const xmlChar lassoSamlMinorVersion[] = "0";
 
 /* StatusCodes */
-const gchar lassoSamlStatusCodeRequestDenied[] = "Samlp:RequestDenied";
-const gchar lassoSamlStatusCodeSuccess[]       = "Samlp:Success";
+const xmlChar lassoSamlStatusCodeRequestDenied[] = "Samlp:RequestDenied";
+const xmlChar lassoSamlStatusCodeSuccess[]       = "Samlp:Success";
 
 /* AuthenticationMethods */
-const gchar lassoSamlAuthenticationMethodPassword[]             = "urn:oasis:names:tc:SAML:1.0:am:password";
-const gchar lassoSamlAuthenticationMethodKerberos[]             = "urn:ietf:rfc:1510";
-const gchar lassoSamlAuthenticationMethodSecureRemotePassword[] = "urn:ietf:rfc:2945";
-const gchar lassoSamlAuthenticationMethodHardwareToken[]        = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
-const gchar lassoSamlAuthenticationMethodSmartcardPki[]         = "urn:ietf:rfc:2246";
-const gchar lassoSamlAuthenticationMethodSoftwarePki[]          = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
-const gchar lassoSamlAuthenticationMethodPGP[]                  = "urn:oasis:names:tc:SAML:1.0:am:PGP";
-const gchar lassoSamlAuthenticationMethodSPki[]                 = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
-const gchar lassoSamlAuthenticationMethodXkms[]                 = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
-const gchar lassoSamlAuthenticationMethodXmlSign[]              = "urn:ietf:rfc:3075";
-const gchar lassoSamlAuthenticationMethodUnspecified[]          = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
+const xmlChar lassoSamlAuthenticationMethodPassword[]             = "urn:oasis:names:tc:SAML:1.0:am:password";
+const xmlChar lassoSamlAuthenticationMethodKerberos[]             = "urn:ietf:rfc:1510";
+const xmlChar lassoSamlAuthenticationMethodSecureRemotePassword[] = "urn:ietf:rfc:2945";
+const xmlChar lassoSamlAuthenticationMethodHardwareToken[]        = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
+const xmlChar lassoSamlAuthenticationMethodSmartcardPki[]         = "urn:ietf:rfc:2246";
+const xmlChar lassoSamlAuthenticationMethodSoftwarePki[]          = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
+const xmlChar lassoSamlAuthenticationMethodPGP[]                  = "urn:oasis:names:tc:SAML:1.0:am:PGP";
+const xmlChar lassoSamlAuthenticationMethodSPki[]                 = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
+const xmlChar lassoSamlAuthenticationMethodXkms[]                 = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
+const xmlChar lassoSamlAuthenticationMethodXmlSign[]              = "urn:ietf:rfc:3075";
+const xmlChar lassoSamlAuthenticationMethodUnspecified[]          = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 

@@ -30,81 +30,81 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <lasso/export.h>
-#include <glib-object.h>
+#include <libxml/xpath.h>
 
 /*****************************************************************************/
 /* Liberty Alliance                                                          */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const gchar lassoLibHRef[];
-LASSO_EXPORT_VAR const gchar lassoLibPrefix[];
+LASSO_EXPORT_VAR const xmlChar lassoLibHRef[];
+LASSO_EXPORT_VAR const xmlChar lassoLibPrefix[];
 
 /* Versioning */
-LASSO_EXPORT_VAR const gchar lassoLibMajorVersion[];
-LASSO_EXPORT_VAR const gchar lassoLibMinorVersion[];
+LASSO_EXPORT_VAR const xmlChar lassoLibMajorVersion[];
+LASSO_EXPORT_VAR const xmlChar lassoLibMinorVersion[];
 
 /* NameIDPolicyType */
-LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeNone[];
-LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeOneTime[];
-LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeFederated[];
-LASSO_EXPORT_VAR const gchar lassoLibNameIDPolicyTypeAny[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeNone[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeOneTime[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeFederated[];
+LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeAny[];
 
 /* AuthnContextComparison */
-LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonExact[];
-LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonMinimum[];
-LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonBetter[];
+LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonExact[];
+LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonMinimum[];
+LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonBetter[];
 
 /* StatusCodes */
-LASSO_EXPORT_VAR const gchar lassoLibStatusCodeFederationDoesNotExist[];
-LASSO_EXPORT_VAR const gchar lassoLibStatusCodeNoPassive[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeFederationDoesNotExist[];
+LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoPassive[];
 
 /* ProtocolProfile */
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileArtifact[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfilePost[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermIdpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermIdpSoap[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermSpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermSpSoap[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniIdpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniIdpSoap[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniSpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniSpSoap[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloSpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloSpSoap[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloIdpHttp[];
-LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloIdpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileArtifact[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfilePost[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermIdpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermIdpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermSpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermSpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniIdpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniIdpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniSpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniSpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloSpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloSpSoap[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpHttp[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpSoap[];
 
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const gchar lassoSamlAssertionHRef[];
-LASSO_EXPORT_VAR const gchar lassoSamlAssertionPrefix[];
-LASSO_EXPORT_VAR const gchar lassoSamlProtocolHRef[];
-LASSO_EXPORT_VAR const gchar lassoSamlProtocolPrefix[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAssertionHRef[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAssertionPrefix[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlProtocolHRef[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlProtocolPrefix[];
 
 /* Versioning */
-LASSO_EXPORT_VAR const gchar lassoSamlMajorVersion[];
-LASSO_EXPORT_VAR const gchar lassoSamlMinorVersion[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlMajorVersion[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlMinorVersion[];
 
 /* StatusCodes */
-LASSO_EXPORT_VAR const gchar lassoSamlStatusCodeRequestDenied[];
-LASSO_EXPORT_VAR const gchar lassoSamlStatusCodeSuccess[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlStatusCodeRequestDenied[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlStatusCodeSuccess[];
 
 /* AuthenticationMethods */
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodPassword[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodKerberos[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSecureRemotePassword[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodHardwareToken[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSmartcardPki[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSoftwarePki[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodPGP[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSPki[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodXkms[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodXmlSign[];
-LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodUnspecified[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPassword[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodKerberos[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSecureRemotePassword[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodHardwareToken[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSmartcardPki[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSoftwarePki[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPGP[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSPki[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXkms[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXmlSign[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodUnspecified[];
 
 #ifdef __cplusplus
 }
