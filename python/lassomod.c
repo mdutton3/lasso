@@ -198,7 +198,14 @@ static PyMethodDef lasso_methods[] = {
   /* environs */
   {"profile_get_request_type_from_soap_msg", profile_get_request_type_from_soap_msg, METH_VARARGS},
   {"profile_new",                            profile_new,                            METH_VARARGS},
+  {"profile_get_identity",                   profile_get_identity,                   METH_VARARGS},
+  {"profile_get_session",                    profile_get_session,                    METH_VARARGS},
+  {"profile_is_identity_dirty",              profile_is_identity_dirty,              METH_VARARGS},
+  {"profile_is_session_dirty",               profile_is_session_dirty,               METH_VARARGS},
+  {"profile_set_identity",                   profile_set_identity,                   METH_VARARGS},
   {"profile_set_identity_from_dump",         profile_set_identity_from_dump,         METH_VARARGS},
+  {"profile_set_session",                    profile_set_session,                    METH_VARARGS},
+  {"profile_set_session_from_dump",          profile_set_session_from_dump,          METH_VARARGS},
 
   /* py_identity.h */
   {"identity_new",           identity_new,           METH_VARARGS},

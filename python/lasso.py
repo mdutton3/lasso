@@ -793,6 +793,28 @@ class Server:
     def destroy(self):
         lassomod.server_destroy(self)
 
+class Identity:
+    """
+    """
+
+    def __init__(self, _obj):
+        """
+        """
+        self._o = _obj
+
+    def new(cls):
+        obj = lassmod.identity_new()
+        return Identity(obj)
+    new = classmethod(new)
+
+    def new_from_dump(cls, dump):
+        obj = lassomod.identity_new_from_dump(dump)
+        return Identity(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def dump(self):
+        return lassomod.identity_dump(self)
+
 class Session:
     """
     """
@@ -860,8 +882,29 @@ class Profile:
         return Profile(obj)
     new = classmethod(new)
 
+    def get_identity(self):
+        return Identity(_obj=lassomod.profile_get_identity(self))
+
+    def get_session(self):
+        return Session(_obj=lassomod.profile_get_session(self))
+
+    def is_identity_dirty(self):
+        return lassomod.profile_is_identity_dirty(self)
+
+    def is_session_dirty(self):
+        return lassomod.profile_is_session_dirty(self)
+
+    def set_identity(self, identity):
+        return lassomod.profile_set_identity(self, identity)
+
     def set_identity_from_dump(self, dump):
         return lassomod.profile_set_identity_from_dump(self, dump)
+
+    def set_session(self, session):
+        return lassomod.profile_set_session(self, session)
+
+    def set_session_from_dump(self, dump):
+        return lassomod.profile_set_session_from_dump(self, dump)
 
 ## login
 loginProtocolProfileBrwsArt  = 1
@@ -1112,7 +1155,7 @@ class RegisterNameIdentifier:
         return lassomod.register_name_identifier_init_request(self, remote_providerID);
 
     def process_request(self):
-        return lassomod.register_name_identifier_process_request_msg(self)
+        return lassomod.register_name_identifier_process_request(self)
 
     def process_response_msg(self, response_msg, response_method):
         return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method);

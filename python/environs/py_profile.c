@@ -86,6 +86,87 @@ PyObject *profile_new(PyObject *self, PyObject *args) {
   return (LassoProfile_wrap(ctx));
 }
 
+PyObject *profile_get_identity(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  LassoIdentity *identity;
+
+  if (CheckArgs(args, "O:profile_get_identity")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:profile_get_identity",
+			 &ctx_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  identity = lasso_profile_get_identity(LassoProfile_get(ctx_obj));
+
+  return(LassoIdentity_wrap(identity));
+}
+
+PyObject *profile_get_session(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  LassoSession *session;
+
+  if (CheckArgs(args, "O:profile_get_session")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:profile_get_session",
+			 &ctx_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  session = lasso_profile_get_session(LassoProfile_get(ctx_obj));
+
+  return(LassoSession_wrap(session));
+}
+
+PyObject *profile_is_identity_dirty(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  int ret;
+
+  if (CheckArgs(args, "O:profile_is_identity_dirty")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:profile_is_identity_dirty",
+			 &ctx_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_is_identity_dirty(LassoProfile_get(ctx_obj));
+
+  return(int_wrap(ret));
+}
+
+PyObject *profile_is_session_dirty(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  int ret;
+
+  if (CheckArgs(args, "O:profile_is_session_dirty")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:profile_is_session_dirty",
+			 &ctx_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_is_session_dirty(LassoProfile_get(ctx_obj));
+
+  return(int_wrap(ret));
+}
+
+PyObject *profile_set_identity(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj, *identity_obj;
+  gint ret;
+
+  if (CheckArgs(args, "OO:profile_set_identity")) {
+    if(!PyArg_ParseTuple(args, (char *) "OO:profile_set_identity",
+			 &ctx_obj, &identity_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_set_identity(LassoProfile_get(ctx_obj),
+				   LassoIdentity_get(identity_obj));
+
+  return(int_wrap(ret));
+}
+
 PyObject *profile_set_identity_from_dump(PyObject *self, PyObject *args) {
   PyObject *ctx_obj;
   gchar *dump;
@@ -100,6 +181,41 @@ PyObject *profile_set_identity_from_dump(PyObject *self, PyObject *args) {
 
   ret = lasso_profile_set_identity_from_dump(LassoProfile_get(ctx_obj),
 					     dump);
+
+  return(int_wrap(ret));
+}
+
+PyObject *profile_set_session(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj, *session_obj;
+  gint ret;
+
+  if (CheckArgs(args, "OO:profile_set_session")) {
+    if(!PyArg_ParseTuple(args, (char *) "OO:profile_set_session",
+			 &ctx_obj, &session_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_set_session(LassoProfile_get(ctx_obj),
+				  LassoSession_get(session_obj));
+
+  return(int_wrap(ret));
+}
+
+PyObject *profile_set_session_from_dump(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  gchar *dump;
+  gint   ret;
+
+  if (CheckArgs(args, "OS:profile_set_session_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:profile_set_session_from_dump",
+			 &ctx_obj, &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_set_session_from_dump(LassoProfile_get(ctx_obj),
+					    dump);
 
   return(int_wrap(ret));
 }

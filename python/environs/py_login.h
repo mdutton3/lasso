@@ -30,6 +30,7 @@
 
 #include "py_server.h"
 #include "py_identity.h"
+#include "py_session.h"
 
 typedef struct {
     PyObject_HEAD

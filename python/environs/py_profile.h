@@ -39,7 +39,14 @@ PyObject *LassoProfile_wrap(LassoProfile *ctx);
 PyObject *profile_get_request_type_from_soap_msg(PyObject *self, PyObject *args);
 
 PyObject *profile_new(PyObject *self, PyObject *args);
+PyObject *profile_get_identity(PyObject *self, PyObject *args);
+PyObject *profile_get_session(PyObject *self, PyObject *args);
+PyObject *profile_is_identity_dirty(PyObject *self, PyObject *args);
+PyObject *profile_is_session_dirty(PyObject *self, PyObject *args);
+PyObject *profile_set_identity(PyObject *self, PyObject *args);
 PyObject *profile_set_identity_from_dump(PyObject *self, PyObject *args);
+PyObject *profile_set_session(PyObject *self, PyObject *args);
+PyObject *profile_set_session_from_dump(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_PROFILE_H__ */
 
