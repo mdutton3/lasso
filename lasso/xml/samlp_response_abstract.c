@@ -131,7 +131,7 @@ get_xmlNode(LassoNode *node)
 	return xmlnode;
 } 
 
-static void
+static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoSamlpResponseAbstract *response = LASSO_SAMLP_RESPONSE_ABSTRACT(node);
@@ -164,6 +164,12 @@ init_from_query(LassoNode *node, char **query_fields)
 			continue;
 		}
 	}
+
+	if (response->ResponseID == NULL || response->IssueInstant == NULL ||
+			response->MajorVersion == 0)
+		return FALSE;
+	
+	return TRUE;
 }
 
 static int

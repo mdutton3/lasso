@@ -161,7 +161,7 @@ build_query(LassoNode *node)
 	return str;
 }
 
-static void
+static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
@@ -202,7 +202,11 @@ init_from_query(LassoNode *node, char **query_fields)
 			continue;
 		}
 	}
-	parent_class->init_from_query(node, query_fields);
+
+	if (request->ProviderID == NULL)
+		return FALSE;
+	
+	return parent_class->init_from_query(node, query_fields);
 }
 
 static int

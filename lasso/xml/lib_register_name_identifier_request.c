@@ -155,7 +155,7 @@ build_query(LassoNode *node)
 	return str;
 }
 
-static void
+static gboolean
 init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibRegisterNameIdentifierRequest *request;
@@ -214,7 +214,6 @@ init_from_query(LassoNode *node, char **query_fields)
 			continue;
 		}
 	}
-	parent_class->init_from_query(node, query_fields);
 
 	if (request->IDPProvidedNameIdentifier->content == NULL) {
 		g_object_unref(request->IDPProvidedNameIdentifier);
@@ -228,6 +227,14 @@ init_from_query(LassoNode *node, char **query_fields)
 		g_object_unref(request->OldProvidedNameIdentifier);
 		request->OldProvidedNameIdentifier = NULL;
 	}
+
+	if (request->ProviderID == NULL ||
+			request->OldProvidedNameIdentifier == NULL ||
+			request->IDPProvidedNameIdentifier == NULL) {
+		return FALSE;
+	}
+	
+	return parent_class->init_from_query(node, query_fields);
 }
 
 

@@ -52,7 +52,8 @@ extern "C" {
 #define LASSO_NODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NODE, LassoNodeClass)) 
 
 typedef enum {
-	LASSO_MESSAGE_FORMAT_UNKNOWN = 0,
+	LASSO_MESSAGE_FORMAT_ERROR = -1,
+	LASSO_MESSAGE_FORMAT_UNKNOWN,
 	LASSO_MESSAGE_FORMAT_XML,
 	LASSO_MESSAGE_FORMAT_BASE64,
 	LASSO_MESSAGE_FORMAT_QUERY,
@@ -88,7 +89,7 @@ struct _LassoNodeClass {
 
 	void     (* destroy)            (LassoNode *node);
 	char*    (* build_query)        (LassoNode *node);
-	void     (* init_from_query)    (LassoNode *node, char **query_fields);
+	gboolean (* init_from_query)    (LassoNode *node, char **query_fields);
 	int      (* init_from_xml)      (LassoNode *node, xmlNode *xmlnode);
 	xmlNode* (* get_xmlNode)        (LassoNode *node);
 
@@ -115,7 +116,7 @@ LASSO_EXPORT char*      lasso_node_export_to_soap(LassoNode *node,
 LASSO_EXPORT xmlNode*   lasso_node_get_xmlNode(LassoNode *node);
 
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
-LASSO_EXPORT void       lasso_node_init_from_query(LassoNode *node, const char *query);
+LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
 LASSO_EXPORT gint       lasso_node_verify_signature(LassoNode *node,

@@ -230,10 +230,10 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 
 	lecp->authnRequestEnvelope = lasso_lib_authn_request_envelope_new();
 	format = lasso_node_init_from_message(LASSO_NODE(lecp->authnRequestEnvelope), request_msg);
-	if (format != LASSO_MESSAGE_FORMAT_XML) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		message(G_LOG_LEVEL_CRITICAL,
 				"Error while building the authentication request envelope");
-		return -1;
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	}
 
 	LASSO_PROFILE(lecp)->request = LASSO_NODE(g_object_ref(
@@ -260,9 +260,9 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *resp
 	lecp->authnResponseEnvelope = lasso_lib_authn_response_envelope_new(NULL, NULL);
 	format = lasso_node_init_from_message(LASSO_NODE(lecp->authnResponseEnvelope),
 			response_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		message(G_LOG_LEVEL_CRITICAL, "Error while building AuthnResponseEnvelope");
-		return -1;
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	}
 
 	profile->response = g_object_ref(lecp->authnResponseEnvelope->AuthnResponse);

@@ -300,7 +300,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 
 	profile->request = lasso_lib_register_name_identifier_request_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		message(G_LOG_LEVEL_CRITICAL, "XXX");
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	}
@@ -372,7 +372,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	/* build register name identifier response from message */
 	profile->response = lasso_lib_register_name_identifier_response_new();
 	format = lasso_node_init_from_message(profile->response, response_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		message(G_LOG_LEVEL_CRITICAL, "XXX");
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	}

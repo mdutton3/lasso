@@ -1083,6 +1083,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	gboolean must_verify_signature = FALSE;
 	gint ret = 0;
 	LassoLibAuthnRequest *request;
+	LassoMessageFormat format;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -1105,7 +1106,12 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			return LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
 	} else {
 		request = lasso_lib_authn_request_new();
-		lasso_node_init_from_message(LASSO_NODE(request), authn_request_msg);
+		format = lasso_node_init_from_message(LASSO_NODE(request), authn_request_msg);
+		if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
+				format == LASSO_MESSAGE_FORMAT_ERROR) {
+			message(G_LOG_LEVEL_CRITICAL, "XXX");
+			return LASSO_PROFILE_ERROR_INVALID_MSG;
+		}
 		
 		LASSO_PROFILE(login)->request = LASSO_NODE(request);
 	}
@@ -1165,12 +1171,17 @@ gint
 lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
 {
 	gint ret1 = 0, ret2 = 0;
+	LassoMessageFormat format;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(NULL, NULL);
-	lasso_node_init_from_message(LASSO_PROFILE(login)->response, authn_response_msg);
+	format = lasso_node_init_from_message(LASSO_PROFILE(login)->response, authn_response_msg);
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
+		message(G_LOG_LEVEL_CRITICAL, "XXX");
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
+	}
 
 	LASSO_PROFILE(login)->remote_providerID = g_strdup(
 			LASSO_LIB_AUTHN_RESPONSE(LASSO_PROFILE(login)->response)->ProviderID);

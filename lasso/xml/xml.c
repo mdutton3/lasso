@@ -249,22 +249,24 @@ lasso_node_export_to_soap(LassoNode *node,
 }
 
 
-void
+gboolean
 lasso_node_init_from_query(LassoNode *node, const char *query)
 {
 	LassoNodeClass *class;
 	char **query_fields;
 	int i;
+	gboolean rc;
 
-	g_return_if_fail(LASSO_IS_NODE(node));
+	g_return_val_if_fail(LASSO_IS_NODE(node), FALSE);
 	class = LASSO_NODE_GET_CLASS(node);
 
 	query_fields = urlencoded_to_strings(query);
-	class->init_from_query(node, query_fields);
+	rc = class->init_from_query(node, query_fields);
 	for (i=0; query_fields[i]; i++) {
 		free(query_fields[i]);
 	}
 	free(query_fields);
+	return rc;
 }
 
 int
@@ -710,12 +712,12 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 
 	if (strchr(msg, '&')) {
 		/* looks like a query string */
-		lasso_node_init_from_query(node, msg);
+		if (lasso_node_init_from_query(node, msg) == FALSE) {
+			/* XXX: free node */
+			return LASSO_MESSAGE_FORMAT_ERROR;
+		}
 		return LASSO_MESSAGE_FORMAT_QUERY;
 	}
-
-	fprintf(stderr, "message: %s\n", message);
-	g_assert_not_reached();
 
 	return LASSO_MESSAGE_FORMAT_UNKNOWN;
 }

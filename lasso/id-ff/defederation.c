@@ -290,8 +290,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 
 	profile->request = lasso_lib_federation_termination_notification_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
-
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN) {
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		message(G_LOG_LEVEL_CRITICAL, "XXX");
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	}
