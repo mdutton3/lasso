@@ -46,7 +46,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 {
 	LassoProfile *profile;
 	gchar *assertionConsumerServiceURL;
-	xmlNode *message;
+	xmlNode *msg;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 
@@ -77,17 +77,17 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 		LASSO_PROFILE(lecp)->server->private_key;
 	LASSO_SAMLP_REQUEST_ABSTRACT(lecp->authnRequestEnvelope->AuthnRequest)->certificate_file =
 		LASSO_PROFILE(lecp)->server->certificate;
-	message = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
+	msg = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
 	
-	/* message is not SOAP but straight XML */
+	/* msg is not SOAP but straight XML */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler); 
-	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlNodeDumpOutput(buf, NULL, msg, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 
 	profile->msg_body = g_strdup(buf->conv ? buf->conv->content : buf->buffer->content);
 	xmlOutputBufferClose(buf);
-	xmlFreeNode(message);
+	xmlFreeNode(msg);
 
 	if (profile->msg_body == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
