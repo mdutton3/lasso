@@ -60,9 +60,9 @@
 #define snippets() \
 	LassoLibStatusResponse *response = LASSO_LIB_STATUS_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(response->ProviderID) }, \
-		{ "Status", 'n', (void**)&(response->Status) }, \
-		{ "RelayState", 'c', (void**)&(response->RelayState) }, \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(response->ProviderID) }, \
+		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
+		{ "RelayState", SNIPPET_CONTENT, (void**)&(response->RelayState) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -77,7 +77,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "StatusResponse");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -89,7 +89,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

@@ -47,8 +47,8 @@
 #define snippets() \
 	LassoSamlSubject *subject = LASSO_SAML_SUBJECT(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "NameIdentifier", 'n', (void**)&(subject->NameIdentifier) },  \
-		{ "SubjectConfirmation", 'n', (void**)&(subject->SubjectConfirmation) }, \
+		{ "NameIdentifier", SNIPPET_NODE, (void**)&(subject->NameIdentifier) },  \
+		{ "SubjectConfirmation", SNIPPET_NODE, (void**)&(subject->SubjectConfirmation) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -63,7 +63,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = xmlNewNode(NULL, "Subject");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode,
 				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -75,7 +75,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

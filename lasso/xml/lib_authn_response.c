@@ -60,8 +60,9 @@
 #define snippets() \
 	LassoLibAuthnResponse *response = LASSO_LIB_AUTHN_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(response->ProviderID) }, \
-		{ "RelayState", 'c', (void**)&(response->RelayState) }, \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(response->ProviderID) }, \
+		{ "RelayState", SNIPPET_CONTENT, (void**)&(response->RelayState) }, \
+		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(response->consent) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -76,9 +77,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AuthnResponse");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
-	if (response->consent)
-		xmlSetProp(xmlnode, "consent", response->consent);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -90,8 +89,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
-	response->consent = xmlGetProp(xmlnode, "consent");
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

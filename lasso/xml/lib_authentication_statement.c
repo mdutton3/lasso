@@ -51,10 +51,10 @@
 #define snippets() \
 	LassoLibAuthenticationStatement *statement = LASSO_LIB_AUTHENTICATION_STATEMENT(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "AuthnContext", 'n', (void**)&(statement->AuthnContext) }, \
-		{ "ReauthenticateOnOrAfter", 'a', \
+		{ "AuthnContext", SNIPPET_NODE, (void**)&(statement->AuthnContext) }, \
+		{ "ReauthenticateOnOrAfter", SNIPPET_ATTRIBUTE, \
 			(void**)&(statement->ReauthenticateOnOrAfter) }, \
-		{ "SessionIndex", 'a', (void**)&(statement->SessionIndex) }, \
+		{ "SessionIndex", SNIPPET_ATTRIBUTE, (void**)&(statement->SessionIndex) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -68,7 +68,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -80,8 +80,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

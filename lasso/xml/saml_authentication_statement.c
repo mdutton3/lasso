@@ -50,11 +50,11 @@
 #define snippets() \
 	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "SubjectLocality", 'n', (void**)&(statement->SubjectLocality) }, \
-		{ "AuthorityBinding", 'n', (void**)&(statement->AuthorityBinding) }, \
-		{ "AuthenticationMethod", 'a', \
+		{ "SubjectLocality", SNIPPET_NODE, (void**)&(statement->SubjectLocality) }, \
+		{ "AuthorityBinding", SNIPPET_NODE, (void**)&(statement->AuthorityBinding) }, \
+		{ "AuthenticationMethod", SNIPPET_ATTRIBUTE, \
 			(void**)&(statement->AuthenticationMethod) }, \
-		{ "AuthenticationInstant", 'a', \
+		{ "AuthenticationInstant", SNIPPET_ATTRIBUTE, \
 			(void**)&(statement->AuthenticationInstant) }, \
 		{ NULL, 0, NULL} \
 	};
@@ -69,7 +69,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AuthenticationStatement");
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -81,7 +81,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 	

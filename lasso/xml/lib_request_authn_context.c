@@ -52,9 +52,11 @@
 #define snippets() \
 	LassoLibRequestAuthnContext *context = LASSO_LIB_REQUEST_AUTHN_CONTEXT(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "AuthnContextClassRef", 'c', (void**)&(context->AuthnContextClassRef) }, \
-		{ "AuthnContextStatementRef", 'c', (void**)&(context->AuthnContextStatementRef) }, \
-		{ "AuthnContextComparisonType", 'c', \
+		{ "AuthnContextClassRef", SNIPPET_CONTENT, \
+			(void**)&(context->AuthnContextClassRef) }, \
+		{ "AuthnContextStatementRef", SNIPPET_CONTENT, \
+			(void**)&(context->AuthnContextStatementRef) }, \
+		{ "AuthnContextComparisonType", SNIPPET_CONTENT, \
 			(void**)&(context->AuthnContextComparisonType) }, \
 		{ NULL, 0, NULL} \
 	};
@@ -70,7 +72,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "RequestAuthnContext");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -82,7 +84,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

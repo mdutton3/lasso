@@ -46,8 +46,8 @@
 #define snippets() \
 	LassoLibIDPList *list = LASSO_LIB_IDP_LIST(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "IDPEntries", 'n', (void**)&(list->IDPEntries) }, \
-		{ "GetComplete", 'c', (void**)&(list->GetComplete) }, \
+		{ "IDPEntries", SNIPPET_NODE, (void**)&(list->IDPEntries) }, \
+		{ "GetComplete", SNIPPET_CONTENT, (void**)&(list->GetComplete) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -61,7 +61,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "IDPList");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -73,7 +73,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

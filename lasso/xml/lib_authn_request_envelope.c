@@ -71,12 +71,12 @@
 	char *is_passive = NULL; \
 	struct XmlSnippet snippets[] = { \
 		/* XXX: Extension */ \
-		{ "ProviderID", 'c', (void**)&(env->ProviderID) }, \
-		{ "ProviderName", 'c', (void**)&(env->ProviderName) }, \
-		{ "AssertionConsumerServiceURL", 'c', \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(env->ProviderID) }, \
+		{ "ProviderName", SNIPPET_CONTENT, (void**)&(env->ProviderName) }, \
+		{ "AssertionConsumerServiceURL", SNIPPET_CONTENT, \
 			(void**)&(env->AssertionConsumerServiceURL) }, \
-		{ "IDPList", 'n', (void**)&(env->IDPList) }, \
-		{ "IsPassive", 'c', (void**)&is_passive }, \
+		{ "IDPList", SNIPPET_NODE, (void**)&(env->IDPList) }, \
+		{ "IsPassive", SNIPPET_CONTENT, (void**)&is_passive }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -91,7 +91,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = xmlNewNode(NULL, "AuthnRequestEnvelope");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
 	is_passive = env->IsPassive ? "true" : "false";
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -103,7 +103,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	if (is_passive) {
 		env->IsPassive = (strcmp(is_passive, "true") == 0);
 		xmlFree(is_passive);

@@ -45,8 +45,8 @@
 	LassoLibScoping *scoping = LASSO_LIB_SCOPING(node); \
 	char *proxy_count = NULL; \
 	struct XmlSnippet snippets[] = { \
-		{ "ProxyCount", 'c', (void**)&proxy_count }, \
-		{ "IDPList", 'n', (void**)&(scoping->IDPList) }, \
+		{ "ProxyCount", SNIPPET_CONTENT, (void**)&proxy_count }, \
+		{ "IDPList", SNIPPET_NODE, (void**)&(scoping->IDPList) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -63,7 +63,7 @@ get_xmlNode(LassoNode *node)
 	if (scoping->ProxyCount) {
 		proxy_count = g_strdup_printf("%d", scoping->ProxyCount);
 	}
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	if (proxy_count)
 		g_free(proxy_count);
@@ -78,7 +78,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	if (proxy_count) {
 		scoping->ProxyCount = atoi(proxy_count);
 		xmlFree(proxy_count);

@@ -47,8 +47,8 @@
 #define snippets() \
 	LassoSamlpStatus *status = LASSO_SAMLP_STATUS(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "StatusCode", 'n', (void**)&(status->StatusCode) }, \
-		{ "StatusMessage", 'c', (void**)&(status->StatusMessage) }, \
+		{ "StatusCode", SNIPPET_NODE, (void**)&(status->StatusCode) }, \
+		{ "StatusMessage", SNIPPET_CONTENT, (void**)&(status->StatusMessage) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -62,7 +62,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = xmlNewNode(NULL, "Status");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -74,7 +74,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

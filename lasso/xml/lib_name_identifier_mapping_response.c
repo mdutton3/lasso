@@ -51,9 +51,9 @@
 	LassoLibNameIdentifierMappingResponse *response = \
 		LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(response->ProviderID) }, \
-		{ "Status", 'n', (void**)&(response->Status) }, \
-		{ "NameIdentifier", 'n', (void**)&(response->NameIdentifier) }, \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(response->ProviderID) }, \
+		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
+		{ "NameIdentifier", SNIPPET_NODE, (void**)&(response->NameIdentifier) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -68,7 +68,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "NameIdentifierMappingResponse");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -80,7 +80,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

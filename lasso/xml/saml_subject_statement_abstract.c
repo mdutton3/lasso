@@ -47,7 +47,7 @@
 	LassoSamlSubjectStatementAbstract *statement = \
 		LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Subject", 'n', (void**)&(statement->Subject) }, \
+		{ "Subject", SNIPPET_NODE, (void**)&(statement->Subject) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -61,7 +61,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "SubjectStatementAbstract");
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -73,7 +73,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

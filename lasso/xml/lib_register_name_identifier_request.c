@@ -67,14 +67,14 @@
 	LassoLibRegisterNameIdentifierRequest *request = \
 		LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
-		{ "IDPProvidedNameIdentifier", 'i', \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
+		{ "IDPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
 			(void**)&(request->IDPProvidedNameIdentifier) }, \
-		{ "SPProvidedNameIdentifier", 'i', \
+		{ "SPProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
 			(void**)&(request->SPProvidedNameIdentifier) }, \
-		{ "OldProvidedNameIdentifier", 'i', \
+		{ "OldProvidedNameIdentifier", SNIPPET_NAME_IDENTIFIER, \
 			(void**)&(request->OldProvidedNameIdentifier) }, \
-		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
+		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -91,7 +91,7 @@ get_xmlNode(LassoNode *node)
 	xmlNodeSetName(xmlnode, "RegisterNameIdentifierRequest");
 	xmlns = xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
 	xmlSetNs(xmlnode, xmlns);
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -103,7 +103,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

@@ -63,13 +63,14 @@
 #define snippets() \
 	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Conditions", 'n', (void**)&(assertion->Conditions) },  \
-		{ "Advice", 'n', (void**)&(assertion->Advice) },  \
-		{ "SubjectStatement", 'n', (void**)&(assertion->SubjectStatement) },  \
-		{ "AuthenticationStatement", 'n', (void**)&(assertion->AuthenticationStatement) }, \
-		{ "AssertionID", 'a', (void**)&(assertion->AssertionID) }, \
-		{ "Issuer", 'a', (void**)&(assertion->Issuer) }, \
-		{ "IssueInstant", 'a', (void**)&(assertion->IssueInstant) }, \
+		{ "Conditions", SNIPPET_NODE, (void**)&(assertion->Conditions) },  \
+		{ "Advice", SNIPPET_NODE, (void**)&(assertion->Advice) },  \
+		{ "SubjectStatement", SNIPPET_NODE, (void**)&(assertion->SubjectStatement) },  \
+		{ "AuthenticationStatement", SNIPPET_NODE, \
+			(void**)&(assertion->AuthenticationStatement) }, \
+		{ "AssertionID", SNIPPET_ATTRIBUTE, (void**)&(assertion->AssertionID) }, \
+		{ "Issuer", SNIPPET_ATTRIBUTE, (void**)&(assertion->Issuer) }, \
+		{ "IssueInstant", SNIPPET_ATTRIBUTE, (void**)&(assertion->IssueInstant) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -122,7 +123,7 @@ get_xmlNode(LassoNode *node)
 	snprintf(s, 9, "%d", assertion->MinorVersion);
 	xmlSetProp(xmlnode, "MinorVersion", s);
 
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;
@@ -148,7 +149,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		xmlFree(s);
 	}
 
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
 }

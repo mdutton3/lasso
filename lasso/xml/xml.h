@@ -43,6 +43,9 @@ extern "C" {
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
 
+#ifdef LASSO_INTERNALS
+#include <lasso/xml/internals.h>
+#endif
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))
@@ -66,16 +69,8 @@ typedef enum {
 	LASSO_SIGNATURE_TYPE_WITHX509
 } lassoSignatureType;
 
-typedef struct _xmlAttr LassoAttr;
-
 typedef struct _LassoNode LassoNode;
 typedef struct _LassoNodeClass LassoNodeClass;
-
-struct XmlSnippet {
-	char *name;
-	char type;
-	void **value;
-};
 
 /**
  * _LassoNode:
@@ -96,36 +91,32 @@ struct _LassoNodeClass {
 	char*    (* get_sign_attr_name) ();
 };
 
-LASSO_EXPORT GType      lasso_node_get_type(void);
+LASSO_EXPORT GType lasso_node_get_type(void);
 
 LASSO_EXPORT LassoNode* lasso_node_new(void);
 LASSO_EXPORT LassoNode* lasso_node_new_from_dump(const char *buffer);
 LASSO_EXPORT LassoNode* lasso_node_new_from_soap(const char *soap);
 LASSO_EXPORT LassoNode* lasso_node_new_from_xmlNode(xmlNode* node);
 
-LASSO_EXPORT void       lasso_node_destroy(LassoNode *node);
-LASSO_EXPORT char*      lasso_node_dump(LassoNode *node, const char *encoding, int format);
-LASSO_EXPORT char*      lasso_node_build_query(LassoNode *node);
+LASSO_EXPORT void lasso_node_destroy(LassoNode *node);
+LASSO_EXPORT char* lasso_node_dump(LassoNode *node, const char *encoding, int format);
+LASSO_EXPORT char* lasso_node_build_query(LassoNode *node);
+LASSO_EXPORT char* lasso_node_export_to_base64(LassoNode *node);
 
-LASSO_EXPORT char*      lasso_node_export_to_base64(LassoNode *node);
-LASSO_EXPORT char*      lasso_node_export_to_query(LassoNode *node,
+LASSO_EXPORT char* lasso_node_export_to_query(LassoNode *node,
 		lassoSignatureMethod  sign_method, const char *private_key_file);
-LASSO_EXPORT char*      lasso_node_export_to_soap(LassoNode *node,
+
+LASSO_EXPORT char* lasso_node_export_to_soap(LassoNode *node,
 		const char *private_key_file, const char *certificate_file);
 
-LASSO_EXPORT xmlNode*   lasso_node_get_xmlNode(LassoNode *node);
+LASSO_EXPORT xmlNode* lasso_node_get_xmlNode(LassoNode *node);
 
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
-LASSO_EXPORT gint       lasso_node_verify_signature(LassoNode *node,
+LASSO_EXPORT gint lasso_node_verify_signature(LassoNode *node,
 		const char *public_key_file, const char *ca_cert_chain_file);
-
-
-void lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
-void lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets);
-
 
 #ifdef __cplusplus
 }

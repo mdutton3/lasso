@@ -63,11 +63,11 @@
 #define snippets() \
 	LassoLibLogoutRequest *request = LASSO_LIB_LOGOUT_REQUEST(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
-		{ "NameIdentifier", 'n', (void**)&(request->NameIdentifier) }, \
-		{ "SessionIndex", 'c', (void**)&(request->SessionIndex) }, \
-		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
-		{ "consent", 'a', (void**)&(request->consent) }, \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
+		{ "NameIdentifier", SNIPPET_NODE, (void**)&(request->NameIdentifier) }, \
+		{ "SessionIndex", SNIPPET_CONTENT, (void**)&(request->SessionIndex) }, \
+		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
+		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(request->consent) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -82,7 +82,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "LogoutRequest");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -181,7 +181,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

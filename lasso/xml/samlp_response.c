@@ -49,8 +49,8 @@
 #define snippets() \
 	LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "Assertion", 'n', (void**)&(response->Assertion) }, \
-		{ "Status", 'n', (void**)&(response->Status) }, \
+		{ "Assertion", SNIPPET_NODE, (void**)&(response->Assertion) }, \
+		{ "Status", SNIPPET_NODE, (void**)&(response->Status) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -64,7 +64,7 @@ get_xmlNode(LassoNode *node)
 
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "Response");
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
 
@@ -86,7 +86,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 

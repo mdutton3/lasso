@@ -89,16 +89,17 @@
 	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node); \
 	char *force_authn = NULL, *is_passive = NULL; \
 	struct XmlSnippet snippets[] = { \
-		{ "ProviderID", 'c', (void**)&(request->ProviderID) }, \
-		{ "NameIDPolicy", 'c', (void**)&(request->NameIDPolicy) }, \
-		{ "ProtocolProfile", 'c', (void**)&(request->ProtocolProfile) }, \
-		{ "AssertionConsumerServiceID", 'c', \
+		{ "ProviderID", SNIPPET_CONTENT, (void**)&(request->ProviderID) }, \
+		{ "NameIDPolicy", SNIPPET_CONTENT, (void**)&(request->NameIDPolicy) }, \
+		{ "ProtocolProfile", SNIPPET_CONTENT, (void**)&(request->ProtocolProfile) }, \
+		{ "AssertionConsumerServiceID", SNIPPET_CONTENT, \
 			(void**)&(request->AssertionConsumerServiceID) }, \
 		/* XXX: RequestAuthnContext */ \
-		{ "RelayState", 'c', (void**)&(request->RelayState) }, \
-		{ "ForceAuthn", 'c', (void**)&force_authn }, \
-		{ "IsPassive", 'c', (void**)&is_passive }, \
+		{ "RelayState", SNIPPET_CONTENT, (void**)&(request->RelayState) }, \
+		{ "ForceAuthn", SNIPPET_CONTENT, (void**)&force_authn }, \
+		{ "IsPassive", SNIPPET_CONTENT, (void**)&is_passive }, \
 		/* XXX: Scoping */ \
+		{ "consent", SNIPPET_ATTRIBUTE, (void**)&(request->consent) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -116,9 +117,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = parent_class->get_xmlNode(node);
 	xmlNodeSetName(xmlnode, "AuthnRequest");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
-	if (request->consent)
-		xmlSetProp(xmlnode, "consent", request->consent);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -217,8 +216,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
 
-	request->consent = xmlGetProp(xmlnode, "consent");
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 
 	if (is_passive) {
 		request->IsPassive = (strcmp(is_passive, "true") == 0);

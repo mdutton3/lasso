@@ -51,8 +51,9 @@
 #define snippets() \
 	LassoSamlAdvice *advice = LASSO_SAML_ADVICE(node); \
 	struct XmlSnippet snippets[] = { \
-		{ "AssertionIDReference", 'c', (void**)&(advice->AssertionIDReference) }, \
-		{ "Assertion", 'n', (void**)&(advice->Assertion) }, \
+		{ "AssertionIDReference", SNIPPET_CONTENT, \
+			(void**)&(advice->AssertionIDReference) }, \
+		{ "Assertion", SNIPPET_NODE, (void**)&(advice->Assertion) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -67,7 +68,7 @@ get_xmlNode(LassoNode *node)
 	xmlnode = xmlNewNode(NULL, "Advice");
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
 				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
-	lasso_node_build_xml_with_snippets(xmlnode, snippets);
+	build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;
 }
@@ -79,7 +80,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-	lasso_node_init_xml_with_snippets(xmlnode, snippets);
+	init_xml_with_snippets(xmlnode, snippets);
 	return 0;
 }
 
