@@ -54,9 +54,7 @@ lasso_identity_new
 lasso_identity_new_from_dump
 lasso_identity_destroy
 lasso_identity_dump
-lasso_identity_add_federation
 lasso_identity_get_federation
-lasso_identity_remove_federation
 <SUBSECTION Standard>
 LASSO_IDENTITY
 LASSO_IS_IDENTITY
