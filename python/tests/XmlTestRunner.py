@@ -48,6 +48,10 @@ class XmlTestResult(unittest.TestResult):
     </test>""" % (test.id(), test.shortDescription())
         # TODO: add err
 
+    def shortDescription(self):
+        text = unittest.TestResult.shortDescription()
+        return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
 
 class XmlTestRunner:
     def _makeResult(self):
