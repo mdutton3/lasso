@@ -62,8 +62,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
     return(-1);
   }
 
-  /* FIXME : export to base 64 or simple xml dump */
-  profile->msg_body = lasso_node_export_to_base64(lecp->authnRequestEnvelope);
+  profile->msg_body = lasso_node_export(lecp->authnRequestEnvelope);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while exporting the AuthnRequestEnvelope to POST msg\n");
     return(-1);
@@ -105,9 +104,9 @@ lasso_lecp_build_authn_response_msg(LassoLecp   *lecp)
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
     return(-1);
   }
-  profile->msg_body = lasso_node_export(profile->response);
+  profile->msg_body = lasso_node_export_to_base64(profile->response);
   if (profile->msg_body == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "AuthnResponse msg not found\n");
+    message(G_LOG_LEVEL_CRITICAL, "AuthnResponse Base64 msg not found\n");
     return(-1);
   }
 
@@ -201,7 +200,7 @@ lasso_lecp_init_from_authn_request_msg(LassoLecp       *lecp,
 
 gint
 lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
-					      gchar      *request_msg)
+					      gchar     *request_msg)
 {
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
   g_return_val_if_fail(request_msg!=NULL, -1);
