@@ -1203,9 +1203,9 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 
 	/* rebuild samlp:Request with request_msg */
 	profile->request = lasso_node_new_from_soap(request_msg);
-	/* XXX was: lasso_request_new_from_export(request_msg, LASSO_NODE_EXPORT_TYPE_SOAP); */
 	if (profile->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Request with request message.");
+		message(G_LOG_LEVEL_CRITICAL,
+				"Failed to rebuild samlp:Request with request message.");
 		return LASSO_ERROR_UNDEFINED;
 	}
 	/* get AssertionArtifact */
