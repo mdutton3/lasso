@@ -728,6 +728,11 @@ lasso_node_init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 	xmlNode *t;
 	int i;
 
+	for (i = 0; snippets[i].name; i++) {
+		if (snippets[i].type == 'a') /* attribute */
+			*(snippets[i].value) = xmlGetProp(node, snippets[i].name);
+	}
+
 	t = node->children;
 	for (t = node->children; t; t = t->next) {
 		if (t->type != XML_ELEMENT_NODE)
@@ -753,6 +758,13 @@ void
 lasso_node_build_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 {
 	int i;
+
+	for (i = 0; snippets[i].name; i++) {
+		if (*(snippets[i].value) == NULL)
+			continue;
+		if (snippets[i].type == 'a') /* attribute */
+			xmlSetProp(node, snippets[i].name, (char*)(*(snippets[i].value)));
+	}
 
 	for (i = 0; snippets[i].name; i++) {
 		if (*(snippets[i].value) == NULL)
