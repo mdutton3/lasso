@@ -31,7 +31,7 @@
 %{
 
 #include <lasso/id-wsf/discovery.h>
-#include <lasso/id-wsf/personal_profile_service.h>
+#include <lasso/id-wsf/profile_service.h>
 #include <lasso/xml/dst_new_data.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
@@ -992,7 +992,7 @@ void LassoPPMsgContact_msgProvider_set(LassoPPMsgContact *self, char *msgProvide
 #define LassoPPMsgContact_get_msgAccount LassoPPMsgContact_msgAccount_get
 char *LassoPPMsgContact_msgAccount_get(LassoPPMsgContact *self) {
 	if (LASSO_IS_PP_MSG_CONTACT(self) == TRUE) {
-		return self->MsgProvider;
+		return self->MsgAccount;
 	}
 	return NULL;
 }
@@ -1236,12 +1236,13 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 
 %}
 
+
 /***********************************************************************
- * ID-WSF XML LassoPersonalProfileService
+ * ID-WSF XML LassoProfileService
  ***********************************************************************/
 
 #ifndef SWIGPHP4
-%rename(PersonalProfileService) LassoPersonalProfileService;
+%rename(ProfileService) LassoProfileService;
 #endif
 typedef struct {
 	%extend {
@@ -1265,7 +1266,7 @@ typedef struct {
 		gchar *msgUrl;
 
 		/* Constructor, Destructor & Static Methods */
-		LassoPersonalProfileService(LassoServer *server);
+		LassoProfileService(LassoServer *server);
 
 		/* Methods inherited from LassoWsfProfile */
 		void buildRequestMsg();
@@ -1277,116 +1278,120 @@ typedef struct {
 
 		LassoDstModification *addModification(char *select);
 		
-		LassoDstModification *initModify(LassoDiscoResourceOffering *resourceOffering,
+		LassoDstModification *initModify(char *prefix,
+						 char *href,
+						 LassoDiscoResourceOffering *resourceOffering,
 						 LassoDiscoDescription *description,
 						 char *select);
 		
-		LassoDstQueryItem *initQuery(LassoDiscoResourceOffering *resourceOffering,
+		LassoDstQueryItem *initQuery(char *prefix,
+					     char *href,
+					     LassoDiscoResourceOffering *resourceOffering,
 					     LassoDiscoDescription *description,
 					     char *select);
 
 		THROW_ERROR
-		void processModifyMsg(char *modify_msg);
+		void processModifyMsg(char *prefix, char *href, char *soap_msg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processModifyResponseMsg(char *modify_response_msg);
+		void processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
 		END_THROW_ERROR
 
 	        LassoDstQueryItem *addQueryItem(char *select);
 
 		THROW_ERROR
-		void processQueryMsg(char *query_msg);
+		void processQueryMsg(char *prefix, char *href, char *soap_msg);
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void processQueryResponseMsg(char *query_response_msg);
+		void processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
 		END_THROW_ERROR
 
 	}
-} LassoPersonalProfileService;
+} LassoProfileService;
 
 %{
 
 /* Attributes Implementations */
 /* modify */
-#define LassoPersonalProfileService_get_modify LassoPersonalProfileService_modify_get
-LassoDstModify *LassoPersonalProfileService_modify_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_modify LassoProfileService_modify_get
+LassoDstModify *LassoProfileService_modify_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE)
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
 		return LASSO_DST_MODIFY(profile->request);
 	return NULL;
 }
 
 /* modifyResponse */
-#define LassoPersonalProfileService_get_modifyResponse LassoPersonalProfileService_modifyResponse_get
-LassoDstModifyResponse *LassoPersonalProfileService_modifyResponse_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_modifyResponse LassoProfileService_modifyResponse_get
+LassoDstModifyResponse *LassoProfileService_modifyResponse_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE)
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
 		return LASSO_DST_MODIFY_RESPONSE(profile->response);
 	return NULL;
 }
 
 /* msgUrl */
-#define LassoPersonalProfileService_get_msgUrl LassoPersonalProfileService_msgUrl_get
-char *LassoPersonalProfileService_msgUrl_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_msgUrl LassoProfileService_msgUrl_get
+char *LassoProfileService_msgUrl_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE)
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
 		return profile->msg_url;
 	return NULL;
 }
 
 /* msgBody */
-#define LassoPersonalProfileService_get_msgBody LassoPersonalProfileService_msgBody_get
-char *LassoPersonalProfileService_msgBody_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_msgBody LassoProfileService_msgBody_get
+char *LassoProfileService_msgBody_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE)
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
 		return profile->msg_body;
 	return NULL;
 }
 
 /* Query */
-#define LassoPersonalProfileService_get_query LassoPersonalProfileService_query_get
-LassoDstQuery *LassoPersonalProfileService_query_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_query LassoProfileService_query_get
+LassoDstQuery *LassoProfileService_query_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE) {
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE) {
 		return LASSO_DST_QUERY(profile->request);
 	}
 	return NULL;
 }
 
 /* QueryResponse */
-#define LassoPersonalProfileService_get_queryResponse LassoPersonalProfileService_queryResponse_get
-LassoDstQueryResponse *LassoPersonalProfileService_queryResponse_get(LassoPersonalProfileService *self) {
+#define LassoProfileService_get_queryResponse LassoProfileService_queryResponse_get
+LassoDstQueryResponse *LassoProfileService_queryResponse_get(LassoProfileService *self) {
 	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PERSONAL_PROFILE_SERVICE(self) == TRUE)
+	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
 		return LASSO_DST_QUERY_RESPONSE(profile->response);
 	return NULL;
 }
 
 
 /* Constructors, destructors & static methods implementations */
-#define new_LassoPersonalProfileService lasso_personal_profile_service_new
+#define new_LassoProfileService lasso_profile_service_new
 
 
 /* Methods inherited from LassoWsfProfile implementations */
-void LassoPersonalProfileService_buildRequestMsg(LassoPersonalProfileService *self) {
+void LassoProfileService_buildRequestMsg(LassoProfileService *self) {
 	lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
 }
 
-void LassoPersonalProfileService_buildResponseMsg(LassoPersonalProfileService *self) {
+void LassoProfileService_buildResponseMsg(LassoProfileService *self) {
 	lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
 }
 
 /* Methods implementations */
-#define LassoPersonalProfileService_addData lasso_personal_profile_service_add_data
-#define LassoPersonalProfileService_addModification lasso_personal_profile_service_add_modification
-#define LassoPersonalProfileService_addQueryItem lasso_personal_profile_service_add_query_item
-#define LassoPersonalProfileService_initModify lasso_personal_profile_service_init_modify
-#define LassoPersonalProfileService_initQuery lasso_personal_profile_service_init_query
-#define LassoPersonalProfileService_processModifyMsg lasso_personal_profile_service_process_modify_msg
-#define LassoPersonalProfileService_processModifyResponseMsg lasso_personal_profile_service_process_modify_response_msg
-#define LassoPersonalProfileService_processQueryMsg lasso_personal_profile_service_process_query_msg
-#define LassoPersonalProfileService_processQueryResponseMsg lasso_personal_profile_service_process_query_response_msg
+#define LassoProfileService_addData lasso_profile_service_add_data
+#define LassoProfileService_addModification lasso_profile_service_add_modification
+#define LassoProfileService_addQueryItem lasso_profile_service_add_query_item
+#define LassoProfileService_initModify lasso_profile_service_init_modify
+#define LassoProfileService_initQuery lasso_profile_service_init_query
+#define LassoProfileService_processModifyMsg lasso_profile_service_process_modify_msg
+#define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
+#define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
+#define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
 
 %}

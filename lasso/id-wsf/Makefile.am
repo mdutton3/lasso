@@ -12,12 +12,12 @@ liblasso_id_wsf_la_SOURCES = \
 	abstract_service.c \
 	discovery.c \
 	interaction_profile_service.c \
-	personal_profile_service.c \
+	profile_service.c \
 	wsf_profile.c	
 
 liblassoinclude_HEADERS = \
 	abstract_service.h \
 	discovery.h \
 	interaction_profile_service.h \
-	personal_profile_service.h \
+	profile_service.h \
 	wsf_profile.h
