@@ -268,7 +268,7 @@ LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMeth
 {
      LassoNode *statement, *subject;
 
-     statement = lasso_saml_authentication_statement_new();
+     statement = lasso_lib_authentication_statement_new();
 
      lasso_saml_authentication_statement_set_authenticationMethod(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), authenticationMethod);
      
