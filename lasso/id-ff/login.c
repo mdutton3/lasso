@@ -830,8 +830,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 	profile->response = lasso_samlp_response_new();
 	profile->response->InResponseTo = g_strdup(profile->request->RequestID);
-	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 2) {
-		/* pre-id-ff 1.2, move accordingly */
+	if (profile->request->MajorVersion == 1 && profile->request->MinorVersion < 1) {
+		/* pre-saml 1.1, move accordingly */
 		profile->response->MinorVersion = 0;
 	}
 
