@@ -887,8 +887,7 @@ typedef struct {
 typedef struct {
 	%extend {
 		/* Attributes inherited from LassoLibLogoutRequest */
-
-		xmlChar *relayState;
+		char *relayState;
 	}
 } LassoLibLogoutRequest;
 
@@ -899,11 +898,11 @@ typedef struct {
 /* relayState */
 #define LassoLibLogoutRequest_get_relayState LassoLibLogoutRequest_relayState_get
 xmlChar *LassoLibLogoutRequest_relayState_get(LassoLibLogoutRequest *self) {
-	return NULL; /* FIXME */
+	return g_strdup(self->RelayState);
 }
 #define LassoLibLogoutRequest_set_relayState LassoLibLogoutRequest_relayState_set
-void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, xmlChar *relayState) {
-	 LASSO_LIB_LOGOUT_REQUEST(self)->RelayState = g_strdup(relayState);
+void LassoLibLogoutRequest_relayState_set(LassoLibLogoutRequest *self, char *relayState) {
+	 self->RelayState = g_strdup(relayState);
 }
 
 
@@ -934,12 +933,16 @@ typedef struct {
 #endif
 %nodefault LassoProvider;
 typedef struct {
+	/* XXX
 	%immutable metadata;
-	/* XXX LassoNode *metadata; */
+	LassoNode *metadata;
+	*/
+
+	%immutable role;
+	LassoProviderRole role;
 
 	%extend {
 		/* Attributes */
-
 		%immutable providerId;
 		%newobject providerId_get;
 		gchar *providerId;
@@ -2390,7 +2393,7 @@ typedef struct {
 		gchar *dump();
 
 		THROW_ERROR
-		void initRequest(gchar *targetNameSpace, gchar *remoteProviderId = NULL);
+		void initRequest(char *targetNamespace, char *remoteProviderId = NULL);
 		END_THROW_ERROR
 
 		THROW_ERROR
