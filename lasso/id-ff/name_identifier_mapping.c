@@ -156,13 +156,13 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
-    printf("service provider\n");
+    debug("service provider\n");
     nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
     if(!nameIdentifier)
       nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     break;
   case lassoProviderTypeIdp:
-    printf("identity provider\n");
+    debug("identity provider\n");
     /* get the next assertion ( next authenticated service provider ) */
     nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     if(!nameIdentifier)

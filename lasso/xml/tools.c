@@ -312,7 +312,7 @@ lasso_query_verify_signature(const gchar   *query,
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
   if(dsigCtx == NULL) {
-    fprintf(stderr,"Error: failed to create signature context\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to create signature context\n");
     goto done;
   }
   
@@ -321,14 +321,14 @@ lasso_query_verify_signature(const gchar   *query,
 					    xmlSecKeyDataFormatPem,
 					    NULL, NULL, NULL);
   if(dsigCtx->signKey == NULL) {
-    fprintf(stderr,"Error: failed to load public pem key from \"%s\"\n",
+    message(G_LOG_LEVEL_ERROR, "Failed to load public pem key from \"%s\"\n",
 	    sender_public_key_file);
     goto done;
   }
   
   /* Verify signature */
   if(xmlSecDSigCtxVerify(dsigCtx, sigNode) < 0) {
-    fprintf(stderr,"Error: signature verify\n");
+    message(G_LOG_LEVEL_ERROR, "Signature verify failed\n");
     ret = 0;
     goto done;
   }
@@ -436,7 +436,7 @@ lasso_str_sign(xmlChar              *str,
   }
 
   if (signNode == NULL) {
-    fprintf(stderr, "Error: failed to create signature template\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to create signature template\n");
     goto done;		
   }
   
@@ -447,14 +447,14 @@ lasso_str_sign(xmlChar              *str,
   refNode = xmlSecTmplSignatureAddReference(signNode, xmlSecTransformSha1Id,
 					    NULL, NULL, NULL);
   if (refNode == NULL) {
-    fprintf(stderr, "Error: failed to add reference to signature template\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add reference to signature template\n");
     goto done;		
   }
   
   /* add enveloped transform */
   if (xmlSecTmplReferenceAddTransform(refNode,
 				      xmlSecTransformEnvelopedId) == NULL) {
-    fprintf(stderr, "Error: failed to add enveloped transform to reference\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add enveloped transform to reference\n");
     goto done;		
   }
   
@@ -462,19 +462,19 @@ lasso_str_sign(xmlChar              *str,
      signed document */
   keyInfoNode = xmlSecTmplSignatureEnsureKeyInfo(signNode, NULL);
   if (keyInfoNode == NULL) {
-    fprintf(stderr, "Error: failed to add key info\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add key info\n");
     goto done;		
   }
   
   if (xmlSecTmplKeyInfoAddKeyName(keyInfoNode, NULL) == NULL) {
-    fprintf(stderr, "Error: failed to add key name\n");
+    message(G_LOG_LEVEL_ERROR, "Failed to add key name\n");
     goto done;		
   }
   
   /* create signature context */
   dsigCtx = xmlSecDSigCtxCreate(NULL);
   if (dsigCtx == NULL) {
-    fprintf(stderr,"Error: failed to create signature context\n");
+    message(G_LOG_LEVEL_ERROR,"Failed to create signature context\n");
     goto done;
   }
 
@@ -483,14 +483,14 @@ lasso_str_sign(xmlChar              *str,
 					    xmlSecKeyDataFormatPem,
 					    NULL, NULL, NULL);
   if (dsigCtx->signKey == NULL) {
-    fprintf(stderr,"Error: failed to load private pem key from \"%s\"\n",
+    message(G_LOG_LEVEL_ERROR,"Failed to load private pem key from \"%s\"\n",
 	    private_key_file);
     goto done;
   }
 
   /* sign the template */
   if (xmlSecDSigCtxSign(dsigCtx, signNode) < 0) {
-    fprintf(stderr,"Error: signature failed\n");
+    message(G_LOG_LEVEL_ERROR,"Signature failed\n");
     goto done;
   }
   
