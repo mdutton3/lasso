@@ -4981,18 +4981,10 @@ typedef struct {
 
 	/* Methods */
 
-        THROW_ERROR
-	int addFederation(LassoFederation *federation);
-	END_THROW_ERROR
-
 	%newobject dump;
 	char *dump();
 
 	LassoFederation *getFederation(char *providerId);
-
-        THROW_ERROR
-	int removeFederation(char *providerId);
-	END_THROW_ERROR
 }
 
 %{
@@ -5019,10 +5011,8 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 /* Methods implementations */
 
-#define LassoIdentity_addFederation lasso_identity_add_federation
 #define LassoIdentity_dump lasso_identity_dump
 #define LassoIdentity_getFederation lasso_identity_get_federation
-#define LassoIdentity_removeFederation lasso_identity_remove_federation
 
 %}
 
