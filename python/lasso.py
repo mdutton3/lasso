@@ -948,8 +948,8 @@ class Login:
     def process_request_msg(self, request_msg):
         return lassomod.login_process_request_msg(self, request_msg)
 
-    def process_response_msg(self, response_msg, remote_providerID):
-        return lassomod.login_process_response_msg(self, response_msg, remote_providerID)
+    def process_response_msg(self, response_msg):
+        return lassomod.login_process_response_msg(self, response_msg)
 
 
 providerTypeSp  = 1

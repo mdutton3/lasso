@@ -338,18 +338,17 @@ PyObject *login_process_request_msg(PyObject *self, PyObject *args) {
 PyObject *login_process_response_msg(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gchar    *response_msg;
-  gchar    *remote_providerID;
   gboolean ret;
 
-  if (CheckArgs(args, "OSS:login_process_response_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Oss:login_process_response_msg",
-			 &login_obj, &response_msg, &remote_providerID))
+  if (CheckArgs(args, "OS:login_process_response_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_process_response_msg",
+			 &login_obj, &response_msg))
       return NULL;
   }
   else return NULL;
 
   ret = lasso_login_process_response_msg(LassoLogin_get(login_obj),
-					 response_msg, remote_providerID);
+					 response_msg);
 
   return (int_wrap(ret));
 }

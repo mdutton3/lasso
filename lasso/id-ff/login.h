@@ -119,8 +119,7 @@ LASSO_EXPORT gint                 lasso_login_process_request_msg         (Lasso
 									   gchar      *request_msg);
 
 LASSO_EXPORT gint                 lasso_login_process_response_msg        (LassoLogin  *login,
-									   gchar       *response_msg,
-									   const gchar *remote_providerID);
+									   gchar       *response_msg);
 
 #ifdef __cplusplus
 }

@@ -633,13 +633,11 @@ lasso_login_process_request_msg(LassoLogin *login,
 
 gint
 lasso_login_process_response_msg(LassoLogin  *login,
-				 gchar       *response_msg,
-				 const gchar *remote_providerID)
+				 gchar       *response_msg)
 {
   LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(response_msg,
 									  lassoNodeExportTypeSoap);
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
-  LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
 
   return (lasso_login_process_response_status_and_assertion(login));
 }
