@@ -154,6 +154,9 @@
 #define LASSO_IS_HREF "urn:liberty:is:2003-08"
 #define LASSO_IS_PREFIX "is"
 
+#define LASSO_SA_HREF "urn:liberty:sa:2004-04"
+#define LASSO_SA_PREFIX "sa"
+
 /* Interaction Service (interact attribute of is:UserInteraction element ) */
 #define LASSO_IS_INTERACT_ATTR_INTERACT_IF_NEEDED "is:interactIfNeeded"
 #define LASSO_IS_INTERACT_ATTR_DO_NOT_INTERACT "is:doNotInteract"

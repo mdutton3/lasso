@@ -66,6 +66,11 @@ liblasso_xml_la_SOURCES = \
 	lib_scoping.c \
 	lib_status_response.c \
 	lib_subject.c \
+	sa_parameter.c \
+	sa_password_transforms.c \
+	sa_transform.c \
+	sa_sasl_request.c \
+	sa_sasl_response.c \
 	saml_advice.c \
 	saml_assertion.c \
 	saml_attribute.c \
@@ -150,6 +155,11 @@ liblassoinclude_HEADERS = \
 	lib_scoping.h \
 	lib_status_response.h \
 	lib_subject.h \
+	sa_parameter.h \
+	sa_password_transforms.h \
+	sa_transform.h \
+	sa_sasl_request.h \
+	sa_sasl_response.h \
 	saml_advice.h \
 	saml_assertion.h \
 	saml_attribute.h \
