@@ -461,13 +461,19 @@ case $host in
 *)CSHARPDYNAMICLINKING="";;
 esac
 
+AC_CHECK_PROGS(GACUTIL, gacutil)
+
 AC_SUBST(CSHARPCILINTERPRETER)
 AC_SUBST(CSHARPCYGPATH_W)
 AC_SUBST(CSHARPCOMPILER)
 AC_SUBST(CSHARPDYNAMICLINKING)
 AC_SUBST(CSHARPLIBRARYPREFIX) # Is this going to be used?
+AC_SUBST(GACUTIL)
 
 if test "X$CSHARPCOMPILER" = X; then
+    enable_csharp=no 
+fi
+if test "X$GACUTIL" = X; then
     enable_csharp=no 
 fi
 AM_CONDITIONAL([CSHARP_ENABLED], [test "x$enable_csharp" = "xyes"])

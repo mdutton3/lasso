@@ -22,15 +22,17 @@ liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i
 	sed -e 's/(char \*) "\(.*\)"/malloc("\1")/' \
 		< liblassosharpglue_wrap.c.bak > liblassosharpglue_wrap.c
 
-
 dotnetlibdir = $(datadir)/dotnet/lasso/
 dotnetlib_DATA = lasso.dll lasso.dll.config
 
 lasso.dll: liblassosharpglue.la
-	mcs /out:lasso.dll /target:library $(srcdir)/*.cs
+	$(CSHARPCOMPILER) -out:lasso.dll -target:library $(srcdir)/*.cs
 
 pkgconfig_DATA  = lasso-sharp.pc
 pkgconfigdir    = $(libdir)/pkgconfig
+
+install-data-local:
+	$(GACUTIL) -i lasso.dll -f -package lasso -gacdir $(libdir)
 
 clean-local:
 	-rm lasso.dll lasso-sharp.pc liblassosharpglue_wrap.c.bak
@@ -47,7 +49,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SWIGTYPE_p_LassoProvider.cs SWIGTYPE_p_LassoSamlpRequestAbstract.cs \
 	SWIGTYPE_p_LassoSamlpResponseAbstract.cs
 
-EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config $(SWIG_FILES)
+EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
 
 MAINTAINERCLEANFILES = $(SWIG_FILES)
 
