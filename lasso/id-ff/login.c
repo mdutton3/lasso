@@ -83,7 +83,7 @@ lasso_login_get_assertion_nameIdentifier(LassoNode  *assertion,
     }
     else {
       g_set_error(err, g_quark_from_string("Lasso"),
-		  LASSO_XML_ERROR_UNDEFINED,
+		  LASSO_ERROR_UNDEFINED,
 		  "NameIdentifier value not found in Assertion element.\n");
       return (NULL);
     }
@@ -277,13 +277,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 				   &err);
 
   if (assertion != NULL) {
-    if (LASSO_PROFILE(login)->remote_providerID != NULL) {
-      idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-					  LASSO_PROFILE(login)->remote_providerID);
-    }
-    else {
-      debug("remote ProviderID is NULL => Impossible to get IDP and verify response signature\n");
-    }
+    idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+					LASSO_PROFILE(login)->remote_providerID,
+					&err);
     /* verify signature */
     if (idp != NULL) {
       if (idp->ca_certificate != NULL) {
@@ -302,9 +298,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
       }
     }
     else {
-      message(G_LOG_LEVEL_CRITICAL, "Failed to get Idp with ProviderID = %s\n",
-	      LASSO_PROFILE(login)->remote_providerID);
-      ret = -1;
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_error_free(err);
       goto done;
     }
 
@@ -488,7 +484,8 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 
   /* build artifact infos */
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID);
+						  LASSO_PROFILE(login)->remote_providerID,
+						  NULL);
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
   url = lasso_provider_get_assertionConsumerServiceURL(remote_provider, lassoProviderTypeSp, NULL);
   /* identityProviderSuccinctID = lasso_str_hash(LASSO_PROFILE(login)->server->providerID, */
@@ -543,8 +540,8 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
   xmlChar *md_authnRequestsSigned = NULL;
   xmlChar *request_protocolProfile = NULL;
   xmlChar *url = NULL;
-  xmlChar *query = NULL;
-  xmlChar *lareq = NULL;
+  gchar *query = NULL;
+  gchar *lareq = NULL;
   gboolean must_sign;
   gint ret = 0;
   GError *err = NULL;
@@ -555,7 +552,13 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
   
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID);
+						  LASSO_PROFILE(login)->remote_providerID,
+						  &err);
+  if (remote_provider == NULL) {
+    ret = err->code;
+    g_error_free(err);
+    return (ret);
+  }
 
   /* check if authnRequest must be signed */
   md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(provider, &err);
@@ -575,9 +578,11 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider, &err);
   if (request_protocolProfile == NULL) {
     /* SingleSignOnProtocolProfile metadata is required */
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
+    if (request_protocolProfile == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_error_free(err);
+    }
     goto done;
   }
 
@@ -590,7 +595,7 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
     g_error_free(err);
     goto done;
   }
-  
+
   if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
     /* GET -> query */
     if (must_sign) {
@@ -599,7 +604,7 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
 					 LASSO_PROFILE(login)->server->private_key);
       if (query == NULL) {
 	message(G_LOG_LEVEL_CRITICAL, "Failed to create AuthnRequest query (signed).\n");
-	ret = -4;
+	ret = -3;
 	goto done;
       }
     }
@@ -626,7 +631,7 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
     }
     else {
       message(G_LOG_LEVEL_CRITICAL, "Failed to export AuthnRequest (Base64 encoded).\n");
-      ret = -4;
+      ret = -5;
     }
   }
 
@@ -672,7 +677,8 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   }
   
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID);
+						  LASSO_PROFILE(login)->remote_providerID,
+						  NULL);
   /* return an authnResponse (base64 encoded) */
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE(login)->response);
   LASSO_PROFILE(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider,
@@ -688,7 +694,8 @@ lasso_login_build_request_msg(LassoLogin *login)
   LassoProvider *remote_provider;
 
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID);
+						  LASSO_PROFILE(login)->remote_providerID,
+						  NULL);
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->request);
   LASSO_PROFILE(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider,
 								  lassoProviderTypeIdp, NULL);
@@ -756,11 +763,13 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   gint ret = 0;
   GError *err = NULL;
 
+  g_return_val_if_fail(authn_request_msg != NULL, -1);
+
   if (authn_request_method != lassoHttpMethodRedirect && \
       authn_request_method != lassoHttpMethodPost && \
       authn_request_method != lassoHttpMethodSoap) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
-    return (-1);
+    return (-2);
   }
 
   server = LASSO_PROFILE(login)->server;
@@ -773,9 +782,10 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 									lassoNodeExportTypeQuery);
     break;
   case lassoHttpMethodPost:
-    /* TODO LibAuthnRequest send by method POST */
-    message(G_LOG_LEVEL_MESSAGE, "HTTP method POST isn't implemented yet.\n");
-    return (-2);
+    /* LibAuthnRequest send by method POST */
+    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+									lassoNodeExportTypeBase64);
+    break;
   case lassoHttpMethodSoap:
     /* LibAuthnRequest send by method SOAP - usefull only for LECP */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
@@ -818,12 +828,21 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 									 "ProviderID", NULL, NULL);
 
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-						  LASSO_PROFILE(login)->remote_providerID);
-  /* Is authnRequest signed ? */
-  md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
-  if (md_authnRequestsSigned != NULL) {
-    must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
-    xmlFree(md_authnRequestsSigned);
+						  LASSO_PROFILE(login)->remote_providerID,
+						  &err);
+  if (remote_provider != NULL) {
+    /* Is authnRequest signed ? */
+    md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
+    if (md_authnRequestsSigned != NULL) {
+      must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
+      xmlFree(md_authnRequestsSigned);
+    }
+    else {
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_error_free(err);
+      return (ret);
+    }
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, err->message);
@@ -861,7 +880,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 					  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
       }
-      return (-2);
+      return (-3);
     }
   }
   return (0);
@@ -1164,7 +1183,7 @@ lasso_login_new_from_dump(LassoServer *server,
       LASSO_PROFILE(login)->request = lasso_request_new_from_export(export,
 								    lassoNodeExportTypeXml);
     }
-    xmlFree(export);
+    g_free(export);
     lasso_node_destroy(request_node);
   }
 
@@ -1189,7 +1208,7 @@ lasso_login_new_from_dump(LassoServer *server,
       LASSO_PROFILE(login)->response = lasso_response_new_from_export(export,
 								      lassoNodeExportTypeXml);
     }
-    xmlFree(export);
+    g_free(export);
     lasso_node_destroy(response_node);
   }
   
