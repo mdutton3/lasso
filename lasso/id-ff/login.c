@@ -112,7 +112,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	}
 
 	if (as == NULL) {
-		return -2;
+		return -1;
 	}
 
 	LASSO_SAML_ASSERTION(assertion)->AuthenticationStatement = 
