@@ -15,6 +15,10 @@ Introduction to Lasso objects
 
 (how to create the LassoServer object)
 
+.. warning:: The source code presented in this document has the purpose to
+             explain the different steps necessary to implement Liberty
+	     Alliance profiles; they lack proper memory management and error
+	     checking.
 
 
 Single Sign-On and Federation Profile
