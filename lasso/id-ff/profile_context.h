@@ -33,7 +33,7 @@ extern "C" {
 
 #include <lasso/xml/strings.h>
 #include <lasso/xml/tools.h>
-/* #include <lasso/xml/errors.h> */
+#include <lasso/xml/errors.h>
 
 #include <lasso/environs/server.h>
 #include <lasso/environs/user.h>
@@ -63,12 +63,6 @@ typedef enum {
   lassoHttpMethodRedirect,
   lassoHttpMethodSoap,
 } lassoHttpMethods;
-
-typedef enum {
-  lassoProviderTypeNone = 0,
-  lassoProviderTypeSp,
-  lassoProviderTypeIdp
-} lassoProviderTypes;
 
 typedef enum {
   lassoMessageTypeNone = 0,

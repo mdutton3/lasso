@@ -47,6 +47,12 @@ typedef struct _LassoProvider LassoProvider;
 typedef struct _LassoProviderClass LassoProviderClass;
 typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
+typedef enum {
+  lassoProviderTypeNone = 0,
+  lassoProviderTypeSp,
+  lassoProviderTypeIdp
+} lassoProviderTypes;
+
 struct _LassoProvider {
   GObject parent;
 
