@@ -129,6 +129,9 @@ PACKAGE is something like 'gnu-ld' or 'pic'.
 coldfusion
     Build Lasso ColdFusion binding (enabled by default).
 
+csharp
+    Build Lasso C# binding (enabled by default).
+
 debugging
     Display debugging messages in 'stderr'.
 
