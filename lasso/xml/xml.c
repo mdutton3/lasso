@@ -337,6 +337,23 @@ lasso_node_import(LassoNode     *node,
 }
 
 /**
+ * lasso_node_import_from_node:
+ * @node: a LassoNode
+ * @imported_node: a LassoNode
+ * 
+ * Put a copy of node->private->node into imported_node->private->node
+ **/
+void
+lasso_node_import_from_node(LassoNode *node,
+			    LassoNode *imported_node)
+{
+  g_return_if_fail(LASSO_IS_NODE(node));
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->import_from_node(node, imported_node);
+}
+
+/**
  * lasso_node_rename_prop:
  * @node: a LassoNode
  * @old_name: the attribute name
@@ -863,6 +880,16 @@ lasso_node_impl_import(LassoNode     *node,
 }
 
 static void
+lasso_node_impl_import_from_node(LassoNode *node,
+				 LassoNode *imported_node)
+{
+  g_return_if_fail (LASSO_IS_NODE(node));
+  g_return_if_fail (LASSO_IS_NODE(imported_node));
+
+  lasso_node_impl_set_xmlNode(node, xmlCopyNode(imported_node->private->node, 1));
+}
+
+static void
 lasso_node_impl_rename_prop(LassoNode     *node,
 			    const xmlChar *old_name,
 			    const xmlChar *new_name)
@@ -1338,6 +1365,7 @@ lasso_node_class_init(LassoNodeClass *class)
   class->get_content       = lasso_node_impl_get_content;
   class->get_name          = lasso_node_impl_get_name;
   class->import            = lasso_node_impl_import;
+  class->import_from_node  = lasso_node_impl_import_from_node;
   class->rename_prop       = lasso_node_impl_rename_prop;
   class->verify_signature  = lasso_node_impl_verify_signature;
   /* virtual private methods */

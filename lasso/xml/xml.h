@@ -94,6 +94,8 @@ struct _LassoNodeClass {
   const xmlChar* (* get_name)         (LassoNode     *node);
   void           (* import)           (LassoNode     *node,
                                        const xmlChar *buffer);
+  void           (* import_from_node) (LassoNode     *node,
+                                       LassoNode     *imported_node);
   void           (* rename_prop)      (LassoNode     *node,
 				       const xmlChar *old_name,
 				       const xmlChar *new_name);
@@ -175,6 +177,9 @@ LASSO_EXPORT const xmlChar* lasso_node_get_name         (LassoNode *node);
 
 LASSO_EXPORT void           lasso_node_import           (LassoNode     *node,
 							 const xmlChar *buffer);
+
+LASSO_EXPORT void           lasso_node_import_from_node (LassoNode *node,
+							 LassoNode *imported_node);
 
 LASSO_EXPORT void           lasso_node_rename_prop      (LassoNode *node,
 							 const xmlChar *old_name,
