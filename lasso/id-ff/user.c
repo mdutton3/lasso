@@ -92,6 +92,8 @@ lasso_user_dump_assertion(gpointer   key,
   LassoNode      *assertion_node;
   LassoNodeClass *assertion_class, *assertions_class;
 
+  debug(DEBUG, "key : %s, value : %s\n", key, lasso_node_export(value));
+
   /* new lasso assertion node */
   assertion_node = lasso_node_new();
   assertion_class = LASSO_NODE_GET_CLASS(assertion_node);
