@@ -810,17 +810,22 @@ gint
 lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 {
 	LassoProvider *remote_provider;
+	LassoProfile *profile;
 	LassoSamlAssertion *assertion;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+	profile = LASSO_PROFILE(login);
 
-	LASSO_PROFILE(login)->response = lasso_samlp_response_new();
+	profile->response = lasso_samlp_response_new();
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
+	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method = 
+		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
 	if (remote_providerID != NULL) {
-		LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
-		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+		profile->remote_providerID = g_strdup(remote_providerID);
+		remote_provider = g_hash_table_lookup(profile->server->providers,
+				profile->remote_providerID);
 		ret = lasso_provider_verify_signature(remote_provider,
 				login->private_data->soap_request_msg,
 				"RequestID", LASSO_MESSAGE_FORMAT_SOAP);
@@ -831,16 +836,16 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		 if signature is invalid or not found
 		 if an error occurs during verification */
 		if (ret != 0) {
-			lasso_profile_set_response_status(LASSO_PROFILE(login),
+			lasso_profile_set_response_status(profile,
 					LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 		}
 
-		if (LASSO_PROFILE(login)->session) {
+		if (profile->session) {
 			/* get assertion in session and add it in response */
-			assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
-					LASSO_PROFILE(login)->remote_providerID);
+			assertion = lasso_session_get_assertion(profile->session,
+					profile->remote_providerID);
 			if (assertion) {
-				LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion =
+				LASSO_SAMLP_RESPONSE(profile->response)->Assertion =
 					g_object_ref(assertion);
 			} else {
 				/* FIXME should this message output by
@@ -849,12 +854,11 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			}
 		}
 	} else {
-		lasso_profile_set_response_status(LASSO_PROFILE(login),
-				LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
+		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 	}
 
-	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(
-			LASSO_PROFILE(login)->response, NULL, NULL);
+	profile->msg_body = lasso_node_export_to_soap(profile->response,
+			profile->server->private_key, profile->server->certificate);
 
 	return ret;
 }
