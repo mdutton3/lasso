@@ -25,6 +25,50 @@
 
 #include <lasso/protocols/single_sign_on_and_federation.h>
 
+LassoNode *lasso_build_authnRequest_from_query(gboolean       verifySignature,
+					       const xmlChar *query,
+					       const xmlChar *rsapub,
+					       const xmlChar *rsakey)
+{
+     LassoNode *req;
+     GData     *gd;
+     int        result;
+
+     if(verifySignature==TRUE){
+	  result = lasso_str_verify(query, rsapub, rsakey);
+	  if(result==-1){
+	       return(NULL);
+	  }
+     }
+
+     gd = lasso_query_to_dict(query);
+     if(gd!=NULL){
+	  req = lasso_build_full_authnRequest(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIDPolicy"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd,
+												       "AssertionConsumerServiceID"),
+								      0),
+					      NULL, // AuthnContextClassRef
+					      NULL, // AuthnContextStatementRef
+					      NULL, // AuthnContextComparison
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0),
+					      NULL, // ProxyCount
+					      NULL, // IDPList
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0));
+
+	  g_datalist_clear(&gd);
+	  return(req);
+     }
+
+     return(NULL);
+}
+
 LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *nameIDPolicy,
 				    const xmlChar *forceAuthn,

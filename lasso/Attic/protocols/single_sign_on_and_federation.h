@@ -31,6 +31,11 @@ extern "C" {
 
 #include <lasso/lasso.h>
 
+LassoNode *lasso_build_authnRequest_from_query(gboolean       verifySignature,
+					       const xmlChar *query,
+					       const xmlChar *rsapub,
+					       const xmlChar *rsakey);
+
 LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *nameIDPolicy,
 				    const xmlChar *forceAuthn,
