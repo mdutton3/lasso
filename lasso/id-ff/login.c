@@ -410,6 +410,17 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	if (status_value && strcmp(status_value, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		if (strcmp(status_value, LASSO_SAML_STATUS_CODE_REQUEST_DENIED) == 0)
 			return LASSO_LOGIN_ERROR_REQUEST_DENIED;
+		if (strcmp(status_value, LASSO_SAML_STATUS_CODE_RESPONDER) == 0) {
+			/* samlp:Responder */
+			if (response->Status->StatusCode->StatusCode &&
+					response->Status->StatusCode->StatusCode->Value) {
+				status_value = response->Status->StatusCode->StatusCode->Value;
+				if (strcmp(status_value,
+					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST) == 0) {
+					return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
+				}
+			}
+		}
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
