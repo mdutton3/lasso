@@ -138,6 +138,8 @@ Warning = _lasso.Warning
  ***********************************************************************/
 
 
+#define %nonewobject %feature("new","")
+
 #if defined(SWIGPYTHON)
 %typemap(in,parse="z") char *, char [ANY] "";
 #endif
@@ -1038,6 +1040,7 @@ typedef struct {
 			return item;
 		}
 		%exception getitem;
+		%nonewobject getitem;
 
 #if defined(SWIGPYTHON)
 		%rename(__len__) length;
