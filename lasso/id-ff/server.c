@@ -353,35 +353,39 @@ lasso_server_new(gchar *metadata,
   LassoServer *server;
   xmlDocPtr    doc;
   xmlNodePtr   root;
-  LassoNode   *md_node;
-  gchar       *providerID;
+  LassoNode   *md_node = NULL;
+  gchar       *providerID = NULL;
   GError      *err = NULL;
 
-  g_return_val_if_fail(metadata != NULL, NULL);
+  /* metadata can be NULL (if server is a LECP) */
 
   /* put server metadata in a LassoNode */
-  doc = xmlParseFile(metadata);
-  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-  xmlFreeDoc(doc);
-  md_node = lasso_node_new();
-  LASSO_NODE_GET_CLASS(md_node)->set_xmlNode(md_node, root);
-  /* md_node = lasso_node_new_from_xmlNode(root); */
+  if (metadata) {
+    doc = xmlParseFile(metadata);
+    root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+    xmlFreeDoc(doc);
+    md_node = lasso_node_new();
+    LASSO_NODE_GET_CLASS(md_node)->set_xmlNode(md_node, root);
  
-  /* get ProviderID in metadata */
-  providerID = lasso_node_get_attr_value(md_node, "ProviderID", &err);
-  if (providerID == NULL) {
-    message(G_LOG_LEVEL_ERROR, err->message);
-    g_error_free(err);
-    lasso_node_destroy(md_node);
-    return (NULL);
+    /* get ProviderID in metadata */
+    providerID = lasso_node_get_attr_value(md_node, "ProviderID", &err);
+    if (providerID == NULL) {
+      message(G_LOG_LEVEL_ERROR, err->message);
+      g_error_free(err);
+      lasso_node_destroy(md_node);
+      return (NULL);
+    }
   }
 
   /* Ok, we can create server */
   server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
 
-  LASSO_PROVIDER(server)->metadata = md_node;
-
-  server->providerID = providerID;
+  if (md_node != NULL) {
+    LASSO_PROVIDER(server)->metadata = md_node;
+  }
+  if (providerID != NULL) {
+    server->providerID = providerID;
+  }
   server->private_key = g_strdup(private_key);
   server->certificate = g_strdup(certificate);
   server->signature_method = signature_method;
@@ -429,8 +433,10 @@ lasso_server_new_from_dump(gchar *dump)
 
   /* metadata */
   server_metadata_node = lasso_node_get_child(server_node, "EntityDescriptor", NULL, NULL);
-  LASSO_PROVIDER(server)->metadata = lasso_node_copy(server_metadata_node);
-  lasso_node_destroy(server_metadata_node);
+  if (server_metadata_node != NULL) {
+    LASSO_PROVIDER(server)->metadata = lasso_node_copy(server_metadata_node);
+    lasso_node_destroy(server_metadata_node);
+  }
 
   /* public key */
   LASSO_PROVIDER(server)->public_key = lasso_node_get_attr_value(server_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, NULL);
