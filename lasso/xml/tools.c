@@ -27,18 +27,20 @@
 xmlChar *
 lasso_build_unique_id(guint8 size)
 {
-  // The probability of 2 randomly chosen identifiers being identical MUST be
-  // less than 2^-128 and SHOULD be less than 2^-160.
-  // so we must have 128 <= exp <= 160
-  // we could build a 128-bit binary number but hexa system is shorter
-  // 32 <= hexa number size <= 48
+  /*
+    The probability of 2 randomly chosen identifiers being identical MUST be
+    less than 2^-128 and SHOULD be less than 2^-160.
+    so we must have 128 <= exp <= 160
+    we could build a 128-bit binary number but hexa system is shorter
+    32 <= hexa number size <= 48
+  */
   int i, val;
   xmlChar *id, *enc_id;
 
   if (size == 0) size = 32;
   id = g_malloc(size+1);
 
-  // build hex number (<= 2^exp-1) 
+  /* build hex number (<= 2^exp-1) */
   for (i=0; i<size; i++) {
     val = g_random_int_range(0, 16);
     if (val < 10)
@@ -48,7 +50,7 @@ lasso_build_unique_id(guint8 size)
   }
   id[size] = '\0';
 
-  // base64 encoding of build string
+  /* base64 encoding of build string */
   enc_id = xmlSecBase64Encode(id, size, 0);
 
   g_free(id);

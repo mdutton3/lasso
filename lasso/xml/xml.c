@@ -377,18 +377,38 @@ static LassoNode *
 lasso_node_impl_get_child(LassoNode *node,
 			  const xmlChar *name)
 {
-  xmlNodePtr cur;
+  /*   xmlNodePtr cur; */
   
-  cur = node->private->node->children;
+  /*   cur = node->private->node->children; */
+  /*   while (cur != NULL) { */
+  /*     if(cur->type == XML_ELEMENT_NODE) { */
+  /*       if (xmlStrEqual(cur->name, name)) { */
+  /* 	return (lasso_node_new(cur)); */
+  /*       } */
+  /*     } */
+  /*     cur = cur->next; */
+  /*   } */
+  /*   return (NULL); */
+
+  xmlNodePtr cur;
+  LassoNode *ret;
+        
+  cur = node->private->node;
   while (cur != NULL) {
-    if(cur->type == XML_ELEMENT_NODE) {
-      if (xmlStrEqual(cur->name, name)) {
-	return (lasso_node_new(cur));
+    if ((cur->type == XML_ELEMENT_NODE) && xmlStrEqual(cur->name, name)) {
+      return (lasso_node_new(cur));
+    }
+    if (cur->children != NULL) {
+      ret = lasso_node_get_child(lasso_node_new(cur->children), name);
+      if (ret != NULL) {
+	return (ret);	    
       }
     }
     cur = cur->next;
   }
   return (NULL);
+  
+  /* return (lasso_node_new(child)); */
 }
 
 static GPtrArray *
