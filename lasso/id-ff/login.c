@@ -1077,10 +1077,9 @@ lasso_login_must_authenticate(LassoLogin *login)
 gint
 lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg)
 {
-	lassoHttpMethod authn_request_http_method; /* XXX update to current CVS code */
 	LassoProvider *remote_provider;
 	gchar *protocolProfile;
-	xmlChar *md_authnRequestsSigned;
+	gchar *md_authnRequestsSigned;
 	gboolean must_verify_signature = FALSE;
 	gint ret = 0;
 	LassoLibAuthnRequest *request;
@@ -1089,7 +1088,6 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (authn_request_msg == NULL) {
-		authn_request_http_method = LASSO_HTTP_METHOD_IDP_INITIATED;
 		if (LASSO_PROFILE(login)->request == NULL) {
 			message(G_LOG_LEVEL_CRITICAL,
 					lasso_strerror(LASSO_PROFILE_ERROR_MISSING_REQUEST));
@@ -1121,16 +1119,25 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	/* get ProtocolProfile in lib:AuthnRequest */
 	protocolProfile = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProtocolProfile;
 	if (protocolProfile == NULL ||
-			xmlStrEqual(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART)) {
+			strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART) == 0) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-	}
-	else if (xmlStrEqual(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST)) {
+	} else if (xmlStrEqual(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST)) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-	}
-	else {
+	} else {
 		message(G_LOG_LEVEL_CRITICAL, 
 				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE));
 		return LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
+	}
+
+	/* check if requested single sign on protocol profile is supported */
+	LASSO_PROVIDER(LASSO_PROFILE(login)->server)->role = LASSO_PROVIDER_ROLE_IDP;
+	if (lasso_provider_has_protocol_profile(
+				LASSO_PROVIDER(LASSO_PROFILE(login)->server),
+				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
+				protocolProfile) == FALSE) {
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE));
+		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 	}
 
 	/* get remote ProviderID */
@@ -1138,7 +1145,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProviderID);
 
 	/* Check authnRequest signature. */
-	if (authn_request_http_method != LASSO_HTTP_METHOD_IDP_INITIATED) {
+	if (authn_request_msg != NULL) {
 		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 		if (remote_provider != NULL) {
@@ -1146,7 +1153,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			md_authnRequestsSigned = lasso_provider_get_metadata_one(
 					remote_provider, "AuthnRequestsSigned");
 			if (md_authnRequestsSigned != NULL) {
-				must_verify_signature = xmlStrEqual(md_authnRequestsSigned, "true");
+				must_verify_signature = strcmp(md_authnRequestsSigned, "true") == 0;
 				g_free(md_authnRequestsSigned);
 			} else {
 				/* AuthnRequestsSigned element is required */
