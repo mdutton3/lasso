@@ -574,7 +574,12 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		}
 	}
 
-	sign = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+	sign = NULL;
+	for (sign = xmlnode->children; sign; sign = sign->next) {
+		if (strcmp(sign->name, "Signature") == 0)
+			break;
+	}
+
 	if (sign == NULL) {
 		xmlFreeDoc(doc);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
