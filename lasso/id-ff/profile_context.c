@@ -262,7 +262,7 @@ lasso_profile_context_class_init(gpointer g_class,
 
   pspec = g_param_spec_pointer ("server",
 				"server metadata and keys/certs",
-				" Datas of server",
+				"Data of server",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
                                    LASSO_PROFILE_CONTEXT_SERVER,
@@ -270,7 +270,7 @@ lasso_profile_context_class_init(gpointer g_class,
 
   pspec = g_param_spec_pointer ("user",
 				"user assertion and identities",
-				"User's datas",
+				"User's data",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
                                    LASSO_PROFILE_CONTEXT_USER,
