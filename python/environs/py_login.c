@@ -56,24 +56,29 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssssssss]", "request", "response", "request_type", "response_dump",
-			 "msg_url", "msg_body", "protocolProfile", "assertionArtifact");
+    return Py_BuildValue("[ssssssssss]", "request", "response", "request_type",
+			 "msg_url", "msg_body",  "response_dump", "msg_relayState",
+			 "protocolProfile", "assertionArtifact", "nameIdentifier");
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
   if (!strcmp(attr, "response"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->response));
   if (!strcmp(attr, "request_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
-  if (!strcmp(attr, "response_dump"))
-    return (charPtrConst_wrap(login->response_dump));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_body));
+  if (!strcmp(attr, "response_dump"))
+    return (charPtrConst_wrap(login->response_dump));
+  if (!strcmp(attr, "msg_relayState"))
+    return (charPtrConst_wrap(login->msg_relayState));
   if (!strcmp(attr, "protocolProfile"))
     return (int_wrap(login->protocolProfile));
   if (!strcmp(attr, "assertionArtifact"))
     return (charPtrConst_wrap(login->assertionArtifact));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(login->nameIdentifier));
 
   Py_INCREF(Py_None);
   return (Py_None);
