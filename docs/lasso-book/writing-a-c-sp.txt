@@ -213,10 +213,10 @@ object.
 ::
 
   if (session_dump != NULL) {
-      lasso_login_set_session_from_dump(login, session_dump);
+      lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump);
   }
   if (identity_dump != NULL) {
-      lasso_login_set_identity_from_dump(login, identity_dump);
+      lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump);
   }
   lasso_login_accept_sso(login);
 
