@@ -30,6 +30,8 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
+#include <lasso/lasso_config.h>
+
 #ifdef LASSO_WSF_ENABLED
 #include <lasso/xml/disco_encrypted_resource_id.h>
 #else
