@@ -1175,8 +1175,7 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 	s = g_string_sized_new(2000);
 
 	for (i=0; query_snippets[i].path; i++) {
-		memset(path, 0, 100);
-		strncpy(path, query_snippets[i].path, 100);
+		g_strlcpy(path, query_snippets[i].path, 100);
 		v = get_value_by_path(node, path, &xml_snippet);
 		if (v && xml_snippet.type == SNIPPET_EXTENSION) {
 			if (s->len)
@@ -1232,8 +1231,7 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 			char *field_name = query_snippets[j].field_name;
 			char path[100];
 
-			memset(path, 0, 100);
-			strncpy(path, query_snippets[j].path, 100);
+			g_strlcpy(path, query_snippets[j].path, 100);
 
 			if (field_name == NULL)
 				field_name = query_snippets[j].path;
