@@ -47,25 +47,10 @@ extern "C" {
 typedef struct _LassoDstQueryItem LassoDstQueryItem;
 typedef struct _LassoDstQueryItemClass LassoDstQueryItemClass;
 
-/*
- * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
- * <xs:element name="QueryItem" maxOccurs="unbounded">
- *    <xs:complexType>
- *        <xs:sequence>
- *            <xs:element name="Select" type="SelectType"/>
- *        </xs:sequence>
- *        <xs:attribute name="id" type="xs:ID"/>
- *        <xs:attribute name="includeCommonAttributes" type="xs:boolean" default="0"/>
- *        <xs:attribute name="itemID" type="IDType"/>
- *        <xs:attribute name="changedSince" type="xs:dateTime"/>
- *    </xs:complexType>
- * </xs:element>
-*/
-
 struct _LassoDstQueryItem {
 	LassoNode parent;
 
-	GList *Select;
+	char *Select;
 
 	char *id;
 	gboolean includeCommonAttributes;
@@ -78,9 +63,8 @@ struct _LassoDstQueryItemClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_item_get_type(void);
-LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(const char *id,
-							 const char *itemID,
-							 const char *changedSince);
+LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(const char *Select,
+							 const char *itemID);
 
 #ifdef __cplusplus
 }

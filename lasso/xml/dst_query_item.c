@@ -25,50 +25,37 @@
 
 #include <lasso/xml/dst_query_item.h>
 
+/*
+ * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ * <xs:element name="QueryItem" maxOccurs="unbounded">
+ *    <xs:complexType>
+ *        <xs:sequence>
+ *            <xs:element name="Select" type="SelectType"/>
+ *        </xs:sequence>
+ *        <xs:attribute name="id" type="xs:ID"/>
+ *        <xs:attribute name="includeCommonAttributes" type="xs:boolean" default="0"/>
+ *        <xs:attribute name="itemID" type="IDType"/>
+ *        <xs:attribute name="changedSince" type="xs:dateTime"/>
+ *    </xs:complexType>
+ * </xs:element>
+*/
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 /* FIXME : implement includeCommonAttributes attribute in snippets */
-#define snippets() \
-	LassoDstQueryItem *query_item = LASSO_DST_QUERY_ITEM(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "Select", SNIPPET_LIST_NODES, (void**)&(query_item->Select) }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&(query_item->id) }, \
-		{ "itemID", SNIPPET_ATTRIBUTE, (void**)&(query_item->itemID) }, \
-		{ "changedSince", SNIPPET_ATTRIBUTE, (void**)&(query_item->changedSince) }, \
-		{ NULL, 0, NULL} \
-	};
+static struct XmlSnippet schema_snippets[] = {
+	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQueryItem, Select) },
+	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, id) },
+	{ "includeCommonAttributes", SNIPPET_ATTRIBUTE_BOOL, \
+	  G_STRUCT_OFFSET(LassoDstQueryItem, itemID) },
+	{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, itemID) },
+	{ "changedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQueryItem, changedSince) },
+	{NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "QueryItem");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, NULL, NULL));
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
 
 
 /*****************************************************************************/
@@ -92,8 +79,9 @@ class_init(LassoDstQueryItemClass *klass)
 	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nodeClass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nodeClass, "QueryItem");
+	lasso_node_class_add_snippets(nodeClass, schema_snippets);
 }
 
 GType
@@ -121,17 +109,15 @@ lasso_dst_query_item_get_type()
 }
 
 LassoDstQueryItem*
-lasso_dst_query_item_new(const char *id,
-			 const char *itemID,
-			 const char *changedSince)
+lasso_dst_query_item_new(const char *Select,
+			 const char *itemID)
 {
 	LassoDstQueryItem *node;
 
 	node = g_object_new(LASSO_TYPE_DST_QUERY_ITEM, NULL);
 
-	node->id = g_strdup(id);
+	node->Select = g_strdup(Select);
 	node->itemID = g_strdup(itemID);
-	node->changedSince = g_strdup(changedSince);
 
 	return node;
 }
