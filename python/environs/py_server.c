@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "../../lassomod.h"
+#include "../lassomod.h"
 
 #include "py_server.h"
 
@@ -42,6 +42,7 @@ PyObject *LassoServer_wrap(LassoServer *server) {
 /******************************************************************************/
 
 PyObject *server_new(PyObject *self, PyObject *args) {
+  LassoServer *server;
   gchar *metadata;
   gchar *public_key = NULL;
   gchar *private_key = NULL;

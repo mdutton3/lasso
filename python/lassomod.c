@@ -53,6 +53,8 @@
 #include "protocols/elements/py_assertion.h"
 #include "protocols/elements/py_authentication_statement.h"
 
+#include "environs/py_server.h"
+
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
   {"init",                init,                METH_VARARGS},
@@ -201,6 +203,11 @@ static PyMethodDef lasso_methods[] = {
 
   /* authentication_statement.h */
   {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
+
+  /* environs */
+  /* py_server.h */
+  {"server_new",          server_new,          METH_VARARGS},
+  {"server_add_provider", server_add_provider, METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
