@@ -88,15 +88,15 @@ GType lasso_register_name_identifier_request_get_type() {
 
 LassoNode*
 lasso_register_name_identifier_request_new(const xmlChar *providerID,
-					   const xmlChar     *idpProvidedNameIdentifier,
-					   const xmlChar     *idpNameQualifier,
-					   const xmlChar     *idpFormat,
-					   const xmlChar     *spProvidedNameIdentifier,
-					   const xmlChar     *spNameQualifier,
-					   const xmlChar     *spFormat,
-					   const xmlChar     *oldProvidedNameIdentifier,
-					   const xmlChar     *oldNameQualifier,
-					   const xmlChar     *oldFormat)
+					   const xmlChar *idpProvidedNameIdentifier,
+					   const xmlChar *idpNameQualifier,
+					   const xmlChar *idpFormat,
+					   const xmlChar *spProvidedNameIdentifier,
+					   const xmlChar *spNameQualifier,
+					   const xmlChar *spFormat,
+					   const xmlChar *oldProvidedNameIdentifier,
+					   const xmlChar *oldNameQualifier,
+					   const xmlChar *oldFormat)
 {
   LassoNode *request, *idpidentifier, *spidentifier, *oldidentifier;
 

@@ -71,6 +71,7 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 					    const xmlChar *statusCodeValue,
 					    LassoNode     *request)
 {
+  /* FIXME : change request type */
   LassoNode *response, *ss, *ssc;
   xmlChar *inResponseTo, *recipient, *relayState;
 
@@ -103,15 +104,19 @@ lasso_register_name_identifier_response_new(const xmlChar *providerID,
 					      recipient);
 
   relayState = lasso_node_get_content(lasso_node_get_child(request, "RelayState"));
-  if(relayState!=NULL)
-       lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
-						relayState);
+  if (relayState != NULL) {
+    lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
+					     relayState);
+  }
 
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
-  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc), statusCodeValue);
-  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss), LASSO_SAMLP_STATUS_CODE(ssc));
-  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response), LASSO_SAMLP_STATUS(ss));
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+				    statusCodeValue);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
+				    LASSO_SAMLP_STATUS_CODE(ssc));
+  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
+				       LASSO_SAMLP_STATUS(ss));
 
   return (response);
 }

@@ -26,7 +26,6 @@
 #include <lasso/protocols/federation_termination_notification.h>
 #include <lasso/xml/saml_name_identifier.h>
 
-
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/

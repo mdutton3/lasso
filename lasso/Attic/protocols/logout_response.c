@@ -71,6 +71,7 @@ lasso_logout_response_new(const xmlChar *providerID,
 			  const xmlChar *statusCodeValue,
 			  LassoNode     *request)
 {
+  /* FIXME : change request type */
   LassoNode *response, *ss, *ssc;
   xmlChar *inResponseTo, *recipient, *relayState;
 
