@@ -33,23 +33,27 @@
 
 /**
  * lasso_name_registration_build_request_msg:
- * @name_registration: the register name identifier object
+ * @name_registration: a #LassoNameRegistration
  * 
- * This method build a register name identifier request message.
+ * Builds a register name identifier request message.
  * 
  * It gets the register name identifier protocol profile and:
- * 
- * - if it is a SOAP method, then it builds the register name identifier
+ * <itemizedlist>
+ * <listitem><para>
+ *   if it is a SOAP method, then it builds the register name identifier
  *   request SOAP message, optionaly signs his node, set the msg_body
  *   attribute, gets the SoapEndpoint url and set the msg_url attribute.
- *
- * - if it is a HTTP-Redirect method, then it builds the register name
+ * </para></listitem>
+ * <listitem><para>
+ *   if it is a HTTP-Redirect method, then it builds the register name
  *   identifier request QUERY message (optionaly signs the request message),
  *   builds the request url with register name identifier url with register
  *   name identifier service url, set the msg_url attribute of the register
  *   name identifier object, set the msg_body to NULL.
+ * </para></listitem>
+ * </itemizedlist>
  * 
- * Return value: 0 if OK else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_name_registration_build_request_msg(LassoNameRegistration *name_registration)
@@ -104,6 +108,33 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
+
+/**
+ * lasso_name_registration_build_response_msg:
+ * @name_registration: a #LassoNameRegistration
+ * 
+ * Builds the register name idendifier response message.
+ *
+ * It gets the request message method and:
+ * <itemizedlist>
+ * <listitem><para>
+ *    if it is a SOAP method, then it builds the response SOAP message, sets
+ *    the msg_body attribute, gets the register name identifier service return
+ *    url and sets the msg_url attribute of the object.
+ * </para></listitem>
+ * <listitem><para>
+ *    if it is a HTTP-Redirect method, then it builds the response QUERY
+ *    message, builds the response url, sets the msg_url with the response url
+ *    and sets the msg_body with NULL
+ * </para></listitem>
+ * </itemizedlist>
+ *
+ * If private key and certificate are set in server object it will also signs
+ * the message (either with X509 if SOAP or with a simple signature for query
+ * strings).
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_registration_build_response_msg(LassoNameRegistration *name_registration)
 {
@@ -167,6 +198,18 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
 	lasso_node_destroy(LASSO_NODE(name_registration));
 }
 
+
+/**
+ * lasso_name_registration_init_request:
+ * @name_registration: a #LassoNameRegistration
+ * @remote_providerID: the providerID of the identity provider.
+ * @http_method: if set, then it get the protocol profile in metadata
+ *     corresponding of this HTTP request method.
+ *
+ * Initializes a new lib:RegisterNameIdentifier request.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		char *remote_providerID, LassoHttpMethod http_method)
@@ -287,6 +330,17 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	return 0;
 }
 
+
+/**
+ * lasso_name_registration_process_request_msg:
+ * @name_registration: a #LassoNameRegistration
+ * @request_msg: the register name identifier request message
+ * 
+ * Processes a lib:RegisterNameIdentifierRequest message.  Rebuilds a request
+ * object from the message and optionally verifies its signature.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_registration,
 		char *request_msg)
 {
@@ -357,6 +411,19 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	return profile->signature_status;
 }
 
+
+/**
+ * lasso_name_registration_process_response_msg:
+ * @name_registration: a #LassoNameRegistration
+ * @response_msg: the register name identifier response message
+ * 
+ * Processes a lib:RegisterNameIdentifierResponse message.  Rebuilds a response
+ * object from the message and optionally verifies its signature.
+ *
+ * If the response depicts Success it will also update Principal federation.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_registration_process_response_msg(LassoNameRegistration *name_registration,
 		char *response_msg)
@@ -446,6 +513,16 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	return rc;
 }
 
+
+/**
+ * lasso_name_registration_validate_request:
+ * @name_registration: a #LassoNameRegistration
+ *
+ * Checks profile request with regards to principal federations and prepares a
+ * lib:RegisterNameIdentifierResponse accordingly.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_registration_validate_request(LassoNameRegistration *name_registration)
 {

@@ -43,7 +43,7 @@ static void check_soap_support(gchar *key, LassoProvider *provider, LassoProfile
 
 /**
  * lasso_logout_build_request_msg:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * 
  * Builds the logout request message.
  *
@@ -125,7 +125,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
 /**
  * lasso_logout_build_response_msg:
- * @logout: the logout object
+ * @logout: a #LassoLogout
  * 
  * Builds the logout response message.
  *
@@ -383,19 +383,8 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
  * @logout: a #LassoLogout
  * @request_msg: the logout request message
  * 
- * Processes a lib:LogoutRequest message.
- *
- * <itemizedlist>
- * <listitem><para>
- *    if it is a SOAP request method then it builds the logout request object
- *    from the SOAP message and optionaly verifies the signature of the logout
- *    request.
- * </para></listitem>
- * <listitem><para>
- *    if it is a HTTP-Redirect request method then it builds the logout request
- *    object from the QUERY message and verify the signature.
- * </para></listitem>
- * </itemizedlist>
+ * Processes a lib:LogoutRequest message.  Rebuilds a request object from the
+ * message and optionally verifies its signature.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
