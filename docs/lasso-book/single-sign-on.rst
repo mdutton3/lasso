@@ -197,7 +197,7 @@ destroyed::
 
   lasso_login_destroy(login);
 
-And a success web page displayed.
+And a success web page may then be displayed.
 
 
 POST request
