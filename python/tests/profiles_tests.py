@@ -199,10 +199,10 @@ class LoginTestCase(unittest.TestCase):
         idpLogin.processAuthnRequestMsg(authnRequestQuery)
         self.failUnless(idpLogin.request.extension)
         extensionsList = idpLogin.request.extension
-        self.failUnlessEqual(len(extensionsList), 2)
+        self.failUnlessEqual(len(extensionsList), 1)
         self.failUnless('<action>do</action>' in extensionsList[0])
-        self.failUnless('<action2>do action 2</action2>' in extensionsList[1])
-        self.failUnless('<action3>do action 3</action3>' in extensionsList[1])
+        self.failUnless('<action2>do action 2</action2>' in extensionsList[0])
+        self.failUnless('<action3>do action 3</action3>' in extensionsList[0])
         
 
 class LogoutTestCase(unittest.TestCase):
