@@ -36,6 +36,7 @@ struct _LassoProviderPrivate
 {
 	gboolean dispose_has_run;
 	GHashTable *SPDescriptor;
+	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
 };
 
@@ -63,6 +64,41 @@ char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
 /*****************************************************************************/
 
 /**
+ * lasso_provider_get_assertion_consumer_service_url:
+ * @provider: a #LassoProvider
+ * @service_id: the AssertionConsumerServiceID, NULL for default
+ *
+ * Extracts the AssertionConsumerServiceURL from the provider metadata
+ * descriptor.
+ *
+ * Return value: the element value, NULL if the element was not found.  This
+ *      string must be freed by the caller.
+ **/
+gchar*
+lasso_provider_get_assertion_consumer_service_url(LassoProvider *provider, const char *service_id)
+{
+	GHashTable *descriptor;
+	GList *l;
+	char *sid = (char*)service_id;
+	char *name;
+
+	if (sid == NULL)
+		sid = provider->private_data->default_assertion_consumer;
+
+	descriptor = provider->private_data->SPDescriptor;
+	if (descriptor == NULL)
+		return NULL;
+
+	name = g_strdup_printf("AssertionConsumerServiceURL %s", sid);
+	l = g_hash_table_lookup(descriptor, name);
+	g_free(name);
+	if (l == NULL)
+		return NULL;
+
+	return g_strdup(l->data);
+}
+
+/**
  * lasso_provider_get_metadata_one:
  * @provider: a #LassoProvider
  * @name: the element name
@@ -81,6 +117,8 @@ lasso_provider_get_metadata_one(LassoProvider *provider, const char *name)
 	descriptor = provider->private_data->SPDescriptor; /* default to SP */
 	if (provider->role == LASSO_PROVIDER_ROLE_IDP)
 		descriptor = provider->private_data->IDPDescriptor;
+	if (descriptor == NULL)
+		return NULL;
 
 	l = g_hash_table_lookup(descriptor, name);
 	if (l)
@@ -274,10 +312,11 @@ lasso_provider_get_base64_succint_id(LassoProvider *provider)
 static LassoNodeClass *parent_class = NULL;
 
 static void
-load_descriptor(xmlNode *xmlnode, GHashTable *descriptor)
+load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provider)
 {
 	xmlNode *t;
 	GList *elements;
+	char *name;
 
 	t = xmlnode->children;
 	while (t) {
@@ -285,27 +324,31 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor)
 			t = t->next;
 			continue;
 		}
-		/* XXX: AssertionConsumerServiceURL nodes have attributes */
-		elements = g_hash_table_lookup(descriptor, t->name);
+		if (strcmp(t->name, "AssertionConsumerServiceURL") == 0) {
+			char *isDefault = xmlGetProp(t, "isDefault");
+			char *id = xmlGetProp(t, "id");
+			name = g_strdup_printf("%s %s", t->name, id);
+			if (isDefault) {
+				if (strcmp(isDefault, "true") == 0)
+					provider->private_data->default_assertion_consumer =
+						g_strdup(id);
+				xmlFree(isDefault);
+			}
+			xmlFree(id);
+		} else {
+			name = g_strdup(t->name);
+		}
+		elements = g_hash_table_lookup(descriptor, name);
 		elements = g_list_append(elements, g_strdup(xmlNodeGetContent(t)));
-		g_hash_table_insert(descriptor, g_strdup(t->name), elements);
+		g_hash_table_insert(descriptor, name, elements);
 		t = t->next;
-	}
-}
-
-static void
-add_descriptor_childnodes(gchar *key, GList *value, xmlNode *xmlnode)
-{
-	while (value) {
-		xmlNewTextChild(xmlnode, NULL, key, value->data);
-		value = g_list_next(value);
 	}
 }
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	xmlNode *xmlnode, *t;
+	xmlNode *xmlnode;
 	LassoProvider *provider = LASSO_PROVIDER(node);
 	char *roles[] = { "None", "SP", "IdP"};
 
@@ -321,19 +364,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	if (provider->ca_cert_chain)
 		xmlNewTextChild(xmlnode, NULL, "CaCertChainFilePath", provider->ca_cert_chain);
 
-	if (g_hash_table_size(provider->private_data->SPDescriptor)) {
-		t = xmlNewTextChild(xmlnode, NULL, "SPDescriptor", NULL);
-		g_hash_table_foreach(provider->private_data->SPDescriptor,
-				(GHFunc)add_descriptor_childnodes, t);
-	}
+	if (provider->metadata_filename)
+		xmlNewTextChild(xmlnode, NULL, "MetadataFilePath", provider->metadata_filename);
 
-	if (g_hash_table_size(provider->private_data->IDPDescriptor)) {
-		t = xmlNewTextChild(xmlnode, NULL, "IDPDescriptor", NULL);
-		g_hash_table_foreach(provider->private_data->IDPDescriptor,
-				(GHFunc)add_descriptor_childnodes, t);
-	}
-	
-	
 	return xmlnode;
 }
 
@@ -368,10 +401,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			provider->public_key = xmlNodeGetContent(t);
 		if (strcmp(t->name, "CaCertChainFilePath") == 0)
 			provider->ca_cert_chain = xmlNodeGetContent(t);
-		if (strcmp(t->name, "SPDescriptor") == 0)
-			load_descriptor(t, provider->private_data->SPDescriptor);
-		if (strcmp(t->name, "IDPDescriptor") == 0)
-			load_descriptor(t, provider->private_data->IDPDescriptor);
+		if (strcmp(t->name, "MetadataFilePath") == 0) {
+			xmlChar *s = xmlNodeGetContent(t);
+			lasso_provider_load_metadata(provider, s);
+			xmlFree(s);
+		};
 		t = t->next;
 	}
 	return 0;
@@ -419,12 +453,14 @@ finalize(GObject *object)
 static void
 instance_init(LassoProvider *provider)
 {
-	provider->private_data = g_new(LassoProviderPrivate, 1);
-	provider->private_data->dispose_has_run = FALSE;
 	provider->role = LASSO_PROVIDER_ROLE_NONE;
+	provider->ProviderID = NULL;
+	provider->metadata_filename = NULL;
 	provider->public_key = NULL;
 	provider->ca_cert_chain = NULL;
-	provider->ProviderID = NULL;
+	provider->private_data = g_new(LassoProviderPrivate, 1);
+	provider->private_data->dispose_has_run = FALSE;
+	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free, NULL);
 	provider->private_data->SPDescriptor = g_hash_table_new_full(
@@ -482,6 +518,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	if (doc == NULL)
 		return FALSE;
 
+	provider->metadata_filename = g_strdup(metadata);
+
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
 	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
@@ -507,7 +545,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xpathObj = xmlXPathEvalExpression(xpath_idp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->IDPDescriptor);
+				provider->private_data->IDPDescriptor, provider);
 		if (compatibility) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
@@ -525,7 +563,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xpathObj = xmlXPathEvalExpression(xpath_sp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
-				provider->private_data->SPDescriptor);
+				provider->private_data->SPDescriptor, provider);
 		if (compatibility) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;

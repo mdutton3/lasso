@@ -21,6 +21,7 @@ It holds all the data about a provider.
 
 @ProviderID: 
 @role: 
+@metadata_filename: 
 @public_key: 
 @ca_cert_chain: 
 
@@ -92,6 +93,16 @@ It holds all the data about a provider.
 @protocol_type: 
 @http_method: 
 @initiate_profile: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_provider_get_assertion_consumer_service_url ##### -->
+<para>
+
+</para>
+
+@provider: 
+@service_id: 
 @Returns: 
 
 

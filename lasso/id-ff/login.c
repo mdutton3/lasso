@@ -448,6 +448,7 @@ gint
 lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 {
 	LassoProvider *remote_provider;
+	LassoProfile *profile;
 	gchar *url;
 	xmlSecByte samlArt[42], *b64_samlArt, *relayState;
 	xmlChar *identityProviderSuccinctID;
@@ -459,23 +460,26 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
+	profile = LASSO_PROFILE(login);
+
 	/* ProtocolProfile must be BrwsArt */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	if (LASSO_PROFILE(login)->remote_providerID == NULL)
+	if (profile->remote_providerID == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 
 	/* build artifact infos */
-	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
-	url = lasso_provider_get_metadata_one(remote_provider, "AssertionConsumerServiceURL");
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
+			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 	if (url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 	identityProviderSuccinctID = lasso_sha1(
-			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
+			LASSO_PROVIDER(profile->server)->ProviderID);
 
 	/* Artifact Format is described in "Binding Profiles", 3.2.2.2. */
 	memcpy(samlArt, "\000\003", 2); /* type code */
@@ -484,25 +488,24 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 
 	xmlFree(identityProviderSuccinctID);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
-	relayState = xmlURIEscapeStr(
-			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->RelayState, NULL);
+	relayState = xmlURIEscapeStr(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		if (relayState == NULL) {
-			LASSO_PROFILE(login)->msg_url = g_strdup_printf(
+			profile->msg_url = g_strdup_printf(
 					"%s?SAMLart=%s", url, b64_samlArt);
 		} else {
-			LASSO_PROFILE(login)->msg_url = g_strdup_printf(
+			profile->msg_url = g_strdup_printf(
 					"%s?SAMLart=%s&RelayState=%s", 
 					url, b64_samlArt, relayState);
 		}
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
-		LASSO_PROFILE(login)->msg_url = g_strdup(url);
-		LASSO_PROFILE(login)->msg_body = g_strdup(b64_samlArt);
+		profile->msg_url = g_strdup(url);
+		profile->msg_body = g_strdup(b64_samlArt);
 		if (relayState != NULL) {
-			LASSO_PROFILE(login)->msg_relayState = g_strdup(relayState);
+			profile->msg_relayState = g_strdup(relayState);
 		}
 	}
 	login->assertionArtifact = g_strdup(b64_samlArt);
@@ -645,8 +648,8 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
-	profile->msg_url = lasso_provider_get_metadata_one(
-			remote_provider, "AssertionConsumerServiceURL");
+	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
+			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
 
 	return 0;
 }
