@@ -67,7 +67,7 @@ static struct XmlSnippet schema_snippets[] = {
 	  G_STRUCT_OFFSET(LassoSaSASLResponse, Data) },
 	{ "ResourceOffering", SNIPPET_LIST_NODES,
 	  G_STRUCT_OFFSET(LassoSaSASLResponse, ResourceOffering) },
-	/* TODO : Credentials */
+	{ "Credentials", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoSaSASLResponse, Credentials) },
 	{ "serverMechanism", SNIPPET_ATTRIBUTE,
 	  G_STRUCT_OFFSET(LassoSaSASLResponse, serverMechanism) },
 	{ "id", SNIPPET_ATTRIBUTE,
@@ -163,6 +163,7 @@ lasso_sa_sasl_response_new(LassoUtilityStatus *status)
 
 	node = g_object_new(LASSO_TYPE_SA_SASL_RESPONSE, NULL);
 
+	g_object_ref(status);
 	node->Status = status;
 
 	return node;
@@ -179,4 +180,34 @@ lasso_sa_sasl_response_new_from_message(const gchar *message)
 	lasso_node_init_from_message(LASSO_NODE(node), message);
 
 	return node;
+}
+
+gint
+lasso_sa_sasl_response_add_credentials(LassoSaSASLResponse *response,
+				       LassoSaCredentials *credentials)
+{
+	g_return_val_if_fail(LASSO_IS_SA_SASL_RESPONSE(response),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_SA_CREDENTIALS(credentials),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	g_object_ref(credentials);
+	response->Credentials = g_list_append(response->Credentials, credentials);
+
+	return 0;
+}
+
+gint
+lasso_sa_sasl_response_add_resource_offering(LassoSaSASLResponse *response,
+					     LassoDiscoResourceOffering *resourceOffering)
+{
+	g_return_val_if_fail(LASSO_IS_SA_SASL_RESPONSE(response),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
+			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	g_object_ref(resourceOffering);
+	response->ResourceOffering = g_list_append(response->ResourceOffering, resourceOffering);
+
+	return 0;
 }

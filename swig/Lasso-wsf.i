@@ -46,6 +46,7 @@
 #include <lasso/xml/is_select.h>
 #include <lasso/xml/is_text.h>
 #include <lasso/xml/is_user_interaction.h>
+#include <lasso/xml/sa_credentials.h>
 #include <lasso/xml/sa_sasl_request.h>
 #include <lasso/xml/sa_sasl_response.h>
 #include <lasso/xml/soap_body.h>
@@ -2433,9 +2434,65 @@ typedef struct {
  ***********************************************************************/
 
 /***********************************************************************
- * sa:SaSASLRequest
+ * sa:SaCredentials
  ***********************************************************************/
 
+#ifndef SWIGPHP4
+%rename(SaCredentials) LassoSaCredentials;
+#endif
+typedef struct {
+	/* Attributes */
+
+} LassoSaCredentials;
+%extend LassoSaCredentials {
+	/* Attributes */
+#ifndef SWIGPHP4
+	%rename(any) any;
+#endif
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSaCredentials();
+
+	~LassoSaCredentials();
+
+	int addAssertion(LassoSamlAssertion *assertion);
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+/* any */
+#define LassoSaCredentials_get_any(self) get_node_list((self)->any)
+#define LassoSaCredentials_any_get(self) get_node_list((self)->any)
+#define LassoSaCredentials_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoSaCredentials_any_set(self, value) set_node_list(&(self)->any, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSaCredentials lasso_sa_credentials_new
+#define delete_LassoSaCredentials(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSaCredentials_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+/* Implementation of methods */
+#define LassoSaCredentials_addAssertion lasso_sa_credentials_add_assertion
+
+%}
+
+
+/***********************************************************************
+ * sa:SaSASLRequest
+ ***********************************************************************/
 
 #ifndef SWIGPHP4
 %rename(SaSASLRequest) LassoSaSASLRequest;
@@ -2529,16 +2586,22 @@ typedef struct {
 	LassoNodeList *Data;
 
 #ifndef SWIGPHP4
-	%rename(passwordTransforms) PasswordTransforms;
+	%rename(credentials) Credentials;
 #endif
-	%newobject PasswordTransforms_get;
-	LassoNodeList *PasswordTransforms;
+	%newobject Credentials_get;
+	LassoNodeList *Credentials;
 
 #ifndef SWIGPHP4
 	%rename(resourceOffering) ResourceOffering;
 #endif
 	%newobject ResourceOffering_get;
 	LassoNodeList *ResourceOffering;
+
+#ifndef SWIGPHP4
+	%rename(passwordTransforms) PasswordTransforms;
+#endif
+	%newobject PasswordTransforms_get;
+	LassoNodeList *PasswordTransforms;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -2552,10 +2615,15 @@ typedef struct {
 
 	~LassoSaSASLResponse();
 
+	int addCredentials(LassoSaCredentials *credentials);
+
+	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
+
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
 	char *dump();
+
 }
 
 %{
@@ -2566,6 +2634,18 @@ typedef struct {
 #define LassoSaSASLResponse_Data_get(self) get_node_list((self)->Data)
 #define LassoSaSASLResponse_set_Data(self, value) set_node_list(&(self)->Data, (value))
 #define LassoSaSASLResponse_Data_set(self, value) set_node_list(&(self)->Data, (value))
+
+/* Credentials */
+#define LassoSaSASLResponse_get_Credentials(self) get_node_list((self)->Credentials)
+#define LassoSaSASLResponse_Credentials_get(self) get_node_list((self)->Credentials)
+#define LassoSaSASLResponse_set_Credentials(self, value) set_node_list(&(self)->Credentials, (value))
+#define LassoSaSASLResponse_Credentials_set(self, value) set_node_list(&(self)->Credentials, (value))
+
+/* ResourceOffering */
+#define LassoSaSASLResponse_get_ResourceOffering(self) get_node_list((self)->ResourceOffering)
+#define LassoSaSASLResponse_ResourceOffering_get(self) get_node_list((self)->ResourceOffering)
+#define LassoSaSASLResponse_set_ResourceOffering(self, value) set_node_list(&(self)->ResourceOffering, (value))
+#define LassoSaSASLResponse_ResourceOffering_set(self, value) set_node_list(&(self)->ResourceOffering, (value))
 
 /* PasswordTransforms */
 #define LassoSaSASLResponse_get_PasswordTransforms(self) get_node_list((self)->PasswordTransforms)
@@ -2593,6 +2673,10 @@ typedef struct {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoSaSASLResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+/* Implementations of methods */
+#define LassoSaSASLResponse_addCredentials lasso_sa_sasl_response_add_credentials
+#define LassoSaSASLResponse_addResourceOffering lasso_sa_sasl_response_add_resource_offering
 
 %}
 

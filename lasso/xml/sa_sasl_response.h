@@ -29,7 +29,9 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+#include <lasso/xml/disco_resource_offering.h>
 #include <lasso/xml/utility_status.h>
+#include <lasso/xml/sa_credentials.h>
 #include <lasso/xml/sa_password_transforms.h>
 #include <lasso/xml/xml.h>
 
@@ -43,7 +45,7 @@ extern "C" {
 #define LASSO_IS_SA_SASL_RESPONSE_CLASS(klass) \
 			(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SA_SASL_RESPONSE))
 #define LASSO_SA_SASL_RESPONSE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSASLResponseClass)) 
+			LASSO_TYPE_SA_SASL_RESPONSE, LassoSaSASLResponseClass))
 
 typedef struct _LassoSaSASLResponse LassoSaSASLResponse;
 typedef struct _LassoSaSASLResponseClass LassoSaSASLResponseClass;
@@ -72,6 +74,13 @@ LASSO_EXPORT GType lasso_sa_sasl_response_get_type(void);
 LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new(LassoUtilityStatus *status);
 
 LASSO_EXPORT LassoSaSASLResponse* lasso_sa_sasl_response_new_from_message(const gchar *message);
+
+LASSO_EXPORT gint lasso_sa_sasl_response_add_credentials(LassoSaSASLResponse *response,
+							 LassoSaCredentials *credentials);
+
+LASSO_EXPORT gint lasso_sa_sasl_response_add_resource_offering(
+	LassoSaSASLResponse *response,
+	LassoDiscoResourceOffering *resourceOffering);
 
 #ifdef __cplusplus
 }

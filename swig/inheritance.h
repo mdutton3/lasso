@@ -131,6 +131,7 @@ SET_NODE_INFO(IsUserInteraction, Node)
 /* sa prefix */
 SET_NODE_INFO(SaSASLRequest, Node)
 SET_NODE_INFO(SaSASLResponse, Node)
+SET_NODE_INFO(SaCredentials, Node)
 
 /* soap prefix */
 
