@@ -56,7 +56,7 @@ _debug(unsigned int level,
 {
   char debug_string[1024];
   char new_debug_string[2048];
-  char *color, *p;
+  char *color;
 
   va_list args;
   
@@ -66,7 +66,6 @@ _debug(unsigned int level,
   }
 
   va_start(args, format);
-  //vsprintf(debug_string, format, args);
   vsnprintf(debug_string, sizeof(debug_string), format, args);
   va_end(args);
 
