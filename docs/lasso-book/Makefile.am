@@ -1,3 +1,4 @@
+docdir = $(datadir)/doc/lasso
 
 if HAVE_REST2HTML
 doc_DATA = writing-a-c-sp.html
