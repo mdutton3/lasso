@@ -1,2 +1,80 @@
-Valery Febvre <vfebvre@easter-eggs.com>
-Nicolas Clapies <nclapies@entrouvert.com>
+Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert and released under the
+same license as Lasso (see README file).
+
+
+Main Developers
+===============
+
+Nicolas Clapiès <nclapies@entrouvert.com>
+Valéry Febvre <vfebvre@easter-eggs.com>
+
+
+Packaging
+=========
+
+Nicolas Clapiès <nclapies@entrouvert.com>
+Valéry Febvre <vfebvre@easter-eggs.com>
+Frédéric Péters <fpeters@entrouvert.com>
+
+
+Java Bindings
+=============
+
+Benjamin Poussin <poussin@codelutin.com> (initial developer)
+Emmanuel Raviart <eraviart@entrouvert.com>
+
+
+Java Unit Tests
+===============
+
+Emmanuel Raviart <eraviart@entrouvert.com>
+
+
+Python Bindings
+===============
+
+Nicolas Clapiès <nclapies@entrouvert.com>
+Valéry Febvre <vfebvre@easter-eggs.com>
+
+
+Python Unit Tests
+=================
+
+Emmanuel Raviart <eraviart@entrouvert.com>
+
+
+Debian Packaging
+================
+
+Frédéric Péters <fpeters@entrouvert.com>
+
+
+Windows Port
+============
+
+Romain Chantereau <rchantereau@entrouvert.com>
+
+
+Documentation
+=============
+
+Christophe Boutet <cboutet@entrouvert.com>
+Romain Chantereau <rchantereau@entrouvert.com>
+Pierre Cros <pcros@entrouvert.com>
+Cédric Musso <cedric.musso@labor-liber.net>
+Frédéric Péters <fpeters@entrouvert.com>
+Emmanuel Raviart <eraviart@entrouvert.com>
+
+
+Lasso Logo
+==========
+
+Florent Monnier <fmonnier@linux-nantes.fr.eu.org>
+
+Copyright (C) 2004, Entr'ouvert <www.entrouvert.com> & Florent Monnier
+
+
+Web Site Design
+===============
+
+Initial design by Cédric Musso <cedric.musso@labor-liber.net>
