@@ -46,13 +46,13 @@
 	  $config = array(
 	  'dsn' => "pgsql://sp:sp@localhost/sp",
 	  'server_dump_filename' => "lasso_server_dump.xml",
-	  'sp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/metadata.xml",
-	  'sp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/public-key.pem",
-	  'sp-private_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/private-key-raw.pem",
-	  'sp-ca' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/certificate.pem",
-	  'idp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/metadata.xml",
-	  'idp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/public-key.pem",
-	  'idp-ca' => "/home/cnowicki/mcvs/lasso/tests/data/ca1-la/certificate.pem",
+	  'sp-metadata' => $cwd . "/metadata_sp1.xml",
+	  'sp-public_key' => $cwd . "/public-key_sp1.pem",
+	  'sp-private_key' => $cwd . "/private-key-raw_sp1.pem",
+	  'sp-ca' => $cwd . "/certificate_sp1.pem",
+	  'idp-metadata' => $cwd . "/metadata_idp1.xml",
+	  'idp-public_key' => $cwd . "/public-key_idp1.pem",
+	  'idp-ca' => $cwd . "/certificate_idp1.pem",
 	  );
 
 	  $config_ser = serialize($config);
@@ -256,7 +256,7 @@
   <td>DSN (Data Source Name) :</td><td><input type='text' name='dsn' size='50' value='<?php echo $config['dsn']; ?>' maxlength='100'></td><td><a href='http://pear.php.net/manual/en/package.database.db.intro-dsn.php' target='_new'>Help</a></td>
 </tr>
 <tr>
-  <td>Server XML Dump:</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
+  <td>Server XML Dump :</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
 
 </tr>
 <tr>
@@ -264,23 +264,28 @@
 </tr>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='sp-metadata' size='50' value='<?php echo $config['sp-metadata']; ?>'></td><td>&nbsp;</td>
+  <td>Metadata :</td>
+  <td><input type='text' name='sp-metadata' size='50' value='<?php echo $config['sp-metadata']; ?>'></td>
+  <td>&nbsp;</td>
 
 </tr>
 
 <tr>
-  <td>Public Key</td><td><input type='text' name='sp-public_key' size='50' value='<?php echo $config['sp-public_key']; ?>'></td><td>&nbsp;</td>
-
+  <td>Public Key :</td>
+  <td><input type='text' name='sp-public_key' size='50' value='<?php echo $config['sp-public_key']; ?>'></td>
+  <td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Private Key</td><td><input type='text' name='sp-private_key' size='50' value='<?php echo $config['sp-private_key']; ?>'></td><td>&nbsp;</td>
-
+  <td>Private Key :</td>
+  <td><input type='text' name='sp-private_key' size='50' value='<?php echo $config['sp-private_key']; ?>'></td>
+  <td>&nbsp;</td>
 </tr>
 
 <tr>
-  <td>Certificate</td><td><input type='text' name='sp-ca' size='50' value='<?php echo $config['sp-ca']; ?>'></td><td>&nbsp;</td>
-
+  <td>Certificate :</td>
+  <td><input type='text' name='sp-ca' size='50' value='<?php echo $config['sp-ca']; ?>'></td>
+  <td>&nbsp;</td>
 </tr>
 
 <tr>
@@ -288,15 +293,19 @@
 </tr>
 
 <tr>
-  <td>Metadata</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
-
+  <td>Metadata :</td>
+  <td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td>
+  <td>&nbsp;</td>
 </tr>
 <tr>
-  <td>Public Key</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
-
+  <td>Public Key :</td>
+  <td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'>
+  </td><td>&nbsp;</td>
 </tr>
 <tr>
-  <td>Certificate</td><td><input type='text' name='idp-ca' size='50' value='<?php echo $config['idp-ca']; ?>'></td><td>&nbsp;</td>
+  <td>Certificate :</td>
+  <td><input type='text' name='idp-ca' size='50' value='<?php echo $config['idp-ca']; ?>'></td>
+  <td>&nbsp;</td>
 </tr>
 
 <tr>

@@ -81,19 +81,20 @@
         'log_name' => $_SERVER['SERVER_NAME'],
         'log_handler' => 'syslog',
         'auth_type' => 'auth_form',
-		'idp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/metadata.xml",
-		'idp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/public-key.pem",
-		'idp-private_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/private-key-raw.pem",
-		'idp-ca' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/certificate.pem",
+		'idp-metadata' => $cwd . "/metadata_idp1.xml",
+		'idp-public_key' => $cwd . "/public-key_idp1.pem",
+		'idp-private_key' => $cwd . "/private-key_idp1-raw.pem",
+		'idp-ca' => $cwd . "/certificate_idp1.pem",
 		'sp' => array(
 		  'sp1' => array(
-			'metadata' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/metadata.xml",
-			'public_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp1-la/public-key.pem",
-			'ca' => "/home/cnowicki/mcvs/lasso/tests/data/ca1-la/certificate.pem"),
+			'metadata' => $cwd . "/metadata_sp1.xml",
+			'public_key' => $cwd . "/public-key_sp1.pem",
+			'ca' => $cwd . "/certificate_sp1.pem")
+		  /* another service provider
 		  'sp2' => array(
 			'metadata' => "/home/cnowicki/mcvs/lasso/tests/data/sp2-la/metadata.xml",
 			'public_key' => "/home/cnowicki/mcvs/lasso/tests/data/sp2-la/public-key.pem",
-			'ca' => "/home/cnowicki/mcvs/lasso/tests/data/ca1-la/certificate.pem")
+			'ca' => "/home/cnowicki/mcvs/lasso/tests/data/ca1-la/certificate.pem") */
 		));
 
 	  $config_ser = serialize($config);
