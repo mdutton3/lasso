@@ -527,7 +527,7 @@ lasso_logout_init_request(LassoLogout    *logout,
   profile->nameIdentifier = content;
 
   /* if logout request from a SP and if an HTTP Redirect / GET method, then remove assertion */
-  if (is_http_redirect_get_method == TRUE) {
+  if (profile->provider_type == lassoProviderTypeSp && is_http_redirect_get_method == TRUE) {
     lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   }
 
@@ -761,7 +761,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   profile->msg_relayState = lasso_node_get_child_content(profile->response, "RelayState", lassoLibHRef, NULL);
 
   /* Only if SOAP method, then remove assertion */
-  if (response_method == lassoHttpMethodSoap) {
+  if ( (response_method == lassoHttpMethodSoap) || (profile->provider_type == lassoProviderTypeIdp && response_method == lassoHttpMethodRedirect) ) {
     lasso_session_remove_assertion(profile->session, profile->remote_providerID);
     if (profile->provider_type == lassoProviderTypeIdp && logout->providerID_index > 0) {
       logout->providerID_index--;
@@ -805,6 +805,8 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
  **/
 gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 {
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+
   logout->providerID_index = 0;
 
   return 0;
