@@ -72,6 +72,7 @@ with:
         swig_type_info *ty = SWIG_TypeDynamicCast(SWIGTYPE_p_LassoXXX, (void **) &result);
         SWIG_SetPointerZval(return_value, (void *)result, ty, 0);
     /* Wrap this return value */
+    {
         /* ALTERNATIVE Constructor, make an object wrapper */
         zval *obj, *_cPtr;
         MAKE_STD_ZVAL(obj);
@@ -81,7 +82,7 @@ with:
         object_init_ex(obj,ptr_ce_swig_LassoSamlpResponseAbstract);
         add_property_zval(obj,"_cPtr",_cPtr);
         *return_value=*obj;
-    }
+    }}
 """
 
 import sys
@@ -96,27 +97,15 @@ while i >= 0:
 """
     j = wrap.find(end, i) + len(end)
     segment = wrap[i:j]
-    if 'this_ptr' in segment:
-        segment = segment.replace("""
+    segment = segment.replace("""
     }
     /* Wrap this return value */
-    if (this_ptr) {
 """, """
     /* Wrap this return value */
-    if (this_ptr) {
 """)
-        
-        segment = segment.replace(end, """
+    segment = segment.replace(end, """
         *return_value=*obj;
     }}
-""")
-    else:
-        segment = segment.replace("""
-    }
-    /* Wrap this return value */
-    {
-""", """
-    /* Wrap this return value */
 """)
     x = segment.find('object_init_ex(obj,') + len('object_init_ex(obj,')
     y = segment.find(')', x)
