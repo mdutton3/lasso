@@ -52,9 +52,17 @@ sgml: templates
 	done);
 	rm -f build/sgml && $(LN_S) ../sgml build/sgml
 
+
+# don't rebuild templates if tmpl is not in srcdir
 templates: scan
 	@echo '*** Building TMPL ***'
-	cd build && gtkdoc-mktmpl --module=lasso --output-dir=../tmpl/
+	if test $(top_builddir) != $(top_srcdir); then \
+		cp -R $(srcdir)/tmpl/ . ; \
+		chmod +w tmpl/ ; \
+		chmod +w tmpl/*.sgml ; \
+	else \
+		(cd build && gtkdoc-mktmpl --module=lasso --output-dir=../tmpl/) ; \
+	fi
 
 # CFLAGS and LDFLAGS for compiling scan program.
 GTKDOC_CFLAGS = 		\
@@ -117,12 +125,10 @@ lasso-index: scan
 		sed 's#<NAME>\([^<]*\)</NAME>#<listitem><para><link linkend=\"\1\">\1</link></para></listitem>#g' > \
 		sgml/lasso-index.sgml
 
-#dist-hook:
-#	@cp -p $(srcdir)/html/*.html $(srcdir)/images/*.png $(srcdir)/*.sgml $(distdir)
-
 clean-local: clean-sources
 	-rm -rf $(DOC_SOURCE_DIR)
 	-rm -rf .libs
+	-if test $(top_builddir) != $(top_srcdir); then ls -la tmpl/; rm -f tmpl/*.sgml ; fi
 	-rm -rf sgml
 	-rm -rf html
 	-rm -rf build
@@ -135,3 +141,18 @@ clean-sources:
 maintainer-clean-local: clean
 	-rm -rf `find sgml -name "*.sgml" -print`
 
+if GTK_DOC_ENABLED
+dist-check-gtkdoc:
+else
+dist-check-gtkdoc:
+	@echo "*** gtk-doc must be installed and enabled in order to make dist"
+	@false
+endif
+
+dist-hook: dist-check-gtkdoc dist-hook-local
+	mkdir $(distdir)/tmpl
+	mkdir $(distdir)/html
+	-cp $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
+	-cp $(srcdir)/html/* $(distdir)/html
+
+.PHONY : dist-hook-local
