@@ -2031,10 +2031,6 @@ typedef struct {
 
 	void buildLocalNameIdentifier(char *nameQualifier, char *format, char *content);
 
-	void setLocalNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
-
-	void setRemoteNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
-
 	gboolean verifyNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
 }
 
@@ -2066,8 +2062,6 @@ typedef struct {
 /* Methods implementations */
 
 #define LassoFederation_buildLocalNameIdentifier lasso_federation_build_local_name_identifier
-#define LassoFederation_setLocalNameIdentifier lasso_federation_set_local_name_identifier
-#define LassoFederation_setRemoteNameIdentifier lasso_federation_set_remote_name_identifier
 #define LassoFederation_verifyNameIdentifier lasso_federation_verify_name_identifier
 
 %}
