@@ -141,6 +141,13 @@ class ErrorUnknownResponseType(Error):
 # Lasso errors
 
 
+class ProfileErrorInvalidQuery(Error):
+    code = lassomod.LASSO_PROFILE_ERROR_INVALID_QUERY
+
+    def __str__(self):
+        return 'Invalid query in Lasso function %s()' % self.functionName
+
+
 class LogoutErrorUnsupportedProfile(Error):
     code = lassomod.LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE
 
@@ -150,7 +157,9 @@ class LogoutErrorUnsupportedProfile(Error):
 
 def newError(code, functionName):
     # FIXME: Use proper ErrorClass, when Lasso will have well defined error codes.
-    if code == lassomod.LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
+    if code == lassomod.LASSO_PROFILE_ERROR_INVALID_QUERY:
+        return ProfileErrorInvalidQuery(functionName)
+    elif code == lassomod.LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
         return LogoutErrorUnsupportedProfile(functionName)
     else:
         return ErrorUnknown(code, functionName)
