@@ -30,15 +30,15 @@
 /*****************************************************************************/
 
 gint
-lasso_federation_termination_build_notification_msg(LassoFederationTermination *federationTermination)
+lasso_federation_termination_build_notification_msg(LassoFederationTermination *defederation)
 {
   LassoProfileContext *profileContext;
   LassoProvider       *provider;
   xmlChar             *protocolProfile;
 
-  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(federationTermination), -1);
+  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
   
-  profileContext = LASSO_PROFILE_CONTEXT(federationTermination);
+  profileContext = LASSO_PROFILE_CONTEXT(defederation);
 
   /* get the prototocol profile of the federation termination notification */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
@@ -83,7 +83,7 @@ lasso_federation_termination_dump(LassoFederationTermination *defederation)
 }
 
 gint
-lasso_federation_termination_init_notification(LassoFederationTermination *notification,
+lasso_federation_termination_init_notification(LassoFederationTermination *defederation,
 					       gchar                      *remote_providerID)
 {
   LassoProfileContext *profileContext;
@@ -92,9 +92,9 @@ lasso_federation_termination_init_notification(LassoFederationTermination *notif
 
   xmlChar *content, *nameQualifier, *format;
 
-  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(notification), -1);
+  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
 
-  profileContext = LASSO_PROFILE_CONTEXT(notification);
+  profileContext = LASSO_PROFILE_CONTEXT(defederation);
 
   profileContext->remote_providerID = remote_providerID;
 
@@ -140,7 +140,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *notif
 }
 
 gint
-lasso_federation_termination_process_notification_msg(LassoFederationTermination *notification,
+lasso_federation_termination_process_notification_msg(LassoFederationTermination *defederation,
 						      gchar                      *request_msg,
 						      lassoHttpMethods            request_method)
 {
@@ -151,7 +151,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
   LassoNodeClass      *statusCode_class;
   xmlChar             *remote_providerID;
 
-  profileContext = LASSO_PROFILE_CONTEXT(notification);
+  profileContext = LASSO_PROFILE_CONTEXT(defederation);
 
   switch(request_method){
   case lassoHttpMethodSoap:
@@ -205,7 +205,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 /*****************************************************************************/
 
 static void
-lasso_federation_termination_instance_init(LassoFederationTermination *notification){
+lasso_federation_termination_instance_init(LassoFederationTermination *defederation){
 }
 
 static void
@@ -240,20 +240,19 @@ lasso_federation_termination_new(LassoServer *server,
 				 LassoUser   *user,
 				 gint         provider_type)
 {
-  LassoFederationTermination *notification;
-  LassoProfileContext *profileContext;
+  LassoFederationTermination *defederation;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the federation_termination object */
-  notification = g_object_new(LASSO_TYPE_FEDERATION_TERMINATION, NULL);
+  defederation = g_object_new(LASSO_TYPE_FEDERATION_TERMINATION,
+			      "server", server,
+			      "user", user,
+			      "provider_type", provider_type,
+			      NULL);
 
   /* set the properties */
-  profileContext = LASSO_PROFILE_CONTEXT(notification);
-  profileContext->user = user;
-  profileContext->server = server;
-  profileContext->provider_type = provider_type;
 
-  return(notification);
+  return(defederation);
 }
