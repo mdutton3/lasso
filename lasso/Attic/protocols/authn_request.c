@@ -186,8 +186,9 @@ lasso_authn_request_new_from_export(gchar               *buffer,
 				    lassoNodeExportType  export_type)
 {
   LassoNode *request=NULL, *authn_context=NULL, *scoping;
+  LassoNode *request_node, *soap_node;
   GData     *gd;
-  xmlChar   *str;
+  xmlChar   *str, *export;
   GPtrArray *array;
   gint       i;
 
@@ -346,7 +347,15 @@ lasso_authn_request_new_from_export(gchar               *buffer,
   case lassoNodeExportTypeBase64:
     break;
   case lassoNodeExportTypeSoap:
-    break; /* XXX */
+    soap_node = lasso_node_new_from_dump(buffer);
+    request_node = lasso_node_get_child(soap_node, "AuthnRequest",
+					lassoLibHRef, NULL);
+    export = lasso_node_export(request_node);
+    lasso_node_import(request, export);
+    xmlFree(export);
+    lasso_node_destroy(request_node);
+    lasso_node_destroy(soap_node);
+    break;
   }
 
   return (request);
