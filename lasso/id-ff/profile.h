@@ -114,8 +114,13 @@ struct _LassoProfileClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg (gchar *soap);
+/* public functions */
 
+LASSO_EXPORT lassoRequestType lasso_profile_get_request_type_from_soap_msg (const gchar *soap);
+
+LASSO_EXPORT gboolean         lasso_profile_is_liberty_query               (const gchar *query);
+
+/* public methods */
 
 LASSO_EXPORT GType          lasso_profile_get_type                       (void);
 

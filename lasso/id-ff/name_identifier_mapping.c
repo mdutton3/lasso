@@ -290,6 +290,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
   switch(request_method){
   case lassoHttpMethodRedirect:
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
     ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
     goto done;
     break;

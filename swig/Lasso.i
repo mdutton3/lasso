@@ -98,7 +98,7 @@
 #ifdef SWIGPYTHON
 %{
 	PyObject *lassoError;
-	PyObject *lassoSyntaxError;
+	PyObject *lassoWarning;
 %}
 
 %init %{
@@ -106,16 +106,16 @@
 	Py_INCREF(lassoError);
 	PyModule_AddObject(m, "Error", lassoError);
 
-	lassoSyntaxError = PyErr_NewException("_lasso.SyntaxError", lassoError, NULL);
-	Py_INCREF(lassoSyntaxError);
-	PyModule_AddObject(m, "SyntaxError", lassoSyntaxError);
+	lassoWarning = PyErr_NewException("_lasso.Warning", lassoError, NULL);
+	Py_INCREF(lassoWarning);
+	PyModule_AddObject(m, "Warning", lassoWarning);
 	
 	lasso_init();
 %}
 
 %pythoncode %{
 Error = _lasso.Error
-SyntaxError = _lasso.SyntaxError
+Warning = _lasso.Warning
 %}
 
 #else
@@ -478,7 +478,7 @@ typedef enum {
 %rename(PROFILE_ERROR_INVALID_HTTP_METHOD) LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
 %rename(PROFILE_ERROR_INVALID_PROTOCOLPROFILE) LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE;
 #endif
-#define LASSO_PROFILE_ERROR_INVALID_QUERY              401
+#define LASSO_PROFILE_ERROR_INVALID_QUERY             -401
 #define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402
 #define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG          -403
 #define LASSO_PROFILE_ERROR_MISSING_REQUEST           -404
@@ -524,17 +524,15 @@ typedef enum {
 void lasso_exception(int errorCode) {
 	PyObject *errorTuple;
 
-	switch(errorCode) {
-	case LASSO_PROFILE_ERROR_INVALID_QUERY:
-		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Syntax Error");
-		PyErr_SetObject(lassoSyntaxError, errorTuple);
+	if (errorCode > 0) {
+		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Warning");
+		PyErr_SetObject(lassoWarning, errorTuple);
 		Py_DECREF(errorTuple);
-		break;
-	default:
+	}
+	else {
 		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Error");
 		PyErr_SetObject(lassoError, errorTuple);
 		Py_DECREF(errorTuple);
-		break;
 	}
 }
 
@@ -555,18 +553,15 @@ void lasso_exception(int errorCode) {
 
 %{
 
-int get_exception_type(int errorCode) {
-	int exceptionType;
+void build_exception_msg(int errorCode, char *errorMsg) {
+	if (errorCode > 0)
+		sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+	else
+		sprintf(errorMsg, "%d / Lasso Error", errorCode);
+}
 
-	switch(errorCode) {
-	case LASSO_PROFILE_ERROR_INVALID_QUERY:
-		exceptionType = SWIG_SyntaxError;
-		break;
-	default:
-		exceptionType = SWIG_UnknownError;
-		break;
-	}
-	return exceptionType;
+int get_exception_type(int errorCode) {
+	return errorCode > 0 ? SWIG_Warning : SWIG_UnknownError;
 }
 
 %}
@@ -576,9 +571,9 @@ int get_exception_type(int errorCode) {
 	int errorCode;
 	errorCode = $action
 	if (errorCode) {
-		char errorMessage[256];
-		sprintf(errorMessage, "%d / Lasso Error", errorCode);
-		SWIG_exception(get_exception_type(errorCode), errorMessage);
+		char errorMsg[256];
+		SWIG_exception(get_exception_type(errorCode),
+			       build_exception_msg(errorCode, errorMsg));
 	}
 }
 %enddef
@@ -1273,6 +1268,13 @@ LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
 %rename(getRequestTypeFromSoapMsg) lasso_profile_get_request_type_from_soap_msg;
 #endif
 lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
+
+#ifdef SWIGPHP4
+%rename(lasso_isLibertyQuery) lasso_profile_is_liberty_query;
+#else
+%rename(isLibertyQuery) lasso_profile_is_liberty_query;
+#endif
+gboolean lasso_profile_is_liberty_query(gchar *query);
 
 
 /***********************************************************************

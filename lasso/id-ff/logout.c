@@ -580,13 +580,12 @@ lasso_logout_init_request(LassoLogout    *logout,
  *    from the SOAP message and optionaly verifies the signature of the logout request.
  * 
  *    if it is a HTTP-Redirect request method then it builds the logout request object
- *    from the QUERY message and verify the signature. If there is an error while parsing the query,
- *    then returns the code error LASSO_PROFILE_ERROR_INVALID_QUERY.
+ *    from the QUERY message and verify the signature.
  *
  *    Saves the HTTP request method.
  *    Saves the name identifier.
  *
- * Return value: 0 if OK else LASSO_PROFILE_ERROR_INVALID_QUERY or < 0
+ * Return value: 0 on success or a negative value otherwise.
  **/
 gint lasso_logout_process_request_msg(LassoLogout     *logout,
 				      gchar           *request_msg,
@@ -640,6 +639,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
 							    lassoNodeExportTypeQuery);
     /* if problem while rebuilding the response, then return invalid query code error */
     if (LASSO_IS_LOGOUT_REQUEST(profile->request) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
       ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
       goto done;
     }
@@ -673,9 +673,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
  * @response_msg: the response message
  * @response_method: the response method
  * 
- * Parses the response message and builds the response object :
- *      if there is an error while parsing the HTTP Redirect / GET message,
- *          then returns a LASSO_PROFILE_ERROR_INVALID_QUERY code error.
+ * Parses the response message and builds the response object.
  * Get the status code value :
  *     if it is not success, then if the local provider is a Service Provider and response method is SOAP,
  *         then builds a new logout request message for HTTP Redirect / GET method and returns the code error
@@ -722,6 +720,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     /* if problem while rebuilding the response, then return invalid query code error */
     if (LASSO_IS_LOGOUT_RESPONSE(profile->response) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
       ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
       goto done;
     }

@@ -1268,6 +1268,7 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
 									lassoNodeExportTypeQuery);
     if (LASSO_PROFILE(login)->request == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
       return LASSO_PROFILE_ERROR_INVALID_QUERY;
     }
     break;

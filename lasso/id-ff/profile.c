@@ -47,7 +47,7 @@ static GObjectClass *parent_class = NULL;
 /*****************************************************************************/
 
 lassoRequestType
-lasso_profile_get_request_type_from_soap_msg(gchar *soap)
+lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 {
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
@@ -96,6 +96,37 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
   }
 
   return type;
+}
+
+/**
+ * lasso_profile_is_liberty_query
+ * @query: HTTP query string
+ *
+ * Tests the query string to know if the URL is called as the result of a
+ * Liberty redirect (action initiated elsewhere) or not.
+ *
+ * Returns: TRUE if lasso query, FALSE otherwise
+ **/
+gboolean
+lasso_profile_is_liberty_query(const gchar *query)
+{
+  /* logic is that a lasso query always has some parameters (RequestId,
+   * MajorVersion, MinorVersion, IssueInstant, ProviderID,
+   * NameIdentifier, NameQualifier, Format).  If three of them are there;
+   * it's a lasso query, possibly broken, but a lasso query nevertheless.
+   */
+  gchar *parameters[] = {
+    "RequestId=", "MajorVersion=", "MinorVersion=", "IssueInstant=",
+    "ProviderID=", "NameIdentifier=", "NameQualifier=", "Format=",
+    NULL };
+  gint i, n = 0;
+
+  for (i=0; parameters[i] && n < 3; i++) {
+    if (strstr(query, parameters[i]))
+      n++;
+  }
+
+  return (n == 3);
 }
 
 

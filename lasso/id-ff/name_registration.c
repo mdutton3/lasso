@@ -514,6 +514,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
   case lassoHttpMethodRedirect:
     profile->request = lasso_register_name_identifier_request_new_from_export(request_msg, lassoNodeExportTypeQuery);
     if (LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request) == FALSE) {
+      message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
       ret = LASSO_PROFILE_ERROR_INVALID_QUERY;
       goto done;
     }
