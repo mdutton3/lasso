@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
 #include <lasso/xml/xml.h>
 #include <lasso/xml/ds_signature.h>
 #include <xmlsec/base64.h>
@@ -417,7 +418,7 @@ lasso_node_add_signature(LassoNode         *node,
 			 const xmlChar     *private_key_file,
 			 const xmlChar     *certificate_file)
 {
-  g_return_if_fail(LASSO_IS_NODE(node));
+  g_return_val_if_fail(LASSO_IS_NODE(node), -1);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   return (class->add_signature(node, sign_method, private_key_file, certificate_file));
@@ -609,7 +610,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
 {
   GString *query;
   xmlDocPtr doc;
-  xmlChar *str1, *str2, *str_escaped;
+  xmlChar *str1, *str2, *str_escaped = NULL;
   gchar *unsigned_query, *ret;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
@@ -718,8 +719,6 @@ static xmlChar *
 lasso_node_impl_get_attr_value(LassoNode     *node,
 			       const xmlChar *name)
 {
-  LassoAttr *prop;
-
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
 
@@ -917,9 +916,9 @@ lasso_node_impl_verify_signature(LassoNode   *node,
 				 const gchar *certificate_file)
 {
   xmlDocPtr doc = xmlNewDoc("1.0");
-  xmlNodePtr signature;
-  xmlSecKeysMngrPtr mngr;
-  xmlSecDSigCtxPtr dsigCtx;
+  xmlNodePtr signature = NULL;
+  xmlSecKeysMngrPtr mngr = NULL;
+  xmlSecDSigCtxPtr dsigCtx = NULL;
   gint ret = -3;
 
   g_return_val_if_fail (LASSO_IS_NODE(node), -4);
@@ -999,9 +998,7 @@ lasso_node_impl_add_child(LassoNode *node,
 			  gboolean   unbounded)
 {
   xmlNodePtr old_child = NULL;
-  LassoNode *search_child = NULL;
   const xmlChar   *href = NULL;
-  gint i;
 
   g_return_if_fail (LASSO_IS_NODE(node));
   g_return_if_fail (LASSO_IS_NODE(child));
@@ -1033,7 +1030,7 @@ lasso_node_impl_add_signature(LassoNode     *node,
 			      const xmlChar *private_key_file,
 			      const xmlChar *certificate_file)
 {
-  LassoNode *signature;
+  LassoNode *signature = NULL;
   gint ret = 0;
 
   switch (sign_method) {
