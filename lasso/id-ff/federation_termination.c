@@ -309,13 +309,15 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
     goto done;
   }
 
+  /* set the nameIdentifier attribute, dont free content variable ! */
+  profile->nameIdentifier = content;
+
   done:
   if (federation!=NULL) {
     lasso_federation_destroy(federation);
   }
 
   /* destroy allocated objects */
-  xmlFree(content);
   xmlFree(nameQualifier);
   xmlFree(format);
   lasso_node_destroy(nameIdentifier);
