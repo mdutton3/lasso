@@ -170,7 +170,6 @@ lasso_logout_request_new_from_query(gchar *query)
   
   /* MajorVersion */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
-
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   if (str == NULL) {
     g_datalist_clear(&gd);
@@ -275,6 +274,29 @@ lasso_logout_request_new_from_soap(gchar *buffer)
   return(request);
 }
 
+static LassoNode *
+lasso_logout_request_new_from_xml(gchar *buffer)
+{
+  LassoNode *request;
+  LassoNode *logout_request_node, *lassoNode_request;
+  xmlNodePtr xmlNode_request;
+  LassoNodeClass *class;
+
+  request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
+
+  lassoNode_request = lasso_node_new_from_dump(buffer);
+  class = LASSO_NODE_GET_CLASS(lassoNode_request);
+  xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
+  lasso_node_destroy(lassoNode_request);
+
+  class = LASSO_NODE_GET_CLASS(request);
+  class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
+
+  lasso_node_destroy(lassoNode_request);
+  
+  return(request);
+}
+
 
 LassoNode*
 lasso_logout_request_new_from_export(gchar               *buffer,
@@ -291,7 +313,11 @@ lasso_logout_request_new_from_export(gchar               *buffer,
   case lassoNodeExportTypeSoap:
     request = lasso_logout_request_new_from_soap(buffer);
     break;
+  case lassoNodeExportTypeXml:
+    request = lasso_logout_request_new_from_xml(buffer);
+    break;
   default:
+    message(G_LOG_LEVEL_CRITICAL, "Unsupported export type\n");
     break;
   }
 
