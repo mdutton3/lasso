@@ -895,9 +895,9 @@ LASSO_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS
 <SECTION>
 <FILE>authn_request</FILE>
 <TITLE>LassoAuthnRequest</TITLE>
-lasso_authn_request_get_protocolProfile
-lassoAuthnRequest
+LassoAuthnRequest
 LassoAuthnRequestClass
+lasso_authn_request_get_protocolProfile
 lasso_authn_request_new
 lasso_authn_request_new_from_query
 lasso_authn_request_set_requestAuthnContext
@@ -915,7 +915,7 @@ LASSO_AUTHN_REQUEST_GET_CLASS
 <SECTION>
 <FILE>authn_response</FILE>
 <TITLE>LassoAuthnResponse</TITLE>
-lassoAuthnResponse
+LassoAuthnResponse
 LassoAuthnResponseClass
 lasso_authn_response_new_from_dump
 lasso_authn_response_new_from_export
