@@ -83,7 +83,7 @@
         'auth_type' => 'auth_form',
 		'idp-metadata' => $cwd . "/metadata_idp1.xml",
 		'idp-public_key' => $cwd . "/public-key_idp1.pem",
-		'idp-private_key' => $cwd . "/private-key_idp1-raw.pem",
+		'idp-private_key' => $cwd . "/private-key-raw_idp1.pem",
 		'idp-ca' => $cwd . "/certificate_idp1.pem",
 		'sp' => array(
 		  'sp1' => array(
