@@ -67,6 +67,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "Extension", SNIPPET_EXTENSION,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, Extension) },
+	{ "AuthnRequest", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, AuthnRequest) },
 	{ "ProviderID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoLibAuthnRequestEnvelope, ProviderID) },
 	{ "ProviderName", SNIPPET_CONTENT,

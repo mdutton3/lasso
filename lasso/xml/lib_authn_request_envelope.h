@@ -56,7 +56,7 @@ struct _LassoLibAuthnRequestEnvelope {
 	LassoNode parent;
 
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	LassoNode *Extension; /* XXX */
+	GList *Extension;
 	/* <xs:element ref="AuthnRequest"/> */
 	LassoLibAuthnRequest *AuthnRequest;
 	/* <xs:element ref="ProviderID"/> */

@@ -59,6 +59,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "Extension", SNIPPET_EXTENSION,
+		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, Extension) },
 	{ "ProviderID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoLibFederationTerminationNotification, ProviderID) },
 	{ "NameIdentifier", SNIPPET_NODE,

@@ -60,3 +60,7 @@ SNIPPET_LIST_CONTENT
     <Name>Value-n</Name>
   </Parent>
 
+SNIPPET_EXTENSION
+
+  (for <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>)
+

@@ -53,6 +53,8 @@ typedef struct _LassoLibStatusResponseClass LassoLibStatusResponseClass;
 struct _LassoLibStatusResponse {
 	LassoSamlpResponseAbstract parent;
 
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="samlp:Status"/> */

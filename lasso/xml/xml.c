@@ -533,6 +533,9 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					GList **location = value;
 					xmlChar *s = xmlNodeGetContent(t);
 					*location = g_list_append(*location, s);
+				} else if (type == SNIPPET_EXTENSION) {
+					GList **location = value;
+					*location = g_list_append(*location, xmlCopyNode(t, 2));
 				}
 
 				if (tmp == NULL)
@@ -638,6 +641,7 @@ lasso_node_dispose(GObject *object)
 	LassoNodeClass *class;
 	struct XmlSnippet *snippet;
 	SnippetType type;
+	GList *elem;
 
 	class = LASSO_NODE_GET_CLASS(object);
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
@@ -657,15 +661,37 @@ lasso_node_dispose(GObject *object)
 			fprintf(stderr, "freeing %s/%s (at %p)\n",
 					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
 #endif
-			if (snippet->type == SNIPPET_NODE ||
-					snippet->type == SNIPPET_NAME_IDENTIFIER ||
-					snippet->type == SNIPPET_NODE_IN_CHILD) {
-				lasso_node_destroy(*value);
-			} else {
-				g_free(*value);
+			switch (type) {
+				case SNIPPET_NODE:
+				case SNIPPET_NAME_IDENTIFIER:
+				case SNIPPET_NODE_IN_CHILD:
+					lasso_node_destroy(*value);
+					break;
+				case SNIPPET_EXTENSION:
+				case SNIPPET_LIST_NODES:
+				case SNIPPET_LIST_CONTENT:
+					elem = (GList*)(*value);
+					while (elem) {
+						if (type == SNIPPET_EXTENSION)
+							xmlFreeNode(elem->data);
+						if (type == SNIPPET_LIST_NODES)
+							lasso_node_destroy(elem->data);
+						if (type == SNIPPET_LIST_CONTENT)
+							g_free(elem->data);
+						elem = g_list_next(elem);
+					}
+					g_list_free(*value);
+					break;
+				case SNIPPET_CONTENT:
+				case SNIPPET_TEXT_CHILD:
+				case SNIPPET_ATTRIBUTE:
+					g_free(*value);
+					break;
+				default:
+					fprintf(stderr, "%d\n", type);
+					g_assert_not_reached();
 			}
 
-			/* XXX: memory management for lists */
 			*value = NULL;
 		}
 		class = g_type_class_peek_parent(class);
@@ -1045,6 +1071,13 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				while (elem) {
 					xmlNewTextChild(xmlnode, NULL,
 							snippet->name, (char*)(elem->data));
+					elem = g_list_next(elem);
+				}
+				break;
+			case SNIPPET_EXTENSION:
+				elem = (GList *)value;
+				while (elem) {
+					xmlAddChild(xmlnode, xmlCopyNode(elem->data, 2));
 					elem = g_list_next(elem);
 				}
 				break;

@@ -39,6 +39,7 @@ typedef enum {
 	SNIPPET_NODE_IN_CHILD,
 	SNIPPET_LIST_NODES,
 	SNIPPET_LIST_CONTENT,
+	SNIPPET_EXTENSION,
 
 	/* transformers for content transformation */
 	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */

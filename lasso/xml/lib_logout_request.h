@@ -53,6 +53,8 @@ typedef struct _LassoLibLogoutRequestClass LassoLibLogoutRequestClass;
 struct _LassoLibLogoutRequest {
 	LassoSamlpRequestAbstract parent;
 
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	GList *Extension;
 	char *ProviderID;
 	LassoSamlNameIdentifier *NameIdentifier;
 	char *SessionIndex;

@@ -52,6 +52,8 @@ typedef struct _LassoLibAuthnRequestClass LassoLibAuthnRequestClass;
 struct _LassoLibAuthnRequest {
 	LassoSamlpRequestAbstract parent;
 
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="AffiliationID" minOccurs="0"/> */

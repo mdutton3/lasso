@@ -59,7 +59,7 @@ struct _LassoLibNameIdentifierMappingResponse {
 	LassoSamlpResponseAbstract parent;
 
 	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
-	LassoNode *Extension;
+	GList *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
 	/* <xs:element ref="samlp:Status"/> */

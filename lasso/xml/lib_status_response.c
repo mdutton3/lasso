@@ -58,7 +58,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	/* TODO <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	{ "Extension", SNIPPET_EXTENSION,
+		G_STRUCT_OFFSET(LassoLibStatusResponse, Extension) },
 	{ "ProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, ProviderID) },
 	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoLibStatusResponse, Status) },
 	{ "RelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoLibStatusResponse, RelayState) },
