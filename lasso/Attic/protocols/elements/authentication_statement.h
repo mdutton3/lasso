@@ -55,7 +55,7 @@ struct _LassoAuthenticationStatementClass {
 LASSO_EXPORT GType      lasso_authentication_statement_get_type (void);
 LASSO_EXPORT LassoNode* lasso_authentication_statement_new      (const xmlChar           *authenticationMethod,
 								 const xmlChar           *reauthenticateOnOrAfter,
-								 LassoSamlNameIdentifier *identifier,
+								 LassoSamlNameIdentifier *sp_identifier,
 								 LassoSamlNameIdentifier *idp_identifier);
 
 #ifdef __cplusplus

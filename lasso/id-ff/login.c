@@ -47,61 +47,6 @@ struct _LassoLoginPrivate
 /*****************************************************************************/
 
 /**
- * lasso_login_get_assertion_nameIdentifier:
- * @assertion: an assertion
- * @err: return location for an allocated GError, or NULL to ignore errors
- * 
- * An assertion may contain 2 NameIdentifier elements (one called NameIdentifier
- * and the other called IDPProvidedNameIdentifier).
- * If contents of the 2 name identifiers are equal then returns one of both
- * else returns the NameIdentifier content.
- * If both contents are NULL or NameIdentifier elements are missing then
- * returns NULL.
- * 
- * Return value: a newly allocated string or NULL
- **/
-static gchar*
-lasso_login_get_assertion_nameIdentifier(LassoNode  *assertion,
-					 GError    **err)
-{
-  xmlChar *ni, *idp_ni;
-
-  if (err != NULL && *err != NULL) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
-		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
-  }
-  if (LASSO_IS_NODE(assertion) == FALSE) {
-    g_set_error(err, g_quark_from_string("Lasso"),
-		LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ,
-		lasso_strerror(LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ));
-    g_return_val_if_fail(LASSO_IS_NODE(assertion), NULL);
-  }
-
-  ni = lasso_node_get_child_content(assertion, "NameIdentifier", NULL, NULL);
-  idp_ni = lasso_node_get_child_content(assertion, "IDPProvidedNameIdentifier",
-					NULL, NULL);
-
-  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
-    xmlFree(ni);
-    return (idp_ni);
-  }
-  else {
-    xmlFree(idp_ni);
-    if (ni != NULL) {
-      return (ni);
-    }
-    else {
-      g_set_error(err, g_quark_from_string("Lasso"),
-		  LASSO_ERROR_UNDEFINED,
-		  "NameIdentifier value not found in Assertion element.\n");
-      return (NULL);
-    }
-  }
-}
-
-/**
  * lasso_login_add_response_assertion:
  * @login: a Login
  * @federation: a Federation
@@ -153,17 +98,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(as));
   }
   else {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to build the AuthenticationStatement element of the Assertion.\n");
     ret = -2;
-    goto done;
-  }
-
-  /* store NameIdentifier */
-  LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion, &err);
-  if (LASSO_PROFILE(login)->nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
     goto done;
   }
 
@@ -267,6 +202,9 @@ lasso_login_process_federation(LassoLogin *login)
     /* TODO */
   }
 
+  /* store the IDP name identifier */
+  LASSO_PROFILE(login)->nameIdentifier = lasso_node_get_content(federation->local_nameIdentifier, NULL);
+
  done:
   lasso_federation_destroy(federation);
   xmlFree(nameIDPolicy);
@@ -312,7 +250,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     }
 
     /* store NameIdentifier */
-    LASSO_PROFILE(login)->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion, &err);
+    LASSO_PROFILE(login)->nameIdentifier = lasso_node_get_child_content(assertion, "NameIdentifier",
+									NULL, &err);
     if (LASSO_PROFILE(login)->nameIdentifier == NULL) {
       message(G_LOG_LEVEL_CRITICAL, err->message);
       ret = err->code;

@@ -69,7 +69,7 @@ GType lasso_authentication_statement_get_type() {
 LassoNode*
 lasso_authentication_statement_new(const xmlChar           *authenticationMethod,
 				   const xmlChar           *reauthenticateOnOrAfter,
-				   LassoSamlNameIdentifier *identifier,
+				   LassoSamlNameIdentifier *sp_identifier,
 				   LassoSamlNameIdentifier *idp_identifier)
 {
   LassoNode *statement;
@@ -78,11 +78,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   gchar     *str;
   xmlChar   *time;
 
-  if (identifier != NULL) {
-    g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(identifier), NULL);
-  }
   g_return_val_if_fail(LASSO_IS_SAML_NAME_IDENTIFIER(idp_identifier), NULL);
-
 
   statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
 
@@ -96,46 +92,42 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
 								 reauthenticateOnOrAfter);
 
   subject = lasso_lib_subject_new();
-  if (identifier == NULL) {
-    /* create a new NameIdentifier and use idp_identifier data to fill it */
-    str = lasso_node_get_content(LASSO_NODE(idp_identifier), NULL);
-    new_identifier = lasso_saml_name_identifier_new(str);
-    xmlFree(str);
-    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
-    if (str != NULL) {
-      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
-      xmlFree(str);
+  if (sp_identifier == NULL) {
+    if (idp_identifier != NULL) {
+      new_identifier = lasso_node_copy(LASSO_NODE(idp_identifier));
     }
-    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format", NULL);
-    if (str != NULL) {
-      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
-      xmlFree(str);
+    else {
+      message(G_LOG_LEVEL_CRITICAL, "Failed to create the authentication statement, both name identifiers are NULL\n");
+      lasso_node_destroy(statement);
+      return (NULL);
     }
   }
   else {
-    new_identifier = lasso_node_copy(LASSO_NODE(identifier));
+    new_identifier = lasso_node_copy(LASSO_NODE(sp_identifier));
   }
   lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
 					LASSO_SAML_NAME_IDENTIFIER(new_identifier));
   lasso_node_destroy(new_identifier);
 
-  /* create a new IdpProvidedNameIdentifier and use idp_identifier data to fill it */
-  str = lasso_node_get_content(LASSO_NODE(idp_identifier), NULL);
-  new_idp_identifier = lasso_lib_idp_provided_name_identifier_new(str);
-  xmlFree(str);
-  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
-  if (str != NULL) {
-    lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
+  if (sp_identifier != NULL) {
+    /* create a new IdpProvidedNameIdentifier and use idp_identifier data to fill it */
+    str = lasso_node_get_content(LASSO_NODE(idp_identifier), NULL);
+    new_idp_identifier = lasso_lib_idp_provided_name_identifier_new(str);
     xmlFree(str);
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
+    if (str != NULL) {
+      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
+      xmlFree(str);
+    }
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format", NULL);
+    if (str != NULL) {
+      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
+      xmlFree(str);
+    }
+    lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
+						    LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(new_idp_identifier));
+    lasso_node_destroy(new_idp_identifier);
   }
-  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format", NULL);
-  if (str != NULL) {
-    lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
-    xmlFree(str);
-  }
-  lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
-						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(new_idp_identifier));
-  lasso_node_destroy(new_idp_identifier);
 
   /* SubjectConfirmation & Subject */
   subject_confirmation = lasso_saml_subject_confirmation_new();
