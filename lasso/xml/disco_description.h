@@ -51,12 +51,22 @@ typedef struct _LassoDiscoDescriptionClass LassoDiscoDescriptionClass;
 struct _LassoDiscoDescription {
 	LassoNode parent;
 
+	/*
+	 * - The service instance description SHOULD list of all of the security mechanisms that
+	 *   the service instance supports.
+	 * - The client SHOULD pick the first mechanism (in the order listed) that it supports;
+	 *   the description SHOULD list them in order of preference, to avoid situations where the
+	 *   client fails to gain access to the service because it picked the wrong security
+	 *   mechanism.
+	 */
 	GList *SecurityMechID;
 	GList *CredentialRef;
 
+	/* WsdlRef group */
 	gchar *WsdlURI;
 	gchar *ServiceNameRef;
 
+	/* BriefSoapHttpDescription group */
 	gchar *Endpoint;
 	gchar *SoapAction;
 
