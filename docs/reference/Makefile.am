@@ -30,8 +30,8 @@ docs: sgml html clean-sources
 
 html: sgml $(DOC_MAIN_SGML_FILE) lasso-index
 	@echo '*** Building HTML ***'
-	test -d $(srcdir)/html || mkdir $(srcdir)/html
-	cd $(srcdir)/html && gtkdoc-mkhtml $(MODULE) ../$(DOC_MAIN_SGML_FILE)
+	test -d html || mkdir html
+	cd html && gtkdoc-mkhtml $(MODULE) ../$(DOC_MAIN_SGML_FILE)
 
 SCANOBJ_FILES = 		\
 	$(MODULE).hierarchy	\
@@ -78,8 +78,8 @@ GTKDOC_LD=$(LIBTOOL) --mode=link $(CC)
 
 scan: doc_sources
 	@echo '*** Scan sources ***'
-	if grep -l '^..*$$' $(MODULE).types > /dev/null ; then \
-		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=$(MODULE) --output-dir=$(srcdir) ; \
+	if grep -l '^..*$$' $(srcdir)/$(MODULE).types > /dev/null ; then \
+		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=$(MODULE) --types=$(srcdir)/$(MODULE).types --output-dir=$(builddir) ; \
 	else \
 		cd $(srcdir) ; \
 		for i in $(SCANOBJ_FILES) ; do \
