@@ -1,1 +1,1 @@
-SUBDIRS=sample-sp
+SUBDIRS=sample-sp sample-idp

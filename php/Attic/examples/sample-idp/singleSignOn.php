@@ -41,8 +41,128 @@
   $form->addRule('username', 'Please enter the Username', 'required', null, 'client');
   $form->addRule('password', 'Please enter the Password', 'required', null, 'client');
 
-  // Login dump is not available, show the login form
-  if (!isset($_SESSION['login_dump']) && !$form->validate())
+  function singleSignOn_done($config, $db, $user_id = 0) 
+  {
+	  $server_dump = file_get_contents($config['server_dump_filename']);
+	  
+	  lasso_init();
+	  
+	  $server = LassoServer::newFromDump($server_dump);
+	  $login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
+
+	  $authenticationMethod = 
+	  (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
+
+	  // reauth in session_cache_expire default is 180 minutes
+	  $reauthenticateOnOrAfter = strftime("%Y-%m-%dT%H:%M:%SZ", time() + session_cache_expire() * 60);
+	  
+      if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
+	  {
+		$login->buildArtifactMsg(
+		  TRUE, // User is authenticated 
+		  $authenticationMethod,
+		  $reauthenticateOnOrAfter,
+		  lassoHttpMethodRedirect);
+	  }
+	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
+	  {
+		// TODO
+		print "TODO : Post\n";
+		exit();
+	  }
+	  else
+		die("Unknown protocol profile for login:" . $login->protocolProfile);
+	
+	  if (empty($user_id))
+	  {
+		// Get user_id
+		$query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='";
+		$query .= $login->nameIdentifier . "'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		$row = $res->fetchRow();
+		$user_id = $row[0];
+	  } 
+	  else
+	  {
+		// Save name identifier
+		if (!$res->numRows())
+		{
+		  $query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
+		  $query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
+		  $res =& $db->query($query);
+		  if (DB::isError($res)) 
+  		  die($res->getMessage());
+		  $name_identifier = $login->nameIdentifier;
+		}
+	  }
+
+	  if ($login->isIdentityDirty)
+	  {
+		$identity = $login->identity;
+		$query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump());
+		$query .= " WHERE user_id='$user_id'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+	  } 
+
+	  // Update identity dump
+	  $identity = $login->identity;
+	  $query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump())." WHERE user_id='$user_id'";
+	  
+	  $res =& $db->query($query);
+  	  if (DB::isError($res)) 
+		die($res->getMessage());
+	 
+	  // Update session dump
+	  $session = $login->session;
+	  $query = "UPDATE users SET session_dump=".$db->quoteSmart($session->dump())." WHERE user_id='$user_id'";
+
+	  $res =& $db->query($query);
+  	  if (DB::isError($res)) 
+		die($res->getMessage());
+
+	  if (empty($login->assertionArtifact))
+		die("assertion Artifact is empty");
+
+	  $assertion = $login->assertion;
+	  $assertion_dump = $assertion->dump();
+
+	  if (empty($assertion_dump))
+		die("assertion dump is empty");
+
+	  // Save assertion 
+	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
+	  $query .= "('".$login->assertionArtifact."',".$db->quoteSmart($assertion_dump).", NOW())";
+
+	  $res =& $db->query($query);
+  	  if (DB::isError($res)) 
+		die($res->getMessage());
+
+	  $_SESSION['login_dump'] = $login->dump();
+	  $_SESSION['session_dump'] = $session->dump();
+
+	  if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
+	  {
+		$url = $login->msgUrl;
+
+		header("Request-URI: $url");
+		header("Content-Location: $url");
+		header("Location: $url");
+	  }
+	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
+	  {
+	  }
+
+	  lasso_shutdown();
+  }
+
+  if (!$form->validate())
   {
 	// Check for AuthnRequest
 	if (empty($_POST) && empty($_GET))
@@ -56,8 +176,14 @@
 
 	$server = LassoServer::newfromdump($server_dump);
 
-	$login = new LassoLogin($server);
+	if (!empty($_SESSION['login_dump']))
+	  $login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
+	else
+	  $login = new LassoLogin($server);
 
+	if (!empty($_SESSION['session_dump']))
+	  $login->setSessionFromDump($_SESSION['session_dump']);
+	
 	if ($_SERVER['REQUEST_METHOD'] = 'GET')
 	  $login->initFromAuthnRequestMsg($_SERVER['QUERY_STRING'], lassoHttpMethodRedirect);
 	else
@@ -69,19 +195,24 @@
 	// User must NOT Authenticate with the IdP 
 	if (!$login->mustAuthenticate()) 
 	{
-	  // TODO
+	  $db = &DB::connect($config['dsn']);
+	  if (DB::isError($db)) 
+		die($db->getMessage());
+
+	  singleSignOn_done($config, $db);
+	  $db->disconnect();
 	  exit;
 	}
 
 	$login_dump = $login->dump();
-
+	$session = $login->session;
 	$_SESSION['login_dump'] = $login->dump();
+	$_SESSION['session_dump'] = $session->dump();
 
 	lasso_shutdown();
   }
   
  
-
   if (isset($_SESSION['login_dump']) && $form->validate())
   {
 	$db = &DB::connect($config['dsn']);
@@ -98,118 +229,10 @@
 
 	if ($res->numRows()) 
 	{
-	  // Get user_id from users
 	  $row = $res->fetchRow();
 	  $user_id = $row[0];
-	
-	  $server_dump = file_get_contents($config['server_dump_filename']);
-
-	  lasso_init();
-	  
-	  $server = LassoServer::newfromdump($server_dump);
-
-	  $login = LassoLogin::newfromdump($server, $_SESSION['login_dump']);
-
-	  $authenticationMethod = (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
-	  
-      if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
-	  {
-		$login->buildArtifactMsg(
-		  TRUE, // User is authenticated 
-		  $authenticationMethod,
-		  "2005-05-03T16:12:00Z", # FIXME: reauthenticateOnOrAfter
-		  lassoHttpMethodRedirect);
-	  }
-	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
-	  {
-		// TODO
-		print "TODO : Post\n";
-		exit();
-	  }
-	  else
-		die("Unknown protocol profile for login:" . $login->protocolProfile);
-	
-	  if ($login->isIdentityDirty)
-	  {
-		$identity = $login->identity;
-		$query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump());
-		$query .= " WHERE user_id='$user_id'";
-
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
-		  die($res->getMessage());
-	  } 
-	  
-	  // Get name identifier
-	  $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='";
-	  $query .= $login->nameIdentifier . "'";
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-		die($res->getMessage());
-
-	  // Save name identifier
-	  if (!$res->numRows())
-	  {
-		$query = "INSERT INTO nameidentifiers (name_identifier, user_id) ";
-		$query .= "VALUES ('" . $login->nameIdentifier . "','$user_id')";
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
-  		  die($res->getMessage());
-		$name_identifier = $login->nameIdentifier;
-	  }
-	  else 
-	  {
-		$row = $res->fetchRow();
-		$name_identifier = $row[0];
-	  }
-
-	  // Update identity dump
-	  $identity = $login->identity;
-	  $query = "UPDATE users SET user_dump=".$db->quoteSmart($identity->dump())." WHERE user_id='$user_id'";
-	  
-	  $res =& $db->query($query);
-  	  if (DB::isError($res)) 
-		die($res->getMessage());
-	 
-	  // Update session dump
-	  $session = $login->session;
-	  $query = "UPDATE users SET session_dump=".$db->quoteSmart($session->dump())." WHERE user_id='$user_id'";
-	  
-	  $res =& $db->query($query);
-  	  if (DB::isError($res)) 
-		die($res->getMessage());
-
-	  if (empty($login->assertionArtifact))
-		die("assertion Artifact is empty");
-
-	  $assertion = $login->assertion;
-	  $assertion_dump = $assertion->dump();
-
-	  if (empty($assertion_dump))
-		die("assertion dump is empty");
-
-	  
-	  // Save assertion 
-	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
-	  $query .= "('".$login->assertionArtifact."',".$db->quoteSmart($assertion_dump).", NOW())";
-	  
-	  $res =& $db->query($query);
-  	  if (DB::isError($res)) 
-		die($res->getMessage());
-
-	  if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
-	  {
-		$url = $login->msgUrl;
-
-		header("Request-URI: $url");
-		header("Content-Location: $url");
-		header("Location: $url");
-	  }
-	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
-	  {
-	  }
-
-	  lasso_shutdown();
+	  singleSignOn_done($config, $db, $user_id);
+	  $db->disconnect();
 	  exit();
 	}
   }

@@ -75,18 +75,42 @@
   # PHP 4.3.0 with OpenSSL support required
   $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));
  
+  socket_set_timeout($fp, 10);
   fwrite($fp, $soap);
-  $ret = fgets($fp);
 
-  if (!preg_match("/^HTTP\/1\\.. 200/i", $ret)) {
+  // header
+  do $header .= fread($fp, 1); while (!preg_match('/\\r\\n\\r\\n$/',$header));
+
+  // chunked encoding
+  if (preg_match('/Transfer\\-Encoding:\\s+chunked\\r\\n/',$header))
+  {
+	do {
+	  $byte = '';
+	  $chunk_size = '';
+	  
+	  do {
+		$chunk_size .= $byte;
+		$byte = fread($fp, 1);
+	  } while ($byte != "\\r");     
+	  
+	  fread($fp, 1);    
+	  $chunk_size = hexdec($chunk_size); 
+  	  $response .= fread($fp, $chunk_size);
+	  fread($fp, 2);          
+  	} while ($chunk_size);        
+  }
+  else
+  {
+	if (preg_match('/Content\\-Length:\\s+([0-9]+)\\r\\n/', $header, $matches))
+	  $response = fread($fp, $matches[1]);
+	else 
+	  while (!feof($fp)) $response .= fread($fp, 1024);
+  }
+  fclose($fp);
+  
+  if (!preg_match("/^HTTP\/1\\.. 200/i", $header)) {
 	die("User is already logged out");
   }
-
-  while (!feof($fp)) {
-  	$reponse .= @fread($fp, 8192);
-  }
-
-  fclose($fp);
 
   # Destroy The PHP Session
   $_SESSION = array();
