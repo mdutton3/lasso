@@ -121,7 +121,7 @@ lasso_login_add_response_assertion(LassoLogin    *login,
     /* store assertion in user object */
     lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
 			     LASSO_PROFILE_CONTEXT(login)->remote_providerID,
-			     lasso_node_copy(assertion));
+			     assertion);
   }
 
   lasso_node_destroy(authentication_statement);
@@ -558,7 +558,7 @@ lasso_login_create_user(LassoLogin *login,
     /* put response assertion in user object */
     lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
 			     LASSO_PROFILE_CONTEXT(login)->remote_providerID,
-			     lasso_node_copy(assertion));
+			     assertion);
 
     /* put the 2 NameIdentifiers in user object */
     nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", lassoSamlAssertionHRef);
