@@ -117,11 +117,11 @@
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
 
-#define LASSO_DISCO_HREF   "urn:liberty:ep:2003-08"
-#define LASSO_DISCO_PREFIX "ep"
+#define LASSO_EP_HREF   "urn:liberty:ep:2003-08"
+#define LASSO_EP_PREFIX "ep"
 
-#define LASSO_DISCO_HREF   "urn:liberty:pp:2003-08"
-#define LASSO_DISCO_PREFIX "pp"
+#define LASSO_PP_HREF   "urn:liberty:pp:2003-08"
+#define LASSO_PP_PREFIX "pp"
 
 /* status code */
 #define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
