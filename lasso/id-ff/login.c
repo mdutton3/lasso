@@ -153,6 +153,9 @@ lasso_login_process_federation(LassoLogin *login)
 			      LASSO_PROFILE_CONTEXT(login)->remote_providerID,
 			      identity);
     }
+    else {
+      debug(DEBUG, "An identity was found.\n");
+    }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
     /* TODO */
@@ -478,6 +481,14 @@ lasso_login_create_user(LassoLogin *login,
     LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new();
     return (0);
   }
+
+  /* put response assertion in user object */
+  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				   "Assertion", lassoLibHRef);
+  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
+			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
+			   lasso_node_copy(assertion));
+  lasso_node_destroy(assertion);
 }
 
 void
@@ -747,13 +758,6 @@ lasso_login_process_response_msg(LassoLogin  *login,
   LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new_from_export(response_msg,
 									  lassoNodeExportTypeSoap);
   LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
-
-  /* put response assertion in user object */
-  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
-				   "Assertion", lassoLibHRef);
-  lasso_user_add_assertion(LASSO_PROFILE_CONTEXT(login)->user,
-			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
-			   assertion);
 
   return (lasso_login_process_response_status_and_assertion(login));
 }
