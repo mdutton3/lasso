@@ -149,7 +149,7 @@ inline void message(GLogLevelFlags level, const char *format, ...)
 	va_list ap;
 	char s[1024];
 	va_start(ap, format);
-	vsnprintf(s, 1024, format, args);
+	vsnprintf(s, 1024, format, ap);
 	va_end(ap);
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, s);
 }
