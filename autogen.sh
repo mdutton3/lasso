@@ -112,6 +112,98 @@ version_check() {
     return $vc_status
 }
 
+# Usage:
+#     require_m4macro filename.m4
+# adds filename.m4 to the list of required macros
+require_m4macro() {
+    case "$REQUIRED_M4MACROS" in
+	$1\ * | *\ $1\ * | *\ $1) ;;
+	*) REQUIRED_M4MACROS="$REQUIRED_M4MACROS $1" ;;
+    esac
+}
+
+forbid_m4macro() {
+    case "$FORBIDDEN_M4MACROS" in
+	$1\ * | *\ $1\ * | *\ $1) ;;
+	*) FORBIDDEN_M4MACROS="$FORBIDDEN_M4MACROS $1" ;;
+    esac
+}
+
+# Usage:
+#     check_m4macros
+# Checks that all the requested macro files are in the aclocal macro path
+# Uses REQUIRED_M4MACROS and ACLOCAL variables.
+check_m4macros() {
+    # construct list of macro directories
+    cm_macrodirs="`$ACLOCAL --print-ac-dir`"
+    set - $ACLOCAL_FLAGS
+    while [ $# -gt 0 ]; do
+	if [ "$1" = "-I" ]; then
+	    cm_macrodirs="$cm_macrodirs $2"
+	    shift
+	fi
+	shift
+    done
+
+    cm_status=0
+    if [ -n "$REQUIRED_M4MACROS" ]; then
+	printbold "Checking for required M4 macros..."
+	# check that each macro file is in one of the macro dirs
+	for cm_macro in $REQUIRED_M4MACROS; do
+	    cm_macrofound=false
+	    for cm_dir in $cm_macrodirs; do
+		if [ -f "$cm_dir/$cm_macro" ]; then
+		    cm_macrofound=true
+		    break
+		fi
+		# The macro dir in Cygwin environments may contain a file
+		# called dirlist containing other directories to look in.
+		if [ -f "$cm_dir/dirlist" ]; then
+		    for cm_otherdir in `cat $cm_dir/dirlist`; do
+			if [ -f "$cm_otherdir/$cm_macro" ]; then
+			    cm_macrofound=true
+		            break
+			fi
+		    done
+		fi
+	    done
+	    if $cm_macrofound; then
+		:
+	    else
+		printerr "  $cm_macro not found"
+		cm_status=1
+	    fi
+	done
+    fi
+    if [ -n "$FORBIDDEN_M4MACROS" ]; then
+	printbold "Checking for forbidden M4 macros..."
+	# check that each macro file is in one of the macro dirs
+	for cm_macro in $FORBIDDEN_M4MACROS; do
+	    cm_macrofound=false
+	    for cm_dir in $cm_macrodirs; do
+		if [ -f "$cm_dir/$cm_macro" ]; then
+		    cm_macrofound=true
+		    break
+		fi
+	    done
+	    if $cm_macrofound; then
+		printerr "  $cm_macro found (should be cleared from macros dir)"
+		cm_status=1
+	    fi
+	done
+    fi
+    if [ "$cm_status" != 0 ]; then
+	printerr "***Error***: some autoconf macros required to build $PKG_NAME"
+	printerr "  were not found in your aclocal path, or some forbidden"
+	printerr "  macros were found.  Perhaps you need to adjust your"
+	printerr "  ACLOCAL_FLAGS?"
+	printerr
+    fi
+    return $cm_status
+}
+
+
+
 printbold "checking this is lasso top-level directory..."
 test -f lasso/lasso.h  || {
 	printerr "***Error***: You must run this script in lasso top-level directory"
@@ -160,9 +252,13 @@ version_check swig SWIG "swig-1.3 swig" $REQUIRED_SWIG_VERSION \
 
 version_check libtool LIBTOOLIZE libtoolize $REQUIRED_LIBTOOL_VERSION \
     "http://ftp.gnu.org/pub/gnu/libtool/libtool-$REQUIRED_LIBTOOL_VERSION.tar.gz" || DIE=1
+require_m4macro libtool.m4
 
 version_check pkg-config PKG_CONFIG pkg-config $REQUIRED_PKG_CONFIG_VERSION \
     "'http://www.freedesktop.org/software/pkgconfig/releases/pkgconfig-$REQUIRED_PKG_CONFIG_VERSION.tar.gz" || DIE=1
+require_m4macro pkg.m4
+
+check_m4macros || DIE=1
 
 # - If something went wrong, exit with error code:1.
 if [ "$DIE" -eq 1 ]; then
@@ -185,7 +281,8 @@ printbold "Running $LIBTOOLIZE..."
 $DRYRUN $LIBTOOLIZE --force --copy || exit 1
 
 printbold "Running $ACLOCAL..."
-$DRYRUN $ACLOCAL $aclocal_args || exit 1
+aclocalinclude="$ACLOCAL_FLAGS"
+$DRYRUN $ACLOCAL $aclocal_args $aclocalinclude || exit 1
 
 printbold "Running $AUTOHEADER..."
 $DRYRUN $AUTOHEADER || exit 1
