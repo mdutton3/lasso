@@ -179,12 +179,12 @@ static void throw_exception_msg(int errorCode) {
 	char errorMsg[256];
 	if (errorCode > 0)
         {
-	    sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+	    sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
             zend_error(E_WARNING, errorMsg);
         }
 	else
         {
-	    sprintf(errorMsg, "%d / Lasso Error", errorCode);
+	    sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
             zend_error(E_ERROR, errorMsg);
         }
 }
@@ -208,18 +208,21 @@ static void throw_exception_msg(int errorCode) {
 %{
 
 PyObject *lassoError;
-PyObject *LASSO_WARNING;
+PyObject *lassoWarning;
 
 static void lasso_exception(int errorCode) {
+	char errorMsg[256];
 	PyObject *errorTuple;
 
 	if (errorCode > 0) {
-		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Warning");
-		PyErr_SetObject(LASSO_WARNING, errorTuple);
+		sprintf(errorMsg, "Lasso Warning: %s", lasso_strerror(errorCode));
+		errorTuple = Py_BuildValue("(is)", errorCode, errorMsg);
+		PyErr_SetObject(lassoWarning, errorTuple);
 		Py_DECREF(errorTuple);
 	}
 	else {
-		errorTuple = Py_BuildValue("(is)", errorCode, "Lasso Error");
+		sprintf(errorMsg, "Lasso Error: %s", lasso_strerror(errorCode));
+		errorTuple = Py_BuildValue("(is)", errorCode, errorMsg);
 		PyErr_SetObject(lassoError, errorTuple);
 		Py_DECREF(errorTuple);
 	}
@@ -232,9 +235,9 @@ static void lasso_exception(int errorCode) {
 	Py_INCREF(lassoError);
 	PyModule_AddObject(m, "Error", lassoError);
 
-	LASSO_WARNING = PyErr_NewException("_lasso.Warning", lassoError, NULL);
-	Py_INCREF(LASSO_WARNING);
-	PyModule_AddObject(m, "Warning", LASSO_WARNING);
+	lassoWarning = PyErr_NewException("_lasso.Warning", lassoError, NULL);
+	Py_INCREF(lassoWarning);
+	PyModule_AddObject(m, "Warning", lassoWarning);
 %}
 
 %pythoncode %{
@@ -259,9 +262,9 @@ Warning = _lasso.Warning
 
 static void build_exception_msg(int errorCode, char *errorMsg) {
 	if (errorCode > 0)
-		sprintf(errorMsg, "%d / Lasso Warning", errorCode);
+		sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
 	else
-		sprintf(errorMsg, "%d / Lasso Error", errorCode);
+		sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
 }
 
 %}
