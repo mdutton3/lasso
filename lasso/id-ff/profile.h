@@ -50,7 +50,22 @@ typedef struct _LassoProfile LassoProfile;
 typedef struct _LassoProfileClass LassoProfileClass;
 typedef struct _LassoProfilePrivate LassoProfilePrivate;
 
-/* Request types (used by SOAP endpoint) */
+/**
+ * LassoRequestType::
+ * @LASSO_REQUEST_TYPE_INVALID: invalid
+ * @LASSO_REQUEST_TYPE_LOGIN: Single Sign On and Federation
+ * @LASSO_REQUEST_TYPE_LOGOUT: Single Logout
+ * @LASSO_REQUEST_TYPE_DEFEDERATION: Federation Termination
+ * @LASSO_REQUEST_TYPE_NAME_REGISTRATION: Name Registration
+ * @LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING: Name Identifier Mapping
+ * @LASSO_REQUEST_TYPE_LECP: Liberty-Enabled Client / Proxy
+ * @LASSO_REQUEST_TYPE_DISCO_QUERY:
+ * @LASSO_REQUEST_TYPE_DISCO_MODIFY:
+ * @LASSO_REQUEST_TYPE_DST_QUERY:
+ * @LASSO_REQUEST_TYPE_DST_MODIFY:
+ *
+ * Request types (known for SOAP endpoints)
+ **/
 typedef enum {
 	LASSO_REQUEST_TYPE_INVALID = 0,
 	LASSO_REQUEST_TYPE_LOGIN = 1,
@@ -65,14 +80,6 @@ typedef enum {
 	LASSO_REQUEST_TYPE_DST_MODIFY = 10,
 } LassoRequestType;
 
-typedef enum {
-	LASSO_MESSAGE_TYPE_NONE = 0,
-	LASSO_MESSAGE_TYPE_AUTHN_REQUEST,
-	LASSO_MESSAGE_TYPE_AUTHN_RESPONSE,
-	LASSO_MESSAGE_TYPE_REQUEST,
-	LASSO_MESSAGE_TYPE_RESPONSE,
-	LASSO_MESSAGE_TYPE_ARTIFACT
-} LassoMessageType;
 
 struct _LassoProfile {
 	LassoNode parent;
