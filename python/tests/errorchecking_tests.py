@@ -37,10 +37,35 @@ import lasso
 
 class ErrorCheckingTestCase(unittest.TestCase):
     def test01(self):
-        lasso.Login(None).msg_url
+        # the user should call lasso.Login.new(); but what if it doesn't ?
+        # An exception should be raised; the program should not segfault.
+        try:
+            lasso.Login(None).msg_url
+        except:
+            pass
 
     def test02(self):
-        lasso.Logout(None, lasso.providerTypeSp).msg_url
+        # Same as test01; replace Login by Logout
+        try:
+            lasso.Logout(None, lasso.providerTypeSp).msg_url
+        except:
+            pass
+
+    def test03(self):
+        # This time; we got something wrong as query string; we pass it to
+        # init_from_authn_request_msg; surely it shouldn't segfault
+        server = lasso.Server.new(
+            '../../examples/data/idp-metadata.xml',
+            '../../examples/data/idp-public-key.pem',
+            '../../examples/data/idp-private-key.pem',
+            '../../examples/data/idp-crt.pem',
+            lasso.signatureMethodRsaSha1)
+        login = lasso.Login.new(server)
+        try:
+            login.init_from_authn_request_msg("", lasso.httpMethodRedirect)
+        except:
+            pass
+
 
 suite1 = unittest.makeSuite(ErrorCheckingTestCase, 'test')
 
