@@ -444,7 +444,7 @@ lasso_name_identifier_mapping_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING, NULL);
-	LASSO_PROFILE(mapping)->server = server;
+	LASSO_PROFILE(mapping)->server = g_object_ref(server);
 
 	return mapping;
 }

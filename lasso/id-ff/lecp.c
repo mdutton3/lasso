@@ -400,7 +400,7 @@ lasso_lecp_new(LassoServer *server)
 	LassoLecp *lecp;
 
 	lecp = g_object_new(LASSO_TYPE_LECP, NULL);
-	LASSO_PROFILE(lecp)->server = server;
+	LASSO_PROFILE(lecp)->server = g_object_ref(server);
 
 	return lecp;
 }

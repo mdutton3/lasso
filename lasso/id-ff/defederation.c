@@ -456,7 +456,7 @@ lasso_defederation_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	defederation = g_object_new(LASSO_TYPE_DEFEDERATION, NULL);
-	LASSO_PROFILE(defederation)->server = server;
+	LASSO_PROFILE(defederation)->server = g_object_ref(server);
 
 	return defederation;
 }

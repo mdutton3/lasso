@@ -614,7 +614,7 @@ lasso_name_registration_new(LassoServer *server)
 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	name_registration = g_object_new(LASSO_TYPE_NAME_REGISTRATION, NULL);
-	LASSO_PROFILE(name_registration)->server = server;
+	LASSO_PROFILE(name_registration)->server = g_object_ref(server);
 
 	return name_registration;
 }
