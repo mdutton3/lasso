@@ -61,6 +61,7 @@ struct _LassoLogin {
   gchar *assertionArtifact;
 
   /*< private >*/
+  gchar *nameIDPolicy;
   lassoHttpMethod http_method;
   LassoLoginPrivate *private;
 };
@@ -80,6 +81,7 @@ LASSO_EXPORT gint        lasso_login_accept_sso                 (LassoLogin *log
 
 LASSO_EXPORT gint        lasso_login_build_artifact_msg         (LassoLogin      *login,
 								 gboolean         authentication_result,
+								 gboolean         is_consent_obtained,
 								 const gchar     *authenticationMethod,
 								 const gchar     *reauthenticateOnOrAfter,
 								 lassoHttpMethod  http_method);
@@ -89,6 +91,7 @@ LASSO_EXPORT gint        lasso_login_build_authn_request_msg    (LassoLogin  *lo
 
 LASSO_EXPORT gint        lasso_login_build_authn_response_msg   (LassoLogin  *login,
 								 gboolean     authentication_result,
+								 gboolean     is_consent_obtained,
 								 const gchar *authenticationMethod,
 								 const gchar *reauthenticateOnOrAfter);
 
@@ -108,6 +111,8 @@ LASSO_EXPORT gint        lasso_login_init_request               (LassoLogin     
 								 gchar           *response_msg,
 								 lassoHttpMethod  response_http_method);
 
+LASSO_EXPORT gboolean    lasso_login_must_ask_for_consent       (LassoLogin *login);
+
 LASSO_EXPORT gboolean    lasso_login_must_authenticate          (LassoLogin *login);
 
 LASSO_EXPORT gint        lasso_login_process_authn_request_msg  (LassoLogin      *login,
@@ -122,6 +127,11 @@ LASSO_EXPORT gint        lasso_login_process_request_msg        (LassoLogin *log
 
 LASSO_EXPORT gint        lasso_login_process_response_msg        (LassoLogin  *login,
 								  gchar       *response_msg);
+
+
+LASSO_EXPORT gint        lasso_login_process_without_authn_request_msg (LassoLogin  *login,
+									const gchar *remote_providerID,
+									const gchar *relayState);
 
 #ifdef __cplusplus
 }

@@ -43,13 +43,13 @@ struct _LassoLoginPrivate
 };
 
 /*****************************************************************************/
-/* functions                                                                 */
+/* static methods/functions                                                  */
 /*****************************************************************************/
 
 /**
  * lasso_login_build_assertion:
  * @login: a Login
- * @federation: a Federation
+ * @federation: the Federation
  * @authenticationMethod: the authentication method
  * @reauthenticateOnOrAfter: the reauthenticate on or after time
  * 
@@ -66,8 +66,8 @@ lasso_login_build_assertion(LassoLogin      *login,
 			    const gchar     *authenticationMethod,
 			    const gchar     *reauthenticateOnOrAfter)
 {
-  LassoNode *assertion = NULL, *as;
-  xmlChar *requestID;
+  LassoNode *assertion = NULL, *nameIdentifier, *as;
+  xmlChar *id, *requestID;
   GError *err = NULL;
   gint ret = 0;
 
@@ -88,10 +88,28 @@ lasso_login_build_assertion(LassoLogin      *login,
 				  requestID);
   xmlFree(requestID);
 
-  as = lasso_authentication_statement_new(authenticationMethod,
-					  reauthenticateOnOrAfter,
-					  LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier),
-					  LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+  if (xmlStrEqual(login->nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
+    /* if NameIDPolicy is 'onetime', don't use a federation */
+    id = lasso_build_unique_id(32);
+    nameIdentifier = lasso_saml_name_identifier_new(id);
+    xmlFree(id);
+    lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+						 LASSO_PROFILE(login)->server->providerID);
+    lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					  lassoLibNameIdentifierFormatOneTime);
+    as = lasso_authentication_statement_new(authenticationMethod,
+					    reauthenticateOnOrAfter,
+					    NULL,
+					    LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
+    LASSO_PROFILE(login)->nameIdentifier = lasso_node_get_content(nameIdentifier, NULL);
+    lasso_node_destroy(nameIdentifier);
+  }
+  else {
+    as = lasso_authentication_statement_new(authenticationMethod,
+					    reauthenticateOnOrAfter,
+					    LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier),
+					    LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+  }
   if (as != NULL) {
     lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
 						     LASSO_SAML_AUTHENTICATION_STATEMENT(as));
@@ -130,70 +148,114 @@ lasso_login_build_assertion(LassoLogin      *login,
   return ret;
 }
 
+/**
+ * lasso_login_process_federation:
+ * @login: a LassoLogin
+ * @is_consent_obtained: is user consent obtained ?
+ * 
+ * Return value: a positive value on success or a negative if an error occurs.
+ **/
 static gint
-lasso_login_process_federation(LassoLogin *login)
+lasso_login_process_federation(LassoLogin *login,
+			       gboolean    is_consent_obtained)
 {
-  LassoFederation *federation;
-  LassoNode *nameIdentifier;
-  xmlChar *id, *nameIDPolicy, *consent = NULL;
+  LassoFederation *federation = NULL;
+  xmlChar *nameIDPolicy;
   gint ret = 0;
   GError *err = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-  /* verify if an identity exists else create it */
+  /* verify if identity already exists else create it */
   if (LASSO_PROFILE(login)->identity == NULL) {
     LASSO_PROFILE(login)->identity = lasso_identity_new();
   }
-  federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
-					     LASSO_PROFILE(login)->remote_providerID);
+  /* get nameIDPolicy in lib:AuthnRequest */
   nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 					      "NameIDPolicy", lassoLibHRef, NULL);
-  if ((nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) && \
-      login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
+  login->nameIDPolicy = g_strdup(nameIDPolicy);
+
+  /* if nameIDPolicy is 'onetime' => nothing to do */
+  if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
+    goto done;
+  }
+
+  /* search a federation in the identity */
+  federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
+					     LASSO_PROFILE(login)->remote_providerID);
+  
+  if ((nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone))) {
+    /* a federation MUST exist */
     if (federation == NULL) {
-      lasso_profile_set_response_status(LASSO_PROFILE(login),
-					lassoLibStatusCodeFederationDoesNotExist);
-      ret = -2;
+      /*
+	if protocolProfile is lassoLoginProtocolProfileBrwsPost
+	set StatusCode to FederationDoesNotExist in lib:AuthnResponse
+      */
+      if (login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
+	lasso_profile_set_response_status(LASSO_PROFILE(login),
+					  lassoLibStatusCodeFederationDoesNotExist);
+      }
+      ret = LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
       goto done;
     }
   }
-  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
-    debug("NameIDPolicy is federated\n");
-    /* FIXME : check AuthnRequest consent attribute */
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated) || \
+	   xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
+    /*
+      consent is necessary, it should be obtained via consent attribute
+      in lib:AuthnRequest or IDP should ask the Principal
+    */
+    if (lasso_login_must_ask_for_consent(login) == TRUE && is_consent_obtained == FALSE) {
+      if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
+	/*
+	  if the NameIDPolicy element is 'any' and if the policy for the
+	  Principal forbids federation, then evaluation MAY proceed as if the
+	  value were onetime.
+	*/
+	g_free(login->nameIDPolicy);
+	login->nameIDPolicy = g_strdup(lassoLibNameIDPolicyTypeOneTime);
+	goto done;
+      }
+      else {
+	/*
+	  if protocolProfile is lassoLoginProtocolProfileBrwsPost
+	  set StatusCode to FederationDoesNotExist in lib:AuthnResponse
+	*/
+	/* FIXME : is it the correct value for the StatusCode */
+	if (login->protocolProfile == lassoLoginProtocolProfileBrwsPost) {
+	  lasso_profile_set_response_status(LASSO_PROFILE(login),
+					    lassoLibStatusCodeFederationDoesNotExist);
+	}
+	ret = LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED;
+	goto done;
+      }
+    }
     if (federation == NULL) {
       federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-
-      /* set local NameIdentifier in federation */
-      id = lasso_build_unique_id(32);
-      nameIdentifier = lasso_saml_name_identifier_new(id);
-      xmlFree(id);
-      lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-						   LASSO_PROFILE(login)->server->providerID);
-      lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
-					    lassoLibNameIdentifierFormatFederated);
-      lasso_federation_set_local_nameIdentifier(federation, nameIdentifier);
-      lasso_node_destroy(nameIdentifier);
-
+      lasso_federation_build_local_nameIdentifier(federation,
+						  LASSO_PROFILE(login)->server->providerID,
+						  lassoLibNameIdentifierFormatFederated,
+						  NULL);
+      
       lasso_identity_add_federation(LASSO_PROFILE(login)->identity,
 				    LASSO_PROFILE(login)->remote_providerID,
 				    federation);
     }
-    else {
-      debug("Ok, a federation was found.\n");
-    }
   }
-  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
-    /* TODO */
+  else {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY), nameIDPolicy);
+    ret = LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY;
+    goto done;
   }
-
-  /* store the IDP name identifier */
-  LASSO_PROFILE(login)->nameIdentifier = lasso_node_get_content(federation->local_nameIdentifier, NULL);
 
  done:
-  lasso_federation_destroy(federation);
+  /* store the IDP name identifier if a federation exists */
+  if (federation != NULL) {
+    LASSO_PROFILE(login)->nameIdentifier = lasso_node_get_content(federation->local_nameIdentifier, NULL);
+    lasso_federation_destroy(federation);
+  }
   xmlFree(nameIDPolicy);
-  xmlFree(consent);
 
   return ret;
 }
@@ -399,15 +461,17 @@ lasso_login_accept_sso(LassoLogin *login)
 gint
 lasso_login_build_artifact_msg(LassoLogin      *login,
 			       gboolean         authentication_result,
+			       gboolean         is_consent_obtained,
 			       const gchar     *authenticationMethod,
 			       const gchar     *reauthenticateOnOrAfter,
 			       lassoHttpMethod  http_method)
 {
   LassoFederation *federation = NULL;
   LassoProvider *remote_provider;
-  gchar   *url;
+  gchar *url;
   xmlSecByte samlArt[42], *b64_samlArt, *relayState;
   xmlChar *assertionHandle, *identityProviderSuccinctID;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL,
@@ -415,27 +479,30 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 
   if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
-    return -2;
+    return LASSO_PARAM_ERROR_INVALID_VALUE;
   }
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
-    return -3;
+    message(G_LOG_LEVEL_CRITICAL, "Invalid ProtocolProfile : %s\n", login->protocolProfile);
+    return -1;
   }
-
-  if (authentication_result == TRUE) {
-    /* federation */
-    lasso_login_process_federation(login);
-    federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
-					       LASSO_PROFILE(login)->remote_providerID);
+ 
+ /* process federation and build assertion only if signature is OK */
+  if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
+    ret = lasso_login_process_federation(login, is_consent_obtained);
     /* fill the response with the assertion */
-    if (federation != NULL) {
+    if (ret == 0) {
+      federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
+						 LASSO_PROFILE(login)->remote_providerID);
       lasso_login_build_assertion(login,
 				  federation,
 				  authenticationMethod,
 				  reauthenticateOnOrAfter);
       lasso_federation_destroy(federation);
+    }
+    else if (ret < 0) {
+      return ret;
     }
   }
 
@@ -462,9 +529,10 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   case lassoHttpMethodRedirect:
     if (relayState == NULL) {
       LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s", url, b64_samlArt);
-    } else {
+    }
+    else {
       LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s&RelayState=%s",
-                      url, b64_samlArt, relayState);
+						      url, b64_samlArt, relayState);
     }
     break;
   case lassoHttpMethodPost:
@@ -483,7 +551,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   xmlFree(b64_samlArt);
   xmlFree(relayState);
   
-  return 0;
+  return ret;
 }
 
 /**
@@ -629,6 +697,7 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
 gint
 lasso_login_build_authn_response_msg(LassoLogin  *login,
 				     gboolean     authentication_result,
+				     gboolean     is_consent_obtained,
 				     const gchar *authenticationMethod,
 				     const gchar *reauthenticateOnOrAfter)
 {
@@ -649,7 +718,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 							    LASSO_PROFILE(login)->request);
   LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
 
-  /* modify AuthnResponse StatusCode if signature is not OK */
+  /* if signature is not OK => modify AuthnResponse StatusCode */
   if (LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_INVALID_SIGNATURE ||
       LASSO_PROFILE(login)->signature_status == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
     switch (LASSO_PROFILE(login)->signature_status) {
@@ -662,34 +731,38 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 					lassoLibStatusCodeUnsignedAuthnRequest);
       break;
     }
-    ret = -1;
+    /* ret = LASSO_PROFILE(login)->signature_status; */
   }
-  
-  /* modify AuthnResponse StatusCode if user authentication is not OK */
-  if (authentication_result == 0) {
-    lasso_profile_set_response_status(LASSO_PROFILE(login),
-				      lassoSamlStatusCodeRequestDenied);
-  }
+  else {
+    /* modify AuthnResponse StatusCode if user authentication is not OK */
+    if (authentication_result == FALSE) {
+      lasso_profile_set_response_status(LASSO_PROFILE(login),
+					lassoSamlStatusCodeRequestDenied);
+    }
 
-  if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
-    /* process federation */
-    lasso_login_process_federation(login);
-    federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
-					       LASSO_PROFILE(login)->remote_providerID);
-    /* fill the response with the assertion */
-    if (federation != NULL) {
-      lasso_login_build_assertion(login,
-				  federation,
-				  authenticationMethod,
-				  reauthenticateOnOrAfter);
-      lasso_federation_destroy(federation);
+    if (LASSO_PROFILE(login)->signature_status == 0 && authentication_result == TRUE) {
+      /* process federation */
+      ret = lasso_login_process_federation(login, is_consent_obtained);
+      /* fill the response with the assertion */
+      if (ret == 0) {
+	federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
+						   LASSO_PROFILE(login)->remote_providerID);
+	lasso_login_build_assertion(login,
+				    federation,
+				    authenticationMethod,
+				    reauthenticateOnOrAfter);
+	lasso_federation_destroy(federation);
+      }
+      else if (ret < 0) {
+	return ret;
+      }
     }
   }
   
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
 						  LASSO_PROFILE(login)->remote_providerID,
 						  NULL);
-  /* return an authnResponse (base64 encoded) */
+  /* build an lib:AuthnResponse base64 encoded */
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE(login)->response);
   LASSO_PROFILE(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider,
 										  lassoProviderTypeSp,
@@ -917,6 +990,67 @@ lasso_login_init_request(LassoLogin      *login,
 }
 
 gboolean
+lasso_login_must_ask_for_consent(LassoLogin *login)
+{
+  xmlChar *nameIDPolicy, *consent;
+  LassoFederation *federation = NULL;
+  gboolean ret = FALSE;
+
+  nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
+					      "NameIDPolicy", lassoLibHRef, NULL);
+
+  if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone) || nameIDPolicy == NULL) {
+    goto done;
+  }
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
+    goto done;
+  }
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated) ||  \
+	   xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeAny)) {
+    if (LASSO_PROFILE(login)->identity != NULL) {
+      federation = lasso_identity_get_federation(LASSO_PROFILE(login)->identity,
+						 LASSO_PROFILE(login)->remote_providerID);
+    }
+    if (federation != NULL) {
+      goto done;
+    }
+    else {
+      consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request,
+					  "consent", NULL);
+      if (consent != NULL) {
+	if (xmlStrEqual(consent, lassoLibConsentObtained) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedPrior) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentImplicit) || \
+	    xmlStrEqual(consent, lassoLibConsentObtainedCurrentExplicit)) {
+	  xmlFree(consent);
+	  goto done;
+	}
+	else {
+	  /* FIXME: what to do if consent value is inapplicable or unavailable ? */
+	}
+      }
+      else {
+	ret = TRUE;
+	goto done;
+      }
+    }
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s\n", nameIDPolicy);
+    /* NameIDPolicy is consider as empty (return FALSE)
+       if its value is unknown/invalid */
+  }
+
+ done:
+  if (federation != NULL) {
+    lasso_federation_destroy(federation);
+  }
+  xmlFree(nameIDPolicy);
+
+  return ret;
+}
+
+gboolean
 lasso_login_must_authenticate(LassoLogin *login)
 {
   gboolean  must_authenticate = FALSE;
@@ -927,22 +1061,26 @@ lasso_login_must_authenticate(LassoLogin *login)
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   /* verify if the user must be authenticated or not */
-  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
-				     NULL, NULL);
-  if (str != NULL) {
-    if (xmlStrEqual(str, "false")) {
-      isPassive = FALSE;
-    }
-    xmlFree(str);
-  }
 
-  str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "ForceAuthn",
-				     NULL, NULL);
-  if (str != NULL) {
-    if (xmlStrEqual(str, "true")) {
-      forceAuthn = TRUE;
+  /* get IsPassive and ForceAuthn in AuthnRequest if exists */
+  if (LASSO_PROFILE(login)->request != NULL) {
+    str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "IsPassive",
+				       NULL, NULL);
+    if (str != NULL) {
+      if (xmlStrEqual(str, "false")) {
+	isPassive = FALSE;
+      }
+      xmlFree(str);
     }
-    xmlFree(str);
+    
+    str = lasso_node_get_child_content(LASSO_PROFILE(login)->request, "ForceAuthn",
+				       NULL, NULL);
+    if (str != NULL) {
+      if (xmlStrEqual(str, "true")) {
+	forceAuthn = TRUE;
+      }
+      xmlFree(str);
+    }
   }
 
   if ((forceAuthn == TRUE || LASSO_PROFILE(login)->session == NULL) && isPassive == FALSE) {
@@ -1041,6 +1179,7 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
       xmlFree(md_authnRequestsSigned);
     }
     else {
+      /* AuthnRequestsSigned element is required */
       message(G_LOG_LEVEL_CRITICAL, err->message);
       ret = err->code;
       g_error_free(err);
@@ -1159,6 +1298,40 @@ lasso_login_process_response_msg(LassoLogin  *login,
   LASSO_PROFILE(login)->response_type = lassoMessageTypeResponse;
 
   return lasso_login_process_response_status_and_assertion(login);
+}
+
+gint
+lasso_login_process_without_authn_request_msg(LassoLogin  *login,
+					      const gchar *remote_providerID,
+					      const gchar *relayState)
+{
+  LassoNode *request;
+  gint ret = 0;
+
+  g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+  g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+  /* relayState can be NULL */
+
+  /* build a fake/dummy lib:AuthnRequest */
+  request = lasso_authn_request_new(remote_providerID, lassoSignatureTypeNone, 0);
+
+  lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(request),
+				      lassoLibConsentObtained);
+  lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(request),
+					   lassoLibNameIDPolicyTypeAny);
+  lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(request),
+					      lassoLibProtocolProfileBrwsArt);
+  if (relayState != NULL) {
+    lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(request),
+					   relayState);
+  }
+  LASSO_PROFILE(login)->request = request;
+
+  LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
+  LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+  login->protocolProfile = lassoLoginProtocolProfileBrwsArt;
+
+  return ret;
 }
 
 /*****************************************************************************/

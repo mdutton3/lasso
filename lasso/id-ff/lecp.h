@@ -76,6 +76,7 @@ LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLec
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp   *lecp,
 									gint         authentication_result,
+									gboolean     is_consent_obtained,
 									const gchar *authenticationMethod,
 									const gchar *reauthenticateOnOrAfter);
 

@@ -114,7 +114,7 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
 }
 
 gint
-lasso_lecp_build_authn_response_msg(LassoLecp   *lecp)
+lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 {
   LassoProfile *profile;
 
@@ -138,6 +138,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp   *lecp)
 gint
 lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
 					     gint         authentication_result,
+					     gboolean     is_consent_obtained,
 					     const gchar *authenticationMethod,
 					     const gchar *reauthenticateOnOrAfter)
 {
@@ -165,6 +166,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
   /* build lib:AuthnResponse */
   lasso_login_build_authn_response_msg(LASSO_LOGIN(lecp),
 				       authentication_result,
+				       is_consent_obtained,
 				       authenticationMethod,
 				       reauthenticateOnOrAfter);
   

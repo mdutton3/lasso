@@ -1513,8 +1513,9 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildArtifactMsg(gint authenticationResult, gchar *authenticationMethod,
-				      gchar *reauthenticateOnOrAfter, lassoHttpMethod httpMethod);
+		void buildArtifactMsg(gboolean authenticationResult, gboolean is_consent_obtained,
+				      gchar *authenticationMethod, gchar *reauthenticateOnOrAfter,
+				      lassoHttpMethod httpMethod);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1522,7 +1523,8 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnResponseMsg(gint authenticationResult, gchar *authenticationMethod,
+		void buildAuthnResponseMsg(gint authenticationResult, gboolean is_consent_obtained,
+					   gchar *authenticationMethod,
 					   gchar *reauthenticateOnOrAfter);
 		END_THROW_ERROR
 
@@ -2038,7 +2040,8 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnResponseEnvelopeMsg(gint authenticationResult,
+		void buildAuthnResponseEnvelopeMsg(gboolean authenticationResult,
+						   gboolean is_consent_obtained,
 						   gchar *authenticationMethod,
 						   gchar *reauthenticateOnOrAfter);
 		END_THROW_ERROR
