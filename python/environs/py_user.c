@@ -60,6 +60,22 @@ PyObject *user_new_from_dump(PyObject *self, PyObject *args) {
   return (LassoUser_wrap(user));
 }
 
+PyObject *user_destroy(PyObject *self, PyObject *args) {
+  PyObject *user_obj;
+
+  if (CheckArgs(args, "O:user_destroy")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:user_destroy",
+			 &user_obj))
+      return NULL;
+  }
+  else return NULL;
+  
+  lasso_user_destroy(LassoUser_get(user_obj));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
 PyObject *user_dump(PyObject *self, PyObject *args) {
   PyObject  *user_obj;
   gchar     *dump;

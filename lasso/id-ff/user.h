@@ -64,6 +64,8 @@ LASSO_EXPORT LassoUser     *lasso_user_new                   (void);
 
 LASSO_EXPORT LassoUser     *lasso_user_new_from_dump         (gchar *dump);
 
+LASSO_EXPORT void           lasso_user_destroy               (LassoUser *user);
+
 LASSO_EXPORT gchar         *lasso_user_dump                  (LassoUser *user);
 
 LASSO_EXPORT gint           lasso_user_add_assertion         (LassoUser *user,

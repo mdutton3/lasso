@@ -119,6 +119,12 @@ lasso_user_dump_identity(gpointer   key,
   identity_class->add_child(identities, identity_node, TRUE);
 }
 
+void
+lasso_user_destroy(LassoUser *user)
+{
+
+}
+
 gchar*
 lasso_user_dump(LassoUser *user)
 {
