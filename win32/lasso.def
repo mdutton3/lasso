@@ -18,12 +18,21 @@ EXPORTS
     lasso_assertion_new
     lasso_authentication_statement_get_type
     lasso_authentication_statement_new
+    lasso_authn_request_envelope_get_authnRequest
+    lasso_authn_request_envelope_get_type
+    lasso_authn_request_envelope_new
+    lasso_authn_request_envelope_new_from_export
     lasso_authn_request_get_protocolProfile
     lasso_authn_request_get_type
     lasso_authn_request_new
     lasso_authn_request_new_from_export
     lasso_authn_request_set_requestAuthnContext
     lasso_authn_request_set_scoping
+    lasso_authn_response_envelope_get_assertionConsumerServiceURL
+    lasso_authn_response_envelope_get_authnResponse
+    lasso_authn_response_envelope_get_type
+    lasso_authn_response_envelope_new
+    lasso_authn_response_envelope_new_from_export
     lasso_authn_response_get_status
     lasso_authn_response_get_type
     lasso_authn_response_new
@@ -43,6 +52,7 @@ EXPORTS
     lasso_federation_termination_new
     lasso_federation_termination_notification_get_type
     lasso_federation_termination_notification_new
+    lasso_federation_termination_notification_new_from_export
     lasso_federation_termination_notification_new_from_query
     lasso_federation_termination_notification_new_from_soap
     lasso_federation_termination_process_notification_msg
@@ -55,10 +65,23 @@ EXPORTS
     lasso_identity_get_type
     lasso_identity_new
     lasso_identity_new_from_dump
+    lasso_identity_remove_local_nameIdentifier
+    lasso_identity_remove_remote_nameIdentifier
     lasso_identity_set_local_nameIdentifier
     lasso_identity_set_remote_nameIdentifier
     lasso_identity_verify_nameIdentifier
     lasso_init
+    lasso_lecp_build_authn_request_envelope_msg
+    lasso_lecp_build_authn_request_msg
+    lasso_lecp_build_authn_response_envelope_msg
+    lasso_lecp_build_authn_response_msg
+    lasso_lecp_destroy
+    lasso_lecp_get_type
+    lasso_lecp_init_authn_request
+    lasso_lecp_init_authn_request_envelope
+    lasso_lecp_new
+    lasso_lecp_process_authn_request_envelope_msg
+    lasso_lecp_process_authn_response_envelope_msg
     lasso_lib_assertion_get_type
     lasso_lib_assertion_new
     lasso_lib_assertion_set_inResponseTo
@@ -71,6 +94,15 @@ EXPORTS
     lasso_lib_authn_context_new
     lasso_lib_authn_context_set_authnContextClassRef
     lasso_lib_authn_context_set_authnContextStatementRef
+    lasso_lib_authn_request_envelope_get_type
+    lasso_lib_authn_request_envelope_new
+    lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL
+    lasso_lib_authn_request_envelope_set_authnRequest
+    lasso_lib_authn_request_envelope_set_extension
+    lasso_lib_authn_request_envelope_set_idpList
+    lasso_lib_authn_request_envelope_set_isPassive
+    lasso_lib_authn_request_envelope_set_providerID
+    lasso_lib_authn_request_envelope_set_providerName
     lasso_lib_authn_request_get_type
     lasso_lib_authn_request_new
     lasso_lib_authn_request_set_affiliationID
@@ -84,6 +116,11 @@ EXPORTS
     lasso_lib_authn_request_set_relayState
     lasso_lib_authn_request_set_requestAuthnContext
     lasso_lib_authn_request_set_scoping
+    lasso_lib_authn_response_envelope_get_type
+    lasso_lib_authn_response_envelope_new
+    lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL
+    lasso_lib_authn_response_envelope_set_authnResponse
+    lasso_lib_authn_response_envelope_set_extension
     lasso_lib_authn_response_get_type
     lasso_lib_authn_response_new
     lasso_lib_authn_response_set_consent
@@ -178,6 +215,7 @@ EXPORTS
     lasso_logout_build_response_msg
     lasso_logout_destroy
     lasso_logout_dump
+    lasso_logout_get_next_providerID
     lasso_logout_get_type
     lasso_logout_init_request
     lasso_logout_new
@@ -237,6 +275,7 @@ EXPORTS
     lasso_node_rename_prop
     lasso_node_verify_signature
     lasso_profile_context_dump
+    lasso_profile_context_get_request_type_from_soap_msg
     lasso_profile_context_get_type
     lasso_profile_context_new
     lasso_profile_context_set_remote_providerID
@@ -401,6 +440,7 @@ EXPORTS
     lasso_soap_env_envelope_get_type
     lasso_soap_env_envelope_new
     lasso_soap_env_envelope_set_body
+    lasso_strerror
     lasso_str_escape
     lasso_str_hash
     lasso_str_sign
@@ -410,7 +450,10 @@ EXPORTS
     lasso_user_destroy
     lasso_user_dump
     lasso_user_get_assertion
+    lasso_user_get_authentication_method
     lasso_user_get_identity
+    lasso_user_get_next_assertion_remote_providerID
+    lasso_user_get_next_identity_remote_providerID
     lasso_user_get_type
     lasso_user_new
     lasso_user_new_from_dump
@@ -424,6 +467,9 @@ EXPORTS
     lassoLibAuthnContextComparisonBetter
     lassoLibAuthnContextComparisonExact
     lassoLibAuthnContextComparisonMinimum
+    lassoLibConsentInapplicable
+    lassoLibConsentObtained
+    lassoLibConsentUnavailable
     lassoLibHRef
     lassoLibMajorVersion
     lassoLibMinorVersion
