@@ -26,7 +26,7 @@
 #include <lasso/protocols/request.h>
 #include <lasso/protocols/response.h>
 #include <lasso/protocols/authn_response.h>
-#include <lasso/environs/context.h>
+#include <lasso/environs/authentication.h>
 
 /*****************************************************************************/
 /* functions                                                                 */
@@ -37,45 +37,42 @@
 /*****************************************************************************/
 
 gchar *
-lasso_authentication_build_request(LassoAuthentication *authn,
-				   const gchar         *protocolProfile,
-				   gboolean             isPassive,
-				   gboolean             forceAuthn,
-				   const gchar         *nameIDPolicy)
+lasso_authentication_build_request(LassoAuthentication *authn)
 {
   LassoProvider *provider;
   xmlChar *request_protocolProfile, *url, *query;
   gchar *str;
   
-  provider = lasso_server_get_provider(authn->server,
-				       authn->local_providerID);
+  provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(authn)->server,
+				       LASSO_PROFILE_CONTEXT(authn)->local_providerID);
   if (provider == NULL) {
     return (NULL);
   }  
 
   /* build the request object */
-  authn->request = LASSO_NODE(lasso_authn_request_new(authn->local_providerID));
+  LASSO_PROFILE_CONTEXT(authn)->request = lasso_authn_request_new(LASSO_PROFILE_CONTEXT(authn)->local_providerID);
+
   /* optional values */
-  if (protocolProfile != NULL) {
-    lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(authn->request),
-						protocolProfile);
-  }
-  if (nameIDPolicy != NULL) {
-    lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(authn->request),
-					     nameIDPolicy);
-  }
-  lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(authn->request), isPassive);
-  lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(authn->request), forceAuthn);
+/*   if (protocolProfile != NULL) { */
+/*     lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request), */
+/* 						protocolProfile); */
+/*   } */
+/*   if (nameIDPolicy != NULL) { */
+/*     lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request), */
+/* 					     nameIDPolicy); */
+/*   } */
+/*   lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request), isPassive); */
+/*   lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request), forceAuthn); */
   
   /* export request depending on the request protocol profile */
   request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(provider);
   if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
     url = lasso_provider_get_singleSignOnServiceUrl(provider);
-    query = lasso_node_export_to_query(authn->request, 1, NULL);
-    str = (gchar *) malloc(strlen(url) + strlen(query) + 2); // +2 for the ? character and the end line character
-    sprintf(str, "%s?%s", url, query);
+    query = lasso_node_export_to_query(LASSO_PROFILE_CONTEXT(authn)->request, 1, NULL);
+    str = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2); // +2 for the ? character and the end line character
+    g_sprintf(str, "%s?%s", url, query);
     
-    authn->request_protocol_method = lassoProfileContextMethodGet;
+    LASSO_PROFILE_CONTEXT(authn)->request_protocol_method = lassoProfileContextMethodGet;
   }
   else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
     printf("TODO - export the AuthnRequest in a formular\n");
@@ -88,8 +85,8 @@ xmlChar*
 lasso_authentication_process_artifact(LassoAuthentication *authn,
 				      gchar               *artifact)
 {
-  authn->request = lasso_request_new(artifact);
-  return (lasso_node_export_to_soap(authn->request));
+  LASSO_PROFILE_CONTEXT(authn)->request = lasso_request_new(artifact);
+  return (lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(authn)->request));
 }
 
 gboolean
@@ -101,16 +98,16 @@ lasso_authentication_process_response(LassoAuthentication *authn,
   char *artifact, *statusCodeValue;
 
   printf("DEBUG - POST response, process the authnResponse\n");
-  authn->response = LASSO_NODE(lasso_authn_response_new_from_export(response, 0));
+  LASSO_PROFILE_CONTEXT(authn)->response = LASSO_NODE(lasso_authn_response_new_from_export(response, 0));
     
   /* process the status code value */
-  statusCode = lasso_node_get_child(authn->response, "StatusCode", NULL);
+  statusCode = lasso_node_get_child(LASSO_PROFILE_CONTEXT(authn)->response, "StatusCode", NULL);
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
   if(strcmp(statusCodeValue, lassoSamlStatusCodeSuccess))
     return(FALSE);
   
   /* process the assertion */
-  assertion = lasso_node_get_child(authn->response, "Assertion", NULL);
+  assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(authn)->response, "Assertion", NULL);
   if(!assertion)
     return(FALSE);
   
@@ -137,37 +134,42 @@ lasso_authentication_process_request(LassoAuthentication *authn,
   gboolean  signature_status;
 
   switch (request_method) {
-  case lasso_protocol_method_get:
-    authn->request = LASSO_NODE(lasso_authn_request_new_from_query(request));
-    authn->peer_providerID = lasso_node_get_child_content(authn->request, "ProviderID", NULL);
+  case lassoProfileContextMethodGet:
+    LASSO_PROFILE_CONTEXT(authn)->request = LASSO_NODE(lasso_authn_request_new_from_query(request));
+    LASSO_PROFILE_CONTEXT(authn)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
+										 "ProviderID", NULL);
 
-    protocolProfile = lasso_node_get_child_content(->request, "ProtocolProfile", NULL);
+    protocolProfile = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request, "ProtocolProfile", NULL);
     if (xmlStrEqual(protocolProfile, lassoLibProtocolProfilePost)) {
-      authn->response = lasso_authn_response_new(->local_providerID, ->request);
+      LASSO_PROFILE_CONTEXT(authn)->response = lasso_authn_response_new(LASSO_PROFILE_CONTEXT(authn)->local_providerID,
+									LASSO_PROFILE_CONTEXT(authn)->request);
     }
     else {
-      authn->response = lasso_response_new();
+      LASSO_PROFILE_CONTEXT(authn)->response = lasso_response_new();
     }
 
-    provider = lasso_server_authentication_get_provider(authn->server, authn->peer_providerID);
+    provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(authn)->server,
+					 LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
     if (xmlStrEqual(lasso_node_get_child_content(provider->metadata, "AuthnRequestsSigned", NULL), "true")) {
       signature_status = lasso_query_verify_signature(request,
 						      provider->public_key,
-						      authn->server->private_key);
+						      LASSO_PROFILE_CONTEXT(authn)->server->private_key);
       /* Status & StatusCode */
       if (signature_status == 0 || signature_status == 2) {
 	switch (signature_status) {
-	case 0:
-	  set_response_status(authn->response, lassoLibStatusCodeInvalidSignature);
+	case 0: // Invalid Signature
+	  lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+						    lassoLibStatusCodeInvalidSignature);
 	  break;
-	case 2:
-	  set_response_status(authn->response, lassoLibStatusCodeUnsignedAuthnRequest);
+	case 2: // Unsigned AuthnRequest
+	  lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+						    lassoLibStatusCodeUnsignedAuthnRequest);
 	  break;
 	}
       }
     }
     break;
-  case lasso_protocol_method_post:
+  case lassoProfileContextMethodPost:
     printf("TODO - lasso_authentication_process_authnRequest() - implement the parsing of the post request\n");
     break;
   default:
@@ -175,11 +177,11 @@ lasso_authentication_process_request(LassoAuthentication *authn,
   }
   
   /* verify if the user must be authenticated or not */
-  if (xmlStrEqual(lasso_node_get_child_content(authn->request, "IsPassive", NULL), "false")) {
+  if (xmlStrEqual(lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request, "IsPassive", NULL), "false")) {
     isPassive = FALSE;
   }
 
-  if (xmlStrEqual(lasso_node_get_child_content(authn->request, "ForceAuthn", NULL), "true")) {
+  if (xmlStrEqual(lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request, "ForceAuthn", NULL), "true")) {
     forceAuthn = TRUE;
   }
 
@@ -188,7 +190,8 @@ lasso_authentication_process_request(LassoAuthentication *authn,
     must_authenticate = TRUE;
   }
   else if (is_authenticated == FALSE && isPassive == TRUE) {
-    set_response_status(authn->response, lassoLibStatusCodeNoPassive);
+    lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+					      lassoLibStatusCodeNoPassive);
     must_authenticate = FALSE;
   }
 
@@ -211,22 +214,25 @@ lasso_authentication_process_authentication_result(LassoAuthentication *authn,
   
   printf("process authentication\n");
   /* verify if a user context exists */
-  if (authn->user == NULL) {
-    authn->user = lasso_user_authentication_new();
+  if (LASSO_PROFILE_CONTEXT(authn)->user == NULL) {
+    LASSO_PROFILE_CONTEXT(authn)->user = lasso_user_new();
   }
   
-  identity = lasso_user_find_identity(authn->user, authn->peer_providerID);
-  nameIDPolicy = lasso_node_get_child_content(authn->request, "NameIDPolicy", NULL);
+  identity = lasso_user_find_identity(LASSO_PROFILE_CONTEXT(authn)->user,
+				      LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
+  nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
+					      "NameIDPolicy", NULL);
   printf("NameIDPolicy %s\n", nameIDPolicy);
   if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
     if (identity == NULL) {
-      set_response_status(authn->response, lassoLibStatusCodeFederationDoesNotExist);
+      lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+						lassoLibStatusCodeFederationDoesNotExist);
     }
   }
-  else if (!strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
+  else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
     printf("DEBUG - NameIDPolicy is federated\n");
     if (identity == NULL) {
-      identity = lasso_identity_new(authn->peer_providerID);
+      identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
       idpProvidedNameIdentifier = LASSO_NODE(lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32)));
       lasso_identity_set_local_name_identifier(identity, idpProvidedNameIdentifier);
     }
@@ -254,15 +260,48 @@ lasso_authentication_process_authentication_result(LassoAuthentication *authn,
   }
   
   /* return a response message */
-  protocolProfile = lasso_node_get_child_content(authn->request, "ProtocolProfile", NULL);
+  protocolProfile = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
+						 "ProtocolProfile", NULL);
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfilePost)) {
-    str = lasso_node_export_to_base64(authn->response);
+    str = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
   }
   else {
     printf("DEBUG - return a artifact message\n");
   }
   
   return(str);
+}
+
+void
+lasso_authentication_set_forceAuthn(LassoAuthentication *authn,
+				    const xmlChar       *forceAuthn)
+{
+  lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request),
+					 forceAuthn);
+}
+
+void
+lasso_authentication_set_isPassive(LassoAuthentication *authn,
+				   gboolean            *isPassive)
+{
+  lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request),
+					isPassive);
+}
+
+void
+lasso_authentication_set_nameIDPolicy(LassoAuthentication *authn,
+				      const xmlChar       *nameIDPolicy)
+{
+  lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request),
+					   nameIDPolicy);
+}
+
+void
+lasso_authentication_set_protocolProfile(LassoAuthentication *authn,
+					 const xmlChar       *protocolProfile)
+{
+  lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE_CONTEXT(authn)->request),
+					      protocolProfile);
 }
 
 /*****************************************************************************/
@@ -272,13 +311,6 @@ lasso_authentication_process_authentication_result(LassoAuthentication *authn,
 static void
 lasso_authentication_instance_init(LassoAuthentication *authn)
 {
-  authn->user = NULL;
-  authn->message = NULL;
-  authn->request  = NULL;
-  authn->response = NULL;
-  authn->local_providerID = NULL;
-  authn->peer_providerID = NULL;
-  authn->request_protocol_method = 0;
 }
 
 static void
@@ -294,12 +326,14 @@ GType lasso_authentication_get_type() {
       sizeof (LassoAuthenticationClass),
       NULL,
       NULL,
-      (GClassInitFunc) lasso_authentication_class_init,
+/*       (GClassInitFunc) lasso_authentication_class_init, */
+      NULL,
       NULL,
       NULL,
       sizeof(LassoAuthentication),
       0,
-      (GInstanceInitFunc) lasso_authentication_instance_init,
+/*       (GInstanceInitFunc) lasso_authentication_instance_init, */
+      NULL,
     };
     
     this_type = g_type_register_static(LASSO_TYPE_PROFILE_CONTEXT,
@@ -309,28 +343,24 @@ GType lasso_authentication_get_type() {
   return this_type;
 }
 
-LassoAuthentication*
-lasso_authentication_new(LassoServerAuthentication *server,
-			  LassoUserAuthentication   *user,
-			  gchar              *local_providerID,
-			  gchar              *peer_providerID)
+LassoProfileContext*
+lasso_authentication_new(LassoServer *server,
+			 LassoUser   *user,
+			 gchar       *local_providerID,
+			 gchar       *remote_providerID)
 {
   /* load the ProviderID name or a reference to the provider ? */
   g_return_val_if_fail(local_providerID != NULL, NULL);
-  g_return_val_if_fail(peer_providerID != NULL, NULL);
+  g_return_val_if_fail(remote_providerID != NULL, NULL);
 
-  LassoAuthentication *authn;
+  LassoProfileContext *authn;
 
-  authn = g_object_new(LASSO_TYPE_AUTHENTICATION, NULL);
+  authn = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_AUTHENTICATION,
+					     "server", server,
+					     "user", user,
+					     "local_providerID", local_providerID,
+					     "remote_providerID", remote_providerID,
+					     NULL));
 
-  ->server = server;
-
-  if (user != NULL) {
-    authn->user = user;
-  }
-
-  lasso_authentication_set_local_providerID(authn, local_providerID);
-  lasso_authentication_set_peer_providerID(authn, peer_providerID);
-
-  return ();
+  return (authn);
 }

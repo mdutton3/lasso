@@ -64,7 +64,7 @@ struct _LassoProfileContext {
   LassoNode *response;
 
   gchar *local_providerID;
-  gchar *peer_providerID;
+  gchar *remote_providerID;
 
   gint request_protocol_method;
   
@@ -80,13 +80,16 @@ LASSO_EXPORT GType                lasso_profile_context_get_type             (vo
 LASSO_EXPORT LassoProfileContext* lasso_profile_context_new                  (LassoServer *server,
 									      LassoUser   *user,
 									      gchar       *local_providerID,
-									      gchar       *peer_providerID);
+									      gchar       *remote_providerID);
 
 LASSO_EXPORT gint                 lasso_profile_context_set_local_providerID (LassoProfileContext *ctx,
 									      gchar               *providerID);
 
-LASSO_EXPORT gint                 lasso_profile_context_set_peer_providerID  (LassoProfileContext *ctx,
+LASSO_EXPORT gint                 lasso_profile_context_set_remote_providerID(LassoProfileContext *ctx,
 									      gchar               *providerID);
+
+LASSO_EXPORT void                 lasso_profile_context_set_response_status  (LassoProfileContext *ctx,
+									      const xmlChar       *statusCodeValue);
 
 #ifdef __cplusplus
 }

@@ -28,25 +28,25 @@
 
 //static GObjectClass *parent_class = NULL;
 
-/* static void */
-/* lasso_authn_response_set_status(LassoAuthnResponse *response, */
-/* 				const xmlChar      *statusCodeValue) { */
-/*   LassoNode *status, *status_code; */
+static void
+lasso_authn_response_set_status(LassoAuthnResponse *response,
+				const xmlChar      *statusCodeValue) {
+  LassoNode *status, *status_code;
 
-/*   status = lasso_samlp_status_new(); */
+  status = lasso_samlp_status_new();
 
-/*   status_code = lasso_samlp_status_code_new(); */
-/*   lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code), */
-/* 				    statusCodeValue); */
+  status_code = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code),
+				    statusCodeValue);
 
-/*   lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status), */
-/* 				    LASSO_SAMLP_STATUS_CODE(status_code)); */
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status),
+				    LASSO_SAMLP_STATUS_CODE(status_code));
 
-/*   lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response), */
-/* 				  LASSO_SAMLP_STATUS(status)); */
-/*   lasso_node_destroy(status_code); */
-/*   lasso_node_destroy(status); */
-/* } */
+  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response),
+				  LASSO_SAMLP_STATUS(status));
+  lasso_node_destroy(status_code);
+  lasso_node_destroy(status);
+}
 
 /*****************************************************************************/
 /* public methods                                                            */

@@ -26,10 +26,12 @@ liblasso_protocols_la_SOURCES = \
 	authn_request.c \
 	authn_response.c \
 	federation_termination_notification.c \
+	identity.c \
 	logout_request.c \
 	logout_response.c \
 	name_identifier_mapping_request.c \
 	name_identifier_mapping_response.c \
+	provider.c \
 	register_name_identifier_request.c \
 	register_name_identifier_response.c \
 	request.c \
@@ -40,10 +42,12 @@ liblassoinclude_HEADERS = \
 	authn_request.h \
 	authn_response.h \
 	federation_termination_notification.h \
+	identity.h \
 	logout_request.h \
 	logout_response.h \
 	name_identifier_mapping_request.h \
 	name_identifier_mapping_response.h \
+	provider.h \
 	register_name_identifier_request.h \
 	register_name_identifier_response.h \
 	request.h \
