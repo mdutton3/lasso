@@ -151,7 +151,9 @@ GType lasso_authn_request_get_type() {
 }
 
 LassoNode*
-lasso_authn_request_new(const xmlChar *providerID)
+lasso_authn_request_new(const xmlChar        *providerID,
+			lassoSignatureType    sign_type,
+			lassoSignatureMethod  sign_method)
 {
   LassoNode *request;
   xmlChar   *id, *time;
@@ -178,7 +180,14 @@ lasso_authn_request_new(const xmlChar *providerID)
   /* ProviderID */
   lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
 					 providerID);
-  
+
+  /* Signature template */
+  if (sign_type != lassoSignatureTypeNone) {
+    lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						    sign_type,
+						    sign_method);
+ }
+
   return (request);
 }
 
