@@ -130,6 +130,68 @@ public class BindingTests extends TestCase {
 	authnRequest = null;
     }
 
+    public void test04() {
+        // Get & set attributes of nodes of type node list.
+
+        SamlpResponse response = new SamlpResponse();
+
+        assertNull(response.getAssertion());
+
+        NodeList assertions = new NodeList();
+        assertEquals(assertions.length(), 0);
+        SamlAssertion assertion1 = new SamlAssertion();
+        assertion1.setAssertionId("assertion 1");
+        assertions.append(assertion1);
+        assertEquals(assertions.length(), 1);
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        SamlAssertion assertion2 = new SamlAssertion();
+        assertion2.setAssertionId("assertion 2");
+        assertions.append(assertion2);
+        assertEquals(assertions.length(), 2);
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) assertions.getItem(1)).getAssertionId(), "assertion 2");
+        SamlAssertion assertion3 = new SamlAssertion();
+        assertion3.setAssertionId("assertion 3");
+        assertions.append(assertion3);
+        assertEquals(assertions.length(), 3);
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) assertions.getItem(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) assertions.getItem(2)).getAssertionId(), "assertion 3");
+        response.setAssertion(assertions);
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(0)).getAssertionId(),
+		     "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(1)).getAssertionId(),
+		     "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(2)).getAssertionId(),
+		     "assertion 3");
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) assertions.getItem(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) assertions.getItem(2)).getAssertionId(), "assertion 3");
+        assertions = null;;
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(0)).getAssertionId(),
+		     "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(1)).getAssertionId(),
+		     "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(2)).getAssertionId(),
+		     "assertion 3");
+        assertions = response.getAssertion();
+        assertEquals(((SamlAssertion) assertions.getItem(0)).getAssertionId(), "assertion 1");
+        assertEquals(((SamlAssertion) assertions.getItem(1)).getAssertionId(), "assertion 2");
+        assertEquals(((SamlAssertion) assertions.getItem(2)).getAssertionId(), "assertion 3");
+        assertions = null;
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(0)).getAssertionId(),
+		     "assertion 1");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(1)).getAssertionId(),
+		     "assertion 2");
+        assertEquals(((SamlAssertion) response.getAssertion().getItem(2)).getAssertionId(),
+		     "assertion 3");
+        response.setAssertion(null);
+        assertNull(response.getAssertion());
+
+	response = null;
+    }
+
     public void test05() {
 	// Get & set attributes of nodes of type XML list.
 
