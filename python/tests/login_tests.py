@@ -379,7 +379,7 @@ jFL7NhzvY02aBTLhm22YOLYnlycKm64NGne+siooDCi5tel2/vcx+e+btX9x</X509Certificate>
         # " <-- Trick for Emacs Python mode.
         self.failUnlessEqual(idpLogoutContext.set_session_from_dump(idpSessionContextDump), 0)
         self.failUnlessEqual(idpLogoutContext.get_session().dump(), idpSessionContextDump)
-
+        self.failUnlessEqual(lassoLogout.process_request(), 0)
         self.failIf(idpLogoutContext.is_identity_dirty())
         self.failUnless(idpLogoutContext.is_session_dirty())
         idpSessionContextDump = idpLogoutContext.get_session().dump()
