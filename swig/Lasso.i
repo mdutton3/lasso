@@ -347,7 +347,8 @@ typedef enum {
 %rename(requestTypeLogin) lassoRequestTypeLogin;
 %rename(requestTypeLogout) lassoRequestTypeLogout;
 %rename(requestTypeDefederation) lassoRequestTypeDefederation;
-%rename(requestTypeRegisterNameIdentifier) lassoRequestTypeRegisterNameIdentifier;
+%rename(requestTypeRegisterNameIdentifier) lassoRequestTypeRegisterNameIdentifier; /* Obsolete */
+%rename(requestTypeNameRegistration) lassoRequestTypeNameRegistration;
 %rename(requestTypeNameIdentifierMapping) lassoRequestTypeNameIdentifierMapping;
 %rename(requestTypeLecp) lassoRequestTypeLecp;
 #endif
@@ -356,7 +357,8 @@ typedef enum {
 	lassoRequestTypeLogin,
 	lassoRequestTypeLogout,
 	lassoRequestTypeDefederation,
-	lassoRequestTypeRegisterNameIdentifier,
+	lassoRequestTypeRegisterNameIdentifier, /* Obsolete */
+	lassoRequestTypeNameRegistration,
 	lassoRequestTypeNameIdentifierMapping,
 	lassoRequestTypeLecp
 } lassoRequestType;
