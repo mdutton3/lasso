@@ -75,11 +75,11 @@ LASSO_EXPORT gint            lasso_name_registration_process_request_msg  (Lasso
 									   gchar                 *request_msg,
 									   lassoHttpMethod        request_method);
 
-LASSO_EXPORT gint            lasso_name_registration_validate_request     (LassoNameRegistration *name_registration);
-
 LASSO_EXPORT gint            lasso_name_registration_process_response_msg (LassoNameRegistration *name_registration,
 									   gchar                 *response_msg,
 									   lassoHttpMethod        response_method);
+
+LASSO_EXPORT gint            lasso_name_registration_validate_request     (LassoNameRegistration *name_registration);
   
 #ifdef __cplusplus
 }
