@@ -147,7 +147,7 @@ LassoNode *
 lasso_register_name_identifier_response_new_from_query(const xmlChar *query)
 {
   LassoNode *response;
-  xmlChar *relayState, *consent;
+  xmlChar *relayState;
   GData *gd;
   
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
