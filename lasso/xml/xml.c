@@ -841,6 +841,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Dst";
 	if (strcmp(prefix, "Dst") == 0 && strcmp(xmlnode->name, "Status") == 0)
 		prefix = "Utility";
+	if (strcmp(prefix, "Disco") == 0 && strcmp(xmlnode->name, "Status") == 0)
+		prefix = "Utility";
 
 	xsitype = xmlGetNsProp(xmlnode, "type", LASSO_XSI_HREF);
 	if (xsitype) {
