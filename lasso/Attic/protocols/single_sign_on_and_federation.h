@@ -117,6 +117,8 @@ LassoNode *lasso_authentication_statement_build(const xmlChar *authenticationMet
 						const xmlChar *idp_format,
 						const xmlChar *confirmationMethod);
 
+lassoRequest *lasso_request_create(const xmlChar *assertionArtifact);
+
 lassoResponse *lasso_response_create(const xmlChar *serialized_request,
 				     gboolean       verifySignature,
 				     const xmlChar *public_key,
