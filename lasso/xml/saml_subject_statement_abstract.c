@@ -115,5 +115,5 @@ LassoNode* lasso_saml_subject_statement_abstract_new(const xmlChar *name)
   if (name && *name)
     LASSO_NODE_GET_CLASS(node)->set_name(node, name);
 
-  return (node);
+  return node;
 }

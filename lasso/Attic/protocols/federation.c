@@ -52,7 +52,7 @@ lasso_federation_copy(LassoFederation *federation)
     copy->remote_nameIdentifier = lasso_node_copy(federation->remote_nameIdentifier);
   }
 
-  return(copy);
+  return copy;
 }
 
 void
@@ -105,17 +105,17 @@ lasso_federation_dump(LassoFederation *federation)
   dump = lasso_node_export(federation_node);
   lasso_node_destroy(federation_node);
 
-  return(dump);
+  return dump;
 }
 
 LassoNode *
 lasso_federation_get_local_nameIdentifier(LassoFederation *federation)
 {
   if (federation->local_nameIdentifier != NULL) {
-    return (lasso_node_copy(federation->local_nameIdentifier));
+    return lasso_node_copy(federation->local_nameIdentifier);
   }
   else {
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -123,10 +123,10 @@ LassoNode *
 lasso_federation_get_remote_nameIdentifier(LassoFederation *federation)
 {
   if (federation->remote_nameIdentifier != NULL) {
-    return(lasso_node_copy(federation->remote_nameIdentifier));
+    return lasso_node_copy(federation->remote_nameIdentifier);
   }
   else {
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -172,7 +172,7 @@ lasso_federation_verify_nameIdentifier(LassoFederation *federation,
 						NULL);
     if(xmlStrEqual(federation_content, nameIdentifier_content)) {
       xmlFree(federation_content);
-      return(TRUE);
+      return TRUE;
     }
     xmlFree(federation_content);
   }
@@ -181,13 +181,13 @@ lasso_federation_verify_nameIdentifier(LassoFederation *federation,
 						NULL);
     if(xmlStrEqual(federation_content, nameIdentifier_content)) {
       xmlFree(federation_content);
-      return(TRUE);
+      return TRUE;
     }
     xmlFree(federation_content);
   }
   xmlFree(nameIdentifier_content);
     
-  return(FALSE);
+  return FALSE;
 }
 
 /*****************************************************************************/
@@ -282,7 +282,7 @@ lasso_federation_new(gchar *remote_providerID)
 
   federation->remote_providerID = g_strdup(remote_providerID);
 
-  return(federation);
+  return federation;
 }
 
 LassoFederation*
@@ -294,5 +294,5 @@ lasso_federation_new_from_dump(gchar *dump)
 
   federation = LASSO_FEDERATION(g_object_new(LASSO_TYPE_FEDERATION, NULL));
 
-  return(federation);
+  return federation;
 }

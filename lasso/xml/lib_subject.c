@@ -154,5 +154,5 @@ lasso_lib_subject_new(gboolean use_xsitype)
 				 "use_xsitype", use_xsitype,
 				 NULL));
 
-  return (node);
+  return node;
 }

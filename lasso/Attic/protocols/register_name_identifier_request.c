@@ -152,7 +152,7 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
   lasso_node_destroy(oldidentifier);
 
-  return (request);
+  return request;
 }
 
 static LassoNode *
@@ -229,7 +229,7 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
  
   g_datalist_clear(&gd);
   
-  return(request);
+  return request;
 }
 
 static LassoNode *
@@ -254,7 +254,7 @@ lasso_register_name_identifier_request_new_from_soap(const xmlChar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
   
-  return(request);
+  return request;
 }
 
 LassoNode*
@@ -277,5 +277,5 @@ lasso_register_name_identifier_request_new_from_export(gchar               *buff
     request = NULL;
   }
 
-  return(request);
+  return request;
 }

@@ -118,7 +118,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
 								   LASSO_SAML_NAME_IDENTIFIER(identifier));
   lasso_node_destroy(identifier);
 
-  return (request);
+  return request;
 }
 
 LassoNode *
@@ -133,7 +133,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   gd = lasso_query_to_dict(query);
   if (gd == NULL) {
     g_object_unref(notification);
-    return(NULL);
+    return NULL;
   }
   
   /* RequestID */
@@ -141,7 +141,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
   
@@ -159,7 +159,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
   
@@ -168,7 +168,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(notification), str);
   
@@ -177,7 +177,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_lib_federation_termination_notification_set_providerID(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(notification), str);
   
@@ -186,21 +186,21 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   identifier = lasso_saml_name_identifier_new(str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0);
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(notification);
-    return (NULL);
+    return NULL;
   }
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
   
@@ -209,7 +209,7 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   
   lasso_node_destroy(identifier);
 
-  return(notification);
+  return notification;
 }
 
 LassoNode *
@@ -234,7 +234,7 @@ lasso_federation_termination_notification_new_from_soap(const gchar *buffer)
   class->set_xmlNode(LASSO_NODE(notification), xmlNode_notification);
   lasso_node_destroy(envelope);
   
-  return(notification);
+  return notification;
 }
 
 
@@ -254,8 +254,8 @@ lasso_federation_termination_notification_new_from_export(const gchar         *b
     notification = lasso_federation_termination_notification_new_from_soap(buffer);
     break;
   default:
-    return(NULL);
+    return NULL;
   }
 
-  return(notification);
+  return notification;
 }

@@ -126,5 +126,5 @@ LassoNode* lasso_saml_name_identifier_new(const xmlChar *content)
   node = LASSO_NODE(g_object_new(LASSO_TYPE_SAML_NAME_IDENTIFIER, NULL));
   xmlNodeSetContent(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node),
 		    content);
-  return (node);
+  return node;
 }

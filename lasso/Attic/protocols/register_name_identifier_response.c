@@ -79,7 +79,7 @@ lasso_register_name_identifier_response_new_from_query(gchar *query)
   
   g_datalist_clear(&gd);
 
-  return(response);
+  return response;
 }
 
 static LassoNode*
@@ -104,7 +104,7 @@ lasso_register_name_identifier_response_new_from_soap(gchar *buffer)
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);
   
-  return(response);
+  return response;
 }
 
 /*****************************************************************************/
@@ -205,7 +205,7 @@ lasso_register_name_identifier_response_new(gchar     *providerID,
   lasso_node_destroy(ssc);
   lasso_node_destroy(ss);
 
-  return (response);
+  return response;
 }
 
 LassoNode*
@@ -222,14 +222,14 @@ lasso_register_name_identifier_response_new_from_request_export(gchar           
 
   if(request){
     message(G_LOG_LEVEL_WARNING, "Error while building RegisterNameIdentifierRequest\n");
-    return(NULL);
+    return NULL;
   }
 
   response = lasso_register_name_identifier_response_new(providerID,
 							 statusCodeValue,
 							 request);
 
-  return(response);
+  return response;
 }
 
 LassoNode*
@@ -249,8 +249,8 @@ lasso_register_name_identifier_response_new_from_export(gchar               *buf
     break;
   default:
     message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
-    return(NULL);
+    return NULL;
   }
 
-  return(response);
+  return response;
 }

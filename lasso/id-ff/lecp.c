@@ -46,12 +46,12 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 									       NULL);
   if (assertionConsumerServiceURL == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
-    return(-1);
+    return -1;
   }
 
   if (profile->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnRequest not found\n");
-    return(-1);
+    return -1;
   }
 
   lecp->authnRequestEnvelope = lasso_authn_request_envelope_new(LASSO_AUTHN_REQUEST(profile->request),
@@ -59,16 +59,16 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 								assertionConsumerServiceURL);
   if (lecp->authnRequestEnvelope == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building AuthnRequestEnvelope\n");
-    return(-1);
+    return -1;
   }
 
   profile->msg_body = lasso_node_export(lecp->authnRequestEnvelope);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while exporting the AuthnRequestEnvelope to POST msg\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -91,10 +91,10 @@ lasso_lecp_build_authn_request_msg(LassoLecp   *lecp,
   profile->msg_body = lasso_node_export_to_soap(profile->request);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the AuthnRequest SOAP message\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -108,15 +108,15 @@ lasso_lecp_build_authn_response_msg(LassoLecp   *lecp)
   profile->msg_url = g_strdup(lecp->assertionConsumerServiceURL);
   if (profile->msg_url == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
-    return(-1);
+    return -1;
   }
   profile->msg_body = lasso_node_export_to_base64(profile->response);
   if (profile->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnResponse Base64 msg not found\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -135,7 +135,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
 
   if (LASSO_IS_AUTHN_RESPONSE(profile->response) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnResponse not found\n");
-    return(-1);
+    return -1;
   }
 
   provider = lasso_server_get_provider_ref(profile->server,
@@ -143,7 +143,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
 					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
-    return(-1);
+    return -1;
   }
 
   /* build lib:AuthnResponse */
@@ -157,7 +157,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
 									       NULL);
   if (assertionConsumerServiceURL == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
-    return(-1);
+    return -1;
   }
 
   xmlFree(LASSO_PROFILE(lecp)->msg_body);
@@ -170,10 +170,10 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp   *lecp,
 
   if (LASSO_PROFILE(lecp)->msg_body == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while exporting the AuthnResponseEnvelope to SOAP msg\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -188,7 +188,7 @@ lasso_lecp_init_authn_request(LassoLecp *lecp)
      a signature template */
   res = lasso_login_init_authn_request(LASSO_LOGIN(lecp), lassoHttpMethodPost);
 
-  return(res);
+  return res;
 }
 
 gint
@@ -203,10 +203,10 @@ lasso_lecp_init_from_authn_request_msg(LassoLecp       *lecp,
 
   if (authn_request_method != lassoHttpMethodSoap) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid authentication request method\n");
-    return(-1);
+    return -1;
   }
   res = lasso_login_init_from_authn_request_msg(LASSO_LOGIN(lecp), authn_request_msg, authn_request_method);
-  return(res);
+  return res;
 }
 
 gint
@@ -219,16 +219,16 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp,
   lecp->authnRequestEnvelope = lasso_authn_request_envelope_new_from_export(request_msg, lassoNodeExportTypeXml);
   if (lecp->authnRequestEnvelope == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building the authentication request envelope\n");
-    return(-1);
+    return -1;
   }
 
   LASSO_PROFILE(lecp)->request = lasso_authn_request_envelope_get_authnRequest(LASSO_AUTHN_REQUEST_ENVELOPE(lecp->authnRequestEnvelope));
   if (LASSO_PROFILE(lecp)->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnRequest not found\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -245,23 +245,23 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp,
   lecp->authnResponseEnvelope = lasso_authn_response_envelope_new_from_export(response_msg, lassoNodeExportTypeSoap);
   if (lecp->authnResponseEnvelope == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building AuthnResponseEnvelope\n");
-    return(-1);
+    return -1;
   }
 
   profile->response = lasso_authn_response_envelope_get_authnResponse(LASSO_AUTHN_RESPONSE_ENVELOPE(lecp->authnResponseEnvelope));
   if (profile->response == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "AuthnResponse not found\n");
-    return(-1);
+    return -1;
   }
 
   lecp->assertionConsumerServiceURL = lasso_authn_response_envelope_get_assertionConsumerServiceURL(
     LASSO_AUTHN_RESPONSE_ENVELOPE(lecp->authnResponseEnvelope));
   if (lecp->assertionConsumerServiceURL == NULL){
     message(G_LOG_LEVEL_CRITICAL, "AssertionConsumerServiceURL not found\n");
-    return(-1);
+    return -1;
   }
 
-  return(0);
+  return 0;
 }
 
 void
@@ -341,5 +341,5 @@ lasso_lecp_new(LassoServer *server)
   }
       
 
-  return(lecp);
+  return lecp;
 }

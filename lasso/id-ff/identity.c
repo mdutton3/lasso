@@ -104,7 +104,7 @@ lasso_identity_add_federation(LassoIdentity   *identity,
 
   identity->is_dirty = TRUE;
 
-  return(0);
+  return 0;
 }
 
 LassoIdentity*
@@ -114,7 +114,7 @@ lasso_identity_copy(LassoIdentity *identity)
   guint i;
 
   if (identity == NULL) {
-    return(NULL);
+    return NULL;
   }
 
   copy = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
@@ -131,7 +131,7 @@ lasso_identity_copy(LassoIdentity *identity)
 		       (gpointer)copy->federations);
   copy->is_dirty = identity->is_dirty;
 
-  return(copy);
+  return copy;
 }
 
 void
@@ -171,7 +171,7 @@ lasso_identity_dump(LassoIdentity *identity)
 
   lasso_node_destroy(identity_node);
 
-  return(dump);
+  return dump;
 }
 
 LassoFederation*
@@ -187,10 +187,10 @@ lasso_identity_get_federation(LassoIdentity *identity,
 						      remote_providerID);
   if (federation == NULL) {
     debug("No Federation found with remote ProviderID = %s\n", remote_providerID);
-    return (NULL);
+    return NULL;
   }
 
-  return(lasso_federation_copy(federation));
+  return lasso_federation_copy(federation);
 }
 
 gchar*
@@ -201,12 +201,12 @@ lasso_identity_get_next_federation_remote_providerID(LassoIdentity *identity)
   g_return_val_if_fail(identity!=NULL, NULL);
 
   if (identity->providerIDs->len == 0) {
-    return(NULL);
+    return NULL;
   }
 
   remote_providerID = g_strdup(g_ptr_array_index(identity->providerIDs, 0));
 
-  return(remote_providerID);
+  return remote_providerID;
 }
 
 gint
@@ -240,7 +240,7 @@ lasso_identity_remove_federation(LassoIdentity *identity,
 
   identity->is_dirty = TRUE;
 
-  return(0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -342,7 +342,7 @@ lasso_identity_new()
 
   identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
-  return(identity);
+  return identity;
 }
 
 LassoIdentity*
@@ -370,7 +370,7 @@ lasso_identity_new_from_dump(gchar *dump)
   identity_node = lasso_node_new_from_dump(dump);
   if (identity_node == NULL) {
     message(G_LOG_LEVEL_WARNING, "Can't create a identity from dump\n");
-    return (NULL);
+    return NULL;
   }
 
   /* federations */
@@ -475,5 +475,5 @@ lasso_identity_new_from_dump(gchar *dump)
 
   lasso_node_destroy(identity_node);
 
-  return (identity);
+  return identity;
 }

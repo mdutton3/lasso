@@ -40,7 +40,7 @@ lasso_authn_request_get_protocolProfile(gchar *query)
   if (protocolProfile == NULL)
     protocolProfile = (gchar *)lassoLibProtocolProfileBrwsArt;
 
-  return (protocolProfile);
+  return protocolProfile;
 }
 
 /*****************************************************************************/
@@ -188,7 +188,7 @@ lasso_authn_request_new(const xmlChar        *providerID,
   lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),
 					 providerID);
 
-  return (request);
+  return request;
 }
 
 LassoNode*
@@ -215,7 +215,7 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     gd = lasso_query_to_dict(buffer);
     if (gd == NULL) {
       g_object_unref(request);
-      return(NULL);
+      return NULL;
     }
 
     /* RequestID */
@@ -226,7 +226,7 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     else {
       g_datalist_clear(&gd);
       g_object_unref(request);
-      return (NULL);
+      return NULL;
     }
 
     /* MajorVersion */
@@ -256,7 +256,7 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     else {
       g_datalist_clear(&gd);
       g_object_unref(request);
-      return (NULL);
+      return NULL;
     }
     
     /* ProviderID */
@@ -266,7 +266,7 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     else {
       g_datalist_clear(&gd);
       g_object_unref(request);
-      return (NULL);
+      return NULL;
     }
     
     /* NameIDPolicy */
@@ -377,5 +377,5 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     break;
   }
 
-  return (request);
+  return request;
 }

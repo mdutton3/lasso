@@ -108,7 +108,7 @@ lasso_request_new(const xmlChar *assertionArtifact)
   lasso_samlp_request_set_assertionArtifact(LASSO_SAMLP_REQUEST(request),
 					    assertionArtifact);
   
-  return (request);
+  return request;
 }
 
 LassoNode*
@@ -141,5 +141,5 @@ lasso_request_new_from_export(gchar               *buffer,
     break;
   }
 
-  return (request);
+  return request;
 }

@@ -83,7 +83,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
     message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
-    return(ret);
+    return ret;
   }
   assertion = lasso_assertion_new(LASSO_PROFILE(login)->server->providerID,
 				  requestID);
@@ -125,7 +125,7 @@ lasso_login_add_response_assertion(LassoLogin      *login,
   lasso_node_destroy(as);
   lasso_node_destroy(assertion);
 
-  return (ret);
+  return ret;
 }
 
 static gint
@@ -210,7 +210,7 @@ lasso_login_process_federation(LassoLogin *login)
   xmlFree(nameIDPolicy);
   xmlFree(consent);
 
-  return (ret);
+  return ret;
 }
 
 static gint
@@ -297,7 +297,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   lasso_node_destroy(status);
   lasso_node_destroy(assertion);
 
-  return (ret);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -398,7 +398,7 @@ lasso_login_accept_sso(LassoLogin *login)
   lasso_node_destroy(idp_ni_copy);
   lasso_node_destroy(assertion);
 
-  return (ret);
+  return ret;
 }
 
 /**
@@ -436,13 +436,13 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 
   if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
-    return (-2);
+    return -2;
   }
 
   /* ProtocolProfile must be BrwsArt */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsArt) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to build artifact message, an AuthnResponse is required by ProtocolProfile.\n");
-    return (-3);
+    return -3;
   }
 
   if (authentication_result == 0) {
@@ -513,7 +513,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   xmlFree(b64_samlArt);
   xmlFree(relayState);
   
-  return (0);
+  return 0;
 }
 
 /**
@@ -553,7 +553,7 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
   if (remote_provider == NULL) {
     ret = err->code;
     g_error_free(err);
-    return (ret);
+    return ret;
   }
 
   /* check if authnRequest must be signed */
@@ -634,7 +634,7 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
   xmlFree(url);
   xmlFree(request_protocolProfile);
 
-  return (ret);
+  return ret;
 }
 
 /**
@@ -664,7 +664,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   /* ProtocolProfile must be BrwsPost */
   if (login->protocolProfile != lassoLoginProtocolProfileBrwsPost) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to build AuthnResponse message, an Artifact is required by ProtocolProfile.\n");
-    return (-1);
+    return -1;
   }
   
   if (authentication_result == 0) {
@@ -695,7 +695,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
 										  lassoProviderTypeSp,
 										  NULL);
 
-  return (0);
+  return 0;
 }
 
 gint
@@ -725,13 +725,13 @@ lasso_login_build_request_msg(LassoLogin *login)
   if (err != NULL) {
     goto done;
   }
-  return (0);
+  return 0;
 
  done:
   message(G_LOG_LEVEL_CRITICAL, err->message);
   ret = err->code;
   g_error_free(err);
-  return (ret);
+  return ret;
 }
 
 void
@@ -766,7 +766,7 @@ lasso_login_dump(LassoLogin *login)
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
 
-  return (dump);
+  return dump;
 }
 
 gint
@@ -776,7 +776,7 @@ lasso_login_init_authn_request(LassoLogin      *login,
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
   if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it must be REDIRECT or POST\n.");
-    return (LASSO_PARAM_ERROR_INVALID_VALUE);
+    return LASSO_PARAM_ERROR_INVALID_VALUE;
   }
 
   login->http_method = http_method;
@@ -793,12 +793,12 @@ lasso_login_init_authn_request(LassoLogin      *login,
   }
 
   if (LASSO_PROFILE(login)->request == NULL) {
-    return (-2);
+    return -2;
   }
 
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
-  return (0);
+  return 0;
 }
 
 gint
@@ -821,7 +821,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
       authn_request_http_method != lassoHttpMethodPost && \
       authn_request_http_method != lassoHttpMethodSoap) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
-    return (-2);
+    return -2;
   }
 
   server = LASSO_PROFILE(login)->server;
@@ -849,7 +849,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   /* verify ASSO_PROFILE(login)-request is an AuthnRequest object */
   if ( LASSO_IS_AUTHN_REQUEST(LASSO_PROFILE(login)->request) == FALSE ) {
     message(G_LOG_LEVEL_CRITICAL, "Message is not an AuthnRequest\n");
-    return(-1);
+    return -1;
   }
 
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
@@ -901,14 +901,14 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
       message(G_LOG_LEVEL_CRITICAL, err->message);
       ret = err->code;
       g_error_free(err);
-      return (ret);
+      return ret;
     }
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, err->message);
     ret = err->code;
     g_error_free(err);
-    return (ret);
+    return ret;
   }
 
   /* verify request signature */
@@ -944,10 +944,10 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 					  lassoLibStatusCodeUnsignedAuthnRequest);
 	break;
       }
-      return (-3);
+      return -3;
     }
   }
-  return (0);
+  return 0;
 }
 
 gint
@@ -966,7 +966,7 @@ lasso_login_init_request(LassoLogin      *login,
   if (response_http_method != lassoHttpMethodRedirect && \
       response_http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
-    return (-1);
+    return -1;
   }
 
   /* rebuild response (artifact) */
@@ -1011,7 +1011,7 @@ lasso_login_init_request(LassoLogin      *login,
     g_clear_error(&err);
   }
 
-  return (ret);
+  return ret;
 }
 
 gboolean
@@ -1051,7 +1051,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 				      lassoLibStatusCodeNoPassive);
   }
 
-  return (must_authenticate);
+  return must_authenticate;
 }
 
 gint
@@ -1085,7 +1085,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login,
 
   ret2 = lasso_login_process_response_status_and_assertion(login);
 
-  return (ret2 == 0 ? ret1 : ret2);
+  return ret2 == 0 ? ret1 : ret2;
 }
 
 gint
@@ -1103,7 +1103,7 @@ lasso_login_process_request_msg(LassoLogin *login,
 								lassoNodeExportTypeSoap);
   if (LASSO_PROFILE(login)->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Request with request message.\n");
-    return (LASSO_ERROR_UNDEFINED);
+    return LASSO_ERROR_UNDEFINED;
   }
   LASSO_PROFILE(login)->request_type = lassoMessageTypeRequest;
 
@@ -1117,7 +1117,7 @@ lasso_login_process_request_msg(LassoLogin *login,
     g_error_free(err);
   }
 
-  return (ret);
+  return ret;
 }
 
 gint
@@ -1132,11 +1132,11 @@ lasso_login_process_response_msg(LassoLogin  *login,
 								  lassoNodeExportTypeSoap);
   if (LASSO_PROFILE(login)->response == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to rebuild samlp:Response with response message.\n");
-    return (LASSO_ERROR_UNDEFINED);
+    return LASSO_ERROR_UNDEFINED;
   }
   LASSO_PROFILE(login)->response_type = lassoMessageTypeResponse;
 
-  return (lasso_login_process_response_status_and_assertion(login));
+  return lasso_login_process_response_status_and_assertion(login);
 }
 
 /*****************************************************************************/
@@ -1234,7 +1234,7 @@ lasso_login_new(LassoServer *server)
 				   "server", lasso_server_copy(server),
 				   NULL));
   
-  return (login);
+  return login;
 }
 
 LassoLogin*
@@ -1334,5 +1334,5 @@ lasso_login_new_from_dump(LassoServer *server,
 
   lasso_node_destroy(node_dump);
 
-  return (login);
+  return login;
 }

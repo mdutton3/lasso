@@ -93,7 +93,7 @@ lasso_logout_dump(LassoLogout *logout)
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
 
-  return(dump);
+  return dump;
 }
 
 /**
@@ -209,7 +209,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     xmlFree(query);
   }
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -310,7 +310,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     xmlFree(query);
   }
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -355,7 +355,7 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
     provider_id = lasso_session_get_next_providerID(profile->session);
   }
   
-  return(provider_id);
+  return provider_id;
 }
 
 /**
@@ -541,7 +541,7 @@ lasso_logout_init_request(LassoLogout    *logout,
     xmlFree(singleLogoutProtocolProfile);
   }
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -645,7 +645,7 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     xmlFree(remote_providerID);
   }
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -778,7 +778,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -800,7 +800,7 @@ gint lasso_logout_reset_session_index(LassoLogout *logout)
 
   lasso_session_reset_index_providerID(profile->session);
 
-  return(0);
+  return 0;
 }
 
 /**
@@ -994,7 +994,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -1105,7 +1105,7 @@ lasso_logout_new(LassoServer       *server,
 			"provider_type", provider_type,
 			NULL);
 
-  return(logout);
+  return logout;
 }
 
 LassoLogout*
@@ -1194,5 +1194,5 @@ lasso_logout_new_from_dump(LassoServer *server,
   /* Initial logout remote provider id */
   logout->initial_remote_providerID = lasso_node_get_child_content(node_dump, "InitialRemoteProviderID", lassoLassoHRef, NULL);
 
-  return(logout);
+  return logout;
 }

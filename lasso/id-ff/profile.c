@@ -54,13 +54,13 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
   soap_node = lasso_node_new_from_dump(soap);
   if (soap_node == NULL) {
     message(G_LOG_LEVEL_WARNING, "Error while build node from soap msg\n");
-    return(-1);
+    return -1;
   }
 
   body_node = lasso_node_get_child(soap_node, "Body", NULL, NULL);
   if(body_node == NULL) {
     message(G_LOG_LEVEL_WARNING, "Body node not found\n");
-    return(-2);
+    return -2;
   }
 
   children = lasso_node_get_children(body_node);
@@ -92,7 +92,7 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
     xmlFree(name);
   }
 
-  return(type);
+  return type;
 }
 
 
@@ -165,7 +165,7 @@ lasso_profile_dump(LassoProfile *ctx,
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
 
-  return (dump);
+  return dump;
 }
 
 LassoIdentity*
@@ -176,11 +176,11 @@ lasso_profile_get_identity(LassoProfile *ctx)
   if (ctx->identity != NULL) {
     /* return identity copy only if identity isn't empty */
     if (ctx->identity->providerIDs->len > 0) {
-      return (lasso_identity_copy(ctx->identity));
+      return lasso_identity_copy(ctx->identity);
     }
   }
 
-  return (NULL);
+  return NULL;
 }
 
 LassoSession*
@@ -191,21 +191,21 @@ lasso_profile_get_session(LassoProfile *ctx)
   if (ctx->session != NULL) {
     /* return session copy only if session isn't empty */
     if (ctx->session->providerIDs->len > 0) {
-      return (lasso_session_copy(ctx->session));
+      return lasso_session_copy(ctx->session);
     }
   }
 
-  return (NULL);
+  return NULL;
 }
 
 gboolean
 lasso_profile_is_identity_dirty(LassoProfile *ctx)
 {
   if (ctx->identity != NULL) {
-    return (ctx->identity->is_dirty);
+    return ctx->identity->is_dirty;
   }
   else {
-    return (FALSE);
+    return FALSE;
   }
 }
 
@@ -213,10 +213,10 @@ gboolean
 lasso_profile_is_session_dirty(LassoProfile *ctx)
 {
   if (ctx->session != NULL) {
-    return (ctx->session->is_dirty);
+    return ctx->session->is_dirty;
   }
   else {
-    return (FALSE);
+    return FALSE;
   }
 }
 
@@ -227,7 +227,7 @@ lasso_profile_set_remote_providerID(LassoProfile *ctx,
   g_free(ctx->remote_providerID);
   ctx->remote_providerID = g_strdup(providerID);
   
-  return (1);
+  return 1;
 }
 
 void
@@ -260,7 +260,7 @@ lasso_profile_set_identity(LassoProfile  *ctx,
   ctx->identity = lasso_identity_copy(identity);
   ctx->identity->is_dirty = FALSE;
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -270,11 +270,11 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx,
   ctx->identity = lasso_identity_new_from_dump((gchar *)dump);
   if (ctx->identity == NULL) {
     message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump\n");
-    return(-1);
+    return -1;
   }
   ctx->identity->is_dirty = FALSE;
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -286,7 +286,7 @@ lasso_profile_set_session(LassoProfile *ctx,
   ctx->session = lasso_session_copy(session);
   ctx->session->is_dirty = FALSE;
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -296,11 +296,11 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx,
   ctx->session = lasso_session_new_from_dump((gchar *)dump);
   if (ctx->session == NULL) {
     message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump\n");
-    return(-1);
+    return -1;
   }
   ctx->session->is_dirty = FALSE;
 
-  return(0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -519,5 +519,5 @@ lasso_profile_new(LassoServer   *server,
 				   "session", lasso_session_copy(session),
 				   NULL));
 
-  return (ctx);
+  return ctx;
 }

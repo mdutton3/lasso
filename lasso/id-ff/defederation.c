@@ -157,7 +157,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
     xmlFree(query);
   }
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -346,7 +346,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
   xmlFree(format);
   lasso_node_destroy(nameIdentifier);
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -422,7 +422,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation,
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 /**
@@ -564,7 +564,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
     lasso_node_destroy(nameIdentifier);
   }
 
-  return(ret);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -677,5 +677,5 @@ lasso_defederation_new(LassoServer      *server,
 			      "provider_type", provider_type,
 			      NULL);
 
-  return(defederation);
+  return defederation;
 }

@@ -118,7 +118,7 @@ lasso_session_add_assertion(LassoSession *session,
 
   session->is_dirty = TRUE;
 
-  return(0);
+  return 0;
 }
 
 LassoSession*
@@ -128,7 +128,7 @@ lasso_session_copy(LassoSession *session)
   guint i;
 
   if (session == NULL) {
-    return(NULL);
+    return NULL;
   }
 
   copy = LASSO_SESSION(g_object_new(LASSO_TYPE_SESSION, NULL));
@@ -145,7 +145,7 @@ lasso_session_copy(LassoSession *session)
 		       (gpointer)copy->assertions);
   copy->is_dirty = session->is_dirty;
 
-  return(copy);
+  return copy;
 }
 
 void
@@ -187,7 +187,7 @@ lasso_session_dump(LassoSession *session)
 
   lasso_node_destroy(session_node);
 
-  return(dump);
+  return dump;
 }
 
 LassoNode*
@@ -205,7 +205,7 @@ lasso_session_get_assertion(LassoSession *session,
     return NULL;
   }
 
-  return(lasso_node_copy(assertion));
+  return lasso_node_copy(assertion);
 }
 
 gchar*
@@ -235,7 +235,7 @@ lasso_session_get_authentication_method(LassoSession *session,
  done:
   lasso_node_destroy(as);
   lasso_node_destroy(assertion);
-  return (authentication_method);
+  return authentication_method;
 }
 
 gchar*
@@ -246,15 +246,15 @@ lasso_session_get_first_providerID(LassoSession *session)
   g_return_val_if_fail(session != NULL, NULL);
 
   if(session->providerIDs->len == 0) {
-    return(NULL);
+    return NULL;
   }
 
   providerID = g_ptr_array_index(session->providerIDs, 0);
   if (providerID == NULL) {
-    return(NULL);
+    return NULL;
   }
 
-  return(g_strdup(providerID));
+  return g_strdup(providerID);
 }
 
 gchar*
@@ -265,15 +265,15 @@ lasso_session_get_next_providerID(LassoSession *session)
   g_return_val_if_fail(session!=NULL, NULL);
 
   if(session->providerIDs->len == 0) {
-    return(NULL);
+    return NULL;
   }
 
   if (session->index_providerID < 0) {
-    return(NULL);
+    return NULL;
   }
 
   if (session->index_providerID>=session->providerIDs->len) {
-    return (NULL);
+    return NULL;
   }
 
   /* get the next provider id and increments the index */
@@ -282,7 +282,7 @@ lasso_session_get_next_providerID(LassoSession *session)
   session->index_providerID++;
   //printf("return provider id %s\n", providerID);
 
-  return(providerID);
+  return providerID;
 }
 
 gint
@@ -317,7 +317,7 @@ lasso_session_remove_assertion(LassoSession *session,
 
   session->is_dirty = TRUE;
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -329,7 +329,7 @@ lasso_session_reset_index_providerID(LassoSession *session)
     session->index_providerID = 0;
   }
 
-  return(0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -432,7 +432,7 @@ lasso_session_new()
 
   session = LASSO_SESSION(g_object_new(LASSO_TYPE_SESSION, NULL));
 
-  return(session);
+  return session;
 }
 
 LassoSession*
@@ -453,7 +453,7 @@ lasso_session_new_from_dump(gchar *dump)
   session_node = lasso_node_new_from_dump(dump);
   if (session_node == NULL) {
     message(G_LOG_LEVEL_WARNING, "Can't create a session from dump\n");
-    return (NULL);
+    return NULL;
   }
 
   /* get assertions */
@@ -500,5 +500,5 @@ lasso_session_new_from_dump(gchar *dump)
   lasso_node_destroy(assertions_node);
   lasso_node_destroy(session_node);
 
-  return (session);
+  return session;
 }

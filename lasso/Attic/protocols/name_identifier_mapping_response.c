@@ -121,7 +121,7 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
   lasso_node_destroy(ssc);
   lasso_node_destroy(ss);
 
-  return (response);
+  return response;
 }
 
 LassoNode *
@@ -132,7 +132,7 @@ lasso_name_identifier_mapping_response_new_from_dump(const gchar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
   lasso_node_import(response, buffer);
   
-  return (response);
+  return response;
 }
 
 /* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse */
@@ -177,7 +177,7 @@ lasso_name_identifier_mapping_response_new_from_query(const gchar *query)
 
   g_datalist_clear(&gd);
 
-  return(response);
+  return response;
 }
 
 /* build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest */
@@ -195,7 +195,7 @@ lasso_name_identifier_mapping_response_new_from_request_soap(const gchar   *buff
 							request);
   lasso_node_destroy(request);
 
-  return(response);
+  return response;
 }
 
 LassoNode *
@@ -220,7 +220,7 @@ lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);
   
-  return(response);
+  return response;
 }
 
 /* build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest */
@@ -238,5 +238,5 @@ lasso_name_identifier_mapping_response_new_from_request_query(const gchar   *que
 							request);
   lasso_node_destroy(request);
 
-  return(response);
+  return response;
 }

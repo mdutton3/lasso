@@ -152,7 +152,7 @@ lasso_samlp_response_abstract_set_signature(LassoSamlpResponseAbstract *node,
   ret = class->add_signature(LASSO_NODE (node), sign_method,
 			     private_key_file, certificate_file);
 
-  return (ret);
+  return ret;
 }
 
 gint
@@ -167,7 +167,7 @@ lasso_samlp_response_abstract_set_signature_tmpl(LassoSamlpResponseAbstract *nod
 
   class = LASSO_NODE_GET_CLASS(node);
 
-  return(class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method, NULL));
+  return class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method, NULL);
 }
 
 gint

@@ -100,5 +100,5 @@ lasso_assertion_new(const xmlChar *issuer,
 					 requestID);
   }
 
-  return (assertion);
+  return assertion;
 }

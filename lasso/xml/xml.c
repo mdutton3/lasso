@@ -67,7 +67,7 @@ lasso_node_copy(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->copy(node));
+  return class->copy(node);
 }
 
 /**
@@ -89,7 +89,7 @@ lasso_node_dump(LassoNode     *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->dump(node, encoding, format));
+  return class->dump(node, encoding, format);
 }
 
 /**
@@ -122,7 +122,7 @@ lasso_node_export(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->export(node));
+  return class->export(node);
 }
 
 /**
@@ -140,7 +140,7 @@ lasso_node_export_to_base64(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->export_to_base64(node));
+  return class->export_to_base64(node);
 }
 
 /**
@@ -163,7 +163,7 @@ lasso_node_export_to_query(LassoNode            *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->export_to_query(node, sign_method, private_key_file));
+  return class->export_to_query(node, sign_method, private_key_file);
 }
 
 /**
@@ -181,7 +181,7 @@ lasso_node_export_to_soap(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->export_to_soap(node));
+  return class->export_to_soap(node);
 }
 
 /**
@@ -215,7 +215,7 @@ lasso_node_get_attr(LassoNode      *node,
   /* don't check @name here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_attr(node, name, err));
+  return class->get_attr(node, name, err);
 }
 
 /**
@@ -250,7 +250,7 @@ lasso_node_get_attr_value(LassoNode      *node,
   /* don't check @name here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_attr_value(node, name, err));
+  return class->get_attr_value(node, name, err);
 }
 
 /**
@@ -268,7 +268,7 @@ lasso_node_get_attrs(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_attrs(node));
+  return class->get_attrs(node);
 }
 
 /**
@@ -304,7 +304,7 @@ lasso_node_get_child(LassoNode      *node,
   /* don't check @name here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_child(node, name, href, err));
+  return class->get_child(node, name, href, err);
 }
 
 /**
@@ -341,7 +341,7 @@ lasso_node_get_child_content(LassoNode      *node,
   /* don't check @name here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_child_content(node, name, href, err));
+  return class->get_child_content(node, name, href, err);
 }
 
 /**
@@ -359,7 +359,7 @@ lasso_node_get_children(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_children(node));
+  return class->get_children(node);
 }
 
 /**
@@ -394,7 +394,7 @@ lasso_node_get_content(LassoNode  *node,
   }
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_content(node, err));
+  return class->get_content(node, err);
 }
 
 /**
@@ -412,7 +412,7 @@ lasso_node_get_name(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_name(node));
+  return class->get_name(node);
 }
 
 /**
@@ -492,7 +492,7 @@ lasso_node_verify_signature(LassoNode   *node,
   /* don't check @public_key_file here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->verify_signature(node, public_key_file));
+  return class->verify_signature(node, public_key_file);
 }
 
 /**
@@ -516,7 +516,7 @@ lasso_node_verify_x509_signature(LassoNode   *node,
   /* don't check @certificate_file here, it's checked in impl method */
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->verify_x509_signature(node, ca_certificate_file));
+  return class->verify_x509_signature(node, ca_certificate_file);
 }
 
 /*****************************************************************************/
@@ -565,7 +565,7 @@ lasso_node_add_signature_tmpl(LassoNode            *node,
 		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->add_signature_tmpl(node, sign_type, sign_method, reference_id));
+  return class->add_signature_tmpl(node, sign_type, sign_method, reference_id);
 }
 
 static gchar *
@@ -575,7 +575,7 @@ lasso_node_build_query(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->build_query(node));
+  return class->build_query(node);
 }
 
 static xmlNodePtr
@@ -585,7 +585,7 @@ lasso_node_get_xmlNode(LassoNode *node)
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_xmlNode(node));
+  return class->get_xmlNode(node);
 }
 
 /**
@@ -635,7 +635,7 @@ lasso_node_serialize(LassoNode *node,
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->serialize(node, gd));
+  return class->serialize(node, gd);
 }
 
 static void
@@ -714,7 +714,7 @@ lasso_node_impl_copy(LassoNode *node)
   copy = LASSO_NODE(g_object_new(G_OBJECT_TYPE(node), NULL));
   lasso_node_set_xmlNode(copy, xmlCopyNode(node->private->node, 1));
 
-  return (copy);
+  return copy;
 }
 
 static void
@@ -739,12 +739,12 @@ lasso_node_impl_dump(LassoNode     *node,
   if (encoding != NULL) {
     handler = xmlFindCharEncodingHandler(encoding);
     if (handler == NULL) {
-      return (NULL);
+      return NULL;
     }
   }
   buf = xmlAllocOutputBuffer(handler);
   if (buf == NULL) {
-    return (NULL);
+    return NULL;
   }
   xmlNodeDumpOutput(buf, NULL, node->private->node,
 		    0, format, encoding);
@@ -757,14 +757,14 @@ lasso_node_impl_dump(LassoNode     *node,
   }
   xmlOutputBufferClose(buf);
 
-  return (ret);
+  return ret;
 }
 
 static gchar *
 lasso_node_impl_export(LassoNode *node)
 {
   /* using lasso_node_impl_dump because dump method can be overrided */
-  return (lasso_node_impl_dump(node, "utf-8", 0));
+  return lasso_node_impl_dump(node, "utf-8", 0);
 }
 
 static gchar *
@@ -778,7 +778,7 @@ lasso_node_impl_export_to_base64(LassoNode *node)
   g_free(buffer);
   buffer = NULL;
 
-  return (ret);
+  return ret;
 }
 
 static gchar *
@@ -826,7 +826,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
     }
     else {
       g_string_free(query, TRUE);
-      return (NULL);
+      return NULL;
     }
 
     /* add signature in query */
@@ -838,7 +838,7 @@ lasso_node_impl_export_to_query(LassoNode            *node,
 
   ret = g_strdup(query->str);
   g_string_free(query, TRUE);
-  return (ret);
+  return ret;
 }
 
 static gchar *
@@ -868,7 +868,7 @@ lasso_node_impl_export_to_soap(LassoNode *node)
   lasso_node_destroy(body);
   lasso_node_destroy(envelope);
   
-  return(buffer);
+  return buffer;
 }
 
 static LassoAttr*
@@ -888,7 +888,7 @@ lasso_node_impl_get_attr(LassoNode      *node,
   prop = node->private->node->properties;
   while (prop != NULL) {
     if (xmlStrEqual(prop->name, name)) {
-      return (prop);
+      return prop;
     }
     prop = prop->next;
   }
@@ -898,7 +898,7 @@ lasso_node_impl_get_attr(LassoNode      *node,
 	      LASSO_XML_ERROR_ATTR_NOT_FOUND,
 	      lasso_strerror(LASSO_XML_ERROR_ATTR_NOT_FOUND),
 	      name, node->private->node->name);
-  return (NULL);
+  return NULL;
 }
 
 static xmlChar *
@@ -923,7 +923,7 @@ lasso_node_impl_get_attr_value(LassoNode      *node,
 		name, node->private->node->name);
   }
 
-  return (value);
+  return value;
 }
 
 static GPtrArray *
@@ -943,7 +943,7 @@ lasso_node_impl_get_attrs(LassoNode *node)
     prop = prop->next;
   }
 
-  return (attributes);
+  return attributes;
 }
 
 static LassoNode *
@@ -1014,14 +1014,14 @@ lasso_node_impl_get_child(LassoNode      *node,
       child = xmlSecFindNode(node->private->node, name, lassoLassoHRef);
   }
   if (child != NULL) {
-    return (lasso_node_new_from_xmlNode(child));
+    return lasso_node_new_from_xmlNode(child);
   }
   else {
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_XML_ERROR_NODE_NOT_FOUND,
 		lasso_strerror(LASSO_XML_ERROR_NODE_NOT_FOUND),
 		name, node->private->node->name);
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -1055,7 +1055,7 @@ lasso_node_impl_get_child_content(LassoNode      *node,
     g_propagate_error (err, tmp_err);
   }
 
-  return (content);
+  return content;
 }
 
 static GPtrArray *
@@ -1075,7 +1075,7 @@ lasso_node_impl_get_children(LassoNode *node)
     cur = cur->next;
   }
 
-  return (children);
+  return children;
 }
 
 static xmlChar *
@@ -1092,7 +1092,7 @@ lasso_node_impl_get_content(LassoNode  *node,
 		node->private->node->name);
   }
 
-  return (content);
+  return content;
 }
 
 static xmlChar *
@@ -1100,7 +1100,7 @@ lasso_node_impl_get_name(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  return (xmlStrdup(node->private->node->name));
+  return xmlStrdup(node->private->node->name);
 }
 
 static void
@@ -1234,7 +1234,7 @@ lasso_node_impl_verify_signature(LassoNode   *node,
     xmlSecDSigCtxDestroy(dsigCtx);
   }
   /* FIXME xmlFreeDoc(doc); */
-  return (ret);
+  return ret;
 }
 
 static gint
@@ -1342,7 +1342,7 @@ lasso_node_impl_verify_x509_signature(LassoNode   *node,
     xmlSecKeysMngrDestroy(mngr);
   }
   /* FIXME xmlFreeDoc(doc); */
-  return (ret);
+  return ret;
 }
 
 /*** private methods **********************************************************/
@@ -1400,7 +1400,7 @@ lasso_node_impl_add_signature(LassoNode     *node,
     ret = lasso_node_sign_signature_tmpl(node, private_key_file, certificate_file);
   }
 
-  return (ret);
+  return ret;
 }
 
 static gint
@@ -1434,7 +1434,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
  
   if (signature == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
-    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
   }
 
 /*   uri = xmlMalloc(strlen(reference_uri)+1+1); */
@@ -1454,14 +1454,14 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
   if (reference == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
     xmlFreeNode(signature);
-    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
   }
 
   /* add enveloped transform */
   if (xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId) == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add enveloped transform to reference\n");
     xmlFreeNode(signature);
-    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
   }
 
   /* add <dsig:KeyInfo/> */
@@ -1469,7 +1469,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
   if (key_info == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add key info\n");
     xmlFreeNode(signature);
-    return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+    return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
   }
   
   /* add <dsig:X509Data/> */
@@ -1477,7 +1477,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
     if (xmlSecTmplKeyInfoAddX509Data(key_info) == NULL) {
       message(G_LOG_LEVEL_CRITICAL, "Failed to add X509Data node\n");
       xmlFreeNode(signature);
-      return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
+      return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
     }
   }
 
@@ -1489,7 +1489,7 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
   /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
   /* xmlFreeDoc(doc); */
 
-  return (0);
+  return 0;
 }
 
 static void
@@ -1558,7 +1558,7 @@ lasso_node_impl_build_query(LassoNode *node)
   ret = g_strdup(query->str);
   g_string_free(query, TRUE);
   
-  return (ret);
+  return ret;
 }
 
 static xmlNodePtr
@@ -1566,7 +1566,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-  return (node->private->node);
+  return node->private->node;
 }
 
 static void
@@ -1699,7 +1699,7 @@ lasso_node_impl_serialize(LassoNode *node,
     g_ptr_array_free(children, TRUE);
   }
     
-  return (gd);
+  return gd;
 }
 
 static void
@@ -1786,7 +1786,7 @@ lasso_node_impl_sign_signature_tmpl(LassoNode     *node,
   if (dsig_ctx == NULL) {
     message(G_LOG_LEVEL_CRITICAL,
 	    lasso_strerror(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED));
-    return(LASSO_DS_ERROR_CONTEXT_CREATION_FAILED);
+    return LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
   }
   
   /* load private key, assuming that there is not password */
@@ -1827,7 +1827,7 @@ lasso_node_impl_sign_signature_tmpl(LassoNode     *node,
   /* xmlUnlinkNode(lasso_node_get_xmlNode(node)); */
   /* xmlFreeDoc(doc); */
 
-  return (ret);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -1963,7 +1963,7 @@ GType lasso_node_get_type() {
 LassoNode*
 lasso_node_new()
 {
-  return (LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL)));
+  return LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
 }
 
 /**
@@ -1992,7 +1992,7 @@ lasso_node_new_from_dump(const gchar *buffer)
   /* free doc */
   xmlFreeDoc(doc);
 
-  return (node);
+  return node;
 }
 
 /**
@@ -2014,5 +2014,5 @@ lasso_node_new_from_xmlNode(xmlNodePtr node)
   lasso_node_set_xmlNode(lasso_node, node);
   lasso_node->private->node_is_weak_ref = TRUE;
 
-  return (lasso_node);
+  return lasso_node;
 }

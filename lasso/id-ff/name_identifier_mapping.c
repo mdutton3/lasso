@@ -36,7 +36,7 @@ lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), NULL);
 
-  return(dump);
+  return dump;
 }
 
 gint
@@ -58,7 +58,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 					   NULL);
   if(provider == NULL) {
     message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
-    return(-2);
+    return -2;
   }
 
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
@@ -68,7 +68,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
-    return (ret);
+    return ret;
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
@@ -88,7 +88,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
     profile->msg_body = NULL;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -109,7 +109,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 					   NULL);
   if(provider == NULL) {
     message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
-    return(-2);
+    return -2;
   }
 
   protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider,
@@ -119,7 +119,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
-    return(ret);
+    return ret;
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
@@ -138,7 +138,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
     profile->msg_body = NULL;
   }
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -162,7 +162,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if(federation == NULL) {
     message(G_LOG_LEVEL_ERROR, "error, federation not found\n");
-    return(-3);
+    return -3;
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
@@ -183,13 +183,13 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
-    return(-4);
+    return -4;
   }
   lasso_federation_destroy(federation);
 
   if(nameIdentifier == NULL) {
     message(G_LOG_LEVEL_ERROR, "Name identifier not found\n");
-    return(-5);
+    return -5;
   }
 
   /* build the request */
@@ -203,7 +203,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
   g_return_val_if_fail(profile->request != NULL, -6);
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -237,7 +237,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
     break;
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown request method\n");
-    return(-3);
+    return -3;
   }
 
   /* set the remote provider id from the request */
@@ -258,7 +258,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL, NULL);
   if(nameIdentifier == NULL) {
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-5);
+    return -5;
   }
 
   remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
@@ -269,17 +269,17 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   if(federation == NULL) {
     message(G_LOG_LEVEL_WARNING, "No federation for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-6);
+    return -6;
   }
 
   if(lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE){
     message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-7);
+    return -7;
   }
   lasso_federation_destroy(federation);
 
-  return(0);
+  return 0;
 }
 
 gint
@@ -304,23 +304,23 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
     profile->response = lasso_name_identifier_mapping_response_new_from_soap(response_msg);
   default:
     message(G_LOG_LEVEL_ERROR, "Unknown response method\n");
-    return(-3);
+    return -3;
   }
  
   statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
   if (err == NULL) {
     if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
-      return(-4);
+      return -4;
     }
   }
   else {
     message(G_LOG_LEVEL_ERROR, err->message);
     ret = err->code;
     g_error_free(err);
-    return (ret);
+    return ret;
   }
-  return(0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -376,5 +376,5 @@ lasso_name_identifier_mapping_new(LassoServer       *server,
 			 "identity", lasso_identity_copy(identity),
 			 "provider_type", provider_type,
 			 NULL);
-  return(mapping);
+  return mapping;
 }

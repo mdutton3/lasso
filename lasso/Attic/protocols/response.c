@@ -106,7 +106,7 @@ lasso_response_new()
   lasso_node_destroy(status_code);
   lasso_node_destroy(status);
 
-  return (response);
+  return response;
 }
 
 LassoNode*
@@ -139,5 +139,5 @@ lasso_response_new_from_export(gchar               *buffer,
     break;
   }
 
-  return (response);
+  return response;
 }

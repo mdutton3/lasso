@@ -51,14 +51,6 @@ Coding Style
            message(G_LOG_LEVEL_MESSAGE, "Ok");
          }
 
-- Use round brackets ``()`` for ``return``. 
-
-  Examples:
-    BAD:
-            ``return 0;``
-    GOOD:
-            ``return(0);``
-
 - Check for memory leaks.
   I recommend valgrind (http://valgrind.kde.org) utility with options:
     --leak-check=yes

@@ -66,15 +66,15 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
     if (err != NULL) {
       message(G_LOG_LEVEL_WARNING, err->message);
       g_error_free(err);
-      return (NULL);
+      return NULL;
     }
     else {
-      return (value);
+      return value;
     }
   }
   else {
     message(G_LOG_LEVEL_WARNING, "No StatusCode element found in AuthnResponse.\n");
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -161,7 +161,7 @@ lasso_authn_response_new(char *providerID,
   /* Status Code */
   lasso_authn_response_set_status(LASSO_AUTHN_RESPONSE(response), lassoSamlStatusCodeSuccess);
   
-  return(response);
+  return response;
 }
 
 LassoNode*
@@ -190,5 +190,5 @@ lasso_authn_response_new_from_export(gchar               *buffer,
     break;
   }
 
-  return (response);
+  return response;
 }

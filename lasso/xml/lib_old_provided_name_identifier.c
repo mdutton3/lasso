@@ -84,5 +84,5 @@ LassoNode* lasso_lib_old_provided_name_identifier_new(const xmlChar *content) {
   xmlNodeSetContent(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node),
 		    content);
 
-  return(node);
+  return node;
 }

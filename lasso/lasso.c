@@ -78,13 +78,13 @@ int lasso_init()
   /* Init xmlsec library */
   if(xmlSecInit() < 0) {
     message(G_LOG_LEVEL_CRITICAL, "XMLSec initialization failed.\n");
-    return(-1);
+    return -1;
   }
   
   /* Check loaded library version */
   if(xmlSecCheckVersion() != 1) {
     message(G_LOG_LEVEL_CRITICAL, "Loaded xmlsec library version is not compatible.\n");
-    return(-1);
+    return -1;
   }
 
   /* Load default crypto engine if we are supporting dynamic
@@ -104,13 +104,13 @@ int lasso_init()
   /* Init crypto library */
   if(xmlSecCryptoAppInit(NULL) < 0) {
     message(G_LOG_LEVEL_CRITICAL, "Crypto initialization failed.\n");
-    return(-1);
+    return -1;
   }
   
   /* Init xmlsec-crypto library */
   if(xmlSecCryptoInit() < 0) {
     message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.\n");
-    return(-1);
+    return -1;
   }
   return 0;
 }
@@ -141,7 +141,7 @@ int lasso_shutdown()
   xmlCleanupParser();
   /* this is to debug memory for regression tests */
   xmlMemoryDump();
-  return (0);
+  return 0;
 }
 
 /** 
@@ -163,7 +163,7 @@ lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMod
   if (major != LASSO_VERSION_MAJOR) {
     g_message("expected major version=%d;real major version=%d",
 	      LASSO_VERSION_MAJOR, major);
-    return (0);
+    return 0;
   }
   
   switch (mode) {
@@ -172,7 +172,7 @@ lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMod
       g_message("mode=exact;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
 		LASSO_VERSION_MINOR, minor,
 		LASSO_VERSION_SUBMINOR, subminor);
-      return (0);
+      return 0;
     }
     break;
   case lassoCheckVersionABICompatible:
@@ -181,10 +181,10 @@ lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMod
       g_message("mode=abi compatible;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
 		LASSO_VERSION_MINOR, minor,
 		LASSO_VERSION_SUBMINOR, subminor);
-      return (0);
+      return 0;
     }
     break;
   }
   
-  return (1);
+  return 1;
 }

@@ -56,7 +56,7 @@ lasso_build_random_sequence(guint8 size)
   }
   seq[size] = '\0';
 
-  return (seq);
+  return seq;
 }
 
 /**
@@ -101,7 +101,7 @@ lasso_build_unique_id(guint8 size)
 
   /* g_free(id); */
   /* return (enc_id); */
-  return (id);
+  return id;
 }
 
 /**
@@ -123,9 +123,9 @@ lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
   node = xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
   if (node != NULL)
     /* val returned must be xmlFree() */
-    return (xmlNodeGetContent(node));
+    return xmlNodeGetContent(node);
   else
-    return (NULL);
+    return NULL;
 }
 
 /**
@@ -141,10 +141,10 @@ xmlChar*
 lasso_g_ptr_array_index(GPtrArray *a, guint i)
 {
   if (a != NULL) {
-    return (g_ptr_array_index(a, i));
+    return g_ptr_array_index(a, i);
   }
   else {
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -166,7 +166,7 @@ lasso_get_current_time()
   tm = localtime(&(time_val.tv_sec));
   strftime((char *)ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
 
-  return (ret);
+  return ret;
 }
 
 /**
@@ -195,7 +195,7 @@ lasso_query_get_value(const gchar   *query,
       g_ptr_array_add(array, g_strdup(g_ptr_array_index(tmp_array, i)));
   }
   g_datalist_clear(&gd);
-  return (array);
+  return array;
 }
 
 static void
@@ -272,7 +272,7 @@ lasso_query_to_dict(const gchar *query)
   }  
   g_strfreev(sa1);
 
-  return (gd);
+  return gd;
 }
 
 /**
@@ -307,7 +307,7 @@ lasso_query_verify_signature(const gchar   *query,
   /* split query, signature (must be last param) */
   str_split = g_strsplit(query, "&Signature=", 0);
   if (str_split[1] == NULL)
-    return (2);
+    return 2;
   /* re-create doc to verify (signed + enrypted) */
   doc = lasso_str_sign(str_split[0],
 		       lassoSignatureMethodRsaSha1,
@@ -368,7 +368,7 @@ lasso_query_verify_signature(const gchar   *query,
   if(doc != NULL) {
     xmlFreeDoc(doc);
   }
-  return (ret);
+  return ret;
 }
 
 /**
@@ -386,10 +386,10 @@ lasso_sha1(xmlChar *str)
 
   if (str != NULL) {
     md = xmlMalloc(20);
-    return(SHA1(str, strlen(str), md));
+    return SHA1(str, strlen(str), md);
   }
   
-  return (NULL);
+  return NULL;
 }
 
 /**
@@ -404,7 +404,7 @@ xmlChar *
 lasso_str_escape(xmlChar *str)
 {
   /* value returned must be xmlFree() */
-  return (xmlURIEscapeStr((const xmlChar *)str, NULL));
+  return xmlURIEscapeStr((const xmlChar *)str, NULL);
 }
 
 xmlChar *
@@ -427,7 +427,7 @@ lasso_str_hash(xmlChar    *str,
   xmlFree(b64_digest);
   xmlFreeDoc(doc);
   /* value returned must be xmlFree() */
-  return (digest);
+  return digest;
 }
 
 /**
@@ -536,7 +536,7 @@ lasso_str_sign(xmlChar              *str,
   /* xmlDocDump(stdout, doc); */
   xmlSecDSigCtxDestroy(dsigCtx);
   /* doc must be freed be caller */
-  return (doc);
+  return doc;
 
  done:    
   /* cleanup */
@@ -547,7 +547,7 @@ lasso_str_sign(xmlChar              *str,
   if (doc != NULL) {
     xmlFreeDoc(doc); 
   }
-  return (NULL);
+  return NULL;
 }
 
 /**
@@ -565,5 +565,5 @@ lasso_str_unescape(xmlChar *str)
 
   ret = g_malloc(strlen(str) * 2); /* XXX why *2?  strlen(str) should be enough */
   xmlURIUnescapeString((const char *)str, 0, ret);
-  return (ret);
+  return ret;
 }

@@ -48,7 +48,7 @@ lasso_name_registration_dump(LassoNameRegistration *name_registration)
 
   dump = NULL;
 
-  return(dump);
+  return dump;
 }
 
 /**
@@ -140,7 +140,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 gint
@@ -159,7 +159,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider not found (ProviderID = %s)\n", profile->remote_providerID);
-    return(-2);
+    return -2;
   }
 
   protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider,
@@ -167,7 +167,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 									     NULL);
   if (protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Register name identifier protocol profile not found\n");
-    return(-3);
+    return -3;
   }
 
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
@@ -183,7 +183,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
     debug("building a http get response message\n");
   }
 
-  return(0);
+  return 0;
 }
 
 void
@@ -321,7 +321,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_registration,
@@ -369,7 +369,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 
   done :
 
-  return(ret);
+  return ret;
 }
 
 gint
@@ -445,7 +445,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 gint
@@ -497,7 +497,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
   done:
 
-  return(ret);
+  return ret;
 }
 
 /*****************************************************************************/
@@ -568,5 +568,5 @@ lasso_name_registration_new(LassoServer       *server,
 					  "provider_type", provider_type,
 					  NULL);
 
-  return(name_registration);
+  return name_registration;
 }

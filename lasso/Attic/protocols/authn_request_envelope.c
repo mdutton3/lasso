@@ -41,7 +41,7 @@ LassoNode *lasso_authn_request_envelope_get_authnRequest(LassoAuthnRequestEnvelo
 {
   g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST_ENVELOPE(request), NULL);
 
-  return(lasso_node_get_child(LASSO_NODE(request), "AuthnRequest", NULL, NULL));
+  return lasso_node_get_child(LASSO_NODE(request), "AuthnRequest", NULL, NULL);
 }
 
 /*****************************************************************************/
@@ -101,7 +101,7 @@ lasso_authn_request_envelope_new(LassoAuthnRequest *authnRequest,
   lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL(LASSO_LIB_AUTHN_REQUEST_ENVELOPE(request),
 								   assertionConsumerServiceURL);
 
-  return(request);
+  return request;
 }
 
 LassoNode*
@@ -132,5 +132,5 @@ lasso_authn_request_envelope_new_from_export(gchar               *buffer,
     break;
   }
 
-  return(request);
+  return request;
 }

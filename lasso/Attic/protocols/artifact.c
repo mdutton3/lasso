@@ -43,7 +43,7 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
   /* decode samlArt */
   i = xmlSecBase64Decode((const xmlChar *)b64_samlArt, samlArt, 42+1);
   if (i < 0 || i > 42) {
-    return(-1);
+    return -1;
   }
   /* extract ByteCode, IdentityProviderSuccinctID and AssertionHandle */
   for(j=0; j<42; j++) {
@@ -59,7 +59,7 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
   }
   sprintf(byteCode, "%d", byte_code);
 
-  return(0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -93,7 +93,7 @@ lasso_artifact_get_assertionHandle(LassoArtifact  *artifact,
     g_propagate_error (err, tmp_err);
   }
 
-  return (assertionHandle);
+  return assertionHandle;
 }
 
 /**
@@ -132,13 +132,13 @@ lasso_artifact_get_byteCode(LassoArtifact  *artifact,
 					  "ByteCode", NULL, &tmp_err);
   if (byteCode == NULL) {
     g_propagate_error (err, tmp_err);
-    return (-1);
+    return -1;
   }
 
   ret = (gint)g_strtod(byteCode, NULL);
   xmlFree(byteCode);
 
-  return (ret);
+  return ret;
 }
 
 xmlChar*
@@ -168,7 +168,7 @@ lasso_artifact_get_b64IdentityProviderSuccinctID(LassoArtifact  *artifact,
     g_propagate_error (err, tmp_err);
   }
 
-  return(b64_identityProviderSuccinctID);
+  return b64_identityProviderSuccinctID;
 }
 
 xmlChar*
@@ -197,7 +197,7 @@ lasso_artifact_get_relayState(LassoArtifact  *artifact,
     g_propagate_error (err, tmp_err);
   }
 
-  return (relayState);
+  return relayState;
 }
 
 xmlChar*
@@ -226,7 +226,7 @@ lasso_artifact_get_samlArt(LassoArtifact  *artifact,
     g_propagate_error (err, tmp_err);
   }
 
-  return (samlArt);
+  return samlArt;
 }
 
 /*****************************************************************************/
@@ -299,7 +299,7 @@ lasso_artifact_new(gchar *samlArt,
     class->new_child(artifact, "RelayState", relayState, FALSE);
   }
 
-  return (artifact);
+  return artifact;
 }
 
 LassoNode*
@@ -344,7 +344,7 @@ lasso_artifact_new_from_query(const xmlChar *query)
   g_free(b64_samlArt);
   g_free(relayState);
 
-  return (artifact);
+  return artifact;
 }
 
 LassoNode*
@@ -373,5 +373,5 @@ lasso_artifact_new_from_lares(const xmlChar *lares,
   g_free(identityProviderSuccinctID);
   g_free(assertionHandle);
 
-  return (artifact);
+  return artifact;
 }

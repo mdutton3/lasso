@@ -102,7 +102,7 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
     else {
       message(G_LOG_LEVEL_CRITICAL, "Failed to create the authentication statement, both name identifiers are NULL\n");
       lasso_node_destroy(statement);
-      return (NULL);
+      return NULL;
     }
   }
   else {
@@ -145,5 +145,5 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   lasso_node_destroy(subject);
   lasso_node_destroy(subject_confirmation);
 
-  return (statement);
+  return statement;
 }

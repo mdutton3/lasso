@@ -273,7 +273,7 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
   ret = class->add_signature(LASSO_NODE (node), sign_method,
 			     private_key_file, certificate_file);
 
-  return (ret);
+  return ret;
 }
 
 /*****************************************************************************/

@@ -141,7 +141,7 @@ lasso_logout_request_new(gchar               *providerID,
 					      LASSO_SAML_NAME_IDENTIFIER(identifier));
   lasso_node_destroy(identifier);
 
-  return(request);
+  return request;
 }
 
 static LassoNode *
@@ -156,7 +156,7 @@ lasso_logout_request_new_from_query(gchar *query)
   gd = lasso_query_to_dict(query);
   if (gd == NULL) {
     g_object_unref(request);
-    return(NULL);
+    return NULL;
   }
   
   /* RequestID */
@@ -164,7 +164,7 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
@@ -174,7 +174,7 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   
   /* MinorVersion */
@@ -182,7 +182,7 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
@@ -191,7 +191,7 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
@@ -200,7 +200,7 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request), str);
   
@@ -209,21 +209,21 @@ lasso_logout_request_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   identifier = lasso_saml_name_identifier_new(str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0);
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(request);
-    return (NULL);
+    return NULL;
   }
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);  
   lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request), LASSO_SAML_NAME_IDENTIFIER(identifier));
@@ -246,7 +246,7 @@ lasso_logout_request_new_from_query(gchar *query)
 
   g_datalist_clear(&gd);
 
-  return(request);
+  return request;
 }
 
 static LassoNode *
@@ -271,7 +271,7 @@ lasso_logout_request_new_from_soap(gchar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
   
-  return(request);
+  return request;
 }
 
 static LassoNode *
@@ -291,7 +291,7 @@ lasso_logout_request_new_from_xml(gchar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(lassoNode_request);
   
-  return(request);
+  return request;
 }
 
 
@@ -318,5 +318,5 @@ lasso_logout_request_new_from_export(gchar               *buffer,
     break;
   }
 
-  return(request);
+  return request;
 }

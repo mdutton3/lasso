@@ -114,7 +114,7 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
 							       LASSO_SAML_NAME_IDENTIFIER(identifier));
   lasso_node_destroy(identifier);
 
-  return (request);
+  return request;
 }
 
 LassoNode *
@@ -167,7 +167,7 @@ lasso_name_identifier_mapping_request_new_from_query(const gchar *query)
 
   g_datalist_clear(&gd);
 
-  return(request);
+  return request;
 }
 
 LassoNode *
@@ -192,5 +192,5 @@ lasso_name_identifier_mapping_request_new_from_soap(const gchar *buffer)
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
   
-  return(request);
+  return request;
 }

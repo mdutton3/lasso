@@ -183,5 +183,5 @@ lasso_lib_authentication_statement_new(gboolean use_xsitype)
 				 "use_xsitype", use_xsitype,
 				 NULL));
 
-  return (node);
+  return node;
 }

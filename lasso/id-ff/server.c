@@ -58,7 +58,7 @@ lasso_server_add_lasso_provider(LassoServer   *server,
 
   g_ptr_array_add(server->providers, provider);
 
-  return (0);
+  return 0;
 }
 
 /*****************************************************************************/
@@ -82,10 +82,10 @@ lasso_server_add_provider(LassoServer *server,
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add new provider.\n");
-    return (LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
+    return LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
   }
 
-  return (0);
+  return 0;
 }
 
 LassoServer*
@@ -114,7 +114,7 @@ lasso_server_copy(LassoServer *server)
   copy->certificate = g_strdup(server->certificate);
   copy->signature_method = server->signature_method;
 
-  return(copy);
+  return copy;
 }
 
 void
@@ -196,7 +196,7 @@ lasso_server_dump(LassoServer *server)
   dump = lasso_node_export(server_node);
   lasso_node_destroy(server_node);
 
-  return(dump);
+  return dump;
 }
 
 LassoProvider*
@@ -217,13 +217,13 @@ lasso_server_get_provider(LassoServer  *server,
   provider = lasso_server_get_provider_ref(server, providerID, &tmp_err);
 
   if (provider != NULL) {
-    return (lasso_provider_copy(provider));
+    return lasso_provider_copy(provider);
   }
   else {
     g_propagate_error (err, tmp_err);
   }
 
-  return (NULL);
+  return NULL;
 }
 
 LassoProvider*
@@ -276,7 +276,7 @@ lasso_server_get_provider_ref(LassoServer  *server,
   /* print error msg here so that caller just check err->code */
   message(G_LOG_LEVEL_CRITICAL, err[0]->message);
 
-  return(NULL);
+  return NULL;
 }
 
 gchar *
@@ -313,7 +313,7 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
   message(G_LOG_LEVEL_CRITICAL,
 	  "Failed to get a providerID corresponding to the hash.\n")
 
-  return(NULL);
+  return NULL;
 }
 
 /*****************************************************************************/
@@ -435,7 +435,7 @@ lasso_server_new(gchar                *metadata,
       message(G_LOG_LEVEL_WARNING, err->message);
       g_error_free(err);
       lasso_node_destroy(md_node);
-      return (NULL);
+      return NULL;
     }
   }
 
@@ -455,7 +455,7 @@ lasso_server_new(gchar                *metadata,
   LASSO_PROVIDER(server)->public_key = g_strdup(public_key);
   LASSO_PROVIDER(server)->ca_certificate = NULL;
 
-  return(server);
+  return server;
 }
 
 LassoServer *
@@ -473,13 +473,13 @@ lasso_server_new_from_dump(gchar *dump)
   server_node  = lasso_node_new_from_dump(dump);
   if (server_node == NULL) {
     message(G_LOG_LEVEL_WARNING, "Error while loading server dump\n");
-    return(NULL);
+    return NULL;
   }
   server_class = LASSO_NODE_GET_CLASS(server_node);
   if (strcmp(server_class->get_name(server_node), LASSO_SERVER_NODE) != 0) {
     message(G_LOG_LEVEL_WARNING, "XML is not a server dump\n");
     lasso_node_destroy(server_node);
-    return(NULL);
+    return NULL;
   }
 
   /* providerID */
@@ -558,5 +558,5 @@ lasso_server_new_from_dump(gchar *dump)
 
   lasso_node_destroy(server_node);
 
-  return(server);
+  return server;
 }

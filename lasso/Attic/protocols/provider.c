@@ -49,7 +49,7 @@ lasso_provider_copy(LassoProvider *provider)
   copy->public_key     = g_strdup(provider->public_key);
   copy->ca_certificate = g_strdup(provider->ca_certificate);
 
-  return(copy);
+  return copy;
 }
 
 void
@@ -87,7 +87,7 @@ lasso_provider_dump(LassoProvider *provider)
 
   lasso_node_destroy(provider_node);
 
-  return(provider_dump);
+  return provider_dump;
 }
 
 gchar *
@@ -135,7 +135,7 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
   }
   if (descriptor == NULL) {
     g_propagate_error (err, tmp_err);
-    return (NULL);
+    return NULL;
   }
 
   content = lasso_node_get_child_content(descriptor, name, NULL, &tmp_err);
@@ -148,7 +148,7 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
     xmlFree(content);
   }
 
-  return (result);
+  return result;
 }
 
 gchar *
@@ -174,7 +174,7 @@ lasso_provider_get_assertionConsumerServiceURL(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -199,7 +199,7 @@ lasso_provider_get_authnRequestsSigned(LassoProvider  *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -225,7 +225,7 @@ lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvide
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -251,7 +251,7 @@ lasso_provider_get_federationTerminationServiceReturnURL(LassoProvider      *pro
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -277,7 +277,7 @@ lasso_provider_get_federationTerminationServiceURL(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -303,7 +303,7 @@ lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider      *prov
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -318,7 +318,7 @@ lasso_provider_get_providerID(LassoProvider  *provider)
   if (descriptor == NULL) {
     message(G_LOG_LEVEL_CRITICAL, err->message);
     g_error_free(err);
-    return (NULL);
+    return NULL;
   }
 
   value = lasso_node_get_attr_value(descriptor, "providerID", &err);
@@ -330,7 +330,7 @@ lasso_provider_get_providerID(LassoProvider  *provider)
     g_error_free(err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -356,7 +356,7 @@ lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider      *pro
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -382,7 +382,7 @@ lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider      *provider
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -407,7 +407,7 @@ lasso_provider_get_singleSignOnProtocolProfile(LassoProvider  *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -432,7 +432,7 @@ lasso_provider_get_singleSignOnServiceURL(LassoProvider  *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -458,7 +458,7 @@ lasso_provider_get_singleLogoutProtocolProfile(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -484,7 +484,7 @@ lasso_provider_get_singleLogoutServiceURL(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -510,7 +510,7 @@ lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 gchar *
@@ -536,7 +536,7 @@ lasso_provider_get_soapEndpoint(LassoProvider      *provider,
     g_propagate_error (err, tmp_err);
   }
 
-  return (value);
+  return value;
 }
 
 void
@@ -565,12 +565,12 @@ static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider,
 
   node = lasso_node_get_child(LASSO_NODE(provider), name, NULL, NULL);
   if(node == NULL) {
-    return(NULL);
+    return NULL;
   }
   content = lasso_node_get_content(node, NULL);
   lasso_node_destroy(node);
 
-  return(content);
+  return content;
 }
 
 /*****************************************************************************/
@@ -665,7 +665,7 @@ lasso_provider_new(gchar *metadata,
     provider->ca_certificate = g_strdup(ca_certificate);
   }
 
-  return(provider);
+  return provider;
 }
 
 
@@ -677,7 +677,7 @@ lasso_provider_new_from_metadata_node(LassoNode *metadata_node)
   provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
   provider->metadata = lasso_node_copy(metadata_node);
   
-  return(provider);
+  return provider;
 }
 
 LassoProvider*
@@ -702,5 +702,5 @@ lasso_provider_new_metadata_filename(gchar *metadata_filename)
 	    "Failed to build LassoProvider: invalid metadata file.\n");
   }
 
-  return(provider);
+  return provider;
 }

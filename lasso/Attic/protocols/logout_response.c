@@ -44,15 +44,15 @@ lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
     if (err != NULL) {
       message(G_LOG_LEVEL_WARNING, err->message);
       g_error_free(err);
-      return (NULL);
+      return NULL;
     }
     else {
-      return (value);
+      return value;
     }
   }
   else {
     message(G_LOG_LEVEL_WARNING, "No StatusCode element found in Response.\n");
-    return (NULL);
+    return NULL;
   }
 }
 
@@ -163,7 +163,7 @@ lasso_logout_response_new(gchar               *providerID,
   lasso_node_destroy(ssc);
   lasso_node_destroy(ss);
   
-  return (response);
+  return response;
 }
 
 LassoNode *
@@ -174,7 +174,7 @@ lasso_logout_response_new_from_dump(gchar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
   lasso_node_import(response, buffer);
   
-  return (response);
+  return response;
 }
 
 LassoNode *
@@ -189,7 +189,7 @@ lasso_logout_response_new_from_query(gchar *query)
   gd = lasso_query_to_dict(query);
   if (gd == NULL) {
     g_object_unref(response);
-    return(NULL);
+    return NULL;
   }
   
   /* ResponseID */
@@ -197,7 +197,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
@@ -206,7 +206,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
@@ -219,7 +219,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
@@ -228,7 +228,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
@@ -237,7 +237,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response), str);
   
@@ -246,7 +246,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response), str);
   
@@ -255,7 +255,7 @@ lasso_logout_response_new_from_query(gchar *query)
   if (str == NULL) {
     g_datalist_clear(&gd);
     g_object_unref(response);
-    return (NULL);
+    return NULL;
   }
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
@@ -276,7 +276,7 @@ lasso_logout_response_new_from_query(gchar *query)
   
   g_datalist_clear(&gd);
 
-  return(response);
+  return response;
 }
 
 LassoNode *
@@ -292,14 +292,14 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   envelope = lasso_node_new_from_dump(buffer);
   if(envelope == NULL) {
     message(G_LOG_LEVEL_WARNING, "Error while parsing the soap msg\n");
-    return(NULL);
+    return NULL;
   }
 
   lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse",
 					    NULL, NULL);
   if(lassoNode_response == NULL) {
     message(G_LOG_LEVEL_WARNING, "LogoutResponse node not found\n");
-    return(NULL);
+    return NULL;
   }
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
@@ -309,7 +309,7 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);
   
-  return(response);
+  return response;
 }
 
 static LassoNode *
@@ -329,7 +329,7 @@ lasso_logout_response_new_from_xml(gchar *buffer)
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(lassoNode_response);
   
-  return(response);
+  return response;
 }
 
 LassoNode*
@@ -352,8 +352,8 @@ lasso_logout_response_new_from_export(gchar               *buffer,
     break;
   default:
     message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
-    return(NULL);
+    return NULL;
   }
 
-  return(response);
+  return response;
 }

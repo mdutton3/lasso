@@ -83,6 +83,6 @@ lasso_strerror(int error_code)
 
   default:
     sprintf(msg, "Undefined error code %d.", error_code);
-    return(strdup(msg));
+    return strdup(msg);
   }
 }
