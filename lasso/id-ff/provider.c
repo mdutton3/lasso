@@ -28,32 +28,41 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-void
-lasso_provider_set_public_key(LassoProvider *provider,
-			      const gchar *key)
-{
-  g_return_if_fail(key != NULL);
-  
-  provider->public_key = g_strdup(key);
+/* return TRUE if the provider is providerId, else return FALSE */
+gboolean lasso_provider_is_providerId(LassoProvider *provider, const char *providerId){
+     LassoNode *entityDescriptor;
+
+     entityDescriptor = lasso_node_get_child(LASSO_NODE(provider), "EntityDescriptor", NULL);
+     if(strcmp(providerId, lasso_node_get_attr_value(entityDescriptor, "ProviderID"))==0){
+	  return(TRUE);
+     }
+     lasso_node_destroy(entityDescriptor);
+
+     return(FALSE);
 }
 
-void
-lasso_provider_set_private_key(LassoProvider *provider,
-			       const gchar *key)
-{
-  g_return_if_fail(key != NULL);
-  
-  provider->private_key = g_strdup(key);
+xmlChar *lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider){
+     return(lasso_provider_get_direct_child_content(provider, "SingleSignOnProtocolProfile"));
 }
 
-void
-lasso_provider_set_certificate(LassoProvider *provider,
-			       const gchar *certificate)
-{
-  g_return_if_fail(certificate != NULL);
-  
-  provider->certificate = g_strdup(certificate);
+xmlChar *lasso_provider_get_singleSignOnServiceUrl(LassoProvider *provider){
+     return(lasso_provider_get_direct_child_content(provider, "SingleSignOnServiceUrl"));
 }
+
+
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static xmlChar *lasso_provider_get_direct_child_content(LassoProvider *provider, const xmlChar *name){
+     LassoNode *node;
+
+     node = lasso_node_get_child(LASSO_NODE(provider), name, NULL);
+     if(!node)
+	  return(NULL);
+     return(lasso_node_get_content(node));
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -62,6 +71,9 @@ lasso_provider_set_certificate(LassoProvider *provider,
 static void
 lasso_provider_instance_init(LassoProvider *provider)
 {
+    LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(provider));
+
+    class->set_name(LASSO_NODE(provider), "Provider");
 }
 
 static void
@@ -91,18 +103,29 @@ GType lasso_provider_get_type() {
   return this_type;
 }
 
-LassoNode* lasso_provider_new(const gchar *metadata_file) {
-  LassoNode *provider;
-  xmlDocPtr  doc = xmlParseFile(metadata_file);
-  xmlNodePtr root;
+LassoNode* lasso_provider_new(){
+     LassoNode *provider;
 
-  provider = LASSO_NODE(g_object_new(LASSO_TYPE_PROVIDER, NULL));
+     provider = LASSO_NODE(g_object_new(LASSO_TYPE_PROVIDER, NULL));
 
-  /* get root element of doc and duplicate it */
-  root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-  /* free doc */
-  xmlFreeDoc(doc);
-  LASSO_NODE_GET_CLASS(provider)->set_xmlNode(provider, root);
+     return (provider);
+}
 
-  return (provider);
+LassoNode* lasso_provider_new_metadata_from_filename(char *filename){
+     LassoNode *provider, *metadata;
+     xmlDocPtr  doc;
+     xmlNodePtr root;
+     LassoNodeClass *class;
+
+     /* get root element of doc and duplicate it */
+     doc = xmlParseFile(filename);
+     root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
+     xmlFreeDoc(doc);
+     metadata = lasso_node_new_from_xmlNode(root);
+     
+     provider = lasso_provider_new();
+     class = LASSO_NODE_GET_CLASS(provider);
+     class->add_child(LASSO_NODE(provider), LASSO_NODE(metadata), TRUE);
+
+     return(provider);
 }

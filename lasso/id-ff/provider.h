@@ -44,9 +44,6 @@ typedef struct _LassoProviderClass LassoProviderClass;
 struct _LassoProvider {
   LassoNode parent;
   /*< private >*/
-  gchar *public_key;
-  gchar *private_key;
-  gchar *certificate;
 };
 
 struct _LassoProviderClass {
@@ -54,16 +51,12 @@ struct _LassoProviderClass {
 };
 
 LASSO_EXPORT GType lasso_provider_get_type(void);
-LASSO_EXPORT LassoNode* lasso_provider_new(const gchar *metadata_file);
+LASSO_EXPORT LassoNode* lasso_provider_new();
+LASSO_EXPORT LassoNode* lasso_provider_new_metadata_from_filename(char *filename);
 
-LASSO_EXPORT void lasso_provider_set_public_key(LassoProvider *provider,
-						const gchar *key);
-
-LASSO_EXPORT void lasso_provider_set_private_key(LassoProvider *provider,
-						 const gchar *key);
-
-LASSO_EXPORT void lasso_provider_set_certificate(LassoProvider *provider,
-						 const gchar *certificate);
+LASSO_EXPORT gboolean lasso_provider_is_providerId(LassoProvider *provider, const char *providerId);
+LASSO_EXPORT xmlChar *lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider);
+LASSO_EXPORT xmlChar *lasso_provider_get_singleSignOnServiceUrl(LassoProvider *provider);
 
 #ifdef __cplusplus
 }
