@@ -37,29 +37,34 @@ extern "C" {
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
 
-xmlChar*  lasso_build_unique_id        (guint8 size);
+#include <lasso/export.h>
 
-xmlChar*  lasso_doc_get_node_content   (xmlDocPtr      doc,
-					const xmlChar *name);
+LASSO_EXPORT xmlChar*   lasso_build_unique_id        (guint8 size);
 
-xmlChar*  lasso_g_ptr_array_index      (GPtrArray *a,
-					guint      i);
+LASSO_EXPORT xmlChar*   lasso_doc_get_node_content   (xmlDocPtr      doc,
+						      const xmlChar *name);
 
-xmlChar*  lasso_get_current_time       (void);
+LASSO_EXPORT xmlChar*   lasso_g_ptr_array_index      (GPtrArray *a,
+						      guint      i);
 
-GData*    lasso_query_to_dict          (const xmlChar *query);
+LASSO_EXPORT xmlChar*   lasso_get_current_time       (void);
 
-int       lasso_query_verify_signature (xmlChar       *str,
-					const xmlChar *sender_public_key_file,
-					const xmlChar *recipient_private_key_file);
+LASSO_EXPORT GPtrArray* lasso_query_get_value        (xmlChar       *query,
+						      const xmlChar *param);
 
-xmlChar*  lasso_str_escape             (xmlChar *str);
+LASSO_EXPORT GData*     lasso_query_to_dict          (const xmlChar *query);
 
-xmlDocPtr lasso_str_sign               (xmlChar           *str,
-					xmlSecTransformId  signMethodId,
-					const char        *private_key_file);
+LASSO_EXPORT int        lasso_query_verify_signature (xmlChar       *str,
+						      const xmlChar *sender_public_key_file,
+						      const xmlChar *recipient_private_key_file);
 
-xmlChar*  lasso_str_unescape           (xmlChar *str);
+LASSO_EXPORT xmlChar*   lasso_str_escape             (xmlChar *str);
+
+LASSO_EXPORT xmlDocPtr  lasso_str_sign               (xmlChar           *str,
+						      xmlSecTransformId  signMethodId,
+						      const char        *private_key_file);
+
+LASSO_EXPORT xmlChar*   lasso_str_unescape           (xmlChar *str);
 
 #ifdef __cplusplus
 }

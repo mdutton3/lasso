@@ -96,7 +96,29 @@ lasso_get_current_time()
   return (ret);
 }
 
-static void gdata_query_to_dict_destroy_notify(gpointer data) {
+GPtrArray *
+lasso_query_get_value(xmlChar       *query,
+		      const xmlChar *param)
+{
+  gint i;
+  GData *gd;
+  GPtrArray *tmp_array, *array = NULL;
+
+  gd = lasso_query_to_dict(query);
+  tmp_array = (GPtrArray *)g_datalist_get_data(&gd, param);
+  /* create a copy of tmp_array */
+  if (tmp_array != NULL) {
+    array = g_ptr_array_new();
+    for(i=0; i<tmp_array->len; i++)
+      g_ptr_array_add(array, g_strdup(g_ptr_array_index(tmp_array, i)));
+  }
+  g_datalist_clear(&gd);
+  return (array);
+}
+
+static void
+gdata_query_to_dict_destroy_notify(gpointer data)
+{
   gint i;
   GPtrArray *array = data;
 
@@ -159,7 +181,7 @@ lasso_query_to_dict(const xmlChar *query)
 }
 
 int
-lasso_query_verify_signature(xmlChar *str,
+lasso_query_verify_signature(xmlChar *query,
 			     const xmlChar *sender_public_key_file,
 			     const xmlChar *recipient_private_key_file)
 {
@@ -167,10 +189,18 @@ lasso_query_verify_signature(xmlChar *str,
   xmlNodePtr sigNode, sigValNode;
   xmlSecDSigCtxPtr dsigCtx;
   gchar **str_split;
+  /*
+     0: signature invalid
+     1: signature ok
+     2: signature not found
+    -1: error during verification
+  */
   gint ret = -1;
 
-  /* split query, signatureValue */
-  str_split = g_strsplit((const gchar *)str, "&Signature=", 0);
+  /* split query, signature (must be last param) */
+  str_split = g_strsplit((const gchar *)query, "&Signature=", 0);
+  if (str_split[1] == NULL)
+    return (2);
   /* re-create doc to verify (signed + enrypted) */
   doc = lasso_str_sign(str_split[0],
 		       xmlSecTransformRsaSha1Id,
@@ -204,6 +234,7 @@ lasso_query_verify_signature(xmlChar *str,
   /* Verify signature */
   if(xmlSecDSigCtxVerify(dsigCtx, sigNode) < 0) {
     fprintf(stderr,"Error: signature verify\n");
+    ret = 0;
     goto done;
   }
   
