@@ -82,10 +82,11 @@ LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (Lasso
 									   gboolean         authentication_result,
 									   const gchar     *authenticationMethod,
 									   const gchar     *reauthenticateOnOrAfter,
-									   lassoHttpMethod  method);
+									   lassoHttpMethod  http_method);
 
-LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin  *login,
-									   const gchar *remote_providerID);
+LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin      *login,
+									   const gchar     *remote_providerID,
+									   lassoHttpMethod  http_method);
 
 LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (LassoLogin  *login,
 									   gboolean     authentication_result,
@@ -102,11 +103,11 @@ LASSO_EXPORT gint                 lasso_login_init_authn_request          (Lasso
 
 LASSO_EXPORT gint                 lasso_login_init_from_authn_request_msg (LassoLogin      *login,
 									   gchar           *authn_request_msg,
-									   lassoHttpMethod  authn_request_method);
+									   lassoHttpMethod  authn_request_http_method);
 
 LASSO_EXPORT gint                 lasso_login_init_request                (LassoLogin      *login,
 									   gchar           *response_msg,
-									   lassoHttpMethod  response_method);
+									   lassoHttpMethod  response_http_method);
 
 LASSO_EXPORT gboolean             lasso_login_must_authenticate           (LassoLogin *login);
 

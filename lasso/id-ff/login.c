@@ -409,8 +409,8 @@ lasso_login_accept_sso(LassoLogin *login)
  * @method: the HTTP method to send the artifact (REDIRECT or POST)
  * 
  * Builds an artifact. Depending of the HTTP method, the data for the sending of
- * the artifact are stored in login->msg_url (REDIRECT) or login->msg_url,
- * login->msg_body and login->msg_relayState (POST).
+ * the artifact are stored in msg_url (REDIRECT) or msg_url, msg_body and
+ * msg_relayState (POST).
  * 
  * Return value: 0 on success and a negative value otherwise.
  **/
@@ -419,7 +419,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 			       gboolean         authentication_result,
 			       const gchar     *authenticationMethod,
 			       const gchar     *reauthenticateOnOrAfter,
-			       lassoHttpMethod  method)
+			       lassoHttpMethod  http_method)
 {
   LassoFederation *federation = NULL;
   LassoProvider *remote_provider;
@@ -432,7 +432,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   g_return_val_if_fail(authenticationMethod != NULL && reauthenticateOnOrAfter != NULL,
 		       LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  if (method != lassoHttpMethodRedirect && method != lassoHttpMethodPost) {
+  if (http_method != lassoHttpMethodRedirect && http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
     return (-2);
   }
@@ -487,7 +487,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   relayState = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 					    "RelayState", NULL, NULL);
 
-  switch (method) {
+  switch (http_method) {
   case lassoHttpMethodRedirect:
     LASSO_PROFILE(login)->msg_url = g_new(gchar, 1024+1);
     g_sprintf(LASSO_PROFILE(login)->msg_url, "%s?SAMLart=%s", url, b64_samlArt);
@@ -519,14 +519,14 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
  * 
  * Builds an authentication request. Depending of the SSO protocol profile of
  * the identity provider (defined in metadata file), the data for the sending of
- * the request are stored in login->msg_url (GET) or login->msg_url and
- * login->msg_body (POST).
+ * the request are stored in msg_url (GET) or msg_url and msg_body (POST).
  * 
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
-lasso_login_build_authn_request_msg(LassoLogin  *login,
-				    const gchar *remote_providerID)
+lasso_login_build_authn_request_msg(LassoLogin      *login,
+				    const gchar     *remote_providerID,
+				    lassoHttpMethod  http_method)
 {
   LassoProvider *provider, *remote_provider;
   xmlChar *md_authnRequestsSigned = NULL;
@@ -540,6 +540,9 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+  g_return_val_if_fail(http_method == lassoHttpMethodRedirect || \
+		       http_method == lassoHttpMethodPost,
+		       LASSO_PARAM_ERROR_INVALID_VALUE);
   
   LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
   
@@ -567,16 +570,6 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
     goto done;
   }
 
-  /* export request depending on the request ProtocolProfile */
-  request_protocolProfile = lasso_provider_get_singleSignOnProtocolProfile(remote_provider, &err);
-  /* SingleSignOnProtocolProfile metadata is required */
-  if (request_protocolProfile == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, err->message);
-    ret = err->code;
-    g_error_free(err);
-    goto done;
-  }
-
   /* get SingleSignOnServiceURL metadata */
   url = lasso_provider_get_singleSignOnServiceURL(remote_provider, &err);
   if (url == NULL) {
@@ -587,8 +580,8 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
     goto done;
   }
   
-  if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOGet)) {
-    /* GET -> query */
+  if (http_method == lassoHttpMethodRedirect) {
+    /* REDIRECT -> query */
     if (must_sign) {
       query = lasso_node_export_to_query(LASSO_PROFILE(login)->request,
 					 LASSO_PROFILE(login)->server->signature_method,
@@ -613,7 +606,7 @@ lasso_login_build_authn_request_msg(LassoLogin  *login,
     LASSO_PROFILE(login)->msg_body = NULL;
     g_free(query);
   }
-  else if (xmlStrEqual(request_protocolProfile, lassoLibProtocolProfileSSOPost)) {
+  else if (http_method == lassoHttpMethodPost) {
     /* POST -> formular */
     if (must_sign) {
       ret = lasso_samlp_request_abstract_sign_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request),
@@ -781,6 +774,7 @@ lasso_login_init_authn_request(LassoLogin *login)
 {
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
 
+  /* FIXME */
   LASSO_PROFILE(login)->request = lasso_authn_request_new(LASSO_PROFILE(login)->server->providerID,
 							  lassoSignatureTypeNone,
 							  0);
@@ -796,7 +790,7 @@ lasso_login_init_authn_request(LassoLogin *login)
 gint
 lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 					gchar           *authn_request_msg,
-					lassoHttpMethod  authn_request_method)
+					lassoHttpMethod  authn_request_http_method)
 {
   LassoServer *server;
   LassoProvider *remote_provider;
@@ -809,9 +803,9 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  if (authn_request_method != lassoHttpMethodRedirect && \
-      authn_request_method != lassoHttpMethodPost && \
-      authn_request_method != lassoHttpMethodSoap) {
+  if (authn_request_http_method != lassoHttpMethodRedirect && \
+      authn_request_http_method != lassoHttpMethodPost && \
+      authn_request_http_method != lassoHttpMethodSoap) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
     return (-2);
   }
@@ -819,7 +813,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   server = LASSO_PROFILE(login)->server;
 
   /* rebuild request */
-  switch (authn_request_method) {
+  switch (authn_request_http_method) {
   case lassoHttpMethodRedirect:
     /* LibAuthnRequest send by method GET */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
@@ -897,7 +891,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 
   /* verify request signature */
   if (must_verify_signature) {
-    switch (authn_request_method) {
+    switch (authn_request_http_method) {
     case lassoHttpMethodGet:
     case lassoHttpMethodRedirect:
       ret = lasso_query_verify_signature(authn_request_msg,
@@ -934,7 +928,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 gint
 lasso_login_init_request(LassoLogin      *login,
 			 gchar           *response_msg,
-			 lassoHttpMethod  response_method)
+			 lassoHttpMethod  response_http_method)
 {
   LassoNode *response = NULL;
   xmlChar *artifact, *b64_identityProviderSuccinctID;
@@ -944,14 +938,14 @@ lasso_login_init_request(LassoLogin      *login,
   g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
   g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  if (response_method != lassoHttpMethodRedirect && \
-      response_method != lassoHttpMethodPost) {
+  if (response_http_method != lassoHttpMethodRedirect && \
+      response_http_method != lassoHttpMethodPost) {
     message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method, it could be REDIRECT or POST\n.");
     return (-1);
   }
 
   /* rebuild response (artifact) */
-  switch (response_method) {
+  switch (response_http_method) {
   case lassoHttpMethodRedirect:
     /* artifact by REDIRECT */
     response = lasso_artifact_new_from_query(response_msg);
