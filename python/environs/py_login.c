@@ -56,7 +56,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
   login = LassoLogin_get(login_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssssssssss]", "user", "request", "response", "request_type",
+    return Py_BuildValue("[ssssssssssss]", "user", "request", "response",
+			 "request_type", "response_type", "provider_type",
 			 "msg_url", "msg_body", "msg_relayState", "response_dump",
 			 "protocolProfile", "assertionArtifact", "nameIdentifier");
   if (!strcmp(attr, "user"))
@@ -67,6 +68,10 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->response));
   if (!strcmp(attr, "request_type"))
     return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
+  if (!strcmp(attr, "response_type"))
+    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->response_type));
+  if (!strcmp(attr, "provider_type"))
+    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->provider_type));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
   if (!strcmp(attr, "msg_body"))
@@ -104,7 +109,7 @@ PyObject *login_new(PyObject *self, PyObject *args) {
   if (user_obj != Py_None) {
     user = LassoUser_get(user_obj);
   }
-  login = LASSO_LOGIN(lasso_login_new(server, user));
+  login = lasso_login_new(server, user);
 
   return (LassoLogin_wrap(login));
 }
@@ -127,7 +132,7 @@ PyObject *login_new_from_dump(PyObject *self, PyObject *args) {
   if (user_obj != Py_None) {
     user = LassoUser_get(user_obj);
   }
-  login = LASSO_LOGIN(lasso_login_new_from_dump(server, user, dump));
+  login = lasso_login_new_from_dump(server, user, dump);
 
   return (LassoLogin_wrap(login));
 }
