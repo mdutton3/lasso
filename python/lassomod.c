@@ -237,6 +237,7 @@ static PyMethodDef lasso_methods[] = {
   {"logout_build_request_msg",    logout_build_request_msg,    METH_VARARGS},
   {"logout_build_response_msg",   logout_build_response_msg,   METH_VARARGS},
   {"logout_destroy",              logout_destroy,              METH_VARARGS},
+  {"logout_get_next_providerID",  logout_get_next_providerID,  METH_VARARGS},
   {"logout_init_request",         logout_init_request,         METH_VARARGS},
   {"logout_process_request_msg",  logout_process_request_msg,  METH_VARARGS},
   {"logout_process_response_msg", logout_process_response_msg, METH_VARARGS},

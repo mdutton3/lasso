@@ -1017,7 +1017,10 @@ class Logout:
 	return lassomod.logout_build_response_msg(self)
 
     def destroy(self):
-	pass
+	lassomod.logout_destroy(self);
+
+    def get_next_providerID(self):
+	return lassomod.logout_get_next_providerID(self);
 
     def init_request(self, remote_providerID = None):
 	return lassomod.logout_init_request(self, remote_providerID);

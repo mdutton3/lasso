@@ -256,8 +256,16 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
 
   envelope = lasso_node_new_from_dump(buffer);
-  lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse", lassoLibHRef);
-     
+  if(envelope==NULL){
+    debug(ERROR, "Error while parsing the soap msg\n");
+    return(NULL);
+  }
+
+  lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse", NULL);
+  if(lassoNode_response==NULL){
+    debug(ERROR, "LogoutResponse node not found\n");
+    return(NULL);
+  }
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
   lasso_node_destroy(lassoNode_response);

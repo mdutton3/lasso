@@ -43,7 +43,9 @@ while(next_provider_id):
     print 'url : ', logout.msg_url
     print 'body : ', logout.msg_body
 
-    user.remove_assertion(next_provider_id)
+    # use the fake response :
+    lasso_logout_process_response_msg()
+
     next_provider_id = user.get_next_assertion_remote_providerID()
 
 print "End of logout ..."

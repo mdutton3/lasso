@@ -138,6 +138,25 @@ PyObject *logout_destroy(PyObject *self, PyObject *args){
   return(Py_None);
 }
 
+PyObject *logout_get_next_providerID(PyObject *self, PyObject *args) {
+  PyObject  *logout_obj;
+  gchar     *remote_providerID;
+
+  if (CheckArgs(args, "O:logout_get_next_providerID")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:logout_get_next_providerID", &logout_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  remote_providerID = lasso_logout_get_next_providerID(LassoLogout_get(logout_obj));
+  if(remote_providerID==NULL){
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
+
+  return (charPtr_wrap(remote_providerID));
+}
+
 PyObject *logout_init_request(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gchar    *remote_providerID;

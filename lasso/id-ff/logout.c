@@ -34,8 +34,7 @@ static GObjectClass *parent_class = NULL;
 gchar *
 lasso_logout_dump(LassoLogout *logout)
 {
-  LassoProfileContext *profileContext;
-  gchar *dump;
+  gchar *dump = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
 
@@ -47,7 +46,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 {
   LassoProfileContext *profileContext;
   LassoProvider *provider;
-  xmlChar *protocolProfile, *singleLogoutServiceURL;
+  xmlChar *protocolProfile;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   
@@ -99,7 +98,6 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   LassoProfileContext *profileContext;
   LassoProvider *provider;
   xmlChar *protocolProfile;
-  int codeError = 0;
   
   if(!LASSO_IS_LOGOUT(logout)){
     debug(ERROR, "Not a Logout object\n");
@@ -143,6 +141,34 @@ lasso_logout_destroy(LassoLogout *logout)
   g_object_unref(G_OBJECT(logout));
 }
 
+gchar*
+lasso_logout_get_next_providerID(LassoLogout *logout)
+{
+  LassoProfileContext *profileContext;
+  gchar *current_provider_id;
+  int i;
+
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+
+  profileContext = LASSO_PROFILE_CONTEXT(logout);
+
+  /* if a ProviderID from a SP request, pass it and return the next provider id found */
+  for(i = 0; i<profileContext->user->assertion_providerIDs->len; i++){
+    current_provider_id = g_strdup(g_ptr_array_index(profileContext->user->assertion_providerIDs, i));
+    if(logout->first_remote_providerID!=NULL){
+      if(xmlStrEqual(current_provider_id, logout->first_remote_providerID)){
+	/* debug(INFO, "It's the ProviderID of the SP requester (%s) : %s, pass it\n", logout->first_remote_providerID, current_provider_id); */
+	xmlFree(current_provider_id);
+	continue;
+      }
+    }
+    return(current_provider_id);
+  }
+
+  return(NULL);
+}
+
 gint
 lasso_logout_init_request(LassoLogout *logout,
 			  gchar       *remote_providerID)
@@ -150,7 +176,6 @@ lasso_logout_init_request(LassoLogout *logout,
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
   LassoIdentity       *identity;
-  LassoLogoutRequest  *request;
 
   xmlChar *content, *nameQualifier, *format;
 
@@ -159,11 +184,11 @@ lasso_logout_init_request(LassoLogout *logout,
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
   if(remote_providerID==NULL){
-    debug(INFO, "No remote provider id, get the next assertion peer provider id\n");
+    /* debug(INFO, "No remote provider id, get the next assertion peer provider id\n"); */
     profileContext->remote_providerID = lasso_user_get_next_assertion_remote_providerID(profileContext->user);
   }
   else{
-    debug(INFO, "A remote provider id for logout request : %s\n", remote_providerID);
+    /* debug(INFO, "A remote provider id for logout request : %s\n", remote_providerID); */
     profileContext->remote_providerID = g_strdup(remote_providerID);
   }
 
@@ -286,7 +311,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     return(-7);
   }
 
-  /* verify authentication (if ok, delete assertion) */
+  /* verify authentication */
   if(profileContext->user==NULL){
     debug(WARNING, "User environ not found\n");
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
@@ -311,6 +336,27 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     debug(WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-10);
+  }
+
+  switch(profileContext->provider_type){
+  case lassoProviderTypeSp:
+    /* at sp, everything is ok, delete the assertion */
+    lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
+    break;
+  case lassoProviderTypeIdp:
+    /* at idp, backup original infos of the sp requester */
+    logout->first_request = profileContext->request;
+    profileContext->request = NULL;
+    
+    logout->first_response = profileContext->response;
+    profileContext->response = NULL;
+
+    logout->first_remote_providerID = profileContext->remote_providerID;
+    profileContext->remote_providerID = NULL;
+
+    break;
+  default:
+    debug(ERROR, "Uknown provider type\n");
   }
 
   return(0);
@@ -342,11 +388,45 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     debug(ERROR, "Unknown response method\n");
     return(-3);
   }
- 
+
+  if(profileContext->response==NULL){
+    debug(ERROR, "LogoutResponse is NULL\n");
+    return(-1);
+  }
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
+
+  if(statusCode==NULL){
+    debug(ERROR, "StatusCode node not found\n");
+    return(-1);
+  }
+
   statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
+
   if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
-    return(-4);
+    return(-1);
+  }
+
+  profileContext->remote_providerID = lasso_node_get_child_content(profileContext->response, "ProviderID", NULL);
+  /* response is ok, so delete the assertion */
+  switch(profileContext->provider_type){
+  case lassoProviderTypeSp:
+    break;
+  case lassoProviderTypeIdp:
+    /* response os ok, delete the assertion */
+    lasso_user_remove_assertion(profileContext->user, profileContext->remote_providerID);
+    debug(INFO, "Remove assertion for %s\n", profileContext->remote_providerID);
+
+    /* if no more assertion for other providers, remove assertion of the original provider */
+    if(profileContext->user->assertion_providerIDs->len == 1){
+      debug(WARNING, "remove assertion of the original provider\n");
+      lasso_user_remove_assertion(profileContext->user, logout->first_remote_providerID);
+
+      printf("%s\n", lasso_user_dump(profileContext->user));
+    }
+
+    break;
+  default:
+    debug(ERROR, "Unkown provider type\n");
   }
 
   return(0);
