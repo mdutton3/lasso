@@ -137,6 +137,37 @@ class AuthnResponse:
     def add_assertion(self, assertion):
         return lassomod.authn_response_add_assertion(self, assertion)
 
+class LogoutRequest:
+    def __init__(self, providerID,
+		 nameIdentifier, nameQualifier, format,
+		 sessionIndex, relayState, consent, _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        self._o = lassomod.logout_request_create(providerID,
+						 nameIdentifier,
+						 nameQualifier,
+						 format,
+						 sessionIndex,
+						 relayState,
+						 consent)
+        if self._o is None: raise Error('lasso_logout_request_create() failed')
+    def __isprivate(self, name):
+        return name == '_o'
+    def __getattr__(self, name):
+        if self.__isprivate(name):d
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.authn_logout_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "node":
+            ret = Node(_obj=ret)
+        return ret
+
 class Node:
     def __init__(self, _obj=None):
         """

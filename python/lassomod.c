@@ -27,6 +27,7 @@
 #include "py_lasso.h"
 #include "xml/py_xml.h"
 #include "protocols/py_single_sign_on_and_federation.h"
+#include "protocols/py_logout.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -52,6 +53,10 @@ static PyMethodDef lasso_methods[] = {
   {"assertion_add_authenticationStatement", assertion_add_authenticationStatement, METH_VARARGS},
   {"authentication_statement_build", authentication_statement_build, METH_VARARGS},
   
+  /* py_logout.h */
+  {"logout_request_getattr", logout_request_getattr, METH_VARARGS},
+  {"logout_request_create",  logout_request_create,  METH_VARARGS},
+
   {NULL, NULL} /* End of Methods Sentinel */
 };
 
