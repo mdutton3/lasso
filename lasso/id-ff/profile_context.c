@@ -137,6 +137,8 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->user   = NULL;
   ctx->request  = NULL;
   ctx->response = NULL;
+  ctx->request_type  = lassoMessageTypeNone;
+  ctx->response_type = lassoMessageTypeNone;
   
   ctx->remote_providerID = NULL;
   

@@ -59,6 +59,15 @@ typedef enum {
   lassoProfileContextIdentityProviderType
 } lassoProfileContextProviderTypes;
 
+typedef enum {
+  lassoMessageTypeNone = 0,
+  lassoMessageTypeAuthnRequest,
+  lassoMessageTypeAuthnResponse,
+  lassoMessageTypeRequest,
+  lassoMessageTypeResponse,
+  lassoMessageTypeArtifact,
+} lassoMessageTypes;
+
 struct _LassoProfileContext {
   GObject parent;
 
@@ -75,6 +84,8 @@ struct _LassoProfileContext {
   gchar *msg_body;
 
   /*< private >*/
+  lassoMessageTypes request_type;
+  lassoMessageTypes response_type;
 };
 
 struct _LassoProfileContextClass {

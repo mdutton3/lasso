@@ -346,6 +346,7 @@ lasso_login_init_authn_request(LassoLogin  *login,
 
   server = LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server);
   LASSO_PROFILE_CONTEXT(login)->request = lasso_authn_request_new(lasso_provider_get_providerID(server));
+  LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
 
   if (LASSO_PROFILE_CONTEXT(login)->request == NULL) {
@@ -378,6 +379,7 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     /* TODO LibAuthnRequest send by method POST */
     break;
   }
+  LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeAuthnRequest;
 
   /* get ProtocolProfile */
   protocolProfile = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(login)->request,
@@ -398,10 +400,12 @@ lasso_login_init_from_authn_request_msg(LassoLogin       *login,
     /* create LibAuthnResponse */
     LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(server)),
 								      LASSO_PROFILE_CONTEXT(login)->request);
+    LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
     break;
   case lassoLoginProtocolPorfileBrwsArt:
     /* create SamlpResponse */
     LASSO_PROFILE_CONTEXT(login)->response = lasso_response_new();
+    LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeResponse;
     break;
   }
 
@@ -470,10 +474,12 @@ lasso_login_init_request(LassoLogin       *login,
     LASSO_PROFILE_CONTEXT(login)->response = lasso_artifact_new_from_lares(response_msg, NULL);
     break;
   }
+  LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeArtifact;
 
   /* create SamlpRequest */
   artifact = lasso_artifact_get_samlArt(LASSO_ARTIFACT(LASSO_PROFILE_CONTEXT(login)->response));
   LASSO_PROFILE_CONTEXT(login)->request = lasso_request_new(artifact);
+  LASSO_PROFILE_CONTEXT(login)->request_type = lassoMessageTypeRequest;
   xmlFree(artifact);
 
   return (0);
@@ -489,6 +495,8 @@ lasso_login_handle_authn_response_msg(LassoLogin *login,
 
   LASSO_PROFILE_CONTEXT(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
 										lassoNodeExportTypeBase64);
+  LASSO_PROFILE_CONTEXT(login)->response_type = lassoMessageTypeAuthnResponse;
+
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				   "Assertion",
 				   lassoLibHRef);
@@ -532,6 +540,7 @@ lasso_login_handle_request_msg(LassoLogin *login,
 
   node = lasso_node_new_from_dump(request_msg);
  
+  // TODO : rebuild request in login->request and set login->request_type
   login->assertionArtifact = lasso_node_get_child_content(node, "AssertionArtifact", lassoSamlProtocolHRef);
   lasso_node_destroy(node);
 

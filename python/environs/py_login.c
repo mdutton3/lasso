@@ -24,6 +24,7 @@
  */
 
 #include "../lassomod.h"
+#include "../xml/py_xml.h"
 
 #include "py_login.h"
 
@@ -37,6 +38,37 @@ PyObject *LassoLogin_wrap(LassoLogin *login) {
   ret = PyCObject_FromVoidPtrAndDesc((void *) login,
                                      (char *) "LassoLogin *", NULL);
   return (ret);
+}
+
+/******************************************************************************/
+
+PyObject *login_getattr(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  LassoLogin *login;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:login_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:login_get_attr", &login_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  login = LassoLogin_get(login_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[ssss]", "request", "response", "request_type",
+			 "msg_url");
+  if (!strcmp(attr, "request"))
+    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
+  if (!strcmp(attr, "response"))
+    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->response));
+  if (!strcmp(attr, "request_type"))
+    return (int_wrap(LASSO_PROFILE_CONTEXT(login)->request_type));
+  if (!strcmp(attr, "msg_url"))
+    return (charPtr_wrap(LASSO_PROFILE_CONTEXT(login)->msg_url));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
 }
 
 /******************************************************************************/
@@ -108,5 +140,39 @@ PyObject *login_build_artifact_msg(PyObject *self, PyObject *args) {
 				       reauthenticateOnOrAfter,
 				       method);
 
+  return (int_wrap(ret));
+}
+
+PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gint ret;
+
+  if (CheckArgs(args, "O:login_build_authn_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_build_authn_request_msg",
+			 &login_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_build_authn_request_msg(LassoLogin_get(login_obj));
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar *remote_providerID;
+  gint ret;
+  
+  if (CheckArgs(args, "OS:login_init_authn_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_init_authn_request",
+			 &login_obj, &remote_providerID))
+      return NULL;
+  }
+  else return NULL;
+  
+  ret = lasso_login_init_authn_request(LassoLogin_get(login_obj),
+				       remote_providerID);
+  
   return (int_wrap(ret));
 }

@@ -39,8 +39,11 @@ typedef struct {
 #define LassoLogin_get(v) (((v) == Py_None) ? NULL : (((LassoLogin_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 PyObject *LassoLogin_wrap(LassoLogin *login);
 
+PyObject *login_getattr(PyObject *self, PyObject *args);
 PyObject *login_new(PyObject *self, PyObject *args);
 PyObject *login_new_from_dump(PyObject *self, PyObject *args);
 PyObject *login_build_artifact_msg(PyObject *self, PyObject *args);
+PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args);
+PyObject *login_init_authn_request(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGIN_H__ */

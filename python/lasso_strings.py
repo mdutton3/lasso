@@ -47,6 +47,14 @@
 
 
 # *****************************************************************************/
+# * Lasso                                                                     */
+# *****************************************************************************/
+
+# * prefix & href */
+lassoHRef = "http://www.entrouvert.org/namespaces/lasso/0.0"
+lassoPrefix = "lasso"
+
+# *****************************************************************************/
 # * Liberty Alliance                                                          */
 # *****************************************************************************/
 
@@ -82,8 +90,10 @@ libStatusCodeUnknownPrincipal = "lib:UnknownPrincipal"
 libStatusCodeUnsignedAuthnRequest = "lib:UnsignedAuthnRequest"
 
 # * ProtocolProfile */
-libProtocolProfileArtifact = "http://projectliberty.org/profiles/brws-art"
-libProtocolProfilePost = "http://projectliberty.org/profiles/brws-post"
+libProtocolProfileSSOGet = "http://projectliberty.org/profiles/sso-get"
+libProtocolProfileSSOPost = "http://projectliberty.org/profiles/sso-post"
+libProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art"
+libProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post"
 libProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http"
 libProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap"
 libProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http"
@@ -102,6 +112,14 @@ libNameIdentifierFormatFederated = "urn:liberty:iff:nameid:federated"
 libNameIdentifierFormatOneTime = "urn:liberty:iff:nameid:one-time"
 libNameIdentifierFormatEncrypted = "urn:liberty:iff:nameid:encrypted"
 libNameIdentifierFormatEntityID = "urn:liberty:iff:nameid:entityID"
+
+# *****************************************************************************/
+# * METADATA                                                                  */
+# *****************************************************************************/
+
+# * prefix & href */
+metadataHRef = "urn:liberty:metadata:2003-08"
+metadataPrefix = "md"
 
 # *****************************************************************************/
 # * SAML                                                                      */

@@ -790,6 +790,14 @@ class AuthenticationStatement(Node):
 ################################################################################
 SignatureMethodRsaSha1 = 1
 SignatureMethodDsaSha1 = 2
+
+MessageTypeNone          = 0
+MessageTypeAuthnRequest  = 1
+MessageTypeAuthnResponse = 2
+MessageTypeRequest       = 3
+MessageTypeResponse      = 4
+MessageTypeArtifact      = 5
+
 class Server:
     """\brief Short desc
 
@@ -810,6 +818,56 @@ class Server:
     def add_provider(self, metadata, public_key=None, certificate=None):
         lassomod.server_add_provider(self, metadata,
                                      public_key, certificate)
+
+
+class Login:
+    """\brief Short desc
+
+    Long desc
+    """
+
+    def __init__(self, _obj):
+	"""
+	The constructor
+	"""
+	self._o = _obj
+        
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.login_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "request":
+            if lassomod.login_getattr(self, "request_type") == MessageTypeAuthnRequest:
+                ret = AuthnRequest(None, _obj=ret)
+            # TODO
+        if name == "response":
+            ret = Node(_obj=ret)
+        return ret
+
+    def new(cls, server, user=None):
+	obj = lassomod.login_new(server, user)
+	return Login(obj)
+    new = classmethod(new)
+
+    def build_artifact_msg(self, authentication_result, authenticationMethod,
+                           reauthenticateOnOrAfter, method):
+        return lassomod.login_build_artifact_msg(self, authentication_result,
+                                                 authenticationMethod,
+                                                 reauthenticateOnOrAfter,
+                                                 method)
+
+    def build_authn_request_msg(self):
+        return lassomod.login_build_authn_request_msg(self)
+
+    def init_authn_request(self, remote_providerID):
+        return lassomod.login_init_authn_request(self, remote_providerID)
 
 
 class Logout:

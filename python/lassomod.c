@@ -202,8 +202,12 @@ static PyMethodDef lasso_methods[] = {
 
   /* environs */
   /* py_login.h */
-  {"login_new",           login_new,           METH_VARARGS},
-  {"login_new_from_dump", login_new_from_dump, METH_VARARGS},
+  {"login_getattr",                 login_getattr,                 METH_VARARGS},
+  {"login_new",                     login_new,                     METH_VARARGS},
+  {"login_new_from_dump",           login_new_from_dump,           METH_VARARGS},
+  {"login_build_artifact_msg",      login_build_artifact_msg,      METH_VARARGS},
+  {"login_build_authn_request_msg", login_build_authn_request_msg, METH_VARARGS},
+  {"login_init_authn_request",      login_init_authn_request,      METH_VARARGS},
 
   /* py_logout.h */
   {"logout_new",                logout_new,                METH_VARARGS},
