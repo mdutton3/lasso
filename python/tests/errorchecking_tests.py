@@ -66,7 +66,7 @@ class ErrorCheckingTestCase(unittest.TestCase):
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(server)
         try:
-            login.processAuthnRequestMsg("", lasso.httpMethodRedirect)
+            login.processAuthnRequestMsg("")
         except lasso.Error:
             pass
 

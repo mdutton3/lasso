@@ -52,6 +52,7 @@ class ServerTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleIdp,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
@@ -64,7 +65,8 @@ class ServerTestCase(unittest.TestCase):
         """Server construction without argument, dump & newFromDump."""
 
         lassoServer = lasso.Server()
-        lassoServer.addProvider(os.path.join(dataDir, 'idp1-la/metadata.xml'))
+        lassoServer.addProvider(
+            lasso.providerRoleIdp, os.path.join(dataDir, 'idp1-la/metadata.xml'))
         dump = lassoServer.dump()
         lassoServer2 = lassoServer.newFromDump(dump)
         dump2 = lassoServer2.dump()
@@ -81,6 +83,7 @@ class LoginTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleIdp,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
@@ -100,10 +103,11 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleIdp,
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
-        logout = lasso.Logout(lassoServer, lasso.providerTypeSp)
+        logout = lasso.Logout(lassoServer)
         try:
             logout.initRequest()
         except lasso.Error, error:
@@ -121,10 +125,11 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleSp,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
-        logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
+        logout = lasso.Logout(lassoServer)
         self.failIf(logout.getNextProviderId())
 
     def test03(self):
@@ -136,13 +141,14 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleSp,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
-        logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
+        logout = lasso.Logout(lassoServer)
         # The processRequestMsg should fail but not abort.
         try:
-            logout.processRequestMsg('passport=0&lasso=1', lasso.httpMethodRedirect)
+            logout.processRequestMsg('passport=0&lasso=1')
         except lasso.Error, error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
                 raise
@@ -158,13 +164,14 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleSp,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
-        logout = lasso.Logout(lassoServer, lasso.providerTypeIdp)
+        logout = lasso.Logout(lassoServer)
         # The processResponseMsg should fail but not abort.
         try:
-            logout.processResponseMsg('liberty=&alliance', lasso.httpMethodRedirect)
+            logout.processResponseMsg('liberty=&alliance')
         except lasso.Error, error:
             if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
                 raise
@@ -180,6 +187,7 @@ class LogoutTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleSp,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
@@ -195,26 +203,38 @@ class DefederationTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
+            lasso.providerRoleSp,
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
-        defederation = lasso.Defederation(lassoServer, lasso.providerTypeIdp)
+        defederation = lasso.Defederation(lassoServer)
         # The processNotificationMsg should fail but not abort.
         try:
-            defederation.processNotificationMsg('nonLibertyQuery=1', lasso.httpMethodRedirect)
+            defederation.processNotificationMsg('nonLibertyQuery=1')
         except lasso.Error, error:
-            if error[0] != lasso.PROFILE_ERROR_INVALID_QUERY:
+            if error[0] != lasso.PROFILE_ERROR_INVALID_MSG:
                 raise
         else:
             self.fail('Defederation processNotificationMsg should have failed.')
+
+
+class IdentityTestCase(unittest.TestCase):
+    def test01(self):
+        """Identity newFromDump & dump."""
+
+        identityDump = """<Identity xmlns="http://www.entrouvert.org/namespaces/lasso/0.0" Version="1"><Federations><Federation xmlns="http://www.entrouvert.org/namespaces/lasso/0.0" Version="1" RemoteProviderID="https://sp1.entrouvert.lan/metadata"><LocalNameIdentifier><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://proxy2.entrouvert.lan/metadata" Format="urn:liberty:iff:nameid:federated">_CD739B41C602EAEA93626EBD1751CB46</saml:NameIdentifier></LocalNameIdentifier></Federation><Federation xmlns="http://www.entrouvert.org/namespaces/lasso/0.0" Version="1" RemoteProviderID="https://idp1.entrouvert.lan/metadata"><RemoteNameIdentifier><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://idp1.entrouvert.lan/metadata" Format="urn:liberty:iff:nameid:federated">_11EA77A4FED32C41824AC5DE87298E65</saml:NameIdentifier></RemoteNameIdentifier></Federation></Federations></Identity>"""
+        identity = lasso.Identity.newFromDump(identityDump)
+        newIdentityDump = identity.dump()
+        self.failUnlessEqual(identityDump, newIdentityDump)
 
 
 suite1 = unittest.makeSuite(ServerTestCase, 'test')
 suite2 = unittest.makeSuite(LoginTestCase, 'test')
 suite3 = unittest.makeSuite(LogoutTestCase, 'test')
 suite4 = unittest.makeSuite(DefederationTestCase, 'test')
+suite5 = unittest.makeSuite(IdentityTestCase, 'test')
 
-allTests = unittest.TestSuite((suite1, suite2, suite3, suite4))
+allTests = unittest.TestSuite((suite1, suite2, suite3, suite4, suite5))
 
 if __name__ == '__main__':
     sys.exit(not unittest.TextTestRunner(verbosity = 2).run(allTests).wasSuccessful())
