@@ -274,10 +274,13 @@ LassoNode *lasso_build_authenticationStatement(const xmlChar *authenticationMeth
      
      lasso_saml_authentication_statement_set_authenticationInstant(LASSO_SAML_AUTHENTICATION_STATEMENT(statement), lasso_get_current_time());
 
-     subject = lasso_saml_subject_new();
+     subject = lasso_lib_subject_new();
 
      lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
 					   LASSO_SAML_NAME_IDENTIFIER(nameIdentifier));
+
+     lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
+						     LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
 
      lasso_saml_subject_statement_abstract_set_subject(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement),
 						       LASSO_SAML_SUBJECT(subject));
