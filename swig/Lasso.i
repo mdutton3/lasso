@@ -3196,10 +3196,13 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibAssertion(char *issuer, char *requestId, char *audience,
-			  char *notBefore, char *notOnOrAfter);
+	LassoLibAssertion();
 
 	~LassoLibAssertion();
+
+	%newobject newFull;
+	static LassoLibAssertion *newFull(char *issuer, char *requestId, char *audience,
+					  char *notBefore, char *notOnOrAfter);
 
 	/* Methods inherited from LassoNode */
 
@@ -3299,8 +3302,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibAssertion lasso_lib_assertion_new_full
+#define new_LassoLibAssertion lasso_lib_assertion_new
 #define delete_LassoLibAssertion(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibAssertion_newFull lasso_lib_assertion_new_full
+#else
+#define LibAssertion_newFull lasso_lib_assertion_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -3683,11 +3691,14 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibFederationTerminationNotification(
-			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
+	LassoLibFederationTerminationNotification();
 
 	~LassoLibFederationTerminationNotification();
+
+	%newobject newFull;
+	static LassoLibFederationTerminationNotification *newFull(
+			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	/* Methods inherited from LassoNode */
 
@@ -3769,8 +3780,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibFederationTerminationNotification lasso_lib_federation_termination_notification_new_full
+#define new_LassoLibFederationTerminationNotification lasso_lib_federation_termination_notification_new
 #define delete_LassoLibFederationTerminationNotification(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibFederationTerminationNotification_newFull lasso_lib_federation_termination_notification_new_full
+#else
+#define LibFederationTerminationNotification_newFull lasso_lib_federation_termination_notification_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -3874,11 +3890,14 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibLogoutRequest(
-			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
-			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
+	LassoLibLogoutRequest();
 
 	~LassoLibLogoutRequest();
+
+	%newobject newFull;
+	static LassoLibLogoutRequest *newFull(
+			char *providerID, LassoSamlNameIdentifier *nameIdentifier,
+			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 
 	/* Methods inherited from LassoNode */
 
@@ -3960,8 +3979,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibLogoutRequest lasso_lib_logout_request_new_full
+#define new_LassoLibLogoutRequest lasso_lib_logout_request_new
 #define delete_LassoLibLogoutRequest(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibLogoutRequest_newFull lasso_lib_logout_request_new_full
+#else
+#define LibLogoutRequest_newFull lasso_lib_logout_request_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4004,12 +4028,15 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibLogoutResponse(
+	LassoLibLogoutResponse();
+
+	~LassoLibLogoutResponse();
+
+	%newobject newFull;
+	static LassoLibLogoutResponse *newFull(
 			char *providerID, const char *statusCodeValue,
 			LassoLibLogoutRequest *request,
 			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
-
-	~LassoLibLogoutResponse();
 
 	/* Methods inherited from LassoNode */
 
@@ -4047,8 +4074,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibLogoutResponse lasso_lib_logout_response_new_full
+#define new_LassoLibLogoutResponse lasso_lib_logout_response_new
 #define delete_LassoLibLogoutResponse(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibLogoutResponse_newFull lasso_lib_logout_response_new_full
+#else
+#define LibLogoutResponse_newFull lasso_lib_logout_response_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4152,14 +4184,17 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibRegisterNameIdentifierRequest(
+	LassoLibRegisterNameIdentifierRequest();
+
+	~LassoLibRegisterNameIdentifierRequest();
+
+	%newobject newFull;
+	static LassoLibRegisterNameIdentifierRequest *newFull(
 			char *providerID,
 			LassoSamlNameIdentifier *idpNameIdentifier,
 			LassoSamlNameIdentifier *spNameIdentifier,
 			LassoSamlNameIdentifier *oldNameIdentifier,
 			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
-
-	~LassoLibRegisterNameIdentifierRequest();
 
 	/* Methods inherited from LassoNode */
 
@@ -4253,8 +4288,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibRegisterNameIdentifierRequest lasso_lib_register_name_identifier_request_new_full
+#define new_LassoLibRegisterNameIdentifierRequest lasso_lib_register_name_identifier_request_new
 #define delete_LassoLibRegisterNameIdentifierRequest(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibRegisterNameIdentifierRequest_newFull lasso_lib_register_name_identifier_request_new_full
+#else
+#define LibRegisterNameIdentifierRequest_newFull lasso_lib_register_name_identifier_request_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4297,12 +4337,15 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoLibRegisterNameIdentifierResponse(
+	LassoLibRegisterNameIdentifierResponse();
+
+	~LassoLibRegisterNameIdentifierResponse();
+
+	%newobject newFull;
+	static LassoLibRegisterNameIdentifierResponse *newFull(
 			char *providerID, char *statusCodeValue,
 			LassoLibRegisterNameIdentifierRequest *request,
 			LassoSignatureType sign_type, LassoSignatureMethod sign_method);
-
-	~LassoLibRegisterNameIdentifierResponse();
 
 	/* Methods inherited from LassoNode */
 
@@ -4340,8 +4383,13 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoLibRegisterNameIdentifierResponse lasso_lib_register_name_identifier_response_new_full
+#define new_LassoLibRegisterNameIdentifierResponse lasso_lib_register_name_identifier_response_new
 #define delete_LassoLibRegisterNameIdentifierResponse(self) lasso_node_destroy(LASSO_NODE(self))
+#ifdef PHP_VERSION
+#define LassoLibRegisterNameIdentifierResponse_newFull lasso_lib_register_name_identifier_response_new_full
+#else
+#define LibRegisterNameIdentifierResponse_newFull lasso_lib_register_name_identifier_response_new_full
+#endif
 
 /* Implementations of methods inherited from LassoNode */
 
