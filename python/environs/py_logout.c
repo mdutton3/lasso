@@ -86,7 +86,7 @@ PyObject *logout_new(PyObject *self, PyObject *args) {
 
   if (CheckArgs(args, "OI:logout_new")) {
     if(!PyArg_ParseTuple(args, (char *) "Oi:logout_new",
-						 &server_obj, &provider_type))
+			 &server_obj, &provider_type))
       return NULL;
   }
   else return NULL;
