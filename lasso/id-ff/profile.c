@@ -91,7 +91,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
 
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
 		name = xpathObj->nodesetval->nodeTab[0]->name;
 
 	if (name == NULL) {

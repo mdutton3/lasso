@@ -569,7 +569,7 @@ lasso_node_new_from_soap(const char *soap)
 
 	xmlnode = xpathObj->nodesetval->nodeTab[0];
 
-	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
 		node = lasso_node_new_from_xmlNode(xmlnode);
 
 	xmlFreeDoc(doc);

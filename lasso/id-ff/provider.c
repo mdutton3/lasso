@@ -399,25 +399,30 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xmlNode *node;
 
 	doc = xmlParseFile(metadata);
-	/* FIXME: lacking error checking */
+	if (doc == NULL)
+		return FALSE;
 
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
 	xpathObj = xmlXPathEvalExpression("/md:EntityDescriptor", xpathCtx);
 	/* if empty: not a metadata file -> bails out */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+		xmlFreeDoc(doc);
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return FALSE;
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
 	provider->ProviderID = xmlGetProp(node, "providerID");
 
 	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:IDPDescriptor", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval->nodeNr == 1)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1)
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->IDPDescriptor);
 	xmlXPathFreeObject(xpathObj);
+
 	xpathObj = xmlXPathEvalExpression("md:EntityDescriptor/md:SPDescriptor", xpathCtx);
-	if (xpathObj && xpathObj->nodesetval->nodeNr == 1)
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1)
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->SPDescriptor);
 	xmlXPathFreeObject(xpathObj);
@@ -436,7 +441,9 @@ lasso_provider_new(LassoProviderRole role, char *metadata, char *public_key, cha
 	provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
 	provider->role = role;
 	if (lasso_provider_load_metadata(provider, metadata) == FALSE) {
-		/* XXX */
+		message(G_LOG_LEVEL_CRITICAL, "Failed to load metadata from %s.", metadata);
+		g_object_unref(provider);
+		return NULL;
 	}
 
 	provider->public_key = g_strdup(public_key);
