@@ -159,19 +159,13 @@ lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char
 		LassoLibNameIdentifierMappingRequest *request,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
 {
-	LassoSamlpResponseAbstract *response_base;
 	LassoLibNameIdentifierMappingResponse *response;
 
 	response = g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL);
-	response_base = LASSO_SAMLP_RESPONSE_ABSTRACT(response);
-  
-	response_base->ResponseID = lasso_build_unique_id(32);
-	response_base->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
-	response_base->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
-	response_base->IssueInstant = lasso_get_current_time();
-	response_base->InResponseTo = LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID;
-	response_base->Recipient = request->ProviderID;
-
+	lasso_samlp_response_abstract_fill(
+			LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+			LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID,
+			request->ProviderID);
 #if 0 /* XXX: signature to do */
 	/* set the signature template */
 	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {

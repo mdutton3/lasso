@@ -102,25 +102,20 @@ LassoNode*
 lasso_lib_register_name_identifier_response_new_full(char *providerID,
 		const char *statusCodeValue, LassoLibRegisterNameIdentifierRequest *request)
 {
-	LassoSamlpResponseAbstract *response;
+	LassoLibStatusResponse *response;
 	
 	response = g_object_new(LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL);
 
-	response->ResponseID = lasso_build_unique_id(32);
-	response->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
-	response->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
-	response->IssueInstant = lasso_get_current_time();
-	response->InResponseTo = LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID;
-	response->Recipient = request->ProviderID;
-
 	LASSO_LIB_STATUS_RESPONSE(response)->ProviderID = g_strdup(providerID);
+	lasso_samlp_response_abstract_fill(
+			LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+			LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID,
+			request->ProviderID);
 
-	if (request->RelayState)
-		LASSO_LIB_STATUS_RESPONSE(response)->RelayState = g_strdup(request->RelayState);
-
-	LASSO_LIB_STATUS_RESPONSE(response)->Status = lasso_samlp_status_new();
-	LASSO_LIB_STATUS_RESPONSE(response)->Status->StatusCode = lasso_samlp_status_code_new();
-	LASSO_LIB_STATUS_RESPONSE(response)->Status->StatusCode->Value = g_strdup(statusCodeValue);
+	response->RelayState = g_strdup(request->RelayState);
+	response->Status = lasso_samlp_status_new();
+	response->Status->StatusCode = lasso_samlp_status_code_new();
+	response->Status->StatusCode->Value = g_strdup(statusCodeValue);
   
 	return LASSO_NODE(response);
 }

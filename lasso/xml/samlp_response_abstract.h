@@ -65,6 +65,8 @@ struct _LassoSamlpResponseAbstractClass {
 
 LASSO_EXPORT GType lasso_samlp_response_abstract_get_type           (void);
 LASSO_EXPORT LassoNode* lasso_samlp_response_abstract_new           (void);
+LASSO_EXPORT void lasso_samlp_response_abstract_fill(LassoSamlpResponseAbstract *response,
+		const char *InResponseTo, const char *Recipient);
 
 #if 0
 LASSO_EXPORT gint lasso_samlp_response_abstract_set_signature       (LassoSamlpResponseAbstract *node,

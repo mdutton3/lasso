@@ -255,6 +255,18 @@ lasso_samlp_response_abstract_get_type()
 	return response_abstract_type;
 }
 
+void
+lasso_samlp_response_abstract_fill(LassoSamlpResponseAbstract *response,
+		const char *InResponseTo, const char *Recipient)
+{
+	response->ResponseID = lasso_build_unique_id(32);
+	response->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+	response->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+	response->IssueInstant = lasso_get_current_time();
+	response->InResponseTo = g_strdup(InResponseTo);
+	response->Recipient = g_strdup(Recipient);
+}
+
 LassoNode*
 lasso_samlp_response_abstract_new()
 {
