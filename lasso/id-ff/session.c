@@ -265,10 +265,10 @@ lasso_session_get_provider_index(LassoSession *session,
   g_return_val_if_fail(session != NULL, NULL);
 
   /* verify index is valid */
-  if ( (session->providerIDs == NULL) && (session->providerIDs->len < 0) ) {
+  if ((session->providerIDs == NULL) && (session->providerIDs->len < 0)) {
     return NULL;
   }
-  if ( (index < 0) || (index >= session->providerIDs->len) ) {
+  if ((index < 0) || (index >= session->providerIDs->len)) {
     return NULL;
   }
 
@@ -449,8 +449,8 @@ lasso_session_new_from_dump(gchar *dump)
 	/* assertion node */
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
 	providerID = lasso_node_get_attr_value(assertion_node,
-						      LASSO_SESSION_REMOTE_PROVIDERID_ATTR,
-						      &err);
+					       LASSO_SESSION_REMOTE_PROVIDERID_ATTR,
+					       &err);
 	if (providerID != NULL) {
 	  assertion = lasso_node_get_child(assertion_node,
 					   "Assertion",
@@ -469,7 +469,7 @@ lasso_session_new_from_dump(gchar *dump)
 	  message(G_LOG_LEVEL_CRITICAL, err->message);
 	  g_clear_error(&err);
 	}
-	g_free(providerID);
+	xmlFree(providerID);
 	lasso_node_destroy(assertion_node);
       }
       assertion_xmlNode = assertion_xmlNode->next;

@@ -86,7 +86,7 @@ LASSO_EXPORT gchar*         lasso_session_get_authentication_method            (
 LASSO_EXPORT gchar*         lasso_session_get_first_providerID                 (LassoSession *session);
 
 LASSO_EXPORT gchar*         lasso_session_get_provider_index                   (LassoSession *session,
-										gint index);
+										gint          index);
 
 LASSO_EXPORT gint           lasso_session_remove_assertion                     (LassoSession *session,
 										gchar        *providerID);
