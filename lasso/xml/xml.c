@@ -473,7 +473,6 @@ lasso_node_rename_prop(LassoNode     *node,
  * lasso_node_verify_signature:
  * @node: a LassoNode
  * @public_key_file: the public key
- * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Verifys the node signature.
  * 
@@ -498,7 +497,6 @@ lasso_node_verify_signature(LassoNode   *node,
  * lasso_node_verify_x509_signature:
  * @node: a LassoNode
  * @ca_certificate_file: the trusted certificate
- * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Verifys the node signature with X509 certificate.
  * 
@@ -610,6 +608,20 @@ lasso_node_new_child(LassoNode     *node,
 
   class = LASSO_NODE_GET_CLASS(node);
   class->new_child(node, name, content, unbounded);
+}
+
+static void
+lasso_node_new_ns_prop(LassoNode     *node,
+		       const xmlChar *name,
+		       const xmlChar *value,
+		       const xmlChar *href,
+		       const xmlChar *prefix)
+{
+  LassoNodeClass *class;
+  g_return_if_fail(LASSO_IS_NODE(node));
+
+  class = LASSO_NODE_GET_CLASS(node);
+  class->new_ns_prop(node, name, value, href, prefix);
 }
 
 static GData *
@@ -1570,6 +1582,23 @@ lasso_node_impl_new_child(LassoNode     *node,
 }
 
 static void
+lasso_node_impl_new_ns_prop(LassoNode     *node,
+			    const xmlChar *name,
+			    const xmlChar *value,
+			    const xmlChar *href,
+			    const xmlChar *prefix)
+{
+  xmlNsPtr ns;
+
+  g_return_if_fail (LASSO_IS_NODE(node));
+  g_return_if_fail (href != NULL || prefix != NULL);
+  g_return_if_fail (name != NULL || value != NULL);
+
+  ns = xmlNewNs(node->private->node, href, prefix);
+  xmlNewNsProp(node->private->node, ns, name, value);
+}
+
+static void
 gdata_serialize_destroy_notify(gpointer data)
 {
   gint i;
@@ -1869,6 +1898,7 @@ lasso_node_class_init(LassoNodeClass *class)
   class->build_query         = lasso_node_impl_build_query;
   class->get_xmlNode         = lasso_node_impl_get_xmlNode;
   class->new_child           = lasso_node_impl_new_child;
+  class->new_ns_prop         = lasso_node_impl_new_ns_prop;
   class->serialize           = lasso_node_impl_serialize;
   class->set_name            = lasso_node_impl_set_name;
   class->set_ns              = lasso_node_impl_set_ns;

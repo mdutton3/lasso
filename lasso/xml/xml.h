@@ -132,6 +132,11 @@ struct _LassoNodeClass {
 				     const xmlChar *name,
 				     const xmlChar *content,
 				     gboolean       unbounded);
+  void       (* new_ns_prop)        (LassoNode     *node,
+				     const xmlChar *name,
+				     const xmlChar *value,
+				     const xmlChar *href,
+				     const xmlChar *prefix);
   GData*     (* serialize)          (LassoNode     *node,
 				     GData         *gd);
   void       (* set_name)           (LassoNode     *node,
@@ -214,7 +219,7 @@ LASSO_EXPORT gint       lasso_node_verify_signature      (LassoNode   *node,
 							  const gchar *public_key_file);
 
 LASSO_EXPORT gint       lasso_node_verify_x509_signature (LassoNode   *node,
-							  const gchar *certificate_file);
+							  const gchar *ca_certificate_file);
 
 #ifdef __cplusplus
 }
