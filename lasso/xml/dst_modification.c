@@ -52,7 +52,7 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Select", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstModification, Select) },
-	{ "NewData", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstModification, NewData) },
+	{ "NewData", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDstModification, NewData) },
 	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification, id) },
 	{ "notChangedSince", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstModification,
 								notChangedSince) },

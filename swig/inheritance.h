@@ -77,8 +77,10 @@ SET_NODE_INFO(LibStatusResponse, SamlpResponseAbstract)
 SET_NODE_INFO(LibLogoutResponse, LibStatusResponse)
 SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
 
-/* ID-WSF FIXME: Check inheritance */
-#if 0
+
+/* ID-WSF */
+
+
 /* disco prefix */
 
 SET_NODE_INFO(DiscoCredentials, Node)
@@ -98,6 +100,7 @@ SET_NODE_INFO(DiscoServiceInstance, Node)
 
 /* dst prefix */
 
+SET_NODE_INFO(DstData, Node)
 SET_NODE_INFO(DstModification, Node)
 SET_NODE_INFO(DstModify, Node)
 SET_NODE_INFO(DstModifyResponse, Node)
@@ -106,7 +109,23 @@ SET_NODE_INFO(DstQuery, Node)
 SET_NODE_INFO(DstQueryItem, Node)
 SET_NODE_INFO(DstQueryResponse, Node)
 
-/* pp prefix */
+/* is prefix */
 
-SET_NODE_INFO(PPMsgContact, Node)
-#endif
+SET_NODE_INFO(IsHelp, Node)
+SET_NODE_INFO(IsInquiry, Node)
+SET_NODE_INFO(IsInquiryElement, Node)
+SET_NODE_INFO(IsInteractionRequest, Node)
+SET_NODE_INFO(IsInteractionResponse, Node)
+SET_NODE_INFO(IsInteractionStatement, Node)
+SET_NODE_INFO(IsItem, Node)
+SET_NODE_INFO(IsParameter, Node)
+SET_NODE_INFO(IsRedirectRequest, Node)
+/* FIXME: IsSelect should inherit from IsInquiryElement */
+SET_NODE_INFO(IsSelect, Node)
+/* FIXME: IsText should inherit from IsInquiryElement */
+SET_NODE_INFO(IsText, Node)
+SET_NODE_INFO(IsUserInteraction, Node)
+
+/* utility prefix */
+
+SET_NODE_INFO(UtilityStatus, Node)

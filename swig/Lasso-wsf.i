@@ -27,15 +27,25 @@
 %{
 
 #include <lasso/id-wsf/discovery.h>
+#include <lasso/id-wsf/interaction_profile_service.h>
 #include <lasso/id-wsf/profile_service.h>
 #include <lasso/xml/dst_new_data.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
+#include <lasso/xml/is_help.h>
+#include <lasso/xml/is_inquiry.h>
+#include <lasso/xml/is_inquiry_element.h>
 #include <lasso/xml/is_interaction_request.h>
 #include <lasso/xml/is_interaction_response.h>
-#include <lasso/xml/is_inquiry.h>
+#include <lasso/xml/is_interaction_statement.h>
+#include <lasso/xml/is_item.h>
+#include <lasso/xml/is_parameter.h>
+#include <lasso/xml/is_redirect_request.h>
+#include <lasso/xml/is_select.h>
+#include <lasso/xml/is_text.h>
+#include <lasso/xml/is_user_interaction.h>
 
 %}
 
@@ -1023,8 +1033,8 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDiscoServiceInstance(
-			char *serviceType, char *providerID, LassoDiscoDescription *description);
+	/* FIXME: Add typemap for LassoNodeList *description. */
+	LassoDiscoServiceInstance(char *serviceType, char *providerID, void *description = NULL);
 
 	~LassoDiscoServiceInstance();
 
@@ -1046,18 +1056,7 @@ typedef struct {
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoDiscoServiceInstance LassoDiscoServiceInstance_new
-LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(char *serviceType,
-							 char *providerID,
-							 LassoDiscoDescription *description) {
-	GList *l_desc = NULL;
-	LassoDiscoServiceInstance *serviceInstance;
-
-	l_desc = g_list_append(l_desc, description);
-	serviceInstance = lasso_disco_service_instance_new(serviceType, providerID, l_desc);
-
-	return serviceInstance;
-}
+#define new_LassoDiscoServiceInstance lasso_disco_service_instance_new
 #define delete_LassoDiscoServiceInstance(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
@@ -1075,6 +1074,64 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(char *serviceType,
 
 
 /***********************************************************************
+ * dst:Data
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DstData) LassoDstData;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(itemIdRef) itemIDRef;
+#endif
+	char *itemIDRef;
+} LassoDstData;
+%extend LassoDstData {
+	/* Attributes */
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstData();
+
+	~LassoDstData();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* any */
+#define LassoDstData_get_any(self) get_node_list((self)->any)
+#define LassoDstData_any_get(self) get_node_list((self)->any)
+#define LassoDstData_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoDstData_any_set(self, value) set_node_list(&(self)->any, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDstData lasso_dst_data_new
+#define delete_LassoDstData(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstData_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
  * dst:Modification
  ***********************************************************************/
 
@@ -1083,16 +1140,30 @@ LassoDiscoServiceInstance *LassoDiscoServiceInstance_new(char *serviceType,
 %rename(DstModification) LassoDstModification;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+	char *notChangedSince;
+
+	gboolean overrideAllowed;
+
+#ifndef SWIGPHP4
+	%rename(select) Select;
+#endif
+	char *Select;
 } LassoDstModification;
 %extend LassoDstModification {
 	/* Attributes */
-	%immutable select;
-	char *select;
 
-	%immutable newData;
-	LassoDstNewData *newData;
+#ifndef SWIGPHP4
+	%rename(newData) NewData;
+#endif
+	%newobject NewData_get;
+	LassoDstNewData *NewData;
 
 	/* Constructor, Destructor & Static Methods */
+
 	LassoDstModification(char *select);
 
 	~LassoDstModification();
@@ -1101,31 +1172,17 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* newData */
-#define LassoDstModification_get_newData LassoDstModification_newData_get
-LassoDstNewData *LassoDstModification_newData_get(LassoDstModification *self) {
-	if (LASSO_IS_DST_MODIFICATION(self) == TRUE) {
-		if (self->NewData != NULL) {
-			return LASSO_DST_NEW_DATA(self->NewData->data);
-		}
-	}
-	return NULL;
-}
-
-/* select */
-#define LassoDstModification_get_select LassoDstModification_select_get
-char *LassoDstModification_select_get(LassoDstModification *self) {
-	return self->Select;
-}
+/* NewData */
+#define LassoDstModification_get_NewData(self) get_node((self)->NewData)
+#define LassoDstModification_NewData_get(self) get_node((self)->NewData)
+#define LassoDstModification_set_NewData(self, value) set_node((gpointer *) &(self)->NewData, (value))
+#define LassoDstModification_NewData_set(self, value) set_node((gpointer *) &(self)->NewData, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1135,8 +1192,6 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoDstModification_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
@@ -1150,17 +1205,41 @@ char *LassoDstModification_select_get(LassoDstModification *self) {
 %rename(DstModify) LassoDstModify;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(itemId) itemID;
+#endif
+	char *itemID;
 } LassoDstModify;
 %extend LassoDstModify {
 	/* Attributes */
 
-	%immutable resourceId;
-	LassoDiscoResourceID *resourceId;
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	%immutable modification;
-	LassoDstModification *modification; /* FIXME : should return a list of Modification */
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
-	char *itemId;
+#ifndef SWIGPHP4
+	%rename(modification) Modification;
+#endif
+	%newobject Modification_get;
+	LassoNodeList *Modification;
+
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1172,38 +1251,35 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-		
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* resourceId */
-#define LassoDstModify_get_resourceId LassoDstModify_resourceId_get
-LassoDiscoResourceID *LassoDstModify_resourceId_get(LassoDstModify *self) {
-	return self->ResourceID;
-}
+/* EncryptedResourceID */
+#define LassoDstModify_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDstModify_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDstModify_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDstModify_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
-/* modification */
-#define LassoDstModify_get_modification LassoDstModify_modification_get
-LassoDstModification *LassoDstModify_modification_get(LassoDstModify *self) {
-	return LASSO_DST_MODIFICATION(self->Modification->data);
-}
+/* Extension */
+#define LassoDstModify_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoDstModify_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoDstModify_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoDstModify_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
-/* itemId */
-#define LassoDstModify_get_itemId LassoDstModify_itemId_get
-char *LassoDstModify_itemId_get(LassoDstModify *self) {
-	return self->itemID;
-}
+/* Modification */
+#define LassoDstModify_get_Modification(self) get_node_list((self)->Modification)
+#define LassoDstModify_Modification_get(self) get_node_list((self)->Modification)
+#define LassoDstModify_set_Modification(self, value) set_node_list(&(self)->Modification, (value))
+#define LassoDstModify_Modification_set(self, value) set_node_list(&(self)->Modification, (value))
 
-#define LassoDstModify_set_itemId LassoDstModify_itemId_set
-void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
-	LASSO_DST_MODIFY(self)->itemID = itemId;
-}
+/* ResourceID */
+#define LassoDstModify_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDstModify_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDstModify_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDstModify_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1213,8 +1289,6 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoDstModify_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
@@ -1228,19 +1302,31 @@ void LassoDstModify_itemId_set(LassoDstModify *self, char *itemId) {
 %rename(DstModifyResponse) LassoDstModifyResponse;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(itemIdRef) itemIDRef;
+#endif
+	char *itemIDRef;
+
+	char *timeStamp;
 } LassoDstModifyResponse;
 %extend LassoDstModifyResponse {
 	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
 #endif
 	%newobject Status_get;
 	LassoUtilityStatus *Status;
-
-	/* char *itemIdRef; */
-
-	/* char *timeStamp; */
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1258,17 +1344,17 @@ typedef struct {
 
 /* Attributes Implementations */
 
+/* Extension */
+#define LassoDstModifyResponse_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoDstModifyResponse_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoDstModifyResponse_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoDstModifyResponse_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+
 /* Status */
 #define LassoDstModifyResponse_get_Status(self) get_node((self)->Status)
 #define LassoDstModifyResponse_Status_get(self) get_node((self)->Status)
 #define LassoDstModifyResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
 #define LassoDstModifyResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
-
-/* status */
-#define LassoDstModifyResponse_get_status LassoDstModifyResponse_status_get
-LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *self) {
-	return self->Status;
-}
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1283,6 +1369,56 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 
 
 /***********************************************************************
+ * dst:NewData
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(DstNewData) LassoDstNewData;
+#endif
+typedef struct {
+} LassoDstNewData;
+%extend LassoDstNewData {
+	/* Attributes */
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoDstNewData();
+
+	~LassoDstNewData();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* any */
+#define LassoDstNewData_get_any(self) get_node_list((self)->any)
+#define LassoDstNewData_any_get(self) get_node_list((self)->any)
+#define LassoDstNewData_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoDstNewData_any_set(self, value) set_node_list(&(self)->any, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoDstNewData lasso_dst_new_data_new
+#define delete_LassoDstNewData(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoDstNewData_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
  * dst:Query
  ***********************************************************************/
 
@@ -1291,17 +1427,41 @@ LassoUtilityStatus *LassoDstModifyResponse_status_get(LassoDstModifyResponse *se
 %rename(DstQuery) LassoDstQuery;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(itemId) itemID;
+#endif
+	char *itemID;
 } LassoDstQuery;
 %extend LassoDstQuery {
 	/* Attributes */
 
-	%immutable resourceId;
-	LassoDiscoResourceID *resourceId;
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	%immutable queryItem;
-	LassoDstQueryItem *queryItem; /* FIXME : must be a GList of LassoDstQueryItem */
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
-	/* char *itemID; */
+#ifndef SWIGPHP4
+	%rename(queryItem) QueryItem;
+#endif
+	%newobject QueryItem_get;
+	LassoNodeList *QueryItem;
+
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1313,26 +1473,35 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
 
-/* resourceId */
-#define LassoDstQuery_get_resourceId LassoDstQuery_resourceId_get
-LassoDiscoResourceID *LassoDstQuery_resourceId_get(LassoDstQuery *self) {
-	return self->ResourceID;
-}
+/* EncryptedResourceID */
+#define LassoDstQuery_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoDstQuery_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoDstQuery_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoDstQuery_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
 
-/* queryItem */
-#define LassoDstQuery_get_queryItem LassoDstQuery_queryItem_get
-LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
-	return self->QueryItem->data;
-}
+/* Extension */
+#define LassoDstQuery_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoDstQuery_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoDstQuery_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoDstQuery_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+
+/* QueryItem */
+#define LassoDstQuery_get_QueryItem(self) get_node_list((self)->QueryItem)
+#define LassoDstQuery_QueryItem_get(self) get_node_list((self)->QueryItem)
+#define LassoDstQuery_set_QueryItem(self, value) set_node_list(&(self)->QueryItem, (value))
+#define LassoDstQuery_QueryItem_set(self, value) set_node_list(&(self)->QueryItem, (value))
+
+/* ResourceID */
+#define LassoDstQuery_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoDstQuery_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoDstQuery_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoDstQuery_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1342,8 +1511,6 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoDstQuery_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
@@ -1357,13 +1524,25 @@ LassoDstQueryItem *LassoDstQuery_queryItem_get(LassoDstQuery *self) {
 %rename(DstQueryItem) LassoDstQueryItem;
 #endif
 typedef struct {
-} LassoDstQueryItem;
-%extend LassoDstQueryItem {
 	/* Attributes */
 
-	%immutable select;
-	char *select;
+	char *changedSince;
 
+	char *id;
+
+	gboolean includeCommonAttributes;
+
+#ifndef SWIGPHP4
+	%rename(itemId) itemID;
+#endif
+	char *itemID;
+
+#ifndef SWIGPHP4
+	%rename(select) Select;
+#endif
+	char *Select;
+} LassoDstQueryItem;
+%extend LassoDstQueryItem {
 	/* Constructor, Destructor & Static Methods */
 
 	LassoDstQueryItem(char *select);
@@ -1374,20 +1553,9 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
-
-/* Attributes Implementations */
-
-/* select */
-#define LassoDstQuery_get_select LassoDstQueryItem_select_get
-char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
-	return self->Select;
-}
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1397,8 +1565,6 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoDstQueryItem_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
@@ -1412,12 +1578,37 @@ char *LassoDstQueryItem_select_get(LassoDstQueryItem *self) {
 %rename(DstQueryResponse) LassoDstQueryResponse;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *id;
+
+#ifndef SWIGPHP4
+	%rename(itemIdRef) itemIDRef;
+#endif
+	char *itemIDRef;
+
+	char *timeStamp;
 } LassoDstQueryResponse;
 %extend LassoDstQueryResponse {
 	/* Attributes */
 
-	%immutable status;
-	LassoUtilityStatus *status;
+#ifndef SWIGPHP4
+	%rename(data) Data;
+#endif
+	%newobject Data_get;
+	LassoNodeList *Data;
+
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
+
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1435,11 +1626,23 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* status */
-#define LassoDstQueryResponse_get_status LassoDstQueryResponse_status_get
-LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self) {
-	return self->Status;
-}
+/* Data */
+#define LassoDstQueryResponse_get_Data(self) get_node_list((self)->Data)
+#define LassoDstQueryResponse_Data_get(self) get_node_list((self)->Data)
+#define LassoDstQueryResponse_set_Data(self, value) set_node_list(&(self)->Data, (value))
+#define LassoDstQueryResponse_Data_set(self, value) set_node_list(&(self)->Data, (value))
+
+/* Extension */
+#define LassoDstQueryResponse_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoDstQueryResponse_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoDstQueryResponse_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoDstQueryResponse_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+
+/* Status */
+#define LassoDstQueryResponse_get_Status(self) get_node((self)->Status)
+#define LassoDstQueryResponse_Status_get(self) get_node((self)->Status)
+#define LassoDstQueryResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoDstQueryResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1450,7 +1653,750 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 
 #define LassoDstQueryResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods implementations */
+%}
+
+
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in Interaction Services Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * is:Help
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsHelp) LassoIsHelp;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *label;
+
+	char *link;
+
+	char *moreLink;
+} LassoIsHelp;
+%extend LassoIsHelp {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsHelp();
+
+	~LassoIsHelp();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsHelp lasso_is_help_new
+#define delete_LassoIsHelp(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsHelp_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:Inquiry
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsInquiry) LassoIsInquiry;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *id;
+
+	char *title;
+} LassoIsInquiry;
+%extend LassoIsInquiry {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(confirm) Confirm;
+#endif
+	%newobject Confirm_get;
+	LassoNodeList *Confirm;
+
+#ifndef SWIGPHP4
+	%rename(help) Help;
+#endif
+	%newobject Help_get;
+	LassoIsHelp *Help;
+
+#ifndef SWIGPHP4
+	%rename(select) Select;
+#endif
+	%newobject Select_get;
+	LassoNodeList *Select;
+
+#ifndef SWIGPHP4
+	%rename(text) Text;
+#endif
+	%newobject Text_get;
+	LassoNodeList *Text;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInquiry();
+
+	~LassoIsInquiry();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Confirm */
+#define LassoIsInquiry_get_Confirm(self) get_node_list((self)->Confirm)
+#define LassoIsInquiry_Confirm_get(self) get_node_list((self)->Confirm)
+#define LassoIsInquiry_set_Confirm(self, value) set_node_list(&(self)->Confirm, (value))
+#define LassoIsInquiry_Confirm_set(self, value) set_node_list(&(self)->Confirm, (value))
+
+/* Help */
+#define LassoIsInquiry_get_Help(self) get_node((self)->Help)
+#define LassoIsInquiry_Help_get(self) get_node((self)->Help)
+#define LassoIsInquiry_set_Help(self, value) set_node((gpointer *) &(self)->Help, (value))
+#define LassoIsInquiry_Help_set(self, value) set_node((gpointer *) &(self)->Help, (value))
+
+/* Select */
+#define LassoIsInquiry_get_Select(self) get_node_list((self)->Select)
+#define LassoIsInquiry_Select_get(self) get_node_list((self)->Select)
+#define LassoIsInquiry_set_Select(self, value) set_node_list(&(self)->Select, (value))
+#define LassoIsInquiry_Select_set(self, value) set_node_list(&(self)->Select, (value))
+
+/* Text */
+#define LassoIsInquiry_get_Text(self) get_node_list((self)->Text)
+#define LassoIsInquiry_Text_get(self) get_node_list((self)->Text)
+#define LassoIsInquiry_set_Text(self, value) set_node_list(&(self)->Text, (value))
+#define LassoIsInquiry_Text_set(self, value) set_node_list(&(self)->Text, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsInquiry lasso_is_inquiry_new
+#define delete_LassoIsInquiry(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInquiry_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:InquiryElement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsInquiryElement) LassoIsInquiryElement;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(hint) Hint;
+#endif
+	char *Hint;
+
+#ifndef SWIGPHP4
+	%rename(Label) Label;
+#endif
+	char *Label;
+
+	char *name;
+
+#ifndef SWIGPHP4
+	%rename(value) Value;
+#endif
+	char *Value;
+} LassoIsInquiryElement;
+%extend LassoIsInquiryElement {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(help) Help;
+#endif
+	%newobject Help_get;
+	LassoIsHelp *Help;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInquiryElement(char *name);
+
+	~LassoIsInquiryElement();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Help */
+#define LassoIsInquiryElement_get_Help(self) get_node((self)->Help)
+#define LassoIsInquiryElement_Help_get(self) get_node((self)->Help)
+#define LassoIsInquiryElement_set_Help(self, value) set_node((gpointer *) &(self)->Help, (value))
+#define LassoIsInquiryElement_Help_set(self, value) set_node((gpointer *) &(self)->Help, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsInquiryElement lasso_is_inquiry_element_new
+#define delete_LassoIsInquiryElement(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInquiryElement_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:InteractionRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsInteractionRequest) LassoIsInteractionRequest;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *id;
+
+	/* FIXME: Missing from Lasso. */
+	/* KeyInfo */
+
+	char *language;
+
+	int maxInteractTime;
+
+	/* FIXME: Missing from Lasso. */
+	/* signed */
+} LassoIsInteractionRequest;
+%extend LassoIsInteractionRequest {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(encryptedResourceId) EncryptedResourceID;
+#endif
+	%newobject EncryptedResourceID_get;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
+
+#ifndef SWIGPHP4
+	%rename(inquiry) Inquiry;
+#endif
+	%newobject Inquiry_get;
+	LassoNodeList *Inquiry;
+
+#ifndef SWIGPHP4
+	%rename(resourceId) ResourceID;
+#endif
+	%newobject ResourceID_get;
+	LassoDiscoResourceID *ResourceID;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInteractionRequest();
+
+	~LassoIsInteractionRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* EncryptedResourceID */
+#define LassoIsInteractionRequest_get_EncryptedResourceID(self) get_node((self)->EncryptedResourceID)
+#define LassoIsInteractionRequest_EncryptedResourceID_get(self) get_node((self)->EncryptedResourceID)
+#define LassoIsInteractionRequest_set_EncryptedResourceID(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+#define LassoIsInteractionRequest_EncryptedResourceID_set(self, value) set_node((gpointer *) &(self)->EncryptedResourceID, (value))
+
+/* Inquiry */
+#define LassoIsInteractionRequest_get_Inquiry(self) get_node_list((self)->Inquiry)
+#define LassoIsInteractionRequest_Inquiry_get(self) get_node_list((self)->Inquiry)
+#define LassoIsInteractionRequest_set_Inquiry(self, value) set_node_list(&(self)->Inquiry, (value))
+#define LassoIsInteractionRequest_Inquiry_set(self, value) set_node_list(&(self)->Inquiry, (value))
+
+/* ResourceID */
+#define LassoIsInteractionRequest_get_ResourceID(self) get_node((self)->ResourceID)
+#define LassoIsInteractionRequest_ResourceID_get(self) get_node((self)->ResourceID)
+#define LassoIsInteractionRequest_set_ResourceID(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+#define LassoIsInteractionRequest_ResourceID_set(self, value) set_node((gpointer *) &(self)->ResourceID, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsInteractionRequest lasso_is_interaction_request_new
+#define delete_LassoIsInteractionRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInteractionRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:InteractionResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsInteractionResponse) LassoIsInteractionResponse;
+#endif
+typedef struct {
+} LassoIsInteractionResponse;
+%extend LassoIsInteractionResponse {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(interactionStatement) InteractionStatement;
+#endif
+	%newobject InteractionStatement_get;
+	LassoNodeList *InteractionStatement;
+
+#ifndef SWIGPHP4
+	%rename(parameter) Parameter;
+#endif
+	%newobject Parameter_get;
+	LassoNodeList *Parameter;
+
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInteractionResponse(LassoUtilityStatus *status);
+
+	~LassoIsInteractionResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* InteractionStatement */
+#define LassoIsInteractionResponse_get_InteractionStatement(self) get_node_list((self)->InteractionStatement)
+#define LassoIsInteractionResponse_InteractionStatement_get(self) get_node_list((self)->InteractionStatement)
+#define LassoIsInteractionResponse_set_InteractionStatement(self, value) set_node_list(&(self)->InteractionStatement, (value))
+#define LassoIsInteractionResponse_InteractionStatement_set(self, value) set_node_list(&(self)->InteractionStatement, (value))
+
+/* Parameter */
+#define LassoIsInteractionResponse_get_Parameter(self) get_node_list((self)->Parameter)
+#define LassoIsInteractionResponse_Parameter_get(self) get_node_list((self)->Parameter)
+#define LassoIsInteractionResponse_set_Parameter(self, value) set_node_list(&(self)->Parameter, (value))
+#define LassoIsInteractionResponse_Parameter_set(self, value) set_node_list(&(self)->Parameter, (value))
+
+/* Status */
+#define LassoIsInteractionResponse_get_Status(self) get_node((self)->Status)
+#define LassoIsInteractionResponse_Status_get(self) get_node((self)->Status)
+#define LassoIsInteractionResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoIsInteractionResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsInteractionResponse lasso_is_interaction_response_new
+#define delete_LassoIsInteractionResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInteractionResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:InteractionStatement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsInteractionStatement) LassoIsInteractionStatement;
+#endif
+typedef struct {
+} LassoIsInteractionStatement;
+%extend LassoIsInteractionStatement {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(inquiry) Inquiry;
+#endif
+	%newobject Inquiry_get;
+	LassoIsInquiry *Inquiry;
+
+	/* FIXME: Missing from Lasso. */
+	/* Signature */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsInteractionStatement(LassoIsInquiry *inquiry);
+
+	~LassoIsInteractionStatement();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Inquiry */
+#define LassoIsInteractionStatement_get_Inquiry(self) get_node((self)->Inquiry)
+#define LassoIsInteractionStatement_Inquiry_get(self) get_node((self)->Inquiry)
+#define LassoIsInteractionStatement_set_Inquiry(self, value) set_node((gpointer *) &(self)->Inquiry, (value))
+#define LassoIsInteractionStatement_Inquiry_set(self, value) set_node((gpointer *) &(self)->Inquiry, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsInteractionStatement lasso_is_interaction_statement_new
+#define delete_LassoIsInteractionStatement(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsInteractionStatement_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:Item
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsItem) LassoIsItem;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(hint) Hint;
+#endif
+	char *Hint;
+
+	char *label;
+
+	char *value;
+} LassoIsItem;
+%extend LassoIsItem {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsItem(char *value);
+
+	~LassoIsItem();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsItem lasso_is_item_new
+#define delete_LassoIsItem(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsItem_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:Parameter
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsParameter) LassoIsParameter;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *name;
+
+	char *value;
+} LassoIsParameter;
+%extend LassoIsParameter {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsParameter(char *name, char *value);
+
+	~LassoIsParameter();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsParameter lasso_is_parameter_new
+#define delete_LassoIsParameter(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsParameter_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:RedirectRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsRedirectRequest) LassoIsRedirectRequest;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(redirectUrl) redirectURL;
+#endif
+	char *redirectURL;
+} LassoIsRedirectRequest;
+%extend LassoIsRedirectRequest {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsRedirectRequest(char *redirectUrl);
+
+	~LassoIsRedirectRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsRedirectRequest lasso_is_redirect_request_new
+#define delete_LassoIsRedirectRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsRedirectRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:Select
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsSelect) LassoIsSelect;
+#endif
+typedef struct {
+	/* FIXME: IsSelect should inherit from IsInquiryElement in Lasso. */
+
+	/* Attributes */
+
+	gboolean multiple;
+} LassoIsSelect;
+%extend LassoIsSelect {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(item) Item;
+#endif
+	%newobject Item_get;
+	LassoNodeList *Item;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsSelect(LassoIsItem *item1, LassoIsItem *item2);
+
+	~LassoIsSelect();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* Item */
+#define LassoIsSelect_get_Item(self) get_node_list((self)->Item)
+#define LassoIsSelect_Item_get(self) get_node_list((self)->Item)
+#define LassoIsSelect_set_Item(self, value) set_node_list(&(self)->Item, (value))
+#define LassoIsSelect_Item_set(self, value) set_node_list(&(self)->Item, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsSelect lasso_is_select_new
+#define delete_LassoIsSelect(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsSelect_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:Text
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsText) LassoIsText;
+#endif
+typedef struct {
+	/* FIXME: IsText should inherit from IsInquiryElement in Lasso. */
+
+	/* Attributes */
+
+	char *format;
+
+	int maxChars;
+
+	int minChars;
+} LassoIsText;
+%extend LassoIsText {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsText();
+
+	~LassoIsText();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsText lasso_is_text_new
+#define delete_LassoIsText(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsText_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * is:UserInteraction
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(IsUserInteraction) LassoIsUserInteraction;
+#endif
+typedef struct {
+	/* Attributes */
+
+	/* FIXME: Missing from Lasso. */
+	/* soap:actor */
+
+	char *id;
+
+	char *interact;
+
+	int maxInteractTime;
+
+	/* FIXME: Missing from Lasso. */
+	/* soap:mustUnderstand */
+
+	char *language;
+
+	gboolean redirect;
+} LassoIsUserInteraction;
+%extend LassoIsUserInteraction {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(interactionService) InteractionService;
+#endif
+	%newobject InteractionService_get;
+	LassoNodeList *InteractionService;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoIsUserInteraction();
+
+	~LassoIsUserInteraction();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+
+/* InteractionService */
+#define LassoIsUserInteraction_get_InteractionService(self) get_node_list((self)->InteractionService)
+#define LassoIsUserInteraction_InteractionService_get(self) get_node_list((self)->InteractionService)
+#define LassoIsUserInteraction_set_InteractionService(self, value) set_node_list(&(self)->InteractionService, (value))
+#define LassoIsUserInteraction_InteractionService_set(self, value) set_node_list(&(self)->InteractionService, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoIsUserInteraction lasso_is_user_interaction_new
+#define delete_LassoIsUserInteraction(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoIsUserInteraction_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -1471,11 +2417,26 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 %rename(UtilityStatus) LassoUtilityStatus;
 #endif
 typedef struct {
+	/* Attributes */
+
+	char *code;
+
+	char *comment;
+
+#ifdef SWIGCSHARP
+	/* "ref" is a C# reserved word. */
+	%rename(reference) ref;
+#endif
+	char *ref;
 } LassoUtilityStatus;
 %extend LassoUtilityStatus {
 	/* Attributes */
 
-	char *code;
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1487,24 +2448,17 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
-
-	/* Methods */
-
 }
 
 %{
 
 /* Attributes Implementations */
-/* status */
-#define LassoUtilityStatus_get_code LassoUtilityStatus_code_get
-char *LassoUtilityStatus_code_get(LassoUtilityStatus *self) {
-	return self->code;
-}
 
-#define LassoUtilityStatus_set_code LassoUtilityStatus_code_set
-void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
-	self->code = g_strdup(code);
-}
+/* Status */
+#define LassoUtilityStatus_get_Status(self) get_node((self)->Status)
+#define LassoUtilityStatus_Status_get(self) get_node((self)->Status)
+#define LassoUtilityStatus_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoUtilityStatus_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoUtilityStatus lasso_utility_status_new
@@ -1513,103 +2467,6 @@ void LassoUtilityStatus_code_set(LassoUtilityStatus *self, char *code) {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoUtilityStatus_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
-
-%}
-
-
-/***********************************************************************
- ***********************************************************************
- * XML Elements in Interaction Services Namespace
- ***********************************************************************
- ***********************************************************************/
-
-
-/***********************************************************************
- * is:InteractionRequest
- ***********************************************************************/
-
-
-#ifndef SWIGPHP4
-%rename(IsInteractionRequest) LassoIsInteractionRequest;
-#endif
-typedef struct {
-} LassoIsInteractionRequest;
-%extend LassoIsInteractionRequest {
-	/* Attributes */
-
-	LassoDiscoResourceID *resourceID;
-
-	LassoIsInquiry *inquiry;
-
-	int maxInteractTime;
-
-	/* Constructor, Destructor & Static Methods */
-
-	LassoIsInteractionRequest();
-
-	~LassoIsInteractionRequest();
-
-	/* Methods inherited from LassoNode */
-
-	%newobject dump;
-	char *dump();
-
-	/* Methods */
-
-}
-
-%{
-
-/* Attributes Implementations */
-
-/* resourceID */
-#define LassoIsInteractionRequest_get_resourceID LassoIsInteractionRequest_resourceID_get
-LassoDiscoResourceID *LassoIsInteractionRequest_resourceID_get(LassoIsInteractionRequest *self) {
-	return self->ResourceID;
-}
-
-#define LassoIsInteractionRequest_set_resourceID LassoIsInteractionRequest_resourceID_set
-void LassoIsInteractionRequest_resourceID_set(LassoIsInteractionRequest *self, LassoDiscoResourceID *resourceID) {
-	self->ResourceID = resourceID;
-}
-
-/* inquiry */
-#define LassoIsInteractionRequest_get_inquiry LassoIsInteractionRequest_inquiry_get
-LassoIsInquiry *LassoIsInteractionRequest_inquiry_get(LassoIsInteractionRequest *self) {
-	if (self->Inquiry == NULL) {
-		return NULL;
-	}
-	return LASSO_IS_INQUIRY(self->Inquiry->data);
-}
-
-#define LassoIsInteractionRequest_set_inquiry LassoIsInteractionRequest_inquiry_set
-void LassoIsInteractionRequest_inquiry_set(LassoIsInteractionRequest *self, LassoIsInquiry *inquiry) {
-	self->Inquiry = g_list_append(self->Inquiry, LASSO_NODE(inquiry));
-}
-
-/* maxInteractTime */
-#define LassoIsInteractionRequest_get_maxInteractTime LassoIsInteractionRequest_maxInteractTime_get
-int LassoIsInteractionRequest_maxInteractTime_get(LassoIsInteractionRequest *self) {
-	return self->maxInteractTime;
-}
-
-#define LassoIsInteractionRequest_set_maxInteractTime LassoIsInteractionRequest_maxInteractTime_set
-void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *self, int maxInteractTime) {
-	self->maxInteractTime = maxInteractTime;
-}
-
-/* Constructors, destructors & static methods implementations */
-
-#define new_LassoIsInteractionRequest lasso_is_interaction_request_new
-#define delete_LassoIsInteractionRequest(self) lasso_node_destroy(LASSO_NODE(self))
-
-/* Implementations of methods inherited from LassoNode */
-
-#define LassoIsInteractionRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
-
-/* Methods implementations */
 
 %}
 
@@ -1632,25 +2489,22 @@ void LassoIsInteractionRequest_maxInteractTime_set(LassoIsInteractionRequest *se
 typedef struct {
 } LassoDiscovery;
 %extend LassoDiscovery {
-	/* Attributes inherited from LassoProfile */
-
-	%immutable query;
-	LassoDiscoQuery *query;
-
-	%immutable queryResponse;
-	LassoDiscoQueryResponse *queryResponse;
-
-	%immutable modify;
-	LassoDiscoModify *modify;
-
-	%immutable modifyResponse;
-	LassoDiscoModifyResponse *modifyResponse;
+	/* Attributes inherited from WsfProfile */
 
 	%immutable msgBody;
 	char *msgBody;
 
 	%immutable msgUrl;
 	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1663,14 +2517,14 @@ typedef struct {
 	%newobject dump;
 	char *dump();
 
-	/* Methods inherited from LassoWsfProfile */
+	/* Methods inherited from WsfProfile */
 
 	THROW_ERROR
-	void buildRequestMsg();
+	int buildRequestMsg();
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void buildResponseMsg();
+	int buildResponseMsg();
 	END_THROW_ERROR
 
 	/* Methods */
@@ -1683,97 +2537,72 @@ typedef struct {
 					      char *option);
 
 	THROW_ERROR
-	void addRemoveEntry(char *entryID);
+	int addRemoveEntry(char *entryID);
 	END_THROW_ERROR
 
 	LassoDiscoRequestedServiceType *addRequestedServiceType(char *serviceType,
 								char *option);
 
 	THROW_ERROR
-	void addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
+	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initModify(LassoDiscoResourceOffering *resourceOffering,
+	int initModify(LassoDiscoResourceOffering *resourceOffering,
 			LassoDiscoDescription *description);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void initQuery(LassoDiscoResourceOffering *resourceOffering,
+	int initQuery(LassoDiscoResourceOffering *resourceOffering,
 		       LassoDiscoDescription *description);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processModifyMsg(char *modify_msg);
+	int processModifyMsg(char *modify_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processModifyResponseMsg(char *modify_response_msg);
+	int processModifyResponseMsg(char *modify_response_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processQueryMsg(char *query_msg);
+	int processQueryMsg(char *query_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processQueryResponseMsg(char *query_response_msg);
+	int processQueryResponseMsg(char *query_response_msg);
 	END_THROW_ERROR
 }
 
 %{
 
-/* Attributes inherited from LassoWsfProfile implementations casted to Discovery domain */
-
-/* query */
-#define LassoDiscovery_get_query LassoDiscovery_query_get
-LassoDiscoQuery *LassoDiscovery_query_get(LassoDiscovery *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_DISCO_QUERY(profile->request))
-		return LASSO_DISCO_QUERY(profile->request);
-	return NULL;
-}
-
-/* queryResponse */
-#define LassoDiscovery_get_queryResponse LassoDiscovery_queryResponse_get
-LassoDiscoQueryResponse *LassoDiscovery_queryResponse_get(LassoDiscovery *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_DISCO_QUERY_RESPONSE(profile->response))
-		return LASSO_DISCO_QUERY_RESPONSE(profile->response);
-	return NULL;
-}
-
-/* modify */
-#define LassoDiscovery_get_modify LassoDiscovery_modify_get
-LassoDiscoModify *LassoDiscovery_modify_get(LassoDiscovery *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_DISCO_MODIFY(profile->request))
-		return LASSO_DISCO_MODIFY(profile->request);
-	printf("booooooo\n");
-	return NULL;
-}
-
-/* modifyResponse */
-#define LassoDiscovery_get_modifyResponse LassoDiscovery_modifyResponse_get
-LassoDiscoModifyResponse *LassoDiscovery_modifyResponse_get(LassoDiscovery *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-
-	if (LASSO_IS_DISCO_MODIFY_RESPONSE(profile->response) == TRUE) {
-		return LASSO_DISCO_MODIFY_RESPONSE(profile->response);
-	}
-	return NULL;
-}
+/* Attributes inherited from WsfProfile implementations */
 
 /* msgBody */
-#define LassoDiscovery_get_msgBody LassoDiscovery_msgBody_get
-char *LassoDiscovery_msgBody_get(LassoDiscovery *self) {
-	return LASSO_WSF_PROFILE(self)->msg_body;
-}
+#define LassoDiscovery_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoDiscovery_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
 
 /* msgUrl */
-#define LassoDiscovery_get_msgUrl LassoDiscovery_msgUrl_get
-char *LassoDiscovery_msgUrl_get(LassoDiscovery *self) {
-	return LASSO_WSF_PROFILE(self)->msg_url;
-}
+#define LassoDiscovery_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoDiscovery_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+
+/* request */
+#define LassoDiscovery_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoDiscovery_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoDiscovery_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoDiscovery_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoDiscovery_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoDiscovery_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoDiscovery_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoDiscovery_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoDiscovery_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoDiscovery_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoDiscovery_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoDiscovery_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1784,7 +2613,7 @@ char *LassoDiscovery_msgUrl_get(LassoDiscovery *self) {
 
 #define LassoDiscovery_dump(self) lasso_node_dump(LASSO_NODE(self))
 
-/* Methods inherited from LassoWsfProfile implementations */
+/* Implementations of methods inherited from WsfProfile */
 
 gint LassoDiscovery_buildRequestMsg(LassoDiscovery *self) {
 	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
@@ -1795,6 +2624,7 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 }
 
 /* Methods implementations */
+
 #define LassoDiscovery_addInsertEntry lasso_discovery_add_insert_entry
 #define LassoDiscovery_addRemoveEntry lasso_discovery_add_remove_entry
 #define LassoDiscovery_addRequestedServiceType lasso_discovery_add_requested_service_type
@@ -1810,6 +2640,128 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 
 
 /***********************************************************************
+ * lasso:InteractionProfileService
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(InteractionProfileService) LassoInteractionProfileService;
+#endif
+typedef struct {
+} LassoInteractionProfileService;
+%extend LassoInteractionProfileService {
+	/* Attributes inherited from WsfProfile */
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoInteractionProfileService(LassoServer *server);
+
+	~LassoInteractionProfileService();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+
+	/* Methods inherited from WsfProfile */
+
+	THROW_ERROR
+	int buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
+
+	/* Methods */
+
+	THROW_ERROR
+	int initRequest();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processRequestMsg(char *msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processResponseMsg(char *msg);
+	END_THROW_ERROR
+}
+
+%{
+
+/* Attributes inherited from WsfProfile implementations */
+
+/* msgBody */
+#define LassoInteractionProfileService_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoInteractionProfileService_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
+
+/* msgUrl */
+#define LassoInteractionProfileService_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoInteractionProfileService_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+
+/* request */
+#define LassoInteractionProfileService_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoInteractionProfileService_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoInteractionProfileService_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoInteractionProfileService_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoInteractionProfileService_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoInteractionProfileService_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoInteractionProfileService_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoInteractionProfileService_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoInteractionProfileService_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoInteractionProfileService_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoInteractionProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoInteractionProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoInteractionProfileService lasso_interaction_profile_service_new
+#define delete_LassoInteractionProfileService(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoInteractionProfileService_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+/* Implementations of methods inherited from WsfProfile */
+
+gint LassoInteractionProfileService_buildRequestMsg(LassoInteractionProfileService *self) {
+	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
+}
+
+gint LassoInteractionProfileService_buildResponseMsg(LassoInteractionProfileService *self) {
+	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
+}
+
+/* Methods implementations */
+
+#define LassoInteractionProfileService_initRequest lasso_interaction_profile_service_init_request
+#define LassoInteractionProfileService_processRequestMsg lasso_interaction_profile_service_process_request_msg
+#define LassoInteractionProfileService_processResponseMsg lasso_interaction_profile_service_process_response_msg
+
+%}
+
+
+/***********************************************************************
  * lasso:ProfileService
  ***********************************************************************/
 
@@ -1820,25 +2772,22 @@ gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
 typedef struct {
 } LassoProfileService;
 %extend LassoProfileService {
-	/* Attributes */
-
-	%immutable query;
-	LassoDstQuery *query;
-
-	%immutable queryResponse;
-	LassoDstQueryResponse *queryResponse;
-
-	%immutable modify;
-	LassoDstModify *modify;
-
-	%immutable modifyResponse;
-	LassoDstModifyResponse *modifyResponse;
+	/* Attributes inherited from WsfProfile */
 
 	%immutable msgBody;
 	char *msgBody;
 
 	%immutable msgUrl;
 	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1851,15 +2800,25 @@ typedef struct {
 	%newobject dump;
 	char *dump();
 
-	/* Methods inherited from LassoWsfProfile */
-	void buildRequestMsg();
+	/* Methods inherited from WsfProfile */
 
-	void buildResponseMsg();
+	THROW_ERROR
+	int buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
 
 	/* Methods */
-	void addData(LassoNode *data);
+
+	THROW_ERROR
+	int addData(LassoNode *data);
+	END_THROW_ERROR
 
 	LassoDstModification *addModification(char *select);
+
+        LassoDstQueryItem *addQueryItem(char *select);
 		
 	LassoDstModification *initModify(char *prefix,
 					 char *href,
@@ -1874,83 +2833,51 @@ typedef struct {
 				     char *select);
 
 	THROW_ERROR
-	void processModifyMsg(char *prefix, char *href, char *soap_msg);
+	int processModifyMsg(char *prefix, char *href, char *soap_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
-	END_THROW_ERROR
-
-        LassoDstQueryItem *addQueryItem(char *select);
-
-	THROW_ERROR
-	void processQueryMsg(char *prefix, char *href, char *soap_msg);
+	int processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	void processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
+	int processQueryMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
 	END_THROW_ERROR
 }
 
 %{
 
-/* Attributes Implementations */
-
-/* modify */
-#define LassoProfileService_get_modify LassoProfileService_modify_get
-LassoDstModify *LassoProfileService_modify_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
-		return LASSO_DST_MODIFY(profile->request);
-	return NULL;
-}
-
-/* modifyResponse */
-#define LassoProfileService_get_modifyResponse LassoProfileService_modifyResponse_get
-LassoDstModifyResponse *LassoProfileService_modifyResponse_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
-		return LASSO_DST_MODIFY_RESPONSE(profile->response);
-	return NULL;
-}
-
-/* msgUrl */
-#define LassoProfileService_get_msgUrl LassoProfileService_msgUrl_get
-char *LassoProfileService_msgUrl_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
-		return profile->msg_url;
-	return NULL;
-}
+/* Attributes inherited from WsfProfile implementations */
 
 /* msgBody */
-#define LassoProfileService_get_msgBody LassoProfileService_msgBody_get
-char *LassoProfileService_msgBody_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
-		return profile->msg_body;
-	return NULL;
-}
+#define LassoProfileService_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoProfileService_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
 
-/* Query */
-#define LassoProfileService_get_query LassoProfileService_query_get
-LassoDstQuery *LassoProfileService_query_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE) {
-		return LASSO_DST_QUERY(profile->request);
-	}
-	return NULL;
-}
+/* msgUrl */
+#define LassoProfileService_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoProfileService_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
 
-/* QueryResponse */
-#define LassoProfileService_get_queryResponse LassoProfileService_queryResponse_get
-LassoDstQueryResponse *LassoProfileService_queryResponse_get(LassoProfileService *self) {
-	LassoWsfProfile *profile = LASSO_WSF_PROFILE(self);
-	if (LASSO_IS_PROFILE_SERVICE(self) == TRUE)
-		return LASSO_DST_QUERY_RESPONSE(profile->response);
-	return NULL;
-}
+/* request */
+#define LassoProfileService_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoProfileService_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoProfileService_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoProfileService_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
 
+/* response */
+#define LassoProfileService_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoProfileService_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoProfileService_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoProfileService_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoProfileService_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoProfileService_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1962,13 +2889,14 @@ LassoDstQueryResponse *LassoProfileService_queryResponse_get(LassoProfileService
 #define LassoProfileService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 
-/* Methods inherited from LassoWsfProfile implementations */
-void LassoProfileService_buildRequestMsg(LassoProfileService *self) {
-	lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
+/* Implementations of methods inherited from WsfProfile */
+
+gint LassoProfileService_buildRequestMsg(LassoProfileService *self) {
+	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
 }
 
-void LassoProfileService_buildResponseMsg(LassoProfileService *self) {
-	lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
+gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
+	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
 }
 
 /* Methods implementations */

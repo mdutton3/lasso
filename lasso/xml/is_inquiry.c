@@ -33,7 +33,8 @@
  *      <xs:element ref="Help" minOccurs="0"/>
  *      <xs:choice maxOccurs="unbounded">
  *        <xs:element ref="Select" minOccurs="0" maxOccurs="unbounded"/>
- *        <xs:element name="Confirm" type="InquiryElementType" minOccurs="0" maxOccurs="unbounded"/>
+ *        <xs:element name="Confirm" type="InquiryElementType" minOccurs="0"
+ *                    maxOccurs="unbounded"/>
  *        <xs:element ref="Text" minOccurs="0" maxOccurs="unbounded"/>
  *      </xs:choice>
  *    </xs:sequence>

@@ -45,6 +45,9 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "Hint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsItem, Hint) },
+	{ "label", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsItem, label) },
+	{ "value", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsItem, value) },
 	{ NULL, 0, 0}
 };
 

@@ -3414,8 +3414,11 @@ typedef struct {
 
 	/* Attributes */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(requestAuthnContext) RequestAuthnContext;
@@ -3497,11 +3500,11 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* extension */
-#define LassoLibAuthnRequest_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibAuthnRequest_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibAuthnRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibAuthnRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibAuthnRequest_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnRequest_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnRequest_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibAuthnRequest_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* RequestAuthnContext */
 #define LassoLibAuthnRequest_get_RequestAuthnContext(self) get_node((self)->RequestAuthnContext)
@@ -3549,8 +3552,11 @@ typedef struct {
 
 	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -3572,13 +3578,13 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from SamlpResponse implementations */
+/* Implementations of attributes inherited from SamlpResponse */
 
-/* extension */
-#define LassoLibAuthnResponse_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibAuthnResponse_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibAuthnResponse_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibAuthnResponse_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibAuthnResponse_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnResponse_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibAuthnResponse_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibAuthnResponse_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* Status */
 #define LassoLibAuthnResponse_get_Status(self) get_node(LASSO_SAMLP_RESPONSE(self)->Status)
@@ -3672,8 +3678,11 @@ typedef struct {
 
 	/* Attributes */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
@@ -3758,11 +3767,11 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* extension */
-#define LassoLibFederationTerminationNotification_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibFederationTerminationNotification_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibFederationTerminationNotification_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibFederationTerminationNotification_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibFederationTerminationNotification_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibFederationTerminationNotification_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibFederationTerminationNotification_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibFederationTerminationNotification_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* NameIdentifier */
 #define LassoLibFederationTerminationNotification_get_NameIdentifier(self) get_node((self)->NameIdentifier)
@@ -3871,8 +3880,11 @@ typedef struct {
 
 	/* Attributes */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(nameIdentifier) NameIdentifier;
@@ -3957,11 +3969,11 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* extension */
-#define LassoLibLogoutRequest_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibLogoutRequest_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibLogoutRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibLogoutRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibLogoutRequest_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibLogoutRequest_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibLogoutRequest_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibLogoutRequest_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* nameIdentifier */
 #define LassoLibLogoutRequest_get_NameIdentifier(self) get_node((self)->NameIdentifier)
@@ -3999,8 +4011,11 @@ typedef struct {
 %extend LassoLibLogoutResponse {
 	/* Attributes inherited from LibStatusResponse */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -4040,11 +4055,11 @@ typedef struct {
 
 /* Implementations of attributes inherited from LibStatusResponse */
 
-/* extension */
-#define LassoLibLogoutResponse_get_extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibLogoutResponse_extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibLogoutResponse_set_extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
-#define LassoLibLogoutResponse_extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+/* Extension */
+#define LassoLibLogoutResponse_get_Extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_Extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibLogoutResponse_set_Extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibLogoutResponse_Extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibLogoutResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -4153,8 +4168,11 @@ typedef struct {
 
 	/* Attributes */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(idpProvidedNameIdentifier) IDPProvidedNameIdentifier;
@@ -4254,11 +4272,11 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* extension */
-#define LassoLibRegisterNameIdentifierRequest_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibRegisterNameIdentifierRequest_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibRegisterNameIdentifierRequest_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibRegisterNameIdentifierRequest_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibRegisterNameIdentifierRequest_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibRegisterNameIdentifierRequest_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierRequest_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* idpProvidedNameIdentifier */
 #define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_node((self)->IDPProvidedNameIdentifier)
@@ -4308,8 +4326,11 @@ typedef struct {
 %extend LassoLibRegisterNameIdentifierResponse {
 	/* Attributes inherited from LibStatusResponse */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(providerId) ProviderID;
@@ -4347,13 +4368,13 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LibStatusResponse implementations */
+/* Implementations of attributes inherited from LibStatusResponse */
 
-/* extension */
-#define LassoLibRegisterNameIdentifierResponse_get_extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibRegisterNameIdentifierResponse_extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
-#define LassoLibRegisterNameIdentifierResponse_set_extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
-#define LassoLibRegisterNameIdentifierResponse_extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+/* Extension */
+#define LassoLibRegisterNameIdentifierResponse_get_Extension(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_Extension_get(self) get_xml_list(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
+#define LassoLibRegisterNameIdentifierResponse_set_Extension(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
+#define LassoLibRegisterNameIdentifierResponse_Extension_set(self, value) set_xml_list(&LASSO_LIB_STATUS_RESPONSE(self)->Extension, (value))
 
 /* providerId */
 #define LassoLibRegisterNameIdentifierResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
@@ -4477,8 +4498,11 @@ typedef struct {
 %extend LassoLibStatusResponse {
 	/* Attributes */
 
-	%newobject extension_get;
-	LassoStringList *extension;
+#ifndef SWIGPHP4
+	%rename(extension) Extension;
+#endif
+	%newobject Extension_get;
+	LassoStringList *Extension;
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -4502,11 +4526,11 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* extension */
-#define LassoLibStatusResponse_get_extension(self) get_xml_list((self)->Extension)
-#define LassoLibStatusResponse_extension_get(self) get_xml_list((self)->Extension)
-#define LassoLibStatusResponse_set_extension(self, value) set_xml_list(&(self)->Extension, (value))
-#define LassoLibStatusResponse_extension_set(self, value) set_xml_list(&(self)->Extension, (value))
+/* Extension */
+#define LassoLibStatusResponse_get_Extension(self) get_xml_list((self)->Extension)
+#define LassoLibStatusResponse_Extension_get(self) get_xml_list((self)->Extension)
+#define LassoLibStatusResponse_set_Extension(self, value) set_xml_list(&(self)->Extension, (value))
+#define LassoLibStatusResponse_Extension_set(self, value) set_xml_list(&(self)->Extension, (value))
 
 /* Status */
 #define LassoLibStatusResponse_get_Status(self) get_node((self)->Status)
@@ -4945,7 +4969,6 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	return providerIds;
 }
 
-
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoIdentity lasso_identity_new
@@ -5098,6 +5121,9 @@ typedef struct {
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
 
+	%newobject server_get;
+	LassoServer *server;
+
 	%newobject session_get;
 	LassoSession *session;
 
@@ -5139,7 +5165,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoDefederation_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5191,6 +5217,12 @@ typedef struct {
 #define LassoDefederation_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoDefederation_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoDefederation_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoDefederation_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoDefederation_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoDefederation_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
 #define LassoDefederation_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoDefederation_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5202,7 +5234,7 @@ typedef struct {
 #define new_LassoDefederation lasso_defederation_new
 #define delete_LassoDefederation(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoDefederation_setIdentityFromDump(LassoDefederation *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -5270,6 +5302,9 @@ typedef struct {
 
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
+
+	%newobject server_get;
+	LassoServer *server;
 
 	%newobject session_get;
 	LassoSession *session;
@@ -5369,7 +5404,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoLogin_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5421,6 +5456,12 @@ typedef struct {
 #define LassoLogin_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoLogin_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoLogin_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLogin_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLogin_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoLogin_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
 #define LassoLogin_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLogin_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5437,7 +5478,7 @@ typedef struct {
 #define Login_newFromDump lasso_login_new_from_dump
 #endif
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoLogin_setIdentityFromDump(LassoLogin *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -5513,6 +5554,9 @@ typedef struct {
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
 
+	%newobject server_get;
+	LassoServer *server;
+
 	%newobject session_get;
 	LassoSession *session;
 
@@ -5575,7 +5619,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoLogout_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5627,6 +5671,12 @@ typedef struct {
 #define LassoLogout_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoLogout_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoLogout_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLogout_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLogout_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoLogout_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
 #define LassoLogout_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLogout_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5643,7 +5693,7 @@ typedef struct {
 #define Logout_newFromDump lasso_logout_new_from_dump
 #endif
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoLogout_setIdentityFromDump(LassoLogout *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -5713,6 +5763,9 @@ typedef struct {
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
 
+	%newobject server_get;
+	LassoServer *server;
+
 	%newobject session_get;
 	LassoSession *session;
 
@@ -5781,7 +5834,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoLecp_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -5833,6 +5886,12 @@ typedef struct {
 #define LassoLecp_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoLecp_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoLecp_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLecp_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoLecp_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoLecp_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
 #define LassoLecp_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoLecp_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -5844,7 +5903,7 @@ typedef struct {
 #define new_LassoLecp lasso_lecp_new
 #define delete_LassoLecp(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoLecp_setIdentityFromDump(LassoLecp *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -5854,7 +5913,7 @@ int LassoLecp_setSessionFromDump(LassoLecp *self, char *dump) {
 	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
 }
 
-/* Methods inherited from Login implementations */
+/* Implementations of methods inherited from Login */
 
 int LassoLecp_buildAssertion(LassoLecp *self, char *authenticationMethod,
 		char *authenticationInstant, char *reauthenticateOnOrAfter, char *notBefore,
@@ -5924,6 +5983,9 @@ typedef struct {
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
 
+	%newobject server_get;
+	LassoServer *server;
+
 	%newobject session_get;
 	LassoSession *session;
 
@@ -5972,7 +6034,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoNameIdentifierMapping_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -6024,11 +6086,15 @@ typedef struct {
 #define LassoNameIdentifierMapping_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoNameIdentifierMapping_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoNameIdentifierMapping_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameIdentifierMapping_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameIdentifierMapping_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoNameIdentifierMapping_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
-#define LassoNameIdentifierMapping_get_session LassoNameIdentifierMapping_session_get
-LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping *self) {
-	return lasso_profile_get_session(LASSO_PROFILE(self));
-}
+#define LassoNameIdentifierMapping_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
+#define LassoNameIdentifierMapping_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoNameIdentifierMapping_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 #define LassoNameIdentifierMapping_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
 
@@ -6037,7 +6103,7 @@ LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping 
 #define new_LassoNameIdentifierMapping lasso_name_identifier_mapping_new
 #define delete_LassoNameIdentifierMapping(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoNameIdentifierMapping_setIdentityFromDump(LassoNameIdentifierMapping *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -6101,6 +6167,9 @@ typedef struct {
 	%newobject response_get;
 	LassoSamlpResponseAbstract *response;
 
+	%newobject server_get;
+	LassoServer *server;
+
 	%newobject session_get;
 	LassoSession *session;
 
@@ -6161,7 +6230,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from Profile implementations */
+/* Implementations of attributes inherited from Profile */
 
 /* identity */
 #define LassoNameRegistration_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -6213,6 +6282,12 @@ typedef struct {
 #define LassoNameRegistration_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 #define LassoNameRegistration_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
 
+/* server */
+#define LassoNameRegistration_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameRegistration_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameRegistration_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoNameRegistration_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
 /* session */
 #define LassoNameRegistration_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
 #define LassoNameRegistration_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
@@ -6237,7 +6312,7 @@ typedef struct {
 #define NameRegistration_newFromDump lasso_name_registration_new_from_dump
 #endif
 
-/* Methods inherited from Profile implementations */
+/* Implementations of methods inherited from Profile */
 
 int LassoNameRegistration_setIdentityFromDump(LassoNameRegistration *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);

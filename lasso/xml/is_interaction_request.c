@@ -55,6 +55,7 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "language", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInteractionRequest, language) },
 	{ "maxInteractTime", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInteractionRequest,
 								maxInteractTime) },
+	/* TODO : signed */
 	{ NULL, 0, 0}
 };
 

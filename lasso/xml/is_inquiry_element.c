@@ -44,9 +44,9 @@
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "Help", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Help) },
-	{ "Hint", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Hint) },
-	{ "Label", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Label) },
-	{ "Value", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInquiryElement, Value) },
+	{ "Hint", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Hint) },
+	{ "Label", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Label) },
+	{ "Value", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsInquiryElement, Value) },
 	{ "name", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInquiryElement, name) },
 	{ NULL, 0, 0}
 };
