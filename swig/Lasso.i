@@ -993,6 +993,55 @@ typedef struct {
 
 
 /***********************************************************************
+ * RegisterNameIdentifierRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(RegisterNameIdentifierRequest) LassoRegisterNameIdentifierRequest;
+#endif
+%nodefault LassoRegisterNameIdentifierRequest;
+typedef struct {
+	%extend {
+		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
+
+		xmlChar *relayState;
+	}
+} LassoRegisterNameIdentifierRequest;
+
+%{
+
+/* Attributes Implementations */
+
+/* relayState */
+#define LassoRegisterNameIdentifierRequest_get_relayState LassoRegisterNameIdentifierRequest_relayState_get
+xmlChar *LassoRegisterNameIdentifierRequest_relayState_get(LassoRegisterNameIdentifierRequest *self) {
+	return NULL; /* FIXME */
+}
+#define LassoRegisterNameIdentifierRequest_set_relayState LassoRegisterNameIdentifierRequest_relayState_set
+void LassoRegisterNameIdentifierRequest_relayState_set(LassoRegisterNameIdentifierRequest *self,
+						       xmlChar *relayState) {
+	 lasso_lib_register_name_identifier_request_set_relayState(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self),
+								   relayState);
+}
+
+%}
+
+
+/***********************************************************************
+ * RegisterNameIdentifierResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(RegisterNameIdentifierResponse) LassoRegisterNameIdentifierResponse;
+#endif
+%nodefault LassoRegisterNameIdentifierResponse;
+typedef struct {
+} LassoRegisterNameIdentifierResponse;
+
+
+/***********************************************************************
  * Request
  ***********************************************************************/
 
@@ -2482,6 +2531,12 @@ typedef struct {
 		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
+		%immutable request;
+		LassoRequest *request;
+
+		%immutable response;
+		LassoResponse *response;
+
 		%newobject session_get;
 		LassoSession *session;
 
@@ -2599,6 +2654,18 @@ gchar *LassoNameRegistration_remoteProviderId_get(LassoNameRegistration *self) {
 #define LassoNameRegistration_set_remoteProviderId LassoNameRegistration_remoteProviderId_set
 void LassoNameRegistration_remoteProviderId_set(LassoNameRegistration *self, gchar *remoteProviderId) {
 	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
+}
+
+/* request */
+#define LassoNameRegistration_get_request LassoNameRegistration_request_get
+LassoRegisterNameIdentifierRequest *LassoNameRegistration_request_get(LassoNameRegistration *self) {
+	return LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->request);
+}
+
+/* response */
+#define LassoNameRegistration_get_response LassoNameRegistration_response_get
+LassoRegisterNameIdentifierResponse *LassoNameRegistration_response_get(LassoNameRegistration *self) {
+	return LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(LASSO_PROFILE(self)->response);
 }
 
 /* session */
