@@ -96,13 +96,13 @@ lasso_provider_get_soapEndpoint(LassoProvider *provider)
 void
 lasso_provider_set_public_key(LassoProvider *provider, xmlChar *public_key)
 {
-  provider->public_key = gstrdup(public_key);
+  provider->public_key = g_strdup(public_key);
 }
 
 void
 lasso_provider_set_certificate(LassoProvider *provider, xmlChar *certificate)
 {
-  provider->certificate = gstrdup(certificate);
+  provider->certificate = g_strdup(certificate);
 }
 
 /*****************************************************************************/
@@ -156,6 +156,20 @@ GType lasso_provider_get_type() {
 				       &this_info, 0);
   }
   return this_type;
+}
+
+LassoProvider*
+lasso_provider_new(gchar *metadata_filename,
+		   gchar *public_key_filename,
+		   gchar *certificate_filename)
+{
+  LassoProvider *provider;
+  
+  provider = lasso_provider_new_metadata_filename(metadata_filename);
+  provider->public_key = public_key_filename;
+  provider->certificate = certificate_filename;
+  
+  return(provider);
 }
 
 

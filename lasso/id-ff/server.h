@@ -66,7 +66,9 @@ LASSO_EXPORT LassoServer*   lasso_server_new                    (gchar *metadata
 LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (xmlChar     *dump);
 
 LASSO_EXPORT void           lasso_server_add_provider           (LassoServer   *server,
-								 LassoProvider *provider);
+								 gchar         *metadata_filename,
+								 gchar         *public_key,
+								 gchar         *certificate);
 
 LASSO_EXPORT xmlChar       *lasso_server_dump                   (LassoServer *server);
 
