@@ -212,6 +212,8 @@ lasso_user_get_assertion(LassoUser *user,
 
   assertion = (LassoNode *)g_hash_table_lookup(user->assertions,
 					       remote_providerID);
+  if (assertion == NULL)
+	  return NULL;
 
   return(lasso_node_copy(assertion));
 }
@@ -229,7 +231,9 @@ lasso_user_get_authentication_method(LassoUser *user,
     providerID = lasso_user_get_next_assertion_remote_providerID(user);
   }
   assertion = lasso_user_get_assertion(user, providerID);
-  g_free(providerID);
+  if (remote_providerID == NULL) {
+    g_free(providerID);
+  }
   as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL);
   authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
   if (authentication_method == NULL) {
@@ -369,17 +373,23 @@ lasso_user_finalize(LassoUser *user)
   /* free allocated memory for assertion_providerIDs array */
   for (i=0; i<user->assertion_providerIDs->len; i++) {
     g_free(user->assertion_providerIDs->pdata[i]);
+    user->assertion_providerIDs->pdata[i] = NULL;
   }
   g_ptr_array_free(user->assertion_providerIDs, TRUE);
+  user->assertion_providerIDs = NULL;
 
   /* free allocated memory for identity_providerIDs array */
   for (i=0; i<user->identity_providerIDs->len; i++) {
     g_free(user->identity_providerIDs->pdata[i]);
+    user->identity_providerIDs->pdata[i] = NULL;
   }
   g_ptr_array_free(user->identity_providerIDs, TRUE);
+  user->identity_providerIDs = NULL;
 
   g_hash_table_destroy(user->assertions);
+  user->assertions = NULL;
   g_hash_table_destroy(user->identities);
+  user->identities = NULL;
 
   parent_class->finalize(G_OBJECT(user));
 }
