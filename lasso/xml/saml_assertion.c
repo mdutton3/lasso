@@ -136,69 +136,16 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 	xmlNode *xmlnode;
 	xmlNs *ns;
+	int rc;
 	
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 	ns = xmlSearchNs(NULL, xmlnode, "saml");
 	insure_namespace(xmlnode, ns);
 
 	if (lasso_dump == FALSE && assertion->sign_type) {
-		/* sign assertion now */
-		/* code could be refactored with lasso_node_export_to_signed_xmlnode */
-		xmlDoc *doc;
-		xmlNode *sign_tmpl;
-		xmlSecDSigCtx *dsig_ctx;
-		char *id_value;
-		xmlAttr *id_attr;
-
-		sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
-		if (sign_tmpl == NULL)
-			return xmlnode;
-
-		doc = xmlNewDoc("1.0");
-		xmlDocSetRootElement(doc, xmlnode);
-		xmlSetTreeDoc(sign_tmpl, doc);
-
-		id_value = xmlGetProp(xmlnode, "AssertionID");
-		id_attr = xmlHasProp(xmlnode, "AssertionID");
-		if (id_value) {
-			xmlAddID(NULL, doc, id_value, id_attr);
-			xmlFree(id_value);
-		}
-
-		dsig_ctx = xmlSecDSigCtxCreate(NULL);
-		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(assertion->private_key_file,
-				xmlSecKeyDataFormatPem,
-				NULL, NULL, NULL);
-		if (dsig_ctx->signKey == NULL) {
-			/* XXX: file existence should actually be tested on
-			 * LassoServer creation */
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
-					assertion->private_key_file);
-			xmlSecDSigCtxDestroy(dsig_ctx);
-			return NULL;
-		}
-		if (assertion->certificate_file != NULL && assertion->certificate_file[0] != 0) {
-			if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey,
-						assertion->certificate_file,
-						xmlSecKeyDataFormatPem) < 0) {
-				message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
-					assertion->certificate_file);
-				xmlSecDSigCtxDestroy(dsig_ctx);
-				return NULL;
-			}
-		}
-		if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
-					xmlnode->name);
-			xmlSecDSigCtxDestroy(dsig_ctx);
-			return NULL;
-		}
-		xmlSecDSigCtxDestroy(dsig_ctx);
-		xmlUnlinkNode(xmlnode);
-		xmlFreeDoc(doc);
+		rc = lasso_sign_node(xmlnode, "AssertionID", assertion->AssertionID,
+				assertion->private_key_file, assertion->certificate_file);
+		/* signature may have failed; what to do ? */
 	}
 
 	return xmlnode;

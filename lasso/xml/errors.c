@@ -60,6 +60,8 @@ lasso_strerror(int error_code)
 			return "Failed to verify signature of %s.";
 		case LASSO_DS_ERROR_INVALID_SIGALG:
 			return "Invalid signature algorithm.";
+		case LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND:
+			return "Signature template has not been found.";
 
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
 			return "Failed to get LassoProvider object "\

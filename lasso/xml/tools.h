@@ -58,6 +58,8 @@ char* lasso_sha1(const char *str);
 
 char** urlencoded_to_strings(const char *str);
 
+int lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
+		const char *private_key_file, const char *certificate_file);
 
 void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);

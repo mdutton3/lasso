@@ -33,6 +33,9 @@
 #include <openssl/engine.h>
 
 #include <xmlsec/base64.h>
+#include <xmlsec/crypto.h>
+#include <xmlsec/templates.h>
+#include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
 
 #include <lasso/xml/xml.h>
@@ -595,5 +598,55 @@ error_code(GLogLevelFlags level, int error, ...)
 	va_end(args);
 
 	return error;
+}
+
+
+int
+lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value,
+		const char *private_key_file, const char *certificate_file)
+{
+	xmlDoc *doc;
+	xmlNode *sign_tmpl;
+	xmlSecDSigCtx *dsig_ctx;
+
+	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
+	if (sign_tmpl == NULL)
+		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
+
+	doc = xmlNewDoc("1.0");
+	xmlDocSetRootElement(doc, xmlnode);
+	xmlSetTreeDoc(sign_tmpl, doc);
+	if (id_attr_name) {
+		xmlAttr *id_attr = xmlHasProp(xmlnode, id_attr_name);
+		if (id_value) {
+			xmlAddID(NULL, doc, id_value, id_attr);
+		}
+	}
+
+	dsig_ctx = xmlSecDSigCtxCreate(NULL);
+	dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+			xmlSecKeyDataFormatPem,
+			NULL, NULL, NULL);
+	if (dsig_ctx->signKey == NULL) {
+		xmlSecDSigCtxDestroy(dsig_ctx);
+		return critical_error(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED, private_key_file);
+	}
+	if (certificate_file != NULL && certificate_file[0] != 0) {
+		if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+					xmlSecKeyDataFormatPem) < 0) {
+			xmlSecDSigCtxDestroy(dsig_ctx);
+			return critical_error(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED,
+					certificate_file);
+		}
+	}
+	if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
+		xmlSecDSigCtxDestroy(dsig_ctx);
+		return critical_error(LASSO_DS_ERROR_SIGNATURE_FAILED, xmlnode->name);
+	}
+	xmlSecDSigCtxDestroy(dsig_ctx);
+	xmlUnlinkNode(xmlnode);
+	xmlFreeDoc(doc);
+
+	return 0;
 }
 

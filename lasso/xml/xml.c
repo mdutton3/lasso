@@ -124,62 +124,25 @@ static xmlNode*
 lasso_node_export_to_signed_xmlnode(LassoNode *node,
 		const char *private_key_file, const char *certificate_file)
 {
-	xmlDoc *doc;
-	xmlNode *message, *sign_tmpl;
-	xmlSecDSigCtx *dsig_ctx;
-	char *id_attr_name = NULL;
+	xmlNode *message;
+	char *id_attr_name = NULL, *id_value = NULL;
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
-	sign_tmpl = xmlSecFindNode(message, xmlSecNodeSignature, xmlSecDSigNs);
-	if (sign_tmpl && private_key_file) {
-		doc = xmlNewDoc("1.0");
-		xmlDocSetRootElement(doc, message);
-		xmlSetTreeDoc(sign_tmpl, doc);
-		if (LASSO_NODE_GET_CLASS(node)->get_sign_attr_name)
+	if (private_key_file) {
+		int rc;
+
+		if (LASSO_NODE_GET_CLASS(node)->get_sign_attr_name) {
 			id_attr_name = LASSO_NODE_GET_CLASS(node)->get_sign_attr_name();
-		if (id_attr_name) {
-			char *id_value = xmlGetProp(message, id_attr_name);
-			xmlAttr *id_attr = xmlHasProp(message, id_attr_name);
-			if (id_value) {
-				xmlAddID(NULL, doc, id_value, id_attr);
-				xmlFree(id_value);
-			}
+			id_value = xmlGetProp(message, id_attr_name);
 		}
 
-		dsig_ctx = xmlSecDSigCtxCreate(NULL);
-		dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
-				xmlSecKeyDataFormatPem,
-				NULL, NULL, NULL);
-		if (dsig_ctx->signKey == NULL) {
-			/* XXX: file existence should actually be tested on
-			 * LassoServer creation */
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED),
-					private_key_file);
-			xmlSecDSigCtxDestroy(dsig_ctx);
-			return NULL;
-		}
-		if (certificate_file != NULL && certificate_file[0] != 0) {
-			if (xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
-						xmlSecKeyDataFormatPem) < 0) {
-				message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED),
-					certificate_file);
-				xmlSecDSigCtxDestroy(dsig_ctx);
-				return NULL;
-			}
-		}
-		if (xmlSecDSigCtxSign(dsig_ctx, sign_tmpl) < 0) {
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_DS_ERROR_SIGNATURE_FAILED),
-					message->name);
-			xmlSecDSigCtxDestroy(dsig_ctx);
-			return NULL;
-		}
-		xmlSecDSigCtxDestroy(dsig_ctx);
-		xmlUnlinkNode(message);
-		xmlFreeDoc(doc);
+		rc = lasso_sign_node(message, id_attr_name, id_value,
+				private_key_file, certificate_file);
+		/* it may have failed; should we care and return NULL or let
+		 * the unsigned message go on the wire ? */
+		if (id_value)
+			xmlFree(id_value);
 	}
 
 	return message;
