@@ -48,9 +48,9 @@ struct _LassoServer {
 
   GPtrArray *providers;
 
-  char *private_key;
-  char *public_key;
-  char *certificate;
+  gchar *public_key;
+  gchar *private_key;
+  gchar *certificate;
 
   /*< private >*/
 };
@@ -60,7 +60,9 @@ struct _LassoServerClass {
 };
 
 LASSO_EXPORT GType          lasso_server_get_type               (void);
-LASSO_EXPORT LassoServer*   lasso_server_new                    (void);
+LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *public_key,
+								 const gchar *private_key,
+								 const gchar *certificate);
 
 LASSO_EXPORT gint           lasso_server_add_provider_from_file (LassoServer *server,
 								 gchar       *filename);

@@ -35,7 +35,7 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
 
   status_code = lasso_node_get_child(response, "StatusCode", NULL);
   if (status_code != NULL)
-    return lasso_node_get_attr_value(statusCode, "Value");
+    return lasso_node_get_attr_value(status_code, "Value");
   else
     return(NULL);
 }

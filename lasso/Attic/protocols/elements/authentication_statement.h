@@ -53,14 +53,10 @@ struct _LassoAuthenticationStatementClass {
 };
 
 LASSO_EXPORT GType      lasso_authentication_statement_get_type (void);
-LASSO_EXPORT LassoNode* lasso_authentication_statement_new      (const xmlChar *authenticationMethod,
-								 const xmlChar *reauthenticateOnOrAfter,
-								 xmlChar       *nameIdentifier,
-								 const xmlChar *nameQualifier,
-								 const xmlChar *format,
-								 xmlChar       *idp_nameIdentifier,
-								 const xmlChar *idp_nameQualifier,
-								 const xmlChar *idp_format);
+LASSO_EXPORT LassoNode* lasso_authentication_statement_new      (const xmlChar           *authenticationMethod,
+								 const xmlChar           *reauthenticateOnOrAfter,
+								 LassoSamlNameIdentifier *identifier,
+								 LassoSamlNameIdentifier *idp_identifier);
 
 #ifdef __cplusplus
 }

@@ -106,7 +106,6 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
   ctx->response = NULL;
   ctx->local_providerID = NULL;
   ctx->remote_providerID = NULL;
-  ctx->request_protocol_method = 0;
 }
 
 static void

@@ -65,9 +65,13 @@ LASSO_EXPORT GType                lasso_authentication_get_type               (v
 LASSO_EXPORT LassoProfileContext* lasso_authentication_new                    (LassoServer *server,
 									       LassoUser   *user,
 									       gchar       *local_providerID,
-									       gchar       *remote_providerID);
+									       gchar       *remote_providerID,
+									       gchar       *request_msg,
+									       gint         request_method,
+									       gchar       *response_msg,
+									       gint         response_method);
 
-LASSO_EXPORT gchar*               lasso_authentication_build_request          (LassoAuthentication *authn);
+LASSO_EXPORT gchar*               lasso_authentication_build_request_msg      (LassoAuthentication *authn);
 
 LASSO_EXPORT xmlChar*             lasso_authentication_process_artifact       (LassoAuthentication *authn,
 									       gchar               *artifact);
@@ -75,26 +79,10 @@ LASSO_EXPORT xmlChar*             lasso_authentication_process_artifact       (L
 LASSO_EXPORT gboolean             lasso_authentication_process_response       (LassoAuthentication *authn,
 										xmlChar             *response);
 
-LASSO_EXPORT gboolean             lasso_authentication_process_request        (LassoAuthentication *authn,
-										gchar               *request,
-										gint                 request_method,
-										gboolean             is_authenticated);
-
 LASSO_EXPORT gchar*               lasso_authentication_process_authentication_result (LassoAuthentication *authn,
 										      gint                 authentication_result,
 										      const char          *authentication_method);
 
-LASSO_EXPORT void                 lasso_authentication_set_forceAuthn                (LassoAuthentication *authn,
-										      gboolean             forceAuthn);
-
-LASSO_EXPORT void                 lasso_authentication_set_isPassive                 (LassoAuthentication *authn,
-										      gboolean             isPassive);
-
-LASSO_EXPORT void                 lasso_authentication_set_nameIDPolicy              (LassoAuthentication *authn,
-										      const xmlChar       *nameIDPolicy);
-
-LASSO_EXPORT void                 lasso_authentication_set_protocolProfile           (LassoAuthentication *authn,
-										      const xmlChar       *protocolProfile);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

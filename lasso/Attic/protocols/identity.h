@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/saml_name_identifier.h>
 
 #define LASSO_TYPE_IDENTITY (lasso_identity_get_type())
 #define LASSO_IDENTITY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDENTITY, LassoIdentity))
@@ -47,8 +48,8 @@ struct _LassoIdentity {
   
   gchar *remote_providerID;
 
-  LassoNode *local_nameIdentifier;
-  LassoNode *remote_nameIdentifier;
+  LassoSamlNameIdentifier *local_nameIdentifier;
+  LassoSamlNameIdentifier *remote_nameIdentifier;
 
   /*< private >*/
 };

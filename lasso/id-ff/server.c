@@ -81,13 +81,13 @@ lasso_server_instance_init(LassoServer *server)
 {
   server->providers = g_ptr_array_new();
 
+  server->public_key  = NULL;
   server->private_key = NULL;
-  server->public_key = NULL;
   server->certificate = NULL;
 }
 
 static void
-lasso_server_class_init(LassoServerClass *klass){
+lasso_server_class_init(LassoServerClass *klass) {
 }
 
 GType lasso_server_get_type() {
@@ -113,12 +113,18 @@ GType lasso_server_get_type() {
   return this_type;
 }
 
-LassoServer *lasso_server_new()
+LassoServer *
+lasso_server_new(const gchar *public_key,
+		 const gchar *private_key,
+		 const gchar *certificate)
 {
   LassoServer *server;
 
-  server = g_object_new(LASSO_TYPE_SERVER, NULL);
+  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+
+  server->public_key  = public_key;
+  server->private_key = private_key;
+  server->certificate = certificate;
 
   return(server);
-
 }

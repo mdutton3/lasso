@@ -66,8 +66,8 @@ struct _LassoProfileContext {
   gchar *local_providerID;
   gchar *remote_providerID;
 
-  gint request_protocol_method;
-  gint status;
+/*   gint request_protocol_method; */
+/*   gint status; */
   
   /*< private >*/
 };

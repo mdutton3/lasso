@@ -67,17 +67,13 @@ GType lasso_authentication_statement_get_type() {
 }
 
 LassoNode*
-lasso_authentication_statement_new(const xmlChar *authenticationMethod,
-				   const xmlChar *reauthenticateOnOrAfter,
-				   xmlChar       *nameIdentifier,
-				   const xmlChar *nameQualifier,
-				   const xmlChar *format,
-				   xmlChar       *idp_nameIdentifier,
-				   const xmlChar *idp_nameQualifier,
-				   const xmlChar *idp_format)
+lasso_authentication_statement_new(const xmlChar           *authenticationMethod,
+				   const xmlChar           *reauthenticateOnOrAfter,
+				   LassoSamlNameIdentifier *identifier,
+				   LassoSamlNameIdentifier *idp_identifier)
 {
   LassoNode *statement;
-  LassoNode *subject, *identifier, *idp_identifier, *subject_confirmation;
+  LassoNode *subject, *subject_confirmation;
   xmlChar *time;
 
   statement = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHENTICATION_STATEMENT, NULL));
@@ -92,22 +88,11 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
 								 reauthenticateOnOrAfter);
 
   subject = lasso_lib_subject_new();
-  identifier = lasso_saml_name_identifier_new(nameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
-					       nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
-					format);
   lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
 					LASSO_SAML_NAME_IDENTIFIER(identifier));
-  idp_identifier = lasso_lib_idp_provided_name_identifier_new(idp_nameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idp_identifier),
-					       idp_nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idp_identifier),
-					idp_format);
-  lasso_saml_subject_set_nameIdentifier(LASSO_SAML_SUBJECT(subject),
-					LASSO_SAML_NAME_IDENTIFIER(idp_identifier));
   lasso_lib_subject_set_idpProvidedNameIdentifier(LASSO_LIB_SUBJECT(subject),
 						  LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idp_identifier));
+
   subject_confirmation = lasso_saml_subject_confirmation_new();
   lasso_saml_subject_confirmation_set_subjectConfirmationMethod(LASSO_SAML_SUBJECT_CONFIRMATION(subject_confirmation),
 								lassoSamlConfirmationMethodBearer);
@@ -118,8 +103,6 @@ lasso_authentication_statement_new(const xmlChar *authenticationMethod,
 						    LASSO_SAML_SUBJECT(subject));
 
   lasso_node_destroy(subject);
-  lasso_node_destroy(identifier);
-  lasso_node_destroy(idp_identifier);
   lasso_node_destroy(subject_confirmation);
 
   return (statement);
