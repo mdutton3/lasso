@@ -339,7 +339,8 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
  **/
 gint
 lasso_logout_init_request(LassoLogout    *logout,
-			  gchar          *remote_providerID)
+			  gchar          *remote_providerID,
+			  lassoHttpMethod request_method)
 {
   LassoProfile      *profile        = NULL;
   LassoProvider     *provider       = NULL;

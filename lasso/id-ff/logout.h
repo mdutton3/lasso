@@ -77,7 +77,8 @@ LASSO_EXPORT void         lasso_logout_destroy              (LassoLogout *logout
 LASSO_EXPORT gchar*       lasso_logout_get_next_providerID  (LassoLogout *logout);
 
 LASSO_EXPORT gint         lasso_logout_init_request         (LassoLogout    *logout,
-							     gchar          *remote_providerID);
+							     gchar          *remote_providerID,
+							     lassoHttpMethod request_method);
 
 LASSO_EXPORT gint         lasso_logout_process_request_msg  (LassoLogout     *logout,
 							     gchar           *request_msg,
