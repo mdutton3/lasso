@@ -26,141 +26,132 @@
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-#include <lasso/export.h>
-#include <libxml/tree.h>
-
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const xmlChar lassoLassoHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoLassoPrefix[];
+#define lassoLassoHRef	 "http://www.entrouvert.org/namespaces/lasso/0.0"
+#define lassoLassoPrefix	 "lasso"
 
 /*****************************************************************************/
 /* Liberty Alliance                                                          */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const xmlChar lassoLibHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoLibPrefix[];
+#define lassoLibHRef	 "urn:liberty:iff:2003-08"
+#define lassoLibPrefix	 "lib"
 
 /* Versioning */
-LASSO_EXPORT_VAR const xmlChar lassoLibMajorVersion[];
-LASSO_EXPORT_VAR const xmlChar lassoLibMinorVersion[];
+#define lassoLibMajorVersion	 "1"
+#define lassoLibMinorVersion	 "2"
 
 /* NameIDPolicyType */
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeNone[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeOneTime[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeFederated[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIDPolicyTypeAny[];
+#define lassoLibNameIDPolicyTypeNone	 "none"
+#define lassoLibNameIDPolicyTypeOneTime	 "onetime"
+#define lassoLibNameIDPolicyTypeFederated	 "federated"
+#define lassoLibNameIDPolicyTypeAny	 "any"
 
 /* AuthnContextComparison */
-LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonExact[];
-LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonMinimum[];
-LASSO_EXPORT_VAR const xmlChar lassoLibAuthnContextComparisonBetter[];
+#define lassoLibAuthnContextComparisonExact	 "exact"
+#define lassoLibAuthnContextComparisonMinimum	 "minimum"
+#define lassoLibAuthnContextComparisonBetter	 "better"
 
 /* StatusCodes */
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeFederationDoesNotExist[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeInvalidAssertionConsumerServiceIndex[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeInvalidSignature[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoAuthnContext[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoAvailableIDP[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoPassive[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeNoSupportedIDP[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeProxyCountExceeded[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnknownPrincipal[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[];
-LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsupportedProfile[];
+#define lassoLibStatusCodeFederationDoesNotExist	 "lib:FederationDoesNotExist"
+#define lassoLibStatusCodeInvalidAssertionConsumerServiceIndex	 "lib:InvalidAssertionConsumerServiceIndex"
+#define lassoLibStatusCodeInvalidSignature	 "lib:InvalidSignature"
+#define lassoLibStatusCodeNoAuthnContext	 "lib:NoAuthnContext"
+#define lassoLibStatusCodeNoAvailableIDP	 "lib:NoAvailableIDP"
+#define lassoLibStatusCodeNoPassive	 "lib:NoPassive"
+#define lassoLibStatusCodeNoSupportedIDP	 "lib:NoSupportedIDP"
+#define lassoLibStatusCodeProxyCountExceeded	 "lib:ProxyCountExceeded"
+#define lassoLibStatusCodeUnknownPrincipal	 "lib:UnknownPrincipal"
+#define lassoLibStatusCodeUnsignedAuthnRequest	 "lib:UnsignedAuthnRequest"
+#define lassoLibStatusCodeUnsupportedProfile	 "lib:UnsupportedProfile"
 
 /* ProtocolProfile */
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSSOGet[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSSOPost[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileBrwsArt[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileBrwsPost[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermIdpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermIdpSoap[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermSpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermSpSoap[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniIdpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniIdpSoap[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniSpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileRniSpSoap[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloSpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloSpSoap[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpHttp[];
-LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSloIdpSoap[];
+#define lassoLibProtocolProfileSSOGet	 "http://projectliberty.org/profiles/sso-get"
+#define lassoLibProtocolProfileSSOPost	 "http://projectliberty.org/profiles/sso-post"
+#define lassoLibProtocolProfileBrwsArt	 "http://projectliberty.org/profiles/brws-art"
+#define lassoLibProtocolProfileBrwsPost	 "http://projectliberty.org/profiles/brws-post"
+#define lassoLibProtocolProfileFedTermIdpHttp	 "http://projectliberty.org/profiles/fedterm-idp-http"
+#define lassoLibProtocolProfileFedTermIdpSoap	 "http://projectliberty.org/profiles/fedterm-idp-soap"
+#define lassoLibProtocolProfileFedTermSpHttp	 "http://projectliberty.org/profiles/fedterm-sp-http"
+#define lassoLibProtocolProfileFedTermSpSoap	 "http://projectliberty.org/profiles/fedterm-sp-soap"
+#define lassoLibProtocolProfileRniIdpHttp	 "http://projectliberty.org/profiles/rni-idp-http"
+#define lassoLibProtocolProfileRniIdpSoap	 "http://projectliberty.org/profiles/rni-idp-soap"
+#define lassoLibProtocolProfileRniSpHttp	 "http://projectliberty.org/profiles/rni-sp-http"
+#define lassoLibProtocolProfileRniSpSoap	 "http://projectliberty.org/profiles/rni-sp-soap"
+#define lassoLibProtocolProfileSloSpHttp	 "http://projectliberty.org/profiles/slo-sp-http"
+#define lassoLibProtocolProfileSloSpSoap	 "http://projectliberty.org/profiles/slo-sp-soap"
+#define lassoLibProtocolProfileSloIdpHttp	 "http://projectliberty.org/profiles/slo-idp-http"
+#define lassoLibProtocolProfileSloIdpSoap	 "http://projectliberty.org/profiles/slo-idp-soap"
 
 /* NameIdentifier formats */
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatFederated[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatOneTime[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEncrypted[];
-LASSO_EXPORT_VAR const xmlChar lassoLibNameIdentifierFormatEntityID[];
+#define lassoLibNameIdentifierFormatFederated	 "urn:liberty:iff:nameid:federated"
+#define lassoLibNameIdentifierFormatOneTime	 "urn:liberty:iff:nameid:one-time"
+#define lassoLibNameIdentifierFormatEncrypted	 "urn:liberty:iff:nameid:encrypted"
+#define lassoLibNameIdentifierFormatEntityID	 "urn:liberty:iff:nameid:entityID"
 
 /* Consent */
-LASSO_EXPORT_VAR const xmlChar lassoLibConsentObtained[];
-LASSO_EXPORT_VAR const xmlChar lassoLibConsentUnavailable[];
-LASSO_EXPORT_VAR const xmlChar lassoLibConsentInapplicable[];
+#define lassoLibConsentObtained	 "urn:liberty:consent:obtained"
+#define lassoLibConsentUnavailable	 "urn:liberty:consent:unavailable"
+#define lassoLibConsentInapplicable	 "urn:liberty:consent:inapplicable"
 
 /*****************************************************************************/
 /* METADATA                                                                  */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const xmlChar lassoMetadataHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoMetadataPrefix[];
+#define lassoMetadataHRef	 "urn:liberty:metadata:2003-08"
+#define lassoMetadataPrefix	 "md"
 
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const xmlChar lassoSamlAssertionHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAssertionPrefix[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlProtocolHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlProtocolPrefix[];
+#define lassoSamlAssertionHRef	 "urn:oasis:names:tc:SAML:1.0:assertion"
+#define lassoSamlAssertionPrefix	 "saml"
+#define lassoSamlProtocolHRef	 "urn:oasis:names:tc:SAML:1.0:protocol"
+#define lassoSamlProtocolPrefix	 "samlp"
 
 /* Versioning */
-LASSO_EXPORT_VAR const xmlChar lassoSamlMajorVersion[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlMinorVersion[];
+#define lassoSamlMajorVersion	 "1"
+#define lassoSamlMinorVersion	 "1"
 
 /* StatusCodes */
-LASSO_EXPORT_VAR const xmlChar lassoSamlStatusCodeRequestDenied[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlStatusCodeSuccess[];
+#define lassoSamlStatusCodeRequestDenied	 "samlp:RequestDenied"
+#define lassoSamlStatusCodeSuccess	 "samlp:Success"
 
 /* AuthenticationMethods */
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPassword[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodKerberos[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSecureRemotePassword[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodHardwareToken[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSmartcardPki[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSoftwarePki[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodPgp[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodSPki[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXkms[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXmlDSig[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodUnspecified[];
+#define lassoSamlAuthenticationMethodPassword	 "urn:oasis:names:tc:SAML:1.0:am:password"
+#define lassoSamlAuthenticationMethodKerberos	 "urn:ietf:rfc:1510"
+#define lassoSamlAuthenticationMethodSecureRemotePassword	 "urn:ietf:rfc:2945"
+#define lassoSamlAuthenticationMethodHardwareToken	 "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+#define lassoSamlAuthenticationMethodSmartcardPki	 "urn:ietf:rfc:2246"
+#define lassoSamlAuthenticationMethodSoftwarePki	 "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+#define lassoSamlAuthenticationMethodPgp	 "urn:oasis:names:tc:SAML:1.0:am:PGP"
+#define lassoSamlAuthenticationMethodSPki	 "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+#define lassoSamlAuthenticationMethodXkms	 "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+#define lassoSamlAuthenticationMethodXmlDSig	 "urn:ietf:rfc:3075"
+#define lassoSamlAuthenticationMethodUnspecified	 "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 /* ConfirmationMethods */
-LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodArtifact01[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodBearer[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodHolderOfKey[];
-LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodSenderVouches[];
+#define lassoSamlConfirmationMethodArtifact01	 "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
+#define lassoSamlConfirmationMethodBearer	 "urn:oasis:names:tc:SAML:1.0:cm:bearer"
+#define lassoSamlConfirmationMethodHolderOfKey	 "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
+#define lassoSamlConfirmationMethodSenderVouches	 "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
 
 /*****************************************************************************/
 /* SOAP                                                                      */
 /*****************************************************************************/
 
 /* prefix & href */
-LASSO_EXPORT_VAR const xmlChar lassoSoapEnvHRef[];
-LASSO_EXPORT_VAR const xmlChar lassoSoapEnvPrefix[];
+#define lassoSoapEnvHRef	 "http://schemas.xmlsoap.org/soap/envelope/"
+#define lassoSoapEnvPrefix	 "soap-env"
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
 
 #endif /* __LASSO_STRINGS_H__ */

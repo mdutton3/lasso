@@ -10,7 +10,6 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-xml.la
 
 liblasso_xml_la_SOURCES = \
-	strings.c \
 	tools.c \
 	debug.c \
 	errors.c \
