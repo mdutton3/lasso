@@ -536,7 +536,7 @@ static xmlChar *
 lasso_node_impl_export(LassoNode *node)
 {
   /* using lasso_node_impl_dump because dump method can be overrided */
-  return (lasso_node_impl_dump(node, "utf-8", 1));
+  return (lasso_node_impl_dump(node, "utf-8", 0));
 }
 
 static xmlChar *
@@ -544,7 +544,7 @@ lasso_node_impl_export_to_base64(LassoNode *node)
 {
   xmlChar *buffer, *ret;
 
-  buffer = lasso_node_impl_dump(node, "utf-8", 1);
+  buffer = lasso_node_impl_dump(node, "utf-8", 0);
   ret = xmlSecBase64Encode((const xmlSecByte *) buffer,
 			   (xmlSecSize)strlen((const char *)buffer), 0);
   xmlFree(buffer);
