@@ -275,19 +275,37 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 				   "Assertion",
 				   lassoLibHRef,
 				   &err);
-  idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
-				      LASSO_PROFILE(login)->remote_providerID);
 
   if (assertion != NULL) {
+    if (LASSO_PROFILE(login)->remote_providerID != NULL) {
+      idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+					  LASSO_PROFILE(login)->remote_providerID);
+    }
+    else {
+      debug("remote ProviderID is NULL => Impossible to get IDP and verify response signature\n");
+    }
     /* verify signature */
-    if (idp->ca_certificate != NULL) {
-      signature_check = lasso_node_verify_signature(assertion, idp->ca_certificate, &err);
-      if (signature_check < 0) {
-	message(G_LOG_LEVEL_CRITICAL, err->message);
-	ret = err->code;
-	g_clear_error(&err);
-	/* we continue */
+    if (idp != NULL) {
+      if (idp->ca_certificate != NULL) {
+	signature_check = lasso_node_verify_signature(assertion, idp->ca_certificate, &err);
+	if (signature_check < 0) {
+	  message(G_LOG_LEVEL_CRITICAL, err->message);
+	  ret = err->code;
+	  g_clear_error(&err);
+	  /* we continue */
+	}
       }
+      else {
+	message(G_LOG_LEVEL_CRITICAL, "Failed to verify Response signature, Idp CA certificate is NULL\n");
+	ret = -1;
+	goto done;
+      }
+    }
+    else {
+      message(G_LOG_LEVEL_CRITICAL, "Failed to get Idp with ProviderID = %s\n",
+	      LASSO_PROFILE(login)->remote_providerID);
+      ret = -1;
+      goto done;
     }
 
     /* store NameIdentifier */
@@ -953,11 +971,26 @@ gint
 lasso_login_process_authn_response_msg(LassoLogin *login,
 				       gchar      *authn_response_msg)
 {
+  gint ret1 = 0, ret2 = 0;
+  GError *err = NULL;
+
   LASSO_PROFILE(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
 									lassoNodeExportTypeBase64);
   LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
 
-  return (lasso_login_process_response_status_and_assertion(login));
+  LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE(login)->response,
+									 "ProviderID",
+									 lassoLibHRef,
+									 &err);
+  if (LASSO_PROFILE(login)->remote_providerID == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret1 = err->code;
+    g_error_free(err);
+  }
+
+  ret2 = lasso_login_process_response_status_and_assertion(login);
+
+  return (ret2 == 0 ? ret1 : ret2);
 }
 
 gint
