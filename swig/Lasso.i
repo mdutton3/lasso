@@ -741,15 +741,31 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(assertionId) AssertionID;
 	char *AssertionID;
+
+	%rename(certificateFile) certificate_file;
+	char *certificate_file;
+
+	%rename(issuer) Issuer;
 	char *Issuer;
+
+	%rename(issueInstant) IssueInstant;
 	char *IssueInstant;
+
+	%rename(majorVersion) MajorVersion;
 	int MajorVersion;
+
+	%rename(minorVersion) MinorVersion;
 	int MinorVersion;
 
-	char *certificate_file;
+	%rename(privateKeyFile) private_key_file;
 	char *private_key_file;
+
+	%rename(signType) sign_type;
 	LassoSignatureType sign_type;
+
+	%rename(signMethod) sign_method;
 	LassoSignatureMethod sign_method;
 } LassoSamlAssertion;
 %extend LassoSamlAssertion {
@@ -800,9 +816,13 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
-	char *NameQualifier;
-	char *Format;
 	char *content;
+
+	%rename(format) Format;
+	char *Format;
+
+	%rename(nameQualifier) NameQualifier;
+	char *NameQualifier;
 } LassoSamlNameIdentifier;
 %extend LassoSamlNameIdentifier {
 	/* Constructor, Destructor & Static Methods */
@@ -849,6 +869,7 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(assertionArtifact) AssertionArtifact;
 	char *AssertionArtifact;
 } LassoSamlpRequest;
 %extend LassoSamlpRequest {
@@ -892,6 +913,8 @@ typedef struct {
 	/* Attributes */
 
 	// FIXME: LassoSamlAssertion *Assertion;
+
+	%rename(status) Status;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -939,11 +962,13 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(statusMessage) StatusMessage;
 	char *StatusMessage;
 } LassoSamlpStatus;
 %extend LassoSamlpStatus {
 	/* Attributes */
 
+	%rename(statusCode) StatusCode;
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -991,11 +1016,13 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(value) Value;
 	char *Value;
 } LassoSamlpStatusCode;
 %extend LassoSamlpStatusCode {
 	/* Attributes */
 
+	%rename(statusCode) StatusCode;
 	LassoSamlpStatusCode *StatusCode;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1117,20 +1144,39 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(affiliationId) AffiliationID;
 	char *AffiliationID;
+
+	%rename(assertionConsumerServiceId) AssertionConsumerServiceID;
 	char *AssertionConsumerServiceID;
-	gboolean ForceAuthn;
-	gboolean IsPassive;
-	char *NameIDPolicy;
-	char *ProtocolProfile;
-	char *ProviderID;
-	char *RelayState;
+
 	char *consent;
+
+	%rename(forceAuthn) ForceAuthn;
+	gboolean ForceAuthn;
+
+	%rename(isPassive) IsPassive;
+	gboolean IsPassive;
+
+	%rename(nameIdPolicy) NameIDPolicy;
+	char *NameIDPolicy;
+
+	%rename(protocolProfile) ProtocolProfile;
+	char *ProtocolProfile;	
+
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(relayState) RelayState;
+	char *RelayState;
+
 } LassoLibAuthnRequest;
 %extend LassoLibAuthnRequest {
 	/* Attributes */
 
+	%rename(extension) Extension;
 	LassoStringArray *Extension;
+
 	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
 	// FIXME: LassoLibScoping *Scoping;
 
@@ -1150,7 +1196,7 @@ typedef struct {
 
 /* Attributes Implementations */
 
-/* Extension */
+/* extension */
 #define LassoLibAuthnRequest_get_Extension LassoLibAuthnRequest_Extension_get
 LassoStringArray *LassoLibAuthnRequest_Extension_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
@@ -1212,15 +1258,23 @@ void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringA
 typedef struct {
 	/* Attributes */
 
-	char *ProviderID;
-	char *RelayState;
 	char *consent;
+
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(relayState) RelayState;
+	char *RelayState;
 } LassoLibAuthnResponse;
 %extend LassoLibAuthnResponse {
 	/* Attributes inherited from LassoSamlpResponse */
 
 	// FIXME: LassoSamlAssertion *Assertion;
+
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(status) Status;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1268,14 +1322,21 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
-	char *ProviderID;
-	char *RelayState;	/* not in schema but allowed in redirects */
 	char *consent;
+
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(relayState) RelayState;
+	char *RelayState;	/* not in schema but allowed in redirects */
 } LassoLibFederationTerminationNotification;
 %extend LassoLibFederationTerminationNotification {
 	/* Attributes */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(nameIdentifier) NameIdentifier;
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1325,16 +1386,27 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
-	char *ProviderID;
-	char *NotOnOrAfter;
-	char *RelayState;
-	char *SessionIndex;
 	char *consent;
+
+	%rename(notOnOrAfter) NotOnOrAfter;
+	char *NotOnOrAfter;
+
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(relayState) RelayState;
+	char *RelayState;
+
+	%rename(sessionIndex) SessionIndex;
+	char *SessionIndex;
 } LassoLibLogoutRequest;
 %extend LassoLibLogoutRequest {
 	/* Attributes */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(nameIdentifier) NameIdentifier;
 	LassoSamlNameIdentifier *NameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1386,9 +1458,16 @@ typedef struct {
 %extend LassoLibLogoutResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(providerId) ProviderID;
 	char *ProviderID;
+
+	%rename(relayState) RelayState;
 	char *RelayState;
+
+	%rename(status) Status;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1410,7 +1489,7 @@ typedef struct {
 
 /* Implementations of attributes inherited from LassoLibStatusResponse */
 
-/* ProviderID */
+/* providerId */
 #define LassoLibLogoutResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
 #define LassoLibLogoutResponse_ProviderID_get(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
 #define LassoLibLogoutResponse_set_ProviderID(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
@@ -1451,15 +1530,25 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(providerId) ProviderID;
 	char *ProviderID;
+
+	%rename(relayState) RelayState;
 	char *RelayState;
 } LassoLibRegisterNameIdentifierRequest;
 %extend LassoLibRegisterNameIdentifierRequest {
 	/* Attributes */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(idpProvidedNameIdentifier) IDPProvidedNameIdentifier;
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
+
+	%rename(oldProvidedNameIdentifier) OldProvidedNameIdentifier;
 	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
+
+	%rename(spProvidedNameIdentifier) SPProvidedNameIdentifier;
 	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1483,19 +1572,19 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* IDPProvidedNameIdentifier */
+/* idpProvidedNameIdentifier */
 #define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_object((self)->IDPProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_get(self) get_object((self)->IDPProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_set_IDPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
 #define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
 
-/* OldProvidedNameIdentifier */
+/* oldProvidedNameIdentifier */
 #define LassoLibRegisterNameIdentifierRequest_get_OldProvidedNameIdentifier(self) get_object((self)->OldProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_get(self) get_object((self)->OldProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_set_OldProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
 #define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
 
-/* SPProvidedNameIdentifier */
+/* spProvidedNameIdentifier */
 #define LassoLibRegisterNameIdentifierRequest_get_SPProvidedNameIdentifier(self) get_object((self)->SPProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_get(self) get_object((self)->SPProvidedNameIdentifier)
 #define LassoLibRegisterNameIdentifierRequest_set_SPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
@@ -1526,9 +1615,16 @@ typedef struct {
 %extend LassoLibRegisterNameIdentifierResponse {
 	/* Attributes inherited from LassoLibStatusResponse */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(providerId) ProviderID;
 	char *ProviderID;
+
+	%rename(relayState) RelayState;
 	char *RelayState;
+
+	%rename(status) Status;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1550,7 +1646,7 @@ typedef struct {
 
 /* Attributes inherited from LassoLibStatusResponse implementations */
 
-/* ProviderID */
+/* providerId */
 #define LassoLibRegisterNameIdentifierResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
 #define LassoLibRegisterNameIdentifierResponse_ProviderID_get(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
 #define LassoLibRegisterNameIdentifierResponse_set_ProviderID(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
@@ -1591,13 +1687,19 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+	%rename(providerId) ProviderID;
 	char *ProviderID;
+
+	%rename(relayState) RelayState;
 	char *RelayState;
 } LassoLibStatusResponse;
 %extend LassoLibStatusResponse {
 	/* Attributes */
 
+	%rename(extension) Extension;
 	// FIXME: GList *Extension;
+
+	%rename(status) Status;
 	LassoSamlpStatus *Status;
 
 	/* Constructor, Destructor & Static Methods */
@@ -1650,10 +1752,18 @@ typedef struct {
 %rename(Provider) LassoProvider;
 #endif
 typedef struct {
-	char *ProviderID;
+	%rename(caCertChain) ca_cert_chain;
 	char *ca_cert_chain;
+
+	%rename(metadataFilename) metadata_filename;
 	char *metadata_filename;
+
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(publicKey) public_key;
 	char *public_key;
+
 	LassoProviderRole role;
 } LassoProvider;
 %extend LassoProvider {
@@ -1733,23 +1843,34 @@ typedef struct {
 #endif
 typedef struct {
 	char *certificate;
+
+	%rename(privateKey) private_key;
 	char *private_key;
+
+	%rename(secretKey) secret_key;
 	char *secret_key;
+
+	%rename(signatureMethod) signature_method;
 	LassoSignatureMethod signature_method;
 } LassoServer;
 %extend LassoServer {
 	/* Attributes inherited from LassoProvider */
 
-	char *ProviderID;
-
+	%rename(caCertChain) ca_cert_chain;
 	char *ca_cert_chain;
 
+	%rename(metadataFilename) metadata_filename;
 	char *metadata_filename;
 
+	%rename(providerId) ProviderID;
+	char *ProviderID;
+
+	%rename(publicKey) public_key;
 	char *public_key;
 
 	/* Attributes */
 
+	%rename(providerIds) ProviderIDs;
 	%immutable ProviderIDs;
 	%newobject ProviderIDs_get;
 	LassoStringArray *ProviderIDs;
@@ -1807,7 +1928,7 @@ typedef struct {
 
 /* Implementations of attributes inherited from LassoProvider */
 
-/* ProviderID */
+/* providerId */
 #define LassoServer_get_ProviderID(self) LASSO_PROVIDER(self)->ProviderID
 #define LassoServer_ProviderID_get(self) LASSO_PROVIDER(self)->ProviderID
 #define LassoServer_set_ProviderID(self, value) set_string(&LASSO_PROVIDER(self)->ProviderID, (value))
@@ -1833,7 +1954,7 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* ProviderIDs */
+/* providerIds */
 #define LassoServer_get_ProviderIDs LassoServer_ProviderIDs_get
 LassoStringArray *LassoServer_ProviderIDs_get(LassoServer *self) {
 	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
