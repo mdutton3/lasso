@@ -28,7 +28,7 @@
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
-
+#include <lasso/xml/disco_modify.h>
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
