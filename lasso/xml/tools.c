@@ -24,6 +24,7 @@
  */
 
 #include <string.h>
+#include <time.h>
 
 #include <libxml/uri.h>
 
@@ -115,18 +116,19 @@ lasso_build_unique_id(guint8 size)
  * 
  * Return value: a string
  **/
-gchar *
+char*
 lasso_get_current_time()
 {
-  struct tm *tm;
-  GTimeVal time_val;
-  gchar *ret = g_new0(gchar, 21);
+	time_t now;
+	struct tm *tm;
+	char *ret;
 
-  g_get_current_time(&time_val);
-  tm = localtime(&(time_val.tv_sec));
-  strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
+	ret = malloc(21);
+	now = time(NULL);
+	tm = gmtime(&now);
+	strftime(ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
 
-  return ret;
+	return ret;
 }
 
 /**
