@@ -27,6 +27,7 @@
 
 
 class HttpRequestMixin:
+    body = None
     headers = None
     method = None # 'GET' or 'POST' or 'PUT' or...
     url = None
@@ -170,13 +171,23 @@ class HttpRequestHandlerMixin:
         raise NotImplementedError
 
 
-class WebSessionMixin:
+class WebClientMixin:
+    httpRequestHeaders = {
+        'User-Agent': 'LassoSimulator/0.0.0',
+        'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html',
+        }
+
+    def __init__(self):
+        pass
+
+
+class WebSessionMixin(WebClientMixin):
     isDirty = True
-    publishToken = False
     token = None
     userId = None # ID of logged user
 
     def __init__(self, token):
+        WebClientMixin.__init__(self)
         self.token = token
 
     def getSimpleLabel(self):
@@ -229,14 +240,15 @@ class WebSiteMixin:
 
     def newSession(self):
         self.lastSessionToken += 1
-        session = self.WebSession(self.lastSessionToken)
-        self.sessions[self.lastSessionToken] = session
+        sessionToken = str(self.lastSessionToken)
+        session = self.WebSession(sessionToken)
+        self.sessions[sessionToken] = session
         return session
 
     def newUser(self, name = None):
         if name is None:
             self.lastUserId += 1
-            userId = self.lastUserId
+            userId = str(self.lastUserId)
         else:
             userId = name
         user = self.WebUser(userId, name = name)

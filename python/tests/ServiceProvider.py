@@ -24,11 +24,11 @@
 
 import lasso
 
-from Provider import Provider
-from websimulator import *
+import Provider
 
 
-class ServiceProvider(Provider):
+class ServiceProviderMixin(Provider.ProviderMixin):
+    createNewAccountWhenNewFederationForUnknownUser = False
     idpSite = None # The identity provider, this service provider will use to authenticate users.
 
     def assertionConsumer(self, handler):
@@ -111,26 +111,81 @@ class ServiceProvider(Provider):
         # If there was no web session yet, create it. Idem for the web user account.
         if session is None:
             session = handler.createSession()
+            session.publishToken = True
         if user is None:
-            # A real service provider would ask user to login locally to create federation. Or it
-            # would ask user informations to create a local account.
-            userId = handler.httpRequest.client.keyring.get(self.url, None)
-            userAuthenticated = userId in self.users
-            if not userAuthenticated:
-                return handler.respond(401, 'Access Unauthorized: User has no account.')
-            user = self.users[userId]
+            # A real service provider would ask user to login locally to create a federation. Or it
+            # would ask user informations to create a local account. Or it would automatically
+            # create a new account...
+            if self.createNewAccountWhenNewFederationForUnknownUser:
+                user = handler.createUser()
+            else:
+                return self.assertionConsumer_newFederationForUnknownUser(
+                    handler, nameIdentifier, lassoSessionDump, lassoIdentityDump)
 
         session.userId = user.uniqueId
+        user.sessionToken = session.token
 
         # Store the updated identity dump and session dump.
+        session.lassoSessionDump = lassoSessionDump
         if login.is_identity_dirty():
             user.lassoIdentityDump = lassoIdentityDump
-        session.lassoSessionDump = lassoSessionDump
 
         self.userIdsByNameIdentifier[nameIdentifier] = user.uniqueId
         self.sessionTokensByNameIdentifier[nameIdentifier] = session.token
 
-        return handler.respond()
+        # We do a redirect now because we don't want the user to be able to reload
+        # assertionConsumer page (because the artifact has been removed from identity-provider).
+        # FIXME: Add the session token to redirect URL.
+        return handler.respondRedirectTemporarily('/assertionConsumer_success')
+
+    def assertionConsumer_newFederationForUnknownUser(
+            self, handler, nameIdentifier, lassoSessionDump, lassoIdentityDump):
+        # Called whe the user has been successfully authenticated on identity provider, but he has
+        # no account on this service provider or is account is not federated yet and he is not
+        # logged.
+        # Depending of the policy of the service provider, the user account can be created
+        # immediately, or the user can be asked to provide informations to create a new account.
+        # He also can be asked to authenticate locally (for the last time :-) in order for the
+        # service-provider to create the federation.
+
+        # Save Lasso login as a dump in session.
+        session = handler.session
+        session.nameIdentifier = nameIdentifier
+        session.lassoSessionDump = lassoSessionDump
+        session.lassoIdentityDump = lassoIdentityDump
+        nameIdentifier = lassoSessionDump = lassoIdentityDump = None
+
+        # We do a redirect now for two reasons:
+        # - We don't want the user to be able to reload assertionConsumer page (because the
+        #   artifact has been removed from identity-provider).
+        # - For HTTP authentication, we don't want to emit a 401 Unauthorized that would force the
+        #   Principal to reload assertionConsumer page.
+        # FIXME: Add the session token to redirect URL.
+        return handler.respondRedirectTemporarily(
+            '/assertionConsumer_newFederationForUnknownUser_part2')
+
+    def assertionConsumer_newFederationForUnknownUser_part2(self, handler):
+        return self.authenticate(handler, self.assertionConsumer_newFederationForUnknownUser_part3)
+
+    def assertionConsumer_newFederationForUnknownUser_part3(
+            self, handler, userAuthenticated, authenticationMethod):
+        if not userAuthenticated:
+            return handler.respond(401, 'Access Unauthorized: User has no account.')
+
+        # User has been authenticated => Create federation.
+        session = handler.session
+        nameIdentifier = session.nameIdentifier
+        del session.nameIdentifier
+        user = handler.user
+        user.lassoIdentityDump = session.lassoIdentityDump
+        del session.lassoIdentityDump
+        self.userIdsByNameIdentifier[nameIdentifier] = user.uniqueId
+        self.sessionTokensByNameIdentifier[nameIdentifier] = session.token
+        return self.assertionConsumer_success(handler)
+
+    def assertionConsumer_success(self, handler):
+        return handler.respond(200, headers = {'Content-Type': 'text/plain'},
+                               body = 'Liberty authentication succeeded')
 
     def login(self, handler):
         libertyEnabled = handler.httpRequest.headers.get('Liberty-Enabled', None)
@@ -252,4 +307,5 @@ class ServiceProvider(Provider):
         failUnless(nameIdentifier)
         del self.sessionTokensByNameIdentifier[nameIdentifier]
 
-        return handler.respond()
+        return handler.respond(200, headers = {'Content-Type': 'text/plain'},
+                               body = 'Liberty logout succeeded')

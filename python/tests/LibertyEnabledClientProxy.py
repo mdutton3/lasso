@@ -24,10 +24,10 @@
 
 import lasso
 
-from websimulator import *
+import abstractweb
 
 
-class LibertyEnabledClientProxy(WebClient):
+class LibertyEnabledClientProxyMixin(abstractweb.WebClientMixin):
     # A service provider MAY provide a list of identity providers it recognizes by including the
     # <lib:IDPList> element in the <lib:AuthnRequestEnvelope>. The format and processing rules for
     # the identity provider list MUST be as defined in [LibertyProtSchema].
@@ -58,7 +58,7 @@ class LibertyEnabledClientProxy(WebClient):
     # <lib:AuthnResponse> MUST be encoded by applying a base64 transformation (refer to
     # [RFC2045]) to the <lib:AuthnResponse> and all its elements.
 
-    httpRequestHeaders = WebClient.httpRequestHeaders.copy()
+    httpRequestHeaders = abstractweb.WebClientMixin.httpRequestHeaders.copy()
     httpRequestHeaders.update({
         # FIXME: Is this the correct syntax for several URLs in LIBV?
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
@@ -72,9 +72,6 @@ class LibertyEnabledClientProxy(WebClient):
     idpSite = None # The identity provider, this LECP will use to authenticate users.
     lassoServerDump = None
     principal = None
-
-    def __init__(self, internet):
-        WebClient.__init__(self, internet)
 
     def getLassoServer(self):
         return lasso.Server.new_from_dump(self.lassoServerDump)

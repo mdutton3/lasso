@@ -22,10 +22,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# FIXME: Replace principal with client in most methods.
-# FIXME: Rename user to userAccount.
-
-
 import abstractweb
 
 
@@ -126,13 +122,9 @@ class Internet(object):
         raise Exception('Unknown web site: %s' % url)
 
 
-class WebClient(object):
+class WebClient(abstractweb.WebClientMixin, object):
     internet = None
     keyring = None
-    httpRequestHeaders = {
-        'User-Agent': 'LassoSimulator/0.0.0',
-        'Accept': 'text/xml,application/xml,application/xhtml+xml,text/html',
-        }
     sessionTokens = None # Simulate the cookies, stored in user's navigator, and containing the
                          # IDs of sessions already opened by the user.
 

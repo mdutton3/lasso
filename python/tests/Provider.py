@@ -24,11 +24,11 @@
 
 import lasso
 
-from websimulator import *
+import abstractweb
 
 
-class Provider(WebSite):
-    httpResponseHeaders = WebSite.httpResponseHeaders.copy()
+class ProviderMixin(abstractweb.WebSiteMixin):
+    httpResponseHeaders = abstractweb.WebSiteMixin.httpResponseHeaders.copy()
     httpResponseHeaders.update({
         'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
         })
@@ -37,8 +37,8 @@ class Provider(WebSite):
     sessionTokensByNameIdentifier = None
     userIdsByNameIdentifier = None
 
-    def __init__(self, internet, url):
-        WebSite.__init__(self, internet, url)
+    def __init__(self):
+        abstractweb.WebSiteMixin.__init__(self)
         self.userIdsByNameIdentifier = {}
         self.sessionTokensByNameIdentifier = {}
 

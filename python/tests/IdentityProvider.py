@@ -24,15 +24,14 @@
 
 import lasso
 
-from Provider import Provider
-from websimulator import *
+import Provider
 
 
-class IdentityProvider(Provider):
+class IdentityProviderMixin(Provider.ProviderMixin):
     soapResponseMsgs = None
 
-    def __init__(self, internet, url):
-        Provider.__init__(self, internet, url)
+    def __init__(self):
+        Provider.ProviderMixin.__init__(self)
         self.soapResponseMsgs = {}
 
     def singleSignOn(self, handler):
@@ -103,6 +102,7 @@ class IdentityProvider(Provider):
             session = handler.session
             if session is None:
                 session = handler.createSession()
+                session.publishToken = True
             session.lassoLoginDump = login.dump()
             login = None
         return self.authenticate(handler, self.singleSignOn_authenticate_part2, login)
@@ -173,6 +173,7 @@ class IdentityProvider(Provider):
             soapResponseMsg = self.soapResponseMsgs.get(artifact, None)
             if soapResponseMsg is None:
                 raise Exception('FIXME: Handle the case when artifact is wrong')
+            del self.soapResponseMsgs[artifact]
             return handler.respond(
                 headers = {'Content-Type': 'text/xml'}, body = soapResponseMsg)
         elif requestType == lasso.requestTypeLogout:

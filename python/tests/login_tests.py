@@ -35,9 +35,7 @@ if not '../.libs' in sys.path:
 import lasso
 
 import builtins
-from IdentityProvider import IdentityProvider
-from LibertyEnabledClientProxy import LibertyEnabledClientProxy
-from ServiceProvider import ServiceProvider
+from libertysimulator import *
 from websimulator import *
 
 

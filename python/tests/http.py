@@ -33,6 +33,7 @@ Features:
 """
 
 
+import base64
 import BaseHTTPServer
 import Cookie
 import cStringIO
@@ -50,6 +51,7 @@ except ImportError:
     SSL = None
 
 import abstractweb
+import submissions
 
 
 try:
@@ -116,9 +118,14 @@ class BaseHTTPSServer(SocketServer.TCPServer):
 
 class HttpRequest(abstractweb.HttpRequestMixin, object):
     handler = None
+    submission = None
 
     def __init__(self, handler):
         self.handler = handler
+        self.submission = submissions.readSubmission(self.handler)
+
+    def getBody(self):
+        return self.submission.readFile()
 
     def getHeaders(self):
         return self.handler.headers
@@ -145,6 +152,7 @@ class HttpRequest(abstractweb.HttpRequestMixin, object):
     def getUrl(self):
         return "%s://%s%s" % (self.scheme, self.headers.get('Host'), self.pathAndQuery)
 
+    body = property(getBody)
     headers = property(getHeaders)
     method = property(getMethod)
     path = property(getPath)
@@ -276,6 +284,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
     server_version = 'HttpRequestHandlerMixin/1.0'
     site = None # Class variable
     testCookieSupport = False
+    useHttpAuthentication = True
 
     def createSession(self):
         session = abstractweb.HttpRequestHandlerMixin.createSession(self)
@@ -285,7 +294,6 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
 
     def handle(self):
         """Handle multiple requests if necessary."""
-        self.httpRequest = HttpRequest(self)
         self.socketCreationTime = time.time()
         try:
             try:
@@ -300,7 +308,8 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
             except SSL.ZeroReturnError:
                 pass
             except SSL.Error, exception:
-                raise str((exception, exception[0]))
+                logger.debug('SSL error in handle. Error = %s, %s' % (exception, exception[0]))
+                raise # FIXME
                 if exception[0] == ('PEM routines', 'PEM_read_bio', 'no start line'):
                     pass
                 else:
@@ -314,12 +323,21 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         """Handle a single HTTP request."""
         self.raw_requestline = self.rfile.readline()
         if not self.raw_requestline:
-            self.close_connection = 1
+            self.close_connection = True
             return
         if not self.parse_request(): # An error code has been sent, just exit
             return
         logger.info(self.raw_requestline.strip())
         logger.debug(str(self.headers))
+
+        # The server isn't forked nor threaded, so we don't want to keep connections open, to avoid
+        # dead-locks which occur for example when the connection with the navigator to the identity
+        # provider is kept open, while a service provider sends a SOAP request to the identity
+        # provider.
+        # Remove this line for forked or threaded servers.
+        self.close_connection = True
+
+        self.httpRequest = HttpRequest(self)
 
         # Retrieve the session and user, if possible.
 
@@ -353,7 +371,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
         # Handle HTTP authentication.
         authorization = self.httpRequest.headers.get('authorization')
         if self.httpRequest.hasQueryField('login') and not authorization \
-               and rootDataHolder.getConfigBoolean('yep:useHttpAuthentication', default = False):
+               and self.useHttpAuthentication:
             # Ask for HTTP authentication.
             return self.outputErrorUnauthorized(httpPath)
         if self.httpRequest.hasQueryField('logout') and authorization:
@@ -462,7 +480,6 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                     # token (it is better not to store it in a cookie or in URLs).
                     if session.publishToken:
                         del session.publishToken
-        self.canUseCookie = canUseCookie
         if session is None and user is not None:
             # The user has been authenticated (using HTTP or X.509 authentication), but the session
             # doesn't exist yet (or was too old, or...). Create a new session.
@@ -480,6 +497,7 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
                 # use cookie.
                 canUseCookie = False
             logger.debug('Session: %s' % session.simpleLabel)
+        self.canUseCookie = canUseCookie
         self.user = user
         if user is not None:
             logger.debug('User: %s' % user.simpleLabel)
@@ -674,15 +692,17 @@ class HttpRequestHandlerMixin(abstractweb.HttpRequestHandlerMixin):
 ##         data = '<html><body>%s</body></html>' % message
 ##         return self.send_error(404, message, data, setCookie = True)
 
-##     def outputErrorUnauthorized(self, filePath):
-##         if filePath is None:
-##             message = 'Access Unauthorized'
-##         else:
-##             message = 'Access to "%s" Unauthorized.' % filePath
-##         logger.info(message)
-##         data = '<html><body>%s</body></html>' % message
-##         headers = {}
-##         return self.send_error(401, message, data, headers, setCookie = True)
+    def outputErrorUnauthorized(self, filePath):
+        if filePath is None:
+            message = 'Access Unauthorized'
+        else:
+            message = 'Access to "%s" Unauthorized.' % filePath
+        logger.info(message)
+        data = '<html><body>%s</body></html>' % message
+        headers = {}
+        if self.useHttpAuthentication:
+            headers["WWW-Authenticate"] = 'Basic realm="%s"' % self.realm
+        return self.send_error(401, message, data, headers, setCookie = True)
 
 ##     def outputInformationContinue(self):
 ##         message = 'Continue'
@@ -878,13 +898,26 @@ class HttpsRequestHandler(HttpRequestHandlerMixin, BaseHTTPSRequestHandler):
     scheme = 'https'
 
 
-# We use ForkingMixIn instead of ThreadingMixIn because the Python binding for
-# libxml2 limits the number of registered xpath functions to 10. Even if we use
-# only one xpathContext, this would limit the number of threads to 10, wich is
-# not enough for a web server.
+## # We use ForkingMixIn instead of ThreadingMixIn because the Python binding for
+## # libxml2 limits the number of registered xpath functions to 10. Even if we use
+## # only one xpathContext, this would limit the number of threads to 10, wich is
+## # not enough for a web server.
 
-class HttpServer(SocketServer.ForkingMixIn, BaseHTTPServer.HTTPServer):
+
+## class HttpServer(SocketServer.ForkingMixIn, BaseHTTPServer.HTTPServer):
+##     pass
+
+
+## class HttpsServer(SocketServer.ForkingMixIn, BaseHTTPSServer):
+##     pass
+
+
+# No fork nor thread.
+
+class HttpServer(BaseHTTPServer.HTTPServer):
     pass
 
-class HttpsServer(SocketServer.ForkingMixIn, BaseHTTPSServer):
+
+class HttpsServer(BaseHTTPSServer):
     pass
+
