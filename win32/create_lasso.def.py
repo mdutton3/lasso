@@ -9,7 +9,7 @@ cmd = "nm -B " + sys.argv[1]
 output = commands.getoutput(cmd)
 lines = output.split("\n")
 
-print "LIBRARY lasso\n"
+print "LIBRARY liblasso.dll\n"
 print "DESCRIPTION \"Free implementation of the Liberty Alliance specifications.\"\n"
 print "EXPORTS\n"
 

@@ -1,6 +1,6 @@
 dll:
-	-/usr/bin/windres -i lasso/lasso.rc -o lasso/lasso.rc.o
-	-/usr/bin/dllwrap.exe --target=i386-mingw32 --def lasso/lasso.def -o lasso/.libs/liblasso.dll -mno-cygwin --add-stdcall-alias -mwindows -s lasso/lasso.o lasso/lasso.rc.o lasso/xml/.libs/liblasso-xml.al lasso/protocols/.libs/liblasso-protocols.al lasso/environs/.libs/liblasso-environs.al -L/usr/local/lib /usr/local/lib/libglib-2.0-0.dll /usr/local/lib/libxmlsec-openssl.dll /usr/local/lib/libxmlsec.dll -lssl -lcrypto /usr/local/lib/libxslt.dll /usr/local/lib/libxml2.dll -lpthread -lz -lm /usr/local/lib/libgobject-2.0-0.dll
+	-/usr/bin/windres -i win32/lasso.rc -o win32/lasso.rc.o
+	-/usr/bin/dllwrap.exe --target=i386-mingw32 --def win32/lasso.def -o lasso/.libs/liblasso.dll -mno-cygwin --add-stdcall-alias -mwindows -s lasso/lasso.o win32/lasso.rc.o lasso/xml/.libs/liblasso-xml.al lasso/protocols/.libs/liblasso-protocols.al lasso/environs/.libs/liblasso-environs.al -L/usr/local/lib /usr/local/lib/libglib-2.0-0.dll /usr/local/lib/libxmlsec-openssl.dll /usr/local/lib/libxmlsec.dll -lssl -lcrypto /usr/local/lib/libxslt.dll /usr/local/lib/libxml2.dll -lpthread -lz -lm /usr/local/lib/libgobject-2.0-0.dll
 install-dll:        
 	-cp -f lasso/.libs/liblasso.dll /usr/local/lib
 	-cp -f lasso/.libs/liblasso.a /usr/local/lib/liblasso.dll.a
