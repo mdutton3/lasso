@@ -56,13 +56,15 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
-			 "msg_relayState");
+			 "nameIdentifier", "msg_relayState");
   if (!strcmp(attr, "user"))
     return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(logout)->user));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_url));
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_body));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(logout->nameIdentifier));
   if (!strcmp(attr, "msg_relayState"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_relayState));
 
@@ -72,20 +74,20 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
 
 
 PyObject *logout_new(PyObject *self, PyObject *args) {
+  gint         provider_type;
   PyObject    *server_obj, *user_obj;
   LassoLogout *logout;
-  gint         provider_type;
 
-  if (CheckArgs(args, "OOI:logout_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOi:logout_new",
-			 &server_obj, &user_obj, &provider_type))
+  if (CheckArgs(args, "IOo:logout_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "IO|O:logout_new",
+			 &provider_type, &server_obj, &user_obj))
       return NULL;
   }
   else return NULL;
 
-  logout = lasso_logout_new(LassoServer_get(server_obj),
-			    LassoUser_get(user_obj),
-			    provider_type);
+  logout = lasso_logout_new(provider_type,
+			    LassoServer_get(server_obj),
+			    LassoUser_get(user_obj));
 
   return (LassoLogout_wrap(logout));
 }
@@ -149,12 +151,8 @@ PyObject *logout_get_next_providerID(PyObject *self, PyObject *args) {
   else return NULL;
 
   remote_providerID = lasso_logout_get_next_providerID(LassoLogout_get(logout_obj));
-  if(remote_providerID==NULL){
-    Py_INCREF(Py_None);
-    return (Py_None);
-  }
 
-  return (charPtr_wrap(remote_providerID));
+  return (charPtrConst_wrap(remote_providerID));
 }
 
 PyObject *logout_init_request(PyObject *self, PyObject *args) {
@@ -174,20 +172,54 @@ PyObject *logout_init_request(PyObject *self, PyObject *args) {
   return(int_wrap(codeError));
 }
 
-PyObject *logout_process_request_msg(PyObject *self, PyObject *args) {
+PyObject *logout_load_request_msg(PyObject *self, PyObject *args){
   PyObject *logout_obj;
   gchar    *request_msg;
   gint      request_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:logout_process_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_process_request_msg",
+  if (CheckArgs(args, "OSI:logout_load_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:logout_load_request_msg",
 			 &logout_obj, &request_msg, &request_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_logout_process_request_msg(LassoLogout_get(logout_obj), request_msg, request_method);
+  codeError = lasso_logout_load_request_msg(LassoLogout_get(logout_obj), request_msg, request_method);
+
+  return(int_wrap(codeError));
+}
+
+PyObject *logout_load_user_dump(PyObject *self, PyObject *args){
+  PyObject *logout_obj;
+  gchar    *user_dump;
+  gint      codeError;
+
+  if (CheckArgs(args, "OS:logout_load_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:logout_load_request_msg",
+			 &logout_obj, &user_dump))
+      return NULL;
+  }
+  else return NULL;
+
+  codeError = lasso_logout_load_user_dump(LassoLogout_get(logout_obj), user_dump);
+
+  return(int_wrap(codeError));
+}
+
+
+PyObject *logout_process_request(PyObject *self, PyObject *args) {
+  PyObject *logout_obj;
+  gint      codeError;
+
+  if (CheckArgs(args, "O:logout_process_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:logout_process_request_msg",
+			 &logout_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  codeError = lasso_logout_process_request(LassoLogout_get(logout_obj));
 
   return(int_wrap(codeError));
 }

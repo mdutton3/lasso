@@ -243,17 +243,25 @@ lasso_logout_init_request(LassoLogout *logout,
   return(0);
 }
 
-gint
-lasso_logout_process_request_msg(LassoLogout      *logout,
-				 gchar            *request_msg,
-				 lassoHttpMethods  request_method)
+gint lasso_logout_load_user_dump(LassoLogout *logout,
+				 gchar       *user_dump)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity *identity;
-  LassoNode *nameIdentifier, *assertion;
-  LassoNode *statusCode;
-  LassoNodeClass *statusCode_class;
-  xmlChar *remote_providerID;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+  g_return_val_if_fail(user_dump!=NULL, -1);
+
+  profileContext = LASSO_PROFILE_CONTEXT(logout);
+
+  profileContext->user = lasso_user_new_from_dump(user_dump);
+
+}
+
+gint lasso_logout_load_request_msg(LassoLogout     *logout,
+				   gchar           *request_msg,
+				   lassoHttpMethods request_method)
+{
+  LassoProfileContext *profileContext;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
   g_return_val_if_fail(request_msg!=NULL, -2);
@@ -281,15 +289,43 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     return(-4);
   }
 
+  /* get the NameIdentifier to load user dump */
+  logout->nameIdentifier = lasso_node_get_child_content(profileContext->request,"NameIdentifier", NULL);
+
+  return(0);
+}
+
+gint
+lasso_logout_process_request(LassoLogout *logout)
+{
+  LassoProfileContext *profileContext;
+  LassoIdentity *identity;
+  LassoNode *nameIdentifier, *assertion;
+  LassoNode *statusCode;
+  LassoNodeClass *statusCode_class;
+  xmlChar *remote_providerID;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+
+  profileContext = LASSO_PROFILE_CONTEXT(logout);
+
+  if(profileContext->request==NULL){
+    debug(ERROR, "LogoutRequest not found\n");
+    return(-1);
+  }
+
   /* set the remote provider id from the request */
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
+  if(remote_providerID==NULL){
+    debug(ERROR, "ProviderID in LogoutRequest not found\n");
+    return(-1);
+  }
   profileContext->remote_providerID = remote_providerID;
 
   /* set LogoutResponse */
   profileContext->response = lasso_logout_response_new(profileContext->server->providerID,
 						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
-
   if(profileContext->response==NULL){
     message(G_LOG_LEVEL_ERROR, "Error while building response\n");
     return(-5);
@@ -315,6 +351,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   if(profileContext->user==NULL){
     message(G_LOG_LEVEL_WARNING, "User environ not found\n");
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
+    return(-1);
   }
 
   assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
@@ -338,6 +375,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     return(-10);
   }
 
+  /* verification is ok, save name identifier in logout object */
   switch(profileContext->provider_type){
   case lassoProviderTypeSp:
     /* at sp, everything is ok, delete the assertion */
@@ -495,20 +533,19 @@ GType lasso_logout_get_type() {
 }
 
 LassoLogout *
-lasso_logout_new(LassoServer        *server,
-		 LassoUser          *user,
-		 lassoProviderTypes  provider_type)
+lasso_logout_new(lassoProviderTypes  provider_type,
+		 LassoServer        *server,
+		 LassoUser          *user)
 {
   LassoLogout *logout;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the logout object */
   logout = g_object_new(LASSO_TYPE_LOGOUT,
+			"provider_type", provider_type,
 			"server", server,
 			"user", user,
-			"provider_type", provider_type,
 			NULL);
 
   return(logout);

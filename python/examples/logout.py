@@ -37,7 +37,7 @@ idpuser_dump = "<LassoUser><LassoAssertions><LassoAssertion RemoteProviderID=\"h
 # SP1 build a request :
 sp1user = lasso.User.new_from_dump(sp1user_dump)
 
-sp1logout = lasso.Logout.new(sp1server, sp1user, lasso.providerTypeSp)
+sp1logout = lasso.Logout.new(lasso.providerTypeSp, sp1server, sp1user)
 sp1logout.init_request()
 sp1logout.build_request_msg()
 
@@ -48,8 +48,7 @@ sp1logout.destroy()
 
 # IDP process request and return a response :
 idpuser = lasso.User.new_from_dump(idpuser_dump)
-idplogout = lasso.Logout.new(idpserver, idpuser, lasso.providerTypeIdp)
-
+idplogout = lasso.Logout.new(lasso.providerTypeIdp, idpserver)
 
 if lasso.get_request_type_from_soap_msg(msg_body)==lasso.requestTypeLogout:
     print "it's a logout request !"
@@ -57,7 +56,12 @@ if lasso.get_request_type_from_soap_msg(msg_body)==lasso.requestTypeLogout:
 #fake response, only for test !
 response_msg_body = "<Envelope><LogoutResponse><ProviderID>https://service-provider2:2003/liberty-alliance/metadata</ProviderID><Status><StatusCode Value=\"Samlp:Success\"></StatusCode></Status></LogoutResponse></Envelope>"
 
-idplogout.process_request_msg(msg_body, lasso.httpMethodSoap)
+idplogout.load_request_msg(msg_body, lasso.httpMethodSoap)
+nameIdentifier = idplogout.nameIdentifier
+print "get the user dump from NameIdentifier : ", nameIdentifier
+idplogout.load_user_dump(idpuser_dump)
+idplogout.process_request()
+
 next_provider_id = idplogout.get_next_providerID()
 while next_provider_id:
     idplogout.init_request(next_provider_id)
@@ -69,5 +73,6 @@ while next_provider_id:
 
     next_provider_id = idplogout.get_next_providerID()
 
+idplogout.build_response_msg()
 
 print "End of logout"
