@@ -61,3 +61,4 @@ liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@ \
 	-export-symbols symbols.sym
 endif
 
+.PHONY: types.c symbols.sym
