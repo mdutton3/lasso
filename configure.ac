@@ -91,40 +91,12 @@ AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $version_decimal, [Release version as 
 dnl Dirty hack in order to have dynamic resource version numbering.
 AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of the lasso version])
 
-# Libtool versioning
-#
-# CURRENT
-#      The most recent interface number that this library implements.
-# 
-# REVISION
-#      The implementation number of the CURRENT interface.
-# 
-# AGE
-#      The difference between the newest and oldest interfaces that this
-#      library implements.  In other words, the library implements all the
-#      interface numbers in the range from number `CURRENT - AGE' to
-#      `CURRENT'.
-#
-# Rules:
-#  1. Start with version information of `0:0:0' for each libtool library.
-#
-#  2. Update the version information only immediately before a public
-#     release of your software.  More frequent updates are unnecessary,
-#     and only guarantee that the current interface number gets larger
-#     faster.
-#
-#  3. If the library source code has changed at all since the last
-#     update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-#  4. If any interfaces have been added, removed, or changed since the
-#     last update, increment CURRENT, and set REVISION to 0.
-#
-#  5. If any interfaces have been added since the last public release,
-#     then increment AGE.
-#
-#  6. If any interfaces have been removed since the last public release,
-#     then set AGE to 0.
-#
+dnl CURRENT, REVISION, AGE
+dnl - library source changed -> increment REVISION
+dnl - interfaces added/removed/changed -> increment CURRENT, REVISION = 0
+dnl - interfaces added -> increment AGE
+dnl - interfaces removed -> AGE = 0
+
 # syntax: CURRENT[:REVISION[:AGE]]
 # So if M=major, m=minor, r=release:
 # c = M + a = M + m;
