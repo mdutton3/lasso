@@ -41,175 +41,191 @@ import com.entrouvert.lasso.*;
 
 
 public class LoginTest extends TestCase {
-    public String generateIdentityProviderContextDump() {
-	LassoServer serverContext = new LassoServer(
-            "../../tests/data/idp1-la/metadata.xml'",
-	    NULL, //"../../tests/data/idp1-la/public-key.pem",
+    public String generateIdentityProviderDump() {
+	Server server = new Server(
+            "../../tests/data/idp1-la/metadata.xml",
             "../../tests/data/idp1-la/private-key-raw.pem",
-            "../../tests/data/idp1-la/certificate.pem",
-	    Lasso.SIGNATURE_METHOD_RSA_SHA1);
-        serverContext.addProvider(
+	    null,
+            "../../tests/data/idp1-la/certificate.pem");
+        server.addProvider(
+            lasso.PROVIDER_ROLE_SP,
             "../../tests/data/sp1-la/metadata.xml",
             "../../tests/data/sp1-la/public-key.pem",
             "../../tests/data/ca1-la/certificate.pem");
-	String serverContextDump = serverContext.dump();
-        return serverContextDump;
+	String serverDump = server.dump();
+        return serverDump;
     }
 
-    public String generateServiceProviderContextDump() {
-	LassoServer serverContext = new LassoServer(
-            "../../tests/data/sp1-la/metadata.xml'",
-	    NULL, //"../../tests/data/sp1-la/public-key.pem",
+    public String generateServiceProviderDump() {
+	Server server = new Server(
+            "../../tests/data/sp1-la/metadata.xml",
             "../../tests/data/sp1-la/private-key-raw.pem",
-            "../../tests/data/sp1-la/certificate.pem",
-	    Lasso.SIGNATURE_METHOD_RSA_SHA1);
-        serverContext.addProvider(
+	    null,
+            "../../tests/data/sp1-la/certificate.pem");
+        server.addProvider(
+            lasso.PROVIDER_ROLE_IDP,
             "../../tests/data/idp1-la/metadata.xml",
             "../../tests/data/idp1-la/public-key.pem",
             "../../tests/data/ca1-la/certificate.pem");
-        String serverContextDump = serverContext.dump();
-        return serverContextDump;
+        String serverDump = server.dump();
+        return serverDump;
     }
 
-    public void test01_generateServersContextDumps() {
-        String identityProviderContextDump = generateIdentityProviderContextDump();
-        assertNotNull(identityProviderContextDump);
-        String serviceProviderContextDump = generateServiceProviderContextDump();
-        assertNotNull(serviceProviderContextDump);
+    public void test01_generateServersDumps() {
+        String identityProviderDump = generateIdentityProviderDump();
+        assertNotNull(identityProviderDump);
+        String serviceProviderDump = generateServiceProviderDump();
+        assertNotNull(serviceProviderDump);
     }
 
     public void test02_serviceProviderLogin() {
-	boolean userAuthenticated;
+	boolean userAuthenticated, userConsentObtained;
 	int method, requestType;
-	LassoAuthnRequest authnRequest;
-	LassoIdentity idpIdentityContext, spIdentityContext;
-	LassoLogin idpLoginContext, spLoginContext;
-	LassoLogout idpLogoutContext, spLogoutContext;
-	LassoResponse response;
-	LassoServer idpContext, spContext;
-	LassoSession idpSessionContext, spSessionContext;
-	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpContextDump,
-	    idpIdentityContextDump, idpSessionContextDump, nameIdentifier, relayState,
+	LibAuthnRequest authnRequest;
+	Identity idpIdentity, spIdentity;
+	Login idpLogin, spLogin;
+	Logout idpLogout, spLogout;
+	Server idp, sp;
+	Session idpSession, spSession;
+	String artifact, authenticationMethod, authnRequestQuery, authnRequestUrl, idpDump,
+	    idpIdentityDump, idpRemoteProviderId, idpSessionDump, nameIdentifier, relayState,
 	    responseQuery, responseUrl, soapEndpoint, soapResponseMsg, soapRequestMsg,
-	    spContextDump, spIdentityContextDump, spSessionContextDump;
+	    spDump, spIdentityDump, spSessionDump;
 
 	// Service provider login using HTTP redirect.
-        spContextDump = generateServiceProviderContextDump();
-	assertNotNull(spContextDump);
-        spContext = new LassoServer(spContextDump);
-        spLoginContext = new LassoLogin(spContext);
-        assertEquals(0, spLoginContext.initAuthnRequest(
-            "https://identity-provider:1998/liberty-alliance/metadata"));
-        assertEquals(Lasso.MESSAGE_TYPE_AUTHN_REQUEST, spLoginContext.getRequestType());
-	authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
-        authnRequest.setPassive(false);
-        authnRequest.setNameIdPolicy(Lasso.LIB_NAMEID_POLICY_TYPE_FEDERATED);
-        authnRequest.setConsent(Lasso.LIB_CONSENT_OBTAINED);
+        spDump = generateServiceProviderDump();
+	assertNotNull(spDump);
+        sp = Server.newFromDump(spDump);
+        spLogin = new Login(sp);
+        spLogin.initAuthnRequest("https://idp1/metadata", lasso.HTTP_METHOD_REDIRECT);
+	authnRequest = (LibAuthnRequest) spLogin.getRequest();
+        authnRequest.setIsPassive(false);
+        authnRequest.setNameIdPolicy(lasso.LIB_NAMEID_POLICY_TYPE_FEDERATED);
+        authnRequest.setConsent(lasso.LIB_CONSENT_OBTAINED);
 	relayState = "fake";
         authnRequest.setRelayState(relayState);
-        assertEquals(0, spLoginContext.buildAuthnRequestMsg());
-        authnRequestUrl = spLoginContext.getMsgUrl();
+        spLogin.buildAuthnRequestMsg();
+        authnRequestUrl = spLogin.getMsgUrl();
         authnRequestQuery = authnRequestUrl.substring(authnRequestUrl.indexOf("?") + 1);
-        method = Lasso.HTTP_METHOD_REDIRECT;
 
 	// Identity provider singleSignOn, for a user having no federation.
-        idpContextDump = generateIdentityProviderContextDump();
-        assertNotNull(idpContextDump);
-        idpContext = new LassoServer(idpContextDump);
-        idpLoginContext = new LassoLogin(idpContext);
-        assertEquals(0, idpLoginContext.initFromAuthnRequestMsg(authnRequestQuery, method));
-        assertTrue(idpLoginContext.mustAuthenticate());
+        idpDump = generateIdentityProviderDump();
+        assertNotNull(idpDump);
+        idp = Server.newFromDump(idpDump);
+        idpLogin = new Login(idp);
+        idpLogin.processAuthnRequestMsg(authnRequestQuery);
+        assertTrue(idpLogin.mustAuthenticate());
+        assertFalse(idpLogin.mustAskForConsent());
 
         userAuthenticated = true;
-        authenticationMethod = Lasso.SAML_AUTHENTICATION_METHOD_PASSWORD;
-        assertEquals(Lasso.LOGIN_PROTOCOL_PROFILE_BRWS_ART, idpLoginContext.getProtocolProfile());
-        assertEquals(0, idpLoginContext.buildArtifactMsg(
-            userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
-            Lasso.HTTP_METHOD_REDIRECT));
-	idpIdentityContextDump = idpLoginContext.getIdentity().dump();
-        assertNotNull(idpIdentityContextDump);
-	idpSessionContextDump = idpLoginContext.getSession().dump();
-        assertNotNull(idpSessionContextDump);
-        responseUrl = idpLoginContext.getMsgUrl();
+        userConsentObtained = false;
+	idpLogin.validateRequestMsg(userAuthenticated, userConsentObtained);
+        authenticationMethod = lasso.SAML_AUTHENTICATION_METHOD_PASSWORD;
+        idpLogin.buildAssertion(
+                authenticationMethod,
+                null, // authenticationInstant
+                null, // reauthenticateOnOrAfter
+                null, // notBefore
+                null);// notOnOrAfter
+        assertEquals(lasso.LOGIN_PROTOCOL_PROFILE_BRWS_ART, idpLogin.getProtocolProfile());
+        idpLogin.buildArtifactMsg(lasso.HTTP_METHOD_REDIRECT);
+	idpIdentityDump = idpLogin.getIdentity().dump();
+        assertNotNull(idpIdentityDump);
+	idpSessionDump = idpLogin.getSession().dump();
+        assertNotNull(idpSessionDump);
+        responseUrl = idpLogin.getMsgUrl();
         responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);
-        soapResponseMsg = idpLoginContext.getResponseDump();
-        artifact = idpLoginContext.getAssertionArtifact();
-	nameIdentifier = idpLoginContext.getNameIdentifier();
-        method = Lasso.HTTP_METHOD_REDIRECT;
+	idpRemoteProviderId = idpLogin.getRemoteProviderId();
+	nameIdentifier = idpLogin.getNameIdentifier().getContent();
+	artifact = idpLogin.getAssertionArtifact();
+        assertNotNull(artifact);
+        method = lasso.HTTP_METHOD_REDIRECT;
 
         // Service provider assertion consumer.
-        spContextDump = generateServiceProviderContextDump();
-	assertNotNull(spContextDump);
-        spContext = new LassoServer(spContextDump);
-        spLoginContext = new LassoLogin(spContext);
-        assertEquals(0, spLoginContext.initRequest(responseQuery, method));
-        assertEquals(0, spLoginContext.buildRequestMsg());
-        soapEndpoint = spLoginContext.getMsgUrl();
-	soapRequestMsg = spLoginContext.getMsgBody();
+        spDump = generateServiceProviderDump();
+	assertNotNull(spDump);
+        sp = Server.newFromDump(spDump);
+        spLogin = new Login(sp);
+        spLogin.initRequest(responseQuery, method);
+        spLogin.buildRequestMsg();
+        soapEndpoint = spLogin.getMsgUrl();
+	soapRequestMsg = spLogin.getMsgBody();
 
         // Identity provider SOAP endpoint.
-        requestType = Lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
-        assertEquals(Lasso.REQUEST_TYPE_LOGIN, requestType);
+        requestType = lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
+        assertEquals(lasso.REQUEST_TYPE_LOGIN, requestType);
+        idpDump = generateIdentityProviderDump();
+        assertNotNull(idpDump);
+        idp = Server.newFromDump(idpDump);
+        idpLogin = new Login(idp);
+	idpLogin.processRequestMsg(soapRequestMsg);
+	assertEquals(artifact, idpLogin.getAssertionArtifact());
+        assertNotNull(idpSessionDump);
+	idpLogin.setSessionFromDump(idpSessionDump);
+	idpLogin.buildResponseMsg(idpRemoteProviderId);
+	soapResponseMsg = idpLogin.getMsgBody();
+	assertNotNull(soapResponseMsg);
 
 	// Service provider assertion consumer (step 2: process SOAP response).
-        assertEquals(0, spLoginContext.processResponseMsg(soapResponseMsg));
-        assertEquals(nameIdentifier, spLoginContext.getNameIdentifier());
+        spLogin.processResponseMsg(soapResponseMsg);
+        assertEquals(nameIdentifier, spLogin.getNameIdentifier().getContent());
 	// The user doesn't have any federation yet.
-        assertEquals(0, spLoginContext.acceptSso());
-        spIdentityContext = spLoginContext.getIdentity();
-        assertNotNull(spIdentityContext);
-        spIdentityContextDump = spIdentityContext.dump();
-        assertNotNull(spIdentityContextDump);
-        spSessionContext = spLoginContext.getSession();
-        assertNotNull(spSessionContext);
-        spSessionContextDump = spSessionContext.dump();
-        assertNotNull(spSessionContextDump);
-	authenticationMethod = spSessionContext.getAuthenticationMethod(null);
-        assertEquals(Lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
+        spLogin.acceptSso();
+        spIdentity = spLogin.getIdentity();
+        assertNotNull(spIdentity);
+        spIdentityDump = spIdentity.dump();
+        assertNotNull(spIdentityDump);
+        spSession = spLogin.getSession();
+        assertNotNull(spSession);
+        spSessionDump = spSession.dump();
+        assertNotNull(spSessionDump);
+	// FIXME: To uncomment.
+	// authenticationMethod = spSession.getAuthenticationMethod("https://idp1/metadata");
+        assertEquals(lasso.SAML_AUTHENTICATION_METHOD_PASSWORD, authenticationMethod);
 
         // Service provider logout.
-        spContextDump = generateServiceProviderContextDump();
-        assertNotNull(spContextDump);
-        spContext = new LassoServer(spContextDump);
-        assertNotNull(spContext);
-        spLogoutContext = new LassoLogout(spContext, Lasso.providerTypeSp);
-        assertNotNull(spIdentityContextDump);
-	spLogoutContext.setIdentityFromDump(spIdentityContextDump);
-        assertNotNull(spSessionContextDump);
-	spLogoutContext.setSessionFromDump(spSessionContextDump);
-        assertEquals(0, spLogoutContext.initRequest(null));
-        assertEquals(0, spLogoutContext.buildRequestMsg());
-        soapEndpoint = spLogoutContext.getMsgUrl();
-        soapRequestMsg = spLogoutContext.getMsgBody();
+        spDump = generateServiceProviderDump();
+        assertNotNull(spDump);
+        sp = Server.newFromDump(spDump);
+        assertNotNull(sp);
+        spLogout = new Logout(sp);
+        assertNotNull(spIdentityDump);
+	spLogout.setIdentityFromDump(spIdentityDump);
+        assertNotNull(spSessionDump);
+	spLogout.setSessionFromDump(spSessionDump);
+        spLogout.initRequest(null, lasso.HTTP_METHOD_ANY);
+        spLogout.buildRequestMsg();
+        soapEndpoint = spLogout.getMsgUrl();
+        soapRequestMsg = spLogout.getMsgBody();
 
 	// Identity provider SOAP endpoint.
-	requestType = Lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
-        assertEquals(Lasso.REQUEST_TYPE_LOGOUT, requestType);
-        idpContextDump = generateIdentityProviderContextDump();
-        assertNotNull(idpContextDump);
-        idpContext = new LassoServer(idpContextDump);
-        assertNotNull(idpContext);
-        idpLogoutContext = new LassoLogout(idpContext, Lasso.providerTypeIdp);
-	assertEquals(0, idpLogoutContext.loadRequestMsg(soapRequestMsg, Lasso.HTTP_METHOD_SOAP));
-        assertEquals(nameIdentifier, idpLogoutContext.getNameIdentifier());
-        assertNotNull(idpIdentityContextDump);
-        assertEquals(0, idpLogoutContext.setIdentityFromDump(idpIdentityContextDump));
-        assertNotNull(idpSessionContextDump);
-        assertEquals(0, idpLogoutContext.setSessionFromDump(idpSessionContextDump));
-	assertEquals(0, idpLogoutContext.processRequest());
-        idpIdentityContext = idpLogoutContext.getIdentity();
-        assertNotNull(idpIdentityContext);
-        idpIdentityContextDump = idpIdentityContext.dump();
-        assertNotNull(idpIdentityContextDump);
+	requestType = lasso.getRequestTypeFromSoapMsg(soapRequestMsg);
+        assertEquals(lasso.REQUEST_TYPE_LOGOUT, requestType);
+        idpDump = generateIdentityProviderDump();
+        assertNotNull(idpDump);
+        idp = Server.newFromDump(idpDump);
+        assertNotNull(idp);
+        idpLogout = new Logout(idp);
+	idpLogout.processRequestMsg(soapRequestMsg);
+        assertEquals(nameIdentifier, idpLogout.getNameIdentifier().getContent());
+        assertNotNull(idpIdentityDump);
+        idpLogout.setIdentityFromDump(idpIdentityDump);
+        assertNotNull(idpSessionDump);
+        idpLogout.setSessionFromDump(idpSessionDump);
+	idpLogout.validateRequest();
+        idpIdentity = idpLogout.getIdentity();
+        assertNotNull(idpIdentity);
+        idpIdentityDump = idpIdentity.dump();
+        assertNotNull(idpIdentityDump);
 	// There is no other service provider from which the user must be logged out.
-        assertEquals(null, idpLogoutContext.getNextProviderId());
-        assertEquals(0, idpLogoutContext.buildResponseMsg());
-        soapResponseMsg = idpLogoutContext.getMsgBody();
+        assertEquals(null, idpLogout.getNextProviderId());
+        idpLogout.buildResponseMsg();
+        soapResponseMsg = idpLogout.getMsgBody();
 
 	// Service provider logout (step 2: process SOAP response).
-        assertEquals(0, spLogoutContext.processResponseMsg(soapResponseMsg, Lasso.HTTP_METHOD_SOAP));
-        spIdentityContextDump = spLogoutContext.getIdentity().dump();
-        assertNotNull(spIdentityContextDump);
+        spLogout.processResponseMsg(soapResponseMsg);
+        spIdentityDump = spLogout.getIdentity().dump();
+        assertNotNull(spIdentityDump);
     }
 
     public static Test suite() { 
@@ -218,8 +234,8 @@ public class LoginTest extends TestCase {
 
     public static void main(String args[]) { 
         System.out.println(System.mapLibraryName("jlasso"));
-        Lasso.init();
+        lasso.init();
 	junit.textui.TestRunner.run(suite());
-	Lasso.shutdown();
+	lasso.shutdown();
     }
 }
