@@ -54,20 +54,23 @@ struct _LassoFederationTerminationClass {
 
 };
 
-LASSO_EXPORT GType                              lasso_federation_termination_get_type          (void);
+LASSO_EXPORT GType                       lasso_federation_termination_get_type                 (void);
 
-LASSO_EXPORT LassoFederationTermination        *lasso_federation_termination_new               (LassoServer *server,
+LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new                      (LassoServer *defederation,
 												LassoUser   *user,
 												gint         provider_type);
   
-LASSO_EXPORT gint                               lasso_federation_termination_build_request_msg (LassoFederationTermination *notification);
+LASSO_EXPORT gint                        lasso_federation_termination_build_notification_msg   (LassoFederationTermination *defederation);
 
-LASSO_EXPORT gint                               lasso_federation_termination_init_request      (LassoFederationTermination *notification,
-												gchar                *remote_providerID);
+LASSO_EXPORT gchar*                      lasso_federation_termination_dump                    (LassoFederationTermination *defederation); 
+
+LASSO_EXPORT gint                        lasso_federation_termination_init_notification        (LassoFederationTermination *defederation,
+												gchar                 *remote_providerID);
   
-LASSO_EXPORT gint                               lasso_federation_termination_handle_request    (LassoFederationTermination *notification,
+LASSO_EXPORT gint                        lasso_federation_termination_process_notification_msg (LassoFederationTermination *defederation,
 												gchar                      *request_msg,
-												gint                     request_method);
+												 lassoHttpMethods         request_method);
+
 
 
 #ifdef __cplusplus

@@ -29,17 +29,6 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-gchar *
-lasso_federation_termination_dump(LassoFederationTermination *federationTermination)
-{
-  LassoProfileContext *profileContext;
-  gchar *dump;
-
-  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(federationTermination), NULL);
-
-  return(dump);
-}
-
 gint
 lasso_federation_termination_build_notification_msg(LassoFederationTermination *federationTermination)
 {
@@ -47,7 +36,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   LassoProvider       *provider;
   xmlChar             *protocolProfile;
 
-  //g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(notification), NULL);
+  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(federationTermination), -1);
   
   profileContext = LASSO_PROFILE_CONTEXT(federationTermination);
 
@@ -55,13 +44,13 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
     debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
-    return(-1);
+    return(-2);
   }
 
   protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider);
   if(protocolProfile==NULL){
     debug(ERROR, "Single Federation_Termination Protocol profile not found\n");
-    return(-2);
+    return(-3);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
@@ -82,9 +71,20 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   return(0);
 }
 
+gchar *
+lasso_federation_termination_dump(LassoFederationTermination *defederation)
+{
+  LassoProfileContext *profileContext;
+  gchar *dump;
+
+  g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), NULL);
+
+  return(dump);
+}
+
 gint
-lasso_federation_termination_init_request(LassoFederationTermination *notification,
-					  gchar                      *remote_providerID)
+lasso_federation_termination_init_notification(LassoFederationTermination *notification,
+					       gchar                      *remote_providerID)
 {
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
@@ -140,16 +140,16 @@ lasso_federation_termination_init_request(LassoFederationTermination *notificati
 }
 
 gint
-lasso_federation_termination_handle_request_msg(LassoFederationTermination *notification,
-						gchar                      *request_msg,
-						lassoHttpMethods            request_method)
+lasso_federation_termination_process_notification_msg(LassoFederationTermination *notification,
+						      gchar                      *request_msg,
+						      lassoHttpMethods            request_method)
 {
   LassoProfileContext *profileContext;
-  LassoIdentity *identity;
-  LassoNode *nameIdentifier, *assertion;
-  LassoNode *statusCode;
-  LassoNodeClass *statusCode_class;
-  xmlChar *remote_providerID;
+  LassoIdentity       *identity;
+  LassoNode           *nameIdentifier, *assertion;
+  LassoNode           *statusCode;
+  LassoNodeClass      *statusCode_class;
+  xmlChar             *remote_providerID;
 
   profileContext = LASSO_PROFILE_CONTEXT(notification);
 
@@ -237,8 +237,8 @@ GType lasso_federation_termination_get_type() {
 
 LassoFederationTermination *
 lasso_federation_termination_new(LassoServer *server,
-					      LassoUser   *user,
-					      gint         provider_type)
+				 LassoUser   *user,
+				 gint         provider_type)
 {
   LassoFederationTermination *notification;
   LassoProfileContext *profileContext;
