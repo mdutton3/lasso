@@ -28,19 +28,32 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-gint
+void
 lasso_identity_set_local_nameIdentifier(LassoIdentity *identity,
 					LassoNode     *nameIdentifier)
 {
   identity->local_nameIdentifier = nameIdentifier;
 }
 
-gint
+void
 lasso_identity_set_remote_nameIdentifier(LassoIdentity *identity,
 					 LassoNode     *nameIdentifier)
 {
   identity->remote_nameIdentifier = nameIdentifier;
 }
+
+LassoNode *
+lasso_identity_get_local_nameIdentifier(LassoIdentity *identity)
+{
+  return(identity->local_nameIdentifier);
+}
+
+LassoNode *
+lasso_identity_get_remote_nameIdentifier(LassoIdentity *identity)
+{
+  return(identity->remote_nameIdentifier);
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -56,6 +69,7 @@ lasso_identity_instance_init(LassoIdentity *identity)
 static void
 lasso_identity_class_init(LassoIdentityClass *klass)
 {
+
 }
 
 GType lasso_identity_get_type() {
