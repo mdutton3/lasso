@@ -420,8 +420,6 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     if(profileContext->user->assertion_providerIDs->len == 1){
       debug(WARNING, "remove assertion of the original provider\n");
       lasso_user_remove_assertion(profileContext->user, logout->first_remote_providerID);
-
-      printf("%s\n", lasso_user_dump(profileContext->user));
     }
 
     break;
