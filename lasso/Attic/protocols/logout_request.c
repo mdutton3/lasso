@@ -75,6 +75,9 @@ lasso_logout_request_new(const xmlChar *providerID,
 {
   LassoNode *request, *identifier;
 
+  g_return_val_if_fail(providerID != NULL, NULL);
+  g_return_val_if_fail(nameIdentifier != NULL, NULL);
+
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
   
   /* Set ONLY required elements/attributs */
@@ -95,10 +98,12 @@ lasso_logout_request_new(const xmlChar *providerID,
 					 providerID);
 
   identifier = lasso_saml_name_identifier_new(nameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
-					       nameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
-					format);
+  if (nameQualifier != NULL)
+    lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier),
+						 nameQualifier);
+  if (format != NULL)
+    lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier),
+					  format);
 
   lasso_lib_logout_request_set_nameIdentifier(LASSO_LIB_LOGOUT_REQUEST(request),
 					      LASSO_SAML_NAME_IDENTIFIER(identifier));
