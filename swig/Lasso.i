@@ -1627,7 +1627,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnRequestMsg(gchar *remoteProviderId = NULL);
+		void buildAuthnRequestMsg();
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -1649,7 +1649,8 @@ typedef struct {
 		gchar *dump();
 
 		THROW_ERROR
-		void initAuthnRequest(lassoHttpMethod httpMethod);
+		void initAuthnRequest(gchar *remoteProviderId = NULL,
+				 lassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2153,7 +2154,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void buildAuthnRequestMsg(gchar *remoteProviderId = NULL);
+		void buildAuthnRequestMsg();
 		END_THROW_ERROR
 
 		THROW_ERROR
@@ -2168,7 +2169,7 @@ typedef struct {
 		END_THROW_ERROR
 
 		THROW_ERROR
-		void initAuthnRequest();
+		void initAuthnRequest(gchar *remoteProviderId = NULL);
 		END_THROW_ERROR
 
 		THROW_ERROR

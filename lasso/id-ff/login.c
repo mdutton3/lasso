@@ -562,7 +562,7 @@ lasso_login_build_artifact_msg(LassoLogin *login,
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
-lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID)
+lasso_login_build_authn_request_msg(LassoLogin *login)
 {
 	LassoProvider *provider, *remote_provider;
 	char *md_authnRequestsSigned, *url, *query, *lareq, *protocolProfile;
@@ -571,13 +571,6 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	if (remote_providerID != NULL) {
-		LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
-	} else {
-		LASSO_PROFILE(login)->remote_providerID = lasso_server_get_first_providerID(
-				LASSO_PROFILE(login)->server);
-	}
 
 	provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
@@ -867,7 +860,8 @@ lasso_login_destroy(LassoLogin *login)
 }
 
 gint
-lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method)
+lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID,
+		lassoHttpMethod http_method)
 {
 	LassoLibAuthnRequest *request;
 
@@ -877,8 +871,14 @@ lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method)
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
-	login->http_method = http_method;
+	if (remote_providerID != NULL) {
+		LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
+	} else {
+		LASSO_PROFILE(login)->remote_providerID = lasso_server_get_first_providerID(
+				LASSO_PROFILE(login)->server);
+	}
 
+	login->http_method = http_method;
 
 	/* XXX: should be moved somehow in samlp_request_abstract.c */
 	request = lasso_lib_authn_request_new();

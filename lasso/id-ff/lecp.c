@@ -73,8 +73,6 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 /**
  * lasso_lecp_build_authn_request_msg:
  * @lecp: a LassoLecp
- * @remote_providerID: the providerID of the identity provider. When NULL, the first
- *                     identity provider is used.
  * 
  * Builds an authentication request. The data for the sending of the request are
  * stored in msg_url and msg_body (SOAP POST).
@@ -82,7 +80,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
  * Return value: 0 on success and a negative value otherwise.
  **/
 int
-lasso_lecp_build_authn_request_msg(LassoLecp *lecp, const char *remote_providerID)
+lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
@@ -90,11 +88,6 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp, const char *remote_providerI
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
 	profile = LASSO_PROFILE(lecp);
-	if (remote_providerID == NULL) {
-		profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
-	} else {
-		profile->remote_providerID = g_strdup(remote_providerID);
-	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
@@ -196,8 +189,15 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp,
 	return 0;
 }
 
+/*
+ * lasso_lecp_init_authn_request:
+ * @lecp: a LassoLecp
+ * @remote_providerID: the providerID of the identity provider. When NULL, the first
+ *                     identity provider is used.
+ *
+ */
 int
-lasso_lecp_init_authn_request(LassoLecp *lecp)
+lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
 {
 	gint res;
 
@@ -206,7 +206,8 @@ lasso_lecp_init_authn_request(LassoLecp *lecp)
 	/* FIXME : BAD usage of http_method
 	   using POST method so that the lib:AuthnRequest is initialize with
 	   a signature template */
-	res = lasso_login_init_authn_request(LASSO_LOGIN(lecp), LASSO_HTTP_METHOD_POST);
+	res = lasso_login_init_authn_request(LASSO_LOGIN(lecp), remote_providerID,
+			LASSO_HTTP_METHOD_POST);
 
 	return res;
 }
