@@ -114,6 +114,8 @@ LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, co
 LASSO_EXPORT gboolean lasso_node_init_from_query(LassoNode *node, const char *query);
 LASSO_EXPORT int lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode);
 
+LASSO_EXPORT const char* lasso_strerror(int error_code);
+
 #ifdef LASSO_INTERNALS
 #include <lasso/xml/private.h>
 #endif

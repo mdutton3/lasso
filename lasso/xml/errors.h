@@ -98,4 +98,3 @@
 /* Federation Termination Notification */
 #define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER  -700
 
-const char* lasso_strerror(int error_code);

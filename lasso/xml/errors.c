@@ -26,6 +26,8 @@
 #include <glib/gstrfuncs.h>
 #include <lasso/xml/errors.h>
 
+const char* lasso_strerror(int error_code);
+
 const char*
 lasso_strerror(int error_code)
 {
@@ -70,7 +72,7 @@ lasso_strerror(int error_code)
 			return "Failed to add new provider.";
 
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
-			return "Unsupported logout protocol profile";
+			return "Unsupported protocol profile";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
