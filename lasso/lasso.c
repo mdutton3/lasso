@@ -30,18 +30,18 @@
 #include "lasso.h"
 
 #if defined _MSC_VER
-HINSTANCE g_hModule = NULL; /**< DLL Instance. */
-/** \brief Microsoft® Windows® DLL main function.
+HINSTANCE g_hModule = NULL;
+
+/**
+ * DllMain:
+ * @hinstDLL: hnadle to the DLL module
+ * @fdwReason: reason value of the DLL call
+ * @lpvReserved:
  *
- *  This function is called when the DLL is attached, detached from a program.
- *  
- *  \param  hinstDLL    Handle to the DLL module.
- *  \param  fdwReason   Reason value of the DLL call.
- *  \param  lpvReserved RFU.
+ * Called when the DLL is attached or detached by a program.
  *
- *  \return TRUE is everything is ok.
- *  
- */
+ * Return value: %TRUE if everything is OK
+ **/
 BOOL WINAPI
 DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -191,4 +191,3 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
 
 	return 1;
 }
-
