@@ -38,12 +38,12 @@ class LibertyEnabledProxyMixin(IdentityProviderMixin, ServiceProviderMixin):
         return ServiceProviderMixin.login(self, handler)
 
     def login_failed(self, handler):
-        # Before, this proxy was considered as a service provider. Now it acts again as a service
+        # Before, this proxy was considered as a service provider. Now it acts again as an identity
         # provider.
         return self.login_done(handler, False, None)
 
     def assertionConsumer_done(self, handler):
-        # Before, this proxy was considered as a service provider. Now it acts again as a service
+        # Before, this proxy was considered as a service provider. Now it acts again as an identity
         # provider.
         # FIXME: We should retrieve authentication method from session.lassoSessionDump.
         return self.login_done(handler, True, lasso.samlAuthenticationMethodPassword)
