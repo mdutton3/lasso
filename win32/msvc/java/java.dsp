@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib lasso-3.lib libxml2.lib glib-2.0.lib gobject-2.0.lib /nologo /dll /machine:I386 /out:"Release/jlasso.dll" /libpath:"C:\j2sdk1.4.2_04\lib" /libpath:"h:\lasso-deps\lib" /libpath:"..\Release"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib liblasso-3.lib libxml2.lib glib-2.0.lib gobject-2.0.lib /nologo /dll /machine:I386 /out:"Release/jlasso.dll" /libpath:"C:\j2sdk1.4.2_04\lib" /libpath:"h:\lasso-deps\lib" /libpath:"..\Release"
 
 !ELSEIF  "$(CFG)" == "java - Win32 Debug"
 
@@ -68,8 +68,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVA_EXPORTS" /YX /FD /GZ  /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "h:\lasso-deps\include" /I "h:\lasso-deps\include\glib-2.0" /I "h:\lasso-deps\lib\glib-2.0\include" /I "..\..\.." /I "C:\j2sdk1.4.2_04\include" /I "C:\j2sdk1.4.2_04\include\win32" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVA_EXPORTS" /YX /FD /GZ  /c
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVA_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "h:\lasso-deps\include" /I "h:\lasso-deps\include\glib-2.0" /I "h:\lasso-deps\lib\glib-2.0\include" /I "..\..\.." /I "C:\j2sdk1.4.2_04\include" /I "C:\j2sdk1.4.2_04\include\win32" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "JAVA_EXPORTS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "_DEBUG"
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib lasso-3.lib libxml2.lib glib-2.0.lib gobject-2.0.lib /nologo /dll /debug /machine:I386 /out:"Debug/jlasso.dll" /pdbtype:sept /libpath:"C:\j2sdk1.4.2_04\lib" /libpath:"h:\lasso-deps\lib" /libpath:"..\Debug"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib liblasso-3.lib libxml2.lib glib-2.0.lib gobject-2.0.lib /nologo /dll /debug /machine:I386 /out:"Debug/jlasso.dll" /pdbtype:sept /libpath:"C:\j2sdk1.4.2_04\lib" /libpath:"h:\lasso-deps\lib" /libpath:"..\Debug"
 
 !ENDIF 
 

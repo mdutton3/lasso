@@ -513,6 +513,10 @@ SOURCE="..\..\lasso\id-wsf\profile_service.c"
 
 SOURCE="..\..\lasso\id-wsf\wsf_profile.c"
 # End Source File
+# Begin Source File
+
+SOURCE="..\..\lasso\id-wsf\authentication.c"
+# End Source File
 # End Group
 # Begin Source File
 
@@ -972,6 +976,10 @@ SOURCE="..\..\lasso\id-wsf\profile_service.h"
 # Begin Source File
 
 SOURCE="..\..\lasso\id-wsf\wsf_profile.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\lasso\id-wsf\authentication.h"
 # End Source File
 # End Group
 # Begin Source File
