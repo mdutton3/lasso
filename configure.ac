@@ -152,6 +152,9 @@ VERSION_MAJOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
 VERSION_MINOR=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\2/'`
 VERSION_RELEASE=`echo $VERSION | $SED -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\3/'`
 changequote([, ])dnl
+VERSION_UNDERSCORED=`echo $VERSION | $SED -e 's/\./_/g'`
+AC_SUBST(VERSION_UNDERSCORED)
+
 
 version_decimal=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
 windows_version=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
@@ -755,6 +758,10 @@ tests/data/sp1-la/Makefile
 lasso.pc
 win32/Makefile
 win32/nsis/Makefile
+win32/nsis/jlasso-lite.nsi
+win32/nsis/lasso-deps.nsi
+win32/nsis/lasso-full.nsi
+win32/nsis/lasso-lite.nsi
 ])
 
 languages_available=`echo $languages_available | sed -e "s/^ //" `
