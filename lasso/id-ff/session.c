@@ -101,7 +101,7 @@ lasso_session_add_assertion(LassoSession *session,
     }
   }
   if(found == TRUE) {
-    message(G_LOG_LEVEL_ERROR, "A provider id already exists\n");
+    message(G_LOG_LEVEL_CRITICAL, "A provider id already exists\n");
     return(-4);
   }
 
@@ -221,7 +221,7 @@ lasso_session_get_authentication_method(LassoSession *session,
   as = lasso_node_get_child(assertion, "AuthenticationStatement", NULL, NULL);
   authentication_method = lasso_node_get_attr_value(as, "AuthenticationMethod", &err);
   if (authentication_method == NULL) {
-    message(G_LOG_LEVEL_ERROR, err->message);
+    message(G_LOG_LEVEL_CRITICAL, err->message);
     g_error_free(err);
     goto done;
   }
