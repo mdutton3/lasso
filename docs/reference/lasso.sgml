@@ -67,7 +67,7 @@
 <!ENTITY LassoRegisterNameIdentifierResponse SYSTEM "sgml/register_name_identifier_response.sgml">
 <!ENTITY LassoRequest SYSTEM "sgml/request.sgml">
 <!ENTITY LassoResponse SYSTEM "sgml/response.sgml">
-<!ENTITY LassoFederationTermination SYSTEM "sgml/federation_termination.sgml">
+<!ENTITY LassoDefederation SYSTEM "sgml/defederation.sgml">
 <!ENTITY LassoIdentity SYSTEM "sgml/identity.sgml">
 <!ENTITY LassoLogin SYSTEM "sgml/login.sgml">
 <!ENTITY LassoLogout SYSTEM "sgml/logout.sgml">
@@ -151,7 +151,7 @@
     &LassoRegisterNameIdentifierResponse;
     &LassoRequest;
     &LassoResponse;
-    &LassoFederationTermination;
+    &LassoDefederation;
     &LassoIdentity;
     &LassoLogin;
     &LassoLogout;
