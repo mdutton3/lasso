@@ -28,7 +28,7 @@ import re, sys, string
 
 MATCH_BLANK   = re.compile(r'^\s*\n$')
 MATCH_COMMENT = re.compile(r'^[ /]+(?P<text>.*)\n$')
-MATCH_CONST   = re.compile(r'^const\s+gchar\s+(?P<name>\w+)\[\]\s*=\s+(?P<value>.*)\n$')
+MATCH_CONST   = re.compile(r'^const\s+xmlChar\s+(?P<name>\w+)\[\]\s*=\s+(?P<value>.*)\n$')
 
 header = """# $%s$
 # 
@@ -55,7 +55,8 @@ header = """# $%s$
 #
 """ % "Id"
 
-file_in = sys.argv[1]
+#file_in = sys.argv[1]
+file_in  = "../lasso/xml/strings.c"
 file_out = "./lasso_strings.py"
 
 fd_in  = open(file_in,  "r")

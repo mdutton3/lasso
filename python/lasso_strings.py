@@ -50,6 +50,10 @@
 # * Liberty Alliance                                                          */
 # *****************************************************************************/
 
+# * prefix & href */
+libHRef = "urn:liberty:iff:2003-08"
+libPrefix = "lib"
+
 # * Versioning */
 libMajorVersion = "1"
 libMinorVersion = "2"
@@ -67,7 +71,15 @@ libAuthnContextComparisonBetter = "better"
 
 # * StatusCodes */
 libStatusCodeFederationDoesNotExist = "lib:FederationDoesNotExist"
+libStatusCodeInvalidAssertionConsumerServiceIndex = "lib:InvalidAssertionConsumerServiceIndex"
+libStatusCodeInvalidSignature = "lib:InvalidSignature"
+libStatusCodeNoAuthnContext = "lib:NoAuthnContext"
+libStatusCodeNoAvailableIDP = "lib:NoAvailableIDP"
 libStatusCodeNoPassive = "lib:NoPassive"
+libStatusCodeNoSupportedIDP = "lib:NoSupportedIDP"
+libStatusCodeProxyCountExceeded = "lib:ProxyCountExceeded"
+libStatusCodeUnknownPrincipal = "lib:UnknownPrincipal"
+libStatusCodeUnsignedAuthnRequest = "lib:UnsignedAuthnRequest"
 
 # * ProtocolProfile */
 libProtocolProfileArtifact = "http://projectliberty.org/profiles/brws-art"
@@ -88,6 +100,12 @@ libProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap"
 # *****************************************************************************/
 # * SAML                                                                      */
 # *****************************************************************************/
+
+# * prefix & href */
+samlAssertionHRef = "urn:oasis:names:tc:SAML:1.0:assertion"
+samlAssertionPrefix = "saml"
+samlProtocolHRef = "urn:oasis:names:tc:SAML:1.0:protocol"
+samlProtocolPrefix = "samlp"
 
 # * Versioning */
 samlMajorVersion = "1"
