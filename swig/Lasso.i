@@ -191,6 +191,7 @@ SyntaxError = _lasso.SyntaxError
 #define gdouble double
 #define gldouble long double
 #define gpointer void*
+#define GPtrArray void
 
 #define xmlChar char
 
@@ -549,30 +550,92 @@ int get_exception_type(int errorCode) {
 %exception;
 %enddef
 
+
+/***********************************************************************
+ * ProviderIds
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(ProviderIds) LassoProviderIds;
+#endif
+%nodefault LassoProviderIds;
+%{
+typedef GPtrArray LassoProviderIds;
+%}
+typedef struct {
+	%extend {
+		/* Methods */
+
+		GPtrArray *cast() {
+			return self;
+		}
+
+		static LassoProviderIds *frompointer(GPtrArray *providerIds) {
+			return (LassoProviderIds *) providerIds;
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__getitem__) getItem;
+#endif
+		gchar *getItem(int index) {
+			return g_ptr_array_index(self, index);
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__len__) length;
+#endif
+		gint length() {
+			return self->len;
+		}
+	}
+} LassoProviderIds;
+
+
 /***********************************************************************
  ***********************************************************************
- * TypeMaps *
+ * Xml
  ***********************************************************************
  ***********************************************************************/
 
-#ifdef SWIGPHP4
-/* GPtrArray -> PHP Indexed Array used by Identity->providerIDs */
-%typemap(out) GPtrArray* {
-    int i;
-    zval *new_element;
 
-    zend_printf("ici");
-    array_init($result);
+/***********************************************************************
+ * Node
+ ***********************************************************************/
 
-    for (i = 0; i < $1->len; i++)
-    {
-        MAKE_STD_ZVAL(new_element);
-        ZVAL_STRING(new_element, (char *) g_ptr_array_index($1, i), 1);
-        zend_hash_next_index_insert(HASH_OF($result), &new_element, sizeof(new_element), NULL);
-        zend_printf("ici");
-    }
+
+#ifndef SWIGPHP4
+%rename(Node) LassoNode;
+#endif
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoNode();
+
+		~LassoNode();
+
+		/* Methods */
+
+		%newobject dump;
+		gchar *dump();
+	}
+} LassoNode;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNode lasso_node_new
+#define delete_LassoNode lasso_node_destroy
+
+/* Methods implementations */
+
+gchar* LassoNode_dump(LassoNode *self) {
+	return lasso_node_export(LASSO_NODE(self));
 }
-#endif 
+
+%}
 
 
 /***********************************************************************
@@ -824,6 +887,91 @@ typedef struct {
 
 
 /***********************************************************************
+ * Provider
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Provider) LassoProvider;
+#endif
+%nodefault LassoProvider;
+typedef struct {
+	%extend {
+		/* Attributes */
+
+		%immutable metadata;
+		%newobject metadata;
+		LassoNode *metadata;
+
+		%immutable providerId;
+		%newobject providerId_get;
+		gchar *providerId;
+	}
+} LassoProvider;
+
+%{
+
+/* Attributes implementations */
+
+/* metadata */
+#define LassoProvider_get_metadata LassoProvider_metadata_get
+LassoNode *LassoProvider_metadata_get(LassoProvider *self) {
+	/* FIXME: The lasso_node_copy is mandatory. Otherwise metadata is not a LassoNode. Is */
+	/* it a bug? If we correct this don't forget to remove newobject above. */
+	return lasso_node_copy(self->metadata);
+}
+
+/* providerId */
+#define LassoProvider_get_providerId  LassoProvider_providerId_get
+gchar *LassoProvider_providerId_get(LassoProvider *self) {
+	return lasso_provider_get_providerID(self);
+}
+
+ %}
+
+
+/***********************************************************************
+ * Providers
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Providers) LassoProviders;
+#endif
+%nodefault LassoProviders;
+%{
+typedef GPtrArray LassoProviders;
+%}
+typedef struct {
+	%extend {
+		/* Methods */
+
+		GPtrArray *cast() {
+			return self;
+		}
+
+		static LassoProviders *frompointer(GPtrArray *providers) {
+			return (LassoProviders *) providers;
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__getitem__) getItem;
+#endif
+		LassoProvider *getItem(int index) {
+			return g_ptr_array_index(self, index);
+		}
+
+#if defined(SWIGPYTHON)
+		%rename(__len__) length;
+#endif
+		gint length() {
+			return self->len;
+		}
+	}
+} LassoProviders;
+
+
+/***********************************************************************
  * Request
  ***********************************************************************/
 
@@ -860,16 +1008,25 @@ typedef struct {
  * Server
  ***********************************************************************/
 
+
 #ifndef SWIGPHP4
 %rename(Server) LassoServer;
 #endif
-
 typedef struct {
 	%extend {
+		/* Attributes inherited from LassoProvider */
+
+		%immutable metadata;
+		%newobject metadata;
+		LassoNode *metadata;
+
 		/* Attributes */
 
 		%immutable providerId;
 		gchar *providerId;
+
+		%immutable providers;
+		LassoProviders *providers;
 
 		/* Constructor, destructor & static methods */
 
@@ -896,12 +1053,28 @@ typedef struct {
 
 %{
 
+/* Attributes inherited from LassoProvider implementations */
+
+/* metadata */
+#define LassoServer_get_metadata LassoServer_metadata_get
+LassoNode *LassoServer_metadata_get(LassoServer *self) {
+	/* FIXME: The lasso_node_copy is mandatory. Otherwise metadata is not a LassoNode. Is */
+	/* it a bug? If we correct this don't forget to remove newobject above. */
+	return lasso_node_copy(LASSO_PROVIDER(self)->metadata);
+}
+
 /* Attributes implementations */
 
 /* providerId */
 #define LassoServer_get_providerId LassoServer_providerId_get
 gchar *LassoServer_providerId_get(LassoServer *self) {
 	return self->providerID;
+}
+
+/* providers */
+#define LassoServer_get_providers LassoServer_providers_get
+LassoProviders *LassoServer_providers_get(LassoServer *self) {
+	return self->providers;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -937,8 +1110,8 @@ typedef struct {
 		%immutable isDirty;
 		gboolean isDirty;
 
-        %immutable providerIDs;
-        GPtrArray* providerIDs;
+		%immutable providerIds;
+		LassoProviderIds *providerIds;
 
 		/* Constructor, Destructor & Static Methods */
 
@@ -967,8 +1140,8 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 }
 
 /* providerIDs */
-#define LassoIdentity_get_providerIDs LassoIdentity_providerIDs_get
-GPtrArray* LassoIdentity_providerIDs_get(LassoIdentity *self) {
+#define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
+LassoProviderIds *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	return self->providerIDs;
 }
 
