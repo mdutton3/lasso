@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include <glib/gprintf.h>
+
 #include <xmlsec/base64.h>
 #include <xmlsec/xmltree.h>
 #include <xmlsec/xmldsig.h>
@@ -1689,6 +1691,8 @@ lasso_node_impl_serialize(LassoNode *node,
 	xmlFree(name);
 	name = NULL;
 	break;
+      default:
+        break;
       }
       lasso_node_destroy((LassoNode *)g_ptr_array_index(children, i));
     }
