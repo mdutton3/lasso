@@ -193,6 +193,7 @@ lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest *node,
 				       const xmlChar *relayState) {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
   g_assert(relayState != NULL);
+  // FIXME : RelayState lenght SHOULD be <= 80
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "RelayState", relayState, FALSE);

@@ -125,12 +125,20 @@ lasso_samlp_response_abstract_set_responseID(LassoSamlpResponseAbstract *node,
   class->set_prop(LASSO_NODE (node), "ResponseID", responseID);
 }
 
-/* TODO
-   void
-   lasso_samlp_response_abstract_set_signature(LassoSamlpResponseAbstract *node)
+void
+lasso_samlp_response_abstract_set_signature(LassoSamlpResponseAbstract *node,
+					    gint                       sign_method,
+					    const xmlChar             *private_key_file,
+					    const xmlChar             *certificate_file)
 {
+  g_assert(LASSO_IS_SAMLP_RESPONSE_ABSTRACT(node));
+  g_assert(private_key_file != NULL);
+  g_assert(certificate_file != NULL);
+  
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->add_signature(LASSO_NODE (node), sign_method,
+		       private_key_file, certificate_file);
 }
-*/
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

@@ -26,7 +26,7 @@
 
 /**
  * lasso_build_unique_id:
- * @size: the ID's lenght (between 32 and 48)
+ * @size: the ID's lenght (between 32 and 40)
  * 
  * Builds an ID which has an unicity probability of 2^(-size*4).
  * The result is Base64 encoded.
@@ -41,9 +41,9 @@ lasso_build_unique_id(guint8 size)
     less than 2^-128 and SHOULD be less than 2^-160.
     so we must have 128 <= exp <= 160
     we could build a 128-bit binary number but hexa system is shorter
-    32 <= hexa number size <= 48
+    32 <= hexa number size <= 40
   */
-  g_return_val_if_fail((size >= 32 && size <= 48) || size == 0, NULL);
+  g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
 
   int i, val;
   xmlChar *id, *enc_id;

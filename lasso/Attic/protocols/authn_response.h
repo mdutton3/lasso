@@ -46,8 +46,6 @@ typedef struct _LassoAuthnResponseClass LassoAuthnResponseClass;
 struct _LassoAuthnResponse {
   LassoLibAuthnResponse parent;
   /*< public >*/
-  gchar     *query;
-  LassoNode *request;
   /*< private >*/
 };
 
@@ -62,7 +60,7 @@ LASSO_EXPORT LassoNode* lasso_authn_response_new_from_dump                 (xmlC
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_export               (xmlChar *buffer,
 									    gint     type);
 
-LASSO_EXPORT LassoNode* lasso_authn_response_new                           (char *providerID,
+LASSO_EXPORT LassoNode* lasso_authn_response_new                           (char      *providerID,
 									    LassoNode *request);
 
 LASSO_EXPORT LassoNode* lasso_authn_response_new_from_request_query        (gchar         *query,

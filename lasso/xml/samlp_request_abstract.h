@@ -57,17 +57,22 @@ LASSO_EXPORT LassoNode* lasso_samlp_request_abstract_new(void);
 LASSO_EXPORT void lasso_samlp_request_abstract_add_respondWith   (LassoSamlpRequestAbstract *node,
 								  const xmlChar *respondWith);
 
-LASSO_EXPORT void lasso_samlp_request_abstract_set_issueInstance (LassoSamlpRequestAbstract *,
-								  const xmlChar *);
+LASSO_EXPORT void lasso_samlp_request_abstract_set_issueInstance (LassoSamlpRequestAbstract *node,
+								  const xmlChar *issueInstant);
 
-LASSO_EXPORT void lasso_samlp_request_abstract_set_majorVersion  (LassoSamlpRequestAbstract *,
-								  const xmlChar *);
+LASSO_EXPORT void lasso_samlp_request_abstract_set_majorVersion  (LassoSamlpRequestAbstract *node,
+								  const xmlChar *majorVersion);
 
-LASSO_EXPORT void lasso_samlp_request_abstract_set_minorVersion  (LassoSamlpRequestAbstract *,
-								  const xmlChar *);
+LASSO_EXPORT void lasso_samlp_request_abstract_set_minorVersion  (LassoSamlpRequestAbstract *node,
+								  const xmlChar *minorVersion);
 
-LASSO_EXPORT void lasso_samlp_request_abstract_set_requestID     (LassoSamlpRequestAbstract *,
-								  const xmlChar *);
+LASSO_EXPORT void lasso_samlp_request_abstract_set_requestID     (LassoSamlpRequestAbstract *node,
+								  const xmlChar *requestID);
+
+LASSO_EXPORT void lasso_samlp_request_abstract_set_signature     (LassoSamlpRequestAbstract *node,
+								  gint                       sign_method,
+								  const xmlChar             *private_key_file,
+								  const xmlChar             *certificate_file);
 
 #ifdef __cplusplus
 }

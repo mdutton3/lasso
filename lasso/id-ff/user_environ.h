@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/environs/environ.h>
 #include <lasso/environs/identity.h>
 
 #define LASSO_TYPE_USER_ENVIRON (lasso_user_environ_get_type())
@@ -41,13 +40,13 @@ extern "C" {
 #define LASSP_IS_USER_ENVIRON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_USER_ENVIRON))
 #define LASSO_USER_ENVIRON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_USER_ENVIRON, LassoUserEnvironClass)) 
 
-
 typedef struct _LassoUserEnviron LassoUserEnviron;
 typedef struct _LassoUserEnvironClass LassoUserEnvironClass;
 
 struct _LassoUserEnviron {
-  LassoEnviron parent;
+  GObject parent;
 
+  /*< public >*/
   GPtrArray *assertions;
   GPtrArray *identities;
 
@@ -55,13 +54,14 @@ struct _LassoUserEnviron {
 };
 
 struct _LassoUserEnvironClass {
-  LassoEnvironClass parent;
+  GObjectClass parent;
 };
 
 LASSO_EXPORT GType             lasso_user_environ_get_type           (void);
-LASSO_EXPORT LassoUserEnviron* lasso_user_environ_new                (void);
+LASSO_EXPORT LassoUserEnviron *lasso_user_environ_new                (void);
 
-LASSO_EXPORT LassoIdentity    *lasso_user_environ_find_identity      (LassoUserEnviron *user, gchar *peer_providerID);
+LASSO_EXPORT LassoIdentity    *lasso_user_environ_find_identity      (LassoUserEnviron *user,
+								      gchar            *peer_providerID);
 
 #ifdef __cplusplus
 }

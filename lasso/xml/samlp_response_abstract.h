@@ -54,23 +54,28 @@ struct _LassoSamlpResponseAbstractClass {
 LASSO_EXPORT GType lasso_samlp_response_abstract_get_type(void);
 LASSO_EXPORT LassoNode* lasso_samlp_response_abstract_new(void);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_inResponseTo  (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_inResponseTo  (LassoSamlpResponseAbstract *node,
+								   const xmlChar *inResponseTo);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_issueInstance (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_issueInstance (LassoSamlpResponseAbstract *node,
+								   const xmlChar *issueInstance);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_majorVersion  (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_majorVersion  (LassoSamlpResponseAbstract *node,
+								   const xmlChar *majorVersion);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_minorVersion  (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_minorVersion  (LassoSamlpResponseAbstract *node,
+								   const xmlChar *minorVersion);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_recipient     (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_recipient     (LassoSamlpResponseAbstract *node,
+								   const xmlChar *recipient);
 
-LASSO_EXPORT void lasso_samlp_response_abstract_set_responseID    (LassoSamlpResponseAbstract *,
-								   const xmlChar *);
+LASSO_EXPORT void lasso_samlp_response_abstract_set_responseID    (LassoSamlpResponseAbstract *node,
+								   const xmlChar *responseID);
+
+LASSO_EXPORT void lasso_samlp_response_abstract_set_signature     (LassoSamlpResponseAbstract *node,
+								   gint                        sign_method,
+								   const xmlChar              *private_key_file,
+								   const xmlChar              *certificate_file);
 
 #ifdef __cplusplus
 }

@@ -41,6 +41,9 @@
      </extension>
    </complexContent>
 </complexType>
+
+<element name="AssertionArtifact" type="string"/>
+
 */
 
 /*****************************************************************************/

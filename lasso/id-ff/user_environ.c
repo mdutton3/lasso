@@ -84,7 +84,7 @@ GType lasso_user_environ_get_type() {
       (GInstanceInitFunc) lasso_user_environ_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_ENVIRON,
+    this_type = g_type_register_static(G_TYPE_OBJECT,
 				       "LassoUserEnviron",
 				       &this_info, 0);
   }

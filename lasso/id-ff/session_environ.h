@@ -47,15 +47,15 @@ typedef struct _LassoSessionEnviron LassoSessionEnviron;
 typedef struct _LassoSessionEnvironClass LassoSessionEnvironClass;
 
 typedef enum {
-     lasso_protocol_profile_type_get = 1,
-     lasso_protocol_profile_type_redirect,
-     lasso_protocol_profile_type_post,
-     lasso_protocol_profile_type_soap,
-     lasso_protocol_profile_type_artifact,
-} lasso_protocol_profile_type;
+  lasso_protocol_method_get = 1,
+  lasso_protocol_method_redirect,
+  lasso_protocol_method_post,
+  lasso_protocol_method_soap,
+  lasso_protocol_method_artifact,
+} lasso_protocol_methods;
 
 struct _LassoSessionEnviron {
-  LassoEnviron parent;
+  GObject parent;
 
   /*< public >*/
   LassoServerEnviron *server;
@@ -68,14 +68,13 @@ struct _LassoSessionEnviron {
 
   char *local_providerID, *peer_providerID;
 
-  int request_protocol_profile;
-  int response_protocol_profile;
-
+  gint request_protocol_method;
+  
   /*< private >*/
 };
 
 struct _LassoSessionEnvironClass {
-  LassoNodeClass parent;
+  GObjectClass parent;
 };
 
 LASSO_EXPORT GType                lasso_session_environ_get_type               (void);
@@ -85,26 +84,32 @@ LASSO_EXPORT LassoSessionEnviron *lasso_session_environ_new                    (
 										gchar *local_providerID,
 										gchar *peer_providerID);
 
-LASSO_EXPORT char                *lasso_session_environ_build_authnRequest     (LassoSessionEnviron *session,
-										const char *responseProtocolProfile,
-										gboolean isPassive,
-										gboolean forceAuthn,
-										const char *nameIDPolicy);
+LASSO_EXPORT char                *lasso_session_environ_build_authn_request     (LassoSessionEnviron *session,
+										 const char *responseProtocolProfile,
+										 gboolean isPassive,
+										 gboolean forceAuthn,
+										 const char *nameIDPolicy);
 
-LASSO_EXPORT gboolean             lasso_session_environ_process_assertion      (LassoSessionEnviron *session, char *str);
+LASSO_EXPORT xmlChar*             lasso_session_environ_process_artifact        (LassoSessionEnviron *session,
+										 gchar               *artifact);
 
-LASSO_EXPORT gboolean             lasso_session_environ_process_authnRequest   (LassoSessionEnviron *session,
-										char *str_request,
-										int protocol_profile_type,
-										gboolean has_cookie);
+LASSO_EXPORT gboolean             lasso_session_environ_process_authn_response  (LassoSessionEnviron *session,
+										 xmlChar             *response);
 
-LASSO_EXPORT char                *lasso_session_environ_process_authentication (LassoSessionEnviron *session,
-										gboolean isAuthenticated,
-										const char *authentication_method);
+LASSO_EXPORT gboolean             lasso_session_environ_process_authn_request   (LassoSessionEnviron *session,
+										 char *request,
+										 int request_method,
+										 gboolean is_authenticated);
 
-LASSO_EXPORT int                  lasso_session_environ_set_local_providerID   (LassoSessionEnviron *session, char *providerID);
+LASSO_EXPORT char                *lasso_session_environ_process_authentication  (LassoSessionEnviron *session,
+										 gint                 authentication_result,
+										 const char          *authentication_method);
 
-LASSO_EXPORT int                  lasso_session_environ_set_peer_providerID    (LassoSessionEnviron *session, char *providerID);
+LASSO_EXPORT int                  lasso_session_environ_set_local_providerID    (LassoSessionEnviron *session,
+										 char *providerID);
+
+LASSO_EXPORT int                  lasso_session_environ_set_peer_providerID     (LassoSessionEnviron *session,
+										 char *providerID);
 
 #ifdef __cplusplus
 }
