@@ -35,16 +35,12 @@
 #define LASSO_LASSO_PREFIX "lasso"
 
 /*****************************************************************************/
-/* Liberty Alliance                                                          */
+/* Liberty Alliance ID-FF                                                    */
 /*****************************************************************************/
 
 /* prefix & href */
 #define LASSO_LIB_HREF	 "urn:liberty:iff:2003-08"
 #define LASSO_LIB_PREFIX	 "lib"
-
-/* disco prefix & href */
-#define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
-#define LASSO_DISCO_PREFIX "disco"
 
 /* Versioning */
 #define LASSO_LIB_MAJOR_VERSION_N	 1
@@ -112,6 +108,43 @@
 #define LASSO_LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT "urn:liberty:consent:obtained:current:explicit"
 #define LASSO_LIB_CONSENT_UNAVAILABLE               "urn:liberty:consent:unavailable"
 #define LASSO_LIB_CONSENT_INAPPLICABLE              "urn:liberty:consent:inapplicable"
+
+/* Service types */
+#define LASSO_LIB_SERVICE_TYPE_DISCO     "urn:liberty:disco:2003-08"
+#define LASSO_LIB_SERVICE_TYPE_ID_SIS_EP "urn:liberty:id-sis-ep:2003-08"
+#define LASSO_LIB_SERVICE_TYPE_ID_SIS_PP "urn:liberty:id-sis-pp:2003-08"
+
+/*****************************************************************************/
+/* Liberty Alliance ID-WSF                                                   */
+/*****************************************************************************/
+
+/* disco prefix & href */
+#define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
+#define LASSO_DISCO_PREFIX "disco"
+
+/* status code */
+#define LASSO_DST_STATUS_CODE_ACTION_NOT_AUTHORIZED "ActionNotAuthorized"
+#define LASSO_DST_STATUS_CODE_ACTION_NOT_SUPPORTED "ActionNotSupported"
+#define LASSO_DST_STATUS_CODE_ALL_RETURNED "AllReturned"
+#define LASSO_DST_STATUS_CODE_CHANGE_HISTORY_NOT_SUPPORTED "ChangeHistoryNotSupported"
+#define LASSO_DST_STATUS_CODE_CHANGED_SINCE_RETURNS_ALL "ChangedSinceReturnsAll"
+#define LASSO_DST_STATUS_CODE_DATA_TOO_LONG "DataTooLong"
+#define LASSO_DST_STATUS_CODE_EXISTS_ALREADY "ExistsAlready"
+#define LASSO_DST_STATUS_CODE_EXTENSION_NOT_SUPPORTED "ExtensionNotSupported"
+#define LASSO_DST_STATUS_CODE_FAILED "Failed"
+#define LASSO_DST_STATUS_CODE_INVALID_DATA "InvalidData"
+#define LASSO_DST_STATUS_CODE_INVALID_RESOURCE_ID "InvalidResourceID"
+#define LASSO_DST_STATUS_CODE_INVALID_SELECT "InvalidSelect"
+#define LASSO_DST_STATUS_CODE_MISSING_NEW_DATA_ELEMENT "MissingNewDataElement"
+#define LASSO_DST_STATUS_CODE_MISSING_RESOURCE_ID_ELEMENT "MissingResourceIDElement"
+#define LASSO_DST_STATUS_CODE_MISSING_SELECT "MissingSelect"
+#define LASSO_DST_STATUS_CODE_MODIFIED_SINCE "ModifiedSince"
+#define LASSO_DST_STATUS_CODE_NO_MORE_ELEMENTS "NoMoreElements"
+#define LASSO_DST_STATUS_CODE_NO_MULTIPLE_ALLOWED "NoMultipleAllowed"
+#define LASSO_DST_STATUS_CODE_NO_MULTIPLE_RESOURCES "NoMultipleResources"
+#define LASSO_DST_STATUS_CODE_OK "OK"
+#define LASSO_DST_STATUS_CODE_TIME_OUT "TimeOut"
+#define LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR "UnexpectedError"
 
 /*****************************************************************************/
 /* METADATA                                                                  */
