@@ -842,6 +842,12 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 									lassoNodeExportTypeSoap);
     break;
   }
+  /* verify ASSO_PROFILE(login)-request is an AuthnRequest object */
+  if ( LASSO_IS_AUTHN_REQUEST(LASSO_PROFILE(login)->request) == FALSE ) {
+    message(G_LOG_LEVEL_CRITICAL, "Message is not an AuthnRequest\n");
+    return(-1);
+  }
+
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
   /* get ProtocolProfile in lib:AuthnRequest */
