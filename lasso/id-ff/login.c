@@ -31,6 +31,12 @@
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/provider.h>
 
+
+struct _LassoLoginPrivate
+{
+	char *soap_request_msg;
+};
+
 /*****************************************************************************/
 /* static methods/functions */
 /*****************************************************************************/
@@ -815,6 +821,12 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 		LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
 		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
+		ret = lasso_provider_verify_signature(remote_provider,
+				login->private_data->soap_request_msg,
+				"RequestID", LASSO_MESSAGE_FORMAT_SOAP);
+		g_free(login->private_data->soap_request_msg);
+		login->private_data->soap_request_msg = NULL;
+
 		/* changed status code into RequestDenied
 		 if signature is invalid or not found
 		 if an error occurs during verification */
@@ -1229,6 +1241,11 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	login->assertionArtifact = g_strdup(
 			LASSO_SAMLP_REQUEST(profile->request)->AssertionArtifact);
 
+	/* Keep a copy of request msg so signature can be verified when we get
+	 * the providerId in lasso_login_build_response_msg()
+	 */
+	login->private_data->soap_request_msg = g_strdup(request_msg);
+
 	return ret;
 }
 
@@ -1308,6 +1325,27 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return 0;
 }
 
+
+/*****************************************************************************/
+/* overridden parent class methods                                           */
+/*****************************************************************************/
+
+static void
+dispose(GObject *object)
+{
+	LassoLogin *login = LASSO_LOGIN(object);
+	g_free(login->private_data->soap_request_msg);
+	G_OBJECT_CLASS(parent_class)->dispose(object);
+}
+
+static void
+finalize(GObject *object)
+{  
+	LassoLogin *login = LASSO_LOGIN(object);
+	g_free(login->private_data);
+	G_OBJECT_CLASS(parent_class)->finalize(object);
+}
+
 /*****************************************************************************/
 /* instance and class init functions */
 /*****************************************************************************/
@@ -1315,6 +1353,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 instance_init(LassoLogin *login)
 {
+	login->private_data = g_new(LassoLoginPrivate, 1);
+	login->private_data->soap_request_msg = NULL;
+
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;
 	login->nameIDPolicy = NULL;
@@ -1332,6 +1373,9 @@ class_init(LassoLoginClass *klass)
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Login");
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
+	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
 GType

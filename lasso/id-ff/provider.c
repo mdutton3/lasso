@@ -518,6 +518,9 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	msg = (char*)message;
 
+	if (message == NULL)
+		return -2;
+
 	if (format == LASSO_MESSAGE_FORMAT_ERROR)
 		return -2;
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN)
