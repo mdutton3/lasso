@@ -26,8 +26,8 @@
  */
 
 
-#include <lasso_config.h>
-#include <lasso.h>
+#include <lasso/lasso_config.h>
+#include <lasso/lasso.h>
 
 
 /***********************************************************************
