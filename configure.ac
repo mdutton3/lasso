@@ -142,21 +142,6 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 
-dnl ==========================================================================
-dnl Check if pkg-config enabled and installed
-dnl ==========================================================================
-AC_ARG_ENABLE(sha1,   [  --enable-pkgconfig      enable pkgconfig for configuration (yes)])
-if test "z$enable_pkgconfig" = "zno" ; then
-    PKG_CONFIG_ENABLED=no
-else
-    AC_CHECK_PROG(PKG_CONFIG_ENABLED, pkg-config, yes, no)
-    if test "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-	if ! pkg-config --atleast-pkgconfig-version 0.9 ; then
-	    PKG_CONFIG_ENABLED=no
-	fi
-    fi
-fi
-
 PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
 AC_SUBST(LASSO_LIBS)
 AC_SUBST(LASSO_CFLAGS)
