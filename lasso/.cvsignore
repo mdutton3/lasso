@@ -1,5 +1,8 @@
 Makefile
 Makefile.in
+lasso_config.h.in
+lasso_config.h
+stamp-h1
 version.h
 *.lo
 *.la
