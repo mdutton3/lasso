@@ -80,7 +80,7 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
       type = lassoRequestTypeDefederation;
     }
     else if(xmlStrEqual(name, "RegisterNameIdentifierRequest")) {
-      type = lassoRequestTypeRegisterNameIdentifier;
+      type = lassoRequestTypeNameRegistration;
     }
     else if(xmlStrEqual(name, "NameIdentifierMappingRequest")) {
       type = lassoRequestTypeNameIdentifierMapping;
