@@ -53,9 +53,9 @@ lasso_logout_dump(LassoLogout *logout)
   logout_class->set_name(logout_node, LASSO_LOGOUT_NODE);
 
   /* back up */
-/*   lasso_node_add_child(logout_node, logout->first_request); */
-/*   lasso_node_add_child(logout_node, logout->first_response); */
-/*   lasso_node_set_prop(logout_node, LASSO_REMOTE_PROVIDERID_NODE, logout->first_remote_providerID); */
+/*   lasso_node_add_child(logout_node, logout->initial_request); */
+/*   lasso_node_add_child(logout_node, logout->initial_response); */
+/*   lasso_node_set_prop(logout_node, LASSO_REMOTE_PROVIDERID_NODE, logout->initial_remote_providerID); */
 
   return(dump);
 }
@@ -175,10 +175,10 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   /* if a ProviderID from a SP request, pass it and return the next provider id found */
   for(i = 0; i<profileContext->user->assertion_providerIDs->len; i++){
     current_provider_id = g_strdup(g_ptr_array_index(profileContext->user->assertion_providerIDs, i));
-    if(logout->first_remote_providerID!=NULL){
-      if(xmlStrEqual(current_provider_id, logout->first_remote_providerID)){
+    if(logout->initial_remote_providerID!=NULL){
+      if(xmlStrEqual(current_provider_id, logout->initial_remote_providerID)){
 	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
-	      logout->first_remote_providerID,
+	      logout->initial_remote_providerID,
 	      current_provider_id);
 	xmlFree(current_provider_id);
 	continue;
@@ -271,8 +271,8 @@ lasso_logout_init_request(LassoLogout *logout,
 }
 
 gint lasso_logout_load_request_msg(LassoLogout     *logout,
-								   gchar           *request_msg,
-								   lassoHttpMethods request_method)
+				   gchar           *request_msg,
+				   lassoHttpMethods request_method)
 {
   LassoProfileContext *profileContext;
 
@@ -305,6 +305,8 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
   /* get the NameIdentifier to load user dump */
   profileContext->nameIdentifier = lasso_node_get_child_content(profileContext->request,
 								"NameIdentifier", NULL);
+
+  /* get the RelayState */
   profileContext->msg_relayState = lasso_node_get_child_content(profileContext->request,
 								"RelayState", NULL);
 
@@ -401,12 +403,12 @@ lasso_logout_process_request(LassoLogout *logout)
   case lassoProviderTypeIdp:
     /* if more than one sp registered, backup original infos of the sp requester */
     /* FIXME : get the nb of remote providers with a proper way */
-    logout->first_remote_providerID = g_strdup(profileContext->remote_providerID);
+    logout->initial_remote_providerID = g_strdup(profileContext->remote_providerID);
     if(profileContext->user->assertion_providerIDs->len>1){
-      logout->first_request = profileContext->request;
+      logout->initial_request = profileContext->request;
       profileContext->request = NULL;
     
-      logout->first_response = profileContext->response;
+      logout->initial_response = profileContext->response;
       profileContext->response = NULL;
 
       profileContext->remote_providerID = NULL;    
@@ -477,11 +479,11 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
     /* if no more assertion for other providers, remove assertion of the original provider and restore the original requester infos */
     if(profileContext->user->assertion_providerIDs->len == 1){
       message(G_LOG_LEVEL_WARNING, "remove assertion of the original provider\n");
-      lasso_user_remove_assertion(profileContext->user, logout->first_remote_providerID);
+      lasso_user_remove_assertion(profileContext->user, logout->initial_remote_providerID);
 
-      profileContext->remote_providerID = logout->first_remote_providerID;
-      profileContext->request = logout->first_request;
-      profileContext->response = logout->first_response;
+      profileContext->remote_providerID = logout->initial_remote_providerID;
+      profileContext->request = logout->initial_request;
+      profileContext->response = logout->initial_response;
     }
 
     break;
@@ -507,8 +509,8 @@ lasso_logout_dispose(LassoLogout *logout)
   debug("Logout object 0x%x disposed ...\n", logout);
 
   /* unref reference counted objects */
-  lasso_node_destroy(logout->first_request);
-  lasso_node_destroy(logout->first_response);
+  lasso_node_destroy(logout->initial_request);
+  lasso_node_destroy(logout->initial_response);
 
   parent_class->dispose(G_OBJECT(logout));
 }
@@ -518,7 +520,7 @@ lasso_logout_finalize(LassoLogout *logout)
 {  
   debug("Logout object 0x%x finalized ...\n", logout);
 
-  g_free(logout->first_remote_providerID);
+  g_free(logout->initial_remote_providerID);
 
   g_free(logout->private);
 
@@ -538,9 +540,9 @@ lasso_logout_instance_init(GTypeInstance   *instance,
   logout->private = g_new (LassoLogoutPrivate, 1);
   logout->private->dispose_has_run = FALSE;
 
-  logout->first_request = NULL;
-  logout->first_response = NULL;
-  logout->first_remote_providerID = NULL;
+  logout->initial_request = NULL;
+  logout->initial_response = NULL;
+  logout->initial_remote_providerID = NULL;
 }
 
 static void

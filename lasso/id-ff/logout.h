@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/environs/profile_context.h>
-
 #include <lasso/protocols/logout_request.h>
 #include <lasso/protocols/logout_response.h>
 
@@ -50,9 +49,9 @@ struct _LassoLogout {
   LassoProfileContext parent;
   
   /*< public >*/
-  LassoNode *first_request;
-  LassoNode *first_response;
-  gchar     *first_remote_providerID;
+  LassoNode *initial_request;
+  LassoNode *initial_response;
+  gchar     *initial_remote_providerID;
 
   /*< private >*/
   LassoLogoutPrivate *private;
