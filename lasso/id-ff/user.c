@@ -93,11 +93,13 @@ lasso_user_get_assertion(LassoUser *user,
 }
 
 void
-lasso_user_add_assertionArtifact(LassoUser      *user,
-				 xmlChar        *assertionArtifact,
-				 LassoAssertion *assertion)
+lasso_user_store_response(LassoUser     *user,
+			  xmlChar       *assertionArtifact,
+			  LassoResponse *response)
 {
-  g_hash_table_insert(user->assertion_artifacts, assertionArtifact, assertion);
+  g_hash_table_insert(user->assertion_artifacts,
+		      g_strdup(assertionArtifact),
+		      lasso_node_copy(response));
 }
 
 LassoNode *lasso_user_get_assertionArtifact(LassoUser *user,

@@ -69,9 +69,9 @@ LASSO_EXPORT void           lasso_user_add_assertion         (LassoUser *user,
 LASSO_EXPORT LassoNode     *lasso_user_get_assertion         (LassoUser *user,
 							      xmlChar   *nameIdentifier);
 
-LASSO_EXPORT void           lasso_user_add_assertionArtifact (LassoUser      *user,
-							      xmlChar        *assertionArtifact,
-							      LassoAssertion *assertion);
+LASSO_EXPORT void           lasso_user_store_response        (LassoUser     *user,
+							      xmlChar       *assertionArtifact,
+							      LassoResponse *response);
 
 LASSO_EXPORT LassoNode     *lasso_user_get_assertionArtifact (LassoUser *user,
 							      xmlChar   *artifact);

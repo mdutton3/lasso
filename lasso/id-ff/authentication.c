@@ -188,11 +188,13 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
 					gint                 method)
 {
   LassoUser *user;
-  gchar     *msg;
-  xmlChar   *nameIDPolicy, *protocolProfile, *assertionHandle;
-  LassoNode *assertion, *authentication_statement, *idpProvidedNameIdentifier;
-  
+  gchar     *msg = g_new(gchar, 1024), *samlArt;
+  xmlChar   *nameIDPolicy, *relayState, *providerID;
+  xmlChar   *assertionHandle, *identityProviderSuccinctID;
+  LassoNode *assertion=NULL, *authentication_statement, *idpProvidedNameIdentifier;
   LassoIdentity *identity;
+
+  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server));
 
   switch (authn->request_method) {
   case lassoProfileContextMethodGet:
@@ -200,17 +202,17 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
     /* federation */
     /* verify if a user context exists else create it */
     if (LASSO_PROFILE_CONTEXT(authn)->user == NULL) {
-      LASSO_PROFILE_CONTEXT(authn)->user = lasso_user_new();
+      LASSO_PROFILE_CONTEXT(authn)->user = lasso_user_new("");
     }
-    identity = lasso_user_find_identity(LASSO_PROFILE_CONTEXT(authn)->user,
-					LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
+    identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(authn)->user,
+				       LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
     nameIDPolicy = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
 						"NameIDPolicy", NULL);
     printf("NameIDPolicy %s\n", nameIDPolicy);
     if (nameIDPolicy == NULL || xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeNone)) {
       if (identity == NULL) {
-      lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
-						lassoLibStatusCodeFederationDoesNotExist);
+	lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+						  lassoLibStatusCodeFederationDoesNotExist);
       }
     }
     else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
@@ -218,8 +220,11 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
       if (identity == NULL) {
 	identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(authn)->remote_providerID);
 	idpProvidedNameIdentifier = LASSO_NODE(lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32)));
-	/* TODO : set nameQualifier and Format */
+	/* TODO: set nameQualifier and Format */
 	lasso_identity_set_local_nameIdentifier(identity, idpProvidedNameIdentifier);
+	lasso_user_add_identity(LASSO_PROFILE_CONTEXT(authn)->user,
+				LASSO_PROFILE_CONTEXT(authn)->remote_providerID,
+				identity);
       }
     }
     else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
@@ -229,7 +234,7 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
     /* fill the response with the assertion */
     if (identity != NULL && authentication_result == 1) {
       printf("DEBUG - an identity found, so build an assertion\n");
-      assertion = lasso_assertion_new(lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(authn)->server)),
+      assertion = lasso_assertion_new(providerID,
 				      lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(authn)->request), "RequestID"));
       authentication_statement = lasso_authentication_statement_new(authenticationMethod,
 								    reauthenticateOnOrAfter,
@@ -244,31 +249,55 @@ lasso_authentication_build_response_msg(LassoAuthentication *authn,
       lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(authn)->response),
 					 assertion);
     }
-    else printf("No identity !!!\n");
+    else {
+      printf("No identity or authentication failed !!!\n");
+      if (authentication_result == 0) {
+	lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(authn),
+						  lassoSamlStatusCodeRequestDenied);
+      }
+    }
 
     if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfilePost)) {
       /* return an authnResponse (base64 encoded) */
       msg = lasso_node_export_to_base64(LASSO_PROFILE_CONTEXT(authn)->response);
     }
     else if (xmlStrEqual(authn->protocolProfile, lassoLibProtocolProfileArtifact)) {
+      
       /* return an artifact */
       switch (method) {
       case lassoProfileContextMethodRedirect:
 	/* return query (base64 encoded) */
 	/* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
-	msg = g_new(gchar, 2+20+20+1);
+	samlArt = g_new(gchar, 2+20+20+1);
+	identityProviderSuccinctID = lasso_str_hash(providerID,
+						    LASSO_PROFILE_CONTEXT(authn)->server->private_key);
 	assertionHandle = lasso_build_random_sequence(20);
-	sprintf(msg, "%c%c%s%s", 1, 3, "01234567890123456789", assertionHandle);
-	//msg = xmlSecBase64Encode(msg, 42, 0);
+	sprintf(samlArt, "%c%c%s%s", 0, 3, identityProviderSuccinctID, assertionHandle);
+	//printf("%s\n", identityProviderSuccinctID);
+	//printf("%s\n", assertionHandle);
+	g_free(assertionHandle);
+	xmlFree(identityProviderSuccinctID);
+	samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+	sprintf(msg, "SAMLArt=%s", samlArt);
+	/* store response */
+	lasso_user_store_response(LASSO_PROFILE_CONTEXT(authn)->user,
+				  samlArt,
+				  LASSO_PROFILE_CONTEXT(authn)->response);
+	g_free(samlArt);
+	relayState = lasso_node_get_child_content(LASSO_PROFILE_CONTEXT(authn)->request,
+						  "RelayState", NULL);
+	if (relayState != NULL) {
+	  sprintf(msg, "%s&RelayState=%s", msg, relayState);
+	}
 	break;
       case lassoProfileContextMethodPost:
-	/* return a formular */
+	/* TODO: return a formular */
 	break;
       }
     }
     break;
   case lassoProfileContextMethodSoap:
-    /* return an SamlpResponse (in a dict indexed with artifact in user)*/
+    /* return an SamlpResponse (in a dict indexed with artifact in user) */
     break;
   }
   
