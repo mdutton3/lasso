@@ -4,7 +4,12 @@ import glob
 import re
 import sys
 
-if len(sys.argv) == 2:
+enable_wsf = 0
+
+if '-wsf' in sys.argv:
+    enable_wsf = 1
+
+if len(sys.argv) == 2+enable_wsf:
     srcdir = sys.argv[1]
 else:
     srcdir = '.'
@@ -17,6 +22,8 @@ for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir)
 
 wsf = ['lasso_disco', 'lasso_dst', 'lasso_is', 'lasso_profile_service',
         'lasso_discovery', 'lasso_wsf', 'lasso_interaction', 'lasso_utility' ]
+if enable_wsf:
+    wsf = []
 
 for s in symbols:
     for t in wsf:

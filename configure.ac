@@ -565,6 +565,17 @@ AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
 
+
+dnl Check if python is explicitly disabled.
+AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
+		enable_wsf="yes", enable_wsf="no")
+
+AM_CONDITIONAL([WSF_ENABLED],[test "x$enable_wsf" = "xyes"])
+if test "x$enable_wsf" = "xyes"; then
+	AC_DEFINE(LASSO_WSF_ENABLED, [], [Define if ID-WSF support is enabled])
+fi
+
+
 dnl ==========================================================================
 dnl User specific option.
 dnl ==========================================================================

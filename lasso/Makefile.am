@@ -24,8 +24,12 @@ liblasso_la_SOURCES = lasso.c errors.c
 types.c:
 	$(PYTHON) $(srcdir)/extract_types.py $(srcdir)
 
+if WSF_ENABLED
+SYMBOLS_ARGS = -wsf
+endif
+
 symbols.sym:
-	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) > symbols.sym
+	$(PYTHON) $(srcdir)/extract_symbols.py $(srcdir) $(SYMBOLS_ARGS) > symbols.sym
 
 clean-local:
 	-rm types.c symbols.sym

@@ -6449,3 +6449,7 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 
 %}
 
+#ifdef LASSO_WSF_ENABLED
+%include Lasso-wsf.i
+#endif
+
