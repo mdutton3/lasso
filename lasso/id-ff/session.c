@@ -304,5 +304,5 @@ lasso_session_dump(LassoSession *session)
 
 void lasso_session_destroy(LassoSession *session)
 {
-	/* XXX do nothing */
+	g_object_unref(G_OBJECT(session));
 }
