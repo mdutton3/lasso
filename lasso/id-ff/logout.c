@@ -98,11 +98,9 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   /* set the remote provider type and get the remote provider object */
   if (profile->provider_type == lassoProviderTypeSp) {
     remote_provider_type = lassoProviderTypeIdp;
-    printf("Remote provider is IDP\n");
   }
   else if (profile->provider_type == lassoProviderTypeIdp) {
     remote_provider_type = lassoProviderTypeSp;
-    printf("Remote provider is SP\n");
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
@@ -178,7 +176,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
 
   done:
-  printf("Build request msg done\n");
+  debug("Build request msg done\n");
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
   }
@@ -293,12 +291,17 @@ gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)
 {
   LassoProfile *profile;
-  gchar *current_provider_id;
-  int i;
+  gchar        *current_provider_id;
+  int           i;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
 
   profile = LASSO_PROFILE(logout);
+
+  if (profile->session == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
+    return(NULL);
+  }
 
   /* if a ProviderID from a SP request, pass it and return the next provider id found */
   for (i = 0; i < profile->session->providerIDs->len; i++) {
@@ -475,7 +478,7 @@ lasso_logout_init_request(LassoLogout *logout,
   profile->nameIdentifier = content;
 
   done:
-  printf("Init request done\n");
+  debug("Init request done\n");
   if (federation != NULL) {
     lasso_federation_destroy(federation);
   }
