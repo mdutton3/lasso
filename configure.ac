@@ -598,7 +598,6 @@ if test "x$enable_wsf" = "xyes"; then
 fi
 AC_SUBST(LASSO_WSF_SUPPORT)
 AM_CONDITIONAL([WSF_ENABLED], [test "x$enable_wsf" = "xyes"])
-AM_CONDITIONAL([WSF_AUTH_ENABLED], [test "x$enable_wsf" = "xyes"])
 
 dnl ==========================================================================
 dnl User specific option.
