@@ -100,24 +100,8 @@ lasso_saml_audience_restriction_condition_get_type()
 /**
  * lasso_saml_audience_restriction_condition_new:
  * 
- * Creates a new <saml:AudienceRestrictionCondition> node object.
+ * Creates a new saml:AudienceRestrictionCondition node object.
  * 
- * The <AudienceRestrictionCondition> element specifies that the assertion is
- * addressed to one or more specific audiences identified by <Audience>
- * elements. Although a party that is outside the audiences specified is
- * capable of drawing conclusions from an assertion, the issuer explicitly
- * makes no representation as to accuracy or trustworthiness to such a party.
- *
- * The AudienceRestrictionCondition evaluates to Valid if and only if the
- * relying party is a member of one or more of the audiences specified. The
- * issuer of an assertion cannot prevent a party to whom it is disclosed from
- * making a decision on the basis of the information provided. However, the
- * <AudienceRestrictionCondition> element allows the issuer to state explicitly
- * that no warranty is provided to such a party in a machine- and
- * human-readable form. While there can be no guarantee that a court would
- * uphold such a warranty exclusion in every circumstance, the probability of
- * upholding the warranty exclusion is considerably improved.
- *
  * Return value: the new @LassoSamlAudienceRestrictionCondition
  **/
 LassoSamlAudienceRestrictionCondition*
