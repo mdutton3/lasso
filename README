@@ -1,3 +1,4 @@
+=====
 Lasso
 =====
                                   Current homepage: http://lasso.entrouvert.org
@@ -29,12 +30,17 @@ Lasso has several mailing lists:
    take part in development. 
     <http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-cvs-commits>
 
+There is also a bug tracking system on the labs.libre-entreprise.org website,
+ <http://labs.libre-entreprise.org/tracker/?atid=206&group_id=31>
+
 
 Lasso was originally written by Nicolas Clapies and Valery Febvre.  Please
 see the file AUTHORS for a list of major contributors, and the ChangeLog
 for a detailed listing of all contributions.
 
 Copyright (c) 2004 Entr'ouvert
+Excepted the Lasso logo, copyright (c) 2004, Entr'ouvert & Florent Monnier
+
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free

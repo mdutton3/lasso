@@ -1,14 +1,10 @@
-                   *****************************************
-                                    AUTHORS
-                   *****************************************
+=======
+AUTHORS
+=======
 
-Note: Unless expressly noted below, everything is copyrighted by Entr'ouvert and
-released under the same license as Lasso (see README file).
-
-Note: NEVER send bug reports, help and feature requests directly to the authors.
-The best way to report a bug is to use the Lasso tracking database at
-http://lasso.entrouvert.org/bugs
-There is also a mailing list (please see the README file).
+Note: please do not send bug reports, help or feature requests directly to the
+      authors; use the request tracker or the mailing list.
+      (see README for details)
 
 
 Main Developers
@@ -80,8 +76,6 @@ Lasso Logo
 ==========
 
 Florent Monnier <fmonnier@linux-nantes.fr.eu.org>
-
-Copyright (C) 2004, Entr'ouvert <www.entrouvert.com> & Florent Monnier
 
 
 Web Site Design
