@@ -75,3 +75,15 @@ StringArray.java
 lasso.java
 lassoConstants.java
 lassoJNI.java
+LibRequestAuthnContext.java
+NodeArray.java
+SamlAttributeDesignator.java
+SamlAttribute.java
+SamlAudienceRestrictionCondition.java
+SamlAuthorityBinding.java
+SamlConditionAbstract.java
+SamlpRequestAbstract.java
+SamlpResponseAbstract.java
+SamlStatementAbstract.java
+SamlSubjectStatementAbstract.java
+StringArray.java
