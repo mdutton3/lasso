@@ -227,6 +227,7 @@ static PyMethodDef lasso_methods[] = {
   {"user_new",           user_new,           METH_VARARGS},
   {"user_new_from_dump", user_new_from_dump, METH_VARARGS},
 
+
   {NULL, NULL} /* End of Methods Sentinel */
 };
 
