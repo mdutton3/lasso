@@ -590,9 +590,6 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_CONTENT:
 				case SNIPPET_TEXT_CHILD:
 				case SNIPPET_ATTRIBUTE:
-					fprintf(stderr, "(in %s) %s : (%p) %s\n",
-							G_OBJECT_TYPE_NAME(object),
-							snippet->name, *value, (char*)*value);
 					g_free(*value);
 					break;
 				case SNIPPET_NODE:
