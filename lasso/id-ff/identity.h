@@ -49,7 +49,7 @@ struct _LassoIdentity {
 	LassoNode parent;
 
 	/*< public >*/
-	GHashTable *federations; /* hash for federations with remote ProviderID as key */
+	GHashTable *federations;
 	gboolean is_dirty;
 
 	/*< private >*/
@@ -64,12 +64,8 @@ LASSO_EXPORT GType lasso_identity_get_type(void);
 LASSO_EXPORT LassoIdentity* lasso_identity_new(void);
 LASSO_EXPORT LassoIdentity* lasso_identity_new_from_dump(const gchar *dump);
 
-LASSO_EXPORT gint lasso_identity_add_federation(LassoIdentity *identity,
-		LassoFederation *federation);
 LASSO_EXPORT LassoFederation* lasso_identity_get_federation(
 		LassoIdentity *identity, const char *providerID);
-LASSO_EXPORT gint lasso_identity_remove_federation(LassoIdentity *identity,
-		const char *providerID);
 
 LASSO_EXPORT void lasso_identity_destroy(LassoIdentity *identity);
 

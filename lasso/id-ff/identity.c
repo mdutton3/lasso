@@ -23,6 +23,7 @@
  */
 
 #include <lasso/id-ff/identity.h>
+#include <lasso/id-ff/identityprivate.h>
 
 struct _LassoIdentityPrivate
 {
