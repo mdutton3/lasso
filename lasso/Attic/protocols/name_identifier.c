@@ -6,7 +6,7 @@ LassoNode *lasso_build_nameIdentifier(const xmlChar *nameIdentifier,
 {
      LassoNode *identifier;
 
-     identifier = lasso_saml_name_identifier_new();
+     identifier = lasso_saml_name_identifier_new(nameIdentifier);
      lasso_saml_name_identifier_set_nameQualifier(identifier, nameQualifier);
      lasso_saml_name_identifier_set_format(identifier, format);
 
