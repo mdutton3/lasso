@@ -186,6 +186,7 @@ if test "X$SWIG" != "X"; then
   fi
 else
   AC_MSG_RESULT(not present - using pre-generated interface files)
+  SWIG="echo"
 fi
 AC_SUBST(SWIG_PYTHON_ARGS)
 
