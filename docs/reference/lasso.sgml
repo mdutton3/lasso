@@ -145,12 +145,12 @@ providers which agreed to share (to federate) the identity of their users.
 </para>
 
     <para>
-Contrary to the other implementations of Liberty Alliance, Lasso is not a
-full-fedged system (most often Java/J2EE) but a fast and tiny C library.  The
-integration work is largely facilitated.  An existing site should be able to
-integrate it in a few days of development, without calling into question its
-architecture.  Lasso is a library written in C Language. It works on GNU/Linux,
-Windows and UNIX and has complete bindings for Java, Perl, PHP and Python.
+Contrary to most other implementations of Liberty Alliance, Lasso is not a
+full-fedged system but a simple C library, with complete bindings for Java,
+Perl, PHP and Python.  The integration work should largely be facilitated.
+An existing site should be able to integrate it in a few days of
+development, without calling into question its architecture.  Lasso is a
+library written in C Language.
     </para>
 
 <para>
