@@ -20,6 +20,9 @@ LASSOSOURCES = lasso.c lasso.h php_lasso.h
 
 lib_LTLIBRARIES = liblasso.la \
 				  $(NULL)
+
+prefix=@PHP_PREFIX@
+libdir=@PHP_EXTENSION_DIR@
 				  
 liblasso_la_SOURCES = $(LASSOSOURCES)
 liblasso_la_LIBADD = $(mylibs) \
