@@ -26,7 +26,6 @@
 #include "../lassomod.h"
 
 #include "py_logout_response.h"
-#include "py_logout_request.h"
 
 PyObject *LassoLogoutResponse_wrap(LassoLogoutResponse *response) {
   PyObject *ret;
@@ -42,24 +41,80 @@ PyObject *LassoLogoutResponse_wrap(LassoLogoutResponse *response) {
 
 /******************************************************************************/
 
-PyObject *logout_response_new(PyObject *self, PyObject *args) {
+PyObject *logout_response_new_from_request_soap(PyObject *self, PyObject *args) {
+  const xmlChar *request_soap_dump;
   const xmlChar *providerID;
-  const xmlChar *statusCodeValue;
-  PyObject      *request_obj;
+  const xmlChar *status_code_value;
 
-  LassoNode *response;
+  LassoNode *response = NULL;
 
-  if (CheckArgs(args, "SSO:logout_response_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "ssO:logout_response_new",
+  if (CheckArgs(args, "SSS:logout_response_new_from_request_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:logout_response_new_from_request_soap",
+			 &request_soap_dump,
 			 &providerID,
-			 &statusCodeValue, &request_obj))
+			 &status_code_value))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_logout_response_new(providerID,
-				       statusCodeValue,
-				       LassoLogoutRequest_get(request_obj));
+  response = lasso_logout_response_new_from_request_soap(request_soap_dump,
+							 providerID,
+							 status_code_value);
+
+  return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
+}
+
+PyObject *logout_response_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *request_soap_dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:logout_response_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:logout_response_new_from_soap",
+			 &request_soap_dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_logout_response_new_from_soap(request_soap_dump);
+
+  return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
+}
+
+PyObject *logout_response_new_from_dump(PyObject *self, PyObject *args) {
+  const xmlChar *dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:logout_response_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:logout_response_new_from_dump",
+			 &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_logout_response_new_from_soap(dump);
+
+  return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
+}
+
+PyObject *logout_response_new_from_request_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+  const xmlChar *providerID;
+  const xmlChar *status_code_value;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "SSS:logout_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:logout_response_new_from_request_query",
+			 &query,
+			 &providerID,
+			 &status_code_value))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_logout_response_new_from_request_query(query, providerID, status_code_value);
 
   return (LassoLogoutResponse_wrap(LASSO_LOGOUT_RESPONSE(response)));
 }

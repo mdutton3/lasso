@@ -152,6 +152,17 @@ class LibLogoutRequest(Node):
         lassomod.lib_logout_request_set_sessionIndex(self, sessionIndex)
 
 
+class LibLogoutResponse(Node):
+    def __init__(self, _obj = None):
+        if _obj!=None:
+            self._o = _obj
+            return
+
+        _obj = lassomod.lib_logout_response_new()
+        if _obj is None: raise Error('lasso_lib_logout_response_new() failed')
+        Node.__init__(self, _obj = _obj)
+        
+
 class LibNameIdentifierMappingRequest(Node):
     def __init__(self, _obj=None):
         """
@@ -305,39 +316,51 @@ class LogoutRequest(LibLogoutRequest):
     def __init__(self, obj):
         """
         """
-##         if _obj != None:
-##             self._o = _obj
-##             return
-##         _obj = lassomod.logout_request_new(soap,
-##                                            query,
-##                                            providerID,
-##                                            nameIdentifier,
-##                                            nameQualifier,
-##                                            format)
-##         if _obj is None: raise Error('lasso_logout_request_new() failed')
-##         LibLogoutRequest.__init__(self, _obj=_obj)
-
         self._o = obj
         LibLogoutRequest.__init__(self, _obj = self._o)
         
-
     def new(cls, providerID, nameIdentifier, nameQualifier, format):
         obj = lassomod.logout_request_new(providerID, nameIdentifier, nameQualifier, format)
         return LogoutRequest(obj)
     new = classmethod(new)
 
-class LogoutResponse(Node):
-    def __init__(self, soap, query, providerID, statusCodeValue, request, _obj=None):
+    def new_from_soap(cls, envelope):
+        obj = lassomod.logout_request_new_from_soap(envelope)
+        return LogoutRequest(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_query(cls, query):
+        obj = lassomod.logout_request_new_from_query(query)
+        return LogoutRequest(obj)
+    new_from_query = classmethod(new_from_query)
+
+
+class LogoutResponse(LibLogoutResponse):
+    def __init__(self, obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.logout_response_new(soap, query,
-                                            providerID, statusCodeValue,
-                                            request)
-        if _obj is None: raise Error('lasso_logout_response_new() failed')
-        Node.__init__(self, _obj=_obj)
+        self._o = obj
+        LibLogoutResponse.__init__(self, _obj = self._o)
+
+    def new_from_request_soap(cls, envelope, providerID, status_code_value):
+        obj = lassomod.logout_response_new_from_request_soap(envelope, providerID, status_code_value)
+        return LogoutResponse(obj)
+    new_from_request_soap = classmethod(new_from_request_soap)
+
+    def new_from_soap(cls, envelope):
+        obj = lassomod.logout_response_new_from_soap(envelope)
+        return LogoutResponse(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_dump(cls, dump):
+        obj = lassomod.logout_response_new_from_dump(dump)
+        return LogoutResponse(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def new_from_request_query(cls, query, providerID, status_code_value):
+        obj = lassomod.logout_response_new_from_request_query(query, providerID, status_code_value)
+        return LogoutResponse(obj);
+    new_from_request_query = classmethod(new_from_request_query)
 
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
