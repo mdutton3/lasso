@@ -1,4 +1,3 @@
-NULL = 	
 SUBDIRS = xml protocols environs
 
 liblassoincludedir = $(includedir)/lasso
@@ -7,11 +6,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
-	$(LASSO_CFLAGS) \
-	$(NULL)
-
-EXTRA_DIST = \
-	$(NULL)
+	$(LASSO_CFLAGS)
 
 ## Added to activate libtool 1.5.6 windows resources partial support
 LTRCCOMPILE = $(LIBTOOL) --tag=RC --mode=compile $(RC) \
@@ -23,19 +18,11 @@ lasso.rc.lo: ../win32/lasso.rc
 	$(LTRCCOMPILE) -i $< -o $@
 
 
-lib_LTLIBRARIES = \
-	liblasso.la \
-	$(NULL)
+lib_LTLIBRARIES = liblasso.la
 
-liblassoinclude_HEADERS = \
-	export.h	\
-	lasso.h	\
-        lasso_config.h \
-	$(NULL)
+liblassoinclude_HEADERS = export.h lasso.h lasso_config.h
 
-liblasso_la_SOURCES = \
-	lasso.c \
-	$(NULL)
+liblasso_la_SOURCES = lasso.c
 
 if MINGW
 liblasso_la_LIBADD = \
@@ -43,20 +30,17 @@ liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/protocols/liblasso-protocols.la \
 	$(top_builddir)/lasso/environs/liblasso-environs.la \
 	$(LASSO_LIBS) \
-	lasso.rc.lo \
-	$(NULL)
+	lasso.rc.lo
 else
 liblasso_la_LIBADD = \
 	$(top_builddir)/lasso/xml/liblasso-xml.la \
 	$(top_builddir)/lasso/protocols/liblasso-protocols.la \
 	$(top_builddir)/lasso/environs/liblasso-environs.la \
-	$(LASSO_LIBS) \
-	$(NULL)
+	$(LASSO_LIBS)
 endif
 
 # Just make damn sure the ABI stays the same between
 # upgrades.
 # Obviously if you don't, fixing the situation up again can be painful. 
-liblasso_la_LDFLAGS = \
-	-no-undefined -version-info @LASSO_VERSION_INFO@ \
-	$(NULL)
+liblasso_la_LDFLAGS = -no-undefined -version-info @LASSO_VERSION_INFO@
+

@@ -10,8 +10,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
 	$(LASSO_CFLAGS) \
-	$(PHP_INCLUDES) \
-	$(NULL)
+	$(PHP_INCLUDES)
 
 
 mylibs = $(top_builddir)/lasso/liblasso.la
@@ -21,15 +20,11 @@ LASSOSOURCES = \
 			   lasso.h \
 			   php_lasso.h
 
-lib_LTLIBRARIES = lasso.la \
-				  $(NULL)
+lib_LTLIBRARIES = lasso.la
 		
 prefix=@PHP_PREFIX@
 libdir=@PHP_EXTENSION_DIR@
 				  
 lasso_la_SOURCES = $(LASSOSOURCES)
-lasso_la_LIBADD = $(mylibs) \
-				  $(LASSO_LIBS) \
-                  ./environs/libenvirons.a \
-                  ./xml/libxml.a \
-				  $(NULL)
+lasso_la_LIBADD = $(mylibs) $(LASSO_LIBS) ./environs/libenvirons.a ./xml/libxml.a
+

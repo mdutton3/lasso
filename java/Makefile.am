@@ -1,58 +1,42 @@
-
-NULL=
 # Define the java module
-JAVA_MODULE=lasso
+JAVA_MODULE = lasso
 # Define java package name
-JAVA_PACKAGE=com.entrouvert.lasso
+JAVA_PACKAGE = com.entrouvert.lasso
 # Define java Package directory, the tailing '/' is mandatory.
-JAVA_PATH=com/entrouvert/lasso/
-JDK_INCLUDES=@JDK_INCLUDE@
-CLASSPATH=.
+JAVA_PATH = com/entrouvert/lasso/
+JDK_INCLUDES = @JDK_INCLUDE@
+CLASSPATH = .
 
-javalibdir=$(prefix)/lib/java
-javasharedir=$(prefix)/share/java
+javalibdir = $(prefix)/lib/java
+javasharedir = $(prefix)/share/java
 
 # Shared library.
-javalib_LTLIBRARIES=libjlasso.la
+javalib_LTLIBRARIES = libjlasso.la
 
-libjlasso_la_SOURCES=	$(JAVA_MODULE)_wrap.c
-libjlasso_la_CFLAGS=	$(JDK_INCLUDES) \
+libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c
+libjlasso_la_CFLAGS =	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
-			-I$(top_srcdir) -I$(top_srcdir)/lasso \
-			$(NULL)
-libjlasso_la_LIBADD=	$(top_builddir)/lasso/liblasso.la \
-                   	$(LASSO_LIBS) \
-                   	$(NULL)
-libjlasso_la_LDFLAGS=	-no-undefined \
-			-version-info @LASSO_VERSION_INFO@ \
-			-avoid-version -module \
-                     	$(NULL)
+			-I$(top_srcdir) -I$(top_srcdir)/lasso
+
+libjlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
+
+libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 
 # Java package
-javashare_DATA=lasso.jar
-JAVA_JAR=lasso.jar
+javashare_DATA = lasso.jar
+JAVA_JAR = lasso.jar
 
-SWIG_OUTPUTS=$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in
-JAVA_CRUFT=$(JAVA_PATH)$(JAVA_MODULE).class $(JAVA_MODULE)_wrap.o \
-$(JAVA_JAR) \
-$(JAVA_PATH)$(JAVA_MODULE)JNI.java
-
-# Sources file in order to beautifully (and so humanly) wrap lasso.
-JAVA_SOURCE_FILES=$(NULL)
-
-# Bytecode version of the java source files.
-JAVA_CLASS_FILES=$(NULL)
-
-
-SUBDIRS=
+SWIG_OUTPUTS = $(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in
+JAVA_CRUFT = $(JAVA_PATH)$(JAVA_MODULE).class $(JAVA_MODULE)_wrap.o \
+	$(JAVA_JAR) \
+	$(JAVA_PATH)$(JAVA_MODULE)JNI.java
 
 # The SWIG outputs are included in the distribution so SWIG is not
 # required to use the Java interface
-EXTRA_DIST= lasso-fragment.java \
-            $(SWIG_OUTPUTS)
+EXTRA_DIST = lasso-fragment.java $(SWIG_OUTPUTS)
 
-CLEANFILES=$(JAVA_CRUFT)
-MAINTAINERCLEANFILES=$(SWIG_OUTPUTS)
+CLEANFILES = $(JAVA_CRUFT)
+MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 
 $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
