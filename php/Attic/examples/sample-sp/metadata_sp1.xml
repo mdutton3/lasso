@@ -12,6 +12,11 @@
   <RegisterNameIdentifierServiceURL>https://sp1:2006/registerNameIdentifier</RegisterNameIdentifierServiceURL>
   <RegisterNameIdentifierProtocolProfile>http://projectliberty.org/profiles/rni-sp-soap</RegisterNameIdentifierProtocolProfile>
 
+  <FederationTerminationServiceURL>https://sp1:2006/federationTermination</FederationTerminationServiceURL>
+  <FederationTerminationServiceReturnURL>https://sp1:2006/federationTerminationReturn</FederationTerminationServiceReturnURL>
+  <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-sp-soap</FederationTerminationNotificationProtocolProfile>
+  <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-sp-http</FederationTerminationNotificationProtocolProfile>
+
   <SoapEndpoint>https://sp1:2006/soapEndpoint</SoapEndpoint>
 
   <AuthnRequestsSigned>true</AuthnRequestsSigned>
