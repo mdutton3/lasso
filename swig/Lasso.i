@@ -73,7 +73,9 @@
 %}
 
 #ifdef SWIGJAVA
-%include "enumsimple.swg"
+#if SWIG_version == "1.3.22"
+  %include "enumsimple.swg"
+#endif
 %pragma(java) jniclasscode=%{
   static {
     try {
