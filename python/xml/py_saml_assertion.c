@@ -66,3 +66,24 @@ PyObject *saml_assertion_add_authenticationStatement(PyObject *self, PyObject *a
   Py_INCREF(Py_None);
   return (Py_None);
 }
+
+PyObject *saml_assertion_set_signature(PyObject *self, PyObject *args) {
+  PyObject      *node_obj;
+  gint           sign_method;
+  const xmlChar *private_key_file;
+  const xmlChar *certificate_file;
+
+  if (CheckArgs(args, "OISS:saml_assertion_set_signature")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oiss:saml_assertion_set_signature",
+			 &node_obj, &sign_method, &private_key_file,
+			 &certificate_file))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_saml_assertion_set_signature(LassoSamlAssertion_get(node_obj),
+				     sign_method,
+				     private_key_file, certificate_file);
+  Py_INCREF(Py_None);
+  return (Py_None);
+}

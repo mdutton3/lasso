@@ -38,5 +38,6 @@ PyObject *LassoSamlAssertion_wrap(LassoSamlAssertion *assertion);
 
 PyObject *saml_assertion_new(PyObject *self, PyObject *args);
 PyObject *saml_assertion_add_authenticationStatement(PyObject *self, PyObject *args);
+PyObject *saml_assertion_set_signature(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_SAML_ASSERTION_H__ */
