@@ -588,7 +588,7 @@ AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
 
 
-dnl Check if python is explicitly disabled.
+dnl Check if wsf is explicitly disabled.
 AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 		enable_wsf="yes", enable_wsf="no")
 
@@ -599,6 +599,13 @@ if test "x$enable_wsf" = "xyes"; then
 	LASSO_WSF_SUPPORT=1
 fi
 AC_SUBST(LASSO_WSF_SUPPORT)
+
+AC_CHECK_LIB(sasl2, sasl_server_init, enable_wsf="yes", enable_wsf="no")
+if test "x$enable_wsf" = xyes ; then
+    SASL_CFLAGS="-I/usr/include/sasl"
+    LDFLAGS="${LDFLAGS} -lsasl2"
+    AC_SUBST(SASL_CFLAGS)
+fi
 
 
 dnl ==========================================================================
