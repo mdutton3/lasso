@@ -144,10 +144,12 @@ lasso_node_export_to_query(LassoNode *node,
 	char *unsigned_query, *query;
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-	g_return_val_if_fail (private_key_file != NULL, NULL);
 
 	unsigned_query = lasso_node_build_query(node);
-	query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
+	if (private_key_file)
+		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
+	else
+		query = g_strdup(unsigned_query);
 	g_free(unsigned_query);
 
 	return query;
@@ -601,6 +603,10 @@ lasso_node_dispose(GObject *object)
 			if (*value == NULL)
 				continue;
 
+#if 0 /* to debug memory management problems */
+			fprintf(stderr, "freeing %s/%s (at %p)\n",
+					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
+#endif
 			if (snippet->type & SNIPPET_NODE) {
 				g_object_unref(*value);
 			} else {
@@ -1047,6 +1053,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_NODE_IN_CHILD:
 				t = xmlNewTextChild(xmlnode, NULL, snippet->name, NULL);
 				xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value)));
+				break;
 			case SNIPPET_LIST_NODES:
 				elem = (GList *)value;
 				while (elem) {
@@ -1065,6 +1072,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					elem = g_list_next(elem);
 				}
 				break;
+			case SNIPPET_INTEGER:
+			case SNIPPET_BOOLEAN:
+				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)
 			g_free(str);
