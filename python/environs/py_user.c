@@ -131,7 +131,7 @@ PyObject *user_get_next_assertion_remote_providerID(PyObject *self, PyObject *ar
   gchar     *remote_providerID;
 
   if (CheckArgs(args, "O:user_get_next_assertion_remote_providerID")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_assertion_remote_providerID", &user_obj, &remote_providerID))
+    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_assertion_remote_providerID", &user_obj))
       return NULL;
   }
   else return NULL;
