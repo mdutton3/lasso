@@ -128,9 +128,7 @@ while i >= 0:
     i = wrap.find(begin, i + len(segment))
 
 # (2)
-begin = """
-    {
-        swig_type_info *ty = SWIG_TypeDynamicCast("""
+begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
 end = """
         *return_value=*obj;
     }}
@@ -146,6 +144,5 @@ while i >= 0:
     segment = '%s%s%s' % (segment[:x], 'get_node_info_with_swig(ty)->php', segment[y:])
     wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
     i = wrap.find(begin, i + len(segment))
-    print i, j
 
 print wrap
