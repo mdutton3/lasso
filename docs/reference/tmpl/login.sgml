@@ -59,7 +59,7 @@ printf("Location: %s\n\nRedirected to IdP\n", LASSO_PROFILE(login)->msg_url);
 </example>
 
 <example>
-<title>Service Provider Assertion Consumer URL</title>
+<title>Service Provider Assertion Consumer Service URL</title>
 <programlisting>
 LassoLogin *login;
 char *request_method = getenv("REQUEST_METHOD");
