@@ -398,8 +398,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xmlXPathObject *xpathObj;
 	xmlNode *node;
 	gboolean compatibility = FALSE; /* compatibility with ID-FF 1.1 metadata files */
-	const char *xpath_idp = "md:EntityDescriptor/md:IDPDescriptor";
-	const char *xpath_sp = "md:EntityDescriptor/md:SPDescriptor";
+	const char *xpath_idp = "/md:EntityDescriptor/md:IDPDescriptor";
+	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
 
 	doc = xmlParseFile(metadata);
 	if (doc == NULL)
@@ -421,8 +421,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			return FALSE;
 		}
 		compatibility = TRUE;
-		xpath_idp = "lib:IDPDescriptor";
-		xpath_sp = "lib:SPDescriptor";
+		xpath_idp = "/lib:IDPDescriptor";
+		xpath_sp = "/lib:SPDescriptor";
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
 	provider->ProviderID = xmlGetProp(node, "providerID");
