@@ -68,7 +68,7 @@ class ServiceProvider(Provider):
         if webUser is not None:
             identityDump = webUser.identityDump
             if identityDump is not None:
-                login.set_identity_from_dump(sessionDump)
+                login.set_identity_from_dump(identityDump)
 
         login.accept_sso()
         if webUser is not None and identityDump is None:
