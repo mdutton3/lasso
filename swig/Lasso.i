@@ -44,13 +44,9 @@
 #undef PACKAGE_BUGREPORT
 #endif
 
-
 #include <lasso/lasso_config.h>
 #include <lasso/lasso.h>
 #include <lasso/xml/lib_assertion.h>
-/* FIXME: IMHO, Lasso errors should not be defined in lasso/xml/ */
-/*        and should be included in lasso.h. */
-#include <lasso/xml/errors.h>
 
 
 /* 
@@ -161,11 +157,7 @@ Warning = _lasso.Warning
 %}
 #endif
 
-
-#define gint int
-#define guint unsigned int
-#define gchar char
-#define guchar unsigned char
+/* GLib types */
 
 #define gboolean bool
 %{
@@ -173,24 +165,8 @@ Warning = _lasso.Warning
 #define false 0
 #define true 1
 %}
-
-#define gshort short
-#define gushort unsigned short
-#define gulong unsigned long
-
-#define gint8 int8_t
-#define gint16 int16_t
-#define gint32 int32_t
-#define gint64 int64_t
-
-#define guint8 u_int8_t
-#define guint16 u_int16_t
-#define guint32 u_int32_t
-#define guint64 u_int64_t
-
-#define gfloat float
-#define gdouble double
-#define gldouble long double
+#define gchar char
+#define gint int
 #define gpointer void*
 #define GPtrArray void
 
@@ -435,14 +411,11 @@ typedef enum {
  * Errors
  ***********************************************************************/
 
-/* XXX: why can't those be taken from errors.h ? */
 
-/* others */
+/* undefined */
 #ifndef SWIGPHP4
 %rename(ERROR_UNDEFINED) LASSO_ERROR_UNDEFINED;
 #endif
-#define LASSO_ERROR_UNDEFINED                         -1
-
 
 /* generic XML */
 #ifndef SWIGPHP4
@@ -451,10 +424,6 @@ typedef enum {
 %rename(XML_ERROR_ATTR_NOT_FOUND) LASSO_XML_ERROR_ATTR_NOT_FOUND;
 %rename(XML_ERROR_ATTR_VALUE_NOT_FOUND) LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND;
 #endif
-#define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10
-#define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND         -11
-#define LASSO_XML_ERROR_ATTR_NOT_FOUND                 -12
-#define LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND           -13
 
 /* XMLDSig */
 #ifndef SWIGPHP4
@@ -473,36 +442,19 @@ typedef enum {
 %rename(DS_ERROR_INVALID_SIGALG) LASSO_DS_ERROR_INVALID_SIGALG;
 %rename(DS_ERROR_DIGEST_COMPUTE_FAILED) LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
 #endif
-#define LASSO_DS_ERROR_SIGNATURE_NOT_FOUND             101
-#define LASSO_DS_ERROR_INVALID_SIGNATURE               102
-#define LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED -103
-#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED        -104
-#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED         -105
-#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED        -106
-#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED        -107
-#define LASSO_DS_ERROR_SIGNATURE_FAILED               -108
-#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED      -109
-#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED          -110
-#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED  -111
-#define LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED      -112
-#define LASSO_DS_ERROR_INVALID_SIGALG                 -113
-#define LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED          -114
 
-/* server */
+/* Server */
 #ifndef SWIGPHP4
 %rename(SERVER_ERROR_PROVIDER_NOT_FOUND) LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 %rename(SERVER_ERROR_ADD_PROVIDER_FAILED) LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
 #endif
-#define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND         -201
-#define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED        -202
 
-/* logout */
+/* Single Logout */
 #ifndef SWIGPHP4
 %rename(LOGOUT_ERROR_UNSUPPORTED_PROFILE) LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 #endif
-#define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE        -301
 
-/* profile */
+/* Profile */
 #ifndef SWIGPHP4
 %rename(PROFILE_ERROR_INVALID_QUERY) LASSO_PROFILE_ERROR_INVALID_QUERY;
 %rename(PROFILE_ERROR_INVALID_POST_MSG) LASSO_PROFILE_ERROR_INVALID_POST_MSG;
@@ -525,27 +477,6 @@ typedef enum {
 %rename(PROFILE_ERROR_BAD_IDENTITY_DUMP) LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP;
 %rename(PROFILE_ERROR_BAD_SESSION_DUMP) LASSO_PROFILE_ERROR_BAD_SESSION_DUMP;
 #endif
-#define LASSO_PROFILE_ERROR_INVALID_QUERY             -401
-#define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402
-#define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG          -403
-#define LASSO_PROFILE_ERROR_MISSING_REQUEST           -404
-#define LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD       -405
-#define LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE   -406
-#define LASSO_PROFILE_ERROR_INVALID_MSG               -407
-#define LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID -408
-#define LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE       -409
-#define LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL       -410
-#define LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND        -411
-#define LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND      -412
-#define LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND -413
-#define LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED     -414
-#define LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED   -415
-#define LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED   -416
-#define LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED  -417
-#define LASSO_PROFILE_ERROR_SESSION_NOT_FOUND         -418
-#define LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP         -419
-#define LASSO_PROFILE_ERROR_BAD_SESSION_DUMP          -420
-
 
 /* functions/methods parameters checking */
 #ifndef SWIGPHP4
@@ -553,9 +484,6 @@ typedef enum {
 %rename(PARAM_ERROR_INVALID_VALUE) LASSO_PARAM_ERROR_INVALID_VALUE;
 %rename(PARAM_ERROR_ERR_CHECK_FAILED) LASSO_PARAM_ERROR_ERR_CHECK_FAILED;
 #endif
-#define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501
-#define LASSO_PARAM_ERROR_INVALID_VALUE               -502
-#define LASSO_PARAM_ERROR_CHECK_FAILED                -503
 
 /* Single Sign-On */
 #ifndef SWIGPHP4
@@ -567,20 +495,21 @@ typedef enum {
 %rename(LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST) LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST;
 %rename(LOGIN_ERROR_STATUS_NOT_SUCCESS) LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 #endif
-#define LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND         601
-#define LASSO_LOGIN_ERROR_CONSENT_NOT_OBTAINED         602
-#define LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY        -603
-#define LASSO_LOGIN_ERROR_REQUEST_DENIE	               604
-#define LASSO_LOGIN_ERROR_INVALID_SIGNATURE            605
-#define LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST       606
-#define LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS           607
 
 /* Federation Termination Notification */
 #ifndef SWIGPHP4
 %rename(DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER) LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER;
 #endif
-#define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER  -700
 
+#ifndef SWIGPHP4
+%rename(strerror) lasso_strerror;
+#endif
+%ignore lasso_strerror;
+
+%include "../lasso/xml/errors.h"
+%{
+#include <lasso/xml/errors.h>
+%}
 
 
 /***********************************************************************
