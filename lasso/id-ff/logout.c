@@ -467,7 +467,8 @@ lasso_logout_init_request(LassoLogout    *logout,
     goto done;
   }
 
-  /* get name identifier attributes */
+  /* Get name identifier attributes */
+  /*  WARNING : Don't free content, it will be backed up in nameIdentifier attribute of LassoDefederation object */
   content = lasso_node_get_content(nameIdentifier, NULL);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
@@ -536,8 +537,9 @@ lasso_logout_init_request(LassoLogout    *logout,
     goto done;
   }
 
-  /* set the name identifier in logout object */
+  /* Set the name identifier attribute with content local variable */
   profile->nameIdentifier = content;
+  content = NULL;
 
   /* if logout request from a SP and if an HTTP Redirect / GET method, then remove assertion */
   if (profile->provider_type == lassoProviderTypeSp && is_http_redirect_get_method == TRUE) {
@@ -550,6 +552,9 @@ lasso_logout_init_request(LassoLogout    *logout,
   }
   if (nameIdentifier != NULL ) {
     lasso_node_destroy(nameIdentifier);
+  }
+  if (content != NULL) {
+    xmlFree(content);
   }
   if (nameQualifier != NULL) {
     xmlFree(nameQualifier);
