@@ -116,6 +116,7 @@ AC_PATH_PROGS(PHP_PATH, php)
 AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
 AC_CHECK_PROGS(SWIG, swig)
 
+
 LIBTOOL_EXPORT_OPTIONS='-export-symbols-regex "^[^_].*"'
 
 dnl Make sure we have an ANSI compiler
@@ -204,10 +205,10 @@ dnl ==========================================================================
 dnl Java(tm) API
 dnl ==========================================================================
 dnl Check if java is explicitly disabled.
-AC_ARG_ENABLE(java, [  --disable-java          Disable the java API.],,
+AC_ARG_ENABLE(java, [  --disable-java          disable the Java bindings],,
               enable_java="yes")
 AC_ARG_WITH(java-home,
-            [  --with-java-home=(JAVA_HOME)  Set the full path to the java home directory.])
+            [  --with-java-home=(JAVA_HOME)  set the full path to the java home directory.])
 AC_MSG_CHECKING(for Java)
 JAVAC_FLAGS=
 JDK_INCLUDE=
@@ -283,12 +284,12 @@ dnl ==========================================================================
 dnl Python API
 dnl ==========================================================================
 dnl Check if python is explicitly disabled.
-AC_ARG_ENABLE(python, [  --disable-python        Enable the Python interface],,
+AC_ARG_ENABLE(python, [  --disable-python        disable the Python bindings],,
               enable_python="yes")
 
 dnl Check if user passed a specific python program.
 AC_ARG_WITH(python,
-            [  --with-python=(PYTHON)  Set the full path to the python program to use.])
+            [  --with-python=(PYTHON)  set the full path to the python program to use.])
 AC_MSG_CHECKING(for Python development files)
 
 dnl specific program passed, set PYTHON to it.
@@ -338,7 +339,7 @@ AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
 
 dnl Check if python is explicitly disabled.
-AC_ARG_ENABLE(php, [  --disable-php           Disable the PHP interface],,
+AC_ARG_ENABLE(php, [  --disable-php           disable the PHP bindings],,
               enable_php="yes")
 
 AC_ARG_WITH(php-config,
@@ -375,14 +376,14 @@ have_expat_include=no
 AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
   
 if test x$have_expat_lib = xno; then
-	enable_php=no
+    enable_php=no
 fi
 
 AC_MSG_CHECKING(for PHP development files)
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 dnl Check if we were be able to extract a good version number.
 if test "X$PHP_VERSION" != X; then
-  languages_available="$languages_available php($PHP_VERSION)"
+    languages_available="$languages_available php($PHP_VERSION)"
 else
     enable_php=no
 fi
@@ -391,11 +392,93 @@ AM_CONDITIONAL([PHP_ENABLED], [test "x$enable_php" = "xyes"])
 AC_SUBST(PHP_VERSION)
 
 
+
+# -----------
+# C# bindings
+# -----------
+
+AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp bindings],,
+              enable_csharp="yes")
+
+AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
+AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
+
+if test -z "$CSHARPCOMPILERBIN" ; then
+  case $host in
+  *-*-cygwin* | *-*-mingw*)
+    AC_CHECK_PROGS(CSHARPCOMPILER, mcs.bat cscc csc);;
+  *)AC_CHECK_PROGS(CSHARPCOMPILER, mcs cscc);;
+  esac
+else
+  CSHARPCOMPILER="$CSHARPCOMPILERBIN"
+fi
+
+CSHARPPATHSEPARATOR="/"
+CSHARPCYGPATH_W=echo
+if test -z "$CSHARPBIN" ; then
+  languages_available="$languages_available C#($CSHARPCOMPILER)"
+  CSHARPCILINTERPRETER=""
+  if test "cscc" = "$CSHARPCOMPILER" ; then
+    AC_CHECK_PROGS(CSHARPCILINTERPRETER, ilrun)
+  else
+    if test "mcs" = "$CSHARPCOMPILER"; then
+      # Check that mcs is the C# compiler and not the Unix mcs utility by examining the output of 'mcs --version'
+      # The Mono compiler should emit: Mono C# compiler version a.b.c.d
+      csharp_version_raw=`(mcs --version) 2>/dev/null`
+      csharp_version_searched=`(mcs --version | sed -n "/C#\|Mono/p") 2>/dev/null`
+      CSHARPCOMPILER="";
+      if test -n "$csharp_version_raw" ; then
+        if test "$csharp_version_raw" = "$csharp_version_searched" ; then
+          CSHARPCOMPILER="mcs"
+        fi
+      fi
+
+      # mono interpreter (ver 0.26 doesn't seem to work on Windows platforms)
+      case $host in
+      *-*-cygwin* | *-*-mingw*)
+        ;;
+      *)AC_CHECK_PROGS(CSHARPCILINTERPRETER, mint);;
+      esac
+    else 
+      if test "csc" = "$CSHARPCOMPILER"; then
+          CSHARPPATHSEPARATOR="\\\\"
+          CSHARPCYGPATH_W='cygpath -w'
+      fi
+    fi
+  fi
+else
+  CSHARPCILINTERPRETER="$CSHARPBIN"
+fi
+
+# Cygwin requires the Windows standard (Pascal) calling convention as it is a Windows executable and not a Cygwin built executable
+case $host in
+*-*-cygwin* | *-*-mingw*)
+    if test "$GCC" = yes; then
+        CSHARPDYNAMICLINKING=" -Wl,--add-stdcall-alias"
+    else
+        CSHARPDYNAMICLINKING=""
+    fi ;;
+*)CSHARPDYNAMICLINKING="";;
+esac
+
+AC_SUBST(CSHARPCILINTERPRETER)
+AC_SUBST(CSHARPCYGPATH_W)
+AC_SUBST(CSHARPCOMPILER)
+AC_SUBST(CSHARPDYNAMICLINKING)
+AC_SUBST(CSHARPLIBRARYPREFIX) # Is this going to be used?
+
+if test "X$CSHARPCOMPILER" = X; then
+    enable_csharp=no 
+fi
+AM_CONDITIONAL([CSHARP_ENABLED], [test "x$enable_csharp" = "xyes"])
+
+
+
 dnl ==========================================================================
 dnl Test suite (requires check)
 dnl ==========================================================================
 dnl Check if user disabled the tests.
-AC_ARG_ENABLE(tests, [  --disable-tests          disable the test suite],,
+AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
               enable_tests="yes")
 AC_DEFINE([CHECK_IS_XML], [], [Define if check available with XML support])
 if test "x$enable_tests" = xyes ; then
@@ -440,7 +523,7 @@ AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
 
 
 dnl pkg-config path
-AC_ARG_WITH(pkg-config-path, [  --with-pkg-config=PATH Set pkg-config metadata search path.],
+AC_ARG_WITH(pkg-config-path, [  --with-pkg-config=PATH set pkg-config metadata search path.],
             PKG_CONFIG_PATH="${withval}", PKG_CONFIG_PATH="")
 if test "z$PKG_CONFIG_PATH" != "z"; then
     export PKG_CONFIG_PATH
@@ -449,7 +532,7 @@ fi
 PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl openssl)
 
 dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc        Disable documentation build],,
+AC_ARG_ENABLE(gtk-doc, [  --disable-gtk-doc       disable documentation build],,
               enable_gtk_doc="yes")
 
 if test "x$enable_gtk_doc" = "xyes" ; then
@@ -559,6 +642,7 @@ dnl Writing result files
 dnl ==========================================================================
 AC_OUTPUT(
 [Makefile
+csharp/Makefile
 docs/Makefile
 docs/lasso-book/Makefile
 docs/reference/Makefile
@@ -584,7 +668,9 @@ tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
 lasso.pc
 ])
-AC_MSG_RESULT([
+languages_available=`echo $languages_available | sed -e "s/^ //" `
+AC_MSG_RESULT(
+
 =============
 Configuration
 =============
@@ -592,33 +678,20 @@ Configuration
 Main
 ----
 
-Compiler:
-    ${CC} 
-
-Install prefix:
-    ${prefix}
-
-Debugging:
-    $enable_debugging
+Compiler:               ${CC} 
+Install prefix:         ${prefix}
+Debugging:              $enable_debugging
 
 Optionals builds
 ----------------
   
-Available languages:
-    ${languages_available}
+Available languages:    ${languages_available}
 
-Python binding:
-    ${enable_python}
+C# binding:             ${enable_csharp}
+Java binding:           ${enable_java}
+PHP binding:            ${enable_php}
+Python binding:         ${enable_python}
 
-PHP binding:
-    ${enable_php}
-
-Java binding:
-    ${enable_java}
-        
-C API references:
-    ${enable_gtk_doc}
-
-Tests suite:
-    ${enable_tests}
-])
+C API references:       ${enable_gtk_doc}
+Tests suite:            ${enable_tests}
+)

@@ -7,12 +7,15 @@ endif
 if PHP_ENABLED
     PHP_SD = php
 endif
+if CSHARP_ENABLED
+    CSHARP_SD = csharp
+endif
 if GTK_DOC_ENABLED
     GTK_DOC_SD = docs
 endif
 
 SUBDIRS		= lasso \
-		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) \
+		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(CSHARP_SD) \
 		  tests \
 		  swig \
 		  $(GTK_DOC_SD)
