@@ -62,6 +62,9 @@ lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf
 		$(top_srcdir)/swig/inheritance.h
 	$(SWIG) -v -java -module lasso -package com.entrouvert.lasso -o lasso_wrap.c \
 		$(top_srcdir)/swig/Lasso.i
+	cp lasso_wrap.c lasso_wrap.c.bak
+	sed -e 's/} DowncastableNode;/void *fix;} DowncastableNode;/' \
+			< lasso_wrap.c.bak > lasso_wrap.c
 
 # FIXME There must be a better way to do this with SWIG
 $(JAVA_PATH)lasso.java: lasso.java
