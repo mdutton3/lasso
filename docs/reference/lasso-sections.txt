@@ -33,7 +33,6 @@ LassoServer
 lasso_server_new
 lasso_server_new_from_dump
 lasso_server_add_provider
-lasso_server_add_service
 lasso_server_destroy
 lasso_server_dump
 lasso_server_get_provider
