@@ -70,9 +70,6 @@ struct _LassoNameIdentifierMappingClass {
 LASSO_EXPORT GType lasso_name_identifier_mapping_get_type(void);
 
 LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new(LassoServer *server);
-LASSO_EXPORT gchar* lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping*);
-LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new_from_dump(
-		LassoServer *server, const char *dump);
 
 LASSO_EXPORT gint lasso_name_identifier_mapping_build_request_msg(
 		LassoNameIdentifierMapping *mapping);

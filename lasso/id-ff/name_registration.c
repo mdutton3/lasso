@@ -206,7 +206,7 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  *
- * Initializes a new lib:RegisterNameIdentifier request.
+ * Initializes a new lib:RegisterNameIdentifierRequest request.
  * 
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -518,7 +518,8 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
  * lasso_name_registration_validate_request:
  * @name_registration: a #LassoNameRegistration
  *
- * Checks profile request with regards to principal federations and prepares a
+ * Checks profile request with regards to message status and principal
+ * federations, update them accordingly and prepares a 
  * lib:RegisterNameIdentifierResponse accordingly.
  * 
  * Return value: 0 on success; or a negative value otherwise.

@@ -34,24 +34,28 @@
 
 /**
  * lasso_defederation_build_notification_msg:
- * @defederation: the federation termination object
+ * @defederation: a #LassoDefederation
  * 
- * This method builds the federation termination notification message.
+ * Builds the federation termination notification message.
  * 
  * It gets the federation termination notification protocol profile and:
- * 
- * - if it is a SOAP method, then it builds the federation termination
+ * <itemizedlist>
+ * <listitem><para>
+ *   if it is a SOAP method, then it builds the federation termination
  *   notification SOAP message, optionaly signs the notification node, set the
  *   msg_body attribute, gets the SoapEndpoint url and set the msg_url
  *   attribute of the federation termination object.
- *
- * - if it is a HTTP-Redirect method, then it builds the federation termination
+ * </para></listitem>
+ * <listitem><para>
+ *   if it is a HTTP-Redirect method, then it builds the federation termination
  *   notification QUERY message (optionaly signs the notification message),
  *   builds the federation termination notification url with federation
  *   termination service url, set the msg_url attribute of the federation
  *   termination object, set the msg_body to NULL
+ * </para></listitem>
+ * </itemizedlist>
  * 
- * Return value: O of OK else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_defederation_build_notification_msg(LassoDefederation *defederation)
@@ -116,10 +120,9 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 
 /**
  * lasso_defederation_destroy:
- * @defederation: the federation termination object
+ * @defederation: a #LassoDefederation
  * 
- * This method destroys the federation termination object
- *
+ * Destroys a #LassoDefederation object.
  **/
 void
 lasso_defederation_destroy(LassoDefederation *defederation)
@@ -244,21 +247,14 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
  * @defederation: the federation termination object
  * @notification_msg: the federation termination notification message
  * 
- * Process the federation termination notification.
- * 
- * - if it is a SOAP notification method then it builds the federation
- *   termination object from the SOAP message and optionaly verify the
- *   signature.
- *
- * - if it is a HTTP-Redirect notification method then it builds the
- *   federation termination notication object from the QUERY message and
- *   optionaly verify the signature.
+ * Processes a lib:FederationTerminationNotification message.  Rebuilds a
+ * request object from the message and optionally verifies its signature.
  * 
  * Set the msg_nameIdentifier attribute with the NameIdentifier content of the
  * notification object and optionaly set the msg_relayState attribute with the
- * RelayState content of the notification object
+ * RelayState content of the notification object.
  *
- * Return value: 0 on success or a negative value otherwise.
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_defederation_process_notification_msg(LassoDefederation *defederation, char *request_msg)
@@ -311,16 +307,12 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 
 /**
  * lasso_defederation_validate_notification:
- * @defederation: the federation termination object
+ * @defederation: a #LassoDefederation
  * 
- * Validate the federation termination notification :
- * -  verifies the ProviderID
- * -  if HTTP-Redirect method, set msg_url with the federation termination
- *    service return url
- * -  verifies the federation
- * -  verifies the authentication
+ * Checks notification with regards to message status and principal
+ * federations; update them accordingly.
  * 
- * Return value: O if OK else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_defederation_validate_notification(LassoDefederation *defederation)
@@ -434,22 +426,12 @@ lasso_defederation_get_type()
 
 /**
  * lasso_defederation_new:
- * @server: the server object of the provider
+ * @server: the #LassoServer
  * 
- * This function build a new federation termination object to build
- * a notification message or to process a notification.
+ * Creates a new #LassoDefederation.
  *
- * If building a federation termination notification message then call :
- *    lasso_defederation_init_notification()
- *    lasso_defederation_build_notification_msg()
- * and get msg_url or msg_body.
- *
- * If processing a federation termination notification message then call :
- *   lasso_defederation_process_notification_msg()
- *   lasso_defederation_validate_notification()
- * and process the returned code.
- *
- * Return value: a new instance of federation termination object or NULL
+ * Return value: a newly created #LassoDefederation object; or NULL if an error
+ *     occured
  **/
 LassoDefederation*
 lasso_defederation_new(LassoServer *server)
@@ -463,4 +445,3 @@ lasso_defederation_new(LassoServer *server)
 
 	return defederation;
 }
-

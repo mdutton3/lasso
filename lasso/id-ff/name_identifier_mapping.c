@@ -32,6 +32,26 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_name_identifier_mapping_build_request_msg:
+ * @mapping: a #LassoNameIdentifierMapping
+ * 
+ * Builds a name identifier mapping request message.
+ * 
+ * <itemizedlist>
+ * <listitem><para>
+ *   If it is a SOAP method, then it builds the request as a SOAP message,
+ *   optionally signs his node, sets @msg_body with that message and sets
+ *   @msg_url with the SOAP Endpoint URL
+ * </para></listitem>
+ * <listitem><para>
+ *   If it is a HTTP-Redirect method, then it builds the request as a query
+ *   string message, optionally signs it and sets @msg_url to that URL.
+ * </para></listitem>
+ * </itemizedlist>
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapping)
 {
@@ -70,6 +90,31 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	return 0;
 }
 
+
+/**
+ * lasso_name_identifier_mapping_build_response_msg:
+ * @mapping: a #LassoNameIdentifierMapping
+ * 
+ * Builds a name identifier mapping response message.
+ *
+ * <itemizedlist>
+ * <listitem><para>
+ *   If it is a SOAP method, then it builds the response as a SOAP message,
+ *   optionally signs his node, sets @msg_body with that message and sets
+ *   @msg_url with the register name identifier service return URL.
+ * </para></listitem>
+ * <listitem><para>
+ *   If it is a HTTP-Redirect method, then it builds the response as a query
+ *   string message, optionally signs it and sets @msg_url to that URL.
+ * </para></listitem>
+ * </itemizedlist>
+ *
+ * If private key and certificate are set in server object it will also signs
+ * the message (either with X509 if SOAP or with a simple signature for query
+ * strings).
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *mapping)
 {
@@ -119,6 +164,17 @@ lasso_name_identifier_mapping_destroy(LassoNameIdentifierMapping *mapping)
 	lasso_node_destroy(LASSO_NODE(mapping));
 }
 
+
+/**
+ * lasso_name_identifier_mapping_init_request:
+ * @mapping: a #LassoNameIdentifierMapping
+ * @targetNamespace: the request targetNamespace
+ * @remote_providerID: the providerID of the identity provider.
+ *
+ * Initializes a new lib:NameIdentifierMappingRequest request.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 		char *targetNamespace, char *remote_providerID)
@@ -194,6 +250,17 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	return 0;
 }
 
+
+/**
+ * lasso_name_identifier_mapping_process_request_msg:
+ * @mapping: a #LassoNameIdentifierMapping
+ * @request_msg: the name identifier mapping request message
+ * 
+ * Processes a lib:NameIdentifierMappingRequest message.  Rebuilds a request
+ * object from the message and optionally verifies its signature.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *mapping,
 		char *request_msg)
@@ -244,6 +311,19 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 	return profile->signature_status;
 }
 
+
+/**
+ * lasso_name_identifier_mapping_process_response_msg:
+ * @mapping: a #LassoNameIdentifierMapping
+ * @response_msg: the name identifier mapping response message
+ * 
+ * Processes a lib:NameIdentifierMappingResponse message.  Rebuilds a response
+ * object from the message and optionally verifies its signature.
+ *
+ * If the response depicts Success it will also sets @targetNameIdentifier.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *mapping,
 		char *response_msg)
@@ -290,6 +370,17 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	return rc;
 }
 
+
+/**
+ * lasso_name_identifier_mapping_validate_request:
+ * @mapping: a #LassoNameIdentifierMapping
+ *
+ * Checks profile request with regards to message status and principal
+ * federations, update them accordingly and prepares a 
+ * lib:NameIdentifierMappingResponse accordingly.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mapping)
 {
@@ -406,7 +497,6 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 }
 
 
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -465,18 +555,4 @@ lasso_name_identifier_mapping_new(LassoServer *server)
 	LASSO_PROFILE(mapping)->server = g_object_ref(server);
 
 	return mapping;
-}
-
-LassoNameIdentifierMapping*
-lasso_name_identifier_mapping_new_from_dump(LassoServer *server, const char *dump)
-{
-	g_assert_not_reached();
-	return NULL;
-}
-
-char*
-lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
-{
-	g_assert_not_reached();
-	return lasso_node_dump(LASSO_NODE(mapping));
 }
