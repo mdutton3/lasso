@@ -34,6 +34,15 @@ struct _LassoIdentityPrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_identity_add_federation:
+ * @identity: a #LassoIdentity
+ * @federation: the #LassoFederation
+ *
+ * Adds @federation as a known federation for @identity.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federation)
 {
@@ -48,16 +57,36 @@ lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federati
 	return 0;
 }
 
+/**
+ * lasso_identity_get_federation:
+ * @identity: a #LassoIdentity
+ * @providerID: the provider ID
+ *
+ * Looks up and returns the #LassoFederation for this provider ID.
+ *
+ * Return value: the #LassoFederation; or NULL if it didn't exist.  The
+ *      #LassoFederation is internally allocated.  It must not be freed,
+ *      modified or stored.
+ **/
 LassoFederation*
-lasso_identity_get_federation(LassoIdentity *identity, gchar *providerID)
+lasso_identity_get_federation(LassoIdentity *identity, const char *providerID)
 {
 	return g_hash_table_lookup(identity->federations, providerID);
 }
 
+/**
+ * lasso_identity_remove_federation:
+ * @identity: a #LassoIdentity
+ * @providerID: the provider ID
+ *
+ * Remove federation between identity and provider with @providerID
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
-lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerID)
+lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID)
 {
-	if (g_hash_table_remove(identity->federations, remote_providerID) == FALSE) {
+	if (g_hash_table_remove(identity->federations, providerID) == FALSE) {
 		debug("Failed to remove federation for remote Provider %s", remote_providerID);
 		return LASSO_ERROR_UNDEFINED;
 	}
@@ -65,6 +94,12 @@ lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerI
 	return 0;
 }
 
+/**
+ * lasso_identity_destroy:
+ * @identity: a #LassoIdentity
+ *
+ * Destroys an identity.
+ **/
 void
 lasso_identity_destroy(LassoIdentity *identity)
 {
@@ -212,12 +247,27 @@ lasso_identity_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_identity_new:
+ *
+ * Creates a new #LassoIdentity.
+ *
+ * Return value: a newly created #LassoIdentity
+ **/
 LassoIdentity*
 lasso_identity_new()
 {
 	return g_object_new(LASSO_TYPE_IDENTITY, NULL);
 }
 
+/**
+ * lasso_identity_new_from_dump:
+ * @dump: XML server dump
+ *
+ * Restores the @dump to a new #LassoIdentity.
+ *
+ * Return value: a newly created #LassoIdentity; or NULL if an error occured
+ **/
 LassoIdentity*
 lasso_identity_new_from_dump(const gchar *dump)
 {
@@ -232,6 +282,14 @@ lasso_identity_new_from_dump(const gchar *dump)
 	return identity;
 }
 
+/**
+ * lasso_identity_dump:
+ * @identity: a #LassoIdentity
+ *
+ * Dumps @identity content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
+ **/
 gchar*
 lasso_identity_dump(LassoIdentity *identity)
 {
@@ -240,4 +298,3 @@ lasso_identity_dump(LassoIdentity *identity)
 
 	return lasso_node_dump(LASSO_NODE(identity), NULL, 1);
 }
-

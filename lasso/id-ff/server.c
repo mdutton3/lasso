@@ -93,7 +93,7 @@ lasso_server_add_service(LassoServer *server,
 }
 
 /**
- * lasso_server_destroy
+ * lasso_server_destroy:
  * @server: a #LassoServer
  *
  * Destroys a server.

@@ -65,7 +65,7 @@ LASSO_EXPORT gint lasso_defederation_build_notification_msg(LassoDefederation *d
 LASSO_EXPORT void lasso_defederation_destroy(LassoDefederation *defederation);
 
 LASSO_EXPORT gint lasso_defederation_init_notification(LassoDefederation *defederation,
-		gchar *remote_providerID, lassoHttpMethod notification_method);
+		gchar *remote_providerID, lassoHttpMethod http_method);
 
 LASSO_EXPORT gint lasso_defederation_process_notification_msg(
 		LassoDefederation *defederation, gchar *notification_msg);

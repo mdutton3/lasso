@@ -51,11 +51,12 @@ typedef struct _LassoFederationPrivate LassoFederationPrivate;
 struct _LassoFederation {
 	LassoNode parent;
 
+	/*< public >*/
 	gchar *remote_providerID;
-
 	LassoSamlNameIdentifier *local_nameIdentifier;
 	LassoSamlNameIdentifier *remote_nameIdentifier;
 
+	/*< private >*/
 	LassoFederationPrivate *private_data;
 };
 
@@ -67,7 +68,7 @@ LASSO_EXPORT GType lasso_federation_get_type(void);
 
 LASSO_EXPORT LassoFederation* lasso_federation_new(gchar *remote_providerID);
 
-LASSO_EXPORT void lasso_federation_build_local_nameIdentifier(LassoFederation *federation,
+LASSO_EXPORT void lasso_federation_build_local_name_identifier(LassoFederation *federation,
 		const gchar *nameQualifier, const gchar *format, const gchar *content);
 
 LASSO_EXPORT void lasso_federation_set_local_name_identifier(LassoFederation *federation,
@@ -77,8 +78,8 @@ LASSO_EXPORT void lasso_federation_set_remote_name_identifier(LassoFederation *f
 
 LASSO_EXPORT void lasso_federation_destroy(LassoFederation *federation);
 
-LASSO_EXPORT gboolean lasso_federation_verify_nameIdentifier(
-		LassoFederation *federation, LassoSamlNameIdentifier *nameIdentifier);
+LASSO_EXPORT gboolean lasso_federation_verify_name_identifier(
+		LassoFederation *federation, LassoSamlNameIdentifier *name_identifier);
 
 #ifdef __cplusplus
 }

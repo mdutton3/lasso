@@ -292,7 +292,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 
 	if (federation == NULL) {
 		federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
-		lasso_federation_build_local_nameIdentifier(federation,
+		lasso_federation_build_local_name_identifier(federation,
 				LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID,
 				LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED,
 				NULL);
@@ -516,15 +516,11 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 /**
  * lasso_login_build_authn_request_msg:
  * @login: a LassoLogin
- * @remote_providerID: the providerID of the identity provider or NULL
  * 
  * Builds an authentication request. Depending of the selected HTTP method,
  * the data for the sending of the request are stored in msg_url (GET) or
  * msg_url and msg_body (POST).
  * 
- * If remote_providerID is NULL, the providerID of the first provider
- * of server is used.
- *
  * Return value: 0 on success and a negative value otherwise.
  **/
 gint
@@ -690,6 +686,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 /**
  * lasso_login_build_response_msg:
  * @login: a LassoLogin
+ * @remote_providerID: the providerID of the session provider
  * 
  * Builds a SOAP response message. The data for the sending of the response
  * are stored in msg_body.
@@ -755,7 +752,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 /**
  * lasso_login_destroy:
- * @login: a LassoLogin
+ * @login: a #LassoLogin
  * 
  * Destroys LassoLogin objects created with lasso_login_new() or lasso_login_new_from_dump().
  **/
@@ -1299,7 +1296,7 @@ lasso_login_get_type()
 
 /**
  * lasso_login_new
- * @server: a #LassoServer
+ * @server: the #LassoServer
  *
  * Creates a new #LassoLogin.
  *
@@ -1321,6 +1318,7 @@ lasso_login_new(LassoServer *server)
 
 /**
  * lasso_login_new_from_dump:
+ * @server: the #LassoServer
  * @dump: XML login dump
  *
  * Restores the @dump to a new #LassoLogin.

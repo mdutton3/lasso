@@ -126,15 +126,16 @@ lasso_defederation_destroy(LassoDefederation *defederation)
 
 /**
  * lasso_defederation_init_notification:
- * @defederation: the federation termination object
+ * @defederation: a #LassoDefederation
  * @remote_providerID: the provider id of the federation termination notified
- * provider.
+ *     provider.
+ * @http_method: the HTTP method to send the message.
  *
- * It sets a new federation termination notification to the remote provider id
- * with the provider id of the requester (from the server object )
- * and the name identifier of the federated principal
+ * Sets a new federation termination notification to the remote provider id
+ * with the provider id of the requester (from the server object) and the name
+ * identifier of the federated principal.
  * 
- * Return value: 0 if OK else < 0
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_defederation_init_notification(LassoDefederation *defederation, gchar *remote_providerID,
@@ -386,7 +387,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
-	if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
+	if (lasso_federation_verify_name_identifier(federation, nameIdentifier) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 
@@ -431,7 +432,6 @@ lasso_defederation_get_type()
 /**
  * lasso_defederation_new:
  * @server: the server object of the provider
- * @provider_type: the provider type (service provider or identity provider)
  * 
  * This function build a new federation termination object to build
  * a notification message or to process a notification.

@@ -53,8 +53,10 @@ Federation Termination Notification Profile
 
 @defederation: 
 @remote_providerID: 
-@notification_method: 
+@http_method: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@notification_method: 
 
 
 <!-- ##### FUNCTION lasso_defederation_process_notification_msg ##### -->

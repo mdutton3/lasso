@@ -730,7 +730,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 		}
 
-		if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
+		if (lasso_federation_verify_name_identifier(federation, nameIdentifier) == FALSE) {
 			message(G_LOG_LEVEL_WARNING, "No name identifier for %s",
 					profile->remote_providerID);
 			lasso_profile_set_response_status(profile,
@@ -936,7 +936,6 @@ lasso_logout_get_type()
 /**
  * lasso_logout_new:
  * @server: the logout object
- * @provider_type: the provider type (service provider or identity provider)
  * 
  * initialises a new logout object
  * 

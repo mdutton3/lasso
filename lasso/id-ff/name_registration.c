@@ -486,7 +486,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 		return LASSO_ERROR_UNDEFINED;
 	}
 
-	if (lasso_federation_verify_nameIdentifier(federation,
+	if (lasso_federation_verify_name_identifier(federation,
 				request->OldProvidedNameIdentifier) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "No name identifier");
 		return LASSO_ERROR_UNDEFINED;

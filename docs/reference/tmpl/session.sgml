@@ -1,0 +1,123 @@
+<!-- ##### SECTION Title ##### -->
+LassoSession
+
+<!-- ##### SECTION Short_Description ##### -->
+Principal Session
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT LassoSession ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT LassoSessionClass ##### -->
+<para>
+
+</para>
+
+@parent: 
+
+<!-- ##### FUNCTION lasso_session_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_new_from_dump ##### -->
+<para>
+
+</para>
+
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_add_assertion ##### -->
+<para>
+
+</para>
+
+@session: 
+@providerID: 
+@assertion: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_destroy ##### -->
+<para>
+
+</para>
+
+@session: 
+
+
+<!-- ##### FUNCTION lasso_session_dump ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_assertion ##### -->
+<para>
+
+</para>
+
+@session: 
+@providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_authentication_method ##### -->
+<para>
+
+</para>
+
+@session: 
+@providerID: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_first_providerID ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_get_provider_index ##### -->
+<para>
+
+</para>
+
+@session: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_session_remove_assertion ##### -->
+<para>
+
+</para>
+
+@session: 
+@providerID: 
+@Returns: 
+
+

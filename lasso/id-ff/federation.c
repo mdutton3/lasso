@@ -35,9 +35,8 @@ struct _LassoFederationPrivate
 /*****************************************************************************/
 
 static LassoSamlNameIdentifier*
-lasso_federation_build_nameIdentifier(const gchar *nameQualifier,
-				      const gchar *format,
-				      const gchar *content)
+lasso_federation_build_name_identifier(const gchar *nameQualifier,
+		const gchar *format, const gchar *content)
 {
 	LassoSamlNameIdentifier *nameIdentifier;
 
@@ -58,16 +57,33 @@ lasso_federation_build_nameIdentifier(const gchar *nameQualifier,
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_federation_build_local_name_identifier:
+ * @federation: a #LassoFederation
+ * @nameQualifier: the name identifier qualifier
+ * @format: the name identifier format
+ * @content: the name identifier content
+ *
+ * Builds federation local name identifier.
+ **/
 void
-lasso_federation_build_local_nameIdentifier(LassoFederation *federation,
+lasso_federation_build_local_name_identifier(LassoFederation *federation,
 					    const gchar     *nameQualifier,
 					    const gchar     *format,
 					    const gchar     *content)
 {
-	federation->local_nameIdentifier = lasso_federation_build_nameIdentifier(
+	federation->local_nameIdentifier = lasso_federation_build_name_identifier(
 			nameQualifier, format, content);
 }
 
+/**
+ * lasso_federation_set_local_name_identifier:
+ * @federation: a #LassoFederation
+ * @name_identifier: the #LassoSamlNameIdentifier
+ *
+ * Sets local name identifier to @name_identifier.  Caller keeps ownership of
+ * @name_identifier.
+ **/
 void
 lasso_federation_set_local_name_identifier(LassoFederation *federation,
 		LassoSamlNameIdentifier *name_identifier)
@@ -76,6 +92,15 @@ lasso_federation_set_local_name_identifier(LassoFederation *federation,
 		lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
 	federation->local_nameIdentifier = g_object_ref(name_identifier);
 }
+
+/**
+ * lasso_federation_set_remote_name_identifier:
+ * @federation: a #LassoFederation
+ * @name_identifier: the #LassoSamlNameIdentifier
+ *
+ * Sets remote name identifier to @name_identifier.  Caller keeps ownership of
+ * @name_identifier
+ **/
 void
 lasso_federation_set_remote_name_identifier(LassoFederation *federation,
 		LassoSamlNameIdentifier *name_identifier)
@@ -85,27 +110,42 @@ lasso_federation_set_remote_name_identifier(LassoFederation *federation,
 	federation->remote_nameIdentifier = g_object_ref(name_identifier);
 }
 
+/**
+ * lasso_federation_destroy:
+ * @federation: a #LassoFederation
+ *
+ * Destroys a federation.
+ **/
 void
 lasso_federation_destroy(LassoFederation *federation)
 {
 	lasso_node_destroy(LASSO_NODE(federation));
 }
 
+/**
+ * lasso_federation_verify_name_identifier:
+ * @federation: a #LassoFederation
+ * @name_identifier: the #LassoSamlNameIdentifier
+ *
+ * Checks whether federation is for @name_identifier.
+ *
+ * Return value: %TRUE if the federation is for @name_identifier.
+ **/
 gboolean
-lasso_federation_verify_nameIdentifier(LassoFederation *federation,
-				       LassoSamlNameIdentifier *nameIdentifier)
+lasso_federation_verify_name_identifier(LassoFederation *federation,
+		LassoSamlNameIdentifier *name_identifier)
 {
 	char *s;
-	/* XXX: verify_nameIdentifier only checks content; what about Format
+	/* XXX: verify_name_identifier only checks content; what about Format
 	 * and NameQualifier ? */
 
 	g_return_val_if_fail(LASSO_IS_FEDERATION(federation), FALSE);
-	g_return_val_if_fail(LASSO_IS_NODE(nameIdentifier), FALSE);
+	g_return_val_if_fail(LASSO_IS_NODE(name_identifier), FALSE);
 
 	/* verify local name identifier */
 	if (federation->local_nameIdentifier != NULL) {
 		s = federation->local_nameIdentifier->content;
-		if (strcmp(s, nameIdentifier->content) == 0) {
+		if (strcmp(s, name_identifier->content) == 0) {
 			return TRUE;
 		}
 	}
@@ -113,7 +153,7 @@ lasso_federation_verify_nameIdentifier(LassoFederation *federation,
 	/* verify remote name identifier */
 	if (federation->remote_nameIdentifier != NULL) {
 		s = federation->remote_nameIdentifier->content;
-		if (strcmp(s, nameIdentifier->content) == 0) {
+		if (strcmp(s, name_identifier->content) == 0) {
 			return TRUE;
 		}
 	}
@@ -239,6 +279,14 @@ lasso_federation_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_federation_new:
+ * @remote_providerID: remote Provider ID
+ *
+ * Creates a new #LassoFederation with the remote provider.
+ *
+ * Return value: a newly created #LassoFederation
+ **/
 LassoFederation*
 lasso_federation_new(gchar *remote_providerID)
 {
@@ -251,4 +299,3 @@ lasso_federation_new(gchar *remote_providerID)
 
 	return federation;
 }
-
