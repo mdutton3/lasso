@@ -174,10 +174,11 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpContext)
         idpLogoutContext = lasso.Logout.new(lasso.providerTypeIdp, idpContext)
         self.failUnlessEqual(
-            idpLogoutContext.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+            idpLogoutContext.load_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
         self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
         self.failUnless(idpUserContextDump)
-        self.failUnlessEqual(idpLogoutContext.create_user(idpUserContextDump), 0)
+        self.failUnlessEqual(idpLogoutContext.load_user_dump(idpUserContextDump), 0)
+        self.failUnlessEqual(idpLogoutContext.process_request(), 0)
         idpUserContext = idpLogoutContext.user
         self.failUnless(idpUserContext)
         idpUserContextDump = idpUserContext.dump()
