@@ -22,11 +22,11 @@
  */
 
 
-import com.entrouvert.lasso.AuthnRequest;
 import com.entrouvert.lasso.Identity;
 import com.entrouvert.lasso.lassoConstants;
 import com.entrouvert.lasso.lasso;
 import com.entrouvert.lasso.Logout;
+import com.entrouvert.lasso.SamlNameIdentifier;
 import com.entrouvert.lasso.Server;
 import com.entrouvert.lasso.Session;
 
@@ -43,13 +43,12 @@ public class CFLassoSingleLogout {
 	logout.buildRequestMsg();
     }
 
-    public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
-			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
-        server = new Server(metadataPath, publicKeyPath, privateKeyPath, null,
-			    lassoConstants.SIGNATURE_METHOD_RSA_SHA1);
+    public void configure(String metadataPath, String privateKeyPath, String idpProviderId,
+			  String idpMetadataPath, String idpPublicKeyPath) {
+        server = new Server(metadataPath, privateKeyPath, null, null);
 	this.idpProviderId = idpProviderId;
-        server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
-        logout = new Logout(server, lassoConstants.providerTypeSp);
+        server.addProvider(lasso.PROVIDER_ROLE_IDP, idpMetadataPath, idpPublicKeyPath, null);
+        logout = new Logout(server);
     }
 
     public String getIdentityDump() {
@@ -69,7 +68,11 @@ public class CFLassoSingleLogout {
     }
 
     public String getNameIdentifier() {
-	return logout.getNameIdentifier();
+	SamlNameIdentifier nameIdentifier = logout.getNameIdentifier();
+	if (nameIdentifier == null)
+	    return null;
+	else
+	    return nameIdentifier.getContent();
     }
 
     public String getSessionDump() {
@@ -85,7 +88,7 @@ public class CFLassoSingleLogout {
     }
 
     public void processResponseMsg(String responseMsg) {
-	logout.processResponseMsg(responseMsg, lassoConstants.HTTP_METHOD_SOAP);
+	logout.processResponseMsg(responseMsg);
     }
 
     public void setIdentityFromDump(String identityDump) {

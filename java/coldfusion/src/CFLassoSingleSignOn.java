@@ -30,7 +30,8 @@
  *
  * To test it:
  * $ export LD_LIBRARY_PATH=../../.libs/
- * $ java -classpath ../../lasso.jar:. CFLassoLogin
+ * $ java -classpath ../../lasso.jar:. CFLassoSingleSignOn
+
  *
  * To use it:
  * $ jar cf CFLasso.jar *.class
@@ -39,11 +40,12 @@
  *   - Add lasso.jar & CFLasso.jar to java.class.path variable.
  */
 
-import com.entrouvert.lasso.AuthnRequest;
+import com.entrouvert.lasso.LibAuthnRequest;
 import com.entrouvert.lasso.Identity;
 import com.entrouvert.lasso.lassoConstants;
 import com.entrouvert.lasso.lasso;
 import com.entrouvert.lasso.Login;
+import com.entrouvert.lasso.SamlNameIdentifier;
 import com.entrouvert.lasso.Server;
 import com.entrouvert.lasso.Session;
 
@@ -61,19 +63,18 @@ public class CFLassoSingleSignOn {
     }
 
     public void buildAuthnRequestMsg() {
-        login.buildAuthnRequestMsg(idpProviderId);
+        login.buildAuthnRequestMsg();
     }
 
     public void buildRequestMsg() {
 	login.buildRequestMsg();
     }
 
-    public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
-			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
-        server = new Server(metadataPath, publicKeyPath, privateKeyPath, null,
-			    lassoConstants.SIGNATURE_METHOD_RSA_SHA1);
+    public void configure(String metadataPath, String privateKeyPath, String idpProviderId,
+			  String idpMetadataPath, String idpPublicKeyPath) {
+        server = new Server(metadataPath, privateKeyPath, null, null);
 	this.idpProviderId = idpProviderId;
-        server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
+        server.addProvider(lasso.PROVIDER_ROLE_IDP, idpMetadataPath, idpPublicKeyPath, null);
         login = new Login(server);
     }
 
@@ -98,7 +99,11 @@ public class CFLassoSingleSignOn {
     }
 
     public String getNameIdentifier() {
-	return login.getNameIdentifier();
+	SamlNameIdentifier nameIdentifier = login.getNameIdentifier();
+	if (nameIdentifier == null)
+	    return null;
+	else
+	    return nameIdentifier.getContent();
     }
 
     public String getSessionDump() {
@@ -110,11 +115,11 @@ public class CFLassoSingleSignOn {
     }
 
     public void initAuthnRequest(String relayState) {
-	AuthnRequest authnRequest;
+	LibAuthnRequest authnRequest;
 	String authnRequestUrl;
 
-        login.initAuthnRequest(lassoConstants.HTTP_METHOD_REDIRECT);
-	authnRequest = login.getAuthnRequest();
+        login.initAuthnRequest(idpProviderId, lassoConstants.HTTP_METHOD_REDIRECT);
+	authnRequest = (LibAuthnRequest) login.getRequest();
         authnRequest.setIsPassive(false);
         authnRequest.setNameIdPolicy(lassoConstants.LIB_NAMEID_POLICY_TYPE_FEDERATED);
         authnRequest.setConsent(lassoConstants.LIB_CONSENT_OBTAINED);
@@ -129,7 +134,6 @@ public class CFLassoSingleSignOn {
     static public void main(String [] args) {
 	CFLassoSingleSignOn lasso = new CFLassoSingleSignOn();
 	lasso.configure("../../../tests/data/sp2-la/metadata.xml",
-			"../../../tests/data/sp2-la/public-key.pem",
 			"../../../tests/data/sp2-la/private-key-raw.pem",
 			"https://idp2/metadata",
 			"../../../tests/data/idp2-la/metadata.xml",
