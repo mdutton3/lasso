@@ -419,3 +419,68 @@ class FederationTerminationNotification(Node):
         if name == "node":
             ret = Node(_obj=ret)
         return ret
+
+
+class NameIdentifierMappingRequest(Node):
+    def __init__(self,
+                 providerID,
+                 nameIdentifier, nameQualifier, format,
+                 consent = None,
+		 _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        self._o = lassomod.name_identifier_mapping_request(providerID,
+                                                           nameIdentifier, nameQualifier, format)
+        if self._o is None: raise Error('lasso_name_identifier_mapping_request() failed')
+
+        if consent:
+            lassomod.name_identifier_mapping_request_set_consent(self, consent)
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.name_identifier_mapping_request_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "node":
+            ret = Node(_obj=ret)
+        return ret
+
+class NameIdentifierMappingResponse(Node):
+    def __init__(self,
+                 providerID,
+                 statusCodeValue,
+                 request,
+                 _obj=None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        self._o = lassomod.name_identifier_mapping_response(providerID,
+                                           statusCodeValue,
+                                           request)
+        if self._o is None: raise Error('lasso_name_identifier_mapping_response() failed')
+
+    def __isprivate(self, name):
+        return name == '_o'
+
+    def __getattr__(self, name):
+        if self.__isprivate(name):
+            return self.__dict__[name]
+        if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
+            raise AttributeError, name
+        ret = lassomod.name_identifier_mapping_response_getattr(self, name)
+        if ret is None:
+            raise AttributeError, name
+        if name == "node":
+            ret = Node(_obj=ret)
+        return ret

@@ -20,6 +20,8 @@ liblasso_protocols_la_SOURCES = \
 	federation_termination_notification.c \
 	logout_request.c \
 	logout_response.c \
+	name_identifier_mapping_request.c \
+	name_identifier_mapping_response.c \
 	register_name_identifier_response.c \
 	register_name_identifier_request.c
 
@@ -31,5 +33,7 @@ liblassoinclude_HEADERS = \
 	federation_termination_notification.h \
 	logout_request.h \
 	logout_response.h \
+	name_identifier_mapping_request.h \
+	name_identifier_mapping_response.h \
 	register_name_identifier_response.h \
 	register_name_identifier_request.h

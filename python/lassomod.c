@@ -31,6 +31,8 @@
 #include "protocols/py_register_name_identifier_request.h"
 #include "protocols/py_register_name_identifier_response.h"
 #include "protocols/py_federation_termination_notification.h"
+#include "protocols/py_name_identifier_mapping_request.h"
+#include "protocols/py_name_identifier_mapping_response.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -95,6 +97,15 @@ static PyMethodDef lasso_methods[] = {
   {"federation_termination_notification_getattr", federation_termination_notification_getattr, METH_VARARGS},
   {"federation_termination_notification",  federation_termination_notification,  METH_VARARGS},
   {"federation_termination_notification_set_consent",  federation_termination_notification_set_consent,  METH_VARARGS},
+
+  /* py_name_identifier_mapping_request.h */
+  {"name_identifier_mapping_request_getattr", name_identifier_mapping_request_getattr, METH_VARARGS},
+  {"name_identifier_mapping_request",  name_identifier_mapping_request,  METH_VARARGS},
+  {"name_identifier_mapping_request_set_consent",  name_identifier_mapping_request_set_consent,  METH_VARARGS},
+
+  {"name_identifier_mapping_response_getattr", name_identifier_mapping_response_getattr, METH_VARARGS},
+  {"name_identifier_mapping_response",  name_identifier_mapping_response,  METH_VARARGS},
+
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
