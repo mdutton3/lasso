@@ -27,7 +27,12 @@
 
 
 %module Lasso
+
+
+%include exception.i       
 %include typemaps.i
+
+
 %{
 
 #if defined(SWIGRUBY) || defined (PHP_VERSION)
@@ -61,6 +66,7 @@
 #define va_copy(dest,src) (dest) = (src)
 #endif
 #endif
+
 %}
 
 /* When lasso module is imported, lasso is initialized.
@@ -112,6 +118,22 @@
 
 %typemap(newfree) gchar * "g_free($1);";
 %typemap(newfree) xmlChar * "xmlFree($1);";
+
+/* Generate a language independant exception from Lasso function result. */
+
+%define THROW_ERROR
+%exception {
+	int errorCode;
+	errorCode = $action
+	if (errorCode)
+		SWIG_exception(SWIG_UnknownError, "Unknown error");
+}
+%enddef
+
+%define END_THROW_ERROR
+%exception;
+%enddef
+
 
 /* Functions */
 
@@ -497,34 +519,33 @@ typedef struct {
 
 		LassoServer(gchar *metadata = NULL, gchar *public_key = NULL,
 			    gchar *private_key = NULL, gchar *certificate = NULL,
-			    lassoSignatureMethod signature_method = lassoSignatureMethodRsaSha1) {
-			return lasso_server_new(metadata, public_key, private_key, certificate,
-						signature_method);
-		}
+			    lassoSignatureMethod signature_method = lassoSignatureMethodRsaSha1);
 
-		~LassoServer() {
-			lasso_server_destroy(self);
-		}
+		~LassoServer();
 
-		static LassoServer *new_from_dump(gchar *dump) {
-			return lasso_server_new_from_dump(dump);
-		}
+		%newobject new_from_dump;
+		static LassoServer *new_from_dump(gchar *dump);
 
 		/* Methods */
 
+	        THROW_ERROR
 		void add_provider(gchar *metadata, gchar *public_key = NULL,
-				  gchar *ca_certificate = NULL) {
-			int errorCode;
-			errorCode = lasso_server_add_provider(self, metadata, public_key,
-							      ca_certificate);
-			/* FIXME: Handle error */
-		}
+				  gchar *ca_certificate = NULL);
+		END_THROW_ERROR
 
-		gchar *dump() {
-			return lasso_server_dump(self);
-		}
+		gchar *dump();
 	}
 } LassoServer;
+
+%{
+
+#define new_LassoServer lasso_server_new
+#define delete_LassoServer lasso_server_destroy
+#define LassoServer_new_from_dump lasso_server_new_from_dump
+#define LassoServer_add_provider lasso_server_add_provider
+#define LassoServer_dump lasso_server_dump
+
+%}
 
 /* Constructors */
 
