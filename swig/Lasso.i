@@ -91,6 +91,8 @@
   }
 %}
 #else
+/* Apache fails when lasso_init is called too early in PHP binding. */
+/* FIXME: To investigate. */
 #ifndef SWIGPHP
 %init %{
 	lasso_init();
@@ -339,57 +341,71 @@ typedef enum {
  ***********************************************************************/
 
 
+#ifndef SWIGPHP
 %rename(XML_ERROR_NODE_NOT_FOUND) LASSO_XML_ERROR_NODE_NOT_FOUND;
-#define LASSO_XML_ERROR_NODE_NOT_FOUND -10
 %rename(XML_ERROR_NODE_CONTENT_NOT_FOUND) LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND;
-#define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND -11
 %rename(XML_ERROR_ATTR_NOT_FOUND) LASSO_XML_ERROR_ATTR_NOT_FOUND;
-#define LASSO_XML_ERROR_ATTR_NOT_FOUND -12
 %rename(XML_ERROR_ATTR_VALUE_NOT_FOUND) LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND;
+#endif
+#define LASSO_XML_ERROR_NODE_NOT_FOUND -10
+#define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND -11
+#define LASSO_XML_ERROR_ATTR_NOT_FOUND -12
 #define LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND -13
 
+#ifndef SWIGPHP
 %rename(DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED) LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
-#define LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED -101
 %rename(DS_ERROR_CONTEXT_CREATION_FAILED) LASSO_DS_ERROR_CONTEXT_CREATION_FAILED;
-#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED -102
 %rename(DS_ERROR_PUBLIC_KEY_LOAD_FAILED) LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED -103
 %rename(DS_ERROR_PRIVATE_KEY_LOAD_FAILED) LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
-#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED -104
 %rename(DS_ERROR_CERTIFICATE_LOAD_FAILED) LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
-#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED -105
 %rename(DS_ERROR_SIGNATURE_FAILED) LASSO_DS_ERROR_SIGNATURE_FAILED;
-#define LASSO_DS_ERROR_SIGNATURE_FAILED -106
 %rename(DS_ERROR_SIGNATURE_NOT_FOUND) LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-#define LASSO_DS_ERROR_SIGNATURE_NOT_FOUND -107
 %rename(DS_ERROR_KEYS_MNGR_CREATION_FAILED) LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED;
-#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED -108
 %rename(DS_ERROR_KEYS_MNGR_INIT_FAILED) LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED;
-#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED -109
 %rename(DS_ERROR_SIGNATURE_VERIFICATION_FAILED) LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
-#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED -110
 %rename(DS_ERROR_INVALID_SIGNATURE) LASSO_DS_ERROR_INVALID_SIGNATURE;
+#endif
+#define LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED -101
+#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED -102
+#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED -103
+#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED -104
+#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED -105
+#define LASSO_DS_ERROR_SIGNATURE_FAILED -106
+#define LASSO_DS_ERROR_SIGNATURE_NOT_FOUND -107
+#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED -108
+#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED -109
+#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED -110
 #define LASSO_DS_ERROR_INVALID_SIGNATURE -111
 
+#ifndef SWIGPHP
 %rename(SERVER_ERROR_PROVIDER_NOT_FOUND) LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
-#define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND -201
 %rename(SERVER_ERROR_ADD_PROVIDER_FAILED) LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
+#endif
+#define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND -201
 #define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED -202
 
+#ifndef SWIGPHP
 %rename(LOGOUT_ERROR_UNSUPPORTED_PROFILE) LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
+#endif
 #define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE -301
 
+#ifndef SWIGPHP
 %rename(PROFILE_ERROR_INVALID_QUERY) LASSO_PROFILE_ERROR_INVALID_QUERY;
+#endif
 #define LASSO_PROFILE_ERROR_INVALID_QUERY -401
 
+#ifndef SWIGPHP
 %rename(PARAM_ERROR_BADTYPE_OR_NULL_OBJ) LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ;
-#define LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ -501
 %rename(PARAM_ERROR_INVALID_VALUE) LASSO_PARAM_ERROR_INVALID_VALUE;
-#define LASSO_PARAM_ERROR_INVALID_VALUE -502
 %rename(PARAM_ERROR_ERR_CHECK_FAILED) LASSO_PARAM_ERROR_ERR_CHECK_FAILED;
+#endif
+#define LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ -501
+#define LASSO_PARAM_ERROR_INVALID_VALUE -502
 #define LASSO_PARAM_ERROR_ERR_CHECK_FAILED -503
 
+#ifndef SWIGPHP
 %rename(ERROR_UNDEFINED) LASSO_ERROR_UNDEFINED;
+#endif
 #define LASSO_ERROR_UNDEFINED -999
 
 /* Generate a language independant exception from Lasso error codes. */
@@ -551,11 +567,6 @@ void LassoAuthnRequest_relayState_set(LassoAuthnRequest *self, xmlChar *relaySta
 typedef struct {
 } LassoAuthnResponse;
 
-/* Methods */
-
-%newobject lasso_authn_response_get_status;
-xmlChar *lasso_authn_response_get_status(LassoAuthnResponse *response);
-
 
 /***********************************************************************
  * Request
@@ -653,28 +664,6 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 
 %}
 
-/* Constructors */
-
-%newobject lasso_server_new;
-LassoServer *lasso_server_new(gchar *metadata = NULL, gchar *publicKey = NULL,
-			      gchar *privateKey = NULL, gchar *certificate = NULL,
-			      lassoSignatureMethod signatureMethod = lassoSignatureMethodRsaSha1);
-
-%newobject lasso_server_new_from_dump;
-LassoServer *lasso_server_new_from_dump(gchar *dump);
-
-/* Destructor */
-
-void lasso_server_destroy(LassoServer *server);
-
-/* Methods */
-
-gint lasso_server_add_provider(LassoServer *server, gchar *metadata, gchar *publicKey = NULL,
-			       gchar *caCertificate = NULL);
-
-%newobject lasso_server_dump;
-gchar *lasso_server_dump(LassoServer *server);
-
 
 /***********************************************************************
  * Identity
@@ -731,23 +720,6 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 #define LassoIdentity_dump lasso_identity_dump
 
 %}
-
-/* Constructors */
-
-%newobject lasso_identity_new;
-LassoIdentity *lasso_identity_new(void);
-
-%newobject lasso_identity_new_from_dump;
-LassoIdentity *lasso_identity_new_from_dump(gchar *dump);
-
-/* Destructor */
-
-void lasso_identity_destroy(LassoIdentity *identity);
-
-/* Methods */
-
-%newobject lasso_identity_dump;
-gchar *lasso_identity_dump(LassoIdentity *identity);
 
 
 /***********************************************************************
@@ -809,26 +781,6 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 #define LassoSession_getAuthenticationMethod lasso_session_get_authentication_method
 
 %}
-
-/* Constructors */
-
-%newobject lasso_session_new;
-LassoSession *lasso_session_new(void);
-
-%newobject lasso_session_new_from_dump;
-LassoSession *lasso_session_new_from_dump(gchar *dump);
-
-/* Destructor */
-
-void lasso_session_destroy(LassoSession *session);
-
-/* Methods */
-
-%newobject lasso_session_dump;
-gchar *lasso_session_dump(LassoSession *session);
-
-%newobject lasso_session_get_authentication_method;
-gchar *lasso_session_get_authentication_method(LassoSession *session, gchar *remoteProviderId);
 
 
 /***********************************************************************
@@ -1082,29 +1034,6 @@ gint LassoDefederation_setSessionFromDump(LassoDefederation *self, gchar *dump) 
 #define LassoDefederation_validateNotification lasso_defederation_validate_notification
 
 %}
-
-/* Constructors */
-
-%newobject lasso_defederation_new;
-LassoDefederation *lasso_defederation_new(LassoServer *server, lassoProviderType providerType);
-
-/* Destructor */
-
-void lasso_defederation_destroy(LassoDefederation *defederation);
-
-/* Methods */
-
-gint lasso_defederation_build_notification_msg(LassoDefederation *defederation);
-
-gint lasso_defederation_init_notification(LassoDefederation *defederation,
-					  gchar *remoteProviderId,
-					  lassoHttpMethod httpMethod);
-
-gint lasso_defederation_process_notification_msg(LassoDefederation *defederation,
-						 gchar *notificationMsg,
-						 lassoHttpMethod httpMethod);
-
-gint lasso_defederation_validate_notification(LassoDefederation *defederation);
 
 
 /***********************************************************************
@@ -1372,54 +1301,6 @@ gint LassoLogin_setSessionFromDump(LassoLogin *self, gchar *dump) {
 
 %}
 
-/* Constructors */
-
-%newobject lasso_login_new;
-LassoLogin *lasso_login_new(LassoServer *server);
-
-%newobject lasso_login_new_from_dump;
-LassoLogin *lasso_login_new_from_dump(LassoServer *server, gchar *dump);
-
-/* Destructor */
-
-void lasso_login_destroy(LassoLogin *login);
-
-/* Methods */
-
-gint lasso_login_accept_sso(LassoLogin *login);
-
-gint lasso_login_build_artifact_msg(LassoLogin *login, gint authenticationResult,
-				    const gchar *authenticationMethod,
-				    const gchar *reauthenticateOnOrAfter,
-				    lassoHttpMethod httpMethod);
-
-gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remoteProviderId);
-
-gint lasso_login_build_authn_response_msg(LassoLogin  *login, gint authenticationResult,
-					  const gchar *authenticationMethod,
-					  const gchar *reauthenticateOnOrAfter);
-
-gint lasso_login_build_request_msg(LassoLogin *login);
-
-%newobject lasso_login_dump;
-gchar *lasso_login_dump(LassoLogin *login);
-
-gint lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod httpMethod);
-
-gint lasso_login_init_from_authn_request_msg(LassoLogin *login, gchar *authnRequestMsg,
-					     lassoHttpMethod  httpMethod);
-
-gint lasso_login_init_request(LassoLogin *login, gchar *responseMsg,
-			      lassoHttpMethod httpMethod);
-
-gboolean lasso_login_must_authenticate(LassoLogin *login);
-
-gint lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authnResponseMsg);
-
-gint lasso_login_process_request_msg(LassoLogin *login, gchar *requestMsg);
-
-gint lasso_login_process_response_msg(LassoLogin  *login, gchar *responseMsg);
-
 
 /***********************************************************************
  * Logout
@@ -1651,43 +1532,6 @@ gint LassoLogout_setSessionFromDump(LassoLogout *self, gchar *dump) {
 
 %}
 
-/* Constructors */
-
-%newobject lasso_logout_new;
-LassoLogout *lasso_logout_new(LassoServer *server, lassoProviderType providerType);
-
-%newobject lasso_logout_new_from_dump;
-LassoLogout *lasso_logout_new_from_dump(LassoServer *server, gchar *dump);
-
-/* Destructor */
-
-void lasso_logout_destroy(LassoLogout *logout);
-
-/* Methods */
-
-gint lasso_logout_build_request_msg(LassoLogout *logout);
-
-gint lasso_logout_build_response_msg(LassoLogout *logout);
-
-%newobject lasso_logout_dump;
-gchar *lasso_logout_dump(LassoLogout *logout);
-
-%newobject lasso_logout_get_next_providerID;
-gchar *lasso_logout_get_next_providerID(LassoLogout *logout);
-
-gint lasso_logout_init_request(LassoLogout *logout, gchar *remoteProviderId,
-			       lassoHttpMethod httpMethod);
-
-gint lasso_logout_process_request_msg(LassoLogout *logout, gchar *requestMsg,
-				      lassoHttpMethod httpMethod);
-
-gint lasso_logout_process_response_msg(LassoLogout *logout, gchar *responseMsg,
-				       lassoHttpMethod httpMethod);
-
-gint lasso_logout_reset_session_index(LassoLogout *logout);
-
-gint lasso_logout_validate_request(LassoLogout *logout);
-
 
 /***********************************************************************
  * LECP
@@ -1908,33 +1752,3 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 #define LassoLecp_processAuthnResponseEnvelopeMsg lasso_lecp_process_authn_response_envelope_msg
 
 %}
-
-/* Constructors */
-
-%newobject lasso_lecp_new;
-LassoLecp *lasso_lecp_new(LassoServer *server);
-
-/* Destructor */
-
-void lasso_lecp_destroy(LassoLecp *lecp);
-
-/* Methods */
-
-gint lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
-
-gint lasso_lecp_build_authn_request_msg(LassoLecp *lecp, const gchar *remoteProviderId);
-
-gint lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp, gint authenticationResult,
-						  const gchar *authenticationMethod,
-						  const gchar *reauthenticateOnOrAfter);
-
-gint lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
-
-gint lasso_lecp_init_authn_request(LassoLecp *lecp);
-
-gint lasso_lecp_init_from_authn_request_msg(LassoLecp *lecp, gchar *authnRequestMsg,
-					    lassoHttpMethod httpMethod);
-
-gint lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, gchar *requestMsg);
-  
-gint lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, gchar *responseMsg);
