@@ -50,44 +50,13 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoUtilityStatus *status = LASSO_UTILITY_STATUS(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "Status", SNIPPET_NODE, (void**)&(status->Status) }, \
-		{ "code", SNIPPET_ATTRIBUTE, (void**)&(status->code) }, \
-		{ "ref", SNIPPET_ATTRIBUTE, (void**)&(status->ref) }, \
-		{ "comment", SNIPPET_ATTRIBUTE, (void**)&(status->comment) }, \
-		{ NULL, 0, NULL} \
-	};
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Status");
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
-
+static struct XmlSnippet schema_snippets[] = {
+	{ "Status", SNIPPET_NODE, G_STRUCT_OFFSET(LassoUtilityStatus, Status) },
+	{ "code", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, code) },
+	{ "ref", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, ref) },
+	{ "comment", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoUtilityStatus, comment) },
+	{ NULL, 0, 0}
+};
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -96,6 +65,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 instance_init(LassoUtilityStatus *node)
 {
+	node->Status = NULL;
 	node->code = NULL;
 	node->ref = NULL;
 	node->comment = NULL;
@@ -104,11 +74,12 @@ instance_init(LassoUtilityStatus *node)
 static void
 class_init(LassoUtilityStatusClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Status");
+	/* no namespace */
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
@@ -139,6 +110,9 @@ LassoUtilityStatus*
 lasso_utility_status_new(const char *code)
 {
 	LassoUtilityStatus *status;
+
+	g_return_val_if_fail(code != NULL, NULL);
+
 	status = g_object_new(LASSO_TYPE_UTILITY_STATUS, NULL);
 
 	status->code = g_strdup(code);
