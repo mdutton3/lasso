@@ -45,9 +45,11 @@ lasso_register_name_identifier_request_rename_attributes_for_query(LassoRegister
 
   spidentifier = lasso_node_get_child(LASSO_NODE(request), "SPProvidedNameIdentifier",
 				      NULL, NULL);
-  lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
-  lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
-  lasso_node_destroy(spidentifier);
+  if (spidentifier != NULL) {
+    lasso_node_rename_prop(spidentifier, "NameQualifier", "SPNameQualifier");
+    lasso_node_rename_prop(spidentifier, "Format", "SPFormat");
+    lasso_node_destroy(spidentifier);
+  }
 
   oldidentifier = lasso_node_get_child(LASSO_NODE(request), "OldProvidedNameIdentifier",
 				       NULL, NULL);
@@ -182,6 +184,11 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   /* MajorVersion */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
   /* MinorVersion */
@@ -242,33 +249,6 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
 									   LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
   lasso_node_destroy(idpidentifier);
   
-  /* SPPProvidedNameIdentifier */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  spidentifier = lasso_lib_sp_provided_name_identifier_new(str);
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPNameQualifier"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPFormat"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
-  
-  lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
-									  LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
-  lasso_node_destroy(spidentifier);
- 
   /* OldPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldProvidedNameIdentifier"), 0);
   if (str == NULL) {
@@ -296,6 +276,31 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
   lasso_node_destroy(oldidentifier);
  
+  /* SPPProvidedNameIdentifier ( optional ) */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
+  if (str != NULL) {
+    spidentifier = lasso_lib_sp_provided_name_identifier_new(str);
+    str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPNameQualifier"), 0);
+    if (str == NULL) {
+      g_datalist_clear(&gd);
+      g_object_unref(request);
+      return NULL;
+    }
+    lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
+    str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPFormat"), 0);
+    if (str == NULL) {
+      g_datalist_clear(&gd);
+      g_object_unref(request);
+      return NULL;
+    }
+    lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
+    
+    lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
+									    LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
+    lasso_node_destroy(spidentifier);
+  } 
+
+
   g_datalist_clear(&gd);
   
   return request;

@@ -48,6 +48,8 @@ typedef struct _LassoNameRegistrationClass LassoNameRegistrationClass;
 struct _LassoNameRegistration {
   LassoProfile parent;
 
+  gchar *oldNameIdentifier;
+
   /*< private >*/
 };
 

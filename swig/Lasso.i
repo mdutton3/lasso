@@ -2248,6 +2248,9 @@ typedef struct {
 		%immutable nameIdentifier;
 		gchar *nameIdentifier;
 
+		%immutable oldNameIdentifier;
+		gchar *oldNameIdentifier;
+
 		%newobject remoteProviderId_get;
 		gchar *remoteProviderId;
 
@@ -2349,6 +2352,12 @@ gchar *LassoNameRegistration_msgUrl_get(LassoNameRegistration *self) {
 #define LassoNameRegistration_get_nameIdentifier LassoNameRegistration_nameIdentifier_get
 gchar *LassoNameRegistration_nameIdentifier_get(LassoNameRegistration *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
+}
+
+/* oldNameIdentifier */
+#define LassoNameRegistration_get_oldNameIdentifier LassoNameRegistration_oldNameIdentifier_get
+gchar *LassoNameRegistration_oldNameIdentifier_get(LassoNameRegistration *self) {
+	return self->oldNameIdentifier;
 }
 
 /* remoteProviderId */

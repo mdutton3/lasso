@@ -36,7 +36,7 @@
 static LassoNode*
 lasso_register_name_identifier_response_new_from_query(gchar *query)
 {
-  LassoNode *response;
+  LassoNode *response, *ss, *ssc;;
   xmlChar   *relayState;
   xmlChar   *str;
   GData     *gd;
@@ -114,6 +114,24 @@ lasso_register_name_identifier_response_new_from_query(gchar *query)
   }
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   str);
+
+  /* StatusCode */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Value"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(response);
+    return NULL;
+  }
+  ss = lasso_samlp_status_new();
+  ssc = lasso_samlp_status_code_new();
+  lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
+				    str);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(ss),
+				    LASSO_SAMLP_STATUS_CODE(ssc));
+  lasso_lib_status_response_set_status(LASSO_LIB_STATUS_RESPONSE(response),
+				       LASSO_SAMLP_STATUS(ss));
+  lasso_node_destroy(ssc);
+  lasso_node_destroy(ss);
 
   /* RelayState */
   relayState = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0);
