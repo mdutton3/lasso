@@ -47,7 +47,7 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	SWIGTYPE_p_LassoProvider.cs SWIGTYPE_p_LassoSamlpRequestAbstract.cs \
 	SWIGTYPE_p_LassoSamlpResponseAbstract.cs
 
-EXTRA_DIST = lasso-sharp.pc.in $(SWIG_FILES)
+EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config $(SWIG_FILES)
 
 MAINTAINERCLEANFILES = $(SWIG_FILES)
 
