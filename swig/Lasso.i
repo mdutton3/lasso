@@ -572,7 +572,8 @@ void lasso_defederation_destroy(LassoDefederation *defederation);
 gint lasso_defederation_build_notification_msg(LassoDefederation *defederation);
 
 gint lasso_defederation_init_notification(LassoDefederation *defederation,
-					  gchar *remote_providerID);
+					  gchar             *remote_providerID,
+					  lassoHttpMethod    notification_method);
 
 gint lasso_defederation_process_notification_msg(LassoDefederation *defederation,
 						 gchar *notification_msg,
