@@ -131,6 +131,7 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
   lasso_lib_register_name_identifier_request_set_providerID(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 							    providerID);
 
+  /* idp provided name identifier is required */
   idpidentifier = lasso_lib_idp_provided_name_identifier_new(idpProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), idpNameQualifier);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), idpFormat);
@@ -138,19 +139,23 @@ lasso_register_name_identifier_request_new(const xmlChar *providerID,
 									   LASSO_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpidentifier));
   lasso_node_destroy(idpidentifier);
 
-  spidentifier = lasso_lib_sp_provided_name_identifier_new(spProvidedNameIdentifier);
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spNameQualifier);
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spFormat);
-  lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
-									  LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
-  lasso_node_destroy(spidentifier);
-
+  /* old provided name identifier is required */
   oldidentifier = lasso_lib_old_provided_name_identifier_new(oldProvidedNameIdentifier);
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldNameQualifier);
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), oldFormat);
   lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
 									   LASSO_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldidentifier));
   lasso_node_destroy(oldidentifier);
+
+  /* sp provided name identifier is optional */
+  if (spProvidedNameIdentifier != NULL && spNameQualifier != NULL && spFormat != NULL) {
+    spidentifier = lasso_lib_sp_provided_name_identifier_new(spProvidedNameIdentifier);
+    lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spNameQualifier);
+    lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), spFormat);
+    lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
+									    LASSO_LIB_SP_PROVIDED_NAME_IDENTIFIER(spidentifier));
+    lasso_node_destroy(spidentifier);
+  }
 
   return request;
 }
