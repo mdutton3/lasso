@@ -22,6 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+ require_once 'HTTP/Session.php';
+ require_once 'DB.php';
+
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 	if ($ret == FALSE)
@@ -50,14 +53,17 @@ You can get more informations about <b>Lasso</b> at <br>
 
  $config = unserialize(file_get_contents('config.inc'));
 
- require_once 'DB.php';
+ // connect to the data base
+ $db = &DB::connect($config['dsn']);
+ if (DB::isError($db)) 
+	die($db->getMessage());
+	
+  session_start();
 
- session_start();
-
- lasso_init();
- 
+  lasso_init();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Lasso Service Provider Example</title>
@@ -65,19 +71,26 @@ You can get more informations about <b>Lasso</b> at <br>
 </head>
 
 <body>
-<p>
+<p align='center'>
 <b>Service Provider Administration</b><br>
 <a href="setup.php">Setup</a><br>
 <a href="admin_user.php">Users Management</a><br>
+<a href="view_session.php">View Online Users</a>
+<?php if ($config['log_handler'] == 'sql') { ?>
+  <br><a href="log_view.php">View log</a>
+<?php } ?>
 </p>
-<p>
+<p align='center'>
   <b>Serice Provider Fonctionnality</b>
-<table>
+<table align='center'>
 <?php
   if (!isset($_SESSION["nameidentifier"])) {  
   ?>
 <tr>
-  <td colspan="2">Single SignOn using an IdP</td>
+  <td colspan="2">Single SignOn using an Identity Provider</td>
+</tr>
+<tr>
+  <td colspan="2">&nbsp;</td>
 </tr>
 <tr>
   <td>Provider</td>
@@ -85,7 +98,7 @@ You can get more informations about <b>Lasso</b> at <br>
 </tr>
 <tr>
   <td><?php echo $config['providerID']; ?></td>
-  <td><a href="login.php">post</a> | <a href="login.php">artifact</a></td>
+  <td><a href="login.php?profile=post">post</a> | <a href="login.php?profile=artifact">artifact</a></td>
 </tr>
 <?php } else { ?>
 <tr>
@@ -97,8 +110,8 @@ You can get more informations about <b>Lasso</b> at <br>
 </table>
 </p>
 
-<p>
-<table>
+<p align='center'>
+<table align='center'>
 <caption><b>Status</b></caption>
 <tr>
   <?php 
@@ -118,19 +131,14 @@ You can get more informations about <b>Lasso</b> at <br>
 	<td><b>UserID:</b></td><td><?php echo $_SESSION["user_id"]; ?></td>
 </tr>
 <?php
-  $db = &DB::connect($config['dsn']);
-
-  if (DB::isError($db)) 
-	die($db->getMessage());
-
+ 
   $query = "SELECT * FROM users WHERE user_id='". $_SESSION["user_id"] ."'"; 
 
   $res =& $db->query($query);
   if (DB::isError($res)) 
-	print $res->getMessage(). "\n";
+	die($res->getMessage());
 
   list($user_id, $identity_dump, $first_name, $last_name, $last_login, $created) = $res->fetchRow();
-
   ?>
 <tr>
 	<td><b>Last Name:</b></td><td><?php echo $last_name; ?></td>
@@ -147,20 +155,16 @@ You can get more informations about <b>Lasso</b> at <br>
 <tr>
 	<td><b>Last Login:</b></td><td><?php echo $last_login; ?></td>
   <?php 
-	$db->disconnect();
 	} 
 	?>
 </tr>
 </table>
 </p>
-<!-- <p>Lasso Version : <?php // echo lasso_version(); ?></p> -->
-
 <br>
-<p>Copyright &copy; 2004 Entr'ouvert</p>
-
+<p align='center'>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
-
 </html>
 <?php
 	lasso_shutdown();
-  ?>
+	$db->disconnect(); 
+?>

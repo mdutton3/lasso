@@ -1,6 +1,5 @@
 <?php
 /*  
- *
  * Identity Provider Example -- SOAP Endpoint
  *
  * Copyright (C) 2004 Entr'ouvert
@@ -25,12 +24,19 @@
   require_once 'Log.php';
   require_once 'DB.php';
 
+  $config = unserialize(file_get_contents('config.inc'));
+   
+  $server_dump = file_get_contents($config['server_dump_filename']);
+
   header("Content-Type: text/xml\r\n");
   
   // connect to the data base
   $db = &DB::connect($config['dsn']);
   if (DB::isError($db)) 
-    die("Could not connect to the database");
+  {
+    header("HTTP/1.0 500 Internal Server Error");
+    exit;
+  }
 
   // create logger 
   $conf['db'] = $db;
@@ -41,10 +47,6 @@
    $logger->log("HTTP_RAW_POST_DATA is empty", PEAR_LOG_WARNING);
    die("HTTP_RAW_POST_DATA is empty!"); 
   }
-
-  $config = unserialize(file_get_contents('config.inc'));
-   
-  $server_dump = file_get_contents($config['server_dump_filename']);
 
   lasso_init();
 

@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+ require_once 'DB.php';
+
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 	if ($ret == FALSE)
@@ -50,13 +52,17 @@ You can get more informations about <b>Lasso</b> at <br>
 
  $config = unserialize(file_get_contents('config.inc'));
 
- require_once 'DB.php';
+ // connect to the data base
+ $db = &DB::connect($config['dsn']);
+ if (DB::isError($db)) 
+	die($db->getMessage());
 
  session_start();
 
  lasso_init();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Lasso Service Provider Example</title>
@@ -64,15 +70,16 @@ You can get more informations about <b>Lasso</b> at <br>
 </head>
 
 <body>
-<p>
+<p align='center'>
   <b>Identity Provider Administration</b><br>
   <a href="setup.php">Setup</a><br>
-  <a href="admin_user.php">Users Management</a>
+  <a href="admin_user.php">Users Management</a><br>
+  <a href="view_sessions.php">View Online Users</a>
 <?php if ($config['log_handler'] == 'sql') { ?>
   <br><a href="log_view.php">View log</a>
 <?php } ?>
 </p>
-<p>
+<p align='center'>
   <b>Identity Provider Fonctionnality</b><br>
 <?php
   if (!isset($_SESSION["user_id"])) {  
@@ -87,8 +94,8 @@ You can get more informations about <b>Lasso</b> at <br>
 <?php } ?>
 </p>
 
-<p>
-<table>
+<p align='center'>
+<table align='center'>
 <caption><b>Status</b></caption>
 <tr>
   <?php 
@@ -116,11 +123,12 @@ You can get more informations about <b>Lasso</b> at <br>
 </table>
 
 <br>
-<p>Copyright &copy; 2004 Entr'ouvert</p>
+<p align='center'>Copyright &copy; 2004 Entr'ouvert</p>
 
 </body>
 
 </html>
 <?php
+      	$db->disconnect(); 
 	lasso_shutdown();
   ?>

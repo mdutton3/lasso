@@ -81,7 +81,8 @@
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	  die($res->getMessage());
-
+	  
+	$logger->log("Delete User '".$_GET['del']."'", PEAR_LOG_NOTICE);
 	}
 	
   lasso_init();
@@ -164,21 +165,21 @@
 	  if ((($count - $startUser) >  $number_of_users)  && !isset($_GET['show_all']))
 		echo "<a href=$PHP_SELF?startUser=" . ($startUser + $number_of_users) . ">Next</a>";
 	  else
-		echo "Next" 
-	?>
-	<?php
+		echo "Next";
+		
+	if (isset($_GET['show_all']))
+		echo "| <a href=\"" . $PHP_SELF ."?startUser=0\">Paginate</a>"; 
+	else
+	{
 	  for ($i = 0; $i < $count; $i += $number_of_users)
 		if ($i == $startUser)
 		  echo "| " . ( $i / $number_of_users);
 		else
 		  echo "| <a href=\"$PHP_SELF?startUser=$i\">" . ( $i / $number_of_users) . "</a>";
+          if ($count > $number_of_users)
+		echo "| <a href=\"$PHP_SELF?show_all=1\">Show All</a>"; 
+	}
 	?>
-	|
-	<?php if (isset($_GET['show_all'])) { ?>
-	<a href="<?php echo $PHP_SELF."?startUser=0"; ?>">Paginate</a> 
-	<?php } else { ?>
-	<a href="<?php echo $PHP_SELF."?show_all=1"; ?>">Show All</a> 
-	<?php } ?>
 	| <a href="javascript:void(0)" onClick="ToggleAll();">Toggle All</a></td>
   <td align='right'><a href="javascript:openpopup('user_add.php')">add user</a></td>
 </tr>
@@ -237,7 +238,7 @@
   </td>
 </tr>
 <tr>
-    <td colspan="<?php echo $num_col; ?>" align='center'> 
+    <td colspan="<?php echo $num_col; ?>" align='center'>
     <?php
         // get all federations for this user
         if (!empty($session_dump) && !empty($identity_dump))

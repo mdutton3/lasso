@@ -50,9 +50,9 @@
   if ($form->validate()) 
   {
 	
-	  $query = "INSERT INTO users (user_id, username, password) VALUES(nextval('user_id_seq'),";
+	  $query = "INSERT INTO users (user_id, username, password, created) VALUES(nextval('user_id_seq'),";
 	  $query .= $db->quoteSmart($form->exportValue('username')) . ",";
-	  $query .= $db->quoteSmart($form->exportValue('password')) . ")";
+	  $query .= $db->quoteSmart($form->exportValue('password')) . ", NOW())";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 

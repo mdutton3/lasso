@@ -22,8 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+	require_once 'DB.php';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
@@ -35,9 +37,8 @@
 		print "<a href='http://lasso.entrouvert.org/'>http://lasso.entrouvert.org/</a></p>";
 		exit();
 	}
- }
+  }
 
-	require_once 'DB.php';
 
 	# default config
 	if (!file_exists('config.inc'))
@@ -46,6 +47,7 @@
 	  $config = array(
 	  'dsn' => "pgsql://sp:sp@localhost/sp",
 	  'server_dump_filename' => "lasso_server_dump.xml",
+	  'log_handler' => "sql",
 	  'sp-metadata' => $cwd . "/metadata_sp1.xml",
 	  'sp-public_key' => $cwd . "/public-key_sp1.pem",
 	  'sp-private_key' => $cwd . "/private-key-raw_sp1.pem",
@@ -140,7 +142,41 @@
 		  die($res->getMessage()); 
 
 		print "OK";
+
+		print "<br>Create table 'log' : ";
+		$query = "DROP TABLE log CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE log (
+		  id          integer primary key,
+		  logtime     timestamp,
+                  ident       varchar(16),
+                  priority    integer,
+                  message     text)";
 		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
+
+
+		print "<br>Create table 'sessions' : ";
+		$query = "DROP TABLE sessions CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE sessions (
+			id varchar(32) primary key,
+			expiry integer,
+			data text
+			)";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
+
 		$db->disconnect();
 		
 		$keys = array_keys($config);
@@ -151,9 +187,7 @@
 		{
 		  print "<br>Check file " . $config[$file] . " : ";
 		  if (!file_exists($config[$file]))
-		  {
 			die("Failed (file does not exist)");
-		  }
 		  else
 			print "OK";
 		}
@@ -261,6 +295,20 @@
   <td>Server XML Dump :</td><td><input type='text' name='server_dump_filename' size='50' value='<?php echo $config['server_dump_filename']; ?>' maxlength='100'></td><td>&nbsp;</td>
 
 </tr>
+<tr>
+    <td colspan='3' align='center'>Logging</td>
+</tr>
+<tr>
+  <td>Handler :</td>
+  <td>
+  <select name='log_handler'>
+    <option value="null" <?php if ($config['log_handler'] == 'null') echo 'selected="selected"'; ?>>NULL (disabled)</option>
+    <option value="sql" <?php if ($config['log_handler'] == 'sql') echo 'selected="selected"'; ?>>Database</option>
+    <option value="syslog" <?php if ($config['log_handler'] == 'syslog') echo 'selected="selected"'; ?>>Syslog</option>
+  </select>
+  </td><td>&nbsp;</td>
+</tr>
+
 <tr>
   <td colspan='3' align='center'>Service Provider</td>
 </tr>

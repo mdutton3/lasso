@@ -211,10 +211,11 @@
 
 		$query = "CREATE TABLE users (
 		  user_id         varchar(100) primary key,
-		  username		  varchar(255) unique,
-		  password		  varchar(255),
+		  username	  varchar(255) unique,
+		  password	  varchar(255),
 		  identity_dump   text,
-		  session_dump    text)";
+		  session_dump    text,
+		  created 	  timestamp)";
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
 		  die($res->getMessage());
@@ -279,6 +280,22 @@
 		  die($res->getMessage());
 		
 		print "OK";
+		
+		print "<br>Create table 'sessions' : ";
+		$query = "DROP TABLE sessions CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE sessions (
+			id varchar(32) primary key,
+			expiry integer,
+			data text
+			)";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
 
 		$db->disconnect();
 
@@ -323,9 +340,7 @@
 		  $config['idp-ca'], lassoSignatureMethodRsaSha1);
 
 		if (empty($server))
-		{
 		  die("Failed");
-		} 
 		else
 		  print "OK";
 
@@ -368,7 +383,7 @@
 		$setup = TRUE;
 	}
         $setup_log = ob_get_contents();
-		ob_end_clean();
+	ob_end_clean();
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>

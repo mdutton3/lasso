@@ -56,32 +56,37 @@
         }
         else
         {
-            $login = new LassoLogin($server);
+		$login = new LassoLogin($server);
 
-            // init login
-            updateDumpsFromSession($login);
-            initFromAuthnRequest($login);
+		// init login
+		updateDumpsFromSession($login);
+		initFromAuthnRequest($login);
 
-            
 
-          	// User must *NOT* Authenticate with the IdP 
-            if (!$login->mustAuthenticate()) 
-            {
-                $user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-                if (!$user_id) 
-                    die("Unknown User");
+		// User must *NOT* Authenticate with the IdP 
+		if (!$login->mustAuthenticate()) 
+		{
+			$user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+			if (!$user_id) 
+			{
+				$logger->log("User must not authenticate, username and password are not available", PEAR_LOG_CRIT);
+				die("Unknown User");
+			}
                     
-                $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
-                if (empty($array))
-                    die("Could not get Identity and Session Dump");
+			$array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
+			if (empty($array))
+			{
+				$logger->log("User must no authenticate, but I don't find session and identity dump in the database", PEAR_LOG_CRIT);
+				die("Could not get Identity and Session Dump");
+			}
 
-                $login->setIdentityFromDump($array['identity_dump']);
-                $login->setSessionFromDump($array['session_dump']);
+			$login->setIdentityFromDump($array['identity_dump']);
+			$login->setSessionFromDump($array['session_dump']);
 	  
-                doneSingleSignOn($db, $login, $user_id);
-                $db->disconnect();
-                exit;
-            }
+			doneSingleSignOn($db, $login, $user_id);
+			$db->disconnect();
+			exit;
+		}
 
             // Check Login and Password
             if (!($user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])))
@@ -206,12 +211,20 @@
    */
   function updateDumpsFromSession(&$login)
   {
+	global $logger;
+
 	// Get session and identity dump if there are available
 	if (!empty($_SESSION['session_dump']))
+	{
+          $logger->log("Update user's session dump", PEAR_LOG_DEBUG);
 	  $login->setSessionFromDump($_SESSION['session_dump']);
+	}
 
 	if (!empty($_SESSION['identity_dump']))
+	{
+          $logger->log("Update user's identity dump", PEAR_LOG_DEBUG);
 	  $login->setIdentityFromDump($_SESSION['identity_dump']);
+	}
   }
 
   /*
@@ -237,12 +250,18 @@
    */
   function authentificateUser($db, $username, $password)
   {
+	global $logger;
+	
 	$query = "SELECT user_id FROM users WHERE username=".$db->quoteSmart($username);
 	$query .= " AND password=".$db->quoteSmart($password);
 
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
+	{
+	  $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+          $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
 	  die($res->getMessage());
+	}
 
   	if ($res->numRows()) 
 	{
@@ -259,11 +278,15 @@
   function getUserIDFromNameIdentifier($db, $nameidentifier)
   {
       $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameidentifier'";
-      echo $query;
+      // echo $query;
 	  
 	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
-  		die($res->getMessage());
+       	if (DB::isError($res)) 
+	{
+		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+	      	$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+		die($res->getMessage());
+	}
 		
       // UserID not found
 	  if (!$res->numRows()) 
@@ -289,8 +312,8 @@
 	  if ($res->numRows()) 
 	  {
 		$row =& $res->fetchRow();
-        $ret = array("identity_dump" => $row[0], "session_dump" => $row[1]);
-        return ($ret);
+		$ret = array("identity_dump" => $row[0], "session_dump" => $row[1]);
+		return ($ret);
 	  } 
    }
 
@@ -300,32 +323,24 @@
    */
   function doneSingleSignOn($db, &$login, $user_id, $is_first_sso = FALSE)
   {
+	global $logger;
+
 	  $authenticationMethod = 
 	  (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
 
 	  // reauth in session_cache_expire, default is 180 minutes
 	  $reauthenticateOnOrAfter = strftime("%Y-%m-%dT%H:%M:%SZ", time() + session_cache_expire() * 60);
 
-	  /* FIXME : there is a segfault when I use a switch statement 
-	  switch($login->protocolProfile)
-	  {
-		case lassoLoginProtocolProfileBrwsArt:
-		  $login->buildArtifactMsg(TRUE, // User is authenticated 
-			$authenticationMethod, $reauthenticateOnOrAfter, lassoHttpMethodRedirect); 
-			break;
-		case lassoLoginProtocolProfileBrwsPost:
-		  die("TODO : Post\n"); 
-		default:
-		  die("Unknown protocol profile\n"); 
-	  } */
-	  
 	  if ($login->protocolProfile == lassoLoginProtocolProfileBrwsArt)
 		  $login->buildArtifactMsg(TRUE, // User is authenticated 
 			$authenticationMethod, $reauthenticateOnOrAfter, lassoHttpMethodRedirect); 
 	  else if ($login->protocolProfile == lassoLoginProtocolProfileBrwsPost)
 		  die("TODO : Post\n"); // TODO
 	  else
-		  die("Unknown protocol profile\n"); 
+	  {
+		$logger->log("Unknown protocol profile", PEAR_LOG_CRIT);
+		die("Unknown protocol profile\n"); 
+	  }
 
 	  if ($is_first_sso)
 	  {
@@ -335,23 +350,30 @@
 
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
-		  die($res->getMessage());
+		{
+	      		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+	    		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+	      		die($res->getMessage());
+		}
 	  }
 
 	  $identity = $login->identity;
 	  // do we need to update identity dump?
 	  if ($login->isIdentityDirty)
-        updateIdentityDump($db, $user_id, $identity->dump());
+		updateIdentityDump($db, $user_id, $identity->dump());
 
 	  $session = $login->session;
 	  // do we need to update session dump?
 	  if ($login->isSessionDirty)
-        updateSessionDump($db, $user_id, $session->dump());
+		updateSessionDump($db, $user_id, $session->dump());
 
 	  if (empty($login->assertionArtifact))
+	  {
+    		$logger->log("Assertion Artifact is empty", PEAR_LOG_CRIT);
 		die("assertion Artifact is empty");
+	  }
 
-      saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
+	saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
 
 	  unset($_SESSION['login_dump']); // delete login_dump 
 	  $_SESSION['identity_dump'] = $session->dump();

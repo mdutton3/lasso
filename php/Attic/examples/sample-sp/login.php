@@ -1,6 +1,5 @@
 <?php
 /*  
- *
  * Service Provider Example -- Simple Sing On 
  *
  * Copyright (C) 2004 Entr'ouvert
@@ -22,9 +21,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+ 
+ require_once 'Log.php';
+ require_once 'DB.php';
 
   $config = unserialize(file_get_contents('config.inc'));
+
+  session_start();
 
   lasso_init();
 
@@ -34,20 +37,29 @@
 
   $login = new LassoLogin($server);
 
-  $login->initauthnrequest(lassoHttpMethodRedirect);
+  switch($_GET['profile'])
+  {
+	case 'post':
+		// TODO
+		break;
+	case 'artifact':
+		$login->initauthnrequest(lassoHttpMethodRedirect);
+	
+		$request = $login->authnRequest;
   
-  $request = $login->authnRequest;
-  
-  $request->isPassive = FALSE;
-  $request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
-  $request->consent = lassoLibConsentObtained;
+		$request->isPassive = FALSE;
+		$request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
+		$request->consent = lassoLibConsentObtained;
 
-  $login->buildAuthnRequestMsg($config['providerID']);
+		$login->buildAuthnRequestMsg($config['providerID']);
 
-  $url = $login->msgUrl;
+		$url = $login->msgUrl;
 
-  header("Request-URI: $url");
-  header("Content-Location: $url");
-  header("Location: $url\r\n\r\n");
-  exit();
+		header("Request-URI: $url");
+		header("Content-Location: $url");
+		header("Location: $url\r\n\r\n");
+		exit();
+	default:
+		die('Unknown single sign on profile');
+  }
 ?>

@@ -37,6 +37,8 @@
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
 
+  session_start();
+
   /*
    * 
    */
@@ -67,7 +69,7 @@
         $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
         $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
         die("Internal Server Error");
-    }
+    } send by 
 
   	if ($res->numRows()) 
 	{
@@ -90,17 +92,17 @@
         // Check Login and Password
         if (!($user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])))
         {
-            $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
+            $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_WARNING);
             sendHTTPBasicAuth();
             $db->disconnect();
             exit;
         }
         else
         {
-            $_SESSION['user_id'] = $user_id;
-            $_SESSION['username'] = $_SERVER['PHP_AUTH_USER'];
-
-            $logger->log("User '".$_SERVER['PHP_AUTH_USER']."'($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
+		$_SESSION['user_id'] = $user_id;
+		$_SESSION['username'] = $_SERVER['PHP_AUTH_USER'];
+	    
+		$logger->log("User '".$_SERVER['PHP_AUTH_USER']."' ($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
 
 
             /* TODO : load identity and session dump 
@@ -148,11 +150,10 @@
   {
       if (($user_id = authentificateUser($db, $form->exportValue('username'), $form->exportValue('password'))))
       {
-		session_start();
 		$_SESSION['user_id'] = $user_id;
 		$_SESSION['username'] = $form->exportValue('username');
 
-        $logger->log("User '".$form->exportValue('username')."'($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
+		$logger->log("User '".$form->exportValue('username')."'($user_id) authenticated, local session started", PEAR_LOG_NOTICE);
 
 		$url = 'index.php';
 		header("Request-URI: $url");
