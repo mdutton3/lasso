@@ -87,7 +87,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoLibAuthnResponse *response = LASSO_LIB_AUTHN_RESPONSE(node);
 	xmlNode *t;
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 
 	t = xmlnode->children;
 	while (t) {

@@ -91,7 +91,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	ob = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(node);
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 
 	t = xmlnode->children;
 	while (t) {

@@ -72,7 +72,7 @@ get_xmlNode(LassoNode *node)
 static void
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 	LASSO_LIB_ASSERTION(node)->InResponseTo = xmlGetProp(xmlnode, "InResponseTo");
 }
 

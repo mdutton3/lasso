@@ -70,7 +70,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoSamlAudienceRestrictionCondition *condition;
 	xmlNode *t;
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 
 	t = xmlnode->children;
 	while (t) {

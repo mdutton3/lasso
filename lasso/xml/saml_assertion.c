@@ -135,25 +135,25 @@ get_xmlNode(LassoNode *node)
 static void
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-        char *s;
+	char *s;
 	xmlNode *t;
-        LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
+	LassoSamlAssertion *assertion = LASSO_SAML_ASSERTION(node);
 
 	parent_class->init_from_xml(node, xmlnode);
 
-        assertion->AssertionID = xmlGetProp(xmlnode, "AssertionID");
-        assertion->Issuer = xmlGetProp(xmlnode, "Issuer");
-        assertion->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
-        s = xmlGetProp(xmlnode, "MajorVersion");
-        if (s) {
-                assertion->MajorVersion = atoi(s);
-                xmlFree(s);
-        }
-        s = xmlGetProp(xmlnode, "MinorVersion");
-        if (s) {
-                assertion->MinorVersion = atoi(s);
-                xmlFree(s);
-        }
+	assertion->AssertionID = xmlGetProp(xmlnode, "AssertionID");
+	assertion->Issuer = xmlGetProp(xmlnode, "Issuer");
+	assertion->IssueInstant = xmlGetProp(xmlnode, "IssueInstant");
+	s = xmlGetProp(xmlnode, "MajorVersion");
+	if (s) {
+		assertion->MajorVersion = atoi(s);
+		xmlFree(s);
+	}
+	s = xmlGetProp(xmlnode, "MinorVersion");
+	if (s) {
+		assertion->MinorVersion = atoi(s);
+		xmlFree(s);
+	}
 
 	t = xmlnode->children;
 	while (t) {

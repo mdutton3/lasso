@@ -78,7 +78,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoSamlAuthenticationStatement *statement = LASSO_SAML_AUTHENTICATION_STATEMENT(node);
 	xmlNode *t;
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 	statement->AuthenticationMethod = xmlGetProp(xmlnode, "AuthenticationMethod");
 	statement->AuthenticationInstant = xmlGetProp(xmlnode, "AuthenticationInstant");
 

@@ -103,7 +103,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 	identifier->content = xmlNodeGetContent(xmlnode);
 	identifier->Format = xmlGetProp(xmlnode, "Format");
 	identifier->NameQualifier = xmlGetProp(xmlnode, "NameQualifier");

@@ -73,7 +73,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoLibSubject *subject = LASSO_LIB_SUBJECT(node);
 	xmlNode *t;
 
-        parent_class->init_from_xml(node, xmlnode);
+	parent_class->init_from_xml(node, xmlnode);
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
