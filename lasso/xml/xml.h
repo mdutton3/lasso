@@ -51,14 +51,15 @@ extern "C" {
 
 /**
  * LassoMessageFormat::
- * @LASSO_MESSAGE_FORMAT_ERROR: error while determining forat
+ * @LASSO_MESSAGE_FORMAT_ERROR: error while determining format
  * @LASSO_MESSAGE_FORMAT_UNKNOWN: unknown format
  * @LASSO_MESSAGE_FORMAT_XML: XML
  * @LASSO_MESSAGE_FORMAT_BASE64: base-64 encoded
  * @LASSO_MESSAGE_FORMAT_QUERY: query string
  * @LASSO_MESSAGE_FORMAT_SOAP: SOAP
  *
- * Message format.
+ * Return code for lasso_node_init_from_message; it describes the type of the
+ * message that was passed to that function.
  **/
 typedef enum {
 	LASSO_MESSAGE_FORMAT_ERROR = -1,
