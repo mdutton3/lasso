@@ -169,6 +169,78 @@ class BindingTestCase(unittest.TestCase):
 
         del response
 
+    def test05(self):
+        """Get & set attributes of nodes of type XML list."""
+
+        authnRequest = lasso.LibAuthnRequest()
+
+        self.failUnlessEqual(authnRequest.extension, None)
+
+        actionString1 = """\
+<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 1</action>
+</lib:Extension>"""
+        actionString2 = """\
+<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 2</action>
+</lib:Extension>"""
+        actionString3 = """\
+<lib:Extension xmlns:lib="urn:liberty:iff:2003-08">
+  <action>do 3</action>
+</lib:Extension>"""
+        extension = lasso.StringList()
+        self.failUnlessEqual(len(extension), 0)
+        extension.append(actionString1)
+        self.failUnlessEqual(len(extension), 1)
+        self.failUnlessEqual(extension[0], actionString1)
+        self.failUnlessEqual(extension[0], actionString1)
+        extension.append(actionString2)
+        self.failUnlessEqual(len(extension), 2)
+        self.failUnlessEqual(extension[0], actionString1)
+        self.failUnlessEqual(extension[1], actionString2)
+        extension.append(actionString3)
+        self.failUnlessEqual(len(extension), 3)
+        self.failUnlessEqual(extension[0], actionString1)
+        self.failUnlessEqual(extension[1], actionString2)
+        self.failUnlessEqual(extension[2], actionString3)
+        authnRequest.extension = extension
+        self.failUnlessEqual(authnRequest.extension[0], actionString1)
+        self.failUnlessEqual(authnRequest.extension[1], actionString2)
+        self.failUnlessEqual(authnRequest.extension[2], actionString3)
+        self.failUnlessEqual(extension[0], actionString1)
+        self.failUnlessEqual(extension[1], actionString2)
+        self.failUnlessEqual(extension[2], actionString3)
+        del extension
+        self.failUnlessEqual(authnRequest.extension[0], actionString1)
+        self.failUnlessEqual(authnRequest.extension[1], actionString2)
+        self.failUnlessEqual(authnRequest.extension[2], actionString3)
+        extension = authnRequest.extension
+        self.failUnlessEqual(extension[0], actionString1)
+        self.failUnlessEqual(extension[1], actionString2)
+        self.failUnlessEqual(extension[2], actionString3)
+        del extension
+        self.failUnlessEqual(authnRequest.extension[0], actionString1)
+        self.failUnlessEqual(authnRequest.extension[1], actionString2)
+        self.failUnlessEqual(authnRequest.extension[2], actionString3)
+        authnRequest.extension = None
+        self.failUnlessEqual(authnRequest.extension, None)
+
+        del authnRequest
+
+    def test06(self):
+        """Get & set attributes of nodes of type node."""
+
+        login = lasso.Login(lasso.Server())
+
+        self.failUnlessEqual(login.request, None)
+        login.request = lasso.LibAuthnRequest()
+        login.request.consent = lasso.libConsentObtained
+        self.failUnlessEqual(login.request.consent, lasso.libConsentObtained)
+        login.request = None
+        self.failUnlessEqual(login.request, None)
+
+        del login
+
 
 class ServerTestCase(unittest.TestCase):
     def test01(self):
