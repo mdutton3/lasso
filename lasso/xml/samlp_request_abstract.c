@@ -111,9 +111,12 @@ get_xmlNode(LassoNode *node)
 
 		/* add enveloped transform */
 		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+		/* add exclusive C14N transform */
+		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+
 		/* add <dsig:KeyInfo/> */
-		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
 		if (request->sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
+			key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
 			xmlSecTmplKeyInfoAddX509Data(key_info);
 		}
 	}
