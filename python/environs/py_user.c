@@ -25,11 +25,9 @@
 
 #include "../lassomod.h"
 
+#include "py_user.h"
 #include "../xml/py_xml.h"
 
-#include "py_user.h"
-
-#include "../protocols/elements/py_assertion.h"
 
 PyObject *LassoUser_wrap(LassoUser *user) {
   PyObject *ret;
@@ -76,7 +74,7 @@ PyObject *user_add_assertion(PyObject *self, PyObject *args){
   else return NULL;
 
   lasso_user_add_assertion(LassoUser_get(user_obj), remote_providerID,
-			   LassoAssertion_get(assertion_obj));
+			   LassoNode_get(assertion_obj));
 
   Py_INCREF(Py_None);
   return (Py_None);
