@@ -333,7 +333,7 @@ AC_ARG_ENABLE(php, [  --disable-php           disable the PHP bindings],,
               enable_php="yes")
 
 AC_ARG_WITH(php-config,
-            [  --with-php-config(=PHP_CONFIG)      Specify full path to php-config.])
+            [  --with-php-config=(PHP_CONFIG)      Specify full path to php-config.])
 dnl Check if user passed a specific php-config program.
 if test "X$with_php_config" != X ; then
     PHP_CONFIG=$with_php_config
