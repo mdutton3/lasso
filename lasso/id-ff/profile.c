@@ -166,6 +166,15 @@ lasso_profile_is_liberty_query(const gchar *query)
 /*****************************************************************************/
 
 
+/**
+ * lasso_profile_get_identity:
+ * @profile: a #LassoProfile
+ *
+ * Gets the identity bound to @profile.
+ *
+ * Return value: the identity or NULL if it none was bound.  The #LassoIdentity
+ *      object is internally allocated and must not be freed by the caller.
+ **/
 LassoIdentity*
 lasso_profile_get_identity(LassoProfile *profile)
 {
@@ -174,6 +183,16 @@ lasso_profile_get_identity(LassoProfile *profile)
 	return NULL;
 }
 
+
+/**
+ * lasso_profile_get_session:
+ * @profile: a #LassoProfile
+ *
+ * Gets the session bound to @profile.
+ *
+ * Return value: the session or NULL if it none was bound.  The #LassoSession
+ *      object is internally allocated and must not be freed by the caller.
+ **/
 LassoSession*
 lasso_profile_get_session(LassoProfile *profile)
 {
@@ -186,17 +205,36 @@ lasso_profile_get_session(LassoProfile *profile)
 	return profile->session;
 }
 
+
+/**
+ * lasso_profile_is_identity_dirty:
+ * @profile: a #LassoProfile
+ *
+ * Checks whether identity has been modified (and should therefore be saved).
+ *
+ * Return value: %TRUE if identity has changed
+ **/
 gboolean
 lasso_profile_is_identity_dirty(LassoProfile *profile)
 {
 	return (profile->identity && profile->identity->is_dirty);
 }
 
+
+/**
+ * lasso_profile_is_session_dirty:
+ * @profile: a #LassoProfile
+ *
+ * Checks whether session has been modified (and should therefore be saved).
+ *
+ * Return value: %TRUE if session has changed
+ **/
 gboolean
 lasso_profile_is_session_dirty(LassoProfile *profile)
 {
 	return (profile->session && profile->session->is_dirty);
 }
+
 
 void
 lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeValue)
@@ -244,6 +282,16 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 	g_assert_not_reached();
 } 
 
+
+/**
+ * lasso_profile_set_identity_from_dump:
+ * @profile: a #LassoProfile
+ * @dump: XML identity dump
+ *
+ * Builds a new #LassoIdentity object from XML dump and binds it to @profile.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
 {
@@ -256,6 +304,16 @@ lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
 	return 0;
 }
 
+
+/**
+ * lasso_profile_set_session_from_dump:
+ * @profile: a #LassoProfile
+ * @dump: XML session dump
+ *
+ * Builds a new #LassoSession object from XML dump and binds it to @profile.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar  *dump)
 {
