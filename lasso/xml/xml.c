@@ -731,7 +731,6 @@ init_xml_with_snippets(xmlNode *node, struct XmlSnippet *snippets)
 			*(snippets[i].value) = xmlGetProp(node, snippets[i].name);
 	}
 
-	t = node->children;
 	for (t = node->children; t; t = t->next) {
 		if (t->type != XML_ELEMENT_NODE)
 			continue;
