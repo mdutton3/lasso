@@ -163,12 +163,12 @@ if xmlsec1_libs[:2] not in ["-l", "-L"]:
 if xmlsec1_libs[:2] not in ["-l", "-L"]:
     print "Error : cannot get XMLSec1 linker flags"
 
-print gobject_cflags
-print gobject_libs
-print libxml2_cflags
-print libxml2_libs
-print xmlsec1_cflags
-print xmlsec1_libs
+#print gobject_cflags
+#print gobject_libs
+#print libxml2_cflags
+#print libxml2_libs
+#print xmlsec1_cflags
+#print xmlsec1_libs
 
 extract_cflags(gobject_cflags)
 extract_libs(gobject_libs)
@@ -185,7 +185,8 @@ library_dirs.append('../lasso/.libs')
 libraries.append('lasso')
 
 em = Extension("lassomod",
-               sources = ["py_lasso.c",
+               sources = ["py_lasso.c", "xml/py_xml.c",
+                          "protocols/py_single_sign_on_and_federation.c",
                           "lassomod.c",
                           "utils.c", "wrap_objs.c"],
                define_macros = define_macros,

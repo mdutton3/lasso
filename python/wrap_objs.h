@@ -9,6 +9,8 @@
 
 #include <xmlsec/xmlsec.h>
 
+#include <lasso/protocols/protocols.h>
+
 typedef struct {
     PyObject_HEAD
     xmlDocPtr obj;

@@ -22,16 +22,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PYLASSO_LASSOMOD_H__
-#define __PYLASSO_LASSOMOD_H__
+#ifndef __PYLASSO_PY_XML_H__
+#define __PYLASSO_PY_XML_H__
 
-#include <lasso/lasso.h>
+#include "../../lasso/xml/xml.h"
 
-#include "utils.h"
-#include "wrap_objs.h"
+typedef struct {
+    PyObject_HEAD
+    LassoNode *obj;
+} LassoNode_object;
 
-#define HASH_TABLE_SIZE 10
+#define LassoNode_get(v) (((v) == Py_None) ? NULL : (((LassoNode_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoNode_wrap(LassoNode *node);
 
-extern PyObject *lasso_error;
+PyObject *node_dump(PyObject *self, PyObject *args);
+PyObject *node_unref(PyObject *self, PyObject *args);
 
-#endif /* __PYLASSO_LASSOMOD_H__ */
+#endif /* __PYLASSO_PY_XML_H__ */

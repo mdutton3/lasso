@@ -1,9 +1,9 @@
 /* $Id$ 
  *
- * PyXMLSec - Python bindings for XML Security library (XMLSec)
+ * PyLasso - Python bindings for Lasso library
  *
- * Copyright (C) 2003-2004 Easter-eggs, Valery Febvre
- * http://pyxmlsec.labs.libre-entreprise.org
+ * Copyright (C) 2004 Entr'ouvert
+ * http://lasso.labs.libre-entreprise.org
  * 
  * Author: Valery Febvre <vfebvre@easter-eggs.com>
  *
@@ -44,7 +44,7 @@ int CheckArgs(PyObject *args, char *format) {
     if (format[i] == 'O' || format[i] == 'o') {
       if (!PyInstance_Check(obj)) {
 	if (format[i] == 'o' && obj == Py_None) continue;
-	PyErr_Format(xmlsec_error,
+	PyErr_Format(lasso_error,
 		     "%s() argument %d must be an instance.",
 		     format + nb_args, i+1);
 	return 0;
@@ -54,7 +54,7 @@ int CheckArgs(PyObject *args, char *format) {
     else if (format[i] == 'C' || format[i] == 'c') {
       if (!PyCallable_Check(obj)) {
 	if (format[i] == 'c' && obj == Py_None) continue;
-	PyErr_Format(xmlsec_error,
+	PyErr_Format(lasso_error,
 		     "%s() argument %d must be callable.",
 		     format + nb_args, i+1);
 	return 0;
@@ -64,7 +64,7 @@ int CheckArgs(PyObject *args, char *format) {
     else if (format[i] == 'S' || format[i] == 's') {
       if (!PyString_Check(obj)) {
 	if (format[i] == 's' && obj == Py_None) continue;
-	PyErr_Format(xmlsec_error,
+	PyErr_Format(lasso_error,
 		     "%s() argument %d must be a string.",
 		     format + nb_args, i+1);
 	return 0;
@@ -74,7 +74,7 @@ int CheckArgs(PyObject *args, char *format) {
     else if (format[i] == 'I' || format[i] == 'i') {
       if (!PyInt_Check(obj)) {
 	if (format[i] == 'i' && obj == Py_None) continue;
-	PyErr_Format(xmlsec_error,
+	PyErr_Format(lasso_error,
 		     "%s() argument %d must be an integer.",
 		     format + nb_args, i+1);
 	return 0;
@@ -84,7 +84,7 @@ int CheckArgs(PyObject *args, char *format) {
     else if (format[i] == 'F' || format[i] == 'f') {
       if (!PyFile_Check(obj)) {
 	if (format[i] == 'f' && obj == Py_None) continue;
-	PyErr_Format(xmlsec_error,
+	PyErr_Format(lasso_error,
 		     "%s() argument %d must be a file.",
 		     format + nb_args, i+1);
 	return 0;

@@ -22,16 +22,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PYLASSO_LASSOMOD_H__
-#define __PYLASSO_LASSOMOD_H__
+#ifndef __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__
+#define __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__
 
-#include <lasso/lasso.h>
+#include <lasso/protocols/single_sign_on_and_federation.h>
 
-#include "utils.h"
-#include "wrap_objs.h"
+typedef struct {
+    PyObject_HEAD
+    LassoAuthnRequest *obj;
+} LassoAuthnRequest_object;
 
-#define HASH_TABLE_SIZE 10
+#define LassoAuthnRequest_get(v) (((v) == Py_None) ? NULL : (((LassoAuthnRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoAuthnRequest_wrap(LassoAuthnRequest *request);
 
-extern PyObject *lasso_error;
+PyObject *authn_request_getattr(PyObject *self, PyObject *args);
+PyObject *authn_request_build(PyObject *self, PyObject *args);
 
-#endif /* __PYLASSO_LASSOMOD_H__ */
+#endif /* __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__ */

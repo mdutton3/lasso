@@ -25,6 +25,8 @@
 #include "lassomod.h"
 
 #include "py_lasso.h"
+#include "xml/py_xml.h"
+#include "protocols/py_single_sign_on_and_federation.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -33,6 +35,14 @@ static PyMethodDef lasso_methods[] = {
   {"check_version_exact", check_version_exact, METH_VARARGS},
   {"check_version",       check_version,       METH_VARARGS},
   {"check_version_ext",   check_version_ext,   METH_VARARGS},
+
+  /* py_xml.h */
+  {"node_dump",  node_dump,  METH_VARARGS},
+  {"node_unref", node_unref, METH_VARARGS},
+
+  /* py_single_sign_on_and_federation.h */
+  {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
+  {"authn_request_build",   authn_request_build,   METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };
