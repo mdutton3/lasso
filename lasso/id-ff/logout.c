@@ -591,8 +591,8 @@ GType lasso_logout_get_type() {
 }
 
 LassoLogout *
-lasso_logout_new(LassoServer        *server,
-		 lassoProviderTypes  provider_type)
+lasso_logout_new(LassoServer       *server,
+		 lassoProviderType  provider_type)
 {
   LassoLogout *logout;
 

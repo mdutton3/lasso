@@ -58,27 +58,27 @@ struct _LassoRegisterNameIdentifierClass {
 
 LASSO_EXPORT GType                        lasso_register_name_identifier_get_type (void);
 
-LASSO_EXPORT LassoRegisterNameIdentifier* lasso_register_name_identifier_new      (LassoServer        *server,
-										   lassoProviderTypes  provider_type);
+LASSO_EXPORT LassoRegisterNameIdentifier* lasso_register_name_identifier_new      (LassoServer       *server,
+										   lassoProviderType  provider_type);
  
-LASSO_EXPORT gint            lasso_register_name_identifier_build_request_msg    (LassoRegisterNameIdentifier *register_name_identifier);
+LASSO_EXPORT gint            lasso_register_name_identifier_build_request_msg     (LassoRegisterNameIdentifier *register_name_identifier);
 
-LASSO_EXPORT gint            lasso_register_name_identifier_build_response_msg   (LassoRegisterNameIdentifier *register_name_identifier);
+LASSO_EXPORT gint            lasso_register_name_identifier_build_response_msg    (LassoRegisterNameIdentifier *register_name_identifier);
 
-LASSO_EXPORT void            lasso_register_name_identifier_destroy              (LassoRegisterNameIdentifier *register_name_identifier);
+LASSO_EXPORT void            lasso_register_name_identifier_destroy               (LassoRegisterNameIdentifier *register_name_identifier);
 
-LASSO_EXPORT gint            lasso_register_name_identifier_init_request         (LassoRegisterNameIdentifier *register_name_identifier,
-										  gchar       *remote_providerID);
+LASSO_EXPORT gint            lasso_register_name_identifier_init_request          (LassoRegisterNameIdentifier *register_name_identifier,
+										   gchar                       *remote_providerID);
 
-LASSO_EXPORT gint            lasso_register_name_identifier_load_request_msg     (LassoRegisterNameIdentifier *register_name_identifier,
-										  gchar            *request_msg,
-										  lassoHttpMethods  request_method);
+LASSO_EXPORT gint            lasso_register_name_identifier_load_request_msg      (LassoRegisterNameIdentifier *register_name_identifier,
+										   gchar                       *request_msg,
+										   lassoHttpMethods             request_method);
 
-LASSO_EXPORT gint            lasso_register_name_identifier_process_request      (LassoRegisterNameIdentifier *register_name_identifier);
+LASSO_EXPORT gint            lasso_register_name_identifier_process_request       (LassoRegisterNameIdentifier *register_name_identifier);
 
-LASSO_EXPORT gint            lasso_register_name_identifier_process_response_msg (LassoRegisterNameIdentifier *register_name_identifier,
-										  gchar                       *response_msg,
-										  lassoHttpMethods             response_method);
+LASSO_EXPORT gint            lasso_register_name_identifier_process_response_msg  (LassoRegisterNameIdentifier *register_name_identifier,
+										   gchar                       *response_msg,
+										   lassoHttpMethods             response_method);
   
 #ifdef __cplusplus
 }

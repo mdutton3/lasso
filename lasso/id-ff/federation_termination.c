@@ -35,7 +35,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
   LassoProfile  *profile;
   LassoProvider *provider;
   xmlChar       *protocolProfile;
-  lassoProviderTypes provider_type; /* use to get metadata */
+  lassoProviderType provider_type; /* use to get metadata */
 
   g_return_val_if_fail(LASSO_IS_FEDERATION_TERMINATION(defederation), -1);
   

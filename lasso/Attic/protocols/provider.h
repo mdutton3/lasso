@@ -51,7 +51,7 @@ typedef enum {
   lassoProviderTypeNone = 0,
   lassoProviderTypeSp,
   lassoProviderTypeIdp
-} lassoProviderTypes;
+} lassoProviderType;
 
 struct _LassoProvider {
   GObject parent;
@@ -85,39 +85,39 @@ LASSO_EXPORT void           lasso_provider_destroy                              
 
 LASSO_EXPORT gchar*         lasso_provider_dump                                                 (LassoProvider *provider);
 
-LASSO_EXPORT gchar*         lasso_provider_get_assertionConsumerServiceURL                      (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_assertionConsumerServiceURL                      (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
 LASSO_EXPORT gchar*         lasso_provider_get_authnRequestsSigned                              (LassoProvider  *provider,
 												 GError        **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationNotificationProtocolProfile (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationNotificationProtocolProfile (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationServiceURL                  (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_federationTerminationServiceURL                  (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_nameIdentifierMappingProtocolProfile             (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_nameIdentifierMappingProtocolProfile             (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
 LASSO_EXPORT gchar*         lasso_provider_get_providerID                                       (LassoProvider  *provider,
 												 GError        **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierProtocolProfile            (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierProtocolProfile            (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierServiceURL                 (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierServiceURL                 (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
 LASSO_EXPORT gchar*         lasso_provider_get_singleSignOnProtocolProfile                      (LassoProvider  *provider,
 												 GError        **err);
@@ -125,21 +125,21 @@ LASSO_EXPORT gchar*         lasso_provider_get_singleSignOnProtocolProfile      
 LASSO_EXPORT gchar*         lasso_provider_get_singleSignOnServiceURL                           (LassoProvider  *provider,
 												 GError        **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutProtocolProfile                      (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutProtocolProfile                      (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutServiceURL                           (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutServiceURL                           (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutServiceReturnURL                     (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_singleLogoutServiceReturnURL                     (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
-LASSO_EXPORT gchar*         lasso_provider_get_soapEndpoint                                     (LassoProvider       *provider,
-												 lassoProviderTypes   provider_type,
-												 GError             **err);
+LASSO_EXPORT gchar*         lasso_provider_get_soapEndpoint                                     (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
 
 LASSO_EXPORT void           lasso_provider_set_public_key                                       (LassoProvider *provider,
 												 gchar         *public_key);

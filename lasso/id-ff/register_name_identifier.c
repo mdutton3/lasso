@@ -480,8 +480,8 @@ GType lasso_register_name_identifier_get_type() {
 }
 
 LassoRegisterNameIdentifier *
-lasso_register_name_identifier_new(LassoServer        *server,
-				   lassoProviderTypes  provider_type)
+lasso_register_name_identifier_new(LassoServer       *server,
+				   lassoProviderType  provider_type)
 {
   LassoRegisterNameIdentifier *register_name_identifier;
 

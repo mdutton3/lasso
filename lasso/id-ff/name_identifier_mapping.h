@@ -58,16 +58,16 @@ struct _LassoNameIdentifierMappingClass {
 
 LASSO_EXPORT GType                       lasso_name_identifier_mapping_get_type             (void);
 
-LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new                  (LassoServer        *server,
-											     LassoIdentity      *identity,
-											     lassoProviderTypes  provider_type);
+LASSO_EXPORT LassoNameIdentifierMapping* lasso_name_identifier_mapping_new                  (LassoServer       *server,
+											     LassoIdentity     *identity,
+											     lassoProviderType  provider_type);
  
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_request_msg    (LassoNameIdentifierMapping *mapping);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_response_msg   (LassoNameIdentifierMapping *mapping);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_init_request         (LassoNameIdentifierMapping *mapping,
-											     gchar                    *remote_providerID);
+											     gchar                      *remote_providerID);
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_request_msg  (LassoNameIdentifierMapping *mapping,
 											     gchar                      *request_msg,

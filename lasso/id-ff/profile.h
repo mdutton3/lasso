@@ -96,9 +96,9 @@ struct _LassoProfile {
 
   /*< private >*/
   LassoProfilePrivate *private;
-  lassoMessageTypes  request_type;
-  lassoMessageTypes  response_type;
-  lassoProviderTypes provider_type;
+  lassoMessageTypes request_type;
+  lassoMessageTypes response_type;
+  lassoProviderType provider_type;
 };
 
 struct _LassoProfileClass {

@@ -355,9 +355,9 @@ GType lasso_name_identifier_mapping_get_type() {
 }
 
 LassoNameIdentifierMapping *
-lasso_name_identifier_mapping_new(LassoServer        *server,
-				  LassoIdentity      *identity,
-				  lassoProviderTypes  provider_type)
+lasso_name_identifier_mapping_new(LassoServer       *server,
+				  LassoIdentity     *identity,
+				  lassoProviderType  provider_type)
 {
   LassoNameIdentifierMapping *mapping;
 
