@@ -36,6 +36,44 @@ static GObjectClass *parent_class = NULL;
 /* public methods                                                            */
 /*****************************************************************************/
 
+void
+lasso_federation_build_local_nameIdentifier(LassoFederation *federation,
+					    const gchar     *nameQualifier,
+					    const gchar     *format)
+{
+  LassoNode *nameIdentifier;
+  xmlChar *id;
+
+  id = lasso_build_unique_id(32);
+  nameIdentifier = lasso_saml_name_identifier_new(id);
+  xmlFree(id);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					       nameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					format);
+  
+  federation->local_nameIdentifier = nameIdentifier;
+}
+
+void
+lasso_federation_build_remote_nameIdentifier(LassoFederation *federation,
+					     const gchar     *nameQualifier,
+					     const gchar     *format)
+{
+  LassoNode *nameIdentifier;
+  xmlChar *id;
+
+  id = lasso_build_unique_id(32);
+  nameIdentifier = lasso_saml_name_identifier_new(id);
+  xmlFree(id);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					       nameQualifier);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(nameIdentifier),
+					format);
+  
+  federation->remote_nameIdentifier = nameIdentifier;
+}
+
 LassoFederation*
 lasso_federation_copy(LassoFederation *federation)
 {
