@@ -656,6 +656,7 @@ lasso_node_impl_get_attr(LassoNode     *node,
 
   prop = node->private->node->properties;
   while (prop != NULL) {
+    //debug(ERROR, "%s - %s\n", prop->name, name);
     if (xmlStrEqual(prop->name, name)) {
       return (prop);
     }
@@ -675,8 +676,10 @@ lasso_node_impl_get_attr_value(LassoNode     *node,
   g_return_val_if_fail (name != NULL, NULL);
 
   prop = lasso_node_get_attr(node, name);
-  if(!prop)
-       return(NULL);
+  if (prop == NULL) {
+    return(NULL);
+  }
+
   return (prop->children->content);
 }
 
