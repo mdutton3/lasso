@@ -11,11 +11,26 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name python
+    End Project Dependency
 }}}
 
 ###############################################################################
 
 Project: "php"=".\php\php.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "python"=".\python\python.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

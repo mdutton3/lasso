@@ -315,6 +315,26 @@ SOURCE=..\..\lasso\xml\lib_subject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\lasso\xml\sa_parameter.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_password_transforms.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_sasl_request.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_sasl_response.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_transform.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\lasso\xml\saml_advice.c
 # End Source File
 # Begin Source File
@@ -501,10 +521,6 @@ SOURCE=..\..\lasso\errors.c
 # Begin Source File
 
 SOURCE=..\..\lasso\lasso.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\vsnprintf.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -739,6 +755,26 @@ SOURCE=..\..\lasso\xml\private.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\lasso\xml\sa_parameter.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_password_transforms.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_sasl_request.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_sasl_response.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\lasso\xml\sa_transform.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\lasso\xml\saml_advice.h
 # End Source File
 # Begin Source File
@@ -952,7 +988,32 @@ SOURCE=..\..\lasso\lasso.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\lasso\lasso_config.h
+SOURCE=.\lasso_config.h
+
+!IF  "$(CFG)" == "lasso - Win32 Release"
+
+# Begin Custom Build
+InputPath=.\lasso_config.h
+InputName=lasso_config
+
+"..\..\$(InputName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) ..\..\lasso
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "lasso - Win32 Debug"
+
+# Begin Custom Build
+InputPath=.\lasso_config.h
+InputName=lasso_config
+
+"..\..\$(InputName)" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy $(InputPath) ..\..\lasso
+
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -963,5 +1024,36 @@ SOURCE=..\..\lasso\lasso_config.h
 SOURCE=..\lasso.rc
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\lasso\extract_types.py
+
+!IF  "$(CFG)" == "lasso - Win32 Release"
+
+# Begin Custom Build
+InputDir=\lasso\lasso-0.6.1rc1\lasso
+InputPath=..\..\lasso\extract_types.py
+
+"$(InputDir)\types.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cd $(InputDir) 
+	I:\Python24\python.exe extract_types.py 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "lasso - Win32 Debug"
+
+# Begin Custom Build
+InputDir=\lasso\lasso-0.6.1rc1\lasso
+InputPath=..\..\lasso\extract_types.py
+
+"$(InputDir)\types.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cd $(InputDir) 
+	I:\Python24\python.exe extract_types.py 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
 # End Target
 # End Project
