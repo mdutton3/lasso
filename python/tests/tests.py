@@ -30,6 +30,8 @@ import imp
 import sys
 import unittest
 
+from XmlTestRunner import XmlTestRunner
+
 sys.path.insert(0, '..')
 sys.path.insert(0, '../.libs')
 
@@ -38,6 +40,10 @@ testSuites = (
     'login_tests',
     )
 
+if "--xml" in sys.argv:
+    print """<?xml version="1.0"?>"""
+    print """<testsuites xmlns="http://www.0d.be/ns/unittest">"""
+    
 success = True
 for testSuite in testSuites:
     fp, pathname, description = imp.find_module(testSuite)
@@ -47,20 +53,27 @@ for testSuite in testSuites:
         if fp:
             fp.close()
     if not module:
-        print 'Unable to load test suite:', testSuite
+        print >> sys.stderr, 'Unable to load test suite:', testSuite
+        continue
 
     if module.__doc__:
         doc = module.__doc__
     else:
         doc = testSuite
 
-    print
-    print '-' * len(doc)
-    print doc
-    print '-' * len(doc)
-
-    result = unittest.TextTestRunner(verbosity=2).run(module.allTests)
+    if "--xml" in sys.argv:
+        runner = XmlTestRunner()
+    else:
+        runner = unittest.TextTestRunner(verbosity=2)
+        print
+        print '-' * len(doc)
+        print doc
+        print '-' * len(doc)
+    result = runner.run(module.allTests)
     success = success and result.wasSuccessful()
+
+if "--xml" in sys.argv:
+    print """</testsuites>"""
 
 sys.exit(not success)
 
