@@ -1,2 +1,8 @@
-build
 *.pyc
+.deps
+.libs
+Makefile
+Makefile.in
+*.la
+*.lo
+
