@@ -25,9 +25,12 @@
 /*
  * Simple wrapper for JLasso, to ease its use by ColdFusion applications.
  *
- * To use it:
+ * To compile it:
  * $ javac -classpath ../../lasso.jar CFLasso.java
- * Edit ColdFusion file bin/jvm.config:
+ * To test it:
+ * $ export LD_LIBRARY_PATH=../../.libs/
+ * $ java -classpath ../../lasso.jar:. CFLasso
+ * To use it, edit ColdFusion file bin/jvm.config:
  *   - Add libjlasso.so directory to java.library.path variable.
  *   - Add classes directory to java.class.path variable.
  */
@@ -40,7 +43,7 @@ public class CFLasso {
 	    null, //"/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/public-key.pem",
             "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/private-key-raw.pem",
             "/home/manou/projects/lasso/lasso-devel/tests/data/sp1-la/certificate.pem",
-            com.entrouvert.lasso.lasso.signatureMethodRsaSha1);
+            com.entrouvert.lasso.lassoConstants.signatureMethodRsaSha1);
         server.addProvider(
             "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/metadata.xml",
             "/home/manou/projects/lasso/lasso-devel/tests/data/idp1-la/public-key.pem",
@@ -58,11 +61,11 @@ public class CFLasso {
 
 	server = getServer();
         login = new com.entrouvert.lasso.Login(server);
-        login.initAuthnRequest(com.entrouvert.lasso.lasso.httpMethodRedirect);
+        login.initAuthnRequest(com.entrouvert.lasso.lassoConstants.httpMethodRedirect);
 	authnRequest = login.getAuthnRequest();
         authnRequest.setIsPassive(false);
-        authnRequest.setNameIdPolicy(com.entrouvert.lasso.lasso.libNameIdPolicyTypeFederated);
-        authnRequest.setConsent(com.entrouvert.lasso.lasso.libConsentObtained);
+        authnRequest.setNameIdPolicy(com.entrouvert.lasso.lassoConstants.libNameIdPolicyTypeFederated);
+        authnRequest.setConsent(com.entrouvert.lasso.lassoConstants.libConsentObtained);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
         login.buildAuthnRequestMsg("https://sp1/metadata");

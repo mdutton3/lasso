@@ -41,7 +41,8 @@ lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i
 # FIXME There must be a better way to do this with SWIG
 $(JAVA_PATH)lasso.java: lasso.java
 	mkdir -p $(JAVA_PATH)
-	test -f $(JAVA_PATH)lasso.java || cp $(srcdir)/*.java $(JAVA_PATH)
+	rm -f $(JAVA_PATH)/*
+	cp $(srcdir)/*.java $(JAVA_PATH)
 
 clean-local:
 	rm -f *.class
