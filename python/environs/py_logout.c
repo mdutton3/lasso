@@ -216,8 +216,8 @@ PyObject *logout_process_request(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gint      codeError;
 
-  if (CheckArgs(args, "O:logout_process_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:logout_process_request_msg",
+  if (CheckArgs(args, "O:logout_process_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:logout_process_request",
 			 &logout_obj))
       return NULL;
   }

@@ -101,7 +101,7 @@ START_TEST(test02_serviceProviderLogin)
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
-	spLoginContext = lasso_login_new(spContext, NULL);
+	spLoginContext = lasso_login_new(spContext);
 	fail_unless(spLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
 	rc = lasso_login_init_authn_request(spLoginContext,
@@ -128,7 +128,7 @@ START_TEST(test02_serviceProviderLogin)
         /* Identity provider singleSignOn, for a user having no federation. */
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
-	idpLoginContext = lasso_login_new(idpContext, NULL);
+	idpLoginContext = lasso_login_new(idpContext);
 	fail_unless(idpLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
 	rc = lasso_login_init_from_authn_request_msg(idpLoginContext,
@@ -160,7 +160,7 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_login_destroy(spLoginContext);
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
-	spLoginContext = lasso_login_new(spContext, NULL);
+	spLoginContext = lasso_login_new(spContext);
 	rc = lasso_login_init_request(spLoginContext,
 			responseQuery,
 			lassoHttpMethodRedirect);
@@ -192,10 +192,9 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_login_destroy(spLoginContext);
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
-	spUserContext = lasso_user_new_from_dump(spUserContextDump);
-	fail_unless(spUserContext != NULL, "spUserContext should not be NULL");
-	spLogoutContext = lasso_logout_new(lassoProviderTypeSp,
-			spContext, spUserContext);
+	spLogoutContext = lasso_logout_new(spContext, lassoProviderTypeSp);
+	lasso_profile_context_set_user_from_dump(LASSO_PROFILE_CONTEXT(spLogoutContext),
+						 spUserContextDump);
 	fail_unless(spLogoutContext != NULL, "spLogoutContext should not be NULL");
 	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
 	fail_unless(spUserContextDump != NULL, "spUserContextDump should not be NULL");
@@ -208,8 +207,6 @@ START_TEST(test02_serviceProviderLogin)
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 
-	/* XXX  the problem lies here (how did lasso_server_destroy(idpContext) changed
-	 *      the spLogoutContext->user ?) */
 	spUserContextDumpTemp = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
 	fail_unless(spUserContextDumpTemp != NULL,
 			"spUserContextDumpTemp should not be NULL");
@@ -220,7 +217,7 @@ START_TEST(test02_serviceProviderLogin)
 			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body);
 
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
-	idpLogoutContext = lasso_logout_new(lassoProviderTypeIdp, idpContext, NULL);
+	idpLogoutContext = lasso_logout_new(idpContext, lassoProviderTypeIdp);
 	fail_unless(idpLogoutContext != NULL, "lasso_logout_new failed");
 	rc = lasso_logout_load_request_msg(
 			idpLogoutContext,

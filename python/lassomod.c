@@ -203,6 +203,8 @@ static PyMethodDef lasso_methods[] = {
 
   /* environs */
   {"profile_context_get_request_type_from_soap_msg",  profile_context_get_request_type_from_soap_msg,  METH_VARARGS},
+  {"profile_context_new",                profile_context_new,                METH_VARARGS},
+  {"profile_context_set_user_from_dump", profile_context_set_user_from_dump, METH_VARARGS},
 
   /* py_federation_termination.h */
   {"federation_termination_getattr",                  federation_termination_getattr,                  METH_VARARGS},

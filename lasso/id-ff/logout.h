@@ -66,7 +66,7 @@ struct _LassoLogoutClass {
 LASSO_EXPORT GType        lasso_logout_get_type                (void);
 
 LASSO_EXPORT LassoLogout* lasso_logout_new                     (LassoServer        *server,
-																lassoProviderTypes  provider_type);
+								lassoProviderTypes  provider_type);
   
 LASSO_EXPORT gint         lasso_logout_build_request_msg       (LassoLogout *logout);
 
@@ -77,24 +77,20 @@ LASSO_EXPORT void         lasso_logout_destroy                 (LassoLogout *log
 LASSO_EXPORT gchar*       lasso_logout_get_next_providerID     (LassoLogout *logout);
 
 LASSO_EXPORT gint         lasso_logout_init_request            (LassoLogout *logout,
-																gchar       *remote_providerID);
+								gchar       *remote_providerID);
 
 LASSO_EXPORT gint         lasso_logout_load_user_dump          (LassoLogout *logout,
-																gchar       *user_dump);
+								gchar       *user_dump);
 
 LASSO_EXPORT gint         lasso_logout_load_request_msg        (LassoLogout     *logout,
-																gchar           *request_msg,
-																lassoHttpMethods request_method);
+								gchar           *request_msg,
+								lassoHttpMethods request_method);
 
 LASSO_EXPORT gint         lasso_logout_process_request         (LassoLogout *logout);
 
-LASSO_EXPORT gint         lasso_logout_process_request_msg     (LassoLogout      *logout,
-																gchar            *request_msg,
-																lassoHttpMethods  request_method);
-
 LASSO_EXPORT gint         lasso_logout_process_response_msg    (LassoLogout      *logout,
-																gchar            *response_msg,
-																lassoHttpMethods  response_method);
+								gchar            *response_msg,
+								lassoHttpMethods  response_method);
   
 #ifdef __cplusplus
 }
