@@ -347,19 +347,21 @@ if test "z$XMLSEC1_FOUND" = "zno" ; then
     fi
 fi
 
-dnl find xmlsec crypto library (openssl)
-if test "z$XMLSEC1_FOUND" = "zyes" ; then
-    AC_MSG_CHECKING(for xmlsec1 OpenSSL crypto library)
-    XMLSEC1_DEFAULT_CRYPTO_LIB=`$XMLSEC1_CONFIG --crypto`
-    if test "$XMLSEC1_DEFAULT_CRYPTO_LIB" = "openssl" ; then
-	prefix=`$XMLSEC1_CONFIG --prefix`
-        if test -e $prefix/lib/libxmlsec1-openssl.so ; then
-	    AC_MSG_RESULT(yes)
+dnl find xmlsec crypto library (openssl) if not under Windows(c)
+if test "z$CWINDOWS" = "zno" ; then
+    if test "z$XMLSEC1_FOUND" = "zyes" ; then
+        AC_MSG_CHECKING(for xmlsec1 OpenSSL crypto library)
+        XMLSEC1_DEFAULT_CRYPTO_LIB=`$XMLSEC1_CONFIG --crypto`
+        if test "$XMLSEC1_DEFAULT_CRYPTO_LIB" = "openssl" ; then
+            prefix=`$XMLSEC1_CONFIG --prefix`
+            if test -e $prefix/lib/libxmlsec1-openssl.so ; then
+                AC_MSG_RESULT(yes)
+            else
+                AC_MSG_ERROR(Could not find xmlsec1 OpenSSL crypto library)
+            fi
         else
-	    AC_MSG_ERROR(Could not find xmlsec1 OpenSSL crypto library)
+            AC_MSG_ERROR(Bad default crypto library ($XMLSEC1_DEFAULT_CRYPTO_LIB) detected, must be OpenSSL)
         fi
-    else
-        AC_MSG_ERROR(Bad default crypto library ($XMLSEC1_DEFAULT_CRYPTO_LIB) detected, must be OpenSSL)
     fi
 fi
 
