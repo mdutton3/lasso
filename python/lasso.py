@@ -72,6 +72,9 @@ class Node:
     def get_child(self, name):
         return Node(_obj=lassomod.node_get_child(self, name))
 
+    def get_content(self):
+        return lassomod.node_get_content(self)
+
     def url_encode(self, sign_method, private_key_file):
         return lassomod.node_url_encode(self, sign_method, private_key_file)
 

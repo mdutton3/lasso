@@ -95,6 +95,22 @@ PyObject *node_get_child(PyObject *self, PyObject *args) {
   return (LassoNode_wrap(ret));
 }
 
+PyObject *node_get_content(PyObject *self, PyObject *args) {
+  PyObject *node_obj;
+  xmlChar *ret;
+
+  if (CheckArgs(args, "O:node_get_content")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:node_get_content",
+			 &node_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_node_get_content(LassoNode_get(node_obj));
+
+  return (xmlCharPtr_wrap(ret));
+}
+
 PyObject *node_unref(PyObject *self, PyObject *args) {
   PyObject *node_obj;
 

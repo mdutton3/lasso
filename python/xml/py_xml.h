@@ -39,6 +39,7 @@ PyObject *LassoNode_wrap(LassoNode *node);
 PyObject *node_dump(PyObject *self, PyObject *args);
 PyObject *node_get_attr_value(PyObject *self, PyObject *args);
 PyObject *node_get_child(PyObject *self, PyObject *args);
+PyObject *node_get_content(PyObject *self, PyObject *args);
 PyObject *node_unref(PyObject *self, PyObject *args);
 PyObject *node_url_encode(PyObject *self, PyObject *args);
 PyObject *node_soap_envelop(PyObject *self, PyObject *args);

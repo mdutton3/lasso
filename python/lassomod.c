@@ -64,6 +64,7 @@ static PyMethodDef lasso_methods[] = {
   {"node_dump",             node_dump,             METH_VARARGS},
   {"node_get_attr_value",   node_get_attr_value,   METH_VARARGS},
   {"node_get_child",        node_get_child,        METH_VARARGS},
+  {"node_get_content",      node_get_content,      METH_VARARGS},
   {"node_unref",            node_unref,            METH_VARARGS},
   {"node_url_encode",       node_url_encode,       METH_VARARGS},
   {"node_soap_envelop",     node_soap_envelop,     METH_VARARGS},
