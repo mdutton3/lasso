@@ -28,7 +28,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-void
+gint
 lasso_user_add_assertion(LassoUser *user,
 			 gchar     *remote_providerID,
 			 LassoNode *assertion)
@@ -37,7 +37,9 @@ lasso_user_add_assertion(LassoUser *user,
   int i;
   gboolean found;
 
-  printf("lasso_user_add_assertion() - add assertion, %s\n", remote_providerID);
+  g_return_val_if_fail(user!=NULL, -1);
+  g_return_val_if_fail(remote_providerID!=NULL, -2);
+  g_return_val_if_fail(assertion!=NULL, -3);
 
   /* add the remote provider id */
   found = FALSE;
@@ -51,14 +53,22 @@ lasso_user_add_assertion(LassoUser *user,
 
   /* add the assertion */
   g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
+
+  return(0);
 }
 
-void
+gint
 lasso_user_add_identity(LassoUser     *user,
 			gchar         *remote_providerID,
 			LassoIdentity *identity)
 {
+  g_return_val_if_fail(user!=NULL, -1);
+  g_return_val_if_fail(remote_providerID!=NULL, -2);
+  g_return_val_if_fail(identity!=NULL, -3);
+
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
+
+  return(0);
 }
 
 static void
@@ -106,6 +116,8 @@ lasso_user_dump(LassoUser *user)
   LassoNode      *user_node, *assertions_node, *identities_node;
   LassoNodeClass *user_class, *assertions_class, *identities_class;
 
+  g_return_val_if_fail(user!=NULL, NULL);
+
   user_node = lasso_node_new();
   user_class = LASSO_NODE_GET_CLASS(user_node);
   user_class->set_name(user_node, LASSO_USER_NODE);
@@ -131,12 +143,17 @@ LassoNode*
 lasso_user_get_assertion(LassoUser *user,
 			 gchar     *remote_providerID)
 {
+  g_return_val_if_fail(user!=NULL, NULL);
+  g_return_val_if_fail(remote_providerID!=NULL, NULL);
+
   return(g_hash_table_lookup(user->assertions, remote_providerID));
 }
 
 gchar*
 lasso_user_get_next_providerID(LassoUser *user)
 {
+  g_return_val_if_fail(user!=NULL, NULL);
+
   return(g_ptr_array_index(user->assertion_providerIDs, 0));
 }
 
@@ -144,15 +161,21 @@ LassoIdentity*
 lasso_user_get_identity(LassoUser *user,
 			gchar     *remote_providerID)
 {
+  g_return_val_if_fail(user!=NULL, NULL);
+  g_return_val_if_fail(remote_providerID!=NULL, NULL);
+
   return(g_hash_table_lookup(user->identities, remote_providerID));
 }
 
-void
+gint
 lasso_user_remove_assertion(LassoUser     *user,
 			    gchar         *remote_providerID)
 {
   LassoNode *assertion;
   int i;
+
+  g_return_val_if_fail(user!=NULL, -1);
+  g_return_val_if_fail(remote_providerID!=NULL, -2);
 
   /* remove the assertion */
   assertion = lasso_user_get_assertion(user, remote_providerID);
@@ -165,6 +188,8 @@ lasso_user_remove_assertion(LassoUser     *user,
       break;
     }
   }
+
+  return(0);
 }
 
 
@@ -236,6 +261,8 @@ lasso_user_new_from_dump(gchar *dump)
   LassoIdentity  *identity;
 
   xmlChar        *remote_providerID;
+
+  g_return_val_if_fail(dump!=NULL, NULL);
 
   /* new object */
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));

@@ -73,11 +73,11 @@ LASSO_EXPORT LassoUser     *lasso_user_new_from_dump         (gchar *dump);
 
 LASSO_EXPORT gchar         *lasso_user_dump                  (LassoUser *user);
 
-LASSO_EXPORT void           lasso_user_add_assertion         (LassoUser *user,
+LASSO_EXPORT gint           lasso_user_add_assertion         (LassoUser *user,
 							      gchar     *remote_providerID,
 							      LassoNode *assertion);
 
-LASSO_EXPORT void           lasso_user_add_identity          (LassoUser     *user,
+LASSO_EXPORT gint           lasso_user_add_identity          (LassoUser     *user,
 							      gchar         *remote_providerID,
 							      LassoIdentity *identity);
 
@@ -89,7 +89,7 @@ LASSO_EXPORT LassoIdentity *lasso_user_get_identity          (LassoUser *user,
 
 LASSO_EXPORT gchar         *lasso_user_get_next_providerID   (LassoUser *user);
 
-LASSO_EXPORT void           lasso_user_remove_assertion      (LassoUser *user,
+LASSO_EXPORT gint           lasso_user_remove_assertion      (LassoUser *user,
 							      gchar     *remote_providerID);
 #ifdef __cplusplus
 }
