@@ -59,11 +59,9 @@ lasso_user_add_assertion(LassoUser *user,
     return(-4);
   }
 
-  debug(DEBUG, "add provider id %s\n", remote_providerID);
   g_ptr_array_add(user->assertion_providerIDs, g_strdup(remote_providerID));
 
   /* add the assertion */
-  debug(DEBUG, "Add an assertion for %s\n", remote_providerID);
   g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
 
   return(0);
@@ -78,7 +76,6 @@ lasso_user_add_identity(LassoUser     *user,
   g_return_val_if_fail(remote_providerID!=NULL, -2);
   g_return_val_if_fail(identity!=NULL, -3);
 
-  debug(DEBUG, "Add an identity for %s\n", remote_providerID);
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 
   return(0);
@@ -91,8 +88,6 @@ lasso_user_dump_assertion(gpointer   key,
 {
   LassoNode      *assertion_node;
   LassoNodeClass *assertion_class, *assertions_class;
-
-  debug(DEBUG, "key : %s, value : %s\n", key, lasso_node_export(value));
 
   /* new lasso assertion node */
   assertion_node = lasso_node_new();
@@ -119,7 +114,7 @@ lasso_user_dump_identity(gpointer   key,
   LassoNodeClass *identity_class;
   xmlChar        *dump;
 
-  dump = lasso_identity_dump(value);
+  dump = lasso_identity_dump(LASSO_IDENTITY(value));
   identity_node = lasso_node_new_from_dump(dump);
   identity_class = LASSO_NODE_GET_CLASS(identity_node);
   identity_class->add_child(identities, identity_node, TRUE);
@@ -147,7 +142,6 @@ lasso_user_dump(LassoUser *user)
   /* dump the assertions */
   table_size = g_hash_table_size(user->assertions);
   if(table_size>0){
-    debug(INFO, "Dump assertions\n");
     assertions_node = lasso_node_new();
     assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
     assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
@@ -158,7 +152,6 @@ lasso_user_dump(LassoUser *user)
   /* dump the identities */
   table_size = g_hash_table_size(user->identities);
   if(table_size>0){
-    debug(INFO, "Dump identities\n");
     identities_node = lasso_node_new();
     identities_class = LASSO_NODE_GET_CLASS(identities_node);
     identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
