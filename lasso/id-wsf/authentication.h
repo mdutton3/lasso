@@ -67,7 +67,7 @@ struct _LassoAuthentication {
 	LassoWsfProfile parent;
 
 	/* The SASL context kept for the life of the connection */
-	sasl_conn_t *connection; /* FIXME : implement dispose method to release the connection */
+	sasl_conn_t *connection;
 	sasl_interact_t **client_interact;
 
 	/*< private >*/

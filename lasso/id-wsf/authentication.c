@@ -407,12 +407,20 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 {
 	LassoSaSASLRequest *request;
 	LassoSaSASLResponse *response;
+
+	gchar *mechanisms, *chosen;
+	gchar **server_mech_list, **client_mech_list, **smech, **cmech;
+	int nbmech;
+
 	char *inbase64, *outbase64;
-	int res;
+
 	char *in = NULL;
 	int inlen = 0;
+
 	const char *out;
 	int outlen = 0;
+
+	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -431,17 +439,62 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 	request = LASSO_SA_SASL_REQUEST(LASSO_WSF_PROFILE(authentication)->request);
 	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
 
+	/* if mechanism is NULL, then abort authentication exchange */
+	chosen = NULL;
+	nbmech = 0;
+	if (g_str_equal(request->mechanism, "") == FALSE) {
+		/* count nb client mechanism list */
+		client_mech_list = g_strsplit(request->mechanism, " ", 0);
+		cmech = client_mech_list;
+		while (*cmech != NULL) {
+			cmech++;
+			nbmech++;
+		}
+
+		mechanisms  = lasso_authentication_get_mechanism_list(authentication);
+		server_mech_list = g_strsplit(mechanisms, " ", 0);
+		smech = server_mech_list;
+
+		/* get chosen mechanism */
+		while (*smech != NULL) {
+			cmech = client_mech_list;
+			while (*cmech != NULL) {
+				if ( g_str_equal(*smech, *cmech) == TRUE) {
+					chosen = g_strdup(*smech);
+					break;
+				}
+				cmech++;
+			}
+			if (chosen != NULL)
+				break;
+			smech++;
+		}
+	}
+	if (chosen == NULL) {
+		g_free(response->Status->code);
+		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+		return res;
+	}
+
+	if (nbmech > 1 && request->Data != NULL) {
+		g_free(response->Status->code);
+		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
+		return res;	
+	}
+
+	/* decode Data if not NULL */
 	if (request->Data != NULL) {
 		inbase64 = request->Data->data;
 		in = g_malloc(strlen(inbase64));
 		inlen = xmlSecBase64Decode(inbase64, in, strlen(inbase64));
 	}
 
-	res = sasl_server_start(authentication->connection, /* context */
-				request->mechanism,
-				in,    /* the optional string the client gave us */
-				inlen, /* and it's length */
-				&out, /* The output of the library. Might not be NULL terminated */
+	/* process sasl request */
+	res = sasl_server_start(authentication->connection,
+				chosen,
+				in,
+				inlen,
+				&out, /* Might not be NULL terminated */
 				&outlen);
 
 	/* set status code in SASLResponse message if not ok */
@@ -486,9 +539,9 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 	response = LASSO_SA_SASL_RESPONSE(LASSO_WSF_PROFILE(authentication)->response);
 
 	/* If mechanism is NULL, thene client wants to abort authentication exchange */
-	if (request->mechanism == NULL) {
+	if (g_str_equal(request->mechanism, "") == TRUE) {
 		g_free(response->Status->code);
-		response->Status->code = LASSO_SA_STATUS_CODE_ABORT;
+		response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 
 		return 0;
 	}
@@ -564,6 +617,8 @@ static void
 dispose(GObject *object)
 {
 	LassoAuthentication *authentication = LASSO_AUTHENTICATION(object);
+
+	sasl_dispose(&authentication->connection);
 
 	if (authentication->private_data->dispose_has_run == TRUE)
 		return;

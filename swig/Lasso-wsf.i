@@ -171,6 +171,8 @@ LassoSoapEnvelope *lasso_soap_envelope_new_from_message(char *message);
 %rename(EP_PREFIX) LASSO_EP_PREFIX;
 %rename(PP_HREF) LASSO_PP_HREF;
 %rename(PP_PREFIX) LASSO_PP_PREFIX;
+%rename(SA_HREF) LASSO_SA_HREF;
+%rename(SA_PREFIX) LASSO_SA_PREFIX;
 #endif
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
@@ -178,6 +180,9 @@ LassoSoapEnvelope *lasso_soap_envelope_new_from_message(char *message);
 #define LASSO_EP_PREFIX "ep"
 #define LASSO_PP_HREF   "urn:liberty:id-sis-pp:2003-08"
 #define LASSO_PP_PREFIX "pp"
+#define LASSO_SA_HREF "urn:liberty:sa:2004-04"
+#define LASSO_SA_PREFIX "sa"
+
 
 /* WSF status code */
 #ifndef SWIGPHP4
