@@ -4951,16 +4951,20 @@ typedef struct {
 			char *caCertChain = NULL);
 	END_THROW_ERROR
 
+#ifdef LASSO_WSF_ENABLED
 	THROW_ERROR
 	int addService(LassoDiscoServiceInstance *service);
 	END_THROW_ERROR
+#endif
 
 	%newobject dump;
 	char *dump();
 
 	LassoProvider *getProvider(char *providerId);
 
+#ifdef LASSO_WSF_ENABLED
 	LassoDiscoServiceInstance *getService(char *serviceType);
+#endif
 }
 
 %{
@@ -5609,9 +5613,11 @@ typedef struct {
 	int processResponseMsg(char *responseMsg);
 	END_THROW_ERROR
 
+#ifdef LASSO_WSF_ENABLED
 	THROW_ERROR
 	int setEncryptedResourceId(LassoDiscoEncryptedResourceID *encryptedResourceId);
 	END_THROW_ERROR
+#endif
 
 	THROW_ERROR
 	int setResourceId(char *content);
