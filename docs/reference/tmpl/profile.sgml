@@ -14,18 +14,6 @@ Base class for all ID-FF profiles
 
 </para>
 
-<!-- ##### ENUM LassoMessageType ##### -->
-<para>
-
-</para>
-
-@LASSO_MESSAGE_TYPE_NONE: 
-@LASSO_MESSAGE_TYPE_AUTHN_REQUEST: 
-@LASSO_MESSAGE_TYPE_AUTHN_RESPONSE: 
-@LASSO_MESSAGE_TYPE_REQUEST: 
-@LASSO_MESSAGE_TYPE_RESPONSE: 
-@LASSO_MESSAGE_TYPE_ARTIFACT: 
-
 <!-- ##### ENUM LassoRequestType ##### -->
 <para>
 
