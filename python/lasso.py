@@ -1456,7 +1456,7 @@ class Lecp(Login):
                 # FIXME ret = Request(_obj=ret)
         elif name == "response":
             if lassomod.lecp_getattr(self, "response_type") == messageTypeAuthnResponse:
-                ret = AuthnResponse(None, _obj=ret)
+                ret = AuthnResponse(_obj=ret)
             elif lassomod.lecp_getattr(self, "response_type") == messageTypeResponse:
                 ret = SamlpResponse(_obj=ret)
                 # FIXME ret = Response(_obj=ret)
