@@ -16,7 +16,7 @@ javalib_LTLIBRARIES = libjlasso.la
 libjlasso_la_SOURCES =	$(JAVA_MODULE)_wrap.c
 libjlasso_la_CFLAGS =	$(JDK_INCLUDES) \
 			$(LASSO_CFLAGS) \
-			-I$(top_srcdir) -I$(top_srcdir)/lasso
+			-I$(top_srcdir)
 
 libjlasso_la_LIBADD =	$(top_builddir)/lasso/liblasso.la $(LASSO_LIBS)
 
@@ -41,8 +41,6 @@ MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 
 $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
 	here=`pwd`; \
-	mkdir -p $(JAVA_PATH) \
-	cd $(JAVA_PATH); \
 	$(SWIG) -v -java -noproxy -module $(JAVA_MODULE) -package $(JAVA_PACKAGE) -o $(JAVA_MODULE)_wrap.c $$here/$<; \
 	if test -r $(JAVA_MODULE)JNI.java; then \
 	  echo "Fixing SWIG 1.3.15+ broken Java API"; \
@@ -56,6 +54,8 @@ $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
 
 # FIXME There must be a better way to do this with SWIG
 $(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java.in lasso-fragment.java
+	mkdir -p $(JAVA_PATH) 
+	cd $(JAVA_PATH) 
 	sed -e 's/^}//' $(JAVA_MODULE).java.in > $(JAVA_PATH)$(JAVA_MODULE).java.tmp
 	cat $(JAVA_PATH)$(JAVA_MODULE).java.tmp lasso-fragment.java > $@
 	echo "}" >> $@
@@ -68,6 +68,8 @@ clean-local:
 all-local: $(JAVA_JAR)
 
 $(JAVA_PATH)$(JAVA_MODULE).class: $(JAVA_PATH)$(JAVA_MODULE).java
+	mkdir -p $(JAVA_PATH)
+	cp $(srcdir)/$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_PATH)
 	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)$(JAVA_MODULE).java
 
 $(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class 
