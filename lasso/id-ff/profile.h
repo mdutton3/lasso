@@ -101,6 +101,8 @@ struct _LassoProfile {
   lassoMessageType  response_type;
   lassoProviderType provider_type;
 
+  lassoHttpMethod http_request_method;
+
   LassoProfilePrivate *private;
 };
 
