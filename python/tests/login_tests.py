@@ -167,12 +167,16 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(idpContextDump)
         idpContext = lasso.Server.new_from_dump(idpContextDump)
         self.failUnless(idpContext)
-        self.failUnless(idpUserContextDump)
-        idpUserContext = lasso.User.new_from_dump(idpUserContextDump)
-        self.failUnless(idpUserContext)
-        idpLogoutContext = lasso.Logout.new(idpContext, idpUserContext, lasso.providerTypeIdp)
+        idpLogoutContext = lasso.Logout.new(idpContext, None, lasso.providerTypeIdp)
         self.failUnlessEqual(
             idpLogoutContext.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
+        self.failUnlessEqual(idpLogoutContext.nameIdentifier, nameIdentifier)
+        self.failUnless(idpUserContextDump)
+        self.failUnlessEqual(idpLogoutContext.create_user(idpUserContextDump), 0)
+        idpUserContext = idpLogoutContext.user
+        self.failUnless(idpUserContext)
+        idpUserContextDump = idpUserContext.dump()
+        self.failUnless(idpUserContextDump)
         # There is no other service provider from which the user must be logged out.
         self.failUnlessEqual(idpLogoutContext.get_next_providerID(), None)
         self.failUnlessEqual(idpLogoutContext.build_response_msg(), 0)
