@@ -1090,6 +1090,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 		}
 		
 		LASSO_PROFILE(login)->request = LASSO_SAMLP_REQUEST_ABSTRACT(request);
+
+		/* get remote ProviderID */
+		LASSO_PROFILE(login)->remote_providerID = g_strdup(
+				LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProviderID);
+
 	}
 
 
@@ -1114,10 +1119,6 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				protocolProfile) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
 	}
-
-	/* get remote ProviderID */
-	LASSO_PROFILE(login)->remote_providerID = g_strdup(
-			LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ProviderID);
 
 	/* Check authnRequest signature. */
 	if (authn_request_msg != NULL) {
