@@ -56,7 +56,6 @@ It is of course possible to have several calls so ``lasso_server_add_provider``
 if there are more than one identity provider.
 
 
-
 Single Sign-On and Federation Profile
 =====================================
 
@@ -116,10 +115,13 @@ be::
   login_process_response_msg(login, answer);
 
 The users are defined by a ``nameIdentifier``.  Those typically map to users
-and sessions on the service provider.  If existing; the session should probably
-contains a ``session_dump`` element and the user a ``identity_dump`` element.
+and sessions in some database on the service provider.  If existing; the
+session should probably contains a ``session_dump`` element and the user a
+``identity_dump`` element.  See `Database Considerations`_ below for more
+informations.
 
-.. XXX include sample database schema here ?
+It is now time to get them out of the database and apply them to the ``login``
+object.
 
 ::
 
@@ -132,7 +134,12 @@ contains a ``session_dump`` element and the user a ``identity_dump`` element.
   lasso_login_accept_sso(login);
 
 After ``lasso_login_accept_sso`` the session and the identity are updated (or
-created) and should then be saved.  You can get respective dumps like this::
+created) and should then be saved.  If the identity was not known to the
+service provider an account will most probably need to be created on the
+service provider; this is a good opportunity to ask the user for more
+information.
+
+You can get respective dumps like this::
 
   LassoIdentity *identity;
   LassoSession *session;
@@ -150,6 +157,7 @@ created) and should then be saved.  You can get respective dumps like this::
       lasso_session_destroy(session);
   }
 
+  /* code to store identity_dump and session_dump */
 
 Finally the ``login`` object can then be destroyed::
 
@@ -196,6 +204,35 @@ The service provider must then make a SOAP request to the identity provider;
 
 And save back session and user dump; the process is similar as the one at the
 end of the single sign on profile.
+
+
+Database Considerations
+=======================
+
+Lasso has been designed to let the service provider keep on using existing
+databases.  Typically there is already a table describing users; just add a
+identity dump column to the existing table:
+
+=======    ========================================    =============
+User Id    existing data (name, address...)            Identity dump
+=======    ========================================    =============
+1          ...                                         <Identity...
+2          ...                                         <Identity...
+=======    ========================================    =============
+
+
+Sessions are also commonly stored in databases; just add a session dump column
+to the existing session table:
+
+==========    =================    ============
+Session Id    misc session data    Session dump
+==========    =================    ============
+6744066       ...                  <Session...
+3338824       ...                  <Session...
+==========    =================    ============
+
+
+
 
 
 .. _Liberty ID-FF Bindings and Profiles Specification:
