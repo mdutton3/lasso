@@ -55,6 +55,7 @@
 
 #include "environs/py_login.h"
 #include "environs/py_server.h"
+#include "environs/py_logout.h"
 #include "environs/py_user.h"
 
 static PyMethodDef lasso_methods[] = {
@@ -214,6 +215,14 @@ static PyMethodDef lasso_methods[] = {
   {"server_new",          server_new,          METH_VARARGS},
   {"server_add_provider", server_add_provider, METH_VARARGS},
 
+  /* py_logout.h */
+  {"logout_new",                logout_new,                METH_VARARGS},
+  {"logout_build_request_msg",  logout_build_request_msg,  METH_VARARGS},
+  {"logout_build_response_msg", logout_build_response_msg, METH_VARARGS},
+  {"logout_init_request",       logout_init_request,       METH_VARARGS},
+  {"logout_handle_request",     logout_handle_request,     METH_VARARGS},
+  {"logout_handle_response",    logout_handle_response,    METH_VARARGS},
+  
   /* py_user.h */
   {"user_new",           user_new,           METH_VARARGS},
   {"user_new_from_dump", user_new_from_dump, METH_VARARGS},
