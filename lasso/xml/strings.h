@@ -157,6 +157,8 @@
 #define LASSO_SA_HREF "urn:liberty:sa:2004-04"
 #define LASSO_SA_PREFIX "sa"
 
+#define LASSO_SA_SASL_SERVICE_NAME "idwsf"
+
 /* Interaction Service (interact attribute of is:UserInteraction element ) */
 #define LASSO_IS_INTERACT_ATTR_INTERACT_IF_NEEDED "is:interactIfNeeded"
 #define LASSO_IS_INTERACT_ATTR_DO_NOT_INTERACT "is:doNotInteract"
@@ -186,9 +188,9 @@
 #define LASSO_DST_STATUS_CODE_TIME_OUT "TimeOut"
 #define LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR "UnexpectedError"
 
-#define LASSO_SA_STATUS_CODE_CONTINUE "sa:continue"
-#define LASSO_SA_STATUS_CODE_ABORT "sa:abort"
-#define LASSO_SA_STATUS_CODE_OK "sa:OK"
+#define LASSO_SA_STATUS_CODE_CONTINUE "continue"
+#define LASSO_SA_STATUS_CODE_ABORT "abort"
+#define LASSO_SA_STATUS_CODE_OK "OK"
 
 /*****************************************************************************/
 /* METADATA                                                                  */

@@ -30,6 +30,8 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
+#include <sasl.h>
+
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_description.h>
 
@@ -48,8 +50,18 @@ typedef struct _LassoAuthentication LassoAuthentication;
 typedef struct _LassoAuthenticationClass LassoAuthenticationClass;
 typedef struct _LassoAuthenticationPrivate LassoAuthenticationPrivate;
 
+typedef enum {
+	LASSO_SASL_OK = SASL_OK,             /* 0 */
+	LASSO_SASL_CONTINUE = SASL_CONTINUE, /* 1 */
+	LASSO_SASL_INTERACT = SASL_INTERACT, /* 2 */
+} LassoSaslType;
+
 struct _LassoAuthentication {
 	LassoWsfProfile parent;
+
+	/* The SASL context kept for the life of the connection */
+	sasl_conn_t *connection; /* FIXME : implement dispose method to release the connection */
+	sasl_interact_t **client_interact;
 
 	/*< private >*/
 	LassoAuthenticationPrivate *private_data;
@@ -63,15 +75,26 @@ LASSO_EXPORT GType lasso_authentication_get_type(void);
 
 LASSO_EXPORT LassoAuthentication* lasso_authentication_new(LassoServer *server);
 
+LASSO_EXPORT gint lasso_authentication_client_start(LassoAuthentication *authentication);
+
+LASSO_EXPORT gint lasso_authentication_client_step(LassoAuthentication *authentication);
+
+LASSO_EXPORT char *lasso_authentication_get_mechanism_list(LassoAuthentication *authentication);
+
 LASSO_EXPORT gint lasso_authentication_init_request(LassoAuthentication *authentication,
 						    LassoDiscoDescription *description,
-						    const gchar *mechanism);
+						    const char *mechanisms,
+						    sasl_callback_t *callbacks);
 
 LASSO_EXPORT gint lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 							   const gchar *soap_msg);
 	
 LASSO_EXPORT gint lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 							    const gchar *soap_msg);
+
+LASSO_EXPORT gint lasso_authentication_server_start(LassoAuthentication *authentication);
+
+LASSO_EXPORT gint lasso_authentication_server_step(LassoAuthentication *authentication);
 
 #ifdef __cplusplus
 }

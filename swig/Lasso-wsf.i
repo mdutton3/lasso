@@ -25,7 +25,7 @@
  */
 
 %{
-
+#include <lasso/id-wsf/authentication.h>
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/interaction_profile_service.h>
 #include <lasso/id-wsf/profile_service.h>
@@ -46,6 +46,8 @@
 #include <lasso/xml/is_select.h>
 #include <lasso/xml/is_text.h>
 #include <lasso/xml/is_user_interaction.h>
+#include <lasso/xml/sa_sasl_request.h>
+#include <lasso/xml/sa_sasl_response.h>
 
 %}
 
@@ -120,6 +122,19 @@
 #define LASSO_DST_STATUS_CODE_OK "OK"
 #define LASSO_DST_STATUS_CODE_TIME_OUT "TimeOut"
 #define LASSO_DST_STATUS_CODE_UNEXPECTED_ERROR "UnexpectedError"
+
+
+/* Sasl cyrus code */
+#ifndef SWIGPHP4
+%rename(SASL_OK) LASSO_SASL_OK;
+%rename(SASL_CONTINUE) LASSO_SASL_CONTINUE;
+%rename(SASL_INTERACT) LASSO_SASL_INTERACT;
+#endif
+typedef enum {
+	LASSO_SASL_OK = SASL_OK,
+	LASSO_SASL_CONTINUE = SASL_CONTINUE,
+	LASSO_SASL_INTERACT = SASL_INTERACT,
+} LassoSaslType;
 
 
 /***********************************************************************
@@ -2400,6 +2415,176 @@ typedef struct {
 
 %}
 
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in Sa Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+/***********************************************************************
+ * sa:SaSaslRequest
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SaSaslRequest) LassoSaSaslRequest;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *mechanism;
+	
+	char *authzID;
+
+	char *advisoryAuthnID;
+
+	char *id;
+
+} LassoSaSaslRequest;
+%extend LassoSaSaslRequest {
+	/* Attributes */
+#ifndef SWIGPHP4
+	%rename(data) Data;
+#endif
+	%newobject Data_get;
+	LassoNodeList *Data;
+
+#ifndef SWIGPHP4
+	%rename(requestAuthnContext) RequestAuthnContext;
+#endif
+	%newobject RequestAuthnContext_get;
+	LassoNodeList *RequestAuthnContext;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSaSaslRequest(char *mechanism);
+
+	~LassoSaSaslRequest();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+/* Data */
+#define LassoSaSaslRequest_get_Data(self) get_node_list((self)->Data)
+#define LassoSaSaslRequest_Data_get(self) get_node_list((self)->Data)
+#define LassoSaSaslRequest_set_Data(self, value) set_node_list(&(self)->Data, (value))
+#define LassoSaSaslRequest_Data_set(self, value) set_node_list(&(self)->Data, (value))
+
+/* RequestAuthnContext */
+#define LassoSaSaslRequest_get_RequestAuthnContext(self) get_node((self)->RequestAuthnContext)
+#define LassoSaSaslRequest_RequestAuthnContext_get(self) get_node((self)->RequestAuthnContext)
+#define LassoSaSaslRequest_set_RequestAuthnContext(self, value) set_node((gpointer *) &(self)->RequestAuthnContext, (value))
+#define LassoSaSaslRequest_RequestAuthnContext_set(self, value) set_node((gpointer *) &(self)->RequestAuthnContext, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSaSaslRequest lasso_sa_sasl_request_new
+#define delete_LassoSaSaslRequest(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSaSaslRequest_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+/***********************************************************************
+ * sa:SaSaslResponse
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SaSaslResponse) LassoSaSaslResponse;
+#endif
+typedef struct {
+	/* Attributes */
+
+	char *serverMechanism;
+
+	char *id;
+
+} LassoSaSaslResponse;
+%extend LassoSaSaslResponse {
+	/* Attributes */
+#ifndef SWIGPHP4
+	%rename(data) Data;
+#endif
+	%newobject Data_get;
+	LassoNodeList *Data;
+
+#ifndef SWIGPHP4
+	%rename(passwordTransforms) PasswordTransforms;
+#endif
+	%newobject PasswordTransforms_get;
+	LassoNodeList *PasswordTransforms;
+
+#ifndef SWIGPHP4
+	%rename(resourceOffering) ResourceOffering;
+#endif
+	%newobject ResourceOffering_get;
+	LassoNodeList *ResourceOffering;
+
+#ifndef SWIGPHP4
+	%rename(status) Status;
+#endif
+	%newobject Status_get;
+	LassoUtilityStatus *Status;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSaSaslResponse(LassoUtilityStatus *status);
+
+	~LassoSaSaslResponse();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes Implementations */
+/* Data */
+#define LassoSaSaslResponse_get_Data(self) get_node_list((self)->Data)
+#define LassoSaSaslResponse_Data_get(self) get_node_list((self)->Data)
+#define LassoSaSaslResponse_set_Data(self, value) set_node_list(&(self)->Data, (value))
+#define LassoSaSaslResponse_Data_set(self, value) set_node_list(&(self)->Data, (value))
+
+/* PasswordTransforms */
+#define LassoSaSaslResponse_get_PasswordTransforms(self) get_node_list((self)->PasswordTransforms)
+#define LassoSaSaslResponse_PasswordTransforms_get(self) get_node_list((self)->PasswordTransforms)
+#define LassoSaSaslResponse_set_PasswordTransforms(self, value) set_node_list(&(self)->PasswordTransforms, (value))
+#define LassoSaSaslResponse_PasswordTransforms_set(self, value) set_node_list(&(self)->PasswordTransforms, (value))
+
+/* ResourceOffering */
+#define LassoSaSaslResponse_get_ResourceOffering(self) get_node_list((self)->ResourceOffering)
+#define LassoSaSaslResponse_ResourceOffering_get(self) get_node_list((self)->ResourceOffering)
+#define LassoSaSaslResponse_set_ResourceOffering(self, value) set_node_list(&(self)->ResourceOffering, (value))
+#define LassoSaSaslResponse_ResourceOffering_set(self, value) set_node_list(&(self)->ResourceOffering, (value))
+
+/* Status */
+#define LassoSaSaslResponse_get_Status(self) get_node((self)->Status)
+#define LassoSaSaslResponse_Status_get(self) get_node((self)->Status)
+#define LassoSaSaslResponse_set_Status(self, value) set_node((gpointer *) &(self)->Status, (value))
+#define LassoSaSaslResponse_Status_set(self, value) set_node((gpointer *) &(self)->Status, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSaSaslResponse lasso_sa_sasl_response_new
+#define delete_LassoSaSaslResponse(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSaSaslResponse_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
 
 /***********************************************************************
  ***********************************************************************
@@ -2908,5 +3093,129 @@ gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
 #define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
 #define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
+
+%}
+
+
+/***********************************************************************
+ * lasso:Authentication
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(Authentication) LassoAuthentication;
+#endif
+typedef struct {
+} LassoAuthentication;
+%extend LassoAuthentication {
+	/* Attributes inherited from WsfProfile */
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject request_get;
+	LassoSaSaslRequest *request;
+
+	%newobject response_get;
+	LassoSaSaslResponse *response;
+
+	%newobject server_get;
+	LassoServer *server;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoAuthentication(LassoServer *server);
+
+	~LassoAuthentication();
+
+	/* Methods inherited from LassoNode */
+
+	/* Methods inherited from WsfProfile */
+
+	THROW_ERROR
+	int buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
+
+	/* Methods */
+	int clientStart();
+
+	int clientStep();
+
+	THROW_ERROR
+	int getMechanismList();
+	END_THROW_ERROR
+
+	int initRequest(LassoDiscoDescription *description, char *mechanisms, sasl_callback_t *callbacks = NULL);
+
+	int processRequestMsg(char *soap_msg);
+
+	int processResponseMsg(char *soap_msg);
+
+	int serverStart();
+
+	int serverStep();
+}
+
+%{
+
+/* Attributes inherited from WsfProfile implementations */
+
+/* msgBody */
+#define LassoAuthentication_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoAuthentication_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
+
+/* msgUrl */
+#define LassoAuthentication_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoAuthentication_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+
+/* request */
+#define LassoAuthentication_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoAuthentication_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoAuthentication_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoAuthentication_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoAuthentication_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoAuthentication_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoAuthentication_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoAuthentication_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoAuthentication_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoAuthentication_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoAuthentication_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoAuthentication_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoAuthentication lasso_authentication_new
+#define delete_LassoAuthentication(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from WsfProfile */
+
+gint LassoAuthentication_buildRequestMsg(LassoAuthentication *self) {
+	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
+}
+
+gint LassoAuthentication_buildResponseMsg(LassoAuthentication *self) {
+	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
+}
+
+/* Methods implementations */
+#define LassoAuthentication_clientStart lasso_authentication_client_start
+#define LassoAuthentication_clientStep lasso_authentication_client_step
+#define LassoAuthentication_getMechanismList lasso_authentication_get_mechanism_list
+#define LassoAuthentication_initRequest lasso_authentication_init_request
+#define LassoAuthentication_processRequestMsg lasso_authentication_process_request_msg
+#define LassoAuthentication_processResponseMsg lasso_authentication_process_response_msg
+#define LassoAuthentication_serverStart lasso_authentication_server_start
+#define LassoAuthentication_serverStep lasso_authentication_server_step
 
 %}

@@ -727,6 +727,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Lib";
 	if (strcmp(xmlnode->ns->href, LASSO_LASSO_HREF) == 0)
 		prefix = "";
+	if (strcmp(xmlnode->ns->href, LASSO_SA_HREF) == 0)
+		prefix = "Sa";
 	if (strcmp(xmlnode->ns->href, LASSO_SAML_ASSERTION_HREF) == 0)
 		prefix = "Saml";
 	if (strcmp(xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
@@ -742,6 +744,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (strcmp(prefix, "Dst") == 0 && strcmp(xmlnode->name, "Status") == 0)
 		prefix = "Utility";
 	if (strcmp(prefix, "Disco") == 0 && strcmp(xmlnode->name, "Status") == 0)
+		prefix = "Utility";
+	if (strcmp(prefix, "Sa") == 0 && strcmp(xmlnode->name, "Status") == 0)
 		prefix = "Utility";
 
 	xsitype = xmlGetNsProp(xmlnode, "type", LASSO_XSI_HREF);
