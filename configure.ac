@@ -449,6 +449,7 @@ Makefile
 lasso/Makefile
 lasso/schema/Makefile
 lasso/bindings/Makefile
+lasso/protocols/Makefile
 docs/Makefile
 docs/reference/Makefile
 ]
