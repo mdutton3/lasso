@@ -133,9 +133,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
+    /* temporary vars */
     gchar *url, *query;
     const gchar *separator = "?";
 
+    /* build and optionaly sign the logout request QUERY message */
     url = lasso_provider_get_singleLogoutServiceURL(provider, profile->provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
@@ -178,9 +180,10 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 {
   LassoProfile  *profile;
   LassoProvider *provider;
-  xmlChar       *protocolProfile;
+  gchar         *url, *query;
+  const gchar   *separator = "?";
   gint           ret = 0;
-  
+
   if (LASSO_IS_LOGOUT(logout) == FALSE) {
     message(G_LOG_LEVEL_CRITICAL, "Not a Logout object\n");
     ret = -1;
@@ -198,33 +201,39 @@ lasso_logout_build_response_msg(LassoLogout *logout)
     goto done;
   }
 
-  protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider,
-								   lassoProviderTypeSp,
-								   NULL);
-  if (protocolProfile == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
+  /* build a SOAP or HTTP-Redirect logout response message */
+  switch (profile->http_request_method) {
+  case lassoHttpMethodSoap:
+    /* optionaly sign the response message */
+    if (profile->server->private_key) {
+      lasso_samlp_response_abstract_set_signature(LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response),
+						  profile->server->signature_method,
+						  profile->server->private_key,
+						  profile->server->certificate,
+						  NULL);
+    }
+    
+    /* build the logout response messsage */
+    profile->msg_url = NULL;
+    profile->msg_body = lasso_node_export_to_soap(profile->response);
+    break;
+  case lassoHttpMethodRedirect:
+    url = lasso_provider_get_singleLogoutServiceReturnURL(provider, profile->provider_type, NULL);
+    query = lasso_node_export_to_query(profile->response,
+				       profile->server->signature_method,
+				       profile->server->private_key);
+    profile->msg_url = g_strjoin(separator, url, query);
+    profile->msg_body = NULL;
+    xmlFree(url);
+    xmlFree(query);
+    break;
+  default:
+    message(G_LOG_LEVEL_CRITICAL, "Invalid HTTP method\n");
     ret = -1;
     goto done;
   }
 
-  if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
-      xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
-    profile->msg_url = NULL;
-    profile->msg_body = lasso_node_export_to_soap(profile->response);
-  }
-  else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
-	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    profile->response_type = lassoHttpMethodRedirect;
-    profile->msg_url = lasso_node_export_to_query(profile->response,
-						  profile->server->signature_method,
-						  profile->server->private_key);
-    profile->msg_body = NULL;
-  }
-
   done:
-  if (protocolProfile != NULL) {
-    xmlFree(protocolProfile);
-  }
 
   return(ret);
 }
