@@ -103,16 +103,10 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
     }
 
     /* build the message */
-    profile->msg_url = lasso_provider_get_federationTerminationServiceURL(provider,
-									  remote_provider_type,
-									  NULL);
+    profile->msg_url = lasso_provider_get_soapEndpoint(provider,
+						       remote_provider_type,
+						       NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
-
-    if (profile->msg_url == NULL || profile->msg_body == NULL ) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url and msg_body\n");
-      ret = -1;
-      goto done;
-    }
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
