@@ -55,13 +55,14 @@
 #include "protocols/elements/py_authentication_statement.h"
 
 #include "environs/py_federation_termination.h"
+#include "environs/py_identity.h"
 #include "environs/py_lecp.h"
 #include "environs/py_login.h"
 #include "environs/py_logout.h"
-#include "environs/py_profile_context.h"
+#include "environs/py_profile.h"
 #include "environs/py_register_name_identifier.h"
 #include "environs/py_server.h"
-#include "environs/py_user.h"
+#include "environs/py_session.h"
 
 static PyMethodDef lasso_methods[] = {
   /* py_lasso.h */
@@ -195,13 +196,17 @@ static PyMethodDef lasso_methods[] = {
   {"authentication_statement_new", authentication_statement_new, METH_VARARGS},
 
   /* environs */
-  {"profile_context_get_request_type_from_soap_msg",  profile_context_get_request_type_from_soap_msg,  METH_VARARGS},
-  {"profile_context_new",                profile_context_new,                METH_VARARGS},
-  {"profile_context_set_user_from_dump", profile_context_set_user_from_dump, METH_VARARGS},
+  {"profile_get_request_type_from_soap_msg", profile_get_request_type_from_soap_msg, METH_VARARGS},
+  {"profile_new",                            profile_new,                            METH_VARARGS},
+  {"profile_set_identity_from_dump",         profile_set_identity_from_dump,         METH_VARARGS},
+
+  /* py_identity.h */
+  {"identity_new",           identity_new,           METH_VARARGS},
+  {"identity_new_from_dump", identity_new_from_dump, METH_VARARGS},
+  {"identity_dump",          identity_dump,          METH_VARARGS},
 
   /* py_federation_termination.h */
-  {"federation_termination_getattr",                  federation_termination_getattr,                  METH_VARARGS},
-
+  {"federation_termination_getattr", federation_termination_getattr, METH_VARARGS},
   {"federation_termination_new",                      federation_termination_new,                      METH_VARARGS},
   {"federation_termination_build_notification_msg",   federation_termination_build_notification_msg,   METH_VARARGS},
   {"federation_termination_destroy",                  federation_termination_destroy,                  METH_VARARGS},
@@ -219,15 +224,15 @@ static PyMethodDef lasso_methods[] = {
   {"lecp_process_authn_response_envelope_msg", lecp_process_authn_response_envelope_msg, METH_VARARGS},
 
   /* py_login.h */
-  {"login_getattr",                     login_getattr,                     METH_VARARGS},
+  {"login_getattr", login_getattr, METH_VARARGS},
   {"login_new",                         login_new,                         METH_VARARGS},
   {"login_new_from_dump",               login_new_from_dump,               METH_VARARGS},
+  {"login_accept_sso",                  login_accept_sso,                  METH_VARARGS},
   {"login_build_artifact_msg",          login_build_artifact_msg,          METH_VARARGS},
   {"login_build_authn_request_msg",     login_build_authn_request_msg,     METH_VARARGS},
   {"login_build_authn_response_msg",    login_build_authn_response_msg,    METH_VARARGS},
   {"login_build_request_msg",           login_build_request_msg,           METH_VARARGS},
   {"login_dump",                        login_dump,                        METH_VARARGS},
-  {"login_create_user",                 login_create_user,                 METH_VARARGS},
   {"login_init_authn_request",          login_init_authn_request,          METH_VARARGS},
   {"login_init_from_authn_request_msg", login_init_from_authn_request_msg, METH_VARARGS},
   {"login_init_request",                login_init_request,                METH_VARARGS},
@@ -237,8 +242,7 @@ static PyMethodDef lasso_methods[] = {
   {"login_process_response_msg",        login_process_response_msg,        METH_VARARGS},
 
   /* py_logout.h */
-  {"logout_getattr",              logout_getattr,              METH_VARARGS},
-
+  {"logout_getattr", logout_getattr, METH_VARARGS},
   {"logout_new",                  logout_new,                  METH_VARARGS},
   {"logout_build_request_msg",    logout_build_request_msg,    METH_VARARGS},
   {"logout_build_response_msg",   logout_build_response_msg,   METH_VARARGS},
@@ -250,16 +254,14 @@ static PyMethodDef lasso_methods[] = {
   {"logout_process_response_msg", logout_process_response_msg, METH_VARARGS},
 
   /* py_register_name_identifier.h */
-  {"register_name_identifier_getattr",              register_name_identifier_getattr,              METH_VARARGS},
-
+  {"register_name_identifier_getattr", register_name_identifier_getattr, METH_VARARGS},
   {"register_name_identifier_new",                  register_name_identifier_new,                  METH_VARARGS},
   {"register_name_identifier_build_request_msg",    register_name_identifier_build_request_msg,    METH_VARARGS},
   {"register_name_identifier_build_response_msg",   register_name_identifier_build_response_msg,   METH_VARARGS},
   {"register_name_identifier_destroy",              register_name_identifier_destroy,              METH_VARARGS},
   {"register_name_identifier_init_request",         register_name_identifier_init_request,         METH_VARARGS},
-  {"register_name_identifier_process_request_msg",  register_name_identifier_process_request_msg,  METH_VARARGS},
+  {"register_name_identifier_process_request",      register_name_identifier_process_request,      METH_VARARGS},
   {"register_name_identifier_process_response_msg", register_name_identifier_process_response_msg, METH_VARARGS},
-
 
   /* py_server.h */
   {"server_new",           server_new,           METH_VARARGS},
@@ -268,16 +270,16 @@ static PyMethodDef lasso_methods[] = {
   {"server_destroy",       server_destroy,       METH_VARARGS},
   {"server_dump",          server_dump,          METH_VARARGS},
   
-  /* py_user.h */
-  {"user_new",                                  user_new,                                  METH_VARARGS},
-  {"user_new_from_dump",                        user_new_from_dump,                        METH_VARARGS},
-  {"user_add_assertion",                        user_add_assertion,                        METH_VARARGS},
-  {"user_destroy",                              user_destroy,                              METH_VARARGS},
-  {"user_dump",                                 user_dump,                                 METH_VARARGS},
-  {"user_get_assertion",                        user_get_assertion,                        METH_VARARGS},
-  {"user_get_authentication_method",            user_get_authentication_method,            METH_VARARGS},
-  {"user_get_next_assertion_remote_providerID", user_get_next_assertion_remote_providerID, METH_VARARGS},
-  {"user_remove_assertion",                     user_remove_assertion,                     METH_VARARGS},
+  /* py_session.h */
+  {"session_new",                                  session_new,                                  METH_VARARGS},
+  {"session_new_from_dump",                        session_new_from_dump,                        METH_VARARGS},
+  {"session_add_assertion",                        session_add_assertion,                        METH_VARARGS},
+  {"session_destroy",                              session_destroy,                              METH_VARARGS},
+  {"session_dump",                                 session_dump,                                 METH_VARARGS},
+  {"session_get_assertion",                        session_get_assertion,                        METH_VARARGS},
+  {"session_get_authentication_method",            session_get_authentication_method,            METH_VARARGS},
+  {"session_get_next_assertion_remote_providerID", session_get_next_assertion_remote_providerID, METH_VARARGS},
+  {"session_remove_assertion",                     session_remove_assertion,                     METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };

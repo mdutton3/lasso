@@ -55,16 +55,16 @@ PyObject *register_name_identifier_getattr(PyObject *self, PyObject *args) {
   register_name_identifier = LassoRegisterNameIdentifier_get(register_name_identifier_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
+    return Py_BuildValue("[ssss]", "identity", "msg_url", "msg_body",
 			 "msg_relayState");
-  if (!strcmp(attr, "user"))
-    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(register_name_identifier)->user));
+  if (!strcmp(attr, "identity"))
+    return (LassoIdentity_wrap(LASSO_PROFILE(register_name_identifier)->identity));
   if (!strcmp(attr, "msg_url"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(register_name_identifier)->msg_url));
+    return (charPtrConst_wrap(LASSO_PROFILE(register_name_identifier)->msg_url));
   if (!strcmp(attr, "msg_body"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(register_name_identifier)->msg_body));
+    return (charPtrConst_wrap(LASSO_PROFILE(register_name_identifier)->msg_body));
   if (!strcmp(attr, "msg_relayState"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(register_name_identifier)->msg_relayState));
+    return (charPtrConst_wrap(LASSO_PROFILE(register_name_identifier)->msg_relayState));
 
   Py_INCREF(Py_None);
   return (Py_None);
@@ -155,21 +155,18 @@ PyObject *register_name_identifier_init_request(PyObject *self, PyObject *args) 
   return(int_wrap(codeError));
 }
 
-PyObject *register_name_identifier_process_request_msg(PyObject *self, PyObject *args) {
+PyObject *register_name_identifier_process_request(PyObject *self, PyObject *args) {
   PyObject *register_name_identifier_obj;
-  gchar    *request_msg;
-  gint      request_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:register_name_identifier_process_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:register_name_identifier_process_request_msg",
-			 &register_name_identifier_obj, &request_msg, &request_method))
+  if (CheckArgs(args, "O:register_name_identifier_process_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:register_name_identifier_process_request",
+			 &register_name_identifier_obj))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier_get(register_name_identifier_obj),
-								 request_msg, request_method);
+  codeError = lasso_register_name_identifier_process_request(LassoRegisterNameIdentifier_get(register_name_identifier_obj));
 
   return(int_wrap(codeError));
 }

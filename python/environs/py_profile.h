@@ -39,7 +39,7 @@ PyObject *LassoProfile_wrap(LassoProfile *ctx);
 PyObject *profile_get_request_type_from_soap_msg(PyObject *self, PyObject *args);
 
 PyObject *profile_new(PyObject *self, PyObject *args);
-PyObject *profile_set_user_from_dump(PyObject *self, PyObject *args);
+PyObject *profile_set_identity_from_dump(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_PROFILE_H__ */
 

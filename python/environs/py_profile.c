@@ -25,7 +25,8 @@
 
 #include "../lassomod.h"
 #include "py_profile.h"
-#include "py_user.h"
+#include "py_identity.h"
+#include "py_session.h"
 #include "py_server.h"
 
 PyObject *LassoProfile_wrap(LassoProfile *ctx) {
@@ -61,40 +62,44 @@ PyObject *profile_get_request_type_from_soap_msg(PyObject *self, PyObject *args)
 /******************************************************************************/
 
 PyObject *profile_new(PyObject *self, PyObject *args) {
-  PyObject *server_obj, *user_obj;
+  PyObject *server_obj, *identity_obj, *session_obj;
   LassoProfile *ctx;
-  LassoUser   *user = NULL;
+  LassoIdentity *identity = NULL;
+  LassoSession *session = NULL;
 
-  if (CheckArgs(args, "Oo:profile_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "O|O:profile_new",
-			 &server_obj, &user_obj))
+  if (CheckArgs(args, "Ooo:profile_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "O|OO:profile_new",
+			 &server_obj, &identity_obj, &session_obj))
       return NULL;
   }
   else return NULL;
 
-  if (user_obj != Py_None) {
-    user = LassoUser_get(user_obj);
+  if (identity_obj != Py_None) {
+    identity = LassoIdentity_get(identity_obj);
+  }
+  if (session_obj != Py_None) {
+    session = LassoSession_get(session_obj);
   }
   ctx = lasso_profile_new(LassoServer_get(server_obj),
-			  user);
+			  identity, session);
 
   return (LassoProfile_wrap(ctx));
 }
 
-PyObject *profile_set_user_from_dump(PyObject *self, PyObject *args) {
+PyObject *profile_set_identity_from_dump(PyObject *self, PyObject *args) {
   PyObject *ctx_obj;
   gchar *dump;
   gint   ret;
 
-  if (CheckArgs(args, "OS:profile_set_user_from_dump")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:profile_set_user_from_dump",
+  if (CheckArgs(args, "OS:profile_set_identity_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:profile_set_identity_from_dump",
 			 &ctx_obj, &dump))
       return NULL;
   }
   else return NULL;
 
-  ret = lasso_profile_set_user_from_dump(LassoProfile_get(ctx_obj),
-					 dump);
+  ret = lasso_profile_set_identity_from_dump(LassoProfile_get(ctx_obj),
+					     dump);
 
   return(int_wrap(ret));
 }

@@ -213,12 +213,12 @@ PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
   return (int_wrap(ret));
 }
 
-PyObject *login_accespt_sso(PyObject *self, PyObject *args) {
+PyObject *login_accept_sso(PyObject *self, PyObject *args) {
   PyObject *login_obj;
   gint ret;
 
-  if (CheckArgs(args, "O:login_accespt_sso")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:login_accespt_sso",
+  if (CheckArgs(args, "O:login_accept_sso")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_accept_sso",
 			 &login_obj))
       return NULL;
   }

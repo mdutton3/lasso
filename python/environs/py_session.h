@@ -23,21 +23,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PYLASSO_PY_IDENTITY_H__
-#define __PYLASSO_PY_IDENTITY_H__
+#ifndef __PYLASSO_PY_USER_H__
+#define __PYLASSO_PY_USER_H__
 
-#include <lasso/environs/identity.h>
+#include <lasso/environs/session.h>
 
 typedef struct {
     PyObject_HEAD
-    LassoIdentity *obj;
-} LassoIdentity_object;
+    LassoSession *obj;
+} LassoSession_object;
 
-#define LassoIdentity_get(v) (((v) == Py_None) ? NULL : (((LassoIdentity_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *LassoIdentity_wrap(LassoIdentity *identity);
+#define LassoSession_get(v) (((v) == Py_None) ? NULL : (((LassoSession_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoSession_wrap(LassoSession *session);
 
-PyObject *identity_new(PyObject *self, PyObject *args);
-PyObject *identity_new_from_dump(PyObject *self, PyObject *args);
-PyObject *identity_dump(PyObject *self, PyObject *args);
+PyObject *session_new(PyObject *self, PyObject *args);
+PyObject *session_new_from_dump(PyObject *self, PyObject *args);
 
-#endif /* __PYLASSO_PY_IDENTITY_H__ */
+PyObject *session_add_assertion(PyObject *self, PyObject *args);
+PyObject *session_destroy(PyObject *self, PyObject *args);
+PyObject *session_dump(PyObject *self, PyObject *args);
+PyObject *session_get_assertion(PyObject *self, PyObject *args);
+PyObject *session_get_authentication_method(PyObject *self, PyObject *args);
+PyObject *session_get_next_assertion_remote_providerID(PyObject *self, PyObject *args);
+PyObject *session_remove_assertion(PyObject *self, PyObject *args);
+
+#endif /* __PYLASSO_PY_SESSION_H__ */

@@ -793,7 +793,7 @@ class Server:
     def destroy(self):
         lassomod.server_destroy(self)
 
-class User:
+class Session:
     """
     """
 
@@ -803,35 +803,35 @@ class User:
         self._o = _obj
 
     def new(cls):
-        obj = lassmod.user_new()
-        return User(obj)
+        obj = lassmod.session_new()
+        return Session(obj)
     new = classmethod(new)
 
     def new_from_dump(cls, dump):
-        obj = lassomod.user_new_from_dump(dump)
-        return User(obj)
+        obj = lassomod.session_new_from_dump(dump)
+        return Session(obj)
     new_from_dump = classmethod(new_from_dump)
 
     def add_assertion(self, remote_providerID, assertion):
-        lassomod.user_add_assertion(self, remote_providerID, assertion)
+        lassomod.session_add_assertion(self, remote_providerID, assertion)
 
     def dump(self):
-        return lassomod.user_dump(self)
+        return lassomod.session_dump(self)
 
     def destroy(self):
-        lassomod.user_destroy(self)
+        lassomod.session_destroy(self)
 
     def get_assertion(self, remote_providerID):
-        return Node(lassomod.user_get_assertion(self, remote_providerID))
+        return Node(lassomod.session_get_assertion(self, remote_providerID))
 
     def get_authentication_method(self, remote_providerID = None):
-        return lassomod.user_get_authentication_method(self, remote_providerID)
+        return lassomod.session_get_authentication_method(self, remote_providerID)
 
     def get_next_assertion_remote_providerID(self):
-        return lassomod.user_get_next_assertion_remote_providerID(self)
+        return lassomod.session_get_next_assertion_remote_providerID(self)
 
     def remove_assertion(self, remote_providerID):
-        lassomod.user_remove_assertion(self, remote_providerID)
+        lassomod.session_remove_assertion(self, remote_providerID)
 
 ## ProfileContext
 # Request types
@@ -844,7 +844,7 @@ requestTypeNameIdentifierMapping  = 5
 def get_request_type_from_soap_msg(soap_buffer):
     return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
 
-class ProfileContext:
+class Profile:
     """\brief Short desc
 
     Long desc
@@ -855,19 +855,19 @@ class ProfileContext:
         """
         self._o = _obj
 
-    def new(cls, server, user=None):
-        obj = lassomod.profile_context_new(server, user)
-        return ProfileContext(obj)
+    def new(cls, server, identity=None, session=None):
+        obj = lassomod.profile_new(server, identity, session)
+        return Profile(obj)
     new = classmethod(new)
 
-    def set_user_from_dump(self, dump):
-        return lassomod.profile_context_set_user_from_dump(self, dump)
+    def set_identity_from_dump(self, dump):
+        return lassomod.profile_set_identity_from_dump(self, dump)
 
 ## login
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2
 
-class Login(ProfileContext):
+class Login(Profile):
     """\brief Short desc
 
     Long desc
@@ -878,7 +878,7 @@ class Login(ProfileContext):
         The constructor
         """
         self._o = _obj
-        ProfileContext.__init__(self, _obj=_obj)
+        Profile.__init__(self, _obj=_obj)
         
     def __isprivate(self, name):
         return name == '_o'
@@ -907,10 +907,13 @@ class Login(ProfileContext):
         return Login(obj)
     new = classmethod(new)
 
-    def new_from_dump(cls, server, user, dump):
-        obj = lassomod.login_new_from_dump(server, user, dump)
+    def new_from_dump(cls, server, identity, dump):
+        obj = lassomod.login_new_from_dump(server, identity, dump)
         return Login(obj)
     new_from_dump = classmethod(new_from_dump)
+
+    def accept_sso(self):
+        return lassomod.login_accept_sso(self)
 
     def build_artifact_msg(self, authentication_result, authenticationMethod,
                            reauthenticateOnOrAfter, method):
@@ -930,9 +933,6 @@ class Login(ProfileContext):
 
     def build_request_msg(self):
         return lassomod.login_build_request_msg(self)
-
-    def create_user(self, user_dump):
-        return lassomod.login_create_user(self, user_dump)
 
     def dump(self):
         return lassomod.login_dump(self)
@@ -964,7 +964,7 @@ providerTypeNone = 0
 providerTypeSp   = 1
 providerTypeIdp  = 2
 
-class Logout(ProfileContext):
+class Logout(Profile):
     """\brief Short desc
 
     Long desc
@@ -974,7 +974,7 @@ class Logout(ProfileContext):
         The constructor
         """
         self._o = _obj
-        ProfileContext.__init__(self, _obj=_obj)
+        Profile.__init__(self, _obj=_obj)
 
     def __isprivate(self, name):
         return name == '_o'
@@ -1024,7 +1024,7 @@ class Logout(ProfileContext):
     def process_response_msg(self, response_msg, response_method):
         return lassomod.logout_process_response_msg(self, response_msg, response_method);
 
-class FederationTermination(ProfileContext):
+class FederationTermination(Profile):
     """\brief Short desc
 
     Long desc
@@ -1034,7 +1034,7 @@ class FederationTermination(ProfileContext):
         The constructor
         """
         self._o = _obj
-        ProfileContext.__init__(self, _obj=_obj)
+        Profile.__init__(self, _obj=_obj)
 
     def __isprivate(self, name):
         return name == '_o'
@@ -1094,8 +1094,8 @@ class RegisterNameIdentifier:
         ret = lassomod.register_name_identifier_getattr(self, name)
         return ret
 
-    def new(cls, server, user, provider_type):
-        obj = lassomod.register_name_identifier_new(server, user, provider_type)
+    def new(cls, server, identity, provider_type):
+        obj = lassomod.register_name_identifier_new(server, identity, provider_type)
         return RegisterNameIdentifier(obj)
     new = classmethod(new)
 
@@ -1111,8 +1111,8 @@ class RegisterNameIdentifier:
     def init_request(self, remote_providerID):
         return lassomod.register_name_identifier_init_request(self, remote_providerID);
 
-    def process_request_msg(self, request_msg, request_method):
-        return lassomod.register_name_identifier_process_request_msg(self, request_msg, request_method);
+    def process_request(self):
+        return lassomod.register_name_identifier_process_request_msg(self)
 
     def process_response_msg(self, response_msg, response_method):
         return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method);
@@ -1162,4 +1162,3 @@ class Lecp:
 
     def process_authn_response_envelope_msg(self):
         pass
-
