@@ -72,7 +72,7 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp)){
     debug(DEBUG, "building a http get request message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
-    lasso_register_name_identifier_rename_attributes_for_query(profileContext->request);
+    lasso_register_name_identifier_rename_attributes_for_query(LASSO_REGISTER_NAME_IDENTIFIER_REQUEST(profileContext->request));
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
 							 profileContext->server->signature_method,
 							 profileContext->server->private_key);
