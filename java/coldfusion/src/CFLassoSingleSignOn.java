@@ -26,14 +26,14 @@
  * Simple wrapper for JLasso, to ease its use by ColdFusion applications.
  *
  * To compile it:
- * $ javac -classpath ../../lasso.jar CFLasso.java
+ * $ javac -classpath ../../lasso.jar *.java
  *
  * To test it:
  * $ export LD_LIBRARY_PATH=../../.libs/
- * $ java -classpath ../../lasso.jar:. CFLasso
+ * $ java -classpath ../../lasso.jar:. CFLassoLogin
  *
  * To use it:
- * $ jar cf CFLasso.jar CFLasso.class
+ * $ jar cf CFLasso.jar *.class
  * edit ColdFusion file bin/jvm.config:
  *   - Add libjlasso.so directory to java.library.path variable.
  *   - Add lasso.jar & CFLasso.jar to java.class.path variable.
@@ -48,8 +48,8 @@ import com.entrouvert.lasso.Server;
 import com.entrouvert.lasso.Session;
 
 
-public class CFLasso {
-    /* A simple service provider */
+public class CFLassoSingleSignOn {
+    /* A simple service provider single sign-on */
 
     protected Login login = null;
     protected Server server = null;
@@ -60,9 +60,11 @@ public class CFLasso {
 	login.acceptSso();
     }
 
-    public void assertionConsumer(String queryString) {
-        login = new Login(server);
-	login.initRequest(queryString, lassoConstants.httpMethodRedirect);
+    public void buildAuthnRequestMsg() {
+        login.buildAuthnRequestMsg(idpProviderId);
+    }
+
+    public void buildRequestMsg() {
 	login.buildRequestMsg();
     }
 
@@ -72,6 +74,7 @@ public class CFLasso {
 			    lassoConstants.signatureMethodRsaSha1);
 	this.idpProviderId = idpProviderId;
         server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
+        login = new Login(server);
     }
 
     public String getIdentityDump() {
@@ -106,11 +109,10 @@ public class CFLasso {
 	    return null;
     }
 
-    public String login(String relayState) {
+    public void initAuthnRequest(String relayState) {
 	AuthnRequest authnRequest;
 	String authnRequestUrl;
 
-        login = new Login(server);
         login.initAuthnRequest(lassoConstants.httpMethodRedirect);
 	authnRequest = login.getAuthnRequest();
         authnRequest.setIsPassive(false);
@@ -118,20 +120,23 @@ public class CFLasso {
         authnRequest.setConsent(lassoConstants.libConsentObtained);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
-        login.buildAuthnRequestMsg(idpProviderId);
-        authnRequestUrl = login.getMsgUrl();
-	return authnRequestUrl;
+    }
+
+    public void initRequest(String queryString) {
+	login.initRequest(queryString, lassoConstants.httpMethodRedirect);
     }
 
     static public void main(String [] args) {
-	CFLasso lasso = new CFLasso();
+	CFLassoSingleSignOn lasso = new CFLassoSingleSignOn();
 	lasso.configure("../../../tests/data/sp2-la/metadata.xml",
 			"../../../tests/data/sp2-la/public-key.pem",
 			"../../../tests/data/sp2-la/private-key-raw.pem",
 			"https://idp2/metadata",
 			"../../../tests/data/idp2-la/metadata.xml",
 			"../../../tests/data/idp2-la/public-key.pem");
-	String ssoUrl = lasso.login("data to get back");
+	lasso.initAuthnRequest("data-to-get-back");
+	lasso.buildAuthnRequestMsg();
+	String ssoUrl = lasso.getMsgUrl();
 	System.out.println("Test");
 	System.out.print("Identity provider single sign-on URL = ");
 	System.out.println(ssoUrl);
