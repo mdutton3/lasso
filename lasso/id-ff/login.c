@@ -1127,9 +1127,9 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 				must_verify_signature = strcmp(authnRequestSigned, "true") == 0;
 				g_free(authnRequestSigned);
 			} else {
-				/* AuthnRequestsSigned element is required */
-				message(G_LOG_LEVEL_CRITICAL, "XXX");
-				return LASSO_ERROR_UNDEFINED;
+				/* missing element in metadata; shouldn't
+				 * happen, assume true */
+				must_verify_signature = TRUE;
 			}
 		} else {
 			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
