@@ -1,6 +1,13 @@
-lasso (0.2.0-1) unstable; urgency=low
+lasso (0.3.0-2) unstable; urgency=low
+
+  * debian/liblasso0-python2.3.files: don't include static library in Python
+    package. [brown bag]
+
+ -- Frederic Peters <fpeters@debian.org>  Tue, 27 Jul 2004 17:23:07 +0200
+
+lasso (0.3.0-1) unstable; urgency=low
 
   * Initial Release.
 
- -- Frederic Peters <fpeters@debian.org>  Fri, 16 Jul 2004 14:50:19 +0200
+ -- Frederic Peters <fpeters@debian.org>  Tue, 27 Jul 2004 16:50:43 +0200
 
