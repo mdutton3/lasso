@@ -157,7 +157,7 @@ START_TEST(test02_serviceProviderLogin)
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
 			"responseQuery shouldn't be an empty string");
-	serviceProviderId = LASSO_PROFILE(idpLoginContext)->remote_providerID;
+	serviceProviderId = strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
 
