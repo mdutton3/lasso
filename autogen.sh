@@ -123,15 +123,15 @@ if (swig -help) </dev/null >/dev/null 2>&1; then
   swig_min_version_dec=`echo $swig_min_vers | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
   if test $swig_version_dec -lt $swig_min_version_dec; then
-    echo "$program: ERROR: \`swig' is too old."
+    echo "$program: WARNING: \`swig' is too old."
     echo "           (version $swig_min_vers or newer is required)"
-    DIE="yes"
+#    DIE="yes"
   fi
 else
     echo
-    echo "$program: ERROR: You must have \`swig' installed to compile $PACKAGE."
+    echo "$program: WARNING: You will need to have \`swig' installed to compile $PACKAGE."
     echo "           (version $swig_min_vers or newer is required)"
-    DIE="yes"
+#    DIE="yes"
 fi
 
 # - If something went wrong, exit with error code:1.
