@@ -17,7 +17,7 @@ liblassosharpglue_la_LIBADD = \
 liblassosharpglue_la_LDFLAGS =	-no-undefined -module -avoid-version
 
 liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i
-	$(SWIG) -v -csharp -module liblassosharpglue -o liblassosharpglue_wrap.c $<
+	$(SWIG) -v -csharp -package lasso -module lasso -o liblassosharpglue_wrap.c $<
 
 
 dotnetlibdir = $(datadir)/dotnet/lasso/
@@ -26,23 +26,25 @@ dotnetlib_DATA = lasso.dll
 lasso.dll: liblassosharpglue.la
 	mcs /out:lasso.dll /target:library $(srcdir)/*.cs
 
+pkgconfig_DATA  = lasso-sharp.pc
+pkgconfigdir    = $(libdir)/pkgconfig
+
 clean-local:
-	-rm lasso.dll
+	-rm lasso.dll lasso-sharp.pc
 
 SWIG_FILES = liblassosharpglue_wrap.c \
 	LassoAuthnRequest.cs LassoAuthnResponse.cs LassoIdentity.cs \
 	LassoLecp.cs LassoLibAuthnRequest.cs LassoLibAuthnResponse.cs \
 	LassoLogin.cs LassoLogout.cs LassoProfile.cs LassoRequest.cs \
 	LassoResponse.cs LassoSamlpRequest.cs LassoSamlpResponse.cs \
-	LassoServer.cs LassoSession.cs liblassosharpglue.cs \
-	liblassosharpgluePINVOKE.cs SWIGTYPE_p_GHashTable.cs \
-	SWIGTYPE_p_GObject.cs SWIGTYPE_p_GPtrArray.cs \
+	LassoServer.cs LassoSession.cs lasso.cs lassoPINVOKE.cs \
+	SWIGTYPE_p_GHashTable.cs SWIGTYPE_p_GObject.cs SWIGTYPE_p_GPtrArray.cs \
 	SWIGTYPE_p_LassoLibRequestAuthnContext.cs \
 	SWIGTYPE_p_LassoLibScoping.cs SWIGTYPE_p_LassoNode.cs \
 	SWIGTYPE_p_LassoProvider.cs SWIGTYPE_p_LassoSamlpRequestAbstract.cs \
 	SWIGTYPE_p_LassoSamlpResponseAbstract.cs
 
-EXTRA_DIST = $(SWIG_FILES)
+EXTRA_DIST = lasso-sharp.pc.in $(SWIG_FILES)
 
 MAINTAINERCLEANFILES = $(SWIG_FILES)
 

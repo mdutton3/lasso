@@ -643,6 +643,7 @@ dnl ==========================================================================
 AC_OUTPUT(
 [Makefile
 csharp/Makefile
+csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
 docs/reference/Makefile
