@@ -54,8 +54,8 @@ _debug(unsigned int level,
 
   va_list args;
   
-  if ((level < 0) || (level > 2)) {
-    printf("DEBUG LEVEL level=%d, must be 0<=x<=2 !!!\n");
+  if ((level < 0) || (level > 3)) {
+    printf("DEBUG LEVEL level=%d, must be 0<=x<=3 !!!\n");
     return;
   }
  
