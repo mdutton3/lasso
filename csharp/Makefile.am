@@ -16,7 +16,8 @@ liblassosharpglue_la_LIBADD = \
 liblassosharpglue_la_LDFLAGS =	-no-undefined -module -avoid-version
 
 liblassosharpglue_wrap.c: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
-	$(SWIG) -v -csharp -module lasso -o liblassosharpglue_wrap.c $(top_srcdir)/swig/Lasso.i
+	$(SWIG) -v -csharp -namespace lasso -module lasso \
+		-o liblassosharpglue_wrap.c $(top_srcdir)/swig/Lasso.i
 	cp liblassosharpglue_wrap.c liblassosharpglue_wrap.c.bak
 	sed -e 's/(char \*) "\(.*\)"/malloc("\1")/' \
 		< liblassosharpglue_wrap.c.bak > liblassosharpglue_wrap.c
