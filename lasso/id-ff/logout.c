@@ -23,9 +23,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
+
+#include <glib/gprintf.h>
+
 #include <lasso/environs/logout.h>
 #include <lasso/xml/errors.h>
-#include <string.h>
 
 #define LASSO_LOGOUT_NODE            "LassoLogout"
 #define LASSO_REMOTE_PROVIDERID_NODE "RemoteProviderID"
