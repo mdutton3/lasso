@@ -1,0 +1,45 @@
+Source: lasso
+Priority: optional
+Maintainer: Frederic Peters <fpeters@debian.org>
+Build-Depends: debhelper (>= 4.0.0), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev
+Standards-Version: 3.6.0
+
+Package: liblasso-dev
+Section: devel
+Architecture: any
+Depends: liblasso0 (= ${Source-Version}), libxml2-dev, libxmlsec1-dev
+Description: Liberty Alliance library - development kit
+ Lasso is an implementation of the Liberty Alliance standard; it defines
+ processes for federated identities, single signon and related protocols.
+ .
+ This package contains the development files for Lasso.
+ .
+ Homepage: http://lasso.entrouvert.org
+ 
+
+Package: liblasso0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Liberty Alliance library - runtime library
+ Lasso is an implementation of the Liberty Alliance standard; it defines
+ processes for federated identities, single signon and related protocols.
+ .
+ This package contains liblasso library used by applications to gain Library
+ Alliance support.
+ .
+ Homepage: http://lasso.entrouvert.org
+
+Package: liblasso0-python2.3
+Section: python
+Architecture: any
+Depends: python2.3, ${shlibs:Depends}, ${misc:depends}, ${python:Depends}
+Description: Liberty Alliance library - Python 2.3 bindings
+ Lasso is an implementation of the Liberty Alliance standard; it defines
+ processes for federated identities, single signon and related protocols.
+ .
+ This package contains Python 2.3 bindings for liblasso, needed to use lasso
+ in Python programs.
+ .
+ Homepage: http://lasso.entrouvert.org
+
