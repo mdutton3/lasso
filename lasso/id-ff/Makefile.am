@@ -15,11 +15,15 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-environs.la
 
 liblasso_environs_la_SOURCES = \
-	authn_environ.c \
-	environ.c \
-	provider.c
+	provider.c \
+	server_environ.c \
+	session_environ.c \
+	user_environ.c \
+	identity.c
 
 liblassoinclude_HEADERS = \
-	authn_environ.h \
-	environ.h \
-	provider.h
+	provider.h \
+	server_environ.h \
+	session_environ.h \
+	user_environ.h \
+	identity.h
