@@ -1,6 +1,7 @@
 files
-liblasso-dev
 liblasso0
+liblasso0-cil
+liblasso0-dev
 python2.3-lasso
 php4-lasso
 *.substvars
