@@ -73,7 +73,6 @@ lasso_session_get_authentication_method(LassoSession *session, gchar *remote_pro
 gchar*
 lasso_session_get_first_providerID(LassoSession *session)
 {
-	/* XXX: why didn't it use get_provider_index directly ? */
 	return lasso_session_get_provider_index(session, 0);
 }
 
@@ -88,14 +87,16 @@ gchar*
 lasso_session_get_provider_index(LassoSession *session, gint index)
 {
 	GList *element;
+	int length;
 
-	if (session->private_data->providerIDs == NULL) {
-		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
-		/* XXX? create list */
-	}
+	length = g_hash_table_size(session->assertions);
 
-	if (g_hash_table_size(session->assertions) == 0)
+	if (length == 0)
 		return NULL;
+
+	if (session->private_data->providerIDs == NULL ||
+			g_list_length(session->private_data->providerIDs) != length)
+		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
 
 	element = g_list_nth(session->private_data->providerIDs, index);
 	if (element == NULL)
