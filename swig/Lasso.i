@@ -788,6 +788,50 @@ typedef struct {
 
 
 /***********************************************************************
+ * saml:Advice
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlAdvice) LassoSamlAdvice;
+#endif
+typedef struct {
+	/* Attributes */
+
+	/* char *AssertionIDReference; FIXME: unbounded */
+} LassoSamlAdvice;
+%extend LassoSamlAdvice {
+	/* Attributes */
+
+	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlAdvice();
+
+	~LassoSamlAdvice();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlAdvice lasso_saml_advice_new
+#define delete_LassoSamlAdvice(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlAdvice_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
  * saml:Assertion
  ***********************************************************************/
 
@@ -809,14 +853,14 @@ typedef struct {
 	char *certificate_file;
 
 #ifndef SWIGPHP4
-	%rename(issuer) Issuer;
-#endif
-	char *Issuer;
-
-#ifndef SWIGPHP4
 	%rename(issueInstant) IssueInstant;
 #endif
 	char *IssueInstant;
+
+#ifndef SWIGPHP4
+	%rename(issuer) Issuer;
+#endif
+	char *Issuer;
 
 #ifndef SWIGPHP4
 	%rename(majorVersion) MajorVersion;
@@ -834,25 +878,52 @@ typedef struct {
 	char *private_key_file;
 
 #ifndef SWIGPHP4
-	%rename(signType) sign_type;
-#endif
-	LassoSignatureType sign_type;
-
-#ifndef SWIGPHP4
 	%rename(signMethod) sign_method;
 #endif
 	LassoSignatureMethod sign_method;
+
+#ifndef SWIGPHP4
+	%rename(signType) sign_type;
+#endif
+	LassoSignatureType sign_type;
 } LassoSamlAssertion;
 %extend LassoSamlAssertion {
 	/* Attributes */
 
-	// FIXME: LassoSamlConditions *Conditions;
-	// FIXME: LassoSamlAdvice *Advice;
-	// FIXME: LassoSamlStatement *Statement;
-	// FIXME: LassoSamlSubjectStatement *SubjectStatement;
-	// FIXME: LassoSamlAuthenticationStatement *AuthenticationStatement;
-	// FIXME: LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
-	// FIXME: LassoSamlAttributeStatement *AttributeStatement;
+#ifndef SWIGPHP4
+	%rename(advice) Advice;
+#endif
+	%newobject Advice_get;
+	LassoSamlAdvice *Advice;
+
+#ifndef SWIGPHP4
+	%rename(attributeStatement) AttributeStatement;
+#endif
+	%newobject AttributeStatement_get;
+	LassoSamlAttributeStatement *AttributeStatement;
+
+#ifndef SWIGPHP4
+	%rename(authenticationStatement) AuthenticationStatement;
+#endif
+	%newobject AuthenticationStatement_get;
+	LassoSamlAuthenticationStatement *AuthenticationStatement;
+
+	/* LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
+	   FIXME: missing from lasso */
+
+#ifndef SWIGPHP4
+	%rename(conditions) Conditions;
+#endif
+	%newobject Conditions_get;
+	LassoSamlConditions *Conditions;
+
+	/* LassoSamlStatement *Statement; FIXME: missing from lasso */
+
+#ifndef SWIGPHP4
+	%rename(subjectStatement) SubjectStatement;
+#endif
+	%newobject SubjectStatement_get;
+	LassoSamlSubjectStatement *SubjectStatement;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -868,6 +939,38 @@ typedef struct {
 
 %{
 
+/* Attributes Implementations */
+
+/* Advice */
+#define LassoSamlAssertion_get_Advice(self) get_object((self)->Advice)
+#define LassoSamlAssertion_Advice_get(self) get_object((self)->Advice)
+#define LassoSamlAssertion_set_Advice(self, value) set_object((gpointer *) &(self)->Advice, (value))
+#define LassoSamlAssertion_Advice_set(self, value) set_object((gpointer *) &(self)->Advice, (value))
+
+/* AttributeStatement */
+#define LassoSamlAssertion_get_AttributeStatement(self) get_object((self)->AttributeStatement)
+#define LassoSamlAssertion_AttributeStatement_get(self) get_object((self)->AttributeStatement)
+#define LassoSamlAssertion_set_AttributeStatement(self, value) set_object((gpointer *) &(self)->AttributeStatement, (value))
+#define LassoSamlAssertion_AttributeStatement_set(self, value) set_object((gpointer *) &(self)->AttributeStatement, (value))
+
+/* AuthenticationStatement */
+#define LassoSamlAssertion_get_AuthenticationStatement(self) get_object((self)->AuthenticationStatement)
+#define LassoSamlAssertion_AuthenticationStatement_get(self) get_object((self)->AuthenticationStatement)
+#define LassoSamlAssertion_set_AuthenticationStatement(self, value) set_object((gpointer *) &(self)->AuthenticationStatement, (value))
+#define LassoSamlAssertion_AuthenticationStatement_set(self, value) set_object((gpointer *) &(self)->AuthenticationStatement, (value))
+
+/* Conditions */
+#define LassoSamlAssertion_get_Conditions(self) get_object((self)->Conditions)
+#define LassoSamlAssertion_Conditions_get(self) get_object((self)->Conditions)
+#define LassoSamlAssertion_set_Conditions(self, value) set_object((gpointer *) &(self)->Conditions, (value))
+#define LassoSamlAssertion_Conditions_set(self, value) set_object((gpointer *) &(self)->Conditions, (value))
+
+/* SubjectStatement */
+#define LassoSamlAssertion_get_SubjectStatement(self) get_object((self)->SubjectStatement)
+#define LassoSamlAssertion_SubjectStatement_get(self) get_object((self)->SubjectStatement)
+#define LassoSamlAssertion_set_SubjectStatement(self, value) set_object((gpointer *) &(self)->SubjectStatement, (value))
+#define LassoSamlAssertion_SubjectStatement_set(self, value) set_object((gpointer *) &(self)->SubjectStatement, (value))
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoSamlAssertion lasso_saml_assertion_new
@@ -876,6 +979,182 @@ typedef struct {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoSamlAssertion_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:AttributeStatement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlAttributeStatement) LassoSamlAttributeStatement;
+#endif
+typedef struct {
+} LassoSamlAttributeStatement;
+%extend LassoSamlAttributeStatement {
+	/* Attributes inherited from SamlSubjectStatementAbstract */
+
+	/* GList *Attribute; FIXME: TODO */
+
+#ifndef SWIGPHP4
+	%rename(subject) Subject;
+#endif
+	%newobject Subject_get;
+	LassoSamlSubject *Subject;
+
+	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlAttributeStatement();
+
+	~LassoSamlAttributeStatement();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Implementations of attributes inherited from SamlSubjectStatementAbstract */
+
+/* Subject */
+#define LassoSamlAttributeStatement_get_Subject(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlAttributeStatement_Subject_get(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlAttributeStatement_set_Subject(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlAttributeStatement_Subject_set(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlAttributeStatement lasso_saml_attribute_statement_new
+#define delete_LassoSamlAttributeStatement(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlAttributeStatement_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:AuthenticationStatement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlAuthenticationStatement) LassoSamlAuthenticationStatement;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(authenticationInstant) AuthenticationInstant;
+#endif
+	char *AuthenticationInstant;
+
+#ifndef SWIGPHP4
+	%rename(authenticationMethod) AuthenticationMethod;
+#endif
+	char *AuthenticationMethod;
+} LassoSamlAuthenticationStatement;
+%extend LassoSamlAuthenticationStatement {
+	/* Attributes */
+
+	/* LassoSamlAuthorityBinding *AuthorityBinding; FIXME: unbounded */
+
+#ifndef SWIGPHP4
+	%rename(subjectLocality) SubjectLocality;
+#endif
+	%newobject SubjectLocality_get;
+	LassoSamlSubjectLocality *SubjectLocality;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlAuthenticationStatement();
+
+	~LassoSamlAuthenticationStatement();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes implementations */
+
+/* SubjectLocality */
+#define LassoSamlAuthenticationStatement_get_SubjectLocality(self) get_object((self)->SubjectLocality)
+#define LassoSamlAuthenticationStatement_SubjectLocality_get(self) get_object((self)->SubjectLocality)
+#define LassoSamlAuthenticationStatement_set_SubjectLocality(self, value) set_object((gpointer *) &(self)->SubjectLocality, (value))
+#define LassoSamlAuthenticationStatement_SubjectLocality_set(self, value) set_object((gpointer *) &(self)->SubjectLocality, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlAuthenticationStatement lasso_saml_authentication_statement_new
+#define delete_LassoSamlAuthenticationStatement(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlAuthenticationStatement_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:Conditions
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlConditions) LassoSamlConditions;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(notBefore) NotBefore;
+#endif
+	char *NotBefore;
+
+#ifndef SWIGPHP4
+	%rename(notOnOrAfter) NotOnOrAfter;
+#endif
+	char *NotOnOrAfter;
+} LassoSamlConditions;
+%extend LassoSamlConditions {
+	/* Attributes */
+
+	/* LassoSamlCondition *Condition;  FIXME: missing from lasso, unbounded */
+	/* LassoSamlAudienceRestrictionCondition *AudienceRestrictionCondition; FIXME: unbounded */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlConditions();
+
+	~LassoSamlConditions();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlConditions lasso_saml_conditions_new
+#define delete_LassoSamlConditions(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlConditions_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -926,6 +1205,219 @@ typedef struct {
 /* Implementations of methods inherited from LassoNode */
 
 #define LassoSamlNameIdentifier_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:Subject
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlSubject) LassoSamlSubject;
+#endif
+typedef struct {
+} LassoSamlSubject;
+%extend LassoSamlSubject {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(nameIdentifier) NameIdentifier;
+#endif
+	%newobject NameIdentifier_get;
+	LassoSamlNameIdentifier *NameIdentifier;
+
+#ifndef SWIGPHP4
+	%rename(subjectConfirmation) SubjectConfirmation;
+#endif
+	%newobject SubjectConfirmation_get;
+	LassoSamlSubjectConfirmation *SubjectConfirmation;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlSubject();
+
+	~LassoSamlSubject();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Attributes implementations */
+
+/* NameIdentifier */
+#define LassoSamlSubject_get_NameIdentifier(self) get_object((self)->NameIdentifier)
+#define LassoSamlSubject_NameIdentifier_get(self) get_object((self)->NameIdentifier)
+#define LassoSamlSubject_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoSamlSubject_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+
+/* SubjectConfirmation */
+#define LassoSamlSubject_get_SubjectConfirmation(self) get_object((self)->SubjectConfirmation)
+#define LassoSamlSubject_SubjectConfirmation_get(self) get_object((self)->SubjectConfirmation)
+#define LassoSamlSubject_set_SubjectConfirmation(self, value) set_object((gpointer *) &(self)->SubjectConfirmation, (value))
+#define LassoSamlSubject_SubjectConfirmation_set(self, value) set_object((gpointer *) &(self)->SubjectConfirmation, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlSubject lasso_saml_subject_new
+#define delete_LassoSamlSubject(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlSubject_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:SubjectConfirmation
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlSubjectConfirmation) LassoSamlSubjectConfirmation;
+#endif
+typedef struct {
+	/* Attributes */
+
+	/* char *ConfirmationMethod; FIXME: unbounded */
+
+#ifndef SWIGPHP4
+	%rename(subjectConfirmationData) SubjectConfirmationData;
+#endif
+	char *SubjectConfirmationData;
+} LassoSamlSubjectConfirmation;
+%extend LassoSamlSubjectConfirmation {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlSubjectConfirmation();
+
+	~LassoSamlSubjectConfirmation();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlSubjectConfirmation lasso_saml_subject_confirmation_new
+#define delete_LassoSamlSubjectConfirmation(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlSubjectConfirmation_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:SubjectLocality
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlSubjectLocality) LassoSamlSubjectLocality;
+#endif
+typedef struct {
+	/* Attributes */
+
+#ifndef SWIGPHP4
+	%rename(dnsAddress) DNSAddress;
+#endif
+	char *DNSAddress;
+
+#ifndef SWIGPHP4
+	%rename(ipAddress) IPAddress;
+#endif
+	char *IPAddress;
+} LassoSamlSubjectLocality;
+%extend LassoSamlSubjectLocality {
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlSubjectLocality();
+
+	~LassoSamlSubjectLocality();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlSubjectLocality lasso_saml_subject_locality_new
+#define delete_LassoSamlSubjectLocality(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlSubjectLocality_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+%}
+
+
+/***********************************************************************
+ * saml:SubjectStatement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(SamlSubjectStatement) LassoSamlSubjectStatement;
+#endif
+typedef struct {
+} LassoSamlSubjectStatement;
+%extend LassoSamlSubjectStatement {
+	/* Attributes inherited from SamlSubjectStatementAbstract */
+
+#ifndef SWIGPHP4
+	%rename(subject) Subject;
+#endif
+	%newobject Subject_get;
+	LassoSamlSubject *Subject;
+
+	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoSamlSubjectStatement();
+
+	~LassoSamlSubjectStatement();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Implementations of attributes inherited from SamlSubjectStatementAbstract */
+
+/* Subject */
+#define LassoSamlSubjectStatement_get_Subject(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlSubjectStatement_Subject_get(self) get_object(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
+#define LassoSamlSubjectStatement_set_Subject(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+#define LassoSamlSubjectStatement_Subject_set(self, value) set_object((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoSamlSubjectStatement lasso_saml_subject_statement_new
+#define delete_LassoSamlSubjectStatement(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoSamlSubjectStatement_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 %}
 
@@ -993,7 +1485,7 @@ typedef struct {
 %extend LassoSamlpResponse {
 	/* Attributes */
 
-	// FIXME: LassoSamlAssertion *Assertion;
+	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
 
 #ifndef SWIGPHP4
 	%rename(status) Status;
@@ -1173,24 +1665,85 @@ typedef struct {
 %extend LassoLibAssertion {
 	/* Attributes inherited from SamlAssertion */
 
-/* 	char *AssertionID; */
-/* 	char *Issuer; */
-/* 	char *IssueInstant; */
-/* 	int MajorVersion; */
-/* 	int MinorVersion; */
+#ifndef SWIGPHP4
+	%rename(advice) Advice;
+#endif
+	%newobject Advice_get;
+	LassoSamlAdvice *Advice;
 
-/* 	// FIXME: LassoSamlConditions *Conditions; */
-/* 	// FIXME: LassoSamlAdvice *Advice; */
-/* 	// FIXME: LassoSamlStatement *Statement; */
-/* 	// FIXME: LassoSamlSubjectStatement *SubjectStatement; */
-/* 	// FIXME: LassoSamlAuthenticationStatement *AuthenticationStatement; */
-/* 	// FIXME: LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement; */
-/* 	// FIXME: LassoSamlAttributeStatement *AttributeStatement; */
+#ifndef SWIGPHP4
+	%rename(assertionId) AssertionID;
+#endif
+	char *AssertionID;
 
-/* 	char *certificate_file; */
-/* 	char *private_key_file; */
-/* 	LassoSignatureType sign_type; */
-/* 	LassoSignatureMethod sign_method; */
+#ifndef SWIGPHP4
+	%rename(attributeStatement) AttributeStatement;
+#endif
+	%newobject AttributeStatement_get;
+	LassoSamlAttributeStatement *AttributeStatement;
+
+#ifndef SWIGPHP4
+	%rename(authenticationStatement) AuthenticationStatement;
+#endif
+	%newobject AuthenticationStatement_get;
+	LassoSamlAuthenticationStatement *AuthenticationStatement;
+
+	/* LassoSamlAuthorizationDecisionsStatement *AuthorizationDecisionStatement;
+	   FIXME: missing from lasso */
+
+#ifndef SWIGPHP4
+	%rename(certificateFile) certificate_file;
+#endif
+	char *certificate_file;
+
+#ifndef SWIGPHP4
+	%rename(conditions) Conditions;
+#endif
+	%newobject Conditions_get;
+	LassoSamlConditions *Conditions;
+
+#ifndef SWIGPHP4
+	%rename(issueInstant) IssueInstant;
+#endif
+	char *IssueInstant;
+
+#ifndef SWIGPHP4
+	%rename(issuer) Issuer;
+#endif
+	char *Issuer;
+
+#ifndef SWIGPHP4
+	%rename(majorVersion) MajorVersion;
+#endif
+	int MajorVersion;
+
+#ifndef SWIGPHP4
+	%rename(minorVersion) MinorVersion;
+#endif
+	int MinorVersion;
+
+#ifndef SWIGPHP4
+	%rename(privateKeyFile) private_key_file;
+#endif
+	char *private_key_file;
+
+#ifndef SWIGPHP4
+	%rename(signMethod) sign_method;
+#endif
+	LassoSignatureMethod sign_method;
+
+#ifndef SWIGPHP4
+	%rename(signType) sign_type;
+#endif
+	LassoSignatureType sign_type;
+
+	/* LassoSamlStatement *Statement; FIXME: missing from lasso */
+
+#ifndef SWIGPHP4
+	%rename(subjectStatement) SubjectStatement;
+#endif
+	%newobject SubjectStatement_get;
+	LassoSamlSubjectStatement *SubjectStatement;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1207,13 +1760,93 @@ typedef struct {
 
 %{
 
-/* Implementations of methods inherited from SamlAssertion */
+/* Implementations of attributes inherited from SamlAssertion */
 
-/* /\* AssertionID *\/ */
-/* #define LassoLibAssertion_get_AssertionID(self) get_object((self)->AssertionID) */
-/* #define LassoLibAssertion_AssertionID_get(self) get_object((self)->AssertionID) */
-/* #define LassoLibAssertion_set_AssertionID(self, value) set_object((gpointer *) &(self)->AssertionID, (value)) */
-/* #define LassoLibAssertion_AssertionID_set(self, value) set_object((gpointer *) &(self)->AssertionID, (value)) */
+/* Advice */
+#define LassoLibAssertion_get_Advice(self) get_object(LASSO_SAML_ASSERTION(self)->Advice)
+#define LassoLibAssertion_Advice_get(self) get_object(LASSO_SAML_ASSERTION(self)->Advice)
+#define LassoLibAssertion_set_Advice(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
+#define LassoLibAssertion_Advice_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Advice, (value))
+
+/* AssertionID */
+#define LassoLibAssertion_get_AssertionID(self) LASSO_SAML_ASSERTION(self)->AssertionID
+#define LassoLibAssertion_AssertionID_get(self) LASSO_SAML_ASSERTION(self)->AssertionID
+#define LassoLibAssertion_set_AssertionID(self, value) set_string(&LASSO_SAML_ASSERTION(self)->AssertionID, (value))
+#define LassoLibAssertion_AssertionID_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->AssertionID, (value))
+
+/* AttributeStatement */
+#define LassoLibAssertion_get_AttributeStatement(self) get_object(LASSO_SAML_ASSERTION(self)->AttributeStatement)
+#define LassoLibAssertion_AttributeStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->AttributeStatement)
+#define LassoLibAssertion_set_AttributeStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
+#define LassoLibAssertion_AttributeStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AttributeStatement, (value))
+
+/* AuthenticationStatement */
+#define LassoLibAssertion_get_AuthenticationStatement(self) get_object(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
+#define LassoLibAssertion_AuthenticationStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->AuthenticationStatement)
+#define LassoLibAssertion_set_AuthenticationStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
+#define LassoLibAssertion_AuthenticationStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->AuthenticationStatement, (value))
+
+/* certificate_file */
+#define LassoLibAssertion_get_certificate_file(self) LASSO_SAML_ASSERTION(self)->certificate_file
+#define LassoLibAssertion_certificate_file_get(self) LASSO_SAML_ASSERTION(self)->certificate_file
+#define LassoLibAssertion_set_certificate_file(self, value) set_string(&LASSO_SAML_ASSERTION(self)->certificate_file, (value))
+#define LassoLibAssertion_certificate_file_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->certificate_file, (value))
+
+/* Conditions */
+#define LassoLibAssertion_get_Conditions(self) get_object(LASSO_SAML_ASSERTION(self)->Conditions)
+#define LassoLibAssertion_Conditions_get(self) get_object(LASSO_SAML_ASSERTION(self)->Conditions)
+#define LassoLibAssertion_set_Conditions(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
+#define LassoLibAssertion_Conditions_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->Conditions, (value))
+
+/* IssueInstant */
+#define LassoLibAssertion_get_IssueInstant(self) LASSO_SAML_ASSERTION(self)->IssueInstant
+#define LassoLibAssertion_IssueInstant_get(self) LASSO_SAML_ASSERTION(self)->IssueInstant
+#define LassoLibAssertion_set_IssueInstant(self, value) set_string(&LASSO_SAML_ASSERTION(self)->IssueInstant, (value))
+#define LassoLibAssertion_IssueInstant_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->IssueInstant, (value))
+
+/* Issuer */
+#define LassoLibAssertion_get_Issuer(self) LASSO_SAML_ASSERTION(self)->Issuer
+#define LassoLibAssertion_Issuer_get(self) LASSO_SAML_ASSERTION(self)->Issuer
+#define LassoLibAssertion_set_Issuer(self, value) set_string(&LASSO_SAML_ASSERTION(self)->Issuer, (value))
+#define LassoLibAssertion_Issuer_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->Issuer, (value))
+
+/* MajorVersion */
+#define LassoLibAssertion_get_MajorVersion(self) LASSO_SAML_ASSERTION(self)->MajorVersion
+#define LassoLibAssertion_MajorVersion_get(self) LASSO_SAML_ASSERTION(self)->MajorVersion
+#define LassoLibAssertion_set_MajorVersion(self, value) LASSO_SAML_ASSERTION(self)->MajorVersion = (value)
+#define LassoLibAssertion_MajorVersion_set(self, value) LASSO_SAML_ASSERTION(self)->MajorVersion = (value)
+
+/* MinorVersion */
+#define LassoLibAssertion_get_MinorVersion(self) LASSO_SAML_ASSERTION(self)->MinorVersion
+#define LassoLibAssertion_MinorVersion_get(self) LASSO_SAML_ASSERTION(self)->MinorVersion
+#define LassoLibAssertion_set_MinorVersion(self, value) LASSO_SAML_ASSERTION(self)->MinorVersion = (value)
+#define LassoLibAssertion_MinorVersion_set(self, value) LASSO_SAML_ASSERTION(self)->MinorVersion = (value)
+
+/* private_key_file */
+#define LassoLibAssertion_get_private_key_file(self) LASSO_SAML_ASSERTION(self)->private_key_file
+#define LassoLibAssertion_private_key_file_get(self) LASSO_SAML_ASSERTION(self)->private_key_file
+#define LassoLibAssertion_set_private_key_file(self, value) set_string(&LASSO_SAML_ASSERTION(self)->private_key_file, (value))
+#define LassoLibAssertion_private_key_file_set(self, value) set_string(&LASSO_SAML_ASSERTION(self)->private_key_file, (value))
+
+/* sign_method */
+#define LassoLibAssertion_get_sign_method(self) LASSO_SAML_ASSERTION(self)->sign_method
+#define LassoLibAssertion_sign_method_get(self) LASSO_SAML_ASSERTION(self)->sign_method
+#define LassoLibAssertion_set_sign_method(self, value) LASSO_SAML_ASSERTION(self)->sign_method = (value)
+#define LassoLibAssertion_sign_method_set(self, value) LASSO_SAML_ASSERTION(self)->sign_method = (value)
+
+/* sign_type */
+#define LassoLibAssertion_get_sign_type(self) LASSO_SAML_ASSERTION(self)->sign_type
+#define LassoLibAssertion_sign_type_get(self) LASSO_SAML_ASSERTION(self)->sign_type
+#define LassoLibAssertion_set_sign_type(self, value) LASSO_SAML_ASSERTION(self)->sign_type = (value)
+#define LassoLibAssertion_sign_type_set(self, value) LASSO_SAML_ASSERTION(self)->sign_type = (value)
+
+/* SubjectStatement */
+#define LassoLibAssertion_get_SubjectStatement(self) get_object(LASSO_SAML_ASSERTION(self)->SubjectStatement)
+#define LassoLibAssertion_SubjectStatement_get(self) get_object(LASSO_SAML_ASSERTION(self)->SubjectStatement)
+#define LassoLibAssertion_set_SubjectStatement(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
+#define LassoLibAssertion_SubjectStatement_set(self, value) set_object((gpointer *) &LASSO_SAML_ASSERTION(self)->SubjectStatement, (value))
+
+/* Implementations of methods inherited from SamlAssertion */
 
 /* Constructors, destructors & static methods implementations */
 
@@ -1348,9 +1981,9 @@ typedef struct {
 	char *RelayState;
 } LassoLibAuthnResponse;
 %extend LassoLibAuthnResponse {
-	/* Attributes inherited from LassoSamlpResponse */
+	/* Attributes inherited from SamlpResponse */
 
-	// FIXME: LassoSamlAssertion *Assertion;
+	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
 
 	%newobject extension_get;
 	LassoStringArray *extension;
@@ -1375,7 +2008,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoSamlpResponse implementations */
+/* Attributes inherited from SamlpResponse implementations */
 
 /* extension */
 #define LassoLibAuthnResponse_get_extension(self) get_extension((self)->Extension)
@@ -1576,7 +2209,7 @@ typedef struct {
 typedef struct {
 } LassoLibLogoutResponse;
 %extend LassoLibLogoutResponse {
-	/* Attributes inherited from LassoLibStatusResponse */
+	/* Attributes inherited from LibStatusResponse */
 
 	%newobject extension_get;
 	LassoStringArray *extension;
@@ -1614,7 +2247,7 @@ typedef struct {
 
 %{
 
-/* Implementations of attributes inherited from LassoLibStatusResponse */
+/* Implementations of attributes inherited from LibStatusResponse */
 
 /* extension */
 #define LassoLibLogoutResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
@@ -1765,7 +2398,7 @@ typedef struct {
 typedef struct {
 } LassoLibRegisterNameIdentifierResponse;
 %extend LassoLibRegisterNameIdentifierResponse {
-	/* Attributes inherited from LassoLibStatusResponse */
+	/* Attributes inherited from LibStatusResponse */
 
 	%newobject extension_get;
 	LassoStringArray *extension;
@@ -1803,7 +2436,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoLibStatusResponse implementations */
+/* Attributes inherited from LibStatusResponse implementations */
 
 /* extension */
 #define LassoLibRegisterNameIdentifierResponse_get_extension(self) get_extension(LASSO_LIB_STATUS_RESPONSE(self)->Extension)
@@ -2046,7 +2679,7 @@ typedef struct {
 	LassoSignatureMethod signature_method;
 } LassoServer;
 %extend LassoServer {
-	/* Attributes inherited from LassoProvider */
+	/* Attributes inherited from Provider */
 
 #ifndef SWIGPHP4
 	%rename(caCertChain) ca_cert_chain;
@@ -2084,7 +2717,7 @@ typedef struct {
 	%newobject newFromDump;
 	static LassoServer *newFromDump(char *dump);
 
-	/* Methods inherited from LassoProvider */
+	/* Methods inherited from Provider */
 
 	gboolean acceptHttpMethod(
 			LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
@@ -2125,7 +2758,7 @@ typedef struct {
 
 %{
 
-/* Implementations of attributes inherited from LassoProvider */
+/* Implementations of attributes inherited from Provider */
 
 /* providerId */
 #define LassoServer_get_ProviderID(self) LASSO_PROVIDER(self)->ProviderID
@@ -2171,7 +2804,7 @@ LassoStringArray *LassoServer_providerIds_get(LassoServer *self) {
 #define Server_newFromDump lasso_server_new_from_dump
 #endif
 
-/* Implementations of methods inherited from LassoProvider */
+/* Implementations of methods inherited from Provider */
 
 #define LassoServer_acceptHttpMethod(server, remote_provider, protocol_type, http_method, initiate_profile) lasso_provider_accept_http_method(LASSO_PROVIDER(server), remote_provider, protocol_type, http_method, initiate_profile)
 #define LassoServer_getAssertionConsumerServiceUrl(server, service_id) lasso_provider_get_assertion_consumer_service_url(LASSO_PROVIDER(server), service_id)
@@ -2455,7 +3088,7 @@ gboolean lasso_profile_is_liberty_query(char *query);
 typedef struct {
 } LassoDefederation;
 %extend LassoDefederation {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -2492,7 +3125,7 @@ typedef struct {
 
 	~LassoDefederation();
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -2524,7 +3157,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* identity */
 #define LassoDefederation_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -2585,7 +3218,7 @@ typedef struct {
 #define new_LassoDefederation lasso_defederation_new
 #define delete_LassoDefederation(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoDefederation_setIdentityFromDump(LassoDefederation *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -2623,7 +3256,7 @@ typedef struct {
 	LassoLoginProtocolProfile protocolProfile;
 } LassoLogin;
 %extend LassoLogin {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%immutable authnRequest;
 	LassoLibAuthnRequest *authnRequest;
@@ -2674,7 +3307,7 @@ typedef struct {
 	%newobject newFromDump;
 	static LassoLogin *newFromDump(LassoServer *server, char *dump);
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -2760,7 +3393,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* authnRequest */
 #define LassoLogin_get_authnRequest LassoLogin_authnRequest_get
@@ -2858,7 +3491,7 @@ LassoSamlpResponse *LassoLogin_response_get(LassoLogin *self) {
 #define Login_newFromDump lasso_login_new_from_dump
 #endif
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoLogin_setIdentityFromDump(LassoLogin *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -2903,7 +3536,7 @@ int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
 typedef struct {
 } LassoLogout;
 %extend LassoLogout {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -2948,7 +3581,7 @@ typedef struct {
 	%newobject newFromDump;
 	static LassoLogout *newFromDump(LassoServer *server, char *dump);
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -2998,7 +3631,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* identity */
 #define LassoLogout_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -3068,7 +3701,7 @@ typedef struct {
 #define Logout_newFromDump lasso_logout_new_from_dump
 #endif
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoLogout_setIdentityFromDump(LassoLogout *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -3107,7 +3740,7 @@ typedef struct {
 	// FIXME: LassoLibAuthnResponseEnvelope *authnResponseEnvelope;
 } LassoLecp;
 %extend LassoLecp {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%immutable authnRequest;
 	LassoLibAuthnRequest *authnRequest;
@@ -3155,7 +3788,7 @@ typedef struct {
 
 	~LassoLecp();
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -3165,7 +3798,7 @@ typedef struct {
 	void setSessionFromDump(char *dump);
 	END_THROW_ERROR
 
-	/* Methods inherited from LassoLogin */
+	/* Methods inherited from Login */
 
 	THROW_ERROR
 	int buildAssertion(char *authenticationMethod, char *authenticationInstant,
@@ -3214,7 +3847,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* authnRequest */
 #define LassoLecp_get_authnRequest LassoLecp_authnRequest_get
@@ -3307,7 +3940,7 @@ LassoSamlpResponse *LassoLecp_response_get(LassoLecp *self) {
 #define new_LassoLecp lasso_lecp_new
 #define delete_LassoLecp(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoLecp_setIdentityFromDump(LassoLecp *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -3317,7 +3950,7 @@ int LassoLecp_setSessionFromDump(LassoLecp *self, char *dump) {
 	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
 }
 
-/* Methods inherited from LassoLogin implementations */
+/* Methods inherited from Login implementations */
 
 int LassoLecp_buildAssertion(LassoLecp *self, char *authenticationMethod,
 		char *authenticationInstant, char *reauthenticateOnOrAfter, char *notBefore,
@@ -3358,7 +3991,7 @@ typedef struct {
 	char *targetNameIdentifier;
 } LassoNameIdentifierMapping;
 %extend LassoNameIdentifierMapping {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -3389,7 +4022,7 @@ typedef struct {
 
 	~LassoNameIdentifierMapping();
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -3431,7 +4064,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* identity */
 #define LassoNameIdentifierMapping_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -3484,7 +4117,7 @@ LassoSession *LassoNameIdentifierMapping_session_get(LassoNameIdentifierMapping 
 #define new_LassoNameIdentifierMapping lasso_name_identifier_mapping_new
 #define delete_LassoNameIdentifierMapping(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoNameIdentifierMapping_setIdentityFromDump(LassoNameIdentifierMapping *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
@@ -3518,7 +4151,7 @@ int LassoNameIdentifierMapping_setSessionFromDump(LassoNameIdentifierMapping *se
 typedef struct {
 } LassoNameRegistration;
 %extend LassoNameRegistration {
-	/* Attributes inherited from LassoProfile */
+	/* Attributes inherited from Profile */
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -3566,7 +4199,7 @@ typedef struct {
 	%newobject newFromDump;
 	static LassoNameRegistration *newFromDump(LassoServer *server, char *dump);
 
-	/* Methods inherited from LassoProfile */
+	/* Methods inherited from Profile */
 
         THROW_ERROR
 	void setIdentityFromDump(char *dump);
@@ -3609,7 +4242,7 @@ typedef struct {
 
 %{
 
-/* Attributes inherited from LassoProfile implementations */
+/* Attributes inherited from Profile implementations */
 
 /* identity */
 #define LassoNameRegistration_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
@@ -3681,7 +4314,7 @@ typedef struct {
 #define NameRegistration_newFromDump lasso_name_registration_new_from_dump
 #endif
 
-/* Methods inherited from LassoProfile implementations */
+/* Methods inherited from Profile implementations */
 
 int LassoNameRegistration_setIdentityFromDump(LassoNameRegistration *self, char *dump) {
 	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
