@@ -135,7 +135,7 @@ lasso_login_process_federation(LassoLogin *login)
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
       /* set local NameIdentifier in identity */
-      nameIdentifier = saml_name_identifier_new(lasso_build_unique_id(32));
+      nameIdentifier = lasso_saml_name_identifier_new(lasso_build_unique_id(32));
       providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
       /*
       if (providerID == NULL) {
