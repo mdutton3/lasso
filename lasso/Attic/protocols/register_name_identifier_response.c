@@ -217,23 +217,26 @@ lasso_register_name_identifier_response_new(gchar     *providerID,
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL));
   
-  /* Set ONLY required elements/attributes */
   /* ResponseID */
   id = lasso_build_unique_id(32);
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					       id);
   xmlFree(id);
+
   /* MajorVersion */
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoLibMajorVersion);
+
   /* MinorVersion */
   lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoLibMinorVersion);
+
   /* IssueInstant */
   time = lasso_get_current_time();
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 time);
   xmlFree(time);
+
   /* ProviderID */
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   providerID);
@@ -248,6 +251,7 @@ lasso_register_name_identifier_response_new(gchar     *providerID,
 					      request_providerID);
   xmlFree(request_providerID);
 
+  /* RelayState */
   request_relayState = lasso_node_get_child_content(request, "RelayState", NULL, NULL);
   if (request_relayState != NULL) {
     lasso_lib_status_response_set_relayState(LASSO_LIB_STATUS_RESPONSE(response),
@@ -255,6 +259,7 @@ lasso_register_name_identifier_response_new(gchar     *providerID,
     xmlFree(request_relayState);
   }
 
+  /* StatusCode and Value */
   ss = lasso_samlp_status_new();
   ssc = lasso_samlp_status_code_new();
   lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(ssc),
