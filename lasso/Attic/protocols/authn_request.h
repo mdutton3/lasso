@@ -52,16 +52,20 @@ struct _LassoAuthnRequestClass {
   LassoLibAuthnRequestClass parent;
 };
 
-LASSO_EXPORT GType      lasso_authn_request_get_type          (void);
-LASSO_EXPORT LassoNode* lasso_authn_request_new               (const xmlChar     *providerID);
+LASSO_EXPORT xmlChar* lasso_authn_request_get_protocolProfile (xmlChar *query);
 
-LASSO_EXPORT void lasso_authn_request_set_requestAuthnContext (LassoAuthnRequest *request,
-							       GPtrArray         *authnContextClassRefs,
-							       GPtrArray         *authnContextStatementRefs,
-							       const xmlChar     *authnContextComparison);
 
-LASSO_EXPORT void lasso_authn_request_set_scoping              (LassoAuthnRequest *request,
-								gint               proxyCount);
+LASSO_EXPORT GType      lasso_authn_request_get_type                (void);
+
+LASSO_EXPORT LassoNode* lasso_authn_request_new                     (const xmlChar *providerID);
+
+LASSO_EXPORT void       lasso_authn_request_set_requestAuthnContext (LassoAuthnRequest *request,
+								     GPtrArray         *authnContextClassRefs,
+								     GPtrArray         *authnContextStatementRefs,
+								     const xmlChar     *authnContextComparison);
+
+LASSO_EXPORT void       lasso_authn_request_set_scoping              (LassoAuthnRequest *request,
+								      gint               proxyCount);
 
 #ifdef __cplusplus
 }

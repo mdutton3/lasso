@@ -26,6 +26,22 @@
 #include <lasso/protocols/authn_request.h>
 
 /*****************************************************************************/
+/* functions                                                                 */
+/*****************************************************************************/
+
+xmlChar *
+lasso_authn_request_get_protocolProfile(xmlChar *query)
+{
+  xmlChar *protocolProfile;
+
+  protocolProfile = lasso_g_ptr_array_index(lasso_query_get_value(query, "ProtocolProfile"), 0);
+  if (protocolProfile == NULL)
+    protocolProfile = lassoLibProtocolProfileArtifact;
+
+  return (protocolProfile);
+}
+
+/*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
