@@ -103,7 +103,7 @@ lasso_federation_termination_notification_new(const xmlChar *providerID,
     lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						    sign_type,
 						    sign_method,
-						    id);
+						    NULL);
   }
 
   /* ProviderID */
