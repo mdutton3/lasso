@@ -1,3 +1,5 @@
+SUBDIRS = elements
+
 liblassoincludedir = $(includedir)/lasso/protocols
 
 INCLUDES = \
@@ -12,9 +14,15 @@ INCLUDES = \
 
 noinst_LTLIBRARIES = liblasso-protocols.la
 
+liblasso_protocols_la_LIBADD = \
+	$(top_builddir)/lasso/protocols/elements/liblasso-elements.la \
+	$(GLIB_LIBS) \
+	$(LIBXSLT_LIBS) \
+	$(LIBXML_LIBS) \
+	$(XMLSEC1_LIBS)
+
 liblasso_protocols_la_SOURCES = \
 	protocols.c \
-	protocol.c \
 	authn_request.c \
 	authn_response.c \
 	federation_termination_notification.c \
@@ -27,7 +35,6 @@ liblasso_protocols_la_SOURCES = \
 
 liblassoinclude_HEADERS = \
 	protocols.h \
-	protocol.h \
 	authn_request.h \
 	authn_response.h \
 	federation_termination_notification.h \
