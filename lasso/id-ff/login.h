@@ -61,8 +61,6 @@ struct _LassoLogin {
 
   gchar                      *assertionArtifact;
   gchar                      *response_dump;
-
-  gchar                      *msg_relayState;
   /*< private >*/
 };
 

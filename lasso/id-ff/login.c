@@ -34,6 +34,73 @@ static GObjectClass *parent_class = NULL;
 /*****************************************************************************/
 
 static gint
+lasso_login_add_response_assertion(LassoLogin    *login,
+				   LassoIdentity *identity,
+				   const gchar   *authenticationMethod,
+				   const gchar   *reauthenticateOnOrAfter)
+{
+  xmlChar *providerID;
+  LassoNode *assertion=NULL, *authentication_statement;
+  xmlChar *ni, *idp_ni;
+
+  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
+  printf("ProviderID = %s\n", providerID);
+  assertion = lasso_assertion_new(providerID,
+				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
+  xmlFree(providerID);
+  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
+								reauthenticateOnOrAfter,
+								identity->remote_nameIdentifier,
+								identity->local_nameIdentifier);
+  ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "NameIdentifier", NULL);
+  idp_ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "IDPProvidedNameIdentifier", NULL);
+  /* store NameIdentifier */
+  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
+    login->nameIdentifier = idp_ni;
+    xmlFree(ni);
+  }
+  else {
+    login->nameIdentifier = ni;
+    xmlFree(idp_ni);
+  }
+
+  lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
+						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
+  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
+				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
+				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
+				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
+  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
+				     assertion);
+
+  return (0);
+}
+
+static gint
+lasso_login_get_assertion_nameIdentifier(LassoNode *assertion)
+{
+  xmlChar *ni, *idp_ni;
+
+  ni = lasso_node_get_child_content(assertion, "NameIdentifier", NULL);
+  idp_ni = lasso_node_get_child_content(assertion, "IDPProvidedNameIdentifier", NULL);
+
+  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
+    xmlFree(ni);
+    return (idp_ni);
+  }
+  else {
+    xmlFree(idp_ni);
+    if (ni != NULL) {
+      return (ni);
+    }
+    else {
+      debug(ERROR, "NameIdentifier value not found in AuthenticationStatement element.\n");
+      return (NULL);
+    }
+  }
+}
+
+static gint
 lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
@@ -86,103 +153,66 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   LassoNode *assertion, *status, *statusCode;
   LassoProvider *idp;
   gchar *statusCode_value;
-  xmlChar *ni, *idp_ni;
+  gint signature_check, ret = 0;
 
-  /* verify signature */
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				   "Assertion",
 				   lassoLibHRef);
   idp = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 				  LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+
   if (assertion != NULL) {
-    lasso_node_verify_signature(assertion, idp->ca_certificate);
-  }
-  else {
-    return (-1);
+    /* verify signature */
+    if (idp->ca_certificate != NULL) {
+      signature_check = lasso_node_verify_signature(assertion, idp->ca_certificate);
+      if (signature_check < 0) {
+	/* ret = -1 or -2 or -3 */
+	ret = signature_check;
+      }
+    }
+
+    /* store NameIdentifier */
+    if (ret == 0) {
+      login->nameIdentifier = lasso_login_get_assertion_nameIdentifier(assertion);
+      if (login->nameIdentifier == NULL) {
+	debug(ERROR, "NameIdentifier element not found in Assertion.\n");
+	ret = -4;
+      }
+    }
+    lasso_node_destroy(assertion);
   }
 
   /* check StatusCode value */
-  status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
-				"Status",
-				lassoSamlProtocolHRef);
-  if (status != NULL) {
-    statusCode = lasso_node_get_child(status,
-				  "StatusCode",
+  if (ret == 0) {
+    status = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
+				  "Status",
 				  lassoSamlProtocolHRef);
+    if (status != NULL) {
+      statusCode = lasso_node_get_child(status,
+					"StatusCode",
+					lassoSamlProtocolHRef);
     
-    if (statusCode) {
-      statusCode_value = lasso_node_get_content(statusCode);
-      if (xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
-	return (-2);
+      if (statusCode != NULL) {
+	statusCode_value = lasso_node_get_attr_value(statusCode, "Value");
+	if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
+	  ret = -7;
+	}
+	xmlFree(statusCode_value);
+	lasso_node_destroy(statusCode);
+      }
+      else {
+	debug(ERROR, "StatusCode element not found in Status.\n");
+	ret = -8;
       }
     }
     else {
-      return (-3);
+      debug(ERROR, "Status element not found in response.\n");
+      ret = -9;
     }
-  }
-  else {
-    return (-4);
+    lasso_node_destroy(status);
   }
 
-  /* store NameIdentifier */
-  ni = lasso_node_get_child_content(LASSO_NODE(assertion), "NameIdentifier", NULL);
-  idp_ni = lasso_node_get_child_content(LASSO_NODE(assertion), "IDPProvidedNameIdentifier", NULL);
-  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
-    login->nameIdentifier = idp_ni;
-    xmlFree(ni);
-  }
-  else {
-    login->nameIdentifier = ni;
-    xmlFree(idp_ni);
-    if (ni == NULL) {
-      return (-5);
-    }
-  }
-
-  return (0);
-}
-
-static gint
-lasso_login_add_response_assertion(LassoLogin    *login,
-				   LassoIdentity *identity,
-				   const gchar   *authenticationMethod,
-				   const gchar   *reauthenticateOnOrAfter)
-{
-  xmlChar *providerID;
-  LassoNode *assertion=NULL, *authentication_statement;
-  xmlChar *ni, *idp_ni;
-
-  providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
-  printf("ProviderID = %s\n", providerID);
-  assertion = lasso_assertion_new(providerID,
-				  lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID"));
-  xmlFree(providerID);
-  authentication_statement = lasso_authentication_statement_new(authenticationMethod,
-								reauthenticateOnOrAfter,
-								identity->remote_nameIdentifier,
-								identity->local_nameIdentifier);
-  ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "NameIdentifier", NULL);
-  idp_ni = lasso_node_get_child_content(LASSO_NODE(authentication_statement), "IDPProvidedNameIdentifier", NULL);
-  /* store NameIdentifier */
-  if (xmlStrEqual(ni, idp_ni) && idp_ni != NULL) {
-    login->nameIdentifier = idp_ni;
-    xmlFree(ni);
-  }
-  else {
-    login->nameIdentifier = ni;
-    xmlFree(idp_ni);
-  }
-
-  lasso_saml_assertion_add_authenticationStatement(LASSO_SAML_ASSERTION(assertion),
-						   LASSO_SAML_AUTHENTICATION_STATEMENT(authentication_statement));
-  lasso_saml_assertion_set_signature(LASSO_SAML_ASSERTION(assertion),
-				     LASSO_PROFILE_CONTEXT(login)->server->signature_method,
-				     LASSO_PROFILE_CONTEXT(login)->server->private_key,
-				     LASSO_PROFILE_CONTEXT(login)->server->certificate);
-  lasso_samlp_response_add_assertion(LASSO_SAMLP_RESPONSE(LASSO_PROFILE_CONTEXT(login)->response),
-				     assertion);
-
-  return (0);
+  return (ret);
 }
 
 /*****************************************************************************/
@@ -233,7 +263,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
   }
   /* save response dump */
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
-  /* segfault ??? debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump); */
+  debug(DEBUG, "SOAP enveloped Samlp:response = %s\n", LASSO_LOGIN(login)->response_dump);
 
   providerID = lasso_provider_get_providerID(LASSO_PROVIDER(LASSO_PROFILE_CONTEXT(login)->server));
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
@@ -267,7 +297,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
     LASSO_PROFILE_CONTEXT(login)->msg_url  = g_strdup(url);
     LASSO_PROFILE_CONTEXT(login)->msg_body = g_strdup(b64_samlArt);
     if (relayState != NULL) {
-      login->msg_relayState = g_strdup(relayState);
+      LASSO_PROFILE_CONTEXT(login)->msg_relayState = g_strdup(relayState);
     }
     break;
   }
@@ -418,8 +448,8 @@ lasso_login_dump(LassoLogin *login)
   if (login->response_dump != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseDump", login->response_dump, FALSE);
   }
-  if (login->msg_relayState != NULL) {
-    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", login->msg_relayState, FALSE);
+  if (LASSO_PROFILE_CONTEXT(login)->msg_relayState != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", LASSO_PROFILE_CONTEXT(login)->msg_relayState, FALSE);
   }
 
   dump = lasso_node_export(node);
@@ -668,7 +698,6 @@ lasso_login_finalize(LassoLogin *login)
   g_free(login->assertionArtifact);
   g_free(login->nameIdentifier);
   g_free(login->response_dump);
-  g_free(login->msg_relayState);
 
   parent_class->finalize(LASSO_PROFILE_CONTEXT(login));
 }
@@ -684,7 +713,6 @@ lasso_login_instance_init(LassoLogin *login)
   login->assertionArtifact = NULL;
   login->nameIdentifier    = NULL;
   login->response_dump     = NULL;
-  login->msg_relayState    = NULL;
 }
 
 static void
