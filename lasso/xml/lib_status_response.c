@@ -96,6 +96,17 @@ init_from_query(LassoNode *node, char **query_fields)
 	if (response->ProviderID == NULL || response->Status == NULL)
 		return FALSE;
 	
+	if (response->Status->StatusCode) {
+		LassoSamlpStatusCode *code = response->Status->StatusCode;
+		if (code->Value && strchr(code->Value, ':') == NULL) {
+			char *s;  /* if not a QName; add the samlp prefix */
+			s = g_strdup_printf("samlp:%s", code->Value);
+			g_free(code->Value);
+			code->Value = s;
+		}
+	}
+
+	
 	return TRUE;
 }
 

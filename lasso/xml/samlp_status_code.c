@@ -47,23 +47,6 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
-static gboolean
-init_from_query(LassoNode *node, char **query_fields)
-{
-	LassoSamlpStatusCode *code = LASSO_SAMLP_STATUS_CODE(node);
-	gboolean rc;
-
-	rc = lasso_node_init_from_query_fields(node, query_fields);
-	if (code->Value && strchr(code->Value, ':') == NULL) {
-		char *s;  /* if not a QName; add the samlp prefix */
-		s = g_strdup_printf("samlp:%s", code->Value);
-		g_free(code->Value);
-		code->Value = s;
-	}
-
-	return rc;
-}
-
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -80,7 +63,6 @@ class_init(LassoSamlpStatusCodeClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	nclass->init_from_query = init_from_query;
 	lasso_node_class_set_nodename(nclass, "StatusCode");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
