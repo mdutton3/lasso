@@ -309,7 +309,7 @@ typedef enum {
 	lassoRequestTypeLecp
 } lassoRequestType;
 
-/* SamelAuthenticationMethod */
+/* SamlAuthenticationMethod */
 #ifndef SWIGPHP
 %rename(samlAuthenticationMethodPassword) lassoSamlAuthenticationMethodPassword;
 %rename(samlAuthenticationMethodKerberos) lassoSamlAuthenticationMethodKerberos;
@@ -823,7 +823,7 @@ typedef struct {
 		gchar *dump();
 
 		%newobject getAuthenticationMethod;
-		gchar *getAuthenticationMethod(gchar *remoteProviderId);
+		gchar *getAuthenticationMethod(gchar *remoteProviderId = NULL);
 	}
 } LassoSession;
 
