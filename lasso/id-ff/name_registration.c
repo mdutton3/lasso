@@ -477,8 +477,8 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 
 gint
 lasso_name_registration_process_response_msg(LassoNameRegistration *name_registration,
-						    gchar                       *response_msg,
-						    lassoHttpMethod              response_method)
+					     gchar                 *response_msg,
+					     lassoHttpMethod        response_method)
 {
   LassoProfile *profile;
   xmlChar      *statusCodeValue;
@@ -499,7 +499,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
     profile->response = lasso_register_name_identifier_response_new_from_export(response_msg, lassoNodeExportTypeQuery);
     break;
   default:
-    message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
+    message(G_LOG_LEVEL_CRITICAL, "Invalid response method\n");
     ret = -1;
     goto done;
   }
@@ -526,7 +526,6 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
   return ret;
 }
-
 
 gint
 lasso_name_registration_validate_request(LassoNameRegistration *name_registration)
@@ -557,44 +556,6 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
   if (profile->response == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while building response\n");
-    ret = -1;
-    goto done;
-  }
-
-  statusCode = lasso_node_get_child(profile->response, "StatusCode", NULL, NULL);
-  statusCode_class = LASSO_NODE_GET_CLASS(statusCode);
-
-  nameIdentifier = lasso_node_get_child(profile->request, "NameIdentifier", NULL, NULL);
-  if (nameIdentifier == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "No name identifier found in name_registration request\n");
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    ret = -1;
-    goto done;
-  }
-
-  /* Verify federation */
-  federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
-  if (federation == NULL) {
-    message(G_LOG_LEVEL_WARNING, "No federation for %s\n", profile->remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    ret = -1;
-    goto done;
-  }
-
-  if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
-    message(G_LOG_LEVEL_WARNING, "No name identifier for %s\n", profile->remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    ret = -1;
-    goto done;
-  }
-  lasso_federation_destroy(federation);
-
-  /* verify authentication (if ok, delete assertion) */
-  assertion = lasso_session_get_assertion(profile->session, profile->remote_providerID);
-  if (assertion == NULL) {
-    message(G_LOG_LEVEL_WARNING, "%s has no assertion\n", profile->remote_providerID);
-    statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
-    lasso_node_destroy(assertion);
     ret = -1;
     goto done;
   }

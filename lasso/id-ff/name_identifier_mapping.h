@@ -66,6 +66,8 @@ LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_req
 
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_build_response_msg   (LassoNameIdentifierMapping *mapping);
 
+LASSO_EXPORT void                        lasso_name_identifier_mapping_destroy              (LassoNameIdentifierMapping *mapping);
+
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_init_request         (LassoNameIdentifierMapping *mapping,
 											     gchar                      *remote_providerID);
 
@@ -76,6 +78,8 @@ LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_r
 LASSO_EXPORT gint                        lasso_name_identifier_mapping_process_response_msg (LassoNameIdentifierMapping *mapping,
 											     gchar                      *response_msg,
 											     lassoHttpMethod             response_method);
+
+LASSO_EXPORT gint                        lasso_name_identifier_mapping_validate_request     (LassoNameIdentifierMapping *mapping);
 
 #ifdef __cplusplus
 }
