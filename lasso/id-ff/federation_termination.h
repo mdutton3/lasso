@@ -45,7 +45,6 @@ typedef struct _LassoFederationTerminationClass LassoFederationTerminationClass;
 
 struct _LassoFederationTermination {
   LassoProfileContext parent;
-  int provider_type;
 
   /*< private >*/
 };

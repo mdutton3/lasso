@@ -47,7 +47,6 @@ typedef struct _LassoRegisterNameIdentifierClass LassoRegisterNameIdentifierClas
 
 struct _LassoRegisterNameIdentifier {
   LassoProfileContext parent;
-  int provider_type;
 
   /*< private >*/
 };
