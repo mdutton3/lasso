@@ -1148,6 +1148,8 @@ lasso_logout_new_from_dump(LassoServer *server,
     export = lasso_node_export(request_node);
     profile->request = lasso_logout_request_new_from_export(export,
 							    lassoNodeExportTypeXml);
+    g_free(export);
+    lasso_node_destroy(request_node);
   }
 
 
