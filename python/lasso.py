@@ -1353,19 +1353,19 @@ class FederationTermination(Profile):
         if errorCode:
             raise newError(errorCode, 'lasso_federation_termination_init_notification')
 
-    def load_notification_msg(self, notification_msg, notification_method):
-        errorCode = lassomod.federation_termination_load_notification_msg(
+    def process_notification_msg(self, notification_msg, notification_method):
+        errorCode = lassomod.federation_termination_process_notification_msg(
             self, notification_msg, notification_method)
         if errorCode:
             raise newError(errorCode, 'lasso_federation_termination_load_notification_msg')
 
-    def process_notification(self):
-        errorCode = lassomod.federation_termination_process_notification(self)
+    def validate_notification(self):
+        errorCode = lassomod.federation_termination_validate_notification(self)
         if errorCode:
             raise newError(errorCode, 'lasso_federation_termination_process_notification')
 
 
-class RegisterNameIdentifier:
+class RegisterNameIdentifier(Profile):
     """\brief Short desc
 
     Long desc
@@ -1378,7 +1378,7 @@ class RegisterNameIdentifier:
         """
         The constructor
         """
-        self._o = _obj
+        Profile.__init__(self, _obj=_obj)
 
     def __getattr__(self, name):
         if self.__isprivate(name):
@@ -1424,7 +1424,7 @@ class RegisterNameIdentifier:
         if errorCode:
             raise newError(errorCode, 'lasso_register_name_identifier_process_response_msg')
 
-class Lecp:
+class Lecp(Login):
     """\brief Short desc
 
     Long desc
@@ -1437,7 +1437,7 @@ class Lecp:
         """
         The constructor
         """
-        self._o = _obj
+        Login.__init__(self, _obj = _obj)
 
     def __getattr__(self, name):
         if self.__isprivate(name):

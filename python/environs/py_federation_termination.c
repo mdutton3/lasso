@@ -143,37 +143,37 @@ PyObject *federation_termination_init_notification(PyObject *self, PyObject *arg
   return(int_wrap(codeError));
 }
 
-PyObject *federation_termination_load_notification_msg(PyObject *self, PyObject *args){
+PyObject *federation_termination_process_notification_msg(PyObject *self, PyObject *args){
   PyObject *notification_obj;
   gchar    *notification_msg;
   gint      notification_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:federation_termination_load_notification_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:federation_termination_load_notification_msg",
+  if (CheckArgs(args, "OSI:federation_termination_process_notification_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:federation_termination_process_notification_msg",
 			 &notification_obj, &notification_msg, &notification_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_federation_termination_load_notification_msg(LassoFederationTermination_get(notification_obj),
-								 notification_msg, notification_method);
+  codeError = lasso_federation_termination_process_notification_msg(LassoFederationTermination_get(notification_obj),
+								    notification_msg, notification_method);
 
   return(int_wrap(codeError));
 }
 
-PyObject *federation_termination_process_notification(PyObject *self, PyObject *args) {
+PyObject *federation_termination_validate_notification(PyObject *self, PyObject *args) {
   PyObject *federation_termination_obj;
   gint      codeError;
 
-  if (CheckArgs(args, "O:federation_termination_process_notification")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:federation_termination_process_notification",
+  if (CheckArgs(args, "O:federation_termination_validate_notification")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:federation_termination_validate_notification",
 			 &federation_termination_obj))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_federation_termination_process_notification(LassoFederationTermination_get(federation_termination_obj));
+  codeError = lasso_federation_termination_validate_notification(LassoFederationTermination_get(federation_termination_obj));
 
   return(int_wrap(codeError));
 }

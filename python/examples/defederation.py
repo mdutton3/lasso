@@ -5,9 +5,9 @@ sys.path.insert(0, '../')
 import lasso
 
 
-spuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">1111111111111111111111111</NameIdentifier></LassoRemoteNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
+spidentity_dump = "<LassoIdentity><LassoFederations><LassoFederation RemoteProviderID=\"https://identity-provider:2003/liberty-alliance/metadata\"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">1111111111111111111111111</NameIdentifier></LassoRemoteNameIdentifier></LassoFederation></LassoFederations></LassoIdentity>"
 
-idpuser_dump = "<LassoUser><LassoIdentities><LassoIdentity RemoteProviderID=\"https://service-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">1111111111111111111111111</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity></LassoIdentities></LassoUser>"
+idpidentity_dump = "<LassoIdentity><LassoFederations><LassoFederation RemoteProviderID=\"https://service-provider:2003/liberty-alliance/metadata\"><LassoLocalNameIdentifier><NameIdentifier NameQualifier=\"qualifier.com\" Format=\"federated\">1111111111111111111111111</NameIdentifier></LassoLocalNameIdentifier></LassoFederation></LassoFederations></LassoIdentity>"
 
 
 # SP :
@@ -16,10 +16,8 @@ spserver = lasso.Server.new("../../examples/sp.xml",
                             lasso.signatureMethodRsaSha1)
 spserver.add_provider("../../examples/idp.xml", None, None)
 
-spuser = lasso.User.new_from_dump(spuser_dump)
-
 spdefederation = lasso.FederationTermination.new(spserver, lasso.providerTypeSp)
-spdefederation.set_user_from_dump(spuser_dump)
+spdefederation.set_identity_from_dump(spidentity_dump)
 spdefederation.init_notification()
 spdefederation.build_notification_msg()
 print 'url : ', spdefederation.msg_url
@@ -34,14 +32,12 @@ idpserver = lasso.Server.new("../../examples/idp.xml",
                             lasso.signatureMethodRsaSha1)
 idpserver.add_provider("../../examples/sp.xml", None, None)
 
-idpuser = lasso.User.new_from_dump(idpuser_dump)
-
 idpdefederation = lasso.FederationTermination.new(idpserver, lasso.providerTypeIdp)
-idpdefederation.load_notification_msg(notification_msg, lasso.httpMethodSoap)
+idpdefederation.process_notification_msg(notification_msg, lasso.httpMethodSoap)
 print 'NameIdentifier :', idpdefederation.nameIdentifier
 
-idpdefederation.set_user_from_dump(idpuser_dump);
-idpdefederation.process_notification()
+idpdefederation.set_identity_from_dump(idpidentity_dump);
+idpdefederation.validate_notification()
 
 print 'End of federation termination notification'
 

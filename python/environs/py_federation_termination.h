@@ -46,7 +46,7 @@ PyObject *federation_termination_new(PyObject *self, PyObject *args);
 PyObject *federation_termination_build_notification_msg(PyObject *self, PyObject *args);
 PyObject *federation_termination_destroy(PyObject *self, PyObject *args);
 PyObject *federation_termination_init_notification(PyObject *self, PyObject *args);
-PyObject *federation_termination_load_notification_msg(PyObject *self, PyObject *args);
-PyObject *federation_termination_process_notification(PyObject *self, PyObject *args);
+PyObject *federation_termination_process_notification_msg(PyObject *self, PyObject *args);
+PyObject *federation_termination_validate_notification(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_FEDERATION_TERMINATION_H__ */
