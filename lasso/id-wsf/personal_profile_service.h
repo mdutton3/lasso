@@ -69,6 +69,8 @@ struct _LassoPersonalProfileServiceClass {
 
 LASSO_EXPORT GType lasso_personal_profile_service_get_type(void);
 
+LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(LassoServer *server);
+
 LASSO_EXPORT gint lasso_personal_profile_service_add_data(
 	LassoPersonalProfileService *pp, LassoNode *requested_data);
 
@@ -93,17 +95,15 @@ LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_init_query(
 LASSO_EXPORT gint lasso_personal_profile_service_process_modify_msg(LassoPersonalProfileService *pp,
 								    const char *modify_soap_msg);
 
-LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(LassoServer *server);
+LASSO_EXPORT gint lasso_personal_profile_service_process_modify_response_msg(
+	LassoPersonalProfileService *pp,
+	const char *modify_response_soap_msg);
 
 LASSO_EXPORT gint lasso_personal_profile_process_query_msg(LassoPersonalProfileService *pp,
 							   const char *request_soap_msg);
 
 LASSO_EXPORT gint lasso_personal_profile_process_query_response_msg(LassoPersonalProfileService *pp,
 								    const char *response_soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_service_process_modify_response_msg(
-	LassoPersonalProfileService *pp,
-	const char *modify_response_soap_msg);
 
 LASSO_EXPORT gint lasso_personal_profile_service_process_request_msg(
 		LassoPersonalProfileService *pp, const char *query_soap_msg);

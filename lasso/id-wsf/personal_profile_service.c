@@ -342,7 +342,7 @@ lasso_personal_profile_service_new(LassoServer *server)
 {
 	LassoPersonalProfileService *pp = NULL;
 
-/* 	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL); */
+	g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
 
 	pp = g_object_new(LASSO_TYPE_PERSONAL_PROFILE_SERVICE, NULL);
 
