@@ -113,6 +113,8 @@ lasso_personal_profile_service_init_modify(LassoPersonalProfileService *pp,
 	/* init Modify */
 	modification = lasso_dst_modification_new(select);
 	profile->request = LASSO_NODE(lasso_dst_modify_new(modification));
+	LASSO_DST_MODIFY(profile->request)->prefixServiceType = LASSO_PP_PREFIX;
+	LASSO_DST_MODIFY(profile->request)->hrefServiceType = LASSO_PP_HREF;
 
 	/* get ResourceID / EncryptedResourceID */
 	if (resourceOffering->ResourceID != NULL) {
@@ -122,7 +124,7 @@ lasso_personal_profile_service_init_modify(LassoPersonalProfileService *pp,
 	  LASSO_DST_MODIFY(profile->request)->EncryptedResourceID = \
 		  resourceOffering->EncryptedResourceID;
 	}
-	
+
 	/* set msg_url */
 	/* TODO : implement WSDLRef */
 	if (description->Endpoint) {
@@ -193,6 +195,8 @@ lasso_personal_profile_service_process_modify_msg(LassoPersonalProfileService *p
 	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
 	lasso_node_init_from_message(LASSO_NODE(modify), modify_soap_msg);
 
+	profile->request = LASSO_NODE(modify);
+
 	/* get ResourceIDGroup */
 	if (modify->ResourceID) {
 		LASSO_ABSTRACT_SERVICE(pp)->ResourceID = modify->ResourceID;
@@ -230,6 +234,8 @@ lasso_personal_profile_service_process_query_msg(LassoPersonalProfileService *pp
 
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 	lasso_node_init_from_message(LASSO_NODE(query), query_soap_msg);
+
+	profile->request = LASSO_NODE(query);
 
 	/* get ResourceIDGroup */
 	if (query->ResourceID) {
