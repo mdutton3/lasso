@@ -38,12 +38,17 @@ case "${host}" in
 	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
 	;;
     *-pc-*gw*)
+dnl     mno-cygwin to produce purely win32 DLL.
         CC="gcc -mno-cygwin"
-        CFLAGS="-I/usr/local/include -D_MSC_VER=1 -DIN_LASSO=1"
-#        CFLAGS="-I/usr/local/include"
-        LDFLAGS="-L/usr/local/lib" 
-dnl        CFLAGS="${CFLAGS} -mno-cygwin"
-dnl        LDFLAGS="${LDFLAGS} -mno-cygwin"
+dnl     _MSC_VER to emulate a MSVC compilation and active secret room with
+dnl     correct dllexport/import export definitions.
+dnl     IN_LASSO to active special import/export mechanisms.
+dnl     G_OS_WIN32 is already defined, so we do not do it. With this
+dnl     definition, Microsoft C library will be used (msvcrt.dll).
+dnl     WIN32 and _WIN32 used to be sure. Some header test against it (ie:
+dnl     jni.h), then it do not cost to add this def...
+        CFLAGS="-I/usr/local/include -DWIN32 -D_WIN32 -D_MSC_VER -DIN_LASSO"
+        LDFLAGS="-L/usr/local/lib"
         GLIB_CFLAGS="-I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include"
         GLIB_LIBS="-lgobject-2.0 -lglib-2.0"
         XMLSEC1_CFLAGS="-DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1"
@@ -92,7 +97,9 @@ if test "$ac_cv_sizeof_size_t" -ne "4" ; then
 fi
 
 
-PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
+if test "$CWINDOWS" = "yes" ; then
+    PKG_CHECK_MODULES(LASSO, glib-2.0 gobject-2.0 libxml-2.0 libxslt xmlsec1 xmlsec1-openssl)
+fi
 AC_SUBST(LASSO_LIBS)
 AC_SUBST(LASSO_CFLAGS)
 	
