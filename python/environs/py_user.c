@@ -25,6 +25,8 @@
 
 #include "../lassomod.h"
 
+#include "../xml/py_xml.h"
+
 #include "py_user.h"
 
 PyObject *LassoUser_wrap(LassoUser *user) {
