@@ -1,19 +1,11 @@
 Makefile
 Makefile.in
 .libs
+.deps
 *.stamp
 sgml
 tmpl
 html
 code
+build
 
-lasso-decl-list.txt
-lasso-decl.txt
-lasso-index.sgml
-lasso-undocumented.txt
-lasso-unused.txt
-lasso.args
-lasso.hierarchy
-lasso.interfaces
-lasso.prerequisites
-lasso.signals
