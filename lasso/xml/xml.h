@@ -39,6 +39,13 @@ extern "C" {
 #define LASSO_IS_NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_NODE))
 #define LASSO_NODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_NODE, LassoNodeClass)) 
 
+typedef enum {
+  lassoNodeExportTypeXml = 1,
+  lassoNodeExportTypeBase64,
+  lassoNodeExportTypeQuery,
+  lassoNodeExportTypeSoap,
+} lassoNodeExportTypes;
+
 typedef struct _xmlAttr LassoAttr;
 
 typedef struct _LassoNode LassoNode;
