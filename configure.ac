@@ -334,7 +334,7 @@ AC_SUBST(PHP_LDFLAGS)
 AC_SUBST(PHP_LIBS)
 AC_SUBST(PHP_EXTENSION_DIR)
 
-AC_ARG_WITH(php, [  --with-php(=PHP)        Enable the PHP interface], with_php="$withval", with_php="no")
+AC_ARG_WITH(php, [  --with-php(=PHP)        Enable the PHP interface], with_php="$withval", with_php="yes")
 AC_MSG_CHECKING(Enable PHP API)
 if test "X$with_php" != Xno ; then
   if test "X$with_php" != Xyes; then
