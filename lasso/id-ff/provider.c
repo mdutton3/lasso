@@ -618,12 +618,11 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 
 /**
  * lasso_provider_new_from_dump:
- * @server: the #LassoServer
  * @dump: XML provider dump
  *
- * Restores the @dump to a new #LassoProivder.
+ * Restores the @dump to a new #LassoProvider.
  *
- * Return value: a newly created #LassoProivder; or NULL if an error occured.
+ * Return value: a newly created #LassoProvider; or NULL if an error occured.
  **/
 LassoProvider*
 lasso_provider_new_from_dump(const gchar *dump)
