@@ -133,7 +133,7 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(httpResponse.statusCode, 200)
 
     def test03(self):
-        """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider."""
+        """Service provider initiated login using HTTP redirect, but user fail to authenticate himself on identity provider. Then logout, with same problem."""
 
         internet = Internet()
         idpSite = self.generateIdpSite(internet)
@@ -144,6 +144,25 @@ class LoginTestCase(unittest.TestCase):
         principal.keyring[spSite.url] = 'Frederic'
 
         httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+
+    def test04(self):
+        """Service provider initiated login using HTTP redirect, but user has no account on service
+        provider and doesn't create one."""
+
+        internet = Internet()
+        idpSite = self.generateIdpSite(internet)
+        spSite = self.generateSpSite(internet)
+        spSite.idpSite = idpSite
+        principal = Principal(internet, 'Christophe Nowicki')
+        principal.keyring[idpSite.url] = 'Nowicki'
+        # Christophe Nowicki has no account on service provider.
+
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/loginUsingRedirect'))
+        self.failUnlessEqual(httpResponse.statusCode, 401)
+        httpResponse = spSite.doHttpRequest(HttpRequest(principal, 'GET', '/logoutUsingSoap'))
         self.failUnlessEqual(httpResponse.statusCode, 401)
 
 ##     def test06(self):
