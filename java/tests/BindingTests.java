@@ -41,8 +41,17 @@ import com.entrouvert.lasso.*;
 
 
 public class BindingTests extends TestCase {
+    public static void main(String args[]) { 
+	junit.textui.TestRunner.run(suite());
+    }
+
+    public static Test suite() { 
+	return new TestSuite(BindingTests.class); 
+    }
+
     public void test01() {
 	// Create and delete nodes.
+
 	LibAuthnRequest authnRequest = new LibAuthnRequest();
 	authnRequest = null;
     }
@@ -74,13 +83,50 @@ public class BindingTests extends TestCase {
 	authnRequest = null;
     }
 
-    public static Test suite() { 
-	return new TestSuite(BindingTests.class); 
-    }
+    public void test03() {
+	// Get & set attributes of nodes of type string list.
 
-    public static void main(String args[]) { 
-	lasso.init();
-	junit.textui.TestRunner.run(suite());
-	lasso.shutdown();
+	LibAuthnRequest authnRequest = new LibAuthnRequest();
+
+	assertNull(authnRequest.getRespondWith());
+
+	StringList respondWith = new StringList();
+	assertEquals(respondWith.length(), 0);
+	respondWith.append("first string");
+	assertEquals(respondWith.length(), 1);
+	assertEquals(respondWith.getItem(0), "first string");
+	assertEquals(respondWith.getItem(0), "first string");
+	respondWith.append("second string");
+	assertEquals(respondWith.length(), 2);
+	assertEquals(respondWith.getItem(0), "first string");
+	assertEquals(respondWith.getItem(1), "second string");
+	respondWith.append("third string");
+	assertEquals(respondWith.length(), 3);
+	assertEquals(respondWith.getItem(0), "first string");
+	assertEquals(respondWith.getItem(1), "second string");
+	assertEquals(respondWith.getItem(2), "third string");
+	authnRequest.setRespondWith(respondWith);
+	assertEquals(authnRequest.getRespondWith().getItem(0), "first string");
+	assertEquals(authnRequest.getRespondWith().getItem(1), "second string");
+	assertEquals(authnRequest.getRespondWith().getItem(2), "third string");
+	assertEquals(respondWith.getItem(0), "first string");
+	assertEquals(respondWith.getItem(1), "second string");
+	assertEquals(respondWith.getItem(2), "third string");
+	respondWith = null;
+	assertEquals(authnRequest.getRespondWith().getItem(0), "first string");
+	assertEquals(authnRequest.getRespondWith().getItem(1), "second string");
+	assertEquals(authnRequest.getRespondWith().getItem(2), "third string");
+	respondWith = authnRequest.getRespondWith();
+	assertEquals(respondWith.getItem(0), "first string");
+	assertEquals(respondWith.getItem(1), "second string");
+	assertEquals(respondWith.getItem(2), "third string");
+	respondWith = null;
+	assertEquals(authnRequest.getRespondWith().getItem(0), "first string");
+	assertEquals(authnRequest.getRespondWith().getItem(1), "second string");
+	assertEquals(authnRequest.getRespondWith().getItem(2), "third string");
+	authnRequest.setRespondWith(null);
+	assertNull(authnRequest.getRespondWith());
+
+	authnRequest = null;
     }
 }

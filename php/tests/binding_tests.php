@@ -1,5 +1,7 @@
 #! /usr/bin/env php
-#
+<?php
+
+
 # $Id$
 #
 # PHP unit tests for Lasso library
@@ -23,8 +25,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
-<?php
 
 $ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
 if ($ret == FALSE) {
@@ -84,39 +84,39 @@ function test03()
         assert($respondWith->length() == 0);
         $respondWith->append('first string');
         assert($respondWith->length() == 1);
-        assert($respondWith->getitem(0) == 'first string');
-        assert($respondWith->getitem(0) == 'first string');
+        assert($respondWith->getItem(0) == 'first string');
+        assert($respondWith->getItem(0) == 'first string');
         $respondWith->append('second string');
         assert($respondWith->length() == 2);
-        assert($respondWith->getitem(0) == 'first string');
-        assert($respondWith->getitem(1) == 'second string');
+        assert($respondWith->getItem(0) == 'first string');
+        assert($respondWith->getItem(1) == 'second string');
         $respondWith->append('third string');
         assert($respondWith->length() == 3);
-        assert($respondWith->getitem(0) == 'first string');
-        assert($respondWith->getitem(1) == 'second string');
-        assert($respondWith->getitem(2) == 'third string');
+        assert($respondWith->getItem(0) == 'first string');
+        assert($respondWith->getItem(1) == 'second string');
+        assert($respondWith->getItem(2) == 'third string');
         $authnRequest->RespondWith = $respondWith;
-	# $authnRequest->RespondWith->getitem(0) doesnt work. It raises:
+	# $authnRequest->RespondWith->getItem(0) doesnt work. It raises:
 	# Fatal error: Class 'lassolibauthnrequest' does not support overloaded method calls
 	$authnRequestRespondWith = $authnRequest->RespondWith;
-        assert($authnRequestRespondWith->getitem(0) == 'first string');
-        assert($authnRequestRespondWith->getitem(1) == 'second string');
-        assert($authnRequestRespondWith->getitem(2) == 'third string');
-        assert($respondWith->getitem(0) == 'first string');
-        assert($respondWith->getitem(1) == 'second string');
-        assert($respondWith->getitem(2) == 'third string');
+        assert($authnRequestRespondWith->getItem(0) == 'first string');
+        assert($authnRequestRespondWith->getItem(1) == 'second string');
+        assert($authnRequestRespondWith->getItem(2) == 'third string');
+        assert($respondWith->getItem(0) == 'first string');
+        assert($respondWith->getItem(1) == 'second string');
+        assert($respondWith->getItem(2) == 'third string');
         $respondWith = NULL;
-        assert($authnRequestRespondWith->getitem(0) == 'first string');
-        assert($authnRequestRespondWith->getitem(1) == 'second string');
-        assert($authnRequestRespondWith->getitem(2) == 'third string');
+        assert($authnRequestRespondWith->getItem(0) == 'first string');
+        assert($authnRequestRespondWith->getItem(1) == 'second string');
+        assert($authnRequestRespondWith->getItem(2) == 'third string');
         $respondWith = $authnRequest->RespondWith;
-        assert($respondWith->getitem(0) == 'first string');
-        assert($respondWith->getitem(1) == 'second string');
-        assert($respondWith->getitem(2) == 'third string');
+        assert($respondWith->getItem(0) == 'first string');
+        assert($respondWith->getItem(1) == 'second string');
+        assert($respondWith->getItem(2) == 'third string');
         $respondWith = NULL;
-        assert($authnRequestRespondWith->getitem(0) == 'first string');
-        assert($authnRequestRespondWith->getitem(1) == 'second string');
-        assert($authnRequestRespondWith->getitem(2) == 'third string');
+        assert($authnRequestRespondWith->getItem(0) == 'first string');
+        assert($authnRequestRespondWith->getItem(1) == 'second string');
+        assert($authnRequestRespondWith->getItem(2) == 'third string');
 	$authnRequestRespondWith = NULL;
         $authnRequest->RespondWith = NULL;
 	print_r($authnRequest->RespondWith);
@@ -141,70 +141,70 @@ function test04()
         $assertion1->AssertionID = 'assertion 1';
         $assertions->append($assertion1);
         assert($assertions->length() == 1);
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
         $assertion2 = new LassoSamlAssertion();
         $assertion2->AssertionID = 'assertion 2';
         $assertions->append($assertion2);
         assert($assertions->length() == 2);
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
-	$assertionsItem1 = $assertions->getitem(1);
+	$assertionsItem1 = $assertions->getItem(1);
         assert($assertionsItem1->AssertionID == 'assertion 2');
         $assertion3 = new LassoSamlAssertion();
         $assertion3->AssertionID = 'assertion 3';
         $assertions->append($assertion3);
         assert($assertions->length() == 3);
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
-	$assertionsItem1 = $assertions->getitem(1);
+	$assertionsItem1 = $assertions->getItem(1);
         assert($assertionsItem1->AssertionID == 'assertion 2');
-	$assertionsItem2 = $assertions->getitem(2);
+	$assertionsItem2 = $assertions->getItem(2);
         assert($assertionsItem2->AssertionID == 'assertion 3');
         $response->assertion = $assertions;
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem0 = $responseAssertion->getitem(0);
+	$responseAssertionItem0 = $responseAssertion->getItem(0);
         assert($responseAssertionItem0->AssertionID == 'assertion 1');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem1 = $responseAssertion->getitem(1);
+	$responseAssertionItem1 = $responseAssertion->getItem(1);
         assert($responseAssertionItem1->AssertionID == 'assertion 2');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem2 = $responseAssertion->getitem(2);
+	$responseAssertionItem2 = $responseAssertion->getItem(2);
         assert($responseAssertionItem2->AssertionID == 'assertion 3');
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
-	$assertionsItem1 = $assertions->getitem(1);
+	$assertionsItem1 = $assertions->getItem(1);
         assert($assertionsItem1->AssertionID == 'assertion 2');
-	$assertionsItem2 = $assertions->getitem(2);
+	$assertionsItem2 = $assertions->getItem(2);
         assert($assertionsItem2->AssertionID == 'assertion 3');
         $assertions = NULL;
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem0 = $responseAssertion->getitem(0);
+	$responseAssertionItem0 = $responseAssertion->getItem(0);
         assert($responseAssertionItem0->AssertionID == 'assertion 1');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem1 = $responseAssertion->getitem(1);
+	$responseAssertionItem1 = $responseAssertion->getItem(1);
         assert($responseAssertionItem1->AssertionID == 'assertion 2');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem2 = $responseAssertion->getitem(2);
+	$responseAssertionItem2 = $responseAssertion->getItem(2);
         assert($responseAssertionItem2->AssertionID == 'assertion 3');
         $assertions = $response->assertion;
-	$assertionsItem0 = $assertions->getitem(0);
+	$assertionsItem0 = $assertions->getItem(0);
         assert($assertionsItem0->AssertionID == 'assertion 1');
-	$assertionsItem1 = $assertions->getitem(1);
+	$assertionsItem1 = $assertions->getItem(1);
         assert($assertionsItem1->AssertionID == 'assertion 2');
-	$assertionsItem2 = $assertions->getitem(2);
+	$assertionsItem2 = $assertions->getItem(2);
         assert($assertionsItem2->AssertionID == 'assertion 3');
         $assertions = NULL;
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem0 = $responseAssertion->getitem(0);
+	$responseAssertionItem0 = $responseAssertion->getItem(0);
         assert($responseAssertionItem0->AssertionID == 'assertion 1');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem1 = $responseAssertion->getitem(1);
+	$responseAssertionItem1 = $responseAssertion->getItem(1);
         assert($responseAssertionItem1->AssertionID == 'assertion 2');
 	$responseAssertion = $response->assertion;
-	$responseAssertionItem2 = $responseAssertion->getitem(2);
+	$responseAssertionItem2 = $responseAssertion->getItem(2);
         assert($responseAssertionItem2->AssertionID == 'assertion 3');
         $response->assertion = NULL;
         assert($response->assertion == NULL);
@@ -235,39 +235,39 @@ function test05()
         assert($extension->length() == 0);
         $extension->append($actionString1);
         assert($extension->length() == 1);
-        assert($extension->getitem(0) == $actionString1);
-        assert($extension->getitem(0) == $actionString1);
+        assert($extension->getItem(0) == $actionString1);
+        assert($extension->getItem(0) == $actionString1);
         $extension->append($actionString2);
         assert($extension->length() == 2);
-        assert($extension->getitem(0) == $actionString1);
-        assert($extension->getitem(1) == $actionString2);
+        assert($extension->getItem(0) == $actionString1);
+        assert($extension->getItem(1) == $actionString2);
         $extension->append($actionString3);
         assert($extension->length() == 3);
-        assert($extension->getitem(0) == $actionString1);
-        assert($extension->getitem(1) == $actionString2);
-        assert($extension->getitem(2) == $actionString3);
+        assert($extension->getItem(0) == $actionString1);
+        assert($extension->getItem(1) == $actionString2);
+        assert($extension->getItem(2) == $actionString3);
         $authnRequest->extension = $extension;
-	# $authnRequest->extension->getitem(0) doesnt work. It raises:
+	# $authnRequest->extension->getItem(0) doesnt work. It raises:
 	# Fatal error: Class 'lassolibauthnrequest' does not support overloaded method calls
 	$authnRequestExtension = $authnRequest->extension;
-        assert($authnRequestExtension->getitem(0) == $actionString1);
-        assert($authnRequestExtension->getitem(1) == $actionString2);
-        assert($authnRequestExtension->getitem(2) == $actionString3);
-        assert($extension->getitem(0) == $actionString1);
-        assert($extension->getitem(1) == $actionString2);
-        assert($extension->getitem(2) == $actionString3);
+        assert($authnRequestExtension->getItem(0) == $actionString1);
+        assert($authnRequestExtension->getItem(1) == $actionString2);
+        assert($authnRequestExtension->getItem(2) == $actionString3);
+        assert($extension->getItem(0) == $actionString1);
+        assert($extension->getItem(1) == $actionString2);
+        assert($extension->getItem(2) == $actionString3);
         $extension = NULL;
-        assert($authnRequestExtension->getitem(0) == $actionString1);
-        assert($authnRequestExtension->getitem(1) == $actionString2);
-        assert($authnRequestExtension->getitem(2) == $actionString3);
+        assert($authnRequestExtension->getItem(0) == $actionString1);
+        assert($authnRequestExtension->getItem(1) == $actionString2);
+        assert($authnRequestExtension->getItem(2) == $actionString3);
         $extension = $authnRequest->extension;
-        assert($extension->getitem(0) == $actionString1);
-        assert($extension->getitem(1) == $actionString2);
-        assert($extension->getitem(2) == $actionString3);
+        assert($extension->getItem(0) == $actionString1);
+        assert($extension->getItem(1) == $actionString2);
+        assert($extension->getItem(2) == $actionString3);
         $extension = NULL;
-        assert($authnRequestExtension->getitem(0) == $actionString1);
-        assert($authnRequestExtension->getitem(1) == $actionString2);
-        assert($authnRequestExtension->getitem(2) == $actionString3);
+        assert($authnRequestExtension->getItem(0) == $actionString1);
+        assert($authnRequestExtension->getItem(1) == $actionString2);
+        assert($authnRequestExtension->getItem(2) == $actionString3);
 	$authnRequestExtension = NULL;
         $authnRequest->extension = NULL;
 	print_r($authnRequest->Extension);

@@ -1059,10 +1059,10 @@ typedef struct {
 		}
 
 #if defined(SWIGPYTHON)
-		%rename(__getitem__) getitem;
+		%rename(__getitem__) getItem;
 #endif
-		%newobject getitem;
-		%exception getitem {
+		%newobject getItem;
+		%exception getItem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
 				sprintf(errorMsg, "%d", arg2);
@@ -1070,7 +1070,7 @@ typedef struct {
 			}
 			$action
 		}
-		LassoNode *getitem(int index) {
+		LassoNode *getItem(int index) {
 			LassoNode *item;
 
 			item = g_ptr_array_index(self, index);
@@ -1078,8 +1078,8 @@ typedef struct {
 				g_object_ref(item);
 			return item;
 		}
-		%exception getitem;
-		%nonewobject getitem;
+		%exception getItem;
+		%nonewobject getItem;
 
 #if defined(SWIGPYTHON)
 		%rename(__len__) length;
@@ -1089,9 +1089,9 @@ typedef struct {
 		}
 
 #if defined(SWIGPYTHON)
-		%rename(__setitem__) setitem;
+		%rename(__setitem__) setItem;
 #endif
-		%exception setitem {
+		%exception setItem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
 				sprintf(errorMsg, "%d", arg2);
@@ -1099,7 +1099,7 @@ typedef struct {
 			}
 			$action
 		}
-		void setitem(int index, LassoNode *item) {
+		void setItem(int index, LassoNode *item) {
 			LassoNode **itemPointer = (LassoNode **) &g_ptr_array_index(self, index);
 			if (*itemPointer != NULL)
 				/* Test added to help debugging. */
@@ -1112,7 +1112,7 @@ typedef struct {
 			else
 				*itemPointer = g_object_ref(item);
 		}
-		%exception setitem;
+		%exception setItem;
 	}
 } LassoNodeList;
 
@@ -1166,9 +1166,9 @@ typedef struct {
 		}
 
 #if defined(SWIGPYTHON)
-		%rename(__getitem__) getitem;
+		%rename(__getitem__) getItem;
 #endif
-		%exception getitem {
+		%exception getItem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
 				sprintf(errorMsg, "%d", arg2);
@@ -1176,10 +1176,10 @@ typedef struct {
 			}
 			$action
 		}
-		char *getitem(int index) {
+		char *getItem(int index) {
 			return g_ptr_array_index(self, index);
 		}
-		%exception getitem;
+		%exception getItem;
 
 #if defined(SWIGPYTHON)
 		%rename(__len__) length;
@@ -1189,9 +1189,9 @@ typedef struct {
 		}
 
 #if defined(SWIGPYTHON)
-		%rename(__setitem__) setitem;
+		%rename(__setitem__) setItem;
 #endif
-		%exception setitem {
+		%exception setItem {
 			if (arg2 < 0 || arg2 >= arg1->len) {
 				char errorMsg[256];
 				sprintf(errorMsg, "%d", arg2);
@@ -1199,7 +1199,7 @@ typedef struct {
 			}
 			$action
 		}
-		void setitem(int index, char *item) {
+		void setItem(int index, char *item) {
 			char **itemPointer = (char **) &g_ptr_array_index(self, index);
 			if (*itemPointer != NULL)
 				free(*itemPointer);
@@ -1208,7 +1208,7 @@ typedef struct {
 			else
 				*itemPointer = g_strdup(item);
 		}
-		%exception setitem;
+		%exception setItem;
 	}
 } LassoStringList;
 
