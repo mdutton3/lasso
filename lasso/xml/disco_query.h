@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_LIB_DISCO_QUERY_H__
+#ifndef __LASSO_DISCO_QUERY_H__
 #define __LASSO_DISCO_QUERY_H__
 
 #ifdef __cplusplus
