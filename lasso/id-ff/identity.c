@@ -355,6 +355,8 @@ lasso_identity_new_from_dump(gchar *dump)
 
   xmlChar *remote_providerID;
 
+  GError *err = NULL;
+
   g_return_val_if_fail(dump != NULL, NULL);
 
   /* new object */
@@ -380,7 +382,15 @@ lasso_identity_new_from_dump(gchar *dump)
 	  xmlStrEqual(federation_xmlNode->name, LASSO_IDENTITY_FEDERATION_NODE)) {
 	federation_node = lasso_node_new_from_xmlNode(federation_xmlNode);
 	remote_providerID = lasso_node_get_attr_value(federation_node,
-						      LASSO_FEDERATION_REMOTE_PROVIDERID_NODE, NULL);
+						      LASSO_FEDERATION_REMOTE_PROVIDERID_NODE, &err);
+	if(remote_providerID==NULL){
+	  message(G_LOG_LEVEL_WARNING, err->message);
+	  g_error_free(err);
+	  lasso_node_destroy(federation_node);
+	  federation_xmlNode = federation_xmlNode->next;
+	  continue;
+	}
+
 	/* new federation */
 	federation = lasso_federation_new(remote_providerID);
 
