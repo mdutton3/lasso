@@ -55,7 +55,7 @@ struct _LassoDstModify {
 	LassoDiscoResourceID *ResourceID;
 	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 	GList *Modification;
-	xmlNode *Extension;
+	GList *Extension;
 
 	char *id;
 	char *itemID;

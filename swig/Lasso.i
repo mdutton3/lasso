@@ -894,14 +894,21 @@ void LassoLibAuthnRequest_consent_set(LassoLibAuthnRequest *self, gchar *consent
 LassoStringArray *LassoLibAuthnRequest_extension_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+
+static void free_xml_list_elem(xmlNode *xmlnode, gpointer unused)
+{
+	xmlFreeNode(xmlnode);
+}
+
 #define LassoLibAuthnRequest_set_extension LassoLibAuthnRequest_extension_set
 void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringArray *extension) {
-	if (self->Extension != NULL)
-		xmlFreeNodeList(self->Extension);
+	if (self->Extension != NULL) {
+		g_list_foreach(self->Extension, free_xml_list_elem, NULL);
+		g_list_free(self->Extension);
+	}
 	if (extension == NULL)
 		self->Extension = NULL;
 	else {
-		xmlNode *extensionList = NULL;
 		int index;
 		for (index = 0; index < extension->len; index ++) {
 			xmlDoc *doc;
@@ -919,15 +926,11 @@ void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringA
 						LASSO_LIB_PREFIX);
 				xmlSetNs(extensionNode, libertyNamespace);
 				xmlAddChild(extensionNode, xmlCopyNode(node, 1));
-				if (extensionList == NULL)
-					extensionList = extensionNode;
-				else
-					xmlAddNextSibling(extensionList, extensionNode);
+				self->Extension = g_list_append(self->Extension, extensionNode);
 						
 			}
 			xmlFreeDoc(doc);
 		}
-		self->Extension = extensionList;
 	}
 }
 

@@ -52,7 +52,7 @@ struct _LassoDstModifyResponse {
 	LassoNode parent;
 
 	/*< public >*/
-	xmlNode *Extension;
+	GList *Extension;
 	LassoUtilityStatus *Status;
 
 	char *id;
