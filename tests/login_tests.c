@@ -103,7 +103,8 @@ START_TEST(test02_serviceProviderLogin)
 	spLoginContext = lasso_login_new(spContext);
 	fail_unless(spLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
-	rc = lasso_login_init_authn_request(spLoginContext, LASSO_HTTP_METHOD_REDIRECT);
+	rc = lasso_login_init_authn_request(spLoginContext, "https://idp1/metadata",
+			LASSO_HTTP_METHOD_REDIRECT);
 	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
 	request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(spLoginContext)->request);
 	fail_unless(LASSO_IS_LIB_AUTHN_REQUEST(request), "request should be authn_request");
@@ -112,7 +113,7 @@ START_TEST(test02_serviceProviderLogin)
 	request->consent = g_strdup(LASSO_LIB_CONSENT_OBTAINED);
 	relayState = "fake";
 	request->RelayState = g_strdup(relayState);
-	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata");
+	rc = lasso_login_build_authn_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,
