@@ -44,7 +44,7 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 
   provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
+    debug("Provider %s not found\n", profile->remote_providerID);
     ret = -1;
     goto done;
   }
