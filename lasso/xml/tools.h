@@ -50,40 +50,42 @@ typedef enum {
   lassoPemFileTypeCert
 } lassoPemFileType;
 
-LASSO_EXPORT xmlChar*         lasso_build_random_sequence             (guint8 size);
+LASSO_EXPORT xmlChar*          lasso_build_random_sequence                (guint8 size);
 
-LASSO_EXPORT xmlChar*         lasso_build_unique_id                   (guint8 size);
+LASSO_EXPORT xmlChar*          lasso_build_unique_id                      (guint8 size);
 
-LASSO_EXPORT xmlChar*         lasso_doc_get_node_content              (xmlDocPtr      doc,
-								       const xmlChar *name);
+LASSO_EXPORT xmlChar*          lasso_doc_get_node_content                 (xmlDocPtr      doc,
+									   const xmlChar *name);
 
-LASSO_EXPORT xmlChar*         lasso_g_ptr_array_index                 (GPtrArray *a,
-								       guint      i);
+LASSO_EXPORT xmlChar*          lasso_g_ptr_array_index                    (GPtrArray *a,
+									   guint      i);
 
-LASSO_EXPORT gchar*           lasso_get_current_time                  (void);
+LASSO_EXPORT gchar*            lasso_get_current_time                     (void);
 
-LASSO_EXPORT GPtrArray*       lasso_query_get_value                   (const gchar   *query,
-								       const xmlChar *param);
+LASSO_EXPORT GPtrArray*        lasso_query_get_value                      (const gchar   *query,
+									   const xmlChar *param);
 
-LASSO_EXPORT lassoPemFileType lasso_get_pem_file_type                 (const gchar *pem_file);
+LASSO_EXPORT lassoPemFileType  lasso_get_pem_file_type                    (const gchar *pem_file);
 
-LASSO_EXPORT xmlSecKeyPtr     lasso_get_public_key_from_pem_cert_file (const gchar *pem_cert_file);
+LASSO_EXPORT xmlSecKeyPtr      lasso_get_public_key_from_pem_cert_file    (const gchar *pem_cert_file);
 
-LASSO_EXPORT GData*           lasso_query_to_dict                     (const gchar *query);
+LASSO_EXPORT xmlSecKeysMngrPtr lasso_load_certs_from_pem_certs_chain_file (const gchar* pem_certs_chain_file);
 
-LASSO_EXPORT int              lasso_query_verify_signature            (const gchar   *query,
-								       const xmlChar *sender_public_key_file,
-								       const xmlChar *recipient_private_key_file);
+LASSO_EXPORT GData*            lasso_query_to_dict                        (const gchar *query);
 
-LASSO_EXPORT xmlChar*         lasso_sha1                              (xmlChar *str);
+LASSO_EXPORT int               lasso_query_verify_signature               (const gchar   *query,
+									   const xmlChar *sender_public_key_file,
+									   const xmlChar *recipient_private_key_file);
 
-LASSO_EXPORT xmlChar*         lasso_str_escape                        (xmlChar *str);
+LASSO_EXPORT xmlChar*          lasso_sha1                                 (xmlChar *str);
 
-LASSO_EXPORT xmlDocPtr        lasso_str_sign                          (xmlChar              *str,
-								       lassoSignatureMethod  sign_method,
-								       const char           *private_key_file);
+LASSO_EXPORT xmlChar*          lasso_str_escape                           (xmlChar *str);
 
-LASSO_EXPORT xmlChar*         lasso_str_unescape                      (xmlChar *str);
+LASSO_EXPORT xmlDocPtr         lasso_str_sign                             (xmlChar              *str,
+									   lassoSignatureMethod  sign_method,
+									   const char           *private_key_file);
+
+LASSO_EXPORT xmlChar*          lasso_str_unescape                         (xmlChar *str);
 
 #ifdef __cplusplus
 }

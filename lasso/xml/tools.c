@@ -168,7 +168,7 @@ lasso_get_current_time()
  * lasso_get_pem_file_type:
  * @pem_file: a pem file
  * 
- * Gets the type of the pem file.
+ * Gets the type of a pem file.
  * 
  * Return value: the pem file type
  **/
@@ -179,6 +179,8 @@ lasso_get_pem_file_type(const gchar *pem_file)
   EVP_PKEY *pkey;
   X509 *cert;
   guint type = lassoPemFileTypeUnknown;
+
+  g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
   bio = BIO_new_file(pem_file, "rb");
   if (bio == NULL) {
@@ -229,6 +231,8 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
   xmlSecKeyDataPtr data;
   xmlSecKeyPtr key = NULL;
 
+  g_return_val_if_fail(pem_cert_file != NULL, NULL);
+
   /* load pem certificate from file */
   fd = fopen(pem_cert_file, "r");
   if (fd == NULL) {
@@ -258,6 +262,91 @@ lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
   X509_free(pem_cert);
 
   return key;
+}
+
+/**
+ * lasso_load_certs_from_pem_certs_chain_file:
+ * @pem_certs_chain_file: a CA certificate chain file
+ * 
+ * Creates a keys manager and loads inside all the CA certificates of
+ * @pem_certs_chain_file. Caller is responsible for freeing it with
+ * #xmlSecKeysMngrDestroy function.
+ * 
+ * Return value: a newly allocated keys manager or NULL if an error occurs.
+ **/
+xmlSecKeysMngrPtr
+lasso_load_certs_from_pem_certs_chain_file(const gchar* pem_certs_chain_file)
+{
+  xmlSecKeysMngrPtr keys_mngr;
+  GIOChannel *gioc;
+  GIOStatus gios;
+  gchar *line;
+  gsize len, pos;
+  GString *cert = NULL;
+  gint ret;
+
+  g_return_val_if_fail(pem_certs_chain_file != NULL, NULL);
+
+  /* create keys manager */
+  keys_mngr = xmlSecKeysMngrCreate();
+  if (keys_mngr == NULL) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED));
+    return NULL;
+  }
+  /* initialize keys manager */
+  if (xmlSecCryptoAppDefaultKeysMngrInit(keys_mngr) < 0) {
+    message(G_LOG_LEVEL_CRITICAL,
+	    lasso_strerror(LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED));
+    xmlSecKeysMngrDestroy(keys_mngr);
+    return NULL;
+  }    
+
+  gioc = g_io_channel_new_file(pem_certs_chain_file, "r", NULL);
+  while (gios = g_io_channel_read_line(gioc, &line, &len, &pos, NULL) == G_IO_STATUS_NORMAL) {
+    if (g_strstr_len(line, 64, "BEGIN CERTIFICATE") != NULL) {
+      cert = g_string_new(line);
+    }
+    else if (g_strstr_len(line, 64, "END CERTIFICATE") != NULL) {
+      g_string_append(cert, line);
+      /* load the new certificate found in the keys manager */
+      ret = xmlSecCryptoAppKeysMngrCertLoadMemory(keys_mngr,
+						  (const xmlSecByte*) cert->str,
+						  (xmlSecSize) cert->len,
+						  xmlSecKeyDataFormatPem,
+						  xmlSecKeyDataTypeTrusted);
+      g_string_free(cert, TRUE);
+      cert = NULL;
+      if (ret < 0) {
+	goto error;
+      }
+    }
+    else if (cert != NULL && line != NULL && line[0] != '\0') {
+      g_string_append(cert, line);
+    }
+    else {
+      debug("Empty line found in the CA certificate chain file")
+    }
+    /* free last line read */
+    if (line != NULL) {
+      g_free(line);
+      line = NULL;
+    }
+  }
+  goto done;
+
+ error:
+  if (line != NULL) {
+    g_free(line);
+    line = NULL;
+  }
+  xmlSecKeysMngrDestroy(keys_mngr);
+  keys_mngr = NULL;
+
+ done:
+  g_io_channel_shutdown(gioc, TRUE, NULL);
+
+  return keys_mngr;
 }
 
 /**
