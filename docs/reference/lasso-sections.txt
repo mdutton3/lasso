@@ -60,6 +60,29 @@ LASSO_LIB_AUTHN_REQUEST_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>lib_authn_request_envelope</FILE>
+<TITLE>LassoLibAuthnRequestEnvelope</TITLE>
+LassoLibAuthnRequestEnvelope
+LassoLibAuthnRequestEnvelopeClass
+lasso_lib_authn_request_envelope_new
+lasso_lib_authn_request_envelope_set_extension
+lasso_lib_authn_request_envelope_set_authnRequest
+lasso_lib_authn_request_envelope_set_assertionConsumerServiceURL
+lasso_lib_authn_request_envelope_set_providerID
+lasso_lib_authn_request_envelope_set_providerName
+lasso_lib_authn_request_envelope_set_idpList
+lasso_lib_authn_request_envelope_set_isPassive
+<SUBSECTION Standard>
+LASSO_LIB_AUTHN_REQUEST_ENVELOPE
+LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE
+LASSO_TYPE_LIB_AUTHN_REQUEST_ENVELOPE
+lasso_lib_authn_request_envelope_get_type
+LASSO_LIB_AUTHN_REQUEST_ENVELOPE_CLASS
+LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE_CLASS
+LASSO_LIB_AUTHN_REQUEST_ENVELOPE_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>lib_authn_response</FILE>
 <TITLE>LassoLibAuthnResponse</TITLE>
 LassoLibAuthnResponse
@@ -76,6 +99,25 @@ lasso_lib_authn_response_get_type
 LASSO_LIB_AUTHN_RESPONSE_CLASS
 LASSO_IS_LIB_AUTHN_RESPONSE_CLASS
 LASSO_LIB_AUTHN_RESPONSE_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>lib_authn_response_envelope</FILE>
+<TITLE>LassoLibAuthnResponseEnvelope</TITLE>
+LassoLibAuthnResponseEnvelope
+LassoLibAuthnResponseEnvelopeClass
+lasso_lib_authn_response_envelope_new
+lasso_lib_authn_response_envelope_set_extension
+lasso_lib_authn_response_envelope_set_authnResponse
+lasso_lib_authn_response_envelope_set_assertionConsumerServiceURL
+<SUBSECTION Standard>
+LASSO_LIB_AUTHN_RESPONSE_ENVELOPE
+LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE
+LASSO_TYPE_LIB_AUTHN_RESPONSE_ENVELOPE
+lasso_lib_authn_response_envelope_get_type
+LASSO_LIB_AUTHN_RESPONSE_ENVELOPE_CLASS
+LASSO_IS_LIB_AUTHN_RESPONSE_ENVELOPE_CLASS
+LASSO_LIB_AUTHN_RESPONSE_ENVELOPE_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -199,7 +241,7 @@ lasso_saml_assertion_add_subjectStatement
 lasso_saml_assertion_set_advice
 lasso_saml_assertion_set_assertionID
 lasso_saml_assertion_set_conditions
-lasso_saml_assertion_set_issueInstance
+lasso_saml_assertion_set_issueInstant
 lasso_saml_assertion_set_issuer
 lasso_saml_assertion_set_majorVersion
 lasso_saml_assertion_set_minorVersion
@@ -418,7 +460,7 @@ LassoSamlpRequestAbstract
 LassoSamlpRequestAbstractClass
 lasso_samlp_request_abstract_new
 lasso_samlp_request_abstract_add_respondWith
-lasso_samlp_request_abstract_set_issueInstance
+lasso_samlp_request_abstract_set_issueInstant
 lasso_samlp_request_abstract_set_majorVersion
 lasso_samlp_request_abstract_set_minorVersion
 lasso_samlp_request_abstract_set_requestID
@@ -458,7 +500,7 @@ LassoSamlpResponseAbstract
 LassoSamlpResponseAbstractClass
 lasso_samlp_response_abstract_new
 lasso_samlp_response_abstract_set_inResponseTo
-lasso_samlp_response_abstract_set_issueInstance
+lasso_samlp_response_abstract_set_issueInstant
 lasso_samlp_response_abstract_set_majorVersion
 lasso_samlp_response_abstract_set_minorVersion
 lasso_samlp_response_abstract_set_recipient
@@ -511,7 +553,7 @@ LASSO_SAMLP_STATUS_CODE_GET_CLASS
 
 <SECTION>
 <FILE>xml</FILE>
-lassoNodeExportTypes
+lassoNodeExportType
 LassoNodePrivate
 <TITLE>LassoNode</TITLE>
 lassoSignatureMethod
@@ -536,6 +578,7 @@ lasso_node_get_children
 lasso_node_get_content
 lasso_node_get_name
 lasso_node_import
+lasso_node_import_from_node
 lasso_node_rename_prop
 lasso_node_verify_signature
 <SUBSECTION Standard>
@@ -769,6 +812,7 @@ LASSO_LIB_SUBJECT_GET_CLASS
 LassoSamlpRequest
 LassoSamlpRequestClass
 lasso_samlp_request_new
+lasso_samlp_request_set_assertionArtifact
 <SUBSECTION Standard>
 LASSO_SAMLP_REQUEST
 LASSO_IS_SAMLP_REQUEST
@@ -888,7 +932,7 @@ lasso_artifact_new_from_query
 lasso_artifact_new_from_lares
 lasso_artifact_get_assertionHandle
 lasso_artifact_get_byteCode
-lasso_artifact_get_identityProviderSuccinctID
+lasso_artifact_get_b64IdentityProviderSuccinctID
 lasso_artifact_get_relayState
 lasso_artifact_get_samlArt
 <SUBSECTION Standard>
@@ -954,6 +998,24 @@ LASSO_AUTHN_REQUEST_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>authn_request_envelope</FILE>
+<TITLE>LassoAuthnRequestEnvelope</TITLE>
+LassoAuthnRequestEnvelope
+LassoAuthnRequestEnvelopeClass
+lasso_authn_request_envelope_new
+lasso_authn_request_envelope_get_authnRequest
+lasso_authn_request_envelope_new_from_export
+<SUBSECTION Standard>
+LASSO_AUTHN_REQUEST_ENVELOPE
+LASSO_IS_AUTHN_REQUEST_ENVELOPE
+LASSO_TYPE_AUTHN_REQUEST_ENVELOPE
+lasso_authn_request_envelope_get_type
+LASSO_AUTHN_REQUEST_ENVELOPE_CLASS
+LASSO_IS_AUTHN_REQUEST_ENVELOPE_CLASS
+LASSO_AUTHN_REQUEST_ENVELOPE_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>authn_response</FILE>
 <TITLE>LassoAuthnResponse</TITLE>
 LassoAuthnResponse
@@ -972,13 +1034,31 @@ LASSO_AUTHN_RESPONSE_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>authn_response_envelope</FILE>
+<TITLE>LassoAuthnResponseEnvelope</TITLE>
+LassoAuthnResponseEnvelope
+LassoAuthnResponseEnvelopeClass
+lasso_authn_response_envelope_new
+lasso_authn_response_envelope_get_assertionConsumerServiceURL
+lasso_authn_response_envelope_get_authnResponse
+lasso_authn_response_envelope_new_from_export
+<SUBSECTION Standard>
+LASSO_AUTHN_RESPONSE_ENVELOPE
+LASSO_IS_AUTHN_RESPONSE_ENVELOPE
+LASSO_TYPE_AUTHN_RESPONSE_ENVELOPE
+lasso_authn_response_envelope_get_type
+LASSO_AUTHN_RESPONSE_ENVELOPE_CLASS
+LASSO_IS_AUTHN_RESPONSE_ENVELOPE_CLASS
+LASSO_AUTHN_RESPONSE_ENVELOPE_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>federation_termination_notification</FILE>
 <TITLE>LassoFederationTerminationNotification</TITLE>
 LassoFederationTerminationNotification
 LassoFederationTerminationNotificationClass
 lasso_federation_termination_notification_new
-lasso_federation_termination_notification_new_from_query
-lasso_federation_termination_notification_new_from_soap
+lasso_federation_termination_notification_new_from_export
 <SUBSECTION Standard>
 LASSO_FEDERATION_TERMINATION_NOTIFICATION
 LASSO_IS_FEDERATION_TERMINATION_NOTIFICATION
@@ -990,30 +1070,59 @@ LASSO_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>identity</FILE>
-LASSO_IDENTITY_NODE
-LASSO_IDENTITY_REMOTE_PROVIDERID_NODE
-LASSO_IDENTITY_LOCAL_NAME_IDENTIFIER_NODE
-LASSO_IDENTITY_REMOTE_NAME_IDENTIFIER_NODE
-<TITLE>LassoIdentity</TITLE>
-LassoIdentity
-LassoIdentityClass
-lasso_identity_new
-lasso_identity_new_from_dump
-lasso_identity_dump
-lasso_identity_get_remote_nameIdentifier
-lasso_identity_get_local_nameIdentifier
-lasso_identity_set_local_nameIdentifier
-lasso_identity_set_remote_nameIdentifier
-lasso_identity_verify_nameIdentifier
+<FILE>federation</FILE>
+LASSO_FEDERATION_NODE
+LASSO_FEDERATION_REMOTE_PROVIDERID_NODE
+LASSO_FEDERATION_LOCAL_NAME_IDENTIFIER_NODE
+LASSO_FEDERATION_REMOTE_NAME_IDENTIFIER_NODE
+<TITLE>LassoFederation</TITLE>
+LassoFederation
+LassoFederationClass
+lasso_federation_new
+lasso_federation_new_from_dump
+lasso_federation_copy
+lasso_federation_destroy
+lasso_federation_dump
+lasso_federation_get_remote_nameIdentifier
+lasso_federation_get_local_nameIdentifier
+lasso_federation_remove_local_nameIdentifier
+lasso_federation_remove_remote_nameIdentifier
+lasso_federation_set_local_nameIdentifier
+lasso_federation_set_remote_nameIdentifier
+lasso_federation_verify_nameIdentifier
 <SUBSECTION Standard>
-LASSO_IDENTITY
-LASSO_IS_IDENTITY
-LASSO_TYPE_IDENTITY
-lasso_identity_get_type
-LASSO_IDENTITY_CLASS
-LASSO_IS_IDENTITY_CLASS
-LASSO_IDENTITY_GET_CLASS
+LASSO_FEDERATION
+LASSO_IS_FEDERATION
+LASSO_TYPE_FEDERATION
+lasso_federation_get_type
+LASSO_FEDERATION_CLASS
+LASSO_IS_FEDERATION_CLASS
+LASSO_FEDERATION_GET_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>lecp</FILE>
+<TITLE>LassoLecp</TITLE>
+LassoLecp
+LassoLecpClass
+lasso_lecp_new
+lasso_lecp_build_authn_request_envelope_msg
+lasso_lecp_build_authn_request_msg
+lasso_lecp_build_authn_response_msg
+lasso_lecp_build_authn_response_envelope_msg
+lasso_lecp_destroy
+lasso_lecp_init_authn_request
+lasso_lecp_init_from_authn_request_msg
+lasso_lecp_process_authn_request_envelope_msg
+lasso_lecp_process_authn_response_envelope_msg
+<SUBSECTION Standard>
+LASSO_LECP
+LASSO_IS_LECP
+LASSO_TYPE_LECP
+lasso_lecp_get_type
+LASSO_LECP_CLASS
+LASSO_IS_LECP_CLASS
+LASSO_LECP_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -1022,8 +1131,7 @@ LASSO_IDENTITY_GET_CLASS
 LassoLogoutRequest
 LassoLogoutRequestClass
 lasso_logout_request_new
-lasso_logout_request_new_from_query
-lasso_logout_request_new_from_soap
+lasso_logout_request_new_from_export
 <SUBSECTION Standard>
 LASSO_LOGOUT_REQUEST
 LASSO_IS_LOGOUT_REQUEST
@@ -1040,11 +1148,8 @@ LASSO_LOGOUT_REQUEST_GET_CLASS
 LassoLogoutResponse
 LassoLogoutResponseClass
 lasso_logout_response_new
-lasso_logout_response_new_from_dump
-lasso_logout_response_new_from_query
-lasso_logout_response_new_from_request_query
-lasso_logout_response_new_from_request_soap
-lasso_logout_response_new_from_soap
+lasso_logout_response_new_from_export
+lasso_logout_response_new_from_request_export
 <SUBSECTION Standard>
 LASSO_LOGOUT_RESPONSE
 LASSO_IS_LOGOUT_RESPONSE
@@ -1106,13 +1211,15 @@ LassoProviderClass
 lasso_provider_new
 lasso_provider_new_from_metadata_node
 lasso_provider_new_metadata_filename
-lasso_provider_get_assertionConsumerServiceURL
-lasso_provider_get_federationTerminationNotificationProtocolProfile
-lasso_provider_get_federationTerminationNotificationServiceURL
+lasso_provider_copy
+lasso_provider_destroy
 lasso_provider_dump
+lasso_provider_get_assertionConsumerServiceURL
+lasso_provider_get_authnRequestsSigned
+lasso_provider_get_federationTerminationNotificationProtocolProfile
+lasso_provider_get_federationTerminationReturnServiceURL
+lasso_provider_get_federationTerminationServiceURL
 lasso_provider_get_nameIdentifierMappingProtocolProfile
-lasso_provider_get_nameIdentifierMappingServiceURL
-lasso_provider_get_nameIdentifierMappingServiceReturnURL
 lasso_provider_get_providerID
 lasso_provider_get_registerNameIdentifierProtocolProfile
 lasso_provider_get_registerNameIdentifierServiceURL
@@ -1140,9 +1247,7 @@ LASSO_PROVIDER_GET_CLASS
 LassoRegisterNameIdentifierRequest
 LassoRegisterNameIdentifierRequestClass
 lasso_register_name_identifier_request_new
-lasso_register_name_identifier_request_new_from_query
-lasso_register_name_identifier_request_new_from_soap
-lasso_register_name_identifier_rename_attributes_for_query
+lasso_register_name_identifier_request_new_from_export
 <SUBSECTION Standard>
 LASSO_REGISTER_NAME_IDENTIFIER_REQUEST
 LASSO_IS_REGISTER_NAME_IDENTIFIER_REQUEST
@@ -1159,11 +1264,7 @@ LASSO_REGISTER_NAME_IDENTIFIER_REQUEST_GET_CLASS
 LassoRegisterNameIdentifierResponse
 LassoRegisterNameIdentifierResponseClass
 lasso_register_name_identifier_response_new
-lasso_register_name_identifier_response_new_from_dump
-lasso_register_name_identifier_response_new_from_query
-lasso_register_name_identifier_response_new_from_request_query
-lasso_register_name_identifier_response_new_from_request_soap
-lasso_register_name_identifier_response_new_from_soap
+lasso_register_name_identifier_response_new_from_export
 <SUBSECTION Standard>
 LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE
 LASSO_IS_REGISTER_NAME_IDENTIFIER_RESPONSE
@@ -1180,6 +1281,7 @@ LASSO_REGISTER_NAME_IDENTIFIER_RESPONSE_GET_CLASS
 LassoRequest
 LassoRequestClass
 lasso_request_new
+lasso_request_new_from_export
 <SUBSECTION Standard>
 LASSO_REQUEST
 LASSO_IS_REQUEST
@@ -1215,9 +1317,10 @@ LassoFederationTermination
 LassoFederationTerminationClass
 lasso_federation_termination_new
 lasso_federation_termination_build_notification_msg
-lasso_federation_termination_dump
+lasso_federation_termination_destroy
 lasso_federation_termination_init_notification
 lasso_federation_termination_process_notification_msg
+lasso_federation_termination_validate_notification
 <SUBSECTION Standard>
 LASSO_FEDERATION_TERMINATION
 LASSO_IS_FEDERATION_TERMINATION
@@ -1229,6 +1332,31 @@ LASSO_FEDERATION_TERMINATION_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>identity</FILE>
+LassoIdentityPrivate
+<TITLE>LassoIdentity</TITLE>
+LassoIdentity
+LassoIdentityClass
+lasso_identity_new
+lasso_identity_new_from_dump
+lasso_identity_add_federation
+lasso_identity_copy
+lasso_identity_destroy
+lasso_identity_dump
+lasso_identity_get_federation
+lasso_identity_get_next_federation_remote_providerID
+lasso_identity_remove_federation
+<SUBSECTION Standard>
+LASSO_IDENTITY
+LASSO_IS_IDENTITY
+LASSO_TYPE_IDENTITY
+lasso_identity_get_type
+LASSO_IDENTITY_CLASS
+LASSO_IS_IDENTITY_CLASS
+LASSO_IDENTITY_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>login</FILE>
 lassoLoginProtocolProfiles
 <TITLE>LassoLogin</TITLE>
@@ -1236,11 +1364,11 @@ LassoLogin
 LassoLoginClass
 lasso_login_new
 lasso_login_new_from_dump
+lasso_login_accept_sso
 lasso_login_build_artifact_msg
 lasso_login_build_authn_request_msg
 lasso_login_build_authn_response_msg
 lasso_login_build_request_msg
-lasso_login_create_user
 lasso_login_destroy
 lasso_login_dump
 lasso_login_init_authn_request
@@ -1269,9 +1397,11 @@ lasso_logout_new
 lasso_logout_build_request_msg
 lasso_logout_build_response_msg
 lasso_logout_destroy
+lasso_logout_get_next_providerID
 lasso_logout_init_request
 lasso_logout_process_request_msg
 lasso_logout_process_response_msg
+lasso_logout_validate_request
 <SUBSECTION Standard>
 LASSO_LOGOUT
 LASSO_IS_LOGOUT
@@ -1283,68 +1413,35 @@ LASSO_LOGOUT_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>name_identifier_mapping</FILE>
-<TITLE>LassoNameIdentifierMapping</TITLE>
-LassoNameIdentifierMapping
-LassoNameIdentifierMappingClass
-lasso_name_identifier_mapping_new
-lasso_name_identifier_mapping_build_request_msg
-lasso_name_identifier_mapping_build_response_msg
-lasso_name_identifier_mapping_init_request
-lasso_name_identifier_mapping_process_request_msg
-lasso_name_identifier_mapping_process_response_msg
+<FILE>profile</FILE>
+LassoProfilePrivate
+lassoHttpMethod
+lassoProviderType
+lassoMessageType
+lasso_profile_get_request_type_from_soap_msg
+<TITLE>LassoProfile</TITLE>
+LassoProfile
+LassoProfileClass
+lasso_profile_new
+lasso_profile_dump
+lasso_profile_get_identity
+lasso_profile_get_session
+lasso_profile_is_identity_dirty
+lasso_profile_is_session_dirty
+lasso_profile_set_identity
+lasso_profile_set_identity_from_dump
+lasso_profile_set_session
+lasso_profile_set_session_from_dump
+lasso_profile_set_remote_providerID
+lasso_profile_set_response_status
 <SUBSECTION Standard>
-LASSO_NAME_IDENTIFIER_MAPPING
-LASSO_IS_NAME_IDENTIFIER_MAPPING
-LASSO_TYPE_NAME_IDENTIFIER_MAPPING
-lasso_name_identifier_mapping_get_type
-LASSO_NAME_IDENTIFIER_MAPPING_CLASS
-LASSO_IS_NAME_IDENTIFIER_MAPPING_CLASS
-LASSO_NAME_IDENTIFIER_MAPPING_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>profile_context</FILE>
-LassoProfileContextPrivate
-lassoHttpMethods
-lassoProviderTypes
-lassoMessageTypes
-<TITLE>LassoProfileContext</TITLE>
-LassoProfileContext
-LassoProfileContextClass
-lasso_profile_context_new
-lasso_profile_context_dump
-lasso_profile_context_set_remote_providerID
-lasso_profile_context_set_response_status
-<SUBSECTION Standard>
-LASSO_PROFILE_CONTEXT
-LASSO_IS_PROFILE_CONTEXT
-LASSO_TYPE_PROFILE_CONTEXT
-lasso_profile_context_get_type
-LASSO_PROFILE_CONTEXT_CLASS
-LASSO_IS_PROFILE_CONTEXT_CLASS
-LASSO_PROFILE_CONTEXT_GET_CLASS
-</SECTION>
-
-<SECTION>
-<FILE>register_name_identifier</FILE>
-<TITLE>LassoRegisterNameIdentifier</TITLE>
-LassoRegisterNameIdentifier
-LassoRegisterNameIdentifierClass
-lasso_register_name_identifier_new
-lasso_register_name_identifier_build_request_msg
-lasso_register_name_identifier_build_response_msg
-lasso_register_name_identifier_init_request
-lasso_register_name_identifier_handle_request
-lasso_register_name_identifier_handle_response
-<SUBSECTION Standard>
-LASSO_REGISTER_NAME_IDENTIFIER
-LASSO_IS_REGISTER_NAME_IDENTIFIER
-LASSO_TYPE_REGISTER_NAME_IDENTIFIER
-lasso_register_name_identifier_get_type
-LASSO_REGISTER_NAME_IDENTIFIER_CLASS
-LASSO_IS_REGISTER_NAME_IDENTIFIER_CLASS
-LASSO_REGISTER_NAME_IDENTIFIER_GET_CLASS
+LASSO_PROFILE
+LASSO_IS_PROFILE
+LASSO_TYPE_PROFILE
+lasso_profile_get_type
+LASSO_PROFILE_CLASS
+LASSO_IS_PROFILE_CLASS
+LASSO_PROFILE_GET_CLASS
 </SECTION>
 
 <SECTION>
@@ -1355,9 +1452,11 @@ LassoServerClass
 lasso_server_new
 lasso_server_new_from_dump
 lasso_server_add_provider
+lasso_server_copy
 lasso_server_dump
 lasso_server_destroy
 lasso_server_get_provider
+lasso_server_get_provider_ref
 lasso_server_get_providerID_from_hash
 <SUBSECTION Standard>
 LASSO_SERVER
@@ -1370,28 +1469,29 @@ LASSO_SERVER_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>user</FILE>
-<TITLE>LassoUser</TITLE>
-LassoUser
-LassoUserClass
-lasso_user_new
-lasso_user_new_from_dump
-lasso_user_destroy
-lasso_user_dump
-lasso_user_add_assertion
-lasso_user_add_identity
-lasso_user_get_assertion
-lasso_user_get_identity
-lasso_user_get_next_providerID
-lasso_user_remove_assertion
+<FILE>session</FILE>
+LassoSessionPrivate
+<TITLE>LassoSession</TITLE>
+LassoSession
+LassoSessionClass
+lasso_session_new
+lasso_session_new_from_dump
+lasso_session_add_assertion
+lasso_session_copy
+lasso_session_destroy
+lasso_session_dump
+lasso_session_get_assertion
+lasso_session_get_authentication_method
+lasso_session_get_next_assertion_remote_providerID
+lasso_session_remove_assertion
 <SUBSECTION Standard>
-LASSO_USER
-LASSO_IS_USER
-LASSO_TYPE_USER
-lasso_user_get_type
-LASSO_USER_CLASS
-LASSO_IS_USER_CLASS
-LASSO_USER_GET_CLASS
+LASSO_SESSION
+LASSO_IS_SESSION
+LASSO_TYPE_SESSION
+lasso_session_get_type
+LASSO_SESSION_CLASS
+LASSO_IS_SESSION_CLASS
+LASSO_SESSION_GET_CLASS
 </SECTION>
 
 

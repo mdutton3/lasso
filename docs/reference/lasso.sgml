@@ -2,7 +2,9 @@
 <!ENTITY LassoDsSignature SYSTEM "sgml/ds_signature.sgml">
 <!ENTITY LassoLibAssertion SYSTEM "sgml/lib_assertion.sgml">
 <!ENTITY LassoLibAuthnRequest SYSTEM "sgml/lib_authn_request.sgml">
+<!ENTITY lasso-LassoLibAuthnRequestEnvelope SYSTEM "sgml/lib_authn_request_envelope.sgml">
 <!ENTITY LassoLibAuthnResponse SYSTEM "sgml/lib_authn_response.sgml">
+<!ENTITY lasso-LassoLibAuthnResponseEnvelope SYSTEM "sgml/lib_authn_response_envelope.sgml">
 <!ENTITY LassoLibIDPEntries SYSTEM "sgml/lib_idp_entries.sgml">
 <!ENTITY LassoLibIDPEntry SYSTEM "sgml/lib_idp_entry.sgml">
 <!ENTITY LassoLibIDPList SYSTEM "sgml/lib_idp_list.sgml">
@@ -51,9 +53,12 @@
 <!ENTITY LassoAssertion SYSTEM "sgml/assertion.sgml">
 <!ENTITY LassoAuthenticationStatement SYSTEM "sgml/authentication_statement.sgml">
 <!ENTITY LassoAuthnRequest SYSTEM "sgml/authn_request.sgml">
+<!ENTITY lasso-LassoAuthnRequestEnvelope SYSTEM "sgml/authn_request_envelope.sgml">
 <!ENTITY LassoAuthnResponse SYSTEM "sgml/authn_response.sgml">
+<!ENTITY lasso-LassoAuthnResponseEnvelope SYSTEM "sgml/authn_response_envelope.sgml">
 <!ENTITY LassoFederationTerminationNotification SYSTEM "sgml/federation_termination_notification.sgml">
-<!ENTITY LassoIdentity SYSTEM "sgml/identity.sgml">
+<!ENTITY LassoFederation SYSTEM "sgml/federation.sgml">
+<!ENTITY LassoLecp SYSTEM "sgml/lecp.sgml">
 <!ENTITY LassoLogoutRequest SYSTEM "sgml/logout_request.sgml">
 <!ENTITY LassoLogoutResponse SYSTEM "sgml/logout_response.sgml">
 <!ENTITY LassoNameIdentifierMappingRequest SYSTEM "sgml/name_identifier_mapping_request.sgml">
@@ -64,26 +69,27 @@
 <!ENTITY LassoRequest SYSTEM "sgml/request.sgml">
 <!ENTITY LassoResponse SYSTEM "sgml/response.sgml">
 <!ENTITY LassoFederationTermination SYSTEM "sgml/federation_termination.sgml">
+<!ENTITY LassoIdentity SYSTEM "sgml/identity.sgml">
 <!ENTITY LassoLogin SYSTEM "sgml/login.sgml">
 <!ENTITY LassoLogout SYSTEM "sgml/logout.sgml">
-<!ENTITY LassoNameIdentifierMapping SYSTEM "sgml/name_identifier_mapping.sgml">
-<!ENTITY LassoProfileContext SYSTEM "sgml/profile_context.sgml">
-<!ENTITY LassoRegisterNameIdentifier SYSTEM "sgml/register_name_identifier.sgml">
+<!ENTITY LassoProfile SYSTEM "sgml/profile.sgml">
 <!ENTITY LassoServer SYSTEM "sgml/server.sgml">
-<!ENTITY LassoUser SYSTEM "sgml/user.sgml">
+<!ENTITY LassoSession SYSTEM "sgml/session.sgml">
 <!ENTITY lasso-tools SYSTEM "sgml/tools.sgml">
 ]>
 <book id="index">
   <bookinfo>
-    <title>[Insert name here] Reference Manual</title>
+    <title>Lasso Reference Manual</title>
   </bookinfo>
 
   <chapter>
-    <title>[Insert title here]</title>
+    <title>Lasso</title>
     &LassoDsSignature;
     &LassoLibAssertion;
     &LassoLibAuthnRequest;
+    &lasso-LassoLibAuthnRequestEnvelope;
     &LassoLibAuthnResponse;
+    &lasso-LassoLibAuthnResponseEnvelope;
     &LassoLibIDPEntries;
     &LassoLibIDPEntry;
     &LassoLibIDPList;
@@ -128,13 +134,17 @@
     &lasso-export;
     &lasso-lasso;
     &lasso-version;
+<br>
     &LassoArtifact;
     &LassoAssertion;
     &LassoAuthenticationStatement;
     &LassoAuthnRequest;
+    &lasso-LassoAuthnRequestEnvelope;
     &LassoAuthnResponse;
+    &lasso-LassoAuthnResponseEnvelope;
     &LassoFederationTerminationNotification;
-    &LassoIdentity;
+    &LassoFederation;
+    &LassoLecp;
     &LassoLogoutRequest;
     &LassoLogoutResponse;
     &LassoNameIdentifierMappingRequest;
@@ -145,13 +155,12 @@
     &LassoRequest;
     &LassoResponse;
     &LassoFederationTermination;
+    &LassoIdentity;
     &LassoLogin;
     &LassoLogout;
-    &LassoNameIdentifierMapping;
-    &LassoProfileContext;
-    &LassoRegisterNameIdentifier;
+    &LassoProfile;
     &LassoServer;
-    &LassoUser;
+    &LassoSession;
     &lasso-tools;
   </chapter>
 </book>
