@@ -162,14 +162,8 @@ lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	request->IssueInstant = lasso_get_current_time();
-
-	/* set the signature template */
-	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-#if 0 /* XXX: signatures are done differently */
-		lasso_samlp_request_abstract_set_signature_tmpl(
-				request, sign_type, sign_method, NULL);
-#endif
-	}
+	request->sign_type = sign_type;
+	request->sign_method = sign_method;
 
 	/* ProviderID */
 	LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request)->ProviderID = g_strdup(providerID);

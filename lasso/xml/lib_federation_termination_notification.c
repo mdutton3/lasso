@@ -241,13 +241,8 @@ lasso_lib_federation_termination_notification_new_full(char *providerID,
 	request->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	request->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	request->IssueInstant = lasso_get_current_time();
-
-	/* set the signature template */
-	if (sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-#if 0 /* XXX: signatures are done differently */
-		lasso_samlp_request_abstract_set_signature_tmpl(request, sign_type, sign_method, NULL);
-#endif
-	}
+	request->sign_type = sign_type;
+	request->sign_method = sign_method;
 
 	LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request)->ProviderID = g_strdup(providerID);
 	LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request)->NameIdentifier =
