@@ -9,7 +9,7 @@ dnl Version
 dnl ==========================================================================
 LASSO_PACKAGE=lasso
 LASSO_VERSION_MAJOR=0
-LASSO_VERSION_MINOR=1
+LASSO_VERSION_MINOR=2
 LASSO_VERSION_SUBMINOR=0
 LASSO_VERSION="$LASSO_VERSION_MAJOR.$LASSO_VERSION_MINOR.$LASSO_VERSION_SUBMINOR"
 LASSO_VERSION_INFO=`echo $LASSO_VERSION | awk -F. '{ printf "%d:%d:%d", $1+$2, $3, $2 }'`
@@ -392,8 +392,7 @@ else
 fi
 
 dnl Let people disable the gtk-doc stuff.
-AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc  Use gtk-doc to build documentation [default=au
-to]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
+AC_ARG_ENABLE(gtk-doc, [  --enable-gtk-doc  Use gtk-doc to build documentation [default=auto]], enable_gtk_doc="$enableval", enable_gtk_doc=auto)
 
 if test x$enable_gtk_doc = xauto ; then
   if test x$GTKDOC = xtrue ; then
