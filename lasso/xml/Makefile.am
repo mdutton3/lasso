@@ -14,14 +14,22 @@ liblasso_xml_la_SOURCES = \
 	tools.c \
 	errors.c \
 	xml.c \
+	disco_credentials.c \
 	disco_description.c \
 	disco_insert_entry.c \
 	disco_modify.c \
 	disco_modify_response.c \
 	disco_options.c \
+	disco_query.c \
+	disco_query_response.c \
 	disco_remove_entry.c \
+	disco_requested_service_type.c \
 	disco_resource_offering.c \
 	disco_service_instance.c \
+	dst_data.c \
+	dst_query.c \
+	dst_query_item.c \
+	dst_query_response.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -65,21 +73,30 @@ liblasso_xml_la_SOURCES = \
 	samlp_response.c \
 	samlp_response_abstract.c \
 	samlp_status.c \
-	samlp_status_code.c
+	samlp_status_code.c \
+	utility_status.c
 
 liblassoinclude_HEADERS = \
 	strings.h \
 	tools.h \
 	errors.h \
 	xml.h	\
+	disco_credentials.h \
 	disco_description.h \
 	disco_insert_entry.h \
 	disco_modify.h \
 	disco_modify_response.h \
 	disco_options.h \
+	disco_query.h \
+	disco_query_response.h \
 	disco_remove_entry.h \
+	disco_requested_service_type.h \
 	disco_resource_offering.h \
 	disco_service_instance.h \
+	dst_data.h \
+	dst_query.h \
+	dst_query_item.h \
+	dst_query_response.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
@@ -123,5 +140,5 @@ liblassoinclude_HEADERS = \
 	samlp_response.h \
 	samlp_response_abstract.h \
 	samlp_status.h \
-	samlp_status_code.h
-
+	samlp_status_code.h \
+	utility_status.h
