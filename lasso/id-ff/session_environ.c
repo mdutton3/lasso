@@ -277,7 +277,14 @@ int lasso_session_environ_set_peer_providerID(LassoSessionEnviron *session, char
 
 static void
 lasso_session_environ_instance_init(LassoSessionEnviron *session){
-
+  session->user = NULL;
+  session->message = NULL;
+  session->request  = NULL;
+  session->response = NULL;
+  session->local_providerID = NULL;
+  session->peer_providerID = NULL;
+  session->request_protocol_profile  = 0;
+  session->response_protocol_profile = 0;
 }
 
 static void
@@ -308,35 +315,27 @@ GType lasso_session_environ_get_type() {
 }
 
 LassoSessionEnviron*
-lasso_session_environ_new(LassoServerEnviron *server, LassoUserEnviron *user, char *local_providerID, char *peer_providerID)
+lasso_session_environ_new(LassoServerEnviron *server,
+			  LassoUserEnviron   *user,
+			  gchar              *local_providerID,
+			  gchar              *peer_providerID)
 {
+  /* load the ProviderID name or a reference to the provider ? */
+  g_return_val_if_fail(local_providerID != NULL, NULL);
+  g_return_val_if_fail(peer_providerID != NULL, NULL);
+
   LassoSessionEnviron *session;
 
   session = g_object_new(LASSO_TYPE_SESSION_ENVIRON, NULL);
 
   session->server = server;
 
-  if(user)
-       session->user = user;
-  else
-       session->user = NULL;
+  if (user) {
+    session->user = user;
+  }
 
-  session->message = NULL;
-
-  session->request  = NULL;
-  session->response = NULL;
-
-  /* load the ProviderID name or a reference to the provider ? */
-  g_return_if_fail(local_providerID);
-  g_return_if_fail(peer_providerID);
-
-  session->local_providerID = NULL;
   lasso_session_environ_set_local_providerID(session, local_providerID);
-  session->peer_providerID = NULL;
   lasso_session_environ_set_peer_providerID(session, peer_providerID);
 
-  session->request_protocol_profile  = 0;
-  session->response_protocol_profile = 0;
-
-  return(session);
+  return (session);
 }

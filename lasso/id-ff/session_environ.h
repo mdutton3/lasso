@@ -57,6 +57,7 @@ typedef enum {
 struct _LassoSessionEnviron {
   LassoEnviron parent;
 
+  /*< public >*/
   LassoServerEnviron *server;
   LassoUserEnviron   *user;
 
@@ -81,8 +82,8 @@ LASSO_EXPORT GType                lasso_session_environ_get_type               (
 
 LASSO_EXPORT LassoSessionEnviron *lasso_session_environ_new                    (LassoServerEnviron *server,
 										LassoUserEnviron *user,
-										char *local_providerID,
-										char *peer_providerID);
+										gchar *local_providerID,
+										gchar *peer_providerID);
 
 LASSO_EXPORT char                *lasso_session_environ_build_authnRequest     (LassoSessionEnviron *session,
 										const char *responseProtocolProfile,
