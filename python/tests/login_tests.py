@@ -36,14 +36,14 @@ class LoginTestCase(unittest.TestCase):
     def generateIdentityProviderContextDump(self):
         serverContext = lasso.Server.new(
             "../../examples/data/idp-metadata.xml",
-            "../../examples/idp-public-key.pem",
-            "../../examples/idp-private-key.pem",
-            "../../examples/idp-crt.pem",
+            "../../examples/data/idp-public-key.pem",
+            "../../examples/data/idp-private-key.pem",
+            "../../examples/data/idp-crt.pem",
             lasso.signatureMethodRsaSha1)
         serverContext.add_provider(
             "../../examples/data/sp-metadata.xml",
-            "../../examples/sp-public-key.pem",
-            "../../examples/ca-crt.pem")
+            "../../examples/data/sp-public-key.pem",
+            "../../examples/data/ca-crt.pem")
         serverContextDump = serverContext.dump()
         serverContext.destroy()
         return serverContextDump
@@ -51,14 +51,14 @@ class LoginTestCase(unittest.TestCase):
     def generateServiceProviderContextDump(self):
         serverContext = lasso.Server.new(
             "../../examples/data/sp-metadata.xml",
-            "../../examples/sp-public-key.pem",
-            "../../examples/sp-private-key.pem",
-            "../../examples/sp-crt.pem",
+            "../../examples/data/sp-public-key.pem",
+            "../../examples/data/sp-private-key.pem",
+            "../../examples/data/sp-crt.pem",
             lasso.signatureMethodRsaSha1)
         serverContext.add_provider(
             "../../examples/data/idp-metadata.xml",
-            "../../examples/idp-public-key.pem",
-            "../../examples/ca-crt.pem")
+            "../../examples/data/idp-public-key.pem",
+            "../../examples/data/ca-crt.pem")
         serverContextDump = serverContext.dump()
         serverContext.destroy()
         return serverContextDump
@@ -75,6 +75,20 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(identityProviderContextDump)
         serviceProviderContextDump = self.generateServiceProviderContextDump()
         self.failUnless(serviceProviderContextDump)
+
+    def test02_serviceProviderLogin(self):
+        spContextDump = self.generateServiceProviderContextDump()
+        self.failUnless(spContextDump)
+        spContext = lasso.Server.new_from_dump(spContextDump)
+        spLoginContext = lasso.Login.new(spContext)
+        self.failIf(spLoginContext.init_authn_request(
+            "https://identity-provider:1998/liberty-alliance/metadata"))
+        spLoginContext.request.set_isPassive(False)
+        spLoginContext.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
+        # FIXME spLoginContext.request.set_consent(lasso.libConsentObtained)
+        spLoginContext.request.set_relayState("fake")
+        self.failIf(spLoginContext.build_authn_request_msg())
+        # spLoginContext.msg_url
 
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')

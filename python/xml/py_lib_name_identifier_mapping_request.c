@@ -3,7 +3,7 @@
  * PyLasso -- Python bindings for Lasso library
  *
  * Copyright (C) 2004 Entr'ouvert
- * http://lasso.labs.libre-entreprise.org
+ * http://lasso.entrouvert.org
  * 
  * Author: Valery Febvre <vfebvre@easter-eggs.com>
  *         Nicolas Clapies <nclapies@entrouvert.com>
