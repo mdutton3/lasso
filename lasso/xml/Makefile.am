@@ -16,6 +16,7 @@ liblasso_xml_la_SOURCES = \
 	xml.c \
 	disco_credentials.c \
 	disco_description.c \
+	disco_encrypted_resource_id.c \
 	disco_insert_entry.c \
 	disco_modify.c \
 	disco_modify_response.c \
@@ -24,6 +25,7 @@ liblasso_xml_la_SOURCES = \
 	disco_query_response.c \
 	disco_remove_entry.c \
 	disco_requested_service_type.c \
+	disco_resource_id.c \
 	disco_resource_offering.c \
 	disco_service_instance.c \
 	dst_data.c \
@@ -83,6 +85,7 @@ liblassoinclude_HEADERS = \
 	xml.h	\
 	disco_credentials.h \
 	disco_description.h \
+	disco_encrypted_resource_id.h \
 	disco_insert_entry.h \
 	disco_modify.h \
 	disco_modify_response.h \
@@ -91,6 +94,7 @@ liblassoinclude_HEADERS = \
 	disco_query_response.h \
 	disco_remove_entry.h \
 	disco_requested_service_type.h \
+	disco_resource_id.h \
 	disco_resource_offering.h \
 	disco_service_instance.h \
 	dst_data.h \
