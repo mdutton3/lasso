@@ -317,8 +317,6 @@ dispose(GObject *object)
 	}
 	server->private_data->dispose_has_run = TRUE;
 
-	debug("Server object 0x%p disposed ...", server);
-
 	/* free allocated memory for hash tables */
 	g_hash_table_destroy(server->providers);
 	server->providers = NULL;
@@ -333,12 +331,9 @@ finalize(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
 
-	debug("Server object 0x%p finalized ...", server);
-
 	g_free(server->private_key);
 	g_free(server->secret_key);
 	g_free(server->certificate);
-
 	g_free(server->private_data);
 
 	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(server));

@@ -360,8 +360,6 @@ dispose(GObject *object)
 	}
 	profile->private_data->dispose_has_run = TRUE;
 
-	debug("Profile object 0x%p disposed ...", profile);
-
 	lasso_server_destroy(profile->server);
 	profile->server = NULL;
 	lasso_identity_destroy(profile->identity);
@@ -376,11 +374,7 @@ static void
 finalize(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
-
-	debug("Profile object 0x%p finalized ...", object);
-
 	g_free(profile->private_data);
-
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

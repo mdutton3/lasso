@@ -172,8 +172,6 @@ dispose(GObject *object)
 	}
 	federation->private_data->dispose_has_run = TRUE;
 
-	debug("Federation object 0x%p disposed ...", federation);
-
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -181,10 +179,7 @@ static void
 finalize(GObject *object)
 {
 	LassoFederation *federation = LASSO_FEDERATION(object);
-	debug("Federation object 0x%p finalized ...", federation);
-
 	g_free(federation->private_data);
-
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

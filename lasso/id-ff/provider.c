@@ -439,8 +439,6 @@ dispose(GObject *object)
 	}
 	provider->private_data->dispose_has_run = TRUE;
 
-	debug("Provider object 0x%p disposed ...", provider);
-
 	if (provider->private_data->IDPDescriptor) {
 		g_hash_table_foreach(provider->private_data->IDPDescriptor,
 				(GHFunc)free_list_strings, NULL);
@@ -465,8 +463,6 @@ static void
 finalize(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
-
-	debug("Provider object 0x%p finalized ...", provider);
 
 	g_free(provider->public_key);
 	provider->public_key = NULL;

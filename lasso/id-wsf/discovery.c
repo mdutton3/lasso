@@ -388,14 +388,9 @@ dispose(GObject *object)
 {
 	LassoDiscovery *discovery = LASSO_DISCOVERY(object);
 
-	if (discovery->private_data->dispose_has_run == TRUE) {
+	if (discovery->private_data->dispose_has_run == TRUE)
 		return;
-	}
 	discovery->private_data->dispose_has_run = TRUE;
-
-	debug("Discovery object 0x%p disposed ...", discovery);
-
-	/* unref reference counted objects */
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
@@ -404,9 +399,8 @@ static void
 finalize(GObject *object)
 { 
 	LassoDiscovery *discovery = LASSO_DISCOVERY(object);
-
-	debug("Discovery object 0x%p finalized ...", discovery);
-
+	g_free(discovery->private_data);
+	discovery->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 

@@ -875,8 +875,6 @@ dispose(GObject *object)
 	}
 	logout->private_data->dispose_has_run = TRUE;
 
-	debug("Logout object 0x%p disposed ...", logout);
-
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -884,7 +882,6 @@ static void
 finalize(GObject *object)
 {  
 	LassoLogout *logout = LASSO_LOGOUT(object);
-	debug("Logout object 0x%p finalized ...", logout);
 	g_free(logout->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }

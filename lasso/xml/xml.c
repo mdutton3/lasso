@@ -446,7 +446,7 @@ lasso_node_dispose(GObject *object)
 	SnippetType type;
 	GList *elem;
 
-#if 0
+#ifdef LASSO_DEBUG
 	fprintf(stderr, "dispose of %s (at %p)\n", G_OBJECT_TYPE_NAME(object), object);
 #endif
 
@@ -464,7 +464,7 @@ lasso_node_dispose(GObject *object)
 			if (*value == NULL)
 				continue;
 
-#if 0 /* to debug memory management problems */
+#ifdef LASSO_DEBUG
 			fprintf(stderr, "  freeing %s/%s (at %p)\n",
 					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
 #endif

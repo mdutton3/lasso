@@ -87,7 +87,6 @@ gint
 lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID)
 {
 	if (g_hash_table_remove(identity->federations, providerID) == FALSE) {
-		debug("Failed to remove federation for remote Provider %s", remote_providerID);
 		return LASSO_ERROR_UNDEFINED;
 	}
 	identity->is_dirty = TRUE;
@@ -179,8 +178,6 @@ dispose(GObject *object)
 	}
 	identity->private_data->dispose_has_run = TRUE;
 
-	debug("Identity object 0x%p disposed ...", identity);
-
 	g_hash_table_destroy(identity->federations);
 	identity->federations = NULL;
 
@@ -191,8 +188,6 @@ static void
 finalize(GObject *object)
 {
 	LassoIdentity *identity = LASSO_IDENTITY(object);
-
-	debug("Identity object 0x%p finalized ...", identity);
 	g_free(identity->private_data);
 	identity->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
