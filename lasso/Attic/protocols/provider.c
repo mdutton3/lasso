@@ -385,6 +385,32 @@ lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider      *provider
   return value;
 }
 
+gchar*
+lasso_provider_get_registerNameIdentifierServiceReturnURL(LassoProvider      *provider,
+							  lassoProviderType   provider_type,
+							  GError            **err)
+{
+  xmlChar *value;
+  GError  *tmp_err = NULL;
+
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
+  
+  value = lasso_provider_get_metadata_value(provider,
+					    provider_type,
+					    "RegisterNameIdentifierServiceReturnURL",
+					    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+  }
+
+  return value;
+}
+
 gchar *
 lasso_provider_get_singleSignOnProtocolProfile(LassoProvider  *provider,
 					       GError        **err)

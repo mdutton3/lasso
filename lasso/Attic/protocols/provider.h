@@ -118,6 +118,10 @@ LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierServiceURL 
 												 lassoProviderType   provider_type,
 												 GError            **err);
 
+LASSO_EXPORT gchar*         lasso_provider_get_registerNameIdentifierServiceReturnURL           (LassoProvider      *provider,
+												 lassoProviderType   provider_type,
+												 GError            **err);
+
 LASSO_EXPORT gchar*         lasso_provider_get_singleSignOnProtocolProfile                      (LassoProvider  *provider,
 												 GError        **err);
 
