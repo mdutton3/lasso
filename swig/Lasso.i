@@ -459,6 +459,7 @@ int get_exception_type(int errorCode)
  ***********************************************************************
  ***********************************************************************/
 
+
 /***********************************************************************
  * Assertion
  ***********************************************************************/
@@ -487,16 +488,17 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoAssertion lasso_assertion_new
-#define delete_LassoAssertion lasso_assertion_destroy
 
-/* Methods implementations */
-void delete_LassoAssertion(LassoAssertion *self){
+void delete_LassoAssertion(LassoAssertion *self) {
 	lasso_node_destroy(LASSO_NODE(self));
 }
 
-gchar* LassoAssertion_dump(LassoAssertion *self){
+/* Methods implementations */
+
+gchar* LassoAssertion_dump(LassoAssertion *self) {
 	return lasso_node_export(LASSO_NODE(self));
 }
+
 %}
 
 
@@ -530,17 +532,21 @@ typedef struct {
 /* Attributes Implementations */
 
 /* affiliationId */
+#define LassoAuthnRequest_get_affiliationId LassoAuthnRequest_affiliationId_get
 xmlChar *LassoAuthnRequest_affiliationId_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_affiliationId LassoAuthnRequest_affiliationId_set
 void LassoAuthnRequest_affiliationId_set(LassoAuthnRequest *self, xmlChar *affiliationId) {
 	 lasso_lib_authn_request_set_affiliationID(LASSO_LIB_AUTHN_REQUEST(self), affiliationId);
 }
 
 /* assertionConsumerServiceId */
+#define LassoAuthnRequest_get_assertionConsumerServiceId LassoAuthnRequest_assertionConsumerServiceId_get
 xmlChar *LassoAuthnRequest_assertionConsumerServiceId_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_assertionConsumerServiceId LassoAuthnRequest_assertionConsumerServiceId_set
 void LassoAuthnRequest_assertionConsumerServiceId_set(LassoAuthnRequest *self,
 						      xmlChar *assertionConsumerServiceId) {
 	lasso_lib_authn_request_set_assertionConsumerServiceID(LASSO_LIB_AUTHN_REQUEST(self),
@@ -548,58 +554,72 @@ void LassoAuthnRequest_assertionConsumerServiceId_set(LassoAuthnRequest *self,
 }
 
 /* consent */
+#define LassoAuthnRequest_get_consent LassoAuthnRequest_consent_get
 xmlChar *LassoAuthnRequest_consent_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_consent LassoAuthnRequest_consent_set
 void LassoAuthnRequest_consent_set(LassoAuthnRequest *self, xmlChar *consent) {
 	 lasso_lib_authn_request_set_consent(LASSO_LIB_AUTHN_REQUEST(self), consent);
 }
 
 /* forceAuthn */
+#define LassoAuthnRequest_get_forceAuthn LassoAuthnRequest_forceAuthn_get
 gboolean LassoAuthnRequest_forceAuthn_get(LassoAuthnRequest *self) {
 	return 0; /* FIXME */
 }
+#define LassoAuthnRequest_set_forceAuthn LassoAuthnRequest_forceAuthn_set
 void LassoAuthnRequest_forceAuthn_set(LassoAuthnRequest *self, gboolean forceAuthn) {
 	 lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(self), forceAuthn);
 }
 
 /* isPassive */
+#define LassoAuthnRequest_get_isPassive LassoAuthnRequest_isPassive_get
 gboolean LassoAuthnRequest_isPassive_get(LassoAuthnRequest *self) {
 	return 0; /* FIXME */
 }
+#define LassoAuthnRequest_set_isPassive LassoAuthnRequest_isPassive_set
 void LassoAuthnRequest_isPassive_set(LassoAuthnRequest *self, gboolean isPassive) {
 	 lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(self), isPassive);
 }
 
 /* nameIdPolicy */
+#define LassoAuthnRequest_get_nameIdPolicy LassoAuthnRequest_nameIdPolicy_get
 xmlChar *LassoAuthnRequest_nameIdPolicy_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_nameIdPolicy LassoAuthnRequest_nameIdPolicy_set
 void LassoAuthnRequest_nameIdPolicy_set(LassoAuthnRequest *self, xmlChar *nameIdPolicy) {
 	 lasso_lib_authn_request_set_nameIDPolicy(LASSO_LIB_AUTHN_REQUEST(self), nameIdPolicy);
 }
 
 /* protocolProfile */
+#define LassoAuthnRequest_get_protocolProfile LassoAuthnRequest_protocolProfile_get
 xmlChar *LassoAuthnRequest_protocolProfile_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_protocolProfile LassoAuthnRequest_protocolProfile_set
 void LassoAuthnRequest_protocolProfile_set(LassoAuthnRequest *self, xmlChar *protocolProfile) {
 	 lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(self),
 						     protocolProfile);
 }
 
 /* providerId */
+#define LassoAuthnRequest_get_providerId LassoAuthnRequest_providerId_get
 xmlChar *LassoAuthnRequest_providerId_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_providerId LassoAuthnRequest_providerId_set
 void LassoAuthnRequest_providerId_set(LassoAuthnRequest *self, xmlChar *providerId) {
 	 lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(self), providerId);
 }
 
 /* relayState */
+#define LassoAuthnRequest_get_relayState LassoAuthnRequest_relayState_get
 xmlChar *LassoAuthnRequest_relayState_get(LassoAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoAuthnRequest_set_relayState LassoAuthnRequest_relayState_set
 void LassoAuthnRequest_relayState_set(LassoAuthnRequest *self, xmlChar *relayState) {
 	 lasso_lib_authn_request_set_relayState(LASSO_LIB_AUTHN_REQUEST(self), relayState);
 }
@@ -656,9 +676,11 @@ typedef struct {
 /* Attributes Implementations */
 
 /* relayState */
+#define LassoLogoutRequest_get_relayState LassoLogoutRequest_relayState_get
 xmlChar *LassoLogoutRequest_relayState_get(LassoLogoutRequest *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLogoutRequest_set_relayState LassoLogoutRequest_relayState_set
 void LassoLogoutRequest_relayState_set(LassoLogoutRequest *self, xmlChar *relayState) {
 	 lasso_lib_logout_request_set_relayState(LASSO_LIB_LOGOUT_REQUEST(self), relayState);
 }
@@ -754,7 +776,8 @@ typedef struct {
 
 /* Attributes implementations */
 
-/* providerID */
+/* providerId */
+#define LassoServer_get_providerId LassoServer_providerId_get
 gchar *LassoServer_providerId_get(LassoServer *self) {
 	return self->providerID;
 }
@@ -813,6 +836,7 @@ typedef struct {
 /* Attributes implementations */
 
 /* isDirty */
+#define LassoIdentity_get_isDirty LassoIdentity_isDirty_get
 gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 	return self->is_dirty;
 }
@@ -873,6 +897,7 @@ typedef struct {
 /* Attributes implementations */
 
 /* isDirty */
+#define LassoSession_get_isDirty LassoSession_isDirty_get
 gboolean LassoSession_isDirty_get(LassoSession *self) {
 	return self->is_dirty;
 }
@@ -993,68 +1018,83 @@ typedef struct {
 /* Attributes inherited from LassoProfile implementations */
 
 /* identity */
+#define LassoDefederation_get_identity LassoDefederation_identity_get
 LassoIdentity *LassoDefederation_identity_get(LassoDefederation *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
 }
+#define LassoDefederation_set_identity LassoDefederation_identity_set
 gint LassoDefederation_identity_set(LassoDefederation *self, LassoIdentity *identity) {
 	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
 }
 
 /* isIdentityDirty */
+#define LassoDefederation_get_isIdentityDirty LassoDefederation_isIdentityDirty_get
 gboolean LassoDefederation_isIdentityDirty_get(LassoDefederation *self) {
 	return lasso_profile_is_identity_dirty(LASSO_PROFILE(self));
 }
 
 /* isSessionDirty */
+#define LassoDefederation_get_isSessionDirty LassoDefederation_isSessionDirty_get
 gboolean LassoDefederation_isSessionDirty_get(LassoDefederation *self) {
 	return lasso_profile_is_session_dirty(LASSO_PROFILE(self));
 }
 
 /* msgBody */
+#define LassoDefederation_get_msgBody LassoDefederation_msgBody_get
 gchar *LassoDefederation_msgBody_get(LassoDefederation *self) {
 	return LASSO_PROFILE(self)->msg_body;
 }
 
 /* msgRelayState */
+#define LassoDefederation_get_msgRelayState LassoDefederation_msgRelayState_get
 gchar *LassoDefederation_msgRelayState_get(LassoDefederation *self) {
 	return LASSO_PROFILE(self)->msg_relayState;
 }
 
 /* msgUrl */
+#define LassoDefederation_get_msgUrl LassoDefederation_msgUrl_get
 gchar *LassoDefederation_msgUrl_get(LassoDefederation *self) {
 	return LASSO_PROFILE(self)->msg_url;
 }
 
 /* nameIdentifier */
+#define LassoDefederation_get_nameIdentifier LassoDefederation_nameIdentifier_get
 gchar *LassoDefederation_nameIdentifier_get(LassoDefederation *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
 }
 
 /* remoteProviderId */
+#define LassoDefederation_get_remoteProviderId LassoDefederation_remoteProviderId_get
 gchar *LassoDefederation_remoteProviderId_get(LassoDefederation *self) {
 	return NULL; /* FIXME */
 }
+#define LassoDefederation_set_remoteProviderId LassoDefederation_remoteProviderId_set
 void LassoDefederation_remoteProviderId_set(LassoDefederation *self, gchar *remoteProviderId) {
 	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
 }
 
 /* request */
+#define LassoDefederation_get_request LassoDefederation_request_get
 LassoFederationTerminationNotification *LassoDefederation_request_get(LassoDefederation *self) {
 	return LASSO_FEDERATION_TERMINATION_NOTIFICATION(LASSO_PROFILE(self)->request);
 }
 
 /* responseStatus */
+#define LassoDefederation_get_responseStatus LassoDefederation_responseStatus_get
 gchar *LassoDefederation_responseStatus_get(LassoDefederation *self) {
 	return NULL; /* FIXME */
 }
+#define LassoDefederation_set_responseStatus LassoDefederation_responseStatus_set
 void LassoDefederation_responseStatus_set(LassoDefederation *self, gchar *responseStatus) {
 	lasso_profile_set_response_status(LASSO_PROFILE(self), responseStatus);
 }
 
 /* session */
+#define LassoDefederation_get_session LassoDefederation_session_get
 LassoSession *LassoDefederation_session_get(LassoDefederation *self) {
 	return lasso_profile_get_session(LASSO_PROFILE(self));
 }
+#define LassoDefederation_set_session LassoDefederation_session_set
 gint LassoDefederation_session_set(LassoDefederation *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
@@ -1136,9 +1176,6 @@ typedef struct {
 
 		%immutable response;
 		LassoResponse *response;
-
-		%immutable responseDump;
-		gchar *responseDump;
 
 		gchar *responseStatus;
 
@@ -1239,6 +1276,7 @@ typedef struct {
 /* Attributes inherited from LassoProfile implementations */
 
 /* authnRequest */
+#define LassoLogin_get_authnRequest LassoLogin_authnRequest_get
 LassoAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->request_type == lassoMessageTypeAuthnRequest)
@@ -1248,6 +1286,7 @@ LassoAuthnRequest *LassoLogin_authnRequest_get(LassoLogin *self) {
 }
 
 /* authnResponse */
+#define LassoLogin_get_authnResponse LassoLogin_authnResponse_get
 LassoAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->response_type == lassoMessageTypeAuthnResponse)
@@ -1257,52 +1296,63 @@ LassoAuthnResponse *LassoLogin_authnResponse_get(LassoLogin *self) {
 }
 
 /* identity */
+#define LassoLogin_get_identity LassoLogin_identity_get
 LassoIdentity *LassoLogin_identity_get(LassoLogin *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
 }
+#define LassoLogin_set_identity LassoLogin_identity_set
 gint LassoLogin_identity_set(LassoLogin *self, LassoIdentity *identity) {
 	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
 }
 
 /* isIdentityDirty */
+#define LassoLogin_get_isIdentityDirty LassoLogin_isIdentityDirty_get
 gboolean LassoLogin_isIdentityDirty_get(LassoLogin *self) {
 	return lasso_profile_is_identity_dirty(LASSO_PROFILE(self));
 }
 
 /* isSessionDirty */
+#define LassoLogin_get_isSessionDirty LassoLogin_isSessionDirty_get
 gboolean LassoLogin_isSessionDirty_get(LassoLogin *self) {
 	return lasso_profile_is_session_dirty(LASSO_PROFILE(self));
 }
 
 /* msgBody */
+#define LassoLogin_get_msgBody LassoLogin_msgBody_get
 gchar *LassoLogin_msgBody_get(LassoLogin *self) {
 	return LASSO_PROFILE(self)->msg_body;
 }
 
 /* msgRelayState */
+#define LassoLogin_get_msgRelayState LassoLogin_msgRelayState_get
 gchar *LassoLogin_msgRelayState_get(LassoLogin *self) {
 	return LASSO_PROFILE(self)->msg_relayState;
 }
 
 /* msgUrl */
+#define LassoLogin_get_msgUrl LassoLogin_msgUrl_get
 gchar *LassoLogin_msgUrl_get(LassoLogin *self) {
 	return LASSO_PROFILE(self)->msg_url;
 }
 
 /* nameIdentifier */
+#define LassoLogin_get_nameIdentifier LassoLogin_nameIdentifier_get
 gchar *LassoLogin_nameIdentifier_get(LassoLogin *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
 }
 
 /* remoteProviderId */
+#define LassoLogin_get_remoteProviderId LassoLogin_remoteProviderId_get
 gchar *LassoLogin_remoteProviderId_get(LassoLogin *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLogin_set_remoteProviderId LassoLogin_remoteProviderId_set
 void LassoLogin_remoteProviderId_set(LassoLogin *self, gchar *remoteProviderId) {
 	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
 }
 
 /* request */
+#define LassoLogin_get_request LassoLogin_request_get
 LassoRequest *LassoLogin_request_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->request_type == lassoMessageTypeRequest)
@@ -1312,6 +1362,7 @@ LassoRequest *LassoLogin_request_get(LassoLogin *self) {
 }
 
 /* response */
+#define LassoLogin_get_response LassoLogin_response_get
 LassoResponse *LassoLogin_response_get(LassoLogin *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->response_type == lassoMessageTypeResponse)
@@ -1320,23 +1371,22 @@ LassoResponse *LassoLogin_response_get(LassoLogin *self) {
 		return NULL;
 }
 
-/* responseDump */
-gchar *LassoLogin_responseDump_get(LassoLogin *self) {
-	return self->response_dump;
-}
-
 /* responseStatus */
+#define LassoLogin_get_responseStatus LassoLogin_responseStatus_get
 gchar *LassoLogin_responseStatus_get(LassoLogin *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLogin_set_responseStatus LassoLogin_responseStatus_set
 void LassoLogin_responseStatus_set(LassoLogin *self, gchar *responseStatus) {
 	lasso_profile_set_response_status(LASSO_PROFILE(self), responseStatus);
 }
 
 /* session */
+#define LassoLogin_get_session LassoLogin_session_get
 LassoSession *LassoLogin_session_get(LassoLogin *self) {
 	return lasso_profile_get_session(LASSO_PROFILE(self));
 }
+#define LassoLogin_set_session LassoLogin_session_set
 gint LassoLogin_session_set(LassoLogin *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
@@ -1344,9 +1394,11 @@ gint LassoLogin_session_set(LassoLogin *self, LassoSession *session) {
 /* Attributes from LassoLogin implementations */
 
 /* assertion */
+#define LassoLogin_get_assertion LassoLogin_assertion_get
 LassoAssertion *LassoLogin_assertion_get(LassoLogin *self) {
 	return lasso_login_get_assertion(self);
 }
+#define LassoLogin_set_assertion LassoLogin_assertion_set
 gint LassoLogin_assertion_set(LassoLogin *self, LassoAssertion *assertion) {
 	return lasso_login_set_assertion(self, assertion);
 }
@@ -1507,73 +1559,89 @@ typedef struct {
 /* Attributes inherited from LassoProfile implementations */
 
 /* identity */
+#define LassoLogout_get_identity LassoLogout_identity_get
 LassoIdentity *LassoLogout_identity_get(LassoLogout *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
 }
+#define LassoLogout_get_identity LassoLogout_identity_get
 gint LassoLogout_identity_set(LassoLogout *self, LassoIdentity *identity) {
 	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
 }
 
 /* isIdentityDirty */
+#define LassoLogout_get_isIdentityDirty LassoLogout_isIdentityDirty_get
 gboolean LassoLogout_isIdentityDirty_get(LassoLogout *self) {
 	return lasso_profile_is_identity_dirty(LASSO_PROFILE(self));
 }
 
 /* isSessionDirty */
+#define LassoLogout_get_isSessionDirty LassoLogout_isSessionDirty_get
 gboolean LassoLogout_isSessionDirty_get(LassoLogout *self) {
 	return lasso_profile_is_session_dirty(LASSO_PROFILE(self));
 }
 
 /* msgBody */
+#define LassoLogout_get_msgBody LassoLogout_msgBody_get
 gchar *LassoLogout_msgBody_get(LassoLogout *self) {
 	return LASSO_PROFILE(self)->msg_body;
 }
 
 /* msgRelayState */
+#define LassoLogout_get_msgRelayState LassoLogout_msgRelayState_get
 gchar *LassoLogout_msgRelayState_get(LassoLogout *self) {
 	return LASSO_PROFILE(self)->msg_relayState;
 }
 
 /* msgUrl */
+#define LassoLogout_get_msgUrl LassoLogout_msgUrl_get
 gchar *LassoLogout_msgUrl_get(LassoLogout *self) {
 	return LASSO_PROFILE(self)->msg_url;
 }
 
 /* nameIdentifier */
+#define LassoLogout_get_nameIdentifier LassoLogout_nameIdentifier_get
 gchar *LassoLogout_nameIdentifier_get(LassoLogout *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
 }
 
 /* remoteProviderId */
+#define LassoLogout_get_remoteProviderId LassoLogout_remoteProviderId_get
 gchar *LassoLogout_remoteProviderId_get(LassoLogout *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLogout_set_remoteProviderId LassoLogout_remoteProviderId_set
 void LassoLogout_remoteProviderId_set(LassoLogout *self, gchar *remoteProviderId) {
 	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
 }
 
 /* request */
+#define LassoLogout_get_request LassoLogout_request_get
 LassoLogoutRequest *LassoLogout_request_get(LassoLogout *self) {
 	return LASSO_LOGOUT_REQUEST(LASSO_PROFILE(self)->request);
 }
 
 /* response */
+#define LassoLogout_get_response LassoLogout_response_get
 LassoLogoutResponse *LassoLogout_response_get(LassoLogout *self) {
 	return LASSO_LOGOUT_RESPONSE(LASSO_PROFILE(self)->response);
 }
 
 /* responseStatus */
+#define LassoLogout_get_responseStatus LassoLogout_responseStatus_get
 gchar *LassoLogout_responseStatus_get(LassoLogout *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLogout_set_responseStatus LassoLogout_responseStatus_set
 void LassoLogout_responseStatus_set(LassoLogout *self, gchar *responseStatus) {
 	lasso_profile_set_response_status(LASSO_PROFILE(self), responseStatus);
 }
 
 /* session */
+#define LassoLogout_get_session LassoLogout_session_get
 LassoSession *LassoLogout_session_get(LassoLogout *self) {
 	return lasso_profile_get_session(LASSO_PROFILE(self));
 }
+#define LassoLogout_set_session LassoLogout_session_set
 gint LassoLogout_session_set(LassoLogout *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
@@ -1724,6 +1792,7 @@ typedef struct {
 /* Attributes inherited from LassoProfile implementations */
 
 /* authnRequest */
+#define LassoLecp_get_authnRequest LassoLecp_authnRequest_get
 LassoAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->request_type == lassoMessageTypeAuthnRequest)
@@ -1733,6 +1802,7 @@ LassoAuthnRequest *LassoLecp_authnRequest_get(LassoLecp *self) {
 }
 
 /* authnResponse */
+#define LassoLecp_get_authnResponse LassoLecp_authnResponse_get
 LassoAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->response_type == lassoMessageTypeAuthnResponse)
@@ -1742,52 +1812,63 @@ LassoAuthnResponse *LassoLecp_authnResponse_get(LassoLecp *self) {
 }
 
 /* identity */
+#define LassoLecp_get_identity LassoLecp_identity_get
 LassoIdentity *LassoLecp_identity_get(LassoLecp *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
 }
+#define LassoLecp_set_identity LassoLecp_identity_set
 gint LassoLecp_identity_set(LassoLecp *self, LassoIdentity *identity) {
 	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
 }
 
 /* isIdentityDirty */
+#define LassoLecp_get_isIdentityDirty LassoLecp_isIdentityDirty_get
 gboolean LassoLecp_isIdentityDirty_get(LassoLecp *self) {
 	return lasso_profile_is_identity_dirty(LASSO_PROFILE(self));
 }
 
 /* isSessionDirty */
+#define LassoLecp_get_isSessionDirty LassoLecp_isSessionDirty_get
 gboolean LassoLecp_isSessionDirty_get(LassoLecp *self) {
 	return lasso_profile_is_session_dirty(LASSO_PROFILE(self));
 }
 
 /* msgBody */
+#define LassoLecp_get_msgBody LassoLecp_msgBody_get
 gchar *LassoLecp_msgBody_get(LassoLecp *self) {
 	return LASSO_PROFILE(self)->msg_body;
 }
 
 /* msgRelayState */
+#define LassoLecp_get_msgRelayState LassoLecp_msgRelayState_get
 gchar *LassoLecp_msgRelayState_get(LassoLecp *self) {
 	return LASSO_PROFILE(self)->msg_relayState;
 }
 
 /* msgUrl */
+#define LassoLecp_get_msgUrl LassoLecp_msgUrl_get
 gchar *LassoLecp_msgUrl_get(LassoLecp *self) {
 	return LASSO_PROFILE(self)->msg_url;
 }
 
 /* nameIdentifier */
+#define LassoLecp_get_nameIdentifier LassoLecp_nameIdentifier_get
 gchar *LassoLecp_nameIdentifier_get(LassoLecp *self) {
 	return LASSO_PROFILE(self)->nameIdentifier;
 }
 
 /* remoteProviderId */
+#define LassoLecp_get_remoteProviderId LassoLecp_remoteProviderId_get
 gchar *LassoLecp_remoteProviderId_get(LassoLecp *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLecp_set_remoteProviderId LassoLecp_remoteProviderId_set
 void LassoLecp_remoteProviderId_set(LassoLecp *self, gchar *remoteProviderId) {
 	lasso_profile_set_remote_providerID(LASSO_PROFILE(self), remoteProviderId);
 }
 
 /* request */
+#define LassoLecp_get_request LassoLecp_request_get
 LassoRequest *LassoLecp_request_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->request_type == lassoMessageTypeRequest)
@@ -1797,6 +1878,7 @@ LassoRequest *LassoLecp_request_get(LassoLecp *self) {
 }
 
 /* response */
+#define LassoLecp_get_response LassoLecp_response_get
 LassoResponse *LassoLecp_response_get(LassoLecp *self) {
 	LassoProfile *profile = LASSO_PROFILE(self);
 	if (profile->response_type == lassoMessageTypeResponse)
@@ -1806,17 +1888,21 @@ LassoResponse *LassoLecp_response_get(LassoLecp *self) {
 }
 
 /* responseStatus */
+#define LassoLecp_get_responseStatus LassoLecp_responseStatus_get
 gchar *LassoLecp_responseStatus_get(LassoLecp *self) {
 	return NULL; /* FIXME */
 }
+#define LassoLecp_set_responseStatus LassoLecp_responseStatus_set
 void LassoLecp_responseStatus_set(LassoLecp *self, gchar *responseStatus) {
 	lasso_profile_set_response_status(LASSO_PROFILE(self), responseStatus);
 }
 
 /* session */
+#define LassoLecp_get_session LassoLecp_session_get
 LassoSession *LassoLecp_session_get(LassoLecp *self) {
 	return lasso_profile_get_session(LASSO_PROFILE(self));
 }
+#define LassoLecp_set_session LassoLecp_session_set
 gint LassoLecp_session_set(LassoLecp *self, LassoSession *session) {
 	return lasso_profile_set_session(LASSO_PROFILE(self), session);
 }
