@@ -51,6 +51,9 @@ struct _LassoAuthentication {
   LassoProfileContext parent;
   /*< public >*/
   /*< private >*/
+  gchar *protocolProfile;
+  gint request_method;
+  gint response_method;
 };
 
 struct _LassoAuthenticationClass {
@@ -82,10 +85,10 @@ LASSO_EXPORT gchar*               lasso_authentication_process_authentication_re
 										      const char          *authentication_method);
 
 LASSO_EXPORT void                 lasso_authentication_set_forceAuthn                (LassoAuthentication *authn,
-										      const xmlChar       *forceAuthn);
+										      gboolean             forceAuthn);
 
 LASSO_EXPORT void                 lasso_authentication_set_isPassive                 (LassoAuthentication *authn,
-										      gboolean            *isPassive);
+										      gboolean             isPassive);
 
 LASSO_EXPORT void                 lasso_authentication_set_nameIDPolicy              (LassoAuthentication *authn,
 										      const xmlChar       *nameIDPolicy);

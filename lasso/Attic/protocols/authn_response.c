@@ -28,6 +28,27 @@
 
 //static GObjectClass *parent_class = NULL;
 
+xmlChar *
+lasso_authn_response_get_status(LassoAuthnResponse *response) {
+  LassoNode *status_code;
+  xmlChar *res;
+
+  status_code = lasso_node_get_child(response, "StatusCode", NULL);
+  if (status_code != NULL)
+    return lasso_node_get_attr_value(statusCode, "Value");
+  else
+    return(NULL);
+}
+
+/*
+  lasso_authn_response_get_nameIdentifier
+  lasso_authn_response_get_idpProvidedNameIdentifier
+
+  assertion = lasso_node_get_child(response, "Assertion", NULL);
+  nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", NULL);
+  idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", NULL);
+*/
+
 static void
 lasso_authn_response_set_status(LassoAuthnResponse *response,
 				const xmlChar      *statusCodeValue) {
