@@ -661,10 +661,6 @@ lasso/protocols/elements/Makefile
 lasso/protocols/Makefile
 lasso/xml/Makefile
 php/Makefile
-php/run-tests.php
-php/environs/Makefile
-php/tests/Makefile
-php/xml/Makefile
 python/Makefile
 swig/Makefile
 tests/Makefile
