@@ -96,9 +96,10 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
 				  gchar              *name,
 				  GError            **err)
 {
-  xmlChar *value;
+  xmlChar *content;
   LassoNode *descriptor;
   GError *tmp_err = NULL;
+  gchar *result = NULL;
 
   if (err != NULL && *err != NULL) {
     g_set_error(err, g_quark_from_string("Lasso"),
@@ -134,15 +135,17 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
     return (NULL);
   }
 
-  value = lasso_node_get_child_content(descriptor, name, NULL,
-				       &tmp_err);
+  content = lasso_node_get_child_content(descriptor, name, NULL, &tmp_err);
   lasso_node_destroy(descriptor);
 
-  if (value == NULL) {
+  if (content == NULL) {
     g_propagate_error (err, tmp_err);
+  } else {
+    result = g_strdup(g_strstrip(content));
+    xmlFree(content);
   }
 
-  return (value);
+  return (result);
 }
 
 gchar *
