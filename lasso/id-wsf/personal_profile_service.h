@@ -36,7 +36,10 @@ extern "C" {
 #include <lasso/xml/dst_modification.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
+#include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_item.h>
+#include <lasso/xml/dst_query_response.h>
+#include <lasso/xml/pp_msg_contact.h>
 
 #define LASSO_PP_HREF   "urn:liberty:pp:2003-08"
 #define LASSO_PP_PREFIX "pp"
