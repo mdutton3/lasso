@@ -78,7 +78,8 @@ LASSO_EXPORT gint lasso_samlp_request_abstract_set_signature       (LassoSamlpRe
 
 LASSO_EXPORT gint lasso_samlp_request_abstract_set_signature_tmpl  (LassoSamlpRequestAbstract *node,
 								    lassoSignatureType         sign_type,
-								    lassoSignatureMethod       sign_method);
+								    lassoSignatureMethod       sign_method,
+								    xmlChar                   *reference_id);
 
 LASSO_EXPORT gint lasso_samlp_request_abstract_sign_signature_tmpl (LassoSamlpRequestAbstract *node,
 								    const xmlChar             *private_key_file,

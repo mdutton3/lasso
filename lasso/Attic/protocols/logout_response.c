@@ -94,9 +94,11 @@ GType lasso_logout_response_get_type() {
 }
 
 LassoNode*
-lasso_logout_response_new(gchar       *providerID,
-			  const gchar *statusCodeValue,
-			  LassoNode   *request)
+lasso_logout_response_new(gchar               *providerID,
+			  const gchar         *statusCodeValue,
+			  LassoNode           *request,
+			  lassoSignatureType   sign_type,
+			  lassoSignatureMethod sign_method)
 {
   LassoNode *response, *ss, *ssc;
   xmlChar *inResponseTo, *request_providerID, *request_relayState;
@@ -121,6 +123,14 @@ lasso_logout_response_new(gchar       *providerID,
   lasso_samlp_response_abstract_set_issueInstant(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 (const xmlChar *)time);
   xmlFree(time);
+
+  /* set the signature template */
+  if (sign_type != lassoSignatureTypeNone) {
+    lasso_samlp_response_abstract_set_signature_tmpl(LASSO_SAMLP_RESPONSE_ABSTRACT(request),
+						     sign_type,
+						     sign_method);
+  }
+
   /* ProviderID */
   lasso_lib_status_response_set_providerID(LASSO_LIB_STATUS_RESPONSE(response),
 					   providerID);
@@ -216,34 +226,34 @@ lasso_logout_response_new_from_query(gchar *query)
   return(response);
 }
 
-LassoNode *
-lasso_logout_response_new_from_request_export(gchar               *buffer,
-					      lassoNodeExportType  export_type,
-					      gchar               *providerID,
-					      gchar               *statusCodeValue)
-{
-  LassoNode *request, *response;
+/* LassoNode * */
+/* lasso_logout_response_new_from_request_export(gchar               *buffer, */
+/* 					      lassoNodeExportType  export_type, */
+/* 					      gchar               *providerID, */
+/* 					      gchar               *statusCodeValue) */
+/* { */
+/*   LassoNode *request, *response; */
 
-  g_return_val_if_fail(buffer != NULL, NULL);
+/*   g_return_val_if_fail(buffer != NULL, NULL); */
 
-  switch(export_type){
-  case lassoNodeExportTypeQuery:
-    request = lasso_logout_request_new_from_export(buffer, export_type);
-    break;
-  case lassoNodeExportTypeSoap:
-    request = lasso_logout_request_new_from_export(buffer, export_type);
-    break;
-  default:
-    message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
-    return(NULL);
-  }
+/*   switch(export_type){ */
+/*   case lassoNodeExportTypeQuery: */
+/*     request = lasso_logout_request_new_from_export(buffer, export_type); */
+/*     break; */
+/*   case lassoNodeExportTypeSoap: */
+/*     request = lasso_logout_request_new_from_export(buffer, export_type); */
+/*     break; */
+/*   default: */
+/*     message(G_LOG_LEVEL_WARNING, "Invalid export type\n"); */
+/*     return(NULL); */
+/*   } */
 
-  response = lasso_logout_response_new(providerID,
-				       statusCodeValue,
-				       request);
+/*   response = lasso_logout_response_new(providerID, */
+/* 				       statusCodeValue, */
+/* 				       request); */
 
-  return(response);
-}
+/*   return(response); */
+/* } */
 
 LassoNode *
 lasso_logout_response_new_from_soap(gchar *buffer)

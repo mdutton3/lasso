@@ -554,7 +554,8 @@ lasso_node_add_signature(LassoNode     *node,
 static gint
 lasso_node_add_signature_tmpl(LassoNode            *node,
 			      lassoSignatureType    sign_type,
-			      lassoSignatureMethod  sign_method)
+			      lassoSignatureMethod  sign_method,
+			      xmlChar              *reference_id)
 {
   LassoNodeClass *class;
 
@@ -562,7 +563,7 @@ lasso_node_add_signature_tmpl(LassoNode            *node,
 		       LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ);
 
   class = LASSO_NODE_GET_CLASS(node);
-  return (class->add_signature_tmpl(node, sign_type, sign_method));
+  return (class->add_signature_tmpl(node, sign_type, sign_method, reference_id));
 }
 
 static gchar *
@@ -1386,10 +1387,10 @@ lasso_node_impl_add_signature(LassoNode     *node,
 			LASSO_PARAM_ERROR_INVALID_VALUE);
  
   if (certificate_file != NULL) {
-    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeWithX509, sign_method);
+    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeWithX509, sign_method, 0);
   }
   else {
-    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeSimple, sign_method);
+    ret = lasso_node_add_signature_tmpl(node, lassoSignatureTypeSimple, sign_method, 0);
   }
   if (ret == 0) {
     ret = lasso_node_sign_signature_tmpl(node, private_key_file, certificate_file);
@@ -1401,11 +1402,13 @@ lasso_node_impl_add_signature(LassoNode     *node,
 static gint
 lasso_node_impl_add_signature_tmpl(LassoNode            *node,
 				   lassoSignatureType    sign_type,
-				   lassoSignatureMethod  sign_method)
+				   lassoSignatureMethod  sign_method,
+				   xmlChar              *reference_uri)
 {
   LassoNode *sign_node;
   xmlDocPtr  doc;
   xmlNodePtr signature, reference, key_info;
+  char   *uri;
 
   g_return_val_if_fail(sign_method == lassoSignatureMethodRsaSha1 || \
 		       sign_method == lassoSignatureMethodDsaSha1,
@@ -1429,9 +1432,21 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
     message(G_LOG_LEVEL_CRITICAL, "Failed to create signature template\n");
     return (LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED);
   }
+
+/*   uri = xmlMalloc(strlen(reference_uri)+1+1); */
+/*   g_sprintf(uri, "#%s", reference_uri); */
+
+  if (reference_uri != NULL) {
+    uri = xmlMalloc(strlen(reference_uri)+1+1);
+    g_sprintf(uri, "#%s", reference_uri);
+  }
+  else {
+    uri = NULL;
+  }
   reference = xmlSecTmplSignatureAddReference(signature,
 					      xmlSecTransformSha1Id,
-					      NULL, NULL, NULL);
+					      NULL, uri, NULL);
+
   if (reference == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Failed to add reference to signature template\n");
     xmlFreeNode(signature);

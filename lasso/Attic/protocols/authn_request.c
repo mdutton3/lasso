@@ -181,7 +181,8 @@ lasso_authn_request_new(const xmlChar        *providerID,
   if (sign_type != lassoSignatureTypeNone) {
     lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						    sign_type,
-						    sign_method);
+						    sign_method,
+						    id);
   }
   /* ProviderID */
   lasso_lib_authn_request_set_providerID(LASSO_LIB_AUTHN_REQUEST(request),

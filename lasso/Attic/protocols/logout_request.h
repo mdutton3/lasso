@@ -54,10 +54,12 @@ struct _LassoLogoutRequestClass {
 
 LASSO_EXPORT GType      lasso_logout_request_get_type        (void);
 
-LASSO_EXPORT LassoNode* lasso_logout_request_new             (gchar *providerID,
-							      gchar *nameIdentifier,
-							      gchar *nameQualifier,
-							      gchar *format);
+LASSO_EXPORT LassoNode* lasso_logout_request_new             (gchar               *providerID,
+							      gchar               *nameIdentifier,
+							      gchar               *nameQualifier,
+							      gchar               *format,
+							      lassoSignatureType   sign_type,
+							      lassoSignatureMethod sign_method);
 
 LASSO_EXPORT LassoNode* lasso_logout_request_new_from_export (gchar               *buffer,
 							      lassoNodeExportType  export_type);

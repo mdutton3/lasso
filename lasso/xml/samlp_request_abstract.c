@@ -145,7 +145,8 @@ lasso_samlp_request_abstract_set_signature(LassoSamlpRequestAbstract *node,
 gint
 lasso_samlp_request_abstract_set_signature_tmpl(LassoSamlpRequestAbstract *node,
 						lassoSignatureType         sign_type,
-						lassoSignatureMethod       sign_method)
+						lassoSignatureMethod       sign_method,
+						xmlChar                   *reference_id)
 {
   LassoNodeClass *class;
 
@@ -154,7 +155,7 @@ lasso_samlp_request_abstract_set_signature_tmpl(LassoSamlpRequestAbstract *node,
 
   class = LASSO_NODE_GET_CLASS(node);
 
-  return(class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method));
+  return(class->add_signature_tmpl(LASSO_NODE (node), sign_type, sign_method, reference_id));
 }
 
 gint

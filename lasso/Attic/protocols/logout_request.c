@@ -69,10 +69,12 @@ GType lasso_logout_request_get_type() {
 }
 
 LassoNode *
-lasso_logout_request_new(gchar *providerID,
-			 gchar *nameIdentifier,
-			 gchar *nameQualifier,
-			 gchar *format)
+lasso_logout_request_new(gchar               *providerID,
+			 gchar               *nameIdentifier,
+			 gchar               *nameQualifier,
+			 gchar               *format,
+			 lassoSignatureType   sign_type,
+			 lassoSignatureMethod sign_method)
 {
   LassoNode *request, *identifier;
   xmlChar *id, *time;
@@ -83,7 +85,6 @@ lasso_logout_request_new(gchar *providerID,
   id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 					     (const xmlChar *)id);
-  xmlFree(id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						lassoLibMajorVersion);
@@ -95,6 +96,17 @@ lasso_logout_request_new(gchar *providerID,
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						(const xmlChar *)time);
   xmlFree(time);
+
+  /* set the signature template */
+  if (sign_type != lassoSignatureTypeNone) {
+    lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						    sign_type,
+						    sign_method,
+						    id);
+  }
+
+  xmlFree(id);
+
   /* ProviderID */
   lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request),
 					  providerID);

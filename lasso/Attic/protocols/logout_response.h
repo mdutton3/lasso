@@ -55,17 +55,19 @@ struct _LassoLogoutResponseClass {
 
 LASSO_EXPORT GType      lasso_logout_response_get_type                (void);
 
-LASSO_EXPORT LassoNode* lasso_logout_response_new                     (gchar       *providerID,
-								       const gchar *statusCodeValue,
-								       LassoNode   *request);
+LASSO_EXPORT LassoNode* lasso_logout_response_new                     (gchar               *providerID,
+								       const gchar         *statusCodeValue,
+								       LassoNode           *request,
+								       lassoSignatureType   sign_type,
+								       lassoSignatureMethod sign_method);
 
 LASSO_EXPORT LassoNode* lasso_logout_response_new_from_export         (gchar               *buffer,
 								       lassoNodeExportType  export_type);
 
-LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_export (gchar               *buffer,
-								       lassoNodeExportType  export_type,
-								       gchar               *providerID,
-								       gchar               *statusCodeValue);
+/* LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_export (gchar               *buffer, */
+/* 								       lassoNodeExportType  export_type, */
+/* 								       gchar               *providerID, */
+/* 								       gchar               *statusCodeValue); */
 
 #ifdef __cplusplus
 }

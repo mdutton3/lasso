@@ -125,7 +125,8 @@ struct _LassoNodeClass {
 				     const xmlChar *certificate_file);
   gint       (* add_signature_tmpl) (LassoNode            *node,
 				     lassoSignatureType    sign_type,
-				     lassoSignatureMethod  sign_method);
+				     lassoSignatureMethod  sign_method,
+				     xmlChar              *reference_id);
   gchar*     (* build_query)        (LassoNode     *node);
   xmlNodePtr (* get_xmlNode)        (LassoNode     *node);
   void       (* new_child)          (LassoNode     *node,
