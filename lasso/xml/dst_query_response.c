@@ -71,16 +71,17 @@ static LassoNodeClass *parent_class = NULL;
 static void
 insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 {
-	/* insure children are kept in same namespace */
 	xmlNode *t;
 
 	t = xmlnode->children;
+	xmlSetNs(xmlnode, ns);
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
 			t = t->next;
 			continue;
 		}
-		xmlSetNs(xmlnode, ns);
+		if (t->ns == NULL)
+			xmlSetNs(xmlnode, ns);
 		insure_namespace(t, ns);
 		t = t->next;
 	}
@@ -93,9 +94,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNs *ns;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(xmlnode, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
-		      LASSO_DST_QUERY_RESPONSE(node)->prefixServiceType);
-	xmlSetNs(xmlnode, ns);
+	ns = xmlNewNs(NULL, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
+			LASSO_DST_QUERY_RESPONSE(node)->prefixServiceType);
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;
