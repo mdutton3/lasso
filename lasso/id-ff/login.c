@@ -166,7 +166,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 
 	if (strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED) != 0 &&
 			strcmp(nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ANY) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s", nameIDPolicy);
+		message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy: %s", nameIDPolicy);
 		/* we consider NameIDPolicy as empty (none value) if its value is unknown/invalid */
 		return TRUE;
 	}
@@ -200,7 +200,7 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
 	if (strcmp(consent, LASSO_LIB_CONSENT_INAPPLICABLE) == 0)
 		return TRUE;
 
-	message(G_LOG_LEVEL_CRITICAL, "Unknown consent value : %s", consent);
+	message(G_LOG_LEVEL_CRITICAL, "Unknown consent value: %s", consent);
 	/* we consider consent as empty if its value is unknown/invalid */
 	return TRUE;
 }
