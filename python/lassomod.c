@@ -213,7 +213,8 @@ static PyMethodDef lasso_methods[] = {
   {"federation_termination_build_notification_msg",   federation_termination_build_notification_msg,   METH_VARARGS},
   {"federation_termination_destroy",                  federation_termination_destroy,                  METH_VARARGS},
   {"federation_termination_init_notification",        federation_termination_init_notification,        METH_VARARGS},
-  {"federation_termination_process_notification_msg", federation_termination_process_notification_msg, METH_VARARGS},
+  {"federation_termination_load_notification_msg",    federation_termination_load_notification_msg,    METH_VARARGS},
+  {"federation_termination_process_notification",     federation_termination_process_notification,     METH_VARARGS},
 
   /* py_lecp.h */
   {"lecp_new",                                 lecp_new,                                 METH_VARARGS},

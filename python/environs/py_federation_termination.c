@@ -56,8 +56,9 @@ PyObject *federation_termination_getattr(PyObject *self, PyObject *args) {
   federation_termination = LassoFederationTermination_get(federation_termination_obj);
 
   if (!strcmp(attr, "__members__"))
-    return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
-			 "msg_relayState");
+    return Py_BuildValue("[sssss]", "user", "msg_url", "msg_body",
+			 "msg_relayState",
+			 "nameIdentifier");
 
   if (!strcmp(attr, "user"))
     return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->user));
@@ -67,26 +68,26 @@ PyObject *federation_termination_getattr(PyObject *self, PyObject *args) {
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_body));
   if (!strcmp(attr, "msg_relayState"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->msg_relayState));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(federation_termination)->nameIdentifier));
 
   Py_INCREF(Py_None);
   return (Py_None);
 }
 
 PyObject *federation_termination_new(PyObject *self, PyObject *args) {
-  PyObject    *server_obj, *user_obj;
   LassoFederationTermination *federation_termination;
-  gint         provider_type;
+  PyObject *server_obj;
+  gint provider_type;
 
-  if (CheckArgs(args, "OOI:federation_termination_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "OOi:federation_termination_new",
-			 &server_obj, &user_obj, &provider_type))
+  if (CheckArgs(args, "OI:federation_termination_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oi:federation_termination_new",
+			 &server_obj, &provider_type))
       return NULL;
   }
   else return NULL;
 
   federation_termination = lasso_federation_termination_new(LassoServer_get(server_obj),
-			    LassoUser_get(user_obj),
-
 			    provider_type);
 
   return (LassoFederationTermination_wrap(federation_termination));
@@ -142,21 +143,37 @@ PyObject *federation_termination_init_notification(PyObject *self, PyObject *arg
   return(int_wrap(codeError));
 }
 
-PyObject *federation_termination_process_notification_msg(PyObject *self, PyObject *args) {
-  PyObject *federation_termination_obj;
+PyObject *federation_termination_load_notification_msg(PyObject *self, PyObject *args){
+  PyObject *notification_obj;
   gchar    *notification_msg;
   gint      notification_method;
   gint      codeError;
 
-  if (CheckArgs(args, "OSI:federation_termination_process_notification_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "Osi:federation_termination_process_notification_msg",
-			 &federation_termination_obj, &notification_msg, &notification_method))
+  if (CheckArgs(args, "OSI:federation_termination_load_notification_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Osi:federation_termination_load_notification_msg",
+			 &notification_obj, &notification_msg, &notification_method))
       return NULL;
   }
   else return NULL;
 
-  codeError = lasso_federation_termination_process_notification_msg(LassoFederationTermination_get(federation_termination_obj),
-								    notification_msg, notification_method);
+  codeError = lasso_federation_termination_load_notification_msg(LassoFederationTermination_get(notification_obj),
+								 notification_msg, notification_method);
+
+  return(int_wrap(codeError));
+}
+
+PyObject *federation_termination_process_notification(PyObject *self, PyObject *args) {
+  PyObject *federation_termination_obj;
+  gint      codeError;
+
+  if (CheckArgs(args, "O:federation_termination_process_notification")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:federation_termination_process_notification",
+			 &federation_termination_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  codeError = lasso_federation_termination_process_notification(LassoFederationTermination_get(federation_termination_obj));
 
   return(int_wrap(codeError));
 }

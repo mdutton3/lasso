@@ -1064,20 +1064,20 @@ class Logout(ProfileContext):
     def process_response_msg(self, response_msg, response_method):
         return lassomod.logout_process_response_msg(self, response_msg, response_method);
 
-class FederationTermination:
+class FederationTermination(ProfileContext):
     """\brief Short desc
 
     Long desc
     """
-
-    def __isprivate(self, name):
-        return name == '_o'
-
     def __init__(self, _obj):
         """
         The constructor
         """
         self._o = _obj
+        ProfileContext.__init__(self, _obj=_obj)
+
+    def __isprivate(self, name):
+        return name == '_o'
 
     def __getattr__(self, name):
         if self.__isprivate(name):
@@ -1090,25 +1090,25 @@ class FederationTermination:
                 ret = User(_obj=ret)
         return ret
 
-    def new(cls, server, user, provider_type):
-        obj = lassomod.federation_termination_new(server, user, provider_type)
+    def new(cls, server, provider_type):
+        obj = lassomod.federation_termination_new(server, provider_type)
         return FederationTermination(obj)
     new = classmethod(new)
-
-    def add_assertion(self, remote_providerID, assertion):
-        lassmod.user_add_assertion(remote_providerID, assertion);
 
     def build_notification_msg(self):
         return lassomod.federation_termination_build_notification_msg(self)
 
     def destroy(self):
-        pass
+        lassomod.federation_termination_destroy(self)
 
     def init_notification(self, remote_providerID = None):
-        return lassomod.federation_termination_init_notification(self, remote_providerID);
+        return lassomod.federation_termination_init_notification(self, remote_providerID)
 
-    def process_notification_msg(self, notification_msg, notification_method):
-        return lassomod.federation_termination_process_notification_msg(self, notification_msg, notification_method);
+    def load_notification_msg(self, notification_msg, notification_method):
+        return lassomod.federation_termination_load_notification_msg(self, notification_msg, notification_method)
+
+    def process_notification(self):
+        return lassomod.federation_termination_process_notification(self)
 
 
 class RegisterNameIdentifier:

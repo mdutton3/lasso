@@ -54,24 +54,23 @@ struct _LassoFederationTerminationClass {
 
 };
 
-LASSO_EXPORT GType                       lasso_federation_termination_get_type                 (void);
+LASSO_EXPORT GType                       lasso_federation_termination_get_type               (void);
 
-LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new                      (LassoServer *server,
-												LassoUser   *user,
-												gint         provider_type);
+LASSO_EXPORT LassoFederationTermination *lasso_federation_termination_new                    (LassoServer *server,
+											      gint         provider_type);
   
-LASSO_EXPORT gint                        lasso_federation_termination_build_notification_msg   (LassoFederationTermination *defederation);
+LASSO_EXPORT gint                        lasso_federation_termination_build_notification_msg (LassoFederationTermination *defederation);
 
-LASSO_EXPORT void                        lasso_federation_termination_destroy                  (LassoFederationTermination *defederation);
+LASSO_EXPORT void                        lasso_federation_termination_destroy                (LassoFederationTermination *defederation);
 
-LASSO_EXPORT gchar*                      lasso_federation_termination_dump                    (LassoFederationTermination *defederation); 
+LASSO_EXPORT gint                        lasso_federation_termination_init_notification      (LassoFederationTermination *defederation,
+											      gchar                 *remote_providerID);
 
-LASSO_EXPORT gint                        lasso_federation_termination_init_notification        (LassoFederationTermination *defederation,
-												gchar                 *remote_providerID);
+LASSO_EXPORT gint                        lasso_federation_termination_load_notification_msg  (LassoFederationTermination *defederation,
+											      gchar                      *request_msg,
+											      lassoHttpMethods          request_method);
   
-LASSO_EXPORT gint                        lasso_federation_termination_process_notification_msg (LassoFederationTermination *defederation,
-												gchar                      *request_msg,
-												 lassoHttpMethods         request_method);
+LASSO_EXPORT gint                        lasso_federation_termination_process_notification   (LassoFederationTermination *defederation);
 
 
 
