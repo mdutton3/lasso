@@ -76,10 +76,9 @@ LASSO_EXPORT LassoDiscoInsertEntry* lasso_discovery_add_insert_entry(
 	LassoDiscovery                *discovery,
 	const gchar                   *serviceType,
 	const gchar                   *providerID,
-	LassoDiscoDescription         *description, /* Was GList *descriptions before */
+	LassoDiscoDescription         *description,
 	LassoDiscoResourceID          *resourceID,
-	LassoDiscoEncryptedResourceID *encryptedResourceID,
-	const char                    *option); /* Was GList *options before */
+	LassoDiscoEncryptedResourceID *encryptedResourceID);
 
 LASSO_EXPORT gint                   lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 								     const gchar    *entryID);
@@ -87,7 +86,7 @@ LASSO_EXPORT gint                   lasso_discovery_add_remove_entry(LassoDiscov
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_service_type(
 	LassoDiscovery *discovery,
 	const gchar    *serviceType,
-	const char     *options); /* Was GList *options before */
+	const char     *options);
 
 LASSO_EXPORT gint                   lasso_discovery_add_resource_offering(
 	LassoDiscovery             *discovery,

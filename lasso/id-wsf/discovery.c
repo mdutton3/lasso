@@ -107,12 +107,10 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 				 const gchar                   *providerID,
 				 LassoDiscoDescription         *description,
 				 LassoDiscoResourceID          *resourceID,
-				 LassoDiscoEncryptedResourceID *encryptedResourceID,
-				 const char                    *option)
+				 LassoDiscoEncryptedResourceID *encryptedResourceID)
 {
 	LassoDiscoInsertEntry *entry;
 	LassoDiscoModify *modify;
-	LassoDiscoOptions *opts;
 	LassoDiscoResourceOffering *resource;
 	LassoDiscoServiceInstance *service;
 
@@ -133,12 +131,6 @@ lasso_discovery_add_insert_entry(LassoDiscovery                *discovery,
 	 so increment reference count */
 	resource->ResourceID = g_object_ref(resourceID);
 	resource->EncryptedResourceID = g_object_ref(encryptedResourceID);
-	/* optional data */
-	if (option != NULL) {
-		opts = lasso_disco_options_new();
-		opts->Option = g_list_append(opts->Option, g_strdup(option));
-		resource->Options = opts;
-	}
 
 	entry = lasso_disco_insert_entry_new();
 	entry->ResourceOffering = resource;
