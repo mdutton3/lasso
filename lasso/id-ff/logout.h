@@ -69,7 +69,9 @@ LASSO_EXPORT GType        lasso_logout_get_type               (void);
 
 LASSO_EXPORT LassoLogout* lasso_logout_new                    (LassoServer       *server,
 							       lassoProviderType  provider_type);
-  
+
+LassoLogout*              lasso_logout_new_from_dump          (LassoServer *server, gchar *dump);
+
 LASSO_EXPORT gint         lasso_logout_build_request_msg      (LassoLogout *logout);
 
 LASSO_EXPORT gint         lasso_logout_build_response_msg     (LassoLogout *logout);
