@@ -155,17 +155,24 @@ VERSION_UNDERSCORED=`echo $VERSION | $SED -e 's/\./_/g'`
 AC_SUBST(VERSION_UNDERSCORED)
 
 
-version_decimal=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
-windows_version=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
+VERSION_DECIMAL=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
+WINDOWS_VERSION=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
 
 dnl Add versionning & package defines to lasso_config.h
 AC_DEFINE_UNQUOTED(LASSO_VERSION_MAJOR, $VERSION_MAJOR, [Major version number])
 AC_DEFINE_UNQUOTED(LASSO_VERSION_MINOR, $VERSION_MINOR, [Minor version number])
 AC_DEFINE_UNQUOTED(LASSO_VERSION_SUBMINOR, $VERSION_RELEASE, [Release version number])
-AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $version_decimal, [Release version as a decimal])
+AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $VERSION_DECIMAL, [Release version as a decimal])
+
+dnl Add versionning & package substitions.
+AC_SUBST(VERSION_MAJOR)
+AC_SUBST(VERSION_MINOR)
+AC_SUBST(VERSION_RELEASE)
+AC_SUBST(VERSION_DECIMAL)
 
 dnl Dirty hack in order to have dynamic resource version numbering.
-AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $windows_version, [Windows version of the lasso version])
+AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $WINDOWS_VERSION, [Windows version of the lasso version])
+AC_SUBST(WINDOWS_VERSION)
 
 dnl CURRENT, REVISION, AGE
 dnl - library source changed -> increment REVISION
@@ -181,6 +188,13 @@ dnl - interfaces removed -> AGE = 0
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
 LASSO_VERSION_INFO="3:0:0"
 AC_SUBST(LASSO_VERSION_INFO)
+
+dnl Compute the minimal supported ABI version for Win32 scripts and resources files.
+MINIMAL_VERSION=`echo $LASSO_VERSION_INFO | $AWK -F: '{printf("%d\n",$1-$3)};'`
+UPCASED_DLL_FILENAME="LIBLASSO-$MINIMAL_VERSION.DLL"
+DLL_FILENAME="liblasso-$MINIMAL_VERSION.dll"
+AC_SUBST(UPCASED_DLL_FILENAME)
+AC_SUBST(DLL_FILENAME)
 
 dnl ==========================================================================
 dnl Swig
@@ -589,9 +603,12 @@ AC_ARG_ENABLE(wsf, [  --enable-wsf            enable experimental ID-WSF],
 		enable_wsf="yes", enable_wsf="no")
 
 AM_CONDITIONAL([WSF_ENABLED],[test "x$enable_wsf" = "xyes"])
+LASSO_WSF_ENABLE="undef LASSO_WSF_ENABLE" 
 if test "x$enable_wsf" = "xyes"; then
 	AC_DEFINE(LASSO_WSF_ENABLED, [], [Define if ID-WSF support is enabled])
+        LASSO_WSF_ENABLE="define LASSO_WSF_ENABLE" 
 fi
+AC_SUBST(LASSO_WSF_ENABLE)
 
 
 dnl ==========================================================================
@@ -748,6 +765,7 @@ perl/Makefile
 php/Makefile
 python/Makefile
 swig/Makefile
+swig/Lasso.i
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile
@@ -756,7 +774,11 @@ tests/data/lecp1-la/Makefile
 tests/data/sp1-la/Makefile
 lasso.pc
 win32/Makefile
+win32/lasso.rc
 win32/msvc/Makefile
+win32/msvc/lasso.dsp
+win32/msvc/lasso_config.h
+win32/msvc/java/Makefile
 win32/msvc/php/Makefile
 win32/msvc/python/Makefile
 win32/nsis/Makefile
