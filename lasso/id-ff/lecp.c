@@ -37,9 +37,9 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 {
 	LassoProfile *profile;
 	gchar *assertionConsumerServiceURL;
-	xmlNode *message, *authn_request_node;
-	xmlOutputBufferPtr buf;
-	xmlCharEncodingHandlerPtr handler = NULL;
+	xmlNode *message;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
 
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
@@ -69,21 +69,8 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	LASSO_SAMLP_REQUEST_ABSTRACT(lecp->authnRequestEnvelope->AuthnRequest)->certificate_file =
 		LASSO_PROFILE(lecp)->server->certificate;
 	message = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
-	for (authn_request_node = message->children;
-			authn_request_node && strcmp(authn_request_node->name, "AuthnRequest") != 0;
-			authn_request_node = authn_request_node->next);
-
-	if (authn_request_node == NULL)
-		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	
-	/*
-	rc = lasso_sign_node(authn_request_node, "RequestID",
-			LASSO_SAMLP_REQUEST_ABSTRACT(
-				lecp->authnRequestEnvelope->AuthnRequest)->RequestID,
-			LASSO_PROFILE(lecp)->server->private_key,
-			LASSO_PROFILE(lecp)->server->certificate);
-			*/
-	
+	/* message is not SOAP but straight XML */
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler); 
 	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
@@ -91,6 +78,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 
 	profile->msg_body = g_strdup(buf->conv ? buf->conv->content : buf->buffer->content);
 	xmlOutputBufferClose(buf);
+	xmlFreeNode(message);
 
 	if (profile->msg_body == NULL) {
 		message(G_LOG_LEVEL_CRITICAL,
