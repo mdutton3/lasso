@@ -28,6 +28,49 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+xmlChar *
+lasso_server_dump(LassoServer *server)
+{
+  LassoProvider *provider;
+  LassoNode *server_node, *providers_node;
+  LassoNodeClass *server_class, *providers_class;
+  xmlChar *signature_method_str, *dump;
+  gint i;
+
+  server_node = lasso_node_new();
+  server_class = LASSO_NODE_GET_CLASS(server_node);
+  server_class->set_name(server_node, "Server");
+
+  /* set private key and signature method */
+  if(server->private_key)
+    server_class->set_prop(server_node, "PrivateKey", server->private_key);
+
+  /* TODO : add the signature method in the dump */
+
+  /* set public key, certificate, metadata */
+  provider = LASSO_PROVIDER(server);
+  server_class->add_child(server_node, provider->metadata, FALSE);
+  if(provider->public_key)
+    server_class->set_prop(server_node, "PublicKey", provider->public_key);
+  if(provider->certificate)
+    server_class->set_prop(server_node, "Certificate", provider->certificate);
+
+  /* set Providers node */
+  providers_node = lasso_node_new();
+  providers_class = LASSO_NODE_GET_CLASS(providers_node);
+  providers_class->set_name(providers_node, "Providers");
+
+  /* add providers */
+  for(i = 0; i<server->providers->len; i++){
+    dump = lasso_provider_dump(g_ptr_array_index(server->providers, i));
+    providers_class->add_child(providers_node, lasso_node_new_from_dump(dump), TRUE);
+  }
+
+  server_class->add_child(server_node, providers_node, FALSE);
+
+  return(lasso_node_export(server_node));
+}
+
 gint
 lasso_server_add_provider(LassoServer *server,
 			  gchar       *metadata,
@@ -71,7 +114,6 @@ static void
 lasso_server_instance_init(LassoServer *server)
 {
   server->providers = g_ptr_array_new();
-
   server->private_key = NULL;
 }
 
@@ -126,6 +168,16 @@ lasso_server_new(const gchar *metadata,
   //LASSO_PROVIDER(server)->metadata = lasso_node_new();
   //LASSO_NODE_CLASS(LASSO_PROVIDER(server)->metadata)->set_xmlNode(LASSO_PROVIDER(server)->metadata, root); 
   LASSO_PROVIDER(server)->metadata = lasso_node_new_from_xmlNode(root);
+
+  return(server);
+}
+
+LassoServer *
+lasso_server_new_from_dump(xmlChar *dump)
+{
+  LassoServer *server;
+
+  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
 
   return(server);
 }

@@ -29,52 +29,53 @@
 /*****************************************************************************/
 
 static void
-lasso_user_node_identity_add(xmlChar *key, LassoIdentity *identity, LassoNode *userNode)
+lasso_user_dump_assertion(gpointer   key,
+			  gpointer   value,
+			  LassoNode *assertions)
 {
-  LassoNode *node, *child;
-  LassoNodeClass *class;
 
-  /* set the Identity node */
-/*   node = lasso_node_new(); */
-/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
-/*   class->set_name(LASSO_NODE(node), "Identity"); */
+}
 
-  /* add the remote provider id */
-/*   class->new_child(node, "RemoteProviderID", key, FALSE); */
+static void
+lasso_user_dump_identity(gpointer   key,
+			 gpointer   value,
+			 LassoNode *identities)
+{
+  LassoNode      *identity_node;
+  LassoNodeClass *identity_class;
+  xmlChar        *dump;
 
-  /* add the local name identifier */
-/*   child = lasso_node_new(); */
-/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
-/*   class->set_name(LASSO_NODE(node), "LocalNameIdentifier"); */
-/*   class->lasso_node_add_child(child, identity->local_nameIdentifier); */
-/*   class->lasso_node_add_child(node, child); */
-  
-  /* add the remote provider id */
-/*   child = lasso_node_new(); */
-/*   class = LASSO_NODE_GET_CLASS(LASSO_NODE(node)); */
-/*   class->set_name(LASSO_NODE(node), "RemoteNameIdentifier"); */
-/*   lasso_node_add_child(child, identity->remote_nameIdentifier); */
-/*   lasso_node_add_child(node, child); */
-
-  /* add the identity node to the user node */
-/*   lasso_node_add_child(userNode, identity); */
+  dump = lasso_identity_dump(value);
+  identity_node = lasso_node_new_from_dump(dump);
+  identity_class = LASSO_NODE_GET_CLASS(identity_node);
+  identity_class->add_child(identities, identity_node, TRUE);
 }
 
 xmlChar *
-lasso_user_export(LassoUser *user)
+lasso_user_dump(LassoUser *user)
 {
-  LassoNode *user_node, *identities, *assertions, *assertion_artifacts;
-  LassoNodeClass *class;
+  LassoNode      *user_node, *assertions_node, *identities_node;
+  LassoNodeClass *user_class, *assertions_class, *identities_class;
 
-  /* set the user node  */
   user_node = lasso_node_new();
-  class = LASSO_NODE_GET_CLASS(LASSO_NODE(user_node));
-  class->set_name(LASSO_NODE(user_node), "User");
+  user_class = LASSO_NODE_GET_CLASS(user_node);
+  user_class->set_name(user_node, "User");
 
-  /* insert all of the identity of the user */
-  g_hash_table_foreach(user->identities, lasso_user_node_identity_add, user);
-  
-  return(lasso_node_export(user));
+  /* dump the assertions */
+  assertions_node = lasso_node_new();
+  assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
+  assertions_class->set_name(assertions_node, "Assertions");
+  g_hash_table_foreach(user->assertions, lasso_user_dump_assertion, assertions_node);
+  user_class->add_child(user_node, assertions_node, FALSE);
+
+  /* dump the identities */
+  identities_node = lasso_node_new();
+  identities_class = LASSO_NODE_GET_CLASS(identities_node);
+  identities_class->set_name(identities_node, "Identities");
+  g_hash_table_foreach(user->identities, lasso_user_dump_identity, identities_node);
+  user_class->add_child(user_node, identities_node, FALSE);
+
+  return(lasso_node_export(user_node));
 }
 
 void
@@ -82,45 +83,23 @@ lasso_user_add_assertion(LassoUser *user,
 			 xmlChar   *remote_providerID,
 			 LassoNode *assertion)
 {
-  g_hash_table_insert(user->assertions, remote_providerID, assertion);
+  g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
 }
 
 LassoNode *
 lasso_user_get_assertion(LassoUser *user,
-			 xmlChar   *nameIdentifier)
+			 xmlChar   *remote_providerID)
 {
-  return(g_hash_table_lookup(user->assertions, nameIdentifier));
+  return(g_hash_table_lookup(user->assertions, remote_providerID));
 }
 
-void
-lasso_user_store_response(LassoUser     *user,
-			  xmlChar       *assertionArtifact,
-			  LassoResponse *response)
-{
-  g_hash_table_insert(user->assertion_artifacts,
-		      g_strdup(assertionArtifact),
-		      lasso_node_copy(LASSO_NODE(response)));
-}
-
-LassoNode *lasso_user_get_assertionArtifact(LassoUser *user,
-					    xmlChar   *artifact)
-{
-  LassoNode *assertion;
-
-  assertion = g_hash_table_lookup(user->assertion_artifacts, artifact);
-  if(assertion){
-    g_hash_table_steal(user->assertion_artifacts, artifact);
-  }
-
-  return(assertion);
-}
 
 void
 lasso_user_add_identity(LassoUser     *user,
 			xmlChar       *remote_providerID,
 			LassoIdentity *identity)
 {
-  g_hash_table_insert(user->identities, remote_providerID, identity);
+  g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 }
 
 LassoIdentity*
@@ -129,6 +108,7 @@ lasso_user_get_identity(LassoUser *user,
 {
   return(g_hash_table_lookup(user->identities, remote_providerID));
 }
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -139,7 +119,6 @@ lasso_user_instance_init(LassoUser *user)
 {
   user->identities = g_hash_table_new(g_str_hash,  g_str_equal);
   user->assertions = g_hash_table_new(g_str_hash,  g_str_equal);
-  user->assertion_artifacts = g_hash_table_new(g_str_hash,  g_str_equal);
 }
 
 static void
@@ -172,15 +151,43 @@ GType lasso_user_get_type() {
 }
 
 LassoUser*
-lasso_user_new(xmlChar *user_str)
+lasso_user_new()
 {
   LassoUser *user;
 
   user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
 
-  if(user_str){
-    /* parse the user str */
+  return(user);
+}
+
+LassoUser*
+lasso_user_new_from_dump(xmlChar *dump)
+{
+  LassoNode *user_node, *identities_node;
+  LassoNodeClass *identities_class;
+  LassoIdentity *identity;
+  xmlNodePtr xmlNode;
+  LassoUser *user;
+  xmlChar *remote_providerID;
+
+  user = LASSO_USER(g_object_new(LASSO_TYPE_USER, NULL));
+
+  user_node = lasso_node_new_from_dump(dump);
+
+  /* set the assertions */
+
+  /* set the identities */
+  identities_node = lasso_node_get_child(user, "Identities", NULL);
+  identities_class = LASSO_NODE_GET_CLASS(user_node);
+  xmlNode = identities_class->get_xmlNode(identities_node);
+  xmlNode = xmlNode->children;
+  while(xmlNode){
+    if(xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(xmlNode->name, "Identity")){
+      identity = lasso_identity_new(xmlGetProp(xmlNode, "RemoteProviderID"));
+      lasso_identity_set_localNameIdentifier(user);
+    }
   }
+
 
   return(user);
 }

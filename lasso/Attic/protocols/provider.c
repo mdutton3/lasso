@@ -29,6 +29,26 @@
 /*****************************************************************************/
 
 xmlChar *
+lasso_provider_dump(LassoProvider *provider)
+{
+  LassoNode *provider_node;
+  LassoNodeClass *provider_class;
+
+  provider_node = lasso_node_new();
+
+  /* set the public key, certificate, metadata */
+  provider_class = LASSO_NODE_GET_CLASS(provider_node);
+  provider_class->set_name(provider_node, "Provider");
+  provider_class->add_child(provider_node, provider->metadata, FALSE);
+  if(provider->public_key)
+    provider_class->set_prop(provider_node, "PublicKey", provider->public_key);
+  if(provider->certificate)
+    provider_class->set_prop(provider_node, "Certificate", provider->certificate);
+
+  return(lasso_node_export(provider_node));
+}
+
+xmlChar *
 lasso_provider_get_assertionConsumerServiceURL(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL));
@@ -96,9 +116,7 @@ static xmlChar *lasso_provider_get_direct_child_content(LassoProvider *provider,
 static void
 lasso_provider_instance_init(LassoProvider *provider)
 {
-    LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(provider));
 
-    class->set_name(LASSO_NODE(provider), "Provider");
 }
 
 static void
@@ -121,7 +139,7 @@ GType lasso_provider_get_type() {
       (GInstanceInitFunc) lasso_provider_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
+    this_type = g_type_register_static(G_TYPE_OBJECT,
 				       "LassoProvider",
 				       &this_info, 0);
   }

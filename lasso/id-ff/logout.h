@@ -31,6 +31,8 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/environs/profile_context.h>
+#include <lasso/protocols/logout_request.h>
 
 #define LASSO_TYPE_LOGOUT (lasso_logout_get_type())
 #define LASSO_LOGOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT, LassoLogout))
@@ -43,7 +45,9 @@ typedef struct _LassoLogout LassoLogout;
 typedef struct _LassoLogoutClass LassoLogoutClass;
 
 struct _LassoLogout {
-  LassoContext parent;
+  LassoProfileContext parent;
+  int method;
+  int provider_type;
 
   /*< private >*/
 };
@@ -54,12 +58,12 @@ struct _LassoLogoutClass {
 };
 
 LASSO_EXPORT GType        lasso_logout_get_type        (void);
-LASSO_EXPORT LassoLogout *lasso_logout_new             (char *peer_providerID);
+LASSO_EXPORT LassoLogout *lasso_logout_new             (LassoServer *server,
+							LassoUser   *user,
+							gint         provider_type);
 
-LASSO_EXPORT xmlChar     *lasso_logout_build_request   (LassoLogout *logout);
-LASSO_EXPORT xmlChar     *lasso_logout_process_request (LassoLogout *logout,
-							gchar       *request,
-							gint         request_method);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

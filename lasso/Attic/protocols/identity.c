@@ -28,6 +28,40 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+xmlChar *
+lasso_identity_dump(LassoIdentity *identity)
+{
+  LassoNode *identity_node, *nameIdentifier;
+  LassoNodeClass *identity_class, *class;
+
+  identity_node = lasso_node_new();
+  identity_class = LASSO_NODE_GET_CLASS(identity_node);
+  identity_class->set_name(identity_node, "Identity");
+
+  /* set the remote providerID */
+  identity_class->set_prop(identity_node, "RemoteProviderID", identity->remote_providerID);
+
+  /* add the remote name identifier */
+  if(identity->remote_nameIdentifier){
+    nameIdentifier = lasso_node_new();
+    class = LASSO_NODE_GET_CLASS(nameIdentifier);
+    class->set_name(nameIdentifier, "RemoteNameIdentifier");
+    class->add_child(nameIdentifier, identity->remote_nameIdentifier, FALSE);
+    identity_class->add_child(identity_node, nameIdentifier, FALSE);
+  }
+
+  /* add the local name identifier */
+  if(identity->local_nameIdentifier){
+    nameIdentifier = lasso_node_new();
+    class = LASSO_NODE_GET_CLASS(nameIdentifier);
+    class->set_name(nameIdentifier, "LocalNameIdentifier");
+    class->add_child(nameIdentifier, identity->local_nameIdentifier, FALSE);
+    identity_class->add_child(identity_node, nameIdentifier, FALSE);
+  }
+
+  return(lasso_node_export(identity_node));
+}
+
 void
 lasso_identity_set_local_nameIdentifier(LassoIdentity *identity,
 					LassoNode     *nameIdentifier)
@@ -88,7 +122,7 @@ GType lasso_identity_get_type() {
       (GInstanceInitFunc) lasso_identity_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
+    this_type = g_type_register_static(G_TYPE_OBJECT,
 				       "LassoIdentity",
 				       &this_info, 0);
   }
@@ -103,6 +137,16 @@ lasso_identity_new(gchar *remote_providerID)
   identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
   identity->remote_providerID = g_strdup(remote_providerID);
+
+  return(identity);
+}
+
+LassoIdentity*
+lasso_identity_new_from_dump(xmlChar *dump)
+{
+  LassoIdentity *identity;
+
+  identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
   return(identity);
 }

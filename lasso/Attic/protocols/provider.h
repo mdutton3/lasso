@@ -42,7 +42,7 @@ typedef struct _LassoProvider LassoProvider;
 typedef struct _LassoProviderClass LassoProviderClass;
 
 struct _LassoProvider {
-  LassoNode parent;
+  GObject parent;
 
   LassoNode *metadata;
 
@@ -53,7 +53,7 @@ struct _LassoProvider {
 };
 
 struct _LassoProviderClass {
-  LassoNodeClass parent;
+  GObjectClass parent;
 };
 
 LASSO_EXPORT GType          lasso_provider_get_type                         (void);

@@ -51,7 +51,6 @@ struct _LassoUser {
   /*< public >*/
   GHashTable *assertions;          /* hash for assertions with nameIdentifier as key */
   GHashTable *identities;          /* hash for identities with remote ProviderID as key */
-  GHashTable *assertion_artifacts; /* hash for temporary assertions with AssertionArtifact as key */
 
   /*< private >*/
 };
@@ -61,7 +60,10 @@ struct _LassoUserClass {
 };
 
 LASSO_EXPORT GType          lasso_user_get_type              (void);
-LASSO_EXPORT LassoUser*     lasso_user_new                   (xmlChar *user_str);
+LASSO_EXPORT LassoUser     *lasso_user_new                   (void);
+LASSO_EXPORT LassoUser     *lasso_user_new_from_dump         (xmlChar *dump);
+
+LASSO_EXPORT xmlChar       *lasso_user_dump                  (LassoUser *user);
 
 LASSO_EXPORT void           lasso_user_add_assertion         (LassoUser *user,
 							      xmlChar   *remote_providerID,
@@ -69,13 +71,6 @@ LASSO_EXPORT void           lasso_user_add_assertion         (LassoUser *user,
 
 LASSO_EXPORT LassoNode     *lasso_user_get_assertion         (LassoUser *user,
 							      xmlChar   *nameIdentifier);
-
-LASSO_EXPORT void           lasso_user_store_response        (LassoUser     *user,
-							      xmlChar       *assertionArtifact,
-							      LassoResponse *response);
-
-LASSO_EXPORT LassoNode     *lasso_user_get_assertionArtifact (LassoUser *user,
-							      xmlChar   *artifact);
 
 LASSO_EXPORT void           lasso_user_add_identity          (LassoUser     *user,
 							      xmlChar       *remote_providerID,

@@ -61,18 +61,17 @@ LASSO_EXPORT LassoServer*   lasso_server_new                    (const gchar *me
 								 const gchar *private_key,
 								 const gchar *certificate,
 								 guint        signature_method);
+LASSO_EXPORT LassoServer   *lasso_server_new_from_dump          (xmlChar *dump);
 
 LASSO_EXPORT gint           lasso_server_add_provider           (LassoServer *server,
 								 gchar       *metadata,
 								 const gchar *public_key,
 								 const gchar *certificate);
 
+LASSO_EXPORT xmlChar       *lasso_server_dump                   (LassoServer *server);
+
 LASSO_EXPORT LassoProvider* lasso_server_get_provider           (LassoServer *server,
 								 gchar       *providerID);
-
-LASSO_EXPORT gint           lasso_server_set_security           (gchar *private_key,
-								 gchar *public_key,
-								 gchar *certificate);
 
 
 #ifdef __cplusplus
