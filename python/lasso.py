@@ -642,6 +642,11 @@ class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_logout_process_response_msg')
 
+    def reset_session_index(self):
+        errorCode = lassomod.lasso_logout_reset_session_index(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_reset_session_index')
+
     def validate_request(self):
         errorCode = lassomod.lasso_logout_validate_request(self)
         if errorCode:
