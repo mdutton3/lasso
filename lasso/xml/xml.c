@@ -669,10 +669,15 @@ static xmlChar *
 lasso_node_impl_get_attr_value(LassoNode     *node,
 			       const xmlChar *name)
 {
+  LassoAttr *prop;
+
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
 
-  return (lasso_node_get_attr(node, name)->children->content);
+  prop = lasso_node_get_attr(node, name);
+  if(!prop)
+       return(NULL);
+  return (prop->children->content);
 }
 
 static GPtrArray *
