@@ -161,7 +161,7 @@ Single Sign-On and Federation
             IF known nameIdentifier
                 # GET BACK identity_dump and session_dump
                 # First retrieve session and user by nameIdentifier
-                lasso_profile_set_identity_from_dump(LASSO_PROFILE(login, identity_dump)
+                lasso_profile_set_identity_from_dump(LASSO_PROFILE(login), identity_dump)
                 lasso_profile_set_session_from_dump(LASSO_PROFILE(login), session_dump)
 
             lasso_login_accept_sso(login)
