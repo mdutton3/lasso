@@ -53,6 +53,15 @@ typedef struct _LassoDiscoModifyResponseClass LassoDiscoModifyResponseClass;
 struct _LassoDiscoModifyResponse {
 	LassoNode parent;
 
+	/* 
+	 * - QNames define in strings.h (LASSO_DISCO_STATUS_CODE_* ) are expected to appear in
+	 *   the"code" attribute of Status elements used in Discovery Service protocol messages.
+	 * - The "ref" attribute on the Status element is not used in this specification,
+	 *   so it MUST not appear on Status elements in Discovery Service protocol messages.
+	 * - The contents of the "comment" attribute are not defined by this specification,
+	 *   but it may be used for additional descriptive text intended for human consumption
+	 *   (for example, to carry information that will aid debugging).
+	*/
 	LassoUtilityStatus *Status;
 
 	char *id;
