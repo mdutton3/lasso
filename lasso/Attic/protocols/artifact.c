@@ -191,7 +191,7 @@ lasso_artifact_new_from_query(const xmlChar *query)
   byteCode = (gchar *) g_new0(gchar, 5+1);
   identityProviderSuccinctID = (gchar *) g_new0(gchar, 20+1);
   assertionHandle = (gchar *) g_new0(gchar, 20+1);
-  ret = lasso_artifact_split_samlArt(b64_samlArt, byteCode,
+  ret = lasso_artifact_split_samlArt((gchar*)b64_samlArt, byteCode,
 				     identityProviderSuccinctID,
 				     assertionHandle);
   if (ret >= 0) {
@@ -222,14 +222,14 @@ lasso_artifact_new_from_lares(const xmlChar *lares,
   byteCode = (gchar *) g_new0(gchar, 5+1);
   identityProviderSuccinctID = (gchar *) g_new0(gchar, 20+1);
   assertionHandle = (gchar *) g_new0(gchar, 20+1);
-  ret = lasso_artifact_split_samlArt(lares, byteCode,
+  ret = lasso_artifact_split_samlArt((gchar*)lares, byteCode,
 				     identityProviderSuccinctID,
 				     assertionHandle);
   if (ret >= 0) {
-    artifact = lasso_artifact_new(lares,
+    artifact = lasso_artifact_new((gchar*)lares,
 				  byteCode, identityProviderSuccinctID,
 				  assertionHandle,
-				  relayState);
+				  (gchar*)relayState);
   }
   g_free(byteCode);
   g_free(identityProviderSuccinctID);
