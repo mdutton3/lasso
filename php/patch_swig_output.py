@@ -135,6 +135,7 @@ with:
     if(arg_count > 1 - argbase) {
 """
 
+import re
 import sys
 
 wrap = sys.stdin.read()
@@ -186,5 +187,9 @@ wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SU
                     'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
 for i in range(10):
     wrap = wrap.replace('if(arg_count > %d) {' % i, 'if(arg_count > %d - argbase) {' % i)
+
+
+wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
+    r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
 
 print wrap
