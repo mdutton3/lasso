@@ -40,7 +40,7 @@ START_TEST(test01_provider_new)
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
-	dump = lasso_node_dump(LASSO_NODE(provider), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(provider));
 	printf("dump:\n%s\n", dump);
 }
 END_TEST
@@ -55,10 +55,10 @@ START_TEST(test02_provider_new_from_dump)
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
-	dump = lasso_node_dump(LASSO_NODE(provider1), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(provider1));
 
 	provider2 = lasso_provider_new_from_dump(dump);
-	dump = lasso_node_dump(LASSO_NODE(provider2), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(provider2));
 	printf("dump:\n%s\n", dump);
 }
 END_TEST
@@ -74,7 +74,7 @@ START_TEST(test01_server_new)
 			NULL, /* Secret key to unlock private key */
 			TESTSDATADIR "/idp1-la/certificate.pem");
 
-	dump = lasso_node_dump(LASSO_NODE(server), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(server));
 	printf("dump:\n%s\n", dump);
 }
 END_TEST
@@ -96,7 +96,7 @@ START_TEST(test02_server_add_provider)
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
-	dump = lasso_node_dump(LASSO_NODE(server), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(server));
 	printf("dump:\n%s\n", dump);
 }
 END_TEST
@@ -118,10 +118,10 @@ START_TEST(test03_server_new_from_dump)
 			TESTSDATADIR "/sp1-la/public-key.pem",
 			TESTSDATADIR "/ca1-la/certificate.pem");
 
-	dump = lasso_node_dump(LASSO_NODE(server1), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(server1));
 
 	server2 = lasso_server_new_from_dump(dump);
-	dump = lasso_node_dump(LASSO_NODE(server2), NULL, 1);
+	dump = lasso_node_dump(LASSO_NODE(server2));
 	printf("dump:\n%s\n", dump);
 }
 END_TEST
