@@ -1,3 +1,20 @@
+lasso (0.3.0-4) unstable; urgency=low
+
+  * debian/copyright: fixed address of the FSF; add a pointer to
+    /usr/share/common-licenses/GPL.
+  * debian/control: lasso source package goes in section libs and liblasso-dev
+    goes in section libdevel
+  * debian/control: -dev package renamed to liblasso0-dev; provides
+    liblasso-dev (per Debian Library Packaging guide)
+
+ -- Frederic Peters <fpeters@debian.org>  Sun,  8 Aug 2004 10:55:39 +0200
+
+lasso (0.3.0-3) unstable; urgency=low
+
+  * fixed lasso.pc
+
+ -- Frederic Peters <fpeters@debian.org>  Thu, 29 Jul 2004 23:24:57 +0200
+
 lasso (0.3.0-2) unstable; urgency=low
 
   * debian/liblasso0-python2.3.files: don't include static library in Python

@@ -1,13 +1,16 @@
 Source: lasso
 Priority: optional
+Section: libs
 Maintainer: Frederic Peters <fpeters@debian.org>
 Build-Depends: debhelper (>= 4.0.0), libxml2-dev, libxslt1-dev, libxmlsec1-dev, libxmlsec1-openssl, libglib2.0-dev, python2.3-dev
-Standards-Version: 3.6.0
+Standards-Version: 3.6.1
 
-Package: liblasso-dev
-Section: devel
+Package: liblasso0-dev
+Section: libdevel
 Architecture: any
 Depends: liblasso0 (= ${Source-Version}), libxml2-dev, libxmlsec1-dev
+Provides: liblasso-dev
+Conflicts: liblasso-dev
 Description: Liberty Alliance library - development kit
  Lasso is an implementation of the Liberty Alliance standard; it defines
  processes for federated identities, single signon and related protocols.
