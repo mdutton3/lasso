@@ -128,15 +128,16 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,
 				       profile->server->private_key);
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
-    profile->msg_body = NULL;
 
-    if (profile->msg_url == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url\n");
+    if ( (url == NULL) || (query == NULL) ) {
+      message(G_LOG_LEVEL_CRITICAL, "%d, Url %s or QUERY %s is NULL\n", remote_provider_type, url, query);
       ret = -1;
       goto done;
     }
+
+    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
+    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_body = NULL;
 
     xmlFree(url);
     xmlFree(query);
