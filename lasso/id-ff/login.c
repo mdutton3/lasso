@@ -135,7 +135,9 @@ lasso_login_process_federation(LassoLogin *login)
 {
   LassoIdentity *identity;
   LassoNode *nameIdentifier;
-  xmlChar *id, *nameIDPolicy;
+  xmlChar *id, *nameIDPolicy, *consent;
+  gint ret = 0;
+  GError *err = NULL;
 
   /* verify if a user context exists else create it */
   if (LASSO_PROFILE_CONTEXT(login)->user == NULL) {
@@ -149,10 +151,31 @@ lasso_login_process_federation(LassoLogin *login)
     if (identity == NULL) {
       lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
 						lassoLibStatusCodeFederationDoesNotExist);
+      ret = -2;
+      goto done;
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
     debug("NameIDPolicy is federated\n");
+    consent = lasso_node_get_attr_value(LASSO_PROFILE_CONTEXT(login)->request,
+					"consent", &err);
+    if (consent != NULL) {
+      if (!xmlStrEqual(consent, lassoLibConsentObtained)) {
+	lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
+						  lassoSamlStatusCodeRequestDenied);
+	message(G_LOG_LEVEL_WARNING, "Consent not obtained");
+	ret = -3;
+	goto done;
+      }
+    }
+    else {
+      lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
+						lassoSamlStatusCodeRequestDenied);
+      message(G_LOG_LEVEL_WARNING, err->message);
+      ret = err->code;
+      g_error_free(err);
+      goto done;
+    }
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
 
@@ -172,15 +195,18 @@ lasso_login_process_federation(LassoLogin *login)
 			      identity);
     }
     else {
-      debug("An identity was found.\n");
+      debug("Ok, an identity was found.\n");
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)) {
     /* TODO */
   }
-  xmlFree(nameIDPolicy);
 
-  return (0);
+ done:
+  xmlFree(nameIDPolicy);
+  xmlFree(consent);
+
+  return (ret);
 }
 
 static gint
@@ -265,7 +291,7 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
 			       const gchar      *reauthenticateOnOrAfter,
 			       lassoHttpMethods  method)
 {
-  LassoIdentity *identity;
+  LassoIdentity *identity = NULL;
   LassoProvider *remote_provider;
 
   gchar   *b64_samlArt, *samlArt, *url;
@@ -285,32 +311,30 @@ lasso_login_build_artifact_msg(LassoLogin       *login,
     return (-3);
   }
 
-  /* federation */
-  lasso_login_process_federation(login);
-  identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
-				     LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-
-  /* fill the response with the assertion */
-  if (identity != NULL && authentication_result == 1) {
-    debug("An identity found, so build an assertion.\n");
-    lasso_login_add_response_assertion(login,
-				       identity,
-				       authenticationMethod,
-				       reauthenticateOnOrAfter);
+  if (authentication_result == 0) {
+    lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
+					      lassoSamlStatusCodeRequestDenied);
   }
   else {
-    debug("No identity or login failed !!!\n");
-    if (authentication_result == 0) {
-      lasso_profile_context_set_response_status(LASSO_PROFILE_CONTEXT(login),
-						lassoSamlStatusCodeRequestDenied);
+    /* federation */
+    lasso_login_process_federation(login);
+    identity = lasso_user_get_identity(LASSO_PROFILE_CONTEXT(login)->user,
+				       LASSO_PROFILE_CONTEXT(login)->remote_providerID);
+    /* fill the response with the assertion */
+    if (identity != NULL) {
+      debug("An identity found, so build an assertion.\n");
+      lasso_login_add_response_assertion(login,
+					 identity,
+					 authenticationMethod,
+					 reauthenticateOnOrAfter);
     }
   }
   /* save response dump */
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE_CONTEXT(login)->response);
 
+  /* build artifact infos */
   remote_provider = lasso_server_get_provider(LASSO_PROFILE_CONTEXT(login)->server,
 					      LASSO_PROFILE_CONTEXT(login)->remote_providerID);
-  /* build artifact infos */
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
   url = lasso_provider_get_assertionConsumerServiceURL(remote_provider);
   samlArt = g_new(gchar, 2+20+20+1);
