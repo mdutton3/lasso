@@ -574,6 +574,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 {
 	LassoProvider *provider, *remote_provider;
 	char *md_authnRequestsSigned, *url, *query, *lareq, *protocolProfile;
+	LassoProviderRole role;
 	gboolean must_sign;
 	gint ret = 0;
 
@@ -597,8 +598,12 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 	if (protocolProfile == NULL)
 		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_ART;
 
+	role = provider->role;
+	provider->role = LASSO_PROVIDER_ROLE_SP; /* we act as an SP for sure here */
+
 	if (lasso_provider_has_protocol_profile(remote_provider,
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON, protocolProfile) == FALSE) {
+		provider->role = role;
 		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 	}
 
@@ -606,6 +611,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 	md_authnRequestsSigned = lasso_provider_get_metadata_one(provider, "AuthnRequestsSigned");
 	must_sign = (md_authnRequestsSigned && strcmp(md_authnRequestsSigned, "true") == 0);
 	g_free(md_authnRequestsSigned);
+	provider->role = role;
 
 	if (login->http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* REDIRECT -> query */
@@ -614,8 +620,8 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 					LASSO_PROFILE(login)->server->signature_method,
 					LASSO_PROFILE(login)->server->private_key);
 		} else {
-			query = lasso_node_export_to_query(LASSO_PROFILE(login)->request,
-					0, NULL);
+			query = lasso_node_export_to_query(
+					LASSO_PROFILE(login)->request, 0, NULL);
 		}
 		if (query == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Failed to create AuthnRequest query");
