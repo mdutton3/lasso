@@ -50,10 +50,11 @@ LASSO_EXPORT int lasso_shutdown(void);
 
 /**
  * LassoCheckVersionMode:
- * @LASSO_CHECK_VERSION_EXACT:		the version should match exactly.
- * @LASSO_CHECK_VERSIONABI_COMPATIBLE:	the version should be ABI compatible.
+ * @LASSO_CHECK_VERSION_EXACT: version should match exactly
+ * @LASSO_CHECK_VERSIONABI_COMPATIBLE: version should be ABI compatible
+ * @LASSO_CHECK_VERSION_NUMERIC: version should be at least that number
  *
- * The lasso library version mode.
+ * Lasso library version check mode.
  */
 typedef enum {
 	LASSO_CHECK_VERSION_EXACT = 0,
