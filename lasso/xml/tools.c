@@ -33,7 +33,6 @@
 #include <xmlsec/base64.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
-#include <xmlsec/crypto.h>
 
 #include <lasso/xml/tools.h>
 
@@ -162,6 +161,102 @@ lasso_get_current_time()
   strftime((char *)ret, 21, "%Y-%m-%dT%H:%M:%SZ", tm);
 
   return ret;
+}
+
+/**
+ * lasso_get_pubkey_from_pem_certificate:
+ * @pem_cert_file: an X509 pem certificate file
+ * 
+ * Gets the public key in an X509 pem certificate file.
+ * 
+ * Return value: a public key or NULL if an error occurs.
+ **/
+xmlSecKeyPtr
+lasso_get_public_key_from_pem_cert_file(const gchar *pem_cert_file)
+{
+  FILE *fd;
+  X509 *pem_cert;
+  xmlSecKeyDataPtr data;
+  xmlSecKeyPtr key = NULL;
+
+  /* load pem certificate from file */
+  fd = fopen(pem_cert_file, "r");
+  if (fd == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem certificate file\n",
+	    pem_cert_file);
+    return NULL;
+  }
+  /* read the pem X509 certificate */
+  pem_cert = PEM_read_X509(fd, NULL, NULL, NULL);
+  fclose(fd);
+  if (pem_cert == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to read X509 certificate\n");
+    return NULL;
+  }
+
+  /* get public key value in certificate */
+  data = xmlSecOpenSSLX509CertGetKey(pem_cert);
+  if (data != NULL) {
+    /* create key and set key value */
+    key = xmlSecKeyCreate();
+    xmlSecKeySetValue(key, data);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL,
+	    "Failed to get the public key in the X509 certificate\n");
+  }
+  X509_free(pem_cert);
+
+  return key;
+}
+
+/**
+ * lasso_get_pem_file_type:
+ * @pem_file: a pem file
+ * 
+ * Gets the type of the pem file.
+ * 
+ * Return value: the pem file type
+ **/
+lassoPemFileType
+lasso_get_pem_file_type(const gchar *pem_file)
+{
+  BIO* bio;
+  EVP_PKEY *pkey;
+  X509 *cert;
+  guint type = lassoPemFileTypeUnknown;
+
+  bio = BIO_new_file(pem_file, "rb");
+  if (bio == NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file\n",
+	    pem_file);
+    return -1;
+  }
+
+  pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);
+  if (pkey != NULL) {
+    type = lassoPemFileTypePubKey;
+    EVP_PKEY_free(pkey);
+  }
+  else {
+    BIO_reset(bio);
+    pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    if (pkey != NULL) {
+      type = lassoPemFileTypePrivateKey;
+      EVP_PKEY_free(pkey);
+    }
+    else {
+      BIO_reset(bio);
+      cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
+      if (cert != NULL) {
+	type = lassoPemFileTypeCert;
+	X509_free(cert);
+      }
+    }
+  }
+  BIO_free(bio);
+
+  return type;
 }
 
 /**
@@ -305,8 +400,8 @@ lasso_query_verify_signature(const gchar   *query,
 		       lassoSignatureMethodRsaSha1,
 		       recipient_private_key_file);
   sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
-				          xmlSecNodeSignatureValue,
-					  xmlSecDSigNs);
+			      xmlSecNodeSignatureValue,
+			      xmlSecDSigNs);
   /* set SignatureValue content */
   str_unescaped = lasso_str_unescape(str_split[1]);
   xmlNodeSetContent(sigValNode, str_unescaped);
@@ -336,9 +431,9 @@ lasso_query_verify_signature(const gchar   *query,
     goto done;
   }
   
-  /* Verify signature */
+  /* verify signature */
   if(xmlSecDSigCtxVerify(dsigCtx, sigNode) < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "Signature verify failed\n");
+    message(G_LOG_LEVEL_CRITICAL, "Failed to verify signature\n");
     ret = 0;
     goto done;
   }
