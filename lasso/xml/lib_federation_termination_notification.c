@@ -64,6 +64,7 @@
 	struct XmlSnippet snippets[] = { \
 		{ "ProviderID", 'c', (void**)&(ob->ProviderID) }, \
 		{ "NameIdentifier", 'n', (void**)&(ob->NameIdentifier) }, \
+		{ "consent", 'a', (void**)&(ob->consent) }, \
 		{ NULL, 0, NULL} \
 	};
 
@@ -80,9 +81,6 @@ get_xmlNode(LassoNode *node)
 	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX));
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
-	if (ob->consent)
-		xmlSetProp(xmlnode, "consent", ob->consent);
-
 	return xmlnode;
 }
 
@@ -90,11 +88,9 @@ static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	snippets();
-
 	if (parent_class->init_from_xml(node, xmlnode))
 		return 1;
 	lasso_node_init_xml_with_snippets(xmlnode, snippets);
-	ob->consent = xmlGetProp(xmlnode, "consent");
 	return 0;
 }
 
