@@ -71,9 +71,8 @@ static LassoNodeClass *parent_class = NULL;
 static void
 insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 {
-	xmlNode *t;
+	xmlNode *t = xmlnode->children;
 
-	t = xmlnode->children;
 	xmlSetNs(xmlnode, ns);
 	while (t) {
 		if (t->type == XML_ELEMENT_NODE && t->ns == NULL)
@@ -89,7 +88,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNs *ns;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(NULL, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
+	ns = xmlNewNs(xmlnode, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
 			LASSO_DST_QUERY_RESPONSE(node)->prefixServiceType);
 	insure_namespace(xmlnode, ns);
 
