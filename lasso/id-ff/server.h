@@ -39,12 +39,6 @@ extern "C" {
 #define LASSP_IS_SERVER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SERVER))
 #define LASSO_SERVER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_SERVER, LassoServerClass)) 
 
-#define LASSO_SERVER_NODE                  "LassoServer"
-#define LASSO_SERVER_PROVIDERS_NODE        "LassoProviders"
-#define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
-#define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
-#define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
-
 typedef struct _LassoServer LassoServer;
 typedef struct _LassoServerClass LassoServerClass;
 
