@@ -1951,7 +1951,11 @@ typedef struct {
 
 	/* Attributes */
 
-	/* GList *Attribute; FIXME: TODO */
+#ifndef SWIGPHP4
+	%rename(attribute) Attribute;
+#endif
+	%newobject Attribute_get;
+	LassoNodeList *Attribute;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -1974,6 +1978,14 @@ typedef struct {
 #define LassoSamlAttributeStatement_Subject_get(self) get_node(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject)
 #define LassoSamlAttributeStatement_set_Subject(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
 #define LassoSamlAttributeStatement_Subject_set(self, value) set_node((gpointer *) &LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(self)->Subject, (value))
+
+/* Attributes Implementations */
+
+/* Attribute */
+#define LassoSamlAttributeStatement_get_Attribute(self) get_node_list((self)->Attribute)
+#define LassoSamlAttributeStatement_Attribute_get(self) get_node_list((self)->Attribute)
+#define LassoSamlAttributeStatement_set_Attribute(self, value) set_node_list(&(self)->Attribute, (value))
+#define LassoSamlAttributeStatement_Attribute_set(self, value) set_node_list(&(self)->Attribute, (value))
 
 /* Constructors, destructors & static methods implementations */
 
