@@ -481,7 +481,6 @@ lasso_login_create_user(LassoLogin *login,
   }
   else {
     LASSO_PROFILE_CONTEXT(login)->user = lasso_user_new();
-    return (0);
   }
 
   /* put response assertion in user object */
@@ -491,6 +490,8 @@ lasso_login_create_user(LassoLogin *login,
 			   LASSO_PROFILE_CONTEXT(login)->remote_providerID,
 			   lasso_node_copy(assertion));
   lasso_node_destroy(assertion);
+
+  return (0);
 }
 
 void
