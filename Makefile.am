@@ -18,6 +18,7 @@ SUBDIRS		= lasso \
 		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(CSHARP_SD) \
 		  tests \
 		  swig \
+		  win32 \
 		  $(GTK_DOC_SD)
 
 ABS_BUILDDIR	= $(shell pwd)
