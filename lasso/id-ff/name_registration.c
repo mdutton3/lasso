@@ -620,7 +620,7 @@ GType lasso_name_registration_get_type() {
 
 LassoNameRegistration *
 lasso_name_registration_new(LassoServer       *server,
-				   lassoProviderType  provider_type)
+			    lassoProviderType  provider_type)
 {
   LassoNameRegistration *name_registration;
 
