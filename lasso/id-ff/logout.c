@@ -88,6 +88,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   LassoProfile     *profile;
   LassoProvider    *provider;
   xmlChar          *protocolProfile = NULL;
+  GError           *err = NULL;
   lassoProviderType remote_provider_type;
   gint              ret = 0;
 
@@ -107,12 +108,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     ret = -1;
     goto done;
   }
-  provider = lasso_server_get_provider_ref(profile->server,
-					   profile->remote_providerID,
-					   NULL);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
   if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
 
@@ -210,6 +210,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   LassoProvider *provider;
   gchar         *url, *query;
   const gchar   *separator = "?";
+  GError        *err = NULL;
   gint           ret = 0;
 
   if (LASSO_IS_LOGOUT(logout) == FALSE) {
@@ -220,12 +221,11 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   
   profile = LASSO_PROFILE(logout);
 
-  provider = lasso_server_get_provider_ref(profile->server,
-					   profile->remote_providerID,
-					   NULL);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
   if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Provider not found %s\n", profile->remote_providerID);
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
 
@@ -345,6 +345,7 @@ lasso_logout_init_request(LassoLogout *logout,
   LassoFederation   *federation     = NULL;
   xmlChar           *content        = NULL, *nameQualifier = NULL, *format = NULL;
   xmlChar           *singleLogoutProtocolProfile = NULL;
+  GError            *err = NULL;
   lassoSignatureType signature_type = lassoSignatureTypeNone;
   gint               ret = 0;
 
@@ -422,10 +423,11 @@ lasso_logout_init_request(LassoLogout *logout,
   format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
   
   /* get the single logout protocol profile and set a new logout request object */
-  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
   if (provider == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
-    ret = -1;
+    message(G_LOG_LEVEL_CRITICAL, err->message);
+    ret = err->code;
+    g_error_free(err);
     goto done;
   }
 
@@ -546,12 +548,11 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
       ret = -1;
       goto done;
     }
-    provider = lasso_server_get_provider_ref(profile->server,
-					     remote_providerID,
-					     NULL);
+    provider = lasso_server_get_provider_ref(profile->server, remote_providerID, &err);
     if (provider == NULL) {
-      message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", remote_providerID);
-      ret = -1;
+      message(G_LOG_LEVEL_CRITICAL, err->message);
+      ret = err->code;
+      g_error_free(err);
       goto done;
     }
     if (provider->ca_certificate != NULL) {
@@ -798,6 +799,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   LassoProfile *profile;
   xmlChar      *statusCodeValue;
   LassoNode    *statusCode;
+  GError       *err = NULL;
   gint          ret = 0;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
@@ -841,7 +843,13 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
       LassoProvider *provider;
       gchar *url, *query;
 
-      provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, NULL);
+      provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID, &err);
+      if (provider == NULL) {
+	message(G_LOG_LEVEL_CRITICAL, err->message);
+	ret = err->code;
+	g_error_free(err);
+	goto done;
+      }
 
       /* FIXME : get an HTTP method in metadata */
 
