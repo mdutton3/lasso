@@ -56,7 +56,7 @@ identity provider Id (defined in metadata).
 You can now redirect the user to the URL defined in ``login->msg_url``; for
 example, in a CGI::
   
-  printf("Location: %s\n", login.msg_url);
+  printf("Location: %s\n", login->msg_url);
 
 
 The user then logs in on the identity provider which ultimately redirects back
@@ -72,11 +72,10 @@ passed in the query parameter.
   login_build_request_msg(login);
 
 The service provider must check this artifact using a SOAP request to the
-identity provider.  The URL is ``login.msg_url`` while the request is
-``login.msg_body``.  The request must succeed with an HTTP 200 status code;
-its content is put in the ``answer``.
-
-::
+identity provider.  The URL is ``login->msg_url`` while the request is
+``login->msg_body``.  The request must succeed with an HTTP 200 status code;
+let's consider its content is put in the ``answer``, the next statement would
+be::
 
   login_process_response_msg(login, answer);
 
