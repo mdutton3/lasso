@@ -117,7 +117,6 @@ lasso_profile_get_session
 lasso_profile_is_identity_dirty
 lasso_profile_is_session_dirty
 lasso_profile_set_identity_from_dump
-lasso_profile_set_response_status
 lasso_profile_set_session_from_dump
 lasso_profile_get_request_type_from_soap_msg
 lasso_profile_is_liberty_query
@@ -898,10 +897,8 @@ LASSO_LIB_AUTHENTICATION_STATEMENT_GET_CLASS
 <FILE>lasso</FILE>
 lasso_init
 lasso_shutdown
-LassoCheckVersionMode
-lasso_check_version_exact
 lasso_check_version
-lasso_check_version_ext
+LassoCheckVersionMode
 </SECTION>
 
 <SECTION>

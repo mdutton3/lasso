@@ -109,17 +109,6 @@ Base class for all ID-FF profiles
 @ctx: 
 
 
-<!-- ##### FUNCTION lasso_profile_set_response_status ##### -->
-<para>
-
-</para>
-
-@profile: 
-@statusCodeValue: 
-<!-- # Unused Parameters # -->
-@ctx: 
-
-
 <!-- ##### FUNCTION lasso_profile_set_session_from_dump ##### -->
 <para>
 
