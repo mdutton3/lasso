@@ -99,9 +99,9 @@ lasso_soap_binding_ext_credential_get_type()
 LassoSoapBindingExtCredential*
 lasso_soap_binding_ext_credential_new(LassoNode *any)
 {
-	g_return_val_if_fail(LASSO_IS_NODE(any) != FALSE, NULL);
-
 	LassoSoapBindingExtCredential *node;
+
+	g_return_val_if_fail(LASSO_IS_NODE(any) != FALSE, NULL);
 
 	node = g_object_new(LASSO_TYPE_SOAP_BINDING_EXT_CREDENTIAL, NULL);
 
