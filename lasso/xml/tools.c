@@ -23,7 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
 #include <lasso/xml/tools.h>
+#include <libxml/uri.h>
 #include <xmlsec/xmltree.h>
 #include <xmlsec/base64.h>
 
@@ -357,7 +359,7 @@ xmlChar *
 lasso_str_escape(xmlChar *str)
 {
   /* value returned must be xmlFree() */
-  return (xmlChar*)(xmlURIEscapeStr((const xmlChar *)str, NULL));
+  return (xmlURIEscapeStr((const xmlChar *)str, NULL));
 }
 
 xmlChar *
