@@ -88,6 +88,9 @@ class LibertyEnabledClientProxyMixin(abstractweb.WebClientMixin):
         httpResponse = self.sendHttpRequestToSite(site, 'GET', path)
         failUnlessEqual(
             httpResponse.headers['Content-Type'], 'application/vnd.liberty-request+xml')
+        libertyEnabledHeader = httpResponse.headers.get('Liberty-Enabled')
+        failUnless(libertyEnabledHeader)
+        failUnless('LIBV=urn:liberty:iff:2003-08' in libertyEnabledHeader)
         lassoServer = self.getLassoServer()
         lecp = lasso.Lecp.new(lassoServer)
         authnRequestEnvelope = httpResponse.body
@@ -102,6 +105,9 @@ class LibertyEnabledClientProxyMixin(abstractweb.WebClientMixin):
             body = lecp.msg_body)
         failUnlessEqual(
             httpResponse.headers.get('Content-Type', None), 'application/vnd.liberty-response+xml')
+        libertyEnabledHeader = httpResponse.headers.get('Liberty-Enabled')
+        failUnless(libertyEnabledHeader)
+        failUnless('LIBV=urn:liberty:iff:2003-08' in libertyEnabledHeader)
         lecp.process_authn_response_envelope_msg(httpResponse.body)
         lecp.build_authn_response_msg()
         failUnless(lecp.msg_url)

@@ -234,13 +234,13 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             # contentType = lecp.msg_content_type
             # failUnlessEqual(contentType, 'application/vnd.liberty-request+xml')
             contentType = 'application/vnd.liberty-request+xml'
-            return handler.respond(
-                headers = {
-                    'Content-Type': contentType,
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    },
-                body = authnRequestEnvelopeMsg)
+            headers = {
+                'Content-Type': contentType,
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                }
+            headers.update(self.libertyEnabledHeaders)
+            return handler.respond(headers = headers, body = authnRequestEnvelopeMsg)
         else:
             login = lasso.Login.new(lassoServer)
             login.init_authn_request()

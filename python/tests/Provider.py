@@ -28,11 +28,10 @@ import abstractweb
 
 
 class ProviderMixin(abstractweb.WebSiteMixin):
-    httpResponseHeaders = abstractweb.WebSiteMixin.httpResponseHeaders.copy()
-    httpResponseHeaders.update({
-        'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
-        })
     lassoServerDump = None
+    libertyEnabledHeaders = {
+        'Liberty-Enabled': 'LIBV=urn:liberty:iff:2003-08,http://projectliberty.org/specs/v1',
+        }
     providerId = None # The Liberty providerID of this web site
     sessionTokensByNameIdentifier = None
     userIdsByNameIdentifier = None

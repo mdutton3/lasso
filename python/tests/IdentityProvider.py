@@ -83,13 +83,13 @@ class IdentityProviderMixin(Provider.ProviderMixin):
             # contentType = lecp.msg_content_type
             # failUnlessEqual(contentType, 'application/vnd.liberty-response+xml')
             contentType = 'application/vnd.liberty-response+xml'
-            return handler.respond(
-                headers = {
-                    'Content-Type': contentType,
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    },
-                body = soapResponseMsg)
+            headers = {
+                'Content-Type': contentType,
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                }
+            headers.update(self.libertyEnabledHeaders)
+            return handler.respond(headers = headers, body = soapResponseMsg)
         else:
             return handler.respond(
                 400,
@@ -167,6 +167,11 @@ class IdentityProviderMixin(Provider.ProviderMixin):
         if requestType == lasso.requestTypeLogin:
             lassoServer = self.getLassoServer()
             login = lasso.Login.new(lassoServer)
+            # FIXME: What should we return when there is an error in process_request_msg?
+            # FIXME: Create a new Lasso function build_response_msg, with either None or
+            # soapResponseMessage as argument. It is called after process_request_message and
+            # should either create a new response or keep the one in soapResponseMsg (if it already
+            # contained an error or if there is no error).
             login.process_request_msg(soapRequestMsg)
             artifact = login.assertionArtifact
             failUnless(artifact)
