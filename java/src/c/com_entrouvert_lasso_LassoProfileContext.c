@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRequest
     }else if(profileContext->request_type == lassoMessageTypeRequest){
         javaObjectClassName = "com/entrouvert/lasso/LassoRequest";
     }else{
-        // Throw error
+        /* FIXME: Throw error */
     }
 
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);
@@ -140,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoProfileContext_initRespons
     }else if(profileContext->response_type == lassoMessageTypeResponse){
         javaObjectClassName = "com/entrouvert/lasso/LassoResponse";
     }else{
-        // Throw error
+        /* FIXME: Throw error */
     }
 
     checkAndSetField(env, this, fieldName, fieldType, javaObjectClassName, cObject);

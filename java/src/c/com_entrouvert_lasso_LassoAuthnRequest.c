@@ -39,7 +39,7 @@ JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_init
     storeCObject(env, this, request);
 }
 
-// From LassoLibAuthnRequest
+/* From LassoLibAuthnRequest */
 
 JNIEXPORT void JNICALL Java_com_entrouvert_lasso_LassoAuthnRequest_setAffiliationID
 (JNIEnv * env, jobject this, jstring _value){

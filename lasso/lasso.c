@@ -40,9 +40,9 @@ HINSTANCE g_hModule = NULL; /**< DLL Instance. */
  */
 BOOL WINAPI
 DllMain(
-  HINSTANCE hinstDLL,  // handle to the DLL module
-  DWORD fdwReason,     // reason for calling function
-  LPVOID lpvReserved)  // reserved
+  HINSTANCE hinstDLL,  /* handle to the DLL module */
+  DWORD fdwReason,     /* reason for calling function */
+  LPVOID lpvReserved)  /* reserved */
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {

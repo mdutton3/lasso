@@ -108,10 +108,10 @@ void checkAndSetField(JNIEnv * env, jobject this, char * fieldName,
 char * fieldType, char * javaObjectClassName, void * cObject){
     jobject javaObject;
 
-    // check if change are made
+    /* check if change are made */
     javaObject = getJavaObjectField(env, this, fieldName, fieldType);
     if(isSameObject(env, javaObject, cObject)){
-        // no change made, do nothing
+        /* no change made, do nothing */
         return;
     }
 
@@ -120,7 +120,7 @@ char * fieldType, char * javaObjectClassName, void * cObject){
         return; /* exception thrown */
     }
 
-    // associate C object with JavaObject
+    /* associate C object with JavaObject */
     storeCObject(env, javaObject, cObject);
     setJavaObjectField(env, this, fieldName, fieldType, javaObject);
 }
