@@ -50,6 +50,9 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   LassoNode *node;
   LassoNode *request, *response;
   gchar *child_dump, *dump = NULL;
+  gchar *request_type =  g_new0(gchar, 6);
+  gchar *response_type = g_new0(gchar, 6);
+  gchar *provider_type = g_new0(gchar, 6);
 
   node = lasso_node_new();
   if (name != NULL) {
@@ -81,6 +84,19 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
   if (ctx->msg_body != NULL) {
     LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgBody", lasso_str_escape(ctx->msg_body), FALSE);
   }
+  if (ctx->msg_relayState != NULL) {
+    LASSO_NODE_GET_CLASS(node)->new_child(node, "MsgRelayState", ctx->msg_relayState, FALSE);
+  }
+
+  g_sprintf(request_type, "%d", ctx->request_type);
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "RequestType", request_type, FALSE);
+  g_free(request_type);
+  g_sprintf(response_type, "%d", ctx->response_type);
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseType", response_type, FALSE);
+  g_free(response_type);
+  g_sprintf(provider_type, "%d", ctx->provider_type);
+  LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderType", provider_type, FALSE);
+  g_free(provider_type);
 
   dump = lasso_node_export(node);
   lasso_node_destroy(node);
