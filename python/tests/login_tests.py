@@ -36,36 +36,54 @@ sys.path.insert(0, '../.libs')
 import lasso
 
 
-class LoginTestCase(unittest.TestCase):
-    def generateIdentityProviderDump(self):
-        server = lasso.Server.new(
+class TestCase(unittest.TestCase):
+    def generateIdp(self):
+        idp = lasso.Server.new_from_dump(self.generateIdpDump())
+        self.failUnless(idp)
+        return idp
+
+    def generateIdpDump(self):
+        idp = lasso.Server.new(
             "../../examples/data/idp-metadata.xml",
             "../../examples/data/idp-public-key.pem",
             "../../examples/data/idp-private-key.pem",
             "../../examples/data/idp-crt.pem",
             lasso.signatureMethodRsaSha1)
-        server.add_provider(
-            "../../examples/data/sp-metadata.xml",
-            "../../examples/data/sp-public-key.pem",
-            "../../examples/data/ca-crt.pem")
-        serverDump = server.dump()
-        server.destroy()
-        return serverDump
+        self.failUnless(idp)
+        self.failUnlessEqual(
+            idp.add_provider(
+                "../../examples/data/sp-metadata.xml",
+                "../../examples/data/sp-public-key.pem",
+                "../../examples/data/ca-crt.pem"),
+            0)
+        idpDump = idp.dump()
+        self.failUnless(idpDump)
+        idp.destroy()
+        return idpDump
 
-    def generateServiceProviderDump(self):
-        server = lasso.Server.new(
+    def generateSp(self):
+        sp = lasso.Server.new_from_dump(self.generateSpDump())
+        self.failUnless(sp)
+        return sp
+
+    def generateSpDump(self):
+        sp = lasso.Server.new(
             "../../examples/data/sp-metadata.xml",
             "../../examples/data/sp-public-key.pem",
             "../../examples/data/sp-private-key.pem",
             "../../examples/data/sp-crt.pem",
             lasso.signatureMethodRsaSha1)
-        server.add_provider(
-            "../../examples/data/idp-metadata.xml",
-            "../../examples/data/idp-public-key.pem",
-            "../../examples/data/ca-crt.pem")
-        serverDump = server.dump()
-        server.destroy()
-        return serverDump
+        self.failUnless(sp)
+        self.failUnlessEqual(
+            sp.add_provider(
+                "../../examples/data/idp-metadata.xml",
+                "../../examples/data/idp-public-key.pem",
+                "../../examples/data/ca-crt.pem"),
+            0)
+        spDump = sp.dump()
+        self.failUnless(spDump)
+        sp.destroy()
+        return spDump
 
     def setUp(self):
         pass
@@ -73,20 +91,18 @@ class LoginTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test01_generateServersDumps(self):
-        """Generate identity and service provider dumps"""
-        identityProviderDump = self.generateIdentityProviderDump()
-        self.failUnless(identityProviderDump)
-        serviceProviderDump = self.generateServiceProviderDump()
-        self.failUnless(serviceProviderDump)
 
-    def test02_serviceProviderLogin(self):
+class LoginTestCase(TestCase):
+    def test01_generateServers(self):
+        """Generate identity and service provider server contexts"""
+        self.generateIdp()
+        self.generateSp()
+
+    def test02_spLogin(self):
         """Service provider initiated login"""
 
         # Service provider login using HTTP redirect.
-        spDump = self.generateServiceProviderDump()
-        self.failUnless(spDump)
-        sp = lasso.Server.new_from_dump(spDump)
+        sp = self.generateSp()
         spLogin = lasso.Login.new(sp)
         self.failUnlessEqual(spLogin.init_authn_request(
             "https://identity-provider:1998/liberty-alliance/metadata"), 0)
@@ -102,9 +118,7 @@ class LoginTestCase(unittest.TestCase):
         method = lasso.httpMethodRedirect
 
         # Identity provider singleSignOn, for a user having no federation.
-        idpDump = self.generateIdentityProviderDump()
-        self.failUnless(idpDump)
-        idp = lasso.Server.new_from_dump(idpDump)
+        idp = self.generateIdp()
         idpLogin = lasso.Login.new(idp)
         self.failUnlessEqual(
             idpLogin.init_from_authn_request_msg(authnRequestQuery, method), 0)
@@ -128,9 +142,7 @@ class LoginTestCase(unittest.TestCase):
         method = lasso.httpMethodRedirect
 
         # Service provider assertion consumer.
-        spDump = self.generateServiceProviderDump()
-        self.failUnless(spDump)
-        sp = lasso.Server.new_from_dump(spDump)
+        sp = self.generateSp()
         spLogin = lasso.Login.new(sp)
         self.failUnlessEqual(spLogin.init_request(responseQuery, method), 0)
         self.failUnlessEqual(spLogin.build_request_msg(), 0)
@@ -158,10 +170,7 @@ class LoginTestCase(unittest.TestCase):
         self.failUnlessEqual(authenticationMethod, lasso.samlAuthenticationMethodPassword)
 
         # Service provider logout.
-        spDump = self.generateServiceProviderDump()
-        self.failUnless(spDump)
-        sp = lasso.Server.new_from_dump(spDump)
-        self.failUnless(sp)
+        sp = self.generateSp()
         spLogout = lasso.Logout.new(sp, lasso.providerTypeSp)
         self.failUnless(spIdentityDump)
         spLogout.set_identity_from_dump(spIdentityDump)
@@ -175,10 +184,7 @@ class LoginTestCase(unittest.TestCase):
         # Identity provider SOAP endpoint.
         requestType = lasso.get_request_type_from_soap_msg(soapRequestMsg)
         self.failUnlessEqual(requestType, lasso.requestTypeLogout)
-        idpDump = self.generateIdentityProviderDump()
-        self.failUnless(idpDump)
-        idp = lasso.Server.new_from_dump(idpDump)
-        self.failUnless(idp)
+        idp = self.generateIdp()
         idpLogout = lasso.Logout.new(idp, lasso.providerTypeIdp)
         self.failUnlessEqual(
             idpLogout.process_request_msg(soapRequestMsg, lasso.httpMethodSoap), 0)
@@ -205,9 +211,7 @@ class LoginTestCase(unittest.TestCase):
 
     def test03(self):
         """Identity provider single sign-on when identity and session already exist."""
-        idpDump = self.generateIdentityProviderDump()
-        self.failUnless(idpDump)
-        idp = lasso.Server.new_from_dump(idpDump)
+        idp = self.generateIdp()
         idpLogin = lasso.Login.new(idp)
         idpIdentityDump = """\
 <LassoIdentity><LassoFederations><LassoFederation RemoteProviderID="https://service-provider:2003/liberty-alliance/metadata"><LassoLocalNameIdentifier><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://identity-provider:1998/liberty-alliance/metadata" Format="urn:liberty:iff:nameid:federated">NjMxMEMzRTlEMDA4NTNEMEZGNDI1MEM0QzY4NUNBNzY=</saml:NameIdentifier></LassoLocalNameIdentifier></LassoFederation></LassoFederations></LassoIdentity>
@@ -275,10 +279,7 @@ jFL7NhzvY02aBTLhm22YOLYnlycKm64NGne+siooDCi5tel2/vcx+e+btX9x</X509Certificate>
 
     def test04(self):
         """Identity provider logout."""
-        idpDump = self.generateIdentityProviderDump()
-        self.failUnless(idpDump)
-        idp = lasso.Server.new_from_dump(idpDump)
-
+        idp = self.generateIdp()
         soapRequestMessage = """\
 <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Body xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><lib:LogoutRequest xmlns:lib="urn:liberty:iff:2003-08" RequestID="RDIwMUYzM0Q1MzdFMjMzQzk0NTM4QUNEQUQ0MURBMEE=" MajorVersion="1" MinorVersion="2" IssueInstance="2004-08-03T11:56:15Z"><lib:ProviderID>https://service-provider:2003/liberty-alliance/metadata</lib:ProviderID><saml:NameIdentifier xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" NameQualifier="https://identity-provider:1998/liberty-alliance/metadata" Format="urn:liberty:iff:nameid:federated">QkM3M0M4MTYxREQzNEYwNEI4M0I4MUVERDUyQUUyMjA=</saml:NameIdentifier><Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
 <SignedInfo>
@@ -391,10 +392,7 @@ jFL7NhzvY02aBTLhm22YOLYnlycKm64NGne+siooDCi5tel2/vcx+e+btX9x</X509Certificate>
 
     def test05(self):
         """Service provider logout."""
-        spDump = self.generateServiceProviderDump()
-        self.failUnless(spDump)
-        sp = lasso.Server.new_from_dump(spDump)
-
+        sp = self.generateSp()
         spLogout = lasso.Logout.new(sp, lasso.providerTypeSp)
 
         spIdentityDump = """\
@@ -463,6 +461,20 @@ jFL7NhzvY02aBTLhm22YOLYnlycKm64NGne+siooDCi5tel2/vcx+e+btX9x</X509Certificate>
         spSessionDump = spLogout.get_session().dump()
         # self.failIf(spSessionDump)
 
+##     def test05(self):
+##         """Service provider LECP login."""
+
+##         # LECP has asked service provider for login.
+##         sp = self.generateSp()
+
+##         # FIXME: Why doesn't lasso.Lecp.new have sp as argument?
+##         # spLecp = lasso.Lecp.new(sp)
+##         spLecp = lasso.Lecp.new()
+##         spLecp.init_authn_request_envelope(sp, )
+##         lasso_lecp_init_authn_request_envelope(sp_lecp, spserver, authnRequest);
+##         lasso_lecp_build_authn_request_envelope_msg(sp_lecp);
+##         msg = g_strdup(sp_lecp->msg_body);
+##         lasso_lecp_destroy(sp_lecp);
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 
