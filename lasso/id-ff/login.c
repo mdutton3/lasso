@@ -770,8 +770,6 @@ gint
 lasso_login_build_request_msg(LassoLogin *login)
 {
 	LassoProvider *remote_provider;
-	gint ret = 0;
-	GError *err = NULL;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -784,24 +782,15 @@ lasso_login_build_request_msg(LassoLogin *login)
 #endif
 	LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->request);
 
-	/* get msg_url (SOAP Endpoint) */
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
-	if (err != NULL) {
-		goto done;
+	if (remote_provider == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Remote provider not found");
+		return -1;
 	}
 	LASSO_PROFILE(login)->msg_url = lasso_provider_get_metadata_one(
 			remote_provider, "SoapEndpoint");
-	if (err != NULL) {
-		goto done;
-	}
 	return 0;
-
-done:
-	message(G_LOG_LEVEL_CRITICAL, err->message);
-	ret = err->code;
-	g_error_free(err);
-	return ret;
 }
 
 /**
@@ -844,12 +833,14 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			/* get assertion in session and add it in response */
 			assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
 					LASSO_PROFILE(login)->remote_providerID);
-			if (assertion == NULL) {
-				/* FIXME should this message output by lasso_session_get_assertion () ? */
+			if (assertion) {
+				LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion =
+					g_object_ref(assertion);
+			} else {
+				/* FIXME should this message output by
+				 * lasso_session_get_assertion () ? */
 				message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session");
 			}
-			LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion =
-				g_object_ref(assertion);
 		}
 	} else {
 		lasso_profile_set_response_status(LASSO_PROFILE(login),
@@ -921,38 +912,35 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	gint ret = 0;
 	int i;
 	char *artifact_b64, *provider_succint_id_b64;
-	char provider_succint_id[21], assertion_handle[21];
+	char provider_succint_id[21];
 	char artifact[43];
 	LassoSamlpRequestAbstract *request;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
+	if (response_http_method != LASSO_HTTP_METHOD_REDIRECT &&
+			response_http_method != LASSO_HTTP_METHOD_POST) {
+		message(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
+		return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+	}
+
 	/* rebuild response (artifact) */
-	switch (response_http_method) {
-		case LASSO_HTTP_METHOD_REDIRECT: /* artifact by REDIRECT */
-			query_fields = urlencoded_to_strings(response_msg);
-			for (i=0; query_fields[i]; i++) {
-				if (strncmp(query_fields[i], "SAMLart=", 8) != 0) {
-					free(query_fields[i]);
-					continue;
-				}
-				artifact_b64 = strdup(query_fields[i]+8);
+	if (response_http_method == LASSO_HTTP_METHOD_REDIRECT) {
+		query_fields = urlencoded_to_strings(response_msg);
+		for (i=0; query_fields[i]; i++) {
+			if (strncmp(query_fields[i], "SAMLart=", 8) != 0) {
 				free(query_fields[i]);
+				continue;
 			}
-			free(query_fields);
-			break;
-		case LASSO_HTTP_METHOD_POST:
-			/* artifact by POST */
-			g_assert_not_reached();
-			/* XXX: artifact code should be moved in this file
-			response = lasso_artifact_new_from_lares(response_msg, NULL);
-			*/
-			break;
-		default:
-			message(G_LOG_LEVEL_CRITICAL,
-					lasso_strerror(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD));
-			return LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD;
+			artifact_b64 = strdup(query_fields[i]+8);
+			free(query_fields[i]);
+		}
+		free(query_fields);
+	}
+	if (response_http_method == LASSO_HTTP_METHOD_POST) {
+		artifact_b64 = strdup(response_msg);
 	}
 
 	i = xmlSecBase64Decode(artifact_b64, artifact, 43);
@@ -968,8 +956,6 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 
 	memcpy(provider_succint_id, artifact+2, 20);
 	provider_succint_id[20] = 0;
-	memcpy(assertion_handle, artifact+22, 20);
-	assertion_handle[20] = 0;
 
 	provider_succint_id_b64 = xmlSecBase64Encode(provider_succint_id, 20, 0);
 
@@ -1024,17 +1010,13 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 	}
 
 	/* build self-addressed lib:AuthnRequest */
-	request = lasso_lib_authn_request_new(); /* XXX */
-	LASSO_SAMLP_REQUEST_ABSTRACT(request)->RequestID = lasso_build_unique_id(32);
+	request = lasso_lib_authn_request_new();
+	/* no RequestID attribute or it would be used in response assertion */
 	LASSO_SAMLP_REQUEST_ABSTRACT(request)->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
 	LASSO_SAMLP_REQUEST_ABSTRACT(request)->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
 	LASSO_SAMLP_REQUEST_ABSTRACT(request)->IssueInstant = lasso_get_current_time();
 	request->ProviderID = g_strdup(LASSO_PROFILE(login)->remote_providerID);
-
 	request->NameIDPolicy = LASSO_LIB_NAMEID_POLICY_TYPE_ANY;
-
-	/* remove RequestID attribute else it would be used in response assertion */
-	LASSO_SAMLP_REQUEST_ABSTRACT(LASSO_PROFILE(login)->request)->RequestID = NULL;
 
 	LASSO_PROFILE(login)->request = LASSO_NODE(request);
 
