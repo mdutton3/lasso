@@ -567,7 +567,7 @@ _debug(GLogLevelFlags level, const char *filename, int line,
 	va_list args;
 
 	va_start(args, format);
-	vsnprintf(debug_string, 1024, format, args);
+	g_vsnprintf(debug_string, 1024, format, args);
 	va_end(args);
 
 	time(&ts);
