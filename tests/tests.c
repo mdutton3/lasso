@@ -30,13 +30,10 @@
 
 extern Suite* basic_suite();
 extern Suite* login_suite();
-extern Suite* random_suite();
 
 typedef Suite* (*SuiteFunction) ();
 
 SuiteFunction suites[] = {
-	random_suite,
-	NULL,
 	basic_suite,
 	login_suite,
 	NULL
@@ -48,14 +45,13 @@ main(int argc, char *argv[])
 	int rc;
 	SRunner *sr;
 	int i;
-	int dont_fork = 0;
+	int dont_fork = 1;
 
 	for (i=1; i<argc; i++) {
 		if (strcmp(argv[i], "--dontfork") == 0) {
 			dont_fork = 1;
 		}
 	}
-	dont_fork = 1; /* XXX: to help debug segfaults */
 
 	lasso_init();
 	
