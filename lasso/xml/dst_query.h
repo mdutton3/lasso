@@ -46,22 +46,6 @@ extern "C" {
 typedef struct _LassoDstQuery LassoDstQuery;
 typedef struct _LassoDstQueryClass LassoDstQueryClass;
 
-/*
-  Schema fragment (liberty-idwsf-dst-v1.0.xsd):
-
-   <xs:element name="Query" type="QueryType"/>
-    <xs:complexType name="QueryType">
-	<xs:sequence>
-	    <xs:group ref="ResourceIDGroup" minOccurs="0"/>
-	    <xs:element name="QueryItem" maxOccurs="unbounded"/>
-	    <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-	</xs:sequence>
-	<xs:attribute name="id" type="xs:ID"/>
-	<xs:attribute name="itemID" type="IDType"/>
-    </xs:complexType>
-
-*/
-
 struct _LassoDstQuery {
 	LassoNode parent;
 
@@ -79,9 +63,7 @@ struct _LassoDstQueryClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_get_type(void);
-LASSO_EXPORT LassoDstQuery* lasso_dst_query_new(LassoDstQueryItem *QueryItem,
-						const char *id,
-						const char *itemID);
+LASSO_EXPORT LassoDstQuery* lasso_dst_query_new(LassoDstQueryItem *QueryItem);
 
 #ifdef __cplusplus
 }

@@ -25,51 +25,35 @@
 
 #include <lasso/xml/dst_query.h>
 
+/*
+ * Schema fragment (liberty-idwsf-dst-v1.0.xsd):
+ * <xs:element name="Query" type="QueryType"/>
+ * <xs:complexType name="QueryType">
+ *     <xs:sequence>
+ *         <xs:group ref="ResourceIDGroup" minOccurs="0"/>
+ *	   <xs:element name="QueryItem" maxOccurs="unbounded"/>
+ *	   <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *     </xs:sequence>
+ *     <xs:attribute name="id" type="xs:ID"/>
+ *     <xs:attribute name="itemID" type="IDType"/>
+ * </xs:complexType>
+*/
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
-#define snippets() \
-	LassoDstQuery *query = LASSO_DST_QUERY(node); \
-	struct XmlSnippetObsolete snippets[] = { \
-		{ "ResourceID", SNIPPET_CONTENT, (void**)&query->ResourceID }, \
-		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&query->EncryptedResourceID }, \
-		{ "QueryItem", SNIPPET_LIST_NODES, (void**)&query->QueryItem }, \
-		{ "id", SNIPPET_ATTRIBUTE, (void**)&query->id }, \
-		{ "itemID", SNIPPET_ATTRIBUTE, (void**)&query->itemID }, \
-		{ NULL, 0, NULL } \
-	};
+static struct XmlSnippet schema_snippets[] = {
+		{ "ResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery, ResourceID) },
+		{ "EncryptedResourceID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDstQuery,
+									  EncryptedResourceID) },
+		{ "QueryItem", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDstQuery, QueryItem) },
+		{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, id) },
+		{ "itemID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoDstQuery, itemID) },
+		{NULL, 0, 0}
+};
 
 static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{
-	xmlNode *xmlnode;
-	snippets();
-
-	xmlnode = xmlNewNode(NULL, "Query");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, NULL, NULL));
-
-	build_xml_with_snippets(xmlnode, snippets);
-
-	return xmlnode;
-}
-
-static int
-init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	snippets();
-	
-	if (parent_class->init_from_xml(node, xmlnode))
-		return -1;
-
-	init_xml_with_snippets(xmlnode, snippets);
-
-	return 0;
-}
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -78,7 +62,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 static void
 instance_init(LassoDstQuery *node)
 {
-
+	node->ResourceID = NULL;
+	node->EncryptedResourceID = NULL;
+	node->QueryItem = NULL;
+	node->id = NULL;
+	node->itemID = NULL;
 }
 
 static void
@@ -87,8 +75,9 @@ class_init(LassoDstQueryClass *klass)
 	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->init_from_xml = init_from_xml;
+	nodeClass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nodeClass, "Query");
+	lasso_node_class_add_snippets(nodeClass, schema_snippets);
 }
 
 GType
@@ -116,15 +105,13 @@ lasso_dst_query_get_type()
 }
 
 LassoDstQuery*
-lasso_dst_query_new(LassoDstQueryItem *QueryItem, const char *id, const char *itemID)
+lasso_dst_query_new(LassoDstQueryItem *QueryItem)
 {
 	LassoDstQuery *query;
 
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 
 	query->QueryItem = g_list_append(query->QueryItem, QueryItem);
-	query->id = g_strdup(id);
-	query->itemID = g_strdup(itemID);
 
 	return query;
 }
