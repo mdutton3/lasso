@@ -713,7 +713,6 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 	if (strchr(msg, '&')) {
 		/* looks like a query string */
 		if (lasso_node_init_from_query(node, msg) == FALSE) {
-			/* XXX: free node */
 			return LASSO_MESSAGE_FORMAT_ERROR;
 		}
 		return LASSO_MESSAGE_FORMAT_QUERY;
