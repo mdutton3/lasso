@@ -2,7 +2,7 @@ SUBDIRS		= lasso docs
 
 ABS_BUILDDIR	= $(shell pwd)
 
-EXTRA_DIST = TODO COPYING
+EXTRA_DIST	= TODO COPYING
 
-pkgconfig_DATA  = lasso.pc
-pkgconfigdir    = $(libdir)/pkgconfig
+pkgconfig_DATA	= lasso.pc
+pkgconfigdir	= $(libdir)/pkgconfig

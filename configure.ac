@@ -360,7 +360,7 @@ AC_ARG_WITH(html-dir,           [  --with-html-dir=PATH    path to installed doc
 if test "z$with_html_dir" != "z" ; then
     LASSO_DOCDIR=$with_html_dir
 else
-    LASSO_DOCDIR='$(datadir)/doc/lasso1'
+    LASSO_DOCDIR='$(datadir)/doc/lasso'
 fi
 
 AC_MSG_RESULT($LASSO_DOCDIR)
@@ -440,7 +440,6 @@ dnl ==========================================================================
 dnl Writing result files
 dnl ==========================================================================
 AC_OUTPUT([
-lasso.pc:lasso.pc.in
 lasso/version.h
 Makefile
 lasso/Makefile
@@ -449,6 +448,7 @@ lasso/protocols/Makefile
 docs/Makefile
 docs/reference/Makefile
 ]
+[lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]
 dnl [lasso.spec:lasso.spec.in]
 )
