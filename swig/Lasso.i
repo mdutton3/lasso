@@ -672,6 +672,13 @@ SET_NODE_INFO(Node, DowncastableNode)
  ***********************************************************************/
 
 
+#ifdef SWIGJAVA
+#if SWIG_VERSION >= 0x010322
+%include "enumsimple.swg"
+#endif
+#endif /* ifdef SWIGJAVA */
+
+
 /* Version Number */
 #ifndef SWIGPHP4
 %rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
@@ -689,6 +696,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(HTTP_METHOD_POST) LASSO_HTTP_METHOD_POST;
 %rename(HTTP_METHOD_REDIRECT) LASSO_HTTP_METHOD_REDIRECT;
 %rename(HTTP_METHOD_SOAP) LASSO_HTTP_METHOD_SOAP;
+%rename(HttpMethod) LassoHttpMethod;
 #endif
 typedef enum {
 	LASSO_HTTP_METHOD_NONE = -1,
@@ -703,7 +711,7 @@ typedef enum {
 /* Consent */
 #ifndef SWIGPHP4
 %rename(LIB_CONSENT_OBTAINED) LASSO_LIB_CONSENT_OBTAINED;
-%rename(LIB_CONSENT_OBTAINEDPrior) LASSO_LIB_CONSENT_OBTAINED_PRIOR;
+%rename(LIB_CONSENT_OBTAINED_PRIOR) LASSO_LIB_CONSENT_OBTAINED_PRIOR;
 %rename(LIB_CONSENT_OBTAINED_CURRENT_IMPLICIT) LASSO_LIB_CONSENT_OBTAINED_CURRENT_IMPLICIT;
 %rename(LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT) LASSO_LIB_CONSENT_OBTAINED_CURRENT_EXPLICIT;
 %rename(LIB_CONSENT_UNAVAILABLE) LASSO_LIB_CONSENT_UNAVAILABLE;
@@ -764,6 +772,7 @@ typedef enum {
 #ifndef SWIGPHP4
 %rename(LOGIN_PROTOCOL_PROFILE_BRWS_ART) LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 %rename(LOGIN_PROTOCOL_PROFILE_BRWS_POST) LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+%rename(LoginProtocolProfile) LassoLoginProtocolProfile;
 #endif
 typedef enum {
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
@@ -778,6 +787,7 @@ typedef enum {
 %rename(MESSAGE_TYPE_REQUEST) LASSO_MESSAGE_TYPE_REQUEST;
 %rename(MESSAGE_TYPE_RESPONSE) LASSO_MESSAGE_TYPE_RESPONSE;
 %rename(MESSAGE_TYPE_ARTIFACT) LASSO_MESSAGE_TYPE_ARTIFACT;
+%rename(MessageType) LassoMessageType;
 #endif
 typedef enum {
 	LASSO_MESSAGE_TYPE_NONE = 0,
@@ -793,6 +803,7 @@ typedef enum {
 %rename(PROVIDER_ROLE_NONE) LASSO_PROVIDER_ROLE_NONE;
 %rename(PROVIDER_ROLE_SP) LASSO_PROVIDER_ROLE_SP;
 %rename(PROVIDER_ROLE_IDP) LASSO_PROVIDER_ROLE_IDP;
+%rename(ProviderRole) LassoProviderRole;
 #endif
 typedef enum {
 	LASSO_PROVIDER_ROLE_NONE = 0,
@@ -809,6 +820,7 @@ typedef enum {
 %rename(REQUEST_TYPE_NAME_REGISTRATION) LASSO_REQUEST_TYPE_NAME_REGISTRATION;
 %rename(REQUEST_TYPE_NAME_IDENTIFIER_MAPPING) LASSO_REQUEST_TYPE_NAME_IDENTIFIER_MAPPING;
 %rename(REQUEST_TYPE_LECP) LASSO_REQUEST_TYPE_LECP;
+%rename(RequestType) LassoRequestType;
 #endif
 typedef enum {
 	LASSO_REQUEST_TYPE_INVALID = 0,
@@ -850,6 +862,7 @@ typedef enum {
 #ifndef SWIGPHP4
 %rename(SIGNATURE_METHOD_RSA_SHA1) LASSO_SIGNATURE_METHOD_RSA_SHA1;
 %rename(SIGNATURE_METHOD_DSA_SHA1) LASSO_SIGNATURE_METHOD_DSA_SHA1;
+%rename(SignatureMethod) LassoSignatureMethod;
 #endif
 typedef enum {
 	LASSO_SIGNATURE_METHOD_RSA_SHA1 = 1,
@@ -1208,9 +1221,6 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 %}
 #else /* ifdef SWIGCSHARP */
 #ifdef SWIGJAVA
-#if SWIG_VERSION >= 0x010322
-  %include "enumsimple.swg"
-#endif
 %pragma(java) jniclasscode=%{
   static {
     try {
@@ -5393,7 +5403,7 @@ typedef struct {
 
 	THROW_ERROR
 	int initAuthnRequest(char *remoteProviderId = NULL,
-			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
+			     LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_REDIRECT);
 	END_THROW_ERROR
 
 	THROW_ERROR
