@@ -1358,7 +1358,7 @@ LASSO_IDENTITY_GET_CLASS
 
 <SECTION>
 <FILE>login</FILE>
-lassoLoginProtocolProfiles
+lassoLoginProtocolProfile
 <TITLE>LassoLogin</TITLE>
 LassoLogin
 LassoLoginClass
