@@ -67,7 +67,7 @@ instance_init(LassoLibAuthenticationStatement *node)
 {
 	node->AuthnContext = NULL;
 	node->ReauthenticateOnOrAfter = NULL;
-	node->SessionIndex = "1"; /* FIXME: proper SessionIndex usage */
+	node->SessionIndex = g_strdup("1"); /* FIXME: proper SessionIndex usage */
 }
 
 static void
@@ -180,7 +180,7 @@ lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 
 	/* SubjectConfirmation & Subject */
 	subject_confirmation = lasso_saml_subject_confirmation_new();
-	subject_confirmation->ConfirmationMethod = LASSO_SAML_CONFIRMATION_METHOD_BEARER;
+	subject_confirmation->ConfirmationMethod = g_strdup(LASSO_SAML_CONFIRMATION_METHOD_BEARER);
 	LASSO_SAML_SUBJECT(subject)->SubjectConfirmation = subject_confirmation;
 
 	LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(statement)->Subject = LASSO_SAML_SUBJECT(subject);

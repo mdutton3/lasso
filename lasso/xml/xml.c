@@ -465,7 +465,7 @@ lasso_node_dispose(GObject *object)
 				continue;
 
 #if 0 /* to debug memory management problems */
-			fprintf(stderr, "freeing %s/%s (at %p)\n",
+			fprintf(stderr, "  freeing %s/%s (at %p)\n",
 					G_OBJECT_TYPE_NAME(object), snippet->name, *value);
 #endif
 			switch (type) {
