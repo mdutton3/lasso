@@ -184,7 +184,7 @@ typedef enum {
 	lassoRequestTypeInvalid = 0,
 	lassoRequestTypeLogin,
 	lassoRequestTypeLogout,
-	lassoRequestTypeFederationTermination,
+	lassoRequestTypeDefederation,
 	lassoRequestTypeRegisterNameIdentifier,
 	lassoRequestTypeNameIdentifierMapping,
 	lassoRequestTypeLecp
