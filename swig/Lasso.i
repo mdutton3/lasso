@@ -292,20 +292,20 @@ typedef enum {
 %rename(libProtocolProfileSloSpHttp) lassoLibProtocolProfileSloSpHttp;
 %rename(libProtocolProfileSloSpSoap) lassoLibProtocolProfileSloSpSoap;
 #endif
-#define lassoLibProtocolProfileBrwsArt = "http://projectliberty.org/profiles/brws-art"
-#define lassoLibProtocolProfileBrwsPost = "http://projectliberty.org/profiles/brws-post"
-#define lassoLibProtocolProfileFedTermIdpHttp = "http://projectliberty.org/profiles/fedterm-idp-http"
-#define lassoLibProtocolProfileFedTermIdpSoap = "http://projectliberty.org/profiles/fedterm-idp-soap"
-#define lassoLibProtocolProfileFedTermSpHttp = "http://projectliberty.org/profiles/fedterm-sp-http"
-#define lassoLibProtocolProfileFedTermSpSoap = "http://projectliberty.org/profiles/fedterm-sp-soap"
-#define lassoLibProtocolProfileRniIdpHttp = "http://projectliberty.org/profiles/rni-idp-http"
-#define lassoLibProtocolProfileRniIdpSoap = "http://projectliberty.org/profiles/rni-idp-soap"
-#define lassoLibProtocolProfileRniSpHttp = "http://projectliberty.org/profiles/rni-sp-http"
-#define lassoLibProtocolProfileRniSpSoap = "http://projectliberty.org/profiles/rni-sp-soap"
-#define lassoLibProtocolProfileSloIdpHttp = "http://projectliberty.org/profiles/slo-idp-http"
-#define lassoLibProtocolProfileSloIdpSoap = "http://projectliberty.org/profiles/slo-idp-soap"
-#define lassoLibProtocolProfileSloSpHttp = "http://projectliberty.org/profiles/slo-sp-http"
-#define lassoLibProtocolProfileSloSpSoap = "http://projectliberty.org/profiles/slo-sp-soap"
+#define lassoLibProtocolProfileBrwsArt "http://projectliberty.org/profiles/brws-art"
+#define lassoLibProtocolProfileBrwsPost "http://projectliberty.org/profiles/brws-post"
+#define lassoLibProtocolProfileFedTermIdpHttp "http://projectliberty.org/profiles/fedterm-idp-http"
+#define lassoLibProtocolProfileFedTermIdpSoap "http://projectliberty.org/profiles/fedterm-idp-soap"
+#define lassoLibProtocolProfileFedTermSpHttp "http://projectliberty.org/profiles/fedterm-sp-http"
+#define lassoLibProtocolProfileFedTermSpSoap "http://projectliberty.org/profiles/fedterm-sp-soap"
+#define lassoLibProtocolProfileRniIdpHttp "http://projectliberty.org/profiles/rni-idp-http"
+#define lassoLibProtocolProfileRniIdpSoap "http://projectliberty.org/profiles/rni-idp-soap"
+#define lassoLibProtocolProfileRniSpHttp "http://projectliberty.org/profiles/rni-sp-http"
+#define lassoLibProtocolProfileRniSpSoap "http://projectliberty.org/profiles/rni-sp-soap"
+#define lassoLibProtocolProfileSloIdpHttp "http://projectliberty.org/profiles/slo-idp-http"
+#define lassoLibProtocolProfileSloIdpSoap "http://projectliberty.org/profiles/slo-idp-soap"
+#define lassoLibProtocolProfileSloSpHttp "http://projectliberty.org/profiles/slo-sp-http"
+#define lassoLibProtocolProfileSloSpSoap "http://projectliberty.org/profiles/slo-sp-soap"
 
 /* LoginProtocolProfile */
 #ifndef SWIGPHP4
@@ -383,17 +383,17 @@ typedef enum {
 %rename(samlAuthenticationMethodXmlDsig) lassoSamlAuthenticationMethodXmlDSig;
 %rename(samlAuthenticationMethodUnspecified) lassoSamlAuthenticationMethodUnspecified;
 #endif
-#define lassoSamlAuthenticationMethodPassword = "urn:oasis:names:tc:SAML:1.0:am:password"
-#define lassoSamlAuthenticationMethodKerberos = "urn:ietf:rfc:1510"
-#define lassoSamlAuthenticationMethodSecureRemotePassword = "urn:ietf:rfc:2945"
-#define lassoSamlAuthenticationMethodHardwareToken = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
-#define lassoSamlAuthenticationMethodSmartcardPki = "urn:ietf:rfc:2246"
-#define lassoSamlAuthenticationMethodSoftwarePki = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
-#define lassoSamlAuthenticationMethodPgp = "urn:oasis:names:tc:SAML:1.0:am:PGP"
-#define lassoSamlAuthenticationMethodSPki = "urn:oasis:names:tc:SAML:1.0:am:SPKI"
-#define lassoSamlAuthenticationMethodXkms = "urn:oasis:names:tc:SAML:1.0:am:XKMS"
-#define lassoSamlAuthenticationMethodXmlDSig = "urn:ietf:rfc:3075"
-#define lassoSamlAuthenticationMethodUnspecified = "urn:oasis:names:tc:SAML:1.0:am:unspecified"
+#define lassoSamlAuthenticationMethodPassword "urn:oasis:names:tc:SAML:1.0:am:password"
+#define lassoSamlAuthenticationMethodKerberos "urn:ietf:rfc:1510"
+#define lassoSamlAuthenticationMethodSecureRemotePassword "urn:ietf:rfc:2945"
+#define lassoSamlAuthenticationMethodHardwareToken "urn:oasis:names:tc:SAML:1.0:am:HardwareToken"
+#define lassoSamlAuthenticationMethodSmartcardPki "urn:ietf:rfc:2246"
+#define lassoSamlAuthenticationMethodSoftwarePki "urn:oasis:names:tc:SAML:1.0:am:X509-PKI"
+#define lassoSamlAuthenticationMethodPgp "urn:oasis:names:tc:SAML:1.0:am:PGP"
+#define lassoSamlAuthenticationMethodSPki "urn:oasis:names:tc:SAML:1.0:am:SPKI"
+#define lassoSamlAuthenticationMethodXkms "urn:oasis:names:tc:SAML:1.0:am:XKMS"
+#define lassoSamlAuthenticationMethodXmlDSig "urn:ietf:rfc:3075"
+#define lassoSamlAuthenticationMethodUnspecified "urn:oasis:names:tc:SAML:1.0:am:unspecified"
 
 /* SignatureMethod */
 #ifndef SWIGPHP4
