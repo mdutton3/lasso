@@ -26,7 +26,7 @@ libjlasso_la_LDFLAGS=-no-undefined -version-info @LASSO_VERSION_INFO@ \
 javashare_DATA=lasso.jar
 JAVA_JAR=lasso.jar
 
-SWIG_OUTPUTS=$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c
+SWIG_OUTPUTS=$(JAVA_PATH)$(JAVA_MODULE).java $(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in
 JAVA_CRUFT=$(JAVA_PATH)$(JAVA_MODULE).class $(JAVA_MODULE)_wrap.o \
 $(JAVA_JAR) \
 $(JAVA_PATH)$(JAVA_MODULE)JNI.java
@@ -49,7 +49,7 @@ CLEANFILES=$(JAVA_CRUFT)
 MAINTAINERCLEANFILES=$(SWIG_OUTPUTS)
 
 
-$(JAVA_MODULE)_wrap.c $(JAVA_PATH)$(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
+$(JAVA_MODULE)_wrap.c $(JAVA_MODULE).java.in: $(srcdir)/../swig/Lasso.i
 	here=`pwd`; \
 	mkdir -p $(JAVA_PATH) \
 	cd $(JAVA_PATH); \
@@ -62,11 +62,10 @@ $(JAVA_MODULE)_wrap.c $(JAVA_PATH)$(JAVA_MODULE).java.in: $(srcdir)/../swig/Lass
 	  rm -f $(JAVA_MODULE)_wrap.c $(JAVA_MODULE)JNI.java; \
 	  mv $(JAVA_MODULE)_wrap.c.new $(JAVA_MODULE)_wrap.c; \
 	fi; \
-	mv $(JAVA_MODULE)_wrap.c $$here; \
 	mv $(JAVA_MODULE).java $(JAVA_MODULE).java.in
 
 # FIXME There must be a better way to do this with SWIG
-$(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_PATH)$(JAVA_MODULE).java.in lasso-fragment.java
+$(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_MODULE).java.in lasso-fragment.java
 	sed -e 's/^}//' $(JAVA_MODULE).java.in > $(JAVA_PATH)$(JAVA_MODULE).java.tmp
 	cat $(JAVA_PATH)$(JAVA_MODULE).java.tmp lasso-fragment.java > $@
 	echo "}" >> $@
