@@ -78,12 +78,33 @@ lasso_lib_logout_response_get_type()
 	return logout_response_type;
 }
 
+/**
+ * lasso_lib_logout_response_new:
+ *
+ * Creates a new #LassoLibLogoutResponse object.
+ *
+ * Return value: a newly created #LassoLibLogoutResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_logout_response_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_LOGOUT_RESPONSE, NULL);
 }
 
+
+/**
+ * lasso_lib_logout_response_new_full:
+ * @providerID:
+ * @statusCodeValue:
+ * @request: the request this is a response to
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibLogoutResponse object and initializes it with the
+ * parameters.
+ *
+ * Return value: a newly created #LassoLibLogoutResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_logout_response_new_full(char *providerID, const char *statusCodeValue,
 		LassoLibLogoutRequest *request,
@@ -107,4 +128,3 @@ lasso_lib_logout_response_new_full(char *providerID, const char *statusCodeValue
 
 	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
-

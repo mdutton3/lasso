@@ -80,12 +80,34 @@ lasso_lib_register_name_identifier_response_get_type()
 	return register_name_identifier_response_type;
 }
 
+
+/**
+ * lasso_lib_register_name_identifier_response_new:
+ *
+ * Creates a new #LassoLibRegisterNameIdentifierResponse object.
+ *
+ * Return value: a newly created #LassoLibRegisterNameIdentifierResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_register_name_identifier_response_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE, NULL);
 }
 
+
+/**
+ * lasso_lib_register_name_identifier_response_new_full:
+ * @providerID:
+ * @statusCodeValue:
+ * @request: the request this is a response to
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibRegisterNameIdentifierResponse object and initializes
+ * it with the parameters.
+ *
+ * Return value: a newly created #LassoLibRegisterNameIdentifierResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_register_name_identifier_response_new_full(const char *providerID,
 		const char *statusCodeValue, LassoLibRegisterNameIdentifierRequest *request,
@@ -110,4 +132,3 @@ lasso_lib_register_name_identifier_response_new_full(const char *providerID,
 
 	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
-

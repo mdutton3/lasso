@@ -171,12 +171,32 @@ lasso_lib_logout_request_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_lib_logout_request_new:
+ *
+ * Creates a new #LassoLibLogoutRequest object.
+ *
+ * Return value: a newly created #LassoLibLogoutRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_logout_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST, NULL);
 }
 
+
+/**
+ * lasso_lib_logout_request_new_full:
+ * @providerID: the provider ID requesting the logout
+ * @nameIdentifier: the name identifier to log out
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibLogoutRequest object and initializes it with the
+ * parameters.
+ *
+ * Return value: a newly created #LassoLibLogoutRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nameIdentifier,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)

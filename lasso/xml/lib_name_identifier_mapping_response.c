@@ -109,12 +109,33 @@ lasso_lib_name_identifier_mapping_response_get_type()
 	return name_identifier_mapping_response_type;
 }
 
+/**
+ * lasso_lib_name_identifier_mapping_response_new:
+ *
+ * Creates a new #LassoLibNameIdentifierMappingResponse object.
+ *
+ * Return value: a newly created #LassoLibNameIdentifierMappingResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_name_identifier_mapping_response_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL);
 }
 
+
+/**
+ * lasso_lib_name_identifier_mapping_response_new_full:
+ * @providerID:
+ * @statusCodeValue:
+ * @request: the request this is a response to
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibNameIdentifierMappingResponse object and initializes
+ * it with the parameters.
+ *
+ * Return value: a newly created #LassoLibNameIdentifierMappingResponse object
+ **/
 LassoSamlpResponseAbstract*
 lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char *statusCodeValue,
 		LassoLibNameIdentifierMappingRequest *request,
@@ -137,4 +158,3 @@ lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char
 
 	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
-

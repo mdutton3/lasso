@@ -218,7 +218,8 @@ lasso_lib_federation_termination_notification_new()
  * @sign_type:
  * @sign_method:
  *
- * Creates a new #LassoLibFederationTerminationNotification object.
+ * Creates a new #LassoLibFederationTerminationNotification object and
+ * initializes it with the parameters.
  *
  * Return value: a newly created #LassoLibFederationTerminationNotification
  *     object

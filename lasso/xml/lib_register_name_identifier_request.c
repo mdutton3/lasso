@@ -195,12 +195,35 @@ lasso_lib_register_name_identifier_request_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_lib_register_name_identifier_request_new:
+ *
+ * Creates a new #LassoLibRegisterNameIdentifierRequest object.
+ *
+ * Return value: a newly created #LassoLibRegisterNameIdentifierRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_register_name_identifier_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST, NULL);
 }
 
+
+/**
+ * lasso_lib_register_name_identifier_request_new_full:
+ * @providerID:
+ * @idpNameIdentifier:
+ * @spNameIdentifier:
+ * @oldNameIdentifier:
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibRegisterNameIdentifierRequest object and initializes
+ * it with the parameters.
+ *
+ * Return value: a newly created #LassoLibRegisterNameIdentifierRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 		LassoSamlNameIdentifier *idpNameIdentifier,
@@ -228,5 +251,3 @@ lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 
 	return request_base;
 }
-
-

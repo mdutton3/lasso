@@ -120,12 +120,34 @@ lasso_lib_name_identifier_mapping_request_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_lib_name_identifier_mapping_request_new:
+ *
+ * Creates a new #LassoLibNameIdentifierMappingRequest object.
+ *
+ * Return value: a newly created #LassoLibNameIdentifierMappingRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_name_identifier_mapping_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_REQUEST, NULL);
 }
 
+
+/**
+ * lasso_lib_name_identifier_mapping_request_new_full:
+ * @providerID: the provider ID requesting the name identifier mapping
+ * @nameIdentifier:
+ * @targetNamespace:
+ * @sign_type:
+ * @sign_method:
+ *
+ * Creates a new #LassoLibNameIdentifierMappingRequest object and initializes
+ * it with the parameters.
+ *
+ * Return value: a newly created #LassoLibNameIdentifierMappingRequest object
+ **/
 LassoSamlpRequestAbstract*
 lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier, const char *targetNamespace,
