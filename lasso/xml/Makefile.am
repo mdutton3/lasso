@@ -52,6 +52,7 @@ liblasso_xml_la_SOURCES = \
 	saml_subject_confirmation.c \
 	saml_subject_locality.c \
 	saml_subject_statement_abstract.c \
+	samlp_request.c \
 	samlp_request_abstract.c \
 	samlp_response.c \
 	samlp_response_abstract.c \
@@ -100,6 +101,7 @@ liblassoinclude_HEADERS = \
 	saml_subject_confirmation.h \
 	saml_subject_locality.h \
 	saml_subject_statement_abstract.h \
+	samlp_request.h \
 	samlp_request_abstract.h \
 	samlp_response.h \
 	samlp_response_abstract.h \
