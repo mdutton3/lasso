@@ -17,7 +17,7 @@ server.add_provider("../../examples/sp3.xml", None, None)
 
 # user :
 
-sp1_identity = """<LassoIdentity RemoteProviderID="https://service-provider1:2003/liberty-alliance/metadata"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier="https://identity-provider:2003/liberty-alliance/metadata" Format="federated">111111111111111111111111</NameIdentifier></LassoRemoteNameIdentifier></LassoIdentity>"""
+sp1_identity = """<LassoIdentity RemoteProviderID="https://service-provider1:2003/liberty-alliance/metadata"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier="https://identity-provider:2003/liberty-alliance/metadata" Format="federated">111111111111111111111111</NameIdentifier></LassoRemoteNameIdentifier><LassoLocalNameIdentifier><NameIdentifier NameQualifier="https://identity-provider:2003/liberty-alliance/metadata" Format="federated">222222222222222222222222</NameIdentifier></LassoLocalNameIdentifier></LassoIdentity>"""
 sp1_assertion = """<LassoAssertion RemoteProviderID="https://service-provider1:2003/liberty-alliance/metadata"><Assertion AssertionID="1234567890"></Assertion></LassoAssertion>"""
 
 sp2_identity = """<LassoIdentity RemoteProviderID="https://service-provider2:2003/liberty-alliance/metadata"><LassoRemoteNameIdentifier><NameIdentifier NameQualifier="https://identity-provider:2003/liberty-alliance/metadata" Format="federated">222222222222222222222</NameIdentifier></LassoRemoteNameIdentifier></LassoIdentity>"""

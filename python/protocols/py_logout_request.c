@@ -63,18 +63,18 @@ PyObject *logout_request_new(PyObject *self, PyObject *args) {
 }
 
 PyObject *logout_request_new_from_export(PyObject *self, PyObject *args) {
-  gchar               *buffer;
-  lassoNodeExportTypes export_type;
-  LassoNode           *request;
+  gchar     *buffer;
+  gint       type;
+  LassoNode *request;
 
   if (CheckArgs(args, "SS:logout_request_new_from_export")) {
     if(!PyArg_ParseTuple(args, (char *) "ss:logout_request_new_from_export",
-			 &buffer, &export_type))
+			 &buffer, &type))
       return NULL;
   }
   else return NULL;
 
-  request = lasso_logout_request_new_from_export(buffer, export_type);
+  request = lasso_logout_request_new_from_export(buffer, type);
 
   return (LassoLogoutRequest_wrap(LASSO_LOGOUT_REQUEST(request)));
 }

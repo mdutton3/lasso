@@ -250,6 +250,10 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
     debug(ERROR, "Unknown request method\n");
     return(-3);
   }
+  if(profileContext->request==NULL){
+    debug(ERROR, "Error while building the request from msg\n");
+    return(-4);
+  }
 
   /* set the remote provider id from the request */
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
@@ -262,7 +266,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
 
   if(profileContext->response==NULL){
     debug(ERROR, "Error while building response\n");
-    return(-4);
+    return(-5);
   }
 
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
@@ -272,13 +276,13 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   if(nameIdentifier==NULL){
     debug(ERROR, "Name identifier not found in logout request\n");
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-5);
+    return(-6);
   }
 
   remote_providerID = lasso_node_get_child_content(profileContext->request, "ProviderID", NULL);
   if(remote_providerID==NULL){
     debug(ERROR, "Provider id not found in logout request\n");
-    return(-6);
+    return(-7);
   }
 
   /* verify authentication (if ok, delete assertion) */
@@ -291,7 +295,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   if(assertion==NULL){
     debug(WARNING, "%s has no assertion\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoSamlStatusCodeRequestDenied);
-    return(-9);
+    return(-8);
   }
 
   /* Verify federation */
@@ -299,13 +303,13 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   if(identity==NULL){
     debug(WARNING, "No identity for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-7);
+    return(-9);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
     debug(WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
-    return(-8);
+    return(-10);
   }
 
   return(0);
