@@ -27,58 +27,68 @@
  *
  * To compile it:
  * $ javac -classpath ../../lasso.jar CFLasso.java
+ *
  * To test it:
  * $ export LD_LIBRARY_PATH=../../.libs/
  * $ java -classpath ../../lasso.jar:. CFLasso
- * To use it, edit ColdFusion file bin/jvm.config:
+ *
+ * To use it:
+ * $ jar cf CFLasso.jar CFLasso.class
+ * edit ColdFusion file bin/jvm.config:
  *   - Add libjlasso.so directory to java.library.path variable.
- *   - Add classes directory to java.class.path variable.
+ *   - Add lasso.jar & CFLasso.jar to java.class.path variable.
  */
+
+import com.entrouvert.lasso.AuthnRequest;
+import com.entrouvert.lasso.lassoConstants;
+import com.entrouvert.lasso.lasso;
+import com.entrouvert.lasso.Login;
+import com.entrouvert.lasso.Server;
 
 
 public class CFLasso {
-    protected com.entrouvert.lasso.Server getServer() {
-        com.entrouvert.lasso.Server server = new com.entrouvert.lasso.Server(
-            "../../../tests/data/sp1-la/metadata.xml",
-	    null, //"../../../tests/data/sp1-la/public-key.pem",
-            "../../../tests/data/sp1-la/private-key-raw.pem",
-            "../../../tests/data/sp1-la/certificate.pem",
-            com.entrouvert.lasso.lassoConstants.signatureMethodRsaSha1);
-        server.addProvider(
-            "../../../tests/data/idp1-la/metadata.xml",
-            "../../../tests/data/idp1-la/public-key.pem",
-            "../../../tests/data/ca1-la/certificate.pem");
-	return server;
+    /* A simple service provider */
+
+    protected Server server = null;
+
+    public String idpProviderId = null;
+
+    public void configure(String metadataPath, String publicKeyPath, String privateKeyPath,
+			  String idpProviderId, String idpMetadataPath, String idpPublicKeyPath) {
+        server = new Server(metadataPath, publicKeyPath, privateKeyPath, null,
+			    lassoConstants.signatureMethodRsaSha1);
+	this.idpProviderId = idpProviderId;
+        server.addProvider(idpMetadataPath, idpPublicKeyPath, null);
     }
 
     public String login(String relayState) {
-	com.entrouvert.lasso.AuthnRequest authnRequest;
-	com.entrouvert.lasso.Login login;
-	com.entrouvert.lasso.Server server;
+	AuthnRequest authnRequest;
+	Login login;
 	String authnRequestUrl;
 
-	// com.entrouvert.lasso.lasso.init();
-
-	server = getServer();
-        login = new com.entrouvert.lasso.Login(server);
-        login.initAuthnRequest(com.entrouvert.lasso.lassoConstants.httpMethodRedirect);
+        login = new Login(server);
+        login.initAuthnRequest(lassoConstants.httpMethodRedirect);
 	authnRequest = login.getAuthnRequest();
         authnRequest.setIsPassive(false);
-        authnRequest.setNameIdPolicy(com.entrouvert.lasso.lassoConstants.libNameIdPolicyTypeFederated);
-        authnRequest.setConsent(com.entrouvert.lasso.lassoConstants.libConsentObtained);
+        authnRequest.setNameIdPolicy(lassoConstants.libNameIdPolicyTypeFederated);
+        authnRequest.setConsent(lassoConstants.libConsentObtained);
 	if (relayState != null)
 	    authnRequest.setRelayState(relayState);
-        login.buildAuthnRequestMsg("https://idp1/metadata");
+        login.buildAuthnRequestMsg(idpProviderId);
         authnRequestUrl = login.getMsgUrl();
-
-	// com.entrouvert.lasso.lasso.shutdown();
-
 	return authnRequestUrl;
     }
 
     static public void main(String [] args) {
 	CFLasso lasso = new CFLasso();
-	String ssoUrl = lasso.login(null);
+	lasso.configure("../../../tests/data/sp2-la/metadata.xml",
+			"../../../tests/data/sp2-la/public-key.pem",
+			"../../../tests/data/sp2-la/private-key-raw.pem",
+			"https://idp2/metadata",
+			"../../../tests/data/idp2-la/metadata.xml",
+			"../../../tests/data/idp2-la/public-key.pem");
+	String ssoUrl = lasso.login("data to get back");
+	System.out.println("Test");
 	System.out.print("Identity provider single sign-on URL = ");
 	System.out.println(ssoUrl);
     }
