@@ -191,6 +191,11 @@ void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
         g_ptr_array_add(array, g_strdup(key));
 }
 
+void free_xml_list_element(xmlNode *xmlnode, gpointer unused)
+{
+	xmlFreeNode(xmlnode);
+}
+
 gpointer get_object(gpointer value)
 {
 	return value == NULL ? NULL : g_object_ref(value);
@@ -1111,76 +1116,49 @@ typedef struct {
 #endif
 %nodefault LassoLibAuthnRequest;
 typedef struct {
-	%extend {
-		/* XXX shouldn't need all of this now */
-		/* Attributes from LassoLibAuthnRequest */
+	/* Attributes */
 
-		char *affiliationId;
-		char *assertionConsumerServiceId;
-		char *consent;
-		LassoStringArray *extension;
-		gboolean forceAuthn;
-		gboolean isPassive;
-		char *nameIdPolicy;
-		char *protocolProfile;
-		char *providerId;
-		char *relayState;
-	}
+	char *AffiliationID;
+	char *AssertionConsumerServiceID;
+	gboolean ForceAuthn;
+	gboolean IsPassive;
+	char *NameIDPolicy;
+	char *ProtocolProfile;
+	char *ProviderID;
+	char *RelayState;
+	char *consent;
 } LassoLibAuthnRequest;
+%extend LassoLibAuthnRequest {
+	/* Attributes */
+
+	LassoStringArray *Extension;
+	// FIXME: LassoLibRequestAuthnContext *RequestAuthnContext;
+	// FIXME: LassoLibScoping *Scoping;
+}
 
 %{
 
 /* Attributes Implementations */
 
-/* affiliationId */
-#define LassoLibAuthnRequest_get_affiliationId LassoLibAuthnRequest_affiliationId_get
-char *LassoLibAuthnRequest_affiliationId_get(LassoLibAuthnRequest *self) {
+/* Extension */
+#define LassoLibAuthnRequest_get_Extension LassoLibAuthnRequest_Extension_get
+LassoStringArray *LassoLibAuthnRequest_Extension_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
-#define LassoLibAuthnRequest_set_affiliationId(self, value) set_string(&(self)->AffiliationID, (value))
-#define LassoLibAuthnRequest_affiliationId_set(self, value) set_string(&(self)->AffiliationID, (value))
-
-/* assertionConsumerServiceId */
-#define LassoLibAuthnRequest_get_assertionConsumerServiceId LassoLibAuthnRequest_assertionConsumerServiceId_get
-char *LassoLibAuthnRequest_assertionConsumerServiceId_get(LassoLibAuthnRequest *self) {
-	return NULL; /* FIXME */
-}
-#define LassoLibAuthnRequest_set_assertionConsumerServiceId(self, value) set_string(&(self)->AssertionConsumerServiceID, (value))
-#define LassoLibAuthnRequest_assertionConsumerServiceId_set(self, value) set_string(&(self)->AssertionConsumerServiceID, (value))
-
-/* consent */
-#define LassoLibAuthnRequest_get_consent LassoLibAuthnRequest_consent_get
-char *LassoLibAuthnRequest_consent_get(LassoLibAuthnRequest *self) {
-	return NULL; /* FIXME */
-}
-#define LassoLibAuthnRequest_set_consent(self, value) set_string(&(self)->consent, (value))
-#define LassoLibAuthnRequest_consent_set(self, value) set_string(&(self)->consent, (value))
-
-/* extension */
-#define LassoLibAuthnRequest_get_extension LassoLibAuthnRequest_extension_get
-LassoStringArray *LassoLibAuthnRequest_extension_get(LassoLibAuthnRequest *self) {
-	return NULL; /* FIXME */
-}
-
-static void free_xml_list_elem(xmlNode *xmlnode, gpointer unused)
-{
-	xmlFreeNode(xmlnode);
-}
-
-#define LassoLibAuthnRequest_set_extension LassoLibAuthnRequest_extension_set
-void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringArray *extension) {
+#define LassoLibAuthnRequest_set_Extension LassoLibAuthnRequest_Extension_set
+void LassoLibAuthnRequest_Extension_set(LassoLibAuthnRequest *self, LassoStringArray *Extension) {
 	if (self->Extension != NULL) {
-		g_list_foreach(self->Extension, (GFunc) free_xml_list_elem, NULL);
+		g_list_foreach(self->Extension, (GFunc) free_xml_list_element, NULL);
 		g_list_free(self->Extension);
 	}
-	if (extension == NULL)
+	if (Extension == NULL)
 		self->Extension = NULL;
 	else {
 		int index;
-		for (index = 0; index < extension->len; index ++) {
+		for (index = 0; index < Extension->len; index ++) {
 			xmlDoc *doc;
 			xmlNode *node;
-			doc = xmlReadDoc(g_ptr_array_index(extension, index), NULL, NULL,
+			doc = xmlReadDoc(g_ptr_array_index(Extension, index), NULL, NULL,
 					XML_PARSE_NONET);
 			if (doc == NULL)
 				continue;
@@ -1201,50 +1179,6 @@ void LassoLibAuthnRequest_extension_set(LassoLibAuthnRequest *self, LassoStringA
 	}
 }
 
-/* forceAuthn */
-#define LassoLibAuthnRequest_get_forceAuthn LassoLibAuthnRequest_forceAuthn_get
-gboolean LassoLibAuthnRequest_forceAuthn_get(LassoLibAuthnRequest *self) {
-	return 0; /* FIXME */
-}
-#define LassoLibAuthnRequest_set_forceAuthn LassoLibAuthnRequest_forceAuthn_set
-void LassoLibAuthnRequest_forceAuthn_set(LassoLibAuthnRequest *self, gboolean forceAuthn) {
-	 self->ForceAuthn = forceAuthn;
-}
-
-/* isPassive */
-#define LassoLibAuthnRequest_get_isPassive LassoLibAuthnRequest_isPassive_get
-gboolean LassoLibAuthnRequest_isPassive_get(LassoLibAuthnRequest *self) {
-	return self->IsPassive;
-}
-#define LassoLibAuthnRequest_set_isPassive LassoLibAuthnRequest_isPassive_set
-void LassoLibAuthnRequest_isPassive_set(LassoLibAuthnRequest *self, gboolean isPassive) {
-	self->IsPassive = isPassive;
-}
-
-/* nameIdPolicy */
-#define LassoLibAuthnRequest_get_nameIdPolicy(self) (self)->NameIDPolicy
-#define LassoLibAuthnRequest_nameIdPolicy_get(self) (self)->NameIDPolicy
-#define LassoLibAuthnRequest_set_nameIdPolicy(self, value) set_string(&(self)->NameIDPolicy, (value))
-#define LassoLibAuthnRequest_nameIdPolicy_set(self, value) set_string(&(self)->NameIDPolicy, (value))
-
-/* protocolProfile */
-#define LassoLibAuthnRequest_get_protocolProfile(self) (self)->ProtocolProfile
-#define LassoLibAuthnRequest_protocolProfile_get(self) (self)->ProtocolProfile
-#define LassoLibAuthnRequest_set_protocolProfile(self, value) set_string(&(self)->ProtocolProfile, (value))
-#define LassoLibAuthnRequest_protocolProfile_set(self, value) set_string(&(self)->ProtocolProfile, (value))
-
-/* providerId */
-#define LassoLibAuthnRequest_get_providerId(self) (self)->ProviderID
-#define LassoLibAuthnRequest_providerId_get(self) (self)->ProviderID
-#define LassoLibAuthnRequest_set_providerId(self, value) set_string(&(self)->ProviderID, (value))
-#define LassoLibAuthnRequest_providerId_set(self, value) set_string(&(self)->ProviderID, (value))
-
-/* relayState */
-#define LassoLibAuthnRequest_get_relayState(self) (self)->RelayState
-#define LassoLibAuthnRequest_relayState_get(self) (self)->RelayState
-#define LassoLibAuthnRequest_set_relayState(self, value) set_string(&(self)->RelayState, (value))
-#define LassoLibAuthnRequest_relayState_set(self, value) set_string(&(self)->RelayState, (value))
-
 %}
 
 
@@ -1258,12 +1192,19 @@ void LassoLibAuthnRequest_isPassive_set(LassoLibAuthnRequest *self, gboolean isP
 #endif
 %nodefault LassoLibAuthnResponse;
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoSamlpResponse */
-		LassoSamlpStatus *Status;
-		// FIXME: LassoSamlAssertion *Assertion;
-	}
+	/* Attributes */
+
+	char *ProviderID;
+	char *RelayState;
+	char *consent;
 } LassoLibAuthnResponse;
+%extend LassoLibAuthnResponse {
+	/* Attributes inherited from LassoSamlpResponse */
+
+	// FIXME: LassoSamlAssertion *Assertion;
+	// FIXME: GList *Extension;
+	LassoSamlpStatus *Status;
+}
 
 %{
 
@@ -1288,8 +1229,30 @@ typedef struct {
 #endif
 %nodefault LassoLibFederationTerminationNotification;
 typedef struct {
-	/* FIXME: Add a relayState when Lasso supports it. */
+	/* Attributes */
+
+	char *ProviderID;
+	char *RelayState;	/* not in schema but allowed in redirects */
+	char *consent;
 } LassoLibFederationTerminationNotification;
+%extend LassoLibFederationTerminationNotification {
+	/* Attributes */
+
+	// FIXME: GList *Extension;
+	LassoSamlNameIdentifier *NameIdentifier;
+}
+
+%{
+
+/* Attributes implementations */
+
+/* NameIdentifier */
+#define LassoLibFederationTerminationNotification_get_NameIdentifier(self) get_object((self)->NameIdentifier)
+#define LassoLibFederationTerminationNotification_NameIdentifier_get(self) get_object((self)->NameIdentifier)
+#define LassoLibFederationTerminationNotification_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibFederationTerminationNotification_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+
+%}
 
 
 /***********************************************************************
@@ -1302,21 +1265,30 @@ typedef struct {
 #endif
 %nodefault LassoLibLogoutRequest;
 typedef struct {
-	%extend {
-		/* Attributes */
-		char *relayState;
-	}
+	/* Attributes */
+
+	char *ProviderID;
+	char *NotOnOrAfter;
+	char *RelayState;
+	char *SessionIndex;
+	char *consent;
 } LassoLibLogoutRequest;
+%extend LassoLibLogoutRequest {
+	/* Attributes */
+
+	// FIXME: GList *Extension;
+	LassoSamlNameIdentifier *NameIdentifier;
+}
 
 %{
 
-/* Attributes */
+/* Attributes implementations */
 
-/* relayState */
-#define LassoLibLogoutRequest_get_relayState(self) (self)->RelayState
-#define LassoLibLogoutRequest_relayState_get(self) (self)->RelayState
-#define LassoLibLogoutRequest_set_relayState(self, value) set_string(&(self)->RelayState, (value))
-#define LassoLibLogoutRequest_relayState_set(self, value) set_string(&(self)->RelayState, (value))
+/* NameIdentifier */
+#define LassoLibLogoutRequest_get_NameIdentifier(self) get_object((self)->NameIdentifier)
+#define LassoLibLogoutRequest_NameIdentifier_get(self) get_object((self)->NameIdentifier)
+#define LassoLibLogoutRequest_set_NameIdentifier(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
+#define LassoLibLogoutRequest_NameIdentifier_set(self, value) set_object((gpointer *) &(self)->NameIdentifier, (value))
 
 %}
 
@@ -1331,16 +1303,31 @@ typedef struct {
 #endif
 %nodefault LassoLibLogoutResponse;
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoLibStatusResponse */
-		LassoSamlpStatus *Status;
-		// FIXME: LassoSamlAssertion *Assertion;
-	}
 } LassoLibLogoutResponse;
+%extend LassoLibLogoutResponse {
+	/* Attributes inherited from LassoLibStatusResponse */
+
+	// FIXME: GList *Extension;
+	char *ProviderID;
+	char *RelayState;
+	LassoSamlpStatus *Status;
+}
 
 %{
 
-/* Attributes inherited from LassoLibStatusResponse implementations */
+/* Implementations of attributes inherited from LassoLibStatusResponse */
+
+/* ProviderID */
+#define LassoLibLogoutResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
+#define LassoLibLogoutResponse_ProviderID_get(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
+#define LassoLibLogoutResponse_set_ProviderID(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
+#define LassoLibLogoutResponse_ProviderID_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
+
+/* RelayState */
+#define LassoLibLogoutResponse_get_RelayState(self) LASSO_LIB_STATUS_RESPONSE(self)->RelayState
+#define LassoLibLogoutResponse_RelayState_get(self) LASSO_LIB_STATUS_RESPONSE(self)->RelayState
+#define LassoLibLogoutResponse_set_RelayState(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
+#define LassoLibLogoutResponse_RelayState_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
 
 /* Status */
 #define LassoLibLogoutResponse_get_Status(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
@@ -1361,22 +1348,41 @@ typedef struct {
 #endif
 %nodefault LassoLibRegisterNameIdentifierRequest;
 typedef struct {
-	%extend {
-		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
+	/* Attributes */
 
-		char *relayState;
-	}
+	char *ProviderID;
+	char *RelayState;
 } LassoLibRegisterNameIdentifierRequest;
+%extend LassoLibRegisterNameIdentifierRequest {
+	/* Attributes */
+
+	// FIXME: GList *Extension;
+	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
+	LassoSamlNameIdentifier *OldProvidedNameIdentifier;
+	LassoSamlNameIdentifier *SPProvidedNameIdentifier;
+}
 
 %{
 
-/* Attributes Implementations */
+/* Attributes implementations */
 
-/* relayState */
-#define LassoLibRegisterNameIdentifierRequest_get_relayState(self) (self)->RelayState
-#define LassoLibRegisterNameIdentifierRequest_relayState_get(self) (self)->RelayState
-#define LassoLibRegisterNameIdentifierRequest_set_relayState(self, value) set_string(&(self)->RelayState, (value))
-#define LassoLibRegisterNameIdentifierRequest_relayState_set(self, value) set_string(&(self)->RelayState, (value))
+/* IDPProvidedNameIdentifier */
+#define LassoLibRegisterNameIdentifierRequest_get_IDPProvidedNameIdentifier(self) get_object((self)->IDPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_get(self) get_object((self)->IDPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_IDPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_IDPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->IDPProvidedNameIdentifier, (value))
+
+/* OldProvidedNameIdentifier */
+#define LassoLibRegisterNameIdentifierRequest_get_OldProvidedNameIdentifier(self) get_object((self)->OldProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_get(self) get_object((self)->OldProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_OldProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_OldProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->OldProvidedNameIdentifier, (value))
+
+/* SPProvidedNameIdentifier */
+#define LassoLibRegisterNameIdentifierRequest_get_SPProvidedNameIdentifier(self) get_object((self)->SPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_get(self) get_object((self)->SPProvidedNameIdentifier)
+#define LassoLibRegisterNameIdentifierRequest_set_SPProvidedNameIdentifier(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
+#define LassoLibRegisterNameIdentifierRequest_SPProvidedNameIdentifier_set(self, value) set_object((gpointer *) &(self)->SPProvidedNameIdentifier, (value))
 
 %}
 
@@ -1392,6 +1398,38 @@ typedef struct {
 %nodefault LassoLibRegisterNameIdentifierResponse;
 typedef struct {
 } LassoLibRegisterNameIdentifierResponse;
+%extend LassoLibRegisterNameIdentifierResponse {
+	/* Attributes inherited from LassoLibStatusResponse */
+
+	// FIXME: GList *Extension;
+	char *ProviderID;
+	char *RelayState;
+	LassoSamlpStatus *Status;
+}
+
+%{
+
+/* Attributes inherited from LassoLibStatusResponse implementations */
+
+/* ProviderID */
+#define LassoLibRegisterNameIdentifierResponse_get_ProviderID(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
+#define LassoLibRegisterNameIdentifierResponse_ProviderID_get(self) LASSO_LIB_STATUS_RESPONSE(self)->ProviderID
+#define LassoLibRegisterNameIdentifierResponse_set_ProviderID(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
+#define LassoLibRegisterNameIdentifierResponse_ProviderID_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->ProviderID, (value))
+
+/* RelayState */
+#define LassoLibRegisterNameIdentifierResponse_get_RelayState(self) LASSO_LIB_STATUS_RESPONSE(self)->RelayState
+#define LassoLibRegisterNameIdentifierResponse_RelayState_get(self) LASSO_LIB_STATUS_RESPONSE(self)->RelayState
+#define LassoLibRegisterNameIdentifierResponse_set_RelayState(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
+#define LassoLibRegisterNameIdentifierResponse_RelayState_set(self, value) set_string(&LASSO_LIB_STATUS_RESPONSE(self)->RelayState, (value))
+
+/* Status */
+#define LassoLibRegisterNameIdentifierResponse_get_Status(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibRegisterNameIdentifierResponse_Status_get(self) get_object(LASSO_LIB_STATUS_RESPONSE(self)->Status)
+#define LassoLibRegisterNameIdentifierResponse_set_Status(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+#define LassoLibRegisterNameIdentifierResponse_Status_set(self, value) set_object((gpointer *) &LASSO_LIB_STATUS_RESPONSE(self)->Status, (value))
+
+%}
 
 
 /***********************************************************************
@@ -1404,11 +1442,29 @@ typedef struct {
 #endif
 %nodefault LassoLibStatusResponse;
 typedef struct {
-	// FIXME: GList *Extension;
-	// FIXME: char *ProviderID;
-	LassoSamlpStatus *Status;
-	// FIXME: char *RelayState;
+	/* Attributes */
+
+	char *ProviderID;
+	char *RelayState;
 } LassoLibStatusResponse;
+%extend LassoLibStatusResponse {
+	/* Attributes */
+
+	// FIXME: GList *Extension;
+	LassoSamlpStatus *Status;
+}
+
+%{
+
+/* Attributes implementations */
+
+/* Status */
+#define LassoLibStatusResponse_get_Status(self) get_object((self)->Status)
+#define LassoLibStatusResponse_Status_get(self) get_object((self)->Status)
+#define LassoLibStatusResponse_set_Status(self, value) set_object((gpointer *) &(self)->Status, (value))
+#define LassoLibStatusResponse_Status_set(self, value) set_object((gpointer *) &(self)->Status, (value))
+
+%}
 
 
 /***********************************************************************
