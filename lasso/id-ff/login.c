@@ -330,7 +330,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	if (status_value && strcmp(status_value, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		if (strcmp(status_value, LASSO_SAML_STATUS_CODE_REQUEST_DENIED) == 0)
 			return LASSO_LOGIN_ERROR_REQUEST_DENIED;
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	if (response->Assertion) {
