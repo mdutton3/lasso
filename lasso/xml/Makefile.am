@@ -26,6 +26,7 @@ liblasso_xml_la_SOURCES = \
 	disco_remove_entry.c \
 	disco_requested_service_type.c \
 	disco_resource_id.c \
+	disco_resource_id_group.c \
 	disco_resource_offering.c \
 	disco_service_instance.c \
 	dst_data.c \
@@ -95,6 +96,7 @@ liblassoinclude_HEADERS = \
 	disco_remove_entry.h \
 	disco_requested_service_type.h \
 	disco_resource_id.h \
+	disco_resource_id_group.h \
 	disco_resource_offering.h \
 	disco_service_instance.h \
 	dst_data.h \
