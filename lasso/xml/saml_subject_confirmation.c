@@ -62,7 +62,8 @@ get_xmlNode(LassoNode *node)
 	snippets();
 
 	xmlnode = xmlNewNode(NULL, "SubjectConfirmation");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
+				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
 	lasso_node_build_xml_with_snippets(xmlnode, snippets);
 
 	return xmlnode;

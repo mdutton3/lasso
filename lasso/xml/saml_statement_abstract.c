@@ -44,7 +44,8 @@ get_xmlNode(LassoNode *node)
 {
 	xmlNode *xmlnode;
 	xmlnode = xmlNewNode(NULL, "StatementAbstract");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
+				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
 	return xmlnode;
 }
 

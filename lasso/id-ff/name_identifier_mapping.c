@@ -351,7 +351,8 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 	}
 
 	/* verify federation of the SP request */
-	federation = g_hash_table_lookup(profile->identity->federations, profile->remote_providerID);
+	federation = g_hash_table_lookup(
+			profile->identity->federations, profile->remote_providerID);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);

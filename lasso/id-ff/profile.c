@@ -223,7 +223,8 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump)
 
 	ctx->identity = lasso_identity_new_from_dump(dump);
 	if (ctx->identity == NULL) {
-		message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump");
+		message(G_LOG_LEVEL_WARNING,
+				"Failed to create the identity from the identity dump");
 		return -1;
 	}
 	ctx->identity->is_dirty = FALSE;

@@ -56,7 +56,8 @@ struct _LassoLibRequestAuthnContext {
 	char *AuthnContextClassRef; /* XXX: should actually be a list */
 	/* <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/> */
 	char *AuthnContextStatementRef; /* XXX: idem */
-	/* <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" minOccurs="0"/> */
+	/* <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" 
+	 *   minOccurs="0"/> */
 	char *AuthnContextComparisonType; /* XXX should be enum ? */
 };
 

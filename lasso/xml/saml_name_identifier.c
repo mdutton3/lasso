@@ -88,7 +88,8 @@ get_xmlNode(LassoNode *node)
 	LassoSamlNameIdentifier *identifier = LASSO_SAML_NAME_IDENTIFIER(node);
 
 	xmlnode = xmlNewNode(NULL, "NameIdentifier");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, 
+				LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX));
 	xmlAddChild(xmlnode, xmlNewText(identifier->content));
 	if (identifier->Format)
 		xmlSetProp(xmlnode, "Format", identifier->Format);
