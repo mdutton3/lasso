@@ -141,8 +141,16 @@ init_from_query(LassoNode *node, char **query_fields)
 {
 	LassoLibAuthnRequest *request = LASSO_LIB_AUTHN_REQUEST(node);
 	
+	request->RequestAuthnContext = LASSO_LIB_REQUEST_AUTHN_CONTEXT(
+			lasso_lib_request_authn_context_new());
 	/* XXX needs code for Scoping, IDPList, IDPEntries... */
 	lasso_node_init_from_query_fields(node, query_fields);
+	if (request->RequestAuthnContext->AuthnContextClassRef == NULL &&
+			request->RequestAuthnContext->AuthnContextStatementRef == NULL &&
+			request->RequestAuthnContext->AuthnContextComparison == NULL) {
+		lasso_node_destroy(LASSO_NODE(request->RequestAuthnContext));
+		request->RequestAuthnContext = NULL;
+	}
 
 	if (request->ProviderID == NULL)
 		return FALSE;

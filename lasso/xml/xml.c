@@ -1217,10 +1217,10 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 		LASSO_NODE_GET_CLASS(v)->init_from_query(v, &query_value);
 	} else if (snippet->type == SNIPPET_LIST_CONTENT) {
 		char **elems = g_strsplit(query_value, " ", 0);
-		char *p;
+		int i;
 		GList *l = NULL;
-		for (p = elems[0]; p; p++) {
-			l = g_list_append(l, p);
+		for (i = 0; elems[i]; i++) {
+			l = g_list_append(l, g_strdup(elems[i]));
 		}
 		g_strfreev(elems);
 		(*(GList**)value) = l;
