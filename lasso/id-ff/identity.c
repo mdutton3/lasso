@@ -29,11 +29,11 @@
 /*****************************************************************************/
 
 int lasso_identity_set_local_name_identifier(LassoIdentity *identity, LassoNode *nameIdentifier){
-     user->local_nameIdentifier = nameIdentifier;
+     identity->local_nameIdentifier = nameIdentifier;
 }
 
 int lasso_identity_set_peer_nameIdentifier(LassoIdentity *identity, LassoNode *nameIdentifier){
-     user->peer_nameIdentifier = nameIdentifier;
+     identity->peer_nameIdentifier = nameIdentifier;
 }
 
 /*****************************************************************************/
