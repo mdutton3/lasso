@@ -93,9 +93,9 @@ START_TEST(test02_serviceProviderLogin)
 	char *relayState;
 	char *authnRequestUrl, *authnRequestQuery;
 	char *responseUrl, *responseQuery;
-	char *idpUserContextDump;
+	char *idpIdentityContextDump;
 	char *soapResponseMsg;
-	char *spUserContextDump, *spUserContextDumpTemp;
+	char *spIdentityContextDump, *spIdentityContextDumpTemp;
 	int requestType;
 
 	serviceProviderContextDump = generateServiceProviderContextDump();
@@ -106,10 +106,10 @@ START_TEST(test02_serviceProviderLogin)
 	rc = lasso_login_init_authn_request(spLoginContext,
 			"https://identity-provider:1998/liberty-alliance/metadata");
 	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
-	fail_unless(LASSO_PROFILE_CONTEXT(spLoginContext)->request_type == \
+	fail_unless(LASSO_PROFILE(spLoginContext)->request_type == \
 			lassoMessageTypeAuthnRequest, "request_type should be AuthnRequest");
 	request = LASSO_LIB_AUTHN_REQUEST(
-			LASSO_PROFILE_CONTEXT(spLoginContext)->request);
+			LASSO_PROFILE(spLoginContext)->request);
 	lasso_lib_authn_request_set_isPassive(request, 0);
 	lasso_lib_authn_request_set_nameIDPolicy(request, lassoLibNameIDPolicyTypeFederated);
 	lasso_lib_authn_request_set_consent(request, lassoLibConsentObtained);
@@ -117,7 +117,7 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_lib_authn_request_set_relayState(request, "fake");
 	rc = lasso_login_build_authn_request_msg(spLoginContext);
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
-	authnRequestUrl = LASSO_PROFILE_CONTEXT(spLoginContext)->msg_url;
+	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,
 			"authnRequestUrl shouldn't be NULL");
 	authnRequestQuery = strchr(authnRequestUrl, '?')+1;
@@ -144,10 +144,10 @@ START_TEST(test02_serviceProviderLogin)
 			lassoHttpMethodRedirect);
 	fail_unless(rc == 0, "lasso_login_build_artifact_msg failed");
 
-	idpUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(idpLoginContext)->user);
-	fail_unless(idpUserContextDump != NULL,
-			"lasso_user_dump shouldn't return NULL");
-	responseUrl = LASSO_PROFILE_CONTEXT(idpLoginContext)->msg_url;
+	idpIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(idpLoginContext)->identity);
+	fail_unless(idpIdentityContextDump != NULL,
+		    "lasso_identity_dump shouldn't return NULL");
+	responseUrl = LASSO_PROFILE(idpLoginContext)->msg_url;
 	fail_unless(responseUrl != NULL, "responseUrl shouldn't be NULL");
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
@@ -168,23 +168,23 @@ START_TEST(test02_serviceProviderLogin)
 	fail_unless(rc == 0, "lasso_login_build_request_msg failed");
 
 	/* Identity provider SOAP endpoint */
-	requestType = lasso_profile_context_get_request_type_from_soap_msg(
-			LASSO_PROFILE_CONTEXT(spLoginContext)->msg_body);
+	requestType = lasso_profile_get_request_type_from_soap_msg(
+			LASSO_PROFILE(spLoginContext)->msg_body);
 	fail_unless(requestType == lassoRequestTypeLogin,
 			"requestType should be lassoRequestTypeLogin");
 	
         /* Service provider assertion consumer (step 2: process SOAP response) */
 	rc = lasso_login_process_response_msg(spLoginContext, soapResponseMsg);
 	fail_unless(rc == 0, "lasso_login_process_request_msg failed");
-	fail_unless(strcmp(LASSO_PROFILE_CONTEXT(spLoginContext)->nameIdentifier,
-        	LASSO_PROFILE_CONTEXT(idpLoginContext)->nameIdentifier) == 0,
+	fail_unless(strcmp(LASSO_PROFILE(spLoginContext)->nameIdentifier,
+        	LASSO_PROFILE(idpLoginContext)->nameIdentifier) == 0,
 		"nameIdentifiers should be identical");
-	rc = lasso_login_create_user(spLoginContext, NULL);
-	fail_unless(rc == 0, "lasso_login_create_user failed");
-	fail_unless(LASSO_PROFILE_CONTEXT(spLoginContext)->user != NULL,
-			"spLoginContext has no user");
-	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLoginContext)->user);
-	fail_unless(spUserContextDump != NULL, "lasso_user_dump failed");
+	rc = lasso_login_accept_sso(spLoginContext);
+	fail_unless(rc == 0, "lasso_login_accept_sso failed");
+	fail_unless(LASSO_PROFILE(spLoginContext)->identity != NULL,
+			"spLoginContext has no identity");
+	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
+	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
 
 	/* Service provider logout */
 	lasso_server_destroy(spContext);
@@ -192,54 +192,54 @@ START_TEST(test02_serviceProviderLogin)
 
 	spContext = lasso_server_new_from_dump(serviceProviderContextDump);
 	spLogoutContext = lasso_logout_new(spContext, lassoProviderTypeSp);
-	lasso_profile_context_set_user_from_dump(LASSO_PROFILE_CONTEXT(spLogoutContext),
-						 spUserContextDump);
+	lasso_profile_set_identity_from_dump(LASSO_PROFILE(spLogoutContext),
+						 spIdentityContextDump);
 	fail_unless(spLogoutContext != NULL, "spLogoutContext should not be NULL");
-	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
-	fail_unless(spUserContextDump != NULL, "spUserContextDump should not be NULL");
+	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLogoutContext)->identity);
+	fail_unless(spIdentityContextDump != NULL, "spIdentityContextDump should not be NULL");
 	rc = lasso_logout_init_request(spLogoutContext, NULL);
 	fail_unless(rc == 0, "lasso_logout_init_request failed");
 	rc = lasso_logout_build_request_msg(spLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_build_request_msg failed");
-	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
+	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLogoutContext)->identity);
 
 	/* Identity provider SOAP endpoint */
 	lasso_server_destroy(idpContext);
 
-	spUserContextDumpTemp = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
-	fail_unless(spUserContextDumpTemp != NULL,
-			"spUserContextDumpTemp should not be NULL");
-	fail_unless(strcmp(spUserContextDumpTemp, spUserContextDump) == 0,
-			"spUserContextDumpTemp should not have diverted from spUserContextDump");
+	spIdentityContextDumpTemp = lasso_identity_dump(LASSO_PROFILE(spLogoutContext)->identity);
+	fail_unless(spIdentityContextDumpTemp != NULL,
+			"spIdentityContextDumpTemp should not be NULL");
+	fail_unless(strcmp(spIdentityContextDumpTemp, spIdentityContextDump) == 0,
+			"spIdentityContextDumpTemp should not have diverted from spIdentityContextDump");
 
-	requestType = lasso_profile_context_get_request_type_from_soap_msg(
-			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body);
+	requestType = lasso_profile_get_request_type_from_soap_msg(
+			LASSO_PROFILE(spLogoutContext)->msg_body);
 
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLogoutContext = lasso_logout_new(idpContext, lassoProviderTypeIdp);
 	fail_unless(idpLogoutContext != NULL, "lasso_logout_new failed");
 	rc = lasso_logout_load_request_msg(
 			idpLogoutContext,
-			LASSO_PROFILE_CONTEXT(spLogoutContext)->msg_body,
+			LASSO_PROFILE(spLogoutContext)->msg_body,
 			lassoHttpMethodSoap);
 	fail_unless(rc == 0, "lasso_logout_load_request_msg failed");
-	rc = lasso_profile_context_set_user_from_dump(
-			LASSO_PROFILE_CONTEXT(idpLogoutContext), idpUserContextDump);
-	fail_unless(rc == 0, "lasso_profile_context_set_user_from_dump failed");
+	rc = lasso_profile_set_identity_from_dump(LASSO_PROFILE(idpLogoutContext),
+						  idpIdentityContextDump);
+	fail_unless(rc == 0, "lasso_profile_set_identity_from_dump failed");
 	rc = lasso_logout_process_request(idpLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_process_request failed");
 	fail_unless(lasso_logout_get_next_providerID(idpLogoutContext) == NULL,
 			"lasso_logout_get_next_providerID failed");
 	rc = lasso_logout_build_response_msg(idpLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_build_response_msg failed");
-	soapResponseMsg = LASSO_PROFILE_CONTEXT(idpLogoutContext)->msg_body;
+	soapResponseMsg = LASSO_PROFILE(idpLogoutContext)->msg_body;
 
 	/* Service provider logout (step 2: process SOAP response) */
 	rc = lasso_logout_process_response_msg(spLogoutContext,
 			soapResponseMsg, lassoHttpMethodSoap);
 	fail_unless(rc == 0, "lasso_logout_process_response_msg failed");
-	spUserContextDump = lasso_user_dump(LASSO_PROFILE_CONTEXT(spLogoutContext)->user);
-	fail_unless(spUserContextDump != NULL, "lasso_user_dump failed");
+	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLogoutContext)->identity);
+	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
 
 }
 END_TEST
