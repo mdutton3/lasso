@@ -90,13 +90,13 @@ lasso_identity_dump(LassoIdentity *identity)
 LassoNode *
 lasso_identity_get_local_nameIdentifier(LassoIdentity *identity)
 {
-  return(LASSO_NODE(identity->local_nameIdentifier));
+  return(lasso_node_copy(identity->local_nameIdentifier));
 }
 
 LassoNode *
 lasso_identity_get_remote_nameIdentifier(LassoIdentity *identity)
 {
-  return(LASSO_NODE(identity->remote_nameIdentifier));
+  return(lasso_node_copy(identity->remote_nameIdentifier));
 }
 
 void
