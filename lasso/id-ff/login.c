@@ -206,13 +206,13 @@ lasso_login_must_ask_for_consent_private(LassoLogin *login)
       else {
 	/* no consent */
 	ret = TRUE;
-	goto done;
       }
     }
   }
   else {
     message(G_LOG_LEVEL_CRITICAL, "Unknown NameIDPolicy : %s\n", nameIDPolicy);
     /* we consider NameIDPolicy as empty (none value) if its value is unknown/invalid */
+    ret = TRUE;
   }
 
  done:
@@ -1086,7 +1086,7 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 					   NULL, NULL);
     if (content != NULL) {
       if (xmlStrEqual(content, "false") || xmlStrEqual(content, "0")) {
-	ret = FALSE;
+	isPassive = FALSE;
       }
       xmlFree(content);
     }
