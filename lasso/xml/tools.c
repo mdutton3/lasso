@@ -78,12 +78,12 @@ lasso_build_unique_id(guint8 size)
     32 <= hexa number size <= 40
   */
   int i, val;
-  xmlChar *id; /* , *enc_id; */
+  xmlChar *id;
 
   g_return_val_if_fail((size >= 32 && size <= 40) || size == 0, NULL);
 
   if (size == 0) size = 32;
-  id = g_malloc(size+1+1); /* one for _ and one for \0 */
+  id = xmlMalloc(size+1+1); /* one for _ and one for \0 */
 
   /* build hex number (<= 2^exp-1) */
   id[0] = '_';
@@ -96,11 +96,6 @@ lasso_build_unique_id(guint8 size)
   }
   id[size+1] = '\0';
 
-  /* base64 encoding of build string */
-  /* enc_id = xmlSecBase64Encode((const xmlChar *)id, size+1, 0); */
-
-  /* g_free(id); */
-  /* return (enc_id); */
   return id;
 }
 
@@ -247,7 +242,6 @@ lasso_query_to_dict(const gchar *query)
       continue;
     }
 
-    /* printf("%s => ", sa2[0]); */
     /* split of value to get mutli values sub-strings separated by SPACE char */
     str_unescaped = lasso_str_unescape(sa2[1]);
     sa3 = g_strsplit(str_unescaped, " ", 0);
@@ -261,9 +255,7 @@ lasso_query_to_dict(const gchar *query)
     j = 0;
     while (sa3[j++] != NULL) {
       g_ptr_array_add(gpa, g_strdup(sa3[j-1]));
-      /* printf("%s, ", sa3[j-1]); */
     }
-    /* printf("\n"); */
     /* add key => values in dict */
     g_datalist_set_data_full(&gd, sa2[0], gpa,
 			     gdata_query_to_dict_destroy_notify);
@@ -385,7 +377,7 @@ lasso_sha1(xmlChar *str)
   unsigned char *md;
 
   if (str != NULL) {
-    md = xmlMalloc(20);
+    md = xmlMalloc(21);
     return SHA1(str, strlen(str), md);
   }
   
@@ -423,7 +415,6 @@ lasso_str_hash(xmlChar    *str,
 					xmlSecNodeDigestValue,
 					xmlSecDSigNs));
   i = xmlSecBase64Decode(b64_digest, digest, 21);
-  /* printf("Decoded string %s length is %d\n", digest, i); */
   xmlFree(b64_digest);
   xmlFreeDoc(doc);
   /* value returned must be xmlFree() */
