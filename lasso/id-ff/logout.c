@@ -101,8 +101,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 				profile->server->private_key);
 		if (query == NULL) {
 			g_free(url);
-			message(G_LOG_LEVEL_CRITICAL, "Error while building request QUERY url");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
@@ -172,7 +171,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 				profile->server->private_key);
 		if (query == NULL) {
 			g_free(url);
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
 		profile->msg_body = NULL;
@@ -526,7 +525,12 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			query = lasso_node_export_to_query(profile->request,
 					profile->server->signature_method,
 					profile->server->private_key);
+			if (query == NULL) {
+				g_free(url);
+				return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
+			}
 			profile->msg_url = g_strdup_printf("%s?%s", url, query);
+			g_free(url);
 			g_free(query);
 			profile->msg_body = NULL;
 

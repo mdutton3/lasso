@@ -97,8 +97,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 
 		if (query == NULL) {
 			g_free(url);
-			message(G_LOG_LEVEL_CRITICAL, "Error while building request QUERY url");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);

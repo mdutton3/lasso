@@ -88,8 +88,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 				profile->server->private_key);
 		if (query == NULL) {
 			g_free(url);
-			message(G_LOG_LEVEL_CRITICAL, "Error building request QUERY url");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
@@ -138,8 +137,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 				profile->server->private_key);
 		if (query == NULL) {
 			g_free(url);
-			message(G_LOG_LEVEL_CRITICAL, "Error building request QUERY url");
-			return -1;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);

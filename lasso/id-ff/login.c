@@ -575,8 +575,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 					LASSO_PROFILE(login)->request, 0, NULL);
 		}
 		if (query == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Failed to create AuthnRequest query");
-			return -3;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
 		/* get SingleSignOnServiceURL metadata */
