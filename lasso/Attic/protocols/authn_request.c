@@ -251,13 +251,22 @@ lasso_authn_request_new_from_query(gchar *query)
   
   /* ForceAuthn */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ForceAuthn"), 0);
-  if (str != NULL)
-    lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), atoi(str));
+  printf("%s\n", str);
+  if (str != NULL){
+    if(!strcmp(str, "true"))
+	 lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), TRUE);
+    else if(!strcmp(str, "false"))
+	 lasso_lib_authn_request_set_forceAuthn(LASSO_LIB_AUTHN_REQUEST(request), FALSE);
+  }
 
   /* IsPassive */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IsPassive"), 0);
-  if (str != NULL)
-    lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), atoi(str));
+  if (str != NULL){
+    if(!strcmp(str, "true"))
+	 lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), TRUE);
+    else
+	 lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), FALSE);
+  }
 
   /* ProtocolProfile */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProtocolProfile"), 0);
