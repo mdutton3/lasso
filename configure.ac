@@ -278,6 +278,7 @@ lasso/protocols/elements/Makefile
 lasso/environs/Makefile
 docs/Makefile
 docs/reference/Makefile
+docs/tutorial/Makefile
 python/Makefile
 python/doc/Makefile
 python/doc/tutorial/Makefile
