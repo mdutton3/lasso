@@ -41,7 +41,11 @@ PyObject *lecp_getattr(PyObject *self, PyObject *args);
 PyObject *lecp_new(PyObject *self, PyObject *args);
 
 
+PyObject *lecp_build_authn_request_msg(PyObject *self, PyObject *args);
+
 PyObject *lecp_build_authn_request_envelope_msg(PyObject *self, PyObject *args);
+
+PyObject *lecp_build_authn_response_msg(PyObject *self, PyObject *args);
 
 PyObject *lecp_build_authn_response_envelope_msg(PyObject *self, PyObject *args);
 

@@ -1181,6 +1181,8 @@ class Lecp:
         if name[:2] == "__" and name[-2:] == "__" and name != "__members__":
             raise AttributeError, name
         ret = lassomod.lecp_getattr(self, name)
+        if ret is None:
+            return None
         return ret
 
     def new(cls):
@@ -1188,20 +1190,29 @@ class Lecp:
         return Lecp(obj)
     new = classmethod(new)
 
+    def build_authn_request_msg(self):
+        return lassomod.lecp_build_authn_request_msg(self)
+
     def build_authn_request_envelope_msg(self):
-        pass
+        return lassomod.lecp_build_authn_request_envelope_msg(self);
+
+    def build_authn_response_msg(self):
+        return lassomod.lecp_build_authn_response_msg(self)
 
     def build_authn_response_envelope_msg(self):
-        pass
+        return lassomod.lecp_build_authn_response_envelope_msg(self)
 
     def destroy(self):
-        pass
+        lassomod.lecp_destroy(self)
 
-    def init_authn_request_envelope(self):
-        pass
+    def init_authn_request_envelope(self, server, authnRequest):
+        return lassomod.lecp_init_authn_request_envelope(self, server, authnRequest)
 
-    def process_authn_request_envelope_msg(self):
-        pass
+    def init_authn_response_envelope(self, server, authnRequest, authnResponse):
+        return lassomod.lecp_init_authn_response_envelope(self, server, authnRequest, authnResponse)
 
-    def process_authn_response_envelope_msg(self):
-        pass
+    def process_authn_request_envelope_msg(self, request_msg):
+        return lassomod.lecp_process_authn_request_envelope_msg(self, request_msg)
+
+    def process_authn_response_envelope_msg(self, response_msg):
+        return lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)

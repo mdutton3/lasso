@@ -74,19 +74,35 @@ LASSO_EXPORT GType      lasso_lecp_get_type                            (void);
 
 LASSO_EXPORT LassoLecp* lasso_lecp_new                                 (void);
 
-LASSO_EXPORT gint       lasso_lecp_build_request_msg    (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
+
+LASSO_EXPORT gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
+
+LASSO_EXPORT gint       lasso_lecp_build_authn_response_msg            (LassoLecp *lecp);
 
 LASSO_EXPORT gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp *lecp);
 
 LASSO_EXPORT void       lasso_lecp_destroy                             (LassoLecp *lecp);
 
-LASSO_EXPORT gint       lasso_lecp_init_request         (LassoLecp *lecp);
+LASSO_EXPORT gint       lasso_lecp_init_authn_request_envelope         (LassoLecp         *lecp,
+									LassoServer       *server,
+									LassoAuthnRequest *authnRequest);
 
-LASSO_EXPORT gint       lasso_lecp_process_request_msg  (LassoLecp *lecp,
-									char *request_msg);
+LASSO_EXPORT gint       lasso_lecp_init_authn_response_envelope        (LassoLecp          *lecp,
+									LassoServer        *server,
+									LassoAuthnRequest  *authnRequest,
+									LassoAuthnResponse *authnResponse);
+
+LASSO_EXPORT gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
+									gchar     *request_msg);
 
 LASSO_EXPORT gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
-									gchar *response_msg);
+									gchar     *response_msg);
+
+
+
+
+
 
 #ifdef __cplusplus
 }
