@@ -29,6 +29,7 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 				    const xmlChar *nameIDPolicy,
 				    const xmlChar *forceAuthn,
 				    const xmlChar *isPassive,
+				    const xmlChar *protocolProfile,
 				    const xmlChar *assertionConsumerServiceID,
 				    const xmlChar **authnContextClassRefs,
 				    const xmlChar **authnContextStatementRefs,
@@ -46,6 +47,7 @@ LassoNode *lasso_build_authnRequest(const xmlChar *providerID,
 					nameIDPolicy,
 					forceAuthn,
 					isPassive,
+					protocolProfile,
 					assertionConsumerServiceID,
 					authnContextClassRefs,
 					authnContextStatementRefs,
@@ -64,6 +66,7 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
 					 const xmlChar *nameIDPolicy,
 					 const xmlChar *forceAuthn,
 					 const xmlChar *isPassive,
+					 const xmlChar *protocolProfile,
 					 const xmlChar *assertionConsumerServiceID,
 					 const xmlChar **authnContextClassRefs,
 					 const xmlChar **authnContextStatementRefs,
@@ -127,6 +130,10 @@ LassoNode *lasso_build_full_authnRequest(const xmlChar *requestID,
   
   if(isPassive != NULL) {
     lasso_lib_authn_request_set_isPassive(LASSO_LIB_AUTHN_REQUEST(request), isPassive);
+  }
+
+  if(protocolProfile != NULL) {
+    lasso_lib_authn_request_set_protocolProfile(LASSO_LIB_AUTHN_REQUEST(request), protocolProfile);
   }
   
   if(assertionConsumerServiceID != NULL) {
