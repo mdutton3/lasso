@@ -26,8 +26,7 @@ DOC_SOURCE_FILES=\
 # do nothing for all
 all:
 
-#docs: sgml html clean-sources
-docs: sgml html
+docs: sgml html clean-sources
 
 html: sgml $(DOC_MAIN_SGML_FILE) lasso-index
 	@echo '*** Building HTML ***'
