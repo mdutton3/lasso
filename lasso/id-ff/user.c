@@ -24,6 +24,13 @@
 
 #include <lasso/environs/user.h>
 
+#define LASSO_USER_NODE                   "LassoUser"
+#define LASSO_USER_IDENTITIES_NODE        "LassoIdentities"
+#define LASSO_USER_IDENTITY_NODE          "LassoIdentity"
+#define LASSO_USER_ASSERTIONS_NODE        "LassoAssertions"
+#define LASSO_USER_ASSERTION_NODE         "LassoAssertion"
+#define LASSO_USER_REMOTE_PROVIDERID_NODE "RemoteProviderID"
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
