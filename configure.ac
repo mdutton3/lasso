@@ -35,7 +35,10 @@ AC_CANONICAL_HOST
 dnl ==========================================================================
 dnl Perform host specific configuration
 dnl ==========================================================================
+NULL=
 MINGW=0
+dnl For java sun environment automagic include subdir guessing. (dirty ? No...)
+SUN_EXTRA_INCLUDE=
 case "${host}" in
     *aix* )
 	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
@@ -65,7 +68,11 @@ dnl                 ln -s   /cygdrive/c/windows/system/kernel32.dll \
 dnl                         /usr/local/lib/libkernel32.dll
 dnl             fi
 dnl         fi
+        dnl FIXME: This is a guessing, no test yet under windows with sun JDK
+        SUN_EXTRA_INCLUDE="/win32" 
         ;;
+    *linux*)
+        SUN_EXTRA_INCLUDE="/linux"
 esac
 
 
@@ -135,9 +142,9 @@ dnl Find egrep command.
 dnl AC_CHECK_PROGS(EGREP, egrep)
 
 dnl Check existenz of binding programs
-AC_CHECK_PROGS(JAVA, gij java)
+AC_CHECK_PROGS(JAVA, java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
-AC_CHECK_PROGS(JAVAH, gcjh javah)
+dnl AC_CHECK_PROGS(JAVAH, gcjh javah) dnl Not used with SWIG.
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(PHP, php)
@@ -199,40 +206,77 @@ dnl ==========================================================================
 dnl Check if java is explicitly disabled.
 AC_ARG_ENABLE(java, [  --disable-java          Disable the java API.],,
               enable_java="yes")
+AC_ARG_WITH(java-home,
+            [  --with-java-home=(JAVA_HOME)  Set the full path to the java home directory.])
 AC_MSG_CHECKING(for Java)
 JAVAC_FLAGS=
-JAVAH_FLAGS=
-
-dnl need to change quotes to allow square brackets
-changequote(<<, >>)dnl
-if test "x$JAVA" != xgij; then
-    JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/java version "\([^"]*\)".*/\1/p' 2>/dev/null`
-else
-    JAVA_VERSION=`$JAVA --version 2>&1 | $SED -ne 's/gij (GNU libgcj) version \([^"]*\) (.*/\1/p' 2>/dev/null`
+JDK_INCLUDE=
+SUN=no
+if test "X$with_java_home" != X; then
+    JDK_INCLUDE="$with_java_home/include"
 fi
-changequote([, ])dnl
+dnl JAVAH_FLAGS= dnl Not used with SWIG
 
-dnl If we found a java version information.
+dnl If the java compiler seems to be a Sun JDK-like compile (Kaffe, Sun JDK...)
+if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
+    dnl If we have a java compiler
+    dnl need to change quotes to allow square brackets
+    changequote(<<, >>)dnl
+    JAVA_VERSION=`$JAVA -version 2>&1 | $SED -ne 's/java version "\([^"]*\)".*/\1/p' 2>/dev/null`
+    changequote([, ])dnl
+    dnl If no java version found, perphas it is a kaffee environment...
+    if test "x$JAVA_VERSION" = x; then
+        JAVA_VERSION=`$JAVA -version 2>&1 | grep "Java Version" | sed 's/^.*Java Version: //g'`
+        dnl If the java environment is kaffe, specify the JDK_INCLUDE directory.
+        if test "x$JAVA_VERSION" != x; then
+            JDK_INCLUDE="/usr/lib/kaffe/include"
+        fi
+    else
+        dnl We assume it is a SUN environment.
+        SUN=yes
+    fi
+    if ! test -f "$JDK_INCLUDE/jni.h"; then
+        JAVA_VERSION=""
+    fi
+fi
+
+dnl If the java compiler is the GNU Java Compiler.
+if test "x$JAVAC" = "xgcj"; then
+    changequote(<<, >>)dnl
+    JAVA_VERSION=`$JAVAC --version 2>&1 | $SED -ne 's/gcj (GCC) \([^"]*\) (.*/\1/p' 2>/dev/null`
+    changequote([, ])dnl
+    
+    dnl Byte-compiled .class file
+    JAVAC_FLAGS="-C"
+    dnl JNI compatible header files. (not used with SWIG.)
+    dnl JAVAH_FLAGS="-jni"
+    dnl Checking for jni.h if gcj is the java interpreter.
+    AC_CHECK_HEADERS([jni.h], [], [JAVA_VERSION=$(NULL)])
+fi
+
+dnl Now transform JDK_INCLUDE in CFLAG option if applicable.
+if test "X$JDK_INCLUDE" != X; then
+    dnl If it is a sun environment
+    if test "x$SUN" = "xyes"; then
+        JDK_INCLUDE="$JDK_INCLUDE -I$JDK_INCLUDE$SUN_EXTRA_INCLUDE"
+    fi
+    JDK_INCLUDE=-I$JDK_INCLUDE
+fi
+
+dnl If we found a java version information, we have java compilation environment.
 if test "X$JAVA_VERSION" != X; then
   languages_available="$languages_available $JAVA($JAVA_VERSION)"
 else
   enable_java=no
 fi
-dnl Checking for jni.h if gcj is the java interpreter.
-if test "x$enable_java" = "xyes" && test "X$JAVAC" = "Xgcj"; then
-    AC_CHECK_HEADERS([jni.h], [enable_java=yes], [enable_java=no])
-fi
-    
+
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
 AC_MSG_RESULT($enable_java)
-if test "X$JAVA" = "Xgij"; then
-    JAVAC_FLAGS="-C"
-    JAVAH_FLAGS="-jni"
-fi
 AC_SUBST(JAVA_VERSION)
 AC_SUBST(JAVAC_FLAGS)
-AC_SUBST(JAVAH_FLAGS)
+AC_SUBST(JDK_INCLUDE)
+dnl AC_SUBST(JAVAH_FLAGS) dnl Not used with SWIG
 
 
 dnl ==========================================================================
