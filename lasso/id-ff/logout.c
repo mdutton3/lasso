@@ -896,7 +896,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     }
 
     message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
-    ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILLE;
+    ret = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
     goto done;
   }
 
