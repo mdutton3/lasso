@@ -2449,9 +2449,23 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
 }
 
+/* Methods inherited from LassoLogin implementations */
+
+gint LassoLecp_buildAssertion(LassoLecp *self, char *authenticationMethod,
+		char *authenticationInstant, char *reauthenticateOnOrAfter, char *notBefore,
+		char *notOnOrAfter) {
+	return lasso_login_build_assertion(LASSO_LOGIN(self), authenticationMethod,
+			authenticationInstant, reauthenticateOnOrAfter, notBefore, notOnOrAfter);
+}
+
+gint LassoLecp_validateRequestMsg(LassoLecp *self, gboolean authenticationResult,
+		gboolean isConsentObtained) {
+	return lasso_login_validate_request_msg(LASSO_LOGIN(self), authenticationResult,
+			isConsentObtained);
+}
+
 /* Methods implementations */
 
-#define LassoLecp_buildAssertion lasso_login_build_assertion
 #define LassoLecp_buildAuthnRequestEnvelopeMsg lasso_lecp_build_authn_request_envelope_msg
 #define LassoLecp_buildAuthnRequestMsg lasso_lecp_build_authn_request_msg
 #define LassoLecp_buildAuthnResponseEnvelopeMsg lasso_lecp_build_authn_response_envelope_msg
@@ -2460,7 +2474,6 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 #define LassoLecp_processAuthnRequestEnvelopeMsg lasso_lecp_process_authn_request_envelope_msg
 #define LassoLecp_processAuthnRequestMsg lasso_lecp_process_authn_request_msg
 #define LassoLecp_processAuthnResponseEnvelopeMsg lasso_lecp_process_authn_response_envelope_msg
-#define LassoLecp_validateRequestMsg lasso_login_validate_request_msg
 
 %}
 
