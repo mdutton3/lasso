@@ -116,6 +116,9 @@ lasso_authn_request_envelope_new_from_export(gchar               *buffer,
   request = LASSO_NODE(g_object_new(LASSO_TYPE_AUTHN_REQUEST_ENVELOPE, NULL));
 
   switch(export_type) {
+  case lassoNodeExportTypeXml:
+    lasso_node_import(request, buffer);
+    break;
   case lassoNodeExportTypeBase64:
     buffer_decoded = xmlMalloc(strlen(buffer));
     xmlSecBase64Decode(buffer, buffer_decoded, strlen(buffer));
