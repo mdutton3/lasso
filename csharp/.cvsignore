@@ -80,4 +80,17 @@ Session.cs
 Status.cs
 StringArray.cs
 lassoPINVOKE.cs
+lasso.cs
+StringList.cs
+SamlpResponseAbstract.cs
+SamlpRequestAbstract.cs
+SamlSubjectStatementAbstract.cs
+SamlStatementAbstract.cs
+SamlConditionAbstract.cs
+SamlAuthorityBinding.cs
+SamlAudienceRestrictionCondition.cs
+SamlAttributeDesignator.cs
+SamlAttribute.cs
+NodeList.cs
+LibRequestAuthnContext.cs
 
