@@ -549,6 +549,10 @@ AC_ARG_ENABLE(tests, [  --disable-tests         disable the test suite],,
               enable_tests="yes")
 if test "x$enable_tests" = xyes ; then
   AC_CHECK_LIB(check, srunner_set_log, enable_tests="yes", enable_tests="no")
+  CHECK_CFLAGS=""
+  CHECK_LIBS="-lcheck"
+  AC_SUBST(CHECK_CFLAGS)
+  AC_SUBST(CHECK_LIBS)
   AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML, [], [Define if check available with XML support])])
 fi
 
