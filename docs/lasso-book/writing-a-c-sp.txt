@@ -193,7 +193,8 @@ defined in the metadata file).
   
   lasso_lib_authn_request_set_forceAuthn(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 1);
-  
+  lasso_lib_authn_request_set_isPassive(
+      LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), 0);
   lasso_lib_authn_request_set_nameIDPolicy(
       LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request), lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_request_set_consent(
