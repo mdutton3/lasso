@@ -306,8 +306,11 @@ dispose(GObject *object)
 
 	debug("Server object 0x%p disposed ...", server);
 
-	/* free allocated memory for providers array */
-	/* XXX */
+	/* free allocated memory for hash tables */
+	g_hash_table_destroy(server->providers);
+	server->providers = NULL;
+	g_hash_table_destroy(server->services);
+	server->services = NULL;
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(server));
 }
