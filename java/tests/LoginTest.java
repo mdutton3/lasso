@@ -119,7 +119,7 @@ public class LoginTest extends TestCase {
         assertEquals(idpLoginContext.buildArtifactMsg(
             userAuthenticated, authenticationMethod, "FIXME: reauthenticateOnOrAfter",
             Lasso.httpMethodRedirect), 0);
-        idpUserContextDump = spLoginContext.getUser().dump();
+	idpUserContextDump = idpLoginContext.getUser().dump();
         assertNotNull(idpUserContextDump);
         responseUrl = idpLoginContext.getMsgUrl();
         responseQuery = responseUrl.substring(responseUrl.indexOf("?") + 1);

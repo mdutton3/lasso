@@ -142,12 +142,14 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_createUser
     int result;
     char *userDump;
 
-    userDump = (char*)(*env)->GetStringUTFChars(env, _userDump, NULL);
+    if (_userDump)
+        userDump = (char*)(*env)->GetStringUTFChars(env, _userDump, NULL);
 
     login = getCObject(env, this);
-    result = lasso_login_init_create_user(login, userDump);
+    result = lasso_login_create_user(login, userDump);
 
-    (*env)->ReleaseStringUTFChars(env, _userDump, userDump);
+    if (_userDump)
+        (*env)->ReleaseStringUTFChars(env, _userDump, userDump);
 
     return result;
 }
