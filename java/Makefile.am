@@ -27,16 +27,31 @@ libjlasso_la_LDFLAGS =	-no-undefined -avoid-version -module
 javashare_DATA = lasso.jar
 
 SWIG_OUTPUTS = lasso_wrap.c \
-	Defederation.java Identity.java lassoConstants.java lasso.java \
-	lassoJNI.java Lecp.java LibAssertion.java LibAuthnRequest.java \
-	LibAuthnResponse.java LibFederationTerminationNotification.java \
-	LibLogoutRequest.java LibLogoutResponse.java \
-	LibRegisterNameIdentifierRequest.java \
-	LibRegisterNameIdentifierResponse.java Login.java Logout.java \
-	NameIdentifierMapping.java NameRegistration.java Node.java \
-	ProviderIds.java Provider.java SamlpRequest.java \
-	SamlpResponse.java Server.java Session.java SWIGTYPE_p_void.java
-
+	Credentials.java Defederation.java Description.java DiscoModify.java \
+	DiscoModifyResponse.java DiscoQuery.java DiscoQueryResponse.java \
+	Discovery.java DstModification.java DstModify.java \
+	DstModifyResponse.java DstQuery.java DstQueryResponse.java \
+	Federation.java Identity.java InsertEntry.java Lecp.java \
+	LibAssertion.java LibAuthnRequest.java LibAuthnResponse.java \
+	LibFederationTerminationNotification.java LibLogoutRequest.java \
+	LibLogoutResponse.java LibRegisterNameIdentifierRequest.java \
+	LibRegisterNameIdentifierResponse.java LibStatusResponse.java \
+	Login.java Logout.java NameIdentifierMapping.java \
+	NameRegistration.java Node.java NodeArray.java Options.java \
+	PPMsgContact.java PersonalProfileService.java Provider.java \
+	QueryItem.java RemoveEntry.java ResourceID.java ResourceOffering.java \
+	SWIGTYPE_p_LassoDiscoEncryptedResourceID.java \
+	SWIGTYPE_p_LassoDiscoRequestedServiceType.java \
+	SWIGTYPE_p_LassoDstNewData.java SWIGTYPE_p_LassoMdProtocolType.java \
+	SWIGTYPE_p_LassoSignatureType.java SWIGTYPE_p_void.java \
+	SamlAdvice.java SamlAssertion.java SamlAttributeStatement.java \
+	SamlAuthenticationStatement.java SamlConditions.java \
+	SamlNameIdentifier.java SamlSubject.java \
+	SamlSubjectConfirmation.java SamlSubjectLocality.java \
+	SamlSubjectStatement.java SamlpRequest.java SamlpResponse.java \
+	SamlpStatus.java SamlpStatusCode.java Server.java \
+	ServiceInstance.java Session.java Status.java StringArray.java \
+	lasso.java lassoConstants.java lassoJNI.java
 
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
 
