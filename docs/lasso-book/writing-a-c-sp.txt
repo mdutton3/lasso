@@ -108,6 +108,33 @@ if there are more than one identity provider.
           document are quite helpful in figuring out the message passing.
 
 
+Serialization
+-------------
+
+``LassoServer`` objects can be serialized into XML files::
+
+  gchar *dump;
+  FILE *fd;
+
+  dump = lasso_server_dump(server);
+  /* write dump into a file, a database, whatever */
+  g_free(dump);
+
+.. note:: ``lasso_server_dump`` (and other Lasso dump functions) allocates
+          memory through GLib.  ``g_free`` is then the function to use instead
+	  of ``free`` to release memory.
+
+It is then really easy to get back properly constructed objects::
+
+  LassoServer *server;
+  gchar *dump;
+
+  /* restore dump from file, database, whatever */
+  server = lasso_server_new_from_dump(dump);
+
+
+
+
 Liberty Metadata Files
 ======================
 
