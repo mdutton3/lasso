@@ -117,30 +117,31 @@ lasso_lib_authn_request_set_consent(LassoLibAuthnRequest *node,
 
 void
 lasso_lib_authn_request_set_forceAuthn(LassoLibAuthnRequest *node,
-				       gint forceAuthn) {
+				       gboolean forceAuthn) {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(forceAuthn == 0 || forceAuthn == 1);
+  g_assert(forceAuthn == FALSE || forceAuthn == TRUE);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  if (forceAuthn == 0) {
+
+  if (forceAuthn == FALSE) {
     class->new_child(LASSO_NODE (node), "ForceAuthn", "false", FALSE);
   }
-  if (forceAuthn == 1) {
+  if (forceAuthn == TRUE) {
     class->new_child(LASSO_NODE (node), "ForceAuthn", "true", FALSE);
   }
 }
 
 void
 lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *node,
-				      gint isPassive) {
+				      gboolean isPassive) {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
-  g_assert(isPassive == 0 || isPassive == 1);
+  g_assert(isPassive == FALSE || isPassive == TRUE);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  if (isPassive == 0) {
+  if (isPassive == FALSE) {
     class->new_child(LASSO_NODE (node), "IsPassive", "false", FALSE);
   }
-  if (isPassive == 1) {
+  if (isPassive == TRUE) {
     class->new_child(LASSO_NODE (node), "IsPassive", "true", FALSE);
   }
 }
