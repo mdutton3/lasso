@@ -295,7 +295,6 @@ AC_ARG_ENABLE(python, [  --disable-python        disable the Python binding],,
 dnl Check if user passed a specific python program.
 AC_ARG_WITH(python,
             [  --with-python=(PYTHON)  set the full path to the python program to use.])
-AC_MSG_CHECKING(for Python development files)
 
 dnl specific program passed, set PYTHON to it.
 if test "X$with_python" != "X"; then
@@ -308,6 +307,9 @@ changequote(<<, >>)dnl
 PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
 changequote([, ])dnl
 
+test "x$PYTHON" != "x" || AC_MSG_ERROR(Python must be installed to compile lasso)
+
+AC_MSG_CHECKING(for Python development files)
 dnl Check if we were be able to extract a good version number.
 if test "X$PYTHON_VERSION" != "X"; then
     PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
@@ -342,7 +344,6 @@ fi
 AM_CONDITIONAL([PYTHON_ENABLED],[test "x$enable_python" = "xyes"])
 AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
-
 
 # -----------
 # PHP binding
