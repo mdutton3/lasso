@@ -900,6 +900,9 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 		if (profile->session && ret == 0) {
 			/* get assertion in session and add it in response */
+			LassoSamlAssertion *assertion;
+			LassoSamlpStatus *status;
+
 			assertion = lasso_session_get_assertion(profile->session,
 					profile->remote_providerID);
 			if (assertion) {
@@ -909,7 +912,6 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 						LASSO_SAML_STATUS_CODE_SUCCESS);
 				lasso_session_remove_status(profile->session, remote_providerID);
 			} else {
-				LassoSamlpStatus *status;
 				/* no assertion, get back status code */
 				status = lasso_session_get_status(profile->session,
 						remote_providerID);
