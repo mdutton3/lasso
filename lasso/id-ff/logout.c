@@ -730,7 +730,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
 		lasso_profile_set_response_status(
 				profile, LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-		return LASSO_XML_ERROR_NODE_NOT_FOUND;
+		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
 	if (profile->session == NULL) {
