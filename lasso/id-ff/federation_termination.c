@@ -49,18 +49,18 @@ lasso_federation_termination_build_notification_msg(LassoFederationTermination *
 
   protocolProfile = lasso_provider_get_federationTerminationNotificationProtocolProfile(provider);
   if(protocolProfile==NULL){
-    debug(ERROR, "Single Federation_Termination Protocol profile not found\n");
+    debug(ERROR, "Federation termination protocol profile not found\n");
     return(-3);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
-    debug(DEBUG, "building a soap federationTermination message\n");
+    debug(DEBUG, "Building a federation termination soap message\n");
     profileContext->request_type = lassoHttpMethodSoap;
     profileContext->msg_url = lasso_provider_get_federationTerminationNotificationServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
-    debug(DEBUG, "building a http get federationTermination message\n");
+    debug(DEBUG, "Building a federation termination http redirect message\n");
     profileContext->request_type = lassoHttpMethodRedirect;
     profileContext->msg_url = lasso_node_export_to_query(profileContext->request,
 							 profileContext->server->signature_method,
@@ -101,7 +101,7 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   /* get identity */
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
   if(identity==NULL){
-    debug(ERROR, "error, identity not found\n");
+    debug(ERROR, "No identity for %s not found\n", profileContext->remote_providerID);
     return(-2);
   }
 
@@ -113,7 +113,6 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
       nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     break;
   case lassoProviderTypeIdp:
-    /* get the next assertion ( next authenticated service provider ) */
     nameIdentifier = LASSO_NODE(lasso_identity_get_remote_nameIdentifier(identity));
     if(!nameIdentifier)
       nameIdentifier = LASSO_NODE(lasso_identity_get_local_nameIdentifier(identity));
@@ -121,20 +120,19 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
   }
   
   if(!nameIdentifier){
-    debug(ERROR, "error, name identifier not found\n");
+    debug(ERROR, "No name identifier for %s\n", profileContext->remote_providerID);
     return(-3);
   }
-  debug(DEBUG, "name identifier : %s\n", lasso_node_export(nameIdentifier));
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
   nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier");
   format = lasso_node_get_attr_value(nameIdentifier, "Format");
   profileContext->request = lasso_federation_termination_notification_new(
-							  lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-							  content,
-							  nameQualifier,
-							  format);
+								   lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
+								   content,
+								   nameQualifier,
+								   format);
 
   return(0);
 }
@@ -155,18 +153,18 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 
   switch(request_method){
   case lassoHttpMethodSoap:
-    debug(DEBUG, "build a federation termination notification from soap msg\n");
+    debug(DEBUG, "Process a federation termination notification soap msg\n");
     profileContext->request = lasso_federation_termination_notification_new_from_soap(request_msg);
     break;
   case lassoHttpMethodRedirect:
-    debug(DEBUG, "build a federation termination notification from query msg\n");
+    debug(DEBUG, "Process a federation termination notification query msg\n");
     profileContext->request = lasso_federation_termination_notification_new_from_query(request_msg);
     break;
   case lassoHttpMethodGet:
-    debug(WARNING, "TODO, implement the get federation termination notification method\n");
+    debug(WARNING, "Implement the get federation termination notification method\n");
     break;
   default:
-    debug(ERROR, "Unknown request method\n");
+    debug(ERROR, "Unknown request method (%d)\n", request_method);
     return(-1);
   }
 
@@ -176,6 +174,7 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
 
   nameIdentifier = lasso_node_get_child(profileContext->request, "NameIdentifier", NULL);
   if(nameIdentifier==NULL){
+    debug(ERROR, "Name identifier not found\n");
     return(-2);
   }
 
@@ -184,17 +183,13 @@ lasso_federation_termination_process_notification_msg(LassoFederationTermination
   /* Verify federation */
   identity = lasso_user_get_identity(profileContext->user, remote_providerID);
   if(identity==NULL){
+    debug(WARNING, "No identity for %s\n", remote_providerID);
     return(-3);
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
+    debug(WARNING, "No name identifier for %s\n", remote_providerID);
     return(-4);
-  }
-
-  /* verify authentication (if ok, delete assertion) */
-  assertion = lasso_user_get_assertion(profileContext->user, remote_providerID);
-  if(assertion==NULL){
-    return(-5);
   }
 
   return(0);
@@ -251,8 +246,6 @@ lasso_federation_termination_new(LassoServer *server,
 			      "user", user,
 			      "provider_type", provider_type,
 			      NULL);
-
-  /* set the properties */
 
   return(defederation);
 }

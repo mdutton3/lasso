@@ -251,7 +251,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   }
 
   if(lasso_identity_verify_nameIdentifier(identity, nameIdentifier)==FALSE){
-    debug(WARNING, "No name identifier in identity for %s\n", remote_providerID);
+    debug(WARNING, "No name identifier for %s\n", remote_providerID);
     statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeFederationDoesNotExist);
     return(-7);
   }
