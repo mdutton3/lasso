@@ -1,10 +1,28 @@
-/* -*- Mode: c; c-basic-offset: 4 -*-
+/* $Id$
  *
- * Lasso.i - SWIG interface file for interfaces to Redland
+ * SWIG bindings for Lasso Library
  *
- * $Id$
+ * Copyright (C) 2004 Entr'ouvert
+ * http://lasso.entrouvert.org
  *
+ * Authors: Romain Chantereau <rchantereau@entrouvert.com>
+ *          Emmanuel Raviart <eraviart@entrouvert.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 
 %module Lasso
 %include typemaps.i
@@ -49,12 +67,17 @@
     lasso_init();
 %}*/
 
+
+/***********************************************************************
+ ***********************************************************************
+ * Common
+ ***********************************************************************
+ ***********************************************************************/
+
+
 #if defined(SWIGPYTHON)
 %typemap(in,parse="z") char *, char [ANY] "";
 #endif
-/* lasso.h */
-int lasso_shutdown(void);
-int lasso_init(void);
 
 
 #define gint int
@@ -81,25 +104,479 @@ int lasso_init(void);
 #define gldouble long double
 #define gpointer void*
 
-/* environs/lecp.h */
-/*
-GType      lasso_lecp_get_type                            (void);
-LassoLecp* lasso_lecp_new                                 (LassoServer *server);
-gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
-gint       lasso_lecp_build_authn_request_msg             (LassoLecp *lecp);
-gint       lasso_lecp_build_authn_response_msg            (LassoLecp   *lecp);
-gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp *lecp);
-void       lasso_lecp_destroy                             (LassoLecp *lecp);
-gint       lasso_lecp_init_authn_request                  (LassoLecp   *lecp,
-									const gchar *remote_providerID);
-gint       lasso_lecp_init_from_authn_request_msg         (LassoLecp       *lecp,
-									gchar           *authn_request_msg,
-									lassoHttpMethod  authn_request_method);
-gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
-									gchar     *request_msg);
-gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
-									gchar     *response_msg);
-*/
+/* SWIG instructions telling how to deallocate Lasso structures */
+
+%typemap(newfree) gchar * "g_free($1);";
+%typemap(newfree) xmlChar * "xmlFree($1);";
+
+/* Functions */
+
+int lasso_init(void);
+
+int lasso_shutdown(void);
+
+
+/***********************************************************************
+ ***********************************************************************
+ * XML
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * SamlpRequest
+ ***********************************************************************/
+
+
+/* Object */
+
+%nodefault _LassoSamlpRequest;
+typedef struct _LassoSamlpRequest {
+    LassoSamlpRequestAbstract parent;
+} LassoSamlpRequest;
+
+
+/***********************************************************************
+ * LibAuthnRequest
+ ***********************************************************************/
+
+
+/* Object */
+
+%nodefault _LassoLibAuthnRequest;
+typedef struct _LassoLibAuthnRequest {
+    LassoSamlpRequestAbstract parent;
+} LassoLibAuthnRequest;
+
+/* Methods */
+
+void lasso_lib_authn_request_set_affiliationID(LassoLibAuthnRequest *, const xmlChar *);
+  
+void lasso_lib_authn_request_set_assertionConsumerServiceID(LassoLibAuthnRequest *,
+							    const xmlChar *);
+
+void lasso_lib_authn_request_set_consent(LassoLibAuthnRequest *, const xmlChar *);
+
+void lasso_lib_authn_request_set_forceAuthn(LassoLibAuthnRequest *, gboolean);
+
+void lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *, gboolean);
+
+void lasso_lib_authn_request_set_nameIDPolicy(LassoLibAuthnRequest *node,
+					      const xmlChar *nameIDPolicy);
+
+void lasso_lib_authn_request_set_protocolProfile(LassoLibAuthnRequest *, const xmlChar *);
+
+void lasso_lib_authn_request_set_providerID(LassoLibAuthnRequest *, const xmlChar *);
+
+void lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest *, const xmlChar *);
+
+void lasso_lib_authn_request_set_requestAuthnContext(LassoLibAuthnRequest *,
+						     LassoLibRequestAuthnContext *);
+
+void lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node, LassoLibScoping *scoping);
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Protocols
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * AuthnRequest
+ ***********************************************************************/
+
+
+/* Object */
+
+%nodefault _LassoAuthnRequest;
+typedef struct _LassoAuthnRequest {
+    LassoLibAuthnRequest parent;
+} LassoAuthnRequest;
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Profiles
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * Server
+ ***********************************************************************/
+
+
+/* Object */
+
+typedef struct {
+    LassoProvider parent;
+    GPtrArray *providers;
+    gchar *providerID;   
+    gchar *private_key;
+    gchar *certificate;
+    guint signature_method;
+
+    %extend {
+	LassoServer(gchar *metadata, gchar *public_key, gchar *private_key, gchar *certificate,
+		    guint signature_method);
+	~LassoServer();
+    }
+} LassoServer;
+
+/* Constructors */
+
+%newobject lasso_server_new;
+LassoServer* lasso_server_new(gchar *metadata, gchar *public_key, gchar *private_key,
+			      gchar *certificate, guint signature_method);
+
+%newobject lasso_server_new_from_dump;
+LassoServer* lasso_server_new_from_dump(gchar *dump);
+
+/* Destructor */
+
+void lasso_server_destroy(LassoServer *server);
+
+/* Methods */
+
+gint lasso_server_add_provider(LassoServer *server, gchar *metadata, gchar *public_key,
+			       gchar *ca_certificate);
+
+%newobject lasso_server_dump;
+gchar* lasso_server_dump(LassoServer *server);
+
+
+/***********************************************************************
+ * Identity
+ ***********************************************************************/
+
+
+/* Object */
+
+typedef struct {
+  GObject parent;
+  GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
+  GHashTable *federations; /* hash for federations with remote ProviderID as key */
+  gboolean is_dirty;
+
+    %extend {
+	LassoIdentity();
+	~LassoIdentity();
+    }
+} LassoIdentity;
+
+/* Constructors */
+
+%newobject lasso_identity_new;
+LassoIdentity* lasso_identity_new(void);
+
+%newobject lasso_identity_new_from_dump;
+LassoIdentity* lasso_identity_new_from_dump(gchar *dump);
+
+/* Destructor */
+
+void lasso_identity_destroy(LassoIdentity *identity);
+
+/* Methods */
+
+%newobject lasso_identity_dump;
+gchar* lasso_identity_dump(LassoIdentity *identity);
+
+
+/***********************************************************************
+ * Session
+ ***********************************************************************/
+
+
+/* Object */
+
+typedef struct {
+  GObject parent;
+  GPtrArray *providerIDs; /* list of the remote provider ids for federations hash table */
+  GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+  gboolean is_dirty;
+
+    %extend {
+	LassoSession();
+	~LassoSession();
+    }
+} LassoSession;
+
+/* Constructors */
+
+%newobject lasso_session_new;
+LassoSession* lasso_session_new(void);
+
+%newobject lasso_session_new_from_dump;
+LassoSession* lasso_session_new_from_dump(gchar *dump);
+
+/* Destructor */
+
+void lasso_session_destroy(LassoSession *session);
+
+/* Methods */
+
+%newobject lasso_session_dump;
+gchar* lasso_session_dump(LassoSession *session);
+
+%newobject lasso_session_get_authentication_method;
+gchar* lasso_session_get_authentication_method(LassoSession *session, gchar *remote_providerID);
+
+
+/***********************************************************************
+ * Profile
+ ***********************************************************************/
+
+
+/* Constants */
+
+typedef enum {
+    lassoHttpMethodGet = 1,
+    lassoHttpMethodPost,
+    lassoHttpMethodRedirect,
+    lassoHttpMethodSoap
+} lassoHttpMethod;
+
+typedef enum {
+    lassoMessageTypeNone = 0,
+    lassoMessageTypeAuthnRequest,
+    lassoMessageTypeAuthnResponse,
+    lassoMessageTypeRequest,
+    lassoMessageTypeResponse,
+    lassoMessageTypeArtifact
+} lassoMessageType;
+
+/* Request types (used by SOAP endpoint) */
+typedef enum {
+    lassoRequestTypeInvalid = 0,
+    lassoRequestTypeLogin,
+    lassoRequestTypeLogout,
+    lassoRequestTypeFederationTermination,
+    lassoRequestTypeRegisterNameIdentifier,
+    lassoRequestTypeNameIdentifierMapping,
+    lassoRequestTypeLecp
+} lassoRequestType;
+
+/* Object */
+
+%nodefault _LassoProfile;
+typedef struct _LassoProfile {
+    GObject parent;
+    LassoServer *server;
+    LassoNode *request;
+    LassoNode *response;
+    gchar *nameIdentifier;
+    gchar *remote_providerID;
+    gchar *msg_url;
+    gchar *msg_body;
+    gchar *msg_relayState;
+    lassoMessageType request_type;
+    lassoMessageType response_type;
+} LassoProfile;
+
+/* Methods */
+
+%newobject lasso_profile_get_identity;
+LassoIdentity* lasso_profile_get_identity(LassoProfile *profile);
+
+%newobject lasso_profile_get_session;
+LassoSession* lasso_profile_get_session(LassoProfile *profile);
+
+gboolean lasso_profile_is_identity_dirty(LassoProfile *profile);
+
+gboolean lasso_profile_is_session_dirty(LassoProfile *profile);
+
+gint lasso_profile_set_remote_providerID(LassoProfile *profile, gchar *providerID);
+
+void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
+
+gint lasso_profile_set_identity(LassoProfile  *profile, LassoIdentity *identity);
+
+gint lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump);
+
+gint lasso_profile_set_session(LassoProfile *profile, LassoSession *session);
+
+gint lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump);
+
+/* Functions */
+
+lassoRequestType lasso_profile_get_request_type_from_soap_msg(gchar *soap);
+
+
+/***********************************************************************
+ * Login
+ ***********************************************************************/
+
+
+/* Constants */
+
+typedef enum {
+    lassoLoginProtocolProfileBrwsArt = 1,
+    lassoLoginProtocolProfileBrwsPost,
+} lassoLoginProtocolProfiles;
+
+/* Object */
+
+typedef struct {
+    LassoProfile parent;
+    lassoLoginProtocolProfiles protocolProfile;
+    gchar *assertionArtifact;
+    gchar *response_dump;
+
+    %extend {
+	LassoLogin(LassoServer *server);
+	~LassoLogin();
+    }
+} LassoLogin;
+
+/* Constructors */
+
+%newobject lasso_login_new;
+LassoLogin* lasso_login_new(LassoServer *server);
+
+%newobject lasso_login_new_from_dump;
+LassoLogin* lasso_login_new_from_dump(LassoServer *server, gchar *dump);
+
+/* Destructor */
+
+void lasso_login_destroy(LassoLogin *login);
+
+/* Methods */
+
+gint lasso_login_accept_sso(LassoLogin *login);
+
+gint lasso_login_build_artifact_msg(LassoLogin *login, gint authentication_result,
+				    const gchar *authenticationMethod,
+				    const gchar *reauthenticateOnOrAfter, lassoHttpMethod method);
+
+gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID);
+
+gint lasso_login_build_authn_response_msg(LassoLogin  *login, gint authentication_result,
+					  const gchar *authenticationMethod,
+					  const gchar *reauthenticateOnOrAfter);
+
+gint lasso_login_build_request_msg(LassoLogin *login);
+
+%newobject lasso_login_dump;
+gchar* lasso_login_dump(LassoLogin *login);
+
+gint lasso_login_init_authn_request(LassoLogin *login);
+
+gint lasso_login_init_from_authn_request_msg(LassoLogin *login, gchar *authn_request_msg,
+					     lassoHttpMethod  authn_request_method);
+
+gint lasso_login_init_request(LassoLogin *login, gchar *response_msg,
+			      lassoHttpMethod response_method);
+
+gboolean lasso_login_must_authenticate(LassoLogin *login);
+
+gint lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg);
+
+gint lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg);
+
+gint lasso_login_process_response_msg(LassoLogin  *login, gchar *response_msg);
+
+
+/***********************************************************************
+ * Logout
+ ***********************************************************************/
+
+
+/* Object */
+
+typedef struct {
+  LassoProfile parent;
+
+    %extend {
+	LassoLogout(LassoServer *server, lassoProviderType provider_type);
+	~LassoLogout();
+    }
+} LassoLogout;
+
+/* Constructors */
+
+%newobject lasso_logout_new;
+LassoLogout* lasso_logout_new(LassoServer *server, lassoProviderType provider_type);
+
+/* Destructor */
+
+void lasso_logout_destroy(LassoLogout *logout);
+
+/* Methods */
+
+gint lasso_logout_build_request_msg(LassoLogout *logout);
+
+gint lasso_logout_build_response_msg(LassoLogout *logout);
+
+%newobject lasso_logout_get_next_providerID;
+gchar* lasso_logout_get_next_providerID (LassoLogout *logout);
+
+gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID);
+
+gint lasso_logout_process_request_msg(LassoLogout *logout, gchar *request_msg,
+				      lassoHttpMethod request_method);
+
+gint lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg,
+				       lassoHttpMethod response_method);
+
+gint lasso_logout_validate_request(LassoLogout *logout);
+
+
+/***********************************************************************
+ * LECP
+ ***********************************************************************/
+
+
+/* Object */
+
+typedef struct {
+  LassoLogin parent;
+
+    %extend {
+	LassoLecp(LassoServer *server);
+	~LassoLecp();
+    }
+} LassoLecp;
+
+/* Constructors */
+
+%newobject lasso_lecp_new;
+LassoLecp* lasso_lecp_new(LassoServer *server);
+
+/* Destructor */
+
+void lasso_lecp_destroy(LassoLecp *lecp);
+
+/* Methods */
+
+gint lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp);
+
+gint lasso_lecp_build_authn_request_msg(LassoLecp *lecp, const gchar *remote_providerID);
+
+gint lasso_lecp_build_authn_response_msg(LassoLecp *lecp);
+
+gint lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp, gint authentication_result,
+						  const gchar *authenticationMethod,
+						  const gchar *reauthenticateOnOrAfter);
+
+gint lasso_lecp_init_authn_request(LassoLecp *lecp);
+
+gint lasso_lecp_init_from_authn_request_msg(LassoLecp *lecp, gchar *authn_request_msg,
+					    lassoHttpMethod authn_request_method);
+
+gint lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, gchar *request_msg);
+  
+gint lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, gchar *response_msg);
+
+
+/***********************************************************************
+ ***********************************************************************
+ * Unsorted
+ ***********************************************************************
+ ***********************************************************************/
+
+
 /*  xml/xml.h */
 /*
 GType          lasso_node_get_type         (void);
@@ -199,267 +676,6 @@ gint lasso_federation_termination_process_notification_msg (LassoFederationTermi
 gint lasso_federation_termination_validate_notification    (LassoFederationTermination *defederation);
 
 
-
-/* $Id$
- */
-
-#define LASSO_TYPE_IDENTITY (lasso_identity_get_type())
-#define LASSO_IDENTITY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_IDENTITY, LassoIdentity))
-/*#define LASSO_IDENTITY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_IDENTITY, LassoIdentityClass))*/
-#define LASSO_IS_IDENTITY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_IDENTITY))
-#define LASSO_IS_IDENTITY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_IDENTITY))
-/*#define LASSO_IDENTITY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_IDENTITY, LassoIdentityClass)) */
-
-/*typedef struct _LassoIdentity LassoIdentity;*/
-/*typedef struct _LassoIdentityClass LassoIdentityClass;*/
-typedef struct _LassoIdentityPrivate LassoIdentityPrivate;
-
-typedef struct _LassoIdentity {
-  GObject parent;
-
-  /*< public >*/
-  GPtrArray  *providerIDs; /* list of the remote provider ids for federations hash table */
-  GHashTable *federations; /* hash for federations with remote ProviderID as key */
-
-  gboolean is_dirty;
-
-  /*< private >*/
-  LassoIdentityPrivate *private;
-} LassoIdentity;
-
-/*struct _LassoIdentityClass {
-  GObjectClass parent;
-};*/
-
-GType            lasso_identity_get_type                              (void);
-
-LassoIdentity*   lasso_identity_new                                   (void);
-
-LassoIdentity*   lasso_identity_new_from_dump                         (gchar *dump);
-
-gint             lasso_identity_add_federation                        (LassoIdentity   *identity,
-										    gchar           *remote_providerID,
-										    LassoFederation *federation);
-
-LassoIdentity*   lasso_identity_copy                                  (LassoIdentity *identity);
-
-void             lasso_identity_destroy                               (LassoIdentity *identity);
-
-gchar*           lasso_identity_dump                                  (LassoIdentity *identity);
-
-LassoFederation* lasso_identity_get_federation                        (LassoIdentity *identity,
-										    gchar         *remote_providerID);
-
-gchar*           lasso_identity_get_next_federation_remote_providerID (LassoIdentity *identity);
-
-gint             lasso_identity_remove_federation                     (LassoIdentity *identity,
-										    gchar         *remote_providerID);
-
-/* $Id$ 
- */
-
-#define LASSO_TYPE_LECP (lasso_lecp_get_type())
-#define LASSO_LECP(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LECP, LassoLecp))
-/*#define LASSO_LECP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_LECP, LassoLecpClass))*/
-#define LASSO_IS_LECP(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LECP))
-#define LASSO_IS_LECP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LECP))
-/*#define LASSO_LECP_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_LECP, LassoLecpClass)) */
-
-/*typedef struct _LassoLecpClass LassoLecpClass;*/
-
-typedef struct _LassoLecp {
-  LassoLogin parent;
-
-  /*< public >*/
-  LassoNode *authnRequestEnvelope;
-  LassoNode *authnResponseEnvelope;
-
-  gchar *assertionConsumerServiceURL;
-
-  /*< private >*/
-} LassoLecp;
-
-/*struct _LassoLecpClass {
-  LassoLoginClass parent_class;
-};*/
-
-GType      lasso_lecp_get_type                            (void);
-
-LassoLecp* lasso_lecp_new                                 (LassoServer *server);
-
-gint       lasso_lecp_build_authn_request_envelope_msg    (LassoLecp *lecp);
-
-gint       lasso_lecp_build_authn_request_msg             (LassoLecp   *lecp,
-							   const gchar *remote_providerID);
-
-gint       lasso_lecp_build_authn_response_msg            (LassoLecp   *lecp);
-
-gint       lasso_lecp_build_authn_response_envelope_msg   (LassoLecp   *lecp,
-                                                           gint         authentication_result,
-							   const gchar *authenticationMethod,
-							   const gchar *reauthenticateOnOrAfter);
-
-void       lasso_lecp_destroy                             (LassoLecp *lecp);
-
-gint       lasso_lecp_init_authn_request                  (LassoLecp *lecp);
-
-gint       lasso_lecp_init_from_authn_request_msg         (LassoLecp       *lecp,
-									gchar           *authn_request_msg,
-									lassoHttpMethod  authn_request_method);
-
-gint       lasso_lecp_process_authn_request_envelope_msg  (LassoLecp *lecp,
-									gchar     *request_msg);
-  
-gint       lasso_lecp_process_authn_response_envelope_msg (LassoLecp *lecp,
-									gchar     *response_msg);
-
-
-/* $Id$ 
- */
-
-#define LASSO_TYPE_LOGIN (lasso_login_get_type())
-#define LASSO_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGIN, LassoLogin))
-/*#define LASSO_LOGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_LOGIN, LassoLoginClass))*/
-#define LASSO_IS_LOGIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LOGIN))
-#define LASSO_IS_LOGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LOGIN))
-/*#define LASSO_LOGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_LOGIN, LassoLoginClass)) */
-
-/*typedef struct _LassoLoginClass LassoLoginClass;*/
-typedef struct _LassoLoginPrivate LassoLoginPrivate;
-
-typedef enum {
-  lassoLoginProtocolProfileBrwsArt = 1,
-  lassoLoginProtocolProfileBrwsPost,
-} lassoLoginProtocolProfiles;
-
-typedef struct _LassoLogin {
-  LassoProfile parent;
-  /*< public >*/
-  lassoLoginProtocolProfiles  protocolProfile;
-
-  gchar                      *assertionArtifact;
-  gchar                      *response_dump;
-  /*< private >*/
-  LassoLoginPrivate *private;
-} LassoLogin;
-
-/*struct _LassoLoginClass {
-  LassoProfileClass parent;
-};*/
-
-GType                lasso_login_get_type                    (void);
-
-LassoLogin*          lasso_login_new                         (LassoServer *server);
-
-LassoLogin*          lasso_login_new_from_dump               (LassoServer *server,
-									   gchar       *dump);
-
-gint                 lasso_login_accept_sso                  (LassoLogin *login);
-
-gint                 lasso_login_build_artifact_msg          (LassoLogin      *login,
-									   gint             authentication_result,
-									   const gchar     *authenticationMethod,
-									   const gchar     *reauthenticateOnOrAfter,
-									   lassoHttpMethod  method);
-
-gint                 lasso_login_build_authn_request_msg     (LassoLogin  *login,
-							      const gchar *remote_providerID);
-
-gint                 lasso_login_build_authn_response_msg    (LassoLogin  *login,
-									   gint         authentication_result,
-									   const gchar *authenticationMethod,
-									   const gchar *reauthenticateOnOrAfter);
-
-gint                 lasso_login_build_request_msg           (LassoLogin *login);
-
-void                 lasso_login_destroy                     (LassoLogin *login);
-
-gchar*               lasso_login_dump                        (LassoLogin *login);
-
-gint                 lasso_login_init_authn_request          (LassoLogin  *login);
-
-gint                 lasso_login_init_from_authn_request_msg (LassoLogin      *login,
-									   gchar           *authn_request_msg,
-									   lassoHttpMethod  authn_request_method);
-
-gint                 lasso_login_init_request                (LassoLogin      *login,
-									   gchar           *response_msg,
-									   lassoHttpMethod  response_method);
-
-gboolean             lasso_login_must_authenticate           (LassoLogin *login);
-
-gint                 lasso_login_process_authn_response_msg  (LassoLogin *login,
-									   gchar      *authn_response_msg);
-
-gint                 lasso_login_process_request_msg         (LassoLogin *login,
-									   gchar      *request_msg);
-
-gint                 lasso_login_process_response_msg        (LassoLogin  *login,
-									   gchar       *response_msg);
-
-/* $Id$ 
- */
-
-#define LASSO_TYPE_LOGOUT (lasso_logout_get_type())
-#define LASSO_LOGOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LOGOUT, LassoLogout))
-/*#define LASSO_LOGOUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_LOGOUT, LassoLogoutClass))*/
-#define LASSO_IS_LOGOUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LOGOUT))
-#define LASSO_IS_LOGOUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LOGOUT))
-/*#define LASSO_LOGOUT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_LOGOUT, LassoLogoutClass)) */
-
-/*typedef struct _LassoLogoutClass LassoLogoutClass;*/
-typedef struct _LassoLogoutPrivate LassoLogoutPrivate;
-
-typedef struct _LassoLogout {
-  LassoProfile parent;
-  
-  /*< public >*/
-  LassoNode *initial_request;
-  LassoNode *initial_response;
-  gchar     *initial_remote_providerID;
-
-  /*< private >*/
-  LassoLogoutPrivate *private;
-} LassoLogout;
-
-/*struct _LassoLogoutClass {
-  LassoProfileClass parent;
-
-};*/
-
-GType        lasso_logout_get_type             (void);
-
-LassoLogout* lasso_logout_new                  (LassoServer       *server,
-							     lassoProviderType  provider_type);
-  
-gint         lasso_logout_build_request_msg    (LassoLogout *logout);
-
-gint         lasso_logout_build_response_msg   (LassoLogout *logout);
-
-void         lasso_logout_destroy              (LassoLogout *logout);
-
-gchar*       lasso_logout_get_next_providerID  (LassoLogout *logout);
-
-gint         lasso_logout_init_request         (LassoLogout *logout,
-							     gchar       *remote_providerID);
-
-gint         lasso_logout_process_request_msg  (LassoLogout     *logout,
-							     gchar           *request_msg,
-							     lassoHttpMethod  request_method);
-
-gint         lasso_logout_validate_request     (LassoLogout *logout);
-
-gint         lasso_logout_process_response_msg (LassoLogout     *logout,
-							     gchar           *response_msg,
-							     lassoHttpMethod  response_method);
   
 /* $Id$ 
  */
@@ -510,117 +726,6 @@ gint                        lasso_name_identifier_mapping_process_response_msg (
 											     gchar                      *response_msg,
 											     lassoHttpMethod             response_method);
 
-/* $Id$ 
- */
-
-#define LASSO_TYPE_PROFILE (lasso_profile_get_type())
-#define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))
-/*#define LASSO_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_PROFILE, LassoProfileClass))*/
-#define LASSO_IS_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_PROFILE))
-#define LASSO_IS_PROFILE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_PROFILE))
-/*#define LASSO_PROFILE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_PROFILE, LassoProfileClass)) */
-
-/*typedef struct _LassoProfileClass LassoProfileClass;*/
-typedef struct _LassoProfilePrivate LassoProfilePrivate;
-
-/* Request types (used by SOAP endpoint) */
-typedef enum {
-  lassoRequestTypeInvalid = 0,
-  lassoRequestTypeLogin,
-  lassoRequestTypeLogout,
-  lassoRequestTypeFederationTermination,
-  lassoRequestTypeRegisterNameIdentifier,
-  lassoRequestTypeNameIdentifierMapping,
-  lassoRequestTypeLecp
-} lassoRequestType;
-
-typedef enum {
-  lassoHttpMethodGet = 1,
-  lassoHttpMethodPost,
-  lassoHttpMethodRedirect,
-  lassoHttpMethodSoap
-} lassoHttpMethod;
-
-typedef enum {
-  lassoMessageTypeNone = 0,
-  lassoMessageTypeAuthnRequest,
-  lassoMessageTypeAuthnResponse,
-  lassoMessageTypeRequest,
-  lassoMessageTypeResponse,
-  lassoMessageTypeArtifact
-} lassoMessageType;
-
-typedef struct _LassoProfile {
-  GObject parent;
-
-  /*< public >*/
-  LassoServer *server;
-
-  LassoNode *request;
-  LassoNode *response;
-
-  gchar *nameIdentifier;
-
-  gchar *remote_providerID;
-
-  gchar *msg_url;
-  gchar *msg_body;
-  gchar *msg_relayState;
-
-  /*< private >*/
-  LassoIdentity *identity;
-  LassoSession  *session;
-
-  lassoMessageType  request_type;
-  lassoMessageType  response_type;
-  lassoProviderType provider_type;
-
-  LassoProfilePrivate *private;
-} LassoProfile;
-
-/*struct _LassoProfileClass {
-  GObjectClass parent;
-};*/
-
-lassoRequestType lasso_profile_get_request_type_from_soap_msg (gchar *soap);
-
-
-GType          lasso_profile_get_type                       (void);
-
-LassoProfile*  lasso_profile_new                            (LassoServer   *server,
-									  LassoIdentity *identity,
-									  LassoSession  *session);
-
-gchar*         lasso_profile_dump                           (LassoProfile *ctx,
-									  const gchar  *name);
-
-LassoIdentity* lasso_profile_get_identity                   (LassoProfile *ctx);
-
-LassoSession*  lasso_profile_get_session                    (LassoProfile *ctx);
-
-gboolean       lasso_profile_is_identity_dirty              (LassoProfile *ctx);
-
-gboolean       lasso_profile_is_session_dirty               (LassoProfile *ctx);
-
-gint           lasso_profile_set_remote_providerID          (LassoProfile *ctx,
-									  gchar        *providerID);
-
-void           lasso_profile_set_response_status            (LassoProfile *ctx,
-									  const gchar  *statusCodeValue);
-
-gint           lasso_profile_set_identity                   (LassoProfile  *ctx,
-									  LassoIdentity *identity);
-
-gint           lasso_profile_set_identity_from_dump         (LassoProfile *ctx,
-									  const gchar  *dump);
-
-gint           lasso_profile_set_session                    (LassoProfile *ctx,
-									  LassoSession *session);
-
-gint           lasso_profile_set_session_from_dump          (LassoProfile *ctx,
-									  const gchar  *dump);
 
 /* $Id$ 
  */
@@ -664,138 +769,17 @@ void            lasso_register_name_identifier_destroy               (LassoRegis
 gint            lasso_register_name_identifier_init_request          (LassoRegisterNameIdentifier *register_name_identifier,
 										   gchar                       *remote_providerID);
 
-gint            lasso_register_name_identifier_load_request_msg      (LassoRegisterNameIdentifier *register_name_identifier,
+/* gint            lasso_register_name_identifier_load_request_msg      (LassoRegisterNameIdentifier *register_name_identifier,
 										   gchar                       *request_msg,
 										   lassoHttpMethod              request_method);
-
 gint            lasso_register_name_identifier_process_request       (LassoRegisterNameIdentifier *register_name_identifier);
+*/
 
 gint            lasso_register_name_identifier_process_response_msg  (LassoRegisterNameIdentifier *register_name_identifier,
 										   gchar                       *response_msg,
 										   lassoHttpMethod              response_method);
   
-/* $Id$ 
- */
 
-#define LASSO_TYPE_SERVER (lasso_server_get_type())
-#define LASSO_SERVER(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SERVER, LassoServer))
-/*#define LASSO_SERVER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_SERVER, LassoServerClass))*/
-#define LASSO_IS_SERVER(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SERVER))
-#define LASSO_IS_SERVER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SERVER))
-/*#define LASSO_SERVER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_SERVER, LassoServerClass)) */
-
-/*typedef struct _LassoServerClass LassoServerClass;*/
-typedef struct _LassoServerPrivate LassoServerPrivate;
-
-typedef struct _LassoServer {
-  LassoProvider parent;
-
-  GPtrArray *providers;
-  
-  gchar *providerID;   
-  gchar *private_key;
-  gchar *certificate;
-  guint  signature_method;
-  /*< private >*/
-  LassoServerPrivate *private;
-} LassoServer;
-
-/*struct _LassoServerClass {
-  LassoProviderClass parent;
-};*/
-
-GType          lasso_server_get_type                 (void);
-
-LassoServer*   lasso_server_new                      (gchar       *metadata,
-								   gchar       *public_key,
-								   gchar       *private_key,
-								   gchar       *certificate,
-								   guint       signature_method);
-
-LassoServer*   lasso_server_new_from_dump            (gchar       *dump);
-
-gint           lasso_server_add_provider             (LassoServer *server,
-								   gchar       *metadata,
-								   gchar       *public_key,
-								   gchar       *ca_certificate);
-
-LassoServer*   lasso_server_copy                     (LassoServer *server);
-
-void           lasso_server_destroy                  (LassoServer *server);
-
-gchar*         lasso_server_dump                     (LassoServer *server);
-
-LassoProvider* lasso_server_get_provider             (LassoServer  *server,
-								   gchar        *providerID,
-								   GError      **err);
-
-LassoProvider* lasso_server_get_provider_ref         (LassoServer  *server,
-								   gchar        *providerID,
-								   GError      **err);
-
-gchar*         lasso_server_get_providerID_from_hash (LassoServer *server,
-								   gchar       *b64_hash);
-
-/* $Id$ 
- */
-
-#define LASSO_TYPE_SESSION (lasso_session_get_type())
-#define LASSO_SESSION(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SESSION, LassoSession))
-/*#define LASSO_SESSION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_SESSION, LassoSessionClass))*/
-#define LASSO_IS_SESSION(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SESSION))
-#define LASSO_IS_SESSION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SESSION))
-/*#define LASSO_SESSION_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_SESSION, LassoSessionClass)) */
-
-/*typedef struct _LassoSessionClass LassoSessionClass;*/
-typedef struct _LassoSessionPrivate LassoSessionPrivate;
-
-typedef struct _LassoSession {
-  GObject parent;
-
-  /*< public >*/
-  GPtrArray  *providerIDs; /* list of the remote provider IDs for assertions hash table */
-  GHashTable *assertions;  /* hash for assertions with remote providerID as key */
-
-  gboolean is_dirty;
-
-  /*< private >*/
-  LassoSessionPrivate *private;
-} LassoSession;
-
-/*struct _LassoSessionClass {
-  GObjectClass parent;
-};*/
-
-GType          lasso_session_get_type                             (void);
-
-LassoSession*  lasso_session_new                                  (void);
-
-LassoSession*  lasso_session_new_from_dump                        (gchar *dump);
-
-gint           lasso_session_add_assertion                        (LassoSession *session,
-										gchar        *remote_providerID,
-										LassoNode    *assertion);
-  
-LassoSession*  lasso_session_copy                                 (LassoSession *session);
-
-void           lasso_session_destroy                              (LassoSession *session);
-
-gchar*         lasso_session_dump                                 (LassoSession *session);
-
-LassoNode*     lasso_session_get_assertion                        (LassoSession *session,
-										gchar        *remote_providerID);
-
-gchar*         lasso_session_get_authentication_method            (LassoSession *session,
-										gchar        *remote_providerID);
-
-gchar*         lasso_session_get_next_assertion_remote_providerID (LassoSession *session);
-
-gint           lasso_session_remove_assertion                     (LassoSession *session,
-										gchar        *remote_providerID);
 
 /* $Id$ 
  */
@@ -811,47 +795,6 @@ int lasso_check_version_ext(int major,
 					 lassoCheckVersionMode mode);
 
 
-/* $Id$ 
- */
-
-#define LASSO_TYPE_AUTHN_REQUEST (lasso_authn_request_get_type())
-#define LASSO_AUTHN_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_AUTHN_REQUEST, LassoAuthnRequest))
-/*#define LASSO_AUTHN_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_AUTHN_REQUEST, LassoAuthnRequestClass))*/
-#define LASSO_IS_AUTHN_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_AUTHN_REQUEST))
-#define LASSO_IS_AUTHN_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_AUTHN_REQUEST))
-/*#define LASSO_AUTHN_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_AUTHN_REQUEST, LassoAuthnRequestClass)) */
-
-/*typedef struct _LassoAuthnRequestClass LassoAuthnRequestClass;*/
-
-typedef struct _LassoAuthnRequest {
-  LassoLibAuthnRequest parent;
-  /*< public >*/
-  /*< private >*/
-} LassoAuthnRequest;
-
-/*struct _LassoAuthnRequestClass {
-  LassoLibAuthnRequestClass parent;
-};*/
-
-gchar* lasso_authn_request_get_protocolProfile (gchar *query);
-
-
-GType      lasso_authn_request_get_type                (void);
-
-LassoNode* lasso_authn_request_new                     (const xmlChar *providerID);
-
-LassoNode* lasso_authn_request_new_from_export         (gchar               *buffer,
-								     lassoNodeExportType  export_type);
-
-void       lasso_authn_request_set_requestAuthnContext (LassoAuthnRequest *request,
-								     GPtrArray         *authnContextClassRefs,
-								     GPtrArray         *authnContextStatementRefs,
-								     const xmlChar     *authnContextComparison);
-
-void       lasso_authn_request_set_scoping             (LassoAuthnRequest *request,
-								     gint               proxyCount);
 
 /* $Id$ 
  */
@@ -1281,10 +1224,11 @@ gchar*         lasso_provider_get_federationTerminationNotificationProtocolProfi
 												 lassoProviderType   provider_type,
 												 GError            **err);
 
+/*
 gchar*         lasso_provider_get_federationTerminationReturnServiceURL            (LassoProvider      *provider,
 												 lassoProviderType   provider_type,
 												 GError            **err);
-
+*/
 gchar*         lasso_provider_get_federationTerminationServiceURL                  (LassoProvider      *provider,
 												 lassoProviderType   provider_type,
 												 GError            **err);
@@ -1636,64 +1580,6 @@ void lasso_lib_authn_context_set_authnContextClassRef     (LassoLibAuthnContext 
 void lasso_lib_authn_context_set_authnContextStatementRef (LassoLibAuthnContext *node,
 									const xmlChar *authnContextStatementRef);
 
-/* $Id$ 
- */
-
-#define LASSO_TYPE_LIB_AUTHN_REQUEST (lasso_lib_authn_request_get_type())
-#define LASSO_LIB_AUTHN_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_LIB_AUTHN_REQUEST, LassoLibAuthnRequest))
-/*#define LASSO_LIB_AUTHN_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_LIB_AUTHN_REQUEST, LassoLibAuthnRequestClass))*/
-#define LASSO_IS_LIB_AUTHN_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_LIB_AUTHN_REQUEST))
-#define LASSO_IS_LIB_AUTHN_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_LIB_AUTHN_REQUEST))
-/*#define LASSO_LIB_AUTHN_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_LIB_AUTHN_REQUEST, LassoLibAuthnRequestClass)) */
-
-/*typedef struct _LassoLibAuthnRequestClass LassoLibAuthnRequestClass;*/
-
-typedef struct _LassoLibAuthnRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
-} LassoLibAuthnRequest;
-
-/*struct _LassoLibAuthnRequestClass {
-  LassoSamlpRequestAbstractClass parent;
-};*/
-
-GType lasso_lib_authn_request_get_type(void);
-LassoNode* lasso_lib_authn_request_new(void);
-
-void lasso_lib_authn_request_set_affiliationID              (LassoLibAuthnRequest *,
-									  const xmlChar *);
-  
-void lasso_lib_authn_request_set_assertionConsumerServiceID (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-void lasso_lib_authn_request_set_consent                    (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-void lasso_lib_authn_request_set_forceAuthn                 (LassoLibAuthnRequest *,
-									  gboolean);
-
-void lasso_lib_authn_request_set_isPassive                  (LassoLibAuthnRequest *,
-									  gboolean);
-
-void lasso_lib_authn_request_set_nameIDPolicy               (LassoLibAuthnRequest *node,
-									  const xmlChar   *nameIDPolicy);
-
-void lasso_lib_authn_request_set_protocolProfile            (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-void lasso_lib_authn_request_set_providerID                 (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-void lasso_lib_authn_request_set_relayState                 (LassoLibAuthnRequest *,
-									  const xmlChar *);
-
-void lasso_lib_authn_request_set_requestAuthnContext        (LassoLibAuthnRequest *,
-									  LassoLibRequestAuthnContext *);
-
-void lasso_lib_authn_request_set_scoping                    (LassoLibAuthnRequest *node,
-									  LassoLibScoping *scoping);
 
 /* $Id$ 
  */
@@ -2399,34 +2285,6 @@ LassoNode* lasso_lib_subject_new(void);
 void lasso_lib_subject_set_idpProvidedNameIdentifier(LassoLibSubject *node,
 								  LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier);
 
-/* $Id$ 
- */
-
-#define LASSO_TYPE_SAMLP_REQUEST (lasso_samlp_request_get_type())
-#define LASSO_SAMLP_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_SAMLP_REQUEST, LassoSamlpRequest))
-/*#define LASSO_SAMLP_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass),
- * LASSO_TYPE_SAMLP_REQUEST, LassoSamlpRequestClass))*/
-#define LASSO_IS_SAMLP_REQUEST(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_SAMLP_REQUEST))
-#define LASSO_IS_SAMLP_REQUEST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_SAMLP_REQUEST))
-/*#define LASSO_SAMLP_REQUEST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),
- * LASSO_TYPE_SAMLP_REQUEST, LassoSamlpRequestClass)) */
-
-/*typedef struct _LassoSamlpRequestClass LassoSamlpRequestClass;*/
-
-typedef struct _LassoSamlpRequest {
-  LassoSamlpRequestAbstract parent;
-  /*< private >*/
-} LassoSamlpRequest;
-
-/*struct _LassoSamlpRequestClass {
-  LassoSamlpRequestAbstractClass parent;
-};*/
-
-GType lasso_samlp_request_get_type(void);
-LassoNode* lasso_samlp_request_new(void);
-
-void lasso_samlp_request_set_assertionArtifact(LassoSamlpRequest *node,
-					  const xmlChar *assertionArtifact);
 
 /* $Id$ 
  */

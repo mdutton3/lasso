@@ -7,7 +7,8 @@ python_DATA=lassomod.py
 python_LTLIBRARIES=_lassomod.la
 
 PYTHON_PACKAGE=lassomod
-_lassomod_la_SOURCES=$(PYTHON_PACKAGE)_wrap.c
+_lassomod_la_SOURCES=$(PYTHON_PACKAGE)_wrap.c \
+			$(top_srcdir)/swig/Lasso.c
 _lassomod_la_CFLAGS=	$(LASSO_CFLAGS) \
 			-DSWIG_COBJECT_TYPES \
 			$(PY_CFLAGS) \
