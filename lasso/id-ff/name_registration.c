@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <string.h>
+#include <glib/gprintf.h>
+
 #include <lasso/environs/name_registration.h>
 
 static GObjectClass *parent_class = NULL;
@@ -120,9 +123,9 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)) {
     /* temporary vars to store url, query and separator */
     gchar *url, *query;
-    const gchar *separator = "?";
 
-    /* build and optionaly sign the query message and build the register name identifier request url */
+    /* build and optionaly sign the query message and build the register name
+     * identifier request url */
     url = lasso_provider_get_registerNameIdentifierServiceURL(provider, profile->provider_type, NULL);
     query = lasso_node_export_to_query(profile->request,
 				       profile->server->signature_method,

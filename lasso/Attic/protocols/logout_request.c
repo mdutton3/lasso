@@ -76,15 +76,8 @@ lasso_logout_request_new(gchar               *providerID,
 			 lassoSignatureType   sign_type,
 			 lassoSignatureMethod sign_method)
 {
-  LassoNodeClass *class;
   LassoNode *request, *identifier;
   xmlChar *request_id, *time;
-
-  xmlDocPtr doc = NULL;
-  xmlNodePtr xmlNode = NULL;
-  xmlIDPtr id;
-  xmlAttrPtr id_attr;
-  xmlChar *id_value;
 
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
@@ -278,7 +271,7 @@ static LassoNode *
 lasso_logout_request_new_from_xml(gchar *buffer)
 {
   LassoNode *request;
-  LassoNode *logout_request_node, *lassoNode_request;
+  LassoNode *lassoNode_request;
   xmlNodePtr xmlNode_request;
   LassoNodeClass *class;
 

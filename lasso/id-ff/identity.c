@@ -76,7 +76,6 @@ lasso_identity_add_federation(LassoIdentity   *identity,
 			      gchar           *remote_providerID,
 			      LassoFederation *federation)
 {
-  LassoFederation *old_federation;
   gboolean found = FALSE;
   int i;
 

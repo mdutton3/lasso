@@ -218,7 +218,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   LassoNode *assertion = NULL, *status = NULL, *statusCode = NULL;
   LassoProvider *idp = NULL;
   gchar *statusCode_value = NULL;
-  gint signature_check;
   gint ret = 0;
   GError *err = NULL;
 
@@ -849,7 +848,6 @@ lasso_login_get_assertion(LassoLogin *login)
 {
   LassoNodeClass *class;
   LassoAssertion *assertion;
-  LassoNode      *node;
   xmlNodePtr      assertion_xmlNode;
 
   g_return_val_if_fail(LASSO_IS_LOGIN(login), NULL);

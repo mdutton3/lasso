@@ -127,7 +127,7 @@ gchar *
 lasso_server_dump(LassoServer *server)
 {
   LassoProvider  *provider;
-  LassoNode      *server_node, *providers_node, *provider_node, *metadata_copy, *metadata_node, *entity_node;
+  LassoNode      *server_node, *providers_node, *provider_node, *metadata_copy, *metadata_node;
   LassoNodeClass *metadata_class, *server_class, *providers_class;
   xmlChar        *signature_method_str, *dump;
   gint            i;

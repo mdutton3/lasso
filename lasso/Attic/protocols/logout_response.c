@@ -316,7 +316,7 @@ static LassoNode *
 lasso_logout_response_new_from_xml(gchar *buffer)
 {
   LassoNode *response;
-  LassoNode *logout_response_node, *lassoNode_response;
+  LassoNode *lassoNode_response;
   xmlNodePtr xmlNode_response;
   LassoNodeClass *class;
 

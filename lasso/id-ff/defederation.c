@@ -443,9 +443,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
   LassoProfile    *profile;
   LassoProvider   *provider;
   LassoFederation *federation;
-  LassoNode       *assertion, *nameIdentifier;
-  GError          *err = NULL;
-  gint             signature_check;
+  LassoNode       *nameIdentifier;
   gint             ret = 0;
   gint            remote_provider_type;
 

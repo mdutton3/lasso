@@ -389,7 +389,6 @@ lasso_logout_init_request(LassoLogout    *logout,
   xmlChar           *content        = NULL, *nameQualifier = NULL, *format = NULL;
   xmlChar           *singleLogoutProtocolProfile = NULL;
   GError            *err = NULL;
-  lassoSignatureType signature_type = lassoSignatureTypeNone;
   gint               ret = 0;
   
   /* FIXME : should use a var to know if the protocol profile is SOAP or HTTP GET ? */
@@ -1000,9 +999,12 @@ lasso_logout_validate_request(LassoLogout *logout)
   /* authentication is ok, federation is ok, propagation support is ok, remove federation */
   lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 
-  /* if at IDP and nb sp logged > 1, then backup remote provider id, request and response */
-  /* REMARK : if only initial service provider was logged, then profile->session->providerIDs->len == 0,
-  /*                                                       else profile->session->providerIDs->len >= 1 */
+  /* if at IDP and nb sp logged > 1, then backup remote provider id,
+   * request and response
+   * REMARK : if only initial service provider was logged,
+   *   then profile->session->providerIDs->len == 0,
+   *   else profile->session->providerIDs->len >= 1
+   */
   if (profile->provider_type == lassoProviderTypeIdp && profile->session->providerIDs->len >= 1) {
     logout->initial_remote_providerID = profile->remote_providerID;
     logout->initial_request = profile->request;
@@ -1142,7 +1144,7 @@ lasso_logout_new_from_dump(LassoServer *server,
   LassoProfile *profile;
   LassoNode    *node_dump, *request_node, *response_node;
   LassoNode    *initial_request_node, *initial_response_node;
-  gchar        *type, *export, *initial_remote_providerID, *providerID_index_str;
+  gchar        *type, *export, *providerID_index_str;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
   g_return_val_if_fail(dump != NULL, NULL);
