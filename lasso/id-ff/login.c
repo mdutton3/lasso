@@ -56,7 +56,7 @@ lasso_login_process_federation(LassoLogin *login)
     }
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
-    printf("DEBUG - NameIDPolicy is federated\n");
+    debug(DEBUG, "NameIDPolicy is federated");
     if (identity == NULL) {
       identity = lasso_identity_new(LASSO_PROFILE_CONTEXT(login)->remote_providerID);
       idpProvidedNameIdentifier = lasso_lib_idp_provided_name_identifier_new(lasso_build_unique_id(32));
@@ -153,11 +153,11 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 }
 
 gint
-lasso_login_build_artifact_msg(LassoLogin  *login,
-			       gint         authentication_result,
-			       const gchar *authenticationMethod,
-			       const gchar *reauthenticateOnOrAfter,
-			       gint         method)
+lasso_login_build_artifact_msg(LassoLogin       *login,
+			       gint              authentication_result,
+			       const gchar      *authenticationMethod,
+			       const gchar      *reauthenticateOnOrAfter,
+			       lassoHttpMethods  method)
 {
   LassoIdentity *identity;
   LassoProvider *remote_provider;
@@ -224,7 +224,7 @@ lasso_login_build_artifact_msg(LassoLogin  *login,
     }
     break;
   case lassoHttpMethodPost:
-    LASSO_PROFILE_CONTEXT(login)->msg_url = g_strdup(url);
+    LASSO_PROFILE_CONTEXT(login)->msg_url  = g_strdup(url);
     LASSO_PROFILE_CONTEXT(login)->msg_body = g_strdup(b64_samlArt);
     if (relayState != NULL) {
       login->msg_relayState = g_strdup(relayState);
@@ -313,9 +313,9 @@ lasso_login_init_authn_request(LassoLogin  *login,
 }
 
 gint
-lasso_login_init_from_authn_request_msg(LassoLogin *login,
-					gchar      *authn_request_msg,
-					gint        authn_request_method)
+lasso_login_init_from_authn_request_msg(LassoLogin       *login,
+					gchar            *authn_request_msg,
+					lassoHttpMethods  authn_request_method)
 {
   LassoServer *server;
   LassoProvider *remote_provider;
@@ -406,17 +406,17 @@ lasso_login_init_from_authn_request_msg(LassoLogin *login,
 }
 
 gint
-lasso_login_init_request(LassoLogin  *login,
-			 xmlChar     *response_msg,
-			 gint         response_method,
-			 const gchar *remote_providerID)
+lasso_login_init_request(LassoLogin       *login,
+			 gchar            *response_msg,
+			 lassoHttpMethods  response_method,
+			 const gchar      *remote_providerID)
 {
   xmlChar *artifact;
 
   LASSO_PROFILE_CONTEXT(login)->remote_providerID = g_strdup(remote_providerID);
 
   /* rebuild response (artifact) */
-  switch (response_method = 1) {
+  switch (response_method) {
   case lassoHttpMethodGet:
   case lassoHttpMethodRedirect:
     /* artifact by REDIRECT */
@@ -437,8 +437,8 @@ lasso_login_init_request(LassoLogin  *login,
 }
 
 gint
-lasso_login_handle_request(LassoLogin *login,
-			   xmlChar    *request_msg)
+lasso_login_handle_request_msg(LassoLogin *login,
+			       gchar      *request_msg)
 {
   LassoNode *node;
 
@@ -451,8 +451,8 @@ lasso_login_handle_request(LassoLogin *login,
 }
 
 gint
-lasso_handle_authn_response_msg(LassoLogin *login,
-				gchar      *authn_response_msg)
+lasso_login_handle_authn_response_msg(LassoLogin *login,
+				      gchar      *authn_response_msg)
 {
   LassoNode *assertion, *status, *statusCode;
   LassoProvider *idp;

@@ -68,15 +68,45 @@ struct _LassoLoginClass {
   LassoProfileContextClass parent;
 };
 
-LASSO_EXPORT GType                lasso_login_get_type                (void);
+LASSO_EXPORT GType                lasso_login_get_type                    (void);
 
-LASSO_EXPORT LassoProfileContext* lasso_login_new                     (LassoServer *server,
-								       LassoUser   *user);
+LASSO_EXPORT LassoProfileContext* lasso_login_new                         (LassoServer *server,
+									   LassoUser   *user);
 
-LASSO_EXPORT gint                 lasso_login_build_authn_request_msg (LassoLogin *login);
+LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin *login);
 
-LASSO_EXPORT gint                 lasso_login_init_authn_request      (LassoLogin  *login,
-								       const gchar *remote_providerID);
+LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (LassoLogin       *login,
+									   gint              authentication_result,
+									   const gchar      *authenticationMethod,
+									   const gchar      *reauthenticateOnOrAfter,
+									   lassoHttpMethods  method);
+
+LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (LassoLogin  *login,
+									   gint         authentication_result,
+									   const gchar *authenticationMethod,
+									   const gchar *reauthenticateOnOrAfter);
+
+LASSO_EXPORT gint                 lasso_login_build_request_msg           (LassoLogin *login);
+
+LASSO_EXPORT gint                 lasso_login_init_authn_request          (LassoLogin  *login,
+									   const gchar *remote_providerID);
+
+LASSO_EXPORT gint                 lasso_login_init_from_authn_request_msg (LassoLogin       *login,
+									   gchar            *authn_request_msg,
+									   lassoHttpMethods  authn_request_method);
+
+LASSO_EXPORT gint                 lasso_login_init_request                (LassoLogin       *login,
+									   gchar            *response_msg,
+									   lassoHttpMethods  response_method,
+									   const gchar      *remote_providerID);
+
+LASSO_EXPORT gint                 lasso_login_handle_request_msg          (LassoLogin *login,
+									   gchar      *request_msg);
+
+LASSO_EXPORT gint                 lasso_login_handle_authn_response_msg   (LassoLogin *login,
+									   gchar      *authn_response_msg);
+
+LASSO_EXPORT gboolean             lasso_login_must_authenticate           (LassoLogin *login);
 
 #ifdef __cplusplus
 }
