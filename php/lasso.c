@@ -123,9 +123,7 @@ zend_module_entry lasso_module_entry = {
 };
 /* }}} */
 
-#ifdef COMPILE_DL_LASSO
 ZEND_GET_MODULE(lasso)
-#endif
 
 /* {{{ PHP_INI
  */
@@ -314,8 +312,8 @@ PHP_FUNCTION(lasso_version)
 
 	zend_printf("DEBUG: lasso_version\n");
 
-	snprintf(lasso_version, 6, "%d.%d.%d", LASSO_VERSION_MAJOR, 
-			LASSO_VERSION_MINOR, LASSO_VERSION_SUBMINOR);
+	/* snprintf(lasso_version, 6, "%d.%d.%d", LASSO_VERSION_MAJOR, 
+			LASSO_VERSION_MINOR, LASSO_VERSION_SUBMINOR); */
 
 	RETURN_STRING(lasso_version, 1)
 }
