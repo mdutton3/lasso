@@ -21,48 +21,62 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
-/*
-gcc -g -O2 -I./.. `pkg-config gobject-2.0 --cflags` `pkg-config libxml-2.0 --cflags` -L../lasso/.libs -llasso `pkg-config gobject-2.0 --libs` `pkg-config libxml-2.0 --libs` -DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1 -I/usr/include/xmlsec1 -I/usr/include/libxml2 -L/usr/lib -L/usr/local/lib -lxmlsec1-openssl -lxmlsec1 -lxslt -lxml2 -lz -lpthread -lm -lssl -lcrypto -ldl login_tests.c -o login_tests
-*/
-
-
+#include <stdlib.h>
+#include <check.h>
 #include <lasso/lasso.h>
 
 
 char *generateIdentityProviderContextDump() {
-  LassoServer *serverContext = lasso_server_new(
-      "../examples/data/idp-metadata.xml",
-      "../examples/data/idp-public-key.pem",
-      "../examples/data/idp-private-key.pem",
-      "../examples/data/idp-crt.pem",
-      lassoSignatureMethodRsaSha1);
-  lasso_server_add_provider(
-      serverContext,
-      "../examples/data/sp-metadata.xml",
-      "../examples/data/sp-public-key.pem",
-      "../examples/data/ca-crt.pem");
-  char *serverContextDump = lasso_server_dump(serverContext);
-  return serverContextDump;
+	LassoServer *serverContext = lasso_server_new(
+			"../examples/data/idp-metadata.xml",
+			"../examples/data/idp-public-key.pem",
+			"../examples/data/idp-private-key.pem",
+			"../examples/data/idp-crt.pem",
+			lassoSignatureMethodRsaSha1);
+	lasso_server_add_provider(
+			serverContext,
+			"../examples/data/sp-metadata.xml",
+			"../examples/data/sp-public-key.pem",
+			"../examples/data/ca-crt.pem");
+	char *serverContextDump = lasso_server_dump(serverContext);
+	return serverContextDump;
 }
 
-void test01_generateServersContextDumps() {
-  char *identityProviderContextDump = generateIdentityProviderContextDump();
-  printf("SUCCESS = %s\n", identityProviderContextDump);
-/*   char *serviceProviderContextDump = generateServiceProviderContextDump(); */
-/*   assertNotNull(serviceProviderContextDump); */
+START_TEST(test01_generateServersContextDumps)
+{
+	char *identityProviderContextDump = generateIdentityProviderContextDump();
+	fail_unless(identityProviderContextDump != NULL,
+		"generateIdentityProviderContextDump should not return NULL");
+}
+END_TEST
+
+Suite* login_suite()
+{
+	Suite *s = suite_create("Login");
+	TCase *tc_generate = tcase_create("Generate Server Contexts");
+	suite_add_tcase(s, tc_generate);
+	tcase_add_test(tc_generate, test01_generateServersContextDumps);
+	return s;
 }
 
+int main(int argc, char *argv[])
+{
+	int rc;
+	Suite *s;
+	SRunner *sr;
 
-void test02_serviceProviderLogin() {
+	lasso_init();
+	
+	s = login_suite();
+	sr = srunner_create(s);
+	srunner_run_all (sr, CK_VERBOSE);
+	rc = srunner_ntests_failed(sr);
+	
+	srunner_free(sr);
+	suite_free(s);
+
+	/*lasso_destroy();*/
+
+	return (rc == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-
-int main() {
-  lasso_init();
-
-  test01_generateServersContextDumps();
-  test02_serviceProviderLogin();
-
-  lasso_shutdown();
-}

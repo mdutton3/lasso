@@ -194,6 +194,25 @@ fi
 
 AM_CONDITIONAL(ENABLE_GTK_DOC, test x$enable_gtk_doc = xyes)
 
+
+dnl ==========================================================================
+dnl Test suite (requires check)
+dnl ==========================================================================
+AC_ARG_ENABLE(tests,
+[  --enable-tests          build the test suite (default)],
+[case "${enableval}" in
+        yes) tests_val=true;;
+        no)  tests_val=false;;
+esac], tests_val=true)
+
+if $tests_val ; then
+  AM_PATH_CHECK
+fi
+
+AM_CONDITIONAL(WITH_TESTS, $tests_val)
+
+
+
 dnl ==========================================================================
 dnl Where do we want to install docs
 dnl ==========================================================================
@@ -312,6 +331,7 @@ python/protocols/Makefile
 python/protocols/elements/Makefile
 python/tests/Makefile
 python/xml/Makefile
+tests/Makefile
 win32/Makefile
 win32/nsis/Makefile
 ]
