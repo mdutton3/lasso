@@ -77,8 +77,7 @@ splogin = lasso.Login.new(server, None)
 
 response_msg = string.split(idplogin.msg_url, '?')[1]
 ret = splogin.init_request(response_msg,
-                           lasso.httpMethodRedirect,
-                           "https://identity-provider:2003/liberty-alliance/metadata")
+                           lasso.httpMethodRedirect)
 
 ret = splogin.build_request_msg()
 print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.msg_body)
