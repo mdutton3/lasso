@@ -960,14 +960,12 @@ GType lasso_login_get_type() {
 }
 
 LassoLogin*
-lasso_login_new(LassoServer *server,
-		LassoUser   *user)
+lasso_login_new(LassoServer *server)
 {
   LassoLogin *login;
 
   login = LASSO_LOGIN(g_object_new(LASSO_TYPE_LOGIN,
 				   "server", server,
-				   "user", user,
 				   NULL));
   
   return (login);
