@@ -239,6 +239,25 @@ lasso_session_get_authentication_method(LassoSession *session,
 }
 
 gchar*
+lasso_session_get_first_providerID(LassoSession *session)
+{
+  gchar *providerID;
+
+  g_return_val_if_fail(session != NULL, NULL);
+
+  if(session->providerIDs->len == 0) {
+    return(NULL);
+  }
+
+  providerID = g_ptr_array_index(session->providerIDs, 0);
+  if (providerID == NULL) {
+    return(NULL);
+  }
+
+  return(g_strdup(providerID));
+}
+
+gchar*
 lasso_session_get_next_providerID(LassoSession *session)
 {
   gchar *providerID;
@@ -253,9 +272,15 @@ lasso_session_get_next_providerID(LassoSession *session)
     return(NULL);
   }
 
+  if (session->index_providerID>=session->providerIDs->len) {
+    return (NULL);
+  }
+
   /* get the next provider id and increments the index */
+  //printf("get provider id from %d\n", session->index_providerID);
   providerID = g_strdup(g_ptr_array_index(session->providerIDs, session->index_providerID));
   session->index_providerID++;
+  //printf("return provider id %s\n", providerID);
 
   return(providerID);
 }
