@@ -23,24 +23,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PYLASSO_PY_PROFILE_CONTEXT_H__
-#define __PYLASSO_PY_PROFILE_CONTEXT_H__
+#ifndef __PYLASSO_PY_PROFILE_H__
+#define __PYLASSO_PY_PROFILE_H__
 
-#include <lasso/environs/profile_context.h>
+#include <lasso/environs/profile.h>
 
 typedef struct {
     PyObject_HEAD
-    LassoProfileContext *obj;
-} LassoProfileContext_object;
+    LassoProfile *obj;
+} LassoProfile_object;
 
-#define LassoProfileContext_get(v) (((v) == Py_None) ? NULL : (((LassoProfileContext_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
-PyObject *LassoProfileContext_wrap(LassoProfileContext *ctx);
+#define LassoProfile_get(v) (((v) == Py_None) ? NULL : (((LassoProfile_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoProfile_wrap(LassoProfile *ctx);
 
-PyObject *profile_context_get_request_type_from_soap_msg(PyObject *self, PyObject *args);
+PyObject *profile_get_request_type_from_soap_msg(PyObject *self, PyObject *args);
 
-PyObject *profile_context_new(PyObject *self, PyObject *args);
-PyObject *profile_context_set_user_from_dump(PyObject *self, PyObject *args);
+PyObject *profile_new(PyObject *self, PyObject *args);
+PyObject *profile_set_user_from_dump(PyObject *self, PyObject *args);
 
-#endif /* __PYLASSO_PY_PROFILE_CONTEXT_H__ */
+#endif /* __PYLASSO_PY_PROFILE_H__ */
 
 
