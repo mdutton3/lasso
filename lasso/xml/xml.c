@@ -571,7 +571,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 		t = g_list_next(t);
 	}
 
-	fprintf(stderr, "ns: %s\n", xmlnode->nsDef->prefix);
 	xmlSetNs(xmlnode, xmlnode->nsDef);
 
 	xmlReconciliateNs(NULL, xmlnode);
