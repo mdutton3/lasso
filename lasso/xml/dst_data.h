@@ -58,8 +58,7 @@ struct _LassoDstDataClass {
 };
 
 LASSO_EXPORT GType lasso_dst_data_get_type(void);
-LASSO_EXPORT LassoDstData* lasso_dst_data_new(const gchar *id,
-					      const gchar *itemIDRef);
+LASSO_EXPORT LassoDstData* lasso_dst_data_new(void);
 
 #ifdef __cplusplus
 }

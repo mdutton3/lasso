@@ -108,18 +108,11 @@ lasso_dst_data_get_type()
 }
 
 LassoDstData*
-lasso_dst_data_new(const gchar *id,
-		   const gchar *itemIDRef)
+lasso_dst_data_new()
 {
 	LassoDstData *data;
 
-	g_return_val_if_fail(id != NULL, NULL);
-	g_return_val_if_fail(itemIDRef != NULL, NULL);
-
 	data = g_object_new(LASSO_TYPE_DST_DATA, NULL);
-
-	data->id = g_strdup(id);
-	data->itemIDRef = g_strdup(itemIDRef);
 
 	return data;
 }
