@@ -351,7 +351,7 @@ lasso_user_remove_identity(LassoUser *user,
   /* remove the identity remote provider id */
   for(i = 0; i<user->identity_providerIDs->len; i++){
     if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->identity_providerIDs, i))){
-      debug("Remove assertion of %s\n", remote_providerID);
+      debug("Remove identity of %s\n", remote_providerID);
       g_ptr_array_remove_index(user->identity_providerIDs, i);
       break;
     }
@@ -535,6 +535,7 @@ lasso_user_new_from_dump(gchar *dump)
 	if (local_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(local_nameIdentifier_node, "NameIdentifier", NULL);
 	  lasso_identity_set_local_nameIdentifier(identity, nameIdentifier_node);
+	  debug("  ... add local name identifier %s\n", lasso_node_get_content(nameIdentifier_node));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(local_nameIdentifier_node);
 	}
@@ -544,9 +545,11 @@ lasso_user_new_from_dump(gchar *dump)
 	if (remote_nameIdentifier_node != NULL) {
 	  nameIdentifier_node = lasso_node_get_child(remote_nameIdentifier_node, "NameIdentifier", NULL);
 	  lasso_identity_set_remote_nameIdentifier(identity, nameIdentifier_node);
+	  debug("  ... add remote name identifier %s\n", lasso_node_get_content(nameIdentifier_node));
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(remote_nameIdentifier_node);
 	}
+	debug("Add identity for %s\n", remote_providerID);
 	lasso_user_add_identity(user, remote_providerID, identity);
 
 	xmlFree(remote_providerID);
