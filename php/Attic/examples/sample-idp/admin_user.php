@@ -25,7 +25,9 @@
   $config = unserialize(file_get_contents('config.inc'));
 
   require_once 'DB.php';
-
+	
+  $number_of_users = 5; 
+  
   $db = &DB::connect($config['dsn']);
 
   if (DB::isError($db)) 
@@ -34,7 +36,6 @@
   // Show XML dump
   if (!empty($_GET['dump']) && !empty($_GET['type'])) 
   {
-	
   	$query = "SELECT " . ($_GET['type'] == 'user' ? 'user' : 'session') . 
 	$query .= "_dump FROM users WHERE user_id='" . $_GET['dump'] . "'";
 	$res =& $db->query($query);
@@ -46,7 +47,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-<body>
+<body onLoad="window.focus();">
 <table>
 <caption><?php echo ($_GET['type'] == 'user' ? 'Identity' : 'Session'); ?> Dump</caption>
 <tr>
@@ -64,7 +65,6 @@
 	exit;
 	}
   
-
   if (!empty($_GET['del'])) {
 
 	$query = "DELETE FROM nameidentifiers WHERE user_id='" . $_GET['del'] . "'" ;
@@ -79,11 +79,25 @@
 
 	}
 	
-
-  $query = "SELECT * FROM users";
+  // Count users
+  $query = "SELECT COUNT(*) FROM users";
   $res =& $db->query($query);
   if (DB::isError($res)) 
-  	print $res->getMessage(). "\n";
+  	die($res->getMessage());
+ 
+  $row = $res->fetchRow();
+  $count = $row[0];
+
+  $startUser = ((empty($_GET['startUser'])) ? 0 : $_GET['startUser']);
+	
+  $query = "SELECT * FROM users";
+
+  if (!isset($_GET['show_all']))
+  	$query .= " OFFSET $startUser LIMIT " . ($startUser + $number_of_users);
+  $res =& $db->query($query);
+  if (DB::isError($res)) 
+  	die($res->getMessage());
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -122,7 +136,35 @@
 ?>
 <thead>
 <tr>
-  <td colspan='<?php echo $num_col + 1; ?>'>Previous | Next | Show All | <a href="javascript:void(0)" onClick="ToggleAll();">Toggle All</a></td>
+  <td colspan='<?php echo $num_col + 1; ?>'>
+	 
+	<?php 
+	  if ($startUser)
+		echo "<a href=$PHP_SELF?startUser=" . ($startUser - $number_of_users) . ">Previous</a>";
+	  else
+		echo "Previous" 
+	?> 
+	| 
+	<?php 
+	  if ((($count - $startUser) >  $number_of_users)  && !isset($_GET['show_all']))
+		echo "<a href=$PHP_SELF?startUser=" . ($startUser + $number_of_users) . ">Next</a>";
+	  else
+		echo "Next" 
+	?>
+	<?php
+	  for ($i = 0; $i < $count; $i += $number_of_users)
+		if ($i == $startUser)
+		  echo "| " . ( $i / $number_of_users);
+		else
+		  echo "| <a href=\"$PHP_SELF?startUser=$i\">" . ( $i / $number_of_users) . "</a>";
+	?>
+	|
+	<?php if (isset($_GET['show_all'])) { ?>
+	<a href="<?php echo $PHP_SELF."?startUser=0"; ?>">Paginate</a> 
+	<?php } else { ?>
+	<a href="<?php echo $PHP_SELF."?show_all=1"; ?>">Show All</a> 
+	<?php } ?>
+	| <a href="javascript:void(0)" onClick="ToggleAll();">Toggle All</a></td>
   <td align='right'><a href="javascript:openpopup('user_add.php')">add user</a></td>
 </tr>
 <tr align="center">
@@ -176,7 +218,7 @@
 <tfoot>
 <tr>
   <td colspan="<?php echo $num_col + 1; ?>">&nbsp;</td>
-  <td>Total: <?php echo $res->numRows();?> Users</td>
+  <td>Total: <?php echo $count; ?> Users</td>
 </tr>
 </tfoot>
 </table>
