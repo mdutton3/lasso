@@ -129,7 +129,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
     return(-1);
   }
 
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if(provider==NULL){
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-1);

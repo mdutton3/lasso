@@ -54,7 +54,7 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
   
   profile = LASSO_PROFILE(register_name_identifier);
 
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if(provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
@@ -107,7 +107,7 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
 
   profile = LASSO_PROFILE(register_name_identifier);
 
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if(provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider not found (ProviderID = %s)\n", profile->remote_providerID);
     return(-2);

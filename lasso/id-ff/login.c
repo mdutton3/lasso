@@ -246,8 +246,8 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 				   "Assertion",
 				   lassoLibHRef,
 				   &err);
-  idp = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-				  LASSO_PROFILE(login)->remote_providerID);
+  idp = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+				      LASSO_PROFILE(login)->remote_providerID);
 
   if (assertion != NULL) {
     /* verify signature */
@@ -437,8 +437,8 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
   login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE(login)->response);
 
   /* build artifact infos */
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-					      LASSO_PROFILE(login)->remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID);
   /* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
   url = lasso_provider_get_assertionConsumerServiceURL(remote_provider, lassoProviderTypeSp, NULL);
   samlArt = g_new(gchar, 2+20+20+1);
@@ -492,8 +492,8 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   GError *err = NULL;
   
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-					      LASSO_PROFILE(login)->remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID);
 
   /* check if authnRequest must be signed */
   md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(provider, &err);
@@ -608,8 +608,8 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
     }
   }
   
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-					      LASSO_PROFILE(login)->remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID);
   /* return an authnResponse (base64 encoded) */
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_base64(LASSO_PROFILE(login)->response);
   LASSO_PROFILE(login)->msg_url  = lasso_provider_get_assertionConsumerServiceURL(remote_provider,
@@ -624,8 +624,8 @@ lasso_login_build_request_msg(LassoLogin *login)
 {
   LassoProvider *remote_provider;
 
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-					      LASSO_PROFILE(login)->remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID);
   LASSO_PROFILE(login)->msg_body = lasso_node_export_to_soap(LASSO_PROFILE(login)->request);
   LASSO_PROFILE(login)->msg_url = lasso_provider_get_soapEndpoint(remote_provider,
 								  lassoProviderTypeIdp, NULL);
@@ -758,8 +758,8 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   LASSO_PROFILE(login)->remote_providerID = lasso_node_get_child_content(LASSO_PROFILE(login)->request,
 									 "ProviderID", NULL, NULL);
 
-  remote_provider = lasso_server_get_provider(LASSO_PROFILE(login)->server,
-					      LASSO_PROFILE(login)->remote_providerID);
+  remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
+						  LASSO_PROFILE(login)->remote_providerID);
   /* Is authnRequest signed ? */
   md_authnRequestsSigned = lasso_provider_get_authnRequestsSigned(remote_provider, &err);
   if (md_authnRequestsSigned != NULL) {
@@ -883,7 +883,7 @@ lasso_login_must_authenticate(LassoLogin *login)
   }
   else if (LASSO_PROFILE(login)->identity == NULL && isPassive == TRUE) {
     lasso_profile_set_response_status(LASSO_PROFILE(login),
-					      lassoLibStatusCodeNoPassive);
+				      lassoLibStatusCodeNoPassive);
   }
 
   return (must_authenticate);
@@ -894,7 +894,7 @@ lasso_login_process_authn_response_msg(LassoLogin *login,
 				       gchar      *authn_response_msg)
 {
   LASSO_PROFILE(login)->response = lasso_authn_response_new_from_export(authn_response_msg,
-										lassoNodeExportTypeBase64);
+									lassoNodeExportTypeBase64);
   LASSO_PROFILE(login)->response_type = lassoMessageTypeAuthnResponse;
 
   return (lasso_login_process_response_status_and_assertion(login));

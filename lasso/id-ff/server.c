@@ -134,10 +134,10 @@ lasso_server_add_provider(LassoServer *server,
   LassoProvider *provider;
 
   g_return_val_if_fail(LASSO_IS_SERVER(server), -1);
-  g_return_val_if_fail(metadata!=NULL, -2);
+  g_return_val_if_fail(metadata != NULL, -2);
 
   provider = lasso_provider_new(metadata, public_key, ca_certificate);
-  g_return_val_if_fail(provider!=NULL, -5);
+  g_return_val_if_fail(provider != NULL, -5);
 
   /* debug(INFO, "Add a provider(%s)\n", lasso_provider_get_providerID(provider)); */
   g_ptr_array_add(server->providers, provider);
@@ -185,13 +185,29 @@ lasso_server_get_provider(LassoServer *server,
 			  gchar       *providerID)
 {
   LassoProvider *provider;
+  
+  provider = lasso_server_get_provider_ref(server, providerID);
+
+  if (provider != NULL) {
+    return (lasso_provider_copy(provider));
+  }
+  else {
+    return (NULL);
+  }
+}
+
+LassoProvider*
+lasso_server_get_provider_ref(LassoServer *server,
+			      gchar       *providerID)
+{
+  LassoProvider *provider;
   xmlChar *id;
   int index, len;
   
   g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
-  g_return_val_if_fail(providerID!=NULL, NULL);
+  g_return_val_if_fail(providerID != NULL, NULL);
 
-/*   debug(INFO, "Get information of provider id %s\n", providerID); */
+  /* debug(INFO, "Get information of provider id %s\n", providerID); */
 
   len = server->providers->len;
   for(index = 0; index<len; index++) {

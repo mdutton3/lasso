@@ -53,7 +53,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
   profile = LASSO_PROFILE(mapping);
 
   /* get the prototocol profile of the name_identifier_mapping */
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if(provider == NULL) {
     message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
@@ -102,7 +102,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 
   profile = LASSO_PROFILE(mapping);
 
-  provider = lasso_server_get_provider(profile->server, profile->remote_providerID);
+  provider = lasso_server_get_provider_ref(profile->server, profile->remote_providerID);
   if(provider == NULL) {
     message(G_LOG_LEVEL_ERROR, "Provider %s not found\n", profile->remote_providerID);
     return(-2);
