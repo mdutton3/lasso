@@ -64,7 +64,8 @@ AC_CHECK_FUNCS(printf sprintf fprintf snprintf vfprintf vsprintf vsnprintf sscan
 
 dnl AC_LIB_LTDL
 
-LASSO_DEFINES=""
+LASSO_DEFINES="-DLASSO_DEBUG"
+dnl LASSO_DEFINES=""
 
 dnl ==========================================================================
 dnl Perform host specific configuration
