@@ -91,35 +91,30 @@ lasso_lib_register_name_identifier_request_set_old_provided_name_identifier(Lass
 void
 lasso_lib_register_name_identifier_request_update_nameIdentifiers(LassoLibRegisterNameIdentifierRequest *node)
 {
-     xmlNodePtr identifier;
-     LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-
      // IDPProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
 			    "NameQualifier", "IDPNameQualifier");
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
 			    "Format", "IDPFormat");
 
      // SPProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
 			    "NameQualifier", "SPNameQualifier");
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
 			    "Format", "SPFormat");
 
      // OldProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
 			    "NameQualifier", "OldNameQualifier");
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
 			    "Format", "OldFormat");
 }
 
 void
 lasso_lib_register_name_identifier_request_restore_nameIdentifiers(LassoLibRegisterNameIdentifierRequest *node)
 {
-     LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-
      // IDPProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+     lasso_node_rename_prop(lasso_node_get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
 			    "NameQualifier", "IDPNameQualifier");
 }
 
