@@ -29,7 +29,11 @@
  */
 
 
+#ifdef SWIGPERL5
+%module lasso
+#else
 %module Lasso
+#endif
 
 
 %include exception.i       
