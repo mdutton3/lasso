@@ -28,46 +28,23 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-LassoIdentity *lasso_session_environ_assertion_consume(LassoSessionEnviron *session){
-     LassoIdentity *identity;
-     LassoNode *statusCode;
-     char *statusCodeValue, *nameIdentifier, *idpProvidedNameIdentifier;
-
-     statusCode = lasso_node_get_child(session->response, "StatusCode", NULL);
-     statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
-     printf("DEBUG - StatusCode Value %s\n", statusCodeValue);
-     if(!strcmp(statusCodeValue, lassoSamlStatusCodeSuccess)){
-	  printf("authentication is ok\n");
-
-	  nameIdentifier = lasso_node_get_child_content(session->response, "NameIdentifier", NULL);
-	  idpProvidedNameIdentifier = lasso_node_get_child_content(session->response, "IDPProvidedNameIdentifier", NULL);
-
-	  identity = lasso_identity_search_by_alias(session->userEnviron, nameIdentifier);
-	  if(!identity){
-	       identity = lasso_user_environ_search_by_name(session->userEnviron, idpProvidedNameIdentifier);
-	  }
-	  if(!identity){
-	       printf("No identity for %s, new identity at %s\n", idpProvidedNameIdentifier, session->local_providerID);
-	       identity = lasso_user_environ_new_from_name(session->peer_providerID, idpProvidedNameIdentifier);
-	  }
-	  return(identity);
-     }
-
-     return(NULL);
-}
-
 char *lasso_session_environ_build_authnRequest(LassoSessionEnviron *session,
-					       const char *responseProtocolProfile,
-					       gboolean isPassive,
-					       gboolean forceAuthn,
-					       const char *nameIDPolicy){
+					       const char         *responseProtocolProfile,
+					       gboolean            isPassive,
+					       gboolean            forceAuthn,
+					       const char         *nameIDPolicy){
      LassoProvider *provider;
      char *str, *requestProtocolProfile;
 
-     printf("DEBUG - Build authentication ...\n");
+     char *url, *query;
+     int url_len, query_len;
 
-     provider = lasso_server_environ_get_provider(session->serverEnviron, session->local_providerID);
+     //LassoEnviron *environ = LASSO_ENVIRON(session);
 
+     provider = lasso_server_environ_get_provider(session->server, session->local_providerID);
+     if(!provider)
+	  return(NULL);
+     
      /* build the request object */
      session->request = LASSO_NODE(lasso_authn_request_new(session->local_providerID));
      if(responseProtocolProfile!=NULL)
@@ -80,31 +57,63 @@ char *lasso_session_environ_build_authnRequest(LassoSessionEnviron *session,
      lasso_lib_authn_request_set_forceAuthn(session->request, forceAuthn);
 
      /* export request depending on the request protocol profile */
-     requestProtocolProfile = lasso_node_get_child_content(LASSO_NODE(provider), "SingleSignOnProtocolProfile", NULL);
+     str = NULL;
+     requestProtocolProfile = lasso_provider_get_singleSignOnProtocolProfile(provider);
      if(!strcmp(requestProtocolProfile, lassoLibProtocolProfileSSOGet)){
-	  char *url, *query;
-	  int url_len, query_len;
-
-	  url = lasso_node_get_child_content(LASSO_NODE(provider), "SingleSignOnServiceUrl", NULL);
+	  url = lasso_provider_get_singleSignOnServiceUrl(provider);
 	  url_len = strlen(url);
 
 	  query = lasso_node_export_to_query(session->request, 1, NULL);
 	  query_len = strlen(query);
 
-	  str = (char *)malloc(url_len+query_len+1); // +1 for the ? character
+	  str = (char *)malloc(url_len+query_len+2); // +2 for the ? character and the end line character
 	  sprintf(str, "%s?%s", url, query);
 
-	  session->request_protocol_profile_type = protocol_profile_type_get;
-	  
+	  session->request_protocol_profile = lasso_protocol_profile_type_get;
      }
      else if(!strcmp(requestProtocolProfile, lassoLibProtocolProfileSSOPost)){
+	  printf("TODO - export the AuthnRequest in a formular\n");
      }
-     else{
-	  return(NULL);
-     }
-     //printf("data : %s\n", str);
 
      return(str);
+}
+
+gboolean lasso_session_environ_process_assertion(LassoSessionEnviron *session, char *str){
+     LassoNode *statusCode, *assertion;
+     LassoNode *nameIdentifier, *idpProvidedNameIdentifier;
+     char *artifact, *statusCodeValue;
+
+     LassoEnviron *environ = LASSO_ENVIRON(session);
+
+     artifact = strstr(str, "SAMLArt");
+     if(artifact){
+	  printf("TODO - lasso_session_environ_process_assertion() - process artifact\n");
+     }
+     else{
+	  printf("DEBUG - POST response, process the authnResponse\n");
+	  session->response = LASSO_NODE(lasso_authn_response_new_from_export(str, 0));
+
+	  /* process the status code value */
+	  statusCode = lasso_node_get_child(session->response, "StatusCode", NULL);
+	  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
+	  if(strcmp(statusCodeValue, lassoSamlStatusCodeSuccess))
+	       return(FALSE);
+	  
+	  /* process the assertion */
+	  assertion = lasso_node_get_child(session->response, "Assertion", NULL);
+	  if(!assertion)
+	       return(FALSE);
+
+	  /* set the name identifiers */
+	  nameIdentifier = lasso_node_get_child(assertion, "NameIdentifier", NULL);
+	  printf("name identifier %s(%s)\n", lasso_node_get_content(nameIdentifier), lasso_node_export(nameIdentifier));
+
+	  idpProvidedNameIdentifier = lasso_node_get_child(assertion, "IDPProvidedNameIdentifier", NULL);
+	  
+
+     }
+
+     return(FALSE);
 }
 
 gboolean lasso_session_environ_process_authnRequest(LassoSessionEnviron *session,
@@ -112,37 +121,43 @@ gboolean lasso_session_environ_process_authnRequest(LassoSessionEnviron *session
 						    int protocol_profile_type,
 						    gboolean has_cookie){
      gboolean must_authenticate = TRUE;
-     char *response_protocolProfile;
-     char *content;
+     char    *response_protocol_profile;
+     char    *content;
      gboolean isPassive = TRUE;
      gboolean forceAuthn = FALSE;
 
-     LassoNode *statusCode;
+     LassoEnviron *environ = LASSO_ENVIRON(session);
 
-     printf("DEBUG - Process authentication ...\n");
+     printf("plop, process AuthnRequest\n");
 
-     session->request = NULL;
-     session->response = NULL;
-
-     if(protocol_profile_type==protocol_profile_type_get){
-	  printf("DEBUG - rebuild AuthnRequest from query\n");
+     /* get the protocol profile */
+     if(protocol_profile_type==lasso_protocol_profile_type_get){
 	  session->request = LASSO_NODE(lasso_authn_request_new_from_query(str_request));
      }
+     else if(protocol_profile_type==lasso_protocol_profile_type_post){
+	  printf("TODO - lasso_session_environ_process_authnRequest() - implement the parsing of the post request\n");
+     }
      else{
-	  printf("DEBUG - unknown protocol profile\n");
-	  return(FALSE);
+	  printf("ERROR - lasso_session_environ_process_authnRequest() - Unknown protocol profile\n");
      }
 
+     /* Verify the signature */
+     printf("TODO - verify the signature\n");
+
+     /* set the peer ProviderID from the request */
+     content = lasso_node_get_child_content(session->request, "ProviderID", NULL);
+     session->peer_providerID = (char *)malloc(strlen(content)+1);
+     sprintf(session->peer_providerID, "%s", content);
+     printf("request from %s\n", session->peer_providerID);
+
      /* response with protocol profile */
-     response_protocolProfile = lasso_node_get_child_content(session->request, "ProtocolProfile", NULL);
-     if(!response_protocolProfile || !strcmp(response_protocolProfile, lassoLibProtocolProfileArtifact)){
-	  printf("DEBUG - response with protocol artifact\n");
-	  session->response = NULL;
-	  session->response_protocol_profile_type = protocol_profile_type_artifact;
+     response_protocol_profile = lasso_node_get_child_content(session->request, "ProtocolProfile", NULL);
+     if(!response_protocol_profile || !strcmp(response_protocol_profile, lassoLibProtocolProfileArtifact)){
+	  session->response_protocol_profile = lasso_protocol_profile_type_artifact;
+	  printf("TODO - lasso_session_session_process_authnRequest() - implement the artifact response\n");
      }
-     else if(!strcmp(response_protocolProfile, lassoLibProtocolProfilePost)){
-	  printf("DEBUG - response with post profile\n");
-	  session->response_protocol_profile_type = protocol_profile_type_post;
+     else if(!strcmp(response_protocol_profile, lassoLibProtocolProfilePost)){
+	  session->response_protocol_profile = lasso_protocol_profile_type_post;
 	  session->response = LASSO_NODE(lasso_authn_response_new(session->local_providerID, session->request));
      }
 
@@ -157,73 +172,77 @@ gboolean lasso_session_environ_process_authnRequest(LassoSessionEnviron *session
 	  forceAuthn = TRUE;
      }
 
+     /* complex test to authentication process */
      if((forceAuthn == TRUE || has_cookie == FALSE) && isPassive == FALSE){
 	  must_authenticate = TRUE;
      }
      else if(has_cookie == FALSE && isPassive == TRUE){
-	  lasso_authn_response_set_status(session->response, lassoLibStatusCodeNoPassive);
+	  printf("TODO - lasso_session_session_process_authnRequest() - implement the generic setting of the status code value\n");
+	  must_authenticate = FALSE;
      }
 
      return(must_authenticate);
 }
 
 char *lasso_session_environ_process_authentication(LassoSessionEnviron *session,
-						   gboolean isAuthenticated,
-						   const char *authentication_method){
+						   gboolean             isAuthenticated,
+						   const char          *authentication_method){
      LassoUserEnviron *user;
      LassoIdentity    *identity;
      char             *str, *nameIDPolicy, *nameIdentifier, *idpProvidedNameIdentifier;
      LassoNode        *assertion, *authentication_statement;
 
-     printf("DEBUG - Process authentication ...\n");
-
      /* process the federation policy */
-     identity = lasso_user_environ_search_identity(session->userEnviron, session->peer_providerID);
+     /* TODO : implement a get identity */
+     //identity = lasso_user_environ_find_identity(session->user, session->peer_providerID);
+     identity = NULL;
      nameIDPolicy = lasso_node_get_child_content(session->request, "NameIDPolicy", NULL);
      if(!nameIDPolicy || !strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeNone)){
-	  printf("NameIDPolicy is none\n");
 	  if(!identity){
 	       printf("TODO - set the StatusCode value with lassoLibStatusCodeFederationDoesNotExist\n");
 	  }
      }
      else if(!strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)){
-	  printf("NameIDPolicy is federated\n");
-	  if(!identity)
-	       identity = lasso_user_environ_new_identity(session->userEnviron, session->peer_providerID);
+	  if(!identity){
+	       //identity = lasso_user_environ_new_identity(session->user, session->peer_providerID);
+	  }
 
      }
      else if(!strcmp(nameIDPolicy, lassoLibNameIDPolicyTypeOneTime)){
-
+	  
      }
+
+     printf("plop\n");
 
      /* fill the response with the assertion */
      if(identity){
+	  printf("no identity\n");
 	  idpProvidedNameIdentifier = lasso_identity_get_alias(identity);
 	  nameIdentifier = lasso_identity_get_name(identity);
 	  if(!nameIdentifier)
 	       nameIdentifier = idpProvidedNameIdentifier;
 
-	  assertion = lasso_assertion_new(session->local_providerID, lasso_node_get_attr_value(LASSO_NODE(session->request),
-											       "RequestID"));
-	  authentication_statement = lasso_authentication_statement_new(authentication_method,
-									"TODO",
-									nameIdentifier,
-									"TODO",
-									"TODO",
-									idpProvidedNameIdentifier,
-									"TODO",
-									"TODO");
-	  lasso_saml_assertion_add_authenticationStatement(assertion,
-							   authentication_statement);
-	  lasso_samlp_response_add_assertion(session->response, assertion);
+	  //assertion = lasso_assertion_new(session->local_providerID, lasso_node_get_attr_value(LASSO_NODE(session->request),
+	  //									       "RequestID"));
+	  //authentication_statement = lasso_authentication_statement_new(authentication_method,
+	  //							"TODO",
+	  //							nameIdentifier,
+	  //							"TODO",
+	  //							"TODO",
+	  //							idpProvidedNameIdentifier,
+	  //							"TODO",
+	  //							"TODO");
+	  //lasso_saml_assertion_add_authenticationStatement(assertion,
+	  //					   authentication_statement);
+	  //lasso_samlp_response_add_assertion(session->response, assertion);
      }
 
      /* return a response message */
-     if(session->response_protocol_profile_type==protocol_profile_type_post){
+     if(session->response_protocol_profile==lasso_protocol_profile_type_post){
 	  printf("DEBUG - return a post message\n");
 	  str = lasso_node_export_to_base64(session->response);
      }
-     else if(session->response_protocol_profile_type==protocol_profile_type_artifact){
+     else if(session->response_protocol_profile==lasso_protocol_profile_type_artifact){
 	  printf("DEBUG - return a artifact message\n");
      }
      else{
@@ -233,20 +252,23 @@ char *lasso_session_environ_process_authentication(LassoSessionEnviron *session,
      return(str);
 }
 
-void lasso_session_environ_set_local_providerID(LassoSessionEnviron *session, char *providerID){
+int lasso_session_environ_set_local_providerID(LassoSessionEnviron *session, char *providerID){
      if(session->local_providerID)
 	  free(session->local_providerID);
      session->local_providerID = (char *)malloc(strlen(providerID)+1);
      strcpy(session->local_providerID, providerID);
+
+     return(1);
 }
 
-void lasso_session_environ_set_peer_providerID(LassoSessionEnviron *session, char *providerID){
+int lasso_session_environ_set_peer_providerID(LassoSessionEnviron *session, char *providerID){
      if(session->peer_providerID)
 	  free(session->peer_providerID);
      session->peer_providerID = (char *)malloc(strlen(providerID)+1);
      strcpy(session->peer_providerID, providerID);
-}
 
+     return(1);
+}
 
 
 /*****************************************************************************/
@@ -255,8 +277,7 @@ void lasso_session_environ_set_peer_providerID(LassoSessionEnviron *session, cha
 
 static void
 lasso_session_environ_instance_init(LassoSessionEnviron *session){
-    LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(session));
-    class->set_name(LASSO_NODE(session), "SessionEnviron");
+
 }
 
 static void
@@ -279,7 +300,7 @@ GType lasso_session_environ_get_type() {
       (GInstanceInitFunc) lasso_session_environ_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
+    this_type = g_type_register_static(LASSO_TYPE_ENVIRON,
 				       "LassoSessionEnviron",
 				       &this_info, 0);
   }
@@ -291,12 +312,31 @@ lasso_session_environ_new(LassoServerEnviron *server, LassoUserEnviron *user, ch
 {
   LassoSessionEnviron *session;
 
-  session = LASSO_SESSION_ENVIRON(g_object_new(LASSO_TYPE_SESSION_ENVIRON, NULL));
+  session = g_object_new(LASSO_TYPE_SESSION_ENVIRON, NULL);
 
-  session->serverEnviron = server;
-  session->userEnviron = user;
+  session->server = server;
+
+  if(user)
+       session->user = user;
+  else
+       session->user = NULL;
+
+  session->message = NULL;
+
+  session->request  = NULL;
+  session->response = NULL;
+
+  /* load the ProviderID name or a reference to the provider ? */
+  g_return_if_fail(local_providerID);
+  g_return_if_fail(peer_providerID);
+
+  session->local_providerID = NULL;
   lasso_session_environ_set_local_providerID(session, local_providerID);
+  session->peer_providerID = NULL;
   lasso_session_environ_set_peer_providerID(session, peer_providerID);
+
+  session->request_protocol_profile  = 0;
+  session->response_protocol_profile = 0;
 
   return(session);
 }

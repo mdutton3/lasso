@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/environs/environ.h>
 #include <lasso/environs/provider.h>
 
 #define LASSO_TYPE_SERVER_ENVIRON (lasso_server_environ_get_type())
@@ -44,21 +45,29 @@ typedef struct _LassoServerEnviron LassoServerEnviron;
 typedef struct _LassoServerEnvironClass LassoServerEnvironClass;
 
 struct _LassoServerEnviron {
-  LassoNode parent;
-  int nbProviders;
+  LassoEnviron parent;
+
+  GPtrArray *providers;
+
+  char *private_key;
+  char *public_key;
+  char *certificate;
+
   /*< private >*/
 };
 
 struct _LassoServerEnvironClass {
-  LassoNodeClass parent;
+  LassoEnvironClass parent;
 };
 
-LASSO_EXPORT GType lasso_server_environ_get_type(void);
-LASSO_EXPORT LassoServerEnviron *lasso_server_environ_new();
+LASSO_EXPORT GType               lasso_server_environ_get_type               (void);
+LASSO_EXPORT LassoServerEnviron *lasso_server_environ_new                    (void);
 
-LASSO_EXPORT int lasso_server_environ_add_provider(LassoServerEnviron *env, LassoProvider *provider);
-LASSO_EXPORT int lasso_server_environ_add_provider_filename(LassoServerEnviron *env, char *filename);
-LASSO_EXPORT LassoProvider *lasso_server_environ_get_provider(LassoServerEnviron *env, const char *providerId);
+LASSO_EXPORT int                 lasso_server_environ_add_provider_from_file (LassoServerEnviron *server, char *filename);
+LASSO_EXPORT LassoProvider      *lasso_server_environ_get_provider           (LassoServerEnviron *server, char *providerID);
+
+LASSO_EXPORT int                 lasso_server_environ_set_security           (char *private_key, char *public_key, char *certificate);
+
 
 #ifdef __cplusplus
 }

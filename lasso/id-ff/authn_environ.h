@@ -51,10 +51,16 @@ struct _LassoAuthnEnvironClass {
 };
 
 LASSO_EXPORT GType lasso_authn_environ_get_type(void);
-LASSO_EXPORT LassoEnviron* lasso_authn_environ_new(const gchar *metadata,
-						   const gchar *public_key,
-						   const gchar *private_key,
-						   const gchar *certificate);
+LASSO_EXPORT LassoAuthnEnviron *lasso_authn_environ_new(gchar *metadata,
+							gchar *public_key,
+							gchar *private_key,
+							gchar *certificate);
+
+LASSO_EXPORT char *lasso_authn_environ_build_request(LassoAuthnEnviron *env, char *authnRequestProtocolProfile);
+
+LASSO_EXPORT gboolean lasso_authn_environ_process_request_from_query(LassoAuthnEnviron *env,
+								     char *query,
+								     int isAuthenticated);
 
 #ifdef __cplusplus
 }

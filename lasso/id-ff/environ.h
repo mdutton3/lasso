@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/environs/provider.h>
 
 #define LASSO_TYPE_ENVIRON (lasso_environ_get_type())
 #define LASSO_ENVIRON(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_ENVIRON, LassoEnviron))
@@ -40,22 +39,12 @@ extern "C" {
 #define LASSP_IS_ENVIRON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_ENVIRON))
 #define LASSO_ENVIRON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_ENVIRON, LassoEnvironClass)) 
 
-typedef enum {
-  LassoEnvironTypeGet = 1,
-  LassoEnvironTypePost,
-  LassoEnvironTypeSoap
-} LassoEnvironType;
-
 typedef struct _LassoEnviron LassoEnviron;
 typedef struct _LassoEnvironClass LassoEnvironClass;
 
 struct _LassoEnviron {
   GObject parent;
-  LassoProvider *local_provider;
-  GData *peer_providers;
-  LassoNode *request;
-  LassoNode *response;
-  LassoEnvironType type;
+  /*< public >*/
   /*< private >*/
 };
 
@@ -63,14 +52,9 @@ struct _LassoEnvironClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT GType lasso_environ_get_type(void);
-LASSO_EXPORT LassoEnviron* lasso_environ_new(LassoProvider *local_provider);
+LASSO_EXPORT GType         lasso_environ_get_type                (void);
 
-LASSO_EXPORT void lasso_environ_add_peer_provider(LassoEnviron *env,
-						  const gchar *metadata,
-						  const gchar *public_key,
-						  const gchar *private_key,
-						  const gchar *certificate);
+LASSO_EXPORT LassoEnviron *lasso_environ_new                     (void);
 
 #ifdef __cplusplus
 }

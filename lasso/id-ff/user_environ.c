@@ -28,89 +28,13 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-LassoIdentity *lasso_user_environ_new_identity(LassoUserEnviron *user, char *peer_providerID){
-     LassoIdentity *identity;
-     LassoNodeClass *class;
+int lasso_user_environ_add_assertion(){
 
-     if(!user->identities){
-	  user->identities = lasso_node_new();
-	  class = LASSO_NODE_GET_CLASS(LASSO_NODE(user->identities));
-	  class->set_name(LASSO_NODE(user->identities), "Identities");
-	  class = LASSO_NODE_GET_CLASS(LASSO_NODE(user));
-	  class->add_child(LASSO_NODE(user), user->identities, 1); /* !!!! */
-     }
-
-     identity = lasso_identity_new(peer_providerID);
-     class = LASSO_NODE_GET_CLASS(LASSO_NODE(user->identities));
-     class->add_child(LASSO_NODE(user->identities), LASSO_NODE(identity), 1);
-
-     return(identity);
 }
 
-LassoIdentity *lasso_user_environ_search_by_alias(LassoUserEnviron *user, char *nameIdentifier){
-     LassoNode *identities;
-     GPtrArray *children;
-     char      *alias_value;
-     int        index;
+int lasso_user_environ_add_identity(){
 
-     identities = lasso_node_get_child(LASSO_NODE(user), "Identities", NULL);
-     if(!identities)
-	  return(NULL);
-
-     children = lasso_node_get_children(identities);
-     if(!children)
-	  return(NULL);
-
-     index = 0;
-     for(index = 0; index<children->len; index++){
-	  alias_value = lasso_node_get_attr_value(g_ptr_array_index(children, index), "Alias");
-	  printf("alias : %s\n", alias_value);
-     }
-
-     return(NULL);
 }
-
-LassoIdentity *lasso_user_environ_search_by_name(LassoUserEnviron *user, char *nameIdentifier){
-     LassoNode *identities;
-     GPtrArray *children;
-     char      *alias_value;
-     int        index;
-
-     identities = lasso_node_get_child(LASSO_NODE(user), "Identities", NULL);
-     if(!identities)
-	  return(NULL);
-
-     children = lasso_node_get_children(identities);
-     if(!children)
-	  return(NULL);
-
-     index = 0;
-     for(index = 0; index<children->len; index++){
-	  alias_value = lasso_node_get_attr_value(g_ptr_array_index(children, index), "Name");
-	  printf("name : %s\n", alias_value);
-     }
-
-     return(NULL);
-}
-
-LassoIdentity *lasso_user_environ_search_identity(LassoUserEnviron *user, char *peer_providerID){
-     LassoNode *userNode, *identity;
-     GPtrArray *identities;
-     LassoAttr *attr;
-     int i = 0;
-
-     if(!user->identities)
-	  return(NULL);
-
-     return(NULL);
-}
-
-void lasso_user_environ_set_userID(LassoUserEnviron *user, char *userID){
-     LassoNodeClass *class = LASSO_NODE_GET_CLASS(user);
-
-     class->new_child(LASSO_NODE(user), "UserID", userID, FALSE);
-}
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -155,8 +79,6 @@ lasso_user_environ_new()
   LassoUserEnviron *user;
 
   user = LASSO_USER_ENVIRON(g_object_new(LASSO_TYPE_USER_ENVIRON, NULL));
-
-  user->identities = NULL;
 
   return(user);
 }

@@ -29,11 +29,74 @@
 /*****************************************************************************/
 
 char*
-lasso_authn_environ_build_request(LassoAuthnEnviron *env) {
+lasso_authn_environ_build_request(LassoAuthnEnviron *env, char *authnRequestProtocolProfile){
   LassoEnviron *e = LASSO_ENVIRON(env);
+  LassoNode *node = LASSO_NODE(e->local_provider);
+  char *url, *query, *protocolProfile;
 
-  e->request = lasso_authn_request_new(lasso_node_get_attr_value(LASSO_NODE(e->local_provider), "ProviderID"));
+  e->request = lasso_authn_request_new(lasso_node_get_attr_value(node, "ProviderID"));
+  if(authnRequestProtocolProfile){
+       lasso_lib_authn_request_set_protocolProfile(e->request, authnRequestProtocolProfile);
+  }
+
+  /* get the url and protocol profile */
+  url = lasso_node_get_child_content(node, "SingleSignOnServiceUrl", NULL);
+  g_return_val_if_fail (url, NULL);
+  protocolProfile = lasso_node_get_child_content(node, "SingleSignOnProtocolProfile", NULL);
+  g_return_val_if_fail (protocolProfile, NULL);
+
+  /* get or post ? */
+  if(strcmp(protocolProfile, lassoLibProtocolProfileSSOGet)==0){
+       printf("AuthnRequest Redirect method ...\n");
+       return build_request_url(e, url, query, lassoLibProtocolProfileSSOGet);
+  }
+  else if(strcmp(protocolProfile, lassoLibProtocolProfileSSOPost)==0){
+       printf("AuthnRequest POST method ...\n");
+       return build_request_url(e, url, lassoLibProtocolProfileSSOPost);
+  }
+  else
+       printf("No method ...\n");
+
+  return(NULL);
 }
+
+gboolean lasso_authn_environ_process_request_from_query(LassoAuthnEnviron *env,
+							char *query,
+							int isAuthenticated){
+     LassoEnviron *e = LASSO_ENVIRON(env);
+     LassoNode *node = LASSO_NODE(e->local_provider);
+     char *protocolProfile, *providerId;
+
+     protocolProfile = lasso_authn_request_get_protocolProfile(query);
+     if(strcmp(protocolProfile, lassoLibProtocolProfileArtifact)==0){
+	  printf("artifact ...\n");
+     }
+     else if(strcmp(protocolProfile, lassoLibProtocolProfilePost)==0){
+	  printf("post ...\n");
+	  providerId = lasso_node_get_attr_value(node, "ProviderID");
+	  e->response = lasso_authn_response_new_from_request_query(query, providerId);
+	  return lasso_authn_response_must_authenticate(e->response, isAuthenticated);
+     }
+}
+
+char *lasso_authn_environ_dump_response(LassoAuthnEnviron *env){
+     LassoEnviron *e = LASSO_ENVIRON(env);
+     char *dump;
+
+     dump = lasso_node_dump(e->response, "utf-8", 1);
+
+     return(dump);
+}
+
+char *lasso_environ_process_authentication(LassoAuthnEnviron *env, gboolean isAuthenticated){
+     LassoEnviron *e = LASSO_ENVIRON(env);
+     LassoNode *response, *assertion, *statement;
+
+     response = e->response;
+
+     
+}
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -73,21 +136,26 @@ GType lasso_authn_environ_get_type()
   return this_type;
 }
 
-LassoEnviron* lasso_authn_environ_new(const gchar *metadata,
-				      const gchar *public_key,
-				      const gchar *private_key,
-				      const gchar *certificate)
+LassoAuthnEnviron* lasso_authn_environ_new(gchar *metadata,
+					   gchar *public_key,
+					   gchar *private_key,
+					   gchar *certificate)
 {
-  LassoEnviron *env;
-  LassoNode *local_provider;
+  LassoAuthnEnviron *authn;
+  LassoEnviron      *e;
+  LassoNode         *local_provider;
 
-  env = LASSO_ENVIRON(g_object_new(LASSO_TYPE_AUTHN_ENVIRON, NULL));
+  authn = g_object_new(LASSO_TYPE_AUTHN_ENVIRON, NULL);
+  e = LASSO_ENVIRON(authn);
 
   local_provider = lasso_provider_new(metadata);
-  lasso_provider_set_public_key(LASSO_PROVIDER(local_provider), public_key);
-  lasso_provider_set_private_key(LASSO_PROVIDER(local_provider), private_key);
-  lasso_provider_set_certificate(LASSO_PROVIDER(local_provider), certificate);
-  env->local_provider = local_provider;
+  if(public_key)
+       lasso_provider_set_public_key(LASSO_PROVIDER(local_provider), public_key);
+  if(private_key)
+       lasso_provider_set_private_key(LASSO_PROVIDER(local_provider), private_key);
+  if(certificate)
+       lasso_provider_set_certificate(LASSO_PROVIDER(local_provider), certificate);
+  e->local_provider = local_provider;
 
-  return LASSO_ENVIRON(g_object_new(LASSO_TYPE_AUTHN_ENVIRON, NULL));
+  return(authn);
 }

@@ -28,45 +28,40 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-/* add a provider, return the number of providers in the server context */
-int lasso_server_environ_add_provider(LassoServerEnviron *env, LassoProvider *provider){
-     LassoNodeClass *class;
+int lasso_server_environ_add_provider_from_file(LassoServerEnviron *server, char *filename){
+     LassoProvider *provider, *p;
      
-     class = LASSO_NODE_GET_CLASS(env);
-     class->add_child(LASSO_NODE(env), LASSO_NODE(provider), TRUE);
-     env->nbProviders++;
+     provider = lasso_provider_new_from_filename(filename);
+     g_ptr_array_add(server->providers, provider);
 
-     return(env->nbProviders);
+     return(1);
 }
 
-int lasso_server_environ_add_provider_filename(LassoServerEnviron *env, char *filename){
-     LassoNodeClass *class;
+LassoProvider *lasso_server_environ_get_provider(LassoServerEnviron *server, char *providerID){
      LassoProvider *provider;
-     int nb;
-
-     provider = lasso_provider_new_metadata_from_filename("./sp.xml");
-     nb = lasso_server_environ_add_provider(env, provider);
-
-     return(nb);
-}
-
-LassoProvider *lasso_server_environ_get_provider(LassoServerEnviron *env, const char *providerId){
-     LassoProvider *provider;
-     GPtrArray *children;
+     char *id;
      int index, len;
 
-     children = lasso_node_get_children(LASSO_NODE(env));
-     len = children->len;
-     index = 0;
-     while(index<len){
-	  provider = (LassoProvider *)g_ptr_array_index(children, index);
-	  if(lasso_provider_is_providerId(provider, providerId)){
+     len = server->providers->len;
+     for(index = 0; index<len; index++){
+	  provider = g_ptr_array_index(server->providers, index);
+
+	  id = lasso_provider_get_providerID(provider);
+	  if(!strcmp(providerID, id)){
 	       return(provider);
 	  }
-	  index++;
      }
-     
+
      return(NULL);
+}
+
+int lasso_server_environ_set_security(char *private_key, char *public_key, char *certificate){
+     g_return_if_fail(private_key);
+     g_return_if_fail(public_key);
+     g_return_if_fail(certificate);
+
+     
+
 }
 
 /*****************************************************************************/
@@ -76,10 +71,7 @@ LassoProvider *lasso_server_environ_get_provider(LassoServerEnviron *env, const 
 static void
 lasso_server_environ_instance_init(LassoServerEnviron *env)
 {
-    LassoNodeClass *class = LASSO_NODE_GET_CLASS(LASSO_NODE(env));
-    class->set_name(LASSO_NODE(env), "ServerEnviron");
 
-    env->nbProviders = 0;
 }
 
 static void
@@ -102,7 +94,7 @@ GType lasso_server_environ_get_type() {
       (GInstanceInitFunc) lasso_server_environ_instance_init,
     };
     
-    this_type = g_type_register_static(LASSO_TYPE_NODE,
+    this_type = g_type_register_static(LASSO_TYPE_ENVIRON,
 				       "LassoServerEnviron",
 				       &this_info, 0);
   }
@@ -111,10 +103,16 @@ GType lasso_server_environ_get_type() {
 
 LassoServerEnviron *lasso_server_environ_new()
 {
-  LassoServerEnviron *env;
+  LassoServerEnviron *server;
 
-  env = LASSO_SERVER_ENVIRON(g_object_new(LASSO_TYPE_SERVER_ENVIRON, NULL));
+  server = g_object_new(LASSO_TYPE_SERVER_ENVIRON, NULL);
 
-  return(env);
+  server->providers = g_ptr_array_new();
+
+  server->private_key = NULL;
+  server->public_key = NULL;
+  server->certificate = NULL;
+
+  return(server);
 
 }

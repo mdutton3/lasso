@@ -1,11 +1,12 @@
-/* $Id$
+/* $Id$ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
- * Author: Valery Febvre <vfebvre@easter-eggs.com>
+ * Authors: Valery Febvre   <vfebvre@easter-eggs.com>
+ *          Nicolas Clapies <nclapies@entrouvert.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,41 +26,27 @@
 #include <lasso/environs/environ.h>
 
 /*****************************************************************************/
+/* functions                                                                 */
+/*****************************************************************************/
+
+
+/*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
-void
-lasso_environ_add_peer_provider(LassoEnviron *env,
-				const gchar *metadata,
-				const gchar *public_key,
-				const gchar *private_key,
-				const gchar *certificate)
-{
-  LassoNode *provider;
-
-  provider = lasso_provider_new(metadata);
-  lasso_provider_set_public_key(LASSO_PROVIDER(provider), public_key);
-  lasso_provider_set_private_key(LASSO_PROVIDER(provider), private_key);
-  lasso_provider_set_certificate(LASSO_PROVIDER(provider), certificate);
-  g_datalist_set_data(env->peer_providers,
-		      lasso_node_get_attr_value(provider, "ProviderID"),
-		      provider);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
-lasso_environ_instance_init(LassoEnviron *env)
+lasso_environ_instance_init(LassoEnviron *environ)
 {
-  g_datalist_init(&(env->peer_providers));
-  env->request = NULL;
-  env->response = NULL;
 }
 
 static void
-lasso_environ_class_init(LassoEnvironClass *klass) {
+lasso_environ_class_init(LassoEnvironClass *class)
+{
 }
 
 GType lasso_environ_get_type() {
@@ -86,12 +73,11 @@ GType lasso_environ_get_type() {
 }
 
 LassoEnviron*
-lasso_environ_new(LassoProvider *local_provider)
+lasso_environ_new()
 {
-  LassoEnviron *env;
+  LassoEnviron *environ;
+  
+  g_object_new(LASSO_TYPE_ENVIRON, NULL);
 
-  env = LASSO_ENVIRON(g_object_new(LASSO_TYPE_ENVIRON, NULL));
-  env->local_provider = local_provider;
-
-  return (env);
+  return(environ);
 }

@@ -28,14 +28,13 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-char *lasso_identity_get_alias(LassoIdentity *identity){
-     return(lasso_node_get_attr_value(LASSO_NODE(identity), "Alias"));
+int lasso_identity_set_local_name_identifier(LassoIdentity *identity, LassoNode *nameIdentifier){
+     user->local_nameIdentifier = nameIdentifier;
 }
 
-char *lasso_identity_get_name(LassoIdentity *identity){
-     return(lasso_node_get_attr_value(LASSO_NODE(identity), "Name"));
+int lasso_identity_set_peer_nameIdentifier(LassoIdentity *identity, LassoNode *nameIdentifier){
+     user->peer_nameIdentifier = nameIdentifier;
 }
-
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

@@ -45,7 +45,8 @@ typedef struct _LassoIdentityClass LassoIdentityClass;
 struct _LassoIdentity {
   LassoNode parent;
   
-  LassoNode *identities;
+  LassoNode *local_nameIdentifier;
+  LassoNode *peer_nameIdentifier;
 
   /*< private >*/
 };
