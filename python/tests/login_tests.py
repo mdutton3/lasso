@@ -27,6 +27,11 @@
 
 
 import unittest
+import sys
+
+sys.path.insert(0, '..')
+sys.path.insert(0, '../.libs')
+
 
 import lasso
 lasso.init()
@@ -194,5 +199,5 @@ suite1 = unittest.makeSuite(LoginTestCase, 'test')
 allTests = unittest.TestSuite((suite1,))
 
 if __name__ == '__main__':
-    unittest.TextTestRunner(verbosity=2).run(allTests)
+    sys.exit(not unittest.TextTestRunner(verbosity=2).run(allTests).wasSuccessful())
 
