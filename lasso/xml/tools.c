@@ -154,9 +154,7 @@ lasso_query_to_dict(const xmlChar *query)
   sa1 = g_strsplit(query, "&", 0);
   while (sa1[i++] != NULL) {
     /* split of key=value to get (key, value) sub-strings */
-    str_unescaped = lasso_str_unescape(sa1[i-1]);
-    sa2 = g_strsplit(str_unescaped, "=", 0);
-    xmlFree(str_unescaped);
+    sa2 = g_strsplit(sa1[i-1], "=", 0);
     //printf("%s => ", sa2[0]);
     /* split of value to get mutli values sub-strings separated by SPACE char */
     str_unescaped = lasso_str_unescape(sa2[1]);
@@ -174,9 +172,9 @@ lasso_query_to_dict(const xmlChar *query)
 			     gdata_query_to_dict_destroy_notify);
     g_strfreev(sa3);
     g_strfreev(sa2);
-  }
-  
+  }  
   g_strfreev(sa1);
+
   return (gd);
 }
 
