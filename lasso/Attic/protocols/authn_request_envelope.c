@@ -126,7 +126,9 @@ lasso_authn_request_envelope_new_from_export(gchar               *buffer,
     xmlFree(buffer_decoded);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid export type : %d\n", export_type);
+    message(G_LOG_LEVEL_WARNING, "Invalid export type : %d\n", export_type);
+    g_free(request);
+    request = NULL;
     break;
   }
 

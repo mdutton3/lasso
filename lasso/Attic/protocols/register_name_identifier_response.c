@@ -221,7 +221,7 @@ lasso_register_name_identifier_response_new_from_request_export(gchar           
   request = lasso_register_name_identifier_request_new_from_export(buffer, export_type);
 
   if(request){
-    message(G_LOG_LEVEL_ERROR, "Error while building RegisterNameIdentifierRequest\n");
+    message(G_LOG_LEVEL_WARNING, "Error while building RegisterNameIdentifierRequest\n");
     return(NULL);
   }
 
@@ -248,7 +248,7 @@ lasso_register_name_identifier_response_new_from_export(gchar               *buf
     response = lasso_register_name_identifier_response_new_from_soap(buffer);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
+    message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
     return(NULL);
   }
 

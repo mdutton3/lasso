@@ -422,7 +422,7 @@ lasso_server_new(gchar *metadata,
     /* get ProviderID in metadata */
     providerID = lasso_node_get_attr_value(md_node, "providerID", &err);
     if (providerID == NULL) {
-      message(G_LOG_LEVEL_ERROR, err->message);
+      message(G_LOG_LEVEL_WARNING, err->message);
       g_error_free(err);
       lasso_node_destroy(md_node);
       return (NULL);
@@ -462,10 +462,15 @@ lasso_server_new_from_dump(gchar *dump)
 
   server_node  = lasso_node_new_from_dump(dump);
   if (server_node == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while loading server dump\n");
+    message(G_LOG_LEVEL_WARNING, "Error while loading server dump\n");
     return(NULL);
   }
   server_class = LASSO_NODE_GET_CLASS(server_node);
+  if (strcmp(server_class->get_name(server_node), LASSO_SERVER_NODE) != 0) {
+    message(G_LOG_LEVEL_WARNING, "XML is not a server dump\n");
+    lasso_node_destroy(server_node);
+    return(NULL);
+  }
 
   /* providerID */
   server->providerID = lasso_node_get_attr_value(server_node, LASSO_SERVER_PROVIDERID_NODE, NULL);

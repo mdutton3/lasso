@@ -77,13 +77,13 @@ int lasso_init()
 
   /* Init xmlsec library */
   if(xmlSecInit() < 0) {
-    message(G_LOG_LEVEL_ERROR, "XMLSec initialization failed.\n");
+    message(G_LOG_LEVEL_CRITICAL, "XMLSec initialization failed.\n");
     return(-1);
   }
   
   /* Check loaded library version */
   if(xmlSecCheckVersion() != 1) {
-    message(G_LOG_LEVEL_ERROR, "Loaded xmlsec library version is not compatible.\n");
+    message(G_LOG_LEVEL_CRITICAL, "Loaded xmlsec library version is not compatible.\n");
     return(-1);
   }
 
@@ -94,7 +94,7 @@ int lasso_init()
    */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
   if(xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
-    message(G_LOG_LEVEL_ERROR, "Unable to load default xmlsec-crypto library. Make sure\n"
+    message(G_LOG_LEVEL_CRITICAL, "Unable to load default xmlsec-crypto library. Make sure\n"
 	    "that you have it installed and check shared libraries path\n"
 	    "(LD_LIBRARY_PATH) envornment variable.\n");
     return(-1);	
@@ -103,13 +103,13 @@ int lasso_init()
 
   /* Init crypto library */
   if(xmlSecCryptoAppInit(NULL) < 0) {
-    message(G_LOG_LEVEL_ERROR, "Crypto initialization failed.\n");
+    message(G_LOG_LEVEL_CRITICAL, "Crypto initialization failed.\n");
     return(-1);
   }
   
   /* Init xmlsec-crypto library */
   if(xmlSecCryptoInit() < 0) {
-    message(G_LOG_LEVEL_ERROR, "xmlsec-crypto initialization failed.\n");
+    message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.\n");
     return(-1);
   }
   return 0;

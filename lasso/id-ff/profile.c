@@ -53,13 +53,13 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
 
   soap_node = lasso_node_new_from_dump(soap);
   if (soap_node == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Error while build node from soap msg\n");
+    message(G_LOG_LEVEL_WARNING, "Error while build node from soap msg\n");
     return(-1);
   }
 
   body_node = lasso_node_get_child(soap_node, "Body", NULL, NULL);
   if(body_node == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Body node not found\n");
+    message(G_LOG_LEVEL_WARNING, "Body node not found\n");
     return(-2);
   }
 
@@ -87,7 +87,7 @@ lasso_profile_get_request_type_from_soap_msg(gchar *soap)
       type = lassoRequestTypeLecp;
     }
     else {
-      message(G_LOG_LEVEL_ERROR, "Unkown node name : %s\n", name);
+      message(G_LOG_LEVEL_WARNING, "Unkown node name : %s\n", name);
     }
     xmlFree(name);
   }
@@ -269,7 +269,7 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx,
 {
   ctx->identity = lasso_identity_new_from_dump((gchar *)dump);
   if (ctx->identity == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to create the identity from the identity dump\n");
+    message(G_LOG_LEVEL_WARNING, "Failed to create the identity from the identity dump\n");
     return(-1);
   }
   ctx->identity->is_dirty = FALSE;
@@ -295,7 +295,7 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx,
 {
   ctx->session = lasso_session_new_from_dump((gchar *)dump);
   if (ctx->session == NULL) {
-    message(G_LOG_LEVEL_ERROR, "Failed to create the session from the session dump\n");
+    message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump\n");
     return(-1);
   }
   ctx->session->is_dirty = FALSE;

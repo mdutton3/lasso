@@ -273,7 +273,7 @@ lasso_register_name_identifier_request_new_from_export(gchar               *buff
     request = lasso_register_name_identifier_request_new_from_soap(buffer);
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Invalid export type\n");
+    message(G_LOG_LEVEL_WARNING, "Invalid export type\n");
     request = NULL;
   }
 

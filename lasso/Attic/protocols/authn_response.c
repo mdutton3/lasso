@@ -64,7 +64,7 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
     value = lasso_node_get_attr_value(status_code, "Value", &err);
     lasso_node_destroy(status_code);
     if (err != NULL) {
-      message(G_LOG_LEVEL_ERROR, err->message);
+      message(G_LOG_LEVEL_WARNING, err->message);
       g_error_free(err);
       return (NULL);
     }
@@ -73,7 +73,7 @@ lasso_authn_response_get_status(LassoAuthnResponse *response) {
     }
   }
   else {
-    message(G_LOG_LEVEL_ERROR, "No StatusCode element found in AuthnResponse.\n");
+    message(G_LOG_LEVEL_WARNING, "No StatusCode element found in AuthnResponse.\n");
     return (NULL);
   }
 }
