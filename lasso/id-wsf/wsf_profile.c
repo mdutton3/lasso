@@ -39,7 +39,7 @@ lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
        	if (LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_request) == TRUE) {
 		profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_request));
 	}
-	else {
+	else if (LASSO_IS_NODE(profile->request) == TRUE) {
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 	}
 
@@ -56,7 +56,7 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
        	if (LASSO_IS_SOAP_ENVELOPE(profile->soap_envelope_response) == TRUE) {
 		profile->msg_body = lasso_node_dump(LASSO_NODE(profile->soap_envelope_response));
 	}
-	else {
+	else if (LASSO_IS_NODE(profile->response) == TRUE) {
 		profile->msg_body = lasso_node_export_to_soap(profile->response);
 	}
 
