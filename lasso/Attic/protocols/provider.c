@@ -24,6 +24,11 @@
 
 #include <lasso/protocols/provider.h>
 
+struct _LassoProviderPrivate
+{
+  gboolean dispose_has_run;
+};
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -144,6 +149,32 @@ static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider,
   return(lasso_node_get_content(node));
 }
 
+/*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_provider_dispose(LassoProvider *provider)
+{
+  if (provider->private->dispose_has_run) {
+    return;
+  }
+  provider->private->dispose_has_run = TRUE;
+
+  /* unref reference counted objects */
+  /* we don't have any here */
+  debug(INFO, "Provider object 0x%x disposed ...\n", provider);
+}
+
+static void
+lasso_provider_finalize(LassoProvider *provider)
+{
+  debug(INFO, "Provider object 0x%x finalized ...\n", provider);
+
+  lasso_node_destroy(provider->metadata);
+  g_free(provider->public_key);
+  g_free(provider->certificate);
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -152,11 +183,20 @@ static gchar *lasso_provider_get_direct_child_content(LassoProvider *provider,
 static void
 lasso_provider_instance_init(LassoProvider *provider)
 {
-
+  provider->private = g_new (LassoProviderPrivate, 1);
+  provider->private->dispose_has_run = FALSE;
+  provider->metadata    = NULL;
+  provider->public_key  = NULL;
+  provider->certificate = NULL;
 }
 
 static void
-lasso_provider_class_init(LassoProviderClass *klass) {
+lasso_provider_class_init(LassoProviderClass *class) {
+  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
+  
+  /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_provider_dispose;
+  gobject_class->finalize = (void *)lasso_provider_finalize;
 }
 
 GType lasso_provider_get_type() {

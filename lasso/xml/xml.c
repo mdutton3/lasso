@@ -1254,7 +1254,6 @@ lasso_node_dispose(LassoNode *node)
 
   /* unref reference counted objects */
   /* we don't have any here */
-  //g_print("%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
   debug(INFO, "%s 0x%x disposed ...\n", lasso_node_get_name(node), node);
 }
 
@@ -1264,7 +1263,6 @@ lasso_node_finalize(LassoNode *node)
   gint i;
   LassoNode *child;
 
-  //g_print("%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   debug(INFO, "%s 0x%x finalized ...\n", lasso_node_get_name(node), node);
   
   if (node->private->node_is_weak_ref == FALSE) {

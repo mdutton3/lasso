@@ -44,6 +44,7 @@ extern "C" {
 
 typedef struct _LassoProvider LassoProvider;
 typedef struct _LassoProviderClass LassoProviderClass;
+typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
 struct _LassoProvider {
   GObject parent;
@@ -54,6 +55,7 @@ struct _LassoProvider {
   gchar *certificate;
 
   /*< private >*/
+  LassoProviderPrivate *private;
 };
 
 struct _LassoProviderClass {
