@@ -106,3 +106,8 @@ const xmlChar lassoSamlAuthenticationMethodXkms[]                 = "urn:oasis:n
 const xmlChar lassoSamlAuthenticationMethodXmlSign[]              = "urn:ietf:rfc:3075";
 const xmlChar lassoSamlAuthenticationMethodUnspecified[]          = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 
+/* ConfirmationMethods */
+const xmlChar lassoSamlConfirmationMethodArtifact01[]    = "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
+const xmlChar lassoSamlConfirmationMethodBearer[]        = "urn:oasis:names:tc:SAML:1.1:cm:bearer"
+const xmlChar lassoSamlConfirmationMethodHolderOfKey[]   = "urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
+const xmlChar lassoSamlConfirmationMethodSenderVouches[] = "urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"

@@ -114,6 +114,12 @@ LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXkms[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodXmlSign[];
 LASSO_EXPORT_VAR const xmlChar lassoSamlAuthenticationMethodUnspecified[];
 
+/* ConfirmationMethods */
+LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodArtifact01[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodBearer[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodHolderOfKey[];
+LASSO_EXPORT_VAR const xmlChar lassoSamlConfirmationMethodSenderVouches[];
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
