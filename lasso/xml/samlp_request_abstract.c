@@ -91,7 +91,6 @@ get_xmlNode(LassoNode *node)
 
 	/* signature stuff */
 	if (request->sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-		xmlDoc *doc;
 		xmlNode *signature = NULL, *reference, *key_info;
 		char *uri;
 
@@ -100,7 +99,7 @@ get_xmlNode(LassoNode *node)
 					xmlSecTransformRsaSha1Id, NULL);
 		}
 		if (request->sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-			signature = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+			signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
 					xmlSecTransformDsaSha1Id, NULL);
 		}
 		/* get out if signature == NULL ? */
