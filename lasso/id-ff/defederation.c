@@ -148,16 +148,14 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
+	if (remote_providerID == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	profile = LASSO_PROFILE(defederation);
 
 	/* set the remote provider id */
 	profile->remote_providerID = g_strdup(remote_providerID);
-
-	if (profile->remote_providerID == NULL) {
-		message(G_LOG_LEVEL_CRITICAL,
-				"No remote provider id to send the defederation request");
-		return -1;
-	}
 
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
@@ -211,8 +209,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 				0);
 	}
 	if (LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Error while building the request");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
 	/* Set the nameIdentifier attribute from content local variable */
@@ -371,8 +368,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	nameIdentifier = LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
 			profile->request)->NameIdentifier;
 	if (nameIdentifier == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in request");
-		return -1;
+		return critical_error(LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER);
 	}
 
 	/* Verify federation */
@@ -387,9 +383,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	}
 
 	if (lasso_federation_verify_nameIdentifier(federation, nameIdentifier) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "No name identifier for %s",
-				profile->remote_providerID);
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 
 	/* remove federation of the remote provider */

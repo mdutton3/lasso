@@ -320,17 +320,17 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	response = LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response);
 
 	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status))
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	if (response->Status->StatusCode == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	status_value = response->Status->StatusCode->Value;
 	if (status_value == NULL) {
 		/* XXX ? was ignored before ? */ 
 	}
 	if (status_value && strcmp(status_value, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
-		return -7; /* FIXME: proper error code */
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	if (response->Assertion) {
@@ -397,11 +397,11 @@ lasso_login_accept_sso(LassoLogin *login)
 		profile->session = lasso_session_new();
 
 	if (profile->response == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	assertion = LASSO_SAMLP_RESPONSE(profile->response)->Assertion;
 	if (assertion == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			g_object_ref(assertion));
@@ -412,7 +412,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	ni = authentication_statement->Subject->NameIdentifier;
 
 	if (ni == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	if (LASSO_IS_LIB_SUBJECT(authentication_statement->Subject)) {
 		idp_ni = LASSO_LIB_SUBJECT(
@@ -467,7 +467,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 	}
 
 	if (LASSO_PROFILE(login)->remote_providerID == NULL)
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 
 	/* build artifact infos */
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
@@ -850,12 +850,12 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	i = xmlSecBase64Decode(artifact_b64, artifact, 43);
 	if (i < 0 || i > 42) {
 		g_free(artifact_b64);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	if (artifact[0] != 0 || artifact[1] != 3) { /* wrong type code */
 		g_free(artifact_b64);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	memcpy(provider_succint_id, artifact+2, 20);
@@ -1058,12 +1058,11 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 			} else {
 				/* AuthnRequestsSigned element is required */
 				message(G_LOG_LEVEL_CRITICAL, "XXX");
-				return -1;
+				return LASSO_ERROR_UNDEFINED;
 			}
 		} else {
-			message(G_LOG_LEVEL_CRITICAL,
-					"Must verify signature without knowing provider");
-			return -1;
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+					LASSO_PROFILE(login)->remote_providerID);
 		}
 
 		/* verify request signature */

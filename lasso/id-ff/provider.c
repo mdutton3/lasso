@@ -270,7 +270,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	xmlChar *s;
 
 	if (xmlnode == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	s = xmlGetProp(xmlnode, "ProviderRole");
 	if (s && strcmp(s, "SP") == 0)

@@ -97,6 +97,18 @@ lasso_strerror(int error_code)
 			return "Name identifier not found";
 		case LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED:
 			return "Error building request QUERY url";
+		case LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED:
+			return "Error building request object";
+		case LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED:
+			return "Error building request message";
+		case LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED:
+			return "Error building response object";
+		case LASSO_PROFILE_ERROR_SESSION_NOT_FOUND:
+			return "Session not found";
+		case LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP:
+			return "Failed to create identity from dump";
+		case LASSO_PROFILE_ERROR_BAD_SESSION_DUMP:
+			return "Failed to create session from dump";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
@@ -106,8 +118,13 @@ lasso_strerror(int error_code)
 		case LASSO_PARAM_ERROR_CHECK_FAILED:
 			return "The error return location should be "\
 				"either NULL or contains a NULL error.";
+
 		case LASSO_LOGIN_ERROR_INVALID_NAMEIDPOLICY:
 			return "Invalid NameIDPolicy in lib:AuthnRequest: %s";
+
+		case LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
+			return "Name identifier not found in request";
+
 		default:
 			return g_strdup_printf("Undefined error code %d.", error_code);
 	}

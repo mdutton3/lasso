@@ -26,6 +26,9 @@
 /* Negative errors : programming or runtime recoverable errors */
 /* Positive errors : Liberty Alliance recoverable errors */
 
+/* undefined */
+#define LASSO_ERROR_UNDEFINED                           -1
+
 /* generic XML */
 #define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10
 #define LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND         -11
@@ -48,14 +51,14 @@
 #define LASSO_DS_ERROR_INVALID_SIGALG                 -113
 #define LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED          -114
 
-/* server */
+/* Server */
 #define LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND         -201
 #define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED        -202
 
-/* logout */
+/* Single Logout */
 #define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE        -301
 
-/* profile */
+/* Profile */
 #define LASSO_PROFILE_ERROR_INVALID_QUERY             -401
 #define LASSO_PROFILE_ERROR_INVALID_POST_MSG          -402
 #define LASSO_PROFILE_ERROR_INVALID_SOAP_MSG          -403
@@ -70,6 +73,12 @@
 #define LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND      -412
 #define LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND -413
 #define LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED     -414
+#define LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED   -415
+#define LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED   -416
+#define LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED  -417
+#define LASSO_PROFILE_ERROR_SESSION_NOT_FOUND         -418
+#define LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP         -419
+#define LASSO_PROFILE_ERROR_BAD_SESSION_DUMP          -420
 
 /* functions/methods parameters checking */
 #define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501
@@ -84,7 +93,7 @@
 #define LASSO_LOGIN_ERROR_INVALID_SIGNATURE		 605
 #define LASSO_LOGIN_ERROR_UNSIGNED_AUTHN_REQUEST	 606
 
-/* others */
-#define LASSO_ERROR_UNDEFINED                         -999
+/* Federation Termination Notification */
+#define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER  -700
 
 const char* lasso_strerror(int error_code);

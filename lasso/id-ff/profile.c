@@ -216,12 +216,8 @@ lasso_profile_set_identity_from_dump(LassoProfile *ctx, const gchar *dump)
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	ctx->identity = lasso_identity_new_from_dump(dump);
-	if (ctx->identity == NULL) {
-		message(G_LOG_LEVEL_WARNING,
-				"Failed to create the identity from the identity dump");
-		return -1;
-	}
-	ctx->identity->is_dirty = FALSE;
+	if (ctx->identity == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_BAD_IDENTITY_DUMP);
 
 	return 0;
 }
@@ -232,10 +228,8 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	ctx->session = lasso_session_new_from_dump(dump);
-	if (ctx->session == NULL) {
-		message(G_LOG_LEVEL_WARNING, "Failed to create the session from the session dump");
-		return -1;
-	}
+	if (ctx->session == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
 	ctx->session->is_dirty = FALSE;
 
 	return 0;

@@ -220,7 +220,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	} else { /* if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) { */
 		if (federation->local_nameIdentifier == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found");
-			return -1;
+			return LASSO_ERROR_UNDEFINED;
 		}
 
 		oldNameIdentifier = g_object_ref(federation->local_nameIdentifier);
@@ -247,7 +247,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
 	if (oldNameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Invalid provider type");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
@@ -270,8 +270,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 			idpNameIdentifier, spNameIdentifier, oldNameIdentifier,
 			LASSO_SIGNATURE_TYPE_WITHX509, LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (profile->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Error creating the request");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
 	profile->http_request_method = http_method;
@@ -390,7 +389,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		message(G_LOG_LEVEL_CRITICAL, "%s", statusCodeValue);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* Update federation with the nameIdentifier attribute. NameQualifier
@@ -422,7 +421,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	}
 	if (nameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Invalid provider role");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	lasso_federation_set_local_name_identifier(federation, nameIdentifier);
@@ -451,7 +450,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	/* verify the register name identifier request */
 	if (LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Register Name Identifier request not found");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request);
@@ -460,7 +459,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	profile->remote_providerID = g_strdup(request->ProviderID);
 	if (profile->remote_providerID == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "No provider id found in name registration request");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* set register name identifier response */
@@ -470,8 +469,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request),
 			LASSO_SIGNATURE_TYPE_WITHX509, LASSO_SIGNATURE_METHOD_RSA_SHA1);
 	if (LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE(profile->response) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Error building response");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED);
 	}
 
 	/* verify federation */
@@ -483,13 +481,13 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
 	if (request->OldProvidedNameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Old provided name identifier not found");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	if (lasso_federation_verify_nameIdentifier(federation,
 				request->OldProvidedNameIdentifier) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "No name identifier");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -508,7 +506,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	}
 	if (providedNameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Sp provided name identifier not found");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	lasso_federation_set_remote_name_identifier(federation, providedNameIdentifier);

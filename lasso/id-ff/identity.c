@@ -59,7 +59,7 @@ lasso_identity_remove_federation(LassoIdentity *identity, char *remote_providerI
 {
 	if (g_hash_table_remove(identity->federations, remote_providerID) == FALSE) {
 		debug("Failed to remove federation for remote Provider %s", remote_providerID);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	identity->is_dirty = TRUE;
 	return 0;

@@ -150,7 +150,8 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	/* get the provider */
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 	if (provider == NULL) {
-		return -1;
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* build logout response message */
@@ -268,8 +269,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 
 	/* verify if session exists */
 	if (profile->session == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Session not found");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	}
 
 	/* get the remote provider id
@@ -280,15 +280,14 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		profile->remote_providerID = g_strdup(remote_providerID);
 	}
 	if (profile->remote_providerID == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No remote provider id to build the logout request");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
 	/* get assertion */
 	assertion = lasso_session_get_assertion(profile->session, profile->remote_providerID);
 	if (LASSO_IS_SAML_ASSERTION(assertion) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Assertion not found");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* if format is one time, then get name identifier from assertion,
@@ -360,8 +359,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 				0);
 	}
 	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Error while building the request");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
 	/* Set the name identifier attribute with content local variable */
@@ -544,7 +542,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success : %s", statusCodeValue);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* LogoutResponse status code value is ok */
@@ -679,8 +677,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 				0);
 	}
 	if (LASSO_IS_LIB_LOGOUT_RESPONSE(profile->response) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Error while building response");
-		return -1;
+		return critical_error(LASSO_PROFILE_ERROR_BUILDING_RESPONSE_FAILED);
 	}
 
 	/* verify signature status */
@@ -703,7 +700,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (assertion == NULL) {
 		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
 		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* If name identifier is federated, then verify federation */
@@ -726,7 +723,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 					profile->remote_providerID);
 			lasso_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return -1;
+			return LASSO_ERROR_UNDEFINED;
 		}
 	}
 
