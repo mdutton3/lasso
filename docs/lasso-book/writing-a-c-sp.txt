@@ -213,23 +213,23 @@ Lasso has been designed to let the service provider keep on using existing
 databases.  Typically there is already a table describing users; just add a
 identity dump column to the existing table:
 
-=======    ========================================    =============
+=======    ========================================    ==============
 User Id    existing data (name, address...)            Identity dump
-=======    ========================================    =============
-1          ...                                         <Identity...
-2          ...                                         <Identity...
-=======    ========================================    =============
+=======    ========================================    ==============
+1          ...                                         <Identity> ...
+2          ...                                         <Identity> ...
+=======    ========================================    ==============
 
 
 Sessions are also commonly stored in databases; just add a session dump column
 to the existing session table:
 
-==========    =================    ============
+==========    =================    =============
 Session Id    misc session data    Session dump
-==========    =================    ============
-6744066       ...                  <Session...
-3338824       ...                  <Session...
-==========    =================    ============
+==========    =================    =============
+6744066       ...                  <Session> ...
+3338824       ...                  <Session> ...
+==========    =================    =============
 
 
 
