@@ -51,7 +51,7 @@ lasso_interaction_profile_service_init_request(LassoInteractionProfileService *s
 
 gint
 lasso_interaction_profile_service_process_request_msg(LassoInteractionProfileService *service,
-						      const char *msg)
+						      const gchar *msg)
 {
 	LassoIsInteractionRequest *request;
 
@@ -63,7 +63,7 @@ lasso_interaction_profile_service_process_request_msg(LassoInteractionProfileSer
 
 gint
 lasso_interaction_profile_service_process_response_msg(LassoInteractionProfileService *service,
-						       const char *msg)
+						       const gchar *msg)
 {
 	LassoIsInteractionResponse *response;
 

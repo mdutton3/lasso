@@ -33,7 +33,7 @@
 /*****************************************************************************/
 
 gint
-lasso_profile_service_add_data(LassoProfileService *service, const char *xmlNodeBuffer)
+lasso_profile_service_add_data(LassoProfileService *service, const gchar *xmlNodeBuffer)
 {
 	LassoWsfProfile *profile;
 	LassoDstData *data;
@@ -60,7 +60,7 @@ lasso_profile_service_add_data(LassoProfileService *service, const char *xmlNode
 }
 
 LassoDstModification*
-lasso_profile_service_add_modification(LassoProfileService *service, const char *select)
+lasso_profile_service_add_modification(LassoProfileService *service, const gchar *select)
 {
 	LassoWsfProfile *profile;
 	LassoDstModification *modification;
@@ -78,7 +78,7 @@ lasso_profile_service_add_modification(LassoProfileService *service, const char 
 }
 
 LassoDstQueryItem*
-lasso_profile_service_add_query_item(LassoProfileService *service, const char *select)
+lasso_profile_service_add_query_item(LassoProfileService *service, const gchar *select)
 {
 	LassoWsfProfile *profile;
 	LassoDstQueryItem *query_item;
@@ -97,11 +97,11 @@ lasso_profile_service_add_query_item(LassoProfileService *service, const char *s
 
 LassoDstModification*
 lasso_profile_service_init_modify(LassoProfileService *service,
-				  const char *prefix,
-				  const char *href,
+				  const gchar *prefix,
+				  const gchar *href,
 				  LassoDiscoResourceOffering *resourceOffering,
 				  LassoDiscoDescription *description,
-				  const char *select)
+				  const gchar *select)
 {
 	LassoDstModification *modification;
 	LassoWsfProfile *profile;
@@ -138,11 +138,11 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 
 LassoDstQueryItem*
 lasso_profile_service_init_query(LassoProfileService *service,
-				 const char *prefix,
-				 const char *href,
+				 const gchar *prefix,
+				 const gchar *href,
 				 LassoDiscoResourceOffering *resourceOffering,
 				 LassoDiscoDescription *description,
-				 const char *select)
+				 const gchar *select)
 {
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
@@ -180,9 +180,9 @@ lasso_profile_service_init_query(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_modify_msg(LassoProfileService *service,
-					 const char *prefix, /* FIXME : must be get from message */
-					 const char *href,   /* FIXME : must be get from message */
-					 const char *modify_soap_msg)
+					 const gchar *prefix, /* FIXME : must be get from message */
+					 const gchar *href,   /* FIXME : must be get from message */
+					 const gchar *modify_soap_msg)
 {
 	LassoDstModify *modify;
 	LassoWsfProfile *profile;
@@ -211,9 +211,9 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_query_msg(LassoProfileService *service,
-					const char *prefix, /* FIXME : must be get from message */
-					const char *href,   /* FIXME : must be get from message */
-					const char *query_soap_msg)
+					const gchar *prefix, /* FIXME : must be get from message */
+					const gchar *href,   /* FIXME : must be get from message */
+					const gchar *query_soap_msg)
 {
 	LassoDstQuery *query;
 	LassoWsfProfile *profile;
@@ -240,9 +240,9 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_query_response_msg(LassoProfileService *service,
-						 const char *prefix,
-						 const char *href,
-						 const char *query_response_soap_msg)
+						 const gchar *prefix,
+						 const gchar *href,
+						 const gchar *query_response_soap_msg)
 {
 	LassoDstQueryResponse *query_response;
 
@@ -259,9 +259,9 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
-						  const char *prefix,
-						  const char *href,
-						  const char *modify_response_soap_msg)
+						  const gchar *prefix,
+						  const gchar *href,
+						  const gchar *modify_response_soap_msg)
 {
 	LassoDstModifyResponse *modify_response;
 

@@ -70,11 +70,11 @@ LASSO_EXPORT gint lasso_interaction_profile_service_init_request(
 
 LASSO_EXPORT gint lasso_interaction_profile_service_process_request_msg(
 	LassoInteractionProfileService *service,
-	const char *request_msg);
+	const gchar *request_msg);
 
 LASSO_EXPORT gint lasso_interaction_profile_service_process_response_msg(
 	LassoInteractionProfileService *service,
-	const char *response_msg);
+	const gchar *response_msg);
 
 
 #ifdef __cplusplus

@@ -160,7 +160,7 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 LassoDiscoRequestedServiceType*
 lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 					   const gchar    *serviceType,
-					   const char     *option)
+					   const gchar     *option)
 {
 	LassoDiscoQuery *query;
 	LassoDiscoRequestedServiceType *rst;
