@@ -4,7 +4,6 @@ SUBDIRS = xml protocols environs
 liblassoincludedir = $(includedir)/lasso
 
 INCLUDES = \
-	-DPACKAGE=\"@PACKAGE@\" \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
 	$(LASSO_DEFINES) \
@@ -54,6 +53,9 @@ liblasso_la_LIBADD = \
 	$(NULL)
 endif
 
+# Just make damn sure the ABI stays the same between
+# upgrades.
+# Obviously if you don't, fixing the situation up again can be painful. 
 liblasso_la_LDFLAGS = \
 	-no-undefined -version-info @LASSO_VERSION_INFO@ \
 	$(NULL)
