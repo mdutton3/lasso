@@ -53,12 +53,30 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+
+static gboolean
+has_lib_status(LassoSamlpStatusCode *status_code)
+{
+	if (status_code == NULL)
+		return FALSE;
+	if (strncmp(status_code->Value, "lib", 3) == 0)
+		return TRUE;
+	return has_lib_status(status_code->StatusCode);
+}
+
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 { 
 	xmlNode *xmlnode, *t;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+
+	if (LASSO_SAMLP_RESPONSE(node)->Status &&
+			has_lib_status(LASSO_SAMLP_RESPONSE(node)->Status->StatusCode)) {
+		/* liberty QName, add liberty namespace */
+		xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+	}
+
 
 	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
 
