@@ -78,6 +78,13 @@ lasso_node_get_children(LassoNode *node)
 }
 
 xmlChar *
+lasso_node_get_content(LassoNode *node)
+{
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  return (class->get_content(node));
+}
+
+xmlChar *
 lasso_node_get_name(LassoNode *node)
 {
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
@@ -312,6 +319,12 @@ lasso_node_impl_get_children(LassoNode *node)
   }
 
   return (children);
+}
+
+static xmlChar *
+lasso_node_impl_get_content(LassoNode *node)
+{
+  return (xmlNodeGetContent(node->private->node));
 }
 
 static xmlChar *
@@ -594,16 +607,17 @@ lasso_node_class_init(LassoNodeClass *class)
   
   /* virtual public methods */
   class->build_query  = lasso_node_impl_build_query;
-  class->get_name     = lasso_node_impl_get_name;
   class->dump         = lasso_node_impl_dump;
-  class->serialize    = lasso_node_impl_serialize;
-  class->url_encode   = lasso_node_impl_url_encode;
-  /* virtual private methods */
-  class->add_child    = lasso_node_impl_add_child;
   class->get_attr     = lasso_node_impl_get_attr;
   class->get_attrs    = lasso_node_impl_get_attrs;
   class->get_child    = lasso_node_impl_get_child;
   class->get_children = lasso_node_impl_get_children;
+  class->get_content  = lasso_node_impl_get_content;
+  class->get_name     = lasso_node_impl_get_name;
+  class->serialize    = lasso_node_impl_serialize;
+  class->url_encode   = lasso_node_impl_url_encode;
+  /* virtual private methods */
+  class->add_child    = lasso_node_impl_add_child;
   class->get_xmlNode  = lasso_node_impl_get_xmlNode;
   class->new_child    = lasso_node_impl_new_child;
   class->new_ns       = lasso_node_impl_new_ns;

@@ -61,16 +61,17 @@ struct _LassoNodeClass {
   /*< vtable >*/
   /*< public >*/
   GString *   (* build_query)  (LassoNode     *node);
+  void        (* dump)         (LassoNode     *,
+				const xmlChar *,
+				int);
   LassoAttr*  (* get_attr)     (LassoNode     *,
 				const xmlChar *);
   GPtrArray*  (* get_attrs)    (LassoNode     *);
   LassoNode*  (* get_child)    (LassoNode     *,
 				const xmlChar *);
   GPtrArray*  (* get_children) (LassoNode     *);
+  xmlChar *   (* get_content)  (LassoNode     *);
   xmlChar *   (* get_name)     (LassoNode     *);
-  void        (* dump)         (LassoNode     *,
-				const xmlChar *,
-				int);
   GData *     (* serialize)    (LassoNode     *,
 				GData         *);
   gchar *     (* url_encode)   (LassoNode     *node,
@@ -123,6 +124,8 @@ LASSO_EXPORT LassoNode* lasso_node_get_child    (LassoNode *node,
 						 const xmlChar *name);
 
 LASSO_EXPORT GPtrArray* lasso_node_get_children (LassoNode *node);
+
+LASSO_EXPORT xmlChar*   lasso_node_get_content  (LassoNode *node);
 
 LASSO_EXPORT xmlChar*   lasso_node_get_name     (LassoNode *node);
 
