@@ -55,18 +55,20 @@ def authentication_statement_build(authenticationMethod, sessionIndex,
                                    format, idp_nameIdentifier,
                                    idp_nameQualifier, idp_format,
                                    confirmationMethod):
-    return Node(_obj=lassomod.authentication_statement_build(authenticationMethod, sessionIndex,
-                                                             reauthenticateOnOrAfter,
-                                                             nameIdentifier, nameQualifier,
-                                                             format, idp_nameIdentifier,
-                                                             idp_nameQualifier, idp_format,
-                                                             confirmationMethod))
+    return Node(_obj=lassomod.authentication_statement_build(
+        authenticationMethod, sessionIndex,
+        reauthenticateOnOrAfter,
+        nameIdentifier, nameQualifier,
+        format, idp_nameIdentifier,
+        idp_nameQualifier, idp_format,
+        confirmationMethod))
 
 class AuthnRequest:
     def __init__(self, providerID, nameIDPolicy, forceAuthn, isPassive,
-                 protocolProfile, assertionConsumerServiceID, authnContextClassRefs,
-                 authnContextStatementRefs, authnContextComparison, relayState,
-                 proxyCount, idpList, consent, _obj=None):
+                 protocolProfile, assertionConsumerServiceID,
+                 authnContextClassRefs, authnContextStatementRefs,
+                 authnContextComparison, relayState, proxyCount, idpList,
+                 consent, _obj=None):
         """
         """
         if _obj != None:
@@ -101,8 +103,9 @@ class AuthnRequest:
         return ret
 
 class AuthnResponse:
-    def __init__(self, query, verify_signature, public_key_file, private_key_file,
-                 certificate_file, is_authenticated, _obj=None):
+    def __init__(self, query, verify_signature, public_key_file,
+                 private_key_file, certificate_file, is_authenticated,
+                 _obj=None):
         """
         """
         if _obj != None:
