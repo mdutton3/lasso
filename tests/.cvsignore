@@ -1,6 +1,6 @@
-login_tests
+tests
 .deps
 .libs
 Makefile.in
 Makefile
-out.xml
+result.xml
