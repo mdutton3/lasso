@@ -13,5 +13,6 @@
     <cfset lasso.init()>
     <cfset ssoUrl=lasso.login("important string")>
     <cfoutput>Identity provider single sing-on URL to redirect to = #ssoUrl#</cfoutput>
+    <cflocation url=#ssoUrl#>
   </body>
 </html>
