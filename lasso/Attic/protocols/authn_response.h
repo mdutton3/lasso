@@ -31,6 +31,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/lib_authn_response.h>
+#include <lasso/protocols/elements/assertion.h>
 
 #define LASSO_TYPE_AUTHN_RESPONSE (lasso_authn_response_get_type())
 #define LASSO_AUTHN_RESPONSE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_AUTHN_RESPONSE, LassoAuthnResponse))
@@ -45,20 +46,36 @@ typedef struct _LassoAuthnResponseClass LassoAuthnResponseClass;
 struct _LassoAuthnResponse {
   LassoLibAuthnResponse parent;
   /*< public >*/
-  xmlChar  *request_query;
-  gboolean  mustAuthenticate;
+  xmlChar *requestID;
   /*< private >*/
+  xmlChar *query;
 };
 
 struct _LassoAuthnResponseClass {
   LassoLibAuthnResponseClass parent;
 };
 
-LASSO_EXPORT GType      lasso_authn_response_get_type (void);
-LASSO_EXPORT LassoNode* lasso_authn_response_new      (xmlChar       *query,
-						       const xmlChar *providerID,
-						       gboolean       signature_status,
-						       gboolean       authentication_status);
+LASSO_EXPORT xmlChar*   lasso_authn_response_get_protocolProfile (xmlChar *query);
+
+
+LASSO_EXPORT GType      lasso_authn_response_get_type            (void);
+
+LASSO_EXPORT LassoNode* lasso_authn_response_new                 (xmlChar       *query,
+								  const xmlChar *providerID,
+								  gboolean       signature_status,
+								  gboolean       authentication_status);
+
+LASSO_EXPORT void       lasso_authn_response_add_assertion       (LassoAuthnResponse *response,
+								  LassoAssertion     *assertion,
+								  const xmlChar      *private_key_file,
+								  const xmlChar      *certificate_file);
+
+LASSO_EXPORT gboolean   lasso_authn_response_must_authenticate   (LassoAuthnResponse *response,
+								  gboolean            is_authenticated);
+
+LASSO_EXPORT gboolean   lasso_authn_response_verify_signature    (LassoAuthnResponse *response,
+								  xmlChar            *public_key_file,
+								  xmlChar            *private_key_file);
 
 #ifdef __cplusplus
 }
