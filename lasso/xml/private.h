@@ -125,7 +125,7 @@ int error_code(GLogLevelFlags level, int error, ...);
 #elif defined(HAVE_VARIADIC_MACROS)
 #  define debug(...)     ;
 #else
-inline void debug(const char *format, ...)
+static inline void debug(const char *format, ...)
 {
 	va_list ap;
 	va_start(ap, format);
@@ -144,7 +144,7 @@ inline void debug(const char *format, ...)
 #  define message(level, ...) \
 	_debug(level, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
 #else
-inline void message(GLogLevelFlags level, const char *format, ...)
+static inline void message(GLogLevelFlags level, const char *format, ...)
 {
 	va_list ap;
 	char s[1024];
