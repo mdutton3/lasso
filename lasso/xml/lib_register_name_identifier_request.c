@@ -64,7 +64,8 @@ From liberty-metadata-v1.0.xsd:
 
 void
 lasso_lib_register_name_identifier_request_set_idp_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									    LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier) {
+									    LassoLibIDPProvidedNameIdentifier *idpProvidedNameIdentifier)
+{
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_IDP_PROVIDED_NAME_IDENTIFIER(idpProvidedNameIdentifier));
 
@@ -76,7 +77,8 @@ lasso_lib_register_name_identifier_request_set_idp_provided_name_identifier(Lass
 
 void
 lasso_lib_register_name_identifier_request_set_old_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									    LassoLibOLDProvidedNameIdentifier *oldProvidedNameIdentifier) {
+									    LassoLibOLDProvidedNameIdentifier *oldProvidedNameIdentifier)
+{
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_OLD_PROVIDED_NAME_IDENTIFIER(oldProvidedNameIdentifier));
 
@@ -93,29 +95,32 @@ lasso_lib_register_name_identifier_request_update_nameIdentifiers(LassoLibRegist
      LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 
      // IDPProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(node, "IDPProvidedNameIdentifier"), "NameQualifier", "IDPNameQualifier");
-     lasso_node_rename_prop(class->get_child(node, "IDPProvidedNameIdentifier"), "Format", "IDPFormat");
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+			    "NameQualifier", "IDPNameQualifier");
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+			    "Format", "IDPFormat");
 
      // SPProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(node, "SPProvidedNameIdentifier"), "NameQualifier", "SPNameQualifier");
-     lasso_node_rename_prop(class->get_child(node, "SPProvidedNameIdentifier"), "Format", "SPFormat");
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
+			    "NameQualifier", "SPNameQualifier");
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "SPProvidedNameIdentifier"),
+			    "Format", "SPFormat");
 
      // OldProvidedNameIdentifier
-     lasso_node_rename_prop(class->get_child(node, "OldProvidedNameIdentifier"), "NameQualifier", "OldNameQualifier");
-     lasso_node_rename_prop(class->get_child(node, "OldProvidedNameIdentifier"), "Format", "OldFormat");
-
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
+			    "NameQualifier", "OldNameQualifier");
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "OldProvidedNameIdentifier"),
+			    "Format", "OldFormat");
 }
 
 void
-lasso_lib_register_name_identifier_request_restore_nameIdentidiers(LassoLibRegisterNameIdentifierRequest *node)
+lasso_lib_register_name_identifier_request_restore_nameIdentifiers(LassoLibRegisterNameIdentifierRequest *node)
 {
-     xmlNodePtr identifier;
      LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 
      // IDPProvidedNameIdentifier
-     identifier = class->get_child(node, "IDPProvidedNameIdentifier");
-     lasso_node_rename_prop(identifier, "NameQualifier", "IDPNameQualifier");
-
+     lasso_node_rename_prop(class->get_child(LASSO_NODE(node), "IDPProvidedNameIdentifier"),
+			    "NameQualifier", "IDPNameQualifier");
 }
 
 void
@@ -142,7 +147,8 @@ lasso_lib_register_name_identifier_request_set_relayState(LassoLibRegisterNameId
 
 void
 lasso_lib_register_name_identifier_request_set_sp_provided_name_identifier(LassoLibRegisterNameIdentifierRequest *node,
-									   LassoLibSPProvidedNameIdentifier *spProvidedNameIdentifier) {
+									   LassoLibSPProvidedNameIdentifier *spProvidedNameIdentifier)
+{
   g_assert(LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(node));
   g_assert(LASSO_IS_LIB_SP_PROVIDED_NAME_IDENTIFIER(spProvidedNameIdentifier));
 
