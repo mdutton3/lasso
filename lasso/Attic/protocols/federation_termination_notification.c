@@ -131,6 +131,10 @@ lasso_federation_termination_notification_new_from_query(const gchar *query)
   notification = LASSO_NODE(g_object_new(LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, NULL));
   
   gd = lasso_query_to_dict(query);
+  if (gd == NULL) {
+    g_object_unref(notification);
+    return(NULL);
+  }
   
   /* RequestID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);

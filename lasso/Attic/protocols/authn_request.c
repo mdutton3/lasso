@@ -213,6 +213,10 @@ lasso_authn_request_new_from_export(gchar               *buffer,
     break;
   case lassoNodeExportTypeQuery:
     gd = lasso_query_to_dict(buffer);
+    if (gd == NULL) {
+      g_object_unref(request);
+      return(NULL);
+    }
 
     /* RequestID */
     str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);

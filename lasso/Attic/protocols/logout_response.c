@@ -187,6 +187,10 @@ lasso_logout_response_new_from_query(gchar *query)
   response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
 
   gd = lasso_query_to_dict(query);
+  if (gd == NULL) {
+    g_object_unref(response);
+    return(NULL);
+  }
   
   /* ResponseID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0);

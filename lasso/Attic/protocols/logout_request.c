@@ -148,12 +148,16 @@ static LassoNode *
 lasso_logout_request_new_from_query(gchar *query)
 {
   LassoNode *request, *identifier;
-  xmlChar *str;
-  GData *gd;
+  xmlChar   *str;
+  GData     *gd;
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
 
   gd = lasso_query_to_dict(query);
+  if (gd == NULL) {
+    g_object_unref(request);
+    return(NULL);
+  }
   
   /* RequestID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
