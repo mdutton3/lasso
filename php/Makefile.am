@@ -19,4 +19,3 @@ test-php: lasso.la lasso.php
 
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
 EXTRA_DIST = $(SWIG_OUTPUTS)
-SUBDIRS = examples
