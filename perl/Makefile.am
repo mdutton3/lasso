@@ -25,7 +25,7 @@ $(PERL_MAKEFILE): lasso.pm
 
 -perl install-perl: $(PERL_MAKEFILE)
 	target=`echo $@ | sed -e 's/-perl//'`; \
-	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR)/$(prefix) $$target
+	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR) $$target
 
 test-perl: $(PERL_MAKEFILE)
 	$(RUN)$(MAKE) -f $(PERL_MAKEFILE) test
