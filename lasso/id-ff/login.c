@@ -518,7 +518,8 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 }
 
 gint
-lasso_login_build_authn_request_msg(LassoLogin *login)
+lasso_login_build_authn_request_msg(LassoLogin  *login,
+				    const gchar *remote_providerID)
 {
   LassoProvider *provider, *remote_provider;
   xmlChar *md_authnRequestsSigned = NULL;
@@ -529,6 +530,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
   gboolean must_sign;
   gint ret = 0;
   GError *err = NULL;
+
+  g_return_val_if_fail(remote_providerID != NULL, -1);
+  
+  LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
   
   provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
   remote_provider = lasso_server_get_provider_ref(LASSO_PROFILE(login)->server,
@@ -631,7 +636,7 @@ lasso_login_build_authn_response_msg(LassoLogin  *login,
   
   if (authentication_result == 0) {
     lasso_profile_set_response_status(LASSO_PROFILE(login),
-					      lassoSamlStatusCodeRequestDenied);
+				      lassoSamlStatusCodeRequestDenied);
   }
   else {
     /* federation */
@@ -708,14 +713,10 @@ lasso_login_dump(LassoLogin *login)
 }
 
 gint
-lasso_login_init_authn_request(LassoLogin  *login,
-			       const gchar *remote_providerID)
+lasso_login_init_authn_request(LassoLogin  *login)
 {
-  g_return_val_if_fail(remote_providerID != NULL, -1);
-  
   LASSO_PROFILE(login)->request = lasso_authn_request_new(LASSO_PROFILE(login)->server->providerID);
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
-  LASSO_PROFILE(login)->remote_providerID = g_strdup(remote_providerID);
 
   if (LASSO_PROFILE(login)->request == NULL) {
     return (-2);

@@ -154,16 +154,18 @@ PyObject *login_build_artifact_msg(PyObject *self, PyObject *args) {
 
 PyObject *login_build_authn_request_msg(PyObject *self, PyObject *args) {
   PyObject *login_obj;
+  gchar *remote_providerID;
   gint ret;
 
-  if (CheckArgs(args, "O:login_build_authn_request_msg")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:login_build_authn_request_msg",
-			 &login_obj))
+  if (CheckArgs(args, "OS:login_build_authn_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_build_authn_request_msg",
+			 &login_obj, &remote_providerID))
       return NULL;
   }
   else return NULL;
 
-  ret = lasso_login_build_authn_request_msg(LassoLogin_get(login_obj));
+  ret = lasso_login_build_authn_request_msg(LassoLogin_get(login_obj),
+					    remote_providerID);
 
   return (int_wrap(ret));
 }
@@ -241,18 +243,16 @@ PyObject *login_dump(PyObject *self, PyObject *args) {
 
 PyObject *login_init_authn_request(PyObject *self, PyObject *args) {
   PyObject *login_obj;
-  gchar *remote_providerID;
   gint ret;
   
-  if (CheckArgs(args, "OS:login_init_authn_request")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:login_init_authn_request",
-			 &login_obj, &remote_providerID))
+  if (CheckArgs(args, "O:login_init_authn_request")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_init_authn_request",
+			 &login_obj))
       return NULL;
   }
   else return NULL;
   
-  ret = lasso_login_init_authn_request(LassoLogin_get(login_obj),
-				       remote_providerID);
+  ret = lasso_login_init_authn_request(LassoLogin_get(login_obj));
   
   return (int_wrap(ret));
 }

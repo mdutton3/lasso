@@ -84,7 +84,8 @@ LASSO_EXPORT gint                 lasso_login_build_artifact_msg          (Lasso
 									   const gchar     *reauthenticateOnOrAfter,
 									   lassoHttpMethod  method);
 
-LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin *login);
+LASSO_EXPORT gint                 lasso_login_build_authn_request_msg     (LassoLogin  *login,
+									   const gchar *remote_providerID);
 
 LASSO_EXPORT gint                 lasso_login_build_authn_response_msg    (LassoLogin  *login,
 									   gint         authentication_result,
@@ -97,8 +98,7 @@ LASSO_EXPORT void                 lasso_login_destroy                     (Lasso
 
 LASSO_EXPORT gchar*               lasso_login_dump                        (LassoLogin *login);
 
-LASSO_EXPORT gint                 lasso_login_init_authn_request          (LassoLogin  *login,
-									   const gchar *remote_providerID);
+LASSO_EXPORT gint                 lasso_login_init_authn_request          (LassoLogin  *login);
 
 LASSO_EXPORT gint                 lasso_login_init_from_authn_request_msg (LassoLogin      *login,
 									   gchar           *authn_request_msg,
