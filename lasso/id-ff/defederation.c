@@ -148,9 +148,9 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
   }
 
   done:
-  if (provider != NULL) {
-    lasso_provider_destroy(provider);
-  }
+/*   if (provider != NULL) { */
+/*     lasso_provider_destroy(provider); */
+/*   } */
   if (protocolProfile != NULL) {
     xmlFree(protocolProfile);
   }
@@ -542,21 +542,20 @@ lasso_defederation_dispose(LassoDefederation *defederation)
   }
   defederation->private->dispose_has_run = TRUE;
 
-  debug("Defederation object 0x%x disposed ...\n", defederation);
-
   /* unref reference counted objects */
-
   parent_class->dispose(G_OBJECT(defederation));
+
+  debug("Defederation object 0x%x disposed ...\n", defederation);
 }
 
 static void
 lasso_defederation_finalize(LassoDefederation *defederation)
-{  
-  debug("Defederation object 0x%x finalized ...\n", defederation);
-
+{
   g_free (defederation->private);
 
   parent_class->finalize(G_OBJECT(defederation));
+
+  debug("Defederation object 0x%x finalized ...\n", defederation);
 }
 
 /*****************************************************************************/
@@ -564,13 +563,24 @@ lasso_defederation_finalize(LassoDefederation *defederation)
 /*****************************************************************************/
 
 static void
-lasso_defederation_instance_init(LassoDefederation *defederation)
+lasso_defederation_instance_init(GTypeInstance   *instance,
+				 gpointer         g_class)
 {
+  LassoDefederation *defederation = LASSO_DEFEDERATION(instance);
+
+  defederation->private = g_new (LassoDefederationPrivate, 1);
+  defederation->private->dispose_has_run = FALSE;
 }
 
 static void
 lasso_defederation_class_init(LassoDefederationClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS(class);
+
+  parent_class = g_type_class_peek_parent(class);
+  /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_defederation_dispose;
+  gobject_class->finalize = (void *)lasso_defederation_finalize;
 }
 
 GType lasso_defederation_get_type() {
