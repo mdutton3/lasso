@@ -443,6 +443,37 @@ class _ProfileChild(object):
         lassomod.lasso_profile_set_session_from_dump(self.parent, dump)
 
 
+class Defederation(_ObjectMixin, lassomod.LassoDefederation, _ProfileChild):
+    # Constants
+
+    lassomodClass = lassomod.LassoDefederation
+
+    # Methods
+
+    def build_notification_msg(self):
+        errorCode = lassomod.lasso_defederation_build_notification_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_defederation_build_notification_msg')
+
+    def init_notification(self, remote_providerID = None):
+        errorCode = lassomod.lasso_defederation_init_notification(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_defederation_init_notification')
+
+    def process_notification_msg(self, notification_msg, notification_method):
+        errorCode = lassomod.lasso_defederation_process_notification_msg(
+            self, notification_msg, notification_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_defederation_process_notification_msg')
+
+    def validate_notification(self):
+        errorCode = lassomod.lasso_defederation_validate_notification(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_defederation_validate_notification')
+
+registerClass(Defederation)
+
+
 class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
     # Constants
 

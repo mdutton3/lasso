@@ -532,13 +532,14 @@ typedef struct {
 	LassoProfile parent;
 
 	%extend {
-		LassoDefederation(LassoServer *server);
+		LassoDefederation(LassoServer *server, lassoProviderType provider_type);
 		~LassoDefederation();
 	}
 } LassoDefederation;
 
 /* Constructors */
 
+%newobject lasso_defederation_new;
 LassoDefederation* lasso_defederation_new(LassoServer *server, lassoProviderType provider_type);
 
 /* Destructor */
