@@ -49,6 +49,7 @@ struct _LassoServer {
 
 	/*< public >*/
 	GHashTable *providers;
+	GHashTable *services;
 
 	gchar *private_key;
 	gchar *secret_key;
