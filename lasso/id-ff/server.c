@@ -32,6 +32,11 @@
 #define LASSO_SERVER_CERTIFICATE_NODE      "Certificate"
 #define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
 
+struct _LassoServerPrivate
+{
+  gboolean dispose_has_run;
+};
+
 static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
@@ -192,15 +197,20 @@ lasso_server_get_providerID_from_hash(LassoServer *server,
 static void
 lasso_server_dispose(LassoServer *server)
 {
-/*   /\* No idea how to access to ->private->dispose_has_run *\/ */
-/*   if (server->private->dispose_has_run) { */
-/*     return; */
-/*   } */
-/*   server->private->dispose_has_run = TRUE; */
+  guint i;
+
+  if (server->private->dispose_has_run == TRUE) {
+    return;
+  }
+  server->private->dispose_has_run = TRUE;
 
   debug("Server object 0x%x finalized ...\n", server);
 
-  /* TODO destroy the providers */
+  /* free allocated memory for providers array */
+  for (i=0; i<server->providers->len; i++) {
+    lasso_provider_destroy(server->providers->pdata[i]);
+  }
+  g_ptr_array_free(server->providers, TRUE);
 
   parent_class->dispose(G_OBJECT(server));
 }
@@ -214,6 +224,8 @@ lasso_server_finalize(LassoServer *server)
   g_free(server->private_key);
   g_free(server->certificate);
 
+  g_free(server->private);
+
   parent_class->finalize(G_OBJECT(server));
 }
 
@@ -224,6 +236,9 @@ lasso_server_finalize(LassoServer *server)
 static void
 lasso_server_instance_init(LassoServer *server)
 {
+  server->private = g_new (LassoServerPrivate, 1);
+  server->private->dispose_has_run = FALSE;
+
   server->providers = g_ptr_array_new();
   server->providerID  = NULL;
   server->private_key = NULL;

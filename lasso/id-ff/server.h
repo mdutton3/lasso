@@ -41,6 +41,7 @@ extern "C" {
 
 typedef struct _LassoServer LassoServer;
 typedef struct _LassoServerClass LassoServerClass;
+typedef struct _LassoServerPrivate LassoServerPrivate;
 
 struct _LassoServer {
   LassoProvider parent;
@@ -52,6 +53,7 @@ struct _LassoServer {
   gchar *certificate;
   guint  signature_method;
   /*< private >*/
+  LassoServerPrivate *private;
 };
 
 struct _LassoServerClass {
