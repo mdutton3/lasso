@@ -404,7 +404,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		for (super = info; super; super = super->super)
 			if (super->swig == $1_descriptor)
 				break;
-		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) < 0)
+		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) >= 0)
 			break;
 	}
 	if (! info->swig)
@@ -415,7 +415,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		for (super = info; super; super = super->super)
 			if (super->swig == $1_descriptor)
 				break;
-		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig) < 0)
+		if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) >= 0)
 			break;
 	}
 	if (! info->swig)
