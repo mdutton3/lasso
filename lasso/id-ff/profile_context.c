@@ -23,6 +23,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 #include <lasso/xml/samlp_response.h>
 #include <lasso/protocols/request.h>
 #include <lasso/protocols/response.h>
@@ -46,8 +49,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
   const xmlChar * name;
-  int type;
-  int i;
+  int type = 0;
 
   soap_node = lasso_node_new_from_dump(soap);
   if(soap_node==NULL){
@@ -104,8 +106,8 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
 			   const gchar         *name)
 {
   LassoNode *node;
-  LassoNode *request, *response;
-  gchar *child_dump, *dump = NULL;
+  LassoNode *request, *response = NULL;
+  gchar *dump = NULL;
   gchar *request_type =  g_new0(gchar, 6);
   gchar *response_type = g_new0(gchar, 6);
   gchar *provider_type = g_new0(gchar, 6);
@@ -124,7 +126,7 @@ lasso_profile_context_dump(LassoProfileContext *ctx,
     lasso_node_destroy(request);
   }
   if (ctx->response != NULL) {
-    request = lasso_node_copy(ctx->response);
+    response = lasso_node_copy(ctx->response);
     LASSO_NODE_GET_CLASS(node)->add_child(node, response, FALSE);
     lasso_node_destroy(response);
   }

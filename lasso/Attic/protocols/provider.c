@@ -24,6 +24,7 @@
  */
 
 #include <lasso/protocols/provider.h>
+#include <lasso/xml/errors.h>
 
 struct _LassoProviderPrivate
 {
@@ -64,51 +65,102 @@ lasso_provider_dump(LassoProvider *provider)
 }
 
 gchar *
-lasso_provider_get_assertionConsumerServiceURL(LassoProvider *provider)
+lasso_provider_get_assertionConsumerServiceURL(LassoProvider  *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "AssertionConsumerServiceURL", NULL));
 }
 
 gchar *
-lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider *provider)
+lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider  *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "FederationTerminationNotificationProtocolProfile", NULL));
 }
 
 gchar *
-lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider *provider)
+lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider  *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "FederationTerminationReturnServiceURL", NULL));
 }
 
 gchar *
-lasso_provider_get_federationTerminationServiceURL(LassoProvider *provider)
+lasso_provider_get_federationTerminationServiceURL(LassoProvider  *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "FederationTerminationServiceURL", NULL));
 }
 
 gchar *
-lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider *provider)
+lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider  *provider,
+							GError        **err)
 {
-  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingProtocolProfile"));
+  GError *tmp_err = NULL;
+  xmlChar *value;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  
+  value = lasso_node_get_attr_value(provider->metadata,
+				    "NameIdentifierMappingProtocolProfile",
+				    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (NULL);
+  }
+  return (value);
 }
 
 gchar *
-lasso_provider_get_nameIdentifierMappingServiceURL(LassoProvider *provider)
+lasso_provider_get_nameIdentifierMappingServiceURL(LassoProvider  *provider,
+						   GError        **err)
 {
-  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingServiceURL"));
+  GError *tmp_err = NULL;
+  xmlChar *value;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_node_get_attr_value(provider->metadata,
+				    "NameIdentifierMappingServiceURL",
+				    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (NULL);
+  }
+  return (value);
 }
 
 gchar *
-lasso_provider_get_nameIdentifierMappingServiceReturnURL(LassoProvider *provider)
+lasso_provider_get_nameIdentifierMappingServiceReturnURL(LassoProvider  *provider,
+							 GError        **err)
 {
-  return(lasso_node_get_attr_value(provider->metadata, "NameIdentifierMappingServiceReturnURL"));
+  GError *tmp_err = NULL;
+  xmlChar *value;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_node_get_attr_value(provider->metadata,
+				    "NameIdentifierMappingServiceReturnURL",
+				    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (NULL);
+  }
+  return (value);
 }
 
 gchar *
-lasso_provider_get_providerID(LassoProvider *provider)
+lasso_provider_get_providerID(LassoProvider  *provider,
+			      GError        **err)
 {
-  return(lasso_node_get_attr_value(provider->metadata, "ProviderID"));
+  GError *tmp_err = NULL;
+  xmlChar *value;
+
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+
+  value = lasso_node_get_attr_value(provider->metadata, "ProviderID",
+				    &tmp_err);
+  if (value == NULL) {
+    g_propagate_error (err, tmp_err);
+    return (NULL);
+  }
+  return (value);
 }
 
 gchar *
@@ -301,7 +353,6 @@ lasso_provider_new_metadata_filename(gchar *metadata_filename)
   doc = xmlParseFile(metadata_filename);
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
   xmlFreeDoc(doc);
-  
   provider->metadata = lasso_node_new();
   LASSO_NODE_GET_CLASS(provider->metadata)->set_xmlNode(provider->metadata, root);
   /*provider->metadata = lasso_node_new_from_xmlNode(root); */

@@ -27,6 +27,8 @@
 #include <glib/gprintf.h>
 #include <xmlsec/base64.h>
 
+#include <lasso/xml/errors.h>
+
 #include <lasso/environs/login.h>
 
 #include <lasso/protocols/artifact.h>
@@ -71,12 +73,17 @@ lasso_login_add_response_assertion(LassoLogin    *login,
 {
   LassoNode *assertion = NULL, *authentication_statement;
   xmlChar *requestID;
+  GError *err = NULL;
   gint ret = 0;
 
-  requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request), "RequestID");
+  requestID = lasso_node_get_attr_value(LASSO_NODE(LASSO_PROFILE_CONTEXT(login)->request),
+					"RequestID", &err);
+
   if (requestID == NULL) {
-    debug(ERROR, "The attribute 'RequestID' is missing in request message.\n");
-    return(-2);
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return(ret);
   }
 
   assertion = lasso_assertion_new(LASSO_PROFILE_CONTEXT(login)->server->providerID,
@@ -174,7 +181,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
   LassoNode *assertion = NULL, *status = NULL, *statusCode = NULL;
   LassoProvider *idp = NULL;
   gchar *statusCode_value = NULL;
-  gint signature_check, ret = 0;
+  gint signature_check;
+  gint ret = 0;
+  GError *err = NULL;
 
   assertion = lasso_node_get_child(LASSO_PROFILE_CONTEXT(login)->response,
 				   "Assertion",
@@ -217,10 +226,16 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     ret = -8;
     goto done;
   }
-  statusCode_value = lasso_node_get_attr_value(statusCode, "Value");
-  if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
-    ret = -7;
-    goto done;
+  statusCode_value = lasso_node_get_attr_value(statusCode, "Value", &err);
+  if (err == NULL) {
+    if (!xmlStrEqual(statusCode_value, lassoSamlStatusCodeSuccess)) {
+      ret = -7;
+    }
+  }
+  else {
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
   }
 
  done:

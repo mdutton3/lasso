@@ -101,12 +101,12 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
     str = lasso_node_get_content(LASSO_NODE(idp_identifier));
     new_identifier = lasso_saml_name_identifier_new(str);
     xmlFree(str);
-    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier");
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
     if (str != NULL) {
       lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
       xmlFree(str);
     }
-    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format");
+    str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format", NULL);
     if (str != NULL) {
       lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_identifier), str);
       xmlFree(str);
@@ -123,12 +123,12 @@ lasso_authentication_statement_new(const xmlChar           *authenticationMethod
   str = lasso_node_get_content(LASSO_NODE(idp_identifier));
   new_idp_identifier = lasso_lib_idp_provided_name_identifier_new(str);
   xmlFree(str);
-  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier");
+  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "NameQualifier", NULL);
   if (str != NULL) {
     lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
     xmlFree(str);
   }
-  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format");
+  str = lasso_node_get_attr_value(LASSO_NODE(idp_identifier), "Format", NULL);
   if (str != NULL) {
     lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(new_idp_identifier), str);
     xmlFree(str);

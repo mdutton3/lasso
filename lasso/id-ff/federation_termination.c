@@ -152,13 +152,12 @@ lasso_federation_termination_init_notification(LassoFederationTermination *defed
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
-  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier");
-  format = lasso_node_get_attr_value(nameIdentifier, "Format");
-  profileContext->request = lasso_federation_termination_notification_new(
-								   lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-								   content,
-								   nameQualifier,
-								   format);
+  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
+  format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
+  profileContext->request = lasso_federation_termination_notification_new(profileContext->server->providerID,
+									  content,
+									  nameQualifier,
+									  format);
   if(profileContext->request==NULL){
     debug(ERROR, "Error while creating the notification\n");
     return(-6);

@@ -109,8 +109,7 @@ lasso_lecp_init_authn_request(LassoLecp   *lecp,
 gint
 lasso_lecp_init_authn_request_envelope(LassoLecp *lecp)
 {
-  LassoProvider *provider;
-  gchar *providerID, *assertionConsumerServiceURL;
+  gchar *assertionConsumerServiceURL;
 
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
@@ -119,12 +118,11 @@ lasso_lecp_init_authn_request_envelope(LassoLecp *lecp)
     return(-4);
   }
 
-  provider = LASSO_PROVIDER(lecp->server);
-  providerID = lasso_provider_get_providerID(provider);
-  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(provider);
+  assertionConsumerServiceURL = lasso_provider_get_assertionConsumerServiceURL(LASSO_PROVIDER(lecp->server));
   lecp->request = lasso_authn_request_envelope_new(lecp->authnRequest,
-						   providerID,
+						   lecp->server->providerID,
 						   assertionConsumerServiceURL);
+  g_free(assertionConsumerServiceURL);
 
   return(0);
 }

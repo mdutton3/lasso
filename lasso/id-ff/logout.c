@@ -203,9 +203,9 @@ lasso_logout_init_request(LassoLogout *logout,
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
-  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier");
-  format = lasso_node_get_attr_value(nameIdentifier, "Format");
-  profileContext->request = lasso_logout_request_new(lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
+  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
+  format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
+  profileContext->request = lasso_logout_request_new(profileContext->server->providerID,
 						     content,
 						     nameQualifier,
 						     format);
@@ -261,7 +261,7 @@ lasso_logout_process_request_msg(LassoLogout      *logout,
   profileContext->remote_providerID = remote_providerID;
 
   /* set LogoutResponse */
-  profileContext->response = lasso_logout_response_new(lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
+  profileContext->response = lasso_logout_response_new(profileContext->server->providerID,
 						       lassoSamlStatusCodeSuccess,
 						       profileContext->request);
 
@@ -344,7 +344,7 @@ lasso_logout_process_response_msg(LassoLogout      *logout,
   }
  
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", NULL);
   if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
     return(-4);
   }

@@ -24,6 +24,7 @@
  */
 
 #include <string.h>
+#include <lasso/xml/errors.h>
 #include <lasso/xml/xml.h>
 #include <lasso/xml/ds_signature.h>
 #include <xmlsec/base64.h>
@@ -194,6 +195,7 @@ lasso_node_get_attr(LassoNode     *node,
  * lasso_node_get_attr_value:
  * @node: a LassoNode
  * @name: the attribute name
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Gets the value of an attribute associated to a node.
  * 
@@ -201,13 +203,14 @@ lasso_node_get_attr(LassoNode     *node,
  * to free the memory with xmlFree().
  **/
 xmlChar *
-lasso_node_get_attr_value(LassoNode     *node,
-			  const xmlChar *name)
+lasso_node_get_attr_value(LassoNode      *node,
+			  const xmlChar  *name,
+			  GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  return (class->get_attr_value(node, name));
+  return (class->get_attr_value(node, name, err));
 }
 
 /**
@@ -716,13 +719,24 @@ lasso_node_impl_get_attr(LassoNode     *node,
 }
 
 static xmlChar *
-lasso_node_impl_get_attr_value(LassoNode     *node,
-			       const xmlChar *name)
+lasso_node_impl_get_attr_value(LassoNode      *node,
+			       const xmlChar  *name,
+			       GError        **err)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
   g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
 
-  return (xmlGetProp(node->private->node, name));
+  xmlChar *value = xmlGetProp(node->private->node, name);
+
+  if (value == NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND,
+		lasso_strerror(LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND),
+		name, node->private->node->name);
+  }
+
+  return (value);
 }
 
 static GPtrArray *

@@ -29,9 +29,9 @@ const char*
 lasso_strerror(int error_code)
 {
   switch (error_code) {
-  case LASSO_ERROR_METADATA_VALUE_NOTFOUND:
-    return "Unable to get metadata value %s\n";
+  case LASSO_ERROR_XML_ATTR_VALUE_NOTFOUND:
+    return "Unable to get '%s' attribute value in '%s' element.\n";
   default:
-    return "Undefined error code !\n";
+    return "Undefined error code !!!\n";
   }
 }

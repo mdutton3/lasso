@@ -34,7 +34,6 @@ static GObjectClass *parent_class = NULL;
 gchar *
 lasso_register_name_identifier_dump(LassoRegisterNameIdentifier *register_name_identifier)
 {
-  LassoProfileContext *profileContext;
   gchar *dump;
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), NULL);
@@ -152,7 +151,6 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
   LassoIdentity       *identity;
-  LassoRegisterNameIdentifierRequest  *request;
 
   xmlChar *content, *nameQualifier, *format;
 
@@ -198,19 +196,18 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
-  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier");
-  format = lasso_node_get_attr_value(nameIdentifier, "Format");
-  profileContext->request = lasso_register_name_identifier_request_new(
-								 lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-								 content,
-								 nameQualifier,
-								 format,
-								 "",
-								 "",
-								 "",
-								 "",
-								 "",
-								 "");
+  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
+  format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
+  profileContext->request = lasso_register_name_identifier_request_new(profileContext->server->providerID,
+								       content,
+								       nameQualifier,
+								       format,
+								       "",
+								       "",
+								       "",
+								       "",
+								       "",
+								       "");
 
   if(profileContext->request==NULL){
     debug(ERROR, "Error while creating the request\n");
@@ -259,10 +256,9 @@ lasso_register_name_identifier_process_request_msg(LassoRegisterNameIdentifier *
   profileContext->remote_providerID = remote_providerID;
 
   /* set RegisterNameIdentifierResponse */
-  profileContext->response = lasso_register_name_identifier_response_new(
-								  lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-								  lassoSamlStatusCodeSuccess,
-								  profileContext->request);
+  profileContext->response = lasso_register_name_identifier_response_new(profileContext->server->providerID,
+									 lassoSamlStatusCodeSuccess,
+									 profileContext->request);
 
   if(profileContext->response==NULL){
     debug(ERROR, "Error while building response\n");
@@ -318,6 +314,8 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
   LassoProfileContext *profileContext;
   xmlChar   *statusCodeValue;
   LassoNode *statusCode;
+  GError *err = NULL;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
   g_return_val_if_fail(response_msg!=NULL, -2);
@@ -338,11 +336,18 @@ lasso_register_name_identifier_process_response_msg(LassoRegisterNameIdentifier 
   }
  
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
-  if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
-    return(-4);
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
+  if (err == NULL) {
+    if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
+      return(-4);
+    }
   }
-
+  else {
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return (ret);
+  }
   return(0);
 }
 

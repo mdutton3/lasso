@@ -32,13 +32,27 @@
 gchar*
 lasso_logout_response_get_status_code_value(LassoLogoutResponse *response)
 {
-  LassoNodeClass *statusCode_class;
-  LassoNode *statusCode_node;
-  
-  statusCode_node = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
-  statusCode_class = LASSO_NODE_GET_CLASS(statusCode_node);
+  LassoNode *status_code;
+  xmlChar *value;
+  GError *err = NULL;
 
-  return(statusCode_class->get_attr_value(statusCode_node, "Value"));
+  status_code = lasso_node_get_child(LASSO_NODE(response), "StatusCode", NULL);
+  if (status_code != NULL) {
+    value = lasso_node_get_attr_value(status_code, "Value", &err);
+    lasso_node_destroy(status_code);
+    if (err != NULL) {
+      debug(ERROR, err->message);
+      g_error_free(err);
+      return (NULL);
+    }
+    else {
+      return (value);
+    }
+  }
+  else {
+    debug(ERROR, "No StatusCode element found in Response.\n");
+    return (NULL);
+  }
 }
 
 /*****************************************************************************/

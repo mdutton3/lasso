@@ -45,6 +45,8 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
   LassoProfileContext *profileContext;
   LassoProvider *provider;
   xmlChar *protocolProfile;
+  GError *err = NULL;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
   
@@ -57,16 +59,18 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider);
-  if(protocolProfile==NULL){
-    debug(ERROR, "Single Name_Identifier_Mapping Protocol profile not found\n");
-    return(-3);
+  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
+  if(err != NULL){
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return (ret);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
     debug(DEBUG, "building a soap request message\n");
     profileContext->request_type = lassoHttpMethodSoap;
-    profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider);
+    profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
@@ -87,7 +91,9 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
   LassoProfileContext *profileContext;
   LassoProvider *provider;
   xmlChar *protocolProfile;
-  
+  GError *err = NULL;
+  gint ret = 0;
+
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
 
   profileContext = LASSO_PROFILE_CONTEXT(mapping);
@@ -98,15 +104,17 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
     return(-2);
   }
 
-  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider);
-  if(protocolProfile==NULL){
-    debug(ERROR, "Single Name_Identifier_Mapping Protocol profile not found\n");
-    return(-3);
+  protocolProfile = lasso_provider_get_nameIdentifierMappingProtocolProfile(provider, &err);
+  if(err != NULL){
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return(ret);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
     debug(DEBUG, "building a soap response message\n");
-    profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider);
+    profileContext->msg_url = lasso_provider_get_nameIdentifierMappingServiceURL(provider, NULL);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
@@ -172,13 +180,12 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
-  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier");
-  format = lasso_node_get_attr_value(nameIdentifier, "Format");
-  profileContext->request = lasso_name_identifier_mapping_request_new(
-						     lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-						     content,
-						     nameQualifier,
-						     format);
+  nameQualifier = lasso_node_get_attr_value(nameIdentifier, "NameQualifier", NULL);
+  format = lasso_node_get_attr_value(nameIdentifier, "Format", NULL);
+  profileContext->request = lasso_name_identifier_mapping_request_new(profileContext->server->providerID,
+								      content,
+								      nameQualifier,
+								      format);
 
   g_return_val_if_fail(profileContext->request!=NULL, -6);
 
@@ -224,10 +231,9 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
   profileContext->remote_providerID = remote_providerID;
 
   /* set Name_Identifier_MappingResponse */
-  profileContext->response = lasso_name_identifier_mapping_response_new(
-                                                       lasso_provider_get_providerID(LASSO_PROVIDER(profileContext->server)),
-						       lassoSamlStatusCodeSuccess,
-						       profileContext->request);
+  profileContext->response = lasso_name_identifier_mapping_response_new(profileContext->server->providerID,
+									lassoSamlStatusCodeSuccess,
+									profileContext->request);
 
   g_return_val_if_fail(profileContext->response!=NULL, -4);
 
@@ -267,9 +273,11 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
   LassoProfileContext *profileContext;
   xmlChar   *statusCodeValue;
   LassoNode *statusCode;
+  GError *err = NULL;
+  gint ret = 0;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
-  g_return_val_if_fail(response_msg!=NULL, -2);
+  g_return_val_if_fail(response_msg != NULL, -2);
 
   profileContext = LASSO_PROFILE_CONTEXT(mapping);
 
@@ -283,11 +291,18 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
   }
  
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
-  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value");
-  if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)){
-    return(-4);
+  statusCodeValue = lasso_node_get_attr_value(statusCode, "Value", &err);
+  if (err == NULL) {
+    if(!xmlStrEqual(statusCodeValue, lassoSamlStatusCodeSuccess)) {
+      return(-4);
+    }
   }
-
+  else {
+    debug(ERROR, err->message);
+    ret = err->code;
+    g_error_free(err);
+    return (ret);
+  }
   return(0);
 }
 
