@@ -30,6 +30,16 @@ public class Lasso { // Lasso
         System.loadLibrary("jlasso");
     }
 
+    static final public int httpMethodGet = 1;
+    static final public int httpMethodPost = 2;
+    static final public int httpMethodRedirect = 3;
+    static final public int httpMethodSoap = 4;
+
+    /* Consent */
+    static final public String libConsentObtained = "urn:liberty:consent:obtained";
+    static final public String libConsentUnavailable = "urn:liberty:consent:unavailable";
+    static final public String libConsentInapplicable = "urn:liberty:consent:inapplicable";
+
     /* NameIDPolicyType */
     static final public String libNameIdPolicyTypeNone = "none";
     static final public String libNameIdPolicyTypeOneTime = "onetime";

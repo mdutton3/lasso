@@ -67,7 +67,7 @@ public class LassoLogin extends LassoProfileContext { // LassoLogin
     native public int initRequest(String responseMsg,
                                   int responseMethod);
 
-    native public int mustAuthenticate();
+    native public boolean mustAuthenticate();
 
     native public int processAuthnResponseMsg(String authnResponseMsg);
 

@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_initRequest
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_entrouvert_lasso_LassoLogin_mustAuthenticate
+JNIEXPORT jboolean JNICALL Java_com_entrouvert_lasso_LassoLogin_mustAuthenticate
 (JNIEnv * env, jobject this){
     int result;
     LassoLogin* login;

@@ -77,6 +77,7 @@ public class LoginTest extends TestCase {
     }
 
     public void test02_serviceProviderLogin() {
+	// Service provider login using HTTP redirect.
         String spContextDump = generateServiceProviderContextDump();
 	assertNotNull(spContextDump);
         LassoServer spContext = new LassoServer(spContextDump);
@@ -86,9 +87,20 @@ public class LoginTest extends TestCase {
 	LassoAuthnRequest authnRequest = (LassoAuthnRequest) spLoginContext.getRequest();
         authnRequest.setPassive(false);
         authnRequest.setNameIdPolicy(Lasso.libNameIdPolicyTypeFederated);
-        // FIXME authnRequest.setConsent(Lasso.libConsentObtained);
+        authnRequest.setConsent(Lasso.libConsentObtained);
         authnRequest.setRelayState("fake");
         assertEquals(spLoginContext.buildAuthnRequestMsg(), 0);
+        String authnRequestUrl = spLoginContext.getMsgUrl();
+        String authnRequestMsg = authnRequestUrl.substring(authnRequestUrl.indexOf("?") + 1);
+        int method = Lasso.httpMethodRedirect;
+
+	// Identity provider singleSignOn, for a user having no federation.
+        String idpContextDump = generateIdentityProviderContextDump();
+        assertNotNull(idpContextDump);
+        LassoServer idpContext = new LassoServer(idpContextDump);
+        LassoLogin idpLoginContext = new LassoLogin(idpContext, null);
+        assertEquals(idpLoginContext.initFromAuthnRequestMsg(authnRequestMsg, method), 0);
+        assertTrue(idpLoginContext.mustAuthenticate());
     }
 
     public static Test suite() { 

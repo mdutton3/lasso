@@ -77,19 +77,32 @@ class LoginTestCase(unittest.TestCase):
         self.failUnless(serviceProviderContextDump)
 
     def test02_serviceProviderLogin(self):
+        """Service provider initiated login"""
+
+        # Service provider login using HTTP redirect.
         spContextDump = self.generateServiceProviderContextDump()
         self.failUnless(spContextDump)
         spContext = lasso.Server.new_from_dump(spContextDump)
         spLoginContext = lasso.Login.new(spContext)
-        self.failIf(spLoginContext.init_authn_request(
-            "https://identity-provider:1998/liberty-alliance/metadata"))
+        self.failUnlessEqual(spLoginContext.init_authn_request(
+            "https://identity-provider:1998/liberty-alliance/metadata"), 0)
         spLoginContext.request.set_isPassive(False)
         spLoginContext.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
-        # FIXME spLoginContext.request.set_consent(lasso.libConsentObtained)
+        spLoginContext.request.set_consent(lasso.libConsentObtained)
         spLoginContext.request.set_relayState("fake")
-        self.failIf(spLoginContext.build_authn_request_msg())
-        # spLoginContext.msg_url
+        self.failUnlessEqual(spLoginContext.build_authn_request_msg(), 0)
+        authnRequestUrl = spLoginContext.msg_url
+        authnRequestMsg = authnRequestUrl.split("?", 1)[1]
+        method = lasso.httpMethodRedirect
 
+        # Identity provider singleSignOn, for a user having no federation.
+        idpContextDump = self.generateIdentityProviderContextDump()
+        self.failUnless(idpContextDump)
+        idpContext = lasso.Server.new_from_dump(idpContextDump)
+        idpLoginContext = lasso.Login.new(idpContext)
+        self.failUnlessEqual(idpLoginContext.init_from_authn_request_msg(authnRequestMsg, method),
+                             0)
+        self.failUnless(idpLoginContext.must_authenticate())
 
 suite1 = unittest.makeSuite(LoginTestCase, 'test')
 
