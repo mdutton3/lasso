@@ -92,6 +92,9 @@ class ErrorUnknown(Error):
         return 'Unknown error number %d in Lasso function %s' % (self.code, self.functionName)
 
 
+# Binding specific errors
+
+
 class ErrorLassoAlreadyInitialized(Error):
     code = 1
     msg = 'Lasso already initialized'
@@ -135,9 +138,22 @@ class ErrorUnknownResponseType(Error):
             self.responseType, self.functionName)
 
 
+# Lasso errors
+
+
+class LogoutErrorUnsupportedProfile(Error):
+    code = lassomod.LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE
+
+    def __str__(self):
+        return 'Unsupported logout profile in Lasso function %s()' % self.functionName
+
+
 def newError(code, functionName):
     # FIXME: Use proper ErrorClass, when Lasso will have well defined error codes.
-    return ErrorUnknown(code, functionName)
+    if code == lassomod.LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
+        return LogoutErrorUnsupportedProfile(functionName)
+    else:
+        return ErrorUnknown(code, functionName)
 
 
 ################################################################################
@@ -455,8 +471,9 @@ class Defederation(_ObjectMixin, lassomod.LassoDefederation, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_defederation_build_notification_msg')
 
-    def init_notification(self, remote_providerID = None):
-        errorCode = lassomod.lasso_defederation_init_notification(self, remote_providerID)
+    def init_notification(self, remote_providerID, notification_method = httpMethodAny):
+        errorCode = lassomod.lasso_defederation_init_notification(
+            self, remote_providerID, notification_method)
         if errorCode:
             raise newError(errorCode, 'lasso_defederation_init_notification')
 
@@ -535,7 +552,7 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_from_authn_request_msg')
 
-    def init_request(self, response_msg, response_http_method):
+    def init_request(self, response_msg, response_http_method = httpMethodRedirect):
         errorCode = lassomod.lasso_login_init_request(self, response_msg, response_http_method)
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_request')
@@ -581,8 +598,8 @@ class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
     def get_next_providerID(self):
         return lassomod.lasso_logout_get_next_providerID(self)
 
-    def init_request(self, remote_providerID = None):
-        errorCode = lassomod.lasso_logout_init_request(self, remote_providerID)
+    def init_request(self, remote_providerID, request_method = httpMethodAny):
+        errorCode = lassomod.lasso_logout_init_request(self, remote_providerID, request_method)
         if errorCode:
             raise newError(errorCode, 'lasso_logout_init_request')
 

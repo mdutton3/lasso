@@ -126,7 +126,8 @@ int lasso_shutdown(void);
 
 
 typedef enum {
-	lassoHttpMethodGet = 1,
+	lassoHttpMethodAny = 0,
+	lassoHttpMethodGet,
 	lassoHttpMethodPost,
 	lassoHttpMethodRedirect,
 	lassoHttpMethodSoap
@@ -207,6 +208,36 @@ typedef enum {
 	lassoSignatureMethodRsaSha1 = 1,
 	lassoSignatureMethodDsaSha1
 } lassoSignatureMethod;
+
+
+/* Errors */
+#define LASSO_XML_ERROR_NODE_NOTFOUND         -10
+#define LASSO_XML_ERROR_NODE_CONTENT_NOTFOUND -11
+#define LASSO_XML_ERROR_ATTR_NOTFOUND         -12
+#define LASSO_XML_ERROR_ATTR_VALUE_NOTFOUND   -13
+
+#define LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED -101
+#define LASSO_DS_ERROR_CONTEXT_CREATION_FAILED        -102
+#define LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED         -103
+#define LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED        -104
+#define LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED        -105
+#define LASSO_DS_ERROR_SIGNATURE_FAILED               -106
+#define LASSO_DS_ERROR_SIGNATURE_NOTFOUND             -107
+#define LASSO_DS_ERROR_KEYS_MNGR_CREATION_FAILED      -108
+#define LASSO_DS_ERROR_KEYS_MNGR_INIT_FAILED          -109
+#define LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED  -110
+#define LASSO_DS_ERROR_INVALID_SIGNATURE              -111
+
+#define LASSO_SERVER_ERROR_PROVIDER_NOTFOUND   -201
+#define LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED -202
+
+#define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE -301
+
+#define LASSO_PARAM_ERROR_BADTYPE_OR_NULL_OBJ -501
+#define LASSO_PARAM_ERROR_INVALID_VALUE       -502
+#define LASSO_PARAM_ERROR_ERR_CHECK_FAILED    -503
+
+#define LASSO_ERROR_UNDEFINED  -999
 
 
 /***********************************************************************
@@ -572,8 +603,8 @@ void lasso_defederation_destroy(LassoDefederation *defederation);
 gint lasso_defederation_build_notification_msg(LassoDefederation *defederation);
 
 gint lasso_defederation_init_notification(LassoDefederation *defederation,
-					  gchar             *remote_providerID,
-					  lassoHttpMethod    notification_method);
+					  gchar *remote_providerID,
+					  lassoHttpMethod notification_method);
 
 gint lasso_defederation_process_notification_msg(LassoDefederation *defederation,
 						 gchar *notification_msg,
@@ -690,7 +721,8 @@ gint lasso_logout_build_response_msg(LassoLogout *logout);
 %newobject lasso_logout_get_next_providerID;
 gchar* lasso_logout_get_next_providerID (LassoLogout *logout);
 
-gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID, lassoHttpMethod request_method);
+gint lasso_logout_init_request(LassoLogout *logout, gchar *remote_providerID,
+			       lassoHttpMethod request_method);
 
 gint lasso_logout_process_request_msg(LassoLogout *logout, gchar *request_msg,
 				      lassoHttpMethod request_method);
