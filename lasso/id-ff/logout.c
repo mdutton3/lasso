@@ -272,7 +272,10 @@ lasso_logout_init_request(LassoLogout *logout,
 					      content,
 					      nameQualifier,
 					      format);
-  xmlFree(content);
+
+  /* free the nameIdentifier infos except the value (keep in profile->nameIdentifier) */
+  profile->nameIdentifier = content;
+
   xmlFree(nameQualifier);
   xmlFree(format);
   lasso_node_destroy(nameIdentifier);
@@ -417,6 +420,7 @@ lasso_logout_validate_request(LassoLogout *logout)
   }
 
   /* verification is ok, save name identifier in logout object */
+  message(G_LOG_LEVEL_WARNING, "Remove assertion of %s\n", profile->remote_providerID);
   lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   if(profile->provider_type==lassoProviderTypeIdp){
     logout->initial_remote_providerID = g_strdup(profile->remote_providerID);
