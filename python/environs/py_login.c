@@ -57,7 +57,7 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
 
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[ssssss]", "request", "response", "request_type",
-			 "msg_url", "msg_body", "protocolProfile");
+			 "msg_url", "msg_body", "protocolProfile", "assertionArtifact");
   if (!strcmp(attr, "request"))
     return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(login)->request));
   if (!strcmp(attr, "response"))
@@ -70,6 +70,8 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(login)->msg_body));
   if (!strcmp(attr, "protocolProfile"))
     return (int_wrap(login->protocolProfile));
+  if (!strcmp(attr, "assertionArtifact"))
+    return (charPtrConst_wrap(login->assertionArtifact));
 
   Py_INCREF(Py_None);
   return (Py_None);
@@ -175,6 +177,24 @@ PyObject *login_build_request_msg(PyObject *self, PyObject *args) {
   else return NULL;
 
   ret = lasso_login_build_request_msg(LassoLogin_get(login_obj));
+
+  return (int_wrap(ret));
+}
+
+PyObject *login_handle_request_msg(PyObject *self, PyObject *args) {
+  PyObject *login_obj;
+  gchar    *request_msg;
+  gboolean ret;
+
+  if (CheckArgs(args, "OS:login_handle_request_msg")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:login_handle_request_msg",
+			 &login_obj, &request_msg))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_login_handle_request_msg(LassoLogin_get(login_obj),
+				       request_msg);
 
   return (int_wrap(ret));
 }

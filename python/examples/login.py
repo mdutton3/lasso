@@ -82,3 +82,19 @@ ret = splogin.init_request(response_msg,
 
 ret = splogin.build_request_msg()
 print "ret = %d, msg_url = %s, msg_body = %s" % (ret, splogin.msg_url, splogin.msg_body)
+
+#####################
+# Identity provider #
+#####################
+server = lasso.Server.new("../../examples/idp.xml",
+                          None, "../../examples/rsakey.pem", "../../examples/rootcert.pem",
+                          lasso.SignatureMethodRsaSha1)
+
+server.add_provider("../../examples/sp.xml",
+                    "../../examples/rsapub.pem", "../../examples/rsacert.pem")
+
+# create Response
+idplogin = lasso.Login.new(server, None)
+
+ret = idplogin.handle_request_msg(splogin.msg_body)
+print "samlp:AssertionArtifact = %s" % idplogin.assertionArtifact
