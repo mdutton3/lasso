@@ -171,7 +171,7 @@ lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 	LASSO_LIB_AUTHENTICATION_STATEMENT(statement)->ReauthenticateOnOrAfter = 
 		g_strdup(reauthenticateOnOrAfter);
 
-	LASSO_SAML_SUBJECT(subject)->NameIdentifier = new_identifier;
+	LASSO_SAML_SUBJECT(subject)->NameIdentifier = g_object_ref(new_identifier);
 
 	if (sp_identifier != NULL) {
 		/* create a new IdpProvidedNameIdentifier and use idp_identifier data to fill it */

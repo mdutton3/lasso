@@ -82,13 +82,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		if (strcmp(t->name, "NameIdentifier") == 0) {
 			subject->NameIdentifier = LASSO_SAML_NAME_IDENTIFIER(
-					lasso_saml_name_identifier_new());
-			lasso_node_init_from_xml(LASSO_NODE(subject->NameIdentifier), t);
+					lasso_node_new_from_xmlNode(t));
 		}
 		if (strcmp(t->name, "SubjectConfirmation") == 0) {
 			subject->SubjectConfirmation = LASSO_SAML_SUBJECT_CONFIRMATION(
-					lasso_saml_subject_confirmation_new());
-			lasso_node_init_from_xml(LASSO_NODE(subject->SubjectConfirmation), t);
+					lasso_node_new_from_xmlNode(t));
 		}
 		t = t->next;
 	}

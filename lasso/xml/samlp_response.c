@@ -151,7 +151,7 @@ lasso_samlp_response_new()
 	LassoSamlpStatusCode *status_code;
 	LassoSamlpStatus *status;
 
-	response = LASSO_SAMLP_RESPONSE_ABSTRACT(g_object_new(LASSO_TYPE_SAMLP_RESPONSE, NULL));
+	response = g_object_new(LASSO_TYPE_SAMLP_RESPONSE, NULL);
 
 	response->ResponseID = lasso_build_unique_id(32);
 	response->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;

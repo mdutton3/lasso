@@ -130,6 +130,6 @@ lasso_samlp_request_get_type()
 LassoNode*
 lasso_samlp_request_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_REQUEST, NULL));
+	return g_object_new(LASSO_TYPE_SAMLP_REQUEST, NULL);
 }
 

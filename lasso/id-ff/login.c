@@ -95,7 +95,7 @@ lasso_login_build_assertion(LassoLogin *login,
 
 	if (strcmp(login->nameIDPolicy, LASSO_LIB_NAMEID_POLICY_TYPE_ONE_TIME) == 0) {
 		/* if NameIDPolicy is 'onetime', don't use a federation */
-		nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(lasso_saml_name_identifier_new());
+		nameIdentifier = lasso_saml_name_identifier_new();
 		nameIdentifier->content = lasso_build_unique_id(32);
 		nameIdentifier->NameQualifier = LASSO_PROVIDER(profile->server)->ProviderID;
 		nameIdentifier->Format = LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME;
@@ -135,9 +135,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
 	}
-	lasso_session_add_assertion(
-			profile->session,
-			profile->remote_providerID,
+	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			LASSO_SAML_ASSERTION(assertion));
 	return 0;
 }
@@ -867,11 +865,12 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			/* get assertion in session and add it in response */
 			assertion = lasso_session_get_assertion(LASSO_PROFILE(login)->session,
 					LASSO_PROFILE(login)->remote_providerID);
-			LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion = assertion;
 			if (assertion == NULL) {
 				/* FIXME should this message output by lasso_session_get_assertion () ? */
 				message(G_LOG_LEVEL_CRITICAL, "Assertion not found in session\n");
 			}
+			LASSO_SAMLP_RESPONSE(LASSO_PROFILE(login)->response)->Assertion =
+				g_object_ref(assertion);
 		}
 	} else {
 		lasso_profile_set_response_status(LASSO_PROFILE(login),
@@ -1249,7 +1248,8 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 		return LASSO_ERROR_UNDEFINED;
 	}
 	/* get AssertionArtifact */
-	login->assertionArtifact = LASSO_SAMLP_REQUEST(profile->request)->AssertionArtifact;
+	login->assertionArtifact = g_strdup(
+			LASSO_SAMLP_REQUEST(profile->request)->AssertionArtifact);
 
 	return ret;
 }

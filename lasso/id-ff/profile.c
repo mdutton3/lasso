@@ -376,7 +376,7 @@ finalize(GObject *object)
 {
 	LassoProfile *profile = LASSO_PROFILE(object);
 
-	debug("Profile object 0x%x finalized ...\n", ctx);
+	debug("Profile object 0x%x finalized ...\n", object);
 
 	g_free(profile->nameIdentifier);
 	g_free(profile->remote_providerID);

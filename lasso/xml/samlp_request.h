@@ -43,16 +43,14 @@ typedef struct _LassoSamlpRequest LassoSamlpRequest;
 typedef struct _LassoSamlpRequestClass LassoSamlpRequestClass;
 
 struct _LassoSamlpRequest {
-  LassoSamlpRequestAbstract parent;
+	LassoSamlpRequestAbstract parent;
 
-  /* <element name="AssertionArtifact" type="string"/> */
-  char *AssertionArtifact;
-
-  /*< private >*/
+	/* <element name="AssertionArtifact" type="string"/> */
+	char *AssertionArtifact;
 };
 
 struct _LassoSamlpRequestClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_samlp_request_get_type(void);

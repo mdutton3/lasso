@@ -258,6 +258,6 @@ lasso_samlp_response_abstract_get_type()
 LassoNode*
 lasso_samlp_response_abstract_new()
 {
-	return LASSO_NODE(g_object_new(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT, NULL));
+	return g_object_new(LASSO_TYPE_SAMLP_RESPONSE_ABSTRACT, NULL);
 }
 
