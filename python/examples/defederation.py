@@ -6,18 +6,6 @@ import lasso
 
 lasso.init()
 
-## print 
-## print 'Build LogoutRequest ...'
-## req = lasso.LogoutRequest.new("http://providerid.com", "CDSC7SCD6SSDJCSCKSDKCDSCLSD", "http://qualifier.com", "federated")
-## soap = req.soap_envelop()
-## req2 = lasso.LogoutRequest.new_from_soap(soap)
-
-## print
-## print 'Rebuild LogoutRequest from soap message ...'
-## req2.dump()
-## query = req2.url_encode(1, 'rsakey.pem')
-## print 'query : ', query
-
 notification = lasso.FederationTerminationNotification.new("http://providerid.com",
                                                            "CDSC7SCD65SCDSDCCDS", "http://qualifier.com", "federated")
 
