@@ -1,4 +1,4 @@
-SUBDIRS		= lasso docs python win32 tests
+SUBDIRS		= lasso docs python tests
 
 ABS_BUILDDIR	= $(shell pwd)
 
