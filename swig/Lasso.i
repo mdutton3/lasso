@@ -200,7 +200,7 @@ typedef struct node_info {
 	swig_type_info *swig;
 } node_info;
 
-static node_info node_infos[100]; /* FIXME: Size should be computed *
+static node_info node_infos[100]; /* FIXME: Size should be computed */
 
 /* Cast a LassoNode into the appropriate derivated class. */
 static swig_type_info *dynamic_cast_node(void **nodePointer) {
@@ -224,7 +224,8 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 			if (strcmp(super->name, superName) == 0)
 				break;
 		if (super == info) {
-			printf("Unknown super class %s for class %s\n", name, superName);
+			printf("Lasso Swig Alert: Unknown super class %s for class %s\n",
+			       superName, name);
 			super = NULL;
 		}
 	} else
@@ -242,7 +243,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 #define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className)
 
 	info = node_infos;
-	SET_NODE_INFO(LassoNode, NULL); /* Must be first. */
+	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
 
 	/* saml prefix */
 
