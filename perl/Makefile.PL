@@ -2,6 +2,7 @@
 
 use ExtUtils::MakeMaker;
 
+$CC=$ENV{CC} || "cc";
 $CFLAGS=$ENV{CFLAGS} || "";
 
 my $objects="lasso_wrap.o ";
@@ -37,4 +38,5 @@ WriteMakefile(
 	      AUTHOR  => 'Frederic Peters <fpeters@entrouvert.com>',
 	      MAKEFILE => 'Makefile.perl',
 	      DEFINE    => "-DHAVE_CONFIG_H $CFLAGS",
+	      CC => $CC,
 );
