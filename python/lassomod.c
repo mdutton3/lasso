@@ -30,6 +30,7 @@
 #include "xml/py_xml.h"
 #include "xml/py_lib_authentication_statement.h"
 #include "xml/py_lib_authn_request.h"
+#include "xml/py_lib_authn_response.h"
 #include "xml/py_lib_federation_termination_notification.h"
 #include "xml/py_lib_logout_request.h"
 #include "xml/py_lib_logout_response.h"
@@ -97,6 +98,10 @@ static PyMethodDef lasso_methods[] = {
   {"lib_authn_request_set_nameIDPolicy",    lib_authn_request_set_nameIDPolicy,    METH_VARARGS},
   {"lib_authn_request_set_protocolProfile", lib_authn_request_set_protocolProfile, METH_VARARGS},
   {"lib_authn_request_set_relayState",      lib_authn_request_set_relayState,      METH_VARARGS},
+
+  /* py_lib_authn_response.h */
+  {"lib_authn_response_new",                 lib_authn_response_new,                 METH_VARARGS},
+  {"lib_authn_response_add_assertion",       lib_authn_response_add_assertion,       METH_VARARGS},
 
   /* py_lib_federation_termination_notification.h */
   {"lib_federation_termination_notification_new",         lib_federation_termination_notification_new,         METH_VARARGS},
@@ -253,19 +258,19 @@ static PyMethodDef lasso_methods[] = {
   {"login_process_response_msg",        login_process_response_msg,        METH_VARARGS},
 
   /* py_logout.h */
-  {"logout_getattr", logout_getattr, METH_VARARGS},
+  {"logout_getattr",              logout_getattr,              METH_VARARGS},
   {"logout_new",                  logout_new,                  METH_VARARGS},
   {"logout_build_request_msg",    logout_build_request_msg,    METH_VARARGS},
   {"logout_build_response_msg",   logout_build_response_msg,   METH_VARARGS},
   {"logout_destroy",              logout_destroy,              METH_VARARGS},
   {"logout_get_next_providerID",  logout_get_next_providerID,  METH_VARARGS},
   {"logout_init_request",         logout_init_request,         METH_VARARGS},
-  {"logout_load_request_msg",     logout_load_request_msg,     METH_VARARGS},
-  {"logout_process_request",      logout_process_request,  METH_VARARGS},
+  {"logout_process_request_msg",  logout_process_request_msg,  METH_VARARGS},
   {"logout_process_response_msg", logout_process_response_msg, METH_VARARGS},
+  {"logout_validate_request",     logout_validate_request,     METH_VARARGS},
 
   /* py_register_name_identifier.h */
-  {"register_name_identifier_getattr", register_name_identifier_getattr, METH_VARARGS},
+  {"register_name_identifier_getattr",              register_name_identifier_getattr,              METH_VARARGS},
   {"register_name_identifier_new",                  register_name_identifier_new,                  METH_VARARGS},
   {"register_name_identifier_build_request_msg",    register_name_identifier_build_request_msg,    METH_VARARGS},
   {"register_name_identifier_build_response_msg",   register_name_identifier_build_response_msg,   METH_VARARGS},

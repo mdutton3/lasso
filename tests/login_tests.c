@@ -218,15 +218,15 @@ START_TEST(test02_serviceProviderLogin)
 	idpContext = lasso_server_new_from_dump(identityProviderContextDump);
 	idpLogoutContext = lasso_logout_new(idpContext, lassoProviderTypeIdp);
 	fail_unless(idpLogoutContext != NULL, "lasso_logout_new failed");
-	rc = lasso_logout_load_request_msg(
+	rc = lasso_logout_process_request_msg(
 			idpLogoutContext,
 			LASSO_PROFILE(spLogoutContext)->msg_body,
 			lassoHttpMethodSoap);
-	fail_unless(rc == 0, "lasso_logout_load_request_msg failed");
+	fail_unless(rc == 0, "lasso_logout_process_request_msg failed");
 	rc = lasso_profile_set_identity_from_dump(LASSO_PROFILE(idpLogoutContext),
 						  idpIdentityContextDump);
 	fail_unless(rc == 0, "lasso_profile_set_identity_from_dump failed");
-	rc = lasso_logout_process_request(idpLogoutContext);
+	rc = lasso_logout_validate_request(idpLogoutContext);
 	fail_unless(rc == 0, "lasso_logout_process_request failed");
 	fail_unless(lasso_logout_get_next_providerID(idpLogoutContext) == NULL,
 			"lasso_logout_get_next_providerID failed");

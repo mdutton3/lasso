@@ -46,9 +46,9 @@ PyObject *logout_build_response_msg(PyObject *self, PyObject *args);
 PyObject *logout_destroy(PyObject *self, PyObject *args);
 PyObject *logout_get_next_providerID(PyObject *self, PyObject *args);
 PyObject *logout_init_request(PyObject *self, PyObject *args);
-PyObject *logout_load_request_msg(PyObject *self, PyObject *args);
+PyObject *logout_process_request_msg(PyObject *self, PyObject *args);
 PyObject *logout_new(PyObject *self, PyObject *args);
-PyObject *logout_process_request(PyObject *self, PyObject *args);
+PyObject *logout_validate_request(PyObject *self, PyObject *args);
 PyObject *logout_process_response_msg(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_LOGOUT_H__ */

@@ -78,11 +78,11 @@ LASSO_EXPORT gchar*       lasso_logout_get_next_providerID     (LassoLogout *log
 LASSO_EXPORT gint         lasso_logout_init_request            (LassoLogout *logout,
 								gchar       *remote_providerID);
 
-LASSO_EXPORT gint         lasso_logout_load_request_msg        (LassoLogout     *logout,
+LASSO_EXPORT gint         lasso_logout_process_request_msg     (LassoLogout     *logout,
 								gchar           *request_msg,
 								lassoHttpMethods request_method);
 
-LASSO_EXPORT gint         lasso_logout_process_request         (LassoLogout *logout);
+LASSO_EXPORT gint         lasso_logout_validate_request        (LassoLogout *logout);
 
 LASSO_EXPORT gint         lasso_logout_process_response_msg    (LassoLogout      *logout,
 								gchar            *response_msg,

@@ -277,9 +277,9 @@ lasso_logout_init_request(LassoLogout *logout,
   return(0);
 }
 
-gint lasso_logout_load_request_msg(LassoLogout     *logout,
-				   gchar           *request_msg,
-				   lassoHttpMethods request_method)
+gint lasso_logout_process_request_msg(LassoLogout     *logout,
+				      gchar           *request_msg,
+				      lassoHttpMethods request_method)
 {
   LassoProfile *profile;
 
@@ -325,7 +325,7 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
 }
 
 gint
-lasso_logout_process_request(LassoLogout *logout)
+lasso_logout_validate_request(LassoLogout *logout)
 {
   LassoProfile *profile;
   LassoFederation *federation;
@@ -409,28 +409,16 @@ lasso_logout_process_request(LassoLogout *logout)
   }
 
   /* verification is ok, save name identifier in logout object */
-  switch(profile->provider_type) {
-  case lassoProviderTypeSp:
-    /* at sp, everything is ok, delete the assertion */
-    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-    break;
-  case lassoProviderTypeIdp:
-    /* if more than one sp registered, backup original infos of the sp requester */
-    /* FIXME : get the nb of remote providers with a proper way */
+  lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+  if(profile->provider_type==lassoProviderTypeIdp){
     logout->initial_remote_providerID = g_strdup(profile->remote_providerID);
     if(profile->session->providerIDs->len>1){
       logout->initial_request = profile->request;
       profile->request = NULL;
-    
       logout->initial_response = profile->response;
       profile->response = NULL;
-
       profile->remote_providerID = NULL;    
     }
-
-    break;
-  default:
-    message(G_LOG_LEVEL_CRITICAL, "Uknown provider type\n");
   }
 
   return(0);
