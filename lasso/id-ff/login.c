@@ -632,10 +632,10 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
 
-	if (profile->session == NULL && strcmp(LASSO_SAMLP_RESPONSE(
-					profile->response)->Status->StatusCode->Value,
+	if (strcmp(LASSO_SAMLP_RESPONSE(profile->response)->Status->StatusCode->Value,
 				"samlp:Success") != 0) {
-		profile->session = lasso_session_new();
+		if (profile->session == NULL)
+			profile->session = lasso_session_new();
 
 		lasso_session_add_status(profile->session, profile->remote_providerID,
 				g_object_ref(LASSO_SAMLP_RESPONSE(profile->response)->Status));
