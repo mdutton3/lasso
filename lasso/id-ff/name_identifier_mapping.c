@@ -32,7 +32,6 @@
 gchar *
 lasso_name_identifier_mapping_dump(LassoNameIdentifierMapping *mapping)
 {
-  LassoProfileContext *profileContext;
   gchar *dump;
 
   g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), NULL);
@@ -129,7 +128,6 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
   LassoProfileContext *profileContext;
   LassoNode           *nameIdentifier;
   LassoIdentity       *identity;
-  LassoNameIdentifierMappingRequest  *request;
 
   xmlChar *content, *nameQualifier, *format;
 
@@ -194,7 +192,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 {
   LassoProfileContext *profileContext;
   LassoIdentity *identity;
-  LassoNode *nameIdentifier, *assertion;
+  LassoNode *nameIdentifier;
   LassoNode *statusCode;
   LassoNodeClass *statusCode_class;
   xmlChar *remote_providerID;
