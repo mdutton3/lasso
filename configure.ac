@@ -31,7 +31,10 @@ dnl
 dnl Check the environment
 dnl
 AC_PROG_CC
+
+#AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
+
 AC_PROG_INSTALL
 AC_STDC_HEADERS
 AC_PATH_PROG(RM, rm, /bin/rm)
@@ -448,7 +451,6 @@ lasso/version.h
 Makefile
 lasso/Makefile
 lasso/schema/Makefile
-lasso/bindings/Makefile
 lasso/protocols/Makefile
 docs/Makefile
 docs/reference/Makefile
