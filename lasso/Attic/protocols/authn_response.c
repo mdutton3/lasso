@@ -292,7 +292,7 @@ lasso_authn_response_new_from_request_query(gchar         *query,
   gd = lasso_query_to_dict(query);
   /* store query - need to verify signature */
   LASSO_AUTHN_RESPONSE(response)->query   = g_strdup(query);
-  LASSO_AUTHN_RESPONSE(response)->request = NULL;
+  LASSO_AUTHN_RESPONSE(response)->request = lasso_authn_request_new_from_query(query);
 
   /* ResponseID */
   id = lasso_build_unique_id(32);
