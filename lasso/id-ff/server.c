@@ -145,6 +145,35 @@ lasso_server_add_provider(LassoServer *server,
   return(0);
 }
 
+LassoServer*
+lasso_server_copy(LassoServer *server)
+{
+  LassoServer *copy;
+  LassoProvider *p;
+  guint i;
+
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+
+  copy = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER, NULL));
+
+  /* herited provider attrs */
+  LASSO_PROVIDER(copy)->metadata = lasso_node_copy(LASSO_PROVIDER(server)->metadata);
+  LASSO_PROVIDER(copy)->public_key     = g_strdup(LASSO_PROVIDER(server)->public_key);
+  LASSO_PROVIDER(copy)->ca_certificate = g_strdup(LASSO_PROVIDER(server)->ca_certificate);
+  /* server attrs */
+  copy->providers = g_ptr_array_new();
+  for(i=0; i<server->providers->len; i++) {
+    p = g_ptr_array_index(server->providers, i);
+    g_ptr_array_add(copy->providers, lasso_provider_copy(p));
+  }
+  copy->providerID  = g_strdup(server->providerID);
+  copy->private_key = g_strdup(server->private_key);
+  copy->certificate = g_strdup(server->certificate);
+  copy->signature_method = server->signature_method;
+
+  return(copy);
+}
+
 void
 lasso_server_destroy(LassoServer *server)
 {
@@ -218,7 +247,7 @@ lasso_server_dispose(LassoServer *server)
   }
   server->private->dispose_has_run = TRUE;
 
-  debug("Server object 0x%x finalized ...\n", server);
+  debug("Server object 0x%x disposed ...\n", server);
 
   /* free allocated memory for providers array */
   for (i=0; i<server->providers->len; i++) {
