@@ -68,6 +68,8 @@ LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnknownPrincipal[];
 LASSO_EXPORT_VAR const xmlChar lassoLibStatusCodeUnsignedAuthnRequest[];
 
 /* ProtocolProfile */
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSSOGet[];
+LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileSSOPost[];
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileArtifact[];
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfilePost[];
 LASSO_EXPORT_VAR const xmlChar lassoLibProtocolProfileFedTermIdpHttp[];
