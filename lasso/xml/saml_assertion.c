@@ -26,34 +26,34 @@
 #include <lasso/xml/saml_assertion.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="Assertion" type="saml:AssertionType"/>
-<complexType name="AssertionType">
-  <sequence>
-    <element ref="saml:Conditions" minOccurs="0"/>
-    <element ref="saml:Advice" minOccurs="0"/>
-    <choice maxOccurs="unbounded">
-      <element ref="saml:Statement"/>
-      <element ref="saml:SubjectStatement"/>
-      <element ref="saml:AuthenticationStatement"/>
-      <element ref="saml:AuthorizationDecisionStatement"/>
-      <element ref="saml:AttributeStatement"/>
-    </choice>
-    <element ref="ds:Signature" minOccurs="0"/>
-  </sequence>
-  <attribute name="MajorVersion" type="integer" use="required"/>
-  <attribute name="MinorVersion" type="integer" use="required"/>
-  <attribute name="AssertionID" type="saml:IDType" use="required"/>
-  <attribute name="Issuer" type="string" use="required"/>
-  <attribute name="IssueInstant" type="dateTime" use="required"/>
-</complexType>
-
-From oasis-sstc-saml-schema-assertion-1.0.xsd:
-<simpleType name="IDType">
-  <restriction base="string"/>
-</simpleType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="Assertion" type="saml:AssertionType"/>
+ * <complexType name="AssertionType">
+ *   <sequence>
+ *     <element ref="saml:Conditions" minOccurs="0"/>
+ *     <element ref="saml:Advice" minOccurs="0"/>
+ *     <choice maxOccurs="unbounded">
+ *       <element ref="saml:Statement"/>
+ *       <element ref="saml:SubjectStatement"/>
+ *       <element ref="saml:AuthenticationStatement"/>
+ *       <element ref="saml:AuthorizationDecisionStatement"/>
+ *       <element ref="saml:AttributeStatement"/>
+ *     </choice>
+ *     <element ref="ds:Signature" minOccurs="0"/>
+ *   </sequence>
+ *   <attribute name="MajorVersion" type="integer" use="required"/>
+ *   <attribute name="MinorVersion" type="integer" use="required"/>
+ *   <attribute name="AssertionID" type="saml:IDType" use="required"/>
+ *   <attribute name="Issuer" type="string" use="required"/>
+ *   <attribute name="IssueInstant" type="dateTime" use="required"/>
+ * </complexType>
+ * 
+ * From oasis-sstc-saml-schema-assertion-1.0.xsd:
+ * <simpleType name="IDType">
+ *   <restriction base="string"/>
+ * </simpleType>
+ */
 
 
 /*****************************************************************************/
@@ -162,18 +162,18 @@ lasso_saml_assertion_set_signature(LassoSamlAssertion  *node,
 {
 	return 0;
 #if 0 /* XXX: signatures are done differently */
-  gint ret;
-  LassoNodeClass *class;
+	gint ret;
+	LassoNodeClass *class;
 
-  g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
-		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_SAML_ASSERTION(node),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
-  class = LASSO_NODE_GET_CLASS(node);
+	class = LASSO_NODE_GET_CLASS(node);
 
-  ret = class->add_signature(LASSO_NODE (node), sign_method,
-			     private_key_file, certificate_file);
+	ret = class->add_signature(LASSO_NODE (node), sign_method,
+			private_key_file, certificate_file);
 
-  return ret;
+	return ret;
 #endif
 }
 

@@ -27,32 +27,31 @@
 #include <libxml/uri.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:complexType name="StatusResponseType">
-  <xs:complexContent>
-    <xs:extension base="samlp:ResponseAbstractType">
-      <xs:sequence>
-        <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="ProviderID"/>
-        <xs:element ref="samlp:Status"/>
-        <xs:element ref="RelayState" minOccurs="0"/>
-      </xs:sequence>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-<xs:element name="ProviderID" type="md:entityIDType"/>
-<xs:element name="RelayState" type="xs:string"/>
-
-From liberty-metadata-v1.0.xsd:
-<xs:simpleType name="entityIDType">
-  <xs:restriction base="xs:anyURI">
-    <xs:maxLength value="1024" id="maxlengthid"/>
-  </xs:restriction>
-</xs:simpleType>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:complexType name="StatusResponseType">
+ *   <xs:complexContent>
+ *     <xs:extension base="samlp:ResponseAbstractType">
+ *       <xs:sequence>
+ *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element ref="ProviderID"/>
+ *         <xs:element ref="samlp:Status"/>
+ *         <xs:element ref="RelayState" minOccurs="0"/>
+ *       </xs:sequence>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ProviderID" type="md:entityIDType"/>
+ * <xs:element name="RelayState" type="xs:string"/>
+ * 
+ * From liberty-metadata-v1.0.xsd:
+ * <xs:simpleType name="entityIDType">
+ *   <xs:restriction base="xs:anyURI">
+ *     <xs:maxLength value="1024" id="maxlengthid"/>
+ *   </xs:restriction>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

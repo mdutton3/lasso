@@ -54,7 +54,7 @@ typedef struct _LassoLibAuthenticationStatementClass LassoLibAuthenticationState
 struct _LassoLibAuthenticationStatement {
 	LassoSamlAuthenticationStatement parent;
 
-        /* <xs:element ref="AuthnContext" minOccurs="0"/> */
+	/* <xs:element ref="AuthnContext" minOccurs="0"/> */
 	LassoLibAuthnContext *AuthnContext;
 	/* <xs:attribute name="ReauthenticateOnOrAfter" type="xs:dateTime" use="optional"/> */
 	char *ReauthenticateOnOrAfter;

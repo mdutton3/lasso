@@ -29,28 +29,28 @@
 #include <lasso/xml/samlp_response_abstract.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
-
-<complexType name="ResponseAbstractType" abstract="true">
-  <sequence>
-     <element ref="ds:Signature" minOccurs="0"/>
-  </sequence>
-  <attribute name="ResponseID" type="saml:IDType" use="required"/>
-  <attribute name="InResponseTo" type="saml:IDReferenceType" use="optional"/>
-  <attribute name="MajorVersion" type="integer" use="required"/>
-  <attribute name="MinorVersion" type="integer" use="required"/>
-  <attribute name="IssueInstant" type="dateTime" use="required"/>
-  <attribute name="Recipient" type="anyURI" use="optional"/>
-</complexType>
-
-From oasis-sstc-saml-schema-assertion-1.0.xsd:
-<simpleType name="IDType">
-  <restriction base="string"/>
-</simpleType>
-<simpleType name="IDReferenceType">
-  <restriction base="string"/>
-</simpleType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+ * 
+ * <complexType name="ResponseAbstractType" abstract="true">
+ *   <sequence>
+ *      <element ref="ds:Signature" minOccurs="0"/>
+ *   </sequence>
+ *   <attribute name="ResponseID" type="saml:IDType" use="required"/>
+ *   <attribute name="InResponseTo" type="saml:IDReferenceType" use="optional"/>
+ *   <attribute name="MajorVersion" type="integer" use="required"/>
+ *   <attribute name="MinorVersion" type="integer" use="required"/>
+ *   <attribute name="IssueInstant" type="dateTime" use="required"/>
+ *   <attribute name="Recipient" type="anyURI" use="optional"/>
+ * </complexType>
+ * 
+ * From oasis-sstc-saml-schema-assertion-1.0.xsd:
+ * <simpleType name="IDType">
+ *   <restriction base="string"/>
+ * </simpleType>
+ * <simpleType name="IDReferenceType">
+ *   <restriction base="string"/>
+ * </simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -229,7 +229,7 @@ class_init(LassoSamlpResponseAbstractClass *klass)
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 	LASSO_NODE_CLASS(klass)->build_query = build_query;
-  	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
+	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 	LASSO_NODE_CLASS(klass)->get_sign_attr_name = get_sign_attr_name;
 }
 

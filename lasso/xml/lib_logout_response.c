@@ -26,11 +26,10 @@
 #include <lasso/xml/lib_logout_response.h>
 
 /*
-The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="LogoutResponse" type="StatusResponseType"/>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="LogoutResponse" type="StatusResponseType"/>
+ */
 
 
 /*****************************************************************************/
@@ -120,7 +119,7 @@ lasso_lib_logout_response_new_full(char *providerID, const char *statusCodeValue
 	response->Status = lasso_samlp_status_new();
 	response->Status->StatusCode = lasso_samlp_status_code_new();
 	response->Status->StatusCode->Value = g_strdup(statusCodeValue);
-  
+
 	return LASSO_NODE(response);
 }
 

@@ -27,35 +27,34 @@
 #include <lasso/xml/lib_logout_request.h>
 
 /*
-The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="LogoutRequest" type="LogoutRequestType"/>
-<xs:complexType name="LogoutRequestType">
-  <xs:complexContent>
-    <xs:extension base="samlp:RequestAbstractType">
-      <xs:sequence>
-        <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="ProviderID"/>
-        <xs:element ref="saml:NameIdentifier"/>
-        <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/>
-        <xs:element ref="RelayState" minOccurs="0"/>
-      </xs:sequence>
-      <xs:attribute ref="consent" use="optional"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-<xs:element name="ProviderID" type="md:entityIDType"/>
-<xs:element name="RelayState" type="xs:string"/>
-
-From liberty-metadata-v1.0.xsd:
-<xs:simpleType name="entityIDType">
-  <xs:restriction base="xs:anyURI">
-    <xs:maxLength value="1024" id="maxlengthid"/>
-  </xs:restriction>
-</xs:simpleType>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="LogoutRequest" type="LogoutRequestType"/>
+ * <xs:complexType name="LogoutRequestType">
+ *   <xs:complexContent>
+ *     <xs:extension base="samlp:RequestAbstractType">
+ *       <xs:sequence>
+ *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element ref="ProviderID"/>
+ *         <xs:element ref="saml:NameIdentifier"/>
+ *         <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/>
+ *         <xs:element ref="RelayState" minOccurs="0"/>
+ *       </xs:sequence>
+ *       <xs:attribute ref="consent" use="optional"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ProviderID" type="md:entityIDType"/>
+ * <xs:element name="RelayState" type="xs:string"/>
+ * 
+ * From liberty-metadata-v1.0.xsd:
+ * <xs:simpleType name="entityIDType">
+ *   <xs:restriction base="xs:anyURI">
+ *     <xs:maxLength value="1024" id="maxlengthid"/>
+ *   </xs:restriction>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

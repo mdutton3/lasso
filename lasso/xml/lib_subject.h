@@ -49,7 +49,7 @@ typedef struct _LassoLibSubjectClass LassoLibSubjectClass;
 
 struct _LassoLibSubject {
 	LassoSamlSubject parent;
-        /* <xs:element ref="IDPProvidedNameIdentifier"/> */
+	/* <xs:element ref="IDPProvidedNameIdentifier"/> */
 	LassoSamlNameIdentifier *IDPProvidedNameIdentifier;
 };
 

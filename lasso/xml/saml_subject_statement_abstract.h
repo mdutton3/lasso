@@ -54,7 +54,7 @@ typedef struct _LassoSamlSubjectStatementAbstractClass LassoSamlSubjectStatement
 
 struct _LassoSamlSubjectStatementAbstract {
 	LassoSamlStatementAbstract parent;
-        /* <element ref="saml:Subject"/> */
+	/* <element ref="saml:Subject"/> */
 	LassoSamlSubject *Subject;
 };
 

@@ -26,23 +26,24 @@
 #include <lasso/xml/lib_request_authn_context.h>
 
 /*
-Information describing which authentication context the requester desires the
-identity provider to use in authenticating the Principal.
-
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="RequestAuthnContext">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:choice>
-        <xs:element name="AuthnContextClassRef" type="xs:anyURI" maxOccurs="unbounded"/>
-        <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/>
-      </xs:choice>
-      <xs:element name="AuthnContextComparison" type="AuthnContextComparisonType" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
-*/
+ * Information describing which authentication context the requester desires the
+ * identity provider to use in authenticating the Principal.
+ * 
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="RequestAuthnContext">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:choice>
+ *         <xs:element name="AuthnContextClassRef" type="xs:anyURI" maxOccurs="unbounded"/>
+ *         <xs:element name="AuthnContextStatementRef" type="xs:anyURI" maxOccurs="unbounded"/>
+ *       </xs:choice>
+ *       <xs:element name="AuthnContextComparison" 
+ *           type="AuthnContextComparisonType" minOccurs="0"/>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

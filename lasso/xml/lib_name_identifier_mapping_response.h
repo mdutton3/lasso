@@ -58,13 +58,13 @@ typedef struct _LassoLibNameIdentifierMappingResponseClass \
 struct _LassoLibNameIdentifierMappingResponse {
 	LassoSamlpResponseAbstract parent;
 
-        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	LassoNode *Extension;
-        /* <xs:element ref="ProviderID"/> */
+	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
-        /* <xs:element ref="samlp:Status"/> */
+	/* <xs:element ref="samlp:Status"/> */
 	LassoSamlpStatus *Status;
-        /* <xs:element ref="saml:NameIdentifier" minOccurs="0"/> */
+	/* <xs:element ref="saml:NameIdentifier" minOccurs="0"/> */
 	LassoSamlNameIdentifier *NameIdentifier;
 };
 

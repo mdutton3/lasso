@@ -26,20 +26,19 @@
 #include <lasso/xml/lib_subject.h>
 
 /*
-The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:complexType name="SubjectType">
-  <xs:complexContent>
-    <xs:extension base="saml:SubjectType">
-      <xs:sequence>
-        <xs:element ref="IDPProvidedNameIdentifier"/>
-      </xs:sequence>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-<xs:element name="Subject" type="SubjectType" substitutionGroup="saml:Subject"/>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:complexType name="SubjectType">
+ *   <xs:complexContent>
+ *     <xs:extension base="saml:SubjectType">
+ *       <xs:sequence>
+ *         <xs:element ref="IDPProvidedNameIdentifier"/>
+ *       </xs:sequence>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * <xs:element name="Subject" type="SubjectType" substitutionGroup="saml:Subject"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

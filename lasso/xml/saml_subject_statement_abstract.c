@@ -26,18 +26,18 @@
 #include <lasso/xml/saml_subject_statement_abstract.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<complexType name="SubjectStatementAbstractType" abstract="true">
-  <complexContent>
-    <extension base="saml:StatementAbstractType">
-      <sequence>
-        <element ref="saml:Subject"/>
-      </sequence>
-    </extension>
-  </complexContent>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <complexType name="SubjectStatementAbstractType" abstract="true">
+ *   <complexContent>
+ *     <extension base="saml:StatementAbstractType">
+ *       <sequence>
+ *         <element ref="saml:Subject"/>
+ *       </sequence>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

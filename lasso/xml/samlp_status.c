@@ -26,19 +26,19 @@
 #include <lasso/xml/samlp_status.h>
 
 /*
-Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
-
-<element name="Status" type="samlp:StatusType"/>
-<complexType name="StatusType">
-  <sequence>
-    <element ref="samlp:StatusCode"/>
-    <element ref="samlp:StatusMessage" minOccurs="0" maxOccurs="1"/>
-    <element ref="samlp:StatusDetail" minOccurs="0"/>
-  </sequence>
-</complexType>
-
-<element name="StatusMessage" type="string"/>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+ * 
+ * <element name="Status" type="samlp:StatusType"/>
+ * <complexType name="StatusType">
+ *   <sequence>
+ *     <element ref="samlp:StatusCode"/>
+ *     <element ref="samlp:StatusMessage" minOccurs="0" maxOccurs="1"/>
+ *     <element ref="samlp:StatusDetail" minOccurs="0"/>
+ *   </sequence>
+ * </complexType>
+ * 
+ * <element name="StatusMessage" type="string"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

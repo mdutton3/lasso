@@ -27,21 +27,21 @@
 #include <lasso/xml/lib_subject.h>
 
 /*
-The schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="AuthenticationStatement" type="AuthenticationStatementType"
-  substitutionGroup="saml:Statement"/>
-<xs:complexType name="AuthenticationStatementType">
-  <xs:complexContent>
-    <xs:extension base="saml:AuthenticationStatementType">
-      <xs:sequence>
-        <xs:element ref="AuthnContext" minOccurs="0"/>
-      </xs:sequence>
-      <xs:attribute name="ReauthenticateOnOrAfter" type="xs:dateTime" use="optional"/>
-      <xs:attribute name="SessionIndex" type="xs:string" use="required"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ *
+ * <xs:element name="AuthenticationStatement" type="AuthenticationStatementType"
+ *   substitutionGroup="saml:Statement"/>
+ * <xs:complexType name="AuthenticationStatementType">
+ *   <xs:complexContent>
+ *     <xs:extension base="saml:AuthenticationStatementType">
+ *       <xs:sequence>
+ *         <xs:element ref="AuthnContext" minOccurs="0"/>
+ *       </xs:sequence>
+ *       <xs:attribute name="ReauthenticateOnOrAfter" type="xs:dateTime" use="optional"/>
+ *       <xs:attribute name="SessionIndex" type="xs:string" use="required"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
 */
 
 /*****************************************************************************/

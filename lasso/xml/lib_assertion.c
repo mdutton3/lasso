@@ -26,30 +26,29 @@
 #include <lasso/xml/lib_assertion.h>
 
 /*
-Authentication assertions provided in an <AuthnResponse> element MUST be of
-type AssertionType, which is an extension of saml:AssertionType, so that the
-RequestID attribute from the original <AuthnRequest> MAY be included in the
-InResponseTo attribute in the <Assertion> element. This is done because it is
-not required that the <AuthnResponse> element itself be signed. Instead, the
-individual <Assertion> elements contained MUST each be signed. Note that it is
-optional for the InResponseTo to be present. Its absence indicates that the
-<AuthnResponse> has been unilaterally sent by the identity provider without a
-corresponding <AuthnRequest> message from the service provider. If the
-attribute is present, it MUST be set to the RequestID of the original
-<AuthnRequest>.
+ * Authentication assertions provided in an <AuthnResponse> element MUST be of
+ * type AssertionType, which is an extension of saml:AssertionType, so that the
+ * RequestID attribute from the original <AuthnRequest> MAY be included in the
+ * InResponseTo attribute in the <Assertion> element. This is done because it is
+ * not required that the <AuthnResponse> element itself be signed. Instead, the
+ * individual <Assertion> elements contained MUST each be signed. Note that it is
+ * optional for the InResponseTo to be present. Its absence indicates that the
+ * <AuthnResponse> has been unilaterally sent by the identity provider without a
+ * corresponding <AuthnRequest> message from the service provider. If the
+ * attribute is present, it MUST be set to the RequestID of the original
+ * <AuthnRequest>.
+ *
+ * The schema fragment is as follows:
 
-The schema fragment is as follows:
-
-<xs:element name="Assertion" type="AssertionType" substitutionGroup="saml:Assertion" />
-<xs:complexType name="AssertionType">
-  <xs:complexContent>
-    <xs:extension base="saml:AssertionType">
-      <xs:attribute name="InResponseTo" type="xs:NCName" use="optional"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-*/
+ * <xs:element name="Assertion" type="AssertionType" substitutionGroup="saml:Assertion" />
+ * <xs:complexType name="AssertionType">
+ *   <xs:complexContent>
+ *     <xs:extension base="saml:AssertionType">
+ *       <xs:attribute name="InResponseTo" type="xs:NCName" use="optional"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

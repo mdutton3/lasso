@@ -27,32 +27,32 @@
 #include <libxml/uri.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="FederationTerminationNotification" type="FederationTerminationNotificationType"/>
-  <xs:complexType name="FederationTerminationNotificationType">
-    <xs:complexContent>
-      <xs:extension base="samlp:RequestAbstractType">
-        <xs:sequence>
-          <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-          <xs:element ref="ProviderID"/>
-          <xs:element ref="saml:NameIdentifier"/>
-        </xs:sequence>
-      <xs:attribute ref="consent" use="optional"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-<xs:element name="ProviderID" type="md:entityIDType"/>
-
-From liberty-metadata-v1.0.xsd:
-<xs:simpleType name="entityIDType">
-  <xs:restriction base="xs:anyURI">
-    <xs:maxLength value="1024" id="maxlengthid"/>
-  </xs:restriction>
-</xs:simpleType>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="FederationTerminationNotification" 
+ *     type="FederationTerminationNotificationType"/>
+ *   <xs:complexType name="FederationTerminationNotificationType">
+ *     <xs:complexContent>
+ *       <xs:extension base="samlp:RequestAbstractType">
+ *         <xs:sequence>
+ *           <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *           <xs:element ref="ProviderID"/>
+ *           <xs:element ref="saml:NameIdentifier"/>
+ *         </xs:sequence>
+ *       <xs:attribute ref="consent" use="optional"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ProviderID" type="md:entityIDType"/>
+ * 
+ * From liberty-metadata-v1.0.xsd:
+ * <xs:simpleType name="entityIDType">
+ *   <xs:restriction base="xs:anyURI">
+ *     <xs:maxLength value="1024" id="maxlengthid"/>
+ *   </xs:restriction>
+ * </xs:simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

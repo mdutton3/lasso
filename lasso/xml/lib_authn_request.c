@@ -27,58 +27,58 @@
 #include <libxml/uri.h>
 
 /*
-The <AuthnRequest> is defined as an extension of samlp:RequestAbstractType.
-The RequestID attribute in samlp:RequestAbstractType has uniqueness
-requirements placed on it by [SAMLCore11], which require it to have the
-properties of a nonce.
-
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="AuthnRequest" type="AuthnRequestType" />
-<xs:complexType name="AuthnRequestType">
-  <xs:complexContent>
-    <xs:extension base="samlp:RequestAbstractType">
-      <xs:sequence>
-        <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="ProviderID"/>
-	<xs:element ref="AffiliationID" minOccurs="0"/>
-        <xs:element ref="NameIDPolicy" minOccurs="0"/>
-        <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/>
-        <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/>
-        <xs:element ref="ProtocolProfile" minOccurs="0"/>
-        <xs:element name="AssertionConsumerServiceID" type="xs:string" minOccurs="0"/>
-        <xs:element ref="RequestAuthnContext" minOccurs="0"/>
-        <xs:element ref="RelayState" minOccurs="0"/>
-        <xs:element ref="Scoping" minOccurs="0 "/>
-      </xs:sequence>
-      <xs:attribute ref="consent" use="optional"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-<xs:element name="ProviderID" type="md:entityIDType"/>
-<xs:element name="AffiliationID" type="md:entityIDType"/>
-
-From liberty-metadata-v1.0.xsd:
-<xs:simpleType name="entityIDType">
-  <xs:restriction base="xs:anyURI">
-    <xs:maxLength value="1024" id="maxlengthid"/>
-  </xs:restriction>
-</xs:simpleType>
-
-<xs:element name="NameIDPolicy" type="NameIDPolicyType"/>
-<xs:simpleType name="NameIDPolicyType">
-  <xs:restriction base="xs:string">
-    <xs:enumeration value="none"/>
-    <xs:enumeration value="onetime"/>
-    <xs:enumeration value="federated"/>
-    <xs:enumeration value="any"/ >
-  </xs:restriction>
-</xs:simpleType>
-
-<xs:element name="ProtocolProfile" type="xs:anyURI"/>
-<xs:element name="RelayState" type="xs:string"/>
-*/
+ * The <AuthnRequest> is defined as an extension of samlp:RequestAbstractType.
+ * The RequestID attribute in samlp:RequestAbstractType has uniqueness
+ * requirements placed on it by [SAMLCore11], which require it to have the
+ * properties of a nonce.
+ * 
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="AuthnRequest" type="AuthnRequestType" />
+ * <xs:complexType name="AuthnRequestType">
+ *   <xs:complexContent>
+ *     <xs:extension base="samlp:RequestAbstractType">
+ *       <xs:sequence>
+ *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element ref="ProviderID"/>
+ * 	<xs:element ref="AffiliationID" minOccurs="0"/>
+ *         <xs:element ref="NameIDPolicy" minOccurs="0"/>
+ *         <xs:element name="ForceAuthn" type="xs:boolean" minOccurs="0"/>
+ *         <xs:element name="IsPassive" type="xs:boolean "minOccurs="0"/>
+ *         <xs:element ref="ProtocolProfile" minOccurs="0"/>
+ *         <xs:element name="AssertionConsumerServiceID" type="xs:string" minOccurs="0"/>
+ *         <xs:element ref="RequestAuthnContext" minOccurs="0"/>
+ *         <xs:element ref="RelayState" minOccurs="0"/>
+ *         <xs:element ref="Scoping" minOccurs="0 "/>
+ *       </xs:sequence>
+ *       <xs:attribute ref="consent" use="optional"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ProviderID" type="md:entityIDType"/>
+ * <xs:element name="AffiliationID" type="md:entityIDType"/>
+ * 
+ * From liberty-metadata-v1.0.xsd:
+ * <xs:simpleType name="entityIDType">
+ *   <xs:restriction base="xs:anyURI">
+ *     <xs:maxLength value="1024" id="maxlengthid"/>
+ *   </xs:restriction>
+ * </xs:simpleType>
+ * 
+ * <xs:element name="NameIDPolicy" type="NameIDPolicyType"/>
+ * <xs:simpleType name="NameIDPolicyType">
+ *   <xs:restriction base="xs:string">
+ *     <xs:enumeration value="none"/>
+ *     <xs:enumeration value="onetime"/>
+ *     <xs:enumeration value="federated"/>
+ *     <xs:enumeration value="any"/ >
+ *   </xs:restriction>
+ * </xs:simpleType>
+ * 
+ * <xs:element name="ProtocolProfile" type="xs:anyURI"/>
+ * <xs:element name="RelayState" type="xs:string"/>
+ */
 
 
 /*****************************************************************************/

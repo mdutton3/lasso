@@ -52,22 +52,22 @@ typedef struct _LassoLibLogoutRequestClass LassoLibLogoutRequestClass;
 
 struct _LassoLibLogoutRequest {
 	LassoSamlpRequestAbstract parent;
-        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	char *Extension;
-        /* <xs:element ref="ProviderID"/> */
+	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
-        /* <xs:element ref="saml:NameIdentifier"/> */
+	/* <xs:element ref="saml:NameIdentifier"/> */
 	LassoSamlNameIdentifier *NameIdentifier;
-        /* <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/> */
+	/* <xs:element name="SessionIndex" type="xs:string" minOccurs="0"/> */
 	char *SessionIndex;
-        /* <xs:element ref="RelayState" minOccurs="0"/> */
+	/* <xs:element ref="RelayState" minOccurs="0"/> */
 	char *RelayState;
-        /* <xs:attribute ref="consent" use="optional"/> */
+	/* <xs:attribute ref="consent" use="optional"/> */
 	char *consent;
 };
 
 struct _LassoLibLogoutRequestClass {
-  LassoSamlpRequestAbstractClass parent;
+	LassoSamlpRequestAbstractClass parent;
 };
 
 LASSO_EXPORT GType lasso_lib_logout_request_get_type(void);

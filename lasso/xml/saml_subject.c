@@ -26,19 +26,19 @@
 #include <lasso/xml/saml_subject.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="Subject" type="saml:SubjectType"/>
-<complexType name="SubjectType">
-  <choice>
-    <sequence>
-      <element ref="saml:NameIdentifier"/>
-      <element ref="saml:SubjectConfirmation" minOccurs="0"/>
-    </sequence>
-    <element ref="saml:SubjectConfirmation"/>
-  </choice>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="Subject" type="saml:SubjectType"/>
+ * <complexType name="SubjectType">
+ *   <choice>
+ *     <sequence>
+ *       <element ref="saml:NameIdentifier"/>
+ *       <element ref="saml:SubjectConfirmation" minOccurs="0"/>
+ *     </sequence>
+ *     <element ref="saml:SubjectConfirmation"/>
+ *   </choice>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

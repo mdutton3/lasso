@@ -26,16 +26,16 @@
 #include <lasso/xml/lib_scoping.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:complexType name="ScopingType">
-  <xs:sequence>
-    <xs:element name="ProxyCount" type="xs:nonNegativeInteger" minOccurs="0"/>
-    <xs:element ref="IDPList" minOccurs="0"/>
-  </xs:sequence>
-</xs:complexType>
-<xs:element name="Scoping" type="ScopingType"/>
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:complexType name="ScopingType">
+ *   <xs:sequence>
+ *     <xs:element name="ProxyCount" type="xs:nonNegativeInteger" minOccurs="0"/>
+ *     <xs:element ref="IDPList" minOccurs="0"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ * <xs:element name="Scoping" type="ScopingType"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -53,7 +53,7 @@ typedef struct _LassoLibAuthnResponseClass LassoLibAuthnResponseClass;
 struct _LassoLibAuthnResponse {
 	LassoSamlpResponse parent;
 
-        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	LassoNode *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;

@@ -26,14 +26,14 @@
 #include <lasso/xml/saml_subject_locality.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="SubjectLocality" type="saml:SubjectLocalityType"/>
-<complexType name="SubjectLocalityType">
-  <attribute name="IPAddress" type="string" use="optional"/>
-  <attribute name="DNSAddress" type="string" use="optional"/>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="SubjectLocality" type="saml:SubjectLocalityType"/>
+ * <complexType name="SubjectLocalityType">
+ *   <attribute name="IPAddress" type="string" use="optional"/>
+ *   <attribute name="DNSAddress" type="string" use="optional"/>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

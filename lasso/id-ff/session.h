@@ -68,7 +68,7 @@ LASSO_EXPORT LassoSession* lasso_session_new_from_dump(const gchar *dump);
 
 LASSO_EXPORT gint lasso_session_add_assertion(LassoSession *session,
 		char *providerID, LassoSamlAssertion *assertion);
-  
+
 LASSO_EXPORT gchar* lasso_session_dump(LassoSession *session);
 
 LASSO_EXPORT LassoSamlAssertion* lasso_session_get_assertion(

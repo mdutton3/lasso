@@ -26,21 +26,21 @@
 #include <lasso/xml/saml_authentication_statement.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="AuthenticationStatement" type="saml:AuthenticationStatementType"/>
-<complexType name="AuthenticationStatementType">
-  <complexContent>
-    <extension base="saml:SubjectStatementAbstractType">
-      <sequence>
-        <element ref="saml:SubjectLocality" minOccurs="0"/>
-        <element ref="saml:AuthorityBinding" minOccurs="0" maxOccurs="unbounded"/>
-      </sequence>
-      <attribute name="AuthenticationMethod" type="anyURI" use="required"/>
-      <attribute name="AuthenticationInstant" type="dateTime" use="required"/>
-    </extension>
-  </complexContent>
-</complexType>
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="AuthenticationStatement" type="saml:AuthenticationStatementType"/>
+ * <complexType name="AuthenticationStatementType">
+ *   <complexContent>
+ *     <extension base="saml:SubjectStatementAbstractType">
+ *       <sequence>
+ *         <element ref="saml:SubjectLocality" minOccurs="0"/>
+ *         <element ref="saml:AuthorityBinding" minOccurs="0" maxOccurs="unbounded"/>
+ *       </sequence>
+ *       <attribute name="AuthenticationMethod" type="anyURI" use="required"/>
+ *       <attribute name="AuthenticationInstant" type="dateTime" use="required"/>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
 */
 
 /*****************************************************************************/

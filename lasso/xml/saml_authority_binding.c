@@ -26,16 +26,15 @@
 #include <lasso/xml/saml_authority_binding.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="AuthorityBinding" type="saml:AuthorityBindingType"/>
-<complexType name="AuthorityBindingType">
-  <attribute name="AuthorityKind" type="QName" use="required"/>
-  <attribute name="Location" type="anyURI" use="required"/>
-  <attribute name="Binding" type="anyURI" use="required"/>
-</complexType>
-
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="AuthorityBinding" type="saml:AuthorityBindingType"/>
+ * <complexType name="AuthorityBindingType">
+ *   <attribute name="AuthorityKind" type="QName" use="required"/>
+ *   <attribute name="Location" type="anyURI" use="required"/>
+ *   <attribute name="Binding" type="anyURI" use="required"/>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -26,11 +26,10 @@
 #include <lasso/xml/lib_register_name_identifier_response.h>
 
 /*
-The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="RegisterNameIdentifierResponse" type="StatusResponseType"/>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="RegisterNameIdentifierResponse" type="StatusResponseType"/>
+ */
 
 
 /*****************************************************************************/
@@ -116,7 +115,7 @@ lasso_lib_register_name_identifier_response_new_full(char *providerID,
 	response->Status = lasso_samlp_status_new();
 	response->Status->StatusCode = lasso_samlp_status_code_new();
 	response->Status->StatusCode->Value = g_strdup(statusCodeValue);
-  
+
 	return LASSO_NODE(response);
 }
 

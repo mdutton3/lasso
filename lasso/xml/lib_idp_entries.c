@@ -26,16 +26,16 @@
 #include <lasso/xml/lib_idp_entries.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="IDPEntries">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element ref="IDPEntry" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="IDPEntries">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:element ref="IDPEntry" maxOccurs="unbounded"/>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

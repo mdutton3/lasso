@@ -26,31 +26,31 @@
 #include <lasso/xml/lib_authn_context.h>
 
 /*
-The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="AuthnContext">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element name="AuthnContextClassRef" type="xs:anyURI" minOccurs="0"/>
-      <xs:choice>
-        <xs:element ref="ac:AuthenticationContextStatement"/>
-        <xs:element name="AuthnContextStatementRef" type="xs:anyURI"/>
-      </xs:choice>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
-
-From schema liberty-authentication-context-v1.2.xsd:
-<xs:element name="AuthenticationContextStatement" type="AuthenticationContextStatementType">
-  <xs:annotation>
-    <xs:documentation>
-      A particular assertion on an identity
-      provider's part with respect to the authentication
-      context associated with an authentication assertion. 
-    </xs:documentation>
-  </xs:annotation>
-</xs:element>
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="AuthnContext">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:element name="AuthnContextClassRef" type="xs:anyURI" minOccurs="0"/>
+ *       <xs:choice>
+ *         <xs:element ref="ac:AuthenticationContextStatement"/>
+ *         <xs:element name="AuthnContextStatementRef" type="xs:anyURI"/>
+ *       </xs:choice>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ * 
+ * From schema liberty-authentication-context-v1.2.xsd:
+ * <xs:element name="AuthenticationContextStatement" type="AuthenticationContextStatementType">
+ *   <xs:annotation>
+ *     <xs:documentation>
+ *       A particular assertion on an identity
+ *       provider's part with respect to the authentication
+ *       context associated with an authentication assertion. 
+ *     </xs:documentation>
+ *   </xs:annotation>
+ * </xs:element>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

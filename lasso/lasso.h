@@ -29,7 +29,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
-    
+
 #if (defined _MSC_VER || defined MINGW32)
 #   include <windows.h>
 #endif
@@ -54,8 +54,8 @@ LASSO_EXPORT int lasso_shutdown(void);
  * The lasso library version mode.
  */
 typedef enum {
-  LASSO_CHECK_VERSION_EXACT = 0,
-  LASSO_CHECK_VERSIONABI_COMPATIBLE
+	LASSO_CHECK_VERSION_EXACT = 0,
+	LASSO_CHECK_VERSIONABI_COMPATIBLE
 } lassoCheckVersionMode;
 
 /**
@@ -66,8 +66,8 @@ typedef enum {
  * value if an error occurs.
  */
 #define lasso_check_version_exact()	\
-    lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
-                            LASSO_VERSION_SUBMINOR, LASSO_CHECK_VERSION_EXACT)
+	lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
+			LASSO_VERSION_SUBMINOR, LASSO_CHECK_VERSION_EXACT)
 
 /**
  * lasso_check_version:
@@ -77,9 +77,9 @@ typedef enum {
  * value if an error occurs.
  */
 #define lasso_check_version()	\
-    lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
-			    LASSO_VERSION_SUBMINOR, \
-			    LASSO_CHECK_VERSIONABI_COMPATIBLE)
+	lasso_check_version_ext(LASSO_VERSION_MAJOR, LASSO_VERSION_MINOR, \
+			LASSO_VERSION_SUBMINOR, \
+			LASSO_CHECK_VERSIONABI_COMPATIBLE)
 
 LASSO_EXPORT int lasso_check_version_ext(int major,
 					 int minor,

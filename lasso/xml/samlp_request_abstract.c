@@ -29,27 +29,26 @@
 #include <lasso/xml/samlp_request_abstract.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
-
-<complexType name="RequestAbstractType" abstract="true">
-  <sequence>
-    <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/>
-    <element ref="ds:Signature" minOccurs="0"/>
-  </sequence>
-  <attribute name="RequestID" type="saml:IDType" use="required"/>
-  <attribute name="MajorVersion" type="integer" use="required"/>
-  <attribute name="MinorVersion" type="integer" use="required"/>
-  <attribute name="IssueInstant" type="dateTime" use="required"/>
-</complexType>
-
-<element name="RespondWith" type="QName"/>
-
-From oasis-sstc-saml-schema-assertion-1.0.xsd:
-<simpleType name="IDType">
-  <restriction base="string"/>
-</simpleType>
-
-*/
+ * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+ * 
+ * <complexType name="RequestAbstractType" abstract="true">
+ *   <sequence>
+ *     <element ref="samlp:RespondWith" minOccurs="0" maxOccurs="unbounded"/>
+ *     <element ref="ds:Signature" minOccurs="0"/>
+ *   </sequence>
+ *   <attribute name="RequestID" type="saml:IDType" use="required"/>
+ *   <attribute name="MajorVersion" type="integer" use="required"/>
+ *   <attribute name="MinorVersion" type="integer" use="required"/>
+ *   <attribute name="IssueInstant" type="dateTime" use="required"/>
+ * </complexType>
+ * 
+ * <element name="RespondWith" type="QName"/>
+ * 
+ * From oasis-sstc-saml-schema-assertion-1.0.xsd:
+ * <simpleType name="IDType">
+ *   <restriction base="string"/>
+ * </simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -210,7 +209,7 @@ class_init(LassoSamlpRequestAbstractClass *klass)
 	parent_class = g_type_class_peek_parent(klass);
 	LASSO_NODE_CLASS(klass)->build_query = build_query;
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
-  	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
+	LASSO_NODE_CLASS(klass)->init_from_query = init_from_query;
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 	LASSO_NODE_CLASS(klass)->get_sign_attr_name = get_sign_attr_name;
 }

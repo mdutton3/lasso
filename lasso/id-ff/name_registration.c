@@ -57,7 +57,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	char *url, *query;
 
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-  
+
 	profile = LASSO_PROFILE(name_registration);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -109,7 +109,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	char *url, *query;
-  
+
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
 
 	profile = LASSO_PROFILE(name_registration);
@@ -410,7 +410,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 		message(G_LOG_LEVEL_CRITICAL, "Federation not found");
 		return -1;
 	}
-  
+
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (remote_provider == NULL) {
@@ -597,7 +597,7 @@ static void
 class_init(LassoNameRegistrationClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-  
+
 	LASSO_NODE_CLASS(klass)->get_xmlNode = get_xmlNode;
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 

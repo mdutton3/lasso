@@ -49,7 +49,7 @@ typedef struct _LassoLogoutPrivate LassoLogoutPrivate;
 
 struct _LassoLogout {
 	LassoProfile parent;
-  
+
 	/*< private >*/
 	LassoNode *initial_request;
 	LassoNode *initial_response;

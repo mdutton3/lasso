@@ -26,16 +26,16 @@
 #include <lasso/xml/samlp_status_code.h>
 
 /*
-Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
-
-<element name="StatusCode" type="samlp:StatusCodeType"/>
-<complexType name="StatusCodeType">
-  <sequence>
-    <element ref="samlp:StatusCode" minOccurs="0"/>
-  </sequence>
-  <attribute name="Value" type="QName" use="required"/>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+ * 
+ * <element name="StatusCode" type="samlp:StatusCodeType"/>
+ * <complexType name="StatusCodeType">
+ *   <sequence>
+ *     <element ref="samlp:StatusCode" minOccurs="0"/>
+ *   </sequence>
+ *   <attribute name="Value" type="QName" use="required"/>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

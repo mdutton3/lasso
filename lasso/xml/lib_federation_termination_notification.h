@@ -57,11 +57,11 @@ typedef struct _LassoLibFederationTerminationNotificationClass \
 struct _LassoLibFederationTerminationNotification {
 	LassoSamlpRequestAbstract parent;
 
-        /* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
+	/* <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/> */
 	LassoNode *Extension;
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
-        /* <xs:element ref="saml:NameIdentifier"/> */
+	/* <xs:element ref="saml:NameIdentifier"/> */
 	LassoSamlNameIdentifier *NameIdentifier;
 	/* <xs:attribute ref="consent" use="optional"/> */
 	char *consent;

@@ -26,18 +26,18 @@
 #include <lasso/xml/saml_conditions.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="Conditions" type="saml:ConditionsType"/>
-<complexType name="ConditionsType">
-  <choice minOccurs="0" maxOccurs="unbounded">
-    <element ref="saml:AudienceRestrictionCondition"/>
-    <element ref="saml:Condition"/>
-  </choice>
-  <attribute name="NotBefore" type="dateTime" use="optional"/>
-  <attribute name="NotOnOrAfter" type="dateTime" use="optional"/>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="Conditions" type="saml:ConditionsType"/>
+ * <complexType name="ConditionsType">
+ *   <choice minOccurs="0" maxOccurs="unbounded">
+ *     <element ref="saml:AudienceRestrictionCondition"/>
+ *     <element ref="saml:Condition"/>
+ *   </choice>
+ *   <attribute name="NotBefore" type="dateTime" use="optional"/>
+ *   <attribute name="NotOnOrAfter" type="dateTime" use="optional"/>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

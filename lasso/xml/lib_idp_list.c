@@ -26,18 +26,18 @@
 #include <lasso/xml/lib_idp_list.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="IDPList" type="IDPListType"/>
-<xs:complexType name="IDPListType">
-  <xs:sequence>
-    <xs:element ref="IDPEntries"/>
-    <xs:element ref="GetComplete" minOccurs="0"/>
-  </xs:sequence>
-</xs:complexType>
-
-<xs:element name="GetComplete" type="xs:anyURI"/>
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="IDPList" type="IDPListType"/>
+ * <xs:complexType name="IDPListType">
+ *   <xs:sequence>
+ *     <xs:element ref="IDPEntries"/>
+ *     <xs:element ref="GetComplete" minOccurs="0"/>
+ *   </xs:sequence>
+ * </xs:complexType>
+ * 
+ * <xs:element name="GetComplete" type="xs:anyURI"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -77,7 +77,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	return 0;
 }
 
-  
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/

@@ -26,23 +26,22 @@
 #include <lasso/xml/lib_name_identifier_mapping_response.h>
 
 /*
-The Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="NameIdentifierMappingResponse" type="NameIdentifierMappingResponseType"/>
-<xs:complexType name="NameIdentifierMappingResponseType">
-  <xs:complexContent>
-    <xs:extension base="samlp:ResponseAbstractType">
-      <xs:sequence>
-        <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="ProviderID"/>
-        <xs:element ref="samlp:Status"/>
-        <xs:element ref="saml:NameIdentifier" minOccurs="0"/>
-      </xs:sequence>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="NameIdentifierMappingResponse" type="NameIdentifierMappingResponseType"/>
+ * <xs:complexType name="NameIdentifierMappingResponseType">
+ *   <xs:complexContent>
+ *     <xs:extension base="samlp:ResponseAbstractType">
+ *       <xs:sequence>
+ *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element ref="ProviderID"/>
+ *         <xs:element ref="samlp:Status"/>
+ *         <xs:element ref="saml:NameIdentifier" minOccurs="0"/>
+ *       </xs:sequence>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -55,7 +55,7 @@ struct _LassoLibStatusResponse {
 
 	/* <xs:element ref="ProviderID"/> */
 	char *ProviderID;
-        /* <xs:element ref="samlp:Status"/> */
+	/* <xs:element ref="samlp:Status"/> */
 	LassoSamlpStatus *Status;
 	/* <xs:element ref="RelayState" minOccurs="0"/> */
 	char *RelayState;

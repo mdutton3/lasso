@@ -26,20 +26,20 @@
 #include <lasso/xml/saml_subject_confirmation.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="SubjectConfirmation" type="saml:SubjectConfirmationType"/>
-<complexType name="SubjectConfirmationType">
-  <sequence>
-    <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/>
-    <element ref="saml:SubjectConfirmationData" minOccurs="0"/>
-    <element ref="ds:KeyInfo" minOccurs="0"/>
-  </sequence>
-</complexType>
-
-<element name="SubjectConfirmationData" type="anyType"/>
-<element name="ConfirmationMethod" type="anyURI"/>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="SubjectConfirmation" type="saml:SubjectConfirmationType"/>
+ * <complexType name="SubjectConfirmationType">
+ *   <sequence>
+ *     <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/>
+ *     <element ref="saml:SubjectConfirmationData" minOccurs="0"/>
+ *     <element ref="ds:KeyInfo" minOccurs="0"/>
+ *   </sequence>
+ * </complexType>
+ * 
+ * <element name="SubjectConfirmationData" type="anyType"/>
+ * <element name="ConfirmationMethod" type="anyURI"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -304,104 +304,102 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
 xmlChar*
-lasso_query_sign(xmlChar              *query,
-		 lassoSignatureMethod  sign_method,
-		 const char           *private_key_file)
+lasso_query_sign(xmlChar *query, lassoSignatureMethod  sign_method, const char *private_key_file)
 {
-  BIO *bio = NULL;
-  xmlChar *digest = NULL; /* 160 bit buffer */
-  RSA *rsa = NULL;
-  DSA *dsa = NULL;
-  unsigned char *sigret = NULL;
-  unsigned int siglen;
-  xmlChar *b64_sigret = NULL, *e_b64_sigret = NULL;
-  xmlChar *new_query = NULL, *s_new_query = NULL;
-  int status = 0;
-  char *t;
+	BIO *bio = NULL;
+	xmlChar *digest = NULL; /* 160 bit buffer */
+	RSA *rsa = NULL;
+	DSA *dsa = NULL;
+	unsigned char *sigret = NULL;
+	unsigned int siglen;
+	xmlChar *b64_sigret = NULL, *e_b64_sigret = NULL;
+	xmlChar *new_query = NULL, *s_new_query = NULL;
+	int status = 0;
+	char *t;
 
-  g_return_val_if_fail(query != NULL, NULL);
-  g_return_val_if_fail(sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 || \
-		       sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1, NULL);
-  g_return_val_if_fail(private_key_file != NULL, NULL);
+	g_return_val_if_fail(query != NULL, NULL);
+	g_return_val_if_fail(sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1 ||
+			sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1, NULL);
+	g_return_val_if_fail(private_key_file != NULL, NULL);
 
-  bio = BIO_new_file(private_key_file, "rb");
-  if (bio == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file",
-	    private_key_file);
-    return NULL;
-  }
+	bio = BIO_new_file(private_key_file, "rb");
+	if (bio == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s private key file",
+				private_key_file);
+		return NULL;
+	}
 
-  /* add SigAlg */
-  switch (sign_method) {
-  case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-    t = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
-    new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
-    xmlFree(t);
-    break;
-  case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-    t = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
-    new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
-    xmlFree(t);
-    break;
-  }
+	/* add SigAlg */
+	switch (sign_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			t = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
+			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
+			xmlFree(t);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			t = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
+			xmlFree(t);
+			break;
+	}
 
-  /* build buffer digest */
-  digest = lasso_sha1(new_query);
-  if (digest == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest");
-    goto done;
-  }
+	/* build buffer digest */
+	digest = lasso_sha1(new_query);
+	if (digest == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to build the buffer digest");
+		goto done;
+	}
 
-  /* calculate signature value */
-  if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-    /* load private key */
-    rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
-    if (rsa == NULL) {
-      goto done;
-    }
-    /* alloc memory for sigret */
-    sigret = (unsigned char *)g_malloc (RSA_size(rsa));
-    /* sign digest message */
-    status = RSA_sign(NID_sha1, digest, 20, sigret, &siglen, rsa);
-    RSA_free(rsa);
-  }
-  else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-    dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
-    if (dsa == NULL) {
-      goto done;
-    }
-    sigret = (unsigned char *)g_malloc (DSA_size(dsa));
-    status = DSA_sign(NID_sha1, digest, 20, sigret, &siglen, dsa);
-    DSA_free(dsa);
-  }
-  if (status == 0) {
-    goto done;
-  }
+	/* calculate signature value */
+	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+		/* load private key */
+		rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, NULL, NULL);
+		if (rsa == NULL) {
+			goto done;
+		}
+		/* alloc memory for sigret */
+		sigret = (unsigned char *)g_malloc (RSA_size(rsa));
+		/* sign digest message */
+		status = RSA_sign(NID_sha1, digest, 20, sigret, &siglen, rsa);
+		RSA_free(rsa);
+	}
+	else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
+		if (dsa == NULL) {
+			goto done;
+		}
+		sigret = (unsigned char *)g_malloc (DSA_size(dsa));
+		status = DSA_sign(NID_sha1, digest, 20, sigret, &siglen, dsa);
+		DSA_free(dsa);
+	}
+	if (status == 0) {
+		goto done;
+	}
 
-  /* Base64 encode the signature value */
-  b64_sigret = xmlSecBase64Encode(sigret, siglen, 0);
-  /* escape b64_sigret */
-  e_b64_sigret = xmlURIEscapeStr(b64_sigret, NULL);
+	/* Base64 encode the signature value */
+	b64_sigret = xmlSecBase64Encode(sigret, siglen, 0);
+	/* escape b64_sigret */
+	e_b64_sigret = xmlURIEscapeStr(b64_sigret, NULL);
 
-  /* add signature */
-  switch (sign_method) {
-  case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-    s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
-    break;
-  case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-    s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
-    break;
-  }
+	/* add signature */
+	switch (sign_method) {
+		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
+			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
+			break;
+		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
+			s_new_query = g_strdup_printf("%s&Signature=%s", new_query, e_b64_sigret);
+			break;
+	}
 
- done:
-  g_free(new_query);
-  xmlFree(digest);
-  BIO_free(bio);
-  free(sigret);
-  xmlFree(b64_sigret);
-  free(e_b64_sigret);
+done:
+	g_free(new_query);
+	xmlFree(digest);
+	BIO_free(bio);
+	free(sigret);
+	xmlFree(b64_sigret);
+	free(e_b64_sigret);
 
-  return s_new_query;
+	return s_new_query;
 }
 
 /**
@@ -416,103 +414,104 @@ lasso_query_sign(xmlChar              *query,
  * a negative value if an error occurs during verification
  **/
 int
-lasso_query_verify_signature(const char   *query,
-			     const char *sender_public_key_file)
+lasso_query_verify_signature(const char *query, const char *sender_public_key_file)
 {
-  BIO *bio = NULL;
-  RSA *rsa = NULL;
-  DSA *dsa = NULL;
-  gchar **str_split = NULL;
-  lassoSignatureMethod  sign_method;
-  xmlChar *digest = NULL, *b64_signature = NULL;
-  xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
-  xmlSecByte *signature;
-  int key_size, status = 0, ret = 0;
+	BIO *bio = NULL;
+	RSA *rsa = NULL;
+	DSA *dsa = NULL;
+	gchar **str_split = NULL;
+	lassoSignatureMethod  sign_method;
+	xmlChar *digest = NULL, *b64_signature = NULL;
+	xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
+	xmlSecByte *signature;
+	int key_size, status = 0, ret = 0;
 
-  g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-  g_return_val_if_fail(sender_public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(sender_public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-  /* split query, the signature MUST be the last param of the query */
-  str_split = g_strsplit(query, "&Signature=", 0);
-  if (str_split[1] == NULL) {
-    ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-    goto done;
-  }
+	/* split query, the signature MUST be the last param of the query */
+	str_split = g_strsplit(query, "&Signature=", 0);
+	if (str_split[1] == NULL) {
+		ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+		goto done;
+	}
 
-  /* create bio to read public key */
-  bio = BIO_new_file(sender_public_key_file, "rb");
-  if (bio == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
-	    sender_public_key_file);
-    ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-    goto done;
-  }  
+	/* create bio to read public key */
+	bio = BIO_new_file(sender_public_key_file, "rb");
+	if (bio == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, 
+				lasso_strerror(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED),
+				sender_public_key_file);
+		ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+		goto done;
+	}  
 
-  /* get signature method (algorithm) and read public key */
-  e_rsa_alg = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
-  e_dsa_alg = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
-  if (g_strrstr(str_split[0], e_rsa_alg) != NULL) {
-    sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-    rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
-    /* rsa = PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL); */
-    if (rsa == NULL) {
-      ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-      goto done;
-    }
-    key_size = RSA_size(rsa);
-  }
-  else if (g_strrstr(str_split[0], e_dsa_alg) != NULL) {
-    sign_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
-    dsa = PEM_read_bio_DSA_PUBKEY(bio, NULL, NULL, NULL);
-    if (dsa == NULL) {
-      ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
-      goto done;
-    }
-    key_size = DSA_size(dsa);
-  }
-  else {
-    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_INVALID_SIGALG));
-    ret = LASSO_DS_ERROR_INVALID_SIGALG;
-    goto done;
-  }
+	/* get signature method (algorithm) and read public key */
+	e_rsa_alg = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
+	e_dsa_alg = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+	if (g_strrstr(str_split[0], e_rsa_alg) != NULL) {
+		sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
+		rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
+		/* rsa = PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL); */
+		if (rsa == NULL) {
+			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+			goto done;
+		}
+		key_size = RSA_size(rsa);
+	}
+	else if (g_strrstr(str_split[0], e_dsa_alg) != NULL) {
+		sign_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+		dsa = PEM_read_bio_DSA_PUBKEY(bio, NULL, NULL, NULL);
+		if (dsa == NULL) {
+			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+			goto done;
+		}
+		key_size = DSA_size(dsa);
+	}
+	else {
+		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_INVALID_SIGALG));
+		ret = LASSO_DS_ERROR_INVALID_SIGALG;
+		goto done;
+	}
 
-  /* get signature (unescape + base64 decode) */
-  signature = (xmlSecByte *)xmlMalloc(key_size+1);
-  b64_signature = xmlURIUnescapeString(str_split[1], 0, NULL);
-  xmlSecBase64Decode(b64_signature, signature, key_size+1);
+	/* get signature (unescape + base64 decode) */
+	signature = (xmlSecByte *)xmlMalloc(key_size+1);
+	b64_signature = xmlURIUnescapeString(str_split[1], 0, NULL);
+	xmlSecBase64Decode(b64_signature, signature, key_size+1);
 
-  /* calculate signature digest */
-  digest = lasso_sha1(str_split[0]);
-  if (digest == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED));
-    ret = LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
-    goto done;
-  }
+	/* calculate signature digest */
+	digest = lasso_sha1(str_split[0]);
+	if (digest == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, 
+				lasso_strerror(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED));
+		ret = LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
+		goto done;
+	}
 
-  if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-    status = RSA_verify(NID_sha1, digest, 20, signature, RSA_size(rsa), rsa);
-    /* printf("OpenSSL %s\n", ERR_error_string(ERR_get_error(), NULL)); */
-    /* printf("OpenSSL %s\n", ERR_error_string(ERR_peek_last_error(), NULL)); */
-  }
-  else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-    status = DSA_verify(NID_sha1, digest, 20, signature, DSA_size(dsa), dsa);
-  }
-  if (status == 0) {
-    ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
-  }
+	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+		status = RSA_verify(NID_sha1, digest, 20, signature, RSA_size(rsa), rsa);
+		/* printf("OpenSSL %s\n", ERR_error_string(ERR_get_error(), NULL)); */
+		/* printf("OpenSSL %s\n", ERR_error_string(ERR_peek_last_error(), NULL)); */
+	}
+	else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+		status = DSA_verify(NID_sha1, digest, 20, signature, DSA_size(dsa), dsa);
+	}
+	if (status == 0) {
+		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
+	}
 
- done:
-  xmlFree(b64_signature);
-  xmlFree(signature);
-  xmlFree(digest);
-  xmlFree(e_rsa_alg);
-  xmlFree(e_dsa_alg);
-  g_strfreev(str_split);
-  BIO_free(bio);
-  RSA_free(rsa);
-  DSA_free(dsa);
+done:
+	xmlFree(b64_signature);
+	xmlFree(signature);
+	xmlFree(digest);
+	xmlFree(e_rsa_alg);
+	xmlFree(e_dsa_alg);
+	g_strfreev(str_split);
+	BIO_free(bio);
+	RSA_free(rsa);
+	DSA_free(dsa);
 
-  return ret;
+	return ret;
 }
 
 /**

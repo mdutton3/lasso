@@ -26,32 +26,32 @@
 #include <lasso/xml/lib_authn_response.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="AuthnResponse" type="AuthnResponseType"/>
-<xs:complexType name="AuthnResponseType">
-  <xs:complexContent>
-    <xs:extension base="samlp:ResponseType">
-      <xs:sequence>
-        <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
-	<xs:element ref="ProviderID"/>
-	<xs:element ref="RelayState" minOccurs="0"/>
-      </xs:sequence>
-      <xs:attribute ref="consent" use="optional"/>
-    </xs:extension>
-  </xs:complexContent>
-</xs:complexType>
-
-<xs:element name="ProviderID" type="md:entityIDType"/>
-From liberty-metadata-v1.0.xsd:
-<xs:simpleType name="entityIDType">
-  <xs:restriction base="xs:anyURI">
-    <xs:maxLength value="1024" id="maxlengthid"/>
-  </xs:restriction>
-</xs:simpleType>
-<xs:element name="RelayState" type="xs:string"/>
-
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="AuthnResponse" type="AuthnResponseType"/>
+ * <xs:complexType name="AuthnResponseType">
+ *   <xs:complexContent>
+ *     <xs:extension base="samlp:ResponseType">
+ *       <xs:sequence>
+ *         <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>
+ * 	<xs:element ref="ProviderID"/>
+ * 	<xs:element ref="RelayState" minOccurs="0"/>
+ *       </xs:sequence>
+ *       <xs:attribute ref="consent" use="optional"/>
+ *     </xs:extension>
+ *   </xs:complexContent>
+ * </xs:complexType>
+ * 
+ * <xs:element name="ProviderID" type="md:entityIDType"/>
+ * From liberty-metadata-v1.0.xsd:
+ * <xs:simpleType name="entityIDType">
+ *   <xs:restriction base="xs:anyURI">
+ *     <xs:maxLength value="1024" id="maxlengthid"/>
+ *   </xs:restriction>
+ * </xs:simpleType>
+ * <xs:element name="RelayState" type="xs:string"/>
+ * 
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

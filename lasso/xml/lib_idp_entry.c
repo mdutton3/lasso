@@ -26,18 +26,18 @@
 #include <lasso/xml/lib_idp_entry.h>
 
 /*
-Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
-
-<xs:element name="IDPEntry">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element ref="ProviderID"/>
-      <xs:element name="ProviderName" type="xs:string" minOccurs="0"/>
-      <xs:element name="Loc" type="xs:anyURI"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
-*/
+ * Schema fragment (liberty-idff-protocols-schema-v1.2.xsd):
+ * 
+ * <xs:element name="IDPEntry">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:element ref="ProviderID"/>
+ *       <xs:element name="ProviderName" type="xs:string" minOccurs="0"/>
+ *       <xs:element name="Loc" type="xs:anyURI"/>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

@@ -27,18 +27,18 @@
 #include <libxml/uri.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="NameIdentifier" type="saml:NameIdentifierType"/>
-<complexType name="NameIdentifierType">
-  <simpleContent>
-    <extension base="string">
-      <attribute name="NameQualifier" type="string" use="optional"/>
-      <attribute name="Format" type="anyURI" use="optional"/>
-    </extension>
-  </simpleContent>
-</complexType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="NameIdentifier" type="saml:NameIdentifierType"/>
+ * <complexType name="NameIdentifierType">
+ *   <simpleContent>
+ *     <extension base="string">
+ *       <attribute name="NameQualifier" type="string" use="optional"/>
+ *       <attribute name="Format" type="anyURI" use="optional"/>
+ *     </extension>
+ *   </simpleContent>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* public methods                                                            */

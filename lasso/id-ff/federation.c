@@ -280,25 +280,13 @@ lasso_federation_get_type()
 LassoFederation*
 lasso_federation_new(gchar *remote_providerID)
 {
-  LassoFederation *federation;
+	LassoFederation *federation;
 
-  g_return_val_if_fail(remote_providerID != NULL, NULL);
+	g_return_val_if_fail(remote_providerID != NULL, NULL);
 
-  federation = LASSO_FEDERATION(g_object_new(LASSO_TYPE_FEDERATION, NULL));
+	federation = LASSO_FEDERATION(g_object_new(LASSO_TYPE_FEDERATION, NULL));
+	federation->remote_providerID = g_strdup(remote_providerID);
 
-  federation->remote_providerID = g_strdup(remote_providerID);
-
-  return federation;
+	return federation;
 }
 
-LassoFederation*
-lasso_federation_new_from_dump(gchar *dump)
-{
-  LassoFederation *federation;
-
-  g_return_val_if_fail(dump != NULL, NULL);
-
-  federation = LASSO_FEDERATION(g_object_new(LASSO_TYPE_FEDERATION, NULL));
-
-  return federation;
-}

@@ -243,7 +243,7 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
 	}
 	ctx->session->is_dirty = FALSE;
 
-  return 0;
+	return 0;
 }
 
 

@@ -30,19 +30,19 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-/* Now, the export orgy begins. The following we must do for the 
-   Windows platform with MSVC compiler. */
+/* Now, the export orgy begins. The following we must do for the
+ * Windows platform with MSVC compiler. */
 
 #if !defined LASSO_EXPORT
 #  if (defined _MSC_VER || defined MINGW32)
-     /* if we compile libxmlsec itself: */
+	/* if we compile libxmlsec itself: */
 #    if defined(IN_LASSO)
 #      if !defined(LASSO_STATIC)
 #        define LASSO_EXPORT __declspec(dllexport) 
 #      else
 #        define LASSO_EXPORT extern
 #      endif
-     /* if a client program includes this file: */
+	/* if a client program includes this file: */
 #    else
 #      if !defined(LASSO_STATIC)
 #        define LASSO_EXPORT __declspec(dllimport) 
@@ -50,8 +50,8 @@ extern "C" {
 #        define LASSO_EXPORT 
 #      endif
 #    endif
-   /* This holds on all other platforms/compilers, which are easier to
-      handle in regard to this. */
+	/* This holds on all other platforms/compilers, which are easier to
+	   handle in regard to this. */
 #  else
 #    define LASSO_EXPORT
 #  endif
@@ -59,17 +59,17 @@ extern "C" {
 
 #if !defined LASSO_EXPORT_VAR
 #  if (defined _MSC_VER || defined MINGW32)
-     /* if we compile libxmlsec itself: */
+	/* if we compile libxmlsec itself: */
 #    if defined(IN_LASSO)
 #      if !defined(LASSO_STATIC)
 #        define LASSO_EXPORT_VAR __declspec(dllexport) extern
 #      else
 #        define LASSO_EXPORT_VAR extern
 #      endif
-     /* if we compile libxmlsec-crypto itself: */
+	/* if we compile libxmlsec-crypto itself: */
 #    elif defined(IN_LASSO_CRYPTO)
 #        define LASSO_EXPORT_VAR extern
-     /* if a client program includes this file: */
+	/* if a client program includes this file: */
 #    else
 #      if !defined(LASSO_STATIC)
 #        define LASSO_EXPORT_VAR __declspec(dllimport) extern
@@ -77,8 +77,8 @@ extern "C" {
 #        define LASSO_EXPORT_VAR extern
 #      endif
 #    endif
-   /* This holds on all other platforms/compilers, which are easier to
-      handle in regard to this. */
+	/* This holds on all other platforms/compilers, which are easier to
+	   handle in regard to this. */
 #  else
 #    define LASSO_EXPORT_VAR extern
 #  endif

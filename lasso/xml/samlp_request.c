@@ -26,26 +26,25 @@
 #include <lasso/xml/samlp_request.h>
 
 /*
-<element name="Request" type="samlp:RequestType"/>
-<complexType name="RequestType">
-   <complexContent>
-     <extension base="samlp:RequestAbstractType">
-	<choice>
-	   <element ref="samlp:Query"/>
-	   <element ref="samlp:SubjectQuery"/>
-	   <element ref="samlp:AuthenticationQuery"/>
-	   <element ref="samlp:AttributeQuery"/>
-	   <element ref="samlp:AuthorizationDecisionQuery"/>
-	   <element ref="saml:AssertionIDReference" maxOccurs="unbounded"/>
-	   <element ref="samlp:AssertionArtifact" maxOccurs="unbounded"/>
-	</choice>
-     </extension>
-   </complexContent>
-</complexType>
-
-<element name="AssertionArtifact" type="string"/>
-
-*/
+ * <element name="Request" type="samlp:RequestType"/>
+ * <complexType name="RequestType">
+ *    <complexContent>
+ *      <extension base="samlp:RequestAbstractType">
+ * 	<choice>
+ * 	   <element ref="samlp:Query"/>
+ * 	   <element ref="samlp:SubjectQuery"/>
+ * 	   <element ref="samlp:AuthenticationQuery"/>
+ * 	   <element ref="samlp:AttributeQuery"/>
+ * 	   <element ref="samlp:AuthorizationDecisionQuery"/>
+ * 	   <element ref="saml:AssertionIDReference" maxOccurs="unbounded"/>
+ * 	   <element ref="samlp:AssertionArtifact" maxOccurs="unbounded"/>
+ * 	</choice>
+ *      </extension>
+ *    </complexContent>
+ * </complexType>
+ * 
+ * <element name="AssertionArtifact" type="string"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

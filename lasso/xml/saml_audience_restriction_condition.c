@@ -26,21 +26,21 @@
 #include <lasso/xml/saml_audience_restriction_condition.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="AudienceRestrictionCondition" type="saml:AudienceRestrictionConditionType"/>
-<complexType name="AudienceRestrictionConditionType">
-  <complexContent>
-    <extension base="saml:ConditionAbstractType">
-      <sequence>
-        <element ref="saml:Audience" maxOccurs="unbounded"/>
-      </sequence>
-    </extension>
-  </complexContent>
-</complexType>
-
-<element name="Audience" type="anyURI"/>
-*/
+ * schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="AudienceRestrictionCondition" type="saml:AudienceRestrictionConditionType"/>
+ * <complexType name="AudienceRestrictionConditionType">
+ *   <complexContent>
+ *     <extension base="saml:ConditionAbstractType">
+ *       <sequence>
+ *         <element ref="saml:Audience" maxOccurs="unbounded"/>
+ *       </sequence>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ * 
+ * <element name="Audience" type="anyURI"/>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

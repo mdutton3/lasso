@@ -27,22 +27,22 @@
 #include <lasso/xml/saml_assertion.h>
 
 /*
-The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
-
-<element name="Advice" type="saml:AdviceType"/>
-<complexType name="AdviceType">
-  <choice minOccurs="0" maxOccurs="unbounded">
-    <element ref="saml:AssertionIDReference"/>
-    <element ref="saml:Assertion"/>
-    <any namespace="##other" processContents="lax"/>
-  </choice>
-</complexType>
-
-<element name="AssertionIDReference" type="saml:IDReferenceType"/>
-<simpleType name="IDReferenceType">
-  <restriction base="string"/>
-</simpleType>
-*/
+ * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
+ * 
+ * <element name="Advice" type="saml:AdviceType"/>
+ * <complexType name="AdviceType">
+ *   <choice minOccurs="0" maxOccurs="unbounded">
+ *     <element ref="saml:AssertionIDReference"/>
+ *     <element ref="saml:Assertion"/>
+ *     <any namespace="##other" processContents="lax"/>
+ *   </choice>
+ * </complexType>
+ * 
+ * <element name="AssertionIDReference" type="saml:IDReferenceType"/>
+ * <simpleType name="IDReferenceType">
+ *   <restriction base="string"/>
+ * </simpleType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

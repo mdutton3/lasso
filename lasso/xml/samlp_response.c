@@ -27,21 +27,20 @@
 #include <libxml/tree.h>
 
 /*
-Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
-
-<element name="Response" type="samlp:ResponseType"/>
-<complexType name="ResponseType">
-  <complexContent>
-    <extension base="samlp:ResponseAbstractType">
-      <sequence>
-        <element ref="samlp:Status"/>
-        <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/>
-      </sequence>
-    </extension>
-  </complexContent>
-</complexType>
-
-*/
+ * Schema fragment (oasis-sstc-saml-schema-protocol-1.0.xsd):
+ * 
+ * <element name="Response" type="samlp:ResponseType"/>
+ * <complexType name="ResponseType">
+ *   <complexContent>
+ *     <extension base="samlp:ResponseAbstractType">
+ *       <sequence>
+ *         <element ref="samlp:Status"/>
+ *         <element ref="saml:Assertion" minOccurs="0" maxOccurs="unbounded"/>
+ *       </sequence>
+ *     </extension>
+ *   </complexContent>
+ * </complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
