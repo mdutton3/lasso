@@ -49,10 +49,10 @@ struct _LassoLogout {
   LassoProfile parent;
   
   /*< public >*/
-  LassoNode *initial_request;
-  LassoNode *initial_response;
-  gchar     *initial_remote_providerID;
-
+  LassoNode      *initial_request;
+  LassoNode      *initial_response;
+  gchar          *initial_remote_providerID;
+  lassoHttpMethod request_method;
   /*< private >*/
   LassoLogoutPrivate *private;
 };

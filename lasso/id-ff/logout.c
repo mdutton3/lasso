@@ -39,11 +39,19 @@ struct _LassoLogoutPrivate
 /* public methods                                                            */
 /*****************************************************************************/
 
+/**
+ * lasso_logout_dump:
+ * @logout: the logout object
+ * 
+ * This method dumps the logout object in string xml form.
+ * 
+ * Return value: a newly allocated string or NULL
+ **/
 gchar *
 lasso_logout_dump(LassoLogout *logout)
 {
-  gchar *dump = NULL;
-  LassoNode *logout_node = NULL;
+  gchar          *dump = NULL;
+  LassoNode      *logout_node = NULL;
   LassoNodeClass *logout_class = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
@@ -52,14 +60,28 @@ lasso_logout_dump(LassoLogout *logout)
   logout_class = LASSO_NODE_GET_CLASS(logout_node);
   logout_class->set_name(logout_node, LASSO_LOGOUT_NODE);
 
-  /* back up */
-/*   lasso_node_add_child(logout_node, logout->initial_request); */
-/*   lasso_node_add_child(logout_node, logout->initial_response); */
-/*   lasso_node_set_prop(logout_node, LASSO_REMOTE_PROVIDERID_NODE, logout->initial_remote_providerID); */
-
   return(dump);
 }
 
+/**
+ * lasso_logout_build_request_msg:
+ * @logout: the logout object
+ * 
+ * This method builds the logout request message.
+ *
+ * It gets the single logout protocol profile of the remote provider and :
+ *    if it is a SOAP method, then it builds the logout request SOAP message,
+ *    set the msg_body attribute, get the single logout service url
+ *    and set the msg_url attribute of the logout object.
+ *
+ *    if it is a HTTP-Redirect method, then it builds the logout request QUERY message,
+ *    builds the logout request url, set the msg_url to the logout request url,
+ *    set the msg_body to NULL
+ *
+ *    HTTP-GET : TODO
+ * 
+ * Return value: a newly allocated string or NULL
+ **/
 gint
 lasso_logout_build_request_msg(LassoLogout *logout)
 {
@@ -76,7 +98,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 					   NULL);
   if (provider == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Provider %s not found\n", profile->remote_providerID);
-    return(-2);
+    return(-1);
   }
 
   /* get the prototocol profile of the logout request */
@@ -86,7 +108,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
   if (protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Single Logout Protocol profile not found\n");
-    return(-3);
+    return(-1);
   }
 
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
@@ -108,7 +130,6 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    debug("Building a http get request message\n");
     profile->request_type = lassoHttpMethodRedirect;
     profile->msg_url = lasso_provider_get_singleLogoutServiceURL(provider,
 								 lassoProviderTypeIdp,
@@ -122,6 +143,25 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   return(0);
 }
 
+/**
+ * lasso_logout_build_response_msg:
+ * @logout: the logout object
+ * 
+ * This method builds the logout response message.
+ *
+ * It gets the request message method and :
+ *    if it is a SOAP method, then it builds the logout response SOAP message,
+ *    set the msg_body attribute, get the single logout service return url
+ *    and set the msg_url attribute of the logout object.
+ *
+ *    if it is a HTTP-Redirect method, then it builds the logout response QUERY message,
+ *    builds the logout response url, set the msg_url to the logout response url,
+ *    set the msg_body to NULL
+ *
+ *    HTTP-GET : TODO
+ * 
+ * Return value: 
+ **/
 gint
 lasso_logout_build_response_msg(LassoLogout *logout)
 {
@@ -154,13 +194,11 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
   if (xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || \
       xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)) {
-    debug("Building a soap response message\n");
     profile->msg_url = NULL;
     profile->msg_body = lasso_node_export_to_soap(profile->response);
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
-    debug("Building a http get response message\n");
     profile->response_type = lassoHttpMethodRedirect;
     profile->msg_url = lasso_node_export_to_query(profile->response,
 						  profile->server->signature_method,
@@ -171,12 +209,28 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   return(0);
 }
 
+/**
+ * lasso_logout_destroy:
+ * @logout: the logout object
+ *
+ * destroy the logout object
+ * 
+ **/
 void
 lasso_logout_destroy(LassoLogout *logout)
 {
   g_object_unref(G_OBJECT(logout));
 }
 
+/**
+ * lasso_logout_get_next_providerID:
+ * @logout: the logout object
+ * 
+ * This method returns the next logout request service provider id
+ * excepted the initial service provider id.
+ * 
+ * Return value: a newly allocated string or NULL
+ **/
 gchar*
 lasso_logout_get_next_providerID(LassoLogout *logout)
 {
@@ -206,6 +260,17 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
   return(NULL);
 }
 
+/**
+ * lasso_logout_init_request:
+ * @logout: the logout object
+ * @remote_providerID: The provider id of the logout requested provider.
+ *     If it is set to NULL, get the default remote provider id.
+ * 
+ * It initialises a new logout request with the remote provider id 
+ * and name identifier of the federated principal
+ * 
+ * Return value: 0 if OK else < 0
+ **/
 gint
 lasso_logout_init_request(LassoLogout *logout,
 			  gchar       *remote_providerID)
@@ -231,14 +296,14 @@ lasso_logout_init_request(LassoLogout *logout,
 
   if (profile->remote_providerID == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "No provider id for init request\n");
-    return(-2);
+    return(-1);
   }
 
   /* get federation */
   federation = lasso_identity_get_federation(profile->identity, profile->remote_providerID);
   if (federation == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
-    return(-3);
+    return(-1);
   }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
@@ -257,14 +322,14 @@ lasso_logout_init_request(LassoLogout *logout,
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
-    return(-4);
+    return(-1);
   }
   lasso_federation_destroy(federation);
 
   if (nameIdentifier == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Name identifier not found for %s\n",
 	    profile->remote_providerID);
-    return(-5);
+    return(-1);
   }
 
   /* build the request */
@@ -286,12 +351,31 @@ lasso_logout_init_request(LassoLogout *logout,
 
   if (profile->request == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Error while creating the request\n");
-    return(-6);
+    return(-1);
   }
 
   return(0);
 }
 
+/**
+ * lasso_logout_process_request_msg:
+ * @logout: the logout object
+ * @request_msg: the logout request message
+ * @request_method: the logout request method
+ * 
+ * Process a logout request.
+ *    if it is a SOAP request method then it builds the logout request object
+ *    from the SOAP message and verify the signature of the logout request.
+ * 
+ *    if it is a HTTP-Redirect request method then it builds the logout request object
+ *    from the QUERY message and verify the signature
+ *
+ * Set the HTTP request method
+ * Set the msg_nameIdentifier attribute with the NameIdentifier of the logout request
+ * Optionaly, set the msg_relayState attribute with the RelayState of the logout request
+ *
+ * Return value: 0 if OK else < 0
+ **/
 gint lasso_logout_process_request_msg(LassoLogout     *logout,
 				      gchar           *request_msg,
 				      lassoHttpMethod  request_method)
@@ -303,13 +387,13 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
   GError        *err = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-  g_return_val_if_fail(request_msg != NULL, -2);
+  g_return_val_if_fail(request_msg != NULL, -1);
 
   profile = LASSO_PROFILE(logout);
 
+  /* build and process the logout request depending on the logout request type and optionaly verify the signature */
   switch (request_method) {
   case lassoHttpMethodSoap:
-    debug("Build a logout request from soap msg\n");
     profile->request = lasso_logout_request_new_from_export(request_msg,
 							    lassoNodeExportTypeSoap);
 
@@ -356,12 +440,15 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
     goto done;
   }
 
-  /* get the NameIdentifier to load identity dump */
+  /* Set the http request method */
+  logout->request_method = request_method;
+
+  /* Set the NameIdentifier */
   profile->nameIdentifier = lasso_node_get_child_content(profile->request,
 							 "NameIdentifier",
 							 NULL, NULL);
 
-  /* get the RelayState */
+  /* Set the RelayState */
   profile->msg_relayState = lasso_node_get_child_content(profile->request,
 							 "RelayState",
 							 NULL, NULL);
@@ -374,15 +461,28 @@ gint lasso_logout_process_request_msg(LassoLogout     *logout,
   return(ret);
 }
 
+/**
+ * lasso_logout_validate_request:
+ * @logout: the logout object
+ * 
+ * Validate the logout request :
+ *    initialises the logout response
+ *    verify the ProviderID
+ *    verify the federation with the NameIdentifier
+ *    verify the authentication with the NameIdentifier
+ *    TODO - if SOAP method at identity provider, verify all the remote service providers support SOAP method.
+ *
+ * Return value: O if OK else < 0
+ **/
 gint
 lasso_logout_validate_request(LassoLogout *logout)
 {
-  LassoProfile *profile;
+  LassoProfile    *profile;
   LassoFederation *federation;
-  LassoNode *nameIdentifier, *assertion;
-  LassoNode *statusCode;
-  LassoNodeClass *statusCode_class;
-  xmlChar *remote_providerID;
+  LassoNode       *nameIdentifier, *assertion;
+  LassoNode       *statusCode;
+  LassoNodeClass  *statusCode_class;
+  xmlChar         *remote_providerID;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
 
@@ -393,7 +493,7 @@ lasso_logout_validate_request(LassoLogout *logout)
     return(-1);
   }
 
-  /* set the remote provider id from the request */
+  /* Set the remote provider id from the request */
   remote_providerID = lasso_node_get_child_content(profile->request, "ProviderID",
 						   NULL, NULL);
   if (remote_providerID == NULL) {
@@ -402,7 +502,7 @@ lasso_logout_validate_request(LassoLogout *logout)
   }
   profile->remote_providerID = remote_providerID;
 
-  /* set LogoutResponse */
+  /* Set LogoutResponse */
   profile->response = lasso_logout_response_new(profile->server->providerID,
 						lassoSamlStatusCodeSuccess,
 						profile->request);
@@ -459,6 +559,8 @@ lasso_logout_validate_request(LassoLogout *logout)
   }
   lasso_federation_destroy(federation);
 
+  /* TODO - if SOAP request method at IDP then verify all the remote service providers supports SOAP protoco profile */
+
   /* verification is ok, save name identifier in logout object */
   lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   if (profile->provider_type == lassoProviderTypeIdp) {
@@ -475,6 +577,18 @@ lasso_logout_validate_request(LassoLogout *logout)
   return(0);
 }
 
+/**
+ * lasso_logout_process_response_msg:
+ * @logout: the logout object
+ * @response_msg: the response message
+ * @response_method: the response method
+ * 
+ * Process the response method :
+ *    build the logout response object
+ *    verify the status code value
+ * 
+ * Return value: 0 if OK else < 0
+ **/
 gint
 lasso_logout_process_response_msg(LassoLogout     *logout,
 				  gchar           *response_msg,
@@ -485,11 +599,11 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
   LassoNode *statusCode;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
-  g_return_val_if_fail(response_msg != NULL, -2);
+  g_return_val_if_fail(response_msg != NULL, -1);
 
   profile = LASSO_PROFILE(logout);
 
-  /* parse LogoutResponse */
+  /* build logout response object */
   switch (response_method) {
   case lassoHttpMethodSoap:
     profile->response = lasso_logout_response_new_from_export(response_msg, lassoNodeExportTypeSoap);
@@ -499,7 +613,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     break;
   default:
     message(G_LOG_LEVEL_CRITICAL, "Unknown response method\n");
-    return(-3);
+    return(-1);
   }
 
   if (profile->response == NULL) {
@@ -632,7 +746,16 @@ GType lasso_logout_get_type() {
   return this_type;
 }
 
-LassoLogout *
+/**
+ * lasso_logout_new:
+ * @server: the logout object
+ * @provider_type: the provider type (service provider or identity provider)
+ * 
+ * initialises a new logout object
+ * 
+ * Return value: 
+ **/
+LassoLogout*
 lasso_logout_new(LassoServer       *server,
 		 lassoProviderType  provider_type)
 {
