@@ -551,7 +551,8 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 	xmlnode = xmlNewNode(NULL, class->node_data->node_name);
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		if (firstns == NULL) firstns = class->node_data->ns;
-		xmlSetNs(xmlnode, class->node_data->ns);
+		if (class->node_data->ns)
+			xmlSetNs(xmlnode, class->node_data->ns);
 		lasso_node_build_xmlNode_from_snippets(node, xmlnode, class->node_data->snippets);
 		class = g_type_class_peek_parent(class);
 	}
@@ -571,6 +572,43 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 static void
 lasso_node_dispose(GObject *object)
 {
+	LassoNodeClass *class;
+	struct XmlSnippet *snippet;
+
+	class = LASSO_NODE_GET_CLASS(object);
+	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
+		for (snippet = class->node_data->snippets; snippet && snippet->name; snippet++) {
+			void **value = G_STRUCT_MEMBER_P(object, snippet->offset);
+
+			if (*value == NULL)
+				continue;
+			switch (snippet->type) {
+				case SNIPPET_ATTRIBUTE_INT:
+				case SNIPPET_CONTENT_BOOL:
+				case SNIPPET_CONTENT_INT:
+					break;
+				case SNIPPET_CONTENT:
+				case SNIPPET_TEXT_CHILD:
+				case SNIPPET_ATTRIBUTE:
+					fprintf(stderr, "(in %s) %s : (%p) %s\n",
+							G_OBJECT_TYPE_NAME(object),
+							snippet->name, *value, (char*)*value);
+					g_free(*value);
+					break;
+				case SNIPPET_NODE:
+				case SNIPPET_NAME_IDENTIFIER:
+					g_object_unref(*value);
+					break;
+				case SNIPPET_LIST_NODES:
+				case SNIPPET_LIST_CONTENT:
+					/* XXX: memory management for lists */
+					break;
+			}
+			*value = NULL;
+		}
+		class = g_type_class_peek_parent(class);
+	}
+
 	parent_class->dispose(object);
 }
 
@@ -955,10 +993,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 {
 	struct XmlSnippet *snippet;
 
-	if (snippets == NULL)
-		return;
-
-	for (snippet = snippets; snippet->name; snippet++) {
+	for (snippet = snippets; snippet && snippet->name; snippet++) {
 		void *value = G_STRUCT_MEMBER(void*, node, snippet->offset);
 
 		if (value == NULL && (snippet->type != SNIPPET_ATTRIBUTE_INT &&
