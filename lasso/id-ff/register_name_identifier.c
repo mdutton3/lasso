@@ -66,7 +66,7 @@ lasso_register_name_identifier_build_request_msg(LassoRegisterNameIdentifier *re
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniIdpSoap)){
     debug(DEBUG, "building a soap request message\n");
     profileContext->request_type = lassoHttpMethodSoap;
-    profileContext->msg_url = lasso_provider_get_singleRegisterNameIdentifierServiceURL(provider);
+    profileContext->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp)){
@@ -100,13 +100,13 @@ lasso_register_name_identifier_build_response_msg(LassoRegisterNameIdentifier *r
 
   protocolProfile = lasso_provider_get_registerNameIdentifierProtocolProfile(provider);
   if(protocolProfile==NULL){
-    debug(ERROR, "Single Register_Name_Identifier Protocol profile not found\n");
+    debug(ERROR, "Register_Name_Identifier Protocol profile not found\n");
     return(-3);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileRniIdpSoap)){
     debug(DEBUG, "building a soap response message\n");
-    profileContext->msg_url = lasso_provider_get_singleRegisterNameIdentifierServiceURL(provider);
+    profileContext->msg_url = lasso_provider_get_registerNameIdentifierServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
   }
   else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileRniIdpHttp)){
@@ -126,11 +126,13 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 					    gchar                       *remote_providerID)
 {
   LassoProfileContext                 *profileContext;
-  LassoNode                           *nameIdentifier;
+  LassoNode                           *spProvidedNameIdentifier, *idpProvidedNameIdentifier, oldProvidedNameIdentifier;
   LassoIdentity                       *identity;
   LassoRegisterNameIdentifierRequest  *request;
 
-  xmlChar *content, *nameQualifier, *format;
+  xmlChar *idpNameIdentifier, *idpNameQualifier, *idpFormat;
+  xmlChar *spNameIdentifier,  *spNameQualifier,  *spFormat;
+  xmlChar *oldNameIdentifier, *oldNameQualifier, *oldFormat;
 
   g_return_val_if_fail(LASSO_IS_REGISTER_NAME_IDENTIFIER(register_name_identifier), -1);
 
@@ -138,14 +140,28 @@ lasso_register_name_identifier_init_request(LassoRegisterNameIdentifier *registe
 
   profileContext->remote_providerID = remote_providerID;
 
-  /* get identity */
-  identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(identity==NULL){
-    debug(ERROR, "error, identity not found\n");
-    return(-2);
+  /* TODO : implement the setting of the request */
+  switch(register_name_identifier->provider_type){
+  case lassoProfileContextServiceProviderType:
+    //spNameQualifier = lasso_build_unique_id(32);
+    //spNameQualifier = profileContext->server->providerID;
+    break;
+  case lassoProfileContextIdentityProviderType:
+    break;
+  default:
+    debug(ERROR, "Unknown provider type\n");
   }
 
-  /* TODO : implement the setting of the request */
+/* lasso_register_name_identifier_request_new(const xmlChar *providerID, */
+/* 					   const xmlChar *idpProvidedNameIdentifier, */
+/* 					   const xmlChar *idpNameQualifier, */
+/* 					   const xmlChar *idpFormat, */
+/* 					   const xmlChar *spProvidedNameIdentifier, */
+/* 					   const xmlChar *spNameQualifier, */
+/* 					   const xmlChar *spFormat, */
+/* 					   const xmlChar *oldProvidedNameIdentifier, */
+/* 					   const xmlChar *oldNameQualifier, */
+/* 					   const xmlChar *oldFormat) */
 
   return(0);
 }
@@ -208,8 +224,8 @@ lasso_register_name_identifier_handle_request_msg(LassoRegisterNameIdentifier   
 
 gint
 lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *register_name_identifier,
-				 gchar *response_msg,
-				 lassoHttpMethods response_method)
+						   gchar                       *response_msg,
+						   lassoHttpMethods             response_method)
 {
   LassoProfileContext *profileContext;
   xmlChar   *statusCodeValue;
@@ -221,6 +237,8 @@ lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *
   switch(response_method){
   case lassoHttpMethodSoap:
     profileContext->response = lasso_register_name_identifier_response_new_from_soap(response_msg);
+  default:
+    debug(ERROR, "Unkown response method\n");
   }
  
   statusCode = lasso_node_get_child(profileContext->response, "StatusCode", NULL);
@@ -237,11 +255,15 @@ lasso_register_name_identifier_handle_response_msg(LassoRegisterNameIdentifier *
 /*****************************************************************************/
 
 static void
-lasso_register_name_identifier_instance_init(LassoRegisterNameIdentifier *register_name_identifier){
+lasso_register_name_identifier_instance_init(LassoRegisterNameIdentifier *register_name_identifier)
+{
+
 }
 
 static void
-lasso_register_name_identifier_class_init(LassoRegisterNameIdentifierClass *klass) {
+lasso_register_name_identifier_class_init(LassoRegisterNameIdentifierClass *klass)
+{
+
 }
 
 GType lasso_register_name_identifier_get_type() {
