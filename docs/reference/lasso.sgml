@@ -57,7 +57,6 @@
 <!ENTITY LassoServer SYSTEM "sgml/server.xml">
 <!ENTITY LassoSession SYSTEM "sgml/session.xml">
 
-<!ENTITY lasso-Liberty-Alliance "liberty-alliance.sgml">
 <!ENTITY version SYSTEM "version.xml">
 ]>
 <book id="index">
