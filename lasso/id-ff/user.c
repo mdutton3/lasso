@@ -264,7 +264,7 @@ lasso_user_get_identity(LassoUser *user,
 
   id = (LassoIdentity*)g_hash_table_lookup(user->identities, remote_providerID);
   if (id == NULL) {
-    message(G_LOG_LEVEL_INFO, "No Identity found with remote ProviderID = %s\n", remote_providerID);
+    debug("No Identity found with remote ProviderID = %s\n", remote_providerID);
   }
 
   return(id);

@@ -69,7 +69,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
     name = lasso_node_get_name(request_node);
 
     if(xmlStrEqual(name, "Request")){
-      message(G_LOG_LEVEL_INFO, "A Request node found\n");
+      debug("A Request node found\n");
       type = lassoRequestTypeLogin;
     }
     else if(xmlStrEqual(name, "LogoutRequest")){
