@@ -22,7 +22,9 @@ liblasso_xml_la_SOURCES = \
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
 	lib_authn_request.c	\
+	lib_authn_request_envelope.c	\
 	lib_authn_response.c \
+	lib_authn_response_envelope.c \
 	lib_federation_termination_notification.c \
 	lib_idp_entries.c	\
 	lib_idp_entry.c	\
@@ -74,7 +76,9 @@ liblassoinclude_HEADERS = \
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
 	lib_authn_request.h	\
+	lib_authn_request_envelope.h	\
 	lib_authn_response.h \
+	lib_authn_response_envelope.h \
 	lib_federation_termination_notification.h \
 	lib_idp_entries.h	\
 	lib_idp_entry.h	\
