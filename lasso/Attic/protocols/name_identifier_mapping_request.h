@@ -53,10 +53,14 @@ struct _LassoNameIdentifierMappingRequestClass {
 };
 
 LASSO_EXPORT GType      lasso_name_identifier_mapping_request_get_type          (void);
-LASSO_EXPORT LassoNode* lasso_name_identifier_mapping_request_new               (const xmlChar *providerID,
+LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new               (const xmlChar *providerID,
 										 const xmlChar *nameIdentifier,
 										 const xmlChar *nameQualifier,
 										 const xmlChar *format);
+
+
+LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_query    (const xmlChar *query);
+LASSO_EXPORT LassoNode *lasso_name_identifier_mapping_request_new_from_soap     (const xmlChar *buffer);
 
 #ifdef __cplusplus
 }

@@ -33,6 +33,7 @@
 #include "xml/py_lib_logout_request.h"
 #include "xml/py_lib_logout_response.h"
 #include "xml/py_lib_name_identifier_mapping_request.h"
+#include "xml/py_lib_name_identifier_mapping_response.h"
 #include "xml/py_lib_register_name_identifier_request.h"
 #include "xml/py_saml_assertion.h"
 #include "xml/py_saml_authentication_statement.h"
@@ -100,6 +101,9 @@ static PyMethodDef lasso_methods[] = {
   {"lib_name_identifier_mapping_request_new",         lib_name_identifier_mapping_request_new,         METH_VARARGS},
   {"lib_name_identifier_mapping_request_set_consent", lib_name_identifier_mapping_request_set_consent, METH_VARARGS},
 
+  /* py_lib_name_identifier_mapping_response.h */
+  {"lib_name_identifier_mapping_response_new",         lib_name_identifier_mapping_response_new,         METH_VARARGS},
+
   /* py_lib_register_name_identifier_request.h */
   {"lib_register_name_identifier_request_new",            lib_register_name_identifier_request_new,            METH_VARARGS},
   {"lib_register_name_identifier_request_set_relayState", lib_register_name_identifier_request_set_relayState, METH_VARARGS},
@@ -150,10 +154,16 @@ static PyMethodDef lasso_methods[] = {
   {"logout_response_new_from_query",         logout_response_new_from_query,         METH_VARARGS},
 
   /* py_name_identifier_mapping_request.h */
-  {"name_identifier_mapping_request_new", name_identifier_mapping_request_new, METH_VARARGS},
+  {"name_identifier_mapping_request_new",            name_identifier_mapping_request_new,            METH_VARARGS},
+  {"name_identifier_mapping_request_new_from_soap",  name_identifier_mapping_request_new_from_soap,  METH_VARARGS},
+  {"name_identifier_mapping_request_new_from_query", name_identifier_mapping_request_new_from_query, METH_VARARGS},
 
   /* py_name_identifier_mapping_response.h */
-  {"name_identifier_mapping_response_new", name_identifier_mapping_response_new, METH_VARARGS},
+  {"name_identifier_mapping_response_new_from_request_soap",  name_identifier_mapping_response_new_from_request_soap,  METH_VARARGS},
+  {"name_identifier_mapping_response_new_from_soap",          name_identifier_mapping_response_new_from_soap,          METH_VARARGS},
+  {"name_identifier_mapping_response_new_from_dump",          name_identifier_mapping_response_new_from_dump,          METH_VARARGS},
+  {"name_identifier_mapping_response_new_from_request_query", name_identifier_mapping_response_new_from_request_query, METH_VARARGS},
+  {"name_identifier_mapping_response_new_from_query",         name_identifier_mapping_response_new_from_query,         METH_VARARGS},
 
   /* py_register_name_identifier_request.h */
   {"register_name_identifier_request_new", register_name_identifier_request_new, METH_VARARGS},

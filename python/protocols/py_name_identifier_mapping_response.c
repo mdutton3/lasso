@@ -42,24 +42,97 @@ PyObject *LassoNameIdentifierMappingResponse_wrap(LassoNameIdentifierMappingResp
 
 /******************************************************************************/
 
-PyObject *name_identifier_mapping_response_new(PyObject *self, PyObject *args) {
-  const xmlChar      *providerID;
-  const xmlChar      *statusCodeValue;
-  PyObject           *request_obj;
+PyObject *name_identifier_mapping_response_new_from_request_soap(PyObject *self, PyObject *args) {
+  const xmlChar *request_soap_dump;
+  const xmlChar *providerID;
+  const xmlChar *status_code_value;
 
-  LassoNode *response;
+  LassoNode *response = NULL;
 
-  if (CheckArgs(args, "SSO:name_identifier_mapping_response_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "ssO:name_identifier_mapping_response_new",
+  if (CheckArgs(args, "SSS:name_identifier_mapping_response_new_from_request_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:name_identifier_mapping_response_new_from_request_soap",
+			 &request_soap_dump,
 			 &providerID,
-			 &statusCodeValue, &request_obj))
+			 &status_code_value))
       return NULL;
   }
   else return NULL;
 
-  response = lasso_name_identifier_mapping_response_new(providerID,
-							statusCodeValue,
-							LassoNameIdentifierMappingRequest_get(request_obj));
+  response = lasso_name_identifier_mapping_response_new_from_request_soap(request_soap_dump,
+									  providerID,
+									  status_code_value);
+
+  return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
+}
+
+PyObject *name_identifier_mapping_response_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *response_soap_dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:name_identifier_mapping_response_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:name_identifier_mapping_response_new_from_soap",
+			 &response_soap_dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_name_identifier_mapping_response_new_from_soap(response_soap_dump);
+
+  return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
+}
+
+PyObject *name_identifier_mapping_response_new_from_dump(PyObject *self, PyObject *args) {
+  const xmlChar *dump;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:name_identifier_mapping_response_new_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:name_identifier_mapping_response_new_from_dump",
+			 &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_name_identifier_mapping_response_new_from_soap(dump);
+
+  return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
+}
+
+PyObject *name_identifier_mapping_response_new_from_request_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+  const xmlChar *providerID;
+  const xmlChar *status_code_value;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "SSS:name_identifier_mapping_response_new_from_request_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "sss:name_identifier_mapping_response_new_from_request_query",
+			 &query,
+			 &providerID,
+			 &status_code_value))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_name_identifier_mapping_response_new_from_request_query(query, providerID, status_code_value);
+
+  return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
+}
+
+PyObject *name_identifier_mapping_response_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode *response = NULL;
+
+  if (CheckArgs(args, "S:name_identifier_mapping_response_new_from_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:name_identifier_mapping_response_new_from_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  response = lasso_name_identifier_mapping_response_new_from_query(query);
 
   return (LassoNameIdentifierMappingResponse_wrap(LASSO_NAME_IDENTIFIER_MAPPING_RESPONSE(response)));
 }

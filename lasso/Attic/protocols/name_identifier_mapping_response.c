@@ -115,3 +115,117 @@ lasso_name_identifier_mapping_response_new(const xmlChar *providerID,
 
   return (response);
 }
+
+LassoNode *
+lasso_name_identifier_mapping_response_new_from_dump(const xmlChar *buffer)
+{
+  LassoNode *response;
+  
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+  lasso_node_load_from_buffer(response, buffer);
+  
+  return (response);
+}
+
+// build a NameIdentifierMappingResponse from a query form NameIdentifierMappingResponse
+LassoNode *
+lasso_name_identifier_mapping_response_new_from_query(const xmlChar *query)
+{
+  LassoNode *response;
+  xmlChar *relayState, *consent;
+  GData *gd;
+  
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+
+  gd = lasso_query_to_dict(query);
+  
+  /* ResponseID */
+  lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					       lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ResponseID"), 0));
+  
+  /* MajorVersion */
+  lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0));
+  
+  /* MinorVersion */
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0));
+  
+  /* IssueInstant */
+  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0));
+  
+  /* InResponseTo */
+  lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+						 lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "InResponseTo"), 0));
+  
+  /* Recipient */
+  lasso_samlp_response_abstract_set_recipient(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
+					      lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Recipient"), 0));
+  
+  /* ProviderID */
+  lasso_lib_name_identifier_mapping_response_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(response),
+							  lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0));
+
+
+  g_datalist_clear(&gd);
+
+  return(response);
+}
+
+// build a NameIdentifierMappingRespose from a soap form NameIdentifierMappingRequest
+LassoNode *
+lasso_name_identifier_mapping_response_new_from_request_soap(const xmlChar *buffer,
+							     const xmlChar *providerID,
+							     const xmlChar *statusCodeValue)
+{
+  LassoNode *request, *response;
+
+  request = lasso_name_identifier_mapping_request_new_from_soap(buffer);
+
+  response = lasso_name_identifier_mapping_response_new(providerID,
+							statusCodeValue,
+							request);
+
+  return(response);
+}
+
+LassoNode *
+lasso_name_identifier_mapping_response_new_from_soap(const xmlChar *buffer)
+{
+  LassoNode *response;
+  LassoNode *envelope, *lassoNode_response;
+  xmlNodePtr xmlNode_response;
+  LassoNodeClass *class;
+
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
+
+  envelope = lasso_node_new_from_dump(buffer);
+  lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse");
+     
+  class = LASSO_NODE_GET_CLASS(lassoNode_response);
+  xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
+  
+  class = LASSO_NODE_GET_CLASS(response);
+  class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
+  g_object_unref(envelope);
+  
+  return(response);
+}
+
+// build a NameIdentifierMappingResponse from a query form NameIdentifierMappingRequest
+LassoNode *
+lasso_name_identifier_mapping_response_new_from_request_query(const xmlChar *query,
+							      const xmlChar *providerID,
+							      const xmlChar *statusCodeValue)
+{
+  LassoNode *request, *response;
+
+  request = lasso_name_identifier_mapping_request_new_from_query(query);
+  
+  response = lasso_name_identifier_mapping_response_new(providerID,
+							statusCodeValue,
+							request);
+
+  return(response);
+}

@@ -37,5 +37,7 @@ typedef struct {
 PyObject *LassoNameIdentifierMappingRequest_wrap(LassoNameIdentifierMappingRequest *request);
 
 PyObject *name_identifier_mapping_request_new(PyObject *self, PyObject *args);
+PyObject *name_identifier_mapping_request_new_from_soap(PyObject *self, PyObject *args);
+PyObject *name_identifier_mapping_request_new_from_query(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_NAME_IDENTIFIER_MAPPING_REQUEST_H__ */

@@ -110,3 +110,78 @@ lasso_name_identifier_mapping_request_new(const xmlChar *providerID,
 
   return (request);
 }
+
+LassoNode *
+lasso_name_identifier_mapping_request_new_from_query(const xmlChar *query)
+{
+  LassoNode *request, *identifier;
+  xmlChar *str;
+  GData *gd;
+
+  request = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, NULL));
+
+  gd = lasso_query_to_dict(query);
+
+  /* RequestID */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
+  lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+
+  
+  /* MajorVersion */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
+  lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+  /* MinorVersion */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
+  lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+  /* IssueInstant */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstance"), 0);
+  lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
+  
+  /* ProviderID */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+  lasso_lib_name_identifier_mapping_request_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), str);
+
+  /* NameIdentifier */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0);
+  identifier = lasso_saml_name_identifier_new(str);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0);
+  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
+  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
+     
+  lasso_lib_name_identifier_mapping_request_set_nameIdentifier(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), identifier);
+  
+  /* consent */
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);
+  if (str != NULL)
+    lasso_lib_name_identifier_mapping_request_set_consent(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), str);
+
+  g_datalist_clear(&gd);
+
+  return(request);
+}
+
+LassoNode *
+lasso_name_identifier_mapping_request_new_from_soap(const xmlChar *buffer)
+{
+  LassoNode *request;
+  LassoNode *envelope, *lassoNode_request;
+  xmlNodePtr xmlNode_request;
+  LassoNodeClass *class;
+
+  request = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, NULL));
+
+  envelope = lasso_node_new_from_dump(buffer);
+  lassoNode_request = lasso_node_get_child(envelope, "NameIdentifierMappingRequest");
+  
+  class = LASSO_NODE_GET_CLASS(lassoNode_request);
+  xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
+  
+  class = LASSO_NODE_GET_CLASS(request);
+  class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
+  g_object_unref(envelope);
+  
+  return(request);
+}

@@ -180,10 +180,10 @@ extract_cflags(xmlsec1_cflags)
 extract_libs(xmlsec1_libs)
 
 # FIXME : cflags & libs for lasso
-include_dirs.append('..')
-library_dirs.append('../lasso/.libs')
-#include_dirs.append('/usr/local/include')
-#library_dirs.append('/usr/local/lib')
+#include_dirs.append('..')
+#library_dirs.append('../lasso/.libs')
+include_dirs.append('/usr/local/include')
+library_dirs.append('/usr/local/lib')
 libraries.append('lasso')
 
 em = Extension("lassomod",
@@ -195,6 +195,7 @@ em = Extension("lassomod",
                           "xml/py_lib_logout_request.c",
                           "xml/py_lib_logout_response.c",
                           "xml/py_lib_name_identifier_mapping_request.c",
+                          "xml/py_lib_name_identifier_mapping_response.c",
                           "xml/py_lib_register_name_identifier_request.c",
                           "xml/py_saml_assertion.c",
                           "xml/py_saml_authentication_statement.c",

@@ -62,3 +62,37 @@ PyObject *name_identifier_mapping_request_new(PyObject *self, PyObject *args) {
 
   return (LassoNameIdentifierMappingRequest_wrap(LASSO_NAME_IDENTIFIER_MAPPING_REQUEST(request)));
 }
+
+PyObject *name_identifier_mapping_request_new_from_soap(PyObject *self, PyObject *args) {
+  const xmlChar *soap_buffer;
+
+  LassoNode     *request;
+
+  if (CheckArgs(args, "S:name_identifier_mapping_request_new_from_soap")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:name_identifier_mapping_request_new_from_soap",
+			 &soap_buffer))
+      return NULL;
+  }
+  else return NULL;
+
+  request = lasso_name_identifier_mapping_request_new_from_soap(soap_buffer);
+
+  return (LassoNameIdentifierMappingRequest_wrap(LASSO_NAME_IDENTIFIER_MAPPING_REQUEST(request)));
+}
+
+PyObject *name_identifier_mapping_request_new_from_query(PyObject *self, PyObject *args) {
+  const xmlChar *query;
+
+  LassoNode     *request;
+
+  if (CheckArgs(args, "S:name_identifier_mapping_request_new_from_query")) {
+    if(!PyArg_ParseTuple(args, (char *) "s:name_identifier_mapping_request_new_from_query",
+			 &query))
+      return NULL;
+  }
+  else return NULL;
+
+  request = lasso_name_identifier_mapping_request_new_from_query(query);
+
+  return (LassoNameIdentifierMappingRequest_wrap(LASSO_NAME_IDENTIFIER_MAPPING_REQUEST(request)));
+}

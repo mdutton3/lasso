@@ -226,6 +226,18 @@ class LibNameIdentifierMappingRequest(Node):
     def set_consent(self, consent):
         lassomod.lib_name_identifier_mapping_request_set_consent(self, consent)
 
+class LibNameIdentifierMappingResponse(Node):
+    def __init__(self, _obj = None):
+        """
+        """
+        if _obj != None:
+            self._o = _obj
+            return
+        _obj = lassomod.lib_name_identifier_mapping_response_new()
+        if _obj is None:
+            raise Error('lasso_lib_name_identifier_mapping_response_new() failed')
+        Node.__init__(self, _obj=_obj)
+
 
 class SamlNameIdentifier(Node):
     def __init__(self, _obj=None):
@@ -346,10 +358,10 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
     new_from_query = classmethod(new_from_query)
 
 class LogoutRequest(LibLogoutRequest):
-    def __init__(self, obj):
+    def __init__(self, _obj):
         """
         """
-        self._o = obj
+        self._o = _obj
         LibLogoutRequest.__init__(self, _obj = self._o)
         
     def new(cls, providerID, nameIdentifier, nameQualifier, format):
@@ -369,10 +381,10 @@ class LogoutRequest(LibLogoutRequest):
 
 
 class LogoutResponse(LibLogoutResponse):
-    def __init__(self, obj):
+    def __init__(self, _obj):
         """
         """
-        self._o = obj
+        self._o = _obj
         LibLogoutResponse.__init__(self, _obj = self._o)
 
     def new_from_request_soap(cls, envelope, providerID, status_code_value):
@@ -402,35 +414,59 @@ class LogoutResponse(LibLogoutResponse):
 
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
-    def __init__(self, providerID, nameIdentifier, nameQualifier, format,
-                 _obj=None):
+    def __init__(self, _obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.name_identifier_mapping_request_new(providerID,
-                                                            nameIdentifier,
-                                                            nameQualifier,
-                                                            format)
-        if _obj is None:
-            raise Error('lasso_name_identifier_mapping_request_new() failed')
-        LibNameIdentifierMappingRequest.__init__(self, _obj=_obj)
+        self._o = _obj
+        LibNameIdentifierMappingRequest.__init__(self, _obj = self._o)
+
+    def new(cls, providerID, nameIdentifier, nameQualifier, format):
+        obj = lassomod.name_identifier_mapping_request_new(providerID, nameIdentifier, nameQualifier, format)
+        return NameIdentifierMappingRequest(obj)
+    new = classmethod(new)
+
+    def new_from_soap(cls, envelope):
+        obj = lassomod.name_identifier_mapping_request_new_from_soap(envelope)
+        return NameIdentifierMappingRequest(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_query(cls, query):
+        obj = lassomod.name_identifier_mapping_request_new_from_query(query)
+        return NameIdentifierMappingRequest(obj)
+    new_from_query = classmethod(new_from_query)
 
 
-class NameIdentifierMappingResponse(Node):
-    def __init__(self, providerID, statusCodeValue, request, _obj=None):
+class NameIdentifierMappingResponse(LibNameIdentifierMappingResponse):
+    def __init__(self, _obj):
         """
         """
-        if _obj != None:
-            self._o = _obj
-            return
-        _obj = lassomod.name_identifier_mapping_response_new(providerID,
-                                                             statusCodeValue,
-                                                             request)
-        if _obj is None:
-            raise Error('lasso_name_identifier_mapping_response_new() failed')
-        Node.__init__(self, _obj=_obj)
+        self._o = _obj
+        LibNameIdentifierMappingResponse.__init__(self, _obj = self._o)
+
+    def new_from_request_soap(cls, envelope, providerID, status_code_value):
+        obj = lassomod.name_identifier_mapping_response_new_from_request_soap(envelope, providerID, status_code_value)
+        return NameIdentifierMappingResponse(obj)
+    new_from_request_soap = classmethod(new_from_request_soap)
+
+    def new_from_soap(cls, envelope):
+        obj = lassomod.name_identifier_mapping_response_new_from_soap(envelope)
+        return NameIdentifierMappingResponse(obj)
+    new_from_soap = classmethod(new_from_soap)
+
+    def new_from_dump(cls, dump):
+        obj = lassomod.name_identifier_mapping_response_new_from_dump(dump)
+        return NameIdentifierMappingResponse(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def new_from_request_query(cls, query, providerID, status_code_value):
+        obj = lassomod.name_identifier_mapping_response_new_from_request_query(query, providerID, status_code_value)
+        return NameIdentifierMappingResponse(obj);
+    new_from_request_query = classmethod(new_from_request_query)
+
+    def new_from_query(cls, query):
+        obj = lassomod.name_identifier_mapping_response_new_from_query(query)
+        return NameIdentifierMappingResponse(obj);
+    new_from_query = classmethod(new_from_query)
 
 
 class RegisterNameIdentifierRequest(Node):
