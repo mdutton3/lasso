@@ -88,7 +88,7 @@ lasso_lib_authn_response_envelope_get_type()
 
 /**
  * lasso_lib_authn_response_envelope_new:
- * @authnResponse: the #LassoLibAuthnResponse to envelop
+ * @response: the #LassoLibAuthnResponse to envelop
  * @assertionConsumerServiceURL: assertion consumer service URL on the service
  *      provider
  *
