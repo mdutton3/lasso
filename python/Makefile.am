@@ -23,7 +23,7 @@ lasso_wrap.c lasso.py: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i
 	sed -e 's/free(result)/g_free(result)/' \
 			< lasso_wrap.c.bak > lasso_wrap.c
 	cp lasso_wrap.c lasso_wrap.c.bak.1
-	sed -e 's/^  int res = 0;$//' \
+	sed -e 's/^  int res = 0;$$//' \
 			< lasso_wrap.c.bak.1 > lasso_wrap.c
 	cp lasso_wrap.c lasso_wrap.c.bak.2
 	sed -e 's/\/\*  if (val) \*val = PyObject_IsTrue(obj); return 1; \*\//int res = 0;/' \
