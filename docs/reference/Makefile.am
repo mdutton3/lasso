@@ -111,7 +111,7 @@ doc_sources: $(DOC_SOURCE_FILES)
 #
 lasso-index: scan 
 	@echo '*** Create functions index ***'
-	grep -h '<NAME>.*</NAME>' lasso-*decl.txt | \
+	grep -h '<NAME>.*</NAME>' build/lasso-*decl.txt | \
 		grep -v '<NAME>extern</NAME>' | \
 		sort -u | \
 		sed 's#_#-#g' | \

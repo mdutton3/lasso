@@ -1,21 +1,4 @@
 <SECTION>
-<FILE>ds_signature</FILE>
-<TITLE>LassoDsSignature</TITLE>
-LassoDsSignature
-LassoDsSignatureClass
-lasso_ds_signature_new
-lasso_ds_signature_sign
-<SUBSECTION Standard>
-LASSO_DS_SIGNATURE
-LASSO_IS_DS_SIGNATURE
-LASSO_TYPE_DS_SIGNATURE
-lasso_ds_signature_get_type
-LASSO_DS_SIGNATURE_CLASS
-LASSO_IS_DS_SIGNATURE_CLASS
-LASSO_DS_SIGNATURE_GET_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>lib_assertion</FILE>
 <TITLE>LassoLibAssertion</TITLE>
 LassoLibAssertion

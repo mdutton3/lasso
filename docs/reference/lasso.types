@@ -1,6 +1,5 @@
 #include <lasso/lasso.h>
 
-lasso_ds_signature_get_type
 lasso_lib_assertion_get_type
 lasso_lib_authentication_statement_get_type
 lasso_lib_authn_context_get_type
