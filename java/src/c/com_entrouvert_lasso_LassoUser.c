@@ -59,3 +59,21 @@ JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoUser_dump
     return (*env)->NewStringUTF(env, result);
 }
 
+JNIEXPORT jstring JNICALL Java_com_entrouvert_lasso_LassoUser_getAuthenticationMethod
+(JNIEnv * env, jobject this, jstring _remoteProviderId){
+    char *remoteProviderId = NULL;
+    char *result;
+    LassoUser* user;
+
+    if (_remoteProviderId)
+        remoteProviderId = (char*)(*env)->GetStringUTFChars(env, _remoteProviderId, NULL);
+
+    user = getCObject(env, this);
+    result = lasso_user_get_authentication_method(user, remoteProviderId);
+
+    if (_remoteProviderId)
+        (*env)->ReleaseStringUTFChars(env, _remoteProviderId, remoteProviderId);
+
+    return (*env)->NewStringUTF(env, result);
+}
+

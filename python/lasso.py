@@ -874,7 +874,7 @@ class User:
     def get_assertion(self, remote_providerID):
 	return Node(lassomod.user_get_assertion(self, remote_providerID))
 
-    def get_authentication_method(self, remote_providerID):
+    def get_authentication_method(self, remote_providerID = None):
 	return lassomod.user_get_authentication_method(self, remote_providerID)
 
     def get_next_assertion_remote_providerID(self):

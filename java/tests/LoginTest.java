@@ -149,13 +149,12 @@ public class LoginTest extends TestCase {
         assertEquals(nameIdentifier, spLoginContext.getNameIdentifier());
 	// The user doesn't have any federation yet.
         assertEquals(0, spLoginContext.createUser(null));
-        spUserContextDump = spLoginContext.getUser().dump();
+        spUserContext = spLoginContext.getUser();
+        assertNotNull(spUserContext);
+        spUserContextDump = spUserContext.dump();
         assertNotNull(spUserContextDump);
-	response = (LassoResponse) spLoginContext.getResponse();
-// FIXME: I believe the instruction below is not clean enough for a binding.
-//         authenticationMethod = response.get_child(
-//             "AuthenticationStatement").get_attr_value("AuthenticationMethod")
-//         assertEquals(lasso.samlAuthenticationMethodPassword, authenticationMethod)
+	authenticationMethod = spUserContext.getAuthenticationMethod(null);
+        assertEquals(Lasso.samlAuthenticationMethodPassword, authenticationMethod);
 
         // Service provider logout.
         spContextDump = generateServiceProviderContextDump();

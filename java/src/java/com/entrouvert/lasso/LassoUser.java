@@ -40,5 +40,7 @@ public class LassoUser extends LassoObject { // LassoUser
 
     native public String dump();
 
+    native public String getAuthenticationMethod(String remoteProviderId);
+
 } // LassoUser
 
