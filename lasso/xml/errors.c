@@ -63,6 +63,8 @@ lasso_strerror(int error_code)
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
 			return "Failed to get LassoProvider object "\
 				"with providerID %s in LassoServer object.";
+		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
+			return "Failed to add new provider.";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported logout protocol profile";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
