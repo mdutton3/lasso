@@ -138,7 +138,7 @@ printf("Location: /\n\nRedirected to site root\n");
 @assertionArtifact: 
 @assertion: 
 
-<!-- ##### ENUM lassoLoginProtocolProfile ##### -->
+<!-- ##### ENUM LassoLoginProtocolProfile ##### -->
 <para>
 
 </para>
