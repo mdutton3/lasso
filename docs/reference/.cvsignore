@@ -5,6 +5,7 @@ Makefile.in
 sgml
 tmpl
 html
+code
 
 lasso-decl-list.txt
 lasso-decl.txt

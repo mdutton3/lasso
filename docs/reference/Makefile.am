@@ -4,7 +4,6 @@ MODULE=lasso
 DOC_MAIN_SGML_FILE=$(MODULE).sgml
 SOURCE_DIR=$(TOP)/lasso
 INCLUDE_DIR=$(TOP)/lasso
-##SGML_CATALOG_FILES=/usr/share/sgml/docbook/sgml-dtd-3.0-1.0-8/catalog:/usr/share/sgml/openjade-1.3.1/catalog:/usr/share/sgml/docbook/dsssl-stylesheets/catalog
 
 EXTRA_DIST = \
 	chapters \
@@ -116,8 +115,6 @@ doc_sources: $(DOC_SOURCE_FILES)
 		sed 's/LASSO_EXPORT//' > \
 		$(DOC_SOURCE_DIR)/$$folder_name/$$file_name; \
 	done);
-#	-@mkdir -p $(DOC_SOURCE_DIR)/lasso
-#	-@mv -f $(DOC_SOURCE_DIR)/lasso/*.c $(DOC_SOURCE_DIR)/lasso/base
 
 #
 # Create index for all functions. For macros and defines need to add -CAPS suffix

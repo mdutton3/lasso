@@ -3,6 +3,7 @@ Makefile.in
 aclocal.m4
 autom4te.cache
 stamp-h
+stamp-h1
 stamp-h.in
 Makefile.in
 configure
