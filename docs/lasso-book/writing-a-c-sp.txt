@@ -50,7 +50,7 @@ compilation and linking.
 
 
 Creating an executable from the previous sample would then a simple matter of
-calling ``gcc`` with the right flags.  But there is currently in bug in
+calling ``gcc`` with the right flags.  But there is currently a bug in
 XMLSec, the library used by Lasso to provide XML Signature and XML Encryption
 support.  It is possible to workaround the bug::
 
