@@ -308,7 +308,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
     goto done;
   }
 
-  /* get federation */
+  /* Get federation */
   federation = lasso_identity_get_federation_ref(profile->identity, profile->remote_providerID);
   if (federation == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Federation not found\n");
@@ -412,6 +412,35 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
   lasso_federation_set_local_nameIdentifier(federation, local_nameIdentifier_node);
 
   done:
+  if (idpNameIdentifier != NULL) {
+    xmlFree(idpNameIdentifier);
+  }
+  if (idpNameQualifier != NULL) {
+    xmlFree(idpNameQualifier);
+  }
+  if (idpFormat != NULL) {
+    xmlFree(idpFormat);
+  }
+
+  if (spNameIdentifier != NULL) {
+    xmlFree(spNameIdentifier);
+  }
+  if (spNameQualifier != NULL) {
+    xmlFree(spNameQualifier);
+  }
+  if (spFormat != NULL) {
+    xmlFree(spFormat);
+  }
+
+  if (oldNameIdentifier != NULL) {
+    xmlFree(oldNameIdentifier);
+  }
+  if (oldNameQualifier != NULL) {
+    xmlFree(oldNameQualifier);
+  }
+  if (oldFormat != NULL) {
+    xmlFree(oldFormat);
+  }
 
   return ret;
 }
