@@ -19,3 +19,4 @@ ltmain.sh
 missing
 mkinstalldirs
 lasso.pc
+lasso-src-config
