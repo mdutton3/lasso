@@ -219,7 +219,7 @@ AC_ARG_WITH(java-home,
 JAVAC_FLAGS=
 JDK_INCLUDE=
 SUN=no
-if test "X$with_java_home" != X; then
+if test "X$with_java_home" != "X"; then
     JDK_INCLUDE="$with_java_home/include"
 fi
 
@@ -234,7 +234,7 @@ if test "x$JAVA" = "xjava" && test "x$JAVAC" = "xjavac"; then
     if test "x$JAVA_VERSION" = x; then
         JAVA_VERSION=`$JAVA -version 2>&1 | grep "Java Version" | $SED 's/^.*Java Version: //g'`
         dnl If the java environment is kaffe, specify the JDK_INCLUDE directory.
-        if test "x$JAVA_VERSION" != x; then
+        if test "x$JAVA_VERSION" != "x"; then
             JDK_INCLUDE="/usr/lib/kaffe/include"
         fi
     else
@@ -261,7 +261,7 @@ if test "x$JAVAC" = "xgcj"; then
 fi
 
 dnl Now transform JDK_INCLUDE in CFLAG option if applicable.
-if test "X$JDK_INCLUDE" != X; then
+if test "X$JDK_INCLUDE" != "X"; then
     dnl If it is a sun environment
     if test "x$SUN" = "xyes"; then
         JDK_INCLUDE="$JDK_INCLUDE -I$JDK_INCLUDE/$SUN_EXTRA_INCLUDE"
@@ -270,7 +270,7 @@ if test "X$JDK_INCLUDE" != X; then
 fi
 
 dnl If we found a java version information, we have java compilation environment.
-if test "X$JAVA_VERSION" != X && test "X$JAR" != X; then
+if test "X$JAVA_VERSION" != "X" && test "X$JAR" != "X"; then
   languages_available="$languages_available $JAVA($JAVA_VERSION)"
 else
   enable_java=no
@@ -298,7 +298,7 @@ AC_ARG_WITH(python,
 AC_MSG_CHECKING(for Python development files)
 
 dnl specific program passed, set PYTHON to it.
-if test "X$with_python" != X; then
+if test "X$with_python" != "X"; then
     PYTHON=$with_python
 fi
 
@@ -309,7 +309,7 @@ PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
 changequote([, ])dnl
 
 dnl Check if we were be able to extract a good version number.
-if test "X$PYTHON_VERSION" != X; then
+if test "X$PYTHON_VERSION" != "X"; then
     PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
     PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
     changequote(<<, >>)dnl
@@ -364,11 +364,11 @@ AC_ARG_WITH(php-extension-dir,
             [PHP_EXTENSION_DIR="$withval"],[PHP_EXTENSION_DIR=])
 
 dnl Check if user passed a specific php-config program.
-if test "X$with_php_config" != X ; then
+if test "X$with_php_config" != "X" ; then
     PHP_CONFIG=$with_php_config
 fi
 
-if test "X$PHP_CONFIG" != X ; then
+if test "X$PHP_CONFIG" != "X" ; then
   PHP_INCLUDES=`$PHP_CONFIG --includes`
   PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
   PHP_LIBS=`$PHP_CONFIG --libs`
@@ -407,7 +407,7 @@ fi
 AC_MSG_CHECKING(for PHP development files)
 PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
 dnl Check if we were be able to extract a good version number.
-if test "X$PHP_VERSION" != X || test "X$ENABLE_PHP_FORCE" == "Xyes"; then
+if test "X$PHP_VERSION" != "X" || test "X$ENABLE_PHP_FORCE" == "Xyes"; then
     languages_available="$languages_available php($PHP_VERSION)"
 else
     enable_php=no
@@ -522,15 +522,15 @@ AC_SUBST(PERLINSTALLSITEARCH)
 AC_SUBST(PERLMAN3DIR)
 
 AC_MSG_CHECKING(Enable Perl API)
-if test "X$enable_perl" != Xno ; then
-  if test "X$enable_perl" != Xyes; then
+if test "X$enable_perl" != "Xno" ; then
+  if test "X$enable_perl" != "Xyes"; then
     PERL=$enable_perl
   fi
   enable_perl=yes
 fi
 
 PERL_VERSION=`$PERL -MConfig -e 'print $Config{version}' 2>/dev/null`
-if test "X$PERL_VERSION" != X; then
+if test "X$PERL_VERSION" != "X"; then
   languages_available="$languages_available perl($PERL_VERSION)"
   if test $enable_perl = yes; then
     languages="$languages perl"
