@@ -39,14 +39,22 @@ _initialized = False
 
 class Error(Exception):
     code = None # Use negative error codes for binding specific errors.
-    msg = None
+    functionName = None
 
-    def __init__(self, msg=None):
-        if msg is not None:
-            self.msg = msg
+    def __init__(self, functionName):
+        self.functionName = functionName
 
     def __str__(self):
         return repr(self.msg)
+
+
+class ErrorUnknown(Error):
+    def __init__(self, code, functionName):
+        ErrorUnknown.__init__(functionName)
+        self.code = code
+
+    def __str__(self):
+        return 'Unknown error number %d in Lasso function %s' % (self.code, self.functionName)
 
 
 class ErrorLassoAlreadyInitialized(Error):
@@ -61,17 +69,18 @@ class ErrorLassoNotInitialized(Error):
     
 class ErrorInstanceCreationFailed(Error):
     code = -3
-    functionName = None
-
-    def __init__(self, functionName):
-        self.functionName = functionName
 
     def __str__(self, functionName):
         return 'Instance creation failed in Lasso function %s()' % self.functionName
 
 
+def newError(code, functionName):
+    # FIXME: Use proper ErrorClass, when Lasso will have well defined error codes.
+    return ErrorUnknown(code, functionName)
+
+
 ################################################################################
-# Functions
+# Initialization
 ################################################################################
 
 
@@ -932,8 +941,9 @@ class Server:
     new_from_dump = classmethod(new_from_dump)
 
     def add_provider(self, metadata, public_key=None, certificate=None):
-        return lassomod.server_add_provider(self, metadata,
-                                            public_key, certificate)
+        errorCode = lassomod.server_add_provider(self, metadata, public_key, certificate)
+        if errorCode:
+            raise newError(errorCode, 'lasso_server_add_provider')
 
     def dump(self):
         return lassomod.server_dump(self)
@@ -1075,16 +1085,24 @@ class Profile:
         return lassomod.profile_is_session_dirty(self)
 
     def set_identity(self, identity):
-        return lassomod.profile_set_identity(self, identity)
+        errorCode = lassomod.profile_set_identity(self, identity)
+        if errorCode:
+            raise newError(errorCode, 'lasso_profile_set_identity')
 
     def set_identity_from_dump(self, dump):
-        return lassomod.profile_set_identity_from_dump(self, dump)
+        errorCode = lassomod.profile_set_identity_from_dump(self, dump)
+        if errorCode:
+            raise newError(errorCode, 'lasso_profile_set_identity_from_dump')
 
     def set_session(self, session):
-        return lassomod.profile_set_session(self, session)
+        errorCode = lassomod.profile_set_session(self, session)
+        if errorCode:
+            raise newError(errorCode, 'lasso_profile_set_session')
 
     def set_session_from_dump(self, dump):
-        return lassomod.profile_set_session_from_dump(self, dump)
+        errorCode = lassomod.profile_set_session_from_dump(self, dump)
+        if errorCode:
+            raise newError(errorCode, 'lasso_profile_set_session_from_dump')
 
 ## login
 loginProtocolProfileBrwsArt  = 1
@@ -1145,51 +1163,70 @@ class Login(Profile):
     new_from_dump = classmethod(new_from_dump)
 
     def accept_sso(self):
-        return lassomod.login_accept_sso(self)
+        errorCode = lassomod.login_accept_sso(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_accept_sso')
 
     def build_artifact_msg(self, authentication_result, authenticationMethod,
                            reauthenticateOnOrAfter, method):
-        return lassomod.login_build_artifact_msg(self, authentication_result,
-                                                 authenticationMethod,
-                                                 reauthenticateOnOrAfter,
-                                                 method)
+        errorCode = lassomod.login_build_artifact_msg(
+            self, authentication_result, authenticationMethod, reauthenticateOnOrAfter, method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_build_artifact_msg')
 
     def build_authn_request_msg(self):
-        return lassomod.login_build_authn_request_msg(self)
+        errorCode = lassomod.login_build_authn_request_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_build_authn_request_msg')
 
     def build_authn_response_msg(self, authentication_result, authenticationMethod,
                                  reauthenticateOnOrAfter):
-        return lassomod.login_build_authn_response_msg(self, authentication_result,
-                                                       authenticationMethod,
-                                                       reauthenticateOnOrAfter)
+        errorCode = lassomod.login_build_authn_response_msg(
+            self, authentication_result, authenticationMethod, reauthenticateOnOrAfter)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_build_authn_response_msg')
 
     def build_request_msg(self):
-        return lassomod.login_build_request_msg(self)
+        errorCode = lassomod.login_build_request_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_build_request_msg')
 
     def dump(self):
         return lassomod.login_dump(self)
 
     def init_authn_request(self, remote_providerID):
-        return lassomod.login_init_authn_request(self, remote_providerID)
+        errorCode = lassomod.login_init_authn_request(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_init_authn_request')
 
     def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
-        return lassomod.login_init_from_authn_request_msg(self, authn_request_msg,
-                                                          authn_request_method)
+        errorCode = lassomod.login_init_from_authn_request_msg(
+            self, authn_request_msg, authn_request_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_init_from_authn_request_msg')
 
     def init_request(self, response_msg, response_method):
-        return lassomod.login_init_request(self, response_msg, response_method)
+        errorCode = lassomod.login_init_request(self, response_msg, response_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_init_request')
 
     def must_authenticate(self):
         return lassomod.login_must_authenticate(self)
 
     def process_authn_response_msg(self, authn_response_msg):
-        return lassomod.login_process_authn_response_msg(self, authn_response_msg)
+        errorCode = lassomod.login_process_authn_response_msg(self, authn_response_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_process_authn_response_msg')
 
     def process_request_msg(self, request_msg):
-        return lassomod.login_process_request_msg(self, request_msg)
+        errorCode = lassomod.login_process_request_msg(self, request_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_process_request_msg')
 
     def process_response_msg(self, response_msg):
-        return lassomod.login_process_response_msg(self, response_msg)
+        errorCode = lassomod.login_process_response_msg(self, response_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_login_process_response_msg')
 
 
 providerTypeNone = 0
@@ -1233,10 +1270,14 @@ class Logout(Profile):
     new = classmethod(new)
 
     def build_request_msg(self):
-        return lassomod.logout_build_request_msg(self)
+        errorCode = lassomod.logout_build_request_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_build_request_msg')
 
     def build_response_msg(self):
-        return lassomod.logout_build_response_msg(self)
+        errorCode = lassomod.logout_build_response_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_build_response_msg')
 
     def destroy(self):
         lassomod.logout_destroy(self);
@@ -1245,16 +1286,24 @@ class Logout(Profile):
         return lassomod.logout_get_next_providerID(self);
 
     def init_request(self, remote_providerID = None):
-        return lassomod.logout_init_request(self, remote_providerID);
+        errorCode = lassomod.logout_init_request(self, remote_providerID);
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_init_request')
 
     def process_request_msg(self, request_msg, request_method):
-        return lassomod.logout_process_request_msg(self, request_msg, request_method);
+        errorCode = lassomod.logout_process_request_msg(self, request_msg, request_method);
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_process_request_msg')
 
     def validate_request(self):
-        return lassomod.logout_validate_request(self);
+        errorCode = lassomod.logout_validate_request(self);
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_validate_request')
 
     def process_response_msg(self, response_msg, response_method):
-        return lassomod.logout_process_response_msg(self, response_msg, response_method);
+        errorCode = lassomod.logout_process_response_msg(self, response_msg, response_method);
+        if errorCode:
+            raise newError(errorCode, 'lasso_logout_process_response_msg')
 
 class FederationTermination(Profile):
     """\brief Short desc
@@ -1292,19 +1341,28 @@ class FederationTermination(Profile):
     new = classmethod(new)
 
     def build_notification_msg(self):
-        return lassomod.federation_termination_build_notification_msg(self)
+        errorCode = lassomod.federation_termination_build_notification_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_federation_termination_build_notification_msg')
 
     def destroy(self):
         lassomod.federation_termination_destroy(self)
 
     def init_notification(self, remote_providerID = None):
-        return lassomod.federation_termination_init_notification(self, remote_providerID)
+        errorCode = lassomod.federation_termination_init_notification(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_federation_termination_init_notification')
 
     def load_notification_msg(self, notification_msg, notification_method):
-        return lassomod.federation_termination_load_notification_msg(self, notification_msg, notification_method)
+        errorCode = lassomod.federation_termination_load_notification_msg(
+            self, notification_msg, notification_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_federation_termination_load_notification_msg')
 
     def process_notification(self):
-        return lassomod.federation_termination_process_notification(self)
+        errorCode = lassomod.federation_termination_process_notification(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_federation_termination_process_notification')
 
 
 class RegisterNameIdentifier:
@@ -1338,22 +1396,33 @@ class RegisterNameIdentifier:
     new = classmethod(new)
 
     def build_request_msg(self):
-        return lassomod.register_name_identifier_build_request_msg(self)
+        errorCode = lassomod.register_name_identifier_build_request_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_register_name_identifier_build_request_msg')
 
     def build_response_msg(self):
-        return lassomod.register_name_identifier_build_response_msg(self)
+        errorCode = lassomod.register_name_identifier_build_response_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_register_name_identifier_build_response_msg')
 
     def destroy(self):
         pass
 
     def init_request(self, remote_providerID):
-        return lassomod.register_name_identifier_init_request(self, remote_providerID)
+        errorCode = lassomod.register_name_identifier_init_request(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_register_name_identifier_init_request')
 
     def process_request(self):
-        return lassomod.register_name_identifier_process_request(self)
+        errorCode = lassomod.register_name_identifier_process_request(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_register_name_identifier_process_request')
 
     def process_response_msg(self, response_msg, response_method):
-        return lassomod.register_name_identifier_process_response_msg(self, response_msg, response_method)
+        errorCode = lassomod.register_name_identifier_process_response_msg(
+            self, response_msg, response_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_register_name_identifier_process_response_msg')
 
 class Lecp:
     """\brief Short desc
@@ -1388,31 +1457,48 @@ class Lecp:
     new = classmethod(new)
 
     def build_authn_request_envelope_msg(self):
-        return lassomod.lecp_build_authn_request_envelope_msg(self)
+        errorCode = lassomod.lecp_build_authn_request_envelope_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_request_envelope_msg')
 
     def build_authn_response_envelope_msg(self):
-        return lassomod.lecp_build_authn_response_envelope_msg(self)
+        errorCode = lassomod.lecp_build_authn_response_envelope_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_response_envelope_msg')
 
     def build_authn_request_msg(self):
-        return lassomod.lecp_build_authn_request_msg(self)
+        errorCode = lassomod.lecp_build_authn_request_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_request_msg')
 
     def build_authn_response_msg(self):
-        return lassomod.lecp_build_authn_response_msg(self)
+        errorCode = lassomod.lecp_build_authn_response_msg(self)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_build_authn_response_msg')
 
     def destroy(self):
         lassomod.lecp_destroy(self)
 
     def init_authn_request(self, remote_providerID):
-        return lassomod.lecp_init_authn_request(self, remote_providerID)
+        errorCode = lassomod.lecp_init_authn_request(self, remote_providerID)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_init_authn_request')
 
     def init_from_authn_request_msg(self, authn_request_msg, authn_request_method):
-        return lassomod.lecp_init_from_authn_request_msg(self, authn_request_msg, authn_request_method)
+        errorCode = lassomod.lecp_init_from_authn_request_msg(
+            self, authn_request_msg, authn_request_method)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_init_from_authn_request_msg')
 
     def process_authn_request_envelope_msg(self, request_msg):
-        return lassomod.lecp_process_authn_request_envelope_msg(self, request_msg)
-  
+        errorCode = lassomod.lecp_process_authn_request_envelope_msg(self, request_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_process_authn_request_envelope_msg')
+
     def process_authn_response_envelope_msg(self, response_msg):
-        return lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)
+        errorCode = lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)
+        if errorCode:
+            raise newError(errorCode, 'lasso_lecp_process_authn_response_envelope_msg')
 
 
 if not _initialized:
