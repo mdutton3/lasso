@@ -131,8 +131,7 @@ test "z$U" != "z" && AC_MSG_ERROR(Compiler not ANSI compliant)
 dnl Check for variadic macros
 AC_CACHE_CHECK([for variadic cpp macros],
     [ac_cv_cpp_variadic_macros],
-    [CFLAGS="${CFLAGS_save}"
-     AC_TRY_COMPILE(
+    [AC_TRY_COMPILE(
          [#include <stdio.h>
           #define a(b,c...) printf(b,##c)],
          [a("foo");a("%s","bar");a("%s%s","baz","quux");],
