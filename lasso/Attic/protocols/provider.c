@@ -104,7 +104,7 @@ lasso_provider_get_metadata_value(LassoProvider      *provider,
     g_set_error(err, g_quark_from_string("Lasso"),
 		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
 		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
-    g_return_val_if_fail (err == NULL || *err == NULL,NULL);
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
   }
   if (LASSO_IS_PROVIDER(provider) == FALSE) {
     g_set_error(err, g_quark_from_string("Lasso"),
@@ -153,7 +153,12 @@ lasso_provider_get_assertionConsumerServiceURL(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -173,7 +178,12 @@ lasso_provider_get_authnRequestsSigned(LassoProvider  *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   value = lasso_provider_get_metadata_value(provider,
 					    lassoProviderTypeSp,
@@ -194,7 +204,12 @@ lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvide
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -215,7 +230,12 @@ lasso_provider_get_federationTerminationReturnServiceURL(LassoProvider      *pro
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -236,7 +256,12 @@ lasso_provider_get_federationTerminationServiceURL(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
 
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -257,7 +282,12 @@ lasso_provider_get_nameIdentifierMappingProtocolProfile(LassoProvider      *prov
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -305,7 +335,12 @@ lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider      *pro
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -326,7 +361,12 @@ lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider      *provider
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -346,7 +386,12 @@ lasso_provider_get_singleSignOnProtocolProfile(LassoProvider  *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    lassoProviderTypeIdp,
@@ -366,7 +411,12 @@ lasso_provider_get_singleSignOnServiceURL(LassoProvider  *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    lassoProviderTypeIdp,
@@ -387,7 +437,12 @@ lasso_provider_get_singleLogoutProtocolProfile(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -408,7 +463,12 @@ lasso_provider_get_singleLogoutServiceURL(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -429,7 +489,12 @@ lasso_provider_get_singleLogoutServiceReturnURL(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
@@ -450,7 +515,12 @@ lasso_provider_get_soapEndpoint(LassoProvider      *provider,
   xmlChar *value;
   GError  *tmp_err = NULL;
 
-  g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  if (err != NULL && *err != NULL) {
+    g_set_error(err, g_quark_from_string("Lasso"),
+		LASSO_PARAM_ERROR_ERR_CHECK_FAILED,
+		lasso_strerror(LASSO_PARAM_ERROR_ERR_CHECK_FAILED));
+    g_return_val_if_fail (err == NULL || *err == NULL, NULL);
+  }
   
   value = lasso_provider_get_metadata_value(provider,
 					    provider_type,
