@@ -38,21 +38,27 @@ static GObjectClass *parent_class = NULL;
 gchar *
 lasso_provider_dump(LassoProvider *provider)
 {
-  LassoNode *provider_node;
+  LassoNode *provider_node, *metadata_node;
   LassoNodeClass *provider_class;
+  gchar *provider_dump;
 
   provider_node = lasso_node_new();
+  metadata_node = lasso_node_copy(provider->metadata);
 
   /* set the public key, ca_certificate, metadata */
   provider_class = LASSO_NODE_GET_CLASS(provider_node);
   provider_class->set_name(provider_node, LASSO_PROVIDER_NODE);
-  provider_class->add_child(provider_node, provider->metadata, FALSE);
+  provider_class->add_child(provider_node, metadata_node, FALSE);
   if(provider->public_key)
     provider_class->set_prop(provider_node, LASSO_PROVIDER_PUBLIC_KEY_NODE, provider->public_key);
   if(provider->ca_certificate)
     provider_class->set_prop(provider_node, LASSO_PROVIDER_CA_CERTIFICATE_NODE, provider->ca_certificate);
 
-  return(lasso_node_export(provider_node));
+  provider_dump = lasso_node_export(provider_node);
+  //lasso_node_destroy(metadata_node);
+  //lasso_node_destroy(provider_node);
+
+  return(provider_dump);
 }
 
 gchar *
@@ -269,7 +275,7 @@ lasso_provider_new_from_metadata_node(LassoNode *metadata_node)
   LassoProvider *provider;
   
   provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
-  provider->metadata = metadata_node;
+  provider->metadata = lasso_node_copy(metadata_node);
   
   return(provider);
 }
