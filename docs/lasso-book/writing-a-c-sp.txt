@@ -166,7 +166,7 @@ identity provider Id (defined in metadata).
       LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibNameIDPolicyTypeFederated);
   lasso_lib_authn_response_set_consent(
       LASSO_LIB_AUTHN_REQUEST(login->request), lassoLibConsentObtained);
-  lasso_login_build_authn_request_msg(idpProviderId);
+  lasso_login_build_authn_request_msg(login, idpProviderId);
 
 
 You can now redirect the user to the URL defined in ``login->msg_url``; for
