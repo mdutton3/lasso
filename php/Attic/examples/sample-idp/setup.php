@@ -78,6 +78,9 @@
 	  $config = array(
 		'dsn' => "pgsql://idp:idp@localhost/idp",
 		'server_dump_filename' => "lasso_server_dump.xml",
+        'log_name' => $_SERVER['SERVER_NAME'],
+        'log_handler' => 'syslog',
+        'auth_type' => 'auth_form',
 		'idp-metadata' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/metadata.xml",
 		'idp-public_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/public-key.pem",
 		'idp-private_key' => "/home/cnowicki/mcvs/lasso/tests/data/idp1-la/private-key-raw.pem",
@@ -371,26 +374,44 @@
 <form name='frm' action='<?php echo $PHP_SELF ?>' method='POST'>
 
 <p align='center'>Lasso Identity Provider Setup</p>
-<br>
 <hr>
 <p>
 <table>
-<caption>Database Configuration</caption>
 <tr>
-  <td>DSN (Data Source Name) :</td><td><input type='text' name='dsn' size='50' value='<?php echo $config['dsn']; ?>' maxlength='100'></td><td><a href='http://pear.php.net/manual/en/package.database.db.intro-dsn.php' target='_new'>Help</a></td>
+    <td colspan='3' align='center'>Database</td>
 </tr>
-</table>
-</p>
-<hr>
-<p>
-<table>
-<caption>Authentification Configuration</caption>
+<tr>
+  <td>DSN (Data Source Name) :</td>
+  <td><input type='text' name='dsn' size='50' value='<?php echo $config['dsn']; ?>' maxlength='100'></td>
+  <td><a href='http://pear.php.net/manual/en/package.database.db.intro-dsn.php' target='_new'>Help</a></td>
+</tr>
+<tr>
+    <td colspan='3' align='center'>Authentification</td>
+</tr>
+<td>
 <tr>
   <td>Authentification type :</td>
   <td>
   <select name='auth_type'>
-    <option value="auth_form" <?php if ($config['auth_type'] == 'auth_form') echo 'selected' ?>>HTML Login/Password Form</option>
-	<option value="auth_basic" <?php if ($config['auth_type'] == 'auth_basic') echo 'selected' ?>>HTTP Auth Basic</option>
+    <option value="auth_form" <?php if ($config['auth_type'] == 'auth_form') echo 'selected="selected"'; ?>>HTML Login/Password Form</option>
+	<option value="auth_basic" <?php if ($config['auth_type'] == 'auth_basic') echo 'selected="selected"'; ?>>HTTP Auth Basic</option>
+  </select>
+  </td><td>&nbsp;</td>
+</tr>
+<tr>
+    <td colspan='3' align='center'>Logging</td>
+</tr>
+<tr>
+  <td>Name :</td>
+  <td><input type='text' name='log_name' size='50' value='<?php echo $config['log_name']; ?>' maxlength='100'></td>
+  <td>&nbsp;</td>
+</tr>
+<tr>
+  <td>Handler :</td>
+  <td>
+  <select name='log_handler'>
+    <option value="null" <?php if ($config['log_handler'] == 'null') echo 'selected="selected"'; ?>>NULL (disabled)</option>
+    <option value="syslog" <?php if ($config['log_handler'] == 'syslog') echo 'selected="selected"'; ?>>Syslog</option>
   </select>
   </td><td>&nbsp;</td>
 </tr>

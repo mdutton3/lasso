@@ -228,7 +228,7 @@
   ?>
   <td rowspan="2">
     <a href="<?php echo $PHP_SELF . '?del=' . $row[0]; ?>">delete</a>
-    <a href="<?php echo $PHP_SELF . '?edit=' . $row[0]; ?>">edit</a>
+    <a href="javascript:openpopup('user_edit.php?user_id=<?php echo ?>')">edit</a>
   </td>
 </tr>
 <tr>

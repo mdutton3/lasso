@@ -27,6 +27,9 @@
  
     $config = unserialize(file_get_contents('config.inc'));
     
+    // create logger 
+    $logger = &Log::factory($config['log_handler'], '', $config['log_name']."::".$_SERVER['PHP_SELF']);
+  
     session_start();
   
     lasso_init();
@@ -41,6 +44,7 @@
         if (!isset($_SERVER['PHP_AUTH_USER']))
         {
             sendHTTPBasicAuth();
+            $db->disconnect();
             exit;
         }
         else
@@ -54,7 +58,12 @@
             // connect to the data base
             $db = &DB::connect($config['dsn']);
             if (DB::isError($db)) 
-                die($db->getMessage());
+            {
+                $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
+                $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+                die("Could not connect to the database");
+            }
+
 
           	// User must *NOT* Authenticate with the IdP 
             if (!$login->mustAuthenticate()) 
@@ -118,9 +127,12 @@
    */
   function sendHTTPBasicAuth()
   {
+    global $logger;
+
     header('WWW-Authenticate: Basic realm="Lasso Identity Provider One"');
     header('HTTP/1.0 401 Unauthorized');
     echo "Acces Denied";
+    $logger->log("User from '" . $_SERVER['REMOTE_ADDR'] . "' pressed the cancel button during HTTP basic authentication request", PEAR_LOG_NOTICE);
   }
 
   /*
@@ -128,12 +140,18 @@
    */
    function updateIdentityDump($db, $user_id, $identity_dump)
    {
+        global $logger;
+       
        	$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity_dump);
 		$query .= " WHERE user_id='$user_id'";
 
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
-		  die($res->getMessage());
+        {
+            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            die("Internal Server Error");
+        }
    }
 
    /*
@@ -141,12 +159,19 @@
    */
    function updateSessionDump($db, $user_id, $session_dump)
    {
+        global $logger;
+
 		$query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
 		$query .= " WHERE user_id='$user_id'";
 
 		$res =& $db->query($query);
-		if (DB::isError($res)) 
-		  die($res->getMessage());
+        if (DB::isError($res)) 
+        {
+            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            die("Internal Server Error");
+        }
+
    }
 
    /*
@@ -154,18 +179,27 @@
     */
    function saveAssertionArtifact($db, $artifact, $assertion)
    {
+      global $logger;
+
 	  $assertion_dump = $assertion->dump();
 
 	  if (empty($assertion_dump))
+      {
+        $logger->log("assertion dump is empty", PEAR_LOG_ALERT);
 		die("assertion dump is empty");
-		
+      }
+
 	  // Save assertion 
 	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
 	  $query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
 
 	  $res =& $db->query($query);
-  	  if (DB::isError($res)) 
-		die($res->getMessage());
+      if (DB::isError($res)) 
+      {
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        die("Internal Server Error");
+      }
    }
 
   /*
@@ -331,13 +365,13 @@
 
 			header("Request-URI: $url");
 			header("Content-Location: $url");
-			header("Location: $url\r\n\r\n");
+			header("Location: $url\n\n");
 			lasso_shutdown();
 			exit;
 		case lassoLoginProtocolProfileBrwsPost:
-		  die("TODO : lassoLoginProtocolProfileBrwsPost");
-		  break;
+		  // TODO : lassoLoginProtocolProfileBrwsPost
 		default:
+          $logger->log("Unknown Login Protocol Profile :" . $db->getMessage(), PEAR_LOG_CRIT);
 		  die("Unknown Login Protocol Profile");
 	  }
   }
@@ -346,12 +380,20 @@
   if ($form->validate())
   {
 	if (empty($_SESSION['login_dump']))
-	  die("Login dump is not registred");
+    {
+        $logger->log("Login dump is not registred in the session", PEAR_LOG_ERR);
+        die("Login dump is not registred");
+    }
 
 	// connect to the data base
 	$db = &DB::connect($config['dsn']);
-	if (DB::isError($db)) 
-	  die($db->getMessage());
+
+    if (DB::isError($db)) 
+    {
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        die("Could not connect to the database");
+    }
 
 	$login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
 
@@ -360,17 +402,22 @@
 	{
       $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
       $is_first_sso = (empty($array) ? TRUE : FALSE);
-
+      
       if (!$is_first_sso)
       {
 		$login->setIdentityFromDump($array['identity_dump']);
 		$login->setSessionFromDump($array['session_dump']);
 	  } 
+      else
+        $logger->log("First SingleSignOn for user '$user_id'", PEAR_LOG_INFO);
 
 	  doneSingleSignOn($db, $login, $user_id, $is_first_sso);
 	  $db->disconnect();
 	  exit;
 	}
+    else
+        $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
+
   }
   else
   {
@@ -386,12 +433,19 @@
 	  // conect to the data base
 	  $db = &DB::connect($config['dsn']);
 	  if (DB::isError($db)) 
-		die($db->getMessage());
-        
+      {
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        die("Could not connect to the database");
+      }
+
       $user_id = getUserIDFromNameIdentifier($db, $login->nameIdentifier);
 	  
 	  if (!$user_id) 
-		die("Unknown User");
+      {
+        $logger->log("Could not get UserID from Name Identifier '" . $login->nameIdentifier . "'", PEAR_LOG_ERR);
+        die("Internal Server Error");
+      }
 	  
 	  doneSingleSignOn($db, $login, $user_id);
 	  $db->disconnect();

@@ -69,6 +69,8 @@
   $url['path'], $url['host'], $url['port'], 
   strlen($logout->msgBody), $logout->msgBody);
 
+  die($soap);
+
   # PHP 4.3.0 with OpenSSL support required
   $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));
  
@@ -121,6 +123,6 @@
   
   header("Request-URI: $url");
   header("Content-Location: $url");
-  header("Location: $url\r\n\r\n");
+  header("Location: $url\n\r\n");
   exit;
 ?>

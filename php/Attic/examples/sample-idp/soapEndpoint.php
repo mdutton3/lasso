@@ -23,11 +23,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
   require_once 'DB.php';
+  require_once 'Log.php';
 
   header("Content-Type: text/xml\r\n");
 
+   // create logger 
+   $logger = &Log::factory($config['log_handler'], '', $config['log_name']."::".$_SERVER['PHP_SELF']);
+
   if (empty($HTTP_RAW_POST_DATA))
+  {
+   $logger->log("HTTP_RAW_POST_DATA is empty", PEAR_LOG_WARNING);
    die("HTTP_RAW_POST_DATA is empty!"); 
+  }
 
   $config = unserialize(file_get_contents('config.inc'));
    
@@ -36,29 +43,37 @@
   lasso_init();
 
   $requestype = lasso_getRequestTypeFromSoapMsg($HTTP_RAW_POST_DATA);
-  $server = LassoServer::newfromdump($server_dump);
+  $server = LassoServer::newFromDump($server_dump);
 
   $db = &DB::connect($config['dsn']);
 
   if (DB::isError($db)) 
-  	die($db->getMessage());
-  
+  {
+    $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ALERT);
+    $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+    die("Could not connect to the database");
+  }
+
   switch ($requestype) 
   {
 	// Login
 	case lassoRequestTypeLogin:
+      $logger->log("SOAP Login Request from " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_INFO);
+
 	  $login = new LassoLogin($server);
 	  $login->processRequestMsg($HTTP_RAW_POST_DATA);
 	  $artifact = $login->assertionArtifact;
 	
-	  $query = "SELECT response_dump FROM assertions WHERE assertion='";
-	  $query .= $artifact ."'";
+	  $query = "SELECT response_dump FROM assertions WHERE assertion='" . $artifact . "'";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
 	  {
 		header("HTTP/1.0 500 Internal Server Error");
-		die($res->getMessage());
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        exit;
+
 	  }
 
 	  // Good Artifact, send reponse_dump
@@ -67,64 +82,89 @@
 		$row = $res->fetchRow();
 		
 		$query = "DELETE FROM assertions WHERE assertion='" . $artifact . "'";
-		
 		$res =& $db->query($query);
+
 		if (DB::isError($res)) 
 		{
-		  header("HTTP/1.0 500 Internal Server Error");
-		  die($res->getMessage()); 
+            header("HTTP/1.0 500 Internal Server Error");
+            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            exit;
 		}
+        $logger->log("Delete assertion '$artifact'", PEAR_LOG_DEBUG);
+        
 		$login->setAssertionFromDump($row[0]);
 		$login->buildResponseMsg();
 		header("Content-Length: " . strlen($login->msgBody) . "\r\n");
 		echo $login->msgBody;
+        exit;
 	  }
 	  else
 	  {
 		// Wrong Artifact
 		header("HTTP/1.0 403 Forbidden");
 		header("Content-Length: 0\r\n");
+        $logger->log("Wrong artifact send by " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_WARNING);        
 		exit;
 	  }
 	  break;
 	case lassoRequestTypeLogout:
+      $logger->log("SOAP Logout Request from " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_INFO);
+
 	  // Logout
 	  $logout = new LassoLogout($server, lassoProviderTypeIdp);
 	  $logout->processRequestMsg($HTTP_RAW_POST_DATA, lassoHttpMethodSoap);
 	  $nameIdentifier = $logout->nameIdentifier; 
-	  
+
+      
 	  // name identifier is empty, wrong request
 	  if (empty($nameIdentifier))
 	  {
 		header("HTTP/1.0 500 Internal Server Error");
+        $logger->log("Name Identifier is empty", PEAR_LOG_ERR);
 		exit;
 	  }
+      
+      $logger->log("Name Identifier '$nameIdentifier'", PEAR_LOG_DEBUG);
 
-	  $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='";
-	  $query .= $nameIdentifier . "'";
+	  $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameIdentifier'";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
-		die($res->getMessage());
+      {
+        header("HTTP/1.0 500 Internal Server Error");
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        exit;
+      }
 	  
 	  if (!$res->numRows()) 
 	  {
 		header("HTTP/1.0 500 Internal Server Error");
+        $logger->log("Could not find user_id matching nameidentifier '$nameIdentifier'", PEAR_LOG_ERR);
 		exit;
 	  }
 		
 	  $row = $res->fetchRow();
 	  $user_id = $row[0];
 
+      $logger->log("'$nameIdentifier' match UserID '$user_id'", PEAR_LOG_DEBUG);
+
 	  $query = "SELECT identity_dump,session_dump FROM users WHERE user_id='$user_id'";
 
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
-		die($res->getMessage());
+      {
+		header("HTTP/1.0 500 Internal Server Error");
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+        exit;
+      } 
 	  
 	  if (!$res->numRows()) 
 	  {
 		header("HTTP/1.0 500 Internal Server Error");
+        $logger->log("Could not fetch identity and session dump for user '$user_id'", PEAR_LOG_ERR);
 		exit;
 	  }
 	  
@@ -135,24 +175,43 @@
 	  $logout->setSessionFromDump($session_dump);
 	  $logout->setIdentityFromDump($user_dump);
 
-	  // TODO : handle exception
-	  if ($logout->validateRequest())
-	  {
-		// validate request failed
-		header("HTTP/1.0 500 Internal Server Error");
-		exit;
-	  }
+      // TODO : handle bad validate request
+	  $logout->validateRequest();
 
 	  if ($logout->isIdentityDirty)
 	  {
 		$identity = $logout->identity;
 		$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity->dump());
-		$query .= " WHERE identity_id='$user_id'";
+		$query .= " WHERE user_id='$user_id'";
 
 		$res =& $db->query($query);
 		if (DB::isError($res)) 
-		  die($res->getMessage());
+        {
+          	header("HTTP/1.0 500 Internal Server Error");
+            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            exit;
+        }
+        $logger->log("Update identity dump for user '$user_id'", PEAR_LOG_DEBUG);
 	  } 
+
+      if ($logout->isSessionDirty)
+	  {
+		$identity = $logout->session;
+		$query = "UPDATE users SET session_dump=".$db->quoteSmart($session->dump());
+		$query .= " WHERE user_id='$user_id'";
+
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+        {
+          	header("HTTP/1.0 500 Internal Server Error");
+            $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+            $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+            exit;
+        }
+        $logger->log("Update session dump for user '$user_id'", PEAR_LOG_DEBUG);
+	  } 
+
 	  
 	  // TODO : try multiple sp logout
 	  while(($providerID = $logout->getNextProviderId()))
@@ -161,23 +220,20 @@
 		$logout->buildRequestMsg();
 		$url = parse_url($logout->msgUrl);
 		
+        $logger->log("Send SOAP Logout Request to '$providerID' for user '$user_id'", PEAR_LOG_INFO);
+        
 		$soap = sprintf("POST %s HTTP/1.1\r\nHost: %s:%d\r\nContent-Length: %d\r\nContent-Type: text/xml\r\n\r\n%s\r\n",
 		  $url['path'], $url['host'], $url['port'], strlen($logout->msgBody), $logout->msgBody);
 
 		$fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30);
 		if (!$fp)
-		{
-		  header("HTTP/1.0 500 Internal Server Error");
-		  die($errstr ($errno));
-		}
+        {
+            $logger->log("Could not send SOAP Logout Request to '$providerID' for user '$user_id' : $errstr ($errno)", PEAR_LOG_WARN);
+            continue;
+        }
 		fwrite($fp, $soap);
 		$ret = fgets($fp);
 
-		if (!preg_match("/^HTTP\/1\\.. 200/i", $ret)) 
-		{
-		  header("HTTP/1.0 500 Internal Server Error");
-		  die("Logout failed with : " . $providerID);
-		}
 		
         // header
         do $header .= fread($fp, 1); while (!preg_match('/\\r\\n\\r\\n$/',$header));
@@ -209,17 +265,24 @@
         }
         fclose($fp);
 
+		if (!preg_match("/^HTTP\/1\\.. 200/i", $header)) 
+        {
+            $logger->log("Logout faild for user '$user_id' on '$providerID'", PEAR_LOG_WARN);
+            continue;
+        }
 		$logout->processResponseMsg($response, lassoHttpMethodSoap);
 	  } 
 	  
 	  $logout->buildResponseMsg();
 	  header("Content-Length: " . strlen($logout->msgBody) . "\r\n");
 	  echo $logout->msgBody;
+      $logger->log("User '$user_id' logged out", PEAR_LOG_INFO);
 	  break;
 	case lassoRequestTypeDefederation:
-	  break;
+
 	default:
 	  header("HTTP/1.0 500 Internal Server Error");
+      $logger->log("Unknown or unsupported SOAP request", PEAR_LOG_CRIT);
   }
   
   lasso_shutdown();

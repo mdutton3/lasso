@@ -33,7 +33,7 @@
 	  die($db->getMessage());
 
   if (!empty($_GET['dump'])) {
-  	$query = "SELECT identity_dump FROM users WHERE user_id='".$db->quoteSmart($_GET['dump']);
+  	$query = "SELECT identity_dump FROM users WHERE user_id=".$db->quoteSmart($_GET['dump']);
 	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	  print $res->getMessage(). "\n";
@@ -72,7 +72,7 @@
 	if (DB::isError($res)) 
 	  die($res->getMessage());
 
-	$query = "DELETE FROM users WHERE user_id='".$db->quoteSmart($_GET['del']);
+	$query = "DELETE FROM users WHERE user_id=".$db->quoteSmart($_GET['del']);
    	$res =& $db->query($query);
 	if (DB::isError($res)) 
 	  die($res->getMessage());
