@@ -338,8 +338,8 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
  * Return value: 0 if OK else < 0
  **/
 gint
-lasso_logout_init_request(LassoLogout *logout,
-			  gchar       *remote_providerID)
+lasso_logout_init_request(LassoLogout    *logout,
+			  gchar          *remote_providerID)
 {
   LassoProfile      *profile        = NULL;
   LassoProvider     *provider       = NULL;
@@ -896,7 +896,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
     }
 
     message(G_LOG_LEVEL_WARNING, "Status code value is not Success\n");
-    ret = LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
+    ret = LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
     goto done;
   }
 
