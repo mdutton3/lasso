@@ -40,6 +40,7 @@ typedef enum {
 	SNIPPET_LIST_NODES,
 	SNIPPET_LIST_CONTENT,
 	SNIPPET_EXTENSION,
+	SNIPPET_SIGNATURE,
 
 	/* transformers for content transformation */
 	SNIPPET_STRING  = 1 << 0, /* default, can be omitted */
@@ -64,6 +65,8 @@ struct _LassoNodeClassData
 	struct QuerySnippet *query_snippets;
 	char *node_name;
 	xmlNs *ns;
+	int sign_type_offset;
+	int sign_method_offset;
 };
 
 void lasso_node_class_set_nodename(LassoNodeClass *klass, char *name);

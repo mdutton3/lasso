@@ -64,3 +64,7 @@ SNIPPET_EXTENSION
 
   (for <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded"/>)
 
+SNIPPET_SIGNATURE
+
+  (for XMLDSig)
+

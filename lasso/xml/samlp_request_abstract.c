@@ -55,6 +55,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "Signature", SNIPPET_SIGNATURE,
+		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
 	{ "RequestID", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoSamlpRequestAbstract, RequestID) },
 	{ "MajorVersion", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, MajorVersion) },
@@ -64,52 +66,6 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSamlpRequestAbstract, IssueInstant) },
 	{ NULL, 0, 0}
 };
-
-static LassoNodeClass *parent_class = NULL;
-
-static xmlNode*
-get_xmlNode(LassoNode *node)
-{ 
-	xmlNode *xmlnode;
-	LassoSamlpRequestAbstract *request = LASSO_SAMLP_REQUEST_ABSTRACT(node);
-
-	xmlnode = parent_class->get_xmlNode(node);
-
-	/* signature stuff */
-	if (request->sign_type != LASSO_SIGNATURE_TYPE_NONE) {
-		xmlNode *signature = NULL, *reference, *key_info;
-		char *uri;
-
-		if (request->sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-			signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
-					xmlSecTransformRsaSha1Id, NULL);
-		}
-		if (request->sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-			signature = xmlSecTmplSignatureCreate(NULL, xmlSecTransformExclC14NId,
-					xmlSecTransformDsaSha1Id, NULL);
-		}
-		/* get out if signature == NULL ? */
-		xmlAddChild(xmlnode, signature);
-
-		uri = g_strdup_printf("#%s", request->RequestID);
-		reference = xmlSecTmplSignatureAddReference(signature,
-				xmlSecTransformSha1Id, NULL, uri, NULL);
-		g_free(uri);
-
-		/* add enveloped transform */
-		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
-		/* add exclusive C14N transform */
-		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
-
-		/* add <dsig:KeyInfo/> */
-		if (request->sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
-			key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-			xmlSecTmplKeyInfoAddX509Data(key_info);
-		}
-	}
-
-	return xmlnode;
-} 
 
 static char*
 get_sign_attr_name()
@@ -138,13 +94,15 @@ class_init(LassoSamlpRequestAbstractClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	parent_class = g_type_class_peek_parent(klass);
-	nclass->get_xmlNode = get_xmlNode;
 	nclass->get_sign_attr_name = get_sign_attr_name;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "RequestAbstract");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	nclass->node_data->sign_type_offset = G_STRUCT_OFFSET(
+			LassoSamlpRequestAbstract, sign_type);
+	nclass->node_data->sign_method_offset = G_STRUCT_OFFSET(
+			LassoSamlpRequestAbstract, sign_method);
 }
 
 GType

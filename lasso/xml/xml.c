@@ -692,6 +692,8 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_ATTRIBUTE:
 					g_free(*value);
 					break;
+				case SNIPPET_SIGNATURE:
+					break; /* no real element here */
 				default:
 					fprintf(stderr, "%d\n", type);
 					g_assert_not_reached();
@@ -1097,6 +1099,66 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					elem = g_list_next(elem);
 				}
 				break;
+			case SNIPPET_SIGNATURE:
+			{
+				LassoNodeClass *klass = LASSO_NODE_GET_CLASS(node);
+				lassoSignatureType sign_type;
+				lassoSignatureType sign_method;
+				xmlNode *signature = NULL, *reference, *key_info;
+				char *uri;
+				char *id;
+
+				while (klass && LASSO_IS_NODE_CLASS(klass) && klass->node_data) {
+					if (klass->node_data->sign_type_offset)
+						break;
+					klass = g_type_class_peek_parent(klass);
+				}
+
+				if (klass->node_data->sign_type_offset == 0)
+					break;
+				
+				sign_type = G_STRUCT_MEMBER(
+						lassoSignatureType, node,
+						klass->node_data->sign_type_offset);
+				sign_method = G_STRUCT_MEMBER(
+						lassoSignatureType, node,
+						klass->node_data->sign_method_offset);
+
+				if (sign_type == LASSO_SIGNATURE_TYPE_NONE)
+					break;
+
+				if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
+					signature = xmlSecTmplSignatureCreate(NULL,
+							xmlSecTransformExclC14NId,
+							xmlSecTransformRsaSha1Id, NULL);
+				} else {
+					signature = xmlSecTmplSignatureCreate(NULL,
+							xmlSecTransformExclC14NId,
+							xmlSecTransformDsaSha1Id, NULL);
+				}
+				/* XXX: get out if signature == NULL ? */
+				xmlAddChild(xmlnode, signature);
+
+				id = G_STRUCT_MEMBER(char*, node, snippet->offset);
+				uri = g_strdup_printf("#%s", id);
+				reference = xmlSecTmplSignatureAddReference(signature,
+						xmlSecTransformSha1Id, NULL, uri, NULL);
+				g_free(uri);
+
+				/* add enveloped transform */
+				xmlSecTmplReferenceAddTransform(reference,
+						xmlSecTransformEnvelopedId);
+				/* add exclusive C14N transform */
+				xmlSecTmplReferenceAddTransform(reference,
+						xmlSecTransformExclC14NId);
+
+				if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
+					/* add <dsig:KeyInfo/> */
+					key_info = xmlSecTmplSignatureEnsureKeyInfo(
+							signature, NULL);
+					xmlSecTmplKeyInfoAddX509Data(key_info);
+				}
+			} break;
 			case SNIPPET_INTEGER:
 			case SNIPPET_BOOLEAN:
 				g_assert_not_reached();
