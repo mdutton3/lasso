@@ -35,57 +35,28 @@ extern "C" {
 
 #define LASSO_TYPE_DISCO_QUERY (lasso_disco_query_get_type())
 #define LASSO_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                LASSO_TYPE_DISCO_QUERY, LassoDiscoQuery))
+			LASSO_TYPE_DISCO_QUERY, LassoDiscoQuery))
 #define LASSO_DISCO_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                        LASSO_TYPE_DISCO_QUERY, LassoDiscoQueryClass))
+			LASSO_TYPE_DISCO_QUERY, LassoDiscoQueryClass))
 #define LASSO_IS_DISCO_QUERY(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_QUERY))
 #define LASSO_IS_DISCO_QUERY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),LASSO_TYPE_DISCO_QUERY))
-#define LASSO_DISCO_QUERY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                                        LASSO_TYPE_DISCO_QUERY, LassoDiscoQueryClass)) 
+#define LASSO_DISCO_QUERY_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_QUERY, LassoDiscoQueryClass)) 
 
 typedef struct _LassoDiscoQuery LassoDiscoQuery;
 typedef struct _LassoDiscoQueryClass LassoDiscoQueryClass;
 
-/*
-The schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-
-<xs: group name="ResourceIDGroup">
-  <xs: sequence>
-     <xs: choice minOccurs="0" maxOccurs="1">
-       <xs: element ref="ResourceID"/>
-       <xs: element ref="EncryptedResourceID"/>
-     </xs: choice>
-  </xs: sequence>
-</xs: group>
-
-<xs: element name="Query" type="QueryType"/>
-<xs: complexType name="QueryType">
-  <xs: sequence>
-     <xs: group ref="ResourceIDGroup"/>
-     <xs: element name="RequestedServiceType" minOccurs="0" maxOccurs="unbounded">
-       <xs: complexType>
-          <xs: sequence>
-            <xs: element ref="ServiceType"/>
-            <xs: element ref="Options" minOccurs="0"/>
-          </xs: sequence>
-       </xs: complexType>
-     </xs: element>
-  </xs: sequence>
-  <xs: attribute name="id" type="xs: ID" use="optional"/>
-</xs: complexType>
-*/
-
 struct _LassoDiscoQuery {
-  LassoNode parent;
+	LassoNode parent;
 
-  char *ResourceID;
-  char *EncryptedResourceID;
-  GList *RequestedServiceType;
-  gchar *id;
+	char *ResourceID;
+	char *EncryptedResourceID;
+	GList *RequestedServiceType;
+	char *id;
 };
 
 struct _LassoDiscoQueryClass {
-  LassoNodeClass parent;
+	LassoNodeClass parent;
 };
 
 LASSO_EXPORT GType lasso_disco_query_get_type(void);

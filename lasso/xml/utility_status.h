@@ -34,36 +34,17 @@ extern "C" {
 
 #define LASSO_TYPE_UTILITY_STATUS (lasso_utility_status_get_type())
 #define LASSO_UTILITY_STATUS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                                     LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatus))
+			LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatus))
 #define LASSO_UTILITY_STATUS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                                LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatusClass))
+			LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatusClass))
 #define LASSO_IS_UTILITY_STATUS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_UTILITY_STATUS))
-#define LASSO_IS_UTILITY_STATUS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-                                                                         LASSO_TYPE_UTILITY_STATUS))
-#define LASSO_UTILITY_STATUS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                                                LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatusClass))
+#define LASSO_IS_UTILITY_STATUS_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_UTILITY_STATUS))
+#define LASSO_UTILITY_STATUS_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_UTILITY_STATUS, LassoUtilityStatusClass))
 
 typedef struct _LassoUtilityStatus LassoUtilityStatus;
 typedef struct _LassoUtilityStatusClass LassoUtilityStatusClass;
-
-/*
-   <xs:element name="Status" type="StatusType">
-        <xs:annotation>
-            <xs:documentation> A standard Status type</xs:documentation>
-        </xs:annotation>
-    </xs:element>
-    <xs:complexType name="StatusType">
-        <xs:annotation>
-            <xs:documentation> A type that may be used for status codes. </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element ref="Status" minOccurs="0"/>
-        </xs:sequence>
-        <xs:attribute name="code" type="xs:QName" use="required"/>
-        <xs:attribute name="ref" type="xs:NCName" use="optional"/>
-        <xs:attribute name="comment" type="xs:string" use="optional"/>
-    </xs:complexType>
-*/
 
 struct _LassoUtilityStatus {
 	LassoNode parent;

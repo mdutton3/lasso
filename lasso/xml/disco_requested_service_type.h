@@ -30,36 +30,25 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/disco_options.h>
 #include <lasso/xml/xml.h>
+#include <lasso/xml/disco_options.h>
 
 #define LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE (lasso_disco_requested_service_type_get_type())
 #define LASSO_DISCO_REQUESTED_SERVICE_TYPE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                           LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, LassoDiscoRequestedServiceType))
-#define LASSO_DISCO_REQUESTED_SERVICE_TYPE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                      LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, LassoDiscoRequestedServiceTypeClass))
-#define LASSO_IS_DISCO_REQUESTED_SERVICE_TYPE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-                                                           LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE))
-#define LASSO_IS_DISCO_REQUESTED_SERVICE_TYPE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-                                                           LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE))
-#define LASSO_DISCO_REQUESTED_SERVICE_TYPE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                      LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, LassoDiscoRequestedServiceTypeClass))
+			LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, LassoDiscoRequestedServiceType))
+#define LASSO_DISCO_REQUESTED_SERVICE_TYPE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, \
+				 LassoDiscoRequestedServiceTypeClass))
+#define LASSO_IS_DISCO_REQUESTED_SERVICE_TYPE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE))
+#define LASSO_IS_DISCO_REQUESTED_SERVICE_TYPE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE))
+#define LASSO_DISCO_REQUESTED_SERVICE_TYPE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DISCO_REQUESTED_SERVICE_TYPE, \
+				    LassoDiscoRequestedServiceTypeClass))
 
 typedef struct _LassoDiscoRequestedServiceType LassoDiscoRequestedServiceType;
 typedef struct _LassoDiscoRequestedServiceTypeClass LassoDiscoRequestedServiceTypeClass;
-
-/*
-The schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-     <xs: element name="RequestedServiceType" minOccurs="0" maxOccurs="unbounded">
-       <xs: complexType>
-          <xs: sequence>
-            <xs: element ref="ServiceType"/>
-            <xs: element ref="Options" minOccurs="0"/>
-          </xs: sequence>
-       </xs: complexType>
-     </xs: element>
-
-*/
 
 struct _LassoDiscoRequestedServiceType {
 	LassoNode parent;
@@ -70,12 +59,11 @@ struct _LassoDiscoRequestedServiceType {
 
 struct _LassoDiscoRequestedServiceTypeClass {
 	LassoNodeClass parent;
-
 };
 
 LASSO_EXPORT GType lasso_disco_requested_service_type_get_type(void);
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_disco_requested_service_type_new(
-	                                                                   const char *ServiceType);
+		const char *ServiceType);
 
 #ifdef __cplusplus
 }

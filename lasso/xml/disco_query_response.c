@@ -25,6 +25,25 @@
 
 #include <lasso/xml/disco_query_response.h>
 
+/*
+ * Schema fragment:
+ *
+ * <xs:element name="QueryResponse" type="QueryResponseType"/>
+ * <xs:complexType name="QueryResponseType">
+ *   <xs:sequence>
+ *     <xs:element ref="Status"/>
+ *     <xs:element ref="ResourceOffering" minOccurs="0" maxOccurs="unbounded"/>
+ *     <xs:element name="Credentials" minOccurs="0">
+ *       <xs:complexType>
+ *         <xs:sequence>
+ *           <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+ *         </xs:sequence>
+ *       </xs:complexType>
+ *     </xs:element>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs:ID" use="optional"/>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -34,7 +53,8 @@
 	LassoDiscoQueryResponse *query_response = LASSO_DISCO_QUERY_RESPONSE(node); \
 	struct XmlSnippet snippets[] = { \
 		{ "Status", SNIPPET_NODE, (void**)&query_response->Status }, \
-		{ "ResourceOffering", SNIPPET_LIST_NODES, (void**)&query_response->ResourceOffering }, \
+		{ "ResourceOffering", SNIPPET_LIST_NODES, \
+			(void**)&query_response->ResourceOffering }, \
 		{ "Credentials", SNIPPET_NODE, (void**)&query_response->Credentials }, \
 		{ "id", SNIPPET_ATTRIBUTE, (void**)&query_response->id }, \
 		{ NULL, 0, NULL} \
@@ -45,8 +65,7 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
-	GList *ro, *credential;
-	xmlNode *xmlnode, *status_xmlNode, *ro_xmlNode, credential_xmlNode;
+	xmlNode *xmlnode;
 	snippets();
 
 	xmlnode = xmlNewNode(NULL, "QueryResponse");
@@ -60,12 +79,10 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	xmlNode *child_xmlNode;
 	snippets();
 	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
 	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
@@ -95,7 +112,9 @@ class_init(LassoDiscoQueryResponseClass *class)
 	nodeClass->init_from_xml = init_from_xml;
 }
 
-GType lasso_disco_query_response_get_type() {
+GType
+lasso_disco_query_response_get_type()
+{
 	static GType this_type = 0;
 
 	if (!this_type) {

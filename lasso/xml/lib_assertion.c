@@ -95,7 +95,8 @@ class_init(LassoLibAssertionClass *klass)
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_lib_assertion_get_type()
+GType
+lasso_lib_assertion_get_type()
 {
 	static GType this_type = 0;
 

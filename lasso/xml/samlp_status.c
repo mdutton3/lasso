@@ -98,7 +98,8 @@ class_init(LassoSamlpStatusClass *klass)
 	LASSO_NODE_CLASS(klass)->init_from_xml = init_from_xml;
 }
 
-GType lasso_samlp_status_get_type()
+GType
+lasso_samlp_status_get_type()
 {
 	static GType this_type = 0;
 

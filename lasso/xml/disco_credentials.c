@@ -25,6 +25,18 @@
 
 #include <lasso/xml/disco_credentials.h>
 
+/*
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * 
+ * <xs:element name="Credentials" minOccurs="0">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ */
+
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -88,7 +100,9 @@ class_init(LassoDiscoCredentialsClass *klass)
 	nodeClass->init_from_xml = init_from_xml;
 }
 
-GType lasso_disco_credentials_get_type() {
+GType
+lasso_disco_credentials_get_type()
+{
 	static GType this_type = 0;
 
 	if (!this_type) {

@@ -25,6 +25,34 @@
 
 #include <lasso/xml/disco_query.h>
 
+/*
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ * 
+ * <xs:group name="ResourceIDGroup">
+ *   <xs:sequence>
+ *      <xs:choice minOccurs="0" maxOccurs="1">
+ *        <xs:element ref="ResourceID"/>
+ *        <xs:element ref="EncryptedResourceID"/>
+ *      </xs:choice>
+ *   </xs:sequence>
+ * </xs:group>
+ * 
+ * <xs:element name="Query" type="QueryType"/>
+ * <xs:complexType name="QueryType">
+ *   <xs:sequence>
+ *      <xs:group ref="ResourceIDGroup"/>
+ *      <xs:element name="RequestedServiceType" minOccurs="0" maxOccurs="unbounded">
+ *        <xs:complexType>
+ *           <xs:sequence>
+ *             <xs:element ref="ServiceType"/>
+ *             <xs:element ref="Options" minOccurs="0"/>
+ *           </xs:sequence>
+ *        </xs:complexType>
+ *      </xs:element>
+ *   </xs:sequence>
+ *   <xs:attribute name="id" type="xs: ID" use="optional"/>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -35,7 +63,8 @@
 	struct XmlSnippet snippets[] = { \
 		{ "ResourceID", SNIPPET_CONTENT, (void**)&query->ResourceID }, \
 		{ "EncryptedResourceID", SNIPPET_CONTENT, (void**)&query->EncryptedResourceID }, \
-		{ "RequestedServiceType", SNIPPET_LIST_NODES, (void**)&query->RequestedServiceType }, \
+		{ "RequestedServiceType", SNIPPET_LIST_NODES, \
+			(void**)&query->RequestedServiceType }, \
 		{ "id", SNIPPET_ATTRIBUTE, (void**)&query->id }, \
 		{ NULL, 0, NULL} \
 	};
@@ -93,7 +122,9 @@ class_init(LassoDiscoQueryClass *klass)
 	nodeClass->init_from_xml = init_from_xml;
 }
 
-GType lasso_disco_query_get_type() {
+GType
+lasso_disco_query_get_type()
+{
 	static GType this_type = 0;
 
 	if (!this_type) {

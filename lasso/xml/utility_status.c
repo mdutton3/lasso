@@ -25,6 +25,26 @@
 
 #include <lasso/xml/utility_status.h>
 
+/*
+ * Schema fragment
+ *
+ * <xs:element name="Status" type="StatusType">
+ *   <xs:annotation>
+ *     <xs:documentation> A standard Status type</xs:documentation>
+ *   </xs:annotation>
+ * </xs:element>
+ * <xs:complexType name="StatusType">
+ *   <xs:annotation>
+ *     <xs:documentation> A type that may be used for status codes. </xs:documentation>
+ *   </xs:annotation>
+ *   <xs:sequence>
+ *     <xs:element ref="Status" minOccurs="0"/>
+ *   </xs:sequence>
+ *   <xs:attribute name="code" type="xs:QName" use="required"/>
+ *   <xs:attribute name="ref" type="xs:NCName" use="optional"/>
+ *   <xs:attribute name="comment" type="xs:string" use="optional"/>
+ * </xs:complexType>
+ */
 
 /*****************************************************************************/
 /* private methods                                                           */

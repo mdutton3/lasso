@@ -34,31 +34,18 @@ extern "C" {
 
 #define LASSO_TYPE_DISCO_CREDENTIALS (lasso_disco_credentials_get_type())
 #define LASSO_DISCO_CREDENTIALS(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-                                      LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentials))
+			LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentials))
 #define LASSO_DISCO_CREDENTIALS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-                                          LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentialsClass))
+			LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentialsClass))
 #define LASSO_IS_DISCO_CREDENTIALS(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
-                                         LASSO_TYPE_DISCO_CREDENTIALS))
+			LASSO_TYPE_DISCO_CREDENTIALS))
 #define LASSO_IS_DISCO_CREDENTIALS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
-                                                 LASSO_TYPE_DISCO_CREDENTIALS))
+			LASSO_TYPE_DISCO_CREDENTIALS))
 #define LASSO_DISCO_CREDENTIALS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-                                          LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentialsClass))
+			LASSO_TYPE_DISCO_CREDENTIALS, LassoDiscoCredentialsClass))
 
 typedef struct _LassoDiscoCredentials LassoDiscoCredentials;
 typedef struct _LassoDiscoCredentialsClass LassoDiscoCredentialsClass;
-
-/*
-The schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
-
-     <xs: element name="Credentials" minOccurs="0">
-       <xs: complexType>
-          <xs: sequence>
-            <xs: any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-          </xs: sequence>
-       </xs: complexType>
-     </xs: element>
-
-*/
 
 struct _LassoDiscoCredentials {
 	LassoNode parent;
@@ -68,7 +55,6 @@ struct _LassoDiscoCredentials {
 
 struct _LassoDiscoCredentialsClass {
 	LassoNodeClass parent;
-
 };
 
 LASSO_EXPORT GType lasso_disco_credentials_get_type(void);

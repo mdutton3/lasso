@@ -24,15 +24,28 @@
  */
 
 #include "errors.h"
-
 #include <lasso/xml/disco_requested_service_type.h>
+
+/*
+ * Schema fragment (liberty-idwsf-disco-svc-v1.0.xsd):
+ *
+ * <xs:element name="RequestedServiceType" minOccurs="0" maxOccurs="unbounded">
+ *   <xs:complexType>
+ *      <xs:sequence>
+ *        <xs:element ref="ServiceType"/>
+ *        <xs:element ref="Options" minOccurs="0"/>
+ *      </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ */
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
 
 #define snippets() \
-	LassoDiscoRequestedServiceType *RequestedServiceType = LASSO_DISCO_REQUESTED_SERVICE_TYPE(node); \
+	LassoDiscoRequestedServiceType *RequestedServiceType = \
+		LASSO_DISCO_REQUESTED_SERVICE_TYPE(node); \
 	struct XmlSnippet snippets[] = { \
 		{ "ServiceType", SNIPPET_CONTENT, (void**)&RequestedServiceType->ServiceType }, \
 		{ "Options", SNIPPET_NODE, (void**)&RequestedServiceType->Options }, \
@@ -44,8 +57,7 @@ static LassoNodeClass *parent_class = NULL;
 static xmlNode*
 get_xmlNode(LassoNode *node)
 { 
-	GList *option;
-	xmlNode *xmlnode, *options_xmlNode;
+	xmlNode *xmlnode;
 	snippets();
 
 	xmlnode = xmlNewNode(NULL, "RequestedServiceType");
@@ -59,12 +71,10 @@ get_xmlNode(LassoNode *node)
 static int
 init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
-	xmlNode *option_xmlNode;
 	snippets();
 	
 	if (parent_class->init_from_xml(node, xmlnode))
 		return -1;
-
 	init_xml_with_snippets(xmlnode, snippets);
 
 	return 0;
@@ -91,7 +101,9 @@ class_init(LassoDiscoRequestedServiceTypeClass *class)
 	nodeClass->init_from_xml = init_from_xml;
 }
 
-GType lasso_disco_requested_service_type_get_type() {
+GType
+lasso_disco_requested_service_type_get_type()
+{
 	static GType this_type = 0;
 
 	if (!this_type) {
