@@ -49,8 +49,8 @@ PyObject *name_identifier_mapping_request_new(PyObject *self, PyObject *args) {
 
   LassoNode *request;
 
-  if (CheckArgs(args, "SSss:name_identifier_mapping_request_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "sszz:name_identifier_mapping_request_new",
+  if (CheckArgs(args, "SSSS:name_identifier_mapping_request_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssss:name_identifier_mapping_request_new",
 			 &providerID, &nameIdentifier,
 			 &nameQualifier, &format))
       return NULL;

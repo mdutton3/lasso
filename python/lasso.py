@@ -299,8 +299,8 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
 
 
 class LogoutRequest(LibLogoutRequest):
-    def __init__(self, providerID, nameIdentifier,
-                 nameQualifier=None, format=None, _obj=None):
+    def __init__(self, providerID, nameIdentifier, nameQualifier, format,
+                 _obj=None):
         """
         """
         if _obj != None:
@@ -328,8 +328,8 @@ class LogoutResponse(Node):
 
 
 class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
-    def __init__(self, providerID, nameIdentifier,
-                 nameQualifier=None, format=None, _obj=None):
+    def __init__(self, providerID, nameIdentifier, nameQualifier, format,
+                 _obj=None):
         """
         """
         if _obj != None:

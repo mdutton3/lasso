@@ -49,8 +49,8 @@ PyObject *logout_request_new(PyObject *self, PyObject *args) {
 
   LassoNode *request;
 
-  if (CheckArgs(args, "SSss:logout_request_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "sszz:logout_request_new",
+  if (CheckArgs(args, "SSSS:logout_request_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "ssss:logout_request_new",
 			 &providerID, &nameIdentifier, &nameQualifier, &format))
       return NULL;
   }
