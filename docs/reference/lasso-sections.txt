@@ -127,6 +127,7 @@ lasso_profile_set_response_status
 lasso_profile_set_session_from_dump
 lasso_profile_get_request_type_from_soap_msg
 lasso_profile_is_liberty_query
+lasso_profile_get_nameIdentifier
 <SUBSECTION Standard>
 LASSO_PROFILE
 LASSO_IS_PROFILE
@@ -154,6 +155,7 @@ lasso_login_build_authn_response_msg
 lasso_login_build_request_msg
 lasso_login_build_response_msg
 lasso_login_init_authn_request
+lasso_login_init_idp_initiated_authn_request
 lasso_login_init_request
 lasso_login_must_ask_for_consent
 lasso_login_must_authenticate
@@ -299,6 +301,7 @@ LASSO_LIB_AUTHN_REQUEST_GET_CLASS
 <TITLE>LassoLibAuthnRequestEnvelope</TITLE>
 LassoLibAuthnRequestEnvelope
 lasso_lib_authn_request_envelope_new
+lasso_lib_authn_request_envelope_new_full
 <SUBSECTION Standard>
 LASSO_LIB_AUTHN_REQUEST_ENVELOPE
 LASSO_IS_LIB_AUTHN_REQUEST_ENVELOPE
@@ -689,11 +692,16 @@ lassoSignatureMethod
 lasso_node_new
 lasso_node_new_from_dump
 lasso_node_new_from_xmlNode
+lasso_node_new_from_soap
 lasso_node_destroy
 lasso_node_dump
 lasso_node_export_to_base64
 lasso_node_export_to_query
 lasso_node_export_to_soap
+lasso_node_get_xmlNode
+lasso_node_init_from_message
+lasso_node_init_from_query
+lasso_node_init_from_xml
 lasso_node_verify_signature
 <SUBSECTION Standard>
 LASSO_NODE
@@ -710,6 +718,7 @@ LASSO_NODE_GET_CLASS
 <TITLE>LassoLibLogoutRequest</TITLE>
 LassoLibLogoutRequest
 lasso_lib_logout_request_new
+lasso_lib_logout_request_new_full
 <SUBSECTION Standard>
 LASSO_LIB_LOGOUT_REQUEST
 LASSO_IS_LIB_LOGOUT_REQUEST
@@ -725,6 +734,7 @@ LASSO_LIB_LOGOUT_REQUEST_GET_CLASS
 <TITLE>LassoLibFederationTerminationNotification</TITLE>
 LassoLibFederationTerminationNotification
 lasso_lib_federation_termination_notification_new
+lasso_lib_federation_termination_notification_new_full
 <SUBSECTION Standard>
 LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION
 LASSO_IS_LIB_FEDERATION_TERMINATION_NOTIFICATION
@@ -740,6 +750,7 @@ LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION_GET_CLASS
 <TITLE>LassoLibLogoutResponse</TITLE>
 LassoLibLogoutResponse
 lasso_lib_logout_response_new
+lasso_lib_logout_response_new_full
 <SUBSECTION Standard>
 LASSO_LIB_LOGOUT_RESPONSE
 LASSO_IS_LIB_LOGOUT_RESPONSE
@@ -755,6 +766,7 @@ LASSO_LIB_LOGOUT_RESPONSE_GET_CLASS
 <TITLE>LassoLibNameIdentifierMappingRequest</TITLE>
 LassoLibNameIdentifierMappingRequest
 lasso_lib_name_identifier_mapping_request_new
+lasso_lib_name_identifier_mapping_request_new_full
 <SUBSECTION Standard>
 LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST
 LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST
@@ -770,6 +782,7 @@ LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST_GET_CLASS
 <TITLE>LassoLibNameIdentifierMappingResponse</TITLE>
 LassoLibNameIdentifierMappingResponse
 lasso_lib_name_identifier_mapping_response_new
+lasso_lib_name_identifier_mapping_response_new_full
 <SUBSECTION Standard>
 LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE
 LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE
@@ -785,6 +798,7 @@ LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE_GET_CLASS
 <TITLE>LassoLibRegisterNameIdentifierRequest</TITLE>
 LassoLibRegisterNameIdentifierRequest
 lasso_lib_register_name_identifier_request_new
+lasso_lib_register_name_identifier_request_new_full
 <SUBSECTION Standard>
 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST
 LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST
@@ -800,6 +814,7 @@ LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST_GET_CLASS
 <TITLE>LassoLibRegisterNameIdentifierResponse</TITLE>
 LassoLibRegisterNameIdentifierResponse
 lasso_lib_register_name_identifier_response_new
+lasso_lib_register_name_identifier_response_new_full
 <SUBSECTION Standard>
 LASSO_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE
 LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_RESPONSE
@@ -875,6 +890,7 @@ LASSO_LIB_AUTHN_CONTEXT_GET_CLASS
 <TITLE>LassoLibAuthenticationStatement</TITLE>
 LassoLibAuthenticationStatement
 lasso_lib_authentication_statement_new
+lasso_lib_authentication_statement_new_full
 <SUBSECTION Standard>
 LASSO_LIB_AUTHENTICATION_STATEMENT
 LASSO_IS_LIB_AUTHENTICATION_STATEMENT

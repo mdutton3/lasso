@@ -263,6 +263,16 @@ printf("Location: /\n\nRedirected to site root\n");
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_login_init_idp_initiated_authn_request ##### -->
+<para>
+
+</para>
+
+@login: 
+@remote_providerID: 
+@Returns: 
+
+
 <!-- ##### FUNCTION lasso_login_init_request ##### -->
 <para>
 

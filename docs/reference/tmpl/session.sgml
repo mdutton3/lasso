@@ -64,3 +64,12 @@ Principal Session
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_session_is_empty ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+

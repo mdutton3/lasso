@@ -150,3 +150,12 @@ Base class for all ID-FF profiles
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_profile_get_nameIdentifier ##### -->
+<para>
+
+</para>
+
+@profile: 
+@Returns: 
+
+
