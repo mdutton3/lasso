@@ -55,6 +55,8 @@ struct _LassoSoapEnvBodyClass {
 LASSO_EXPORT GType lasso_soap_env_body_get_type(void);
 LASSO_EXPORT LassoNode* lasso_soap_env_body_new(void);
 
+LASSO_EXPORT void lasso_soap_env_body_add_child(LassoSoapEnvBody *body, LassoNode *node);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

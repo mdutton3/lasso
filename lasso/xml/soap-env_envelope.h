@@ -53,8 +53,10 @@ struct _LassoSoapEnvEnvelopeClass {
   /*< vtable >*/
 };
 
-LASSO_EXPORT GType lasso_soap_env_envelope_get_type(void);
-LASSO_EXPORT LassoNode* lasso_soap_env_envelope_new(void);
+LASSO_EXPORT GType      lasso_soap_env_envelope_get_type (void);
+LASSO_EXPORT LassoNode* lasso_soap_env_envelope_new      (void);
+LASSO_EXPORT void       lasso_soap_env_envelope_set_body (LassoSoapEnvEnvelope *envelope,
+							  LassoSoapEnvBody     *body);
 
 #ifdef __cplusplus
 }

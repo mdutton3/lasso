@@ -30,7 +30,7 @@
 /*****************************************************************************/
 
 void
-lasso_soap_env_envelope_add_body(LassoSoapEnvEnvelope *envelope,
+lasso_soap_env_envelope_set_body(LassoSoapEnvEnvelope *envelope,
 				 LassoSoapEnvBody *body)
 {
   g_assert(LASSO_IS_SOAP_ENV_ENVELOPE(envelope));
@@ -40,18 +40,6 @@ lasso_soap_env_envelope_add_body(LassoSoapEnvEnvelope *envelope,
   class->add_child(LASSO_NODE(envelope),
 		   LASSO_NODE(body),
 		   FALSE);
-}
-
-LassoNode *
-lasso_soap_env_envelope_get_body(LassoSoapEnvEnvelope *envelope)
-{
-     LassoNode *body;
-
-     g_assert(LASSO_IS_SOAP_ENV_ENVELOPE(envelope));
-
-     body = lasso_node_get_child(envelope, "Body");
-
-     return(body);
 }
 
 /*****************************************************************************/

@@ -41,17 +41,6 @@ lasso_soap_env_body_add_child(LassoSoapEnvBody *body, LassoNode *node)
 		   FALSE);
 }
 
-void
-lasso_soap_env_body_get_child(LassoSoapEnvBody *body, const xmlChar *name)
-{
-     LassoNode *node;
-
-     //g_assert(LASSO_IS_SOAP_ENV_BODY(body));
-
-     node = lasso_node_get_child(body, name);
-
-     return(node);
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
