@@ -95,22 +95,16 @@ PyObject *login_getattr(PyObject *self, PyObject *args) {
 /******************************************************************************/
 
 PyObject *login_new(PyObject *self, PyObject *args) {
-  PyObject *server_obj, *user_obj;
+  PyObject *server_obj;
   LassoLogin *login;
-  LassoServer *server;
-  LassoUser   *user = NULL;
 
-  if (CheckArgs(args, "Oo:login_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "O|O:login_new", &server_obj, &user_obj))
+  if (CheckArgs(args, "O:login_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:login_new", &server_obj))
       return NULL;
   }
   else return NULL;
 
-  server = LassoServer_get(server_obj);
-  if (user_obj != Py_None) {
-    user = LassoUser_get(user_obj);
-  }
-  login = lasso_login_new(server, user);
+  login = lasso_login_new(LassoServer_get(server_obj));
 
   return (LassoLogin_wrap(login));
 }

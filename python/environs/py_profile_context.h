@@ -28,7 +28,18 @@
 
 #include <lasso/environs/profile_context.h>
 
+typedef struct {
+    PyObject_HEAD
+    LassoProfileContext *obj;
+} LassoProfileContext_object;
+
+#define LassoProfileContext_get(v) (((v) == Py_None) ? NULL : (((LassoProfileContext_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *LassoProfileContext_wrap(LassoProfileContext *ctx);
+
 PyObject *profile_context_get_request_type_from_soap_msg(PyObject *self, PyObject *args);
+
+PyObject *profile_context_new(PyObject *self, PyObject *args);
+PyObject *profile_context_set_user_from_dump(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_PROFILE_CONTEXT_H__ */
 

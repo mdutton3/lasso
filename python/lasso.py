@@ -47,16 +47,6 @@ def shutdown():
     """
     return lassomod.shutdown()
 
-# Request types
-requestTypeLogin                  = 1
-requestTypeLogout                 = 2
-requestTypeFederationTermination  = 3
-requestTypeRegisterNameIdentifier = 4
-requestTypeNameIdentifierMapping  = 5
-
-def get_request_type_from_soap_msg(soap_buffer):
-    return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
-
 ################################################################################
 # xml : low level classes
 ################################################################################
@@ -883,10 +873,41 @@ class User:
     def remove_assertion(self, remote_providerID):
         lassomod.user_remove_assertion(self, remote_providerID)
 
+## ProfileContext
+# Request types
+requestTypeLogin                  = 1
+requestTypeLogout                 = 2
+requestTypeFederationTermination  = 3
+requestTypeRegisterNameIdentifier = 4
+requestTypeNameIdentifierMapping  = 5
+
+def get_request_type_from_soap_msg(soap_buffer):
+    return lassomod.profile_context_get_request_type_from_soap_msg(soap_buffer);
+
+class ProfileContext:
+    """\brief Short desc
+
+    Long desc
+    """
+    def __init__(self, _obj):
+        """
+        The constructor
+        """
+        self._o = _obj
+
+    def new(cls, server, user=None):
+        obj = lassomod.profile_context_new(server, user)
+        return ProfileContext(obj)
+    new = classmethod(new)
+
+    def set_user_from_dump(self, dump):
+        return lassomod.profile_context_set_user_from_dump(self, dump)
+
+## login
 loginProtocolProfileBrwsArt  = 1
 loginProtocolProfileBrwsPost = 2
 
-class Login:
+class Login(ProfileContext):
     """\brief Short desc
 
     Long desc
@@ -897,6 +918,7 @@ class Login:
         The constructor
         """
         self._o = _obj
+        ProfileContext.__init__(self, _obj=_obj)
         
     def __isprivate(self, name):
         return name == '_o'
@@ -920,8 +942,8 @@ class Login:
             ret = Node(_obj=ret)
         return ret
 
-    def new(cls, server, user=None):
-        obj = lassomod.login_new(server, user)
+    def new(cls, server):
+        obj = lassomod.login_new(server)
         return Login(obj)
     new = classmethod(new)
 
@@ -978,8 +1000,9 @@ class Login:
         return lassomod.login_process_response_msg(self, response_msg)
 
 
-providerTypeSp  = 1
-providerTypeIdp = 2
+providerTypeNone = 0
+providerTypeSp   = 1
+providerTypeIdp  = 2
 
 class Logout:
     """\brief Short desc

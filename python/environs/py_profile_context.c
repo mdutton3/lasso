@@ -25,6 +25,22 @@
 
 #include "../lassomod.h"
 #include "py_profile_context.h"
+#include "py_user.h"
+#include "py_server.h"
+
+PyObject *LassoProfileContext_wrap(LassoProfileContext *ctx) {
+  PyObject *ret;
+
+  if (ctx == NULL) {
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
+  ret = PyCObject_FromVoidPtrAndDesc((void *) ctx,
+                                     (char *) "LassoProfileContext *", NULL);
+  return (ret);
+}
+
+/******************************************************************************/
 
 PyObject *profile_context_get_request_type_from_soap_msg(PyObject *self, PyObject *args) {
   gchar *soap_buffer;
@@ -42,3 +58,43 @@ PyObject *profile_context_get_request_type_from_soap_msg(PyObject *self, PyObjec
   return(int_wrap(type));
 }
 
+/******************************************************************************/
+
+PyObject *profile_context_new(PyObject *self, PyObject *args) {
+  PyObject *server_obj, *user_obj;
+  LassoProfileContext *ctx;
+  LassoUser   *user = NULL;
+
+  if (CheckArgs(args, "Oo:profile_context_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "O|O:profile_context_new",
+			 &server_obj, &user_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  if (user_obj != Py_None) {
+    user = LassoUser_get(user_obj);
+  }
+  ctx = lasso_profile_context_new(LassoServer_get(server_obj),
+				  user);
+
+  return (LassoProfileContext_wrap(ctx));
+}
+
+PyObject *profile_context_set_user_from_dump(PyObject *self, PyObject *args) {
+  PyObject *ctx_obj;
+  gchar *dump;
+  gint   ret;
+
+  if (CheckArgs(args, "OS:profile_context_set_user_from_dump")) {
+    if(!PyArg_ParseTuple(args, (char *) "Os:profile_context_set_user_from_dump",
+			 &ctx_obj, &dump))
+      return NULL;
+  }
+  else return NULL;
+
+  ret = lasso_profile_context_set_remote_providerID(LassoProfileContext_get(ctx_obj),
+						    dump);
+
+  return(int_wrap(ret));
+}
