@@ -31,11 +31,17 @@ typedef struct {
     xmlSecPtr obj;
 } xmlSecPtr_object;
 
+typedef struct {
+    PyObject_HEAD
+    gpointer *obj;
+} gpointer_object;
+
 /* Functions to wrap LibXML Python objects -> LibXML C objects */
 #define xmlDocPtr_get(v) (((v) == Py_None) ? NULL : (((xmlDocPtr_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 #define xmlNodePtr_get(v) (((v) == Py_None) ? NULL : (((xmlNodePtr_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 #define xmlNodeSetPtr_get(v) (((v) == Py_None) ? NULL : (((xmlNodeSetPtr_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 #define xmlOutputBufferPtr_get(v) (((v) == Py_None) ? NULL : (((xmlOutputBufferPtr_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+#define gpointer_get(v) (((v) == Py_None) ? NULL : (((gpointer_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
 
 /* Functions to wrap XMLSec Python objects -> XMLSec C objects */
 #define xmlSecPtr_get(v) (((v) == Py_None) ? NULL : (((xmlSecPtr_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
