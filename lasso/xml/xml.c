@@ -58,13 +58,14 @@ static void xmlCleanNs(xmlNode *root_node);
 
 /**
  * lasso_node_dump:
- * @node: a LassoNode
+ * @node: a #LassoNode
  * @encoding: the name of the encoding to use or NULL.
- * @format: is formatting allowed
+ * @format: whether formatting is allowed
  * 
  * Dumps @node. All datas in object are dumped in an XML format.
  * 
- * Return value: a full XML dump of @node
+ * Return value: a full XML dump of @node.  The string must be freed by the
+ *     caller.
  **/
 char*
 lasso_node_dump(LassoNode *node, const char *encoding, int format)
@@ -107,9 +108,9 @@ lasso_node_dump(LassoNode *node, const char *encoding, int format)
 
 /**
  * lasso_node_destroy:
- * @node: a LassoNode
+ * @node: a #LassoNode
  * 
- * Destroys the LassoNode.
+ * Destroys the #LassoNode.
  **/
 void
 lasso_node_destroy(LassoNode *node)
@@ -155,13 +156,14 @@ lasso_node_export_to_signed_xmlnode(LassoNode *node,
 
 /**
  * lasso_node_export_to_base64:
- * @node: a LassoNode
- * @private_key_file: path to private key for signature
- * @certificate_file: path to certificate for signature
+ * @node: a #LassoNode
+ * @private_key_file: the path to the private key for signature (may be NULL)
+ * @certificate_file: the path to the certificate for signature (may be NULL)
  * 
- * Base64 XML dump
+ * Exports @node to a base64-encoded message.
  * 
- * Return value: a Base64 encoded export of the LassoNode
+ * Return value: a base64-encoded export of @node.  The string must be freed by
+ *      the caller.
  **/
 char*
 lasso_node_export_to_base64(LassoNode *node,
@@ -189,14 +191,15 @@ lasso_node_export_to_base64(LassoNode *node,
 
 /**
  * lasso_node_export_to_query:
- * @node: a LassoNode
+ * @node: a #LassoNode
  * @sign_method: the Signature transform method
- * @private_key_file: a private key (may be NULL)
+ * @private_key_file: the path to the private key (may be NULL)
  * 
- * URL-encodes and signes the LassoNode.
- * If private_key_file is NULL, query won't be signed.
+ * Exports @node to a HTTP query string.  If @private_key_file is NULL,
+ * query won't be signed.
  * 
- * Return value: URL-encoded and signed LassoNode
+ * Return value: a HTTP query export of @node.  The string must be freed by the
+ *      caller.
  **/
 char*
 lasso_node_export_to_query(LassoNode *node,
@@ -218,13 +221,14 @@ lasso_node_export_to_query(LassoNode *node,
 
 /**
  * lasso_node_export_to_soap:
- * @node: a LassoNode
- * @private_key_file: path to private key for signature
- * @certificate_file: path to certificate for signature
+ * @node: a #LassoNode
+ * @private_key_file: the path to the private key for signature (may be NULL)
+ * @certificate_file: the path to the certificate for signature (may be NULL)
  * 
- * Like lasso_node_export() method except that result is SOAP enveloped.
+ * Exports @node to a SOAP message.
  * 
- * Return value: a SOAP enveloped export of the LassoNode
+ * Return value: a SOAP export of @node.  The string must be freed by the
+ *      caller.
  **/
 char*
 lasso_node_export_to_soap(LassoNode *node,
@@ -292,15 +296,15 @@ lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 /**
  * lasso_node_verify_signature:
- * @node: a LassoNode
- * @public_key_file: a public key (or a certificate) file
- * @ca_cert_chain_file: a CA certificate chain file
+ * @node: a #LassoNode
+ * @public_key_file: the path to a public key (or a certificate) file
+ * @ca_cert_chain_file: the path to the CA certificate chain file
  * 
  * Verifies the node signature of @node.
  * 
- * Return value: 0 if signature is valid
- * a positive value if signature was not found or is invalid
- * a negative value if an error occurs during verification
+ * Return value: 0 if signature is valid; or a positive value if signature was
+ *      not found or was invalid; or a negative value if an error occured
+ *      during the verification.
  **/
 gint
 lasso_node_verify_signature(LassoNode *node,
@@ -746,7 +750,7 @@ lasso_node_get_type()
 /**
  * lasso_node_new:
  * 
- * The main LassoNode constructor.
+ * Creates a new #LassoNode.
  * 
  * Return value: a new node
  **/
@@ -798,7 +802,7 @@ lasso_node_new_from_soap(const char *soap)
  * lasso_node_new_from_xmlNode:
  * @node: an xmlNode
  * 
- * Builds a new LassoNode from an xmlNode.
+ * Builds a new #LassoNode from an xmlNode.
  * 
  * Return value: a new node
  **/
@@ -1405,7 +1409,7 @@ static void xmlUseNsDef(xmlNs *ns, xmlNode *node)
 
 /**
  * xmlCleanNs
- * @root_node
+ * @root_node: 
  *
  * xmlCleanNs removes duplicate xml namespace declarations and merge them on
  * the @root_node.
