@@ -213,7 +213,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	}
 
 	/* Set the nameIdentifier attribute from content local variable */
-	profile->nameIdentifier = g_strdup(nameIdentifier->content);
+	profile->nameIdentifier = g_object_ref(nameIdentifier);
 
 	/* remove federation with remote provider id */
 	if (profile->identity == NULL) {
@@ -289,8 +289,8 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	profile->nameIdentifier = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
-				profile->request)->NameIdentifier->content);
+	profile->nameIdentifier = g_object_ref(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
+				profile->request)->NameIdentifier);
 
 	/* get the RelayState (only available in redirect mode) */
 	if (LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(profile->request)->RelayState)

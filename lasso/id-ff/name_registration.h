@@ -53,7 +53,7 @@ typedef struct _LassoNameRegistrationClass LassoNameRegistrationClass;
 
 struct _LassoNameRegistration {
 	LassoProfile parent;
-	gchar *oldNameIdentifier;
+	LassoSamlNameIdentifier *oldNameIdentifier;
 };
 
 struct _LassoNameRegistrationClass {

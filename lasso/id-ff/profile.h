@@ -77,7 +77,7 @@ struct _LassoProfile {
 	LassoNode *request;
 	LassoNode *response;
 
-	gchar *nameIdentifier; /* XXX: shouldn't it be LassoSamlNameIdentifier ? */
+	LassoSamlNameIdentifier *nameIdentifier;
 
 	gchar *remote_providerID;
 

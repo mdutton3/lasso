@@ -104,7 +104,7 @@ lasso_login_build_assertion(LassoLogin *login,
 		as = lasso_lib_authentication_statement_new_full(authenticationMethod,
 				authenticationInstant, reauthenticateOnOrAfter,
 				NULL, nameIdentifier);
-		profile->nameIdentifier = g_strdup(nameIdentifier->content);
+		profile->nameIdentifier = nameIdentifier;
 	} else {
 		as = lasso_lib_authentication_statement_new_full(authenticationMethod,
 				authenticationInstant, reauthenticateOnOrAfter,
@@ -257,8 +257,8 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 		}
 
-		LASSO_PROFILE(login)->nameIdentifier = g_strdup(
-			LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content);
+		LASSO_PROFILE(login)->nameIdentifier = g_object_ref(
+			LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 		return 0;
 	}
 
@@ -302,7 +302,7 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 	}
 
 	LASSO_PROFILE(login)->nameIdentifier = 
-		g_strdup(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content);
+		g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 
 	return ret;
 }
@@ -351,9 +351,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_ERROR_UNDEFINED;
 		}
 
-		profile->nameIdentifier = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-				response->Assertion->AuthenticationStatement
-				)->Subject->NameIdentifier->content;
+		profile->nameIdentifier = g_object_ref(LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
+					response->Assertion->AuthenticationStatement
+					)->Subject->NameIdentifier);
 
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
 			return LASSO_ERROR_UNDEFINED;

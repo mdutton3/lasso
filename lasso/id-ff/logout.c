@@ -363,7 +363,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	}
 
 	/* Set the name identifier attribute with content local variable */
-	profile->nameIdentifier = g_strdup(nameIdentifier->content);
+	profile->nameIdentifier = g_object_ref(nameIdentifier);
 
 	/* if logout request from a SP and if an HTTP Redirect/GET method, then remove assertion */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && is_http_redirect_get_method) {
@@ -426,8 +426,8 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	profile->nameIdentifier = g_strdup(
-			LASSO_LIB_LOGOUT_REQUEST(profile->request)->NameIdentifier->content);
+	profile->nameIdentifier = g_object_ref(
+			LASSO_LIB_LOGOUT_REQUEST(profile->request)->NameIdentifier);
 
 	return profile->signature_status;
 }

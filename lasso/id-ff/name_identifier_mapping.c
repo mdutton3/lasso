@@ -227,8 +227,8 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
 	profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
 
-	profile->nameIdentifier = g_strdup(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
-			profile->request)->NameIdentifier->content);
+	profile->nameIdentifier = g_object_ref(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
+			profile->request)->NameIdentifier);
 
 	return profile->signature_status;
 }

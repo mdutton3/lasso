@@ -215,8 +215,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 			oldNameIdentifier = g_object_ref(idpNameIdentifier);
 		}
 
-		profile->nameIdentifier = g_strdup(spNameIdentifier->content);
-		name_registration->oldNameIdentifier = g_strdup(oldNameIdentifier->content);
+		profile->nameIdentifier = g_object_ref(spNameIdentifier);
+		name_registration->oldNameIdentifier = g_object_ref(oldNameIdentifier);
 	} else { /* if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) { */
 		if (federation->local_nameIdentifier == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found");
@@ -236,12 +236,11 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		idpNameIdentifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED);
 
 		if (spNameIdentifier) {
-			profile->nameIdentifier = g_strdup(spNameIdentifier->content);
-			name_registration->oldNameIdentifier = g_strdup(profile->nameIdentifier);
+			profile->nameIdentifier = g_object_ref(spNameIdentifier);
+			name_registration->oldNameIdentifier = g_object_ref(spNameIdentifier);
 		} else {
-			profile->nameIdentifier = g_strdup(idpNameIdentifier->content);
-			name_registration->oldNameIdentifier = g_strdup(
-					oldNameIdentifier->content);
+			profile->nameIdentifier = g_object_ref(idpNameIdentifier);
+			name_registration->oldNameIdentifier = g_object_ref(oldNameIdentifier);
 		}
 	}
 
@@ -325,22 +324,23 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 			profile->request)->SPProvidedNameIdentifier;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
 		if (nameIdentifier) {
-			profile->nameIdentifier = g_strdup(nameIdentifier->content);
-			name_registration->oldNameIdentifier = g_strdup(profile->nameIdentifier);
+			profile->nameIdentifier = g_object_ref(nameIdentifier);
+			name_registration->oldNameIdentifier = g_object_ref(
+					profile->nameIdentifier);
 		} else {
-			profile->nameIdentifier = g_strdup(
+			profile->nameIdentifier = g_object_ref(
 				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-					profile->request)->IDPProvidedNameIdentifier->content);
-			name_registration->oldNameIdentifier = g_strdup(
+					profile->request)->IDPProvidedNameIdentifier);
+			name_registration->oldNameIdentifier = g_object_ref(
 				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-					profile->request)->OldProvidedNameIdentifier->content);
+					profile->request)->OldProvidedNameIdentifier);
 		}
 	}
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
-		profile->nameIdentifier = g_strdup(nameIdentifier->content);
-		name_registration->oldNameIdentifier = g_strdup(
-			LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-				profile->request)->OldProvidedNameIdentifier->content);
+		profile->nameIdentifier = g_object_ref(nameIdentifier);
+		name_registration->oldNameIdentifier = g_object_ref(
+				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
+					profile->request)->OldProvidedNameIdentifier);
 	}
 
 
@@ -522,7 +522,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "OldNameIdentifier", SNIPPET_CONTENT,
+	{ "OldNameIdentifier", SNIPPET_NODE_IN_CHILD,
 		G_STRUCT_OFFSET(LassoNameRegistration, oldNameIdentifier) },
 	{ NULL, 0, 0}
 };

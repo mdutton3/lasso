@@ -1510,7 +1510,9 @@ gchar *LassoDefederation_msgUrl_get(LassoDefederation *self) {
 /* nameIdentifier */
 #define LassoDefederation_get_nameIdentifier LassoDefederation_nameIdentifier_get
 gchar *LassoDefederation_nameIdentifier_get(LassoDefederation *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* remoteProviderId */
@@ -1795,7 +1797,9 @@ gchar *LassoLogin_msgUrl_get(LassoLogin *self) {
 /* nameIdentifier */
 #define LassoLogin_get_nameIdentifier LassoLogin_nameIdentifier_get
 gchar *LassoLogin_nameIdentifier_get(LassoLogin *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* remoteProviderId */
@@ -2044,7 +2048,9 @@ gchar *LassoLogout_msgUrl_get(LassoLogout *self) {
 /* nameIdentifier */
 #define LassoLogout_get_nameIdentifier LassoLogout_nameIdentifier_get
 gchar *LassoLogout_nameIdentifier_get(LassoLogout *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* remoteProviderId */
@@ -2309,7 +2315,9 @@ gchar *LassoLecp_msgUrl_get(LassoLecp *self) {
 /* nameIdentifier */
 #define LassoLecp_get_nameIdentifier LassoLecp_nameIdentifier_get
 gchar *LassoLecp_nameIdentifier_get(LassoLecp *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* remoteProviderId */
@@ -2519,7 +2527,9 @@ gchar *LassoNameIdentifierMapping_msgUrl_get(LassoNameIdentifierMapping *self) {
 /* nameIdentifier */
 #define LassoNameIdentifierMapping_get_nameIdentifier LassoNameIdentifierMapping_nameIdentifier_get
 gchar *LassoNameIdentifierMapping_nameIdentifier_get(LassoNameIdentifierMapping *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* targetNameIdentifier */
@@ -2724,13 +2734,17 @@ gchar *LassoNameRegistration_msgUrl_get(LassoNameRegistration *self) {
 /* nameIdentifier */
 #define LassoNameRegistration_get_nameIdentifier LassoNameRegistration_nameIdentifier_get
 gchar *LassoNameRegistration_nameIdentifier_get(LassoNameRegistration *self) {
-	return LASSO_PROFILE(self)->nameIdentifier;
+	if (LASSO_PROFILE(self)->nameIdentifier)
+		return g_strdup(LASSO_PROFILE(self)->nameIdentifier->content);
+	return NULL;
 }
 
 /* oldNameIdentifier */
 #define LassoNameRegistration_get_oldNameIdentifier LassoNameRegistration_oldNameIdentifier_get
 gchar *LassoNameRegistration_oldNameIdentifier_get(LassoNameRegistration *self) {
-	return self->oldNameIdentifier;
+	if (self->oldNameIdentifier)
+		return g_strdup(self->oldNameIdentifier->content);
+	return NULL;
 }
 
 /* remoteProviderId */

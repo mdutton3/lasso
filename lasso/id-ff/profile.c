@@ -263,7 +263,8 @@ lasso_profile_set_session_from_dump(LassoProfile *ctx, const gchar  *dump)
 static struct XmlSnippet schema_snippets[] = {
 	{ "Request", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, request) },
 	{ "Response", SNIPPET_NODE_IN_CHILD, G_STRUCT_OFFSET(LassoProfile, response) },
-	{ "NameIdentifier", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, nameIdentifier) },
+	{ "NameIdentifier", SNIPPET_NODE_IN_CHILD,
+		G_STRUCT_OFFSET(LassoProfile, nameIdentifier) },
 	{ "RemoteProviderID", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, remote_providerID) },
 	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url) },
 	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body) },
