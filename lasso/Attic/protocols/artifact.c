@@ -250,11 +250,11 @@ lasso_artifact_new_from_query(const xmlChar *query)
 				     identityProviderSuccinctID,
 				     assertionHandle);
 
-  /* debug("b64_samlArt = %s\n", b64_samlArt); */
-  /* debug("relayState = %s\n", relayState); */
-  /* debug("byteCode = %s\n", byteCode); */
-  /* debug("identityProviderSuccinctID = %s\n", identityProviderSuccinctID); */
-  /* debug("assertionHandle = %s\n", assertionHandle); */
+/*   printf("b64_samlArt = %s\n", b64_samlArt); */
+/*   printf("relayState = %s\n", relayState); */
+/*   printf("byteCode = %s\n", byteCode); */
+/*   printf("identityProviderSuccinctID = %s\n", identityProviderSuccinctID); */
+/*   printf("assertionHandle = %s\n", assertionHandle); */
 
   if (ret >= 0) {
     artifact = lasso_artifact_new(b64_samlArt,

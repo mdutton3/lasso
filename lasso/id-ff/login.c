@@ -831,7 +831,6 @@ lasso_login_init_request(LassoLogin      *login,
     return (-1);
   }
 
-  printf("SourceID ProviderID hash : %s\n", lasso_str_hash("http://example-idp", LASSO_PROFILE(login)->server->private_key));
   /* rebuild response (artifact) */
   switch (response_method) {
   case lassoHttpMethodRedirect:
