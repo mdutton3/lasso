@@ -9,12 +9,14 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-id-wsf.la
 
 liblasso_id_wsf_la_SOURCES = \
+	authentication.c \
 	discovery.c \
 	interaction_profile_service.c \
 	profile_service.c \
 	wsf_profile.c	
 
 liblassoinclude_HEADERS = \
+	authentication.h \
 	discovery.h \
 	interaction_profile_service.h \
 	profile_service.h \
