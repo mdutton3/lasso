@@ -22,6 +22,7 @@ liblasso_id_ff_la_SOURCES = \
 	profile.c \
 	provider.c \
 	server.c \
+	service.c \
 	session.c
 
 liblassoinclude_HEADERS = \
@@ -36,4 +37,5 @@ liblassoinclude_HEADERS = \
 	profile.h \
 	provider.h \
 	server.h \
+	service.h \
 	session.h
