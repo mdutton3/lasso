@@ -59,9 +59,9 @@ lasso_node_copy(LassoNode *node)
  * @encoding: the name of the encoding to use or NULL.
  * @format: is formatting allowed
  * 
- * Dumps the LassoNode. All datas in object are dumped in an XML format.
+ * Dumps @node. All datas in object are dumped in an XML format.
  * 
- * Return value: a full XML dump of the LassoNode
+ * Return value: a full XML dump of @node
  **/
 xmlChar *
 lasso_node_dump(LassoNode     *node,
@@ -112,7 +112,7 @@ lasso_node_export(LassoNode *node)
  * 
  * Like lasso_node_export() method except that result is Base64 encoded.
  * 
- * Return value: a Base64 encoded dump of the LassoNode
+ * Return value: a Base64 encoded export of the LassoNode
  **/
 xmlChar *
 lasso_node_export_to_base64(LassoNode *node)
@@ -126,8 +126,8 @@ lasso_node_export_to_base64(LassoNode *node)
 /**
  * lasso_node_export_to_query:
  * @node: a LassoNode
- * @sign_method: the Signature Transform method
- * @private_key_file: a private key (Optional)
+ * @sign_method: the Signature transform method
+ * @private_key_file: a private key (may be NULL)
  * 
  * URL-encodes and signes the LassoNode.
  * If private_key_file is NULL, query won't be signed.
@@ -151,7 +151,7 @@ lasso_node_export_to_query(LassoNode            *node,
  * 
  * Like lasso_node_export() method except that result is SOAP enveloped.
  * 
- * Return value: an SOAP enveloped export of the LassoNode
+ * Return value: a SOAP enveloped export of the LassoNode
  **/
 xmlChar *
 lasso_node_export_to_soap(LassoNode *node)
@@ -186,9 +186,9 @@ lasso_node_get_attr(LassoNode     *node,
  * @node: a LassoNode
  * @name: the attribut name
  * 
- * Gets the value of an attribute associated to a node.
+ * Gets the value of an attribut associated to a node.
  * 
- * Return value: the attribute value or NULL if not found. It's up to the caller
+ * Return value: the attribut value or NULL if not found. It's up to the caller
  * to free the memory with xmlFree().
  **/
 xmlChar *
@@ -222,9 +222,9 @@ lasso_node_get_attrs(LassoNode *node)
  * lasso_node_get_child:
  * @node: a LassoNode
  * @name: the name
- * @href: the namespace href (may be NULL)
+ * @href: the namespace (may be NULL)
  * 
- * Gets child of node having given name and namespace href.
+ * Gets child of node having given @name and namespace @href.
  * 
  * Return value: a child node
  **/
@@ -934,10 +934,11 @@ lasso_node_impl_add_signature(LassoNode     *node,
     signature = lasso_ds_signature_new(node, xmlSecTransformDsaSha1Id);
     break;
   }
-  lasso_node_add_child(node, signature, FALSE);
+  lasso_node_add_child(node, signature, TRUE);
   lasso_ds_signature_sign(LASSO_DS_SIGNATURE(signature),
 			  private_key_file,
 			  certificate_file);
+  lasso_node_destroy(signature);
 }
 
 static void gdata_build_query_foreach_func(GQuark   key_id,
