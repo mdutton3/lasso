@@ -370,6 +370,8 @@ python/protocols/Makefile
 python/protocols/elements/Makefile
 python/tests/Makefile
 python/xml/Makefile
+win32/Makefile
+win32/nsis/Makefile
 ]
 [lasso.pc:lasso.pc.in]
 dnl [lasso-config:lasso-config.in]
