@@ -22,13 +22,13 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "lasso_config.h"
 #endif
 
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "php_lasso.h"
+#include "../php_lasso.h"
 
 #include "lasso.h"
 
@@ -96,32 +96,5 @@ PHP_FUNCTION(lasso_identity_dump) {
 
 	RETURN_STRING(identity_dump, 1);
 
-}
-/* }}} */
-
-/* {{{ proto resource lasso_identity_get_next_providerID(resource identity) */
-PHP_FUNCTION(lasso_identity_get_next_providerid)
-{
-	LassoIdentity  *identity;
-	char *providerID;
-	zval *param;
-
-	zend_printf("DEBUG: lasso_identity_get_next_providerID\n");
-
-	int num_args;
-
-	if ((num_args = ZEND_NUM_ARGS()) != 1) 
-		WRONG_PARAM_COUNT
-
-	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &param) == FAILURE) {
-		return;
-	}
-
-	ZEND_FETCH_RESOURCE(identity, LassoIdentity *, &param, -1, le_lassoidentity_name, le_lassoidentity);
-	
-	zend_printf("DEBUG: identity at 0x%p\n", identity);
-
-	providerID = (char *) lasso_identity_get_next_providerID(identity);
-	RETURN_STRING(providerID, 1);
 }
 /* }}} */

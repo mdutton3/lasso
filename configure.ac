@@ -73,7 +73,7 @@ esac
 
 
 dnl ==========================================================================
-dnl Version
+dnl Version Super.Size.Me.L
 dnl ==========================================================================
 
 changequote(<<, >>)dnl
@@ -173,6 +173,7 @@ AC_CHECK_PROGS(JAVAC, gcj javac)
 AC_CHECK_PROGS(JAVAH, gcjh javah)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PYTHON, python)
+AC_CHECK_PROGS(PHP, php)
 AC_CHECK_PROGS(SWIG, swig)
 AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
 
@@ -271,6 +272,7 @@ if test "X$with_python" != Xno; then
 fi
 
 
+
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 PYTHON_VERSION=`$PYTHON -c 'import sys; print sys.version[:3]' 2>/dev/null`
@@ -313,6 +315,49 @@ AM_CONDITIONAL([PYTHON_ENABLED],[test "x$with_python" = "xyes"])
 AC_MSG_RESULT($with_python)
 AC_SUBST(PYTHON_VERSION)
 
+AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
+if test "X$PHP_CONFIG" != X ; then
+
+  PHP_INCLUDES=`$PHP_CONFIG --includes`
+  PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
+  PHP_LIBS=`$PHP_CONFIG --libs`
+  PHP_EXTENSION_DIR=`$PHP_CONFIG --extension-dir`
+else
+  # This allows 'make clean' in the python directory to work when
+  # php isn't available
+  PHP=:
+  PHP_INCLUDES=
+  PHP_LDFLAGS=
+  PHP_LIBS=
+  PHP_EXTENSION_DIR=
+fi
+AC_SUBST(PHP_INCLUDES)
+AC_SUBST(PHP_LDFLAGS)
+AC_SUBST(PHP_LIBS)
+AC_SUBST(PHP_EXTENSION_DIR)
+
+AC_ARG_WITH(php, [  --with-php(=PHP)        Enable the PHP interface], with_php="$withval", with_php="no")
+AC_MSG_CHECKING(Enable PHP API)
+if test "X$with_php" != Xno ; then
+  if test "X$with_php" != Xyes; then
+    PHP=$with_php
+  fi
+  with_php=yes
+fi
+
+PHP_VERSION=`php-config --version 2>/dev/null`
+if test "X$PHP_VERSION" != X; then
+  languages_available="$languages_available php($PHP_VERSION)"
+  if test $with_php = yes; then
+    languages="$languages php"
+  fi
+fi
+AC_MSG_RESULT($with_php)
+AM_CONDITIONAL([PHP_ENABLED],[test "x$with_php" = "xyes"])
+AC_SUBST(PHP_VERSION)
+
+SD_LANG="$languages"
+AC_SUBST(SD_LANG)
 
 dnl ==========================================================================
 dnl Test suite (requires check)
@@ -437,7 +482,7 @@ if test "z$enable_pedantic" = "zyes" ; then
 else
     AC_MSG_RESULT(no)
 fi    
-
+lasso_
 dnl ==========================================================================
 dnl Static linking
 dnl ==========================================================================
@@ -514,6 +559,10 @@ python/protocols/Makefile
 python/protocols/elements/Makefile
 python/tests/Makefile
 python/xml/Makefile
+php/Makefile
+php/environs/Makefile
+php/xml/Makefile
+php/tests/Makefile
 tests/Makefile
 java/Makefile]
 dnl [java/coldfusion/Makefile]
@@ -546,6 +595,9 @@ Optionals builds
 
 Python binding:
     ${with_python}
+
+PHP binding:
+    ${with_php}
 
 Build Java binding:
     ${with_java}

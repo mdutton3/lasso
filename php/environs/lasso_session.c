@@ -22,12 +22,12 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "lasso_config.h"
 #endif
 
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "php_lasso.h"
+#include "../php_lasso.h"
 
 #include "lasso.h"

@@ -23,7 +23,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "lasso_config.h"
 #endif
 
 #include "php.h"
@@ -74,7 +74,6 @@ function_entry lasso_functions[] = {
 	/* lasso_user.c */
 	PHP_FE(lasso_identity_new,	NULL)
 	PHP_FE(lasso_identity_dump,	NULL)
-	PHP_FE(lasso_identity_get_next_providerid,	NULL)
 	PHP_FE(lasso_identity_destroy,	NULL)
 
 	/* lasso_profile_.c */

@@ -71,7 +71,6 @@ PHP_FUNCTION(lasso_login_build_authn_request_msg);
 
 /* lasso_user.c */
 PHP_FUNCTION(lasso_identity_new);	
-PHP_FUNCTION(lasso_identity_get_next_providerid);	
 PHP_FUNCTION(lasso_identity_dump);	
 PHP_FUNCTION(lasso_identity_destroy);	
 
