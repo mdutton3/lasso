@@ -979,11 +979,9 @@ void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 	g_free(uri);
 
 	/* add enveloped transform */
-	xmlSecTmplReferenceAddTransform(reference,
-			xmlSecTransformEnvelopedId);
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	/* add exclusive C14N transform */
-	xmlSecTmplReferenceAddTransform(reference,
-			xmlSecTransformExclC14NId);
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 
 	if (sign_type == LASSO_SIGNATURE_TYPE_WITHX509) {
 		/* add <dsig:KeyInfo/> */
@@ -1267,7 +1265,7 @@ xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 			xmlDeclareNs(root_node, t);
 }
 
-static int
+__inline__ static int
 sameNs(xmlNs *ns1, xmlNs *ns2)
 {
 	return (ns1 == NULL && ns2 == NULL) || (ns1 && ns2 && strcmp(ns1->href, ns2->href) == 0);
