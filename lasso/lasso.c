@@ -44,17 +44,14 @@ HINSTANCE g_hModule = NULL; /**< DLL Instance. */
  *  
  */
 BOOL WINAPI
-DllMain(
-  HINSTANCE hinstDLL,  /* handle to the DLL module */
-  DWORD fdwReason,     /* reason for calling function */
-  LPVOID lpvReserved)  /* reserved */
+DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
-    if (fdwReason == DLL_PROCESS_ATTACH)
-    {
-        DisableThreadLibraryCalls(hinstDLL);
-        g_hModule = hinstDLL;
-    }
-    return TRUE;
+	if (fdwReason == DLL_PROCESS_ATTACH)
+	{
+		DisableThreadLibraryCalls(hinstDLL);
+		g_hModule = hinstDLL;
+	}
+	return TRUE;
 }
 #endif
 
@@ -67,54 +64,47 @@ DllMain(
  */
 int lasso_init()
 {
-  g_type_init();
+	g_type_init();
 
-  /* Init libxml and libxslt libraries */
-  xmlInitParser();
-  /*LIBXML_TEST_VERSION*/
-  /* xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS; */
-  /* xmlSubstituteEntitiesDefault(1); */
+	/* Init libxml and libxslt libraries */
+	xmlInitParser();
+	/*LIBXML_TEST_VERSION*/
+	/* xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS; */
+	/* xmlSubstituteEntitiesDefault(1); */
 
-  /* Init xmlsec library */
-  if(xmlSecInit() < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "XMLSec initialization failed.\n");
-    return -1;
-  }
-  
-  /* Check loaded library version */
-#if 0 /* dubious check; disabled for now */
-  if(xmlSecCheckVersion() != 1) {
-    message(G_LOG_LEVEL_CRITICAL, "Loaded xmlsec library version is not compatible.\n");
-    return -1;
-  }
-#endif
+	/* Init xmlsec library */
+	if (xmlSecInit() < 0) {
+		message(G_LOG_LEVEL_CRITICAL, "XMLSec initialization failed.");
+		return -1;
+	}
 
-  /* Load default crypto engine if we are supporting dynamic
-   * loading for xmlsec-crypto libraries. Use the crypto library
-   * name ("openssl", "nss", etc.) to load corresponding 
-   * xmlsec-crypto library.
-   */
+	/* Load default crypto engine if we are supporting dynamic
+	 * loading for xmlsec-crypto libraries. Use the crypto library
+	 * name ("openssl", "nss", etc.) to load corresponding 
+	 * xmlsec-crypto library.
+	 */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
-  if(xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "Unable to load default xmlsec-crypto library. Make sure\n"
-	    "that you have it installed and check shared libraries path\n"
-	    "(LD_LIBRARY_PATH) environment variable.\n");
-    return -1;	
-  }
+	if (xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
+		message(G_LOG_LEVEL_CRITICAL,
+				"Unable to load default xmlsec-crypto library. Make sure"
+				"that you have it installed and check shared libraries path"
+				"(LD_LIBRARY_PATH) environment variable.");
+		return -1;	
+	}
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
-  /* Init crypto library */
-  if(xmlSecCryptoAppInit(NULL) < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "Crypto initialization failed.\n");
-    return -1;
-  }
-  
-  /* Init xmlsec-crypto library */
-  if(xmlSecCryptoInit() < 0) {
-    message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.\n");
-    return -1;
-  }
-  return 0;
+	/* Init crypto library */
+	if (xmlSecCryptoAppInit(NULL) < 0) {
+		message(G_LOG_LEVEL_CRITICAL, "Crypto initialization failed.");
+		return -1;
+	}
+
+	/* Init xmlsec-crypto library */
+	if (xmlSecCryptoInit() < 0) {
+		message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.");
+		return -1;
+	}
+	return 0;
 }
 
 /**
@@ -126,24 +116,24 @@ int lasso_init()
  **/
 int lasso_shutdown()
 {
-  /* Shutdown xmlsec-crypto library */
-  xmlSecCryptoShutdown();
-  
-  /* Shutdown crypto library */
-  xmlSecCryptoAppShutdown();
-  
-  /* Shutdown xmlsec library */
-  xmlSecShutdown();
-  
-  /* Shutdown libxslt/libxml */
+	/* Shutdown xmlsec-crypto library */
+	xmlSecCryptoShutdown();
+
+	/* Shutdown crypto library */
+	xmlSecCryptoAppShutdown();
+
+	/* Shutdown xmlsec library */
+	xmlSecShutdown();
+
+	/* Shutdown libxslt/libxml */
 #ifndef XMLSEC_NO_XSLT
-  xsltCleanupGlobals();            
+	xsltCleanupGlobals();            
 #endif /* XMLSEC_NO_XSLT */
-  /* Cleanup function for the XML library */
-  xmlCleanupParser();
-  /* this is to debug memory for regression tests */
-  xmlMemoryDump();
-  return 0;
+	/* Cleanup function for the XML library */
+	xmlCleanupParser();
+	/* this is to debug memory for regression tests */
+	xmlMemoryDump();
+	return 0;
 }
 
 /** 
@@ -161,32 +151,31 @@ int lasso_shutdown()
 int 
 lasso_check_version_ext(int major, int minor, int subminor, lassoCheckVersionMode mode)
 {
-  /* we always want to have a match for major version number */
-  if (major != LASSO_VERSION_MAJOR) {
-    g_message("expected major version=%d;real major version=%d",
-	      LASSO_VERSION_MAJOR, major);
-    return 0;
-  }
-  
-  switch (mode) {
-  case LASSO_CHECK_VERSION_EXACT:
-    if ((minor != LASSO_VERSION_MINOR) || (subminor != LASSO_VERSION_SUBMINOR)) {
-      g_message("mode=exact;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
-		LASSO_VERSION_MINOR, minor,
-		LASSO_VERSION_SUBMINOR, subminor);
-      return 0;
-    }
-    break;
-  case LASSO_CHECK_VERSIONABI_COMPATIBLE:
-    if ((minor < LASSO_VERSION_MINOR) ||
-	((minor == LASSO_VERSION_MINOR) && (subminor < LASSO_VERSION_SUBMINOR))) {
-      g_message("mode=abi compatible;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
-		LASSO_VERSION_MINOR, minor,
-		LASSO_VERSION_SUBMINOR, subminor);
-      return 0;
-    }
-    break;
-  }
-  
-  return 1;
+	/* we always want to have a match for major version number */
+	if (major != LASSO_VERSION_MAJOR) {
+		g_message("expected major version=%d;real major version=%d",
+				LASSO_VERSION_MAJOR, major);
+		return 0;
+	}
+
+	if (mode == LASSO_CHECK_VERSION_EXACT) {
+		if (minor != LASSO_VERSION_MINOR || subminor != LASSO_VERSION_SUBMINOR) {
+			g_message("mode=exact;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
+					LASSO_VERSION_MINOR, minor,
+					LASSO_VERSION_SUBMINOR, subminor);
+			return 0;
+		}
+	}
+	if (mode == LASSO_CHECK_VERSIONABI_COMPATIBLE) {
+		if (minor < LASSO_VERSION_MINOR || (minor == LASSO_VERSION_MINOR && 
+					subminor < LASSO_VERSION_SUBMINOR)) {
+			g_message("mode=abi compatible;expected minor version=%d;real minor version=%d;expected subminor version=%d;real subminor version=%d",
+					LASSO_VERSION_MINOR, minor,
+					LASSO_VERSION_SUBMINOR, subminor);
+			return 0;
+		}
+	}
+
+	return 1;
 }
+
