@@ -168,6 +168,11 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
      
   /* RequestID */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
   /* MajorVersion */
@@ -176,14 +181,28 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   /* MinorVersion */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
   /* IssueInstant */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
   
   /* ProviderID */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
+  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_lib_register_name_identifier_request_set_providerID(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request), str);
   
   /* RelayState */
@@ -193,10 +212,25 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   /* IDPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPProvidedNameIdentifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   idpidentifier = lasso_lib_idp_provided_name_identifier_new(str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPNameQualifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IDPFormat"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(idpidentifier), str);
   
   lasso_lib_register_name_identifier_request_set_idpProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
@@ -205,10 +239,25 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
   
   /* SPPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPProvidedNameIdentifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   spidentifier = lasso_lib_sp_provided_name_identifier_new(str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPNameQualifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SPFormat"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(spidentifier), str);
   
   lasso_lib_register_name_identifier_request_set_spProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
@@ -217,10 +266,25 @@ lasso_register_name_identifier_request_new_from_query(const xmlChar *query)
  
   /* OldPProvidedNameIdentifier */
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldProvidedNameIdentifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   oldidentifier = lasso_lib_old_provided_name_identifier_new(str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldNameQualifier"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), str);
   str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "OldFormat"), 0);
+  if (str == NULL) {
+    g_datalist_clear(&gd);
+    g_object_unref(request);
+    return NULL;
+  }
   lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(oldidentifier), str);
      
   lasso_lib_register_name_identifier_request_set_oldProvidedNameIdentifier(LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(request),
