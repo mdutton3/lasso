@@ -70,7 +70,7 @@ PHP_FUNCTION(lasso_login_init_authn_request) {
 	int num_args;
 	int ret;
 
-	if ((num_args = ZEND_NUM_ARGS()) != 2) 
+	if ((num_args = ZEND_NUM_ARGS()) != 1) 
 		WRONG_PARAM_COUNT
 
 	if (zend_parse_parameters(num_args TSRMLS_CC, "z", &param) == FAILURE) {
