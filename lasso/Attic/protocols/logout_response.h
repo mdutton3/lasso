@@ -64,11 +64,6 @@ LASSO_EXPORT LassoNode* lasso_logout_response_new                     (gchar    
 LASSO_EXPORT LassoNode* lasso_logout_response_new_from_export         (gchar               *buffer,
 								       lassoNodeExportType  export_type);
 
-/* LASSO_EXPORT LassoNode* lasso_logout_response_new_from_request_export (gchar               *buffer, */
-/* 								       lassoNodeExportType  export_type, */
-/* 								       gchar               *providerID, */
-/* 								       gchar               *statusCodeValue); */
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
