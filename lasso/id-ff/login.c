@@ -1219,8 +1219,8 @@ lasso_login_process_authn_request_msg(LassoLogin      *login,
     break;
   }
   if (LASSO_PROFILE(login)->request == NULL) {
-    message(G_LOG_LEVEL_CRITICAL, "Message isn't an AuthnRequest\n");
-    return -1;
+    message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_PROFILE_ERROR_INVALID_QUERY));
+    return LASSO_PROFILE_ERROR_INVALID_QUERY;
   }
 
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
@@ -1380,6 +1380,22 @@ lasso_login_process_response_msg(LassoLogin  *login,
   return lasso_login_process_response_status_and_assertion(login);
 }
 
+/**
+ * lasso_login_process_without_authn_request_msg:
+ * @login: a LassoLogin.
+ * @remote_providerID: the ProviderID of the remote provider (may be NULL).
+ * @relayState: the value understood by mutual agreement between the identity provider and service
+ * provider so that the service provider knows how to handle subsequent interactions with the
+ * Principal after SSO. This MAY be the URL of a resource at the service provider (may be NULL).
+ * 
+ * It's possible for an identity provider to generate an authentication response without first
+ * having received an authentication request. This method must be used in this case in the place of
+ * the lasso_login_process_request_msg() method.
+ *
+ * If @remote_providerID is NULL, the providerID of the first provider found in session is used.
+ * 
+ * Return value: 0 on success and a negative value if an error occurs.
+ **/
 gint
 lasso_login_process_without_authn_request_msg(LassoLogin  *login,
 					      const gchar *remote_providerID,
