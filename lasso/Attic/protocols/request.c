@@ -96,7 +96,13 @@ lasso_request_new(const xmlChar *assertionArtifact)
   lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						(const xmlChar *)time);
   xmlFree(time);
-  
+
+  /* Signature template with X509
+     FIXME: signature method */
+  lasso_samlp_request_abstract_set_signature_tmpl(request,
+						  lassoSignatureTypeWithX509,
+						  lassoSignatureMethodRsaSha1);
+
   /* AssertionArtifact */
   lasso_samlp_request_set_assertionArtifact(LASSO_SAMLP_REQUEST(request),
 					    assertionArtifact);
