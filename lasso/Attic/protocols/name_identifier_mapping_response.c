@@ -66,9 +66,13 @@ lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
   xmlNodePtr xmlNode_response;
   LassoNodeClass *class;
 
+  envelope = lasso_node_new_from_dump(buffer);
+  if (LASSO_IS_NODE(envelope) == FALSE) {
+    return NULL;
+  }
+
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
 
-  envelope = lasso_node_new_from_dump(buffer);
   lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse",
 					    lassoLibHRef, NULL);
      
