@@ -114,6 +114,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 								     lassoProviderTypeSp,
 								     NULL);
   }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+    ret = -1;
+    goto done;
+  }
 
   if (protocolProfile == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Single logout protocol profile not found\n");
@@ -133,6 +138,12 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 							lassoProviderTypeIdp,
 							NULL);
     profile->msg_body = lasso_node_export_to_soap(profile->request);
+    
+    if (profile->msg_url == NULL || profile->msg_body == NULL ) {
+      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url and msg_body\n");
+      ret = -1;
+      goto done;
+    }
   }
   else if (xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp) || \
 	   xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)) {
@@ -148,6 +159,12 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
     g_sprintf(profile->msg_url, "%s?%s", url, query);
     profile->msg_body = NULL;
+
+    if (profile->msg_url == NULL) {
+      message(G_LOG_LEVEL_CRITICAL, "Error while setting msg_url\n");
+      ret = -1;
+      goto done;
+    }
 
     xmlFree(url);
     xmlFree(query);
@@ -410,6 +427,11 @@ lasso_logout_init_request(LassoLogout *logout,
   }
   else if (profile->provider_type == lassoProviderTypeSp) {
     singleLogoutProtocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider, lassoProviderTypeIdp, NULL);
+  }
+  else {
+    message(G_LOG_LEVEL_CRITICAL, "Invalid provider type\n");
+    ret = -1;
+    goto done;
   }
 
   if (singleLogoutProtocolProfile == NULL) {
@@ -682,51 +704,51 @@ lasso_logout_validate_request(LassoLogout *logout)
   /* if SOAP request method at IDP then verify all the remote service providers support SOAP protocol profile.
      If one remote authenticated principal service provider doesn't support SOAP
      then return UnsupportedProfile to original service provider */
-/*   if (profile->provider_type==lassoProviderTypeIdp && profile->http_request_method==lassoHttpMethodSoap) { */
-/*     gboolean all_http_soap; */
-/*     LassoProvider *provider; */
-/*     gchar *providerID, *protocolProfile; */
-/*     int i; */
+  if (profile->provider_type==lassoProviderTypeIdp && profile->http_request_method==lassoHttpMethodSoap) {
+    gboolean all_http_soap;
+    LassoProvider *provider;
+    gchar *providerID, *protocolProfile;
+    int i;
     
-/*     all_http_soap = TRUE; */
+    all_http_soap = TRUE;
 
-/*     for (i = 0; i<profile->server->providers->len; i++) { */
-/*       provider = g_ptr_array_index(profile->server->providers, i); */
-/*       providerID = lasso_provider_get_providerID(provider); */
+    for (i = 0; i<profile->server->providers->len; i++) {
+      provider = g_ptr_array_index(profile->server->providers, i);
+      providerID = lasso_provider_get_providerID(provider);
 
-/*       /\* if the original service provider then continue *\/ */
-/*       if (xmlStrEqual(remote_providerID, providerID)) { */
-/* 	continue; */
-/*       } */
+      /* if the original service provider then continue */
+      if (xmlStrEqual(remote_providerID, providerID)) {
+	continue;
+      }
 
-/*       /\* if principal is not authenticated with this remote service provider, continue *\/ */
-/*       assertion = lasso_session_get_assertion(profile->session, providerID); */
-/*       if (assertion == NULL) { */
-/* 	continue; */
-/*       } */
+      /* if principal is not authenticated with this remote service provider, continue */
+      assertion = lasso_session_get_assertion(profile->session, providerID);
+      if (assertion == NULL) {
+	continue;
+      }
 
-/*       /\* if protocolProfile is SOAP continue else break *\/ */
-/*       protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider, lassoProviderTypeIdp, NULL); */
-/*       if (protocolProfile == NULL || !xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap)) { */
-/* 	all_http_soap = FALSE; */
-/* 	break; */
-/*       } */
+      /* if protocolProfile is SOAP continue else break */
+      protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider, lassoProviderTypeIdp, NULL);
+      if (protocolProfile == NULL || !xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap)) {
+	all_http_soap = FALSE;
+	break;
+      }
 
-/*       if (protocolProfile != NULL) { */
-/* 	xmlFree(protocolProfile); */
-/*       } */
+      if (protocolProfile != NULL) {
+	xmlFree(protocolProfile);
+      }
 
-/*       if (providerID != NULL) { */
-/* 	xmlFree(providerID); */
-/*       } */
-/*     } */
+      if (providerID != NULL) {
+	xmlFree(providerID);
+      }
+    }
 
-/*     if (all_http_soap==FALSE) { */
-/*       statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeUnsupportedProfile); */
-/*       ret = -1; */
-/*       goto done; */
-/*     } */
-/*   } */
+    if (all_http_soap==FALSE) {
+      statusCode_class->set_prop(statusCode, "Value", lassoLibStatusCodeUnsupportedProfile);
+      ret = -1;
+      goto done;
+    }
+  }
 
   lasso_federation_destroy(federation);
 
