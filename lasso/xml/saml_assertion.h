@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/ds_signature.h>
 #include <lasso/xml/saml_advice.h>
 #include <lasso/xml/saml_authentication_statement.h>
 #include <lasso/xml/saml_conditions.h>
