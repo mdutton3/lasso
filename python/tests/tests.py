@@ -38,6 +38,7 @@ testSuites = (
     'login_tests',
     )
 
+success = True
 for testSuite in testSuites:
     fp, pathname, description = imp.find_module(testSuite)
     try:                                             
@@ -58,5 +59,8 @@ for testSuite in testSuites:
     print doc
     print '-' * len(doc)
 
-    unittest.TextTestRunner(verbosity=2).run(module.allTests)
+    result = unittest.TextTestRunner(verbosity=2).run(module.allTests)
+    success = success and result.wasSuccessful()
+
+sys.exit(not success)
 
