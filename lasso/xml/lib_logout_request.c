@@ -171,13 +171,13 @@ lasso_lib_logout_request_get_type()
 	return this_type;
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_logout_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST, NULL);
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nameIdentifier,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
 {
@@ -194,6 +194,5 @@ lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nam
 	LASSO_LIB_LOGOUT_REQUEST(request)->ProviderID = g_strdup(providerID);
 	LASSO_LIB_LOGOUT_REQUEST(request)->NameIdentifier = g_object_ref(nameIdentifier);
 
-	return LASSO_NODE(request);
+	return request;
 }
-

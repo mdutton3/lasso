@@ -40,7 +40,6 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	xmlNode *message, *authn_request_node;
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
-	int rc;
 
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
@@ -65,6 +64,10 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	}
 
+	LASSO_SAMLP_REQUEST_ABSTRACT(lecp->authnRequestEnvelope->AuthnRequest)->private_key_file =
+		LASSO_PROFILE(lecp)->server->private_key;
+	LASSO_SAMLP_REQUEST_ABSTRACT(lecp->authnRequestEnvelope->AuthnRequest)->certificate_file =
+		LASSO_PROFILE(lecp)->server->certificate;
 	message = lasso_node_get_xmlNode(LASSO_NODE(lecp->authnRequestEnvelope), FALSE);
 	for (authn_request_node = message->children;
 			authn_request_node && strcmp(authn_request_node->name, "AuthnRequest") != 0;
@@ -73,11 +76,13 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	if (authn_request_node == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED);
 	
+	/*
 	rc = lasso_sign_node(authn_request_node, "RequestID",
 			LASSO_SAMLP_REQUEST_ABSTRACT(
 				lecp->authnRequestEnvelope->AuthnRequest)->RequestID,
 			LASSO_PROFILE(lecp)->server->private_key,
 			LASSO_PROFILE(lecp)->server->certificate);
+			*/
 	
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler); 
@@ -120,11 +125,10 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 
 	profile->msg_url  = lasso_provider_get_metadata_one(
 			remote_provider, "SingleSignOnServiceURL");
+	/* msg_body has usally been set in
+	 * lasso_lecp_process_authn_request_envelope_msg() */
 	if (profile->msg_body == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
-
-	/* msg_body should have been set in
-	 * lasso_lecp_process_authn_request_envelope_msg() */
 
 	return 0;
 }
@@ -141,7 +145,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 	if (profile->msg_url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
-	profile->msg_body = lasso_node_export_to_base64(profile->response, NULL, NULL);
+	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
 	if (profile->msg_body == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
 	}
@@ -189,10 +193,13 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	lecp->authnResponseEnvelope = lasso_lib_authn_response_envelope_new(
 			LASSO_LIB_AUTHN_RESPONSE(profile->response),
 			assertionConsumerServiceURL);
-	LASSO_PROFILE(lecp)->msg_body = lasso_node_export_to_soap(
-			LASSO_NODE(lecp->authnResponseEnvelope), NULL, NULL);
+	LASSO_SAMLP_RESPONSE_ABSTRACT(lecp->authnResponseEnvelope->AuthnResponse
+			)->private_key_file = profile->server->private_key;
+	LASSO_SAMLP_RESPONSE_ABSTRACT(lecp->authnResponseEnvelope->AuthnResponse
+			)->certificate_file = profile->server->certificate;
+	profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(lecp->authnResponseEnvelope));
 
-	if (LASSO_PROFILE(lecp)->msg_body == NULL) {
+	if (profile->msg_body == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
 	}
 

@@ -113,7 +113,7 @@ lasso_lib_authn_response_get_type()
 	return authn_response_type;
 }
 
-LassoNode*
+LassoSamlpResponseAbstract*
 lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 {
 	LassoLibAuthnResponse *response;
@@ -129,6 +129,6 @@ lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 		response->RelayState = g_strdup(request->RelayState);
 	}
 
-	return LASSO_NODE(response);
+	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
 

@@ -126,40 +126,9 @@ lasso_node_destroy(LassoNode *node)
 	}
 }
 
-static xmlNode*
-lasso_node_export_to_signed_xmlnode(LassoNode *node,
-		const char *private_key_file, const char *certificate_file)
-{
-	xmlNode *message;
-	char *id_attr_name = NULL, *id_value = NULL;
-
-	message = lasso_node_get_xmlNode(node, FALSE);
-
-	if (private_key_file) {
-		int rc;
-
-		if (LASSO_NODE_GET_CLASS(node)->get_sign_attr_name) {
-			id_attr_name = LASSO_NODE_GET_CLASS(node)->get_sign_attr_name();
-			id_value = xmlGetProp(message, id_attr_name);
-		}
-
-		rc = lasso_sign_node(message, id_attr_name, id_value,
-				private_key_file, certificate_file);
-		/* it may have failed; should we care and return NULL or let
-		 * the unsigned message go on the wire ? */
-		if (id_value)
-			xmlFree(id_value);
-	}
-
-	return message;
-}
-
-
 /**
  * lasso_node_export_to_base64:
  * @node: a #LassoNode
- * @private_key_file: the path to the private key for signature (may be NULL)
- * @certificate_file: the path to the certificate for signature (may be NULL)
  * 
  * Exports @node to a base64-encoded message.
  * 
@@ -167,8 +136,7 @@ lasso_node_export_to_signed_xmlnode(LassoNode *node,
  *      the caller.
  **/
 char*
-lasso_node_export_to_base64(LassoNode *node,
-		const char *private_key_file, const char *certificate_file)
+lasso_node_export_to_base64(LassoNode *node)
 {
 	xmlNode *message;
 	xmlOutputBufferPtr buf;
@@ -176,7 +144,7 @@ lasso_node_export_to_base64(LassoNode *node,
 	char *buffer;
 	char *ret;
 
-	message = lasso_node_export_to_signed_xmlnode(node, private_key_file, certificate_file);
+	message = lasso_node_get_xmlNode(node, FALSE);
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
@@ -223,8 +191,6 @@ lasso_node_export_to_query(LassoNode *node,
 /**
  * lasso_node_export_to_soap:
  * @node: a #LassoNode
- * @private_key_file: the path to the private key for signature (may be NULL)
- * @certificate_file: the path to the certificate for signature (may be NULL)
  * 
  * Exports @node to a SOAP message.
  * 
@@ -232,8 +198,7 @@ lasso_node_export_to_query(LassoNode *node,
  *      caller.
  **/
 char*
-lasso_node_export_to_soap(LassoNode *node,
-		const char *private_key_file, const char *certificate_file)
+lasso_node_export_to_soap(LassoNode *node)
 {
 	xmlNode *envelope, *body, *message;
 	xmlOutputBuffer *buf;
@@ -242,7 +207,7 @@ lasso_node_export_to_soap(LassoNode *node,
 
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
-	message = lasso_node_export_to_signed_xmlnode(node, private_key_file, certificate_file);
+	message = lasso_node_get_xmlNode(node, FALSE);
 
 	envelope = xmlNewNode(NULL, "Envelope");
 	xmlSetNs(envelope, xmlNewNs(envelope, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX));
@@ -712,7 +677,6 @@ class_init(LassoNodeClass *class)
 	class->destroy = lasso_node_impl_destroy;
 	class->init_from_query = NULL;
 	class->init_from_xml = lasso_node_impl_init_from_xml;
-	class->get_sign_attr_name = NULL;
 
 	/* virtual private methods */
 	class->build_query = lasso_node_impl_build_query;

@@ -68,6 +68,8 @@ struct _LassoSamlpRequestAbstract {
 	/* ds:Signature stuffs */
 	lassoSignatureType sign_type;
 	lassoSignatureMethod sign_method;
+	char *private_key_file;
+	char *certificate_file;
 };
 
 struct _LassoSamlpRequestAbstractClass {

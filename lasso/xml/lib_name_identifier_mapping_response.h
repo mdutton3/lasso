@@ -74,9 +74,9 @@ struct _LassoLibNameIdentifierMappingResponseClass {
 };
 
 LASSO_EXPORT GType lasso_lib_name_identifier_mapping_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_response_new(void);
+LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_name_identifier_mapping_response_new(void);
 
-LASSO_EXPORT LassoNode* lasso_lib_name_identifier_mapping_response_new_full(
+LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_name_identifier_mapping_response_new_full(
 		char *provideRID, const char *statusCodeValue,
 		LassoLibNameIdentifierMappingRequest *request,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method);

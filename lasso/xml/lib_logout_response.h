@@ -59,9 +59,9 @@ struct _LassoLibLogoutResponseClass {
 };
 
 LASSO_EXPORT GType lasso_lib_logout_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_logout_response_new(void);
+LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_logout_response_new(void);
 
-LASSO_EXPORT LassoNode* lasso_lib_logout_response_new_full(
+LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_logout_response_new_full(
 		char *providerID, const char *statusCodeValue,
 		LassoLibLogoutRequest *request,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method);

@@ -70,8 +70,9 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = lasso_provider_get_metadata_one(
 				remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request,
-				profile->server->private_key, profile->server->certificate);
+		profile->request->private_key_file = profile->server->private_key;
+		profile->request->certificate_file = profile->server->certificate;
+		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
 		return 0;
 	}
 
@@ -83,7 +84,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(profile->request,
+		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
 				profile->server->signature_method,
 				profile->server->private_key);
 		if (query == NULL) {
@@ -121,8 +122,9 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = NULL; /* XXX ??? */
-		profile->msg_body = lasso_node_export_to_soap(profile->response,
-				profile->server->private_key, profile->server->certificate);
+		profile->response->private_key_file = profile->server->private_key;
+		profile->response->certificate_file = profile->server->certificate;
+		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->response));
 		return 0;
 	}
 
@@ -132,7 +134,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(profile->response,
+		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
 				profile->server->signature_method,
 				profile->server->private_key);
 		if (query == NULL) {
@@ -293,7 +295,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	profile = LASSO_PROFILE(name_registration);
 
 	profile->request = lasso_lib_register_name_identifier_request_new();
-	format = lasso_node_init_from_message(profile->request, request_msg);
+	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
@@ -369,7 +371,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
 	/* build register name identifier response from message */
 	profile->response = lasso_lib_register_name_identifier_response_new();
-	format = lasso_node_init_from_message(profile->response, response_msg);
+	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}

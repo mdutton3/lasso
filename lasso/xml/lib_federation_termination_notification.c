@@ -196,13 +196,13 @@ lasso_lib_federation_termination_notification_get_type()
 	return this_type;
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_federation_termination_notification_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_FEDERATION_TERMINATION_NOTIFICATION, NULL);
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_federation_termination_notification_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
@@ -222,6 +222,5 @@ lasso_lib_federation_termination_notification_new_full(char *providerID,
 	LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(request)->NameIdentifier =
 		g_object_ref(nameIdentifier);
 
-	return LASSO_NODE(request);
+	return request;
 }
-

@@ -32,20 +32,16 @@
 gint
 lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
-	profile->msg_body = lasso_node_export_to_soap(profile->request, /* FIXME : set keys */
-						      NULL,
-						      NULL);
-
+	/* FIXME : set keys */
+	profile->msg_body = lasso_node_export_to_soap(profile->request);
 	return 0;
 }
 
 gint
 lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 {
-	profile->msg_body = lasso_node_export_to_soap(profile->response, /* FIXME : set keys */
-						      NULL,
-						      NULL);
-
+	/* FIXME : set keys */
+	profile->msg_body = lasso_node_export_to_soap(profile->response);
 	return 0;
 }
 

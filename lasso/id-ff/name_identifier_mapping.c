@@ -57,8 +57,9 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 	}
 
-	profile->msg_body = lasso_node_export_to_soap(profile->request,
-			profile->server->private_key, profile->server->certificate);
+	profile->request->private_key_file = profile->server->private_key;
+	profile->request->certificate_file = profile->server->certificate;
+	profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
 	if (profile->msg_body == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_BUILDING_MESSAGE_FAILED);
 	}
@@ -95,8 +96,9 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	}
 
 	profile->msg_url = NULL;
-	profile->msg_body = lasso_node_export_to_soap(profile->response,
-			profile->server->private_key, profile->server->certificate);
+	profile->response->private_key_file = profile->server->private_key;
+	profile->response->certificate_file = profile->server->certificate;
+	profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->response));
 
 	return 0;
 }
@@ -199,7 +201,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
 	/* build name identifier mapping from message */
 	profile->request = lasso_lib_name_identifier_mapping_request_new();
-	format = lasso_node_init_from_message(profile->request, request_msg);
+	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
@@ -250,7 +252,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	profile = LASSO_PROFILE(mapping);
 
 	profile->response = lasso_lib_name_identifier_mapping_response_new();
-	format = lasso_node_init_from_message(profile->response, response_msg);
+	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}

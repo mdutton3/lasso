@@ -67,12 +67,25 @@ static struct XmlSnippet schema_snippets[] = {
 	{ NULL, 0, 0}
 };
 
-static char*
-get_sign_attr_name()
-{
-	return "RequestID";
-}
+static LassoNodeClass *parent_class = NULL;
 
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	LassoSamlpRequestAbstract *request = LASSO_SAMLP_REQUEST_ABSTRACT(node);
+	xmlNode *xmlnode;
+	int rc;
+	
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+
+	if (lasso_dump == FALSE && request->sign_type) {
+		rc = lasso_sign_node(xmlnode, "RequestID", request->RequestID,
+				request->private_key_file, request->certificate_file);
+		/* signature may have failed; what to do ? */
+	}
+
+	return xmlnode;
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -94,7 +107,8 @@ class_init(LassoSamlpRequestAbstractClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
-	nclass->get_sign_attr_name = get_sign_attr_name;
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "RequestAbstract");
 	lasso_node_class_set_ns(nclass, LASSO_SAML_PROTOCOL_HREF, LASSO_SAML_PROTOCOL_PREFIX);

@@ -120,13 +120,13 @@ lasso_lib_name_identifier_mapping_request_get_type()
 	return this_type;
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_name_identifier_mapping_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_REQUEST, NULL);
 }
 
-LassoNode*
+LassoSamlpRequestAbstract*
 lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier, const char *targetNamespace,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
@@ -152,6 +152,5 @@ lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 
 	/* XXX: consent ?  */
 
-	return LASSO_NODE(request);
+	return request;
 }
-

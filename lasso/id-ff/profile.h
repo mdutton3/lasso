@@ -35,6 +35,9 @@ extern "C" {
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/session.h>
 
+#include <lasso/xml/samlp_request_abstract.h>
+#include <lasso/xml/samlp_response_abstract.h>
+
 #define LASSO_TYPE_PROFILE (lasso_profile_get_type())
 #define LASSO_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_PROFILE, LassoProfile))
 #define LASSO_PROFILE_CLASS(klass) \
@@ -74,8 +77,8 @@ struct _LassoProfile {
 	/*< public >*/
 	LassoServer *server;
 
-	LassoNode *request;
-	LassoNode *response;
+	LassoSamlpRequestAbstract *request;
+	LassoSamlpResponseAbstract *response;
 
 	LassoSamlNameIdentifier *nameIdentifier;
 

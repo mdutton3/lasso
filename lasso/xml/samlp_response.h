@@ -64,7 +64,7 @@ struct _LassoSamlpResponseClass {
 };
 
 LASSO_EXPORT GType lasso_samlp_response_get_type(void);
-LASSO_EXPORT LassoNode* lasso_samlp_response_new(void);
+LASSO_EXPORT LassoSamlpResponseAbstract* lasso_samlp_response_new(void);
 
 
 #ifdef __cplusplus

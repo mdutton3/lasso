@@ -109,13 +109,13 @@ lasso_lib_name_identifier_mapping_response_get_type()
 	return name_identifier_mapping_response_type;
 }
 
-LassoNode*
+LassoSamlpResponseAbstract*
 lasso_lib_name_identifier_mapping_response_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL);
 }
 
-LassoNode*
+LassoSamlpResponseAbstract*
 lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char *statusCodeValue,
 		LassoLibNameIdentifierMappingRequest *request,
 		lassoSignatureType sign_type, lassoSignatureMethod sign_method)
@@ -135,6 +135,6 @@ lasso_lib_name_identifier_mapping_response_new_full(char *providerID, const char
 	response->Status->StatusCode = lasso_samlp_status_code_new();
 	response->Status->StatusCode->Value = g_strdup(statusCodeValue);
 
-	return LASSO_NODE(response);
+	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
 }
 

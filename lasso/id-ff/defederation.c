@@ -77,9 +77,9 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(
 				remote_provider, "SoapEndpoint");
-		profile->msg_body = lasso_node_export_to_soap(profile->request,
-				profile->server->private_key, profile->server->certificate);
-
+		profile->request->private_key_file = profile->server->private_key;
+		profile->request->certificate_file = profile->server->certificate;
+		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
 		return 0;
 	}
 
@@ -91,7 +91,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
-		query = lasso_node_export_to_query(profile->request,
+		query = lasso_node_export_to_query(LASSO_NODE(profile->request),
 				profile->server->signature_method,
 				profile->server->private_key);
 
@@ -271,7 +271,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	profile = LASSO_PROFILE(defederation);
 
 	profile->request = lasso_lib_federation_termination_notification_new();
-	format = lasso_node_init_from_message(profile->request, request_msg);
+	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
