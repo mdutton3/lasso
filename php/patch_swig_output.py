@@ -84,9 +84,9 @@ with:
     }
 """
 
-wrapFile = file('lasso_wrap.c')
-wrap = wrapFile.read()
-wrapFile.close()
+import sys
+
+wrap = sys.stdin.read()
 
 i = wrap.find('    {\n        swig_type_info *ty = SWIG_TypeDynamicCast(')
 while i >= 0:
@@ -124,6 +124,4 @@ while i >= 0:
     wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
     i = wrap.find('    {\n        swig_type_info *ty = SWIG_TypeDynamicCast(', i + len(segment))
 
-wrapFile = file('lasso_wrap_patched.c', 'w')
-wrapFile.write(wrap)
-wrapFile.close()
+print wrap
