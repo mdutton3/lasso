@@ -109,7 +109,6 @@ LASSO_FEDERATION_GET_CLASS
 <SECTION>
 <FILE>profile</FILE>
 <TITLE>LassoProfile</TITLE>
-LassoMessageType
 LassoRequestType
 LassoProfile
 lasso_profile_get_identity
