@@ -442,8 +442,8 @@ lasso_register_name_identifier_new(LassoServer        *server,
 
   /* set the register_name_identifier object */
   register_name_identifier = g_object_new(LASSO_TYPE_REGISTER_NAME_IDENTIFIER,
-					  "server", server,
-					  "user", user,
+					  "server", lasos_server_copy(server),
+					  "user", lasso_user_copy(user),
 					  "provider_type", provider_type,
 					  NULL);
 

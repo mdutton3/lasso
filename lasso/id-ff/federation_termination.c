@@ -309,7 +309,7 @@ lasso_federation_termination_new(LassoServer *server,
 
   /* set the federation_termination object */
   defederation = g_object_new(LASSO_TYPE_FEDERATION_TERMINATION,
-			      "server", server,
+			      "server", lasso_server_copy(server),
 			      "provider_type", provider_type,
 			      NULL);
 

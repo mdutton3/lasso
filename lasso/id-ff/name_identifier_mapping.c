@@ -355,9 +355,9 @@ lasso_name_identifier_mapping_new(LassoServer        *server,
 
   /* set the name_identifier_mapping object */
   mapping = g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING,
-			"server", server,
-			"user", user,
-			"provider_type", provider_type,
-			NULL);
+			 "server", lasso_server_copy(server),
+			 "user", lasso_user_copy(user),
+			 "provider_type", provider_type,
+			 NULL);
   return(mapping);
 }
