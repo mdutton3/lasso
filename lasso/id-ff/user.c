@@ -43,7 +43,6 @@ lasso_user_add_assertion(LassoUser *user,
 			 gchar     *remote_providerID,
 			 LassoNode *assertion)
 {
-  gchar *providerId;
   int i;
   gboolean found;
 
@@ -388,6 +387,8 @@ lasso_user_new_from_dump(gchar *dump)
 
   xmlChar        *remote_providerID;
 
+  GError         *err = NULL;
+
   g_return_val_if_fail(dump != NULL, NULL);
 
   /* new object */
@@ -412,9 +413,10 @@ lasso_user_new_from_dump(gchar *dump)
       if (assertion_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(assertion_xmlNode->name, LASSO_USER_ASSERTION_NODE)) {
 	/* assertion node */
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
-	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE);
-	if(remote_providerID==NULL){
-	  debug(ERROR, "No remote provider id for assertion\n");
+	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE, &err);
+	if (remote_providerID == NULL) {
+	  debug(ERROR, err->message);
+	  g_error_free(err);
 	  continue;
 	}
 	lasso_user_add_assertion(user, remote_providerID, lasso_node_copy(assertion_node));
@@ -437,8 +439,7 @@ lasso_user_new_from_dump(gchar *dump)
     while (identity_xmlNode != NULL) {
       if (identity_xmlNode->type==XML_ELEMENT_NODE && xmlStrEqual(identity_xmlNode->name, LASSO_USER_IDENTITY_NODE)) {
 	identity_node = lasso_node_new_from_xmlNode(identity_xmlNode);
-	remote_providerID = lasso_node_get_attr_value(identity_node, LASSO_IDENTITY_REMOTE_PROVIDERID_NODE);
-
+	remote_providerID = lasso_node_get_attr_value(identity_node, LASSO_IDENTITY_REMOTE_PROVIDERID_NODE, NULL);
 	/* new identity */
 	identity = lasso_identity_new(remote_providerID);
 
