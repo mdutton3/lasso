@@ -193,12 +193,9 @@ Warning = _lasso.Warning
 #define gpointer void*
 #define GPtrArray void
 
-#define xmlChar char
-
 /* SWIG instructions telling how to deallocate Lasso structures */
 
 %typemap(newfree) gchar * "g_free($1);";
-%typemap(newfree) xmlChar * "xmlFree($1);";
 
 /* Functions */
 
@@ -594,12 +591,17 @@ void build_exception_msg(int errorCode, char *errorMsg) {
 #ifndef SWIGPHP4
 %rename(ProviderIds) LassoProviderIds;
 #endif
-%nodefault LassoProviderIds;
 %{
 typedef GPtrArray LassoProviderIds;
 %}
 typedef struct {
 	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoProviderIds();
+
+		~LassoProviderIds();
+
 		/* Methods */
 
 		GPtrArray *cast() {
@@ -611,11 +613,20 @@ typedef struct {
 		}
 
 #if defined(SWIGPYTHON)
-		%rename(__getitem__) getItem;
+		%rename(__getitem__) getitem;
 #endif
-		gchar *getItem(int index) {
+		%exception getitem {
+			if (arg2 < 0 || arg2 >= arg1->len) {
+				char errorMsg[256];
+				sprintf(errorMsg, "%d", arg2);
+				SWIG_exception(SWIG_IndexError, errorMsg);
+			}
+			$action
+		}
+		gchar *getitem(int index) {
 			return g_ptr_array_index(self, index);
 		}
+		%exception getitem;
 
 #if defined(SWIGPYTHON)
 		%rename(__len__) length;
@@ -625,6 +636,20 @@ typedef struct {
 		}
 	}
 } LassoProviderIds;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+LassoProviderIds *new_LassoProviderIds() {
+	return g_ptr_array_new();
+}
+
+void delete_LassoProviderIds(LassoProviderIds *self) {
+	g_ptr_array_free(self, true);
+}
+
+%}
 
 
 /***********************************************************************
@@ -737,15 +762,15 @@ typedef struct {
 		/* XXX shouldn't need all of this now */
 		/* Attributes from LassoLibAuthnRequest */
 
-		xmlChar *affiliationId;
-		xmlChar *assertionConsumerServiceId;
-		xmlChar *consent;
+		gchar *affiliationId;
+		gchar *assertionConsumerServiceId;
+		gchar *consent;
 		gboolean forceAuthn;
 		gboolean isPassive;
-		xmlChar *nameIdPolicy;
-		xmlChar *protocolProfile;
-		xmlChar *providerId;
-		xmlChar *relayState;
+		gchar *nameIdPolicy;
+		gchar *protocolProfile;
+		gchar *providerId;
+		gchar *relayState;
 	}
 } LassoLibAuthnRequest;
 
@@ -755,33 +780,33 @@ typedef struct {
 
 /* affiliationId */
 #define LassoLibAuthnRequest_get_affiliationId LassoLibAuthnRequest_affiliationId_get
-xmlChar *LassoLibAuthnRequest_affiliationId_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_affiliationId_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
 #define LassoLibAuthnRequest_set_affiliationId LassoLibAuthnRequest_affiliationId_set
-void LassoLibAuthnRequest_affiliationId_set(LassoLibAuthnRequest *self, xmlChar *affiliationId) {
+void LassoLibAuthnRequest_affiliationId_set(LassoLibAuthnRequest *self, gchar *affiliationId) {
 	LASSO_LIB_AUTHN_REQUEST(self)->AffiliationID = strdup(affiliationId);
 }
 
 /* assertionConsumerServiceId */
 #define LassoLibAuthnRequest_get_assertionConsumerServiceId LassoLibAuthnRequest_assertionConsumerServiceId_get
-xmlChar *LassoLibAuthnRequest_assertionConsumerServiceId_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_assertionConsumerServiceId_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
 #define LassoLibAuthnRequest_set_assertionConsumerServiceId LassoLibAuthnRequest_assertionConsumerServiceId_set
 void LassoLibAuthnRequest_assertionConsumerServiceId_set(LassoLibAuthnRequest *self,
-						      xmlChar *assertionConsumerServiceId) {
+						      gchar *assertionConsumerServiceId) {
 	LASSO_LIB_AUTHN_REQUEST(self)->AssertionConsumerServiceID = strdup(
 							       assertionConsumerServiceId);
 }
 
 /* consent */
 #define LassoLibAuthnRequest_get_consent LassoLibAuthnRequest_consent_get
-xmlChar *LassoLibAuthnRequest_consent_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_consent_get(LassoLibAuthnRequest *self) {
 	return NULL; /* FIXME */
 }
 #define LassoLibAuthnRequest_set_consent LassoLibAuthnRequest_consent_set
-void LassoLibAuthnRequest_consent_set(LassoLibAuthnRequest *self, xmlChar *consent) {
+void LassoLibAuthnRequest_consent_set(LassoLibAuthnRequest *self, gchar *consent) {
 	 LASSO_LIB_AUTHN_REQUEST(self)->consent = strdup(consent);
 }
 
@@ -807,41 +832,41 @@ void LassoLibAuthnRequest_isPassive_set(LassoLibAuthnRequest *self, gboolean isP
 
 /* nameIdPolicy */
 #define LassoLibAuthnRequest_get_nameIdPolicy LassoLibAuthnRequest_nameIdPolicy_get
-xmlChar *LassoLibAuthnRequest_nameIdPolicy_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_nameIdPolicy_get(LassoLibAuthnRequest *self) {
 	return g_strdup(self->NameIDPolicy);
 }
 #define LassoLibAuthnRequest_set_nameIdPolicy LassoLibAuthnRequest_nameIdPolicy_set
-void LassoLibAuthnRequest_nameIdPolicy_set(LassoLibAuthnRequest *self, xmlChar *nameIdPolicy) {
+void LassoLibAuthnRequest_nameIdPolicy_set(LassoLibAuthnRequest *self, gchar *nameIdPolicy) {
 	self->NameIDPolicy = g_strdup(nameIdPolicy);
 }
 
 /* protocolProfile */
 #define LassoLibAuthnRequest_get_protocolProfile LassoLibAuthnRequest_protocolProfile_get
-xmlChar *LassoLibAuthnRequest_protocolProfile_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_protocolProfile_get(LassoLibAuthnRequest *self) {
 	return g_strdup(self->ProtocolProfile);
 }
 #define LassoLibAuthnRequest_set_protocolProfile LassoLibAuthnRequest_protocolProfile_set
-void LassoLibAuthnRequest_protocolProfile_set(LassoLibAuthnRequest *self, xmlChar *protocolProfile) {
+void LassoLibAuthnRequest_protocolProfile_set(LassoLibAuthnRequest *self, gchar *protocolProfile) {
 	self->ProtocolProfile = g_strdup(protocolProfile);
 }
 
 /* providerId */
 #define LassoLibAuthnRequest_get_providerId LassoLibAuthnRequest_providerId_get
-xmlChar *LassoLibAuthnRequest_providerId_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_providerId_get(LassoLibAuthnRequest *self) {
 	return g_strdup(self->ProviderID);
 }
 #define LassoLibAuthnRequest_set_providerId LassoLibAuthnRequest_providerId_set
-void LassoLibAuthnRequest_providerId_set(LassoLibAuthnRequest *self, xmlChar *providerId) {
+void LassoLibAuthnRequest_providerId_set(LassoLibAuthnRequest *self, gchar *providerId) {
 	self->ProviderID = g_strdup(providerId);
 }
 
 /* relayState */
 #define LassoLibAuthnRequest_get_relayState LassoLibAuthnRequest_relayState_get
-xmlChar *LassoLibAuthnRequest_relayState_get(LassoLibAuthnRequest *self) {
+gchar *LassoLibAuthnRequest_relayState_get(LassoLibAuthnRequest *self) {
 	return g_strdup(self->RelayState);
 }
 #define LassoLibAuthnRequest_set_relayState LassoLibAuthnRequest_relayState_set
-void LassoLibAuthnRequest_relayState_set(LassoLibAuthnRequest *self, xmlChar *relayState) {
+void LassoLibAuthnRequest_relayState_set(LassoLibAuthnRequest *self, gchar *relayState) {
 	self->RelayState = g_strdup(relayState);
 }
 
@@ -897,7 +922,7 @@ typedef struct {
 
 /* relayState */
 #define LassoLibLogoutRequest_get_relayState LassoLibLogoutRequest_relayState_get
-xmlChar *LassoLibLogoutRequest_relayState_get(LassoLibLogoutRequest *self) {
+gchar *LassoLibLogoutRequest_relayState_get(LassoLibLogoutRequest *self) {
 	return g_strdup(self->RelayState);
 }
 #define LassoLibLogoutRequest_set_relayState LassoLibLogoutRequest_relayState_set
@@ -959,65 +984,7 @@ gchar *LassoProvider_providerId_get(LassoProvider *self) {
 	return g_strdup(self->ProviderID);
 }
 
- %}
-
-
-/***********************************************************************
- * Providers
- ***********************************************************************/
-
-%{
-static void
-add_provider(gchar *key, LassoProvider *provider, LassoProvider **providers)
-{
-	/* add provider at the end of providers */
-	int i=0;
-	while (providers[i]) i++;
-	providers[i] = provider;
-}
 %}
-
-#ifndef SWIGPHP4
-%rename(Providers) LassoProviders;
-#endif
-%nodefault LassoProviders;
-%{
-typedef GHashTable LassoProviders;
-%}
-typedef struct {
-	%extend {
-		/* Methods */
-
-		GHashTable *cast() {
-			return self;
-		}
-
-		static LassoProviders *frompointer(GHashTable *providers) {
-			return (LassoProviders *) providers;
-		}
-
-#if defined(SWIGPYTHON)
-		%rename(__getitem__) getItem;
-#endif
-		LassoProvider *getItem(int index) {
-			LassoProvider **providers;
-			LassoProvider *item;
-			int l = g_hash_table_size(self);
-			providers = g_malloc0(sizeof(LassoProvider*) * (l+1));
-			g_hash_table_foreach(self, (GHFunc)add_provider, providers);
-			item = providers[index];
-			g_free(providers);
-			return item;
-		}
-
-#if defined(SWIGPYTHON)
-		%rename(__len__) length;
-#endif
-		gint length() {
-			return g_hash_table_size(self);
-		}
-	}
-} LassoProviders;
 
 
 /***********************************************************************
@@ -1033,7 +1000,7 @@ typedef struct {
 	%extend {
 		/* Attributes inherited from LassoLibRegisterNameIdentifierRequest */
 
-		xmlChar *relayState;
+		gchar *relayState;
 	}
 } LassoLibRegisterNameIdentifierRequest;
 
@@ -1043,12 +1010,13 @@ typedef struct {
 
 /* relayState */
 #define LassoLibRegisterNameIdentifierRequest_get_relayState LassoLibRegisterNameIdentifierRequest_relayState_get
-xmlChar *LassoLibRegisterNameIdentifierRequest_relayState_get(LassoLibRegisterNameIdentifierRequest *self) {
+gchar *LassoLibRegisterNameIdentifierRequest_relayState_get(
+		LassoLibRegisterNameIdentifierRequest *self) {
 	return NULL; /* FIXME */
 }
 #define LassoLibRegisterNameIdentifierRequest_set_relayState LassoLibRegisterNameIdentifierRequest_relayState_set
-void LassoLibRegisterNameIdentifierRequest_relayState_set(LassoLibRegisterNameIdentifierRequest *self,
-						       xmlChar *relayState)
+void LassoLibRegisterNameIdentifierRequest_relayState_set(
+		LassoLibRegisterNameIdentifierRequest *self, gchar *relayState)
 {
 	 LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(self)->RelayState = g_strdup(relayState);
 }
@@ -1122,8 +1090,9 @@ typedef struct {
 		%immutable providerId;
 		gchar *providerId;
 
-		%immutable providers;
-		LassoProviders *providers;
+		%immutable providerIds;
+		%newobject providerIds_get;
+		LassoProviderIds *providerIds;
 
 		/* Constructor, destructor & static methods */
 
@@ -1144,6 +1113,8 @@ typedef struct {
 
 		%newobject dump;
 		gchar *dump();
+
+		LassoProvider *getProvider(gchar *providerId);
 	}
 } LassoServer;
 
@@ -1166,10 +1137,19 @@ gchar *LassoServer_providerId_get(LassoServer *self) {
 	return LASSO_PROVIDER(self)->ProviderID;
 }
 
-/* providers */
-#define LassoServer_get_providers LassoServer_providers_get
-LassoProviders *LassoServer_providers_get(LassoServer *self) {
-	return self->providers;
+/* providerIds */
+void LassoServer_add_providerId_to_array(
+		gchar *key, LassoProvider *provider, LassoProviderIds *providerIds)
+{
+        g_ptr_array_add(providerIds, g_strdup(provider->ProviderID));
+}
+#define LassoServer_get_providerIds LassoServer_providerIds_get
+LassoProviderIds *LassoServer_providerIds_get(LassoServer *self) {
+	GPtrArray *providerIds = g_ptr_array_sized_new(g_hash_table_size(self->providers));
+	g_hash_table_foreach(
+			self->providers, (GHFunc) LassoServer_add_providerId_to_array,
+			providerIds);
+	return providerIds;
 }
 
 /* Constructors, destructors & static methods implementations */
@@ -1186,6 +1166,7 @@ LassoProviders *LassoServer_providers_get(LassoServer *self) {
 
 #define LassoServer_addProvider lasso_server_add_provider
 #define LassoServer_dump lasso_server_dump
+#define LassoServer_getProvider lasso_server_get_provider
 
 %}
 
@@ -1234,7 +1215,7 @@ gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 	return self->is_dirty;
 }
 
-/* providerIDs */
+/* providerIds */
 #define LassoIdentity_get_providerIds LassoIdentity_providerIds_get
 LassoProviderIds *LassoIdentity_providerIds_get(LassoIdentity *self) {
 	return NULL;
@@ -1306,7 +1287,7 @@ gboolean LassoSession_isDirty_get(LassoSession *self) {
 	return self->is_dirty;
 }
 
-/* providerIDs */
+/* providerIds */
 #define LassoSession_get_providerIds LassoSession_providerIds_get
 LassoProviderIds *LassoSession_providerIds_get(LassoSession *self) {
 	return NULL; /* XXX */
