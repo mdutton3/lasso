@@ -74,18 +74,30 @@ lasso_user_add_identity(LassoUser     *user,
 			gchar         *remote_providerID,
 			LassoIdentity *identity)
 {
+  LassoIdentity *old_identity;
+  gboolean found;
+  int i;
+
   g_return_val_if_fail(user!=NULL, -1);
   g_return_val_if_fail(remote_providerID!=NULL, -2);
   g_return_val_if_fail(identity!=NULL, -3);
 
-  LassoIdentity *old_identity;
+  /* add the remote provider id if not already saved */
+  found = FALSE;
+  for(i = 0; i<user->identity_providerIDs->len; i++){
+    if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->identity_providerIDs, i)))
+      found = TRUE;
+  }
+  if(found==FALSE){
+    g_ptr_array_add(user->identity_providerIDs, g_strdup(remote_providerID));
+  }  
 
+  /* add the identity, replace if one already exists */
   old_identity = lasso_user_get_identity(user, remote_providerID);
   if (old_identity != NULL) {
     lasso_user_remove_identity(user, remote_providerID);
     lasso_identity_destroy(old_identity);
   }
-
   g_hash_table_insert(user->identities, g_strdup(remote_providerID), identity);
 
   return(0);
@@ -182,7 +194,7 @@ lasso_user_get_assertion(LassoUser *user,
 }
 
 gchar*
-lasso_user_get_next_providerID(LassoUser *user)
+lasso_user_get_next_assertion_remote_providerID(LassoUser *user)
 {
   gchar *remote_providerID;
 
@@ -192,6 +204,21 @@ lasso_user_get_next_providerID(LassoUser *user)
     return(NULL);
 
   remote_providerID = g_strdup(g_ptr_array_index(user->assertion_providerIDs, 0));
+
+  return(remote_providerID);
+}
+
+gchar*
+lasso_user_get_next_identity_remote_providerID(LassoUser *user)
+{
+  gchar *remote_providerID;
+
+  g_return_val_if_fail(user!=NULL, NULL);
+
+  if(user->identity_providerIDs->len==0)
+    return(NULL);
+
+  remote_providerID = g_strdup(g_ptr_array_index(user->identity_providerIDs, 0));
 
   return(remote_providerID);
 }
@@ -207,7 +234,7 @@ lasso_user_get_identity(LassoUser *user,
 
   id = (LassoIdentity*)g_hash_table_lookup(user->identities, remote_providerID);
   if (id == NULL) {
-    debug(DEBUG, "No Identity found with remote ProviderID = %s\n", remote_providerID);
+    debug(WARNING, "No Identity found with remote ProviderID = %s\n", remote_providerID);
   }
 
   return(id);
@@ -247,6 +274,7 @@ lasso_user_remove_identity(LassoUser *user,
 			   gchar     *remote_providerID)
 {
   LassoIdentity *identity;
+  int i;
 
   g_return_val_if_fail(user!=NULL, -1);
   g_return_val_if_fail(remote_providerID!=NULL, -2);
@@ -258,6 +286,15 @@ lasso_user_remove_identity(LassoUser *user,
   }
   else {
     debug(DEBUG, "Failed to remove identity for remote Provider %s\n", remote_providerID);
+  }
+
+  /* remove the identity remote provider id */
+  for(i = 0; i<user->identity_providerIDs->len; i++){
+    if(xmlStrEqual(remote_providerID, g_ptr_array_index(user->identity_providerIDs, i))){
+      debug(DEBUG, "Remove assertion of %s\n", remote_providerID);
+      g_ptr_array_remove_index(user->identity_providerIDs, i);
+      break;
+    }
   }
 
   return(0);
@@ -283,8 +320,10 @@ static void
 lasso_user_instance_init(LassoUser *user)
 {
   user->assertion_providerIDs = g_ptr_array_new();
-  user->identities = g_hash_table_new(g_str_hash, g_str_equal);
   user->assertions = g_hash_table_new(g_str_hash, g_str_equal);
+
+  user->identity_providerIDs = g_ptr_array_new();
+  user->identities = g_hash_table_new(g_str_hash, g_str_equal);
 }
 
 static void
@@ -373,6 +412,10 @@ lasso_user_new_from_dump(gchar *dump)
 	/* assertion node */
 	assertion_node = lasso_node_new_from_xmlNode(assertion_xmlNode);
 	remote_providerID = lasso_node_get_attr_value(assertion_node, LASSO_USER_REMOTE_PROVIDERID_NODE);
+	if(remote_providerID==NULL){
+	  debug(ERROR, "No remote provider id for assertion\n");
+	  continue;
+	}
 	lasso_user_add_assertion(user, remote_providerID, lasso_node_copy(assertion_node));
 	g_free(remote_providerID);
 	lasso_node_destroy(assertion_node);
@@ -415,7 +458,7 @@ lasso_user_new_from_dump(gchar *dump)
 	  lasso_node_destroy(nameIdentifier_node);
 	  lasso_node_destroy(remote_nameIdentifier_node);
 	}
-
+	printf("avant add identity\n");
 	lasso_user_add_identity(user, remote_providerID, identity);
 
 	g_free(remote_providerID);

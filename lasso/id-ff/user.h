@@ -49,6 +49,8 @@ struct _LassoUser {
   /*< public >*/
   GPtrArray  *assertion_providerIDs; /* list of the remote provider ids for assertions hash table */
   GHashTable *assertions;  /* hash for assertions with remote providerID as key */
+
+  GPtrArray  *identity_providerIDs; /* list of the remote provider ids for identities hash table */
   GHashTable *identities;  /* hash for identities with remote ProviderID as key */
 
   /*< private >*/
@@ -64,10 +66,6 @@ LASSO_EXPORT LassoUser     *lasso_user_new                   (void);
 
 LASSO_EXPORT LassoUser     *lasso_user_new_from_dump         (gchar *dump);
 
-LASSO_EXPORT void           lasso_user_destroy               (LassoUser *user);
-
-LASSO_EXPORT gchar         *lasso_user_dump                  (LassoUser *user);
-
 LASSO_EXPORT gint           lasso_user_add_assertion         (LassoUser *user,
 							      gchar     *remote_providerID,
 							      LassoNode *assertion);
@@ -76,13 +74,19 @@ LASSO_EXPORT gint           lasso_user_add_identity          (LassoUser     *use
 							      gchar         *remote_providerID,
 							      LassoIdentity *identity);
 
+LASSO_EXPORT void           lasso_user_destroy               (LassoUser *user);
+
+LASSO_EXPORT gchar         *lasso_user_dump                  (LassoUser *user);
+
 LASSO_EXPORT LassoNode     *lasso_user_get_assertion         (LassoUser *user,
 							      gchar     *remote_providerID);
 
 LASSO_EXPORT LassoIdentity *lasso_user_get_identity          (LassoUser *user,
 							      gchar     *remote_providerID);
 
-LASSO_EXPORT gchar         *lasso_user_get_next_providerID   (LassoUser *user);
+LASSO_EXPORT gchar         *lasso_user_get_next_assertion_remote_providerID   (LassoUser *user);
+
+LASSO_EXPORT gchar         *lasso_user_get_next_identity_remote_providerID   (LassoUser *user);
 
 LASSO_EXPORT gint           lasso_user_remove_assertion      (LassoUser *user,
 							      gchar     *remote_providerID);

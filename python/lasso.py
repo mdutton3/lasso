@@ -861,8 +861,8 @@ class User:
     def get_assertion(self, providerID):
 	return Node(lassomod.user_get_assertion(self, providerID))
 
-    def get_next_providerID(self):
-	return lassomod.user_get_next_providerID(self)
+    def get_next_assertion_remote_providerID(self):
+	return lassomod.user_get_next_assertion_remote_providerID(self)
 
     def remove_assertion(self, providerID):
 	lassomod.user_remove_assertion(self, providerID)

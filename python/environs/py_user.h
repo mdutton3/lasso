@@ -43,7 +43,7 @@ PyObject *user_add_assertion(PyObject *self, PyObject *args);
 PyObject *user_destroy(PyObject *self, PyObject *args);
 PyObject *user_dump(PyObject *self, PyObject *args);
 PyObject *user_get_assertion(PyObject *self, PyObject *args);
-PyObject *user_get_next_providerID(PyObject *self, PyObject *args);
+PyObject *user_get_next_assertion_remote_providerID(PyObject *self, PyObject *args);
 PyObject *user_remove_assertion(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_USER_H__ */

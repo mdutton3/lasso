@@ -32,7 +32,7 @@ print user.dump()
 
 # requests :
 logout = lasso.Logout.new(server, user, lasso.providerTypeIdp);
-next_provider_id = user.get_next_providerID();
+next_provider_id = user.get_next_assertion_remote_providerID();
 while(next_provider_id):
     assertion = user.get_assertion(next_provider_id)
 
@@ -44,7 +44,7 @@ while(next_provider_id):
     print 'body : ', logout.msg_body
 
     user.remove_assertion(next_provider_id)
-    next_provider_id = user.get_next_providerID()
+    next_provider_id = user.get_next_assertion_remote_providerID()
 
 print "End of logout ..."
 print "Dump of user environ :"

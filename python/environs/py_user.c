@@ -126,17 +126,17 @@ PyObject *user_get_assertion(PyObject *self, PyObject *args) {
   return (LassoNode_wrap(assertion_node));
 }
 
-PyObject *user_get_next_providerID(PyObject *self, PyObject *args) {
+PyObject *user_get_next_assertion_remote_providerID(PyObject *self, PyObject *args) {
   PyObject  *user_obj;
   gchar     *remote_providerID;
 
-  if (CheckArgs(args, "O:user_get_next_providerID")) {
-    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_providerID", &user_obj, &remote_providerID))
+  if (CheckArgs(args, "O:user_get_next_assertion_remote_providerID")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:user_get_next_assertion_remote_providerID", &user_obj, &remote_providerID))
       return NULL;
   }
   else return NULL;
 
-  remote_providerID = lasso_user_get_next_providerID(LassoUser_get(user_obj));
+  remote_providerID = lasso_user_get_next_assertion_remote_providerID(LassoUser_get(user_obj));
   if(remote_providerID==NULL){
     Py_INCREF(Py_None);
     return (Py_None);

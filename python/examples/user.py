@@ -18,7 +18,7 @@ user = lasso.User.new_from_dump(user_dump);
 
 print "Dump of user environ : %s\n" % user.dump()
 
-next_provider_id = user.get_next_providerID()
+next_provider_id = user.get_next_assertion_remote_providerID()
 while(next_provider_id):
     print "Next provider id : ", next_provider_id
     assertion = user.get_assertion(next_provider_id)
@@ -26,7 +26,7 @@ while(next_provider_id):
     print "Remove his assertion from user ..."
     user.remove_assertion(next_provider_id)
 
-    next_provider_id = user.get_next_providerID()
+    next_provider_id = user.get_next_assertion_remote_providerID()
 
 print "All assertions deleted\n"
 
