@@ -168,6 +168,16 @@ int lasso_shutdown(void);
  * Constants
  ***********************************************************************/
 
+/* Version number */
+#ifndef SWIGPHP
+%rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
+%rename(VERSION_MINOR) LASSO_VERSION_MINOR;
+%rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
+#endif
+#define LASSO_VERSION_MAJOR 0
+#define LASSO_VERSION_MINOR 3
+#define LASSO_VERSION_SUBMINOR 0
+
 
 /* HttpMethod */
 #ifndef SWIGPHP
