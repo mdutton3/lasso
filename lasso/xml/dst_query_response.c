@@ -55,6 +55,41 @@ static struct XmlSnippet schema_snippets[] = {
 	{NULL, 0, 0}
 };
 
+static LassoNodeClass *parent_class = NULL;
+
+static void
+insure_namespace(xmlNode *xmlnode, xmlNs *ns)
+{
+	/* insure children are kept in same namespace */
+	xmlNode *t;
+
+	t = xmlnode->children;
+	while (t) {
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+		xmlSetNs(xmlnode, ns);
+		insure_namespace(t, ns);
+		t = t->next;
+	}
+}
+
+static xmlNode*
+get_xmlNode(LassoNode *node)
+{
+	xmlNode *xmlnode;
+	xmlNs *ns;
+
+	xmlnode = parent_class->get_xmlNode(node);
+	ns = xmlNewNs(xmlnode, LASSO_DST_QUERY_RESPONSE(node)->hrefServiceType,
+		      LASSO_DST_QUERY_RESPONSE(node)->prefixServiceType);
+	xmlSetNs(xmlnode, ns);
+	insure_namespace(xmlnode, ns);
+
+	return xmlnode;
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -69,6 +104,9 @@ instance_init(LassoDstQueryResponse *node)
 	node->id = NULL;
 	node->itemIDRef = NULL;
 	node->timeStamp = NULL;
+
+	node->prefixServiceType = NULL;
+	node->hrefServiceType = NULL;
 }
 
 static void
@@ -76,6 +114,8 @@ class_init(LassoDstQueryResponseClass *klass)
 {
 	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
 
+	parent_class = g_type_class_peek_parent(klass);
+	nodeClass->get_xmlNode = get_xmlNode;
 	nodeClass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nodeClass, "QueryResponse");
 	lasso_node_class_add_snippets(nodeClass, schema_snippets);
