@@ -37,7 +37,6 @@
 #include <lasso/xml/dst_modify_response.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
-#include <lasso/xml/pp_msg_contact.h>
 
 %}
 
@@ -897,9 +896,6 @@ typedef struct {
 		/* Constructor, Destructor & Static Methods */
 		LassoDstQueryResponse(LassoUtilityStatus *status);
 
-		/* Methods */
-		LassoPPMsgContact *getMsgContact(); /* FIXME : should return a list of LassoPPMsgContact */
-
 	}
 } LassoDstQueryResponse;
 
@@ -914,98 +910,6 @@ LassoUtilityStatus *LassoDstQueryResponse_status_get(LassoDstQueryResponse *self
 
 /* Constructors, destructors & static methods implementations */
 #define new_LassoDstQueryResponse lasso_dst_query_response_new
-
-/* Methods implementations */
-/* msgContact */
-LassoPPMsgContact *LassoDstQueryResponse_getMsgContact(LassoDstQueryResponse *self) {
-        /* FIXME : should return a list of Msgcontact */
-	GList *data;
-	LassoPPMsgContact *msgContact;
-
-	data = self->Data;
-	if (LASSO_IS_DST_DATA(data) == FALSE) {
-		return NULL;
-	}
-	if (LASSO_IS_PP_MSG_CONTACT(data->data) == FALSE) {
-		return NULL;
-	}
-	msgContact = LASSO_PP_MSG_CONTACT(data->data);
-	return msgContact;
-}
-
-%}
-
-
-
-/***********************************************************************
- ***********************************************************************
- LassoPersonalProfile domain
- ***********************************************************************
- ***********************************************************************/
-
-/***********************************************************************
- * ID-WSF XML PPMsgContact
- ***********************************************************************/
-#ifndef SWIGPHP4
-%rename(PPMsgContact) LassoPPMsgContact;
-#endif
-typedef struct {
-	%extend {
-		/* Attributes */
-		char *msgProvider;
-
-		char *msgAccount;
-
-		/* Constructor, Destructor & Static Methods */
-		LassoPPMsgContact();
-
-		/* Methods */
-		LassoNode *cast() {
-			return LASSO_NODE(self);
-		}
-
-	}
-} LassoPPMsgContact;
-
-
-
-%{
-
-/* Attributes Implementations */
-/* msgProvider */
-#define LassoPPMsgContact_get_msgProvider LassoPPMsgContact_msgProvider_get
-char *LassoPPMsgContact_msgProvider_get(LassoPPMsgContact *self) {
-	if (LASSO_IS_PP_MSG_CONTACT(self) == TRUE) {
-		return self->MsgProvider;
-	}
-	return NULL;
-}
-
-#define LassoPPMsgContact_set_msgProvider LassoPPMsgContact_msgProvider_set
-void LassoPPMsgContact_msgProvider_set(LassoPPMsgContact *self, char *msgProvider) {
-	if (LASSO_IS_PP_MSG_CONTACT(self) == TRUE) {
-		self->MsgProvider = g_strdup(msgProvider);
-	}
-}
-
-/* msgAccount */
-#define LassoPPMsgContact_get_msgAccount LassoPPMsgContact_msgAccount_get
-char *LassoPPMsgContact_msgAccount_get(LassoPPMsgContact *self) {
-	if (LASSO_IS_PP_MSG_CONTACT(self) == TRUE) {
-		return self->MsgAccount;
-	}
-	return NULL;
-}
-
-#define LassoPPMsgContact_set_msgAccount LassoPPMsgContact_msgAccount_set
-void LassoPPMsgContact_msgAccount_set(LassoPPMsgContact *self, char *msgAccount) {
-	if (LASSO_IS_PP_MSG_CONTACT(self) == TRUE) {
-		self->MsgAccount = g_strdup(msgAccount);
-	}
-}
-
-/* Constructors, destructors & static methods implementations */
-#define new_LassoPPMsgContact lasso_pp_msg_contact_new
 
 /* Methods implementations */
 
