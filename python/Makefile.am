@@ -26,6 +26,6 @@ lassomod_la_LIBADD = $(mylibs) \
 	
 
 EXTRA_DIST = lassomod.h  py_lasso.h  utils.h  wrap_objs.h \
-		generator_lasso_strings.py  lasso.py  lasso_strings.py  setup.py
+		generator_lasso_strings.py  lasso.py  lasso_strings.py
 
 
