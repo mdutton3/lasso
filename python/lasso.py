@@ -1003,6 +1003,9 @@ class Logout:
     def build_response_msg(self):
 	return lassomod.logout_build_response_msg(self)
 
+    def destroy(self):
+	pass
+
     def init_request(self, remote_providerID):
 	return lassomod.logout_init_request(self, remote_providerID);
 

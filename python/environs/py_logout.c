@@ -92,6 +92,22 @@ PyObject *logout_build_response_msg(PyObject *self, PyObject *args) {
   return(int_wrap(codeError));
 }
 
+PyObject *logout_destroy(PyObject *self, PyObject *args){
+  PyObject *logout_obj;
+
+  if (CheckArgs(args, "O:logout_destroy")) {
+    if(!PyArg_ParseTuple(args, (char *) "O:logout_destroy",
+			 &logout_obj))
+      return NULL;
+  }
+  else return NULL;
+
+  lasso_logout_destroy(LassoLogout_get(logout_obj));
+
+  Py_INCREF(Py_None);
+  return(Py_None);
+}
+
 PyObject *logout_init_request(PyObject *self, PyObject *args) {
   PyObject *logout_obj;
   gchar    *remote_providerID;
