@@ -48,7 +48,7 @@ lasso_profile_context_get_request_type_from_soap_msg(gchar *soap)
 {
   LassoNode *soap_node, *body_node, *request_node;
   GPtrArray *children;
-  const xmlChar * name;
+  xmlChar *name;
   int type = 0;
 
   soap_node = lasso_node_new_from_dump(soap);
@@ -221,9 +221,11 @@ lasso_profile_context_dispose(LassoProfileContext *ctx)
   debug("ProfileContext object 0x%x disposed ...\n", ctx);
 
   /* unref reference counted objects */
+  lasso_server_destroy(ctx->server);
+  lasso_user_destroy(ctx->user);
+
   lasso_node_destroy(ctx->request);
   lasso_node_destroy(ctx->response);
-  /* BEWARE: server and user shouldn't be destroyed */
 
   parent_class->dispose(G_OBJECT(ctx));
 }
@@ -396,8 +398,8 @@ lasso_profile_context_new(LassoServer *server,
   LassoProfileContext *ctx;
 
   ctx = LASSO_PROFILE_CONTEXT(g_object_new(LASSO_TYPE_PROFILE_CONTEXT,
-					   "server", server,
-					   "user", user,
+					   "server", lasso_server_copy(server),
+					   "user", lasso_user_copy(user),
 					   NULL));
 
   return (ctx);
