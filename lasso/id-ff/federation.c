@@ -64,8 +64,8 @@ lasso_federation_build_local_nameIdentifier(LassoFederation *federation,
 					    const gchar     *format,
 					    const gchar     *content)
 {
-  federation->local_nameIdentifier = lasso_federation_build_nameIdentifier(
-		  nameQualifier, format, content);
+	federation->local_nameIdentifier = lasso_federation_build_nameIdentifier(
+			nameQualifier, format, content);
 }
 
 void
@@ -139,7 +139,7 @@ get_xmlNode(LassoNode *node)
 	xmlSetProp(xmlnode, "Version", "2");
 
 	if (federation->remote_providerID)
-		xmlNewTextChild(xmlnode, NULL, "RemoteProviderID", federation->remote_providerID);
+		xmlSetProp(xmlnode, "RemoteProviderID", federation->remote_providerID);
 
 	if (federation->local_nameIdentifier) {
 		t = xmlNewTextChild(xmlnode, NULL, "LocalNameIdentifier", NULL);
@@ -162,15 +162,13 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	LassoFederation *federation = LASSO_FEDERATION(node);
 	xmlNode *t, *n;
 
+	federation->remote_providerID = xmlGetProp(xmlnode, "RemoteProviderID");
 	t = xmlnode->children;
 	while (t) {
 		if (t->type != XML_ELEMENT_NODE) {
 			t = t->next;
 			continue;
 		}
-
-		if (strcmp(t->name, "RemoteProviderID") == 0)
-			federation->remote_providerID = xmlNodeGetContent(t);
 
 		if (strcmp(t->name, "LocalNameIdentifier") == 0) {
 			n = t->children;
