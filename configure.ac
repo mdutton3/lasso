@@ -202,6 +202,7 @@ AC_ARG_ENABLE(java, [  --disable-java          Disable the java API.],,
 AC_MSG_CHECKING(for Java)
 JAVAC_FLAGS=
 JAVAH_FLAGS=
+
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 if test "x$JAVA" != xgij; then
@@ -217,6 +218,11 @@ if test "X$JAVA_VERSION" != X; then
 else
   enable_java=no
 fi
+dnl Checking for jni.h if gcj is the java interpreter.
+if test "x$enable_java" = "xyes" && test "X$JAVAC" = "Xgcj"; then
+    AC_CHECK_HEADERS([jni.h], [enable_java=yes], [enable_java=no])
+fi
+    
 dnl Conditional java sub dir test.
 AM_CONDITIONAL([JAVA_ENABLED],[test "x$enable_java" = "xyes"])
 AC_MSG_RESULT($enable_java)
