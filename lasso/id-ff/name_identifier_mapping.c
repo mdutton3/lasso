@@ -42,7 +42,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	/* get provider object */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -81,7 +81,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -140,7 +140,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	/* verify the provider type is a service provider type */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -268,7 +268,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response)->ProviderID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}

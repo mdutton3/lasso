@@ -585,7 +585,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_provi
 	provider = LASSO_PROVIDER(LASSO_PROFILE(login)->server);
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				LASSO_PROFILE(login)->remote_providerID);
 	}
@@ -789,7 +789,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}

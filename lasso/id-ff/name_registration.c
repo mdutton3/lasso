@@ -62,7 +62,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -117,7 +117,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -189,7 +189,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -385,7 +385,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
  
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -415,7 +415,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -502,7 +502,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}

@@ -66,8 +66,8 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Provider %s not found", profile->remote_providerID);
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* get the protocol profile type */
@@ -163,7 +163,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -279,8 +279,7 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	profile->request = lasso_lib_federation_termination_notification_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return LASSO_PROFILE_ERROR_INVALID_MSG;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	profile->remote_providerID = g_strdup(LASSO_LIB_FEDERATION_TERMINATION_NOTIFICATION(
@@ -288,8 +287,8 @@ lasso_defederation_process_notification_msg(LassoDefederation *defederation, cha
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Unknown provider");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	profile->signature_status = lasso_provider_verify_signature(
@@ -352,7 +351,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
-		if (remote_provider == NULL) {
+		if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 			return error_code(G_LOG_LEVEL_CRITICAL,
 					LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 					profile->remote_providerID);

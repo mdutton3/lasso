@@ -74,7 +74,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	/* get remote provider */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -321,7 +321,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	/* get the provider */
 	remote_provider = g_hash_table_lookup(
 			profile->server->providers, profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
@@ -423,8 +423,8 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Unknown provider");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
 	}
 
 	/* verify signatures */
@@ -509,8 +509,8 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid provider");
-		return -1;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
+				profile->remote_providerID);
 	}
 
 	/* verify signature */
@@ -654,7 +654,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	/* get the provider */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
-	if (remote_provider == NULL) {
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND,
 				profile->remote_providerID);
 	}
