@@ -25,8 +25,9 @@
   require_once 'HTML/QuickForm.php';
   require_once 'Log.php';
   require_once 'DB.php';
+  require_once 'session.php';
 
-   $config = unserialize(file_get_contents('config.inc'));
+  $config = unserialize(file_get_contents('config.inc'));
    
    // connect to the data base
    $db = &DB::connect($config['dsn']);
@@ -36,6 +37,10 @@
   // create logger 
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
+  // session handler
+  session_set_save_handler("open_session", "close_session", 
+  "read_session", "write_session", "destroy_session", "gc_session");
 
   session_start();
 
@@ -69,7 +74,7 @@
         $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
         $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
         die("Internal Server Error");
-    } send by 
+    } 
 
   	if ($res->numRows()) 
 	{
@@ -84,7 +89,6 @@
     if (!isset($_SERVER['PHP_AUTH_USER']))
     {
         sendHTTPBasicAuth();
-        $db->disconnect();
         exit;
     }
     else
@@ -94,7 +98,6 @@
         {
             $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP " . $_SERVER['REMOTE_ADDR'], PEAR_LOG_WARNING);
             sendHTTPBasicAuth();
-            $db->disconnect();
             exit;
         }
         else
@@ -122,8 +125,6 @@
                 $_SESSION['session_dump'] = $row[1];
             } */
             
-            $db->disconnect();
-
             $url = 'index.php';
             header("Request-URI: $url");
             header("Content-Location: $url");
@@ -159,12 +160,10 @@
 		header("Request-URI: $url");
 		header("Content-Location: $url");
 		header("Location: $url\r\n\r\n");
-        $db->disconnect();
         exit;
 	  }
       else
         $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
-      $db->disconnect();
   }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

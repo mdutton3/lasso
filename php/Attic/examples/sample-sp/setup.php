@@ -167,8 +167,22 @@
 
 		$query = "CREATE TABLE sessions (
 			id varchar(32) primary key,
-			expiry integer,
-			data text
+			lastupdate timestamp,
+			data text)";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
+
+		print "<br>Create table 'sso_sessions' : ";
+		$query = "DROP TABLE sso_sessions CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE sso_sessions (
+			name_identifier character varying(100),
+			session_id character varying(32)
 			)";
 		
 		$res =& $db->query($query);
@@ -176,6 +190,7 @@
 		  die($res->getMessage());
 
 		print "OK";
+
 
 		$db->disconnect();
 		
@@ -375,6 +390,9 @@
 </table>
 <input type='hidden' name='action' value='setup'>
 </form>
+<p align='center'><a href='index.php'>Index</a>
+</p>
+<p>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
 </html>
 <?php

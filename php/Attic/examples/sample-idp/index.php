@@ -23,6 +23,7 @@
  */
 
  require_once 'DB.php';
+ require_once 'session.php';
 
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
@@ -56,6 +57,10 @@ You can get more informations about <b>Lasso</b> at <br>
  $db = &DB::connect($config['dsn']);
  if (DB::isError($db)) 
 	die($db->getMessage());
+	
+ // session handler
+ session_set_save_handler("open_session", "close_session", 
+ "read_session", "write_session", "destroy_session", "gc_session");
 
  session_start();
 
@@ -65,7 +70,7 @@ You can get more informations about <b>Lasso</b> at <br>
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>Lasso Service Provider Example</title>
+<title>Lasso Identity Provider Example</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
 </head>
 
@@ -74,7 +79,7 @@ You can get more informations about <b>Lasso</b> at <br>
   <b>Identity Provider Administration</b><br>
   <a href="setup.php">Setup</a><br>
   <a href="admin_user.php">Users Management</a><br>
-  <a href="view_sessions.php">View Online Users</a>
+  <a href="view_session.php">View Online Users</a>
 <?php if ($config['log_handler'] == 'sql') { ?>
   <br><a href="log_view.php">View log</a>
 <?php } ?>
@@ -129,6 +134,5 @@ You can get more informations about <b>Lasso</b> at <br>
 
 </html>
 <?php
-      	$db->disconnect(); 
 	lasso_shutdown();
-  ?>
+?>

@@ -24,19 +24,24 @@
 
   require_once 'Log.php';
   require_once 'DB.php';
+  require_once 'session.php';
 
   $config = unserialize(file_get_contents('config.inc'));
 	
   $number_of_users = 5; 
-  
-  $db = &DB::connect($config['dsn']);
 
+  // connect to the data base
+  $db = &DB::connect($config['dsn']);
   if (DB::isError($db)) 
      die("Could not connect to the database");
 
   // create logger 
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
+  // session handler
+  session_set_save_handler("open_session", "close_session", 
+   "read_session", "write_session", "destroy_session", "gc_session");
 
   // Show XML dump
   if (!empty($_GET['dump']) && !empty($_GET['type'])) 
@@ -179,8 +184,14 @@
           if ($count > $number_of_users)
 		echo "| <a href=\"$PHP_SELF?show_all=1\">Show All</a>"; 
 	}
+	if ($count)
+	{
 	?>
-	| <a href="javascript:void(0)" onClick="ToggleAll();">Toggle All</a></td>
+	| <a href="javascript:void(0)" onClick="ToggleAll();">Toggle All</a>
+	<?php 
+	}
+	?>
+	</td>
   <td align='right'><a href="javascript:openpopup('user_add.php')">add user</a></td>
 </tr>
 <tr align="center">
@@ -241,9 +252,10 @@
     <td colspan="<?php echo $num_col; ?>" align='center'>
     <?php
         // get all federations for this user
-        if (!empty($session_dump) && !empty($identity_dump))
+        if (!empty($identity_dump))
         {
-            $login->setSessionFromDump($session_dump);
+	    if (!empty($session_dump))
+		$login->setSessionFromDump($session_dump);
             $login->setIdentityFromDump($identity_dump);
 
             $identity = $login->identity;
@@ -292,7 +304,6 @@
 </body>
 
 </html>
-<?php
-    lasso_shutdown();
-    $db->disconnect();
+<?php 
+	lasso_shutdown();
 ?>

@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
- require_once 'HTTP/Session.php';
  require_once 'DB.php';
+ require_once 'session.php';
 
  if(!extension_loaded('lasso')) {
 	$ret = @dl('lasso.' . PHP_SHLIB_SUFFIX);
@@ -57,7 +57,11 @@ You can get more informations about <b>Lasso</b> at <br>
  $db = &DB::connect($config['dsn']);
  if (DB::isError($db)) 
 	die($db->getMessage());
-	
+
+ // session handler
+ session_set_save_handler("open_session", "close_session", 
+ "read_session", "write_session", "destroy_session", "gc_session");
+
   session_start();
 
   lasso_init();
@@ -166,5 +170,4 @@ You can get more informations about <b>Lasso</b> at <br>
 </html>
 <?php
 	lasso_shutdown();
-	$db->disconnect(); 
 ?>

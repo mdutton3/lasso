@@ -24,8 +24,18 @@
  
  require_once 'Log.php';
  require_once 'DB.php';
+ require_once 'session.php';
 
   $config = unserialize(file_get_contents('config.inc'));
+
+  // connect to the data base
+  $db = &DB::connect($config['dsn']);
+  if (DB::isError($db)) 
+	die($db->getMessage());
+
+  // session handler
+  session_set_save_handler("open_session", "close_session", 
+  "read_session", "write_session", "destroy_session", "gc_session");
 
   session_start();
 

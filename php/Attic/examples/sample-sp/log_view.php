@@ -1,6 +1,6 @@
 <?php
 /*  
- * Identity Provider Example -- View log
+ * Service Provider Example -- View log
  *
  * Copyright (C) 2004 Entr'ouvert
  * http://lasso.entrouvert.org
@@ -65,7 +65,7 @@
 <html>
 <head>
 <head>
-  <title>Lasso Identity Provider Example : View Logs</title>
+  <title>Lasso Service Provider Example : View Logs</title>
 </head>
 <body>
 <br>

@@ -25,6 +25,7 @@
     require_once 'HTML/QuickForm.php';
     require_once 'Log.php';
     require_once 'DB.php';
+    require_once 'session.php';
  
     $config = unserialize(file_get_contents('config.inc'));
     
@@ -36,6 +37,10 @@
     // create logger 
     $conf['db'] = $db;
     $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
+    // session handler
+    session_set_save_handler("open_session", "close_session", 
+    "read_session", "write_session", "destroy_session", "gc_session");
 
     session_start();
   
@@ -51,7 +56,6 @@
         if (!isset($_SERVER['PHP_AUTH_USER']))
         {
             sendHTTPBasicAuth();
-            $db->disconnect();
             exit;
         }
         else
@@ -76,15 +80,16 @@
 			$array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
 			if (empty($array))
 			{
-				$logger->log("User must no authenticate, but I don't find session and identity dump in the database", PEAR_LOG_CRIT);
+				$logger->log("User must no authenticate, but I don't find session and identity 
+				dump in the database", PEAR_LOG_CRIT);
 				die("Could not get Identity and Session Dump");
 			}
 
 			$login->setIdentityFromDump($array['identity_dump']);
-			$login->setSessionFromDump($array['session_dump']);
+			if (!empty($array['session_dump']))
+				$login->setSessionFromDump($array['session_dump']);
 	  
 			doneSingleSignOn($db, $login, $user_id);
-			$db->disconnect();
 			exit;
 		}
 
@@ -92,22 +97,21 @@
             if (!($user_id = authentificateUser($db, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])))
             {
                 sendHTTPBasicAuth();
-                $db->disconnect();
                 exit;
             }
             else
             {
                 $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
-                $is_first_sso = (empty($array) ? TRUE : FALSE);
+                $is_first_sso = (isset($array['identity_dump']) ? FALSE : TRUE);
 
-                if (!$is_first_sso)
-                {
-                    $login->setIdentityFromDump($array['identity_dump']);
-                    $login->setSessionFromDump($array['session_dump']);
-                } 
+                /*if (!$is_first_sso)
+                    $login->setIdentityFromDump($array['identity_dump']); */
+
+		if (!empty($array['session_dump']))
+			$login->setSessionFromDump($array['session_dump']);
+
                 doneSingleSignOn($db, $login, $user_id, $is_first_sso);
             }
-            $db->disconnect();
         }
         exit;
   }
@@ -147,15 +151,16 @@
         global $logger;
        
        	$query = "UPDATE users SET identity_dump=".$db->quoteSmart($identity_dump);
-		$query .= " WHERE user_id='$user_id'";
+	$query .= " WHERE user_id='$user_id'";
 
-		$res =& $db->query($query);
-		if (DB::isError($res)) 
+	$res =& $db->query($query);
+	if (DB::isError($res)) 
         {
             $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
             $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
             die("Internal Server Error");
         }
+        $logger->log("Update user '$user_id' identity dump", PEAR_LOG_DEBUG);
    }
 
    /*
@@ -165,17 +170,17 @@
    {
         global $logger;
 
-		$query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
-		$query .= " WHERE user_id='$user_id'";
+	$query = "UPDATE users SET session_dump=".$db->quoteSmart($session_dump);
+	$query .= " WHERE user_id='$user_id'";
 
-		$res =& $db->query($query);
+	$res =& $db->query($query);
         if (DB::isError($res)) 
         {
             $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
             $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
             die("Internal Server Error");
         }
-
+        $logger->log("Update user '$user_id' session dump", PEAR_LOG_DEBUG);
    }
 
    /*
@@ -183,27 +188,27 @@
     */
    function saveAssertionArtifact($db, $artifact, $assertion)
    {
-      global $logger;
+	global $logger;
 
-	  $assertion_dump = $assertion->dump();
+	$assertion_dump = $assertion->dump();
 
-	  if (empty($assertion_dump))
-      {
-        $logger->log("assertion dump is empty", PEAR_LOG_ALERT);
+	if (empty($assertion_dump))
+	{
+		$logger->log("assertion dump is empty", PEAR_LOG_ALERT);
 		die("assertion dump is empty");
-      }
+	}
 
-	  // Save assertion 
-	  $query = 	"INSERT INTO assertions (assertion, response_dump, created) VALUES ";
-	  $query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
+	// Save assertion 
+      	$query = "INSERT INTO assertions (assertion, response_dump, created) VALUES ";
+	$query .= "('".$artifact."',".$db->quoteSmart($assertion_dump).", NOW())";
 
-	  $res =& $db->query($query);
-      if (DB::isError($res)) 
-      {
-        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
-        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
-        die("Internal Server Error");
-      }
+	$res =& $db->query($query);
+	if (DB::isError($res)) 
+	{
+		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+		die("Internal Server Error");
+	}
    }
 
   /*
@@ -216,14 +221,14 @@
 	// Get session and identity dump if there are available
 	if (!empty($_SESSION['session_dump']))
 	{
-          $logger->log("Update user's session dump", PEAR_LOG_DEBUG);
 	  $login->setSessionFromDump($_SESSION['session_dump']);
+          $logger->log("Update user's session dump", PEAR_LOG_DEBUG);
 	}
 
 	if (!empty($_SESSION['identity_dump']))
 	{
-          $logger->log("Update user's identity dump", PEAR_LOG_DEBUG);
 	  $login->setIdentityFromDump($_SESSION['identity_dump']);
+          $logger->log("Update user's identity dump", PEAR_LOG_DEBUG);
 	}
   }
 
@@ -277,10 +282,9 @@
    */
   function getUserIDFromNameIdentifier($db, $nameidentifier)
   {
-      $query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameidentifier'";
-      // echo $query;
+	$query = "SELECT user_id FROM nameidentifiers WHERE name_identifier='$nameidentifier'";
 	  
-	  $res =& $db->query($query);
+	$res =& $db->query($query);
        	if (DB::isError($res)) 
 	{
 		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
@@ -288,12 +292,12 @@
 		die($res->getMessage());
 	}
 		
-      // UserID not found
-	  if (!$res->numRows()) 
-        return (0);
+	// UserID not found
+	if (!$res->numRows()) 
+		return (0);
 	  
-	  $row = $res->fetchRow();
-      return ($row[0]);
+	$row = $res->fetchRow();
+	return ($row[0]);
   }
 
   /*
@@ -301,20 +305,18 @@
    */
    function getIdentityDumpAndSessionDumpFromUserID($db, $user_id)
    {
-      // User is authentificated
-	  $query = "SELECT identity_dump,session_dump FROM users WHERE identity_dump";
-	  $query .= " IS NOT NULL AND session_dump IS NOT NULL AND user_id='$user_id'";
+	$query = "SELECT identity_dump,session_dump FROM users WHERE user_id='$user_id'";
 
-	  $res =& $db->query($query);
-	  if (DB::isError($res)) 
+	$res =& $db->query($query);
+	if (DB::isError($res)) 
 		die($res->getMessage());
 
-	  if ($res->numRows()) 
-	  {
+      	if ($res->numRows()) 
+	{
 		$row =& $res->fetchRow();
 		$ret = array("identity_dump" => $row[0], "session_dump" => $row[1]);
 		return ($ret);
-	  } 
+	} 
    }
 
 
@@ -325,7 +327,7 @@
   {
 	global $logger;
 
-	  $authenticationMethod = 
+      	$authenticationMethod = 
 	  (($_SERVER["HTTPS"] == 'on') ? lassoSamlAuthenticationMethodSecureRemotePassword : lassoSamlAuthenticationMethodPassword);
 
 	  // reauth in session_cache_expire, default is 180 minutes
@@ -373,11 +375,29 @@
 		die("assertion Artifact is empty");
 	  }
 
-	saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
+	  saveAssertionArtifact($db, $login->assertionArtifact, $login->assertion);
+
+
+	  // Save PHP Session ID in the sso_session table
+	  $query = "INSERT INTO sso_sessions(name_identifier, session_id, ip)";
+	  $query .= " VALUES('" . $login->nameIdentifier . "','" . session_id() . "','";
+	  $query .= ip2long($_SERVER['REMOTE_ADDR']) . "')";
+
+	  echo $query;
+
+	  $res =& $db->query($query);
+	  if (DB::isError($res)) 
+	  {
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_CRIT);
+	    	$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
+	      	die($res->getMessage());
+	  }
 
 	  unset($_SESSION['login_dump']); // delete login_dump 
-	  $_SESSION['identity_dump'] = $session->dump();
+	  $_SESSION['identity_dump'] = $identity->dump();
 	  $_SESSION['session_dump'] = $session->dump();
+
+          $logger->log("New Single Sign On Session started for user '$user_id'", PEAR_LOG_INFO);
 
 	  switch($login->protocolProfile)
 	  {
@@ -392,8 +412,8 @@
 		case lassoLoginProtocolProfileBrwsPost:
 		  // TODO : lassoLoginProtocolProfileBrwsPost
 		default:
-          $logger->log("Unknown Login Protocol Profile :" . $db->getMessage(), PEAR_LOG_CRIT);
-		  die("Unknown Login Protocol Profile");
+			$logger->log("Unknown Login Protocol Profile :" . $db->getMessage(), PEAR_LOG_CRIT);
+			die("Unknown Login Protocol Profile");
 	  }
   }
 
@@ -401,63 +421,63 @@
   if ($form->validate())
   {
 	if (empty($_SESSION['login_dump']))
-    {
-        $logger->log("Login dump is not registred in the session", PEAR_LOG_ERR);
-        die("Login dump is not registred");
-    }
+	{
+		$logger->log("Login dump is not registred in the session", PEAR_LOG_ERR);
+		die("Login dump is not registred");
+	}
 
 	$login = LassoLogin::newFromDump($server, $_SESSION['login_dump']);
 
 	if (($user_id = authentificateUser($db, $form->exportValue('username'), 
 	  $form->exportValue('password')))) 
 	{
-      $array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
-      $is_first_sso = (empty($array) ? TRUE : FALSE);
-      
-      if (!$is_first_sso)
-      {
-		$login->setIdentityFromDump($array['identity_dump']);
-		$login->setSessionFromDump($array['session_dump']);
-	  } 
-      else
-        $logger->log("First SingleSignOn for user '$user_id'", PEAR_LOG_INFO);
+		$array = getIdentityDumpAndSessionDumpFromUserID($db, $user_id);
+		$is_first_sso = (isset($array['identity_dump']) ? FALSE : TRUE);
+	
+		if (!empty($array['identity_dump']))
+			$login->setIdentityFromDump($array['identity_dump']);
 
-	  doneSingleSignOn($db, $login, $user_id, $is_first_sso);
-	  $db->disconnect();
-	  exit;
+		/* if (!$is_first_sso)
+			$login->setIdentityFromDump($array['identity_dump']);
+		else
+			$logger->log("First SingleSignOn for user '$user_id'", PEAR_LOG_INFO); */
+			
+		if (!empty($array['session_dump']))
+			$login->setSessionFromDump($array['session_dump']);
+
+		doneSingleSignOn($db, $login, $user_id, $is_first_sso);
+		exit;
 	}
-    else
-        $logger->log("Authentication failure with login '".$form->exportValue('username')." password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
-
+	else
+		$logger->log("Authentication failure with login '". $form->exportValue('username')." 
+		password '". $form->exportValue('password') ."' IP '" . $_SERVER['REMOTE_ADDR']."'", PEAR_LOG_WARNING);
   }
   else
   {
   	$login = new LassoLogin($server);
 
-    // init login
-    updateDumpsFromSession($login);
-    initFromAuthnRequest($login);
+	// init login
+	updateDumpsFromSession($login);
+	initFromAuthnRequest($login);
 	
 	// User must NOT Authenticate with the IdP 
 	if (!$login->mustAuthenticate()) 
 	{
-      $user_id = getUserIDFromNameIdentifier($db, $login->nameIdentifier);
+		$user_id = getUserIDFromNameIdentifier($db, $login->nameIdentifier);
 	  
-	  if (!$user_id) 
-      {
-        $logger->log("Could not get UserID from Name Identifier '" . $login->nameIdentifier . "'", PEAR_LOG_ERR);
-        die("Internal Server Error");
-      }
-	  
-	  doneSingleSignOn($db, $login, $user_id);
-	  $db->disconnect();
-	  exit;
+		if (!$user_id) 
+		{
+			$logger->log("Could not get UserID from Name Identifier '" . $login->nameIdentifier . "'", PEAR_LOG_ERR);
+			die("Internal Server Error");
+		}
+		doneSingleSignOn($db, $login, $user_id);
+		exit;
 	}
 	else
 	{
-	  // register login dump in this session, 
-	  // we can not transfert xml dump with hidden input 
-  	  $_SESSION['login_dump'] = $login->dump();
+		// register login dump in this session, 
+		// we can not transfert xml dump with hidden input 
+		$_SESSION['login_dump'] = $login->dump();
 	}
   } 
 ?>

@@ -22,9 +22,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-  $config = unserialize(file_get_contents('config.inc'));
-  
   require_once 'DB.php';
+  require_once 'session.php';
+  
+  $config = unserialize(file_get_contents('config.inc'));
+
+  // connect to the data base
+  $db = &DB::connect($config['dsn']);
+  if (DB::isError($db)) 
+	die($db->getMessage());
+	
+  // session handler
+  session_set_save_handler("open_session", "close_session", 
+  "read_session", "write_session", "destroy_session", "gc_session");
+
   session_start();
 
   if (!isset($_SESSION["nameidentifier"])) {
@@ -34,11 +45,6 @@
 
 	switch($_POST['action']) {
 	  case "submit":
-		$db = &DB::connect($config['dsn']);
-
-		if (DB::isError($db)) 
-		  die($db->getMessage());
-
 		// Update User info
 		$query = "UPDATE users SET first_name=" . $db->quoteSmart($_POST['first_name']);
 		$query .= ",last_name=" . $db->quoteSmart($_POST['last_name']);

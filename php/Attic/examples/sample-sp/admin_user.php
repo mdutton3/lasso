@@ -153,6 +153,13 @@
 </tfoot>
 </table>
 
+<br>
+<p align='center'><a href='index.php'>Index</a>
+</p>
+
+<br>
+<p>Copyright &copy; 2004 Entr'ouvert</p>
+
 </body>
 
 </html>

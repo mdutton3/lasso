@@ -25,6 +25,7 @@
   require_once 'HTML/QuickForm.php';
   require_once 'Log.php';  
   require_once 'DB.php';  
+  require_once 'session.php';
 
    $config = unserialize(file_get_contents('config.inc'));
 
@@ -33,6 +34,10 @@
    if (DB::isError($db)) 
 	die("Could not connect to the database");
 
+   // session handler
+   session_set_save_handler("open_session", "close_session", 
+   "read_session", "write_session", "destroy_session", "gc_session");
+	
   // create logger 
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
@@ -57,13 +62,12 @@
 	  $res =& $db->query($query);
 	  if (DB::isError($res)) 
 	  { 
-		$logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_ERR);
-		$logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+		$logger->log("DB Error :" . $res->getMessage(), PEAR_LOG_ERR);
+		$logger->log("DB Error :" . $res->getDebugInfo(), PEAR_LOG_DEBUG);
 		die("username exist!");
 	  }
 	  
     	  $logger->log("Create User '" . $form->exportValue('username') . "'", PEAR_LOG_NOTICE);
-	  $db->disconnect();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

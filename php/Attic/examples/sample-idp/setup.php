@@ -287,8 +287,23 @@
 
 		$query = "CREATE TABLE sessions (
 			id varchar(32) primary key,
-			expiry integer,
-			data text
+			lastupdate timestamp,
+			data text)";
+		
+		$res =& $db->query($query);
+		if (DB::isError($res)) 
+		  die($res->getMessage());
+
+		print "OK";
+
+		print "<br>Create table 'sso_sessions' : ";
+		$query = "DROP TABLE sso_sessions CASCADE";
+		$res =& $db->query($query);
+
+		$query = "CREATE TABLE sso_sessions (
+			name_identifier character varying(100),
+			session_id character varying(32),
+			ip integer
 			)";
 		
 		$res =& $db->query($query);
@@ -300,7 +315,6 @@
 		$db->disconnect();
 
 		// Check if IdP files does exists
-	
 		$keys = array_keys($config);
 		$files = preg_grep("/idp/", $keys);
 		
@@ -551,7 +565,8 @@
   <input type='submit' name='setup' value='setup'>
 </p>
 </form>
-<br>
+<p align='center'><a href='index.php'>Index</a>
+</p>
 <p>Copyright &copy; 2004 Entr'ouvert</p>
 </body>
 </html>

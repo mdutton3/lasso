@@ -24,16 +24,16 @@
 
   require_once 'Log.php';
   require_once 'DB.php';
-
+  require_once 'session.php';
 
   $config = unserialize(file_get_contents('config.inc'));
 
   if (!$_GET['SAMLart']) {
   	exit(1);
   }
-
+  
+  // connect to the data base
   $db = &DB::connect($config['dsn']);
-
   if (DB::isError($db)) 
 	  die($db->getMessage());
 
@@ -41,6 +41,10 @@
   $conf['db'] = $db;
   $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
  
+  // session handler
+  session_set_save_handler("open_session", "close_session", 
+  "read_session", "write_session", "destroy_session", "gc_session");
+
   session_start();
 
   lasso_init();
@@ -158,7 +162,7 @@
   }
   else 
   {
-    // New User
+    	// New User
 	$login->acceptSso();
 
 	$identity = $login->identity;
@@ -227,7 +231,6 @@
   header("Request-URI: $url");
   header("Content-Location: $url");
   header("Location: $url\n\n");
-  $db->disconnect(); 
   lasso_shutdown();
   exit();
 ?>

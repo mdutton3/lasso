@@ -22,27 +22,37 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+    require_once 'Log.php';
+    require_once 'DB.php';
+    require_once 'session.php';
+
     $config = unserialize(file_get_contents('config.inc'));
 
-    require_once 'DB.php';
+    // connect to the data base
+    $db = &DB::connect($config['dsn']);
+    if (DB::isError($db)) 
+	die($db->getMessage());
+	
+    // create logger 
+    $conf['db'] = $db;
+    $logger = &Log::factory($config['log_handler'], 'log', $_SERVER['PHP_SELF'], $conf);
+
+    // session handler
+    session_set_save_handler("open_session", "close_session", 
+    "read_session", "write_session", "destroy_session", "gc_session");
 
     session_start();
 
   if (!isset($_SESSION["nameidentifier"])) {
-	print "User is not logged in";
+        $logger->log("Not logged in user '" . $_SERVER['REMOTE_ADDR'] , "', try to register.", PEAR_LOG_WARN);
 	exit(0);
-	}
+  }
 
   lasso_init();
   
-  $db = &DB::connect($config['dsn']);
-
-  if (DB::isError($db)) 
-	die($db->getMessage());
-
   $server_dump = file_get_contents($config['server_dump_filename']);
   
-  $server = LassoServer::newfromdump($server_dump);
+  $server = LassoServer::newFromDump($server_dump);
   
   $logout = new LassoLogout($server, lassoProviderTypeSp);
   
@@ -52,7 +62,11 @@
   $res =& $db->query($query);
   
   if (DB::isError($res)) 
-	print $res->getMessage(). "\n";
+  {
+        $logger->log("DB Error :" . $db->getMessage(), PEAR_LOG_CRIT);
+        $logger->log("DB Error :" . $db->getDebugInfo(), PEAR_LOG_DEBUG);
+	die($db->getMessage());
+  }
  
   $row = $res->fetchRow();
   
@@ -69,10 +83,11 @@
   $url['path'], $url['host'], $url['port'], 
   strlen($logout->msgBody), $logout->msgBody);
 
+  $logger->log('Send SOAP Request to '. $url['host'] . ":" .$url['port']. $url['path'], PEAR_LOG_INFO);
+  $logger->log('SOAP Request : ' . $soap, PEAR_LOG_DEBUG);
 
   # PHP 4.3.0 with OpenSSL support required
   $fp = fsockopen("ssl://" . $url['host'], $url['port'], $errno, $errstr, 30) or die($errstr ($errno));
- 
   socket_set_timeout($fp, 10);
   fwrite($fp, $soap);
 
@@ -106,16 +121,19 @@
   }
   fclose($fp);
   
+  $logger->log('SOAP Response Header : ' . $header, PEAR_LOG_DEBUG);
+  $logger->log('SOAP Response Body : ' . $response, PEAR_LOG_DEBUG);
+
   if (!preg_match("/^HTTP\/1\\.. 200/i", $header)) {
+        $logger->log("User is already logged out" . $_SERVER['REMOTE_ADDR'], PEAR_LOG_WARN);	
 	die("User is already logged out");
   }
 
   # Destroy The PHP Session
   $_SESSION = array();
-
+  $logger->log("Destroy session '".session_id()."' for user '".$_SESSION['username']."'", PEAR_LOG_INFO);	
   session_destroy();
-  
-  $db->disconnect();
+
   lasso_shutdown();
 
   $url = "index.php";
