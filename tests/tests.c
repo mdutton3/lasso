@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <config.h>
 
 #include <check.h>
 #include <lasso.h>
@@ -61,14 +62,16 @@ main(int argc, char *argv[])
 	if (dont_fork) {
 		srunner_set_fork_status(sr, CK_NOFORK);
 	}
+#ifdef CHECK_IS_XML
 	srunner_set_xml(sr, "result.xml");
+#endif
 	srunner_run_all (sr, CK_VERBOSE);
 	rc = srunner_ntests_failed(sr);
 	
 	srunner_free(sr);
-	/*suite_free(s);*/
-
-	/*lasso_destroy();*/
+	/*suite_free(s);  */
+	/* no longer available in check 0.9.0; it will leak a
+	 * bit with previous versions */
 
 	return (rc == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

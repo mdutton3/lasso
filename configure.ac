@@ -217,8 +217,10 @@ AC_ARG_ENABLE(tests,
         no)  tests_val=false;;
 esac], tests_val=true)
 
+AC_DEFINE([CHECK_IS_XML], [], [Define if check available with XML support])
 if $tests_val ; then
-  AM_PATH_CHECK(0.9.0)
+  AM_PATH_CHECK
+  AC_CHECK_LIB(check, srunner_set_xml, [AC_DEFINE(CHECK_IS_XML)])
 fi
 
 AM_CONDITIONAL(WITH_TESTS, $tests_val)
