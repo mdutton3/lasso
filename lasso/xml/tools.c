@@ -89,7 +89,7 @@ lasso_get_current_time()
   GTimeVal time_val;
   xmlChar *ret = g_malloc(21);
 
-  g_get_current_time(&time_val); 
+  g_get_current_time(&time_val);
   tm = localtime(&(time_val.tv_sec));
   strftime(ret, 21, "%FT%TZ", tm);
 

@@ -30,11 +30,11 @@ The schema fragment ():
 */
 
 void lasso_ds_signature_sign(LassoDsSignature *node,
-			     const xmlChar *key_file,
-			     const xmlChar *cert_file)
+			     const xmlChar    *private_key_file,
+			     const xmlChar    *certificate_file)
 {
   xmlNodePtr signature = LASSO_NODE_GET_CLASS(node)->get_xmlNode(LASSO_NODE(node));
-  xmlSecDSigCtxPtr dsig_ctx = NULL;
+  xmlSecDSigCtxPtr dsig_ctx;
 
   /* create signature context */
   dsig_ctx = xmlSecDSigCtxCreate(NULL);
@@ -43,15 +43,18 @@ void lasso_ds_signature_sign(LassoDsSignature *node,
   }
   
   /* load private key, assuming that there is not password */
-  dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(key_file, xmlSecKeyDataFormatPem,
+  dsig_ctx->signKey = xmlSecCryptoAppKeyLoad(private_key_file,
+					     xmlSecKeyDataFormatPem,
 					     NULL, NULL, NULL);
   if(dsig_ctx->signKey == NULL) {
-    printf("Error: failed to load private pem key from \"%s\"\n", key_file);
+    printf("Error: failed to load private pem key from \"%s\"\n",
+	   private_key_file);
   }
   
   /* load certificate and add to the key */
-  if(xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, cert_file, xmlSecKeyDataFormatPem) < 0) {
-    printf("Error: failed to load pem certificate \"%s\"\n", cert_file);
+  if(xmlSecCryptoAppKeyCertLoad(dsig_ctx->signKey, certificate_file,
+				xmlSecKeyDataFormatPem) < 0) {
+    printf("Error: failed to load pem certificate \"%s\"\n", certificate_file);
   }
 
   /* sign the template */
@@ -109,13 +112,13 @@ GType lasso_ds_signature_get_type() {
  * 
  * Return value: the new @LassoDsDignature
  **/
-LassoNode* lasso_ds_signature_new(xmlDocPtr doc,
+LassoNode* lasso_ds_signature_new(xmlDocPtr         doc,
 				  xmlSecTransformId signMethodId)
 {
   LassoNode *node;
-  xmlNodePtr signature = NULL;
-  xmlNodePtr reference = NULL;
-  xmlNodePtr key_info = NULL;
+  xmlNodePtr signature;
+  xmlNodePtr reference;
+  xmlNodePtr key_info;
 
   node = LASSO_NODE(g_object_new(LASSO_TYPE_DS_SIGNATURE, NULL));
 
