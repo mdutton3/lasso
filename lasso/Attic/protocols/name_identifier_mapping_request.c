@@ -127,108 +127,6 @@ lasso_name_identifier_mapping_request_new(const xmlChar       *providerID,
 }
 
 static LassoNode *
-lasso_name_identifier_mapping_request_new_from_query(const gchar *query)
-{
-  LassoNode *request, *identifier;
-  xmlChar *str;
-  GData *gd;
-
-  request = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, NULL));
-
-  gd = lasso_query_to_dict(query);
-
-  /* RequestID */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RequestID"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
-  
-  /* MajorVersion */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MajorVersion"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
-  
-  /* MinorVersion */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "MinorVersion"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
-  
-  /* IssueInstant */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "IssueInstant"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_samlp_request_abstract_set_issueInstant(LASSO_SAMLP_REQUEST_ABSTRACT(request), str);
-
-  /* ProviderID */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "ProviderID"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_lib_name_identifier_mapping_request_set_providerID(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), str);
-
-  /* NameIdentifier */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameIdentifier"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  identifier = lasso_saml_name_identifier_new(str);
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "NameQualifier"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_saml_name_identifier_set_nameQualifier(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "Format"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_saml_name_identifier_set_format(LASSO_SAML_NAME_IDENTIFIER(identifier), str);
-     
-  lasso_lib_name_identifier_mapping_request_set_nameIdentifier(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request),
-							       LASSO_SAML_NAME_IDENTIFIER(identifier));
-  lasso_node_destroy(identifier);
-
-  /* TargetNameSpace */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "TargetNameSpace"), 0);
-  if (str == NULL) {
-    g_datalist_clear(&gd);
-    g_object_unref(request);
-    return NULL;
-  }
-  lasso_lib_name_identifier_mapping_request_set_targetNameSpace(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), str);
-
-  /* consent */
-  str = lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "consent"), 0);
-  if (str != NULL)
-    lasso_lib_name_identifier_mapping_request_set_consent(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(request), str);
-
-  g_datalist_clear(&gd);
-
-  return request;
-}
-
-static LassoNode *
 lasso_name_identifier_mapping_request_new_from_soap(const gchar *buffer)
 {
   LassoNode *request;
@@ -282,9 +180,6 @@ lasso_name_identifier_mapping_request_new_from_export(gchar               *buffe
   g_return_val_if_fail(buffer != NULL, NULL);
 
   switch(export_type){
-  case lassoNodeExportTypeQuery:
-    request = lasso_name_identifier_mapping_request_new_from_query(buffer);
-    break;
   case lassoNodeExportTypeSoap:
     request = lasso_name_identifier_mapping_request_new_from_soap(buffer);
     break;
