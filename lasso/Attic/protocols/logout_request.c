@@ -76,15 +76,23 @@ lasso_logout_request_new(gchar               *providerID,
 			 lassoSignatureType   sign_type,
 			 lassoSignatureMethod sign_method)
 {
+  LassoNodeClass *class;
   LassoNode *request, *identifier;
-  xmlChar *id, *time;
+  xmlChar *request_id, *time;
+
+  xmlDocPtr doc = NULL;
+  xmlNodePtr xmlNode = NULL;
+  xmlIDPtr id;
+  xmlAttrPtr id_attr;
+  xmlChar *id_value;
+
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
   
   /* RequestID */
-  id = lasso_build_unique_id(32);
+  request_id = lasso_build_unique_id(32);
   lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
-					     (const xmlChar *)id);
+					     (const xmlChar *)request_id);
   /* MajorVersion */
   lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						lassoLibMajorVersion);
@@ -97,15 +105,26 @@ lasso_logout_request_new(gchar               *providerID,
 						(const xmlChar *)time);
   xmlFree(time);
 
+  class = LASSO_NODE_GET_CLASS(request);
+
+  doc = xmlNewDoc("1.0");
+  xmlNode = class->get_xmlNode(request);
+  id_attr = lasso_node_get_attr(request, "RequestID", NULL);
+  if (id_attr != NULL) {
+    id_value = xmlNodeListGetString(doc, id_attr->children, 1);
+    id = xmlAddID(NULL, doc, id_value, id_attr);
+    xmlFree(id_value);
+  }
+
   /* set the signature template */
   if (sign_type != lassoSignatureTypeNone) {
     lasso_samlp_request_abstract_set_signature_tmpl(LASSO_SAMLP_REQUEST_ABSTRACT(request),
 						    sign_type,
 						    sign_method,
-						    id);
+						    NULL);
   }
 
-  xmlFree(id);
+  xmlFree(request_id);
 
   /* ProviderID */
   lasso_lib_logout_request_set_providerID(LASSO_LIB_LOGOUT_REQUEST(request),
