@@ -108,6 +108,7 @@ GType lasso_saml_name_identifier_get_type() {
 
 /**
  * lasso_saml_name_identifier_new:
+ * @content: the node content
  * 
  * Creates a new <saml:NameIdentifier> node object.
  * 
