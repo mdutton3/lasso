@@ -73,6 +73,18 @@ lasso_provider_get_providerID(LassoProvider *provider)
 }
 
 xmlChar *
+lasso_provider_get_registerNameIdentifierProtocolProfile(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierProtocolProfile", NULL));
+}
+
+xmlChar *
+lasso_provider_get_registerNameIdentifierServiceURL(LassoProvider *provider)
+{
+  return(lasso_node_get_child_content(provider->metadata, "RegisterNameIdentifierServiceURL", NULL));
+}
+
+xmlChar *
 lasso_provider_get_singleSignOnProtocolProfile(LassoProvider *provider)
 {
   return(lasso_node_get_child_content(provider->metadata, "SingleSignOnProtocolProfile", NULL));

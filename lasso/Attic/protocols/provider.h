@@ -60,33 +60,41 @@ struct _LassoProviderClass {
   GObjectClass parent;
 };
 
-LASSO_EXPORT GType          lasso_provider_get_type                         (void);
+LASSO_EXPORT GType          lasso_provider_get_type                                             (void);
 
-LASSO_EXPORT LassoProvider *lasso_provider_new                              (gchar *metadata_filename,
-									     gchar *public_key_filename,
-									     gchar *certificate_filename);
+LASSO_EXPORT LassoProvider *lasso_provider_new                                                  (gchar *metadata_filename,
+												 gchar *public_key_filename,
+												 gchar *certificate_filename);
 
-LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_xmlNode             (xmlNodePtr metadata_xmlNode);
-LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename            (xmlChar *metadata_filename);
+LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_xmlNode                                 (xmlNodePtr metadata_xmlNode);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_assertionConsumerServiceURL  (LassoProvider *provider);
+LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename                                (xmlChar *metadata_filename);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationProtocolProfile(LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_assertionConsumerServiceURL                      (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationServiceURL(LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationProtocolProfile (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar       *lasso_provider_dump                             (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_federationTerminationNotificationServiceURL      (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                   (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_dump                                                 (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnProtocolProfile  (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnServiceURL       (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_providerID                                       (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutProtocolProfile  (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceURL       (LassoProvider *provider);
-LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceReturnURL (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_registerNameIdentifierProtocolProfile            (LassoProvider *provider);
 
-LASSO_EXPORT xmlChar*       lasso_provider_get_soapEndpoint                 (LassoProvider *provider);
+LASSO_EXPORT xmlChar       *lasso_provider_get_registerNameIdentifierServiceURL                 (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnProtocolProfile                      (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleSignOnServiceURL                           (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutProtocolProfile                      (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceURL                           (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar       *lasso_provider_get_singleLogoutServiceReturnURL                     (LassoProvider *provider);
+
+LASSO_EXPORT xmlChar*       lasso_provider_get_soapEndpoint                                     (LassoProvider *provider);
 
 #ifdef __cplusplus
 }
