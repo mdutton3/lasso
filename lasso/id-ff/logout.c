@@ -499,7 +499,8 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 		response_method = LASSO_HTTP_METHOD_REDIRECT;
 
 	/* get provider */
-	profile->remote_providerID = LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID;
+	profile->remote_providerID = g_strdup(
+			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);
 	if (profile->remote_providerID == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "ProviderID not found");
 		return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
