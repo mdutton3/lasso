@@ -180,6 +180,7 @@ lasso_node_export_to_soap(LassoNode *node)
  * lasso_node_get_attr:
  * @node: a LassoNode
  * @name: the attribute name
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Gets an attribute associated with the node.
  * 
@@ -240,6 +241,7 @@ lasso_node_get_attrs(LassoNode *node)
  * @node: a LassoNode
  * @name: the child name
  * @href: the namespace (may be NULL)
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Gets child of node having given @name and namespace @href.
  * 
@@ -262,6 +264,7 @@ lasso_node_get_child(LassoNode      *node,
  * @node: a LassoNode
  * @name: the child name
  * @href: the namespace (may be NULL)
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Gets child content of node having given @name and namespace @href.
  * 
@@ -300,6 +303,7 @@ lasso_node_get_children(LassoNode *node)
 /**
  * lasso_node_get_content:
  * @node: a LassoNode
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Read the value of a node, this can be either the text carried directly by
  * this node if it's a TEXT node or the aggregate string of the values carried
@@ -393,6 +397,7 @@ lasso_node_rename_prop(LassoNode     *node,
  * lasso_node_verify_signature:
  * @node: a LassoNode
  * @certificate_file: a certificate
+ * @err: return location for an allocated GError, or NULL to ignore errors
  * 
  * Verifys the node signature.
  * 
