@@ -1126,9 +1126,10 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 		while (value) {
 			xmlNode *t = value->data;
 			xmlNode *c;
-			xmlAttr *a;
 
 			/* attributes */
+#if 0
+			xmlAttr *a;
 			for (a = t->properties; a; a = a->next) {
 				if (result->len)
 					g_string_append(result, "&");
@@ -1140,6 +1141,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 				xmlFree(s2);
 				xmlFree(s);
 			}
+#endif
 
 			/* children (only simple ones and 1-level deep) */
 			for (c = t->children; c; c = c->next) {
@@ -1292,6 +1294,7 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 	char *field, *t;
 	LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
 	struct QuerySnippet *query_snippets = NULL;
+	gboolean has_extension = FALSE;
 
 	while (class && LASSO_IS_NODE_CLASS(class) && class->node_data) {
 		if (class->node_data && class->node_data->query_snippets) {
@@ -1317,10 +1320,37 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 
 			if (field_name == NULL)
 				field_name = query_snippets[j].path;
+			if (strcmp(field_name, "Extension") == 0) {
+				has_extension = TRUE;
+				continue;
+			}
 			if (strcmp(field, field_name) != 0)
 				continue;
 			set_value_at_path(node, path, t+1);
 			break;
+		}
+		if (query_snippets[j].path == NULL && has_extension &&
+				strcmp(field, "SigAlg") != 0 && strcmp(field, "Signature") != 0) {
+			/* got to the end without finding anything; and has
+			 * Extension; build it */
+			struct XmlSnippet *extension_snippet;
+			LassoNode *value_node;
+			GList **value;
+			xmlNode *xmlnode, *xmlchild;
+			if (find_path(node, "Extension", &value_node, &extension_snippet) == 0) {
+				value = G_STRUCT_MEMBER_P(value_node, extension_snippet->offset);
+				if (*value) {
+					xmlnode = (*value)->data;
+				} else {
+					xmlnode = xmlNewNode(xmlNewNs(NULL, LASSO_LIB_HREF,
+								LASSO_LIB_PREFIX), "Extension");
+				}
+				xmlchild = xmlNewNode(NULL, field);
+				xmlAddChild(xmlchild, xmlNewText(t+1));
+				xmlAddChild(xmlnode, xmlchild);
+				if (! *value)
+					*value = g_list_append(*value, xmlnode);
+			}
 		}
 		*t = '=';
 	}
