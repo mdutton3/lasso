@@ -67,9 +67,9 @@ struct _LassoNodeClass {
 				       int            format);
   xmlChar*       (* export)           (LassoNode     *node);
   xmlChar*       (* export_to_base64) (LassoNode     *node);
-  gchar*         (* export_to_query)  (LassoNode     *node,
-				       gint           sign_method,
-				       const gchar   *private_key_file);
+  gchar*         (* export_to_query)  (LassoNode            *node,
+				       lassoSignatureMethod  sign_method,
+				       const gchar          *private_key_file);
   xmlChar*       (* export_to_soap)   (LassoNode     *node);
   LassoAttr*     (* get_attr)         (LassoNode     *node,
 				       const xmlChar *name);
@@ -117,11 +117,6 @@ struct _LassoNodeClass {
 				xmlNodePtr     libxml_node);
 };
 
-typedef enum {
-  lassoSignatureMethodRsaSha1 = 1,
-  lassoSignatureMethodDsaSha1
-} lassoSignatureMethod;
-
 LASSO_EXPORT GType          lasso_node_get_type         (void);
 
 LASSO_EXPORT LassoNode*     lasso_node_new              (void);
@@ -140,9 +135,9 @@ LASSO_EXPORT xmlChar*       lasso_node_export           (LassoNode *node);
 
 LASSO_EXPORT xmlChar*       lasso_node_export_to_base64 (LassoNode *node);
 
-LASSO_EXPORT gchar*         lasso_node_export_to_query  (LassoNode   *node,
-							 gint         sign_method,
-							 const gchar *private_key_file);
+LASSO_EXPORT gchar*         lasso_node_export_to_query  (LassoNode            *node,
+							 lassoSignatureMethod  sign_method,
+							 const gchar          *private_key_file);
 
 LASSO_EXPORT xmlChar*       lasso_node_export_to_soap   (LassoNode *node);
 

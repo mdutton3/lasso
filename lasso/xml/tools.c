@@ -202,7 +202,7 @@ lasso_query_verify_signature(const gchar   *query,
     return (2);
   /* re-create doc to verify (signed + enrypted) */
   doc = lasso_str_sign(str_split[0],
-		       xmlSecTransformRsaSha1Id,
+		       lassoSignatureMethodRsaSha1,
 		       recipient_private_key_file);
   sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 			      xmlSecNodeSignatureValue,
@@ -271,9 +271,9 @@ lasso_str_escape(xmlChar *str)
 }
 
 xmlDocPtr
-lasso_str_sign(xmlChar *str,
-	       xmlSecTransformId signMethodId,
-	       const char* private_key_file)
+lasso_str_sign(xmlChar              *str,
+	       lassoSignatureMethod  sign_method,
+	       const char           *private_key_file)
 {
   /* FIXME : renamed fct into lasso_query_add_signature
      SHOULD returned a query (xmlChar) instead of xmlDoc */
@@ -293,8 +293,17 @@ lasso_str_sign(xmlChar *str,
   xmlAddChild((xmlNodePtr)doc, envelope);
 
   /* create signature template for enveloped signature */
-  signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
-				       signMethodId, NULL);
+  switch (sign_method) {
+  case lassoSignatureMethodRsaSha1:
+    signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					 xmlSecTransformRsaSha1Id, NULL);
+    break;
+  case lassoSignatureMethodDsaSha1:
+    signNode = xmlSecTmplSignatureCreate(doc, xmlSecTransformExclC14NId,
+					 xmlSecTransformDsaSha1Id, NULL);
+    break;
+  }
+
   if (signNode == NULL) {
     fprintf(stderr, "Error: failed to create signature template\n");
     goto done;		

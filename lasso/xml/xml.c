@@ -36,6 +36,14 @@ struct _LassoNodePrivate
 /* virtual public methods                                                    */
 /*****************************************************************************/
 
+/**
+ * lasso_node_copy:
+ * @node: a LassoNode
+ * 
+ * Build a copy of the node
+ * 
+ * Return value: a copy of the node
+ **/
 LassoNode *
 lasso_node_copy(LassoNode *node)
 {
@@ -45,6 +53,16 @@ lasso_node_copy(LassoNode *node)
   return (class->copy(node));
 }
 
+/**
+ * lasso_node_dump:
+ * @node: a LassoNode
+ * @encoding: the name of the encoding to use or NULL.
+ * @format: is formatting allowed
+ * 
+ * Dumps the LassoNode. All datas in object are dumped in an XML format.
+ * 
+ * Return value: a full XML dump of the LassoNode
+ **/
 xmlChar *
 lasso_node_dump(LassoNode     *node,
 		const xmlChar *encoding,
@@ -56,6 +74,12 @@ lasso_node_dump(LassoNode     *node,
   return (class->dump(node, encoding, format));
 }
 
+/**
+ * lasso_node_destroy:
+ * @node: a LassoNode
+ * 
+ * Destroys the LassoNode
+ **/
 void
 lasso_node_destroy(LassoNode *node)
 {
@@ -65,6 +89,14 @@ lasso_node_destroy(LassoNode *node)
   return (class->destroy(node));
 }
 
+/**
+ * lasso_node_export:
+ * @node: a LassoNode
+ * 
+ * Exports the LassoNode.
+ * 
+ * Return value: an XML dump of the LassoNode (UTF-8 encoding)
+ **/
 xmlChar *
 lasso_node_export(LassoNode *node)
 {
@@ -74,6 +106,14 @@ lasso_node_export(LassoNode *node)
   return (class->export(node));
 }
 
+/**
+ * lasso_node_export_to_base64:
+ * @node: a LassoNode
+ * 
+ * Like lasso_node_export() method except that result is Base64 encoded.
+ * 
+ * Return value: a Base64 encoded dump of the LassoNode
+ **/
 xmlChar *
 lasso_node_export_to_base64(LassoNode *node)
 {
@@ -83,10 +123,21 @@ lasso_node_export_to_base64(LassoNode *node)
   return (class->export_to_base64(node));
 }
 
+/**
+ * lasso_node_export_to_query:
+ * @node: a LassoNode
+ * @sign_method: the Signature Transform method
+ * @private_key_file: a private key (Optional)
+ * 
+ * URL-encodes and signes the LassoNode.
+ * If private_key_file is NULL, query won't be signed.
+ * 
+ * Return value: URL-encoded and signed LassoNode
+ **/
 gchar *
-lasso_node_export_to_query(LassoNode   *node,
-			   gint         sign_method,
-			   const gchar *private_key_file)
+lasso_node_export_to_query(LassoNode            *node,
+			   lassoSignatureMethod  sign_method,
+			   const gchar          *private_key_file)
 {
   g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
@@ -94,6 +145,14 @@ lasso_node_export_to_query(LassoNode   *node,
   return (class->export_to_query(node, sign_method, private_key_file));
 }
 
+/**
+ * lasso_node_export_to_soap:
+ * @node: a LassoNode
+ * 
+ * Like lasso_node_export() method except that result is SOAP enveloped.
+ * 
+ * Return value: an SOAP enveloped export of the LassoNode
+ **/
 xmlChar *
 lasso_node_export_to_soap(LassoNode *node)
 {
@@ -103,6 +162,15 @@ lasso_node_export_to_soap(LassoNode *node)
   return (class->export_to_soap(node));
 }
 
+/**
+ * lasso_node_get_attr:
+ * @node: a LassoNode
+ * @name: the attribut name
+ * 
+ * Gets an attribut associated with the node.
+ * 
+ * Return value: the attribut or NULL if not found.
+ **/
 LassoAttr *
 lasso_node_get_attr(LassoNode     *node,
 		    const xmlChar *name)
@@ -113,6 +181,16 @@ lasso_node_get_attr(LassoNode     *node,
   return (class->get_attr(node, name));
 }
 
+/**
+ * lasso_node_get_attr_value:
+ * @node: a LassoNode
+ * @name: the attribut name
+ * 
+ * Gets the value of an attribute associated to a node.
+ * 
+ * Return value: the attribute value or NULL if not found. It's up to the caller
+ * to free the memory with xmlFree().
+ **/
 xmlChar *
 lasso_node_get_attr_value(LassoNode     *node,
 			  const xmlChar *name)
@@ -123,6 +201,14 @@ lasso_node_get_attr_value(LassoNode     *node,
   return (class->get_attr_value(node, name));
 }
 
+/**
+ * lasso_node_get_attrs:
+ * @node: a LassoNode
+ * 
+ * Gets attributs associated with the node.
+ * 
+ * Return value: an array of attributs or NULL if no attribut found. 
+ **/
 GPtrArray *
 lasso_node_get_attrs(LassoNode *node)
 {
@@ -132,6 +218,16 @@ lasso_node_get_attrs(LassoNode *node)
   return (class->get_attrs(node));
 }
 
+/**
+ * lasso_node_get_child:
+ * @node: a LassoNode
+ * @name: the name
+ * @href: the namespace href (may be NULL)
+ * 
+ * Gets child of node having given name and namespace href.
+ * 
+ * Return value: a child node
+ **/
 LassoNode *
 lasso_node_get_child(LassoNode     *node,
 		     const xmlChar *name,
@@ -143,6 +239,14 @@ lasso_node_get_child(LassoNode     *node,
   return (class->get_child(node, name, href));
 }
 
+/**
+ * lasso_node_get_children:
+ * @node: a LassoNode
+ * 
+ * Gets direct children of node
+ * 
+ * Return value: an array of node or NULL if no children found.
+ **/
 GPtrArray *
 lasso_node_get_children(LassoNode *node)
 {
@@ -154,7 +258,7 @@ lasso_node_get_children(LassoNode *node)
 
 /**
  * lasso_node_get_content:
- * @node: the LassoNode
+ * @node: a LassoNode
  * 
  * Read the value of a node, this can be either the text carried directly by
  * this node if it's a TEXT node or the aggregate string of the values carried
@@ -173,6 +277,14 @@ lasso_node_get_content(LassoNode *node)
   return (class->get_content(node));
 }
 
+/**
+ * lasso_node_get_name:
+ * @node: a LassoNode
+ * 
+ * Gets the name of the node
+ * 
+ * Return value: the name of the node
+ **/
 const xmlChar *
 lasso_node_get_name(LassoNode *node)
 {
@@ -182,6 +294,13 @@ lasso_node_get_name(LassoNode *node)
   return (class->get_name(node));
 }
 
+/**
+ * lasso_node_import:
+ * @node: a LassoNode
+ * @buffer: an XML buffer
+ * 
+ * parse an XML buffer and build a LassoNode
+ **/
 void
 lasso_node_import(LassoNode     *node,
 		  const xmlChar *buffer)
@@ -192,6 +311,14 @@ lasso_node_import(LassoNode     *node,
   class->import(node, buffer);
 }
 
+/**
+ * lasso_node_rename_prop:
+ * @node: a LassoNode
+ * @old_name: the attribut name
+ * @new_name: the new attribut name
+ * 
+ * Renames an attribut of the node
+ **/
 void
 lasso_node_rename_prop(LassoNode     *node,
 		       const xmlChar *old_name,
@@ -203,6 +330,15 @@ lasso_node_rename_prop(LassoNode     *node,
   class->rename_prop(node, old_name, new_name);
 }
 
+/**
+ * lasso_node_verify_signature:
+ * @node: a LassoNode
+ * @certificate_file: a certificate
+ * 
+ * Verifys the node signature.
+ * 
+ * Return value: 1 if signature is valid, 0 if invalid. -1 if an error occurs.
+ **/
 gint
 lasso_node_verify_signature(LassoNode   *node,
 			    const gchar *certificate_file)
@@ -417,9 +553,9 @@ lasso_node_impl_export_to_base64(LassoNode *node)
 }
 
 static gchar *
-lasso_node_impl_export_to_query(LassoNode   *node,
-				gint         sign_method,
-				const gchar *private_key_file)
+lasso_node_impl_export_to_query(LassoNode            *node,
+				lassoSignatureMethod  sign_method,
+				const gchar          *private_key_file)
 {
   GString *query;
   xmlDocPtr doc;
@@ -437,15 +573,13 @@ lasso_node_impl_export_to_query(LassoNode   *node,
     switch (sign_method) {
     case lassoSignatureMethodRsaSha1:
       str_escaped = lasso_str_escape((xmlChar *)xmlSecHrefRsaSha1);
-      query = g_string_append(query, str_escaped);
-      doc = lasso_str_sign(query->str, xmlSecTransformRsaSha1Id, private_key_file);
       break;
     case lassoSignatureMethodDsaSha1:
       str_escaped = lasso_str_escape((xmlChar *)xmlSecHrefDsaSha1);
-      query = g_string_append(query, str_escaped);
-      doc = lasso_str_sign(query->str, xmlSecTransformDsaSha1Id, private_key_file);
       break;
     }
+    query = g_string_append(query, str_escaped);
+    doc = lasso_str_sign(query->str, sign_method, private_key_file);
     xmlFree(str_escaped);
     query = g_string_append(query, "&Signature=");
     str1 = lasso_doc_get_node_content(doc, xmlSecNodeSignatureValue);

@@ -39,6 +39,11 @@ extern "C" {
 
 #include <lasso/export.h>
 
+typedef enum {
+  lassoSignatureMethodRsaSha1 = 1,
+  lassoSignatureMethodDsaSha1
+} lassoSignatureMethod;
+
 LASSO_EXPORT xmlChar*   lasso_build_unique_id        (guint8 size);
 
 LASSO_EXPORT xmlChar*   lasso_doc_get_node_content   (xmlDocPtr      doc,
@@ -60,9 +65,9 @@ LASSO_EXPORT int        lasso_query_verify_signature (const gchar   *query,
 
 LASSO_EXPORT xmlChar*   lasso_str_escape             (xmlChar *str);
 
-LASSO_EXPORT xmlDocPtr  lasso_str_sign               (xmlChar           *str,
-						      xmlSecTransformId  signMethodId,
-						      const char        *private_key_file);
+LASSO_EXPORT xmlDocPtr  lasso_str_sign               (xmlChar              *str,
+						      lassoSignatureMethod  sign_method,
+						      const char           *private_key_file);
 
 LASSO_EXPORT xmlChar*   lasso_str_unescape           (xmlChar *str);
 
