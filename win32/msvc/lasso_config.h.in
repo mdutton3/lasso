@@ -1,6 +1,3 @@
-/* Release version as a decimal */
-#define LASSO_VERSION_DECIMAL @VERSION_DECIMAL@
-
 /* Major version number */
 #define LASSO_VERSION_MAJOR @VERSION_MAJOR@
 
@@ -15,7 +12,11 @@
 
 /* Define if ID-WSF support is enabled */
 /* #undef LASSO_WSF_ENABLED */
-#@LASSO_WSF_ENABLE@
+#if @LASSO_WSF_SUPPORT@
+#  define LASSO_WSF_ENABLED
+#else
+#  undef LASSO_WSF_ENABLED
+#endif
 
 /* Name of package */
 #define PACKAGE "@PACKAGE@"
@@ -37,5 +38,4 @@
 
 /* Version number of package */
 #define VERSION "@VERSION@"
-
 

@@ -155,23 +155,13 @@ VERSION_UNDERSCORED=`echo $VERSION | $SED -e 's/\./_/g'`
 AC_SUBST(VERSION_UNDERSCORED)
 
 
-VERSION_DECIMAL=`expr $VERSION_MAJOR \* 10000 + $VERSION_MINOR \* 100 + $VERSION_RELEASE`
-WINDOWS_VERSION=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
-
-dnl Add versionning & package defines to lasso_config.h
+dnl Add versionning & package defines to lasso_.h
 AC_DEFINE_UNQUOTED(LASSO_VERSION_MAJOR, $VERSION_MAJOR, [Major version number])
 AC_DEFINE_UNQUOTED(LASSO_VERSION_MINOR, $VERSION_MINOR, [Minor version number])
 AC_DEFINE_UNQUOTED(LASSO_VERSION_SUBMINOR, $VERSION_RELEASE, [Release version number])
-AC_DEFINE_UNQUOTED(LASSO_VERSION_DECIMAL, $VERSION_DECIMAL, [Release version as a decimal])
-
-dnl Add versionning & package substitions.
-AC_SUBST(VERSION_MAJOR)
-AC_SUBST(VERSION_MINOR)
-AC_SUBST(VERSION_RELEASE)
-AC_SUBST(VERSION_DECIMAL)
 
 dnl Dirty hack in order to have dynamic resource version numbering.
-AC_DEFINE_UNQUOTED(LASSO_WINDOWS_VERSION, $WINDOWS_VERSION, [Windows version of the lasso version])
+WINDOWS_VERSION=`echo $VERSION_MAJOR,$VERSION_MINOR,$VERSION_RELEASE,0`
 AC_SUBST(WINDOWS_VERSION)
 
 dnl CURRENT, REVISION, AGE
@@ -190,9 +180,9 @@ LASSO_VERSION_INFO="3:0:0"
 AC_SUBST(LASSO_VERSION_INFO)
 
 dnl Compute the minimal supported ABI version for Win32 scripts and resources files.
-MINIMAL_VERSION=`echo $LASSO_VERSION_INFO | $AWK -F: '{printf("%d\n",$1-$3)};'`
-UPCASED_DLL_FILENAME="LIBLASSO-$MINIMAL_VERSION.DLL"
-DLL_FILENAME="liblasso-$MINIMAL_VERSION.dll"
+minimal_version=`echo $LASSO_VERSION_INFO | $AWK -F: '{printf("%d\n",$1-$3)};'`
+UPCASED_DLL_FILENAME="LIBLASSO-$minimal_version.DLL"
+DLL_FILENAME="liblasso-$minimal_version.dll"
 AC_SUBST(UPCASED_DLL_FILENAME)
 AC_SUBST(DLL_FILENAME)
 
