@@ -26,7 +26,6 @@
 #include "lasso.h"
 
 #if defined _MSC_VER
-#include <windows.h>
 HINSTANCE g_hModule = NULL; /**< DLL Instance. */
 /** \brief Microsoft® Windows® DLL main function.
  *
