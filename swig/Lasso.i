@@ -549,6 +549,31 @@ int get_exception_type(int errorCode) {
 %exception;
 %enddef
 
+/***********************************************************************
+ ***********************************************************************
+ * TypeMaps *
+ ***********************************************************************
+ ***********************************************************************/
+
+#ifdef SWIGPHP4
+/* GPtrArray -> PHP Indexed Array used by Identity->providerIDs */
+%typemap(out) GPtrArray* {
+    int i;
+    zval *new_element;
+
+    zend_printf("ici");
+    array_init($result);
+
+    for (i = 0; i < $1->len; i++)
+    {
+        MAKE_STD_ZVAL(new_element);
+        ZVAL_STRING(new_element, (char *) g_ptr_array_index($1, i), 1);
+        zend_hash_next_index_insert(HASH_OF($result), &new_element, sizeof(new_element), NULL);
+        zend_printf("ici");
+    }
+}
+#endif 
+
 
 /***********************************************************************
  ***********************************************************************
@@ -912,6 +937,9 @@ typedef struct {
 		%immutable isDirty;
 		gboolean isDirty;
 
+        %immutable providerIDs;
+        GPtrArray* providerIDs;
+
 		/* Constructor, Destructor & Static Methods */
 
 		LassoIdentity();
@@ -937,6 +965,13 @@ typedef struct {
 gboolean LassoIdentity_isDirty_get(LassoIdentity *self) {
 	return self->is_dirty;
 }
+
+/* providerIDs */
+#define LassoIdentity_get_providerIDs LassoIdentity_providerIDs_get
+GPtrArray* LassoIdentity_providerIDs_get(LassoIdentity *self) {
+	return self->providerIDs;
+}
+
 
 /* Constructors, destructors & static methods implementations */
 
@@ -2031,3 +2066,6 @@ gint LassoLecp_setSessionFromDump(LassoLecp *self, gchar *dump) {
 #define LassoLecp_processAuthnResponseEnvelopeMsg lasso_lecp_process_authn_response_envelope_msg
 
 %}
+
+
+
