@@ -10,12 +10,12 @@ query = [...] # Get current URL query.
 server_dump = [...] # Load server_dump from file or database or...
 server = lasso.Server.new_from_dump(server_dump)
 login = lasso.Login.new(server)
-if login.init_request(query, lasso.httpMethods['redirect']:
+if login.init_request(query, lasso.httpMethodRedirect):
     raise Exception('Login error')
 if login.build_request_msg():
     raise Exception('Login error')
 soap_response = [...] # Send SOAP message login.msg_body to URL login.msg_url.
-if login.handle_response(soap_response):
+if login.process_response(soap_response):
     raise Exception('Login error')
 name_identifier = login.response.name_identifier
 account = [...] # Retrieve user account having this name_identifier.
