@@ -18,7 +18,12 @@ lib_LTLIBRARIES = liblasso.la
 
 liblassoinclude_HEADERS = export.h lasso.h lasso_config.h
 
-liblasso_la_SOURCES = lasso.c
+liblasso_la_SOURCES = lasso.c types.c
+
+types.c:
+	python extract_types.py
+
+EXTRA_DIST = extract_types.py
 
 if MINGW
 liblasso_la_LIBADD = \

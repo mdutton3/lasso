@@ -8,3 +8,5 @@ version.h
 *.la
 .libs
 .deps
+types.c
+
