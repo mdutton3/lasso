@@ -122,7 +122,9 @@ norminative URLs::
       <SingleLogoutServiceURL>https://sp.example.com/singleLogout</SingleLogoutServiceURL>
       <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
       <SoapEndpoint>https://sp.example.com/soapEndpoint</SoapEndpoint>
-      <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">https://sp.example.com/assertionConsumer</AssertionConsumerServiceURL>
+      <AssertionConsumerServiceURL id="AssertionConsumerServiceURL1" isDefault="true">
+        https://sp.example.com/assertionConsumer
+      </AssertionConsumerServiceURL>
       <AuthnRequestsSigned>true</AuthnRequestsSigned>
     </SPDescriptor>
   </EntityDescriptor>
