@@ -55,7 +55,7 @@ lasso_personal_profile_service_add_data(LassoPersonalProfileService *pp, LassoNo
 	LASSO_DST_QUERY_RESPONSE(profile->response)->Data = \
 		g_list_append(LASSO_DST_QUERY_RESPONSE(profile->response)->Data, data);
 
-	return ;
+	return 0;
 }
 
 LassoDstQueryItem*
