@@ -639,13 +639,13 @@ SET_NODE_INFO(Node, DowncastableNode)
  ***********************************************************************/
 
 
-/* Version number */
+/* Version Number */
 #ifndef SWIGPHP4
 %rename(VERSION_MAJOR) LASSO_VERSION_MAJOR;
 %rename(VERSION_MINOR) LASSO_VERSION_MINOR;
 %rename(VERSION_SUBMINOR) LASSO_VERSION_SUBMINOR;
 #endif
-
+%include "../lasso/lasso_config.h"
 
 /* HttpMethod */
 #ifndef SWIGPHP4
