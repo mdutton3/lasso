@@ -24,8 +24,14 @@
  */
 
 #include <lasso/environs/defederation.h>
-
 #include <lasso/xml/errors.h>
+
+static GObjectClass *parent_class = NULL;
+
+struct _LassoDefederationPrivate
+{
+  gboolean dispose_has_run;
+};
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -316,13 +322,12 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
   profile->nameIdentifier = content;
 
   /* remove federation with remote provider id */
-  if (profile->identity ==NULL) {
+  if (profile->identity == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
     ret = -1;
     goto done;
   }
   lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
-
 
   /* remove assertion from session */
   if (profile->session != NULL) {
@@ -511,21 +516,47 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 
   /* if defederation has a session and if there is an assertion for remote provider id, then remove assertion too  */
   if (profile->session != NULL) {
-    assertion = lasso_session_get_assertion(profile->session, profile->remote_providerID);
-    if (assertion != NULL) {
-      lasso_session_remove_assertion(profile->session, profile->remote_providerID);
-    }
+    lasso_session_remove_assertion(profile->session, profile->remote_providerID);
   }
 
   done:
-  if (federation!=NULL) {
+  if (federation != NULL) {
     lasso_federation_destroy(federation);
   }
-  if (nameIdentifier!=NULL) {
+  if (nameIdentifier != NULL) {
     lasso_node_destroy(nameIdentifier);
   }
 
   return(ret);
+}
+
+/*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_defederation_dispose(LassoDefederation *defederation)
+{
+  if (defederation->private->dispose_has_run == TRUE) {
+    return;
+  }
+  defederation->private->dispose_has_run = TRUE;
+
+  debug("Defederation object 0x%x disposed ...\n", defederation);
+
+  /* unref reference counted objects */
+
+  parent_class->dispose(G_OBJECT(defederation));
+}
+
+static void
+lasso_defederation_finalize(LassoDefederation *defederation)
+{  
+  debug("Defederation object 0x%x finalized ...\n", defederation);
+
+  g_free (defederation->private);
+
+  parent_class->finalize(G_OBJECT(defederation));
 }
 
 /*****************************************************************************/
