@@ -1,3 +1,781 @@
+2005-02-22  fpeters
+
+	* NEWS, configure.ac, doap.rdf: told about 0.6.1
+
+2005-02-22  fpeters
+
+	* swig/Makefile.am: wsf support include file
+
+2005-02-22  fpeters
+
+	* csharp/Makefile.am: MessageType.cs was removed
+
+2005-02-21  fpeters
+
+	* docs/reference/lasso.sgml: updated © information in reference
+	manual
+
+2005-02-21  fpeters
+
+	* python/Makefile.am: more hateful Makefile.am to work with both
+	swig 1.3.22 and 1.3.24; perhaps.
+
+2005-02-21  fpeters
+
+	* docs/reference/tmpl/profile.sgml: LassoRequestType disappeared
+
+2005-02-21  fpeters
+
+	* docs/reference/tmpl/node.sgml: LassoMessageFormat enum is now
+	documented incode
+
+2005-02-21  fpeters
+
+	* lasso/xml/xml.h: typo fix and longer description
+
+2005-02-21  fpeters
+
+	* lasso/id-ff/provider.h: enum documentation
+
+2005-02-21  fpeters
+
+	* lasso/xml/xml.h: documented enums
+
+2005-02-21  fpeters
+
+	* docs/reference/lasso-sections.txt: removed LassoMessageType from
+	doc
+
+2005-02-21  fpeters
+
+	* lasso/id-ff/profile.h, swig/Lasso.i: documented LassoRequestType
+	and killed unused LassoMessageType (it was already unused in 0.6.0
+	so I allow this as not breaking api)
+
+2005-02-21  fpeters
+
+	* lasso/lasso.h: gtkdoc comment formatting
+
+2005-02-21  fpeters
+
+	* lasso/lasso.h: documented new version check mode
+
+2005-02-21  fpeters
+
+	* python/Makefile.am: hacking against swig 1.3.24
+
+2005-02-19  fpeters
+
+	* win32/.cvsignore, win32/msvc/.cvsignore,
+	win32/msvc/java/.cvsignore, win32/msvc/php/.cvsignore,
+	win32/msvc/python/.cvsignore, win32/nsis/.cvsignore: generated
+	files are best ignored by cvs
+
+2005-02-19  fpeters
+
+	* configure.ac, win32/msvc/lasso_config.h.in: janitored
+	configure.ac; it shouldn't have been batardized this way.
+
+2005-02-19  fpeters
+
+	* csharp/Makefile.am: missing csharp swig generated file
+
+2005-02-19  fpeters
+
+	* lasso/version.h.in: removed long useless file
+
+2005-02-19  fpeters
+
+	* swig/Lasso.i: define LASSO_WSF_ENABLED
+
+2005-02-19  fpeters
+
+	* configure.ac, swig/.cvsignore, swig/Lasso.i,
+	swig/wsf-support.i.in: provide wsf support activation status to
+	swig binding; note to Romain: wtf was LASSO_WSF_ENABLE ?  (it
+	appears in rev1.129 of configure.ac without any comment about its
+	purpose)  (I removed it)
+
+2005-02-18  rchantereau
+
+	* win32/nsis/lasso-full.nsi.in: Use MSVC binaries.
+
+2005-02-18  fpeters
+
+	* csharp/Makefile.am, swig/Lasso.i: corrected enum CheckVersionMode
+	binding (didn't work for c# and java)
+
+2005-02-17  rchantereau
+
+	* win32/nsis/python.nsi.in: Changed the output file directory to
+	nsis.
+
+2005-02-17  rchantereau
+
+	* configure.ac, win32/nsis/python.nsi.in: Added python NSI script.
+
+2005-02-17  fpeters
+
+	* lasso/lasso.h: lasso numeric check enum
+
+2005-02-17  fpeters
+
+	* configure.ac, lasso/lasso.c, swig/Lasso.i, swig/Lasso.i.in,
+	swig/Makefile.am: added dumb numerical mode to checkVersion; added
+	swig binding for this function; generating Lasso.i considered bad
+	idea, cleaned and removed.
+
+2005-02-17  rchantereau
+
+	* python/Makefile.am: Escape the $ as begin of a variable name
+	adding another '$'.  Now the '$$' pass '$' to sed and '$' is end of
+	line and no more begin of variable name.
+
+2005-02-16  rchantereau
+
+	* win32/msvc/lasso.dsp.in, win32/msvc/java/java.dsp,
+	win32/msvc/php/php.dsp, win32/msvc/python/python.dsp: Updated MSVC
+	projects.
+
+2005-02-16  rchantereau
+
+	* win32/msvc/lasso_config.h, win32/msvc/lasso_config.h.in: Now
+	lasso_config.h for MSVC is generated with configure substitutions.
+
+2005-02-16  rchantereau
+
+	* python/Makefile.am: Added the temporary files for "int res = 0;"
+	declaration to local cleanning rule.
+
+2005-02-16  rchantereau
+
+	* win32/msvc/java/Makefile.am: Added the automake makefile for the
+	MSVC lasso-java project.
+
+2005-02-16  rchantereau
+
+	* win32/nsis/lasso-full.nsi.in, win32/nsis/lasso-lite.nsi.in: Added
+	DLL filename subsitution.
+
+2005-02-16  rchantereau
+
+	* win32/nsis/Makefile.am: Distribute generated nsi files too in
+	order to permit non-autotools users to create lasso installers.
+
+2005-02-16  rchantereau
+
+	* win32/msvc/Makefile.am: Include lasso project input file and java
+	subdirectory in distribution and automake system.
+
+2005-02-16  rchantereau
+
+	* win32/msvc/lasso.dsp, win32/msvc/lasso.dsp.in: Now Lasso MSVC
+	Project is dynamicaly generated.
+
+2005-02-16  rchantereau
+
+	* win32/Makefile.am: The produced resource file is distributed too
+	in order to permit MSVC users to compile LASSO.
+
+2005-02-16  rchantereau
+
+	* win32/lasso.rc, win32/lasso.rc.in: Now Resource file is generated
+	from configure variable (for versionning and file name).
+
+2005-02-16  rchantereau
+
+	* swig/Lasso.i: No more Lasso.i in the repository, it is generated
+	from Lasso.i.in.
+
+2005-02-16  rchantereau
+
+	* swig/Makefile.am: The SWIG input file is distributed too.
+
+2005-02-16  rchantereau
+
+	* swig/Lasso.i, swig/Lasso.i.in: Now The SWIG interface is
+	"generated" by configure.
+
+	The following constants are set and exported to bindings: -
+	LASSO_VERSION_MAJOR - LASSO_VERSION_MINOR - LASSO_VERSION_SUBMINOR
+	- LASSO_WSF_ENABLE
+
+2005-02-16  rchantereau
+
+	* python/Makefile.am: result have to be freed with g_free.
+	corrected a incode declaration. As regexp does not manage multiline
+	expressions, the comment is replaced by the res integer
+	declaration.
+
+2005-02-16  rchantereau
+
+	* java/Makefile.am: Fix a syntax error only reported by MSVC.
+
+	Create a void pointer in an empty structure declaration.
+
+2005-02-16  rchantereau
+
+	* configure.ac: Now some version information are propagated in
+	order to perform substitions.
+
+	New files are not dynamicaly generated.
+
+2005-02-16  rchantereau
+
+	* Makefile.am: Put swig sub directory before bindings directories.
+
+2005-02-15  rchantereau
+
+	* win32/msvc/lasso_config.h: Set only used constants.
+
+2005-02-15  rchantereau
+
+	* swig/Lasso.i: No more lasso_config.h constants export in LASSO
+	bindings.
+
+2005-02-15  rchantereau
+
+	* win32/msvc/lasso.dsw, win32/msvc/java/java.dsp: Added java
+	project to lasso workspace.
+
+2005-02-15  rchantereau
+
+	* win32/msvc/lasso.dsp, win32/msvc/lasso.dsw,
+	win32/msvc/python/python.dsp: Updated Lasso workspace.
+
+2005-02-15  rchantereau
+
+	* win32/msvc/lasso_config.h: Added a Windows configured
+	lasso_config.h.
+
+	Perhaps we have to transform it into a special lasso_config.h.in in
+	order to have the version number dynamicaly configured, and only
+	this value (not the HAVE_FOO).
+
+2005-02-15  fpeters
+
+	* configure.ac, win32/Makefile.am, win32/msvc/Makefile.am,
+	win32/msvc/php/Makefile.am, win32/msvc/python/Makefile.am: ship
+	msvc project files
+
+2005-02-14  fpeters
+
+	* swig/Lasso.i: use g_free(), not free()  (so it works under
+	windows)
+
+2005-02-14  rchantereau
+
+	* lasso/errors.c: Included xml.h for better lasso_strerror export
+	declaration.
+
+2005-02-14  nclapies
+
+	* lasso/xml/strings.h: Added status code constants for wsf
+	authentication service.
+
+2005-02-14  fpeters
+
+	* lasso/id-wsf/Makefile.am: added missing authentication.c to
+	Makefile.am
+
+2005-02-14  nclapies
+
+	* lasso/id-wsf/authentication.c, lasso/id-wsf/authentication.h:
+	Added high level of authentication service : standard methods of a
+	lasso service. Must be improved depending on the needs from souk
+	implementation.
+
+2005-02-14  nclapies
+
+	* lasso/xml/sa_sasl_request.c: Added duplication of mechanism
+	string parameter in constructor.
+
+2005-02-14  nclapies
+
+	* lasso/xml/sa_sasl_response.h: Added missing status parameter in
+	lasso_sa_sasl_response_new() method. Added
+	lasso_sa_sasl_response_new_from_message().
+
+2005-02-13  eraviart
+
+	* swig/Lasso.i: Added Lasso error strings to SWIG exception
+	messages.
+
+2005-02-13  eraviart
+
+	* swig/Lasso.i: Added two missing ID-WSF functions to LECP binding.
+
+2005-02-11  rchantereau
+
+	* win32/msvc/lasso.dsp, win32/msvc/lasso.dsw,
+	win32/msvc/python/python.dsp: Update MSVC workspace and projects.
+
+2005-02-11  fpeters
+
+	* lasso/id-ff/login.c: checks provider has been found
+
+2005-02-11  fpeters
+
+	* lasso/id-ff/server.c: if g_hash_table_find doesn't find anything,
+	check twice to be sure to return NULL.
+
+2005-02-11  rchantereau
+
+	* lasso/xml/private.h: g_vsnprintf taked the place of vsnprintf.
+
+2005-02-11  fpeters
+
+	* lasso/id-ff/profile.c: check param for NULL
+
+2005-02-11  fpeters
+
+	* configure.ac: cflags_save ate my breakfast; removed.
+
+2005-02-10  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/sa_parameter.c,
+	lasso/xml/sa_parameter.h, lasso/xml/sa_password_transforms.c,
+	lasso/xml/sa_password_transforms.h, lasso/xml/sa_sasl_request.c,
+	lasso/xml/sa_sasl_request.h, lasso/xml/sa_sasl_response.c,
+	lasso/xml/sa_sasl_response.h, lasso/xml/sa_transform.c,
+	lasso/xml/sa_transform.h, lasso/xml/strings.h: Added low level
+	classes for wsf authentication service. SASLResponse is only tested
+	with required Status element.
+
+2005-02-10  fpeters
+
+	* lasso/xml/private.h: removed unecessary vsnprintf declaration
+
+2005-02-10  fpeters
+
+	* win32/msvc/vsnprintf.c: we don't need yet another implement of
+	vsnprintf, we can use glib
+
+2005-02-10  fpeters
+
+	* lasso/xml/tools.c: use glib version of vsnprintf
+
+2005-02-10  fpeters
+
+	* lasso/lasso.c: use gtk-doc style function comment for DllMain
+
+2005-02-10  fpeters
+
+	* configure.ac, win32/nsis/Makefile.am, win32/nsis/jlasso-lite.nsi,
+	win32/nsis/jlasso-lite.nsi.in, win32/nsis/lasso-deps.nsi,
+	win32/nsis/lasso-deps.nsi.in, win32/nsis/lasso-full.nsi,
+	win32/nsis/lasso-full.nsi.in, win32/nsis/lasso-lite.nsi,
+	win32/nsis/lasso-lite.nsi.in: autofill nsi files with lasso version
+	number
+
+2005-02-10  nclapies
+
+	* lasso/xml/lib_authn_request.c,
+	lasso/xml/lib_request_authn_context.c,
+	lasso/xml/lib_request_authn_context.h: Now
+	lasso_lib_request_authn_context_new() returns
+	LassoLibRequestAuthnContex* instead of LassoNode*.
+
+2005-02-10  fpeters
+
+	* Makefile.am, configure.ac, docs/Makefile.am,
+	docs/lasso-book/Makefile.am, docs/lasso-book/figures/Makefile.am,
+	docs/reference/tmpl/login.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/server.sgml: reworked a bit documentation build
+	system and added detection of inkscape and xsltproc in configure
+
+2005-02-08  rchantereau
+
+	* win32/msvc/lasso.dsp, win32/msvc/php/php.dsp: Removed
+	XMLSEC_DYNAMIC_LOADING because it is a non-sense.  We are using
+	xmlsec-openssl specific functions in code, so there is no choice,
+	we have to use openssl. (Fix a build warning).
+
+2005-02-08  rchantereau
+
+	* lasso/xml/tools.c: Fixed type error.
+
+2005-02-08  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/tools.c, lasso/xml/xml.c: allocate
+	query fields memory with glib g_malloc (and free it with g_free)
+
+2005-02-08  fpeters
+
+	* lasso/id-ff/provider.c: memory allocated by libxml2, freed by
+	xmlFree
+
+2005-02-08  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/xml.c: replaced free() by
+	xmlFree() when freeing strings created by libxml2
+
+2005-02-08  fpeters
+
+	* lasso/xml/tools.c: replaced free() with correct libraries
+	function (glib and libxml2)
+
+2005-02-08  fpeters
+
+	* swig/Lasso.i: do not include wsf functions when not using wsf
+
+2005-02-08  fpeters
+
+	* docs/lasso-book/figures/Makefile.am: step.xsl is in $(srcdir)
+
+2005-02-08  fpeters
+
+	* debian/changelog, debian/control, debian/copyright,
+	debian/liblasso1-dev.dirs, debian/liblasso1-dev.files,
+	debian/liblasso1.dirs, debian/liblasso1.files,
+	debian/liblasso3-dev.dirs, debian/liblasso3-dev.files,
+	debian/liblasso3.dirs, debian/liblasso3.files,
+	debian/php4-lasso.files, debian/rules: updated debian packaging to
+	what has just been uploaded to sid
+
+2005-02-08  fpeters
+
+	* lasso/xml/xml.c: that inline should be ok everywhere
+
+2005-02-08  fpeters
+
+	* php/patch_swig_output.py: ultra magic swig search&replace;
+	compiles with new debian php packages (and old ones too)
+
+2005-02-08  rchantereau
+
+	* win32/msvc/lasso.dsp: Removed bad build configuration.
+
+2005-02-08  rchantereau
+
+	* win32/msvc/lasso.dsp, win32/msvc/lasso.dsw,
+	win32/msvc/php/php.dsp: Added MS VC worspace and projets.
+	Currently two projects:
+
+	- Lasso DLL - PHP binding
+
+2005-02-08  rchantereau
+
+	* win32/msvc/vsnprintf.c: Added the vsnprintf function code of
+	Patrick Powell for MS Visual C users.
+
+2005-02-08  rchantereau
+
+	* lasso/xml/private.h: If vsnprintf is not available, the function
+	is declared in the private.h header file.
+
+2005-02-08  fpeters
+
+	* php/patch_swig_output.py: another php api change bites the dust
+
+2005-02-08  rchantereau
+
+	* lasso/xml/xml.c: __inline under MSVC.
+
+2005-02-08  fpeters
+
+	* php/patch_swig_output.py: first fix for debian php package abi
+	changes; zend_register_internal_class_ex gained a mysterious
+	parameter
+
+2005-02-08  fpeters
+
+	* lasso/xml/private.h: obviously static
+
+2005-02-08  fpeters
+
+	* php/Makefile.am: distribute patch_swig_output; it might come
+	handy
+
+2005-02-08  fpeters
+
+	* lasso/id-ff/lecp.c: variables and functions shouldn't have the
+	same names
+
+2005-02-08  fpeters
+
+	* lasso/xml/private.h: fixed variable name
+
+2005-02-08  fpeters
+
+	* configure.ac, lasso/xml/private.h: detect when it is possible to
+	use variadic macros and fall back to inline functions when it is
+	not the case.
+
+2005-02-08  eraviart
+
+	* lasso/xml/dst_new_data.c: Added missing snippet for element "any"
+	in dst:NewData.
+
+2005-02-05  fpeters
+
+	* docs/lasso-book/liberty-architecture.rst,
+	docs/lasso-book/figures/.cvsignore,
+	docs/lasso-book/figures/Makefile.am: use new figures in
+	documentation
+
+2005-02-05  fpeters
+
+	* configure.ac, docs/lasso-book/Makefile.am,
+	docs/lasso-book/figures/.cvsignore,
+	docs/lasso-book/figures/Makefile.am,
+	docs/lasso-book/figures/slo-sp-soap.svg,
+	docs/lasso-book/figures/sso-brws-art.svg,
+	docs/lasso-book/figures/sso-brws-post.svg,
+	docs/lasso-book/figures/step.xsl: New figures for documentation;
+	automake and makefile stuffs to generate png out of svg (with
+	inkscape) out of template svg (with xsltproc).	Needs to check for
+	those tools in configure.ac
+
+2005-02-05  fpeters
+
+	* lasso/errors.c, lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/private.h,
+	lasso/xml/tools.c: removed all %s escaping sequences from lasso
+	error strings; as a side effect this simplifies critical_error
+	macro, porting to non-gcc compilers should be easier.  Along the
+	way I also fixed the long standing bug #256.
+
+2005-02-05  fpeters
+
+	* lasso/Makefile.am: marked types.c and symbols.sym as phony
+	targets so they are rebuilt every time
+
+2005-02-05  fpeters
+
+	* lasso/id-ff/logout.c: more appropriate error code
+
+2005-02-05  fpeters
+
+	* lasso/id-wsf/wsf_profile.c: removed remaining compiler warning
+	(unused variable) from id-wsf/
+
+2005-02-05  fpeters
+
+	* lasso/xml/xml.c: correctly use id-ff 1.1 xml namespace in
+	backward compatibility mode
+
+2005-02-05  fpeters
+
+	* README.JAVA, README.WIN32: Updated documentation files nobody
+	cared about.
+
+2005-02-04  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/session.c, lasso/xml/xml.c:
+	added tests to fix bug #407 and avoir similar ones
+
+2005-02-04  fpeters
+
+	* tests/basic_tests.c: added testcase for bug #407
+
+2005-02-04  fpeters
+
+	* python/tests/profiles_tests.py: all query fields are restored to
+	the same lib:Extension; there are no other way.
+
+2005-02-04  fpeters
+
+	* lasso/xml/xml.c: restore a <lib:Extension> from unknown query
+	string elements; all of them are merged in the same <lib:Extension>
+
+2005-02-04  fpeters
+
+	* lasso/xml/private.h: use c99 construct for variadic macros when
+	not using gcc (still missing a third alternative for non-(c99||gcc)
+	compilers
+
+2005-02-03  eraviart
+
+	* configure.ac: Lasso requires glib and gobject >= 2.4.0 (when
+	compiled with glib 2.2.3, it generates an error: undefined symbol
+	g_hash_table_find).
+
+2005-02-02  eraviart
+
+	* python/tests/profiles_tests.py: Added a test converting an
+	AuthnRequest with an extension to and from a query. It fails.
+
+2005-02-02  fpeters
+
+	* lasso/xml/lib_authn_request.c, lasso/xml/xml.c: correctly deals
+	with RequestAuthnContext when rebuilding AuthnRequest from query
+	string
+
+2005-02-01  eraviart
+
+	* lasso/xml/strings.h, python/tests/profiles_tests.py,
+	swig/Lasso.i: Corrected typo in constant.  Added test for
+	AuthnContext in AuthnRequest.
+
+2005-01-30  eraviart
+
+	* lasso/xml/strings.h, swig/Lasso-wsf.i: Corrected SIS namespaces.
+
+2005-01-30  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am: doesn't mention wsf files
+	for now; a better solution will be devised in time
+
+2005-01-30  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am: don't include wsf files
+
+2005-01-29  fpeters
+
+	* lasso/id-ff/lecp.c, lasso/id-ff/provider.c: removed extraneous
+	liberty namespace registration and noted a future fix to LECP to
+	do.
+
+2005-01-29  eraviart
+
+	* swig/Lasso.i, swig/inheritance.h: SWIG: Use WSF_SUPPORT instead
+	of WSF_ENABLED as constant in bindings.
+
+2005-01-29  eraviart
+
+	* swig/Lasso-wsf.i: Typo correction.
+
+2005-01-29  eraviart
+
+	* swig/Lasso.i, swig/inheritance.h: Reverted previous replacement
+	of #if LASSO_WSF_ENABLED with #ifdef LASSO_WSF_ENABLED.
+
+2005-01-29  nclapies
+
+	* swig/Lasso.i, swig/inheritance.h: Replaced #if LASSO_WSF_ENABLED
+	by ifdef LASSO_WSF_ENABLED to enable wsf in bindings.
+
+2005-01-29  nclapies
+
+	* lasso/id-wsf/profile_service.h: Removed old comment.
+
+2005-01-29  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: Removed optional option parameter in
+	lasso_discovery_add_insert_entry().
+
+2005-01-29  eraviart
+
+	* swig/Lasso.i: SWIG: Added Attribute to AttributeStatement.
+
+2005-01-29  eraviart
+
+	* csharp/.cvsignore, csharp/Makefile.am, java/.cvsignore,
+	java/Makefile.am, swig/Lasso.i, swig/inheritance.h: Added binding
+	for saml:AttributeValue.  Corrected use of constant
+	LASSO_WSF_ENABLED in binding.
+
+2005-01-29  eraviart
+
+	* swig/Lasso.i, swig/inheritance.h: SWIG: Added constant
+	WSF_ENABLED and VERSION_DECIMAL to bindings.
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/login.c: compatibility with previous liberty
+	specifications; still missing support for old elements in
+	lib:AuthnRequest (requires some deep thought) but it may already be
+	working as is.
+
+2005-01-28  rchantereau
+
+	* win32/nsis/jlasso-lite.nsi, win32/nsis/lasso-deps.nsi,
+	win32/nsis/lasso-full.nsi, win32/nsis/lasso-lite.nsi: Updated to
+	lasso 0.6.0 with soname 3.  Updated dependencies too.
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/login.c: initializes AuthnResponse in
+	process_authn_request_msg; it is necessary since intermediary
+	function may want to set status code.  (fix a crasher bug when
+	using isPassive and POST)
+
+2005-01-28  rchantereau
+
+	* win32/lasso.rc: SONAME:3 no more 1.
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-ff/providerprivate.h: produce 1.1 requests and
+	notifications when interoperating with previous liberty
+	implementations
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/defederation.c: include missing identityprivate.h
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/provider.c: liberty 1.1 metadata were in another
+	namespace   "http://projectliberty.org/schemas/core/2002/12"
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/provider.c: store liberty 1.2 conformance when
+	loading metadata; it will allow to deal with previous liberty
+	implementations
+
+2005-01-28  fpeters
+
+	* lasso/id-ff/login.c: samlp:Request Major and Minor versions are
+	saml, not lib
+
+	If the element or its type is in a SAML namespace
+	(urn:oasis:names:tc:SAML:1.0:assertion or
+	urn:oasis:names:tc:SAML:1.0:protocol), then the values MUST be 1
+	and 1 respectively.
+
+2005-01-28  fpeters
+
+	* configure.ac: abort configure if python is not found
+
+2005-01-28  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/login.c,
+	lasso/id-ff/login.h, lasso/id-ff/profile.c, lasso/id-ff/server.c:
+	Document new functions; pretty please.	Fixed memory leak
+	introduced in lasso_profile_get_request_type_from_soap_msg; moved
+	wsf chunk from build_assertion to its own function.
+
+2005-01-28  eraviart
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h, lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/profile_service.c,
+	lasso/id-wsf/profile_service.h, lasso/xml/Makefile.am,
+	lasso/xml/disco_resource_offering.c,
+	lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h, lasso/xml/dst_data.c,
+	lasso/xml/dst_data.h, lasso/xml/saml_attribute.c,
+	lasso/xml/saml_attribute.h, lasso/xml/saml_attribute_statement.c,
+	lasso/xml/saml_attribute_statement.h,
+	lasso/xml/saml_attribute_value.c, lasso/xml/saml_attribute_value.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: Merged wsf-api-change-not-for-0-6
+	branch with trunk.
+
+2005-01-27  nclapies
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, swig/Lasso.i: Fixed bug
+	: login imports properly ResourceID in ResourceOffering if it was
+	set before building assertion. lasso_login_set_resourceId() now
+	takes a char* as parameter : it is the content of the ResourceID
+	element.
+
+2005-01-27  nclapies
+
+	* swig/Lasso.i: Fixed rename of LASSO_LIB_CONSENT_OBTAINED_PRIOR.
+
+2005-01-27  fpeters
+
+	* ChangeLog: updated ChangeLog for 0.6 with gazillion things.
+
 2005-01-27  fpeters
 
 	* configure.ac: wsf activation status in configure summary output
