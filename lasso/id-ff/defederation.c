@@ -479,7 +479,7 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
       goto done;
     }
 
-    /* build the QUERY and the url */
+    /* build the QUERY and the url. Dont need to sign the query, only the relay state is optinaly added and it is crypted by the notifier */
     url = lasso_provider_get_federationTerminationServiceReturnURL(provider,
 								   profile->provider_type,
 								   NULL);
