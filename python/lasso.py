@@ -150,12 +150,6 @@ class _ObjectMixin(object):
         return parent
     parent = property(get_parent)
 
-##     # Constructors
-
-##     def __init__(self, *arguments, **keywordArguments):
-##         super(_ObjectMixin, self).__init__(*arguments, **keywordArguments)
-##         _setRegisteredClass(self)
-
     # Methods
 
     def __repr__(self):
@@ -246,6 +240,11 @@ class Server(_ObjectMixin, lassomod.LassoServer):
     lassomodClass = lassomod.LassoServer
 
     # Constructors
+
+    def __init__(self, metadata = None, public_key = None, private_key = None, certificate = None,
+                signature_method = signatureMethodRsaSha1):
+        super(Server, self).__init__(
+            metadata, public_key, private_key, certificate, signature_method)
 
     def new_from_dump(cls, dump):
         self = lassomod.lasso_server_new_from_dump(dump)
@@ -576,7 +575,7 @@ class Lecp(_ObjectMixin, lassomod.LassoLecp):
     msg_url = property(get_msg_url)
 
     def get_request(self):
-        return parent.request
+        return self.parent.request
     request = property(get_request)
 
     def get_request_type(self):
@@ -639,10 +638,10 @@ class Lecp(_ObjectMixin, lassomod.LassoLecp):
             raise newError(errorCode, 'lasso_lecp_process_authn_response_envelope_msg')
 
     def set_identity_from_dump(self, dump):
-        return parent.set_identity_from_dump(dump)
+        return self.parent.set_identity_from_dump(dump)
 
     def set_session_from_dump(self, dump):
-        return parent.set_session_from_dump(dump)
+        return self.parent.set_session_from_dump(dump)
 
 registerClass(Lecp)
 
