@@ -345,12 +345,14 @@ lasso_logout_init_request(LassoLogout *logout,
   /* verify the identity and session exists */
   if (profile->identity == NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
-    return(-1);
+    ret = -1;
+    goto done;
   }
 
   if (profile->session != NULL) {
     message(G_LOG_LEVEL_CRITICAL, "Session not found\n");
-    exit(-1);
+    ret = -1;
+    goto done;
   }
 
   /* get federation */
