@@ -40,36 +40,11 @@
 #include <lasso/xml/errors.h>
 #include <lasso/xml/xml.h>
 
-struct _LassoNodePrivate
-{
-  gboolean   dispose_has_run;
-  gboolean   node_is_weak_ref;
-};
-
 static GObjectClass *parent_class = NULL;
 
 /*****************************************************************************/
 /* virtual public methods                                                    */
 /*****************************************************************************/
-
-/**
- * lasso_node_copy:
- * @node: a LassoNode
- * 
- * Build a copy of the node.
- * 
- * Return value: a copy of the node
- **/
-LassoNode *
-lasso_node_copy(LassoNode *node)
-{
-  LassoNodeClass *class;
-
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->copy(node);
-}
 
 /**
  * lasso_node_dump:
@@ -81,11 +56,11 @@ lasso_node_copy(LassoNode *node)
  * 
  * Return value: a full XML dump of @node
  **/
-gchar*
+char*
 lasso_node_dump(LassoNode *node, const xmlChar *encoding, int format)
 {
 	xmlNode *xmlnode;
-	gchar *ret;
+	char *ret;
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
 
@@ -129,28 +104,29 @@ lasso_node_dump(LassoNode *node, const xmlChar *encoding, int format)
 void
 lasso_node_destroy(LassoNode *node)
 {
-  if (LASSO_IS_NODE(node)) {
-    LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-    class->destroy(node);
-  }
+	if (LASSO_IS_NODE(node)) {
+		LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+		class->destroy(node);
+	}
 }
 
 /**
  * lasso_node_export_to_base64:
  * @node: a LassoNode
  * 
- * Like lasso_node_export() method except that result is Base64 encoded.
+ * Base64 XML dump
  * 
  * Return value: a Base64 encoded export of the LassoNode
  **/
-gchar *
+char*
 lasso_node_export_to_base64(LassoNode *node)
 {
-  LassoNodeClass *class;
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	char *buffer, *ret;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->export_to_base64(node);
+	buffer = lasso_node_dump(node, "utf-8", 0);
+	ret = xmlSecBase64Encode(buffer, strlen(buffer), 0);
+	g_free(buffer);
+	return ret;
 }
 
 /**
@@ -164,16 +140,20 @@ lasso_node_export_to_base64(LassoNode *node)
  * 
  * Return value: URL-encoded and signed LassoNode
  **/
-gchar *
-lasso_node_export_to_query(LassoNode            *node,
-			   lassoSignatureMethod  sign_method,
-			   const gchar          *private_key_file)
+char*
+lasso_node_export_to_query(LassoNode *node,
+		lassoSignatureMethod sign_method, const char *private_key_file)
 {
-  LassoNodeClass *class;
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	char *unsigned_query, *query;
 
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->export_to_query(node, sign_method, private_key_file);
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+	g_return_val_if_fail (private_key_file != NULL, NULL);
+
+	unsigned_query = lasso_node_build_query(node);
+	query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
+	g_free(unsigned_query);
+
+	return query;
 }
 
 /**
@@ -184,7 +164,7 @@ lasso_node_export_to_query(LassoNode            *node,
  * 
  * Return value: a SOAP enveloped export of the LassoNode
  **/
-gchar*
+char*
 lasso_node_export_to_soap(LassoNode *node)
 {
 	xmlNode *envelope, *body;
@@ -214,7 +194,7 @@ lasso_node_export_to_soap(LassoNode *node)
 
 
 void
-lasso_node_init_from_query(LassoNode *node, const gchar *query)
+lasso_node_init_from_query(LassoNode *node, const char *query)
 {
 	LassoNodeClass *class;
 	char **query_fields;
@@ -256,113 +236,8 @@ lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
  * a negative value if an error occurs during verification
  **/
 gint
-lasso_node_verify_signature(LassoNode   *node,
-			    const gchar *public_key_file,
-			    const gchar *ca_cert_chain_file)
-{
-  LassoNodeClass *class;
-
-  return 0;
-
-  g_return_val_if_fail(LASSO_IS_NODE(node),
-		       LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->verify_signature(node, public_key_file, ca_cert_chain_file);
-}
-
-/*****************************************************************************/
-/* virtual private methods                                                   */
-/*****************************************************************************/
-
-gchar*
-lasso_node_build_query(LassoNode *node)
-{
-	LassoNodeClass *class;
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-	class = LASSO_NODE_GET_CLASS(node);
-	return class->build_query(node);
-}
-
-xmlNodePtr
-lasso_node_get_xmlNode(LassoNode *node)
-{
-  LassoNodeClass *class;
-  g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-
-#if 0
-  fprintf(stderr, "lasso_node_get_xmlNode for %p (%s)\n", node, G_OBJECT_TYPE_NAME(node));
-#endif
-
-  class = LASSO_NODE_GET_CLASS(node);
-  return class->get_xmlNode(node);
-}
-
-/*****************************************************************************/
-/* implementation methods                                                    */
-/*****************************************************************************/
-
-static LassoNode *
-lasso_node_impl_copy(LassoNode *node)
-{
-  LassoNode *copy;
-  copy = LASSO_NODE(g_object_new(G_OBJECT_TYPE(node), NULL));
-  return copy;
-}
-
-static void
-lasso_node_impl_destroy(LassoNode *node)
-{
-  g_object_unref(G_OBJECT(node));
-}
-
-static gchar *
-lasso_node_impl_export_to_base64(LassoNode *node)
-{
-  gchar *buffer, *ret;
-
-  buffer = lasso_node_dump(node, "utf-8", 0);
-  ret = xmlSecBase64Encode(buffer, strlen(buffer), 0);
-  g_free(buffer);
-  buffer = NULL;
-
-  return ret;
-}
-
-static gchar *
-lasso_node_impl_export_to_query(LassoNode            *node,
-				lassoSignatureMethod  sign_method,
-				const gchar          *private_key_file)
-{
-	gchar *unsigned_query, *query;
-
-	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
-	g_return_val_if_fail (private_key_file != NULL, NULL);
-
-	unsigned_query = lasso_node_build_query(node);
-	query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
-	xmlFree(unsigned_query);
-
-	return query;
-}
-
-static void
-lasso_node_impl_init_from_query(LassoNode *node, char **query_fields)
-{
-	;
-}
-
-static void
-lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
-{
-	;
-}
-
-static gint
-lasso_node_impl_verify_signature(LassoNode   *node,
-				 const gchar *public_key_file,
-				 const gchar *ca_cert_chain_file)
+lasso_node_verify_signature(LassoNode *node,
+		const char *public_key_file, const char *ca_cert_chain_file)
 {
 	return 0;
 #if 0 /* XXX: signature should be verified in relevant nodes */
@@ -478,6 +353,54 @@ lasso_node_impl_verify_signature(LassoNode   *node,
   /* FIXME xmlFreeDoc(doc); */
   return ret;
 #endif
+}
+
+/*****************************************************************************/
+/* virtual private methods                                                   */
+/*****************************************************************************/
+
+char*
+lasso_node_build_query(LassoNode *node)
+{
+	LassoNodeClass *class;
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	class = LASSO_NODE_GET_CLASS(node);
+	return class->build_query(node);
+}
+
+xmlNodePtr
+lasso_node_get_xmlNode(LassoNode *node)
+{
+	LassoNodeClass *class;
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+#if 0
+	fprintf(stderr, "lasso_node_get_xmlNode for %p (%s)\n", node, G_OBJECT_TYPE_NAME(node));
+#endif
+	class = LASSO_NODE_GET_CLASS(node);
+	return class->get_xmlNode(node);
+}
+
+/*****************************************************************************/
+/* implementation methods                                                    */
+/*****************************************************************************/
+
+static void
+lasso_node_impl_destroy(LassoNode *node)
+{
+	g_object_unref(G_OBJECT(node));
+}
+
+static void
+lasso_node_impl_init_from_query(LassoNode *node, char **query_fields)
+{
+	;
+}
+
+static void
+lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	;
 }
 
 /*** private methods **********************************************************/
@@ -685,24 +608,11 @@ lasso_node_impl_sign_signature_tmpl(LassoNode     *node,
 static void
 lasso_node_dispose(LassoNode *node)
 {
-  if (node->private->dispose_has_run == TRUE) {
-    return;
-  }
-  node->private->dispose_has_run = TRUE;
-
-  /* unref reference counted objects */
-  /* we don't have any here */
-
-  parent_class->dispose(G_OBJECT(node));
 }
 
 static void
 lasso_node_finalize(LassoNode *node)
 {
-	g_free (node->private);
-	node->private = NULL;
-
-	parent_class->finalize(G_OBJECT(node));
 }
 
 /*****************************************************************************/
@@ -712,11 +622,6 @@ lasso_node_finalize(LassoNode *node)
 static void
 instance_init(LassoNode *instance)
 {
-	LassoNode *node = LASSO_NODE(instance);
-
-	node->private = g_new (LassoNodePrivate, 1);
-	node->private->dispose_has_run  = FALSE;
-	node->private->node_is_weak_ref = FALSE;
 }
 
 static void
@@ -726,19 +631,15 @@ class_init(LassoNodeClass *class)
 
 	parent_class = g_type_class_peek_parent(class);
 	/* virtual public methods */
-	class->copy                  = lasso_node_impl_copy;
-	class->destroy               = lasso_node_impl_destroy;
-	class->export_to_base64      = lasso_node_impl_export_to_base64;
-	class->export_to_query       = lasso_node_impl_export_to_query;
-	class->init_from_query       = lasso_node_impl_init_from_query;
-	class->init_from_xml         = lasso_node_impl_init_from_xml;
-	class->verify_signature      = lasso_node_impl_verify_signature;
+	class->destroy = lasso_node_impl_destroy;
+	class->init_from_query = lasso_node_impl_init_from_query;
+	class->init_from_xml = lasso_node_impl_init_from_xml;
 
 	/* virtual private methods */
-	class->build_query         = lasso_node_impl_build_query;
-	class->get_xmlNode         = NULL; /* nothing here */
+	class->build_query = lasso_node_impl_build_query;
+	class->get_xmlNode = NULL; /* nothing here */
 	/* override parent class methods */
-	gobject_class->dispose  = (void *)lasso_node_dispose;
+	gobject_class->dispose = (void *)lasso_node_dispose;
 	gobject_class->finalize = (void *)lasso_node_finalize;
 }
 
@@ -775,11 +676,11 @@ lasso_node_get_type()
 LassoNode*
 lasso_node_new()
 {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
+	return g_object_new(LASSO_TYPE_NODE, NULL);
 }
 
 LassoNode*
-lasso_node_new_from_soap(const gchar *soap)
+lasso_node_new_from_soap(const char *soap)
 {
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
