@@ -255,16 +255,6 @@ lasso_node_set_name(LassoNode     *node,
 }
 
 static void
-lasso_node_set_node(LassoNode *node,
-		    xmlNodePtr libxml_node)
-{
-  g_return_if_fail(LASSO_IS_NODE(node));
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->set_node(node, libxml_node);
-}
-
-static void
 lasso_node_set_ns(LassoNode     *node,
 		  const xmlChar *href,
 		  const xmlChar *prefix)
@@ -284,6 +274,16 @@ lasso_node_set_prop(LassoNode     *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(node, name, value);
+}
+
+static void
+lasso_node_set_xmlNode(LassoNode *node,
+		       xmlNodePtr libxml_node)
+{
+  g_return_if_fail(LASSO_IS_NODE(node));
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->set_xmlNode(node, libxml_node);
 }
 
 /*****************************************************************************/
@@ -448,20 +448,21 @@ static LassoNode *
 lasso_node_impl_get_child(LassoNode     *node,
 			  const xmlChar *name)
 {
+  /*   /\* No recurssive version *\/ */
   /*   xmlNodePtr cur; */
   
-  /*   No recurssive version */
   /*   cur = node->private->node->children; */
   /*   while (cur != NULL) { */
   /*     if(cur->type == XML_ELEMENT_NODE) { */
   /*       if (xmlStrEqual(cur->name, name)) { */
-  /* 	return (lasso_node_new(cur)); */
+  /*   	return (lasso_node_new(cur)); */
   /*       } */
   /*     } */
   /*     cur = cur->next; */
   /*   } */
   /*   return (NULL); */
 
+  /* Recurssive version */
   xmlNodePtr cur;
   LassoNode *ret;
 
@@ -476,14 +477,12 @@ lasso_node_impl_get_child(LassoNode     *node,
     if (cur->children != NULL) {
       ret = lasso_node_get_child(lasso_node_new(cur->children), name);
       if (ret != NULL) {
-	return (ret);	    
+	return (ret);
       }
     }
     cur = cur->next;
   }
   return (NULL);
-  
-  /* return (lasso_node_new(child)); */
 }
 
 static GPtrArray *
@@ -542,7 +541,7 @@ lasso_node_impl_parse_memory(LassoNode  *node,
   doc = xmlParseMemory(buffer, strlen(buffer));
   /* get root element of doc and duplicate it */
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
-  lasso_node_set_node(node, root);
+  lasso_node_set_xmlNode(node, root);
   /* free doc */
   xmlFreeDoc(doc);
 }
@@ -841,17 +840,6 @@ lasso_node_impl_set_name(LassoNode     *node,
 }
 
 static void
-lasso_node_impl_set_node(LassoNode  *node,
-			 xmlNodePtr  libxml_node)
-{
-  g_return_if_fail (LASSO_IS_NODE(node));
-  g_return_if_fail (libxml_node != NULL);
-
-  xmlFreeNode(node->private->node);
-  node->private->node = libxml_node;
-}
-
-static void
 lasso_node_impl_set_ns(LassoNode     *node,
 		       const xmlChar *href,
 		       const xmlChar *prefix)
@@ -890,6 +878,17 @@ lasso_node_impl_set_prop(LassoNode     *node,
   g_return_if_fail (value != NULL);
 
   xmlSetProp(node->private->node, name, value);
+}
+
+static void
+lasso_node_impl_set_xmlNode(LassoNode  *node,
+			    xmlNodePtr  libxml_node)
+{
+  g_return_if_fail (LASSO_IS_NODE(node));
+  g_return_if_fail (libxml_node != NULL);
+
+  xmlFreeNode(node->private->node);
+  node->private->node = libxml_node;
 }
 
 /*****************************************************************************/
@@ -955,9 +954,9 @@ lasso_node_class_init(LassoNodeClass *class)
   class->new_child   = lasso_node_impl_new_child;
   class->new_ns      = lasso_node_impl_new_ns;
   class->set_name    = lasso_node_impl_set_name;
-  class->set_node    = lasso_node_impl_set_node;
   class->set_ns      = lasso_node_impl_set_ns;
   class->set_prop    = lasso_node_impl_set_prop;
+  class->set_xmlNode = lasso_node_impl_set_xmlNode;
   /* override parent class methods */
   gobject_class->dispose  = (void *)lasso_node_dispose;
   gobject_class->finalize = (void *)lasso_node_finalize;

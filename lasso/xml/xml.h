@@ -100,14 +100,14 @@ struct _LassoNodeClass {
 			       const xmlChar *);
   void       (* set_name)     (LassoNode     *,
 			       const xmlChar *);
-  void       (* set_node)     (LassoNode     *,
-			       xmlNodePtr);
   void       (* set_ns)       (LassoNode     *node,
 			       const xmlChar *href,
 			       const xmlChar *prefix);
   void       (* set_prop)     (LassoNode     *,
 			       const xmlChar *,
 			       const xmlChar *);
+  void       (* set_xmlNode)  (LassoNode     *,
+			       xmlNodePtr);
 };
 
 typedef enum {

@@ -152,7 +152,7 @@ LassoNode* lasso_ds_signature_new(xmlDocPtr         doc,
     printf("Error: failed to add X509Data node\n");
   }
 
-  LASSO_NODE_GET_CLASS(node)->set_node(node, signature);
+  LASSO_NODE_GET_CLASS(node)->set_xmlNode(node, signature);
 
   return (node);
 }
