@@ -43,7 +43,7 @@ struct _LassoAbstractServicePrivate
 static LassoAbstractServiceClass *parent_class = NULL;
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static void

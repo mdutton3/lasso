@@ -131,7 +131,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static void

@@ -294,7 +294,7 @@ lasso_lecp_destroy(LassoLecp *lecp)
 static LassoNodeClass *parent_class = NULL;
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static void

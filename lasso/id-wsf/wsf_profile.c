@@ -63,7 +63,7 @@ lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 static LassoNodeClass *parent_class = NULL;
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static void

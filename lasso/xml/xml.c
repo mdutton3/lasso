@@ -583,7 +583,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node)
 }
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static GObjectClass *parent_class = NULL;

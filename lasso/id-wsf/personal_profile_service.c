@@ -131,7 +131,7 @@ lasso_personal_profile_service_process_response_msg(LassoPersonalProfileService 
 static LassoPersonalProfileServiceClass *parent_class = NULL;
 
 /*****************************************************************************/
-/* overridden parent class methods                                            */
+/* overridden parent class methods                                           */
 /*****************************************************************************/
 
 static void
