@@ -24,6 +24,35 @@
 
 #include "lasso.h"
 
+#if defined _MSC_VER
+#include <windows.h>
+HINSTANCE g_hModule = NULL; /**< DLL Instance. */
+/** \brief Microsoft® Windows® DLL main function.
+ *
+ *  This function is called when the DLL is attached, detached from a program.
+ *  
+ *  \param  hinstDLL    Handle to the DLL module.
+ *  \param  fdwReason   Reason value of the DLL call.
+ *  \param  lpvReserved RFU.
+ *
+ *  \return TRUE is everything is ok.
+ *  
+ */
+BOOL WINAPI
+DllMain(
+  HINSTANCE hinstDLL,  // handle to the DLL module
+  DWORD fdwReason,     // reason for calling function
+  LPVOID lpvReserved)  // reserved
+{
+    if (fdwReason == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hinstDLL);
+        g_hModule = hinstDLL;
+    }
+    return TRUE;
+}
+#endif
+
 /**
  * lasso_init:
  *

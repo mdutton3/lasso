@@ -26,6 +26,43 @@ AC_SUBST(LASSO_VERSION_INFO)
 
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 AM_MAINTAINER_MODE
+GLIB_FOUND="no"
+XMLSEC1_FOUND="no"
+LIBXML_FOUND="no"
+LIBXML262_FOUND="no"
+LIBXSLT_FOUND="no"
+CWINDOWS="no"
+
+dnl ==========================================================================
+dnl Perform host specific configuration
+dnl ==========================================================================
+case "${host}" in
+    *aix* )
+	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
+	;;
+    *-pc-*)
+        CC="gcc -mno-cygwin"
+        CFLAGS="-I/usr/local/include -D_MSC_VER=1 -DIN_LASSO=1"
+#        CFLAGS="-I/usr/local/include"
+        LDFLAGS="-L/usr/local/lib" 
+dnl        CFLAGS="${CFLAGS} -mno-cygwin"
+dnl        LDFLAGS="${LDFLAGS} -mno-cygwin"
+        GLIB_CFLAGS="-I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include"
+        GLIB_LIBS="-lgobject-2.0 -lglib-2.0"
+        GLIB_FOUND="yes"
+        XMLSEC1_CFLAGS="-DXMLSEC_CRYPTO=\"openssl\" -DXMLSEC_LIBXML_260=1 -D__XMLSEC_FUNCTION__=__FUNCTION__ -DXMLSEC_NO_XKMS=1 -DXMLSEC_NO_CRYPTO_DYNAMIC_LOADING=1 -DXMLSEC_CRYPTO_OPENSSL=1"
+        XMLSEC1_LIBS="-lxmlsec-openssl -lxmlsec"
+        XMLSEC1_FOUND="yes"
+        LIBXML_CFLAGS="-I/usr/local/include/libxml2"
+        LIBXML_LIBS="-lxml2"
+        LIBXML_FOUND="yes"
+        LIBXML262_FOUND="yes"
+        LIBXSLT_CFLAGS=""
+        LIBXSLT_LIBS="-lxslt"
+        LIBXSLT_FOUND="yes"
+        CWINDOWS="yes"
+        ;;
+esac
 
 dnl
 dnl Check the environment
@@ -67,36 +104,29 @@ dnl AC_LIB_LTDL
 LASSO_DEFINES="-DLASSO_DEBUG"
 dnl LASSO_DEFINES=""
 
-dnl ==========================================================================
-dnl Perform host specific configuration
-dnl ==========================================================================
-case "${host}" in
-    *aix* )
-	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
-	;;
-esac
+
 
 dnl ==========================================================================
 dnl Check for __FUNCTION__ or __func__
 dnl ==========================================================================
-AC_MSG_CHECKING(for __FUNCTION__ or __func__)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
-	[[char *foo = __FUNCTION__;]])],
-	[ac_function_exists=yes],
-	[ac_function_exists=no])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
-	[[char *foo = __func__;]])],
-	[ac_func_exists=yes],
-	[ac_func_exists=no])
-if test "z$ac_function_exists" = "zyes" ; then
-	AC_MSG_RESULT(__FUNCTION__)
-	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__FUNCTION__"
-elif test "z$ac_func_exists" = "zyes" ; then 
-	AC_MSG_RESULT(__func__)
-	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__func__"
-else 
-	AC_MSG_RESULT("no")
-fi
+dnl AC_MSG_CHECKING(for __FUNCTION__ or __func__)
+dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+dnl 	[[char *foo = __FUNCTION__;]])],
+dnl 	[ac_function_exists=yes],
+dnl 	[ac_function_exists=no])
+dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+dnl 	[[char *foo = __func__;]])],
+dnl 	[ac_func_exists=yes],
+dnl 	[ac_func_exists=no])
+dnl if test "z$ac_function_exists" = "zyes" ; then
+dnl 	AC_MSG_RESULT(__FUNCTION__)
+dnl 	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__FUNCTION__"
+dnl elif test "z$ac_func_exists" = "zyes" ; then 
+dnl 	AC_MSG_RESULT(__func__)
+dnl 	LASSO_DEFINES="$LASSO_DEFINES -D__LASSO_FUNCTION__=__func__"
+dnl else 
+dnl 	AC_MSG_RESULT("no")
+dnl fi
 
 dnl ==========================================================================
 dnl check do we have size_t and its size, 
@@ -127,19 +157,20 @@ fi
 dnl ==========================================================================
 dnl find glib
 dnl ==========================================================================
-GLIB_MIN_VERSION="2.2.3"
-GLIB_CONFIG="glib-config"
-GLIB_CFLAGS=""
-GLIB_LIBS=""
-GLIB_FOUND="no"
-AC_ARG_WITH(glib, [  --with-glib=[PFX]       glib location])
-if test "z$with_glib" = "zno" ; then 
-    AC_MSG_CHECKING(for glib libraries >= $GLIB_MIN_VERSION) 
-    AC_MSG_ERROR(glib >= $GLIB_MIN_VERSION is required for $PACKAGE)
-elif test "z$with_glib" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-    PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_MIN_VERSION,
-	[GLIB_FOUND=yes],
-	[GLIB_FOUND=no])
+if test "$GLIB_FOUND" = "no"; then
+    GLIB_MIN_VERSION="2.2.3"
+    GLIB_CONFIG="glib-config --prefix=/usr/local"
+    GLIB_CFLAGS=""
+    GLIB_LIBS=""
+    AC_ARG_WITH(glib, [  --with-glib=[PFX]       glib location])
+    if test "z$with_glib" = "zno" ; then 
+        AC_MSG_CHECKING(for glib libraries >= $GLIB_MIN_VERSION) 
+        AC_MSG_ERROR(glib >= $GLIB_MIN_VERSION is required for $PACKAGE)
+    elif test "z$with_glib" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
+        PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_MIN_VERSION,
+            [GLIB_FOUND=yes],
+            [GLIB_FOUND=no])
+    fi
 fi
 
 if test "z$GLIB_FOUND" = "zno" ; then
@@ -170,23 +201,23 @@ AC_SUBST(GLIB_MIN_VERSION)
 dnl ==========================================================================
 dnl find libxml
 dnl ==========================================================================
-LIBXML_MIN_VERSION="2.4.2"
-LIBXML_CONFIG="xml2-config"
-LIBXML_CFLAGS=""
-LIBXML_LIBS=""
-LIBXML_FOUND="no"
-LIBXML262_FOUND="no"
-AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
-if test "z$with_libxml" = "zno" ; then 
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
-    AC_MSG_ERROR(libxml2 >= $LIBXML_MIN_VERSION is required for $PACKAGE)
-elif test "z$with_libxml" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-    PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_MIN_VERSION,
-	[LIBXML_FOUND=yes],
-	[LIBXML_FOUND=no])
-    PKG_CHECK_MODULES(LIBXML262, libxml-2.0 >= 2.6.2,
-	[LIBXML262_FOUND=yes],
-	[LIBXML262_FOUND=no])
+if test "z$LIBXML_FOUND" = "zno" ; then
+    LIBXML_MIN_VERSION="2.4.2"
+    LIBXML_CONFIG="xml2-config --prefix=/usr/local"
+    LIBXML_CFLAGS=""
+    LIBXML_LIBS=""
+    AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
+    if test "z$with_libxml" = "zno" ; then 
+        AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
+        AC_MSG_ERROR(libxml2 >= $LIBXML_MIN_VERSION is required for $PACKAGE)
+    elif test "z$with_libxml" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
+        PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_MIN_VERSION,
+            [LIBXML_FOUND=yes],
+            [LIBXML_FOUND=no])
+        PKG_CHECK_MODULES(LIBXML262, libxml-2.0 >= 2.6.2,
+            [LIBXML262_FOUND=yes],
+            [LIBXML262_FOUND=no])
+    fi
 fi
 
 if test "z$LIBXML_FOUND" = "zno" ; then
@@ -221,20 +252,21 @@ dnl ==========================================================================
 dnl find libxslt
 dnl ==========================================================================
 LASSO_NO_LIBXSLT="1"
-LIBXSLT_MIN_VERSION=1.0.20
-LIBXSLT_CONFIG="xslt-config"
-LIBXSLT_CFLAGS=""
-LIBXSLT_LIBS=""
-LIBXSLT_FOUND="no"
-AC_ARG_WITH(libxslt, [  --with-libxslt=[PFX]      libxslt location])
-if test "z$with_libxslt" = "zno" ; then
-    AC_MSG_CHECKING(for libxslt libraries >= $LIBXSLT_MIN_VERSION) 
-    AC_MSG_RESULT(no)
-    LIBXSLT_FOUND="without"
-elif test "z$with_libxslt" = "z" -a  "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-    PKG_CHECK_MODULES(LIBXSLT, libxslt >= $LIBXSLT_MIN_VERSION,
-	[LIBXSLT_FOUND=yes],
-	[LIBXSLT_FOUND=no])
+if test "z$LIBXSLT_FOUND" = "zno" ; then
+    LIBXSLT_MIN_VERSION=1.0.20
+    LIBXSLT_CONFIG="xslt-config --prefix=/usr/local"
+    LIBXSLT_CFLAGS=""
+    LIBXSLT_LIBS=""
+    AC_ARG_WITH(libxslt, [  --with-libxslt=[PFX]      libxslt location])
+    if test "z$with_libxslt" = "zno" ; then
+        AC_MSG_CHECKING(for libxslt libraries >= $LIBXSLT_MIN_VERSION) 
+        AC_MSG_RESULT(no)
+        LIBXSLT_FOUND="without"
+    elif test "z$with_libxslt" = "z" -a  "z$PKG_CONFIG_ENABLED" = "zyes" ; then
+        PKG_CHECK_MODULES(LIBXSLT, libxslt >= $LIBXSLT_MIN_VERSION,
+            [LIBXSLT_FOUND=yes],
+            [LIBXSLT_FOUND=no])
+    fi
 fi
 
 if test "z$LIBXSLT_FOUND" = "zno" ; then
@@ -276,19 +308,20 @@ AC_SUBST(LIBXSLT_MIN_VERSION)
 dnl ==========================================================================
 dnl find xmlsec1
 dnl ==========================================================================
-XMLSEC1_MIN_VERSION="1.2.4"
-XMLSEC1_CONFIG="xmlsec1-config"
-XMLSEC1_CFLAGS=""
-XMLSEC1_LIBS=""
-XMLSEC1_FOUND="no"
-AC_ARG_WITH(xmlsec1, [  --with-xmlsec1=[PFX]       xmlsec1 location])
-if test "z$with_xmlsec1" = "zno" ; then 
-    AC_MSG_CHECKING(for xmlsec1 libraries >= $XMLSEC1_MIN_VERSION) 
-    AC_MSG_ERROR(xmlsec1 >= $XMLSEC1_MIN_VERSION is required for $PACKAGE)
-elif test "z$with_xmlsec1" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-    PKG_CHECK_MODULES(XMLSEC1, xmlsec1 >= $XMLSEC1_MIN_VERSION,
-	[XMLSEC1_FOUND=yes],
-	[XMLSEC1_FOUND=no])
+if test "z$XMLSEC1_FOUND" = "zno" ; then
+    XMLSEC1_MIN_VERSION="1.2.4"
+    XMLSEC1_CONFIG="xmlsec1-config --prefix=/usr/local"
+    XMLSEC1_CFLAGS=""
+    XMLSEC1_LIBS=""
+    AC_ARG_WITH(xmlsec1, [  --with-xmlsec1=[PFX]       xmlsec1 location])
+    if test "z$with_xmlsec1" = "zno" ; then 
+        AC_MSG_CHECKING(for xmlsec1 libraries >= $XMLSEC1_MIN_VERSION) 
+        AC_MSG_ERROR(xmlsec1 >= $XMLSEC1_MIN_VERSION is required for $PACKAGE)
+    elif test "z$with_xmlsec1" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
+        PKG_CHECK_MODULES(XMLSEC1, xmlsec1 >= $XMLSEC1_MIN_VERSION,
+            [XMLSEC1_FOUND=yes],
+            [XMLSEC1_FOUND=no])
+    fi
 fi
 
 if test "z$XMLSEC1_FOUND" = "zno" ; then
@@ -427,7 +460,7 @@ AC_SUBST(LASSO_CORE_CFLAGS)
 AC_SUBST(LASSO_CORE_LIBS)
 
 LASSO_CFLAGS="$LASSO_CORE_CFLAGS $GLIB_CFLAGS $LIBXML_CFLAGS $LIBXSLT_CFLAGS $XMLSEC1_CFLAGS $LASSO_CRYPTO_CFLAGS"
-LASSO_LIBS="-L${libdir} -l$LASSO_CRYPTO_LIB $LASSO_CORE_LIBS $GLIB_LIBS $LIBXML_LIBS $LIBXSLT_LIBS $XMLSEC1_LIBS $LASSO_CRYPTO_LIBS"
+LASSO_LIBS="-L${libdir} $LASSO_CRYPTO_LIB $LASSO_CORE_LIBS $GLIB_LIBS $LIBXML_LIBS $LIBXSLT_LIBS $XMLSEC1_LIBS $LASSO_CRYPTO_LIBS"
 AC_SUBST(LASSO_CFLAGS)
 AC_SUBST(LASSO_LIBS)
 
@@ -436,6 +469,16 @@ AC_SUBST(LASSO_APP_DEFINES)
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
+
+dnl ==========================================================================
+dnl Producing DLL
+dnl ==========================================================================
+dnl if test "$CWINDOWS" = "yes" ; then
+dnl     LINK="/usr/bin/dllwrap.exe --add-stdcall-alias -mwindows -s --driver-name \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) \$(LASSO_CORE_CFLAGS) \$(GLIB_CFLAGS) \$(LIBXML_CFLAGS) \$(LIBXSLT_CFLAGS) \$(XMLSEC1_CFLAGS) \$(LASSO_CRYPTO_CFLAGS) -L\${libdir} \$(GLIB_LIBS) \$(LIBXML_LIBS) \$(LIBXSLT_LIBS) \$(XMLSEC1_LIBS) \$(LASSO_CRYPTO_LIBS) -o \$@"
+dnl else
+dnl     LINK="\$(LIBTOOL) --mode=link \$(CCLD) \$(AM_CFLAGS) \$(CFLAGS) \$(LDFLAGS) -o \$@"
+dnl fi
+dnl AC_SUBST(LINK)
 
 dnl ==========================================================================
 dnl Writing result files
