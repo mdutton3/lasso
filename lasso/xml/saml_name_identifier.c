@@ -43,17 +43,6 @@ The schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
 /*****************************************************************************/
 
 void
-lasso_saml_name_identifier_set_nameQualifier(LassoSamlNameIdentifier *node,
-					     const xmlChar *nameQualifier)
-{
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(node));
-  g_assert(nameQualifier != NULL);
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->set_prop(LASSO_NODE (node), "NameQualifier", nameQualifier);
-}
-
-void
 lasso_saml_name_identifier_set_format(LassoSamlNameIdentifier *node,
 				      const xmlChar *format)
 {
@@ -62,6 +51,17 @@ lasso_saml_name_identifier_set_format(LassoSamlNameIdentifier *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->set_prop(LASSO_NODE (node), "Format", format);
+}
+
+void
+lasso_saml_name_identifier_set_nameQualifier(LassoSamlNameIdentifier *node,
+					     const xmlChar *nameQualifier)
+{
+  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(node));
+  g_assert(nameQualifier != NULL);
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->set_prop(LASSO_NODE (node), "NameQualifier", nameQualifier);
 }
 
 /*****************************************************************************/

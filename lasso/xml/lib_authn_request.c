@@ -155,7 +155,7 @@ lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *node,
  **/
 void
 lasso_lib_authn_request_set_nameIDPolicy(LassoLibAuthnRequest *node,
-					 const xmlChar   *nameIDPolicy)
+					 const xmlChar *nameIDPolicy)
 {
   g_assert(LASSO_IS_LIB_AUTHN_REQUEST(node));
   g_assert(nameIDPolicy != NULL);

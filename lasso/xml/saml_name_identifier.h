@@ -54,11 +54,11 @@ struct _LassoSamlNameIdentifierClass {
 LASSO_EXPORT GType lasso_saml_name_identifier_get_type(void);
 LASSO_EXPORT LassoNode* lasso_saml_name_identifier_new(xmlChar *content);
 
-LASSO_EXPORT void lasso_saml_name_identifier_set_nameQualifier (LassoSamlNameIdentifier *node,
-								const xmlChar *nameQualifier);
-
 LASSO_EXPORT void lasso_saml_name_identifier_set_format        (LassoSamlNameIdentifier *node,
 								const xmlChar *format);
+
+LASSO_EXPORT void lasso_saml_name_identifier_set_nameQualifier (LassoSamlNameIdentifier *node,
+								const xmlChar *nameQualifier);
 
 #ifdef __cplusplus
 }

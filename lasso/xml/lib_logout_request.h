@@ -57,7 +57,10 @@ LASSO_EXPORT LassoNode* lasso_lib_logout_request_new(void);
 LASSO_EXPORT void lasso_lib_logout_request_set_consent        (LassoLibLogoutRequest *,
 							       const xmlChar *);
 
-LASSO_EXPORT void lasso_lib_logout_request_set_providerId     (LassoLibLogoutRequest *,
+LASSO_EXPORT void lasso_lib_logout_request_set_nameIdentifier (LassoLibLogoutRequest *,
+							       LassoSamlNameIdentifier *);
+
+LASSO_EXPORT void lasso_lib_logout_request_set_providerID     (LassoLibLogoutRequest *,
 							       const xmlChar *);
 
 LASSO_EXPORT void lasso_lib_logout_request_set_relayState     (LassoLibLogoutRequest *,
@@ -65,9 +68,6 @@ LASSO_EXPORT void lasso_lib_logout_request_set_relayState     (LassoLibLogoutReq
 
 LASSO_EXPORT void lasso_lib_logout_request_set_sessionIndex   (LassoLibLogoutRequest *,
 							       const xmlChar *);
-
-LASSO_EXPORT void lasso_lib_logout_request_set_nameIdentifier (LassoLibLogoutRequest *,
-							       LassoSamlNameIdentifier *);
 
 #ifdef __cplusplus
 }

@@ -70,6 +70,16 @@ lasso_lib_logout_request_set_consent(LassoLibLogoutRequest *node,
 }
 
 void
+lasso_lib_logout_request_set_nameIdentifier(LassoLibLogoutRequest *node,
+					    LassoSamlNameIdentifier *nameIdentifier) {
+  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
+  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
+
+  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
+  class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
+}
+
+void
 lasso_lib_logout_request_set_providerID(LassoLibLogoutRequest *node,
 					const xmlChar *providerID)
 {
@@ -99,16 +109,6 @@ lasso_lib_logout_request_set_sessionIndex(LassoLibLogoutRequest *node,
 
   LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "SessionIndex", sessionIndex, FALSE);
-}
-
-void
-lasso_lib_logout_request_set_nameIdentifier(LassoLibLogoutRequest *node,
-					    LassoSamlNameIdentifier *nameIdentifier) {
-  g_assert(LASSO_IS_LIB_LOGOUT_REQUEST(node));
-  g_assert(LASSO_IS_SAML_NAME_IDENTIFIER(nameIdentifier));
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->add_child(LASSO_NODE (node), LASSO_NODE (nameIdentifier), FALSE);
 }
 
 /*****************************************************************************/
