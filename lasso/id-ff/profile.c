@@ -205,7 +205,7 @@ lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue
 	status = lasso_samlp_status_new();
 	status->StatusCode = lasso_samlp_status_code_new();
 
-	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) == 0) {
+	if (strncmp(statusCodeValue, "samlp:", 6) == 0) {
 		status->StatusCode->Value = g_strdup(statusCodeValue);
 	} else {
 		status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_RESPONDER);
