@@ -1,15 +1,12 @@
-NULL=
 TOP=$(top_srcdir)
-MODULE=lasso
-DOC_MAIN_SGML_FILE=$(MODULE).sgml
+DOC_MAIN_SGML_FILE=lasso.sgml
 SOURCE_DIR=$(TOP)/lasso
 INCLUDE_DIR=$(TOP)/lasso
 
 EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \
-	lasso.types \
-	$(NULL)
+	lasso.types 
 
 # Extra options to pass to gtkdoc-scangobj.
 SCANOBJ_OPTIONS=
@@ -31,14 +28,9 @@ docs: sgml html clean-sources
 html: sgml $(DOC_MAIN_SGML_FILE) lasso-index
 	@echo '*** Building HTML ***'
 	test -d html || mkdir html
-	cd html && gtkdoc-mkhtml $(MODULE) ../$(DOC_MAIN_SGML_FILE)
+	cd html && gtkdoc-mkhtml lasso ../build/$(DOC_MAIN_SGML_FILE)
 
-SCANOBJ_FILES = 		\
-	$(MODULE).hierarchy	\
-	$(MODULE).signals 	\
-	$(MODULE).interfaces 	\
-	$(MODULE).prerequisites \
-	$(MODULE).args
+SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisites lasso.args
 
 #
 # Prepeare sgml files from sources for each library. We are also
@@ -48,10 +40,13 @@ SCANOBJ_FILES = 		\
 #
 sgml: templates
 	@echo '*** Building SGML ***'
-	-@gtkdoc-mkdb --module=$(MODULE) \
+	cd build && gtkdoc-mkdb --module=lasso \
 		    --main-sgml-file=$(DOC_MAIN_SGML_FILE) \
-		    --source-dir=$(DOC_SOURCE_DIR)/lasso
-	-@(for i in `find sgml -name "*.sgml" -print` ; do \
+		    --tmpl-dir=../tmpl/ \
+		    --source-dir=../$(DOC_SOURCE_DIR)/lasso \
+		    --output-dir=../sgml/
+	cp $(srcdir)/lasso.sgml build/
+	(for i in `find sgml -name "*.sgml" -print` ; do \
 	    cat $$i | \
 		sed 's!\(&lt;dsig:\)\([^/]*\)\(\/&gt;\)!<ulink URL=\"http://www.w3.org/TR/xmldsig-core/#sec-\2\">\1\2\3</ulink>!g' | \
 		sed 's!\(&lt;enc:\)\([^/]*\)\(\/&gt;\)!<ulink URL=\"http://www.w3.org/TR/xmlenc-core/#sec-\2\">\1\2\3</ulink>!g' | \
@@ -59,10 +54,11 @@ sgml: templates
 		$$i.tmp; \
 		mv -f $$i.tmp $$i; \
 	done);
+	ln -s ../sgml build/sgml
 
 templates: scan
 	@echo '*** Building TMPL ***'
-	-@gtkdoc-mktmpl --module=$(MODULE)
+	cd build && gtkdoc-mktmpl --module=lasso --output-dir=../tmpl/
 
 # CFLAGS and LDFLAGS for compiling scan program.
 GTKDOC_CFLAGS = 		\
@@ -77,20 +73,19 @@ GTKDOC_CC=$(LIBTOOL) --mode=compile $(CC)
 GTKDOC_LD=$(LIBTOOL) --mode=link $(CC)
 
 scan: doc_sources
+	test -d build || mkdir build
 	@echo '*** Scan sources ***'
-	if grep -l '^..*$$' $(srcdir)/$(MODULE).types > /dev/null ; then \
-		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=$(MODULE) --types=$(srcdir)/$(MODULE).types --output-dir=$(builddir) ; \
+	cp $(srcdir)/lasso-sections.txt build/
+	if grep -l '^..*$$' $(srcdir)/lasso.types > /dev/null ; then \
+		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=lasso --types=$(srcdir)/lasso.types --output-dir=build/ ; \
 	else \
 		cd $(srcdir) ; \
 		for i in $(SCANOBJ_FILES) ; do \
 			test -f $$i || touch $$i ; \
 		done \
 	fi
-	-@gtkdoc-scan --module=$(MODULE) \
-		    --source-dir=$(DOC_SOURCE_DIR)/lasso/
+	gtkdoc-scan --module=lasso --source-dir=$(DOC_SOURCE_DIR)/lasso/ --output-dir=build/
 
-$(MODULE)-decl.txt $(SCANOBJ_FILES): scan
-	@true
 
 #
 # Prepare source files by coping them to "code" folder and 
@@ -98,7 +93,7 @@ $(MODULE)-decl.txt $(SCANOBJ_FILES): scan
 #
 doc_sources: $(DOC_SOURCE_FILES)
 	@echo '*** Prepare sources ***'
-	@(for i in $(DOC_SOURCE_FILES) ; do \
+	(for i in $(DOC_SOURCE_FILES) ; do \
 	    folder_name=`echo $$i | sed 's#$(TOP)/##' | sed 's#/[^/]*$$##'`; \
 	    file_name=`echo $$i | sed 's#.*/##'`; \
 	    test -d $(DOC_SOURCE_DIR)/$$folder_name || mkdir -p $(DOC_SOURCE_DIR)/$$folder_name; \
@@ -116,32 +111,30 @@ doc_sources: $(DOC_SOURCE_FILES)
 #
 lasso-index: scan 
 	@echo '*** Create functions index ***'
-	@grep -h '<NAME>.*</NAME>' $(MODULE)-*decl.txt | \
+	grep -h '<NAME>.*</NAME>' lasso-*decl.txt | \
 		grep -v '<NAME>extern</NAME>' | \
 		sort -u | \
 		sed 's#_#-#g' | \
 		sed 's#<NAME>\([^-]*\)-\([^<]*\)</NAME>#<listitem><para><link linkend=\"\1-\2-CAPS\">\1-\2</link></para></listitem>#g' | \
 		sed 's#<NAME>\([^<]*\)</NAME>#<listitem><para><link linkend=\"\1\">\1</link></para></listitem>#g' > \
-		lasso-index.sgml
+		sgml/lasso-index.sgml
 
 #dist-hook:
 #	@cp -p $(srcdir)/html/*.html $(srcdir)/images/*.png $(srcdir)/*.sgml $(distdir)
 
-clean: clean-sources clean-local
-	-@rm -rf $(DOC_SOURCE_DIR)
-	-@rm -rf .libs
-	-@rm -rf tmpl
-	-@rm -rf sgml
-	-@rm -rf html
-	-@rm -f  lasso-decl-list.txt lasso-decl.txt lasso-undocumented.txt lasso-unused.txt
-	-@rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
+clean-local: clean-sources
+	-rm -rf $(DOC_SOURCE_DIR)
+	-rm -rf .libs
+	-rm -rf tmpl
+	-rm -rf sgml
+	-rm -rf html
+	-rm -rf build
+	-rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
+	-rm -rf  $(SCANOBJ_FILES) *.o *~ *.bak *.stamp
 
 clean-sources:
-	-@rm -rf code
-
-clean-local:
-	-@rm -rf  $(SCANOBJ_FILES) *.o *~ *.bak *.stamp
+	-rm -rf code
 
 maintainer-clean-local: clean
-	-@rm -rf `find sgml -name "*.sgml" -print`
+	-rm -rf `find sgml -name "*.sgml" -print`
 

@@ -9,6 +9,6 @@ endif
 %.html: %.txt
 	$(REST2HTML) $? > $@
 
-EXTRA_DIST = \
-            lasso-book.txt writing-a-c-sp.txt
+CLEANFILES = writing-a-c-sp.html
+EXTRA_DIST = lasso-book.txt writing-a-c-sp.txt
 

@@ -1,5 +1,4 @@
 <!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
-<!ENTITY LassoDsSignature SYSTEM "sgml/ds_signature.sgml">
 <!ENTITY LassoLibAssertion SYSTEM "sgml/lib_assertion.sgml">
 <!ENTITY LassoLibAuthnRequest SYSTEM "sgml/lib_authn_request.sgml">
 <!ENTITY lasso-LassoLibAuthnRequestEnvelope SYSTEM "sgml/lib_authn_request_envelope.sgml">
@@ -84,7 +83,6 @@
 
   <chapter>
     <title>Lasso</title>
-    &LassoDsSignature;
     &LassoLibAssertion;
     &LassoLibAuthnRequest;
     &lasso-LassoLibAuthnRequestEnvelope;
