@@ -304,33 +304,6 @@ typedef struct _LassoLibAuthnRequest {
 	LassoSamlpRequestAbstract parent;
 } LassoLibAuthnRequest;
 
-/* Methods */
-
-void lasso_lib_authn_request_set_affiliationID(LassoLibAuthnRequest *, const xmlChar *);
-  
-void lasso_lib_authn_request_set_assertionConsumerServiceID(LassoLibAuthnRequest *,
-							    const xmlChar *);
-
-void lasso_lib_authn_request_set_consent(LassoLibAuthnRequest *, const xmlChar *);
-
-void lasso_lib_authn_request_set_forceAuthn(LassoLibAuthnRequest *, gboolean);
-
-void lasso_lib_authn_request_set_isPassive(LassoLibAuthnRequest *, gboolean);
-
-void lasso_lib_authn_request_set_nameIDPolicy(LassoLibAuthnRequest *node,
-					      const xmlChar *nameIDPolicy);
-
-void lasso_lib_authn_request_set_protocolProfile(LassoLibAuthnRequest *, const xmlChar *);
-
-void lasso_lib_authn_request_set_providerID(LassoLibAuthnRequest *, const xmlChar *);
-
-void lasso_lib_authn_request_set_relayState(LassoLibAuthnRequest *, const xmlChar *);
-
-void lasso_lib_authn_request_set_requestAuthnContext(LassoLibAuthnRequest *,
-						     LassoLibRequestAuthnContext *);
-
-void lasso_lib_authn_request_set_scoping(LassoLibAuthnRequest *node, LassoLibScoping *scoping);
-
 
 /***********************************************************************
  * LibAuthnResponse
