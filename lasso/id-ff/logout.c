@@ -480,14 +480,17 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 
 	profile->response = lasso_lib_logout_response_new();
 	format = lasso_node_init_from_message(profile->response, response_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
-	}
 
-	if (format == LASSO_MESSAGE_FORMAT_SOAP)
-		response_method = LASSO_HTTP_METHOD_SOAP;
-	if (format == LASSO_MESSAGE_FORMAT_QUERY)
-		response_method = LASSO_HTTP_METHOD_REDIRECT;
+	switch (format) {
+		case LASSO_MESSAGE_FORMAT_SOAP:
+			response_method = LASSO_HTTP_METHOD_SOAP;
+			break;
+		case LASSO_MESSAGE_FORMAT_QUERY:
+			response_method = LASSO_HTTP_METHOD_REDIRECT;
+			break;
+		default:
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
 
 	/* get provider */
 	profile->remote_providerID = g_strdup(

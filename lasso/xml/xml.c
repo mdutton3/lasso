@@ -778,7 +778,7 @@ lasso_node_new_from_soap(const char *soap)
 LassoNode*
 lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
-	char *prefix;
+	char *prefix = NULL;
 	char *typename;
 	GType gtype;
 	LassoNode *node;
@@ -821,6 +821,9 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 			prefix = "Lib";
 		xmlFree(xsitype);
 	}
+
+	if (prefix == NULL)
+		return NULL;
 
 	typename = g_strdup_printf("Lasso%s%s", prefix, xmlnode->name);
 

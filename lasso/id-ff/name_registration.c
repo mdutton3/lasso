@@ -217,8 +217,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 
 		profile->nameIdentifier = g_strdup(spNameIdentifier->content);
 		name_registration->oldNameIdentifier = g_strdup(oldNameIdentifier->content);
-	}
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+	} else { /* if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) { */
 		if (federation->local_nameIdentifier == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found");
 			return -1;

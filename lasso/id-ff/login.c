@@ -380,7 +380,7 @@ lasso_login_accept_sso(LassoLogin *login)
 {
 	LassoProfile *profile;
 	LassoSamlAssertion *assertion;
-	LassoSamlNameIdentifier *ni, *idp_ni;
+	LassoSamlNameIdentifier *ni, *idp_ni = NULL;
 	LassoFederation *federation;
 	LassoSamlSubjectStatementAbstract *authentication_statement;
 
@@ -814,7 +814,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	char **query_fields;
 	gint ret = 0;
 	int i;
-	char *artifact_b64, *provider_succint_id_b64;
+	char *artifact_b64 = NULL, *provider_succint_id_b64;
 	char provider_succint_id[21];
 	char artifact[43];
 	LassoSamlpRequestAbstract *request;
@@ -835,23 +835,23 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 				free(query_fields[i]);
 				continue;
 			}
-			artifact_b64 = strdup(query_fields[i]+8);
+			artifact_b64 = g_strdup(query_fields[i]+8);
 			free(query_fields[i]);
 		}
 		free(query_fields);
 	}
 	if (response_http_method == LASSO_HTTP_METHOD_POST) {
-		artifact_b64 = strdup(response_msg);
+		artifact_b64 = g_strdup(response_msg);
 	}
 
 	i = xmlSecBase64Decode(artifact_b64, artifact, 43);
 	if (i < 0 || i > 42) {
-		free(artifact_b64);
+		g_free(artifact_b64);
 		return -1;
 	}
 
 	if (artifact[0] != 0 || artifact[1] != 3) { /* wrong type code */
-		free(artifact_b64);
+		g_free(artifact_b64);
 		return -1;
 	}
 
@@ -989,6 +989,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	if (authn_request_msg == NULL) {
+		format = 0;
 		if (LASSO_PROFILE(login)->request == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
 		}

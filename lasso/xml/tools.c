@@ -423,7 +423,7 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	lassoSignatureMethod  sign_method;
 	xmlChar *digest = NULL, *b64_signature = NULL;
 	xmlChar *e_rsa_alg = NULL, *e_dsa_alg = NULL;
-	xmlSecByte *signature;
+	xmlSecByte *signature = NULL;
 	int key_size, status = 0, ret = 0;
 
 	g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
