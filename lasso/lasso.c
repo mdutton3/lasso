@@ -55,6 +55,9 @@ DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 }
 #endif
 
+
+#include "types.c"
+
 /**
  * lasso_init:
  *
@@ -64,7 +67,13 @@ DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
  */
 int lasso_init()
 {
+	int i;
+
 	g_type_init();
+
+	/* Init Lasso classes */
+	for (i=0; functions[i]; i++)
+		functions[i]();
 
 	/* Init libxml and libxslt libraries */
 	xmlInitParser();
