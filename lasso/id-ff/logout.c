@@ -34,6 +34,8 @@ lasso_logout_dump(LassoLogout *logout)
   LassoProfileContext *profileContext;
   gchar *dump;
 
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+
   return(dump);
 }
 
@@ -43,23 +45,36 @@ lasso_logout_build_request_msg(LassoLogout *logout)
   LassoProfileContext *profileContext;
   LassoProvider *provider;
   xmlChar *protocolProfile;
+
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
   
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
   /* get the prototocol profile of the logout */
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
+    debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
     return(-1);
   }
 
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
   if(protocolProfile==NULL){
+    debug(ERROR, "Single Logout Protocol profile not found\n");
     return(-2);
   }
+  debug(DEBUG, "protocol profile : %s\n", protocolProfile);
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
+    debug(DEBUG, "building a soap request message\n");
+    profileContext->request_type = lassoHttpMethodSoap;
     profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->request);
+  }
+  else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
+    debug(DEBUG, "building a http get request message\n");
+    profileContext->request_type = lassoHttpMethodRedirect;
+    profileContext->msg_url = lasso_node_export_to_query(profileContext->request);
+    profileContext->msg_body = NULL;
   }
 
   return(0);
@@ -72,21 +87,32 @@ lasso_logout_build_response_msg(LassoLogout *logout)
   LassoProvider *provider;
   xmlChar *protocolProfile;
   
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
   provider = lasso_server_get_provider(profileContext->server, profileContext->remote_providerID);
   if(provider==NULL){
-    return(-1);
+    debug(ERROR, "Provider %s not found\n", profileContext->remote_providerID);
+    return(-2);
   }
 
   protocolProfile = lasso_provider_get_singleLogoutProtocolProfile(provider);
   if(protocolProfile==NULL){
-    return(-2);
+    debug(ERROR, "Single Logout Protocol profile not found\n");
+    return(-3);
   }
 
   if(xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloSpSoap) || xmlStrEqual(protocolProfile, lassoLibProtocolProfileSloIdpSoap)){
+    debug(DEBUG, "building a http get response message\n");
     profileContext->msg_url = lasso_provider_get_singleLogoutServiceURL(provider);
     profileContext->msg_body = lasso_node_export_to_soap(profileContext->response);
+  }
+  else if(xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloSpHttp)||xmlStrEqual(protocolProfile,lassoLibProtocolProfileSloIdpHttp)){
+    debug(DEBUG, "building a http get response message\n");
+    profileContext->response_type = lassoHttpMethodRedirect;
+    profileContext->msg_url = lasso_node_export_to_query(profileContext->response);
+    profileContext->msg_body = NULL;
   }
 
   return(0);
@@ -103,12 +129,19 @@ lasso_logout_init_request(LassoLogout *logout,
 
   xmlChar *content, *nameQualifier, *format;
 
+  g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+
   profileContext = LASSO_PROFILE_CONTEXT(logout);
 
+  profileContext->remote_providerID = remote_providerID;
+
   /* get identity */
+  printf("%s\n", profileContext->remote_providerID);
   identity = lasso_user_get_identity(profileContext->user, profileContext->remote_providerID);
-  if(identity==NULL)
-    return(-1);
+  if(identity==NULL){
+    debug(ERROR, "error, identity not found\n");
+    return(-2);
+  }
 
   /* get the name identifier (!!! depend on the provider type : SP or IDP !!!)*/
   switch(logout->provider_type){
@@ -126,8 +159,10 @@ lasso_logout_init_request(LassoLogout *logout,
   }
   
   if(!nameIdentifier){
-    return(-2);
+    debug(ERROR, "error, name identifier not found\n");
+    return(-3);
   }
+  debug(DEBUG, "name identifier : %s\n", lasso_node_export(nameIdentifier));
 
   /* build the request */
   content = lasso_node_get_content(nameIdentifier);
@@ -138,6 +173,7 @@ lasso_logout_init_request(LassoLogout *logout,
 						     nameQualifier,
 						     format);
 
+  debug(DEBUG, "Building the request message is ok\n");
   return(0);
 }
 
@@ -267,6 +303,9 @@ lasso_logout_new(LassoServer *server,
 {
   LassoLogout *logout;
   LassoProfileContext *profileContext;
+
+  g_return_val_if_fail(LASSO_IS_SERVER(server), NULL);
+  g_return_val_if_fail(LASSO_IS_USER(user), NULL);
 
   /* set the logout object */
   logout = g_object_new(LASSO_TYPE_LOGOUT, NULL);
