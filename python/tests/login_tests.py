@@ -75,7 +75,7 @@ class LoginTestCase(unittest.TestCase):
         pass
 
     def test01_generateServersContextDumps(self):
-        """Generate identity & service provider context dumps"""
+        """Generate identity and service provider context dumps"""
         identityProviderContextDump = self.generateIdentityProviderContextDump()
         self.failUnless(identityProviderContextDump)
         serviceProviderContextDump = self.generateServiceProviderContextDump()
