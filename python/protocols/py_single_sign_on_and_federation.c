@@ -288,3 +288,132 @@ PyObject *authentication_statement_build(PyObject *self, PyObject *args) {
 
   return (LassoNode_wrap(statement));
 }
+
+/******************************************************************************/
+/* lassoRequest                                                               */
+/******************************************************************************/
+
+PyObject *lassoRequest_wrap(lassoRequest *request) {
+  PyObject *ret;
+
+  if (request == NULL) {
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
+  ret = PyCObject_FromVoidPtrAndDesc((void *) request,
+                                     (char *) "lassoRequest *", NULL);
+  return (ret);
+}
+
+PyObject *request_getattr(PyObject *self, PyObject *args) {
+  PyObject *lareq_obj;
+  lassoRequest *lareq;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:request_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:request_get_attr", &lareq_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  lareq = lassoRequest_get(lareq_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[s]", "node");
+  if (!strcmp(attr, "node"))
+    return (LassoNode_wrap(lareq->node));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+PyObject *request_create(PyObject *self, PyObject *args) {
+  const xmlChar *assertionArtifact;
+
+  lassoRequest *request;
+
+  if(!PyArg_ParseTuple(args, (char *) "s:request_create",
+		       &assertionArtifact))
+    return NULL;
+
+  request = lasso_request_create(assertionArtifact);
+
+  return (lassoRequest_wrap(request));
+}
+
+/******************************************************************************/
+/* lassoResponse                                                              */
+/******************************************************************************/
+
+PyObject *lassoResponse_wrap(lassoResponse *response) {
+  PyObject *ret;
+
+  if (response == NULL) {
+    Py_INCREF(Py_None);
+    return (Py_None);
+  }
+  ret = PyCObject_FromVoidPtrAndDesc((void *) response,
+                                     (char *) "lassoResponse *", NULL);
+  return (ret);
+}
+
+PyObject *response_getattr(PyObject *self, PyObject *args) {
+  PyObject *lares_obj;
+  lassoResponse *lares;
+  const char *attr;
+
+  if (CheckArgs(args, "OS:response_get_attr")) {
+    if (!PyArg_ParseTuple(args, "Os:response_get_attr", &lares_obj, &attr))
+      return NULL;
+  }
+  else return NULL;
+
+  lares = lassoResponse_get(lares_obj);
+
+  if (!strcmp(attr, "__members__"))
+    return Py_BuildValue("[s]", "node");
+  if (!strcmp(attr, "node"))
+    return (LassoNode_wrap(lares->node));
+  if (!strcmp(attr, "request_node"))
+    return (LassoNode_wrap(lares->request_node));
+
+  Py_INCREF(Py_None);
+  return (Py_None);
+}
+
+PyObject *response_create(PyObject *self, PyObject *args) {
+  const char    *serialized_request;
+  int            verifySignature;
+  const char    *public_key;
+  const char    *private_key;
+  const char    *certificate;
+
+  lassoResponse *response;
+
+  if(!PyArg_ParseTuple(args, (char *) "sisss:response_create",
+		       &serialized_request, &verifySignature, &public_key, &private_key, &certificate))
+    return NULL;
+
+  response = lasso_response_create(serialized_request,
+				   verifySignature,
+				   public_key,
+				   private_key,
+				   certificate);
+
+  return (lassoResponse_wrap(response));
+}
+
+PyObject *response_init(PyObject *self, PyObject *args) {
+  PyObject      *response_obj;
+  gboolean       authentication_result;
+  int            ret;
+
+  if(!PyArg_ParseTuple(args, (char *) "Oi:response_init",
+		       &response_obj, &authentication_result))
+    return NULL;
+
+  ret = lasso_response_init(lassoResponse_get(response_obj),
+			    authentication_result);
+
+  return (int_wrap(ret));
+}

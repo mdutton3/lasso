@@ -56,4 +56,27 @@ PyObject *assertion_add_authenticationStatement(PyObject *self, PyObject *args);
 
 PyObject *authentication_statement_build(PyObject *self, PyObject *args);
 
+typedef struct  {
+    PyObject_HEAD
+    lassoRequest *obj;
+} lassoRequest_object;
+
+#define lassoRequest_get(v) (((v) == Py_None) ? NULL : (((lassoRequest_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *lassoRequest_wrap(lassoRequest *request);
+
+typedef struct {
+    PyObject_HEAD
+    lassoResponse *obj;
+} lassoResponse_object;
+
+#define lassoResponse_get(v) (((v) == Py_None) ? NULL : (((lassoResponse_object *)(PyObject_GetAttr(v, PyString_FromString("_o"))))->obj))
+PyObject *lassoResponse_wrap(lassoResponse *response);
+
+PyObject *request_getattr(PyObject *self, PyObject *args);
+PyObject *request_create(PyObject *self, PyObject *args);
+
+PyObject *response_getattr(PyObject *self, PyObject *args);
+PyObject *response_create(PyObject *self, PyObject *args);
+PyObject *response_init(PyObject *self, PyObject *args);
+
 #endif /* __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__ */
