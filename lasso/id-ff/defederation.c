@@ -25,6 +25,8 @@
 
 #include <lasso/environs/defederation.h>
 
+#include <lasso/xml/errors.h>
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
@@ -314,7 +316,13 @@ lasso_defederation_init_notification(LassoDefederation *defederation,
   profile->nameIdentifier = content;
 
   /* remove federation with remote provider id */
+  if (profile->identity ==NULL) {
+    message(G_LOG_LEVEL_CRITICAL, "Identity not found\n");
+    ret = -1;
+    goto done;
+  }
   lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
+
 
   /* remove assertion from session */
   if (profile->session != NULL) {
