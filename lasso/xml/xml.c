@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/ds_signature.h>
 #include "../export.h"
 
 struct _LassoNodePrivate

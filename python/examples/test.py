@@ -12,7 +12,7 @@ req = lasso.AuthnRequest("http://providerid.com")
 req.set_forceAuthn(0)
 req.set_isPassive(0)
 req.set_protocolProfile(lasso.libProtocolProfilePost)
-req.set_requestAuthnContext(["test"],
+req.set_requestAuthnContext(["test1", "test2"],
                             None,
                             lasso.libAuthnContextComparisonExact)
 req.set_scoping(proxyCount=1)
@@ -28,10 +28,10 @@ if protocolProfile == lasso.libProtocolProfilePost:
     # partie IDP
     res = lasso.AuthnResponse.new_from_request_query(query, "http://providerid.com")
     # verification de la signature de la query
-    print res.verify_signature("../../examples/rsapub.pem",
-                               "../../examples/rsakey.pem")
-    print res.must_authenticate(is_authenticated=0)
-    res.process_authentication_result(0)
+    print "Query signature check:", res.verify_signature("../../examples/rsapub.pem",
+                                                         "../../examples/rsakey.pem")
+    print "Must authenticate?   :", res.must_authenticate(is_authenticated=0)
+    res.process_authentication_result(1)
     # dump pour envoi au SP
     dump_response = res.dump()
     res.destroy()
@@ -54,7 +54,7 @@ if protocolProfile == lasso.libProtocolProfilePost:
 
     # partie SP
     # Verification de la signature de l'assertion
-    print "Signature check: ", res.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
+    print "Assertion signature check: ", res.get_child("Assertion").verify_signature("../../examples/rootcert.pem")
     # recuperation du StatusCode
     status_code = res.get_child("StatusCode")
     # recuperation de la valeur de l'attribut "Value"

@@ -70,7 +70,10 @@ class Node:
         return lassomod.node_get_attr_value(self, name)
 
     def get_child(self, name):
-        return Node(_obj=lassomod.node_get_child(self, name))
+        obj = lassomod.node_get_child(self, name)
+        if obj:
+            return Node(_obj=obj)
+        return None
 
     def get_content(self):
         return lassomod.node_get_content(self)
