@@ -47,29 +47,47 @@
 
   $login = new LassoLogin($server);
 
-  switch($_GET['profile'])
+  if ($_GET['profile'] == 'post')
+	$login->initauthnrequest(lassoHttpMethodPost);
+  elseif ($_GET['profile'] == 'artifact')
+	$login->initauthnrequest(lassoHttpMethodRedirect);
+  else
+	die('Unknown Single Sign ON Profile');
+
+  $request = $login->authnRequest;
+  $request->isPassive = FALSE;
+  $request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
+  $request->consent = lassoLibConsentObtained;
+
+  $login->buildAuthnRequestMsg($config['providerID']);
+
+  $url = $login->msgUrl;
+  $msg = $login->msgBody;
+  switch ($_GET['profile'])
   {
 	case 'post':
-		// TODO
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Authentication Request</title>
+ </head>
+  <body onLoad="document.forms[0].submit()">
+  <form action="<?php echo $url; ?>" method="post">
+   <p>You should be automaticaly redirected to an authentication server.</p>
+   <p>If this page is still visible after a few seconds, press the <em>Send</em> button below.</p>
+   <input type="hidden" name="LAREQ" value="<?php echo $msg; ?>" />
+   <input type="submit" name="SendButton" value="Send" />
+  </form>
+ </body>
+</html>
+<?
 		break;
-	case 'artifact':
-		$login->initauthnrequest(lassoHttpMethodRedirect);
-	
-		$request = $login->authnRequest;
-  
-		$request->isPassive = FALSE;
-		$request->nameIdPolicy = lassoLibNameIDPolicyTypeFederated;
-		$request->consent = lassoLibConsentObtained;
-
-		$login->buildAuthnRequestMsg($config['providerID']);
-
-		$url = $login->msgUrl;
-
+  	case 'artifact' :
 		header("Request-URI: $url");
 		header("Content-Location: $url");
 		header("Location: $url\r\n\r\n");
-		exit();
-	default:
-		die('Unknown single sign on profile');
+		break;
   }
 ?>
