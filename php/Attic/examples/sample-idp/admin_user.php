@@ -79,6 +79,15 @@
 
 	}
 	
+  lasso_init();
+
+  // Create Lasso Server
+  $server_dump = file_get_contents($config['server_dump_filename']);
+  $server = LassoServer::newFromDump($server_dump);
+
+  // Lasso User
+  $login = new LassoLogin($server);
+  
   // Count users
   $query = "SELECT COUNT(*) FROM users";
   $res =& $db->query($query);
@@ -88,6 +97,7 @@
   $row = $res->fetchRow();
   $count = $row[0];
 
+  
   $startUser = ((empty($_GET['startUser'])) ? 0 : $_GET['startUser']);
 	
   $query = "SELECT * FROM users";
@@ -171,7 +181,7 @@
 <td>&nbsp;</td>
 <?php
   for ($i = 0; $i < $num_col; $i++) {
-	echo "<td>" . $tableinfo[$i]['name'] ."</td>";
+	echo "<td><b>" . $tableinfo[$i]['name'] ."</b></td>";
   }
 ?>
 <td>&nbsp;</td>
@@ -182,7 +192,7 @@
   while ($row =& $res->fetchRow()) {
 ?>
 <tr align="center">
-<td>
+<td rowspan="2">
   <input type='checkbox' name='uid' value='<?php $row[0]; ?>'>
 </td>
 <?php
@@ -191,13 +201,22 @@
 	?>
 	<td>
 	<?php 
+        // show row content
 	  switch ($tableinfo[$i]['name']) 
 	  {
 		case "identity_dump":
-  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=identity')>view</a>";
+            $identity_dump = $row[$i];
+            if (empty($row[$i]))
+                echo "&nbsp;";
+            else
+                echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=identity')>view</a>";
 		  break;
 	    case "session_dump":
-  		  echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=session')>view</a>";
+            $session_dump = $row[$i];
+            if (empty($row[$i]))
+                echo "&nbsp;";
+            else
+                echo "<a href=javascript:openpopup('". $PHP_SELF . '?dump=' . $row[0] . "&type=session')>view</a>";
 		  break;
 		default:
 		  echo (empty($row[$i])) ? "&nbsp;" : $row[$i];
@@ -207,9 +226,42 @@
 	<?php
   }
   ?>
-  <td>
-  <a href="<?php echo $PHP_SELF . '?del=' . $row[0]; ?>">delete</a>
+  <td rowspan="2">
+    <a href="<?php echo $PHP_SELF . '?del=' . $row[0]; ?>">delete</a>
+    <a href="<?php echo $PHP_SELF . '?edit=' . $row[0]; ?>">edit</a>
   </td>
+</tr>
+<tr>
+    <td colspan="<?php echo $num_col; ?>" align='center'> 
+    <?php
+        // get all federations for this user
+        if (!empty($session_dump) && !empty($identity_dump))
+        {
+            $login->setSessionFromDump($session_dump);
+            $login->setIdentityFromDump($identity_dump);
+
+            $identity = $login->identity;
+            $providerIDs = $identity->providerIDs;
+?>
+<table width="100%">
+<?php
+            for($i = count($providerIDs); $i > 0; $i--)
+            {
+?>
+<tr>
+    <td align='center'><?php echo print $providerIDs[$i - 1]; ?></td>
+    <td align='right'><a href="">cancel federation</a></td>
+</tr>
+<?php
+            }
+?>
+</table>
+<?php
+        }
+        else
+            echo "Not Federated with an Service Provider.";
+    ?>
+    </td>
 </tr>
 <?php
 }
@@ -235,5 +287,6 @@
 
 </html>
 <?php
-  $db->disconnect();
+    lasso_shutdown();
+    $db->disconnect();
 ?>
