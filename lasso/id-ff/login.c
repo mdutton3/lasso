@@ -307,8 +307,9 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 }
 
 static gint
-lasso_login_process_response_status_and_assertion(LassoLogin *login) {
-	LassoProvider *idp = NULL;
+lasso_login_process_response_status_and_assertion(LassoLogin *login)
+{
+	LassoProvider *idp;
 	LassoSamlpResponse *response;
 	char *status_value;
 	int ret;
@@ -345,7 +346,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
 			return ret;
 
 		/* store NameIdentifier */
-		/* XXX: in AuthenticationStatement */
 		profile->nameIdentifier = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
 				response->Assertion->AuthenticationStatement)->Subject->NameIdentifier->content;
 
