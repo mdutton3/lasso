@@ -49,10 +49,11 @@ if not hasattr(sys, 'version_info') or sys.version_info < (2,2):
 # sanity check for any arguments
 if len(sys.argv) == 1:
     msg = 'Choose an action :\n' \
-          '   1. Build\n' \
-          '   2. Install\n' \
-          '   3. Clean\n' \
-          '   4. Exit\n' \
+          '   1. Build module\n' \
+          '   2. Build documentation\n' \
+          '   3. Install\n' \
+          '   4. Clean\n' \
+          '   5. Exit\n' \
           'Your choice : '
     reply = raw_input(msg)
     choice = None
@@ -61,11 +62,14 @@ if len(sys.argv) == 1:
     if choice == '1':
         sys.argv.append('build')
     elif choice == '2':
-        sys.argv.append('install')
+        print commands.getoutput('doxygen doc/doxygen.conf')
+        sys.exit(0)
     elif choice == '3':
+        sys.argv.append('install')
+    elif choice == '4':
         sys.argv.append('clean')
         sys.argv.append('-a')
-    elif choice == '4':
+    elif choice == '5':
         sys.exit(0)
 
 # the crypto engine name : openssl, gnutls or nss
