@@ -287,24 +287,17 @@ lasso_logout_response_new_from_soap(gchar *buffer)
   xmlNodePtr xmlNode_response;
   LassoNodeClass *class;
 
-  response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
-
   envelope = lasso_node_new_from_dump(buffer);
-  if(envelope == NULL) {
-    message(G_LOG_LEVEL_WARNING, "Error while parsing the soap msg\n");
+  if(LASSO_IS_NODE(envelope) == FALSE) {
     return NULL;
   }
 
+  response = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_RESPONSE, NULL));
   lassoNode_response = lasso_node_get_child(envelope, "LogoutResponse",
 					    NULL, NULL);
-  if(lassoNode_response == NULL) {
-    message(G_LOG_LEVEL_WARNING, "LogoutResponse node not found\n");
-    return NULL;
-  }
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
   lasso_node_destroy(lassoNode_response);
-
   class = LASSO_NODE_GET_CLASS(response);
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);

@@ -237,16 +237,17 @@ lasso_logout_request_new_from_soap(gchar *buffer)
   xmlNodePtr xmlNode_request;
   LassoNodeClass *class;
 
-  request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
-
   envelope = lasso_node_new_from_dump(buffer);
+  if (LASSO_IS_NODE(envelope) == FALSE) {
+    return NULL;
+  }
+
+  request = LASSO_NODE(g_object_new(LASSO_TYPE_LOGOUT_REQUEST, NULL));
   lassoNode_request = lasso_node_get_child(envelope, "LogoutRequest",
 					   lassoLibHRef, NULL);
-  
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
   lasso_node_destroy(lassoNode_request);
-
   class = LASSO_NODE_GET_CLASS(request);
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);

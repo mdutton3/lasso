@@ -72,14 +72,11 @@ lasso_name_identifier_mapping_response_new_from_soap(const gchar *buffer)
   }
 
   response = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_RESPONSE, NULL));
-
   lassoNode_response = lasso_node_get_child(envelope, "NameIdentifierMappingResponse",
 					    lassoLibHRef, NULL);
-     
   class = LASSO_NODE_GET_CLASS(lassoNode_response);
   xmlNode_response = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_response)), 1);
   lasso_node_destroy(lassoNode_response);
-
   class = LASSO_NODE_GET_CLASS(response);
   class->set_xmlNode(LASSO_NODE(response), xmlNode_response);
   lasso_node_destroy(envelope);

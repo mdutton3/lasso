@@ -140,18 +140,15 @@ lasso_name_identifier_mapping_request_new_from_soap(const gchar *buffer)
   }
 
   request = LASSO_NODE(g_object_new(LASSO_TYPE_NAME_IDENTIFIER_MAPPING_REQUEST, NULL));
-
   lassoNode_request = lasso_node_get_child(envelope, "NameIdentifierMappingRequest",
 					   lassoLibHRef, NULL);
-  
   class = LASSO_NODE_GET_CLASS(lassoNode_request);
   xmlNode_request = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_request)), 1);
   lasso_node_destroy(lassoNode_request);
-
   class = LASSO_NODE_GET_CLASS(request);
   class->set_xmlNode(LASSO_NODE(request), xmlNode_request);
   lasso_node_destroy(envelope);
-  
+
   return request;
 }
 

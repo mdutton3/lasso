@@ -219,17 +219,18 @@ lasso_federation_termination_notification_new_from_soap(const gchar *buffer)
   LassoNode *envelope, *lassoNode_notification;
   xmlNodePtr xmlNode_notification;
   LassoNodeClass *class;
-  
-  notification = LASSO_NODE(g_object_new(LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, NULL));
-  
+    
   envelope = lasso_node_new_from_dump(buffer);
+  if (LASSO_IS_NODE(envelope) == FALSE) {
+    return NULL;
+  }
+
+  notification = LASSO_NODE(g_object_new(LASSO_TYPE_FEDERATION_TERMINATION_NOTIFICATION, NULL));
   lassoNode_notification = lasso_node_get_child(envelope, "FederationTerminationNotification",
-						lassoLibHRef, NULL);
-  
+						lassoLibHRef, NULL);  
   class = LASSO_NODE_GET_CLASS(lassoNode_notification);
   xmlNode_notification = xmlCopyNode(class->get_xmlNode(LASSO_NODE(lassoNode_notification)), 1);
-  lasso_node_destroy(lassoNode_notification);
-  
+  lasso_node_destroy(lassoNode_notification);  
   class = LASSO_NODE_GET_CLASS(notification);
   class->set_xmlNode(LASSO_NODE(notification), xmlNode_notification);
   lasso_node_destroy(envelope);
