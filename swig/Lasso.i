@@ -198,6 +198,9 @@ typedef struct node_info {
 	char *name;
 	struct node_info *super;
 	swig_type_info *swig;
+#ifdef PHP_VERSION
+	zend_class_entry *php;
+#endif
 } node_info;
 
 static node_info node_infos[100]; /* FIXME: Size should be computed */
@@ -215,7 +218,22 @@ static swig_type_info *dynamic_cast_node(void **nodePointer) {
 	return NULL;
 }
 
+static node_info *get_node_info_with_swig(swig_type_info *swig) {
+	node_info *info;
+
+	for (info = node_infos; info->swig; info++) {
+		if (info->swig == swig)
+			return info;
+	}
+	return NULL;
+}
+
+#ifdef PHP_VERSION
+static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig,
+			  zend_class_entry *php) {
+#else
 static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig) {
+#endif
 	node_info *super;
 
 	info->name = name;
@@ -232,6 +250,9 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		super = NULL;
 	info->super = super;
 	info->swig = swig;
+#ifdef PHP_VERSION
+	info->php = php;
+#endif
 }
 
 %}
@@ -240,10 +261,18 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 { /* Brace needed for pre-C99 compilers */
 	node_info *info;
 
+#ifdef PHP_VERSION
+#define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className, &ce_swig_##className)
+#else
 #define SET_NODE_INFO(className, superClassName) set_node_info(info++, #className, #superClassName, SWIGTYPE_p_##className)
+#endif
 
 	info = node_infos;
+#ifdef PHP_VERSION
+	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode, &ce_swig_LassoNode);
+#else
 	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode);
+#endif
 
 	/* saml prefix */
 
