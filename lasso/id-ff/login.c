@@ -472,7 +472,6 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 	/* build artifact infos */
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
-	/* liberty-idff-bindings-profiles-v1.2.pdf p.25 */
 	url = lasso_provider_get_metadata_one(remote_provider, "AssertionConsumerServiceURL");
 	if (url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
@@ -480,6 +479,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, lassoHttpMethod http_method)
 	identityProviderSuccinctID = lasso_sha1(
 			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
 
+	/* Artifact Format is described in "Binding Profiles", 3.2.2.2. */
 	memcpy(samlArt, "\000\003", 2); /* type code */
 	memcpy(samlArt+2, identityProviderSuccinctID, 20);
 	lasso_build_random_sequence(samlArt+22, 20);

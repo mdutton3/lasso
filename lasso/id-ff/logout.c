@@ -520,6 +520,11 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		/* At SP, if the request method was a SOAP type, then rebuild the request
 		 * message with HTTP method */
+
+		/* takes lower-level StatusCode if available */
+		if (response->Status->StatusCode && response->Status->StatusCode->StatusCode)
+			statusCodeValue = response->Status->StatusCode->StatusCode->Value;
+
 		if (strcmp(statusCodeValue, LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE) == 0 &&
 				remote_provider->role == LASSO_PROVIDER_ROLE_IDP &&
 				logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {

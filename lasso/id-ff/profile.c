@@ -189,9 +189,29 @@ lasso_profile_set_response_status(LassoProfile *ctx, const char *statusCodeValue
 {
 	LassoSamlpStatus *status;
 
+	/* protocols-schema 1.2 (errata 2.0), page 9
+	 *
+	 * 3.1.9. Response Status Codes
+	 *
+	 * All Liberty response messages use <samlp: StatusCode> elements to
+	 * indicate the status of a corresponding request.  Responders MUST
+	 * comply with the rules governing <samlp: StatusCode> elements
+	 * specified in [SAMLCore11] regarding the use of nested second-, or
+	 * lower-level response codes to provide specific information relating
+	 * to particular errors. A number of status codes are defined within
+	 * the Liberty namespace for use with this specification.
+	 */
+
 	status = lasso_samlp_status_new();
 	status->StatusCode = lasso_samlp_status_code_new();
-	status->StatusCode->Value = g_strdup(statusCodeValue);
+
+	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) == 0) {
+		status->StatusCode->Value = g_strdup(statusCodeValue);
+	} else {
+		status->StatusCode->Value = g_strdup(LASSO_SAML_STATUS_CODE_RESPONDER);
+		status->StatusCode->StatusCode = lasso_samlp_status_code_new();
+		status->StatusCode->StatusCode->Value = g_strdup(statusCodeValue);
+	}
 
 	if (LASSO_IS_SAMLP_RESPONSE(ctx->response)) {
 		LassoSamlpResponse *response = LASSO_SAMLP_RESPONSE(ctx->response);
