@@ -141,7 +141,7 @@ AC_CHECK_PROGS(TAR, gnutar gtar tar)
 dnl Find egrep command.
 dnl AC_CHECK_PROGS(EGREP, egrep)
 
-dnl Check existenz of binding programs
+dnl Check existence of binding programs
 AC_CHECK_PROGS(JAVA, java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
 dnl AC_CHECK_PROGS(JAVAH, gcjh javah) dnl Not used with SWIG.
