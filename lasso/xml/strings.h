@@ -55,6 +55,22 @@ LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonBetter[];
 LASSO_EXPORT_VAR const gchar lassoLibStatusCodeFederationDoesNotExist[];
 LASSO_EXPORT_VAR const gchar lassoLibStatusCodeNoPassive[];
 
+/* ProtocolProfile */
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileArtifact[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfilePost[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermIdpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermIdpSoap[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermSpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileFedTermSpSoap[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniIdpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniIdpSoap[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniSpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileRniSpSoap[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloSpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloSpSoap[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloIdpHttp[];
+LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloIdpSoap[];
+
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/

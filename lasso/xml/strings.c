@@ -47,6 +47,22 @@ const gchar lassoLibAuthnContextComparisonBetter[]  = "better";
 const gchar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
 const gchar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
 
+/* ProtocolProfile */
+const gchar lassoLibProtocolProfileArtifact[]       = "http://projectliberty.org/profiles/brws-art";
+const gchar lassoLibProtocolProfilePost[]           = "http://projectliberty.org/profiles/brws-post";
+const gchar lassoLibProtocolProfileFedTermIdpHttp[] = "http://projectliberty.org/profiles/fedterm-idp-http";
+const gchar lassoLibProtocolProfileFedTermIdpSoap[] = "http://projectliberty.org/profiles/fedterm-idp-soap";
+const gchar lassoLibProtocolProfileFedTermSpHttp[]  = "http://projectliberty.org/profiles/fedterm-sp-http";
+const gchar lassoLibProtocolProfileFedTermSpSoap[]  = "http://projectliberty.org/profiles/fedterm-sp-soap";
+const gchar lassoLibProtocolProfileRniIdpHttp[]     = "http://projectliberty.org/profiles/rni-idp-http";
+const gchar lassoLibProtocolProfileRniIdpSoap[]     = "http://projectliberty.org/profiles/rni-idp-soap";
+const gchar lassoLibProtocolProfileRniSpHttp[]      = "http://projectliberty.org/profiles/rni-sp-http";
+const gchar lassoLibProtocolProfileRniSpSoap[]      = "http://projectliberty.org/profiles/rni-sp-soap";
+const gchar lassoLibProtocolProfileSloSpHttp[]      = "http://projectliberty.org/profiles/slo-sp-http";
+const gchar lassoLibProtocolProfileSloSpSoap[]      = "http://projectliberty.org/profiles/slo-sp-soap";
+const gchar lassoLibProtocolProfileSloIdpHttp[]     = "http://projectliberty.org/profiles/slo-idp-http";
+const gchar lassoLibProtocolProfileSloIdpSoap[]     = "http://projectliberty.org/profiles/slo-idp-soap";
+
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
