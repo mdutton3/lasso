@@ -31,7 +31,6 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
-#include <lasso/xml/dst_select.h>
 
 #define LASSO_TYPE_DST_QUERY_ITEM (lasso_dst_query_item_get_type())
 #define LASSO_DST_QUERY_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -79,8 +78,7 @@ struct _LassoDstQueryItemClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_item_get_type(void);
-LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(LassoDstSelect *Select,
-							 const char *id,
+LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(const char *id,
 							 const char *itemID,
 							 const char *changedSince);
 

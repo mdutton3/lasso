@@ -121,8 +121,7 @@ lasso_dst_query_item_get_type()
 }
 
 LassoDstQueryItem*
-lasso_dst_query_item_new(LassoDstSelect *Select,
-			 const char *id,
+lasso_dst_query_item_new(const char *id,
 			 const char *itemID,
 			 const char *changedSince)
 {
@@ -130,7 +129,6 @@ lasso_dst_query_item_new(LassoDstSelect *Select,
 
 	node = g_object_new(LASSO_TYPE_DST_QUERY_ITEM, NULL);
 
-	node->Select = g_list_append(node->Select, Select);
 	node->id = g_strdup(id);
 	node->itemID = g_strdup(itemID);
 	node->changedSince = g_strdup(changedSince);
