@@ -34,6 +34,12 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+LassoNode *lasso_authn_request_envelope_get_authnRequest(LassoAuthnRequestEnvelope *request)
+{
+  g_return_val_if_fail(LASSO_IS_AUTHN_REQUEST_ENVELOPE(request), NULL);
+
+  return(lasso_node_get_child(LASSO_NODE(request), "AuthnRequest", NULL));
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

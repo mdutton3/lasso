@@ -34,6 +34,19 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
+xmlChar *lasso_authn_response_envelope_get_assertionConsumerServiceURL (LassoAuthnResponseEnvelope *response)
+{
+  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE_ENVELOPE(response), NULL);
+
+  return(lasso_node_get_child_content(LASSO_NODE(response), "AssertionConsumerServiceURL", NULL));
+}
+
+LassoNode* lasso_authn_response_envelope_get_authnResponse(LassoAuthnResponseEnvelope *response)
+{
+  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE_ENVELOPE(response), NULL);
+  
+  return(lasso_node_get_child(LASSO_NODE(response), "AuthnResponse", NULL));
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */

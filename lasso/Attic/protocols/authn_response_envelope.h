@@ -52,12 +52,16 @@ struct _LassoAuthnResponseEnvelopeClass {
   LassoLibAuthnResponseEnvelopeClass parent;
 };
 
-LASSO_EXPORT GType                      lasso_authn_response_envelope_get_type        (void);
+LASSO_EXPORT GType      lasso_authn_response_envelope_get_type                        (void);
 
-LASSO_EXPORT LassoNode*                 lasso_authn_response_envelope_new             (LassoLibAuthnResponse *authnResponse,
+LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new                             (LassoLibAuthnResponse *authnResponse,
 										       const xmlChar        *assertionConsumerServiceURL);
 
-LASSO_EXPORT LassoNode*                 lasso_authn_response_envelope_new_from_export (gchar                *buffer,
+LASSO_EXPORT xmlChar*   lasso_authn_response_envelope_get_assertionConsumerServiceURL (LassoAuthnResponseEnvelope *response);
+
+LASSO_EXPORT LassoNode* lasso_authn_response_envelope_get_authnResponse               (LassoAuthnResponseEnvelope *response);
+
+LASSO_EXPORT LassoNode* lasso_authn_response_envelope_new_from_export                 (gchar                *buffer,
 										       lassoNodeExportTypes  export_type);
 
 #ifdef __cplusplus
