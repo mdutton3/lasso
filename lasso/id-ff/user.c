@@ -59,6 +59,7 @@ lasso_user_add_assertion(LassoUser *user,
   }
 
   /* add the assertion */
+  debug(DEBUG, "add assertion for %s\n", remote_providerID);
   g_hash_table_insert(user->assertions, g_strdup(remote_providerID), assertion);
 
   return(0);
@@ -99,7 +100,7 @@ lasso_user_dump_assertion(gpointer   key,
 
   /* add lasso assertion node to lasso assertions node */
   assertions_class = LASSO_NODE_GET_CLASS(assertions);
-  assertions_class->add_child(assertions, assertion_node, FALSE);
+  assertions_class->add_child(assertions, assertion_node, TRUE);
 }
 
 static void
