@@ -720,6 +720,9 @@ lasso_logout_validate_request(LassoLogout *logout)
 		return LASSO_XML_ERROR_NODE_NOT_FOUND;
 	}
 
+	if (profile->session == NULL)
+		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
+
 	/* verify authentication */
 	assertion = lasso_session_get_assertion(profile->session, profile->remote_providerID);
 	if (assertion == NULL) {
