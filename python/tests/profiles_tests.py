@@ -48,10 +48,9 @@ class ServerTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'sp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
@@ -78,10 +77,9 @@ class LoginTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'sp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
@@ -98,10 +96,9 @@ class LogoutTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'sp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'sp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
             os.path.join(dataDir, 'idp1-la/public-key.pem'),
@@ -120,10 +117,9 @@ class LogoutTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
@@ -136,10 +132,9 @@ class LogoutTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
@@ -158,10 +153,9 @@ class LogoutTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
@@ -180,10 +174,9 @@ class LogoutTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),
@@ -196,10 +189,9 @@ class DefederationTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         lassoServer.addProvider(
             os.path.join(dataDir, 'sp1-la/metadata.xml'),
             os.path.join(dataDir, 'sp1-la/public-key.pem'),

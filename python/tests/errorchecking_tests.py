@@ -61,13 +61,12 @@ class ErrorCheckingTestCase(unittest.TestCase):
         # initFromAuthnRequestMsg; surely it shouldn't segfault
         server = lasso.Server(
             os.path.join(dataDir, 'idp1-la/metadata.xml'),
-            None, # os.path.join(dataDir, 'idp1-la/public-key.pem') is no more used
             os.path.join(dataDir, 'idp1-la/private-key-raw.pem'),
-            os.path.join(dataDir, 'idp1-la/certificate.pem'),
-            lasso.signatureMethodRsaSha1)
+            None,
+            os.path.join(dataDir, 'idp1-la/certificate.pem'))
         login = lasso.Login(server)
         try:
-            login.initFromAuthnRequestMsg("", lasso.httpMethodRedirect)
+            login.processAuthnRequestMsg("", lasso.httpMethodRedirect)
         except lasso.Error:
             pass
 
