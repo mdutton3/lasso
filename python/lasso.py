@@ -29,38 +29,79 @@ __docformat__ = "plaintext en"
 import lassomod
 from lasso_strings import *
 
-_inited = False
+_initialized = False
+
+
+################################################################################
+# Lasso Errors
+################################################################################
+
 
 class Error(Exception):
-    def __init__(self, msg):
-        self.msg = msg
+    code = None # Use negative error codes for binding specific errors.
+    msg = None
+
+    def __init__(self, msg=None):
+        if msg is not None:
+            self.msg = msg
+
     def __str__(self):
         return repr(self.msg)
+
+
+class ErrorLassoAlreadyInitialized(Error):
+    code = -1
+    msg = 'Lasso already initialized'
+
+
+class ErrorLassoNotInitialized(Error):
+    code = -2
+    msg = 'Lasso not initialized or already shotdown'
+
     
+class ErrorInstanceCreationFailed(Error):
+    code = -3
+    functionName = None
+
+    def __init__(self, functionName):
+        self.functionName = functionName
+
+    def __str__(self, functionName):
+        return 'Instance creation failed in Lasso function %s()' % self.functionName
+
+
+################################################################################
+# Functions
+################################################################################
+
+
 def init():
     """
     Init Lasso Library.
     """
-    global _inited
-    if _inited:
-        raise Error('Lasso already inited')
-    _inited = True
+    global _initialized
+    if _initialized:
+        raise ErrorLassoAlreadyInitialized()
+    _initialized = True
     return lassomod.init()
+
 
 def shutdown():
     """
     Shutdown Lasso Library.
     """
-    global _inited
-    if not _inited:
-        raise Error('Lasso not inited or already shotdown')
-    _inited = False
+    global _initialized
+    if not _initialized:
+        raise ErrorLassoNotInitialized()
+    _initialized = False
     return lassomod.shutdown()
 
 
 ################################################################################
-# xml : low level classes
+# xml: low level classes
 ################################################################################
+
+
 # Export types
 NodeExportTypeXml    = 1
 NodeExportTypeBase64 = 2
@@ -167,7 +208,7 @@ class Node:
 
     def verify_signature(self, certificate_file):
         """
-        Verifys the node signature.
+        Verify the node signature.
 
         \param certificate_file a certificate
         \return 1 if signature is valid, 0 if invalid. -1 if an error occurs.
@@ -188,7 +229,8 @@ class SamlAssertion(Node):
             self._o = _obj
             return
         _obj = lassomod.saml_assertion_new()
-        if _obj is None: raise Error('lasso_saml_assertion_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_saml_assertion_new')
         Node.__init__(self, _obj=_obj)
 
     def add_authenticationStatement(self, authenticationStatement):
@@ -216,7 +258,8 @@ class SamlAuthenticationStatement(Node):
             self._o = _obj
             return
         _obj = lassomod.saml_authentication_statement_new()
-        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_saml_authentication_statement_new')
         Node.__init__(self, _obj=_obj)
 
 
@@ -233,7 +276,8 @@ class SamlNameIdentifier(Node):
             self._o = _obj
             return
         _obj = lassomod.saml_name_identifier_new()
-        if _obj is None: raise Error('lasso_saml_name_identifier_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_saml_name_identifier_new')
         Node.__init__(self, _obj=_obj)
 
     def set_format(self, format):
@@ -256,7 +300,8 @@ class SamlpResponse(Node):
             self._o = _obj
             return
         _obj = lassomod.samlp_response_new()
-        if _obj is None: raise Error('lasso_samlp_response_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_samlp_response_new')
         Node.__init__(self, _obj=_obj)
 
     def add_assertion(self, assertion):
@@ -276,7 +321,8 @@ class LibAuthenticationStatement(SamlAuthenticationStatement):
             self._o = _obj
             return
         _obj = lassomod.lib_authentication_statement_new()
-        if _obj is None: raise Error('lasso_saml_authentication_statement_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_saml_authentication_statement_new')
         SamlAuthenticationStatement.__init__(self, _obj=_obj)
     def set_sessionIndex(self, sessionIndex):
         lassomod.lib_authentication_statement_set_sessionIndex(self, sessionIndex)
@@ -295,7 +341,8 @@ class LibAuthnRequest(Node):
             self._o = _obj
             return
         _obj = lassomod.lib_authn_request_new()
-        if _obj is None: raise Error('lasso_lib_authn_request_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_lib_authn_request_new')
         Node.__init__(self, _obj=_obj)
         
     def set_consent(self, consent):
@@ -331,7 +378,8 @@ class LibAuthnResponse(SamlpResponse):
             self._o = _obj
             return
         _obj = lassomod.lib_authn_response_new()
-        if _obj is None: raise Error('lasso_lib_authn_response_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_lib_authn_response_new')
         SamlpResponse.__init__(self, _obj=_obj)
 
 
@@ -349,7 +397,7 @@ class LibFederationTerminationNotification(Node):
             return
         _obj = lassomod.lib_federation_termination_notification_new()
         if _obj is None:
-            raise Error('lasso_lib_federation_termination_notification_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_lib_federation_termination_notification_new')
         Node.__init__(self, _obj=_obj)
 
     def set_consent(self, consent):
@@ -369,7 +417,8 @@ class LibLogoutRequest(Node):
             self._o = _obj
             return
         _obj = lassomod.lib_logout_request_new()
-        if _obj is None: raise Error('lasso_lib_logout_request_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_lib_logout_request_new')
         Node.__init__(self, _obj=_obj)
 
     def set_consent(self, consent):
@@ -399,7 +448,8 @@ class LibLogoutResponse(Node):
             return
 
         _obj = lassomod.lib_logout_response_new()
-        if _obj is None: raise Error('lasso_lib_logout_response_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_lib_logout_response_new')
         Node.__init__(self, _obj = _obj)
         
 
@@ -417,7 +467,7 @@ class LibNameIdentifierMappingRequest(Node):
             return
         _obj = lassomod.lib_name_identifier_mapping_request_new()
         if _obj is None:
-            raise Error('lasso_lib_name_identifier_mapping_request_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_lib_name_identifier_mapping_request_new')
         Node.__init__(self, _obj=_obj)
 
     def set_consent(self, consent):
@@ -438,7 +488,7 @@ class LibNameIdentifierMappingResponse(Node):
             return
         _obj = lassomod.lib_name_identifier_mapping_response_new()
         if _obj is None:
-            raise Error('lasso_lib_name_identifier_mapping_response_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_lib_name_identifier_mapping_response_new')
         Node.__init__(self, _obj=_obj)
 
 
@@ -456,7 +506,7 @@ class LibRegisterNameIdentifierRequest(Node):
             return
         _obj = lassomod.lib_register_name_identifier_request_new()
         if _obj is None:
-            raise Error('lasso_lib_register_name_identifier_request_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_lib_register_name_identifier_request_new')
         Node.__init__(self, _obj=_obj)
 
 
@@ -474,15 +524,19 @@ class LibRegisterNameIdentifierResponse(Node):
             return
         _obj = lassomod.lib_register_name_identifier_response_new()
         if _obj is None:
-            raise Error('lasso_lib_register_name_identifier_response_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_lib_register_name_identifier_response_new')
         Node.__init__(self, _obj=_obj)
 
+
 ################################################################################
-# protocols : middle level classes
+# protocols: middle level classes
 ################################################################################
+
 
 def authn_request_get_protocolProfile(query):
     return lassomod.authn_request_get_protocolProfile(query)
+
+
 class AuthnRequest(LibAuthnRequest):
     """\brief Blabla
 
@@ -496,7 +550,8 @@ class AuthnRequest(LibAuthnRequest):
             self._o = _obj
             return
         _obj = lassomod.authn_request_new(providerID)
-        if _obj is None: raise Error('lasso_authn_request_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_authn_request_new')
         LibAuthnRequest.__init__(self, _obj=_obj)
     
     def set_requestAuthnContext(self, authnContextClassRefs=None,
@@ -525,6 +580,8 @@ class AuthnResponse(SamlpResponse):
 
     def new_from_export(cls, buffer, type=0):
         obj = lassomod.authn_response_new_from_export(buffer, type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_authn_response_new_from_export')
         return AuthnResponse(obj)
     new_from_export = classmethod(new_from_export)
 
@@ -542,12 +599,18 @@ class FederationTerminationNotification(LibFederationTerminationNotification):
         LibFederationTerminationNotification.__init__(self, _obj=self._o)
 
     def new(cls, providerID, nameIdentifier, nameQualifier, format):
-        obj = lassomod.federation_termination_notification_new(providerID, nameIdentifier, nameQualifier, format)
+        obj = lassomod.federation_termination_notification_new(
+            providerID, nameIdentifier, nameQualifier, format)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_federation_termination_notification_new')
         return FederationTerminationNotification(obj)
     new = classmethod(new)
 
     def new_from_export(cls, buffer, export_type = 0):
-        obj = lassomod.federation_termination_notification(buffer, export_type)
+        obj = lassomod.federation_termination_notification_new_from_export(buffer, export_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_federation_termination_notification_new_from_export')
         return LogoutRequest(obj)
     new_from_export = classmethod(new_from_export)
 
@@ -565,11 +628,15 @@ class LogoutRequest(LibLogoutRequest):
         
     def new(cls, providerID, nameIdentifier, nameQualifier, format):
         obj = lassomod.logout_request_new(providerID, nameIdentifier, nameQualifier, format)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_logout_request_new')
         return LogoutRequest(obj)
     new = classmethod(new)
 
     def new_from_export(cls, buffer, export_type = 0):
         obj = lassomod.logout_request_new_from_export(buffer, export_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_logout_request_new_from_export')
         return LogoutRequest(obj)
     new_from_export = classmethod(new_from_export)
 
@@ -588,11 +655,16 @@ class LogoutResponse(LibLogoutResponse):
 
     def new_from_export(cls, buffer, export_type = 0):
         obj = lassomod.logout_response_new_from_export(buffer, export_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_logout_response_new_from_export')
         return LogoutResponse(obj)
     new_from_export = classmethod(new_from_export)
 
     def new_from_request_export(cls, buffer, export_type, providerID, statusCodeValue):
-        obj = lassomod.logout_response_new_from_request_export(buffer, export_type, providerID, statusCodeValue)
+        obj = lassomod.logout_response_new_from_request_export(
+            buffer, export_type, providerID, statusCodeValue)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_logout_response_new_from_request_export')
         return LogoutResponse(obj)
     new_from_export = classmethod(new_from_request_export)
 
@@ -610,17 +682,26 @@ class NameIdentifierMappingRequest(LibNameIdentifierMappingRequest):
         LibNameIdentifierMappingRequest.__init__(self, _obj = self._o)
 
     def new(cls, providerID, nameIdentifier, nameQualifier, format):
-        obj = lassomod.name_identifier_mapping_request_new(providerID, nameIdentifier, nameQualifier, format)
+        obj = lassomod.name_identifier_mapping_request_new(
+            providerID, nameIdentifier, nameQualifier, format)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_name_identifier_mapping_request_new')
         return NameIdentifierMappingRequest(obj)
     new = classmethod(new)
 
     def new_from_soap(cls, envelope):
         obj = lassomod.name_identifier_mapping_request_new_from_soap(envelope)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_request_new_from_soap')
         return NameIdentifierMappingRequest(obj)
     new_from_soap = classmethod(new_from_soap)
 
     def new_from_query(cls, query):
         obj = lassomod.name_identifier_mapping_request_new_from_query(query)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_request_new_from_query')
         return NameIdentifierMappingRequest(obj)
     new_from_query = classmethod(new_from_query)
 
@@ -637,30 +718,47 @@ class NameIdentifierMappingResponse(LibNameIdentifierMappingResponse):
         self._o = _obj
         LibNameIdentifierMappingResponse.__init__(self, _obj = self._o)
 
+    def new_from_dump(cls, dump):
+        obj = lassomod.name_identifier_mapping_response_new_from_dump(dump)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_response_new_from_dump')
+        return NameIdentifierMappingResponse(obj)
+    new_from_dump = classmethod(new_from_dump)
+
+    def new_from_query(cls, query):
+        obj = lassomod.name_identifier_mapping_response_new_from_query(query)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_response_new_from_query')
+        return NameIdentifierMappingResponse(obj);
+    new_from_query = classmethod(new_from_query)
+
+    def new_from_request_query(cls, query, providerID, status_code_value):
+        obj = lassomod.name_identifier_mapping_response_new_from_request_query(
+            query, providerID, status_code_value)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_response_new_from_request_query')
+        return NameIdentifierMappingResponse(obj);
+    new_from_request_query = classmethod(new_from_request_query)
+
     def new_from_request_soap(cls, envelope, providerID, status_code_value):
-        obj = lassomod.name_identifier_mapping_response_new_from_request_soap(envelope, providerID, status_code_value)
+        obj = lassomod.name_identifier_mapping_response_new_from_request_soap(
+            envelope, providerID, status_code_value)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_response_new_from_request_soap')
         return NameIdentifierMappingResponse(obj)
     new_from_request_soap = classmethod(new_from_request_soap)
 
     def new_from_soap(cls, envelope):
         obj = lassomod.name_identifier_mapping_response_new_from_soap(envelope)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_name_identifier_mapping_response_new_from_soap')
         return NameIdentifierMappingResponse(obj)
     new_from_soap = classmethod(new_from_soap)
-
-    def new_from_dump(cls, dump):
-        obj = lassomod.name_identifier_mapping_response_new_from_dump(dump)
-        return NameIdentifierMappingResponse(obj)
-    new_from_dump = classmethod(new_from_dump)
-
-    def new_from_request_query(cls, query, providerID, status_code_value):
-        obj = lassomod.name_identifier_mapping_response_new_from_request_query(query, providerID, status_code_value)
-        return NameIdentifierMappingResponse(obj);
-    new_from_request_query = classmethod(new_from_request_query)
-
-    def new_from_query(cls, query):
-        obj = lassomod.name_identifier_mapping_response_new_from_query(query)
-        return NameIdentifierMappingResponse(obj);
-    new_from_query = classmethod(new_from_query)
 
 
 class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
@@ -675,19 +773,23 @@ class RegisterNameIdentifierRequest(LibRegisterNameIdentifierRequest):
         self._o = _obj
         LibRegisterNameIdentifierRequest.__init__(self, _obj = self._o)
 
-    def new(cls, providerID,
-            idpNameIdentifier, idpNameQualifier, idpFormat,
+    def new(cls, providerID, idpNameIdentifier, idpNameQualifier, idpFormat,
             spNameIdentifier, spNameQualifier, spFormat,
             oldNameIdentifier, oldNameQualifier, oldFormat):
-        obj = lassomod.register_name_identifier_request_new(providerID,
-                                                            idpNameIdentifier, idpNameQualifier, idpFormat,
-                                                            spNameIdentifier, spNameQualifier, spFormat,
-                                                            oldNameIdentifier, oldNameQualifier, oldFormat)
+        obj = lassomod.register_name_identifier_request_new(
+            providerID, idpNameIdentifier, idpNameQualifier, idpFormat,
+            spNameIdentifier, spNameQualifier, spFormat,
+            oldNameIdentifier, oldNameQualifier, oldFormat)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_register_name_identifier_request_new')
         return RegisterNameIdentifierRequest(obj)
     new = classmethod(new)
 
     def new_from_export(cls, buffer, export_type = 0):
         obj = lassomod.register_name_identifier_request_new_from_export(buffer, export_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_register_name_identifier_request_new_from_export')
         return RegisterNameIdentifierRequest(obj)
     new_from_export = classmethod(new_from_export)
 
@@ -709,11 +811,18 @@ class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
 
     def new_from_export(cls, buffer, export_type = 0):
         obj = lassomod.register_name_identifier_response_new_from_export(buffer, export_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_register_name_identifier_response_new_from_export')
         return RegisterNameIdentifierResponse(obj)
     new_from_export = classmethod(new_from_export)
 
     def new_from_request_export(cls, buffer, export_type, providerID, statusCodeValue):
-        obj = lassomod.register_name_identifier_response_new_from_request_export(buffer, export_type, providerID, statusCodeValue)
+        obj = lassomod.register_name_identifier_response_new_from_request_export(
+            buffer, export_type, providerID, statusCodeValue)
+        if obj is None:
+            raise ErrorInstanceCreationFailed(
+                'lasso_register_name_identifier_response_new_from_request_export')
         return RegisterNameIdentifierResponse(obj)
     new_from_export = classmethod(new_from_request_export)    
 
@@ -721,6 +830,7 @@ class RegisterNameIdentifierResponse(LibRegisterNameIdentifierResponse):
 ################################################################################
 # elements
 ################################################################################
+
 
 class Assertion(SamlAssertion):
     """\brief Blabla
@@ -735,7 +845,8 @@ class Assertion(SamlAssertion):
             self._o = _obj
             return
         _obj = lassomod.assertion_new(issuer, requestID)
-        if _obj is None: raise Error('lasso_assertion_new() failed')
+        if _obj is None:
+            raise ErrorInstanceCreationFailed('lasso_assertion_new')
         SamlAssertion.__init__(self, _obj=_obj)
 
 
@@ -769,12 +880,15 @@ class AuthenticationStatement(Node):
                                                      idp_nameQualifier,
                                                      idp_format)
         if _obj is None:
-            raise Error('lasso_authentication_statement_new() failed')
+            raise ErrorInstanceCreationFailed('lasso_authentication_statement_new')
         Node.__init__(self, _obj=_obj)
 
+
 ################################################################################
-# environs : high level classes
+# environs: high level classes
 ################################################################################
+
+
 signatureMethodRsaSha1 = 1
 signatureMethodDsaSha1 = 2
 
@@ -790,6 +904,7 @@ messageTypeRequest       = 3
 messageTypeResponse      = 4
 messageTypeArtifact      = 5
 
+
 class Server:
     """\brief Short desc
 
@@ -804,11 +919,15 @@ class Server:
     def new(cls, metadata, public_key, private_key, certificate, signature_method):
         obj = lassomod.server_new(metadata, public_key, private_key,
                                   certificate, signature_method)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_server_new')
         return Server(obj)
     new = classmethod(new)
 
     def new_from_dump(cls, dump):
         obj = lassomod.server_new_from_dump(dump)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_server_new_from_dump')
         return Server(obj)
     new_from_dump = classmethod(new_from_dump)
 
@@ -833,11 +952,15 @@ class Identity:
 
     def new(cls):
         obj = lassmod.identity_new()
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_identity_new')
         return Identity(obj)
     new = classmethod(new)
 
     def new_from_dump(cls, dump):
         obj = lassomod.identity_new_from_dump(dump)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_identity_new_from_dump')
         return Identity(obj)
     new_from_dump = classmethod(new_from_dump)
 
@@ -868,11 +991,15 @@ class Session:
 
     def new(cls):
         obj = lassmod.session_new()
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_session_new')
         return Session(obj)
     new = classmethod(new)
 
     def new_from_dump(cls, dump):
         obj = lassomod.session_new_from_dump(dump)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_session_new_from_dump')
         return Session(obj)
     new_from_dump = classmethod(new_from_dump)
 
@@ -922,6 +1049,8 @@ class Profile:
 
     def new(cls, server, identity=None, session=None):
         obj = lassomod.profile_new(server, identity, session)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_profile_new')
         return Profile(obj)
     new = classmethod(new)
 
@@ -1003,11 +1132,15 @@ class Login(Profile):
 
     def new(cls, server):
         obj = lassomod.login_new(server)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_login_new')
         return Login(obj)
     new = classmethod(new)
 
     def new_from_dump(cls, server, dump):
         obj = lassomod.login_new_from_dump(server, dump)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_login_new_from_dump')
         return Login(obj)
     new_from_dump = classmethod(new_from_dump)
 
@@ -1094,6 +1227,8 @@ class Logout(Profile):
 
     def new(cls, server, provider_type):
         obj = lassomod.logout_new(server, provider_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_logout_new')
         return Logout(obj)
     new = classmethod(new)
 
@@ -1151,6 +1286,8 @@ class FederationTermination(Profile):
 
     def new(cls, server, provider_type):
         obj = lassomod.federation_termination_new(server, provider_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_federation_termination_new')
         return FederationTermination(obj)
     new = classmethod(new)
 
@@ -1195,6 +1332,8 @@ class RegisterNameIdentifier:
 
     def new(cls, server, identity, provider_type):
         obj = lassomod.register_name_identifier_new(server, identity, provider_type)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_register_name_identifier_new')
         return RegisterNameIdentifier(obj)
     new = classmethod(new)
 
@@ -1243,6 +1382,8 @@ class Lecp:
 
     def new(cls, server = None):
         obj = lassomod.lecp_new(server)
+        if obj is None:
+            raise ErrorInstanceCreationFailed('lasso_lecp_new')
         return Lecp(obj)
     new = classmethod(new)
 
@@ -1274,5 +1415,5 @@ class Lecp:
         return lassomod.lecp_process_authn_response_envelope_msg(self, response_msg)
 
 
-if not _inited:
+if not _initialized:
     init()
