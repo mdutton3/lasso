@@ -1564,7 +1564,7 @@ typedef struct {
 LassoIdentity *LassoLogout_identity_get(LassoLogout *self) {
 	return lasso_profile_get_identity(LASSO_PROFILE(self));
 }
-#define LassoLogout_get_identity LassoLogout_identity_get
+#define LassoLogout_set_identity LassoLogout_identity_set
 gint LassoLogout_identity_set(LassoLogout *self, LassoIdentity *identity) {
 	return lasso_profile_set_identity(LASSO_PROFILE(self), identity);
 }
