@@ -21,10 +21,8 @@ PROTSOURCES = \
 	py_register_name_identifier_response.c
 
 
-if WITH_PYTHON
 libprotocols_a_SOURCES = $(PROTSOURCES)
 noinst_LIBRARIES = libprotocols.a
-endif
 
 EXTRA_DIST = \
 	$(PROTSOURCES) \

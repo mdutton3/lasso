@@ -13,10 +13,8 @@ XMLSOURCES = \
 	py_samlp_response.c \
 	py_xml.c
 
-if WITH_PYTHON
 noinst_LIBRARIES = libxml.a
 libxml_a_SOURCES = $(XMLSOURCES)
-endif
 
 INCLUDES = \
 	-DPACKAGE=\"@PACKAGE@\" \
