@@ -487,11 +487,11 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
 
   switch (http_method) {
   case lassoHttpMethodRedirect:
-    LASSO_PROFILE(login)->msg_url = g_new(gchar, 1024+1);
-    g_sprintf(LASSO_PROFILE(login)->msg_url, "%s?SAMLart=%s", url, b64_samlArt);
-    if (relayState != NULL) {
-      g_sprintf(LASSO_PROFILE(login)->msg_url, "%s&RelayState=%s",
-	      LASSO_PROFILE(login)->msg_url, relayState);
+    if (relayState == NULL) {
+      LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s", url, b64_samlArt);
+    else {
+      LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?SAMLart=%s&RelayState=%s",
+                      url, b64_samlArt, relayState);
     }
     break;
   case lassoHttpMethodPost:
@@ -597,8 +597,7 @@ lasso_login_build_authn_request_msg(LassoLogin      *login,
       }
     }
     /* alloc msg_url (+2 for the ? and \0) */
-    LASSO_PROFILE(login)->msg_url = (gchar *) g_new(gchar, strlen(url) + strlen(query) + 2);
-    g_sprintf(LASSO_PROFILE(login)->msg_url, "%s?%s", url, query);
+    LASSO_PROFILE(login)->msg_url = g_strdup_printf("%s?%s", url, query);
     LASSO_PROFILE(login)->msg_body = NULL;
     g_free(query);
   }
@@ -787,7 +786,7 @@ lasso_login_dump(LassoLogin *login)
   node = lasso_node_new_from_dump(parent_dump);
   g_free(parent_dump);
 
-  g_sprintf(protocolProfile, "%d", login->protocolProfile);
+  g_snprintf(protocolProfile, 6, "%d", login->protocolProfile);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProtocolProfile", protocolProfile, FALSE);
 
   /* nico : Added dump of assertion */

@@ -157,13 +157,13 @@ lasso_profile_dump(LassoProfile *ctx,
 					  ctx->msg_relayState, FALSE);
   }
 
-  g_sprintf(request_type, "%d", ctx->request_type);
+  g_snprintf(request_type, 6, "%d", ctx->request_type);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "RequestType", request_type, FALSE);
   g_free(request_type);
-  g_sprintf(response_type, "%d", ctx->response_type);
+  g_snprintf(response_type, 6, "%d", ctx->response_type);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ResponseType", response_type, FALSE);
   g_free(response_type);
-  g_sprintf(provider_type, "%d", ctx->provider_type);
+  g_snprintf(provider_type, 6, "%d", ctx->provider_type);
   LASSO_NODE_GET_CLASS(node)->new_child(node, "ProviderType", provider_type, FALSE);
   g_free(provider_type);
 

@@ -138,8 +138,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
     }
 
     /* build the msg_url */
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_url = g_strdup_printf("%s?%s", url, query);
     profile->msg_body = NULL;
   }
   else {
@@ -244,8 +243,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
       goto done;
     }
 
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_url = g_strdup_printf("%s?%s", url, query);
     profile->msg_body = NULL;
     break;
   default:
@@ -766,8 +764,7 @@ lasso_logout_process_response_msg(LassoLogout     *logout,
       query = lasso_node_export_to_query(profile->request,
 					 profile->server->signature_method,
 					 profile->server->private_key);
-      profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-      g_sprintf(profile->msg_url, "%s?%s", url, query);
+      profile->msg_url = g_strdup_printf("%s?%s", url, query);
       profile->msg_body = NULL;
 
       /* send a HTTP Redirect / GET method, so first remove session */

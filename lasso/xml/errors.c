@@ -30,8 +30,6 @@
 const char*
 lasso_strerror(int error_code)
 {
-  char msg[256];
-
   switch (error_code) {
   case LASSO_XML_ERROR_NODE_NOT_FOUND:
     return "Unable to get '%s' child of '%s' element.\n";
@@ -82,7 +80,6 @@ lasso_strerror(int error_code)
     return "The error return location should be either NULL or contains a NULL error.\n";
 
   default:
-    sprintf(msg, "Undefined error code %d.", error_code);
-    return strdup(msg);
+    return g_strdup_printf("Undefined error code %d.", error_code);
   }
 }

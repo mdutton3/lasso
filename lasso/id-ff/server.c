@@ -146,7 +146,7 @@ lasso_server_dump(LassoServer *server)
 
   /* signature method */
   signature_method_str = g_new(gchar, 6);
-  sprintf(signature_method_str, "%d", server->signature_method);
+  g_snprintf(signature_method_str, 6, "%d", server->signature_method);
   server_class->set_prop(server_node, LASSO_SERVER_SIGNATURE_METHOD_NODE, signature_method_str);
   g_free(signature_method_str);
 

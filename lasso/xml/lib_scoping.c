@@ -65,7 +65,7 @@ lasso_lib_scoping_set_proxyCount(LassoLibScoping *node,
   g_assert(LASSO_IS_LIB_SCOPING(node));
   g_assert(proxyCount >= 0);
 
-  g_sprintf(str, "%d", proxyCount);
+  g_snprintf(str, 6, "%d", proxyCount);
   class = LASSO_NODE_GET_CLASS(node);
   class->new_child(LASSO_NODE (node), "ProxyCount", str, FALSE);
 }

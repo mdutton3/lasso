@@ -136,8 +136,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
       goto done;
     }
 
-    profile->msg_url = g_new(gchar, strlen(url) + strlen(query) + 1 + 1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_url = g_strdup_printf("%s?%s", url, query);
     profile->msg_body = NULL;
   }
   else {
@@ -507,10 +506,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 
     /* if a relay state, then build the query part */
     if (profile->msg_relayState != NULL) {
-      gchar *url = NULL;
-      url = g_new(gchar, strlen(profile->msg_url) + strlen("RelayState=") + strlen(profile->msg_relayState) + 1 + 1);
-      g_sprintf(url, "%s?RelayState=%s", url, profile->msg_relayState);
-
+      gchar *url;
+      url = g_strdup_printf("%s?RelayState=%s", profile->msg_url, profile->msg_relayState);
       xmlFree(profile->msg_url);
       profile->msg_url = url;
     }

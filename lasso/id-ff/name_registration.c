@@ -150,8 +150,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
     }
 
     /* build the msg_url */
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_url = g_strdup_printf("%s?%s", url, query);
     profile->msg_body = NULL;
   }
   else {
@@ -227,8 +226,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
       goto done;
     }
 
-    profile->msg_url = g_new(gchar, strlen(url)+strlen(query)+1+1);
-    g_sprintf(profile->msg_url, "%s?%s", url, query);
+    profile->msg_url = g_strdup_printf("%s?%s", url, query);
     profile->msg_body = NULL;
     break;
   default:
