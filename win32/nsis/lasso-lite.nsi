@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Liberty Alliance Single Sign On"
-!define PRODUCT_VERSION "0.4.1"
+!define PRODUCT_VERSION "0.5.0a"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://www.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -48,17 +48,20 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-lite-0_4_1.exe"
+OutFile "Install-lite-0_5a.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show
+
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
-Section "L.A.S.S.O." SEC08
-  File "..\..\lasso\.libs\liblasso-1.dll"
+Section "L.A.S.S.O." SEC01
+  SetOutPath "$INSTDIR"
+  SetOverwrite ifnewer
+  File "..\..\lasso\.libs\liblasso-2.dll"
 SectionEnd
 
 Section -AdditionalIcons
@@ -79,7 +82,7 @@ SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "Free implementation of the Liberty Alliance specifications."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Free implementation of the Liberty Alliance specifications."
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -97,7 +100,7 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\liblasso-1.dll"
+  Delete "$INSTDIR\liblasso-2.dll"
 
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Uninstall.lnk"
   Delete "$SMPROGRAMS\Liberty Alliance Single Sign On\Website.lnk"
@@ -106,5 +109,5 @@ Section Uninstall
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
-  SetAutoClose true
+  SetAutoClose false
 SectionEnd

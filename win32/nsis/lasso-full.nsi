@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Liberty Alliance Single Sign On and all dependencies"
-!define PRODUCT_VERSION "0.4.1-2"
+!define PRODUCT_VERSION "0.5.0a"
 !define PRODUCT_PUBLISHER "Entr'ouvert"
 !define PRODUCT_WEB_SITE "http://www.entrouvert.org"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -48,11 +48,11 @@ SetCompressor bzip2
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Install-full-0_4_1-2.exe"
+OutFile "Install-full-0_5a.exe"
 InstallDir "$SYSDIR"
 ShowInstDetails show
 ShowUnInstDetails show
-
+AutoCloseWindow false
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
@@ -60,46 +60,47 @@ FunctionEnd
 Section "GLIB: Low-level core library that forms the basis for projects such as GTK+ and GNOME." SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\..\..\..\..\usr\local\lib\libglib-2.0-0.dll"
-  File "..\..\..\..\..\usr\local\lib\libgobject-2.0-0.dll"
-  File "..\..\..\..\..\usr\local\lib\libgmodule-2.0-0.dll"
-  File "..\..\..\..\..\usr\local\lib\libgthread-2.0-0.dll"
+  File "c:\cygwin\usr\local\lib\libglib-2.0-0.dll"
+  File "c:\cygwin\usr\local\lib\libgobject-2.0-0.dll"
+  File "c:\cygwin\usr\local\lib\libgmodule-2.0-0.dll"
+  File "c:\cygwin\usr\local\lib\libgthread-2.0-0.dll"
 SectionEnd
 
-Section "LIBXML2: XML C parser and toolkit." SEC02
-  File "..\..\..\..\..\usr\local\lib\libxml2.dll"
+Section "LIBXML2: XML C parser and toolkit version 2.6.15." SEC02
+  File "c:\cygwin\usr\local\lib\libxml2.dll"
 SectionEnd
 
-Section "LIBXSLT: The XSLT C library." SEC03
-  File "..\..\..\..\..\usr\local\lib\libxslt.dll"
-  File "..\..\..\..\..\usr\local\lib\libexslt.dll"
+Section "LIBXSLT: The XSLT C library version 1.2.6." SEC03
+  File "c:\cygwin\usr\local\lib\libxslt.dll"
+  File "c:\cygwin\usr\local\lib\libexslt.dll"
 SectionEnd
 
-Section "LIBXMLSEC: XML Security Library C library based on LibXML2." SEC04
-  File "..\..\..\..\..\usr\local\lib\libxmlsec.dll"
-  File "..\..\..\..\..\usr\local\lib\libxmlsec-mscrypto.dll"
-  File "..\..\..\..\..\usr\local\lib\libxmlsec-openssl.dll"
+Section "LIBXMLSEC: XML Security Library C library (based on LibXML2) version 1.2.6." SEC04
+  File "c:\cygwin\usr\local\lib\libxmlsec.dll"
+  File "c:\cygwin\usr\local\lib\libxmlsec-mscrypto.dll"
+  File "c:\cygwin\usr\local\lib\libxmlsec-openssl.dll"
 SectionEnd
 
-Section "LIBOPENSSL: A  full-strength general purpose cryptography library." SEC05
-  File "..\..\..\..\..\usr\local\lib\libeay32.dll"
-  File "..\..\..\..\..\usr\local\lib\libssleay32.dll"
+Section "LIBOPENSSL: A  full-strength general purpose cryptography library version 0.9.7e." SEC05
+  File "c:\cygwin\usr\local\lib\libeay32.dll"
+  File "c:\cygwin\usr\local\lib\libssl32.dll"
 SectionEnd
 
-Section "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library." SEC06
-  File "..\..\..\..\..\usr\local\lib\libz.dll"
+Section "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library version 1.2.1." SEC06
+  File "c:\cygwin\usr\local\lib\zlib.dll"
+  File "c:\cygwin\usr\local\lib\zlib1.dll"
 SectionEnd
 
 Section "LIBICONV: Free iconv() implementation." SEC07
-  File "..\..\..\..\..\usr\local\lib\libiconv.dll"
+  File "c:\cygwin\usr\local\lib\iconv.dll"
 SectionEnd
 
 Section "LIBINTL: Library for native language support." SEC08
-  File "..\..\..\..\..\usr\local\lib\intl.dll"
+  File "c:\cygwin\usr\local\lib\intl.dll"
 SectionEnd
 
 Section "L.A.S.S.O." SEC09
-  File  "..\..\lasso\.libs\liblasso-1.dll"
+  File  "..\..\lasso\.libs\liblasso-2.dll"
 SectionEnd
 
 Section -AdditionalIcons
@@ -121,11 +122,11 @@ SectionEnd
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "GLIB: Low-level core library that forms the basis for projects such as GTK+ and GNOME."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "LIBXML2: XML C parser and toolkit." 
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "LIBXSLT: The XSLT C library."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "LIBXMLSEC: XML Security Library C library based on LibXML2 with openssl and mscrypto modules."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "LIBOPENSSL: A  full-strength general purpose cryptography library."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "LIBXML2: XML C parser and toolkit version 2.5.15."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "LIBXSLT: The XSLT C library version 1.2.12."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "LIBXMLSEC: XML Security Library C library version 1.2.6 (based on LibXML2) with openssl and mscrypto modules."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "LIBOPENSSL: A  full-strength general purpose cryptography library version 0.9.7e."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "ZLIB: A free, general-purpose, legally unencumbered -- that is, not covered by any patents -- lossless data-compression library version 1.2.1."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "LIBICONV: Free iconv() implementation."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC08} "LIBINTL: Library for native language support."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC09} "LIBLASSO: Free implementation of the Liberty Alliance specifications."
@@ -146,9 +147,10 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\liblasso-1.dll"
-  Delete "$INSTDIR\libiconv.dll"
-  Delete "$INSTDIR\libz.dll"
+  Delete "$INSTDIR\liblasso-2.dll"
+  Delete "$INSTDIR\iconv.dll"
+  Delete "$INSTDIR\zlib.dll"
+  Delete "$INSTDIR\zlib1.dll"
   Delete "$INSTDIR\libssleay32.dll"
   Delete "$INSTDIR\libeay32.dll"
   Delete "$INSTDIR\libxmlsec-openssl.dll"
