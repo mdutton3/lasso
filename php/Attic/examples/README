@@ -84,8 +84,10 @@ CONFIGURATION
  OpenSSL
  
  To generate SSL certificat for the Identity Provider and the Service 
- Provider you need the openssl command line utility. You need to create
- a certificate, a public and private key : 
+ Provider you need the openssl command line utility. 
+ You need to create a certificate, a public and private key for the idp 
+ and the sp. In order to proceed, you can run the gen_keys.sh script or use
+ the openssl command line utility :
 
  # cd /var/www/sp
  # openssl req -out certificate_sp1.pem -keyout private-key-raw_sp1.pem -x509 -nodes -newkey rsa:2048
