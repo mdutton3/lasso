@@ -698,9 +698,9 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
   GError *err = NULL;
 
   if (authn_request_method != lassoHttpMethodRedirect && \
-      authn_request_method != lassoHttpMethodGet && \
-      authn_request_method != lassoHttpMethodPost) {
-    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+      authn_request_method != lassoHttpMethodPost && \
+      authn_request_method != lassoHttpMethodSoap) {
+    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT, POST or SOAP (LECP)\n.");
     return (-1);
   }
 
@@ -708,16 +708,20 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
 
   /* rebuild request */
   switch (authn_request_method) {
-  case lassoHttpMethodGet:
   case lassoHttpMethodRedirect:
     /* LibAuthnRequest send by method GET */
     LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
-										lassoNodeExportTypeQuery);
+									lassoNodeExportTypeQuery);
     break;
   case lassoHttpMethodPost:
     /* TODO LibAuthnRequest send by method POST */
     message(G_LOG_LEVEL_MESSAGE, "HTTP method POST isn't implemented yet.\n");
     return (-2);
+  case lassoHttpMethodSoap:
+    /* LibAuthnRequest send by method SOAP - usefull only for LECP */
+    LASSO_PROFILE(login)->request = lasso_authn_request_new_from_export(authn_request_msg,
+									lassoNodeExportTypeSoap);
+    break;
   }
   LASSO_PROFILE(login)->request_type = lassoMessageTypeAuthnRequest;
 
@@ -813,15 +817,13 @@ lasso_login_init_request(LassoLogin      *login,
   xmlChar *artifact, *identityProviderSuccinctID;
 
   if (response_method != lassoHttpMethodRedirect && \
-      response_method != lassoHttpMethodGet && \
       response_method != lassoHttpMethodPost) {
-    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT/GET or POST\n.");
+    message(G_LOG_LEVEL_ERROR, "Invalid HTTP method, it could be REDIRECT or POST\n.");
     return (-1);
   }
 
   /* rebuild response (artifact) */
   switch (response_method) {
-  case lassoHttpMethodGet:
   case lassoHttpMethodRedirect:
     /* artifact by REDIRECT */
     response = lasso_artifact_new_from_query(response_msg);
@@ -835,7 +837,7 @@ lasso_login_init_request(LassoLogin      *login,
   /* get remote identityProviderSuccinctID */
   identityProviderSuccinctID = lasso_artifact_get_identityProviderSuccinctID(LASSO_ARTIFACT(response));
   LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(LASSO_PROFILE(login)->server,
-											  identityProviderSuccinctID);
+										  identityProviderSuccinctID);
   xmlFree(identityProviderSuccinctID);
   
   LASSO_PROFILE(login)->response_type = lassoMessageTypeArtifact;
