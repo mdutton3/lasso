@@ -25,6 +25,8 @@
 
 #include "../lassomod.h"
 
+#include "../xml/py_xml.h"
+
 #include "py_logout.h"
 
 PyObject *LassoLogout_wrap(LassoLogout *logout) {
@@ -57,16 +59,20 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
   if (!strcmp(attr, "__members__"))
     return Py_BuildValue("[ssss]", "user", "msg_url", "msg_body",
 			 "nameIdentifier", "msg_relayState");
-  if (!strcmp(attr, "user"))
-    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(logout)->user));
   if (!strcmp(attr, "msg_url"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_url));
   if (!strcmp(attr, "msg_body"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_body));
-  if (!strcmp(attr, "nameIdentifier"))
-    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->nameIdentifier));
   if (!strcmp(attr, "msg_relayState"))
     return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->msg_relayState));
+  if (!strcmp(attr, "nameIdentifier"))
+    return (charPtrConst_wrap(LASSO_PROFILE_CONTEXT(logout)->nameIdentifier));
+  if (!strcmp(attr, "request"))
+    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(logout)->request));
+  if (!strcmp(attr, "response"))
+    return (LassoNode_wrap(LASSO_PROFILE_CONTEXT(logout)->response));
+  if (!strcmp(attr, "user"))
+    return (LassoUser_wrap(LASSO_PROFILE_CONTEXT(logout)->user));
 
   Py_INCREF(Py_None);
   return (Py_None);
@@ -75,19 +81,17 @@ PyObject *logout_getattr(PyObject *self, PyObject *args) {
 
 PyObject *logout_new(PyObject *self, PyObject *args) {
   gint         provider_type;
-  PyObject    *server_obj, *user_obj;
+  PyObject    *server_obj;
   LassoLogout *logout;
 
-  if (CheckArgs(args, "IOo:logout_new")) {
-    if(!PyArg_ParseTuple(args, (char *) "IO|O:logout_new",
-			 &provider_type, &server_obj, &user_obj))
+  if (CheckArgs(args, "OI:logout_new")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oi:logout_new",
+						 &server_obj, &provider_type))
       return NULL;
   }
   else return NULL;
 
-  logout = lasso_logout_new(provider_type,
-			    LassoServer_get(server_obj),
-			    LassoUser_get(user_obj));
+  logout = lasso_logout_new(LassoServer_get(server_obj), provider_type);
 
   return (LassoLogout_wrap(logout));
 }

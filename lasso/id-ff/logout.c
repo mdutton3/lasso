@@ -25,6 +25,9 @@
 
 #include <lasso/environs/logout.h>
 
+#define LASSO_LOGOUT_NODE            "LassoLogout"
+#define LASSO_REMOTE_PROVIDERID_NODE "RemoteProviderID"
+
 static GObjectClass *parent_class = NULL;
 
 struct _LassoLogoutPrivate
@@ -40,8 +43,19 @@ gchar *
 lasso_logout_dump(LassoLogout *logout)
 {
   gchar *dump = NULL;
+  LassoNode *logout_node = NULL;
+  LassoNodeClass *logout_class = NULL;
 
   g_return_val_if_fail(LASSO_IS_LOGOUT(logout), NULL);
+
+  logout_node = lasso_node_new();
+  logout_class = LASSO_NODE_GET_CLASS(logout_node);
+  logout_class->set_name(logout_node, LASSO_LOGOUT_NODE);
+
+  /* back up */
+/*   lasso_node_add_child(logout_node, logout->first_request); */
+/*   lasso_node_add_child(logout_node, logout->first_response); */
+/*   lasso_node_set_prop(logout_node, LASSO_REMOTE_PROVIDERID_NODE, logout->first_remote_providerID); */
 
   return(dump);
 }
@@ -163,7 +177,9 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
     current_provider_id = g_strdup(g_ptr_array_index(profileContext->user->assertion_providerIDs, i));
     if(logout->first_remote_providerID!=NULL){
       if(xmlStrEqual(current_provider_id, logout->first_remote_providerID)){
-	/* message(G_LOG_LEVEL_INFO, "It's the ProviderID of the SP requester (%s) : %s, pass it\n", logout->first_remote_providerID, current_provider_id); */
+	debug("It's the ProviderID of the SP requester (%s) : %s, pass it\n",
+	      logout->first_remote_providerID,
+	      current_provider_id);
 	xmlFree(current_provider_id);
 	continue;
       }
@@ -224,7 +240,7 @@ lasso_logout_init_request(LassoLogout *logout,
     }
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unknown provider type\n");
+    message(G_LOG_LEVEL_ERROR, "Invalid provider type\n");
     return(-4);
   }
   
@@ -270,8 +286,8 @@ gint lasso_logout_load_user_dump(LassoLogout *logout,
 }
 
 gint lasso_logout_load_request_msg(LassoLogout     *logout,
-				   gchar           *request_msg,
-				   lassoHttpMethods request_method)
+								   gchar           *request_msg,
+								   lassoHttpMethods request_method)
 {
   LassoProfileContext *profileContext;
 
@@ -290,10 +306,10 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
     profileContext->request = lasso_logout_request_new_from_export(request_msg, lassoNodeExportTypeQuery);
     break;
   case lassoHttpMethodGet:
-    message(G_LOG_LEVEL_WARNING, "TODO, implement the get method\n");
+    debug("TODO, implement the get method\n");
     break;
   default:
-    message(G_LOG_LEVEL_ERROR, "Unknown request method\n");
+    message(G_LOG_LEVEL_ERROR, "Invalid request method\n");
     return(-3);
   }
   if(profileContext->request==NULL){
@@ -302,8 +318,10 @@ gint lasso_logout_load_request_msg(LassoLogout     *logout,
   }
 
   /* get the NameIdentifier to load user dump */
-  LASSO_PROFILE_CONTEXT(logout)->nameIdentifier = lasso_node_get_child_content(profileContext->request,
-									       "NameIdentifier", NULL);
+  profileContext->nameIdentifier = lasso_node_get_child_content(profileContext->request,
+								"NameIdentifier", NULL);
+  profileContext->msg_relayState = lasso_node_get_child_content(profileContext->request,
+								"RelayState", NULL);
 
   return(0);
 }
@@ -501,7 +519,7 @@ lasso_logout_dispose(LassoLogout *logout)
   }
   logout->private->dispose_has_run = TRUE;
 
-  debug("ProfileContext object 0x%x disposed ...\n", logout);
+  debug("Logout object 0x%x disposed ...\n", logout);
 
   /* unref reference counted objects */
   lasso_node_destroy(logout->first_request);
@@ -575,9 +593,8 @@ GType lasso_logout_get_type() {
 }
 
 LassoLogout *
-lasso_logout_new(lassoProviderTypes  provider_type,
-		 LassoServer        *server,
-		 LassoUser          *user)
+lasso_logout_new(LassoServer        *server,
+				 lassoProviderTypes  provider_type)
 {
   LassoLogout *logout;
 
@@ -585,10 +602,9 @@ lasso_logout_new(lassoProviderTypes  provider_type,
 
   /* set the logout object */
   logout = g_object_new(LASSO_TYPE_LOGOUT,
-			"provider_type", provider_type,
-			"server", server,
-			"user", user,
-			NULL);
+						"server", server,
+						"provider_type", provider_type,
+						NULL);
 
   return(logout);
 }
