@@ -32,9 +32,8 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-wsf/wsf_profile.h>
-#include <lasso/xml/disco_resource_offering.h>
-#include <lasso/xml/dst_query_item.h>
-#include <lasso/xml/disco_resource_id_group.h>
+#include <lasso/xml/disco_resource_id.h>
+#include <lasso/xml/disco_encrypted_resource_id.h>
 
 #define LASSO_TYPE_ABSTRACT_SERVICE (lasso_abstract_service_get_type())
 #define LASSO_ABSTRACT_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -55,14 +54,16 @@ typedef struct _LassoAbstractServicePrivate LassoAbstractServicePrivate;
 struct _LassoAbstractService {
 	LassoWsfProfile parent;
 
-	LassoDiscoResourceOffering *ResourceOffering;
+	/* ResourceID / EncryptedResourceID being used when processing request message */
+	LassoDiscoResourceID *ResourceID;
+	LassoDiscoEncryptedResourceID *EncryptedResourceID;
 
-	LassoDiscoResourceIDGroup *ResourceIDGroup;
+	/* Data being used when processing a query response message */
+	GList *data;
+	
+	/* QueryItem being used when processing a query request message */
+	GList *queryItem;
 
-	GList *Data;
-	GList *QueryItem;
-
-	LassoAbstractServicePrivate *private_data;
 };
 
 struct _LassoAbstractServiceClass {
@@ -71,6 +72,8 @@ struct _LassoAbstractServiceClass {
 
 
 LASSO_EXPORT GType lasso_abstract_service_get_type(void);
+
+LASSO_EXPORT gint lasso_abstract_service_build_request_msg(LassoAbstractService *service);
 
 LASSO_EXPORT LassoAbstractService* lasso_abstract_service_new(LassoServer *server);
 
