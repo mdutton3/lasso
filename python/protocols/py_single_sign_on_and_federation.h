@@ -36,6 +36,6 @@ typedef struct {
 PyObject *lassoAuthnRequest_wrap(lassoAuthnRequest *request);
 
 PyObject *authn_request_getattr(PyObject *self, PyObject *args);
-PyObject *authn_request_build(PyObject *self, PyObject *args);
+PyObject *authn_request_create(PyObject *self, PyObject *args);
 
 #endif /* __PYLASSO_PY_SINGLE_SIGN_ON_AND_FEDERATION_H__ */

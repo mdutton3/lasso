@@ -42,7 +42,7 @@ static PyMethodDef lasso_methods[] = {
 
   /* py_single_sign_on_and_federation.h */
   {"authn_request_getattr", authn_request_getattr, METH_VARARGS},
-  {"authn_request_build",   authn_request_build,   METH_VARARGS},
+  {"authn_request_create",  authn_request_create,   METH_VARARGS},
 
   {NULL, NULL} /* End of Methods Sentinel */
 };

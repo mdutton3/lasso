@@ -46,8 +46,6 @@ const gchar lassoLibAuthnContextComparisonBetter[]  = "better";
 /* StatusCodes */
 const gchar lassoLibStatusCodeFederationDoesNotExist[] = "lib:FederationDoesNotExist";
 const gchar lassoLibStatusCodeNoPassive[]              = "lib:NoPassive";
-const gchar lassoLibStatusCodeRequestDenied[]          = "lib:RequestDenied";
-const gchar lassoLibStatusCodeSuccess[]                = "lib:Success";
 
 /*****************************************************************************/
 /* SAML                                                                      */
@@ -56,4 +54,21 @@ const gchar lassoLibStatusCodeSuccess[]                = "lib:Success";
 /* Versioning */
 const gchar lassoSamlMajorVersion[] = "1";
 const gchar lassoSamlMinorVersion[] = "0";
+
+/* StatusCodes */
+const gchar lassoSamlStatusCodeRequestDenied[] = "Samlp:RequestDenied";
+const gchar lassoSamlStatusCodeSuccess[]       = "Samlp:Success";
+
+/* AuthenticationMethods */
+const gchar lassoSamlAuthenticationMethodPassword[]             = "urn:oasis:names:tc:SAML:1.0:am:password";
+const gchar lassoSamlAuthenticationMethodKerberos[]             = "urn:ietf:rfc:1510";
+const gchar lassoSamlAuthenticationMethodSecureRemotePassword[] = "urn:ietf:rfc:2945";
+const gchar lassoSamlAuthenticationMethodHardwareToken[]        = "urn:oasis:names:tc:SAML:1.0:am:HardwareToken";
+const gchar lassoSamlAuthenticationMethodSmartcardPki[]         = "urn:ietf:rfc:2246";
+const gchar lassoSamlAuthenticationMethodSoftwarePki[]          = "urn:oasis:names:tc:SAML:1.0:am:X509-PKI";
+const gchar lassoSamlAuthenticationMethodPGP[]                  = "urn:oasis:names:tc:SAML:1.0:am:PGP";
+const gchar lassoSamlAuthenticationMethodSPki[]                 = "urn:oasis:names:tc:SAML:1.0:am:SPKI";
+const gchar lassoSamlAuthenticationMethodXkms[]                 = "urn:oasis:names:tc:SAML:1.0:am:XKMS";
+const gchar lassoSamlAuthenticationMethodXmlSign[]              = "urn:ietf:rfc:3075";
+const gchar lassoSamlAuthenticationMethodUnspecified[]          = "urn:oasis:names:tc:SAML:1.0:am:unspecified";
 

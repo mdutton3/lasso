@@ -67,7 +67,7 @@ PyObject *authn_request_getattr(PyObject *self, PyObject *args) {
 
 /******************************************************************************/
 
-PyObject *authn_request_build(PyObject *self, PyObject *args) {
+PyObject *authn_request_create(PyObject *self, PyObject *args) {
   PyObject *authnContextClassRefs_obj, *authnContextStatementRefs_obj;
   PyObject *idpList_obj;
   const xmlChar *providerID;
@@ -94,19 +94,19 @@ PyObject *authn_request_build(PyObject *self, PyObject *args) {
 		       &idpList, &consent))
     return NULL;
 
-  request = lasso_authn_request_build(providerID,
-				      nameIDPolicy,
-				      forceAuthn,
-				      isPassive,
-				      protocolProfile,
-				      assertionConsumerServiceID,
-				      NULL,
-				      NULL,
-				      authnContextComparison,
-				      relayState,
-				      proxyCount,
-				      NULL,
-				      consent);
+  request = lasso_authn_request_create(providerID,
+				       nameIDPolicy,
+				       forceAuthn,
+				       isPassive,
+				       protocolProfile,
+				       assertionConsumerServiceID,
+				       NULL,
+				       NULL,
+				       authnContextComparison,
+				       relayState,
+				       proxyCount,
+				       NULL,
+				       consent);
 
   return (lassoAuthnRequest_wrap(request));
 }

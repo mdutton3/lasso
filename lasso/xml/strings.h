@@ -54,8 +54,6 @@ LASSO_EXPORT_VAR const gchar lassoLibAuthnContextComparisonBetter[];
 /* StatusCodes */
 LASSO_EXPORT_VAR const gchar lassoLibStatusCodeFederationDoesNotExist[];
 LASSO_EXPORT_VAR const gchar lassoLibStatusCodeNoPassive[];
-LASSO_EXPORT_VAR const gchar lassoLibStatusCodeRequestDenied[];
-LASSO_EXPORT_VAR const gchar lassoLibStatusCodeSuccess[];
 
 /*****************************************************************************/
 /* SAML                                                                      */
@@ -64,6 +62,23 @@ LASSO_EXPORT_VAR const gchar lassoLibStatusCodeSuccess[];
 /* Versioning */
 LASSO_EXPORT_VAR const gchar lassoSamlMajorVersion[];
 LASSO_EXPORT_VAR const gchar lassoSamlMinorVersion[];
+
+/* StatusCodes */
+LASSO_EXPORT_VAR const gchar lassoSamlStatusCodeRequestDenied[];
+LASSO_EXPORT_VAR const gchar lassoSamlStatusCodeSuccess[];
+
+/* AuthenticationMethods */
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodPassword[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodKerberos[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSecureRemotePassword[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodHardwareToken[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSmartcardPki[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSoftwarePki[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodPGP[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodSPki[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodXkms[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodXmlSign[];
+LASSO_EXPORT_VAR const gchar lassoSamlAuthenticationMethodUnspecified[];
 
 #ifdef __cplusplus
 }
