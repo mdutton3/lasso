@@ -19,8 +19,8 @@ _lassomod_la_LDFLAGS=	-module -avoid-version \
 			-version-info @LASSO_VERSION_INFO@ \
 				$(NULL)
 
-$(PYTHON_PACKAGE)_wrap.c: $(srcdir)/../swig/Lasso.i
-	$(SWIG) -v -python -module $(PYTHON_PACKAGE) -o $@ $<
+$(PYTHON_PACKAGE)_wrap.c $(PYTHON_PACKAGE).py: $(srcdir)/../swig/Lasso.i
+	$(SWIG) -v -python -module $(PYTHON_PACKAGE) -o $(PYTHON_PACKAGE)_wrap.c $<
 
 # Dirty hack, another better way ?
 .deps/_$(PYTHON_PACKAGE)_la-$(PYTHON_PACKAGE)_wrap.Plo:
