@@ -934,15 +934,24 @@ class Login(Profile):
         ret = lassomod.login_getattr(self, name)
         if ret is None:
             raise AttributeError, name
-        if name == "user":
-            ret = User(_obj=ret)
-        if name == "request":
-            # print "request_type =", lassomod.login_getattr(self, "request_type")
+        elif name == "identity":
+            ret= Identity(_obj=ret)
+        elif name == "session":
+            ret= Session(_obj=ret)
+        elif name == "request":
             if lassomod.login_getattr(self, "request_type") == messageTypeAuthnRequest:
                 ret = AuthnRequest(None, _obj=ret)
-            # TODO
-        if name == "response":
-            ret = Node(_obj=ret)
+            elif lassomod.login_getattr(self, "request_type") == messageTypeRequest:
+                ret = Node(_obj=ret)
+                # FIXME ret = Request(_obj=ret)
+        elif name == "response":
+            if lassomod.login_getattr(self, "response_type") == messageTypeAuthnResponse:
+                ret = AuthnResponse(None, _obj=ret)
+            elif lassomod.login_getattr(self, "response_type") == messageTypeResponse:
+                ret = SamlpResponse(_obj=ret)
+                # FIXME ret = Response(_obj=ret)
+            elif lassomod.login_getattr(self, "response_type") == messageTypeArtifact:
+                ret = Node(_obj=ret)
         return ret
 
     def new(cls, server):
