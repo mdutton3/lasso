@@ -23,6 +23,7 @@
  */
 
 #include <lasso/xml/tools.h>
+#include <xmlsec/xmltree.h>
 
 xmlChar *
 lasso_build_random_sequence(guint8 size)
@@ -106,7 +107,7 @@ lasso_doc_get_node_content(xmlDocPtr doc, const xmlChar *name)
   xmlNodePtr node;
 
   /* FIXME: bad namespace used */
-  node = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
+  node = xmlSecFindNode(xmlDocGetRootElement(doc), name, xmlSecDSigNs);
   if (node != NULL)
     /* val returned must be xmlFree() */
     return (xmlNodeGetContent(node));
@@ -283,7 +284,7 @@ lasso_query_verify_signature(const gchar   *query,
   doc = lasso_str_sign(str_split[0],
 		       lassoSignatureMethodRsaSha1,
 		       recipient_private_key_file);
-  sigValNode = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc),
+  sigValNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 				          xmlSecNodeSignatureValue,
 					  xmlSecDSigNs);
   /* set SignatureValue content */
@@ -295,7 +296,7 @@ lasso_query_verify_signature(const gchar   *query,
   /*xmlDocDump(stdout, doc);*/
 
   /* find start node */
-  sigNode = (xmlNodePtr)xmlSecFindNode(xmlDocGetRootElement(doc),
+  sigNode = xmlSecFindNode(xmlDocGetRootElement(doc),
 				       xmlSecNodeSignature, xmlSecDSigNs);
   
   /* create signature context */
@@ -368,7 +369,7 @@ lasso_str_hash(xmlChar    *str,
   doc = lasso_str_sign(str,
 		       lassoSignatureMethodRsaSha1,
 		       private_key_file);
-  b64_digest = xmlNodeGetContent((xmlNodePtr)xmlSecFindNode(
+  b64_digest = xmlNodeGetContent(xmlSecFindNode(
 			  	 	xmlDocGetRootElement(doc),
 					xmlSecNodeDigestValue,
 					xmlSecDSigNs));
