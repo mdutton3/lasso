@@ -47,6 +47,7 @@ extern "C" {
 
 typedef struct _LassoIdentity LassoIdentity;
 typedef struct _LassoIdentityClass LassoIdentityClass;
+typedef struct _LassoIdentityPrivate LassoIdentityPrivate;
 
 struct _LassoIdentity {
   GObject parent;
@@ -57,6 +58,7 @@ struct _LassoIdentity {
   LassoNode *remote_nameIdentifier;
 
   /*< private >*/
+  LassoIdentityPrivate *private;
 };
 
 struct _LassoIdentityClass {
@@ -68,6 +70,8 @@ LASSO_EXPORT GType          lasso_identity_get_type                  (void);
 LASSO_EXPORT LassoIdentity *lasso_identity_new                       (gchar *remote_providerID);
 
 LASSO_EXPORT LassoIdentity *lasso_identity_new_from_dump             (xmlChar *dump);
+
+LASSO_EXPORT void           lasso_identity_destroy                   (LassoIdentity *identity);
 
 LASSO_EXPORT xmlChar       *lasso_identity_dump                      (LassoIdentity *identity);
 

@@ -24,9 +24,22 @@
 
 #include <lasso/protocols/identity.h>
 
+struct _LassoIdentityPrivate
+{
+  gboolean dispose_has_run;
+};
+
+static GObjectClass *parent_class = NULL;
+
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
+
+void
+lasso_identity_destroy(LassoIdentity *identity)
+{
+  g_object_unref(G_OBJECT(identity));
+}
 
 xmlChar *
 lasso_identity_dump(LassoIdentity *identity)
@@ -123,20 +136,62 @@ lasso_identity_verify_nameIdentifier(LassoIdentity *identity,
 }
 
 /*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_identity_dispose(LassoIdentity *identity)
+{
+  if (identity->private->dispose_has_run) {
+    return;
+  }
+  identity->private->dispose_has_run = TRUE;
+
+  debug(DEBUG, "Identity object 0x%x disposed ...\n", identity);
+
+  /* unref reference counted objects */
+  lasso_node_destroy(identity->local_nameIdentifier);
+  lasso_node_destroy(identity->remote_nameIdentifier);
+
+  parent_class->dispose(G_OBJECT(identity));
+}
+
+static void
+lasso_identity_finalize(LassoIdentity *identity)
+{
+  debug(DEBUG, "Identity object 0x%x finalized ...\n", identity);
+
+  g_free(identity->remote_providerID);
+
+  g_free (identity->private);
+
+  parent_class->finalize(G_OBJECT(identity));
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 static void
 lasso_identity_instance_init(LassoIdentity *identity)
 {
+  identity->private = g_new (LassoIdentityPrivate, 1);
+  identity->private->dispose_has_run = FALSE;
+
+  identity->remote_providerID  = NULL;
   identity->local_nameIdentifier  = NULL;
   identity->remote_nameIdentifier = NULL;
 }
 
 static void
-lasso_identity_class_init(LassoIdentityClass *klass)
+lasso_identity_class_init(LassoIdentityClass *g_class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (g_class);
 
+  parent_class = g_type_class_peek_parent(g_class);
+  /* override parent class methods */
+  gobject_class->dispose  = (void *)lasso_identity_dispose;
+  gobject_class->finalize = (void *)lasso_identity_finalize;
 }
 
 GType lasso_identity_get_type() {
@@ -167,6 +222,8 @@ lasso_identity_new(gchar *remote_providerID)
 {
   LassoIdentity *identity;
 
+  g_return_val_if_fail(remote_providerID != NULL, NULL);
+
   identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
   identity->remote_providerID = g_strdup(remote_providerID);
@@ -178,6 +235,8 @@ LassoIdentity*
 lasso_identity_new_from_dump(xmlChar *dump)
 {
   LassoIdentity *identity;
+
+  g_return_val_if_fail(dump != NULL, NULL);
 
   identity = LASSO_IDENTITY(g_object_new(LASSO_TYPE_IDENTITY, NULL));
 
