@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include <lasso/export.h>
-#include <libxml/xpath.h>
+#include <libxml/tree.h>
 
 /*****************************************************************************/
 /* Liberty Alliance                                                          */
