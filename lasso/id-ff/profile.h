@@ -80,9 +80,7 @@ struct _LassoProfile {
   GObject parent;
 
   /*< public >*/
-  LassoServer   *server;
-  LassoIdentity *identity;
-  LassoSession  *session;
+  LassoServer *server;
 
   LassoNode *request;
   LassoNode *response;
@@ -96,10 +94,14 @@ struct _LassoProfile {
   gchar *msg_relayState;
 
   /*< private >*/
-  LassoProfilePrivate *private;
+  LassoIdentity *identity;
+  LassoSession  *session;
+
   lassoMessageType  request_type;
   lassoMessageType  response_type;
   lassoProviderType provider_type;
+
+  LassoProfilePrivate *private;
 };
 
 struct _LassoProfileClass {
