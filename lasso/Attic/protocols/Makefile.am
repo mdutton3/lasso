@@ -13,14 +13,18 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-protocols.la
 
 liblasso_protocols_la_SOURCES = \
-	single_sign_on_and_federation.c \
-	logout.c \
+	protocol.c \
 	federation_termination_notification.c \
-	register_name_identifier.c
+	logout.c \
+	register_name_identifier.c \
+	single_sign_on_and_federation.c \
+	ssoaf_authn_request.c
 
 liblassoinclude_HEADERS = \
-	single_sign_on_and_federation.h \
-	logout.h \
+	protocols.h \
+	protocol.h \
 	federation_termination_notification.h \
+	logout.h \
 	register_name_identifier.h \
-	protocols.h
+	single_sign_on_and_federation.h \
+	ssoaf_authn_request.h
