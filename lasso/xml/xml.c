@@ -252,17 +252,6 @@ lasso_node_new_child(LassoNode     *node,
 }
 
 static void
-lasso_node_new_ns(LassoNode     *node,
-		  const xmlChar *href,
-		  const xmlChar *prefix)
-{
-  g_return_if_fail(LASSO_IS_NODE(node));
-
-  LassoNodeClass *class = LASSO_NODE_GET_CLASS(node);
-  class->new_ns(node, href, prefix);
-}
-
-static void
 lasso_node_set_name(LassoNode     *node,
 		    const xmlChar *name)
 {
@@ -858,19 +847,6 @@ lasso_node_impl_new_child(LassoNode     *node,
 }
 
 static void
-lasso_node_impl_new_ns(LassoNode     *node,
-		       const xmlChar *href,
-		       const xmlChar *prefix)
-{
-  g_return_if_fail (LASSO_IS_NODE(node));
-  /* href may be NULL */
-  g_return_if_fail (prefix != NULL);
-
-  xmlSetNs(node->private->node,
-	   xmlNewNs(node->private->node, href, prefix));
-}
-
-static void
 lasso_node_impl_set_name(LassoNode     *node,
 			 const xmlChar *name)
 {
@@ -997,7 +973,6 @@ lasso_node_class_init(LassoNodeClass *class)
   class->add_child   = lasso_node_impl_add_child;
   class->get_xmlNode = lasso_node_impl_get_xmlNode;
   class->new_child   = lasso_node_impl_new_child;
-  class->new_ns      = lasso_node_impl_new_ns;
   class->set_name    = lasso_node_impl_set_name;
   class->set_ns      = lasso_node_impl_set_ns;
   class->set_prop    = lasso_node_impl_set_prop;
@@ -1044,7 +1019,7 @@ lasso_node_new_from_dump(xmlChar *buffer)
 
   g_return_val_if_fail (buffer != NULL, NULL);
 
-  node = lasso_node_new();
+  node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
   doc = xmlParseMemory(buffer, strlen(buffer));
   /* get root element of doc and duplicate it */
   root = xmlCopyNode(xmlDocGetRootElement(doc), 1);
@@ -1062,7 +1037,7 @@ lasso_node_new_from_xmlNode(xmlNodePtr node)
 
   g_return_val_if_fail (node != NULL, NULL);
 
-  lasso_node = lasso_node_new();
+  lasso_node = LASSO_NODE(g_object_new(LASSO_TYPE_NODE, NULL));
   lasso_node_set_xmlNode(lasso_node, node);
 
   return (lasso_node);

@@ -97,9 +97,6 @@ struct _LassoNodeClass {
 			       const xmlChar *,
 			       const xmlChar *,
 			       gboolean);
-  void       (* new_ns)       (LassoNode     *,
-			       const xmlChar *,
-			       const xmlChar *);
   void       (* set_name)     (LassoNode     *,
 			       const xmlChar *);
   void       (* set_ns)       (LassoNode     *node,
