@@ -53,12 +53,14 @@ struct _LassoFederationTerminationNotificationClass {
 };
 
 LASSO_EXPORT GType      lasso_federation_termination_notification_get_type          (void);
+
 LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new               (const xmlChar *providerID,
 										     const xmlChar *nameIdentifier,
 										     const xmlChar *nameQualifier,
 										     const xmlChar *format);
-LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new_from_query    (const xmlChar *query);
-LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new_from_soap     (const xmlChar *buffer);
+
+LASSO_EXPORT LassoNode* lasso_federation_termination_notification_new_from_export   (const xmlChar *export,
+										     lassoNodeExportTypes export_type);
 
 #ifdef __cplusplus
 }

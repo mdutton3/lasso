@@ -99,6 +99,22 @@ lasso_identity_get_remote_nameIdentifier(LassoIdentity *identity)
 }
 
 void
+lasso_identity_remove_local_nameIdentifier(LassoIdentity *identity)
+{
+  if(identity->local_nameIdentifier!=NULL){
+    lasso_node_destroy(identity->local_nameIdentifier);
+  }
+}
+
+void
+lasso_identity_remove_remote_nameIdentifier(LassoIdentity *identity)
+{
+  if(identity->remote_nameIdentifier!=NULL){
+    lasso_node_destroy(identity->remote_nameIdentifier);
+  }
+}
+
+void
 lasso_identity_set_local_nameIdentifier(LassoIdentity *identity,
 					LassoNode     *nameIdentifier)
 {

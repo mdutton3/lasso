@@ -180,3 +180,25 @@ lasso_federation_termination_notification_new_from_soap(const xmlChar *buffer)
   
   return(notification);
 }
+
+
+LassoNode*
+lasso_federation_termination_notification_new_from_export(const xmlChar       *buffer,
+							  lassoNodeExportTypes export_type)
+{
+  LassoNode *notification;
+
+  g_return_val_if_fail(buffer != NULL, NULL);
+
+  switch(export_type){
+  case lassoNodeExportTypeQuery:
+    notification = lasso_federation_termination_notification_new_from_query(buffer);
+    break;
+  case lassoNodeExportTypeSoap:
+    notification = lasso_federation_termination_notification_new_from_soap(buffer);
+    break;
+  default:
+  }
+
+  return(notification);
+}

@@ -129,8 +129,8 @@ PyObject *federation_termination_init_notification(PyObject *self, PyObject *arg
   gchar    *remote_providerID;
   gint      codeError;
 
-  if (CheckArgs(args, "OS:federation_termination_init_notification")) {
-    if(!PyArg_ParseTuple(args, (char *) "Os:federation_termination_init_notification",
+  if (CheckArgs(args, "Os:federation_termination_init_notification")) {
+    if(!PyArg_ParseTuple(args, (char *) "Oz:federation_termination_init_notification",
 			 &federation_termination_obj, &remote_providerID))
       return NULL;
   }

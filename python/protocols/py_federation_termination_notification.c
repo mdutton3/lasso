@@ -64,36 +64,20 @@ PyObject *federation_termination_notification_new(PyObject *self, PyObject *args
   return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
 }
 
-PyObject *federation_termination_notification_new_from_soap(PyObject *self, PyObject *args) {
-  const xmlChar *soap_buffer;
+PyObject *federation_termination_notification_new_from_export(PyObject *self, PyObject *args) {
+  xmlChar   *soap_buffer;
+  gint       type;
 
-  LassoNode     *notification;
+  LassoNode *notification;
 
-  if (CheckArgs(args, "S:federation_termination_notification_new_from_soap")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:federation_termination_notification_new_from_soap",
-			 &soap_buffer))
+  if (CheckArgs(args, "SI:federation_termination_notification_new_from_export")) {
+    if(!PyArg_ParseTuple(args, (char *) "si:federation_termination_notification_new_from_export",
+			 &soap_buffer, &type))
       return NULL;
   }
   else return NULL;
 
-  notification = lasso_federation_termination_notification_new_from_soap(soap_buffer);
-
-  return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
-}
-
-PyObject *federation_termination_notification_new_from_query(PyObject *self, PyObject *args) {
-  const xmlChar *query;
-
-  LassoNode     *notification;
-
-  if (CheckArgs(args, "S:federation_termination_notification_new_from_query")) {
-    if(!PyArg_ParseTuple(args, (char *) "s:federation_termination_notification_new_from_query",
-			 &query))
-      return NULL;
-  }
-  else return NULL;
-
-  notification = lasso_federation_termination_notification_new_from_query(query);
+  notification = lasso_federation_termination_notification_new_from_export(soap_buffer, type);
 
   return (LassoFederationTerminationNotification_wrap(LASSO_FEDERATION_TERMINATION_NOTIFICATION(notification)));
 }
