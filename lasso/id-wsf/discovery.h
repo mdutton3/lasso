@@ -105,6 +105,11 @@ LASSO_EXPORT gint                   lasso_discovery_init_query(
 LASSO_EXPORT gint                   lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 								       const gchar    *message);
 
+LASSO_EXPORT gint lasso_discovery_process_modify_response_msg(
+		LassoDiscovery *discovery, const gchar *message);
+LASSO_EXPORT gint lasso_discovery_process_query_msg(
+		LassoDiscovery *discovery, const gchar *message);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -294,18 +294,16 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 }
 
 gint
-lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery,
-					    const gchar    *message)
+lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	LASSO_WSF_PROFILE(discovery)->response = \
+	LASSO_WSF_PROFILE(discovery)->response =
 		LASSO_NODE(lasso_disco_modify_new_from_message(message));
 
 	return 0;
 }
 
 gint
-lasso_discovery_process_query_msg(LassoDiscovery *discovery,
-				  const gchar    *message)
+lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
 	LassoDiscoQuery *request;
 	LassoDiscoQueryResponse *response;

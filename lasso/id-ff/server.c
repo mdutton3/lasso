@@ -91,16 +91,6 @@ lasso_server_add_service(LassoServer *server,
 	return 0;
 }
 
-gchar*
-lasso_server_get_authnRequestsSigned(LassoServer *server,
-				     GError **err)
-{
-	/* XXX to do differently (add a boolean to struct) */
-	g_assert_not_reached();
-	return NULL;
-}
-
-
 void
 lasso_server_destroy(LassoServer *server)
 {

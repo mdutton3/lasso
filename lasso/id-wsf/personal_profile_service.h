@@ -78,13 +78,13 @@ LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_init_query(
 	LassoDiscoDescription *description,
 	const char *select);
 
-LASSO_EXPORT gint lasso_personal_profile_process_request_msg(LassoPersonalProfileService *pp,
-							     const char *request_soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_process_response_msg(LassoPersonalProfileService *pp,
-							      const char *response_soap_msg);
-
 LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(LassoServer *server);
+
+LASSO_EXPORT gint lasso_personal_profile_service_process_request_msg(
+		LassoPersonalProfileService *pp, const char *query_soap_msg);
+
+LASSO_EXPORT gint lasso_personal_profile_service_process_response_msg(
+		LassoPersonalProfileService *pp, const char *query_response_soap_msg);
 
 #ifdef __cplusplus
 }

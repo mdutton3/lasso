@@ -65,7 +65,7 @@ struct _LassoDstModificationClass {
 
 LASSO_EXPORT GType lasso_dst_modification_get_type(void);
 
-LASSO_EXPORT LassoDstModification* lasso_dst_modification_new();
+LASSO_EXPORT LassoDstModification* lasso_dst_modification_new(const char *select);
 
 #ifdef __cplusplus
 }
