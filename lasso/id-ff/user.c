@@ -147,6 +147,7 @@ lasso_user_dump(LassoUser *user)
   /* dump the assertions */
   table_size = g_hash_table_size(user->assertions);
   if(table_size>0){
+    debug(INFO, "Dump assertions\n");
     assertions_node = lasso_node_new();
     assertions_class = LASSO_NODE_GET_CLASS(assertions_node);
     assertions_class->set_name(assertions_node, LASSO_USER_ASSERTIONS_NODE);
@@ -157,6 +158,7 @@ lasso_user_dump(LassoUser *user)
   /* dump the identities */
   table_size = g_hash_table_size(user->identities);
   if(table_size>0){
+    debug(INFO, "Dump identities\n");
     identities_node = lasso_node_new();
     identities_class = LASSO_NODE_GET_CLASS(identities_node);
     identities_class->set_name(identities_node, LASSO_USER_IDENTITIES_NODE);
