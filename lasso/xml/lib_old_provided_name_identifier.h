@@ -51,7 +51,7 @@ struct _LassoLibOLDProvidedNameIdentifierClass {
 };
 
 LASSO_EXPORT GType lasso_lib_old_provided_name_identifier_get_type(void);
-LASSO_EXPORT LassoNode* lasso_lib_old_provided_name_identifier_new(void);
+LASSO_EXPORT LassoNode* lasso_lib_old_provided_name_identifier_new(xmlChar *content);
 
 #ifdef __cplusplus
 }

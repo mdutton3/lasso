@@ -72,7 +72,16 @@ GType lasso_lib_old_provided_name_identifier_get_type() {
   return this_type;
 }
 
-LassoNode* lasso_lib_old_provided_name_identifier_new() {
-  return LASSO_NODE(g_object_new(LASSO_TYPE_LIB_OLD_PROVIDED_NAME_IDENTIFIER,
+LassoNode* lasso_lib_old_provided_name_identifier_new(xmlChar *content) {
+  LassoNode *node;
+
+  g_assert(content != NULL);
+
+  node = LASSO_NODE(g_object_new(LASSO_TYPE_LIB_OLD_PROVIDED_NAME_IDENTIFIER,
 				 NULL));
+
+  xmlNodeSetContent(LASSO_NODE_GET_CLASS(node)->get_xmlNode(node),
+		    content);
+
+  return(node);
 }
