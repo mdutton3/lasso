@@ -1,4 +1,8 @@
+if HAVE_INKSCAPE
+if HAVE_XSLTPROC
 SUBDIRS = figures
+endif
+endif
 
 docdir = $(datadir)/doc/lasso
 

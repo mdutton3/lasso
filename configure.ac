@@ -615,10 +615,6 @@ else
 fi
 AC_SUBST(HTML_DIR)
 
-AC_CHECK_PROGS(REST2HTML, rest2html)
-
-AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
-
 
 dnl pkg-config path
 AC_ARG_WITH(pkg-config, [  --with-pkg-config=PATH set pkg-config metadata search path.],
@@ -640,6 +636,17 @@ if test "x$enable_gtk_doc" = "xyes" ; then
 fi
 dnl Conditional docs sub dir test.
 AM_CONDITIONAL([GTK_DOC_ENABLED],[test "x$enable_gtk_doc" = "xyes"])
+
+
+AC_CHECK_PROGS(REST2HTML, rest2html)
+AM_CONDITIONAL(HAVE_REST2HTML, test -n "$ac_cv_prog_REST2HTML")
+
+AC_CHECK_PROGS(XSLTPROC, xsltproc)
+AM_CONDITIONAL(HAVE_XSLTPROC, test -n "$ac_cv_prog_XSLTPROC")
+
+AC_CHECK_PROGS(INKSCAPE, inkscape)
+AM_CONDITIONAL(HAVE_INKSCAPE, test -n "$ac_cv_prog_INKSCAPE")
+
 
 dnl Debug 
 AC_MSG_CHECKING(for debugging) 

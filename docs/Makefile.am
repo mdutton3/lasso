@@ -1,4 +1,6 @@
-## Process this file with automake to produce Makefile.in
+if GTK_DOC_ENABLED
+    GTK_DOC_SD = reference
+endif
 
-SUBDIRS = lasso-book reference
+SUBDIRS = lasso-book $(GTK_DOC_SD)
 

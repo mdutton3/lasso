@@ -356,3 +356,25 @@ Identifies the two possible profiles for Single Sign-On and Federation.
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_login_set_encryptedResourceId ##### -->
+<para>
+
+</para>
+
+@login: 
+@encryptedResourceId: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_login_set_resourceId ##### -->
+<para>
+
+</para>
+
+@login: 
+@content: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@resourceId: 
+
+

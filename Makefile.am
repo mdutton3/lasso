@@ -13,16 +13,13 @@ endif
 if PERL_ENABLED
     PERL_SD = perl
 endif
-if GTK_DOC_ENABLED
-    GTK_DOC_SD = docs
-endif
 
 SUBDIRS		= lasso \
 		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(CSHARP_SD) $(PERL_SD) \
 		  tests \
 		  swig \
 		  win32 \
-		  $(GTK_DOC_SD)
+		  docs
 
 ABS_BUILDDIR	= $(shell pwd)
 

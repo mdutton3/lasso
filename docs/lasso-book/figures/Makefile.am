@@ -23,11 +23,11 @@ figures_DATA = $(FIGURES_PNG_FILES)
 CLEANFILES = $(FIGURES_PNG_FILES) $(FIGURES_SVG_FILES)
 
 %.svg:
-	xsltproc --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` $(srcdir)/step.xsl \
+	$(XSLTPROC) --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` $(srcdir)/step.xsl \
 		$< > $@
 
 %.png: %.svg
-	inkscape -d 150 --export-png=$@ $<
+	$(INKSCAPE) -d 150 --export-png=$@ $<
 
 
 sso-brws-art-1.svg: sso-brws-art.svg step.xsl
