@@ -877,12 +877,6 @@ dispose(GObject *object)
 
 	debug("Logout object 0x%p disposed ...", logout);
 
-	/* unref reference counted objects */
-	/* XXX
-	lasso_node_destroy(logout->initial_request);
-	lasso_node_destroy(logout->initial_response);
-	*/
-
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -891,7 +885,6 @@ finalize(GObject *object)
 {  
 	LassoLogout *logout = LASSO_LOGOUT(object);
 	debug("Logout object 0x%p finalized ...", logout);
-	g_free(logout->initial_remote_providerID);
 	g_free(logout->private_data);
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
