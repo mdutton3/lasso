@@ -67,7 +67,7 @@ $(JAVA_MODULE)_wrap.c $(JAVA_PATH)$(JAVA_MODULE).java.in: $(srcdir)/../swig/Lass
 
 # FIXME There must be a better way to do this with SWIG
 $(JAVA_PATH)$(JAVA_MODULE).java: $(JAVA_PATH)$(JAVA_MODULE).java.in lasso-fragment.java
-	sed -e 's/^}//' $(JAVA_PATH)$(JAVA_MODULE).java.in > $(JAVA_PATH)$(JAVA_MODULE).java.tmp
+	sed -e 's/^}//' $(JAVA_MODULE).java.in > $(JAVA_PATH)$(JAVA_MODULE).java.tmp
 	cat $(JAVA_PATH)$(JAVA_MODULE).java.tmp lasso-fragment.java > $@
 	echo "}" >> $@
 	rm -f $(JAVA_PATH)$(JAVA_MODULE).java.tmp
@@ -78,7 +78,7 @@ clean-local:
 
 all-local: $(JAVA_JAR)
 
-$(JAVA_PATH)$(JAVA_MODULE).class:
+$(JAVA_PATH)$(JAVA_MODULE).class: $(JAVA_PATH)$(JAVA_MODULE).java
 	$(JAVAC) $(JAVAC_FLAGS) $(JAVA_PATH)$(JAVA_MODULE).java
 
 $(JAVA_JAR): $(JAVA_PATH)$(JAVA_MODULE).class 
