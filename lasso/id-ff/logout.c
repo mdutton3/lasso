@@ -416,8 +416,7 @@ gint lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	profile->request = lasso_lib_logout_request_new();
 	format = lasso_node_init_from_message(profile->request, request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return LASSO_PROFILE_ERROR_INVALID_MSG;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -489,8 +488,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	profile->response = lasso_lib_logout_response_new();
 	format = lasso_node_init_from_message(profile->response, response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
-		return LASSO_PROFILE_ERROR_INVALID_MSG;
+		return error_code(G_LOG_LEVEL_CRITICAL, LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)

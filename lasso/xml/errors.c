@@ -67,6 +67,8 @@ lasso_strerror(int error_code)
 			return "Failed to add new provider.";
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported logout protocol profile";
+		case LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE:
+			return "Unsupported protocol profile";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:

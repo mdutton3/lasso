@@ -1207,7 +1207,8 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 			LASSO_LIB_AUTHN_RESPONSE(LASSO_PROFILE(login)->response)->ProviderID);
 
 	if (LASSO_PROFILE(login)->remote_providerID == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "XXX");
+		ret1 = error_code(G_LOG_LEVEL_CRITICAL,
+				lasso_strerror(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND));
 	}
 
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
@@ -1216,10 +1217,12 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	LASSO_PROFILE(login)->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
 			LASSO_PROFILE(login)->response)->RelayState);
 
-	ret1 = lasso_provider_verify_signature(remote_provider,
-			authn_response_msg, "ResponseID", format);
+	LASSO_PROFILE(login)->signature_status = lasso_provider_verify_signature(
+			remote_provider, authn_response_msg, "ResponseID", format);
 	ret2 = lasso_login_process_response_status_and_assertion(login);
 
+	/* XXX: and what about signature_status ?  Shouldn't it return error on
+	 * failure ? */
 	return ret2 == 0 ? ret1 : ret2;
 }
 
