@@ -28,6 +28,11 @@
 #include <lasso/protocols/authn_response.h>
 #include <lasso/environs/profile_context.h>
 
+struct _LassoProfileContextPrivate
+{
+  gboolean dispose_has_run;
+};
+
 /*****************************************************************************/
 /* functions                                                                 */
 /*****************************************************************************/
@@ -120,12 +125,47 @@ lasso_profile_context_set_response_status(LassoProfileContext *ctx,
 }
 
 /*****************************************************************************/
+/* overrided parent class methods                                            */
+/*****************************************************************************/
+
+static void
+lasso_profile_context_dispose(LassoProfileContext *ctx)
+{
+  if (ctx->private->dispose_has_run) {
+    return;
+  }
+  ctx->private->dispose_has_run = TRUE;
+
+  /* unref reference counted objects */
+  /* we don't have any here */
+  debug(INFO, "ProfileContext object 0x%x disposed ...\n", ctx);
+}
+
+static void
+lasso_profile_context_finalize(LassoProfileContext *ctx)
+{
+  debug(INFO, "ProfileContext object 0x%x finalized ...\n", ctx);
+
+  lasso_server_destroy(ctx->server);
+  // TODO lasso_user_destroy(ctx->user);
+  lasso_node_destroy(ctx->request);
+  lasso_node_destroy(ctx->response);
+  g_free(ctx->remote_providerID);
+  
+  g_free(ctx->msg_url);
+  g_free(ctx->msg_body);
+
+  g_free (ctx->private);
+}
+
+/*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
 
 enum {
   LASSO_PROFILE_CONTEXT_SERVER = 1,
   LASSO_PROFILE_CONTEXT_USER,
+  LASSO_PROFILE_CONTEXT_PROVIDER_TYPE,
 };
 
 static void
@@ -133,6 +173,9 @@ lasso_profile_context_instance_init(GTypeInstance   *instance,
 				    gpointer         g_class)
 {
   LassoProfileContext *ctx = LASSO_PROFILE_CONTEXT(instance);
+
+  ctx->private = g_new (LassoProfileContextPrivate, 1);
+  ctx->private->dispose_has_run = FALSE;
 
   ctx->server = NULL;
   ctx->user   = NULL;
@@ -170,6 +213,10 @@ lasso_profile_context_set_property (GObject      *object,
     self->user = g_value_get_pointer (value);
   }
     break;
+  case LASSO_PROFILE_CONTEXT_PROVIDER_TYPE: {
+    self->provider_type = g_value_get_uint (value);
+  }
+    break;
   default:
     /* We don't have any other property... */
     g_assert (FALSE);
@@ -197,7 +244,7 @@ lasso_profile_context_class_init(gpointer g_class,
 
   pspec = g_param_spec_pointer ("server",
 				"server metadata and keys/certs",
-				"Set datas of server",
+				" Datas of server",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
                                    LASSO_PROFILE_CONTEXT_SERVER,
@@ -205,11 +252,25 @@ lasso_profile_context_class_init(gpointer g_class,
 
   pspec = g_param_spec_pointer ("user",
 				"user assertion and identities",
-				"Set user's datas",
+				"User's datas",
 				G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (gobject_class,
                                    LASSO_PROFILE_CONTEXT_USER,
                                    pspec);
+
+  pspec = g_param_spec_uint ("provider_type",
+			     "provider type",
+			     "The provider type",
+			     0,
+			     G_MAXINT,
+			     0,
+			     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property (gobject_class,
+                                   LASSO_PROFILE_CONTEXT_PROVIDER_TYPE,
+                                   pspec);
+
+  gobject_class->dispose  = (void *)lasso_profile_context_dispose;
+  gobject_class->finalize = (void *)lasso_profile_context_finalize;
 }
 
 GType lasso_profile_context_get_type() {

@@ -46,6 +46,7 @@ extern "C" {
 
 typedef struct _LassoProfileContext LassoProfileContext;
 typedef struct _LassoProfileContextClass LassoProfileContextClass;
+typedef struct _LassoProfileContextPrivate LassoProfileContextPrivate;
 
 typedef enum {
   lassoHttpMethodGet = 1,
@@ -86,6 +87,7 @@ struct _LassoProfileContext {
   int provider_type;
 
   /*< private >*/
+  LassoProfileContextPrivate *private;
   lassoMessageTypes request_type;
   lassoMessageTypes response_type;
 };
