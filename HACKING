@@ -34,7 +34,8 @@ Coding Style
          }
 
 - Put SPACES before the opening round bracket and after the closing round
-  bracket. One more time, it improves the readability of the code.
+  bracket with ``if``, ``for``, ``switch``, ``while``, etc. One more time,
+  it improves the readability of the code.
 
   Examples:
     BAD:
