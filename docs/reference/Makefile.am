@@ -47,7 +47,7 @@ SCANOBJ_FILES = 		\
 #
 sgml: templates
 	@echo '*** Building SGML ***'
-	-@gtkdoc-mkdb --module=lasso \
+	-@gtkdoc-mkdb --module=$(MODULE) \
 		    --main-sgml-file=$(DOC_MAIN_SGML_FILE) \
 		    --source-dir=$(DOC_SOURCE_DIR)/lasso
 	-@(for i in `find sgml -name "*.sgml" -print` ; do \
@@ -135,9 +135,11 @@ dist-hook:
 clean: clean-sources clean-local
 	-@rm -rf $(DOC_SOURCE_DIR)
 	-@rm -rf .libs
-	-@rm -rf sgml
 	-@rm -rf tmpl
-	-@rm -f $(SCANOBJ_FILES) *.png index.sgml lasso-index.sgml
+	-@rm -rf sgml
+	-@rm -rf html
+	-@rm -f  lasso-decl-list.txt lasso-decl.txt lasso-undocumented.txt lasso-unused.txt
+	-@rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
 
 clean-sources:
 	-@rm -rf code
