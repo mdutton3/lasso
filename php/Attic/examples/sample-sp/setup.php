@@ -49,8 +49,8 @@
 	  'server_dump_filename' => "lasso_server_dump.xml",
 	  'log_handler' => "sql",
 	  'sp-metadata' => $cwd . "/metadata_sp1.xml",
-	  'sp-public_key' => $cwd . "/public-key_sp1.pem",
 	  'sp-private_key' => $cwd . "/private-key-raw_sp1.pem",
+	  'sp-secret_key' => "",
 	  'sp-ca' => $cwd . "/certificate_sp1.pem",
 	  'providerID' => "https://idp1/metadata",
 	  'idp-metadata' => $cwd . "/metadata_idp1.xml",
@@ -66,7 +66,9 @@
 		  fclose($fd);
 		}
 	  else
-		die("Could not write default config file");
+		die("Could not write default config file, 
+		if you get a \"permission denied\" error, check the owner of the 
+		sample directory. (it must be www-data).");
 	}
 	else 
 	{
@@ -202,7 +204,10 @@
 		{
 		  print "<br>Check file " . $config[$file] . " : ";
 		  if (!file_exists($config[$file]))
-			die("Failed (file does not exist)");
+		  	if ($file == 'sp-secret_key')
+				print "not found (optional)";
+			else
+				die("Failed (file does not exist)");
 		  else
 			print "OK";
 		}
@@ -211,9 +216,18 @@
 
 		print "<br>Create Server : ";
 
-		$server = new LassoServer($config['sp-metadata'], 
-		  $config['sp-public_key'], $config['sp-private_key'], 
-		  $config['sp-ca'], lassoSignatureMethodRsaSha1);
+		/* 
+		  $server = new LassoServer(
+		  $config['sp-metadata'], 
+		  $config['sp-public_key'], 
+		  $config['sp-private_key'], 
+		  $config['sp-ca']); */
+		  
+		  $server = new LassoServer(
+		  $config['sp-metadata'], 
+		  $config['sp-private_key'], 
+		  $config['sp-secret_key'], 
+		  $config['sp-ca']); 
 
 		if (empty($server))
 		{
@@ -224,10 +238,14 @@
 
 		print "<br>Add provider : ";
 
-		$ret = $server->addProvider($config['idp-metadata'], 
-		  $config['idp-public_key'], $config['idp-ca']);
+		$ret = $server->addProvider(
+		LASSO_PROVIDER_ROLE_IDP, 
+		$config['idp-metadata'], 
+		$config['idp-public_key'], 
+		$config['idp-ca']);
 
-		/*if ($ret != TRUE)
+		/* FIXME : check addProvider return value
+		if ($ret != TRUE)
 		{
 		  print "Failed";
 		  break;
@@ -284,7 +302,6 @@
   ob_end_flush();
   ob_end_flush();
   ?>
-<p><a href='index.php'>Back to Index</a></p>  
 </body>
 </html>
 <?php
@@ -336,15 +353,16 @@
 
 </tr>
 
-<tr>
-  <td>Public Key :</td>
-  <td><input type='text' name='sp-public_key' size='50' value='<?php echo $config['sp-public_key']; ?>'></td>
-  <td>&nbsp;</td>
-</tr>
 
 <tr>
   <td>Private Key :</td>
   <td><input type='text' name='sp-private_key' size='50' value='<?php echo $config['sp-private_key']; ?>'></td>
+  <td>&nbsp;</td>
+</tr>
+
+<tr>
+  <td>Secret Key (optional) :</td>
+  <td><input type='text' name='sp-secret_key' size='50' value='<?php echo $config['sp-secret_key']; ?>'></td>
   <td>&nbsp;</td>
 </tr>
 

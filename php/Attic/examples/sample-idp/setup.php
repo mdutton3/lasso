@@ -44,9 +44,13 @@
    {
 	  print "<br>$key : ";
 
-	  $ret = $server->addProvider($item['metadata'], $item['public_key'], $item['ca']);
+	  $ret = $server->addProvider(LASSO_PROVIDER_ROLE_SP, 
+	  $item['metadata'], 
+	  $item['public_key'], 
+	  $item['ca']);
 	  
-	  /*if ($ret != TRUE)
+	  /* FIXME : check addProvider return value
+	  if ($ret != TRUE)
 	  {
 		print "Failed";
 		break;
@@ -81,8 +85,8 @@
         'log_handler' => 'sql',
         'auth_type' => 'auth_form',
 		'idp-metadata' => $cwd . "/metadata_idp1.xml",
-		'idp-public_key' => $cwd . "/public-key_idp1.pem",
 		'idp-private_key' => $cwd . "/private-key-raw_idp1.pem",
+		'idp-secret_key' => "",
 		'idp-ca' => $cwd . "/certificate_idp1.pem",
 		'sp' => array(
 		  'sp1' => array(
@@ -97,9 +101,10 @@
 		));
 
 	  $config_ser = serialize($config);
-
 	  if (!write_config_inc($config))
-		die("Could not write default config file");
+		die("Could not write default config file, 
+		if you get a \"permission denied\" error, check the owner of the 
+		sample directory. (it must be www-data).");
 	}
 	else 
 	{
@@ -333,7 +338,10 @@
 		  print "<br>Check file " . $config[$file] . " : ";
 		  if (!file_exists($config[$file]))
 		  {
-			die("Failed (file does not exist)");
+		  	if ($file == 'idp-secret_key')
+				print "not found (optional)";
+			else
+				die("Failed (file does not exist)");
 		  }
 		  else
 			print "OK";
@@ -359,9 +367,19 @@
 
 		print "<br>Create Server : ";
 
-		$server = new LassoServer($config['idp-metadata'], 
-		  $config['idp-public_key'], $config['idp-private_key'], 
-		  $config['idp-ca'], lassoSignatureMethodRsaSha1);
+		/* 
+		$server = new LassoServer(
+		$config['idp-metadata'], 
+		$config['idp-public_key'], 
+		$config['idp-private_key'], 
+		$config['idp-ca']);
+		*/
+
+		$server = new LassoServer(
+		$config['idp-metadata'], 
+		$config['idp-private_key'], 
+		$config['idp-secret_key'], 
+		$config['idp-ca']);
 
 		if (empty($server))
 		  die("Failed");
@@ -494,12 +512,13 @@
   <td>Metadata :</td><td><input type='text' name='idp-metadata' size='50' value='<?php echo $config['idp-metadata']; ?>'></td><td>&nbsp;</td>
 </tr>
 
-<tr>
-  <td>Public Key :</td><td><input type='text' name='idp-public_key' size='50' value='<?php echo $config['idp-public_key']; ?>'></td><td>&nbsp;</td>
-</tr>
 
 <tr>
   <td>Private Key :</td><td><input type='text' name='idp-private_key' size='50' value='<?php echo $config['idp-private_key']; ?>'></td><td>&nbsp;</td>
+</tr>
+
+<tr>
+  <td>Secret Key (optional) :</td><td><input type='text' name='idp-secret_key' size='50' value='<?php echo $config['idp-secret_key']; ?>'></td><td>&nbsp;</td>
 </tr>
 
 <tr>
