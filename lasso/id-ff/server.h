@@ -41,8 +41,8 @@ extern "C" {
 
 #define LASSO_SERVER_NODE                  "LassoServer"
 #define LASSO_SERVER_PROVIDERS_NODE        "LassoProviders"
-#define LASSO_SERVER_PRIVATE_KEY_NODE      "LassoPrivateKey"
-#define LASSO_SERVER_SIGNATURE_METHOD_NODE "LassoSignatureMethod"
+#define LASSO_SERVER_PRIVATE_KEY_NODE      "PrivateKey"
+#define LASSO_SERVER_SIGNATURE_METHOD_NODE "SignatureMethod"
 
 typedef struct _LassoServer LassoServer;
 typedef struct _LassoServerClass LassoServerClass;

@@ -239,12 +239,12 @@ lasso_provider_new(gchar *metadata_filename,
 
 
 LassoProvider*
-lasso_provider_new_metadata_xmlNode(xmlNodePtr metadata_xmlNode)
+lasso_provider_new_from_metadata_node(LassoNode *metadata_node)
 {
   LassoProvider *provider;
   
   provider = LASSO_PROVIDER(g_object_new(LASSO_TYPE_PROVIDER, NULL));
-  provider->metadata = lasso_node_new_from_xmlNode(metadata_xmlNode);
+  provider->metadata = lasso_node_new_from_xmlNode(metadata_node);
   
   return(provider);
 }

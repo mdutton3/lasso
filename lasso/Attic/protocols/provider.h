@@ -68,7 +68,7 @@ LASSO_EXPORT LassoProvider *lasso_provider_new                                  
 												 gchar *public_key_filename,
 												 gchar *certificate_filename);
 
-LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_xmlNode                                 (xmlNodePtr metadata_xmlNode);
+LASSO_EXPORT LassoProvider *lasso_provider_new_from_metadata_node                               (LassoNode *metadata_node);
 
 LASSO_EXPORT LassoProvider *lasso_provider_new_metadata_filename                                (gchar *metadata_filename);
 
