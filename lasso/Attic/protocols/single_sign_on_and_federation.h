@@ -51,6 +51,27 @@ struct _lassoAuthnResponse {
   const xmlChar *certificate;
 };
 
+typedef struct _lassoRequest lassoRequest;
+
+struct _lassoRequest {
+  LassoNode  *node;
+};
+
+typedef struct _lassoResponse lassoResponse;
+
+struct _lassoResponse {
+  LassoNode     *node;
+  xmlChar       *request_query;
+  LassoNode     *request_node;
+  gboolean       isPassive;
+  gboolean       mustAuthenticate;
+  const xmlChar *public_key;
+  const xmlChar *private_key;
+  const xmlChar *certificate;
+};
+
+
+
 lassoAuthnRequest *lasso_authn_request_create(const xmlChar *providerID,
 					      const xmlChar *nameIDPolicy,
 					      gint           forceAuthn,
@@ -77,9 +98,9 @@ gint lasso_authn_response_init(lassoAuthnResponse *lares,
 			       gboolean            authentication_result);
 
 gint lasso_authn_response_add_assertion(lassoAuthnResponse *lares,
-					LassoNode *assertion);
+					LassoNode          *assertion);
 
-LassoNode *lasso_assertion_build(gpointer lares,
+LassoNode *lasso_assertion_build(gpointer       lares,
 				 const xmlChar *issuer);
 
 gint lasso_assertion_add_authenticationStatement(LassoNode *assertion,
@@ -96,8 +117,14 @@ LassoNode *lasso_authentication_statement_build(const xmlChar *authenticationMet
 						const xmlChar *idp_format,
 						const xmlChar *confirmationMethod);
 
-LassoNode *lasso_response_build_full(LassoNode     *request,
-				     const xmlChar *providerID);
+lassoResponse *lasso_response_create(const xmlChar *serialized_request,
+				     gboolean       verifySignature,
+				     const xmlChar *public_key,
+				     const xmlChar *private_key,
+				     const xmlChar *certificate);
+
+gint lasso_response_init(lassoResponse *lares,
+			 gboolean       authentication_result);
 
 #ifdef __cplusplus
 }

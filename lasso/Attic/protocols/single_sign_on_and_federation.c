@@ -455,7 +455,7 @@ lasso_assertion_build(gpointer lares,
 					   content);
     }
     else {
-      lasso_samlp_response_abstract_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
+     lasso_samlp_response_abstract_set_inResponseTo(LASSO_LIB_ASSERTION(assertion),
 						     content);
     }
   }
@@ -531,22 +531,98 @@ lasso_authentication_statement_build(const xmlChar *authenticationMethod,
   return (statement);
 }
 
-LassoNode *
-lasso_response_build_full(LassoNode     *request,
-			  const xmlChar *providerID)
+
+lassoRequest *
+lasso_request_create(const xmlChar *assertionArtifact)
+{
+     lassoRequest *lareq;
+     LassoNode *request;
+
+     request = lasso_samlp_request_new();
+
+     lasso_samlp_request_abstract_set_requestID(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						(const xmlChar *)lasso_build_unique_id(32));
+
+     lasso_samlp_request_abstract_set_majorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   lassoSamlMajorVersion);
+
+     lasso_samlp_request_abstract_set_minorVersion(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						   lassoSamlMinorVersion);
+
+     lasso_samlp_request_abstract_set_issueInstance(LASSO_SAMLP_REQUEST_ABSTRACT(request),
+						    lasso_get_current_time());
+
+     lasso_samlp_request_set_assertionArtifact(LASSO_SAMLP_REQUEST(request),
+					       assertionArtifact);
+
+     lareq->node = request;
+
+     return(lareq);
+}
+
+lassoResponse *
+lasso_response_create(const xmlChar *serialized_request,
+		      gboolean       verifySignature,
+		      const xmlChar *public_key,
+		      const xmlChar *private_key,
+		      const xmlChar *certificate)
+{
+     lassoResponse *lares;
+     LassoNode *request;
+
+     request = lasso_samlp_request_new();
+
+     lasso_node_parse_memory(request, serialized_request);
+
+     lares = g_malloc(sizeof(lassoResponse));
+
+     lares->request_node = request;
+
+     return(lares);
+}
+
+gint
+lasso_response_init(lassoResponse *lares,
+		    gboolean       authentication_result)
 {
   LassoNode *response;
+  LassoNode *status, *status_code;
+  xmlChar *content;
 
   response = lasso_samlp_response_new();
 
   lasso_samlp_response_abstract_set_responseID(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 					       (const xmlChar *)lasso_build_unique_id(32));
+
   lasso_samlp_response_abstract_set_majorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						 lassoSamlMajorVersion);     
-  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response), 
+						 lassoSamlMajorVersion);
+
+  lasso_samlp_response_abstract_set_minorVersion(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
 						 lassoSamlMinorVersion);
-  lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response),
-						  lasso_get_current_time());
+
+/*   lasso_samlp_response_abstract_set_issueInstance(LASSO_SAMLP_RESPONSE_ABSTRACT(response), */
+/* 						  lasso_get_current_time()); */
+
   
-  return (response);
+  /* InResponseTo */
+/*   content = xmlNodeGetContent((xmlNodePtr)lasso_node_get_attr(lares->request_node, "RequestID")); */
+/*   if (content != NULL) { */
+/*     lasso_samlp_response_abstract_set_inResponseTo(LASSO_SAMLP_RESPONSE_ABSTRACT(response), */
+/* 						   content); */
+/*   } */
+/*   xmlFree(content); */
+
+  /* Add Status */
+  status = lasso_samlp_status_new();
+  status_code = lasso_samlp_status_code_new();
+  if(authentication_result==0)
+       lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code), lassoSamlStatusCodeRequestDenied);
+  else
+       lasso_samlp_status_code_set_value(LASSO_SAMLP_STATUS_CODE(status_code), lassoSamlStatusCodeSuccess);
+  lasso_samlp_status_set_statusCode(LASSO_SAMLP_STATUS(status), LASSO_SAMLP_STATUS_CODE(status_code));
+  lasso_samlp_response_set_status(LASSO_SAMLP_RESPONSE(response), LASSO_SAMLP_STATUS(status));
+
+  lares->node = response;
+
+  return (1);
 }
