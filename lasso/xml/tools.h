@@ -46,21 +46,21 @@ typedef enum {
 	LASSO_PEM_FILE_TYPE_CERT
 } lassoPemFileType;
 
-LASSO_EXPORT void  lasso_build_random_sequence(char *buffer, unsigned int size);
-LASSO_EXPORT char* lasso_build_unique_id(unsigned int size);
-LASSO_EXPORT char* lasso_get_current_time(void);
-LASSO_EXPORT lassoPemFileType lasso_get_pem_file_type(const char *file);
+void  lasso_build_random_sequence(char *buffer, unsigned int size);
+char* lasso_build_unique_id(unsigned int size);
+char* lasso_get_current_time(void);
+lassoPemFileType lasso_get_pem_file_type(const char *file);
 
-LASSO_EXPORT xmlSecKey* lasso_get_public_key_from_pem_cert_file(const char *file);
-LASSO_EXPORT xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
+xmlSecKey* lasso_get_public_key_from_pem_cert_file(const char *file);
+xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
-LASSO_EXPORT xmlChar* lasso_query_sign(xmlChar *query,
-		lassoSignatureMethod sign_method, const char *private_key_file);
+xmlChar* lasso_query_sign(xmlChar *query,
+   lassoSignatureMethod sign_method, const char *private_key_file);
 
-LASSO_EXPORT int lasso_query_verify_signature(
-		const char *query, const char *sender_public_key_file);
+int lasso_query_verify_signature(
+   const char *query, const char *sender_public_key_file);
 
-LASSO_EXPORT char* lasso_sha1(const char *str);
+char* lasso_sha1(const char *str);
 
 char** urlencoded_to_strings(const char *str);
 

@@ -41,7 +41,10 @@ extern "C" {
 
 #include <lasso/xml/errors.h>
 #include <lasso/xml/strings.h>
+
+#ifdef LASSO_INTERNALS
 #include <lasso/xml/tools.h>
+#endif
 
 #define LASSO_TYPE_NODE (lasso_node_get_type())
 #define LASSO_NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_NODE, LassoNode))
