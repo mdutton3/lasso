@@ -1517,8 +1517,8 @@ lasso_get_current_time
 lasso_query_get_value
 lasso_query_to_dict
 lasso_query_verify_signature
+lasso_sha1
 lasso_str_escape
-lasso_str_hash
 lasso_str_sign
 lasso_str_unescape
 </SECTION>
