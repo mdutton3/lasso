@@ -598,7 +598,7 @@ class Logout(_ObjectMixin, lassomod.LassoLogout, _ProfileChild):
     def get_next_providerID(self):
         return lassomod.lasso_logout_get_next_providerID(self)
 
-    def init_request(self, remote_providerID, request_method = httpMethodAny):
+    def init_request(self, remote_providerID = None, request_method = httpMethodAny):
         errorCode = lassomod.lasso_logout_init_request(self, remote_providerID, request_method)
         if errorCode:
             raise newError(errorCode, 'lasso_logout_init_request')
