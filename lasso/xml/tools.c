@@ -27,6 +27,8 @@
 
 #include <libxml/uri.h>
 
+#include <openssl/sha.h>
+
 #include <xmlsec/xmltree.h>
 #include <xmlsec/base64.h>
 #include <xmlsec/xmldsig.h>
@@ -43,7 +45,7 @@ lasso_build_random_sequence(guint8 size)
   int i, val;
   xmlChar *seq;
 
-  seq = g_malloc(size+1);
+  seq = xmlMalloc(size+1);
 
   for (i=0; i<size; i++) {
     val = g_random_int_range(0, 16);
@@ -351,6 +353,14 @@ lasso_query_verify_signature(const gchar   *query,
     xmlFreeDoc(doc);
   }
   return (ret);
+}
+
+xmlChar*
+lasso_sha1(xmlChar *str)
+{
+  unsigned char *md = xmlMalloc(20);
+
+  return(SHA1(str, strlen(str), md));
 }
 
 /**

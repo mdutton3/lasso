@@ -63,6 +63,8 @@ LASSO_EXPORT int        lasso_query_verify_signature (const gchar   *query,
 						      const xmlChar *sender_public_key_file,
 						      const xmlChar *recipient_private_key_file);
 
+LASSO_EXPORT xmlChar*   lasso_sha1                   (xmlChar *str);
+
 LASSO_EXPORT xmlChar*   lasso_str_escape             (xmlChar *str);
 
 LASSO_EXPORT xmlChar*   lasso_str_hash               (xmlChar    *str,
