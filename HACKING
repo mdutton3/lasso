@@ -57,3 +57,25 @@ Coding Style
     --show-reachable=yes
     --num-callers=32
     --suppressions=tests/valgrind/openssl.supp
+
+
+
+GNU Emacs
+=========
+
+::
+
+  (defun lasso-c-mode ()
+    "C mode with adjusted defaults for use with Lasso."
+    (interactive)
+    (c-mode)
+    (c-set-style "K&R")
+    (setq tab-width    (setq indent-tabs-mode t)
+    (setq c-basic-offset 8))
+
+This will define the M-x lasso-c-mode command.  It can be switched on
+automatically in a given directory::
+
+  (setq auto-mode-alist (cons '("/usr/src/lasso.*/.*\\.[ch]$" .  lasso-c-mode)
+	auto-mode-alist))
+
