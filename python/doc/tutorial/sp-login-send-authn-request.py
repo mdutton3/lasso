@@ -19,7 +19,7 @@ login.request.set_isPassive(False)
 
 # Identity provider will create a federation with this service provider and this user, if this was
 # not already done.
-login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypes['federated'])
+login.request.set_nameIDPolicy(lasso.libNameIDPolicyTypeFederated)
 
 if login.build_authn_request_msg():
     raise Exception('Login error')
