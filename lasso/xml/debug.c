@@ -61,7 +61,6 @@ _debug(GLogLevelFlags  level,
   time_t ts;
   char date[20];
   va_list args;
-  /* char *color = NULL; */
   
   if (level == G_LOG_LEVEL_DEBUG && debug_type == 0) {
     g_warning("message() function should not be used with G_LOG_LEVEL_DEBUG level. Use debug() function rather.");
@@ -74,21 +73,6 @@ _debug(GLogLevelFlags  level,
 
   time(&ts);
   strftime(date, 20, "%d-%m-%Y %H:%M:%S", localtime(&ts));
-
-  /*   switch (level) { */
-  /*   case ERROR: */
-  /*     color = red; */
-  /*     break; */
-  /*   case WARNING: */
-  /*     color = blue; */
-  /*     break; */
-  /*   case DEBUG: */
-  /*     color = yellow; */
-  /*     break; */
-  /*   case INFO: */
-  /*     color = green; */
-  /*     break; */
-  /*   } */
 
   if (level == G_LOG_LEVEL_DEBUG || level == G_LOG_LEVEL_CRITICAL) {
     g_log("Lasso", level,

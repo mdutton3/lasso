@@ -157,26 +157,7 @@ lasso_login_process_federation(LassoLogin *login)
   }
   else if (xmlStrEqual(nameIDPolicy, lassoLibNameIDPolicyTypeFederated)) {
     debug("NameIDPolicy is federated\n");
-    /* FIXME : AuthnRequest consent attribute */
-    /* consent = lasso_node_get_attr_value(LASSO_PROFILE(login)->request, */
-    /*        				"consent", &err); */
-    /* if (consent != NULL) { */
-    /*   if (!xmlStrEqual(consent, lassoLibConsentObtained)) { */
-    /*     lasso_profile_set_response_status(LASSO_PROFILE(login), */
-    /* 		       			  lassoSamlStatusCodeRequestDenied); */
-    /* 	   message(G_LOG_LEVEL_WARNING, "Consent not obtained"); */
-    /* 	   ret = -3; */
-    /* 	   goto done; */
-    /*   } */
-    /* } */
-    /* else { */
-    /*   lasso_profile_set_response_status(LASSO_PROFILE(login), */
-    /*  				lassoSamlStatusCodeRequestDenied); */
-    /*   message(G_LOG_LEVEL_WARNING, err->message); */
-    /*   ret = err->code; */
-    /*   g_error_free(err); */
-    /*   goto done; */
-    /* } */
+    /* FIXME : check AuthnRequest consent attribute */
     if (federation == NULL) {
       federation = lasso_federation_new(LASSO_PROFILE(login)->remote_providerID);
 
@@ -261,7 +242,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
     /* verify signature */
     if (idp != NULL) {
       /* FIXME detect X509Data ? */
-      /* signature_check = lasso_node_verify_x509_signature(assertion, idp->ca_certificate); */
       ret = lasso_node_verify_signature(assertion, idp->public_key);
       if (ret < 0) {
 	goto done;
@@ -284,14 +264,6 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login) {
       /* we continue */
     }
   }
-/* nico : dont return a code error if no assertion found */
-/*   else { */
-/*     /\* no assertion found *\/ */
-/*     debug(err->message); */
-/*     ret = err->code; */
-/*     g_clear_error(&err); */
-/*     /\* we continue *\/ */
-/*   } */
 
  done:
   if (err != NULL) {
@@ -477,10 +449,7 @@ lasso_login_build_artifact_msg(LassoLogin      *login,
     }
   }
 
-  /* save response dump */
-  /*        login->response_dump = lasso_node_export_to_soap(LASSO_PROFILE(login)->response); */
-
-  /* nico : doesn't dump the response anymore, instead store the assertion */
+  /* store the assertion */
   login->assertion = NULL;
   assertion_node = lasso_node_get_child(LASSO_PROFILE(login)->response, "Assertion", NULL, NULL);
   if (assertion_node != NULL) {
@@ -1018,8 +987,6 @@ lasso_login_init_from_authn_request_msg(LassoLogin      *login,
       break;
     case lassoHttpMethodPost:
       /* FIXME detect X509Data ? */
-      /* ret = lasso_node_verify_x509_signature(LASSO_PROFILE(login)->request, */
-      /* 					remote_provider->ca_certificate); */
       ret = lasso_node_verify_signature(LASSO_PROFILE(login)->request,
 					remote_provider->public_key);
       break;

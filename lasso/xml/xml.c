@@ -961,40 +961,6 @@ lasso_node_impl_get_child(LassoNode      *node,
     g_return_val_if_fail(name != NULL, NULL);
   }
 
-  /*   /\* No recurssive version *\/ */
-  /*   xmlNodePtr cur; */
-  
-  /*   cur = node->private->node->children; */
-  /*   while (cur != NULL) { */
-  /*     if(cur->type == XML_ELEMENT_NODE) { */
-  /*       if (xmlStrEqual(cur->name, name)) { */
-  /*   	return (lasso_node_new_from_xmlNode(cur)); */
-  /*       } */
-  /*     } */
-  /*     cur = cur->next; */
-  /*   } */
-  /*   return (NULL); */
-
-  /*   /\* Recurssive version *\/ */
-  /*   xmlNodePtr cur; */
-  /*   LassoNode *ret, *child; */
-  
-  /*   cur = node->private->node; */
-  /*   while (cur != NULL) { */
-  /*     if ((cur->type == XML_ELEMENT_NODE) && xmlStrEqual(cur->name, name)) { */
-  /*       return (lasso_node_new_from_xmlNode(cur)); */
-  /*     } */
-  /*     if (cur->children != NULL) { */
-  /*       child = lasso_node_new_from_xmlNode(cur->children); */
-  /*       ret = lasso_node_get_child(child, name); */
-  /*       if (ret != NULL) { */
-  /* 	return (ret); */
-  /*       } */
-  /*     } */
-  /*     cur = cur->next; */
-  /*   } */
-  /*   return (NULL); */
-
   if (href != NULL) {
     child = xmlSecFindNode(node->private->node, name, href);
   }
@@ -1439,9 +1405,6 @@ lasso_node_impl_add_signature_tmpl(LassoNode            *node,
     return LASSO_DS_ERROR_SIGNATURE_TMPL_CREATION_FAILED;
   }
 
-/*   uri = xmlMalloc(strlen(reference_uri)+1+1); */
-/*   g_sprintf(uri, "#%s", reference_uri); */
-
   if (reference_uri != NULL) {
     uri = xmlMalloc(strlen(reference_uri)+1+1);
     g_sprintf(uri, "#%s", reference_uri);
@@ -1577,7 +1540,6 @@ lasso_node_impl_new_child(LassoNode     *node,
 			  const xmlChar *content,
 			  gboolean       unbounded)
 {
-  /* LassoNode *old_child = NULL; */
   xmlNodePtr old_child = NULL;
   const xmlChar *href = NULL;
 
@@ -1590,11 +1552,9 @@ lasso_node_impl_new_child(LassoNode     *node,
       href = node->private->node->ns->href;
     }
     old_child = xmlSecFindNode(node->private->node, name, href);
-    /* old_child = lasso_node_get_child(node, name); */
   }
 
   if (!unbounded && old_child != NULL) {
-    /* xmlNodeSetContent(old_child->private->node, content); */
     xmlNodeSetContent(old_child, content);
   }
   else {
@@ -1723,18 +1683,6 @@ lasso_node_impl_set_ns(LassoNode     *node,
 
   g_return_if_fail (LASSO_IS_NODE(node));
   g_return_if_fail (href != NULL || prefix != NULL);
-
-  /*   xmlNsPtr cur; */
-  /*   cur = node->private->node->ns; */
-  /*   while (cur != NULL) { */
-  /*     printf("%s:%s\n", cur->prefix, cur->href); */
-  /*     cur = cur->next; */
-  /*   } */
-  /*   cur = node->private->node->nsDef; */
-  /*   while (cur != NULL) { */
-  /*     printf("%s:%s\n", cur->prefix, cur->href); */
-  /*     cur = cur->next; */
-  /*   } */
 
   new_ns = xmlNewNs(node->private->node, href, prefix);
   xmlFreeNs(node->private->node->ns);
