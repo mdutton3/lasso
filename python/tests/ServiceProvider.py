@@ -223,7 +223,8 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             return handler.respond(headers = headers, body = authnRequestEnvelopeMsg)
         else:
             login = lasso.Login(lassoServer)
-            login.init_authn_request()
+            login.init_authn_request(lasso.httpMethodRedirect)
+            #login.init_authn_request()
             failUnlessEqual(login.request_type, lasso.messageTypeAuthnRequest)
             if forceAuthn:
                 login.request.set_forceAuthn(forceAuthn)
@@ -233,7 +234,7 @@ class ServiceProviderMixin(Provider.ProviderMixin):
             login.request.set_consent(lasso.libConsentObtained)
             if relayState:
                 login.request.set_relayState(relayState)
-            login.build_authn_request_msg(self.idpSite.providerId, lasso.httpMethodRedirect)
+            login.build_authn_request_msg(self.idpSite.providerId)
             authnRequestUrl = login.msg_url
             failUnless(authnRequestUrl)
             return handler.respondRedirectTemporarily(authnRequestUrl)

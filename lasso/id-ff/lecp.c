@@ -183,7 +183,10 @@ lasso_lecp_init_authn_request(LassoLecp *lecp)
 
   g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
 
-  res = lasso_login_init_authn_request(LASSO_LOGIN(lecp));
+  /* FIXME : BAD usage of http_method
+     using POST method so that the lib:AuthnRequest is initialize with
+     a signature template */
+  res = lasso_login_init_authn_request(LASSO_LOGIN(lecp), lassoHttpMethodPost);
 
   return(res);
 }

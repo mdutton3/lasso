@@ -104,7 +104,7 @@ START_TEST(test02_serviceProviderLogin)
 	spLoginContext = lasso_login_new(spContext);
 	fail_unless(spLoginContext != NULL,
 			"lasso_login_new() shouldn't have returned NULL");
-	rc = lasso_login_init_authn_request(spLoginContext);
+	rc = lasso_login_init_authn_request(spLoginContext, lassoHttpMethodRedirect);
 	fail_unless(rc == 0, "lasso_login_init_authn_request failed");
 	fail_unless(LASSO_PROFILE(spLoginContext)->request_type == \
 			lassoMessageTypeAuthnRequest, "request_type should be AuthnRequest");
@@ -115,8 +115,7 @@ START_TEST(test02_serviceProviderLogin)
 	lasso_lib_authn_request_set_consent(request, lassoLibConsentObtained);
 	relayState = "fake";
 	lasso_lib_authn_request_set_relayState(request, "fake");
-	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata",
-						 lassoHttpMethodRedirect);
+	rc = lasso_login_build_authn_request_msg(spLoginContext, "https://idp1/metadata");
 	fail_unless(rc == 0, "lasso_login_build_authn_request_msg failed");
 	authnRequestUrl = LASSO_PROFILE(spLoginContext)->msg_url;
 	fail_unless(authnRequestUrl != NULL,

@@ -472,9 +472,9 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_artifact_msg')
 
-    def build_authn_request_msg(self, remote_providerID, http_method):
+    def build_authn_request_msg(self, remote_providerID):
         errorCode = lassomod.lasso_login_build_authn_request_msg(
-            self, remote_providerID, http_method)
+            self, remote_providerID)
         if errorCode:
             raise newError(errorCode, 'lasso_login_build_authn_request_msg')
 
@@ -493,8 +493,8 @@ class Login(_ObjectMixin, lassomod.LassoLogin, _ProfileChild):
     def dump(self):
         return lassomod.lasso_login_dump(self)
 
-    def init_authn_request(self):
-        errorCode = lassomod.lasso_login_init_authn_request(self)
+    def init_authn_request(self, http_method):
+        errorCode = lassomod.lasso_login_init_authn_request(self, http_method)
         if errorCode:
             raise newError(errorCode, 'lasso_login_init_authn_request')
 

@@ -561,8 +561,7 @@ gint lasso_login_build_artifact_msg(LassoLogin *login, gint authentication_resul
 				    const gchar *reauthenticateOnOrAfter,
 				    lassoHttpMethod http_method);
 
-gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID,
-					 lassoHttpMethod http_method);
+gint lasso_login_build_authn_request_msg(LassoLogin *login, const gchar *remote_providerID);
 
 gint lasso_login_build_authn_response_msg(LassoLogin  *login, gint authentication_result,
 					  const gchar *authenticationMethod,
@@ -573,7 +572,7 @@ gint lasso_login_build_request_msg(LassoLogin *login);
 %newobject lasso_login_dump;
 gchar* lasso_login_dump(LassoLogin *login);
 
-gint lasso_login_init_authn_request(LassoLogin *login);
+gint lasso_login_init_authn_request(LassoLogin *login, lassoHttpMethod http_method);
 
 gint lasso_login_init_from_authn_request_msg(LassoLogin *login, gchar *authn_request_msg,
 					     lassoHttpMethod  authn_request_http_method);
