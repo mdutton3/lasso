@@ -14,6 +14,14 @@ liblasso_xml_la_SOURCES = \
 	tools.c \
 	errors.c \
 	xml.c \
+	disco_description.c \
+	disco_insert_entry.c \
+	disco_modify.c \
+	disco_modify_response.c \
+	disco_options.c \
+	disco_remove_entry.c \
+	disco_resource_offering.c \
+	disco_service_instance.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -61,6 +69,14 @@ liblassoinclude_HEADERS = \
 	tools.h \
 	errors.h \
 	xml.h	\
+	disco_description.h \
+	disco_insert_entry.h \
+	disco_modify.h \
+	disco_modify_response.h \
+	disco_options.h \
+	disco_remove_entry.h \
+	disco_resource_offering.h \
+	disco_service_instance.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
