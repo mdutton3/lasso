@@ -4,7 +4,7 @@ Lasso
 
 Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
 of the Liberty Alliance specifications.  Those define processes for
-federated identities, single signon and related protocols.  Lasso provides
+federated identities, single sign-on and related protocols.  Lasso provides
 both a C library and bindings for different languages (Python and Java for
 now).
 
@@ -19,7 +19,7 @@ Lasso has several mailing lists:
  - lasso-devel@lists.labs.libre-entreprise.org:
 
    The mailing list for Lasso users and developers; discussions about both
-   development and deployment of Lasso have their place on thist list.
+   development and deployment of Lasso have their place on this list.
     <http://lists.labs.libre-entreprise.org/mailman/listinfo/lasso-devel>
  
  - lasso-cvs-commits@lists.labs.libre-entreprise.org:
