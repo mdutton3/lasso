@@ -36,6 +36,10 @@ extern "C" {
 /* Liberty Alliance                                                          */
 /*****************************************************************************/
 
+/* prefix & href */
+LASSO_EXPORT_VAR const gchar lassoLibHRef[];
+LASSO_EXPORT_VAR const gchar lassoLibPrefix[];
+
 /* Versioning */
 LASSO_EXPORT_VAR const gchar lassoLibMajorVersion[];
 LASSO_EXPORT_VAR const gchar lassoLibMinorVersion[];
@@ -74,6 +78,12 @@ LASSO_EXPORT_VAR const gchar lassoLibProtocolProfileSloIdpSoap[];
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
+
+/* prefix & href */
+LASSO_EXPORT_VAR const gchar lassoSamlAssertionHRef[];
+LASSO_EXPORT_VAR const gchar lassoSamlAssertionPrefix[];
+LASSO_EXPORT_VAR const gchar lassoSamlProtocolHRef[];
+LASSO_EXPORT_VAR const gchar lassoSamlProtocolPrefix[];
 
 /* Versioning */
 LASSO_EXPORT_VAR const gchar lassoSamlMajorVersion[];

@@ -28,6 +28,10 @@
 /* Liberty Alliance                                                          */
 /*****************************************************************************/
 
+/* prefix & href */
+const gchar lassoLibHRef[]   = "urn:liberty:iff:2003-08";
+const gchar lassoLibPrefix[] = "lib";
+
 /* Versioning */
 const gchar lassoLibMajorVersion[] = "1";
 const gchar lassoLibMinorVersion[] = "2";
@@ -66,6 +70,12 @@ const gchar lassoLibProtocolProfileSloIdpSoap[]     = "http://projectliberty.org
 /*****************************************************************************/
 /* SAML                                                                      */
 /*****************************************************************************/
+
+/* prefix & href */
+const gchar lassoSamlAssertionHRef[]   = "urn:oasis:names:tc:SAML:1.0:assertion";
+const gchar lassoSamlAssertionPrefix[] = "saml";
+const gchar lassoSamlProtocolHRef[]    = "urn:oasis:names:tc:SAML:1.0:protocol";
+const gchar lassoSamlProtocolPrefix[]  = "samlp";
 
 /* Versioning */
 const gchar lassoSamlMajorVersion[] = "1";
