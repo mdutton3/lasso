@@ -103,7 +103,7 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 				      xmlChar            *public_key_file,
 				      xmlChar            *private_key_file)
 {
-  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(response), 0);
+  g_return_val_if_fail(LASSO_IS_AUTHN_RESPONSE(response), 1);
 
   LassoNode *status, *status_code;
   gboolean signature_status;
@@ -132,7 +132,10 @@ lasso_authn_response_verify_signature(LassoAuthnResponse *response,
 				    LASSO_SAMLP_STATUS(status));
   }
 
-  return (signature_status);
+  if (signature_status == 1)
+    return (TRUE);
+  else
+    return (FALSE);
 }
 
 /*****************************************************************************/
