@@ -36,20 +36,18 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
 			     gchar *identityProviderSuccinctID,
 			     gchar *assertionHandle)
 {
-  xmlChar *samlArt;
+  xmlSecByte samlArt[42+1];
   gint i, j, byte_code = 0;
 
-  samlArt = xmlMalloc(42+1);
-
   /* decode samlArt */
-  i = xmlSecBase64Decode((xmlChar *)b64_samlArt, samlArt, 42+1);
+  i = xmlSecBase64Decode((const xmlChar *)b64_samlArt, samlArt, 42+1);
   if (i < 0 || i > 42) {
     return(-1);
   }
   /* extract ByteCode, IdentityProviderSuccinctID and AssertionHandle */
   for(j=0; j<42; j++) {
-    if (j<2) {
-      byte_code += (gint)samlArt[j];
+    if (j < 2) {
+      byte_code += (guint)samlArt[j];
     }
     else if (j >= 2 && j < 22) {
       identityProviderSuccinctID[j-2] = samlArt[j];
@@ -59,7 +57,6 @@ lasso_artifact_split_samlArt(gchar *b64_samlArt,
     }
   }
   sprintf(byteCode, "%d", byte_code);
-  xmlFree(samlArt);
 
   return(0);
 }
@@ -215,7 +212,8 @@ lasso_artifact_new(gchar *samlArt,
   class = LASSO_NODE_GET_CLASS(artifact);
   class->new_child(artifact, "SAMLart", samlArt, FALSE);
   class->new_child(artifact, "ByteCode", byteCode, FALSE);
-  b64_identityProviderSuccinctID = xmlSecBase64Encode(identityProviderSuccinctID, 20, 0);
+  b64_identityProviderSuccinctID = xmlSecBase64Encode((const xmlSecByte *)identityProviderSuccinctID,
+						      20, 0);
   class->new_child(artifact, "B64IdentityProviderSuccinctID",
 		   b64_identityProviderSuccinctID, FALSE);
   xmlFree(b64_identityProviderSuccinctID);
@@ -244,17 +242,17 @@ lasso_artifact_new_from_query(const xmlChar *query)
   g_datalist_clear(&gd);
 
   byteCode = (gchar *) g_new0(gchar, 5+1);
-  identityProviderSuccinctID = (gchar *) g_new0(gchar, 20);
+  identityProviderSuccinctID = (gchar *) g_new0(gchar, 21);
   assertionHandle = (gchar *) g_new0(gchar, 20+1);
   ret = lasso_artifact_split_samlArt((gchar*)b64_samlArt, byteCode,
 				     identityProviderSuccinctID,
 				     assertionHandle);
 
-/*   printf("b64_samlArt = %s\n", b64_samlArt); */
-/*   printf("relayState = %s\n", relayState); */
-/*   printf("byteCode = %s\n", byteCode); */
-/*   printf("identityProviderSuccinctID = %s\n", identityProviderSuccinctID); */
-/*   printf("assertionHandle = %s\n", assertionHandle); */
+  /* printf("b64_samlArt = %s\n", b64_samlArt); */
+  /* printf("relayState = %s\n", relayState); */
+  /* printf("byteCode = %s\n", byteCode); */
+  /* printf("identityProviderSuccinctID = %s\n", identityProviderSuccinctID); */
+  /* printf("assertionHandle = %s\n", assertionHandle); */
 
   if (ret >= 0) {
     artifact = lasso_artifact_new(b64_samlArt,
@@ -265,8 +263,8 @@ lasso_artifact_new_from_query(const xmlChar *query)
   g_free(byteCode);
   g_free(identityProviderSuccinctID);
   g_free(assertionHandle);
-  xmlFree(b64_samlArt);
-  xmlFree(relayState);
+  g_free(b64_samlArt);
+  g_free(relayState);
 
   return (artifact);
 }
