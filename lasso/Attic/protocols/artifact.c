@@ -147,7 +147,7 @@ lasso_artifact_get_samlArt(LassoArtifact  *artifact,
   GError *tmp_err = NULL;
 
   samlArt = lasso_node_get_child_content(LASSO_NODE(artifact),
-					 "SAMLArt", NULL, &tmp_err);
+					 "SAMLart", NULL, &tmp_err);
   if (samlArt == NULL) {
     g_propagate_error (err, tmp_err);
   }
@@ -213,7 +213,7 @@ lasso_artifact_new(gchar *samlArt,
   artifact = LASSO_NODE(g_object_new(LASSO_TYPE_ARTIFACT, NULL));
 
   class = LASSO_NODE_GET_CLASS(artifact);
-  class->new_child(artifact, "SAMLArt", samlArt, FALSE);
+  class->new_child(artifact, "SAMLart", samlArt, FALSE);
   class->new_child(artifact, "ByteCode", byteCode, FALSE);
   b64_identityProviderSuccinctID = xmlSecBase64Encode(identityProviderSuccinctID, 20, 0);
   class->new_child(artifact, "B64IdentityProviderSuccinctID",
@@ -239,7 +239,7 @@ lasso_artifact_new_from_query(const xmlChar *query)
   gint ret;
 
   gd = lasso_query_to_dict(query);
-  b64_samlArt = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SAMLArt"), 0));
+  b64_samlArt = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "SAMLart"), 0));
   relayState  = g_strdup(lasso_g_ptr_array_index((GPtrArray *)g_datalist_get_data(&gd, "RelayState"), 0));
   g_datalist_clear(&gd);
 
