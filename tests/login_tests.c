@@ -69,11 +69,12 @@ int main(int argc, char *argv[])
 	
 	s = login_suite();
 	sr = srunner_create(s);
+	srunner_set_xml(sr, "out.xml");
 	srunner_run_all (sr, CK_VERBOSE);
 	rc = srunner_ntests_failed(sr);
 	
 	srunner_free(sr);
-	suite_free(s);
+	/*suite_free(s);*/
 
 	/*lasso_destroy();*/
 
