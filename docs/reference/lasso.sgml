@@ -53,20 +53,42 @@
 ]>
 <book id="index">
   <bookinfo>
-    <title>[Insert name here] Reference Manual</title>
+    <title>Lasso Reference Manual</title>
   </bookinfo>
 
   <chapter>
-    <title>[Insert title here]</title>
-    &lasso-LassoDsSignature;
+    <title>XML</title>
+        <chapter>
+	    <title>DSig</title>
+	      &lasso-LassoDsSignature;
+	</chapter>
+  <chapter>
+  <title>Liberty alliance</title>
     &LassoLibAssertion;
+    &lasso-LassoLibAuthenticationStatement;
+    &lasso-LassoLibAuthnContext;
     &LassoLibAuthnRequest;
     &LassoLibAuthnResponse;
+    &lasso-LassoLibFederationTerminationNotification;
     &lasso-LassoLibIDPEntries;
     &lasso-LassoLibIDPEntry;
     &lasso-LassoLibIDPList;
+    &lasso-LassoLibIDPProvidedNameIdentifier;
+    &lasso-LassoLibLogoutRequest;
+    &lasso-LassoLibLogoutResponse;
+    &lasso-LassoLibNameIdentifierMappingRequest;
+    &lasso-LassoLibNameIdentifierMappingResponse;
+    &lasso-LassoLibOLDProvidedNameIdentifier;
+    &lasso-LassoLibRegisterNameIdentifierRequest;
+    &lasso-LassoLibRegisterNameIdentifierResponse;
     &LassoLibRequestAuthnContext;
     &LassoLibScoping;
+    &lasso-LassoLibSPProvidedNameIdentifier;
+    &lasso-LassoLibStatusResponse;
+    &lasso-LassoLibSubject;
+    </chapter>
+    <chapter>
+    <title>SAML</title>
     &LassoSamlAdvice;
     &LassoSamlAssertion;
     &lasso-LassoSamlAudienceRestrictionCondition;
@@ -80,34 +102,28 @@
     &LassoSamlSubjectConfirmation;
     &lasso-LassoSamlSubjectLocality;
     &LassoSamlSubjectStatementAbstract;
+
+    &lasso-LassoSamlpRequest;
     &LassoSamlpRequestAbstract;
     &LassoSamlpResponse;
     &LassoSamlpResponseAbstract;
     &LassoSamlpStatus;
     &LassoSamlpStatusCode;
-    &LassoNode;
-    &lasso-LassoLibLogoutRequest;
-    &lasso-LassoLibFederationTerminationNotification;
-    &lasso-LassoLibIDPProvidedNameIdentifier;
-    &lasso-LassoLibLogoutResponse;
-    &lasso-LassoLibNameIdentifierMappingRequest;
-    &lasso-LassoLibNameIdentifierMappingResponse;
-    &lasso-LassoLibOLDProvidedNameIdentifier;
-    &lasso-LassoLibRegisterNameIdentifierRequest;
-    &lasso-LassoLibRegisterNameIdentifierResponse;
-    &lasso-LassoLibSPProvidedNameIdentifier;
-    &lasso-LassoLibStatusResponse;
-    &lasso-LassoLibSubject;
-    &lasso-LassoSamlpRequest;
-    &lasso-LassoLibAuthnContext;
-    &lasso-LassoLibAuthenticationStatement;
-    &lasso-export;
+    </chapter>
+  <chapter>
+    <title>Core</title>
     &lasso-lasso;
-    &lasso-version;
-    &lasso-single-sign-on-and-federation;
-    &lasso-federation-termination-notification;
-    &lasso-logout;
-    &lasso-register-name-identifier;
+    &LassoNode;
     &lasso-tools;
+    &lasso-version;
+    &lasso-export;
+    </chapter>
+  </chapter>
+  <chapter>
+    <title>High level</title>
+    &lasso-single-sign-on-and-federation;
+    &lasso-logout;
+    &lasso-federation-termination-notification;
+    &lasso-register-name-identifier;
   </chapter>
 </book>
