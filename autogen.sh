@@ -28,7 +28,7 @@ if test "z$DRYRUN" != "z"; then
 fi
 
 echo "- Define minimal version constants."
-automake_min_vers=1.6
+automake_min_vers=1.8
 aclocal_min_vers=$automake_min_vers
 autoconf_min_vers=2.53
 libtoolize_min_vers=1.5
@@ -50,8 +50,8 @@ program=`basename $0`
 
 echo " - Define autotool program commands."
 autoconf=autoconf
-automake=automake
-aclocal=aclocal
+automake=automake-1.8
+aclocal=aclocal-1.8
 
 echo "- Check autoconf version."
 if ($autoconf --version) < /dev/null > /dev/null 2>&1 ; then
