@@ -1,3 +1,3 @@
 SUBDIRS = nsis msvc
 
-EXTRA_DIST = lasso.rc
+EXTRA_DIST = lasso.rc lasso.rc.in
