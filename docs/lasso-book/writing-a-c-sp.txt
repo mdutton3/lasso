@@ -320,7 +320,24 @@ AQWWRRS...         3338824
 
 
 
+API Reference
+=============
+
+- LassoLogin_
+- LassoLogout_
+- LassoIdentity_
+- LassoServer_
+- LassoSession_
+
+
+
 
 .. _Liberty ID-FF Bindings and Profiles Specification:
    http://www.projectliberty.org/specs/draft-liberty-idff-bindings-profiles-1.2-errata-v1.0.pdf
+
+.. _LassoLogin: /lasso-api/lassologin.html
+.. _LassoLogout: /lasso-api/lassologout.html
+.. _LassoIdentity: /lasso-api/lassoidentity.html
+.. _LassoServer: /lasso-api/lassoserver.html
+.. _LassoSession: /lasso-api/lassosession.html
 
