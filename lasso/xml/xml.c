@@ -1167,6 +1167,21 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 			return NULL;
 		}
 		return g_string_free(result, FALSE);
+	} else if (snippet->type == SNIPPET_LIST_CONTENT) {
+		/* not clear in spec; concat values with spaces */
+		GList *value = G_STRUCT_MEMBER(GList*, value_node, snippet->offset);
+		GString *result = g_string_new("");
+		while (value) {
+			result = g_string_append(result, (char*)value->data);
+			if (value->next)
+				result = g_string_append(result, " ");
+			value = value->next;
+		}
+		if (result->len == 0) {
+			g_string_free(result, TRUE);
+			return NULL;
+		}
+		return g_string_free(result, FALSE);
 	} else {
 		char *value = G_STRUCT_MEMBER(char*, value_node, snippet->offset);
 		if (value == NULL) return NULL;
@@ -1200,6 +1215,15 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 			g_assert_not_reached();
 		}
 		LASSO_NODE_GET_CLASS(v)->init_from_query(v, &query_value);
+	} else if (snippet->type == SNIPPET_LIST_CONTENT) {
+		char **elems = g_strsplit(query_value, " ", 0);
+		char *p;
+		GList *l = NULL;
+		for (p = elems[0]; p; p++) {
+			l = g_list_append(l, p);
+		}
+		g_strfreev(elems);
+		(*(GList**)value) = l;
 	} else {
 		(*(char**)value) = g_strdup(query_value);
 	}
