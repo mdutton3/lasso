@@ -191,7 +191,10 @@ lasso_server_new(gchar *metadata,
   xmlNodePtr   root;
   LassoNode   *metadata_node;
 
-  server->private_key = private_key;
+  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER,
+				     NULL));
+
+  server->private_key = g_strdup(private_key);
   server->signature_method = signature_method;
 
   doc = xmlParseFile(metadata);
@@ -199,11 +202,8 @@ lasso_server_new(gchar *metadata,
   xmlFreeDoc(doc);
   metadata_node = lasso_node_new_from_xmlNode(root);
 
-  server = LASSO_SERVER(g_object_new(LASSO_TYPE_SERVER,
-				     NULL));
-
-  LASSO_PROVIDER(server)->public_key = public_key;
-  LASSO_PROVIDER(server)->certificate = certificate;
+  LASSO_PROVIDER(server)->public_key = g_strdup(public_key);
+  LASSO_PROVIDER(server)->certificate = g_strdup(certificate);
   LASSO_PROVIDER(server)->metadata = metadata_node;
 
   return(server);
