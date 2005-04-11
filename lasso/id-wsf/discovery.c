@@ -223,16 +223,22 @@ lasso_discovery_init_query(LassoDiscovery                *discovery,
 			   LassoDiscoResourceOffering    *resourceOffering,
 			   LassoDiscoDescription         *description)
 {
+	LassoSoapEnvelope *envelope;
+	LassoDiscoQuery *query;
+
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(lasso_disco_query_new());
-	/*
-	 * after the call of this method, app must add requested service types
-	 */
+	query = lasso_disco_query_new();
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(query);
+
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
+	envelope->Body->any = g_list_append(envelope->Body->any, query);
+
 	return lasso_discovery_init_request(discovery, resourceOffering, description);
 }
 
