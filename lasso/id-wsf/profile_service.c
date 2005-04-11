@@ -27,6 +27,7 @@
 #include <lasso/xml/dst_query_response.h>
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
+#include <lasso/xml/soap_binding_correlation.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -106,6 +107,9 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 	LassoDstModification *modification;
 	LassoWsfProfile *profile;
 
+	LassoSoapEnvelope *envelope;
+	LassoDstModify *modify;
+
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
@@ -114,9 +118,16 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 
 	/* init Modify */
 	modification = lasso_dst_modification_new(select);
-	profile->request = LASSO_NODE(lasso_dst_modify_new(modification));
+
+	modify = lasso_dst_modify_new(modification);
+	profile->request = LASSO_NODE(modify);
+
 	LASSO_DST_MODIFY(profile->request)->prefixServiceType = g_strdup(prefix);
 	LASSO_DST_MODIFY(profile->request)->hrefServiceType = g_strdup(href);
+
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
+	envelope->Body->any = g_list_append(envelope->Body->any, modify);
 
 	/* get ResourceID / EncryptedResourceID */
 	if (resourceOffering->ResourceID != NULL) {
@@ -147,6 +158,9 @@ lasso_profile_service_init_query(LassoProfileService *service,
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
 
+	LassoSoapEnvelope *envelope;
+	LassoDstQuery *query;
+
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
@@ -156,10 +170,17 @@ lasso_profile_service_init_query(LassoProfileService *service,
 	
 	/* init Query */
 	query_item = lasso_dst_query_item_new(select);
-	profile->request = LASSO_NODE(lasso_dst_query_new(query_item));
+
+	query = lasso_dst_query_new(query_item);
+	profile->request = LASSO_NODE(query);
+
 	LASSO_DST_QUERY(profile->request)->prefixServiceType = g_strdup(prefix);
 	LASSO_DST_QUERY(profile->request)->hrefServiceType = g_strdup(href);
 	
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
+	envelope->Body->any = g_list_append(envelope->Body->any, query);
+
 	/* get ResourceID / EncryptedResourceID */
 	if (resourceOffering->ResourceID != NULL) {
 		LASSO_DST_QUERY(profile->request)->ResourceID = resourceOffering->ResourceID;
@@ -184,27 +205,35 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service,
 					 const gchar *href,   /* FIXME : must be get from message */
 					 const gchar *modify_soap_msg)
 {
-	LassoDstModify *modify;
-	LassoWsfProfile *profile;
+	LassoDstModifyResponse *response;
+	LassoSoapBindingCorrelation *correlation;
+	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
+	LassoWsfProfile *profile;
+	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
 	g_return_val_if_fail(modify_soap_msg != NULL, -1);
 
 	profile = LASSO_WSF_PROFILE(service);
 
-	modify = g_object_new(LASSO_TYPE_DST_MODIFY, NULL);
-	lasso_node_init_from_message(LASSO_NODE(modify), modify_soap_msg);
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(modify_soap_msg));
+	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
+	LASSO_WSF_PROFILE(service)->request = LASSO_NODE(envelope->Body->any->data);
 
-	profile->request = LASSO_NODE(modify);
+	correlation = envelope->Header->Other->data;
+	messageId = correlation->messageID;
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
 
 	/* init QueryResponse */
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
-	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(lasso_dst_modify_response_new(status));
-	LASSO_DST_MODIFY_RESPONSE(profile->response)->prefixServiceType = \
-		g_strdup(prefix);
-	LASSO_DST_MODIFY_RESPONSE(profile->response)->hrefServiceType = \
-		g_strdup(href);
+	response = lasso_dst_modify_response_new(status);
+	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
+	LASSO_DST_MODIFY_RESPONSE(profile->response)->prefixServiceType = g_strdup(prefix);
+	LASSO_DST_MODIFY_RESPONSE(profile->response)->hrefServiceType = g_strdup(href);
+
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
 }
@@ -213,27 +242,37 @@ gint
 lasso_profile_service_process_query_msg(LassoProfileService *service,
 					const gchar *prefix, /* FIXME : must be get from message */
 					const gchar *href,   /* FIXME : must be get from message */
-					const gchar *query_soap_msg)
+					const gchar *soap_msg)
 {
-	LassoDstQuery *query;
-	LassoWsfProfile *profile;
+	LassoDstQueryResponse *response;
+	LassoSoapBindingCorrelation *correlation;
+	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
+	LassoWsfProfile *profile;
+	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
-	g_return_val_if_fail(query_soap_msg != NULL, -1);
+	g_return_val_if_fail(soap_msg != NULL, -1);
 
 	profile = LASSO_WSF_PROFILE(service);
 
-	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
-	lasso_node_init_from_message(LASSO_NODE(query), query_soap_msg);
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
+	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
+	LASSO_WSF_PROFILE(service)->request = LASSO_NODE(envelope->Body->any->data);
 
-	profile->request = LASSO_NODE(query);
+	correlation = envelope->Header->Other->data;
+	messageId = correlation->messageID;
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
 
 	/* init QueryResponse */
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
-	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(lasso_dst_query_response_new(status));
+	response = lasso_dst_query_response_new(status);
+	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 	LASSO_DST_QUERY_RESPONSE(profile->response)->prefixServiceType = g_strdup(prefix);
 	LASSO_DST_QUERY_RESPONSE(profile->response)->hrefServiceType = g_strdup(href);
+
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
 }
@@ -242,17 +281,19 @@ gint
 lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 						 const gchar *prefix,
 						 const gchar *href,
-						 const gchar *query_response_soap_msg)
+						 const gchar *soap_msg)
 {
-	LassoDstQueryResponse *query_response;
+	LassoDstQueryResponse *response;
+	LassoSoapEnvelope *envelope;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
-	g_return_val_if_fail(query_response_soap_msg != NULL, -1);
+	g_return_val_if_fail(soap_msg != NULL, -1);
 
-	query_response = g_object_new(LASSO_TYPE_DST_QUERY_RESPONSE, NULL);
-	lasso_node_init_from_message(LASSO_NODE(query_response), query_response_soap_msg);
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
+	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
 
-	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(query_response);
+	response = envelope->Body->any->data;
+	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
 	return 0;
 }
@@ -261,17 +302,19 @@ gint
 lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 						  const gchar *prefix,
 						  const gchar *href,
-						  const gchar *modify_response_soap_msg)
+						  const gchar *soap_msg)
 {
-	LassoDstModifyResponse *modify_response;
+	LassoDstModifyResponse *response;
+	LassoSoapEnvelope *envelope;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
-	g_return_val_if_fail(modify_response_soap_msg != NULL, -1);
+	g_return_val_if_fail(soap_msg != NULL, -1);
 
-	modify_response = g_object_new(LASSO_TYPE_DST_MODIFY_RESPONSE, NULL);
-	lasso_node_init_from_message(LASSO_NODE(modify_response), modify_response_soap_msg);
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
+	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
 
-	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(modify_response);
+	response = envelope->Body->any->data;
+	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
 	return 0;
 }
