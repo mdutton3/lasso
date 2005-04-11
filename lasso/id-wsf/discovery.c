@@ -206,16 +206,22 @@ lasso_discovery_init_modify(LassoDiscovery                *discovery,
 			    LassoDiscoResourceOffering    *resourceOffering,
 			    LassoDiscoDescription         *description)
 {
+	LassoSoapEnvelope *envelope;
+	LassoDiscoModify *modify;
+
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(lasso_disco_modify_new());
-	/*
-	 * after the call of this method, app must add InsertEntry and RemoveEntry
-	 */
+	modify = lasso_disco_modify_new();
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(modify);
+
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
+	envelope->Body->any = g_list_append(envelope->Body->any, modify);
+
 	return lasso_discovery_init_request(discovery, resourceOffering, description);
 }
 
