@@ -23,6 +23,7 @@
  */
 
 #include <lasso/id-wsf/discovery.h>
+#include <lasso/xml/soap_binding_correlation.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -246,20 +247,29 @@ gint
 lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 				   const gchar    *message)
 {
-	LassoDiscoModify *request;
 	LassoDiscoModifyResponse *response;
+	LassoSoapBindingCorrelation *correlation;
+	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
+	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	request = lasso_disco_modify_new_from_message(message);
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(request);
-	/* App should process insert entries and remove entries (in ResourceOffering) */
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(envelope->Body->any->data);
+
+	correlation = envelope->Header->Other->data;
+	messageId = correlation->messageID;
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
 
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
 	response = lasso_disco_modify_response_new(status);
 	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
+
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
 }
@@ -267,8 +277,17 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 gint
 lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
+	LassoDiscoModifyResponse *response;
+	LassoSoapEnvelope *envelope;
+
 	LASSO_WSF_PROFILE(discovery)->response =
 		LASSO_NODE(lasso_disco_modify_response_new_from_message(message));
+
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
+
+	response = envelope->Body->any->data;
+	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
 
 	return 0;
 }
@@ -276,23 +295,29 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 gint
 lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	LassoDiscoQuery *request;
 	LassoDiscoQueryResponse *response;
+	LassoSoapBindingCorrelation *correlation;
+	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
+	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	request = lasso_disco_query_new_from_message(message);
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(request);
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(envelope->Body->any->data);
+
+	correlation = envelope->Header->Other->data;
+	messageId = correlation->messageID;
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
 
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
 	response = lasso_disco_query_response_new(status);
 	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
 
-	/*
-	 * after the call of this method, app must add ResourceOffering
-	 */
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
 }
@@ -300,11 +325,17 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 gint
 lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
+	LassoDiscoQueryResponse *response;
+	LassoSoapEnvelope *envelope;
+
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	LASSO_WSF_PROFILE(discovery)->response =
-		LASSO_NODE(lasso_disco_query_response_new_from_message(message));
+	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
+	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
+
+	response = envelope->Body->any->data;
+	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
 
 	return 0;
 }
