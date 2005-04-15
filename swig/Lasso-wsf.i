@@ -1451,7 +1451,10 @@ typedef struct {
 	~LassoDiscoServiceInstance();
 
 	void addDescription(LassoDiscoDescription *description) {
-		self->Description = g_list_append(self->Description, description);
+		if (LASSO_IS_DISCO_DESCRIPTION(description) == TRUE) {
+			g_object_ref(description);
+			self->Description = g_list_append(self->Description, description);
+		}
 	}
 
 	/* Methods inherited from LassoNode */
