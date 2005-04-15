@@ -62,6 +62,7 @@
 %}
 
 
+
 /***********************************************************************
  ***********************************************************************
  * Functions
@@ -96,6 +97,7 @@ LassoSoapEnvelope *lasso_soap_envelope_new_from_message(char *message);
 %rename(SECURITY_MECH_TLS_SAML) LASSO_SECURITY_MECH_TLS_SAML;
 %rename(SECURITY_MECH_TLS_BEARER) LASSO_SECURITY_MECH_TLS_BEARER;
 
+%rename(SECURITY_MECH_CLIENT_TLS) LASSO_SECURITY_MECH_CLIENT_TLS;
 %rename(SECURITY_MECH_CLIENT_TLS_X509) LASSO_SECURITY_MECH_CLIENT_TLS_X509;
 %rename(SECURITY_MECH_CLIENT_TLS_SAML) LASSO_SECURITY_MECH_CLIENT_TLS_SAML;
 %rename(SECURITY_MECH_CLIENT_TLS_BEARER) LASSO_SECURITY_MECH_CLIENT_TLS_BEARER;
@@ -1447,6 +1449,10 @@ typedef struct {
 				  LassoDiscoDescription *description);
 
 	~LassoDiscoServiceInstance();
+
+	void addDescription(LassoDiscoDescription *description) {
+		self->Description = g_list_append(self->Description, description);
+	}
 
 	/* Methods inherited from LassoNode */
 
