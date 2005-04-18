@@ -1180,6 +1180,9 @@ lasso_login_must_authenticate(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	
 	request = LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
+	if (request == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+	}
 
 	/* get IsPassive and ForceAuthn in AuthnRequest if exists */
 	if ((request->ForceAuthn || LASSO_PROFILE(login)->session == NULL) &&
