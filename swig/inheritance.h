@@ -99,6 +99,12 @@ SET_NODE_INFO(DiscoRequestedServiceType, Node)
 SET_NODE_INFO(DiscoResourceID, Node)
 SET_NODE_INFO(DiscoResourceOffering, Node)
 SET_NODE_INFO(DiscoServiceInstance, Node)
+SET_NODE_INFO(DiscoAuthenticateRequester, Node)
+SET_NODE_INFO(DiscoAuthorizeRequester, Node)
+SET_NODE_INFO(DiscoAuthenticateSessionContext, Node)
+SET_NODE_INFO(DiscoEncryptResourceID, Node)
+SET_NODE_INFO(DiscoSendSingleLogout, Node)
+SET_NODE_INFO(DiscoGenerateBearerToken, Node)
 
 /* dst prefix */
 
