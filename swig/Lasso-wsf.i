@@ -86,7 +86,7 @@ LassoSoapEnvelope *lasso_soap_envelope_new_from_message(char *message);
 
 /* Liberty Security Mechanisms */
 #ifndef SWIGPHP4
-%rename(SECURITY_MECH_NULL) LASSO_SECURITY_NULL;
+%rename(SECURITY_MECH_NULL) LASSO_SECURITY_MECH_NULL;
 
 %rename(SECURITY_MECH_X509) LASSO_SECURITY_MECH_X509;
 %rename(SECURITY_MECH_SAML) LASSO_SECURITY_MECH_SAML;
@@ -645,11 +645,19 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDiscoDescription(
-			char *securityMechID, char *wsdlURI, char *serviceNameRef,
-			char *endpoint, char *soapAction);
+	LassoDiscoDescription();
 
 	~LassoDiscoDescription();
+
+	%newobject newWithWsdlRef;
+	static LassoDiscoDescription *newWithWsdlRef(gchar *securityMechID,
+						     gchar *wsdlURI,
+						     gchar *serviceNameRef);
+
+	%newobject newWithBriefSoapHttpDescription;
+	static LassoDiscoDescription *newWithBriefSoapHttpDescription(gchar *securityMechID,
+								      gchar *endpoint,
+								      gchar *soapAction = NULL);
 
 	/* Methods inherited from LassoNode */
 
@@ -674,6 +682,17 @@ typedef struct {
 #define LassoDiscoDescription_SecurityMechID_set(self, value) set_string_list(&(self)->SecurityMechID, (value))
 
 /* Constructors, destructors & static methods implementations */
+#ifdef PHP_VERSION
+#define LassoDiscoDescription_newWithWsdlRef lasso_disco_description_new_with_WsdlRef
+#else
+#define DiscoDescription_newWithWsdlRef lasso_disco_description_new_with_WsdlRef
+#endif
+
+#ifdef PHP_VERSION
+#define LassoDiscoDescription_newWithBriefSoapHttpDescription lasso_disco_description_new_with_BriefSoapHttpDescription
+#else
+#define DiscoDescription_newWithBriefSoapHttpDescription lasso_disco_description_new_with_BriefSoapHttpDescription
+#endif
 
 #define new_LassoDiscoDescription lasso_disco_description_new
 #define delete_LassoDiscoDescription(self) lasso_node_destroy(LASSO_NODE(self))

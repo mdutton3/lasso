@@ -127,26 +127,54 @@ lasso_disco_description_get_type()
 }
 
 LassoDiscoDescription*
-lasso_disco_description_new(const gchar *securityMechID,
-			    const gchar *wsdlURI,
-			    const gchar *serviceNameRef,
-			    const gchar *endpoint,
-			    const gchar *soapAction)
+lasso_disco_description_new()
+{
+	LassoDiscoDescription *description;
+
+	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
+
+	return description;
+}
+
+LassoDiscoDescription*
+lasso_disco_description_new_with_WsdlRef(const gchar *securityMechID,
+					 const gchar *wsdlURI,
+					 const gchar *serviceNameRef)
 {
 	LassoDiscoDescription *description;
 
 	g_return_val_if_fail(securityMechID != NULL, NULL);
-	g_return_val_if_fail((wsdlURI != NULL && serviceNameRef != NULL) || endpoint != NULL, NULL);
-	/* SoapAction is associated with Endpoint but optional */
-	
+	g_return_val_if_fail(wsdlURI != NULL, NULL);
+	g_return_val_if_fail(serviceNameRef != NULL, NULL);
+
 	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
 
 	description->SecurityMechID = g_list_append(description->SecurityMechID,
 						    g_strdup(securityMechID));
 	description->WsdlURI = g_strdup(wsdlURI);
 	description->ServiceNameRef = g_strdup(serviceNameRef);
+
+	return description;
+}
+
+LassoDiscoDescription*
+lasso_disco_description_new_with_BriefSoapHttpDescription(const gchar *securityMechID,
+							  const gchar *endpoint,
+							  const gchar *soapAction)
+{
+	LassoDiscoDescription *description;
+
+	g_return_val_if_fail(securityMechID != NULL, NULL);
+	g_return_val_if_fail(endpoint != NULL, NULL);
+	
+	description = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
+
+	description->SecurityMechID = g_list_append(description->SecurityMechID,
+						    g_strdup(securityMechID));
 	description->Endpoint = g_strdup(endpoint);
-	description->SoapAction = g_strdup(soapAction);
+	if (soapAction != NULL) {
+		description->SoapAction = g_strdup(soapAction);
+	}
 
 	return description;
 }

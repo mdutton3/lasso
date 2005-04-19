@@ -77,13 +77,19 @@ struct _LassoDiscoDescriptionClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_disco_description_get_type            (void);
+LASSO_EXPORT GType lasso_disco_description_get_type (void);
 
-LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new  (const gchar *securityMechID,
-								  const gchar *wsdlURI,
-								  const gchar *serviceNameRef,
-								  const gchar *endpoint,
-								  const gchar *soapAction);
+LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new();
+
+LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new_with_WsdlRef(
+	const gchar *securityMechID,
+	const gchar *wsdlURI,
+	const gchar *serviceNameRef);
+
+LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new_with_BriefSoapHttpDescription(
+	const gchar *securityMechID,
+	const gchar *endpoint,
+	const gchar *soapAction);
 
 #ifdef __cplusplus
 }
