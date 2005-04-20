@@ -39,6 +39,7 @@ struct _LassoProviderPrivate
 	GHashTable *SPDescriptor;
 	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
+	xmlNode *organization;
 };
 
 static char *protocol_uris[] = {
@@ -306,6 +307,26 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 }
 
 
+/**
+ * lasso_provider_get_organization
+ * @provider: a #LassoProvider
+ *
+ * Returns the provider metadata <Organization> XML node.
+ *
+ * Return value: the <Organization/> node (libxml2 xmlNode*); or NULL if it is
+ *      not found.  This xmlnode must be freed by the caller.
+ **/
+xmlNode*
+lasso_provider_get_organization(LassoProvider *provider)
+{
+	if (provider->private_data->organization) {
+		return xmlCopyNode(provider->private_data->organization, 1);
+	} else {
+		return NULL;
+	}
+}
+
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -436,6 +457,11 @@ dispose(GObject *object)
 	}
 	provider->private_data->SPDescriptor = NULL;
 
+	if (provider->private_data->organization) {
+		xmlFreeNode(provider->private_data->organization);
+		provider->private_data->organization = NULL;
+	}
+
 	if (provider->private_data->default_assertion_consumer)
 		g_free(provider->private_data->default_assertion_consumer);
 
@@ -473,6 +499,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
+	provider->private_data->organization = NULL;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
@@ -537,6 +564,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	xmlNode *node;
 	const char *xpath_idp = "/md:EntityDescriptor/md:IDPDescriptor";
 	const char *xpath_sp = "/md:EntityDescriptor/md:SPDescriptor";
+	const char *xpath_organization = "/md:EntityDescriptor/md:Organization";
 
 	doc = xmlParseFile(metadata);
 	if (doc == NULL)
@@ -601,6 +629,13 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 				node = node->next;
 			}
 		}
+	}
+	xmlXPathFreeObject(xpathObj);
+
+	xpathObj = xmlXPathEvalExpression(xpath_organization, xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
+		provider->private_data->organization = xmlCopyNode(
+				xpathObj->nodesetval->nodeTab[0], 1);
 	}
 	xmlXPathFreeObject(xpathObj);
 

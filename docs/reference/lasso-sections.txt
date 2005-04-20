@@ -16,6 +16,7 @@ lasso_provider_get_first_http_method
 lasso_provider_get_metadata_list
 lasso_provider_get_metadata_one
 lasso_provider_has_protocol_profile
+lasso_provider_get_organization
 <SUBSECTION Standard>
 LASSO_PROVIDER
 LASSO_IS_PROVIDER

@@ -144,6 +144,8 @@ LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provide
 
 LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(LassoProvider *provider);
 
+LASSO_EXPORT xmlNode* lasso_provider_get_organization(LassoProvider *provider);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
