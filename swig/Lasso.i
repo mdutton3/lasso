@@ -1199,6 +1199,27 @@ static GPtrArray *get_xml_list(GList *xmlList) {
 	return xmlArray;
 }
 
+static char* get_xml_string(xmlNode *xmlnode)
+{
+	xmlOutputBufferPtr buf;
+	char *xmlString;
+
+	buf = xmlAllocOutputBuffer(NULL);
+	if (buf == NULL)
+		xmlString = NULL;
+	else {
+		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+		xmlOutputBufferFlush(buf);
+		if (buf->conv == NULL)
+			xmlString = g_strdup(buf->buffer->content);
+		else
+			xmlString = g_strdup(buf->conv->content);
+		xmlOutputBufferClose(buf);
+	}
+	xmlFreeNode(xmlnode);
+	return xmlString;
+}
+
 static void set_node(gpointer *nodePointer, gpointer value)
 {
 	if (*nodePointer != NULL)
@@ -4809,6 +4830,9 @@ typedef struct {
 	%newobject getBase64SuccinctId;
 	char* getBase64SuccinctId();
 
+	%newobject getOrganization;
+	char* getOrganization();
+
 	LassoHttpMethod getFirstHttpMethod(
 			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
 
@@ -4844,6 +4868,7 @@ typedef struct {
 #define LassoProvider_getFirstHttpMethod lasso_provider_get_first_http_method
 #define LassoProvider_getMetadataOne lasso_provider_get_metadata_one
 #define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
+#define LassoProvider_getOrganization(self) get_xml_string(lasso_provider_get_organization(self))
 
 %}
 
@@ -4926,6 +4951,9 @@ typedef struct {
 
 	%newobject getBase64SuccinctId;
 	char* getBase64SuccinctId();
+
+	%newobject getOrganization;
+	char* getOrganization();
 
 	LassoHttpMethod getFirstHttpMethod(
 			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
@@ -5016,6 +5044,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 #define LassoServer_getFirstHttpMethod(server, remote_provider, protocol_type) lasso_provider_get_first_http_method(LASSO_PROVIDER(server), remote_provider, protocol_type)
 #define LassoServer_getMetadataOne(server, name) lasso_provider_get_metadata_one(LASSO_PROVIDER(server), name)
 #define LassoServer_hasProtocolProfile(server, protocol_type, protocol_profile) lasso_provider_has_protocol_profile(LASSO_PROVIDER(server), protocol_type, protocol_profile)
+#define LassoServer_getOrganization(server) get_xml_string(lasso_provider_get_organization(LASSO_PROVIDER(server)))
 
 /* Methods implementations */
 
