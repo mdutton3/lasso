@@ -857,6 +857,10 @@ typedef struct {
 
 	%newobject dump;
 	char *dump();
+
+	%newobject newFromMessage;
+	static LassoDiscoModify *newFromMessage(char *message);
+
 }
 
 %{
@@ -893,6 +897,11 @@ typedef struct {
 #define delete_LassoDiscoModify(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
+#ifdef PHP_VERSION
+#define LassoDiscoModify_newFromMessage lasso_disco_modify_new_from_message
+#else
+#define DiscoModify_newFromMessage lasso_disco_modify_new_from_message
+#endif
 
 #define LassoDiscoModify_dump(self) lasso_node_dump(LASSO_NODE(self))
 
