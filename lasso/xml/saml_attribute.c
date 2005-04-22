@@ -51,6 +51,13 @@
  *   </xs:sequence>
  *   <xs:anyAttribute processContents="lax"/>
  * </xs:complexType>
+ *
+ * <element name="AttributeDesignator" type="saml:AttributeDesignatorType"/>
+ * <complexType name="AttributeDesignatorType">
+ *   <attribute name="AttributeName" type="string" use="required"/>
+ *   <attribute name="AttributeNamespace" type="anyURI" use="required"/>
+ * </complexType>
+ *
  */
 
 /*****************************************************************************/
@@ -58,6 +65,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
+	{ "AttributeName", SNIPPET_ATTRIBUTE,
+	  G_STRUCT_OFFSET(LassoSamlAttribute, attributeName) },
+	{ "AttributeNameSpace", SNIPPET_ATTRIBUTE,
+	  G_STRUCT_OFFSET(LassoSamlAttribute, attributeNameSpace) },
 	{ "AttributeValue", SNIPPET_LIST_NODES,
 		G_STRUCT_OFFSET(LassoSamlAttribute, AttributeValue) },
 	{ NULL, 0, 0}
@@ -70,6 +81,8 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoSamlAttribute *node)
 {
+	node->attributeName = NULL;
+	node->attributeNameSpace = NULL;
 	node->AttributeValue = NULL;
 }
 

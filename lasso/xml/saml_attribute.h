@@ -50,6 +50,8 @@ struct _LassoSamlAttribute {
 	LassoSamlAttributeDesignator parent;
 
 	/*< public >*/
+	gchar *attributeName;
+	gchar *attributeNameSpace;
 	GList *AttributeValue;
 };
 

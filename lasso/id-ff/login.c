@@ -92,6 +92,8 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 		attributeValue->any = g_list_append(attributeValue->any, resourceOffering);
 
 		attribute = lasso_saml_attribute_new();
+		attribute->attributeName = "DiscoveryResourceOffering";
+		attribute->attributeNameSpace = g_strdup(LASSO_DISCO_HREF);
 		attribute->AttributeValue = g_list_append(attribute->AttributeValue,
 				attributeValue);
 
