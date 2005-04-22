@@ -93,7 +93,15 @@ lasso_disco_insert_entry_get_type()
 }
 
 LassoDiscoInsertEntry*
-lasso_disco_insert_entry_new()
+lasso_disco_insert_entry_new(LassoDiscoResourceOffering *resourceOffering)
 {
-	return g_object_new(LASSO_TYPE_DISCO_INSERT_ENTRY, NULL);
+	LassoDiscoInsertEntry *insertEntry;
+
+	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering) == TRUE, NULL);
+
+	insertEntry = g_object_new(LASSO_TYPE_DISCO_INSERT_ENTRY, NULL);
+
+	insertEntry->ResourceOffering = g_object_ref(resourceOffering);
+
+	return insertEntry;
 }

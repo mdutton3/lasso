@@ -769,7 +769,7 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDiscoInsertEntry();
+	LassoDiscoInsertEntry(LassoDiscoResourceOffering *resourceOffering);
 
 	~LassoDiscoInsertEntry();
 

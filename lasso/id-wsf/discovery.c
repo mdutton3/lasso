@@ -113,8 +113,7 @@ lasso_discovery_add_insert_entry(LassoDiscovery *discovery,
 	resourceId = resourceId ? g_object_ref(resourceId) : resourceId;
 	resourceOffering->ResourceID = resourceId;
 
-	insertEntry = lasso_disco_insert_entry_new();
-	insertEntry->ResourceOffering = resourceOffering;
+	insertEntry = lasso_disco_insert_entry_new(resourceOffering);
 
 	modify->InsertEntry = g_list_append(modify->InsertEntry, insertEntry);
 

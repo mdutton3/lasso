@@ -61,7 +61,8 @@ struct _LassoDiscoInsertEntryClass {
 };
 
 LASSO_EXPORT GType lasso_disco_insert_entry_get_type(void);
-LASSO_EXPORT LassoDiscoInsertEntry* lasso_disco_insert_entry_new(void);
+LASSO_EXPORT LassoDiscoInsertEntry* lasso_disco_insert_entry_new(
+	LassoDiscoResourceOffering *resourceOffering);
 
 #ifdef __cplusplus
 }
