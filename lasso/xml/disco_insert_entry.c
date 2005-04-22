@@ -42,7 +42,7 @@
 static struct XmlSnippet schema_snippets[] = {
 	{ "ResourceOffering", SNIPPET_NODE,
 	  G_STRUCT_OFFSET(LassoDiscoInsertEntry, ResourceOffering) },
-	{ "any", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoInsertEntry, any) },
+	{ "", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoDiscoInsertEntry, any) },
 	{ NULL, 0, 0}
 };
 
