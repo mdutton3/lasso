@@ -564,6 +564,10 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	}
 
 	/* verify federation */
+	if (profile->identity == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
+	}
+
 	federation = g_hash_table_lookup(profile->identity->federations,
 			profile->remote_providerID);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
