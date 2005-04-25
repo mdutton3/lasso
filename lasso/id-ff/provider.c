@@ -40,6 +40,7 @@ struct _LassoProviderPrivate
 	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
 	xmlNode *organization;
+	xmlSecKey *public_key;
 };
 
 static char *protocol_uris[] = {
@@ -58,8 +59,6 @@ static char *protocol_md_nodename[] = {
 };
 static char *protocol_roles[] = { NULL, "sp", "idp"};
 char *protocol_methods[] = {"", "", "", "", "", "-http", "-soap"};
-
-
 
 /*****************************************************************************/
 /* public methods */
@@ -462,8 +461,15 @@ dispose(GObject *object)
 		provider->private_data->organization = NULL;
 	}
 
-	if (provider->private_data->default_assertion_consumer)
+	if (provider->private_data->default_assertion_consumer) {
 		g_free(provider->private_data->default_assertion_consumer);
+		provider->private_data->default_assertion_consumer = NULL;
+	}
+
+	if (provider->private_data->public_key) {
+		xmlSecKeyDestroy(provider->private_data->public_key);
+		provider->private_data->public_key = NULL;
+	}
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
@@ -500,6 +506,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->organization = NULL;
+	provider->private_data->public_key = NULL;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
@@ -673,8 +680,38 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
+	lasso_provider_load_public_key(provider);
+
 	return provider;
 }
+
+void
+lasso_provider_load_public_key(LassoProvider *provider)
+{
+	LassoPemFileType file_type;
+	xmlSecKey *pub_key = NULL;
+
+	if (provider->public_key == NULL)
+		return;
+
+	file_type = lasso_get_pem_file_type(provider->public_key);
+	switch (file_type) {
+		case LASSO_PEM_FILE_TYPE_UNKNOWN:
+			break; /* with a warning ? */
+		case LASSO_PEM_FILE_TYPE_CERT:
+			pub_key = lasso_get_public_key_from_pem_cert_file(
+					provider->public_key);
+			break;
+		case LASSO_PEM_FILE_TYPE_PUB_KEY:
+			pub_key = xmlSecCryptoAppKeyLoad(provider->public_key,
+					xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+			break;
+		case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
+			break; /* with a warning ? */
+	}
+	provider->private_data->public_key = pub_key;
+}
+
 
 /**
  * lasso_provider_new_from_dump:
@@ -694,6 +731,8 @@ lasso_provider_new_from_dump(const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
 
+	lasso_provider_load_public_key(provider);
+
 	return provider;
 }
 
@@ -708,7 +747,6 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	xmlNode *xmlnode = NULL, *sign, *x509data;
 	xmlSecKeysMngr *keys_mngr = NULL;
 	xmlSecDSigCtx *dsigCtx;
-	LassoPemFileType public_key_file_type;
 	int rc;
 
 	msg = (char*)message;
@@ -722,7 +760,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		return -2;
 
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		return lasso_query_verify_signature(message, provider->public_key);
+		return lasso_query_verify_signature(message, provider->private_data->public_key);
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
@@ -792,22 +830,9 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
-		if (provider->public_key) {
-			public_key_file_type = lasso_get_pem_file_type(provider->public_key);
-			if (public_key_file_type == LASSO_PEM_FILE_TYPE_CERT) {
-				/* public_key_file is a certificate file
-				 * => get public key in it */
-				dsigCtx->signKey = lasso_get_public_key_from_pem_cert_file(
-						provider->public_key);
-			} else {
-				/* load public key */
-				dsigCtx->signKey = xmlSecCryptoAppKeyLoad(
-						provider->public_key,
-						xmlSecKeyDataFormatPem,
-						NULL, NULL, NULL);
-			}
-		}
+		dsigCtx->signKey = provider->private_data->public_key;
 		if (dsigCtx->signKey == NULL) {
+			/* XXX: should this be detected on lasso_provider_new ? */
 			xmlSecDSigCtxDestroy(dsigCtx);
 			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;

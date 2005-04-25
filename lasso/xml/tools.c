@@ -403,7 +403,7 @@ done:
 /**
  * lasso_query_verify_signature:
  * @query: a query (an url-encoded message)
- * @sender_public_key_file: the query sender public key
+ * @sender_public_key: the query sender public key
  * 
  * Verifies the query signature.
  * 
@@ -412,9 +412,8 @@ done:
  * a negative value if an error occurs during verification
  **/
 int
-lasso_query_verify_signature(const char *query, const char *sender_public_key_file)
+lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_key)
 {
-	BIO *bio = NULL;
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	gchar **str_split = NULL;
@@ -425,50 +424,49 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	int key_size, status = 0, ret = 0;
 
 	g_return_val_if_fail(query != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(sender_public_key_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(sender_public_key != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(sender_public_key->value != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* split query, the signature MUST be the last param of the query */
 	/* FIXME: actually there could be more params in the URL; but they
 	 * wouldn't be covered by the signature */
 	str_split = g_strsplit(query, "&Signature=", 0);
 	if (str_split[1] == NULL) {
-		ret = LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
-		goto done;
+		g_strfreev(str_split);
+		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 	}
 
-	/* create bio to read public key */
-	bio = BIO_new_file(sender_public_key_file, "rb");
-	if (bio == NULL) {
-		ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
-		goto done;
-	}  
+	if (sender_public_key->value->id == xmlSecOpenSSLKeyDataRsaId) {
+		rsa = xmlSecOpenSSLKeyDataRsaGetRsa(sender_public_key->value);
+	} else if (sender_public_key->value->id == xmlSecOpenSSLKeyDataDsaId) {
+		dsa = xmlSecOpenSSLKeyDataDsaGetDsa(sender_public_key->value);
+	} else {
+		/* no key; it will fail later */
+	}
 
 	/* get signature method (algorithm) and read public key */
 	e_rsa_alg = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
-	e_dsa_alg = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
 	if (g_strrstr(str_split[0], e_rsa_alg) != NULL) {
 		sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-		rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
-		/* rsa = PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL); */
 		if (rsa == NULL) {
-			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
 		}
 		key_size = RSA_size(rsa);
-	}
-	else if (g_strrstr(str_split[0], e_dsa_alg) != NULL) {
-		sign_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
-		dsa = PEM_read_bio_DSA_PUBKEY(bio, NULL, NULL, NULL);
-		if (dsa == NULL) {
-			ret = LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+	} else {
+		e_dsa_alg = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+	
+		if (g_strrstr(str_split[0], e_dsa_alg) != NULL) {
+			sign_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
+			if (dsa == NULL) {
+				ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
+				goto done;
+			}
+			key_size = DSA_size(dsa);
+		} else {
+			ret = critical_error(LASSO_DS_ERROR_INVALID_SIGALG);
 			goto done;
 		}
-		key_size = DSA_size(dsa);
-	}
-	else {
-		message(G_LOG_LEVEL_CRITICAL, lasso_strerror(LASSO_DS_ERROR_INVALID_SIGALG));
-		ret = LASSO_DS_ERROR_INVALID_SIGALG;
-		goto done;
 	}
 
 	/* get signature (unescape + base64 decode) */
@@ -476,23 +474,19 @@ lasso_query_verify_signature(const char *query, const char *sender_public_key_fi
 	b64_signature = xmlURIUnescapeString(str_split[1], 0, NULL);
 	xmlSecBase64Decode(b64_signature, signature, key_size+1);
 
-	/* calculate signature digest */
+	/* compute signature digest */
 	digest = lasso_sha1(str_split[0]);
 	if (digest == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, 
-				lasso_strerror(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED));
-		ret = LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
+		ret = critical_error(LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED);
 		goto done;
 	}
 
-	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
-		status = RSA_verify(NID_sha1, digest, 20, signature, RSA_size(rsa), rsa);
-		/* printf("OpenSSL %s\n", ERR_error_string(ERR_get_error(), NULL)); */
-		/* printf("OpenSSL %s\n", ERR_error_string(ERR_peek_last_error(), NULL)); */
+	if (rsa) {
+		status = RSA_verify(NID_sha1, digest, 20, signature, key_size, rsa);
+	} else if (dsa) {
+		status = DSA_verify(NID_sha1, digest, 20, signature, key_size, dsa);
 	}
-	else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
-		status = DSA_verify(NID_sha1, digest, 20, signature, DSA_size(dsa), dsa);
-	}
+
 	if (status == 0) {
 		ret = LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
@@ -504,9 +498,6 @@ done:
 	xmlFree(e_rsa_alg);
 	xmlFree(e_dsa_alg);
 	g_strfreev(str_split);
-	BIO_free(bio);
-	RSA_free(rsa);
-	DSA_free(dsa);
 
 	return ret;
 }
