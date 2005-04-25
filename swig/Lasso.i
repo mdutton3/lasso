@@ -4892,9 +4892,9 @@ typedef struct {
 	char *private_key;
 
 #ifndef SWIGPHP4
-	%rename(secretKey) secret_key;
+	%rename(privateKeyPassword) private_key_password;
 #endif
-	char *secret_key;
+	char *private_key_password;
 
 #ifndef SWIGPHP4
 	%rename(signatureMethod) signature_method;
@@ -4932,8 +4932,8 @@ typedef struct {
 
 	/* Constructor, destructor & static methods */
 
-	LassoServer(char *metadata = NULL, char *privateKey = NULL, char *secretKey = NULL,
-			char *certificate = NULL);
+	LassoServer(char *metadata = NULL, char *privateKey = NULL,
+			char *privateKeyPassword = NULL, char *certificate = NULL);
 
 	~LassoServer();
 

@@ -60,7 +60,7 @@ struct _LassoServer {
 	GHashTable *services;
 
 	gchar *private_key;
-	gchar *secret_key;
+	gchar *private_key_password;
 	gchar *certificate;
 	LassoSignatureMethod signature_method;
 

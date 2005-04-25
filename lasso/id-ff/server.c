@@ -115,7 +115,8 @@ lasso_server_destroy(LassoServer *server)
 
 static struct XmlSnippet schema_snippets[] = {
 	{ "PrivateKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, private_key) },
-	{ "SecretKeyFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, secret_key) },
+	{ "PrivateKeyPassword", SNIPPET_CONTENT,
+		G_STRUCT_OFFSET(LassoServer, private_key_password) },
 	{ "CertificateFilePath", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoServer, certificate) },
 	{ NULL, 0, 0}
 };
@@ -362,7 +363,7 @@ finalize(GObject *object)
 	LassoServer *server = LASSO_SERVER(object);
 
 	g_free(server->private_key);
-	g_free(server->secret_key);
+	g_free(server->private_key_password);
 	g_free(server->certificate);
 	g_free(server->private_data);
 
@@ -384,7 +385,7 @@ instance_init(LassoServer *server)
 			(GDestroyNotify)lasso_node_destroy);
 
 	server->private_key = NULL;
-	server->secret_key = NULL;
+	server->private_key_password = NULL;
 	server->certificate = NULL;
 	server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
@@ -439,8 +440,7 @@ lasso_server_get_type()
  * lasso_server_new:
  * @metadata: path to the provider metadata file
  * @private_key: path to the the server private key file or NULL
- * @secret_key: path to the the server secret key file (used to decrypt the
- *     private key)
+ * @private_key_password: password to private key (if it is encrypted)
  * @certificate: path to the server certificate file
  * 
  * Creates a new #LassoServer.
@@ -451,7 +451,7 @@ lasso_server_get_type()
 LassoServer*
 lasso_server_new(const gchar *metadata,
 		 const gchar *private_key,
-		 const gchar *secret_key,
+		 const gchar *private_key_password,
 		 const gchar *certificate)
 {
 	LassoServer *server;
@@ -469,7 +469,7 @@ lasso_server_new(const gchar *metadata,
 	}
 
 	server->private_key = g_strdup(private_key);
-	server->secret_key = g_strdup(secret_key);
+	server->private_key_password = g_strdup(private_key_password);
 	server->certificate = g_strdup(certificate);
 
 	return server;
