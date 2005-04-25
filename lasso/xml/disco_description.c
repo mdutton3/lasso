@@ -178,3 +178,42 @@ lasso_disco_description_new_with_BriefSoapHttpDescription(const gchar *securityM
 
 	return description;
 }
+
+LassoDiscoDescription*
+lasso_disco_description_copy(LassoDiscoDescription *description)
+{
+	LassoDiscoDescription *newDescription;
+	GList *securityMechIds, *credentialRefs;
+
+	newDescription = g_object_new(LASSO_TYPE_DISCO_DESCRIPTION, NULL);
+
+	securityMechIds = description->SecurityMechID;
+	while (securityMechIds) {
+		newDescription->SecurityMechID = g_list_append(newDescription->SecurityMechID,
+							       g_strdup(securityMechIds->data));
+		securityMechIds = securityMechIds->next;
+	}
+
+	credentialRefs = description->CredentialRef;
+	while (credentialRefs) {
+		newDescription->CredentialRef = g_list_append(newDescription->CredentialRef,
+							      g_strdup(credentialRefs->data));
+		credentialRefs = credentialRefs->next;
+	}
+
+	newDescription->WsdlURI = g_strdup(description->WsdlURI);
+	newDescription->ServiceNameRef = g_strdup(description->ServiceNameRef);
+
+	if (description->Endpoint) {
+		newDescription->Endpoint = g_strdup(description->Endpoint);	
+	}
+	if (description->SoapAction) {
+		newDescription->SoapAction = g_strdup(description->SoapAction);	
+	}
+	
+	if (description->id) {
+		newDescription->id = g_strdup(description->id);
+	}
+
+	return newDescription;
+}

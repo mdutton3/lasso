@@ -79,6 +79,9 @@ struct _LassoDiscoDescriptionClass {
 
 LASSO_EXPORT GType lasso_disco_description_get_type (void);
 
+LASSO_EXPORT LassoDiscoDescription *lasso_disco_description_copy(
+	LassoDiscoDescription *description);
+
 LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new();
 
 LASSO_EXPORT LassoDiscoDescription* lasso_disco_description_new_with_WsdlRef(
