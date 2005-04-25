@@ -361,8 +361,13 @@ static void
 finalize(GObject *object)
 {
 	LassoServer *server = LASSO_SERVER(object);
+	int i = 0;
 
 	g_free(server->private_key);
+	if (server->private_key_password) {
+		while (server->private_key_password[i])
+			server->private_key_password[i++] = 0;
+	}
 	g_free(server->private_key_password);
 	g_free(server->certificate);
 	g_free(server->private_data);
