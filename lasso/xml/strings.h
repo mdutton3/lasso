@@ -268,9 +268,9 @@
 #define LASSO_SAML_AUTHENTICATION_METHOD_LIBERTY        "urn:liberty:ac:2003-08"
 
 /* ConfirmationMethods */
-#define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01	\
-	"urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
-#define LASSO_SAML_CONFIRMATION_METHOD_BEARER	 "urn:oasis:names:tc:SAML:1.0:cm:bearer"
+#define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT "urn:oasis:names:tc:SAML:1.0:cm:artifact"
+#define LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01 "urn:oasis:names:tc:SAML:1.0:cm:artifact-01"
+#define LASSO_SAML_CONFIRMATION_METHOD_BEARER "urn:oasis:names:tc:SAML:1.0:cm:bearer"
 #define LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY	 \
 	"urn:oasis:names:tc:SAML:1.0:cm:holder-of-key"
 #define LASSO_SAML_CONFIRMATION_METHOD_SENDER_VOUCHES	 \
