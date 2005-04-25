@@ -622,6 +622,20 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	if (login->assertionArtifact == NULL)
 		lasso_login_build_assertion_artifact(login);
 
+	if (login->assertion) {
+		LassoSamlAssertion *assertion = login->assertion;
+		LassoSamlSubjectStatementAbstract *ss;
+
+		ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement);
+		if (assertion->MajorVersion == 1 && assertion->MinorVersion == 0) {
+			ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
+					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
+		} else {
+			ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
+					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
+		}
+	}
+
 	b64_samlArt = xmlStrdup(login->assertionArtifact);
 	relayState = xmlURIEscapeStr(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
@@ -783,6 +797,14 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	/* ProtocolProfile must be BrwsPost */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+	}
+
+	if (login->assertion) {
+		LassoSamlAssertion *assertion = login->assertion;
+		LassoSamlSubjectStatementAbstract *ss;
+		ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement);
+		ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
+				g_strdup(LASSO_SAML_CONFIRMATION_METHOD_BEARER));
 	}
 
 	/* Countermeasure: The issuer should sign <lib:AuthnResponse> messages.
