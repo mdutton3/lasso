@@ -27,6 +27,7 @@
 #include <lasso/lasso_config.h>
 #include <lasso/xml/lib_authentication_statement.h>
 #include <lasso/xml/lib_subject.h>
+#include <lasso/xml/saml_advice.h>
 #include <lasso/xml/saml_attribute.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/samlp_response.h>
@@ -78,14 +79,23 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 #ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
-	LassoDiscoServiceInstance *serviceInstance;
+	LassoDiscoServiceInstance *serviceInstance, *newServiceInstance;
 	LassoSamlAttributeStatement *attributeStatement;
 	LassoSamlAttribute *attribute;
 	LassoSamlAttributeValue *attributeValue;
 
+	LassoSamlAssertion *credential;
+	LassoSamlAdvice *advice;
+	GList *listDescriptions, *listSecurityMechIds;
+	LassoDiscoDescription *description;
+	gchar *securityMechId;
+	gboolean found;
+
 	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
 	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance)) {
-		resourceOffering = lasso_disco_resource_offering_new(serviceInstance);
+		newServiceInstance = lasso_disco_service_instance_copy(serviceInstance);
+
+		resourceOffering = lasso_disco_resource_offering_new(newServiceInstance);
 		resourceOffering->ResourceID = g_object_ref(login->private_data->resourceId);
 
 		attributeValue = lasso_saml_attribute_value_new();
@@ -102,6 +112,46 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 				attributeStatement->Attribute, attribute);
 
 		assertion->AttributeStatement = attributeStatement;
+
+		/* Add optional credential */
+		listDescriptions = newServiceInstance->Description;
+		while (listDescriptions) {
+			description = LASSO_DISCO_DESCRIPTION(listDescriptions->data);
+			listSecurityMechIds = description->SecurityMechID;
+			found = FALSE;
+			while(listSecurityMechIds) {
+				securityMechId = listSecurityMechIds->data;
+				if (g_str_equal(securityMechId,
+						LASSO_SECURITY_MECH_SAML)==TRUE || \
+				    g_str_equal(securityMechId,
+						LASSO_SECURITY_MECH_TLS_SAML) == TRUE || \
+				    g_str_equal(securityMechId,
+						LASSO_SECURITY_MECH_CLIENT_TLS_SAML)==TRUE) {
+					found  = TRUE;
+					break;
+			  }
+			  
+			  listSecurityMechIds = listSecurityMechIds->next;
+			}
+			if (found == TRUE) {
+				/* FIXME: Add required attributes for assertion */
+				credential = lasso_saml_assertion_new();
+				credential->AssertionID = lasso_build_unique_id(32);
+				credential->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
+				credential->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
+				assertion->IssueInstant = lasso_get_current_time();
+
+				advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
+				advice->Assertion = LASSO_NODE(credential);
+				assertion->Advice = advice;
+
+				description->CredentialRef = g_list_append(
+					description->CredentialRef,
+					g_strdup(credential->AssertionID));
+			}
+
+			listDescriptions = listDescriptions->next;
+		}
 	}
 #endif
 }
