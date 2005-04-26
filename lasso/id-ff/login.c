@@ -30,6 +30,8 @@
 #include <lasso/xml/saml_advice.h>
 #include <lasso/xml/saml_attribute.h>
 #include <lasso/xml/saml_attribute_value.h>
+#include <lasso/xml/saml_audience_restriction_condition.h>
+#include <lasso/xml/saml_conditions.h>
 #include <lasso/xml/samlp_response.h>
 
 #ifdef LASSO_WSF_ENABLED
@@ -84,7 +86,9 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 	LassoSamlAttribute *attribute;
 	LassoSamlAttributeValue *attributeValue;
 
-	LassoSamlAssertion *credential;
+	LassoSamlConditions *conditions;
+	LassoSamlAudienceRestrictionCondition *audience_restriction_condition;
+	LassoSamlAssertion *credential = NULL;
 	LassoSamlAdvice *advice;
 	GList *listDescriptions, *listSecurityMechIds;
 	LassoDiscoDescription *description;
@@ -135,16 +139,32 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 			}
 			if (found == TRUE) {
 				/* FIXME: Add required attributes for assertion */
-				credential = lasso_saml_assertion_new();
-				credential->AssertionID = lasso_build_unique_id(32);
-				credential->MajorVersion = LASSO_LIB_MAJOR_VERSION_N;
-				credential->MinorVersion = LASSO_LIB_MINOR_VERSION_N;
-				assertion->IssueInstant = lasso_get_current_time();
+				if (LASSO_IS_SAML_ASSERTION(credential) == FALSE) {
+					profile = LASSO_PROFILE(login);
 
-				advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
-				advice->Assertion = LASSO_NODE(credential);
-				assertion->Advice = advice;
+					credential = lasso_saml_assertion_new();
+					credential->AssertionID = lasso_build_unique_id(32);
+					credential->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
+					credential->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
+					credential->IssueInstant = lasso_get_current_time();
+					credential->Issuer = g_strdup(
+						LASSO_PROVIDER(profile->server)->ProviderID);
+					
+					conditions = lasso_saml_conditions_new();
+					credential->Conditions = conditions;
+					audience_restriction_condition = \
+						lasso_saml_audience_restriction_condition_new_full(
+						       LASSO_PROVIDER(profile->server)->ProviderID);
+					conditions->AudienceRestrictionCondition = \
+					    g_list_append(conditions->AudienceRestrictionCondition,
+							  audience_restriction_condition);
 
+					/* FIXME: Include <lib:AuthenticationStatement> */
+					
+					advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
+					advice->Assertion = LASSO_NODE(credential);
+					assertion->Advice = advice;
+				}
 				description->CredentialRef = g_list_append(
 					description->CredentialRef,
 					g_strdup(credential->AssertionID));
