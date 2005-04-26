@@ -82,7 +82,7 @@ dnl         fi
     *linux*)
         SUN_EXTRA_INCLUDE="linux"
         ;;
-    *Darwin*)
+    *darwin*)
         DARWIN=1
         ;;
 esac
