@@ -738,6 +738,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Saml";
 	if (strcmp(xmlnode->ns->href, LASSO_SAML_PROTOCOL_HREF) == 0)
 		prefix = "Samlp";
+	if (strcmp(xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
+		prefix = "Wsse";
 
 	/* XXX: new Dst namespaces can be added dynamically; they should not
 	 * be hardcoded here
