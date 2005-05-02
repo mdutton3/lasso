@@ -59,6 +59,7 @@
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_header.h>
 #include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/wsse_security.h>
 %}
 
 
@@ -3301,6 +3302,12 @@ typedef struct {
 
 	~LassoSoapHeader();
 
+	void addOther(LassoNode *node) {
+		if LASSO_IS_NODE(node) {
+			self->Other = g_list_append(self->Other, node);
+		}
+	}
+
 	/* Methods inherited from LassoNode */
 
 	%newobject dump;
@@ -3433,6 +3440,9 @@ typedef struct {
 	%newobject server_get;
 	LassoServer *server;
 
+	%newobject soapEnvelopeRequest_get;
+	LassoSoapEnvelope *soapEnvelopeRequest;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoDiscovery(LassoServer *server);
@@ -3526,6 +3536,12 @@ typedef struct {
 #define LassoDiscovery_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
 #define LassoDiscovery_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 #define LassoDiscovery_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+
+/* soapEnvelopeRequest */
+#define LassoDiscovery_get_soapEnvelopeRequest(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_request)
+#define LassoDiscovery_soapEnvelopeRequest_get(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_request)
+#define LassoDiscovery_set_soapEnvelopeRequest(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_request, (value))
+#define LassoDiscovery_soapEnvelopeRequest_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_request, (value))
 
 /* Constructors, destructors & static methods implementations */
 
@@ -3991,5 +4007,64 @@ gint LassoAuthentication_buildResponseMsg(LassoAuthentication *self) {
 #define LassoAuthentication_processResponseMsg lasso_authentication_process_response_msg
 #define LassoAuthentication_serverStart lasso_authentication_server_start
 #define LassoAuthentication_serverStep lasso_authentication_server_step
+
+%}
+
+
+
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in Web Service Security Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * wsse:Security
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(WsseSecurity) LassoWsseSecurity;
+#endif
+typedef struct {
+	/* Attributes */
+
+} LassoWsseSecurity;
+%extend LassoWsseSecurity {
+
+	%newobject any_get;
+	LassoNodeList *any;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoWsseSecurity();
+
+	~LassoWsseSecurity();
+
+	/* Methods inherited from LassoNode */
+
+	%newobject dump;
+	char *dump();
+}
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoWsseSecurity lasso_wsse_security_new
+#define delete_LassoWsseSecurity(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+#define LassoWsseSecurity_dump(self) lasso_node_dump(LASSO_NODE(self))
+
+/* Attributes Implementations */
+
+/* any */
+#define LassoWsseSecurity_get_any(self) get_node_list((self)->any)
+#define LassoWsseSecurity_any_get(self) get_node_list((self)->any)
+#define LassoWsseSecurity_set_any(self, value) set_node_list(&(self)->any, (value))
+#define LassoWsseSecurity_any_set(self, value) set_node_list(&(self)->any, (value))
 
 %}

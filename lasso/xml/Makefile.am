@@ -68,7 +68,8 @@ WSF_C_FILES = \
 	soap_body.c \
 	soap_envelope.c \
 	soap_header.c \
-	utility_status.c
+	utility_status.c \
+	wsse_security.c
 
 WSF_H_FILES = \
 	disco_authenticate_requester.h \
@@ -129,7 +130,8 @@ WSF_H_FILES = \
 	soap_body.h \
 	soap_envelope.h \
 	soap_header.h \
-	utility_status.h
+	utility_status.h \
+	wsse_security.h
 endif
 
 liblasso_xml_la_SOURCES = \

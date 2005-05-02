@@ -159,7 +159,7 @@
 #define LASSO_SECURITY_MECH_CLIENT_TLS_BEARER "urn:liberty:security:2004-04:ClientTLS:Bearer"
 
 
-/* disco prefix & href */
+/* liberty wsf prefix & href */
 #define LASSO_DISCO_HREF   "urn:liberty:disco:2003-08"
 #define LASSO_DISCO_PREFIX "disco"
 
@@ -288,6 +288,9 @@
 
 #define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
 #define LASSO_SOAP_BINDING_EXT_PREFIX "soap-binding-ext"
+
+#define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
+#define LASSO_WSSE_PREFIX "wsse"
 
 /*****************************************************************************/
 /* Others                                                                    */

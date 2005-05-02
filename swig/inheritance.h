@@ -148,4 +148,7 @@ SET_NODE_INFO(SoapBindingCorrelation, Node)
 
 SET_NODE_INFO(UtilityStatus, Node)
 
+/* web service security extension */
+SET_NODE_INFO(WsseSecurity, Node)
+
 #endif /* LASSO_WSF_ENABLED */
