@@ -16,7 +16,7 @@ else:
 
 wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service',
         'lasso_discovery', 'lasso_wsf', 'lasso_interaction', 'lasso_utility',
-        'lasso_sa_', 'lasso_soap_', 'lasso_authentication' ]
+        'lasso_sa_', 'lasso_soap_', 'lasso_authentication', 'lasso_wsse' ]
 if enable_wsf:
     wsf = []
 
