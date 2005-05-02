@@ -1624,7 +1624,11 @@ typedef struct {
 %extend LassoSamlAdvice {
 	/* Attributes */
 
-	/* LassoSamlAssertion *Assertion; FIXME: unbounded */
+#ifndef SWIGPHP4
+	%rename(assertion) Assertion;
+#endif
+	%newobject Assertion_get;
+	LassoSamlAssertion *Assertion;
 
 	%newobject assertionIdReference_get;
 	LassoStringList *assertionIdReference;
@@ -1644,6 +1648,11 @@ typedef struct {
 %{
 
 /* Attributes implementations */
+/* Assertion */
+#define LassoSamlAdvice_get_Assertion(self) get_node((self)->Assertion)
+#define LassoSamlAdvice_Assertion_get(self) get_node((self)->Assertion)
+#define LassoSamlAdvice_set_Assertion(self, value) set_node((gpointer *) &(self)->Assertion, (value))
+#define LassoSamlAdvice_Assertion_set(self, value) set_node((gpointer *) &(self)->Assertion, (value))
 
 /* assertionIdReference */
 #define LassoSamlAdvice_get_assertionIdReference(self) get_string_list((self)->AssertionIDReference)
