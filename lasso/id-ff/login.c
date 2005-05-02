@@ -159,8 +159,9 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 					    g_list_append(conditions->AudienceRestrictionCondition,
 							  audience_restriction_condition);
 
-					/* FIXME: Include <lib:AuthenticationStatement> */
-					
+					/* FIXME: Missing AuthenticationStatement and
+					          AttributeStatement */
+
 					advice = LASSO_SAML_ADVICE(lasso_saml_advice_new());
 					advice->Assertion = LASSO_NODE(credential);
 					assertion->Advice = advice;
