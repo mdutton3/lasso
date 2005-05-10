@@ -533,13 +533,13 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_LIST_XMLNODES:
 					elem = (GList*)(*value);
 					while (elem) {
-						if (type == SNIPPET_LIST_XMLNODES)
+						if (type == SNIPPET_LIST_XMLNODES && elem->data)
 							xmlFreeNode(elem->data);
-						if (type == SNIPPET_EXTENSION)
+						if (type == SNIPPET_EXTENSION && elem->data)
 							xmlFreeNode(elem->data);
-						if (type == SNIPPET_LIST_NODES)
+						if (type == SNIPPET_LIST_NODES && elem->data)
 							lasso_node_destroy(elem->data);
-						if (type == SNIPPET_LIST_CONTENT)
+						if (type == SNIPPET_LIST_CONTENT && elem->data)
 							g_free(elem->data);
 						elem = g_list_next(elem);
 					}
