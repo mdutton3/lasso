@@ -74,6 +74,7 @@ static struct QuerySnippet query_snippets[] = {
 	{ "ProviderID", NULL },
 	{ "Status", "Value" },
 	{ "RelayState", NULL },
+	{ "InResponseTo", NULL },
 	{ NULL, NULL }
 };
 
