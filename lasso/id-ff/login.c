@@ -255,7 +255,8 @@ lasso_login_build_assertion(LassoLogin *login,
 	assertion->private_key_file = g_strdup(profile->server->private_key);
 	assertion->certificate_file = g_strdup(profile->server->certificate);
 
-	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST || \
+	    login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		/* only add assertion if response is an AuthnResponse */
 		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
 	}
@@ -1361,6 +1362,9 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 	} else if (strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST) == 0) {
 		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST;
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+	} else if (strcmp(protocolProfile, LASSO_LIB_PROTOCOL_PROFILE_BRWS_LECP) == 0) {
+		protocolProfile = LASSO_LIB_PROTOCOL_PROFILE_BRWS_LECP;
+		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 	} else {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}

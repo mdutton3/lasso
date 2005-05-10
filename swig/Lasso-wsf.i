@@ -3554,13 +3554,8 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 
-gint LassoDiscovery_buildRequestMsg(LassoDiscovery *self) {
-	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
-}
-
-gint LassoDiscovery_buildResponseMsg(LassoDiscovery *self) {
-	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
-}
+#define LassoDiscovery_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoDiscovery_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 
@@ -3682,14 +3677,8 @@ typedef struct {
 #define LassoInteractionProfileService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 /* Implementations of methods inherited from WsfProfile */
-
-gint LassoInteractionProfileService_buildRequestMsg(LassoInteractionProfileService *self) {
-	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
-}
-
-gint LassoInteractionProfileService_buildResponseMsg(LassoInteractionProfileService *self) {
-	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
-}
+#define LassoInteractionProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoInteractionProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 
@@ -3829,14 +3818,8 @@ typedef struct {
 
 
 /* Implementations of methods inherited from WsfProfile */
-
-gint LassoProfileService_buildRequestMsg(LassoProfileService *self) {
-	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
-}
-
-gint LassoProfileService_buildResponseMsg(LassoProfileService *self) {
-	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
-}
+#define LassoProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 #define LassoProfileService_addData lasso_profile_service_add_data
@@ -3989,14 +3972,8 @@ typedef struct {
 #define delete_LassoAuthentication(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from WsfProfile */
-
-gint LassoAuthentication_buildRequestMsg(LassoAuthentication *self) {
-	return lasso_wsf_profile_build_request_msg(LASSO_WSF_PROFILE(self));
-}
-
-gint LassoAuthentication_buildResponseMsg(LassoAuthentication *self) {
-	return lasso_wsf_profile_build_response_msg(LASSO_WSF_PROFILE(self));
-}
+#define LassoAuthentication_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoAuthentication_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 #define LassoAuthentication_clientStart lasso_authentication_client_start
@@ -4010,6 +3987,88 @@ gint LassoAuthentication_buildResponseMsg(LassoAuthentication *self) {
 
 %}
 
+
+/***********************************************************************
+ ***********************************************************************
+ * XML Elements in Web Service Security Namespace
+ ***********************************************************************
+ ***********************************************************************/
+
+/***********************************************************************
+ * lasso:WsfProfile
+ ***********************************************************************/
+
+#ifndef SWIGPHP4
+%rename(WsfProfile) LassoWsfProfile;
+#endif
+typedef struct {
+	/* Attributes */
+#ifndef SWIGPHP4
+	%rename(soapEnvelopeRequest) soap_envelope_request;
+#endif
+	%newobject soap_envelope_request_get;
+	LassoSoapEnvelope *soap_envelope_request;
+
+#ifndef SWIGPHP4
+	%rename(soapEnvelopeResponse) soap_envelope_response;
+#endif
+	%newobject soap_envelope_response_get;
+	LassoSoapEnvelope *soap_envelope_response;
+
+
+} LassoWsfProfile;
+%extend LassoWsfProfile {
+
+	/* Attributes */
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoWsfProfile(LassoServer *server);
+
+	~LassoWsfProfile();
+
+	/* Methods */
+
+	void buildSoapRequestMsg();
+	void buildSoapResponseMsg();
+	void initSoapRequest(LassoNode *request);
+	void processSoapRequestMsg(char *soapRequestMsg);
+	void processSoapResponseMsg(char *soapResponseMsg);
+	LassoSoapBindingProvider *setProviderSoapRequest(const char *providerId);
+}
+
+%{
+
+/* msgBody */
+#define LassoWsfProfile_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoWsfProfile_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
+
+/* msgUrl */
+#define LassoWsfProfile_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoWsfProfile_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+
+/* Constructors, destructors & static methods implementations */
+#define new_LassoWsfProfile lasso_wsf_profile_new
+#define delete_LassoWsfProfile(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from LassoNode */
+
+/* Attributes Implementations */
+
+/* Methods implementations */
+#define LassoWsfProfile_buildSoapRequestMsg lasso_wsf_profile_build_soap_request_msg
+#define LassoWsfProfile_buildSoapResponseMsg lasso_wsf_profile_build_soap_response_msg
+#define LassoWsfProfile_initSoapRequest lasso_wsf_profile_init_soap_request
+#define LassoWsfProfile_processSoapRequestMsg lasso_wsf_profile_process_soap_request_msg
+#define LassoWsfProfile_processSoapResponseMsg lasso_wsf_profile_process_soap_response_msg
+#define LassoWsfProfile_setProviderSoapRequest lasso_wsf_profile_set_provider_soap_request
+
+%}
 
 
 /***********************************************************************

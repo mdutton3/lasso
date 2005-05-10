@@ -62,6 +62,7 @@ typedef struct _LassoLoginPrivate LassoLoginPrivate;
 typedef enum {
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART = 1,
 	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST,
+	LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP,
 } LassoLoginProtocolProfile;
 
 struct _LassoLogin {

@@ -104,6 +104,8 @@
 	"http://projectliberty.org/profiles/brws-art"
 #define LASSO_LIB_PROTOCOL_PROFILE_BRWS_POST	\
 	"http://projectliberty.org/profiles/brws-post"
+#define LASSO_LIB_PROTOCOL_PROFILE_BRWS_LECP	\
+	"http://projectliberty.org/profiles/lecp"
 #define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_HTTP	\
 	"http://projectliberty.org/profiles/fedterm-idp-http"
 #define LASSO_LIB_PROTOCOL_PROFILE_FED_TERM_IDP_SOAP	\
@@ -281,13 +283,13 @@
 /*****************************************************************************/
 
 #define LASSO_SOAP_ENV_HREF   "http://schemas.xmlsoap.org/soap/envelope/"
-#define LASSO_SOAP_ENV_PREFIX "soap-env"
+#define LASSO_SOAP_ENV_PREFIX "s"
 
 #define LASSO_SOAP_BINDING_HREF   "urn:liberty:sb:2003-08"
-#define LASSO_SOAP_BINDING_PREFIX "soap-binding"
+#define LASSO_SOAP_BINDING_PREFIX "sb"
 
 #define LASSO_SOAP_BINDING_EXT_HREF "urn:liberty:sb:2004-04"
-#define LASSO_SOAP_BINDING_EXT_PREFIX "soap-binding-ext"
+#define LASSO_SOAP_BINDING_EXT_PREFIX "sbe"
 
 #define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
 #define LASSO_WSSE_PREFIX "wsse"
