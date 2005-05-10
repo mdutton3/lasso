@@ -794,8 +794,8 @@ is_base64(const char *message)
 	const char *c;
 
 	c = message;
-	while (*c != 0 && (isalnum(*c) || *c == '+' || *c == '/' || *c == '\n')) c++;
-	while (*c == '=' || *c == '\n') c++; /* trailing = */
+	while (*c != 0 && (isalnum(*c) || *c == '+' || *c == '/' || *c == '\n' || *c == '\r')) c++;
+	while (*c == '=' || *c == '\n' | *c == '\r') c++; /* trailing = */
 
 	if (*c == 0)
 		return TRUE;
