@@ -518,6 +518,13 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 
 	/* verify signature */
 	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
+	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+		/* This message SHOULD be signed.
+		 *  -- draft-liberty-idff-protocols-schema-1.2-errata-v2.0.pdf - p38
+		 */
+		message(G_LOG_LEVEL_WARNING, "No signature on response");
+		rc = 0;
+	}
 
 	response = LASSO_LIB_STATUS_RESPONSE(profile->response);
 
