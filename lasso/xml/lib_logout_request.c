@@ -107,8 +107,7 @@ init_from_query(LassoNode *node, char **query_fields)
 	
 	if (request->ProviderID == NULL ||
 			request->NameIdentifier->content == NULL ||
-			request->NameIdentifier->Format == NULL ||
-			request->NameIdentifier->NameQualifier == NULL) {
+			request->NameIdentifier->Format == NULL) {
 		lasso_node_destroy(LASSO_NODE(request->NameIdentifier));
 		request->NameIdentifier = NULL;
 		return FALSE;
