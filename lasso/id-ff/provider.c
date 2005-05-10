@@ -358,7 +358,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			char *id = xmlGetProp(t, "id");
 			name = g_strdup_printf("%s %s", t->name, id);
 			if (isDefault) {
-				if (strcmp(isDefault, "true") == 0)
+				if (strcmp(isDefault, "true") == 0 || strcmp(isDefault, "1") == 0)
 					provider->private_data->default_assertion_consumer =
 						g_strdup(id);
 				xmlFree(isDefault);
