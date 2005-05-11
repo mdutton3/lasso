@@ -378,13 +378,6 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	if (lasso_provider_accept_http_method(LASSO_PROVIDER(profile->server),
-				remote_provider,
-				LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,
-				profile->http_request_method, FALSE) == FALSE) {
-		return critical_error(LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE);
-	}
-
 	nameIdentifier = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
 			profile->request)->SPProvidedNameIdentifier;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
