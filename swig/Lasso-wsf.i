@@ -59,6 +59,7 @@
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_header.h>
 #include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/soap_binding_provider.h>
 #include <lasso/xml/wsse_security.h>
 %}
 
