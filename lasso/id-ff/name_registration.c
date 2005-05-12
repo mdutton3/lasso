@@ -339,7 +339,11 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
  * @request_msg: the register name identifier request message
  * 
  * Processes a lib:RegisterNameIdentifierRequest message.  Rebuilds a request
- * object from the message and optionally verifies its signature.
+ * object from the message and optionally verifies its signature.  Sets
+ * profile->nameIdentifier to local name identifier.  If it changed (when this
+ * is IdP-initiated and there was no previously defined local name identifier)
+ * profile->nameIdentifier will be the new one and profile->oldNameIdentiifer
+ * the old one.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
