@@ -388,7 +388,9 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 		if (request->SPProvidedNameIdentifier) {
 			profile->nameIdentifier = g_object_ref(request->SPProvidedNameIdentifier);
 		} else {
-			profile->nameIdentifier = g_object_ref(request->OldProvidedNameIdentifier);
+			profile->nameIdentifier = g_object_ref(request->IDPProvidedNameIdentifier);
+			name_registration->oldNameIdentifier = g_object_ref(
+					request->OldProvidedNameIdentifier);
 		}
 	} else if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
 		/* SP initiated, profile->name */
