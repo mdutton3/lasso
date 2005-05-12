@@ -182,6 +182,12 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 
+	if (federation->local_nameIdentifier) {
+		profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
+	} else {
+		profile->nameIdentifier = g_object_ref(nameIdentifier);
+	}
+
 	/* get / verify http method */
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
 		http_method = lasso_provider_get_first_http_method(
@@ -226,9 +232,6 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 		profile->request->MajorVersion = 1;
 		profile->request->MinorVersion = 1;
 	}
-
-	/* Set the nameIdentifier attribute from content local variable */
-	profile->nameIdentifier = g_object_ref(nameIdentifier);
 
 	/* remove federation with remote provider id */
 	if (profile->identity == NULL) {
