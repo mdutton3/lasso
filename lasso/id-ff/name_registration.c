@@ -203,7 +203,9 @@ lasso_name_registration_destroy(LassoNameRegistration *name_registration)
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  *
- * Initializes a new lib:RegisterNameIdentifierRequest request.
+ * Initializes a new lib:RegisterNameIdentifierRequest request; it sets
+ * @name_registration->nameIdentifier to the new name identifier and
+ * @name_registration->oldNameIdentifier to the old one.
  * 
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -246,6 +248,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	 * of the old name identifier is only federated type */
 
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
+		/* Initiating it, from a SP */
 		spNameIdentifier = lasso_saml_name_identifier_new();
 		spNameIdentifier->content = lasso_build_unique_id(32);
 		spNameIdentifier->NameQualifier = g_strdup(profile->remote_providerID);
@@ -265,6 +268,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		profile->nameIdentifier = g_object_ref(spNameIdentifier);
 		name_registration->oldNameIdentifier = g_object_ref(oldNameIdentifier);
 	} else { /* if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) { */
+		/* Initiating it, from an IdP */
 		if (federation->local_nameIdentifier == NULL) {
 			message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found");
 			return LASSO_ERROR_UNDEFINED;
@@ -282,13 +286,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 		idpNameIdentifier->NameQualifier = g_strdup(profile->remote_providerID);
 		idpNameIdentifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED);
 
-		if (spNameIdentifier) {
-			profile->nameIdentifier = g_object_ref(spNameIdentifier);
-			name_registration->oldNameIdentifier = g_object_ref(spNameIdentifier);
-		} else {
-			profile->nameIdentifier = g_object_ref(idpNameIdentifier);
-			name_registration->oldNameIdentifier = g_object_ref(oldNameIdentifier);
-		}
+		profile->nameIdentifier = g_object_ref(idpNameIdentifier);
+		name_registration->oldNameIdentifier = g_object_ref(oldNameIdentifier);
 	}
 
 	if (oldNameIdentifier == NULL) {
