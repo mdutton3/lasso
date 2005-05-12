@@ -464,13 +464,8 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
 
-	if (federation->remote_nameIdentifier) {
-		LASSO_PROFILE(login)->nameIdentifier = 
-			g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier));
-	} else {
-		LASSO_PROFILE(login)->nameIdentifier = 
-			g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
-	}
+	LASSO_PROFILE(login)->nameIdentifier = 
+		g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
 
 	return ret;
 }

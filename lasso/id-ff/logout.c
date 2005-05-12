@@ -322,6 +322,13 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		if (nameIdentifier == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 		}
+		if (federation->local_nameIdentifier) {
+			profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
+		} else {
+			profile->nameIdentifier = g_object_ref(nameIdentifier);
+		}
+	} else {
+		profile->nameIdentifier = g_object_ref(nameIdentifier);
 	}
 
 	/* get the provider */
@@ -382,9 +389,6 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	if (profile->msg_relayState)
 		LASSO_LIB_LOGOUT_REQUEST(profile->request)->RelayState =
 			g_strdup(profile->msg_relayState);
-
-	/* Set the name identifier attribute with content local variable */
-	profile->nameIdentifier = g_object_ref(nameIdentifier);
 
 	/* if logout request from a SP and if an HTTP Redirect/GET method, then remove assertion */
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP && is_http_redirect_get_method) {

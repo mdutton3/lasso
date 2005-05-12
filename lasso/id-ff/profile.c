@@ -76,19 +76,10 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	if (federation == NULL)
 		return NULL;
 
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
-		if (federation->remote_nameIdentifier)
-			return federation->remote_nameIdentifier;
-		return federation->local_nameIdentifier;
-	}
-
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
-		if (federation->local_nameIdentifier)
-			return federation->local_nameIdentifier;
+	if (federation->remote_nameIdentifier)
 		return federation->remote_nameIdentifier;
-	}
 
-	return NULL;
+	return federation->local_nameIdentifier;
 }
 
 /**
