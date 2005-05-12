@@ -256,7 +256,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	assertion->certificate_file = g_strdup(profile->server->certificate);
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST || \
-	    login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
+			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		/* only add assertion if response is an AuthnResponse */
 		LASSO_SAMLP_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
 	}
@@ -464,8 +464,13 @@ lasso_login_process_federation(LassoLogin *login, gboolean is_consent_obtained)
 		lasso_identity_add_federation(LASSO_PROFILE(login)->identity, federation);
 	}
 
-	LASSO_PROFILE(login)->nameIdentifier = 
-		g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+	if (federation->remote_nameIdentifier) {
+		LASSO_PROFILE(login)->nameIdentifier = 
+			g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier));
+	} else {
+		LASSO_PROFILE(login)->nameIdentifier = 
+			g_object_ref(LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier));
+	}
 
 	return ret;
 }
