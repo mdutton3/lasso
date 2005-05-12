@@ -351,6 +351,7 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
 	LassoSamlNameIdentifier *nameIdentifier;
+	LassoLibRegisterNameIdentifierRequest *request;
 
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
 	g_return_val_if_fail(request_msg != NULL, -1);
@@ -378,29 +379,22 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
+	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request);
+
 	nameIdentifier = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
 			profile->request)->SPProvidedNameIdentifier;
+	name_registration->oldNameIdentifier = NULL;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
-		if (nameIdentifier) {
-			profile->nameIdentifier = g_object_ref(nameIdentifier);
-			name_registration->oldNameIdentifier = g_object_ref(
-					profile->nameIdentifier);
+		/* IdP initiated */
+		if (request->SPProvidedNameIdentifier) {
+			profile->nameIdentifier = g_object_ref(request->SPProvidedNameIdentifier);
 		} else {
-			profile->nameIdentifier = g_object_ref(
-				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-					profile->request)->IDPProvidedNameIdentifier);
-			name_registration->oldNameIdentifier = g_object_ref(
-				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-					profile->request)->OldProvidedNameIdentifier);
+			profile->nameIdentifier = g_object_ref(request->OldProvidedNameIdentifier);
 		}
+	} else if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+		/* SP initiated, profile->name */
+		profile->nameIdentifier = g_object_ref(request->IDPProvidedNameIdentifier);
 	}
-	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
-		profile->nameIdentifier = g_object_ref(nameIdentifier);
-		name_registration->oldNameIdentifier = g_object_ref(
-				LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(
-					profile->request)->OldProvidedNameIdentifier);
-	}
-
 
 	return profile->signature_status;
 }
