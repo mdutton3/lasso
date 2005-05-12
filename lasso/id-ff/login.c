@@ -867,7 +867,8 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	profile = LASSO_PROFILE(login);
 
 	/* ProtocolProfile must be BrwsPost */
-	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST &&
+			login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
