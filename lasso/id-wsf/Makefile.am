@@ -6,9 +6,8 @@ INCLUDES = \
 	$(LASSO_CORE_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
-noinst_LTLIBRARIES = liblasso-id-wsf.la
-
 if WSF_ENABLED
+noinst_LTLIBRARIES = liblasso-id-wsf.la
 WSF_C_FILES = \
 	authentication.c \
 	discovery.c \
