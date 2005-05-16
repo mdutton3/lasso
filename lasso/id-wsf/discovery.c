@@ -229,7 +229,6 @@ lasso_discovery_init_query(LassoDiscovery                *discovery,
 			   LassoDiscoResourceOffering    *resourceOffering,
 			   LassoDiscoDescription         *description)
 {
-	LassoSoapEnvelope *envelope;
 	LassoDiscoQuery *query;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -241,9 +240,7 @@ lasso_discovery_init_query(LassoDiscovery                *discovery,
 	query = lasso_disco_query_new();
 	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(query);
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
-	envelope->Body->any = g_list_append(envelope->Body->any, query);
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(query));
 
 	return lasso_discovery_init_request(discovery, resourceOffering, description);
 }
@@ -253,27 +250,19 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 				   const gchar    *message)
 {
 	LassoDiscoModifyResponse *response;
-	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
-	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(envelope->Body->any->data);
-
-	correlation = envelope->Header->Other->data;
-	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
+	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message);
 
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
 	response = lasso_disco_modify_response_new(status);
 	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
 
+	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
@@ -282,46 +271,26 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 gint
 lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	LassoDiscoModifyResponse *response;
-	LassoSoapEnvelope *envelope;
-
-	LASSO_WSF_PROFILE(discovery)->response =
-		LASSO_NODE(lasso_disco_modify_response_new_from_message(message));
-
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
-
-	response = envelope->Body->any->data;
-	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
-
-	return 0;
+	return lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
 }
 
 gint
 lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
 	LassoDiscoQueryResponse *response;
-	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
-	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(envelope->Body->any->data);
-
-	correlation = envelope->Header->Other->data;
-	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
+	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message);
 
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
 	response = lasso_disco_query_response_new(status);
 	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
 
+	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
@@ -330,19 +299,7 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 gint
 lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	LassoDiscoQueryResponse *response;
-	LassoSoapEnvelope *envelope;
-
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(discovery)->soap_envelope_response = envelope;
-
-	response = envelope->Body->any->data;
-	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
-
-	return 0;
+	return lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
 }
 
 /*****************************************************************************/
