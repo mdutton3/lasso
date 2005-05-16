@@ -3444,6 +3444,9 @@ typedef struct {
 	%newobject soapEnvelopeRequest_get;
 	LassoSoapEnvelope *soapEnvelopeRequest;
 
+	%newobject soapEnvelopeResponse_get;
+	LassoSoapEnvelope *soapEnvelopeResponse;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoDiscovery(LassoServer *server);
@@ -3543,6 +3546,12 @@ typedef struct {
 #define LassoDiscovery_soapEnvelopeRequest_get(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_request)
 #define LassoDiscovery_set_soapEnvelopeRequest(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_request, (value))
 #define LassoDiscovery_soapEnvelopeRequest_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_request, (value))
+
+/* soapEnvelopeResponse */
+#define LassoDiscovery_get_soapEnvelopeResponse(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_response)
+#define LassoDiscovery_soapEnvelopeResponse_get(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_response)
+#define LassoDiscovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_response, (value))
+#define LassoDiscovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_response, (value))
 
 /* Constructors, destructors & static methods implementations */
 

@@ -120,8 +120,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(profile)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(profile)->request = LASSO_NODE(envelope->Body->any->data); 
+	profile->soap_envelope_request = envelope;
+	profile->request = LASSO_NODE(envelope->Body->any->data); 
 
 	/* FIXME: Process mustUnderstand attribute */
 
@@ -144,7 +144,8 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
+	profile->soap_envelope_response = envelope;
+	profile->response = LASSO_NODE(envelope->Body->any->data);
 
 	/* FIXME: Process mustUnderstand attribute */
 
