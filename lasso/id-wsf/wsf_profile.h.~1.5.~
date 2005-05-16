@@ -32,7 +32,6 @@ extern "C" {
 
 #include <lasso/id-ff/server.h>
 #include <lasso/xml/soap_envelope.h>
-#include <lasso/xml/soap_binding_provider.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -69,27 +68,13 @@ struct _LassoWsfProfileClass {
 	LassoNodeClass parent;
 };
 
+LASSO_EXPORT LassoSoapEnvelope *lasso_wsf_profile_build_soap_envelope(const char *refToMessageId);
+
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
-/* FIXME: must be private method */
-LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId);
+LASSO_EXPORT gint lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile);
 
-LASSO_EXPORT gint lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile);
-
-LASSO_EXPORT gint lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile);
-
-LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile,
-						      LassoNode *request);
-
-LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
-							     const gchar *message);
-
-LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
-							      const gchar *message);
-
-LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_request(
-	LassoWsfProfile *profile,
-	const char *providerId);
+LASSO_EXPORT gint lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile);
 
 LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
 

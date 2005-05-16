@@ -27,7 +27,7 @@
 #include <lasso/xml/soap_binding_correlation.h>
 
 /*****************************************************************************/
-/* private methods                                                           */
+/* public methods                                                            */
 /*****************************************************************************/
 
 LassoSoapEnvelope*
@@ -58,24 +58,8 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId)
 	return envelope;
 }
 
-/*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
-
 gint
-lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request)
-{
-	LassoSoapEnvelope *envelope;
-
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
-	LASSO_WSF_PROFILE(profile)->soap_envelope_request = envelope;
-	envelope->Body->any = g_list_append(envelope->Body->any, request);
-
-	return 0;
-}
-
-gint
-lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
+lasso_wsf_profile_build_request_msg(LassoWsfProfile *profile)
 {
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -92,7 +76,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 }
 
 gint
-lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
+lasso_wsf_profile_build_response_msg(LassoWsfProfile *profile)
 {
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
 			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -108,68 +92,6 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	return 0;
 }
 
-gint
-lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message)
-{
-	LassoSoapBindingCorrelation *correlation;
-	LassoSoapEnvelope *envelope;
-	gchar *messageId;
-
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(profile)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(profile)->request = LASSO_NODE(envelope->Body->any->data); 
-
-	/* FIXME: Process mustUnderstand attribute */
-
-	correlation = envelope->Header->Other->data;
-
-	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
-	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
-
-	return 0;
-}
-
-gint
-lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gchar *message)
-{
-	LassoSoapEnvelope *envelope;
-
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
-
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(message));
-	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
-
-	/* FIXME: Process mustUnderstand attribute */
-
-	return 0;
-}
-
-LassoSoapBindingProvider *lasso_wsf_profile_set_provider_soap_request(LassoWsfProfile *profile,
-								      const char *providerId)
-{
-	LassoSoapBindingProvider *provider;
-	LassoSoapEnvelope *soap_request;
-	LassoSoapHeader *header;
-
-	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), NULL);
-	g_return_val_if_fail(providerId != NULL, NULL);
-
-	soap_request = profile->soap_envelope_request;
-	g_return_val_if_fail(LASSO_IS_SOAP_ENVELOPE(soap_request) == TRUE, NULL);
-
-	header = profile->soap_envelope_request->Header;
-	provider = lasso_soap_binding_provider_new(providerId);
-	header->Other = g_list_append(header->Other, provider);
-
-	return provider;
-}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
