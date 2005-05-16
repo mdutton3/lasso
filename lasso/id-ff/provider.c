@@ -346,6 +346,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 	xmlNode *t;
 	GList *elements;
 	char *name;
+	xmlChar *value;
 
 	t = xmlnode->children;
 	while (t) {
@@ -368,7 +369,9 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			name = g_strdup(t->name);
 		}
 		elements = g_hash_table_lookup(descriptor, name);
-		elements = g_list_append(elements, g_strdup(xmlNodeGetContent(t)));
+		value = xmlNodeGetContent(t);
+		elements = g_list_append(elements, g_strdup(value));
+		xmlFree(value);
 		g_hash_table_insert(descriptor, name, elements);
 		t = t->next;
 	}
