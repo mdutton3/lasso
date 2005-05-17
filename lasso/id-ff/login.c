@@ -741,6 +741,8 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 		lasso_session_add_status(profile->session, profile->remote_providerID,
 				g_object_ref(LASSO_SAMLP_RESPONSE(profile->response)->Status));
+	} else {
+		lasso_session_remove_status(profile->session, profile->remote_providerID);
 	}
 
 	return ret;
