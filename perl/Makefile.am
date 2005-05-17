@@ -26,7 +26,7 @@ $(PERL_MAKEFILE): lasso.pm
 
 -perl install-perl: $(PERL_MAKEFILE)
 	target=`echo $@ | sed -e 's/-perl//'`; \
-	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR) $$target
+	$(MAKE) -f $(PERL_MAKEFILE) DESTDIR=$(DESTDIR) PREFIX=$(prefix) $$target
 
 test-perl: $(PERL_MAKEFILE)
 	$(RUN)$(MAKE) -f $(PERL_MAKEFILE) test
@@ -61,6 +61,11 @@ clean-local:
 
 
 # perl module installation disabled since broken wrt to make distcheck
-install-fakeDATA:
-	@true
+install-fakeDATA: install-perl
+
+uninstall-local:
+	find $(DESTDIR)$(prefix) -name lasso -type d | grep perl | xargs rm -rf
+	find $(DESTDIR)$(prefix) -name lasso.pm -exec rm -f {} \;
+	find $(DESTDIR)$(prefix) -name perllocal.pod -exec rm -f {} \;
+	true
 
