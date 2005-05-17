@@ -1,6 +1,15 @@
 NEWS
 ====
 
+0.6.2 - May 23rd 2005
+---------------------
+
+Fixed usage of NameIdentifiers after calls to Register Name Identifier profile,
+improved robustness against other Liberty implementations, fixed minor bugs and
+memory leaks.  Continued work on ID-WSF support, still partial and disabled by
+default.
+
+
 0.6.1 - February 22nd 2005
 --------------------------
 
