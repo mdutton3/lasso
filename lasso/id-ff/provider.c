@@ -310,9 +310,9 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
  * lasso_provider_get_organization
  * @provider: a #LassoProvider
  *
- * Returns the provider metadata <Organization> XML node.
+ * Returns the provider metadata &lt;Organization&gt; XML node.
  *
- * Return value: the <Organization/> node (libxml2 xmlNode*); or NULL if it is
+ * Return value: the &lt;Organization/&gt; node (libxml2 xmlNode*); or NULL if it is
  *      not found.  This xmlnode must be freed by the caller.
  **/
 xmlNode*
