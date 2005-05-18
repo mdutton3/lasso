@@ -22,7 +22,7 @@ $(PERL_MAKEFILE): lasso.pm
 	test -e Makefile.PL || $(LN_S) $(srcdir)/Makefile.PL .
 	test -e lasso_wrap.c || $(LN_S) $(srcdir)/lasso_wrap.c .
 	test -e lasso.pm || $(LN_S) $(srcdir)/lasso.pm .
-	VERSION=$(VERSION) CC=$(CC) CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL $(MAKE_PL_OPTS)
+	VERSION=$(VERSION) CC=$(CC) CFLAGS="$(AM_CPPFLAGS) $(AM_CFLAGS) $(SWIG_OPTS) $(CPPFLAGS) $(AM_STANDARD_CFLAGS)" $(PERL) $(srcdir)/Makefile.PL DESTDIR=$(DESTDIR) PREFIX=$(prefix) $(MAKE_PL_OPTS)
 
 -perl install-perl: $(PERL_MAKEFILE)
 	target=`echo $@ | sed -e 's/-perl//'`; \
