@@ -711,7 +711,7 @@ lasso_provider_load_public_key(LassoProvider *provider)
 	if (provider->public_key == NULL && provider->private_data->signing_key_descriptor == NULL)
 		return;
 
-	if (provider->private_data->signing_key_descriptor) {
+	if (provider->public_key == NULL) {
 		xmlNode *t = provider->private_data->signing_key_descriptor->children;
 		xmlChar *b64_value;
 		xmlSecByte *value;
