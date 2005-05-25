@@ -41,6 +41,7 @@ struct _LassoProviderPrivate
 	GHashTable *IDPDescriptor;
 	xmlNode *organization;
 	xmlSecKey *public_key;
+	xmlNode *signing_key_descriptor;
 };
 
 static char *protocol_uris[] = {
@@ -354,6 +355,14 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			t = t->next;
 			continue;
 		}
+		if (strcmp(t->name, "KeyDescriptor") == 0) {
+			char *use = xmlGetProp(t, "use");
+			if (use && strcmp(use, "signing") == 0) {
+				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
+			}
+			t = t->next;
+			continue;
+		}
 		if (strcmp(t->name, "AssertionConsumerServiceURL") == 0) {
 			char *isDefault = xmlGetProp(t, "isDefault");
 			char *id = xmlGetProp(t, "id");
@@ -472,6 +481,11 @@ dispose(GObject *object)
 	if (provider->private_data->public_key) {
 		xmlSecKeyDestroy(provider->private_data->public_key);
 		provider->private_data->public_key = NULL;
+	}
+
+	if (provider->private_data->signing_key_descriptor) {
+		xmlFreeNode(provider->private_data->signing_key_descriptor);
+		provider->private_data->signing_key_descriptor = NULL;
 	}
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
@@ -694,8 +708,51 @@ lasso_provider_load_public_key(LassoProvider *provider)
 	LassoPemFileType file_type;
 	xmlSecKey *pub_key = NULL;
 
-	if (provider->public_key == NULL)
+	if (provider->public_key == NULL && provider->private_data->signing_key_descriptor == NULL)
 		return;
+
+	if (provider->private_data->signing_key_descriptor) {
+		xmlNode *t = provider->private_data->signing_key_descriptor->children;
+		xmlChar *b64_value;
+		xmlSecByte *value;
+		int length;
+		int rc;
+
+		/* could use XPath but going down manually will do */
+		while (t) {
+			if (t->type == XML_ELEMENT_NODE) {
+				if (strcmp(t->name, "KeyInfo") == 0 ||
+						strcmp(t->name, "X509Data") == 0) {
+					t = t->children;
+					continue;
+				}
+				if (strcmp(t->name, "X509Certificate") == 0)
+					break;
+			}
+			t = t->next;
+		}
+		if (t == NULL)
+			return;
+
+		b64_value = xmlNodeGetContent(t);
+		length = strlen(b64_value);
+		value = g_malloc(length);
+		rc = xmlSecBase64Decode(b64_value, value, length);
+		if (rc < 0) {
+			/* bad base-64 */
+			xmlFree(b64_value);
+			g_free(value);
+		}
+		pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
+				xmlSecKeyDataFormatCertDer, NULL, NULL, NULL);
+		xmlFree(b64_value);
+		g_free(value);
+		if (pub_key == NULL) {
+			/* XXX: bad key */
+		}
+		provider->private_data->public_key = pub_key;
+		return;
+	}
 
 	file_type = lasso_get_pem_file_type(provider->public_key);
 	switch (file_type) {
