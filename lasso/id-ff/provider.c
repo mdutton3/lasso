@@ -524,6 +524,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->organization = NULL;
 	provider->private_data->public_key = NULL;
+	provider->private_data->signing_key_descriptor = NULL;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
