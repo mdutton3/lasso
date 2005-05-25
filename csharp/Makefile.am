@@ -63,8 +63,68 @@ SWIG_FILES = liblassosharpglue_wrap.c \
 	HttpMethod.cs ProviderRole.cs SignatureMethod.cs LoginProtocolProfile.cs \
 	RequestType.cs
 
+if WSF_ENABLED
+SWIG_WSF_FILES = Authentication.cs \
+	DiscoAuthenticateRequester.cs \
+	DiscoAuthenticateSessionContext.cs \
+	DiscoAuthorizeRequester.cs \
+	DiscoCredentials.cs \
+	DiscoDescription.cs \
+	DiscoEncryptedResourceID.cs \
+	DiscoEncryptResourceID.cs \
+	DiscoGenerateBearerToken.cs \
+	DiscoInsertEntry.cs \
+	DiscoModify.cs \
+	DiscoModifyResponse.cs \
+	DiscoOptions.cs \
+	DiscoQuery.cs \
+	DiscoQueryResponse.cs \
+	DiscoRemoveEntry.cs \
+	DiscoRequestedServiceType.cs \
+	DiscoResourceID.cs \
+	DiscoResourceOffering.cs \
+	DiscoSendSingleLogout.cs \
+	DiscoServiceInstance.cs \
+	Discovery.cs \
+	DstData.cs \
+	DstModification.cs \
+	DstModify.cs \
+	DstModifyResponse.cs \
+	DstNewData.cs \
+	DstQueryItem.cs \
+	DstQuery.cs \
+	DstQueryResponse.cs \
+	InteractionProfileService.cs \
+	IsHelp.cs \
+	IsInquiryElement.cs \
+	IsInquiry.cs \
+	IsInteractionRequest.cs \
+	IsInteractionResponse.cs \
+	IsInteractionStatement.cs \
+	IsItem.cs \
+	IsParameter.cs \
+	IsRedirectRequest.cs \
+	IsSelect.cs \
+	IsText.cs \
+	IsUserInteraction.cs \
+	lassoConstants.cs \
+	ProfileService.cs \
+	SaCredentials.cs \
+	SaSASLRequest.cs \
+	SaSASLResponse.cs \
+	SoapBindingCorrelation.cs \
+	SoapBody.cs \
+	SoapEnvelope.cs \
+	SoapHeader.cs \
+	SWIGTYPE_p_LassoSoapBindingProvider.cs \
+	UserAccount.cs \
+	UtilityStatus.cs \
+	WsfProfile.cs \
+	WsseSecurity.cs
+endif
 
-EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk $(SWIG_FILES)
+EXTRA_DIST = lasso-sharp.pc.in lasso.dll.config AssemblyInfo.cs lasso-sharp.snk \
+		$(SWIG_FILES) $(SWIG_WSF_FILES)
 
-MAINTAINERCLEANFILES = $(SWIG_FILES)
+MAINTAINERCLEANFILES = $(SWIG_FILES) $(SWIG_WSF_FILES)
 

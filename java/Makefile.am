@@ -48,14 +48,74 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Session.java StringList.java SWIGTYPE_p_LassoMdProtocolType.java \
 	SWIGTYPE_p_LassoSignatureType.java SWIGTYPE_p_void.java
 
+if WSF_ENABLED
+SWIG_WSF_OUTPUTS = Authentication.java \
+	DiscoAuthenticateRequester.java \
+	DiscoAuthenticateSessionContext.java \
+	DiscoAuthorizeRequester.java \
+	DiscoCredentials.java \
+	DiscoDescription.java \
+	DiscoEncryptedResourceID.java \
+	DiscoEncryptResourceID.java \
+	DiscoGenerateBearerToken.java \
+	DiscoInsertEntry.java \
+	DiscoModify.java \
+	DiscoModifyResponse.java \
+	DiscoOptions.java \
+	DiscoQuery.java \
+	DiscoQueryResponse.java \
+	DiscoRemoveEntry.java \
+	DiscoRequestedServiceType.java \
+	DiscoResourceID.java \
+	DiscoResourceOffering.java \
+	DiscoSendSingleLogout.java \
+	DiscoServiceInstance.java \
+	Discovery.java \
+	DstData.java \
+	DstModification.java \
+	DstModify.java \
+	DstModifyResponse.java \
+	DstNewData.java \
+	DstQueryItem.java \
+	DstQuery.java \
+	DstQueryResponse.java \
+	InteractionProfileService.java \
+	IsHelp.java \
+	IsInquiryElement.java \
+	IsInquiry.java \
+	IsInteractionRequest.java \
+	IsInteractionResponse.java \
+	IsInteractionStatement.java \
+	IsItem.java \
+	IsParameter.java \
+	IsRedirectRequest.java \
+	IsSelect.java \
+	IsText.java \
+	IsUserInteraction.java \
+	lassoConstants.java \
+	ProfileService.java \
+	SaCredentials.java \
+	SaSASLRequest.java \
+	SaSASLResponse.java \
+	SoapBindingCorrelation.java \
+	SoapBody.java \
+	SoapEnvelope.java \
+	SoapHeader.java \
+	SWIGTYPE_p_LassoSoapBindingProvider.java \
+	UserAccount.java \
+	UtilityStatus.java \
+	WsfProfile.java \
+	WsseSecurity.java
+endif
+
 JAVA_CRUFT = $(JAVA_PATH)lasso.class lasso_wrap.o lasso.jar $(JAVA_PATH)lasso.java
 
 # The SWIG outputs are included in the distribution so SWIG is not
 # required to use the Java interface
-EXTRA_DIST = $(SWIG_OUTPUTS)
+EXTRA_DIST = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 
 CLEANFILES = $(JAVA_CRUFT)
-MAINTAINERCLEANFILES = $(SWIG_OUTPUTS)
+MAINTAINERCLEANFILES = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 
 
 lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
