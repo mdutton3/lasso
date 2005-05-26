@@ -23,7 +23,7 @@ certificates to use, etc.
 @providers: 
 @services: 
 @private_key: 
-@secret_key: 
+@private_key_password: 
 @certificate: 
 @signature_method: 
 

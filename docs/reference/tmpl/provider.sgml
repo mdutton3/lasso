@@ -157,3 +157,12 @@ It holds all the data about a provider.
 @Returns: 
 
 
+<!-- ##### FUNCTION lasso_provider_get_organization ##### -->
+<para>
+
+</para>
+
+@provider: 
+@Returns: 
+
+
