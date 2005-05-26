@@ -1,3 +1,35 @@
+lasso (0.6.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Frederic Peters <fpeters@debian.org>  Thu, 26 May 2005 11:29:25 +0200
+
+lasso (0.6.1-3) unstable; urgency=low
+
+  * debian/control: fixed Depends line, this is no longer -zts.
+  * debian/control: updated Build-depends to php4-dev (>= 4:4.3.10-10)
+    (closes: #301330)
+
+ -- Frederic Peters <fpeters@debian.org>  Fri, 25 Mar 2005 10:15:22 +0100
+
+lasso (0.6.1-2) unstable; urgency=low
+
+  * Rebuilt with PHP Zend Thread Safety disabled.
+  * lasso/xml/lib_authn_request.c, lasso/id-ff/login.c: backported
+    AssertionConsumerServiceID fix from CVS.
+  * python/lasso_wrap.c, python/lasso.py: regenerated with SWIG 1.3.22;
+    1.3.24 created a buggy binding.
+  * debian/control: Build-depends on mono-utils (>= 1.0)
+
+ -- Frederic Peters <fpeters@debian.org>  Fri, 25 Mar 2005 08:50:39 +0100
+
+lasso (0.6.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * lasso/id-ff/login.c: backported SAML 1.0 compatibility fix from CVS.
+
+ -- Frederic Peters <fpeters@debian.org>  Sun,  6 Mar 2005 14:07:45 +0100
+
 lasso (0.6.0-1) unstable; urgency=low
 
   * New upstream release.
