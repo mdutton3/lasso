@@ -1,3 +1,763 @@
+2005-05-26  fpeters
+
+	* docs/reference/tmpl/login.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/provider.sgml, docs/reference/tmpl/server.sgml:
+	sync docs with code
+
+2005-05-26  fpeters
+
+	* debian/control, debian/php4-lasso.examples: no more php zts
+
+2005-05-26  fpeters
+
+	* debian/changelog: new upstream
+
+2005-05-26  fpeters
+
+	* debian/files: this file is generated
+
+2005-05-26  fpeters
+
+	* NEWS, doap.rdf: 0.6.2 release date
+
+2005-05-25  fpeters
+
+	* configure.ac: preparing for 0.6.2; removes swig files if moving
+	from non-wsf to wsf or otherwise.
+
+2005-05-25  fpeters
+
+	* csharp/Makefile.am, java/Makefile.am: bring wsf files on make
+	dist
+
+2005-05-25  fpeters
+
+	* lasso/id-ff/provider.c: properly initialize key node to NULL
+
+2005-05-25  fpeters
+
+	* lasso/id-ff/provider.c: allows overriding of infile keydescriptor
+	with argument to add_provider
+
+2005-05-25  fpeters
+
+	* lasso/id-ff/provider.c: load public key from metadata file
+
+2005-05-18  fpeters
+
+	* lasso/id-ff/provider.c: fixed docstring to use entities for < and
+	>
+
+2005-05-18  fpeters
+
+	* lasso/xml/xml.c: oops missing |
+
+2005-05-18  fpeters
+
+	* perl/Makefile.am: fixed usage of DESTDIR and PREFIX
+
+2005-05-17  fpeters
+
+	* perl/Makefile.am: perl now installs and uninstalls correctly
+	(with thanks to p.g.o)
+
+2005-05-17  fpeters
+
+	* lasso/id-ff/login.c: fixed case when consent was first refused
+	then given (failure status code remained in the user session).
+
+	(debugged thanks to Authentic Debug Pane (tm) (r) (patent pending))
+
+2005-05-17  fpeters
+
+	* NEWS, doap.rdf: planning 0.6.2 for May 23rd.
+
+2005-05-16  nclapies
+
+	* lasso/id-wsf/Makefile.am: Set liblasso-id-wsf.la only when WSF
+	support set.
+
+2005-05-16  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, swig/Lasso-wsf.i: Set response
+	attribute when processing WSF SOAP response message.
+
+2005-05-16  nclapies
+
+	* lasso/id-wsf/discovery.c: Updated discovery to SOAP binding.
+
+2005-05-16  nclapies
+
+	* lasso/id-wsf/wsf_profile.c.~1.12.~,
+	lasso/id-wsf/wsf_profile.h.~1.5.~, lasso/id-wsf/wsf_profile.lo,
+	lasso/id-wsf/wsf_profile.o: Mistake about last add.
+
+2005-05-16  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.c.~1.12.~,
+	lasso/id-wsf/wsf_profile.h, lasso/id-wsf/wsf_profile.h.~1.5.~,
+	lasso/id-wsf/wsf_profile.lo, lasso/id-wsf/wsf_profile.o: Added WSF
+	SOAP binding layer.
+
+2005-05-16  fpeters
+
+	* lasso/id-ff/provider.c: fixed memory leak in loadDescriptor
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/login.c: allows fake brws-lecp profile (introduced by
+	Nicolas) to be used in lasso_login_build_authn_response_msg, so
+	LECP works again.
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/name_registration.c: documented that previous change
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/name_registration.c: fixed the case of idp-initiated
+	rni with no sp defined name identifier
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/name_registration.c: fixing
+	lasso_name_registration_init_request with regards to
+	profile->nameIdentifier (hopefully)
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/name_registration.c: fixed
+	lasso_name_registration_process_request_msg so that it ends with
+	profile->nameIdentifier being the local name identifier.
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/defederation.c: profile->nameIdentifier set to local
+	name identifier
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c, lasso/id-ff/profile.c:
+	profile->nameIdentifier should always points to *local* name
+	identifier.  (not yet tested for federation termination)
+
+2005-05-12  fpeters
+
+	* lasso/id-ff/login.c: use remote name identifier if available for
+	login->nameIdentifier
+
+2005-05-11  fpeters
+
+	* lasso/id-ff/name_registration.c: don't check other endpoint for
+	supported profile since *they* initiated it that way and it seems
+	allowed for them not to have it in their metadata.
+
+2005-05-11  nclapies
+
+	* swig/Lasso-wsf.i: Fixed header included.
+
+2005-05-10  fpeters
+
+	* lasso/xml/lib_status_response.c: InResponseTo must be part of the
+	redirect answer
+
+2005-05-10  fpeters
+
+	* lasso/id-ff/provider.c: 1 is a valid boolean value
+
+2005-05-10  fpeters
+
+	* lasso/xml/xml.c: \r may be hiding in base64
+
+2005-05-10  nclapies
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/xml/strings.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: Fixed lecp profile : added case
+	when lecp profile is used when building assertion.
+
+2005-05-10  fpeters
+
+	* lasso/xml/xml.c: don't lasso_node_destroy list items that may be
+	NULL
+
+2005-05-10  fpeters
+
+	* lasso/xml/xml.c: allows \n in base64 strings
+
+2005-05-10  fpeters
+
+	* lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_logout_request.c: NameQualifier is optional
+
+2005-05-10  fpeters
+
+	* lasso/id-ff/logout.c: don't fail if there is no signature on
+	Logout Response
+
+2005-05-02  fpeters
+
+	* lasso/xml/tools.c: reworked query string signature verification
+	to better handle cases where the signature algorithm is not fully
+	url-encoded; also deals with the corner case where there are query
+	params past the signature.
+
+2005-05-02  fpeters
+
+	* lasso/extract_symbols.py, lasso/extract_types.py: wsse is only
+	for wsf
+
+2005-05-02  nclapies
+
+	* lasso/xml/xml.c: Added process of Wsse prefix in
+	lasso_node_new_from_xmlNode().
+
+2005-05-02  nclapies
+
+	* lasso/xml/wsse_security.c, lasso/xml/wsse_security.h:
+	wsse:Security class.
+
+2005-05-02  nclapies
+
+	* lasso/id-ff/login.c: Added a FIXME to list missing element in
+	credential.
+
+2005-05-02  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/strings.h, swig/Lasso-wsf.i,
+	swig/inheritance.h: Added wsse:Security element.
+
+2005-05-02  nclapies
+
+	* swig/Lasso.i: Added access to saml:Assertion in saml:Advice
+	element.
+
+2005-04-26  fpeters
+
+	* configure.ac: fixed Darwin case so it compiles on Mac OS X
+
+2005-04-26  nclapies
+
+	* lasso/id-ff/login.c: For now Make only one credential for every
+	description end points of the Discovery IDP. Fixed Minor Version of
+	credential included in Advice element to Saml Minor Version. Added
+	Audience restriction to Discovery IDP ProviderID.
+
+2005-04-25  fpeters
+
+	* lasso/id-ff/login.c: allocate memory for string; don't use it
+	static
+
+2005-04-25  nclapies
+
+	* lasso/id-ff/login.c: lasso_login_assertion_add_discovery() adds
+	credentials if security mechanisms want it.
+
+2005-04-25  nclapies
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_description.h,
+	lasso/xml/disco_service_instance.c,
+	lasso/xml/disco_service_instance.h: Added copy constructor to
+	duplicate LassoDiscoDescription and LassoDiscoServiceInstance
+	objects.
+
+2005-04-25  fpeters
+
+	* lasso/id-ff/login.c, lasso/xml/lib_authentication_statement.c:
+	use proper confirmation method saml identifiers
+
+2005-04-25  fpeters
+
+	* lasso/xml/strings.h: added saml artifact confirmation method
+	identification (from SAML 1.1 spec)
+
+2005-04-25  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c, lasso/xml/private.h, lasso/xml/tools.c: loads
+	public key into xmlSecKey on LassoProvider instanciation; this
+	merges signature verification in XML messages and in query strings.
+
+2005-04-25  fpeters
+
+	* lasso/id-ff/server.c: conscientiously overwrite memory used by
+	the private key password
+
+2005-04-25  fpeters
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h, swig/Lasso.i: renamed
+	secret_key to private_key_password since it was badly named and
+	unused (so no API breakage)
+
+2005-04-23  fpeters
+
+	* lasso/id-ff/name_registration.c: return error message if name
+	registration profile is used on an empty identity (was segfaulting)
+
+2005-04-22  nclapies
+
+	* lasso/id-ff/login.c, lasso/xml/saml_attribute.c,
+	lasso/xml/saml_attribute.h: Added missing optional attributes
+	AttributeName and AttributeNameSpace in Attribute element. When
+	adding a ResourceOffering element in Assertion, they are set.
+
+2005-04-22  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/xml/disco_insert_entry.c,
+	lasso/xml/disco_insert_entry.h, swig/Lasso-wsf.i:
+	DiscoResourceOffering is required in DiscoInsertEntry.
+
+2005-04-22  fpeters
+
+	* lasso/xml/disco_insert_entry.c: SNIPPET_LIST_NODES
+
+	  <Parent>
+	    <Value-1/>
+	    <Value-2/>
+	    <Value-n/>
+	  </Parent>
+
+	[note: if there are no other nodes; it is possible to leave snippet
+	name as  the empty string; nodes will then be constructed looking
+	at their names and  namespaces	(this is useful for xs:any)]
+
+	(from docs/reference/snippet-types.rst)
+
+2005-04-22  nclapies
+
+	* swig/Lasso-wsf.i: Added binding of lasso_new_from_message() for
+	DiscoModify.
+
+2005-04-20  fpeters
+
+	* swig/Lasso.i: binding to lasso_provider_get_organization;
+	converts xmlNode into string
+
+2005-04-20  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h: API addition;
+	lasso_provider_get_organization
+
+2005-04-20  fpeters
+
+	* lasso/xml/xml.c: set pointer to NULL as a protective measure
+
+2005-04-19  nclapies
+
+	* lasso/xml/disco_description.c, lasso/xml/disco_description.h,
+	swig/Lasso-wsf.i: Added support of choice between WsdlRef and
+	BriefSoapHttpDescription in LassoDiscoDescription object : 2 new
+	constructors, lasso_disco_description_new_with_WsdlRef() and
+	lasso_disco_description_new_with_BriefSoapHttpDescription().
+	lasso_disco_description_new only returns a simple empty object.
+
+2005-04-18  fpeters
+
+	* lasso/id-ff/login.c: bails out with an error if
+	lasso_login_must_authenticate is called while login has no request;
+	this probably means it was called before
+	lasso_login_process_authn_request_msg.
+
+2005-04-18  nclapies
+
+	* swig/inheritance.h: Added discovery directives in inheritance.h
+
+2005-04-15  nclapies
+
+	* swig/Lasso-wsf.i: Added ref count in addDescription() method.
+
+2005-04-15  nclapies
+
+	* swig/Lasso-wsf.i: Added addDescription method.
+
+2005-04-11  nclapies
+
+	* lasso/id-wsf/profile_service.c: Liberty wsf SOAP binding.
+
+2005-04-11  nclapies
+
+	* lasso/id-wsf/discovery.c: Fixed lasso_discovery_init_modify() :
+	added missing code for liberty wsf soap binding.
+
+2005-04-11  nclapies
+
+	* lasso/id-wsf/discovery.c: Completed discovery with support of
+	liberty wsf soap binding.
+
+2005-04-11  nclapies
+
+	* lasso/id-wsf/discovery.c: Updated Discovery : now it binds his
+	messages in liberty wsf SOAP envelope.
+
+2005-04-01  nclapies
+
+	* lasso/id-wsf/authentication.c, lasso/id-wsf/authentication.h,
+	swig/Lasso-wsf.i: Fixed removed code in previous commit. Fixed some
+	rules from liberty spec : mutli mechanism, null mechanism. Added
+	namespace for service authentication.
+
+2005-03-29  fpeters
+
+	* lasso/xml/samlp_response.c: don't set status to constant string
+	in samlp:Response
+
+2005-03-29  fpeters
+
+	* lasso/xml/tools.c: properly multiply sizeof(char*) to avoid
+	buffer overflow
+
+2005-03-29  fpeters
+
+	* lasso/id-ff/profile.c: free up Status if not NULL.
+
+2005-03-29  fpeters
+
+	* lasso/id-ff/login.c: checks for Status before Assertion; so lasso
+	doesn't restore an old assertion.
+
+2005-03-29  fpeters
+
+	* lasso/id-ff/login.c: bring back LassoSamlAssertion
+
+2005-03-29  fpeters
+
+	* lasso/id-ff/login.c: don't add assertion in samlp:Response if the
+	signature check failed
+
+2005-03-24  fpeters
+
+	* lasso/id-ff/login.c: deals with incorrect
+	AssertionConsumerServiceID
+
+2005-03-24  fpeters
+
+	* lasso/xml/lib_authn_request.c: include AssertionConsumerServiceID
+	in query strings
+
+2005-03-22  fpeters
+
+	* lasso/id-ff/login.c: session may exist beforehand, store status
+	nevertheless
+
+2005-03-22  fpeters
+
+	* lasso/id-ff/login.c: no success won't set Success
+
+2005-03-21  nclapies
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h, swig/Lasso.i: Added
+	REQUEST_TYPE_SASL_REQUEST returned by
+	lasso_profile_get_request_type_from_soap_msg().
+
+2005-03-21  nclapies
+
+	* swig/Lasso-wsf.i: Renamed properly attribute acces in
+	DiscoServiceInstance object.
+
+2005-03-21  nclapies
+
+	* lasso/id-wsf/authentication.c: Updated authentication service :
+	fixed error when parsing data from client. Removed hard code to
+	build soap envelope by call to common function from wsf_profile.h.
+
+2005-03-21  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h: Added
+	function to build generic liberty wsf soap envelope.
+
+2005-03-19  fpeters
+
+	* tests/Makefile.am: removed erroneously commited tests Makefile
+
+2005-03-18  fpeters
+
+	* python/tests/errorchecking_tests.py: docstring to errorchecking
+	tests
+
+2005-03-18  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/server.c: include lasso_config.h
+	since LASSO_WSF_ENABLED is used
+
+2005-03-18  fpeters
+
+	* lasso/id-ff/login.h, lasso/id-ff/server.h: added missing
+	lasso_config.h include (necessary for LASSO_WSF_ENABLED definition)
+
+2005-03-18  fpeters
+
+	* configure.ac, lasso/id-wsf/Makefile.am: since wsf is no longer
+	compiled it is no longer necessary to check or isolate sasl check
+	variable.
+
+2005-03-18  fpeters
+
+	* lasso/Makefile.am, lasso/extract_symbols.py,
+	lasso/extract_types.py, lasso/id-ff/login.c, lasso/id-ff/login.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/id-wsf/Makefile.am, lasso/xml/Makefile.am, swig/Lasso.i,
+	tests/Makefile.am: don't compile id-wsf files when wsf is disabled;
+	this cuts down build time by a nice margin.
+
+2005-03-18  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: Updated lasso_discovery_add_insert_entry()
+	prototype : now it only takes a LassoServiceInstance and a
+	LassoDiscoResourceID.
+
+2005-03-18  eraviart
+
+	* swig/Lasso.i: Renamed LASSO_WSF_SUPPORT to WSF_SUPPORT in SWIG.
+
+2005-03-18  nclapies
+
+	* lasso/id-wsf/authentication.h, swig/Lasso-wsf.i,
+	lasso/id-wsf/authentication.c: Updated authentication service : now
+	it has hard coded collbacks. developer must use LassoUserAccount to
+	inform sasl about login and password.
+
+2005-03-18  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Fixed dump of attribute.
+
+2005-03-18  nclapies
+
+	* lasso/xml/soap_body.c, lasso/xml/soap_body.h: Fixed any attribute
+	in snippet.
+
+2005-03-18  nclapies
+
+	* lasso/xml/soap_envelope.c: Fixed process of dump for soap
+	envelope message.
+
+2005-03-17  rchantereau
+
+	* docs/lasso-book/writing-a-php-sp.txt: First version of the
+	"Writing a Libety PHP SP".
+
+	Almost all adapted copied/pasted from "Writing a Liberty C SP".
+
+2005-03-15  fpeters
+
+	* lasso/xml/samlp_response.c: detect liberty QName and add
+	appropriate namespace (closes: #416)
+
+2005-03-15  fpeters
+
+	* tests/random_tests.c: added non-regression test for bug #416
+	(missing namespace in some samlp:Response)
+
+2005-03-11  fpeters
+
+	* lasso/xml/soap_binding_ext_credential.c: warning: ISO C90 forbids
+	mixed declarations and code
+
+2005-03-11  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/soap_binding_consent.c,
+	lasso/xml/soap_binding_consent.h,
+	lasso/xml/soap_binding_processing_context.c,
+	lasso/xml/soap_binding_processing_context.h,
+	lasso/xml/soap_binding_provider.c,
+	lasso/xml/soap_binding_provider.h,
+	lasso/xml/soap_binding_usage_directive.c,
+	lasso/xml/soap_binding_usage_directive.h: Complete liberty soap
+	binding.
+
+2005-03-11  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/soap_binding_ext_credential.c,
+	lasso/xml/soap_binding_ext_credential.h,
+	lasso/xml/soap_binding_ext_credentials_context.c,
+	lasso/xml/soap_binding_ext_credentials_context.h,
+	lasso/xml/soap_binding_ext_service_instance_update.c,
+	lasso/xml/soap_binding_ext_service_instance_update.h,
+	lasso/xml/soap_binding_ext_timeout.c,
+	lasso/xml/soap_binding_ext_timeout.h, lasso/xml/strings.h: Added
+	liberty soap binding extension.
+
+2005-03-10  nclapies
+
+	* lasso/xml/strings.h, swig/Lasso-wsf.i: Added missing security
+	mechanism.
+
+2005-03-10  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/xml/disco_modify.c,
+	lasso/xml/disco_modify.h, lasso/xml/strings.h, swig/Lasso-wsf.i:
+	Restore ResourceID and EncryptedResourceID attributes in discovery
+	and modify. Added security mechanism id.
+
+2005-03-10  nclapies
+
+	* lasso/xml/disco_description.h: Added comments about security mech
+	rules.
+
+2005-03-10  nclapies
+
+	* lasso/xml/disco_resource_offering.h: Added comment about Options
+	rules.
+
+2005-03-10  nclapies
+
+	* lasso/xml/disco_modify_response.h: Added comments about status
+	rules.
+
+2005-03-10  nclapies
+
+	* lasso/xml/disco_modify.c, lasso/xml/disco_modify.h: resourceId is
+	for LassoResourceID and LassoEncryptedResourceID.
+
+2005-03-10  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h: Fixed
+	resourceID to resourceId. Added some param tests.
+
+2005-03-10  nclapies
+
+	* lasso/xml/strings.h: Added disco status codes.
+
+2005-03-10  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/disco_authenticate_requester.c,
+	lasso/xml/disco_authenticate_requester.h,
+	lasso/xml/disco_authenticate_session_context.c,
+	lasso/xml/disco_authenticate_session_context.h,
+	lasso/xml/disco_authorize_requester.c,
+	lasso/xml/disco_authorize_requester.h,
+	lasso/xml/disco_encrypt_resource_id.c,
+	lasso/xml/disco_encrypt_resource_id.h,
+	lasso/xml/disco_generate_bearer_token.c,
+	lasso/xml/disco_generate_bearer_token.h,
+	lasso/xml/disco_send_single_logout.c,
+	lasso/xml/disco_send_single_logout.h, swig/Lasso-wsf.i: Added
+	discovery directive elements.
+
+2005-03-07  fpeters
+
+	* tests/random_tests.c: removed debugging output
+
+2005-03-07  fpeters
+
+	* tests/random_tests.c: use fail_unless since fail_if didn't exist
+	in check 0.8.x
+
+2005-03-07  fpeters
+
+	* lasso/xml/saml_assertion.c, tests/random_tests.c: only use
+	xsi:type on elements that have a saml: ancestor (and added test to
+	not regress)
+
+2005-03-07  fpeters
+
+	* lasso/id-ff/login.c: return
+	LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND in
+	lasso_login_process_authn_response_msg when liberty status is
+	samlp:Responder/lib:FederationDoesNotExist
+
+2005-03-07  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/xml/xml.c: only use
+	LASSO_SIGNATURE_TYPE_WITHX509 (including a <KeyInfo/> in message)
+	if we have a certificate to use; use LASSO_SIGNATURE_TYPE_SIMPLE
+	otherwise.
+
+2005-03-04  eraviart
+
+	* lasso/id-ff/login.c: Corrected MinorVersion of samlp:Response.
+
+2005-03-02  nclapies
+
+	* lasso/id-wsf/authentication.c: Added credentials and resource
+	offerings if authentication is OK.
+
+2005-03-02  nclapies
+
+	* lasso/xml/sa_credentials.c, lasso/xml/sa_credentials.h,
+	swig/Lasso-wsf.i, swig/inheritance.h, lasso/xml/Makefile.am,
+	lasso/xml/sa_sasl_response.c, lasso/xml/sa_sasl_response.h: Added
+	credentials and resource offerings if authentication is OK.
+
+2005-03-02  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	lasso/id-wsf/interaction_profile_service.c,
+	lasso/id-wsf/interaction_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h: Use
+	gchar instead of char.
+
+2005-03-02  nclapies
+
+	* lasso/xml/sa_sasl_request.c, lasso/xml/sa_sasl_request.h,
+	lasso/xml/sa_sasl_response.c, lasso/xml/sa_sasl_response.h: Renamed
+	LassoSaSaslRequest to LassoSaSASLRequest. Idem to
+	LassoSaSASLResponse.
+
+2005-03-02  nclapies
+
+	* lasso/id-wsf/authentication.c: soap envelope / binding support.
+
+2005-03-02  nclapies
+
+	* swig/Lasso-wsf.i, swig/inheritance.h: Added soap swig binding,
+	liberty soap binding swig binding, authentication service swig
+	update
+
+2005-03-02  nclapies
+
+	* lasso/id-wsf/authentication.h, lasso/id-wsf/wsf_profile.c,
+	lasso/id-wsf/wsf_profile.h: Added soap envelope object to embed
+	specific data from id-wsf.lasso/id-wsf/authentication.c
+
+2005-03-02  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/soap_binding_correlation.c,
+	lasso/xml/soap_binding_correlation.h, lasso/xml/soap_body.c,
+	lasso/xml/soap_body.h, lasso/xml/soap_envelope.c,
+	lasso/xml/soap_envelope.h, lasso/xml/soap_header.c,
+	lasso/xml/soap_header.h, lasso/xml/strings.h, lasso/xml/xml.c:
+	Added soap envelope and soap binding. It is useful for id-wsf but
+	could be used in other parts later.
+
+2005-03-01  fpeters
+
+	* docs/lasso-book/writing-a-c-sp.txt: fixed links to API reference
+
+2005-02-24  fpeters
+
+	* configure.ac, lasso/Makefile.am, lasso/extract_types.py,
+	lasso/id-wsf/Makefile.am: don't require sasl if wsf is not wanted;
+	allow sasl2 dir to be passed to configure; include <sasl/sasl.h>
+	instead of <sasl.h> since mutt does it that way.
+
+2005-02-24  nclapies
+
+	* lasso/id-wsf/authentication.c: Removed odd printf().
+
+2005-02-24  nclapies
+
+	* lasso/id-wsf/authentication.c: Added support of cyrus libsasl in
+	id-wsf authentication service.
+
+2005-02-24  nclapies
+
+	* lasso/id-wsf/authentication.h, lasso/id-wsf/Makefile.am,
+	lasso/xml/sa_sasl_response.c, lasso/xml/strings.h, lasso/xml/xml.c,
+	swig/Lasso-wsf.i, python/Makefile.am: Added support of cyrus
+	libsasl in id-wsf authentication service.
+
+2005-02-24  nclapies
+
+	* configure.ac: Added support of cyrus libsasl. Currently it
+	disables wsf if not found.
+
+2005-02-22  fpeters
+
+	* ChangeLog: updated ChangeLog for 0.6.1
+
 2005-02-22  fpeters
 
 	* NEWS, configure.ac, doap.rdf: told about 0.6.1
