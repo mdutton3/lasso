@@ -4937,6 +4937,8 @@ typedef struct {
 #endif
 	char *public_key;
 
+	LassoProviderRole role;
+
 	/* Attributes */
 
 	%immutable providerIds;
@@ -5028,6 +5030,12 @@ typedef struct {
 #define LassoServer_public_key_get(self) LASSO_PROVIDER(self)->public_key
 #define LassoServer_set_public_key(self, value) set_string(&LASSO_PROVIDER(self)->public_key, (value))
 #define LassoServer_public_key_set(self, value) set_string(&LASSO_PROVIDER(self)->public_key, (value))
+
+/* role */
+#define LassoServer_get_role(self) LASSO_PROVIDER(self)->role
+#define LassoServer_role_get(self) LASSO_PROVIDER(self)->role
+#define LassoServer_set_role(self, value) LASSO_PROVIDER(self)->role = value
+#define LassoServer_role_set(self, value) LASSO_PROVIDER(self)->role = value
 
 /* Attributes implementations */
 
