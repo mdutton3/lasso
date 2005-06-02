@@ -92,7 +92,6 @@ binary-arch: build install
 	dh_makeshlibs -a -V
 	dh_installdeb
 	dh_shlibdeps -a
-	dh_makenetlibs -L liblasso-cil -r
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
