@@ -74,7 +74,7 @@ install: build
 
 # Build architecture-independent files here.
 binary-indep: build install
-# We have nothing to do by default.
+	dh_makeclilibs -L liblasso-cil -r
 
 # Build architecture-dependent files here.
 binary-arch: build install
@@ -90,6 +90,7 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a -V
+	dh_clideps -L liblasso-cil -r -d
 	dh_installdeb
 	dh_shlibdeps -a
 	dh_gencontrol
