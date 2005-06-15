@@ -109,6 +109,13 @@
 
 #define %nonewobject %feature("new","")
 
+/*
+ * In Windows, function free() segfaults when used for strings allocated 
+ * using Glib.
+ */
+
+%typemap(newfree) char * "g_free($1);";
+
 
 /***********************************************************************
  * Python Tuning
