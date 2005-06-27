@@ -475,16 +475,13 @@ lasso_session_new_from_dump(const gchar *dump)
  *
  * Return value: the dump string.  It must be freed by the caller.
  **/
-const gchar*
+gchar*
 lasso_session_dump(LassoSession *session)
 {
-	const char *dump;
-
 	if (lasso_session_is_empty(session))
 		return g_strdup("");
 
-	dump = lasso_node_dump(LASSO_NODE(session));
-	return dump;
+	return lasso_node_dump(LASSO_NODE(session));
 }
 
 /**
