@@ -445,16 +445,23 @@ lasso_session_new_from_dump(const gchar *dump)
 {
 	LassoSession *session;
 	xmlDoc *doc;
+	xmlNode *rootElement;
 
 	if (dump == NULL)
 		return NULL;
 
-	session = lasso_session_new();
 	doc = xmlParseMemory(dump, strlen(dump));
 	if (doc == NULL)
 		return NULL;
 
-	init_from_xml(LASSO_NODE(session), xmlDocGetRootElement(doc));
+	rootElement = xmlDocGetRootElement(doc);
+	if (strcmp(rootElement->name, "Session") != 0) {
+		xmlFreeDoc(doc);
+		return NULL;
+	}
+
+	session = lasso_session_new();
+	init_from_xml(LASSO_NODE(session), rootElement);
 	xmlFreeDoc(doc);
 
 	return session;
@@ -468,13 +475,16 @@ lasso_session_new_from_dump(const gchar *dump)
  *
  * Return value: the dump string.  It must be freed by the caller.
  **/
-gchar*
+const gchar*
 lasso_session_dump(LassoSession *session)
 {
+	const char *dump;
+
 	if (lasso_session_is_empty(session))
 		return g_strdup("");
 
-	return lasso_node_dump(LASSO_NODE(session));
+	dump = lasso_node_dump(LASSO_NODE(session));
+	return dump;
 }
 
 /**
