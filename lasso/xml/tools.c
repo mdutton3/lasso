@@ -291,7 +291,7 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
 	return keys_mngr;
 }
 
-/**
+/*
  * lasso_query_sign:
  * @query: a query (an url-encoded node)
  * @sign_method: the Signature transform method
@@ -301,17 +301,17 @@ lasso_load_certs_from_pem_certs_chain_file(const char* pem_certs_chain_file)
  * 
  * Return value: a newly allocated query signed or NULL if an error occurs.
  **/
-xmlChar*
-lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *private_key_file)
+char*
+lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file)
 {
 	BIO *bio = NULL;
-	xmlChar *digest = NULL; /* 160 bit buffer */
+	char *digest = NULL; /* 160 bit buffer */
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	unsigned char *sigret = NULL;
 	unsigned int siglen;
-	xmlChar *b64_sigret = NULL, *e_b64_sigret = NULL;
-	xmlChar *new_query = NULL, *s_new_query = NULL;
+	char *b64_sigret = NULL, *e_b64_sigret = NULL;
+	char *new_query = NULL, *s_new_query = NULL;
 	int status = 0;
 	char *t;
 
@@ -330,12 +330,12 @@ lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *p
 	/* add SigAlg */
 	switch (sign_method) {
 		case LASSO_SIGNATURE_METHOD_RSA_SHA1:
-			t = xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
+			t = (char*)xmlURIEscapeStr(xmlSecHrefRsaSha1, NULL);
 			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
 			xmlFree(t);
 			break;
 		case LASSO_SIGNATURE_METHOD_DSA_SHA1:
-			t = xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
+			t = (char*)xmlURIEscapeStr(xmlSecHrefDsaSha1, NULL);
 			new_query = g_strdup_printf("%s&SigAlg=%s", query, t);
 			xmlFree(t);
 			break;
@@ -358,7 +358,7 @@ lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *p
 		/* alloc memory for sigret */
 		sigret = (unsigned char *)g_malloc (RSA_size(rsa));
 		/* sign digest message */
-		status = RSA_sign(NID_sha1, digest, 20, sigret, &siglen, rsa);
+		status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, rsa);
 		RSA_free(rsa);
 	}
 	else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
@@ -367,7 +367,7 @@ lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *p
 			goto done;
 		}
 		sigret = (unsigned char *)g_malloc (DSA_size(dsa));
-		status = DSA_sign(NID_sha1, digest, 20, sigret, &siglen, dsa);
+		status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, dsa);
 		DSA_free(dsa);
 	}
 	if (status == 0) {
@@ -375,9 +375,9 @@ lasso_query_sign(xmlChar *query, LassoSignatureMethod sign_method, const char *p
 	}
 
 	/* Base64 encode the signature value */
-	b64_sigret = xmlSecBase64Encode(sigret, siglen, 0);
+	b64_sigret = (char*)xmlSecBase64Encode(sigret, siglen, 0);
 	/* escape b64_sigret */
-	e_b64_sigret = xmlURIEscapeStr(b64_sigret, NULL);
+	e_b64_sigret = (char*)xmlURIEscapeStr((xmlChar*)b64_sigret, NULL);
 
 	/* add signature */
 	switch (sign_method) {
@@ -417,7 +417,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	RSA *rsa = NULL;
 	DSA *dsa = NULL;
 	gchar **str_split = NULL;
-	xmlChar *digest = NULL, *b64_signature = NULL;
+	char *digest = NULL, *b64_signature = NULL;
 	xmlSecByte *signature = NULL;
 	int key_size, status = 0, ret = 0;
 	char *sig_alg, *usig_alg = NULL;
@@ -449,7 +449,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	sig_alg = strchr(sig_alg, '=')+1;
 
 	usig_alg = xmlURIUnescapeString(sig_alg, 0, NULL);
-	if (strcmp(usig_alg, xmlSecHrefRsaSha1) == 0) {
+	if (strcmp(usig_alg, (char*)xmlSecHrefRsaSha1) == 0) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataRsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
@@ -460,7 +460,7 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 			goto done;
 		}
 		key_size = RSA_size(rsa);
-	} else if (strcmp(usig_alg, xmlSecHrefDsaSha1) == 0) {
+	} else if (strcmp(usig_alg, (char*)xmlSecHrefDsaSha1) == 0) {
 		if (sender_public_key->value->id != xmlSecOpenSSLKeyDataDsaId) {
 			ret = critical_error(LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED);
 			goto done;
@@ -483,8 +483,8 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 
 	/* get signature (unescape + base64 decode) */
 	signature = xmlMalloc(key_size+1);
-	b64_signature = xmlURIUnescapeString(str_split[1], 0, NULL);
-	xmlSecBase64Decode(b64_signature, signature, key_size+1);
+	b64_signature = (char*)xmlURIUnescapeString(str_split[1], 0, NULL);
+	xmlSecBase64Decode((xmlChar*)b64_signature, signature, key_size+1);
 
 	/* compute signature digest */
 	digest = lasso_sha1(str_split[0]);
@@ -494,9 +494,9 @@ lasso_query_verify_signature(const char *query, const xmlSecKey *sender_public_k
 	}
 
 	if (rsa) {
-		status = RSA_verify(NID_sha1, digest, 20, signature, key_size, rsa);
+		status = RSA_verify(NID_sha1, (unsigned char*)digest, 20, signature, key_size, rsa);
 	} else if (dsa) {
-		status = DSA_verify(NID_sha1, digest, 20, signature, key_size, dsa);
+		status = DSA_verify(NID_sha1, (unsigned char*)digest, 20, signature, key_size, dsa);
 	}
 
 	if (status == 0) {
@@ -530,7 +530,7 @@ lasso_sha1(const char *str)
 		return NULL;
 
 	md = xmlMalloc(20);
-	return SHA1(str, strlen(str), md);
+	return (char*)SHA1((unsigned char*)str, strlen(str), md);
 }
 
 char**
@@ -610,7 +610,7 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 
 	sign_tmpl = NULL;
 	for (sign_tmpl = xmlnode->children; sign_tmpl; sign_tmpl = sign_tmpl->next) {
-		if (strcmp(sign_tmpl->name, "Signature") == 0)
+		if (strcmp((char*)sign_tmpl->name, "Signature") == 0)
 			break;
 	}
 	sign_tmpl = xmlSecFindNode(xmlnode, xmlSecNodeSignature, xmlSecDSigNs);
@@ -618,15 +618,15 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	if (sign_tmpl == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
 
-	doc = xmlNewDoc("1.0");
+	doc = xmlNewDoc((xmlChar*)"1.0");
 	old_parent = xmlnode->parent;
 	xmlnode->parent = NULL;
 	xmlDocSetRootElement(doc, xmlnode);
 	xmlSetTreeDoc(sign_tmpl, doc);
 	if (id_attr_name) {
-		xmlAttr *id_attr = xmlHasProp(xmlnode, id_attr_name);
+		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
 		if (id_value) {
-			xmlAddID(NULL, doc, id_value, id_attr);
+			xmlAddID(NULL, doc, (xmlChar*)id_value, id_attr);
 		}
 	}
 
