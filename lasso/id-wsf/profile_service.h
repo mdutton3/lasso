@@ -79,8 +79,6 @@ LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(
 LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_add_query_item(LassoProfileService *service,
 								     const gchar *select);
 
-LASSO_EXPORT gint lasso_profile_service_build_request_msg(LassoProfileService *service);
-
 LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
 	LassoProfileService *service,
 	const gchar *prefix,
