@@ -3829,7 +3829,7 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 #define LassoProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
-#define LassoProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 #define LassoProfileService_addData lasso_profile_service_add_data
