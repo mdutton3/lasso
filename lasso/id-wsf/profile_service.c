@@ -256,14 +256,7 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 
 	profile = LASSO_WSF_PROFILE(service);
 
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
-	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(service)->request = LASSO_NODE(envelope->Body->any->data);
-
-	correlation = envelope->Header->Other->data;
-	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
-	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
+	lasso_wsf_profile_process_soap_request_msg(profile, soap_msg);
 
 	/* init QueryResponse */
 	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
@@ -272,6 +265,7 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 	LASSO_DST_QUERY_RESPONSE(profile->response)->prefixServiceType = g_strdup(prefix);
 	LASSO_DST_QUERY_RESPONSE(profile->response)->hrefServiceType = g_strdup(href);
 
+	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	return 0;
