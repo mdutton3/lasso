@@ -100,8 +100,7 @@ LassoPemFileType lasso_get_pem_file_type(const char *file);
 xmlSecKey* lasso_get_public_key_from_pem_cert_file(const char *file);
 xmlSecKeysMngr* lasso_load_certs_from_pem_certs_chain_file (const char *file);
 
-xmlChar* lasso_query_sign(xmlChar *query,
-		LassoSignatureMethod sign_method, const char *private_key_file);
+char* lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *private_key_file);
 
 int lasso_query_verify_signature(const char *query, const xmlSecKey *public_key);
 
