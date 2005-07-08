@@ -3750,9 +3750,7 @@ typedef struct {
 
 	/* Methods */
 
-	THROW_ERROR
-	int addData(char *xmlNodeBuffer);
-	END_THROW_ERROR
+	LassoDstData *addData(char *xmlNodeBuffer);
 
 	LassoDstModification *addModification(char *select);
 

@@ -69,7 +69,7 @@ LASSO_EXPORT GType lasso_profile_service_get_type(void);
 LASSO_EXPORT LassoProfileService* lasso_profile_service_new(LassoServer *server);
 
 
-LASSO_EXPORT gint lasso_profile_service_add_data(LassoProfileService *service,
+LASSO_EXPORT LassoDstData *lasso_profile_service_add_data(LassoProfileService *service,
 						 const gchar *xmlNodeBuffer);
 
 LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(

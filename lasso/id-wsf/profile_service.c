@@ -33,7 +33,7 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-gint
+LassoDstData*
 lasso_profile_service_add_data(LassoProfileService *service, const gchar *xmlNodeBuffer)
 {
 	LassoWsfProfile *profile;
@@ -41,8 +41,8 @@ lasso_profile_service_add_data(LassoProfileService *service, const gchar *xmlNod
 	xmlNode *root, *xmlnode;
 	xmlDoc *doc;
 	
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, -1);
-	g_return_val_if_fail(xmlNodeBuffer != NULL, -1);
+	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, NULL);
+	g_return_val_if_fail(xmlNodeBuffer != NULL, NULL);
 
 	profile = LASSO_WSF_PROFILE(service);
 
@@ -57,7 +57,7 @@ lasso_profile_service_add_data(LassoProfileService *service, const gchar *xmlNod
 	LASSO_DST_QUERY_RESPONSE(profile->response)->Data = \
 		g_list_append(LASSO_DST_QUERY_RESPONSE(profile->response)->Data, data);
 
-	return 0;
+	return data;
 }
 
 LassoDstModification*
