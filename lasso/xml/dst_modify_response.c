@@ -74,8 +74,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNs *ns;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlNewNs(xmlnode, LASSO_DST_MODIFY_RESPONSE(node)->hrefServiceType,
-			LASSO_DST_MODIFY_RESPONSE(node)->prefixServiceType);
+	ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_DST_MODIFY_RESPONSE(node)->hrefServiceType,
+			(xmlChar*)LASSO_DST_MODIFY_RESPONSE(node)->prefixServiceType);
 	insure_namespace(xmlnode, ns);
 
 	return xmlnode;

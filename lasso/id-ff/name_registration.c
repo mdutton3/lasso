@@ -623,7 +623,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlSetProp(xmlnode, "NameRegistrationDumpVersion", "2");
+	xmlSetProp(xmlnode, (xmlChar*)"NameRegistrationDumpVersion", (xmlChar*)"2");
 
 	return xmlnode;
 }

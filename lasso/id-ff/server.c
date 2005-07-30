@@ -143,13 +143,14 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlSetProp(xmlnode, "ServerDumpVersion", "2");
-	xmlSetProp(xmlnode, "SignatureMethod", signature_methods[server->signature_method]);
+	xmlSetProp(xmlnode, (xmlChar*)"ServerDumpVersion", (xmlChar*)"2");
+	xmlSetProp(xmlnode, (xmlChar*)"SignatureMethod",
+			(xmlChar*)signature_methods[server->signature_method]);
 
 	/* Providers */
 	if (g_hash_table_size(server->providers)) {
 		xmlNode *t;
-		t = xmlNewTextChild(xmlnode, NULL, "Providers", NULL);
+		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Providers", NULL);
 		g_hash_table_foreach(server->providers,
 				(GHFunc)add_provider_childnode, t);
 	}
@@ -157,7 +158,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	/* Services */
 	if (g_hash_table_size(server->services)) {
 		xmlNode *t;
-		t = xmlNewTextChild(xmlnode, NULL, "Services", NULL);
+		t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Services", NULL);
 		g_hash_table_foreach(server->services,
 				(GHFunc)add_service_childnode, t);
 	}
@@ -180,10 +181,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (rc)
 		return rc;
 
-	s = xmlGetProp(xmlnode, "SignatureMethod");
-	if (s && strcmp(s, "RSA_SHA1") == 0)
+	s = xmlGetProp(xmlnode, (xmlChar*)"SignatureMethod");
+	if (s && strcmp((char*)s, "RSA_SHA1") == 0)
 		server->signature_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
-	if (s && strcmp(s, "DSA_SHA1") == 0)
+	if (s && strcmp((char*)s, "DSA_SHA1") == 0)
 		server->signature_method = LASSO_SIGNATURE_METHOD_DSA_SHA1;
 	if (s)
 		xmlFree(s);
@@ -197,7 +198,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 
-		if (strcmp(t->name, "Providers") == 0) {
+		if (strcmp((char*)t->name, "Providers") == 0) {
 			while (t2) {
 				LassoProvider *p;
 				if (t2->type != XML_ELEMENT_NODE) {
@@ -213,7 +214,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 		}
 		
 #ifdef LASSO_WSF_ENABLED
-		if (strcmp(t->name, "Services") == 0) {
+		if (strcmp((char*)t->name, "Services") == 0) {
 			while (t2) {
 				LassoDiscoServiceInstance *s;
 				if (t2->type != XML_ELEMENT_NODE) {
@@ -300,10 +301,11 @@ static gboolean
 get_providerID_with_hash(gchar *key, gpointer value, char **providerID)
 {
 	char *hash = *providerID;
-	char *hash_providerID, *b64_hash_providerID;
+	xmlChar *hash_providerID;
+	char *b64_hash_providerID;
 
-	hash_providerID = lasso_sha1(key);
-	b64_hash_providerID = xmlSecBase64Encode(hash_providerID, 20, 0);
+	hash_providerID = (xmlChar*)lasso_sha1(key);
+	b64_hash_providerID = (char*)xmlSecBase64Encode(hash_providerID, 20, 0);
 	xmlFree(hash_providerID);
 
 	if (strcmp(b64_hash_providerID, hash) == 0) {

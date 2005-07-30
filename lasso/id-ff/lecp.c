@@ -85,7 +85,8 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	xmlNodeDumpOutput(buf, NULL, msg, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 
-	profile->msg_body = g_strdup(buf->conv ? buf->conv->content : buf->buffer->content);
+	profile->msg_body = g_strdup(
+			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 	xmlFreeNode(msg);
 
@@ -295,9 +296,9 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 
 	doc = xmlParseMemory(request_msg, strlen(request_msg));
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, "lib", LASSO_LIB_HREF);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"lib", (xmlChar*)LASSO_LIB_HREF);
 	/* TODO: will need to use another href for id-ff 1.1 support */
-	xpathObj = xmlXPathEvalExpression("//lib:AuthnRequest", xpathCtx);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//lib:AuthnRequest", xpathCtx);
 
 	if (xpathObj == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
@@ -310,19 +311,19 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 	authn_request = xmlCopyNode(xpathObj->nodesetval->nodeTab[0], 1);
 	xmlFreeDoc(doc);
 
-	soap_envelope = xmlNewNode(NULL, "Envelope");
-	xmlSetNs(soap_envelope,
-			xmlNewNs(soap_envelope, LASSO_SOAP_ENV_HREF, LASSO_SOAP_ENV_PREFIX));
+	soap_envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
+	xmlSetNs(soap_envelope, xmlNewNs(soap_envelope,
+				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX));
 
-	soap_body = xmlNewTextChild(soap_envelope, NULL, "Body", NULL);
+	soap_body = xmlNewTextChild(soap_envelope, NULL, (xmlChar*)"Body", NULL);
 	xmlAddChild(soap_body, authn_request);
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, soap_envelope, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
-	LASSO_PROFILE(lecp)->msg_body = g_strdup(
-			buf->conv ? buf->conv->content : buf->buffer->content);
+	LASSO_PROFILE(lecp)->msg_body = g_strdup( (char*)(
+			buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 	xmlFreeNode(soap_envelope);
 

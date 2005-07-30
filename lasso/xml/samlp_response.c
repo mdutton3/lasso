@@ -74,19 +74,21 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	if (LASSO_SAMLP_RESPONSE(node)->Status &&
 			has_lib_status(LASSO_SAMLP_RESPONSE(node)->Status->StatusCode)) {
 		/* liberty QName, add liberty namespace */
-		xmlNewNs(xmlnode, LASSO_LIB_HREF, LASSO_LIB_PREFIX);
+		xmlNewNs(xmlnode, (xmlChar*)LASSO_LIB_HREF, (xmlChar*)LASSO_LIB_PREFIX);
 	}
 
 
-	for (t = xmlnode->children; t && strcmp(t->name, "Assertion"); t = t->next) ;
+	for (t = xmlnode->children; t && strcmp((char*)t->name, "Assertion"); t = t->next) ;
 
-	if (t && strcmp(t->ns->href, LASSO_LIB_HREF) == 0) {
+	if (t && strcmp((char*)t->ns->href, LASSO_LIB_HREF) == 0) {
 		/* liberty nodes are not allowed in samlp nodes */
-		xmlSetNs(t, xmlNewNs(xmlnode, LASSO_SAML_ASSERTION_HREF,
-					LASSO_SAML_ASSERTION_PREFIX));
-		if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL)
-			xmlNewNsProp(t, xmlNewNs(xmlnode, LASSO_XSI_HREF, LASSO_XSI_PREFIX),
-					"type", "lib:AssertionType");
+		xmlSetNs(t, xmlNewNs(xmlnode, (xmlChar*)LASSO_SAML_ASSERTION_HREF,
+					(xmlChar*)LASSO_SAML_ASSERTION_PREFIX));
+		if (xmlHasNsProp(t, (xmlChar*)"type", (xmlChar*)LASSO_XSI_HREF) == NULL)
+			xmlNewNsProp(t, xmlNewNs(xmlnode,
+						(xmlChar*)LASSO_XSI_HREF,
+						(xmlChar*)LASSO_XSI_PREFIX),
+					(xmlChar*)"type", (xmlChar*)"lib:AssertionType");
 	}
 
 	return xmlnode;

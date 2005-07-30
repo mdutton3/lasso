@@ -126,9 +126,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	LassoIdentity *identity = LASSO_IDENTITY(node);
 
-	xmlnode = xmlNewNode(NULL, "Identity");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
-	xmlSetProp(xmlnode, "Version", "2");
+	xmlnode = xmlNewNode(NULL, (xmlChar*)"Identity");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, (xmlChar*)LASSO_LASSO_HREF, NULL));
+	xmlSetProp(xmlnode, (xmlChar*)"Version", (xmlChar*)"2");
 
 	if (g_hash_table_size(identity->federations))
 		g_hash_table_foreach(identity->federations,
@@ -150,7 +150,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 
-		if (strcmp(t->name, "Federation") == 0) {
+		if (strcmp((char*)t->name, "Federation") == 0) {
 			LassoFederation *federation;
 			federation = LASSO_FEDERATION(lasso_node_new_from_xmlNode(t));
 			g_hash_table_insert(
@@ -282,7 +282,7 @@ lasso_identity_new_from_dump(const gchar *dump)
 		return NULL;
 
 	rootElement = xmlDocGetRootElement(doc);
-	if (strcmp(rootElement->name, "Identity") != 0) {
+	if (strcmp((char*)rootElement->name, "Identity") != 0) {
 		xmlFreeDoc(doc);
 		return NULL;
 	}

@@ -250,8 +250,8 @@ static void
 add_assertion_childnode(gchar *key, LassoLibAssertion *value, xmlNode *xmlnode)
 {
 	xmlNode *t;
-	t = xmlNewTextChild(xmlnode, NULL, "Assertion", NULL);
-	xmlSetProp(t, "RemoteProviderID", key);
+	t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Assertion", NULL);
+	xmlSetProp(t, (xmlChar*)"RemoteProviderID", (xmlChar*)key);
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
@@ -259,8 +259,8 @@ static void
 add_status_childnode(gchar *key, LassoSamlpStatus *value, xmlNode *xmlnode)
 {
 	xmlNode *t;
-	t = xmlNewTextChild(xmlnode, NULL, "Status", NULL);
-	xmlSetProp(t, "RemoteProviderID", key);
+	t = xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Status", NULL);
+	xmlSetProp(t, (xmlChar*)"RemoteProviderID", (xmlChar*)key);
 	xmlAddChild(t, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
 
@@ -270,9 +270,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 	LassoSession *session = LASSO_SESSION(node);
 
-	xmlnode = xmlNewNode(NULL, "Session");
-	xmlSetNs(xmlnode, xmlNewNs(xmlnode, LASSO_LASSO_HREF, NULL));
-	xmlSetProp(xmlnode, "Version", "2");
+	xmlnode = xmlNewNode(NULL, (xmlChar*)"Session");
+	xmlSetNs(xmlnode, xmlNewNs(xmlnode, (xmlChar*)LASSO_LASSO_HREF, NULL));
+	xmlSetProp(xmlnode, (xmlChar*)"Version", (xmlChar*)"2");
 
 	if (g_hash_table_size(session->assertions))
 		g_hash_table_foreach(session->assertions,
@@ -297,7 +297,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			continue;
 		}
 
-		if (strcmp(t->name, "Assertion") == 0) {
+		if (strcmp((char*)t->name, "Assertion") == 0) {
 			n = t->children;
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
 			
@@ -305,10 +305,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				LassoLibAssertion *assertion;
 				assertion = LASSO_LIB_ASSERTION(lasso_node_new_from_xmlNode(n));
 				g_hash_table_insert(session->assertions,
-						xmlGetProp(t, "RemoteProviderID"), assertion);
+						xmlGetProp(t, (xmlChar*)"RemoteProviderID"),
+						assertion);
 			}
 		}
-		if (strcmp(t->name, "Status") == 0) {
+		if (strcmp((char*)t->name, "Status") == 0) {
 			n = t->children;
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
 			
@@ -316,7 +317,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				LassoSamlpStatus *status;
 				status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(n));
 				g_hash_table_insert(session->private_data->status,
-						xmlGetProp(t, "RemoteProviderID"), status);
+						xmlGetProp(t, (xmlChar*)"RemoteProviderID"),
+						status);
 			}
 		}
 		t = t->next;
@@ -455,7 +457,7 @@ lasso_session_new_from_dump(const gchar *dump)
 		return NULL;
 
 	rootElement = xmlDocGetRootElement(doc);
-	if (strcmp(rootElement->name, "Session") != 0) {
+	if (strcmp((char*)rootElement->name, "Session") != 0) {
 		xmlFreeDoc(doc);
 		return NULL;
 	}

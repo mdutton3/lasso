@@ -321,7 +321,7 @@ lasso_login_build_assertion(LassoLogin *login,
 static gboolean
 lasso_login_must_ask_for_consent_private(LassoLogin *login)
 {
-	xmlChar *nameIDPolicy, *consent;
+	char *nameIDPolicy, *consent;
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoFederation *federation = NULL;
 
@@ -611,7 +611,7 @@ static void
 lasso_login_build_assertion_artifact(LassoLogin *login)
 {
 	xmlSecByte samlArt[42], *b64_samlArt;
-	xmlChar *identityProviderSuccinctID;
+	char *identityProviderSuccinctID;
 
 	identityProviderSuccinctID = lasso_sha1(
 			LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID);
@@ -619,12 +619,12 @@ lasso_login_build_assertion_artifact(LassoLogin *login)
 	/* Artifact Format is described in "Binding Profiles", 3.2.2.2. */
 	memcpy(samlArt, "\000\003", 2); /* type code */
 	memcpy(samlArt+2, identityProviderSuccinctID, 20);
-	lasso_build_random_sequence(samlArt+22, 20);
+	lasso_build_random_sequence((char*)samlArt+22, 20);
 
 	xmlFree(identityProviderSuccinctID);
 	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
 
-	login->assertionArtifact = g_strdup(b64_samlArt);
+	login->assertionArtifact = g_strdup((char*)b64_samlArt);
 	xmlFree(b64_samlArt);
 }
 
@@ -645,7 +645,8 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	LassoProvider *remote_provider;
 	LassoProfile *profile;
 	gchar *url;
-	xmlSecByte *b64_samlArt, *relayState;
+	xmlChar *b64_samlArt;
+	char *relayState;
 	gint ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -708,8 +709,9 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		}
 	}
 
-	b64_samlArt = xmlStrdup(login->assertionArtifact);
-	relayState = xmlURIEscapeStr(LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
+	b64_samlArt = xmlStrdup((xmlChar*)login->assertionArtifact);
+	relayState = (char*)xmlURIEscapeStr(
+			(xmlChar*)LASSO_LIB_AUTHN_REQUEST(profile->request)->RelayState, NULL);
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		xmlChar *escaped_artifact = xmlURIEscapeStr(b64_samlArt, NULL);
@@ -725,7 +727,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 	if (http_method == LASSO_HTTP_METHOD_POST) {
 		profile->msg_url = g_strdup(url);
-		profile->msg_body = g_strdup(b64_samlArt);
+		profile->msg_body = g_strdup((char*)b64_samlArt);
 		if (relayState != NULL) {
 			profile->msg_relayState = g_strdup(relayState);
 		}
@@ -1168,7 +1170,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 		artifact_b64 = g_strdup(response_msg);
 	}
 
-	i = xmlSecBase64Decode(artifact_b64, artifact, 43);
+	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 43);
 	if (i < 0 || i > 42) {
 		g_free(artifact_b64);
 		return LASSO_ERROR_UNDEFINED;
@@ -1182,7 +1184,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	memcpy(provider_succinct_id, artifact+2, 20);
 	provider_succinct_id[20] = 0;
 
-	provider_succinct_id_b64 = xmlSecBase64Encode(provider_succinct_id, 20, 0);
+	provider_succinct_id_b64 = (char*)xmlSecBase64Encode((xmlChar*)provider_succinct_id, 20, 0);
 
 	LASSO_PROFILE(login)->remote_providerID = lasso_server_get_providerID_from_hash(
 			LASSO_PROFILE(login)->server, provider_succinct_id_b64);
@@ -1611,12 +1613,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoLogin *login = LASSO_LOGIN(node);
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlSetProp(xmlnode, "LoginDumpVersion", "2");
+	xmlSetProp(xmlnode, (xmlChar*)"LoginDumpVersion", (xmlChar*)"2");
 
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART)
-		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", "Artifact");
+		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"Artifact");
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST)
-		xmlNewTextChild(xmlnode, NULL, "ProtocolProfile", "POST");
+		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ProtocolProfile", (xmlChar*)"POST");
 
 	return xmlnode;
 }
@@ -1637,9 +1639,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			t = t->next;
 			continue;
 		}
-		if (strcmp(t->name, "ProtocolProfile") == 0) {
+		if (strcmp((char*)t->name, "ProtocolProfile") == 0) {
 			char *s;
-			s = xmlNodeGetContent(t);
+			s = (char*)xmlNodeGetContent(t);
 			if (strcmp(s, "Artifact") == 0)
 				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 			if (strcmp(s, "POST") == 0)

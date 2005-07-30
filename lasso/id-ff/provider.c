@@ -301,7 +301,7 @@ lasso_provider_get_base64_succinct_id(LassoProvider *provider)
 	char *succinct_id, *base64_succinct_id;
 
 	succinct_id = lasso_sha1(provider->ProviderID);
-	base64_succinct_id = xmlSecBase64Encode(succinct_id, 20, 0);
+	base64_succinct_id = (char*)xmlSecBase64Encode((xmlChar*)succinct_id, 20, 0);
 	xmlFree(succinct_id);
 	return base64_succinct_id;
 }
@@ -355,17 +355,17 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			t = t->next;
 			continue;
 		}
-		if (strcmp(t->name, "KeyDescriptor") == 0) {
-			char *use = xmlGetProp(t, "use");
+		if (strcmp((char*)t->name, "KeyDescriptor") == 0) {
+			char *use = (char*)xmlGetProp(t, (xmlChar*)"use");
 			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
 			t = t->next;
 			continue;
 		}
-		if (strcmp(t->name, "AssertionConsumerServiceURL") == 0) {
-			char *isDefault = xmlGetProp(t, "isDefault");
-			char *id = xmlGetProp(t, "id");
+		if (strcmp((char*)t->name, "AssertionConsumerServiceURL") == 0) {
+			char *isDefault = (char*)xmlGetProp(t, (xmlChar*)"isDefault");
+			char *id = (char*)xmlGetProp(t, (xmlChar*)"id");
 			name = g_strdup_printf("%s %s", t->name, id);
 			if (isDefault) {
 				if (strcmp(isDefault, "true") == 0 || strcmp(isDefault, "1") == 0)
@@ -375,11 +375,11 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			}
 			xmlFree(id);
 		} else {
-			name = g_strdup(t->name);
+			name = g_strdup((char*)t->name);
 		}
 		elements = g_hash_table_lookup(descriptor, name);
 		value = xmlNodeGetContent(t);
-		elements = g_list_append(elements, g_strdup(value));
+		elements = g_list_append(elements, g_strdup((char*)value));
 		xmlFree(value);
 		g_hash_table_insert(descriptor, name, elements);
 		t = t->next;
@@ -394,9 +394,9 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	char *roles[] = { "None", "SP", "IdP"};
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlSetProp(xmlnode, "ProviderDumpVersion", "2");
+	xmlSetProp(xmlnode, (xmlChar*)"ProviderDumpVersion", (xmlChar*)"2");
 	if (provider->role)
-		xmlSetProp(xmlnode, "ProviderRole", roles[provider->role]);
+		xmlSetProp(xmlnode, (xmlChar*)"ProviderRole", (xmlChar*)roles[provider->role]);
 
 	return xmlnode;
 }
@@ -413,10 +413,10 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	if (xmlnode == NULL)
 		return LASSO_ERROR_UNDEFINED;
 
-	s = xmlGetProp(xmlnode, "ProviderRole");
-	if (s && strcmp(s, "SP") == 0)
+	s = xmlGetProp(xmlnode, (xmlChar*)"ProviderRole");
+	if (s && strcmp((char*)s, "SP") == 0)
 		provider->role = LASSO_PROVIDER_ROLE_SP;
-	if (s && strcmp(s, "IdP") == 0)
+	if (s && strcmp((char*)s, "IdP") == 0)
 		provider->role = LASSO_PROVIDER_ROLE_IDP;
 	if (s)
 		xmlFree(s);
@@ -599,15 +599,15 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	provider->private_data->conformance = LIBERTY_1_2;
 
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, "md", LASSO_METADATA_HREF);
-	xpathObj = xmlXPathEvalExpression("/md:EntityDescriptor", xpathCtx);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"md", (xmlChar*)LASSO_METADATA_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"/md:EntityDescriptor", xpathCtx);
 	/* if empty: not a ID-FF 1.2 metadata file -> bails out */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
 		xmlXPathFreeObject(xpathObj);
-		xmlXPathRegisterNs(xpathCtx, "md11",
-				"http://projectliberty.org/schemas/core/2002/12");
+		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"md11",
+				(xmlChar*)"http://projectliberty.org/schemas/core/2002/12");
 		xpathObj = xmlXPathEvalExpression(
-				"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
+				(xmlChar*)"/md11:SPDescriptor|/md11:IDPDescriptor", xpathCtx);
 		if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
 			xmlXPathFreeObject(xpathObj);
 			xmlFreeDoc(doc);
@@ -619,9 +619,9 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 		xpath_sp = "/md11:SPDescriptor";
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
-	provider->ProviderID = xmlGetProp(node, "providerID");
+	provider->ProviderID = (char*)xmlGetProp(node, (xmlChar*)"providerID");
 
-	xpathObj = xmlXPathEvalExpression(xpath_idp, xpathCtx);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_idp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->IDPDescriptor, provider);
@@ -629,8 +629,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
-				if (strcmp(node->name, "ProviderID") == 0) {
-					provider->ProviderID = xmlNodeGetContent(node);
+				if (strcmp((char*)node->name, "ProviderID") == 0) {
+					provider->ProviderID = (char*)xmlNodeGetContent(node);
 					break;
 				}
 				node = node->next;
@@ -639,7 +639,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	}
 	xmlXPathFreeObject(xpathObj);
 
-	xpathObj = xmlXPathEvalExpression(xpath_sp, xpathCtx);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_sp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->SPDescriptor, provider);
@@ -647,8 +647,8 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
-				if (strcmp(node->name, "ProviderID") == 0) {
-					provider->ProviderID = xmlNodeGetContent(node);
+				if (strcmp((char*)node->name, "ProviderID") == 0) {
+					provider->ProviderID = (char*)xmlNodeGetContent(node);
 					break;
 				}
 				node = node->next;
@@ -657,7 +657,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	}
 	xmlXPathFreeObject(xpathObj);
 
-	xpathObj = xmlXPathEvalExpression(xpath_organization, xpathCtx);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_organization, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		provider->private_data->organization = xmlCopyNode(
 				xpathObj->nodesetval->nodeTab[0], 1);
@@ -722,12 +722,12 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		/* could use XPath but going down manually will do */
 		while (t) {
 			if (t->type == XML_ELEMENT_NODE) {
-				if (strcmp(t->name, "KeyInfo") == 0 ||
-						strcmp(t->name, "X509Data") == 0) {
+				if (strcmp((char*)t->name, "KeyInfo") == 0 ||
+						strcmp((char*)t->name, "X509Data") == 0) {
 					t = t->children;
 					continue;
 				}
-				if (strcmp(t->name, "X509Certificate") == 0)
+				if (strcmp((char*)t->name, "X509Certificate") == 0)
 					break;
 			}
 			t = t->next;
@@ -736,7 +736,7 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			return;
 
 		b64_value = xmlNodeGetContent(t);
-		length = strlen(b64_value);
+		length = strlen((char*)b64_value);
 		value = g_malloc(length);
 		rc = xmlSecBase64Decode(b64_value, value, length);
 		if (rc < 0) {
@@ -826,7 +826,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
 		msg = g_malloc(strlen(message));
-		rc = xmlSecBase64Decode(message, msg, strlen(message));
+		rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 		if (rc < 0) {
 			g_free(msg);
 			return -3;
@@ -844,8 +844,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		xmlXPathObject *xpathObj;
 
 		xpathCtx = xmlXPathNewContext(doc);
-		xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
-		xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
+		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
+		xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 		}
@@ -860,8 +860,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	}
 
 	if (id_attr_name) {
-		char *id_value = xmlGetProp(xmlnode, id_attr_name);
-		xmlAttr *id_attr = xmlHasProp(xmlnode, id_attr_name);
+		xmlChar *id_value = xmlGetProp(xmlnode, (xmlChar*)id_attr_name);
+		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
 		if (id_value) {
 			xmlAddID(NULL, doc, id_value, id_attr);
 			xmlFree(id_value);
@@ -870,7 +870,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	sign = NULL;
 	for (sign = xmlnode->children; sign; sign = sign->next) {
-		if (strcmp(sign->name, "Signature") == 0)
+		if (strcmp((char*)sign->name, "Signature") == 0)
 			break;
 	}
 

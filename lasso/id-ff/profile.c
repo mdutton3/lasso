@@ -105,11 +105,11 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 
 	doc = xmlParseMemory(soap, strlen(soap));
 	xpathCtx = xmlXPathNewContext(doc);
-	xmlXPathRegisterNs(xpathCtx, "s", LASSO_SOAP_ENV_HREF);
-	xpathObj = xmlXPathEvalExpression("//s:Body/*", xpathCtx);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
 
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		name = xpathObj->nodesetval->nodeTab[0]->name;
+		name = (char*)xpathObj->nodesetval->nodeTab[0]->name;
 		ns = xpathObj->nodesetval->nodeTab[0]->ns;
 	}
 
@@ -128,13 +128,13 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	} else if (strcmp(name, "AuthnRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_LECP;
 	} else if (strcmp(name, "Query") == 0) {
-		if (strcmp(ns->href, LASSO_DISCO_HREF) == 0) {
+		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type = LASSO_REQUEST_TYPE_DISCO_QUERY;
 		} else {
 			type = LASSO_REQUEST_TYPE_DST_QUERY;
 		}
 	} else if (strcmp(name, "Modify") == 0) {
-		if (strcmp(ns->href, LASSO_DISCO_HREF) == 0) {
+		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
 			type =LASSO_REQUEST_TYPE_DISCO_MODIFY;
 		} else {
 			type =LASSO_REQUEST_TYPE_DST_MODIFY;	

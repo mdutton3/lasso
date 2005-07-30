@@ -110,7 +110,7 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 			continue;
 		}
 		
-		if (xmlnode->ns && strcmp(xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
+		if (xmlnode->ns && strcmp((char*)xmlnode->ns->href, LASSO_LIB_HREF) == 0) {
 			char *typename, *gtypename;
 			GType gtype;
 
@@ -120,10 +120,12 @@ insure_namespace(xmlNode *xmlnode, xmlNs *ns)
 
 			if (gtype) {
 				xmlSetNs(xmlnode, ns);
-				if (xmlHasNsProp(t, "type", LASSO_XSI_HREF) == NULL) {
-					xsi_ns = xmlNewNs(xmlnode,
-							LASSO_XSI_HREF, LASSO_XSI_PREFIX);
-					xmlNewNsProp(xmlnode, xsi_ns, "type", typename);
+				if (xmlHasNsProp(t, (xmlChar*)"type",
+							(xmlChar*)LASSO_XSI_HREF) == NULL) {
+					xsi_ns = xmlNewNs(xmlnode, (xmlChar*)LASSO_XSI_HREF,
+							(xmlChar*)LASSO_XSI_PREFIX);
+					xmlNewNsProp(xmlnode, xsi_ns, (xmlChar*)"type",
+							(xmlChar*)typename);
 				}
 			}
 			g_free(gtypename);
@@ -146,7 +148,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	int rc;
 	
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	ns = xmlSearchNs(NULL, xmlnode, "saml");
+	ns = xmlSearchNs(NULL, xmlnode, (xmlChar*)"saml");
 	insure_namespace(xmlnode, ns);
 
 	if (lasso_dump == FALSE && assertion->sign_type) {

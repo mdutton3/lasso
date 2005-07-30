@@ -868,8 +868,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlNodeSetName(xmlnode, "Logout");
-	xmlSetProp(xmlnode, "LogoutDumpVersion", "2");
+	xmlNodeSetName(xmlnode, (xmlChar*)"Logout");
+	xmlSetProp(xmlnode, (xmlChar*)"LogoutDumpVersion", (xmlChar*)"2");
 
 	return xmlnode;
 }

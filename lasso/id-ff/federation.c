@@ -147,7 +147,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlSetProp(xmlnode, "FederationDumpVersion", "2");
+	xmlSetProp(xmlnode, (xmlChar*)"FederationDumpVersion", (xmlChar*)"2");
 
 	return xmlnode;
 }
