@@ -57,6 +57,7 @@ typedef struct _LassoProfileServicePrivate LassoProfileServicePrivate;
 struct _LassoProfileService {
 	LassoWsfProfile parent;
 
+	xmlDoc *profileDataXmlDoc;
 };
 
 struct _LassoProfileServiceClass {
@@ -113,6 +114,19 @@ LASSO_EXPORT gint lasso_profile_service_process_query_response_msg(LassoProfileS
 								   const gchar *prefix,
 								   const gchar *href,
 								   const gchar *soap_msg);
+
+LASSO_EXPORT gint lasso_profile_service_validate_modify(LassoProfileService *service,
+					const gchar *prefix,
+					const gchar *href);
+
+LASSO_EXPORT gint lasso_profile_service_validate_query(LassoProfileService *service,
+					const gchar *prefix,
+					const gchar *href);
+
+LASSO_EXPORT gint lasso_profile_service_set_xml_node(LassoProfileService *service,
+					const gchar *prefix,
+					const gchar *href,
+					xmlNodePtr xmlNode);
 
 #ifdef __cplusplus
 }

@@ -24,10 +24,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
 %{
 #include <lasso/id-wsf/authentication.h>
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/interaction_profile_service.h>
+#include <lasso/id-wsf/personal_profile_service.h>
 #include <lasso/id-wsf/profile_service.h>
 #include <lasso/xml/disco_authenticate_requester.h>
 #include <lasso/xml/disco_authorize_requester.h>
@@ -3645,6 +3647,7 @@ typedef struct {
 	THROW_ERROR
 	int processResponseMsg(char *msg);
 	END_THROW_ERROR
+
 }
 
 %{
@@ -3697,6 +3700,208 @@ typedef struct {
 #define LassoInteractionProfileService_processResponseMsg lasso_interaction_profile_service_process_response_msg
 
 %}
+
+/***********************************************************************
+ * lasso:PersonalProfileService
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(PersonalProfileService) LassoPersonalProfileService;
+#endif
+typedef struct {
+} LassoPersonalProfileService;
+%extend LassoPersonalProfileService {
+	/* Attributes inherited from WsfProfile */
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoPersonalProfileService(LassoServer *server);
+
+	~LassoPersonalProfileService();
+
+	/* Methods inherited from WsfProfile */
+
+	THROW_ERROR
+	int buildRequestMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
+
+	/* Methods */
+		
+	LassoDstModification *initModify(LassoDiscoResourceOffering *resourceOffering,
+							LassoDiscoDescription *description,
+							char *select);
+		
+	LassoDstQueryItem *initQuery(
+						LassoDiscoResourceOffering *resourceOffering,
+						LassoDiscoDescription *description,
+						char *select);
+
+	THROW_ERROR
+	int processModifyMsg(char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processModifyResponseMsg(char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processQueryMsg(char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processQueryResponseMsg(char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int setXmlNode(LassoXmlNode *xmlNode);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateModify();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateQuery();
+	END_THROW_ERROR
+
+}
+
+%{
+
+/* Attributes inherited from WsfProfile implementations */
+
+/* msgBody */
+#define LassoPersonalProfileService_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoPersonalProfileService_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
+
+/* msgUrl */
+#define LassoPersonalProfileService_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoPersonalProfileService_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+
+/* request */
+#define LassoPersonalProfileService_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoPersonalProfileService_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoPersonalProfileService_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoPersonalProfileService_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoPersonalProfileService_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoPersonalProfileService_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoPersonalProfileService_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoPersonalProfileService_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoPersonalProfileService_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoPersonalProfileService_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoPersonalProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoPersonalProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoPersonalProfileService lasso_personal_profile_service_new
+#define delete_LassoPersonalProfileService(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from WsfProfile */
+#define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoPersonalProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
+
+/* Methods implementations */
+#define LassoPersonalProfileService_initModify lasso_personal_profile_service_init_modify
+#define LassoPersonalProfileService_initQuery lasso_personal_profile_service_init_query
+#define LassoPersonalProfileService_processModifyMsg lasso_personal_profile_service_process_modify_msg
+#define LassoPersonalProfileService_processModifyResponseMsg lasso_personal_profile_service_process_modify_response_msg
+#define LassoPersonalProfileService_processQueryMsg lasso_personal_profile_service_process_query_msg
+#define LassoPersonalProfileService_processQueryResponseMsg lasso_personal_profile_service_process_query_response_msg
+#define LassoPersonalProfileService_setXmlNode lasso_personal_profile_service_set_xml_node
+#define LassoPersonalProfileService_validateModify lasso_personal_profile_service_validate_modify
+#define LassoPersonalProfileService_validateQuery lasso_personal_profile_service_validate_query
+
+%}
+
+ 
+/***********************************************************************
+ * lasso:xmlNode
+ ***********************************************************************/
+
+#ifndef SWIGPHP4
+%rename(XmlNode) LassoXmlNode;
+#endif
+%{
+typedef xmlNode LassoXmlNode;
+%}
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoXmlNode(char *name);
+
+		/* Methods */
+		void addChild(LassoXmlNode *node) {
+			xmlAddChild((xmlNode *) self, (xmlNode *) node);
+		}
+		
+		void addProperty(char *name, char *value) {
+			xmlSetProp((xmlNode *) self, (xmlChar *) name, (xmlChar *) value);
+		}
+
+		%newobject dump;
+		char *dump() {
+			char *ret;
+			xmlOutputBuffer *buf;
+
+			buf = xmlAllocOutputBuffer(NULL);
+			if (buf == NULL) {
+				return NULL;
+			}
+			xmlNodeDumpOutput(buf, NULL, (xmlNode *) self, 0, 1, NULL);
+			xmlOutputBufferFlush(buf);
+			if (buf->conv != NULL) {
+				ret = g_strdup(buf->conv->content);
+			} else {
+				ret = g_strdup(buf->buffer->content);
+			}
+			xmlOutputBufferClose(buf);
+
+			return ret;
+		}
+		
+		void setContent(char *content) {
+			xmlNodeSetContent((xmlNode *) self, (xmlChar *) content);
+		}
+
+	}
+} LassoXmlNode;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+LassoXmlNode* new_LassoXmlNode(char *name) {
+	return (LassoXmlNode *) xmlNewNode(NULL, name);
+}
+
+%}
+
 
 
 /***********************************************************************
@@ -3754,7 +3959,7 @@ typedef struct {
 
 	LassoDstModification *addModification(char *select);
 
-        LassoDstQueryItem *addQueryItem(char *select);
+	LassoDstQueryItem *addQueryItem(char *select);
 		
 	LassoDstModification *initModify(char *prefix,
 					 char *href,
@@ -3783,6 +3988,19 @@ typedef struct {
 	THROW_ERROR
 	int processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
 	END_THROW_ERROR
+	
+	THROW_ERROR
+	int setXmlNode(char *prefix, char *href, LassoXmlNode *xmlNode);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateModify(char *prefix, char *href);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateQuery(char *prefix, char *href);
+	END_THROW_ERROR
+
 }
 
 %{
@@ -3839,6 +4057,9 @@ typedef struct {
 #define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
 #define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
+#define LassoProfileService_setXmlNode lasso_profile_service_set_xml_node
+#define LassoProfileService_validateModify lasso_profile_service_validate_modify
+#define LassoProfileService_validateQuery lasso_profile_service_validate_query
 
 %}
 

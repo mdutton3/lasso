@@ -12,6 +12,7 @@ WSF_C_FILES = \
 	authentication.c \
 	discovery.c \
 	interaction_profile_service.c \
+	personal_profile_service.c \
 	profile_service.c \
 	wsf_profile.c	
 
@@ -19,6 +20,7 @@ WSF_H_FILES = \
 	authentication.h \
 	discovery.h \
 	interaction_profile_service.h \
+	personal_profile_service.h \
 	profile_service.h \
 	wsf_profile.h
 endif

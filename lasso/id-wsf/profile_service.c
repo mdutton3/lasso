@@ -98,11 +98,11 @@ lasso_profile_service_add_query_item(LassoProfileService *service, const gchar *
 
 LassoDstModification*
 lasso_profile_service_init_modify(LassoProfileService *service,
-				  const gchar *prefix,
-				  const gchar *href,
-				  LassoDiscoResourceOffering *resourceOffering,
-				  LassoDiscoDescription *description,
-				  const gchar *select)
+	const gchar *prefix,
+	const gchar *href,
+	LassoDiscoResourceOffering *resourceOffering,
+	LassoDiscoDescription *description,
+	const gchar *select)
 {
 	LassoDstModification *modification;
 	LassoWsfProfile *profile;
@@ -149,11 +149,11 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 
 LassoDstQueryItem*
 lasso_profile_service_init_query(LassoProfileService *service,
-				 const gchar *prefix,
-				 const gchar *href,
-				 LassoDiscoResourceOffering *resourceOffering,
-				 LassoDiscoDescription *description,
-				 const gchar *select)
+	const gchar *prefix,
+	const gchar *href,
+	LassoDiscoResourceOffering *resourceOffering,
+	LassoDiscoDescription *description,
+	const gchar *select)
 {
 	LassoDstQueryItem *query_item;
 	LassoWsfProfile *profile;
@@ -201,9 +201,9 @@ lasso_profile_service_init_query(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_modify_msg(LassoProfileService *service,
-					 const gchar *prefix, /* FIXME : must be get from message */
-					 const gchar *href,   /* FIXME : must be get from message */
-					 const gchar *modify_soap_msg)
+	const gchar *prefix, /* FIXME : must be get from message */
+	const gchar *href,   /* FIXME : must be get from message */
+	const gchar *modify_soap_msg)
 {
 	LassoDstModifyResponse *response;
 	LassoSoapBindingCorrelation *correlation;
@@ -240,9 +240,9 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_query_msg(LassoProfileService *service,
-					const gchar *prefix, /* FIXME : must be get from message */
-					const gchar *href,   /* FIXME : must be get from message */
-					const gchar *soap_msg)
+	const gchar *prefix, /* FIXME : must be get from message */
+	const gchar *href,   /* FIXME : must be get from message */
+	const gchar *soap_msg)
 {
 	LassoDstQueryResponse *response;
 	LassoSoapBindingCorrelation *correlation;
@@ -271,11 +271,12 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 	return 0;
 }
 
+
 gint
 lasso_profile_service_process_query_response_msg(LassoProfileService *service,
-						 const gchar *prefix,
-						 const gchar *href,
-						 const gchar *soap_msg)
+	const gchar *prefix,
+	const gchar *href,
+	const gchar *soap_msg)
 {
 	LassoDstQueryResponse *response;
 	LassoSoapEnvelope *envelope;
@@ -294,9 +295,9 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 
 gint
 lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
-						  const gchar *prefix,
-						  const gchar *href,
-						  const gchar *soap_msg)
+	const gchar *prefix,
+	const gchar *href,
+	const gchar *soap_msg)
 {
 	LassoDstModifyResponse *response;
 	LassoSoapEnvelope *envelope;
@@ -313,6 +314,98 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 	return 0;
 }
 
+gint
+lasso_profile_service_validate_modify(LassoProfileService *service,
+	const gchar *prefix,
+	const gchar *href)
+{
+
+	return -1;
+}
+
+gint
+lasso_profile_service_validate_query(LassoProfileService *service,
+	const gchar *prefix,
+	const gchar *href)
+{
+	LassoDstQuery *request;
+	LassoDstQueryResponse *response;
+	GList *queryItems;
+	LassoDstQueryItem *queryItem;
+	char *select;
+	
+	xmlNode *xmlnode;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	char *data;
+	LassoDstData *dstData;
+
+	xmlOutputBuffer *buf;
+
+
+	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, -1);
+
+	request = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request);
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+
+	queryItems = request->QueryItem;
+	while (queryItems) {
+		queryItem = LASSO_DST_QUERY_ITEM(queryItems->data);
+		select = queryItem->Select;
+
+		xpathCtx = xmlXPathNewContext(LASSO_PROFILE_SERVICE(service)->profileDataXmlDoc);
+		xmlXPathRegisterNs(xpathCtx, (xmlChar *) prefix, (xmlChar *) href);
+		xpathObj = xmlXPathEvalExpression((xmlChar *) select, xpathCtx);
+		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+			xmlnode = xpathObj->nodesetval->nodeTab[0];
+			buf = xmlAllocOutputBuffer(NULL);
+			if (buf == NULL) {
+				continue;
+			}
+			xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
+			xmlOutputBufferFlush(buf);
+			if (buf->conv != NULL) {
+				data = g_strdup((gchar *) buf->conv->content);
+			} else {
+				data = g_strdup((gchar *) buf->buffer->content);
+			}
+			
+			dstData = lasso_profile_service_add_data(LASSO_PROFILE_SERVICE(service),
+				data);
+			if (queryItem->itemID != NULL) {
+				dstData->itemIDRef = g_strdup(queryItem->itemID);
+			}
+
+			xmlOutputBufferClose(buf);
+			xmlFreeNode(xmlnode);
+		}
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
+
+		queryItems = queryItems->next;
+	}
+	
+	return 0;
+}
+
+gint
+lasso_profile_service_set_xml_node(LassoProfileService *service,
+	const char *prefix,
+	const char *href,
+	xmlNodePtr xmlNode)
+{
+	xmlNsPtr ns;
+
+	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, -1);
+	g_return_val_if_fail(xmlNode != NULL, -1);
+
+	ns = xmlNewNs(xmlNode, (const xmlChar *) href, (const xmlChar *) prefix);
+	xmlSetNs(xmlNode, ns);
+	service->profileDataXmlDoc = xmlNewDoc((const xmlChar *) "1.0");
+	xmlDocSetRootElement(service->profileDataXmlDoc, xmlNode);
+
+	return 0;
+}
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -325,7 +418,7 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 static void
 instance_init(LassoProfileService *service)
 {
-
+	service->profileDataXmlDoc = NULL;
 }
 
 static void
