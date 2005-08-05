@@ -58,7 +58,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoSoapBindingExtTimeout *node)
 {
-	node->maxProcessingTime = NULL;
+	node->maxProcessingTime = 0;
 	node->id = NULL;
 	node->mustUnderstand = NULL;
 	node->actor = NULL;
