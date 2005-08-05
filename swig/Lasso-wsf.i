@@ -3755,6 +3755,8 @@ typedef struct {
 						LassoDiscoResourceOffering *resourceOffering,
 						LassoDiscoDescription *description,
 						char *select);
+	
+	gchar* getEmail();
 
 	THROW_ERROR
 	int processModifyMsg(char *soap_msg);
@@ -3828,6 +3830,7 @@ typedef struct {
 /* Methods implementations */
 #define LassoPersonalProfileService_initModify lasso_personal_profile_service_init_modify
 #define LassoPersonalProfileService_initQuery lasso_personal_profile_service_init_query
+#define LassoPersonalProfileService_getEmail lasso_personal_profile_service_get_email
 #define LassoPersonalProfileService_processModifyMsg lasso_personal_profile_service_process_modify_msg
 #define LassoPersonalProfileService_processModifyResponseMsg lasso_personal_profile_service_process_modify_response_msg
 #define LassoPersonalProfileService_processQueryMsg lasso_personal_profile_service_process_query_msg
@@ -3876,9 +3879,9 @@ typedef struct {
 			xmlNodeDumpOutput(buf, NULL, (xmlNode *) self, 0, 1, NULL);
 			xmlOutputBufferFlush(buf);
 			if (buf->conv != NULL) {
-				ret = g_strdup(buf->conv->content);
+				ret = (char *) g_strdup((gchar *) buf->conv->content);
 			} else {
-				ret = g_strdup(buf->buffer->content);
+				ret = (char *) g_strdup((gchar *) buf->buffer->content);
 			}
 			xmlOutputBufferClose(buf);
 
@@ -3897,7 +3900,7 @@ typedef struct {
 /* Constructors, destructors & static methods implementations */
 
 LassoXmlNode* new_LassoXmlNode(char *name) {
-	return (LassoXmlNode *) xmlNewNode(NULL, name);
+	return (LassoXmlNode *) xmlNewNode(NULL, (xmlChar *) name);
 }
 
 %}
