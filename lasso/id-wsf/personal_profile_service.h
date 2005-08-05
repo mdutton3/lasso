@@ -81,6 +81,8 @@ LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_init_query(
 	LassoDiscoDescription *desc,
 	const gchar *select);
 
+LASSO_EXPORT gchar* lasso_personal_profile_service_get_email(LassoPersonalProfileService *service);
+
 LASSO_EXPORT gint lasso_personal_profile_service_process_modify_msg(
 	LassoPersonalProfileService *service,
 	const gchar *soap_msg);

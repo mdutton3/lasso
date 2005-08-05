@@ -23,6 +23,8 @@
  */
 
 #include <lasso/id-wsf/personal_profile_service.h>
+#include <lasso/xml/dst_query_response.h>
+#include <lasso/xml/dst_data.h>
 
 
 /*****************************************************************************/
@@ -59,6 +61,70 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *service,
 				resourceOffering,
 				description,
 				select);
+}
+
+gchar*
+lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
+{
+	LassoDstQueryResponse *response;
+	GList *datas;
+	LassoDstData *data;
+	xmlNode *root, *child;
+	xmlChar *msgAccount, *msgProvider;
+	char *email;
+
+	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
+
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+	datas = response->Data;
+	msgAccount = NULL;
+	msgProvider = NULL;
+	while (datas != NULL) {
+		data = LASSO_DST_DATA(datas->data);
+
+		root = (xmlNode *) data->any->data;
+		if (root == NULL) {
+			printf("\tDEBUG - Root element not found ...\n");
+			datas = datas->next;
+			continue;
+		}
+
+		if (strcmp((char *) root->name, "MsgContact") == 0) {
+			child = root->children;
+			while (child != NULL) {
+				if (child->type != XML_ELEMENT_NODE) {
+					child = child->next;
+					continue;
+				}
+
+				if (strcmp((char *) child->name, "MsgAccount") == 0) {
+					msgAccount = xmlNodeGetContent(child);
+				}
+				else if (strcmp((char *) child->name, "MsgProvider") == 0) {
+					msgProvider = xmlNodeGetContent(child);
+				}
+				
+				if (msgAccount != NULL && msgProvider != NULL) {
+					break;
+				}
+		
+				child = child->next;
+			}
+		}
+
+		if (msgAccount != NULL && msgProvider != NULL) {
+			break;
+		}
+
+		datas = datas->next;
+	}
+	if (msgAccount != NULL || msgProvider != NULL) {
+		email = g_strdup_printf("%s@%s", msgAccount, msgProvider);
+	}
+	xmlFree(msgAccount);
+	xmlFree(msgProvider);
+
+	return email;
 }
 
 gint
