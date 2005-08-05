@@ -37,6 +37,7 @@ extern "C" {
 #include <lasso/xml/dst_modification.h>
 #include <lasso/xml/dst_query_item.h>
 #include <lasso/xml/disco_resource_offering.h>
+#include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_PROFILE_SERVICE (lasso_profile_service_get_type())
 #define LASSO_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -94,6 +95,9 @@ LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_init_query(LassoProfileSer
 								 LassoDiscoResourceOffering *ro,
 								 LassoDiscoDescription *desc,
 								 const gchar *select);
+
+LASSO_EXPORT xmlNode* lasso_profile_service_get_xmlNode(LassoProfileService *service,
+	gchar *itemId);
 
 LASSO_EXPORT gint lasso_profile_service_process_modify_msg(LassoProfileService *service,
 							   const gchar *prefix,

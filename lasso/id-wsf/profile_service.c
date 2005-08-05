@@ -199,6 +199,36 @@ lasso_profile_service_init_query(LassoProfileService *service,
 	return query_item;
 }
 
+xmlNode*
+lasso_profile_service_get_xmlNode(LassoProfileService *service,
+	gchar *itemId)
+{
+	LassoDstQueryResponse *response;
+	GList *datas;
+	LassoDstData *data;
+	xmlNode *node;
+	
+	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, NULL);
+
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+	datas = response->Data;
+	if (itemId != NULL) {
+		while (datas != NULL) {
+			if (strcmp(data->itemIDRef, itemId) == 0) {
+				break;
+			}
+			datas = datas->next;
+		}
+	}
+	if (datas == NULL) {
+		return NULL;
+	}
+	data = LASSO_DST_DATA(datas->data);
+	node = (xmlNode *) data->any->data;
+
+	return xmlCopyNode(node, 1);
+}
+
 gint
 lasso_profile_service_process_modify_msg(LassoProfileService *service,
 	const gchar *prefix, /* FIXME : must be get from message */

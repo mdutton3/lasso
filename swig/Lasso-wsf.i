@@ -3701,6 +3701,71 @@ typedef struct {
 
 %}
 
+
+/***********************************************************************
+ * lasso:xmlNode
+ ***********************************************************************/
+
+#ifndef SWIGPHP4
+%rename(XmlNode) LassoXmlNode;
+#endif
+%{
+typedef xmlNode LassoXmlNode;
+%}
+typedef struct {
+	%extend {
+		/* Constructor, Destructor & Static Methods */
+
+		LassoXmlNode(char *name);
+
+		/* Methods */
+		void addChild(LassoXmlNode *node) {
+			xmlAddChild((xmlNode *) self, (xmlNode *) node);
+		}
+		
+		void addProperty(char *name, char *value) {
+			xmlSetProp((xmlNode *) self, (xmlChar *) name, (xmlChar *) value);
+		}
+
+		%newobject dump;
+		char *dump() {
+			char *ret;
+			xmlOutputBuffer *buf;
+
+			buf = xmlAllocOutputBuffer(NULL);
+			if (buf == NULL) {
+				return NULL;
+			}
+			xmlNodeDumpOutput(buf, NULL, (xmlNode *) self, 0, 1, NULL);
+			xmlOutputBufferFlush(buf);
+			if (buf->conv != NULL) {
+				ret = (char *) g_strdup((gchar *) buf->conv->content);
+			} else {
+				ret = (char *) g_strdup((gchar *) buf->buffer->content);
+			}
+			xmlOutputBufferClose(buf);
+
+			return ret;
+		}
+		
+		void setContent(char *content) {
+			xmlNodeSetContent((xmlNode *) self, (xmlChar *) content);
+		}
+
+	}
+} LassoXmlNode;
+
+%{
+
+/* Constructors, destructors & static methods implementations */
+
+LassoXmlNode* new_LassoXmlNode(char *name) {
+	return (LassoXmlNode *) xmlNewNode(NULL, (xmlChar *) name);
+}
+
+%}
+
+
 /***********************************************************************
  * lasso:PersonalProfileService
  ***********************************************************************/
@@ -3757,6 +3822,8 @@ typedef struct {
 						char *select);
 	
 	gchar* getEmail();
+	
+	LassoXmlNode *getXmlNode(char *itemId = NULL);
 
 	THROW_ERROR
 	int processModifyMsg(char *soap_msg);
@@ -3827,6 +3894,12 @@ typedef struct {
 #define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 #define LassoPersonalProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
+/* Implementations of methods inherited from PersonalProfile */
+LassoXmlNode* LassoPersonalProfileService_getXmlNode(LassoPersonalProfileService *self, char *itemId)
+{
+	return lasso_profile_service_get_xmlNode(LASSO_PROFILE_SERVICE(self), itemId);
+}
+
 /* Methods implementations */
 #define LassoPersonalProfileService_initModify lasso_personal_profile_service_init_modify
 #define LassoPersonalProfileService_initQuery lasso_personal_profile_service_init_query
@@ -3840,71 +3913,6 @@ typedef struct {
 #define LassoPersonalProfileService_validateQuery lasso_personal_profile_service_validate_query
 
 %}
-
- 
-/***********************************************************************
- * lasso:xmlNode
- ***********************************************************************/
-
-#ifndef SWIGPHP4
-%rename(XmlNode) LassoXmlNode;
-#endif
-%{
-typedef xmlNode LassoXmlNode;
-%}
-typedef struct {
-	%extend {
-		/* Constructor, Destructor & Static Methods */
-
-		LassoXmlNode(char *name);
-
-		/* Methods */
-		void addChild(LassoXmlNode *node) {
-			xmlAddChild((xmlNode *) self, (xmlNode *) node);
-		}
-		
-		void addProperty(char *name, char *value) {
-			xmlSetProp((xmlNode *) self, (xmlChar *) name, (xmlChar *) value);
-		}
-
-		%newobject dump;
-		char *dump() {
-			char *ret;
-			xmlOutputBuffer *buf;
-
-			buf = xmlAllocOutputBuffer(NULL);
-			if (buf == NULL) {
-				return NULL;
-			}
-			xmlNodeDumpOutput(buf, NULL, (xmlNode *) self, 0, 1, NULL);
-			xmlOutputBufferFlush(buf);
-			if (buf->conv != NULL) {
-				ret = (char *) g_strdup((gchar *) buf->conv->content);
-			} else {
-				ret = (char *) g_strdup((gchar *) buf->buffer->content);
-			}
-			xmlOutputBufferClose(buf);
-
-			return ret;
-		}
-		
-		void setContent(char *content) {
-			xmlNodeSetContent((xmlNode *) self, (xmlChar *) content);
-		}
-
-	}
-} LassoXmlNode;
-
-%{
-
-/* Constructors, destructors & static methods implementations */
-
-LassoXmlNode* new_LassoXmlNode(char *name) {
-	return (LassoXmlNode *) xmlNewNode(NULL, (xmlChar *) name);
-}
-
-%}
-
 
 
 /***********************************************************************
@@ -3975,6 +3983,8 @@ typedef struct {
 				     LassoDiscoResourceOffering *resourceOffering,
 				     LassoDiscoDescription *description,
 				     char *select);
+					 
+	LassoXmlNode *getXmlNode(char *itemId = NULL);
 
 	THROW_ERROR
 	int processModifyMsg(char *prefix, char *href, char *soap_msg);
@@ -4056,6 +4066,7 @@ typedef struct {
 #define LassoProfileService_addQueryItem lasso_profile_service_add_query_item
 #define LassoProfileService_initModify lasso_profile_service_init_modify
 #define LassoProfileService_initQuery lasso_profile_service_init_query
+#define LassoProfileService_getXmlNode lasso_profile_service_get_xmlNode
 #define LassoProfileService_processModifyMsg lasso_profile_service_process_modify_msg
 #define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
