@@ -22,11 +22,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <lasso/lasso_config.h>
 #include <lasso/id-ff/identity.h>
 #include <lasso/id-ff/identityprivate.h>
 
 struct _LassoIdentityPrivate
 {
+	GList *resource_offerings;
 	gboolean dispose_has_run;
 };
 
@@ -108,6 +110,39 @@ lasso_identity_destroy(LassoIdentity *identity)
 	lasso_node_destroy(LASSO_NODE(identity));
 }
 
+#ifdef LASSO_WSF_ENABLED
+gint
+lasso_identity_add_resource_offering(LassoIdentity *identity,
+		LassoDiscoResourceOffering *offering)
+{
+	/* XXX: add proper entry id to offering */
+	int entry_id = 1;
+	char entry_id_s[20];
+	GList *iter;
+	LassoDiscoResourceOffering *t;
+	
+	g_snprintf(entry_id_s, 18, "%d", entry_id);
+	iter = identity->private_data->resource_offerings;
+	while (iter) {
+		t = iter->data;
+		iter = g_list_next(iter);
+		if (strcmp(t->entryID, entry_id_s) == 0) {
+			entry_id++;
+			g_snprintf(entry_id_s, 18, "%d", entry_id);
+			iter = identity->private_data->resource_offerings; /* rewind */
+		}
+	}
+		
+	offering->entryID = g_strdup(entry_id_s);
+	identity->private_data->resource_offerings = g_list_append(
+			identity->private_data->resource_offerings, g_object_ref(offering));
+	identity->is_dirty = TRUE;
+
+	return 0;
+}
+#endif
+
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -119,6 +154,15 @@ add_federation_childnode(gchar *key, LassoFederation *value, xmlNode *xmlnode)
 {
 	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
 }
+
+#ifdef LASSO_WSF_ENABLED
+static void
+add_resource_offering_childnode(LassoNode *value, xmlNode *xmlnode)
+{
+	xmlAddChild(xmlnode, lasso_node_get_xmlNode(LASSO_NODE(value), TRUE));
+}
+
+#endif
 
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
@@ -133,6 +177,10 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	if (g_hash_table_size(identity->federations))
 		g_hash_table_foreach(identity->federations,
 				(GHFunc)add_federation_childnode, xmlnode);
+#ifdef LASSO_WSF_ENABLED
+	g_list_foreach(identity->private_data->resource_offerings,
+			(GFunc)add_resource_offering_childnode, xmlnode);
+#endif
 
 	return xmlnode;
 }
@@ -201,7 +249,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoIdentity *identity)
 {
-	identity->private_data = g_new(LassoIdentityPrivate, 1);
+	identity->private_data = g_new0(LassoIdentityPrivate, 1);
 	identity->private_data->dispose_has_run = FALSE;
 
 	identity->federations = g_hash_table_new_full(g_str_hash, g_str_equal,

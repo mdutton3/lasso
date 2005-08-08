@@ -32,6 +32,13 @@ extern "C" {
 gint lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federation);
 gint lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID);
 
+#ifdef LASSO_WSF_ENABLED
+#include <lasso/xml/disco_resource_offering.h>
+gint lasso_identity_add_resource_offering(LassoIdentity *identity,
+		LassoDiscoResourceOffering *offering);
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

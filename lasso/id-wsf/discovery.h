@@ -105,6 +105,7 @@ LASSO_EXPORT gchar* lasso_discovery_dump(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
 		LassoDiscoResourceOffering *resourceOffering);
+LASSO_EXPORT gint lasso_discovery_crunch_modify_msg(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 					      LassoDiscoResourceOffering *resourceOffering,

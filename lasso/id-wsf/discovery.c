@@ -27,6 +27,7 @@
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
+#include <lasso/id-ff/identityprivate.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -390,6 +391,25 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 		discovery->resource_id = g_object_ref(request->ResourceID);
 	if (request->EncryptedResourceID)
 		discovery->encrypted_resource_id = g_object_ref(request->EncryptedResourceID);
+
+	return 0;
+}
+
+gint
+lasso_discovery_crunch_modify_msg(LassoDiscovery *discovery)
+{
+	LassoDiscoModify *request = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
+	GList *iter;
+
+	iter = request->InsertEntry;
+	while (iter) {
+		LassoDiscoInsertEntry *entry = iter->data;
+		iter = g_list_next(iter);
+
+		lasso_identity_add_resource_offering(LASSO_WSF_PROFILE(discovery)->identity,
+				entry->ResourceOffering);
+		fprintf(stderr, "an entry:\n%s\n\n", lasso_node_dump(LASSO_NODE(entry)));
+	}
 
 	return 0;
 }
