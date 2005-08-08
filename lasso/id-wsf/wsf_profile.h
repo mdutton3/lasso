@@ -31,6 +31,8 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/id-ff/server.h>
+#include <lasso/id-ff/identity.h>
+#include <lasso/id-ff/session.h>
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_binding_provider.h>
 
@@ -63,6 +65,9 @@ struct _LassoWsfProfile {
 	gchar *msg_url;
 	gchar *msg_body;
 
+	/*< private >*/
+	LassoIdentity *identity;
+	LassoSession  *session;
 };
 
 struct _LassoWsfProfileClass {
@@ -70,6 +75,16 @@ struct _LassoWsfProfileClass {
 };
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
+
+LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
+LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
+LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile);
+LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(LassoWsfProfile *profile);
+
+LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
+		const gchar *dump);
+LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
+		const gchar *dump);
 
 /* FIXME: must be private method */
 LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId);
