@@ -3458,6 +3458,13 @@ typedef struct {
 	%newobject soapEnvelopeResponse_get;
 	LassoSoapEnvelope *soapEnvelopeResponse;
 
+	/* Attributes */
+	%newobject resourceId_get;
+	LassoDiscoResourceID *resourceId;
+
+	%newobject encryptedResourceId_get;
+	LassoDiscoEncryptedResourceID *encryptedResourceId;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoDiscovery(LassoServer *server);
@@ -3596,6 +3603,22 @@ typedef struct {
 #define LassoDiscovery_soapEnvelopeResponse_get(self) get_node(LASSO_WSF_PROFILE(self)->soap_envelope_response)
 #define LassoDiscovery_set_soapEnvelopeResponse(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_response, (value))
 #define LassoDiscovery_soapEnvelopeResponse_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->soap_envelope_response, (value))
+
+/* Attributes */
+
+/* EncryptedResourceID */
+#define LassoDiscovery_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
+#define LassoDiscovery_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
+#define LassoDiscovery_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoDiscovery_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+
+/* EncryptedResourceID */
+#define LassoDiscovery_get_resourceId(self) get_node((self)->resource_id)
+#define LassoDiscovery_resourceId_get(self) get_node((self)->resource_id)
+#define LassoDiscovery_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoDiscovery_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+
+
 
 /* Constructors, destructors & static methods implementations */
 

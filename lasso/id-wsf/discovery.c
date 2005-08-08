@@ -26,6 +26,7 @@
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
+#include <lasso/xml/disco_modify.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -291,7 +292,31 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 	}
 
 end:
+
+	/* XXX lasso_node_destroy(assertions) */
+
 	return g_object_ref(resource_offering);
+}
+
+LassoDiscoDescription*
+lasso_discovery_get_description_auto(LassoDiscoResourceOffering *offering, gchar *security_mech)
+{
+	GList *iter, *iter2;
+	LassoDiscoDescription *description;
+
+	iter = offering->ServiceInstance->Description;
+	while (iter) {
+		description = iter->data;
+		iter = g_list_next(iter);
+		iter2 = description->SecurityMechID;
+		while (iter2) {
+			if (strcmp((char*)iter2->data, security_mech) == 0) {
+				return g_object_ref(description);
+			}
+			iter2 = g_list_next(iter2);
+		}
+	}
+	return NULL;
 }
 
 
@@ -311,6 +336,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	LassoSession *session;
 	GList *assertions;
 	LassoDiscoResourceOffering *offering;
+	LassoDiscoDescription *description;
 
 	modify = lasso_disco_modify_new();
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(modify));
@@ -320,6 +346,8 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	if (offering == NULL) {
 		return -1;
 	}
+	description = lasso_discovery_get_description_auto(offering, LASSO_SECURITY_MECH_NULL);
+	
 	/* XXX: EncryptedResourceID support */
 	modify->ResourceID = g_object_ref(offering->ResourceID);
 	lasso_node_destroy(LASSO_NODE(offering));
@@ -327,6 +355,10 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 	modify->InsertEntry = g_list_append(modify->InsertEntry,
 			lasso_disco_insert_entry_new(new_offering));
 	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(modify);
+
+	if (description->Endpoint != NULL) {
+		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
+	} /* XXX: else, description->WsdlURLK, get endpoint automatically */
 
 	return 0;
 }
@@ -338,6 +370,7 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 	LassoDiscoModifyResponse *response;
 	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
+	LassoDiscoModify *request;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -350,6 +383,13 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	request = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
+
+	if (request->ResourceID)
+		discovery->resource_id = g_object_ref(request->ResourceID);
+	if (request->EncryptedResourceID)
+		discovery->encrypted_resource_id = g_object_ref(request->EncryptedResourceID);
 
 	return 0;
 }
