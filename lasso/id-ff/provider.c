@@ -749,7 +749,7 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		xmlFree(b64_value);
 		g_free(value);
 		if (pub_key == NULL) {
-			/* XXX: bad key */
+			/* XXX: bad key (could try Pem now) */
 		}
 		provider->private_data->public_key = pub_key;
 		return;

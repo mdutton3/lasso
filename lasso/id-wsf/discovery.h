@@ -100,6 +100,9 @@ LASSO_EXPORT void lasso_discovery_destroy(LassoDiscovery *discovery);
 
 LASSO_EXPORT gchar* lasso_discovery_dump(LassoDiscovery *discovery);
 
+LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
+		gchar *resourceId, LassoDiscoServiceInstance *serviceInstance);
+
 LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 					      LassoDiscoResourceOffering *resourceOffering,
 					      LassoDiscoDescription *description);

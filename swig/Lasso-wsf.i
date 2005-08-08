@@ -3489,6 +3489,11 @@ typedef struct {
 
 	/* Methods */
 
+	THROW_ERROR
+	int initInsert(gchar *resourceId, LassoDiscoServiceInstance *serviceInstance);
+	END_THROW_ERROR
+		
+
 	LassoDiscoInsertEntry* addInsertEntry(LassoDiscoServiceInstance *serviceInstance,
 					      LassoDiscoResourceID *resourceID);
 
@@ -3620,6 +3625,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_addRemoveEntry lasso_discovery_add_remove_entry
 #define LassoDiscovery_addRequestedServiceType lasso_discovery_add_requested_service_type
 #define LassoDiscovery_addResourceOffering lasso_discovery_add_resource_offering
+#define LassoDiscovery_initInsert lasso_discovery_init_insert
 #define LassoDiscovery_initModify lasso_discovery_init_modify
 #define LassoDiscovery_initQuery lasso_discovery_init_query
 #define LassoDiscovery_processModifyMsg lasso_discovery_process_modify_msg

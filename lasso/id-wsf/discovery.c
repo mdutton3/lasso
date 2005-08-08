@@ -24,6 +24,8 @@
 
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/saml_assertion.h>
+#include <lasso/xml/saml_attribute_value.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -245,6 +247,98 @@ lasso_discovery_init_query(LassoDiscovery                *discovery,
 	return lasso_discovery_init_request(discovery, resourceOffering, description);
 }
 
+static LassoDiscoResourceOffering*
+lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gchar *service_type)
+{
+	LassoSession *session;
+	GList *assertions, *iter, *iter2, *iter3, *iter4;
+	LassoDiscoResourceOffering *resource_offering = NULL;
+
+	session = LASSO_WSF_PROFILE(discovery)->session;
+	assertions = lasso_session_get_assertions(session, NULL);
+	iter = assertions;
+	while (iter) {
+		LassoSamlAssertion *assertion = iter->data;
+		iter = g_list_next(iter);
+		if (assertion->AttributeStatement == NULL)
+			continue;
+		iter2 = assertion->AttributeStatement->Attribute;
+		while (iter2) {
+			LassoSamlAttribute *attribute = iter2->data;
+			iter2 = g_list_next(iter2);
+			if (strcmp(attribute->attributeName, "DiscoveryResourceOffering") != 0)
+				continue;
+			iter3 = attribute->AttributeValue;
+			while (iter3) {
+				LassoSamlAttributeValue *attribute_value = iter3->data;
+				iter3 = g_list_next(iter3);
+				iter4 = attribute_value->any;
+				while (iter4) {
+					LassoDiscoResourceOffering *v = iter4->data;
+					iter4 = g_list_next(iter4);
+					if (! LASSO_IS_DISCO_RESOURCE_OFFERING(v))
+						continue;
+					if (v->ServiceInstance == NULL)
+						continue;
+					if (strcmp(v->ServiceInstance->ServiceType,
+								service_type) == 0) {
+						resource_offering = v;
+						goto end;
+					}
+				}
+			}
+		}
+	}
+
+end:
+	return g_object_ref(resource_offering);
+}
+
+
+/**
+ * lasso_discovery_init_insert
+ * @discovery: a #LassoDiscovery
+ * @resourceId: the attribute provider resource id
+ * @serviceInstance: the attribute provider service instance
+ *
+ * Initializes a disco Modify/InsertEntry
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_discovery_init_insert(LassoDiscovery *discovery,
+		gchar *resourceId, LassoDiscoServiceInstance *serviceInstance)
+{
+	LassoDiscoModify *modify;
+	LassoSession *session;
+	GList *assertions;
+	LassoDiscoResourceOffering *offering;
+
+	modify = lasso_disco_modify_new();
+
+	/* get discovery service resource id from principal assertion */
+	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
+	if (offering == NULL) {
+		return -1;
+	}
+	/* XXX: EncryptedResourceID support */
+	modify->ResourceID = g_object_ref(offering->ResourceID);
+	lasso_node_destroy(LASSO_NODE(offering));
+
+	offering = lasso_disco_resource_offering_new(serviceInstance);
+	/* XXX: EncryptedResourceID support */
+	offering->ResourceID = lasso_disco_resource_id_new(resourceId);
+
+	modify->InsertEntry = g_list_append(modify->InsertEntry,
+			lasso_disco_insert_entry_new(offering));
+
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(modify);
+
+	fprintf(stderr, "%s\n", lasso_node_dump(LASSO_NODE(modify)));
+
+	return 0;
+}
+
 gint
 lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 				   const gchar    *message)
@@ -314,8 +408,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlNodeSetName(xmlnode, "Discovery");
-	xmlSetProp(xmlnode, "DiscoveryDumpVersion", "2");
+	xmlNodeSetName(xmlnode, (xmlChar*)"Discovery");
+	xmlSetProp(xmlnode, (xmlChar*)"DiscoveryDumpVersion", (xmlChar*)"2");
 
 	return xmlnode;
 }
