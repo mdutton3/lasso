@@ -102,6 +102,12 @@ lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 	return g_hash_table_lookup(session->assertions, providerID);
 }
 
+static void
+add_assertion_to_list(gchar *key, LassoLibAssertion *value, GList **list)
+{
+	*list = g_list_append(*list, value);
+}
+
 
 /**
  * lasso_session_get_assertions
@@ -117,9 +123,15 @@ GList*
 lasso_session_get_assertions(LassoSession *session, const char *provider_id)
 {
 	GList *r = NULL;
-	LassoSamlAssertion *assertion = g_hash_table_lookup(session->assertions, provider_id);
-	if (assertion)
-		r = g_list_append(r, g_object_ref(assertion));
+	LassoSamlAssertion *assertion;
+
+	if (provider_id == NULL) {
+		g_hash_table_foreach(session->assertions, (GHFunc)add_assertion_to_list, &r);
+	} else {
+		assertion = g_hash_table_lookup(session->assertions, provider_id);
+		if (assertion)
+			r = g_list_append(r, g_object_ref(assertion));
+	}
 	return r;
 }
 
