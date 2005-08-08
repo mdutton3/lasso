@@ -3490,7 +3490,7 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	int initInsert(gchar *resourceId, LassoDiscoServiceInstance *serviceInstance);
+	int initInsert(LassoDiscoResourceOffering *newOffering);
 	END_THROW_ERROR
 		
 

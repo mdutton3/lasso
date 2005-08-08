@@ -298,16 +298,14 @@ end:
 /**
  * lasso_discovery_init_insert
  * @discovery: a #LassoDiscovery
- * @resourceId: the attribute provider resource id
- * @serviceInstance: the attribute provider service instance
+ * @new_offering: the new service offered
  *
  * Initializes a disco Modify/InsertEntry
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_discovery_init_insert(LassoDiscovery *discovery,
-		gchar *resourceId, LassoDiscoServiceInstance *serviceInstance)
+lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOffering *new_offering)
 {
 	LassoDiscoModify *modify;
 	LassoSession *session;
@@ -315,6 +313,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	LassoDiscoResourceOffering *offering;
 
 	modify = lasso_disco_modify_new();
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(modify));
 
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
@@ -325,16 +324,9 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	modify->ResourceID = g_object_ref(offering->ResourceID);
 	lasso_node_destroy(LASSO_NODE(offering));
 
-	offering = lasso_disco_resource_offering_new(serviceInstance);
-	/* XXX: EncryptedResourceID support */
-	offering->ResourceID = lasso_disco_resource_id_new(resourceId);
-
 	modify->InsertEntry = g_list_append(modify->InsertEntry,
-			lasso_disco_insert_entry_new(offering));
-
+			lasso_disco_insert_entry_new(new_offering));
 	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(modify);
-
-	fprintf(stderr, "%s\n", lasso_node_dump(LASSO_NODE(modify)));
 
 	return 0;
 }
