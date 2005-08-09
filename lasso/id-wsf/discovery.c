@@ -512,6 +512,7 @@ gint
 lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
 	LassoDiscoQueryResponse *response;
+	LassoDiscoQuery *request;
 	LassoSoapEnvelope *envelope;
 	LassoUtilityStatus *status;
 
@@ -526,6 +527,14 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
+	
+	if (request->ResourceID)
+		discovery->resource_id = g_object_ref(request->ResourceID);
+	if (request->EncryptedResourceID)
+		discovery->encrypted_resource_id = g_object_ref(request->EncryptedResourceID);
+
 
 	return 0;
 }
