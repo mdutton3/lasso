@@ -37,6 +37,7 @@ gint lasso_identity_remove_federation(LassoIdentity *identity, const char *provi
 gint lasso_identity_add_resource_offering(LassoIdentity *identity,
 		LassoDiscoResourceOffering *offering);
 gboolean lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *entryID);
+GList* lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type);
 #endif
 
 

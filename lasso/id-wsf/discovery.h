@@ -106,13 +106,17 @@ LASSO_EXPORT gchar* lasso_discovery_dump(LassoDiscovery *discovery);
 LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
 		LassoDiscoResourceOffering *resourceOffering);
 LASSO_EXPORT gint lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id);
+
+LASSO_EXPORT gint lasso_discovery_build_response_msg(LassoDiscovery *discovery);
 LASSO_EXPORT gint lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 					      LassoDiscoResourceOffering *resourceOffering,
 					      LassoDiscoDescription *description);
 
-LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery,
+LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery);
+
+LASSO_EXPORT gint lasso_discovery_init_query_full(LassoDiscovery *discovery,
 					     LassoDiscoResourceOffering *resourceOffering,
 					     LassoDiscoDescription *description);
 

@@ -230,7 +230,7 @@ lasso_discovery_init_modify(LassoDiscovery                *discovery,
 }
 
 gint
-lasso_discovery_init_query(LassoDiscovery                *discovery,
+lasso_discovery_init_query_full(LassoDiscovery                *discovery,
 			   LassoDiscoResourceOffering    *resourceOffering,
 			   LassoDiscoDescription         *description)
 {
@@ -336,7 +336,6 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 {
 	LassoDiscoModify *modify;
 	LassoSession *session;
-	GList *assertions;
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
 
@@ -380,7 +379,6 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 {
 	LassoDiscoModify *modify;
 	LassoSession *session;
-	GList *assertions;
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
 
@@ -408,6 +406,47 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 
 	return 0;
 }
+
+/**
+ * lasso_discovery_init_query
+ * @discovery: a #LassoDiscovery
+ *
+ * Initializes a disco Query message
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_discovery_init_query(LassoDiscovery *discovery)
+{
+	LassoDiscoQuery *query;
+	LassoSession *session;
+	LassoDiscoResourceOffering *offering;
+	LassoDiscoDescription *description;
+
+	query = lasso_disco_query_new();
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(query));
+
+	/* get discovery service resource id from principal assertion */
+	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
+	if (offering == NULL) {
+		return -1;
+	}
+	description = lasso_discovery_get_description_auto(offering, LASSO_SECURITY_MECH_NULL);
+	
+	/* XXX: EncryptedResourceID support */
+	query->ResourceID = g_object_ref(offering->ResourceID);
+	lasso_node_destroy(LASSO_NODE(offering));
+
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(query);
+
+	if (description->Endpoint != NULL) {
+		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
+	} /* XXX: else, description->WsdlURLK, get endpoint automatically */
+
+	return 0;
+}
+
+
 
 
 gint
@@ -511,23 +550,15 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 gint
 lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	LassoDiscoQueryResponse *response;
 	LassoDiscoQuery *request;
 	LassoSoapEnvelope *envelope;
-	LassoUtilityStatus *status;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message);
 
-	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
-	response = lasso_disco_query_response_new(status);
-	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
-
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
-
 	request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
 	
 	if (request->ResourceID)
@@ -537,6 +568,38 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 
 
 	return 0;
+}
+
+
+gint
+lasso_discovery_build_response_msg(LassoDiscovery *discovery)
+{
+	LassoDiscoQuery *request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
+	LassoDiscoQueryResponse *response;
+	LassoSoapEnvelope *envelope;
+	GList *offerings = NULL;
+	GList *iter;
+
+
+	iter = request->RequestedServiceType;
+	while (iter) {
+		LassoDiscoRequestedServiceType *service_type = iter->data;
+		iter = g_list_next(iter);
+		offerings = g_list_concat(offerings, lasso_identity_get_offerings(
+					LASSO_WSF_PROFILE(discovery)->identity,
+					service_type->ServiceType));
+	}
+
+	/* build response */
+	response = lasso_disco_query_response_new(
+			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	response->ResourceOffering = offerings;
+	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
+	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
+
 }
 
 gint

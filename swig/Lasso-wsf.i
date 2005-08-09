@@ -3528,8 +3528,12 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int initQuery(LassoDiscoResourceOffering *resourceOffering,
-		       LassoDiscoDescription *description);
+	int initQuery();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int initQueryFull(LassoDiscoResourceOffering *resourceOffering,
+			LassoDiscoDescription *description);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -3647,10 +3651,10 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 }
 
 #define LassoDiscovery_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
-#define LassoDiscovery_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 
+#define LassoDiscovery_buildResponseMsg lasso_discovery_build_response_msg
 #define LassoDiscovery_addInsertEntry lasso_discovery_add_insert_entry
 #define LassoDiscovery_addRemoveEntry lasso_discovery_add_remove_entry
 #define LassoDiscovery_addRequestedServiceType lasso_discovery_add_requested_service_type
@@ -3660,6 +3664,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_buildModifyResponseMsg lasso_discovery_build_modify_response_msg
 #define LassoDiscovery_initModify lasso_discovery_init_modify
 #define LassoDiscovery_initQuery lasso_discovery_init_query
+#define LassoDiscovery_initQueryFull lasso_discovery_init_query_full
 #define LassoDiscovery_processModifyMsg lasso_discovery_process_modify_msg
 #define LassoDiscovery_processModifyResponseMsg lasso_discovery_process_modify_response_msg
 #define LassoDiscovery_processQueryMsg lasso_discovery_process_query_msg

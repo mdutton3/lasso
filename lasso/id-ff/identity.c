@@ -170,6 +170,27 @@ lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *ent
 	}
 	return FALSE;
 }
+
+
+GList*
+lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
+{
+	GList *iter;
+	LassoDiscoResourceOffering *t;
+	GList *result = NULL;
+	
+	iter = identity->private_data->resource_offerings;
+	while (iter) {
+		t = iter->data;
+		iter = g_list_next(iter);
+		if (strcmp(t->ServiceInstance->ServiceType, service_type) == 0) {
+			result = g_list_append(result, g_object_ref(t));
+		}
+	}
+
+	return result;
+}
+
 #endif
 
 
