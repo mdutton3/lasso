@@ -164,6 +164,7 @@ lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *ent
 			identity->private_data->resource_offerings = g_list_remove(
 					identity->private_data->resource_offerings, t);
 			lasso_node_destroy(LASSO_NODE(t));
+			identity->is_dirty = TRUE;
 			return TRUE;
 		}
 	}
@@ -234,6 +235,15 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					identity->federations,
 					g_strdup(federation->remote_providerID), federation);
 		}
+
+#ifdef LASSO_WSF_ENABLED
+		if (strcmp((char*)t->name, "ResourceOffering") == 0) {
+			LassoDiscoResourceOffering *offering;
+			offering = LASSO_DISCO_RESOURCE_OFFERING(lasso_node_new_from_xmlNode(t));
+			identity->private_data->resource_offerings = g_list_append(
+					identity->private_data->resource_offerings, offering);
+		}
+#endif
 
 		t = t->next;
 	}

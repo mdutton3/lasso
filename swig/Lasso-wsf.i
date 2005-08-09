@@ -3501,6 +3501,10 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
+	int initRemove(const char *entryId);
+	END_THROW_ERROR
+
+	THROW_ERROR
 	int buildModifyResponseMsg();
 	END_THROW_ERROR
 
@@ -3652,6 +3656,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_addRequestedServiceType lasso_discovery_add_requested_service_type
 #define LassoDiscovery_addResourceOffering lasso_discovery_add_resource_offering
 #define LassoDiscovery_initInsert lasso_discovery_init_insert
+#define LassoDiscovery_initRemove lasso_discovery_init_remove
 #define LassoDiscovery_buildModifyResponseMsg lasso_discovery_build_modify_response_msg
 #define LassoDiscovery_initModify lasso_discovery_init_modify
 #define LassoDiscovery_initQuery lasso_discovery_init_query

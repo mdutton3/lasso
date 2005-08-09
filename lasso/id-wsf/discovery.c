@@ -360,10 +360,55 @@ lasso_discovery_init_insert(LassoDiscovery *discovery, LassoDiscoResourceOfferin
 
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
+	} /* XXX: else, description->WsdlURLI, get endpoint automatically */
+
+	return 0;
+}
+
+
+/**
+ * lasso_discovery_init_remove
+ * @discovery: a #LassoDiscovery
+ * @entry_id: entry id of the resource offering to remove
+ *
+ * Initializes a disco Modify/RemoveEntry
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
+{
+	LassoDiscoModify *modify;
+	LassoSession *session;
+	GList *assertions;
+	LassoDiscoResourceOffering *offering;
+	LassoDiscoDescription *description;
+
+	modify = lasso_disco_modify_new();
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(modify));
+
+	/* get discovery service resource id from principal assertion */
+	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
+	if (offering == NULL) {
+		return -1;
+	}
+	description = lasso_discovery_get_description_auto(offering, LASSO_SECURITY_MECH_NULL);
+	
+	/* XXX: EncryptedResourceID support */
+	modify->ResourceID = g_object_ref(offering->ResourceID);
+	lasso_node_destroy(LASSO_NODE(offering));
+
+	modify->RemoveEntry = g_list_append(modify->RemoveEntry,
+			lasso_disco_remove_entry_new(entry_id));
+	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(modify);
+
+	if (description->Endpoint != NULL) {
+		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
 	} /* XXX: else, description->WsdlURLK, get endpoint automatically */
 
 	return 0;
 }
+
 
 gint
 lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
@@ -450,7 +495,17 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 gint
 lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
-	return lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
+	int rc;
+	LassoDiscoModifyResponse *response;
+	
+	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
+	if (rc) return rc;
+
+	response = LASSO_DISCO_MODIFY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
+	if (strcmp(response->Status->code, "OK") != 0)
+		return LASSO_ERROR_UNDEFINED;
+
+	return 0;
 }
 
 gint
