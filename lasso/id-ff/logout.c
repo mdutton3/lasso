@@ -166,6 +166,29 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
+	if (profile->response == NULL) {
+		/* no answer, this means this function got called before
+		 * validate_request, probably because there were no active
+		 * session */
+		if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
+			profile->response = lasso_lib_logout_response_new_full(
+					LASSO_PROVIDER(profile->server)->ProviderID,
+					LASSO_SAML_STATUS_CODE_REQUEST_DENIED,
+					LASSO_LIB_LOGOUT_REQUEST(profile->request),
+					profile->server->certificate ? 
+					LASSO_SIGNATURE_TYPE_WITHX509 : LASSO_SIGNATURE_TYPE_SIMPLE,
+					LASSO_SIGNATURE_METHOD_RSA_SHA1);
+		}
+		if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
+			profile->response = lasso_lib_logout_response_new_full(
+					LASSO_PROVIDER(profile->server)->ProviderID,
+					LASSO_SAML_STATUS_CODE_REQUEST_DENIED,
+					LASSO_LIB_LOGOUT_REQUEST(profile->request),
+					LASSO_SIGNATURE_TYPE_NONE,
+					0);
+		}
+	}
+
 	/* build logout response message */
 	if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = NULL;
