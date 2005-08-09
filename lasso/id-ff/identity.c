@@ -140,6 +140,35 @@ lasso_identity_add_resource_offering(LassoIdentity *identity,
 
 	return 0;
 }
+
+/**
+ * lasso_identity_remove_resource_offering:
+ * @identity: a #LassoIdentity
+ * @entryID: the resource offering entry ID
+ *
+ * Remove resource offering about identity with @entryID
+ *
+ * Return value: TRUE on success; FALSE if the offering was not found.
+ **/
+gboolean
+lasso_identity_remove_resource_offering(LassoIdentity *identity, const char *entryID)
+{
+	GList *iter;
+	LassoDiscoResourceOffering *t;
+	
+	iter = identity->private_data->resource_offerings;
+	while (iter) {
+		t = iter->data;
+		iter = g_list_next(iter);
+		if (strcmp(t->entryID, entryID) == 0) {
+			identity->private_data->resource_offerings = g_list_remove(
+					identity->private_data->resource_offerings, t);
+			lasso_node_destroy(LASSO_NODE(t));
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 #endif
 
 
