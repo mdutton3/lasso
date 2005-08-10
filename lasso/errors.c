@@ -126,6 +126,8 @@ lasso_strerror(int error_code)
 
 		case LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER:
 			return "Name identifier not found in request";
+		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
+			return "Unknown principal";
 
 		default:
 			return "Undefined error code.";

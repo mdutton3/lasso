@@ -501,6 +501,10 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST) == 0) {
 					return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 				}
+				if (strcmp(status_value,
+						LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+					return LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL;
+				}
 			}
 		}
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
