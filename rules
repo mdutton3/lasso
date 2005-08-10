@@ -32,7 +32,7 @@ major=`ls src/.libs/lib*.so.* | \
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-java --disable-gtk-doc --disable-perl
+	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-java --disable-gtk-doc --disable-perl --enable-wsf --disable-csharp
 
 
 build: build-stamp
@@ -74,7 +74,7 @@ install: build
 
 # Build architecture-independent files here.
 binary-indep: build install
-	dh_makeclilibs -L liblasso-cil -r
+	#dh_makeclilibs -L liblasso-cil -r
 
 # Build architecture-dependent files here.
 binary-arch: build install
@@ -90,7 +90,7 @@ binary-arch: build install
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a -V
-	dh_clideps -L liblasso-cil -r -d
+	#dh_clideps -L liblasso-cil -r -d
 	dh_installdeb
 	dh_shlibdeps -a
 	dh_gencontrol

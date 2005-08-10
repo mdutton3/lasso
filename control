@@ -52,20 +52,6 @@ Description: Liberty ID-FF library - Python 2.3 bindings
  .
  Homepage: http://lasso.entrouvert.org
 
-Package: liblasso-cil
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:depends}, ${cli:Depends}
-Description: Liberty ID-FF library - .NET bindings
- Lasso is an implementation of the Liberty Identity Federation specifications
- defined by the Liberty Alliance consortium.  They defines processes such as
- network identity federation and single sign-on.
- .
- This package contains .NET assemblies that allow .NET / C# applications to use
- lasso.
- .
- Homepage: http://lasso.entrouvert.org
-
 Package: php4-lasso
 Section: web
 Architecture: any
