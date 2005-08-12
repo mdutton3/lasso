@@ -3552,6 +3552,7 @@ typedef struct {
 	int processQueryResponseMsg(char *query_response_msg);
 	END_THROW_ERROR
 
+	%newobject getService;
 	LassoProfileService* getService(const char *service_type = NULL);
 }
 
@@ -3671,7 +3672,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_processModifyResponseMsg lasso_discovery_process_modify_response_msg
 #define LassoDiscovery_processQueryMsg lasso_discovery_process_query_msg
 #define LassoDiscovery_processQueryResponseMsg lasso_discovery_process_query_response_msg
-#define LassoDiscovery_getService lasso_discovery_get_service
+#define LassoDiscovery_getService(self, type) get_node(lasso_discovery_get_service(self, type))
 
 %}
 
@@ -3885,9 +3886,20 @@ typedef struct {
 	%newobject server_get;
 	LassoServer *server;
 
+	/* Attributes inherited from ProfileService */
+	%newobject resourceId_get;
+	LassoDiscoResourceID *resourceId;
+
+	%newobject encryptedResourceId_get;
+	LassoDiscoEncryptedResourceID *encryptedResourceId;
+
+	%newobject resourceData_get;
+	char *resourceData;
+
+
 	/* Constructor, Destructor & Static Methods */
 
-	LassoPersonalProfileService(LassoServer *server);
+	LassoPersonalProfileService(LassoServer *server, LassoDiscoResourceOffering *offering);
 
 	~LassoPersonalProfileService();
 
@@ -3897,49 +3909,54 @@ typedef struct {
 	int buildRequestMsg();
 	END_THROW_ERROR
 
+	/* Methods inherited from ProfileService */
+
+	THROW_ERROR
+	gint initQuery(const char *select, const char *item_id = NULL);
+	END_THROW_ERROR
+
+	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
+		
+	THROW_ERROR
+	int processQueryMsg(const char *message);
+	END_THROW_ERROR
+
 	THROW_ERROR
 	int buildResponseMsg();
 	END_THROW_ERROR
 
+	THROW_ERROR
+	int processQueryResponseMsg(const char *message);
+	END_THROW_ERROR
+
+	%newobject getAnswer;
+	char* getAnswer(const char *select = NULL);
+
+
+	LassoDstModification *initModify(char *prefix,
+					 char *href,
+					 LassoDiscoResourceOffering *resourceOffering,
+					 LassoDiscoDescription *description,
+					 char *select);
+
+	LassoDstModification *addModification(char *select);
+
+	THROW_ERROR
+	int processModifyMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int validateModify(char *prefix, char *href);
+	END_THROW_ERROR
+
+
 	/* Methods */
-		
-	LassoDstModification *initModify(LassoDiscoResourceOffering *resourceOffering,
-							LassoDiscoDescription *description,
-							char *select);
-		
-	LassoDstQueryItem *initQuery(
-						LassoDiscoResourceOffering *resourceOffering,
-						LassoDiscoDescription *description,
-						char *select);
-	
+
 	gchar* getEmail();
-	
-	LassoXmlNode *getXmlNode(char *itemId = NULL);
-
-	THROW_ERROR
-	int processModifyMsg(char *soap_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int processModifyResponseMsg(char *soap_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int processQueryMsg(char *soap_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int processQueryResponseMsg(char *soap_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int validateModify();
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int validateQuery();
-	END_THROW_ERROR
-
 }
 
 %{
@@ -3972,6 +3989,28 @@ typedef struct {
 #define LassoPersonalProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 #define LassoPersonalProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
+/* Attributes from ProfileService*/
+
+/* EncryptedResourceID */
+#define LassoPersonalProfileService_get_encryptedResourceId(self) get_node(LASSO_PROFILE_SERVICE(self)->encrypted_resource_id)
+#define LassoPersonalProfileService_encryptedResourceId_get(self) get_node(LASSO_PROFILE_SERVICE(self)->encrypted_resource_id)
+#define LassoPersonalProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->encrypted_resource_id, (value))
+#define LassoPersonalProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->encrypted_resource_id, (value))
+
+/* ResourceID */
+#define LassoPersonalProfileService_get_resourceId(self) get_node(LASSO_PROFILE_SERVICE(self)->resource_id)
+#define LassoPersonalProfileService_resourceId_get(self) get_node(LASSO_PROFILE_SERVICE(self)->resource_id)
+#define LassoPersonalProfileService_set_resourceId(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->resource_id, (value))
+#define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->resource_id, (value))
+
+/* resourceData */
+#define LassoPersonalProfileService_get_resourceData(self) get_xml_string(LASSO_PROFILE_SERVICE(self)->resource_data)
+#define LassoPersonalProfileService_resourceData_get(self) get_xml_string(LASSO_PROFILE_SERVICE(self)->resource_data)
+#define LassoPersonalProfileService_set_resourceData(self, value) set_xml_string(&(LASSO_PROFILE_SERVICE(self))->resource_data, (value))
+#define LassoPersonalProfileService_resourceData_set(self, value) set_xml_string(&(LASSO_PROFILE_SERVICE(self))->resource_data, (value))
+
+
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoPersonalProfileService lasso_personal_profile_service_new
@@ -3981,22 +4020,25 @@ typedef struct {
 #define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 #define LassoPersonalProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
-/* Implementations of methods inherited from PersonalProfile */
-LassoXmlNode* LassoPersonalProfileService_getXmlNode(LassoPersonalProfileService *self, char *itemId)
-{
-	return lasso_profile_service_get_xmlNode(LASSO_PROFILE_SERVICE(self), itemId);
-}
+/* Implementations of methods inherited from ProfileService */
+#define LassoPersonalProfileService_buildResponseMsg lasso_profile_service_build_response_msg
+#define LassoPersonalProfileService_addData lasso_profile_service_add_data
+#define LassoPersonalProfileService_addModification lasso_profile_service_add_modification
+#define LassoPersonalProfileService_addQueryItem lasso_profile_service_add_query_item
+#define LassoPersonalProfileService_initModify lasso_profile_service_init_modify
+#define LassoPersonalProfileService_initQuery lasso_profile_service_init_query
+#define LassoPersonalProfileService_getXmlNode lasso_profile_service_get_xmlNode
+#define LassoPersonalProfileService_processModifyMsg lasso_profile_service_process_modify_msg
+#define LassoPersonalProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
+#define LassoPersonalProfileService_processQueryMsg lasso_profile_service_process_query_msg
+#define LassoPersonalProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
+#define LassoPersonalProfileService_validateModify lasso_profile_service_validate_modify
+#define LassoPersonalProfileService_validateQuery lasso_profile_service_validate_query
+#define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
+
 
 /* Methods implementations */
-#define LassoPersonalProfileService_initModify lasso_personal_profile_service_init_modify
-#define LassoPersonalProfileService_initQuery lasso_personal_profile_service_init_query
 #define LassoPersonalProfileService_getEmail lasso_personal_profile_service_get_email
-#define LassoPersonalProfileService_processModifyMsg lasso_personal_profile_service_process_modify_msg
-#define LassoPersonalProfileService_processModifyResponseMsg lasso_personal_profile_service_process_modify_response_msg
-#define LassoPersonalProfileService_processQueryMsg lasso_personal_profile_service_process_query_msg
-#define LassoPersonalProfileService_processQueryResponseMsg lasso_personal_profile_service_process_query_response_msg
-#define LassoPersonalProfileService_validateModify lasso_personal_profile_service_validate_modify
-#define LassoPersonalProfileService_validateQuery lasso_personal_profile_service_validate_query
 
 %}
 
@@ -4058,30 +4100,35 @@ typedef struct {
 
 	/* Methods */
 
-	LassoDstData *addData(char *xmlNodeBuffer);
-
-	LassoDstModification *addModification(char *select);
+	THROW_ERROR
+	gint initQuery(const char *select, const char *item_id = NULL);
+	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
+	THROW_ERROR
+	int processQueryMsg(const char *message);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int processQueryResponseMsg(const char *message);
+	END_THROW_ERROR
+
+	%newobject getAnswer;
+	char* getAnswer(const char *select = NULL);
+
+
 	LassoDstModification *initModify(char *prefix,
 					 char *href,
 					 LassoDiscoResourceOffering *resourceOffering,
 					 LassoDiscoDescription *description,
 					 char *select);
 
-	THROW_ERROR
-	int buildResponseMsg();
-	END_THROW_ERROR
-
-	%newobject getAnswer;
-	char* getAnswer(const char *select = NULL);
-
-	THROW_ERROR
-	gint initQuery(const char *select, const char *item_id = NULL);
-	END_THROW_ERROR
-					 
-	LassoXmlNode *getXmlNode(char *itemId = NULL);
+	LassoDstModification *addModification(char *select);
 
 	THROW_ERROR
 	int processModifyMsg(char *prefix, char *href, char *soap_msg);
@@ -4092,21 +4139,8 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processQueryMsg(const char *message);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int processQueryResponseMsg(const char *message);
-	END_THROW_ERROR
-	
-	THROW_ERROR
 	int validateModify(char *prefix, char *href);
 	END_THROW_ERROR
-
-	THROW_ERROR
-	int validateQuery(char *prefix, char *href);
-	END_THROW_ERROR
-
 }
 
 %{
