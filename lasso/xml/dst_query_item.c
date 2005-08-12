@@ -119,7 +119,7 @@ lasso_dst_query_item_get_type()
 }
 
 LassoDstQueryItem*
-lasso_dst_query_item_new(const char *select)
+lasso_dst_query_item_new(const char *select, const char *item_id)
 {
 	LassoDstQueryItem *node;
 
@@ -128,6 +128,7 @@ lasso_dst_query_item_new(const char *select)
 	node = g_object_new(LASSO_TYPE_DST_QUERY_ITEM, NULL);
 
 	node->Select = g_strdup(select);
+	node->itemID = g_strdup(item_id);
 
 	return node;
 }

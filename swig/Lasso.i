@@ -1217,6 +1217,10 @@ static char* get_xml_string(xmlNode *xmlnode)
 	xmlOutputBufferPtr buf;
 	char *xmlString;
 
+	if (xmlnode == NULL) {
+		return NULL;
+	}
+
 	buf = xmlAllocOutputBuffer(NULL);
 	if (buf == NULL)
 		xmlString = NULL;

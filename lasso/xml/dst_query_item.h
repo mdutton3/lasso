@@ -62,7 +62,7 @@ struct _LassoDstQueryItemClass {
 };
 
 LASSO_EXPORT GType lasso_dst_query_item_get_type(void);
-LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(const char *select);
+LASSO_EXPORT LassoDstQueryItem* lasso_dst_query_item_new(const char *select, const char *item_id);
 
 #ifdef __cplusplus
 }

@@ -86,7 +86,7 @@ LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(
 	const gchar *select);
 
 LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_add_query_item(LassoProfileService *service,
-								     const gchar *select);
+		const char *select, const char *item_id);
 
 LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
 	LassoProfileService *service,
@@ -97,7 +97,7 @@ LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
 	const gchar *select);
 
 LASSO_EXPORT gint lasso_profile_service_init_query(LassoProfileService *service,
-		const char *select);
+		const char *select, const char *item_id);
 LASSO_EXPORT gint lasso_profile_service_build_response_msg(LassoProfileService *service);
 LASSO_EXPORT xmlNode* lasso_profile_service_get_answer(LassoProfileService *service,
 		const char *select);

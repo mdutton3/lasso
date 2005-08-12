@@ -1996,7 +1996,7 @@ typedef struct {
 %extend LassoDstQueryItem {
 	/* Constructor, Destructor & Static Methods */
 
-	LassoDstQueryItem(char *select);
+	LassoDstQueryItem(const char *select, const char *item_id = NULL);
 
 	~LassoDstQueryItem();
 
@@ -4062,7 +4062,7 @@ typedef struct {
 
 	LassoDstModification *addModification(char *select);
 
-	LassoDstQueryItem *addQueryItem(char *select);
+	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
 	LassoDstModification *initModify(char *prefix,
 					 char *href,
@@ -4078,7 +4078,7 @@ typedef struct {
 	char* getAnswer(const char *select = NULL);
 
 	THROW_ERROR
-	gint initQuery(const char *select);
+	gint initQuery(const char *select, const char *item_id = NULL);
 	END_THROW_ERROR
 					 
 	LassoXmlNode *getXmlNode(char *itemId = NULL);

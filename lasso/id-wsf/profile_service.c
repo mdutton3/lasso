@@ -89,22 +89,38 @@ lasso_profile_service_add_modification(LassoProfileService *service, const gchar
 	return modification;
 }
 
+
+/**
+ * lasso_profile_service_add_query_item:
+ * @service: a #LassoProfileService
+ * @select: 
+ * @item_id:
+ *
+ * ...
+ *
+ * Return value:
+ **/
 LassoDstQueryItem*
-lasso_profile_service_add_query_item(LassoProfileService *service, const gchar *select)
+lasso_profile_service_add_query_item(LassoProfileService *service,
+		const char *select, const char *item_id)
 {
-	LassoWsfProfile *profile;
-	LassoDstQueryItem *query_item;
+	LassoDstQuery *query;
+	LassoDstQueryItem *item;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
 	g_return_val_if_fail(select != NULL, NULL);
 
-	profile = LASSO_WSF_PROFILE(service);
+	query = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request);
 
-	query_item = lasso_dst_query_item_new(select);
-	LASSO_DST_QUERY(profile->request)->QueryItem = g_list_append(
-		LASSO_DST_QUERY(profile->request)->QueryItem, (gpointer)query_item);
+	if (LASSO_DST_QUERY_ITEM(query->QueryItem->data)->itemID == NULL) {
+		/* XXX: all items must have itemID if there is more than one */
+		return NULL;
+	}
 
-	return query_item;
+	item = lasso_dst_query_item_new(select, item_id);
+	query->QueryItem = g_list_append(query->QueryItem, item);
+
+	return item;
 }
 
 LassoDstModification*
@@ -158,62 +174,20 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 	return modification;
 }
 
-#if 0
-LassoDstQueryItem*
-lasso_profile_service_init_query(LassoProfileService *service,
-	const gchar *prefix,
-	const gchar *href,
-	LassoDiscoResourceOffering *resourceOffering,
-	LassoDiscoDescription *description,
-	const gchar *select)
-{
-	LassoDstQueryItem *query_item;
-	LassoWsfProfile *profile;
 
-	LassoSoapEnvelope *envelope;
-	LassoDstQuery *query;
-
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
-	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
-	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
-	g_return_val_if_fail(select != NULL, NULL);
-
-	profile = LASSO_WSF_PROFILE(service);
-	
-	/* init Query */
-	query_item = lasso_dst_query_item_new(select);
-
-	query = lasso_dst_query_new(query_item);
-	profile->request = LASSO_NODE(query);
-
-	LASSO_DST_QUERY(profile->request)->prefixServiceType = g_strdup(prefix);
-	LASSO_DST_QUERY(profile->request)->hrefServiceType = g_strdup(href);
-	
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
-	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
-	envelope->Body->any = g_list_append(envelope->Body->any, query);
-
-	/* get ResourceID / EncryptedResourceID */
-	if (resourceOffering->ResourceID != NULL) {
-		LASSO_DST_QUERY(profile->request)->ResourceID = resourceOffering->ResourceID;
-	}
-	else {
-	  LASSO_DST_QUERY(profile->request)->EncryptedResourceID = \
-		  resourceOffering->EncryptedResourceID;
-	}
-	
-	/* set msg_url */
-	/* TODO : implement WSDLRef */
-	if (description->Endpoint) {
-		profile->msg_url = g_strdup(description->Endpoint);
-	}
-
-	return query_item;
-}
-#endif
-
+/**
+ * lasso_profile_service_init_query
+ * @service: a #LassoProfileService
+ * @select: 
+ * @item_id:
+ *
+ * ...
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
-lasso_profile_service_init_query(LassoProfileService *service, const char *select)
+lasso_profile_service_init_query(LassoProfileService *service,
+		const char *select, const char *item_id)
 {
 	LassoWsfProfile *profile;
 	LassoDstQuery *query;
@@ -222,7 +196,7 @@ lasso_profile_service_init_query(LassoProfileService *service, const char *selec
 
 	profile = LASSO_WSF_PROFILE(service);
 
-	query = lasso_dst_query_new(lasso_dst_query_item_new(select));
+	query = lasso_dst_query_new(lasso_dst_query_item_new(select, item_id));
 	profile->request = LASSO_NODE(query);
 	
 	offering = service->private_data->offering;
@@ -372,15 +346,17 @@ lasso_profile_service_get_answer(LassoProfileService *service, const char *selec
 	char *item_id = NULL;
 
 	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+	iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
 
 	if (select == NULL) {
-		/* default to first */
+		/* if only one element; default to first */
+		if (g_list_length(iter) > 1)
+			return NULL;
 		data = response->Data->data;
 	} else {
 		LassoDstQueryItem *item = NULL;
 		/* lookup select in query to get itemId, then get data with itemIdRef */
 		/* XXX: needs another level, since there may be more than one dst:Query */
-		iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
 		while (iter) {
 			item = iter->data;
 			iter = g_list_next(iter);
