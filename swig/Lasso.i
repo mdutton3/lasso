@@ -1332,8 +1332,6 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 	xmlDoc *doc;
 	xmlNode *node;
 
-	fprintf(stderr, "setting string: %s\n", string);
-
 	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
 	node = xmlDocGetRootElement(doc);
 	if (node != NULL)
@@ -5233,6 +5231,19 @@ typedef struct {
 	char *dump();
 
 	LassoFederation *getFederation(char *providerId);
+
+#ifdef LASSO_WSF_ENABLED
+	THROW_ERROR
+	int addResourceOffering(LassoDiscoResourceOffering *offering);
+	END_THROW_ERROR
+
+	THROW_ERROR
+	int removeResourceOffering(const char *entry_id);
+	END_THROW_ERROR
+
+	%newobject getOfferings;
+	LassoNodeList *getOfferings(const char *service_type);
+#endif
 }
 
 %{
@@ -5261,6 +5272,24 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 #define LassoIdentity_dump lasso_identity_dump
 #define LassoIdentity_getFederation lasso_identity_get_federation
+
+#ifdef LASSO_WSF_ENABLED
+#define LassoIdentity_addResourceOffering lasso_identity_add_resource_offering
+#define LassoIdentity_removeResourceOffering lasso_identity_remove_resource_offering
+
+LassoNodeList *LassoIdentity_getOfferings(LassoIdentity *self, const char *service_type) {
+	GPtrArray *array = NULL;
+	GList *list;
+
+	list = lasso_identity_get_offerings(self, service_type);
+	if (list) {
+		array = get_node_list(list);
+		g_list_foreach(list, (GFunc) free_node_list_item, NULL);
+		g_list_free(list);
+	}
+	return array;
+}
+#endif
 
 %}
 

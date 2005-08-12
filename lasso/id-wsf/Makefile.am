@@ -16,9 +16,13 @@ WSF_C_FILES = \
 	profile_service.c \
 	wsf_profile.c	
 
+lasso_private_h_sources = \
+	profile_service_private.h
+
 WSF_H_FILES = \
 	authentication.h \
 	discovery.h \
+	identity.h \
 	interaction_profile_service.h \
 	personal_profile_service.h \
 	profile_service.h \
@@ -29,3 +33,4 @@ liblasso_id_wsf_la_SOURCES = $(WSF_C_FILES)
 
 liblassoinclude_HEADERS = $(WSF_H_FILES)
 
+EXTRA_DIST = $(lasso_private_h_sources)

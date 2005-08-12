@@ -24,6 +24,7 @@
 
 #include <lasso/lasso_config.h>
 #include <lasso/id-ff/identity.h>
+#include <lasso/id-wsf/identity.h>
 #include <lasso/id-ff/identityprivate.h>
 
 struct _LassoIdentityPrivate
