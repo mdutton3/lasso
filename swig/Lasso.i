@@ -958,6 +958,7 @@ typedef enum {
 /* undefined */
 #ifndef SWIGPHP4
 %rename(ERROR_UNDEFINED) LASSO_ERROR_UNDEFINED;
+%rename(ERROR_UNIMPLEMENTED) LASSO_ERROR_UNIMPLEMENTED;
 #endif
 
 /* generic XML */

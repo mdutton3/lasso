@@ -27,6 +27,7 @@
 
 /* undefined */
 #define LASSO_ERROR_UNDEFINED                           -1
+#define LASSO_ERROR_UNIMPLEMENTED                       -2
 
 /* generic XML */
 #define LASSO_XML_ERROR_NODE_NOT_FOUND                 -10

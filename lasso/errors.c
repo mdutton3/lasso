@@ -31,6 +31,8 @@ const char*
 lasso_strerror(int error_code)
 {
 	switch (error_code) {
+		case LASSO_ERROR_UNIMPLEMENTED:
+			return "Unimplemented part of Lasso";
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
 			return "Unable to get child of element.";
 		case LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND:
