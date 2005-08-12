@@ -56,7 +56,6 @@ typedef struct _LassoPersonalProfileServicePrivate LassoPersonalProfileServicePr
 
 struct _LassoPersonalProfileService {
 	LassoProfileService parent;
-
 };
 
 struct _LassoPersonalProfileServiceClass {
@@ -66,44 +65,10 @@ struct _LassoPersonalProfileServiceClass {
 
 LASSO_EXPORT GType lasso_personal_profile_service_get_type(void);
 
-LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(LassoServer *server);
-
-
-LASSO_EXPORT  LassoDstModification* lasso_personal_profile_service_init_modify(
-	LassoPersonalProfileService *service,
-	LassoDiscoResourceOffering *ro,
-	LassoDiscoDescription *desc,
-	const gchar *select);
-
-LASSO_EXPORT LassoDstQueryItem* lasso_personal_profile_service_init_query(
-	LassoPersonalProfileService *service,
-	LassoDiscoResourceOffering *ro,
-	LassoDiscoDescription *desc,
-	const gchar *select);
+LASSO_EXPORT LassoPersonalProfileService* lasso_personal_profile_service_new(
+		LassoServer *server, LassoDiscoResourceOffering *offering);
 
 LASSO_EXPORT gchar* lasso_personal_profile_service_get_email(LassoPersonalProfileService *service);
-
-LASSO_EXPORT gint lasso_personal_profile_service_process_modify_msg(
-	LassoPersonalProfileService *service,
-	const gchar *soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_service_process_modify_response_msg(
-	LassoPersonalProfileService *service,
-	const gchar *soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_service_process_query_msg(
-	LassoPersonalProfileService *service,
-	const gchar *soap_msg);
-	
-LASSO_EXPORT gint lasso_personal_profile_service_process_query_response_msg(
-	LassoPersonalProfileService *service,
-	const gchar *soap_msg);
-
-LASSO_EXPORT gint lasso_personal_profile_service_validate_modify(
-	LassoPersonalProfileService *service);
-
-LASSO_EXPORT gint lasso_personal_profile_service_validate_query(
-	LassoPersonalProfileService *service);
 
 #ifdef __cplusplus
 }
