@@ -58,7 +58,9 @@ typedef struct _LassoProfileServicePrivate LassoProfileServicePrivate;
 struct _LassoProfileService {
 	LassoWsfProfile parent;
 
-	xmlDoc *profileDataXmlDoc;
+	LassoDiscoResourceID *resource_id;
+	LassoDiscoEncryptedResourceID *encrypted_resource_id;
+	xmlNode *resource_data;
 
 	/*< private >*/
 	LassoProfileServicePrivate *private_data;
@@ -111,9 +113,7 @@ LASSO_EXPORT gint lasso_profile_service_process_modify_response_msg(LassoProfile
 								    const gchar *soap_msg);
 
 LASSO_EXPORT gint lasso_profile_service_process_query_msg(LassoProfileService *service,
-							  const gchar *prefix,
-							  const gchar *href,
-							  const gchar *soap_msg);
+							  const char *message);
 	
 LASSO_EXPORT gint lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 								   const gchar *prefix,
@@ -127,11 +127,6 @@ LASSO_EXPORT gint lasso_profile_service_validate_modify(LassoProfileService *ser
 LASSO_EXPORT gint lasso_profile_service_validate_query(LassoProfileService *service,
 					const gchar *prefix,
 					const gchar *href);
-
-LASSO_EXPORT gint lasso_profile_service_set_xml_node(LassoProfileService *service,
-					const gchar *prefix,
-					const gchar *href,
-					xmlNodePtr xmlNode);
 
 #ifdef __cplusplus
 }

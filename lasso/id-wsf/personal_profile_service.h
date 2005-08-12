@@ -99,9 +99,6 @@ LASSO_EXPORT gint lasso_personal_profile_service_process_query_response_msg(
 	LassoPersonalProfileService *service,
 	const gchar *soap_msg);
 
-LASSO_EXPORT gint lasso_personal_profile_service_set_xml_node(LassoPersonalProfileService *service,
-	xmlNodePtr xmlNode);
-
 LASSO_EXPORT gint lasso_personal_profile_service_validate_modify(
 	LassoPersonalProfileService *service);
 

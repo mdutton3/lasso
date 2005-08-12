@@ -262,6 +262,41 @@ lasso_profile_service_init_query(LassoProfileService *service, const char *selec
 	return 0;
 }
 
+/**
+ * lasso_profile_service_process_query_msg:
+ * @service: a #LassoProfileService
+ * @message: the disco query message
+ *
+ * Processes a dst:Query message.  Rebuilds a request object from the message
+ * and extracts ResourceID.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_profile_service_process_query_msg(LassoProfileService *service, const char *message)
+{
+	LassoDstQuery *query;
+	LassoWsfProfile *profile;
+	int rc;
+
+	profile = LASSO_WSF_PROFILE(service);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, message);
+	if (rc) {
+		return rc;
+	}
+
+	query = LASSO_DST_QUERY(profile->request);
+	if (query->ResourceID)
+		service->resource_id = g_object_ref(query->ResourceID);
+	else if (query->EncryptedResourceID)
+		service->encrypted_resource_id = g_object_ref(query->EncryptedResourceID);
+	else {
+		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
+	}
+
+	return 0;
+}
+
 
 xmlNode*
 lasso_profile_service_get_xmlNode(LassoProfileService *service,
@@ -333,6 +368,7 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service,
 	return 0;
 }
 
+#if 0
 gint
 lasso_profile_service_process_query_msg(LassoProfileService *service,
 	const gchar *prefix, /* FIXME : must be get from message */
@@ -363,7 +399,7 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 
 	return 0;
 }
-
+#endif
 
 gint
 lasso_profile_service_process_query_response_msg(LassoProfileService *service,
@@ -421,6 +457,7 @@ lasso_profile_service_validate_query(LassoProfileService *service,
 	const gchar *prefix,
 	const gchar *href)
 {
+#if 0
 	LassoDstQuery *request;
 	LassoDstQueryResponse *response;
 	GList *queryItems;
@@ -478,25 +515,7 @@ lasso_profile_service_validate_query(LassoProfileService *service,
 		queryItems = queryItems->next;
 	}
 	
-	return 0;
-}
-
-gint
-lasso_profile_service_set_xml_node(LassoProfileService *service,
-	const char *prefix,
-	const char *href,
-	xmlNodePtr xmlNode)
-{
-	xmlNsPtr ns;
-
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service) == TRUE, -1);
-	g_return_val_if_fail(xmlNode != NULL, -1);
-
-	ns = xmlNewNs(xmlNode, (const xmlChar *) href, (const xmlChar *) prefix);
-	xmlSetNs(xmlNode, ns);
-	service->profileDataXmlDoc = xmlNewDoc((const xmlChar *) "1.0");
-	xmlDocSetRootElement(service->profileDataXmlDoc, xmlNode);
-
+#endif
 	return 0;
 }
 
@@ -544,7 +563,7 @@ finalize(GObject *object)
 static void
 instance_init(LassoProfileService *service)
 {
-	service->profileDataXmlDoc = NULL;
+	service->resource_data = NULL;
 	service->private_data = g_new0(LassoProfileServicePrivate, 1);
 }
 

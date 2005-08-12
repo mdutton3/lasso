@@ -550,6 +550,16 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 	return 0;
 }
 
+/**
+ * lasso_discovery_process_query_msg:
+ * @discovery: a #LassoDiscovery
+ * @message: the disco query message
+ *
+ * Processes a disco:Query message.  Rebuilds a request object from the message
+ * and extracts ResourceID.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *message)
 {
@@ -566,9 +576,11 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 	
 	if (request->ResourceID)
 		discovery->resource_id = g_object_ref(request->ResourceID);
-	if (request->EncryptedResourceID)
+	else if (request->EncryptedResourceID)
 		discovery->encrypted_resource_id = g_object_ref(request->EncryptedResourceID);
-
+	else {
+		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
+	}
 
 	return 0;
 }

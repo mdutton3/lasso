@@ -3625,7 +3625,7 @@ typedef struct {
 #define LassoDiscovery_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
 #define LassoDiscovery_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
 
-/* EncryptedResourceID */
+/* ResourceID */
 #define LassoDiscovery_get_resourceId(self) get_node((self)->resource_id)
 #define LassoDiscovery_resourceId_get(self) get_node((self)->resource_id)
 #define LassoDiscovery_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
@@ -3933,10 +3933,6 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int setXmlNode(LassoXmlNode *xmlNode);
-	END_THROW_ERROR
-
-	THROW_ERROR
 	int validateModify();
 	END_THROW_ERROR
 
@@ -3999,7 +3995,6 @@ LassoXmlNode* LassoPersonalProfileService_getXmlNode(LassoPersonalProfileService
 #define LassoPersonalProfileService_processModifyResponseMsg lasso_personal_profile_service_process_modify_response_msg
 #define LassoPersonalProfileService_processQueryMsg lasso_personal_profile_service_process_query_msg
 #define LassoPersonalProfileService_processQueryResponseMsg lasso_personal_profile_service_process_query_response_msg
-#define LassoPersonalProfileService_setXmlNode lasso_personal_profile_service_set_xml_node
 #define LassoPersonalProfileService_validateModify lasso_personal_profile_service_validate_modify
 #define LassoPersonalProfileService_validateQuery lasso_personal_profile_service_validate_query
 
@@ -4033,6 +4028,16 @@ typedef struct {
 
 	%newobject server_get;
 	LassoServer *server;
+
+	/* Attributes */
+	%newobject resourceId_get;
+	LassoDiscoResourceID *resourceId;
+
+	%newobject encryptedResourceId_get;
+	LassoDiscoEncryptedResourceID *encryptedResourceId;
+
+	%newobject resourceData_get;
+	char *resourceData;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -4084,17 +4089,13 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processQueryMsg(char *prefix, char *href, char *soap_msg);
+	int processQueryMsg(const char *message);
 	END_THROW_ERROR
 
 	THROW_ERROR
 	int processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
 	END_THROW_ERROR
 	
-	THROW_ERROR
-	int setXmlNode(char *prefix, char *href, LassoXmlNode *xmlNode);
-	END_THROW_ERROR
-
 	THROW_ERROR
 	int validateModify(char *prefix, char *href);
 	END_THROW_ERROR
@@ -4135,6 +4136,27 @@ typedef struct {
 #define LassoProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 #define LassoProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
+/* Attributes */
+
+/* EncryptedResourceID */
+#define LassoProfileService_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
+#define LassoProfileService_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
+#define LassoProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+
+/* ResourceID */
+#define LassoProfileService_get_resourceId(self) get_node((self)->resource_id)
+#define LassoProfileService_resourceId_get(self) get_node((self)->resource_id)
+#define LassoProfileService_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoProfileService_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+
+/* resourceData */
+#define LassoProfileService_get_resourceData(self) get_xml_string((self)->resource_data)
+#define LassoProfileService_resourceData_get(self) get_xml_string((self)->resource_data)
+#define LassoProfileService_set_resourceData(self, value) set_xml_string(&(self)->resource_data, (value))
+#define LassoProfileService_resourceData_set(self, value) set_xml_string(&(self)->resource_data, (value))
+
+
 /* Constructors, destructors & static methods implementations */
 
 #define new_LassoProfileService lasso_profile_service_new
@@ -4160,7 +4182,6 @@ typedef struct {
 #define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
 #define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
-#define LassoProfileService_setXmlNode lasso_profile_service_set_xml_node
 #define LassoProfileService_validateModify lasso_profile_service_validate_modify
 #define LassoProfileService_validateQuery lasso_profile_service_validate_query
 

@@ -1323,6 +1323,27 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 	}
 }
 
+static void set_xml_string(xmlNode **xmlnode, const char* string)
+{
+	xmlDoc *doc;
+	xmlNode *node;
+
+	fprintf(stderr, "setting string: %s\n", string);
+
+	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
+	node = xmlDocGetRootElement(doc);
+	if (node != NULL)
+		node = xmlCopyNode(node, 1);
+	xmlFreeDoc(doc);
+
+	if (*xmlnode)
+		xmlFreeNode(*xmlnode);
+
+	*xmlnode = node;
+}
+
+
+
 %}
 
 

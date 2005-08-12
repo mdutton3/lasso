@@ -148,10 +148,7 @@ lasso_personal_profile_service_process_query_msg(LassoPersonalProfileService *se
 {
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, -1);
 
-	return lasso_profile_service_process_query_msg(LASSO_PROFILE_SERVICE(service),
-				LASSO_PP_PREFIX,
-				LASSO_PP_HREF,
-				soap_msg);
+	return LASSO_ERROR_UNIMPLEMENTED;
 }
 
 gint
@@ -205,8 +202,7 @@ lasso_personal_profile_service_set_xml_node(LassoPersonalProfileService *service
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, -1);
 	g_return_val_if_fail(xmlNode != NULL, -1);
 
-	return lasso_profile_service_set_xml_node(LASSO_PROFILE_SERVICE(service),
-				LASSO_PP_PREFIX, LASSO_PP_HREF, xmlNode);
+	return -1;
 }
 
 /*****************************************************************************/
