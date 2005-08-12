@@ -28,6 +28,8 @@
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/id-ff/identityprivate.h>
+#include <lasso/id-wsf/profile_service.h>
+#include <lasso/id-wsf/personal_profile_service.h>
 
 struct _LassoDiscoveryPrivate
 {
@@ -677,7 +679,13 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 		}
 	}
 
-	service = lasso_profile_service_new_full(LASSO_WSF_PROFILE(discovery)->server, offering);
+	if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
+		service = LASSO_PROFILE_SERVICE(lasso_personal_profile_service_new(
+					LASSO_WSF_PROFILE(discovery)->server, offering));
+	} else {
+		service = lasso_profile_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
+				offering);
+	}
 
 	return service;
 }
