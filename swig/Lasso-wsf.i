@@ -4056,10 +4056,6 @@ typedef struct {
 	int buildRequestMsg();
 	END_THROW_ERROR
 
-	THROW_ERROR
-	int buildResponseMsg();
-	END_THROW_ERROR
-
 	/* Methods */
 
 	LassoDstData *addData(char *xmlNodeBuffer);
@@ -4073,6 +4069,13 @@ typedef struct {
 					 LassoDiscoResourceOffering *resourceOffering,
 					 LassoDiscoDescription *description,
 					 char *select);
+
+	THROW_ERROR
+	int buildResponseMsg();
+	END_THROW_ERROR
+
+	%newobject getAnswer;
+	char* getAnswer(const char *select = NULL);
 
 	THROW_ERROR
 	gint initQuery(const char *select);
@@ -4093,7 +4096,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processQueryResponseMsg(char *prefix, char *href, char *soap_msg);
+	int processQueryResponseMsg(const char *message);
 	END_THROW_ERROR
 	
 	THROW_ERROR
@@ -4169,9 +4172,9 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 #define LassoProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
-#define LassoProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
+#define LassoProfileService_buildResponseMsg lasso_profile_service_build_response_msg
 #define LassoProfileService_addData lasso_profile_service_add_data
 #define LassoProfileService_addModification lasso_profile_service_add_modification
 #define LassoProfileService_addQueryItem lasso_profile_service_add_query_item
@@ -4184,6 +4187,7 @@ typedef struct {
 #define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
 #define LassoProfileService_validateModify lasso_profile_service_validate_modify
 #define LassoProfileService_validateQuery lasso_profile_service_validate_query
+#define LassoProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
 
 %}
 

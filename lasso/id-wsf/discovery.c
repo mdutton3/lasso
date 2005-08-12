@@ -586,6 +586,11 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 }
 
 
+/**
+ * lasso_discovery_build_response_msg
+ * @discovery:
+ *
+ **/
 gint
 lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 {
@@ -594,7 +599,6 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	LassoSoapEnvelope *envelope;
 	GList *offerings = NULL;
 	GList *iter;
-
 
 	iter = request->RequestedServiceType;
 	while (iter) {

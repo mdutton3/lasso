@@ -265,7 +265,7 @@ lasso_profile_service_init_query(LassoProfileService *service, const char *selec
 /**
  * lasso_profile_service_process_query_msg:
  * @service: a #LassoProfileService
- * @message: the disco query message
+ * @message: the dst query message
  *
  * Processes a dst:Query message.  Rebuilds a request object from the message
  * and extracts ResourceID.
@@ -293,6 +293,154 @@ lasso_profile_service_process_query_msg(LassoProfileService *service, const char
 	else {
 		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
 	}
+
+	return 0;
+}
+
+/**
+ * lasso_discovery_build_response_msg:
+ * @service: a #LassoProfileService
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_profile_service_build_response_msg(LassoProfileService *service)
+{
+	LassoWsfProfile *profile;
+	LassoDstQuery *query;
+	LassoDstQueryResponse *response;
+	GList *iter;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	LassoSoapEnvelope *envelope;
+
+	profile = LASSO_WSF_PROFILE(service);
+	query = LASSO_DST_QUERY(profile->request);
+
+	response = lasso_dst_query_response_new(lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	profile->response = LASSO_NODE(response);
+	response->prefixServiceType = g_strdup(query->prefixServiceType);
+	response->hrefServiceType = g_strdup(query->hrefServiceType);
+	envelope = profile->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc, service->resource_data);
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
+			(xmlChar*)response->hrefServiceType);
+
+	/* XXX: needs another level, since there may be more than one <dst:Query> */
+	iter = query->QueryItem;
+	while (iter) {
+		LassoDstQueryItem *item = iter->data;
+		xpathObj = xmlXPathEvalExpression((xmlChar*)item->Select, xpathCtx);
+		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+			LassoDstData *data;
+			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
+			/* XXX: assuming there is only one matching node */
+			data = lasso_dst_data_new();
+			data->any = g_list_append(data->any, xmlCopyNode(node, 1));
+			if (item->itemID) {
+				data->itemIDRef = g_strdup(item->itemID);
+			}
+			response->Data = g_list_append(response->Data, data);
+		}
+		iter = g_list_next(iter);
+	}
+
+	xmlUnlinkNode(service->resource_data);
+	xmlFreeDoc(doc);
+
+	return lasso_wsf_profile_build_soap_response_msg(profile);
+}
+
+/**
+ * lasso_profile_service_get_answer:
+ * @service: a #LassoProfileService
+ * 
+ *
+ *
+ **/
+xmlNode*
+lasso_profile_service_get_answer(LassoProfileService *service, const char *select)
+{
+	LassoDstQueryResponse *response;
+	LassoDstData *data = NULL;
+	GList *iter;
+	char *item_id = NULL;
+
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+
+	if (select == NULL) {
+		/* default to first */
+		data = response->Data->data;
+	} else {
+		LassoDstQueryItem *item = NULL;
+		/* lookup select in query to get itemId, then get data with itemIdRef */
+		/* XXX: needs another level, since there may be more than one dst:Query */
+		iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
+		while (iter) {
+			item = iter->data;
+			iter = g_list_next(iter);
+			if (strcmp(item->Select, select) == 0) {
+				break;
+			}
+			item = NULL;
+		}
+
+		iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
+		if (item == NULL) {
+			/* not found */
+			return NULL;
+		}
+		item_id = item->itemID;
+		if (item_id == NULL) {
+			/* item_id is not mandatory when there is only one item */
+			data = response->Data->data;
+		}
+
+		iter = response->Data;
+		while (iter && item_id) {
+			LassoDstData *t = iter->data;
+			iter = g_list_next(iter);
+			if (strcmp(t->itemIDRef, item_id) == 0) {
+				data = t;
+				break;
+			}
+		}
+		if (data == NULL) {
+			/* not found */
+			return NULL;
+		}
+	}
+
+	/* XXX: there may be more than one xmlnode */
+	return xmlCopyNode(data->any->data, 1);
+}
+
+/**
+ * lasso_profile_service_process_query_response_msg:
+ * @service: a #LassoProfileService
+ * @message: the dst query response message
+ *
+ * ...
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
+gint
+lasso_profile_service_process_query_response_msg(LassoProfileService *service, const char *message)
+{
+	int rc;
+	LassoDstQueryResponse *response;
+
+	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(service), message);
+	if (rc) return rc;
+
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+	if (strcmp(response->Status->code, "OK") != 0)
+		return LASSO_ERROR_UNDEFINED;
 
 	return 0;
 }
@@ -399,7 +547,6 @@ lasso_profile_service_process_query_msg(LassoProfileService *service,
 
 	return 0;
 }
-#endif
 
 gint
 lasso_profile_service_process_query_response_msg(LassoProfileService *service,
@@ -421,6 +568,7 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service,
 
 	return 0;
 }
+#endif
 
 gint
 lasso_profile_service_process_modify_response_msg(LassoProfileService *service,

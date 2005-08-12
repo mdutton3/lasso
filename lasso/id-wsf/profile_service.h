@@ -98,6 +98,9 @@ LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
 
 LASSO_EXPORT gint lasso_profile_service_init_query(LassoProfileService *service,
 		const char *select);
+LASSO_EXPORT gint lasso_profile_service_build_response_msg(LassoProfileService *service);
+LASSO_EXPORT xmlNode* lasso_profile_service_get_answer(LassoProfileService *service,
+		const char *select);
 
 LASSO_EXPORT xmlNode* lasso_profile_service_get_xmlNode(LassoProfileService *service,
 	gchar *itemId);
@@ -116,9 +119,7 @@ LASSO_EXPORT gint lasso_profile_service_process_query_msg(LassoProfileService *s
 							  const char *message);
 	
 LASSO_EXPORT gint lasso_profile_service_process_query_response_msg(LassoProfileService *service,
-								   const gchar *prefix,
-								   const gchar *href,
-								   const gchar *soap_msg);
+								   const char *message);
 
 LASSO_EXPORT gint lasso_profile_service_validate_modify(LassoProfileService *service,
 					const gchar *prefix,

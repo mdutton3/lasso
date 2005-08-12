@@ -158,9 +158,7 @@ lasso_personal_profile_service_process_query_response_msg(LassoPersonalProfileSe
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, -1);
 
 	return lasso_profile_service_process_query_response_msg(LASSO_PROFILE_SERVICE(service),
-				LASSO_PP_PREFIX,
-				LASSO_PP_HREF,
-				soap_msg);
+			soap_msg);
 }
 
 gint

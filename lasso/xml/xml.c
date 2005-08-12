@@ -430,7 +430,6 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoNode *value_node;
 	struct XmlSnippet *version_snippet;
 	
-
 	if (class->node_data == NULL)
 		return NULL;
 
@@ -1413,7 +1412,7 @@ xmlDeclareNs(xmlNode *root_node, xmlNode *node)
 		return;
 
 	for (ns = node->nsDef; ns; ns = ns->next)
-		if (strcmp((char*)ns->prefix, "xsi") != 0)
+		if (ns->prefix && strcmp((char*)ns->prefix, "xsi") != 0)
 			xmlNewNs(root_node, ns->href, ns->prefix);
 	for (t = node->children; t; t = t->next)
 		if (t->type == XML_ELEMENT_NODE)
