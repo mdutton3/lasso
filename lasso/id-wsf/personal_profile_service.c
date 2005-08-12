@@ -55,12 +55,15 @@ lasso_personal_profile_service_init_query(LassoPersonalProfileService *service,
 {
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
 
+	return NULL;
+#if 0 /* XXX */
 	return lasso_profile_service_init_query(LASSO_PROFILE_SERVICE(service),
 				LASSO_PP_PREFIX,
 				LASSO_PP_HREF,
 				resourceOffering,
 				description,
 				select);
+#endif
 }
 
 gchar*

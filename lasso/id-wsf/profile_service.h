@@ -59,6 +59,9 @@ struct _LassoProfileService {
 	LassoWsfProfile parent;
 
 	xmlDoc *profileDataXmlDoc;
+
+	/*< private >*/
+	LassoProfileServicePrivate *private_data;
 };
 
 struct _LassoProfileServiceClass {
@@ -69,6 +72,8 @@ struct _LassoProfileServiceClass {
 LASSO_EXPORT GType lasso_profile_service_get_type(void);
 
 LASSO_EXPORT LassoProfileService* lasso_profile_service_new(LassoServer *server);
+LASSO_EXPORT LassoProfileService* lasso_profile_service_new_full(LassoServer *server,
+		LassoDiscoResourceOffering *offering);
 
 
 LASSO_EXPORT LassoDstData *lasso_profile_service_add_data(LassoProfileService *service,
@@ -89,12 +94,8 @@ LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
 	LassoDiscoDescription *desc,
 	const gchar *select);
 
-LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_init_query(LassoProfileService *service,
-								 const gchar *prefix,
-								 const gchar *href,
-								 LassoDiscoResourceOffering *ro,
-								 LassoDiscoDescription *desc,
-								 const gchar *select);
+LASSO_EXPORT gint lasso_profile_service_init_query(LassoProfileService *service,
+		const char *select);
 
 LASSO_EXPORT xmlNode* lasso_profile_service_get_xmlNode(LassoProfileService *service,
 	gchar *itemId);

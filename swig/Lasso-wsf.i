@@ -3551,6 +3551,8 @@ typedef struct {
 	THROW_ERROR
 	int processQueryResponseMsg(char *query_response_msg);
 	END_THROW_ERROR
+
+	LassoProfileService* getService(const char *service_type = NULL);
 }
 
 %{
@@ -3669,6 +3671,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_processModifyResponseMsg lasso_discovery_process_modify_response_msg
 #define LassoDiscovery_processQueryMsg lasso_discovery_process_query_msg
 #define LassoDiscovery_processQueryResponseMsg lasso_discovery_process_query_response_msg
+#define LassoDiscovery_getService lasso_discovery_get_service
 
 %}
 
@@ -4065,12 +4068,10 @@ typedef struct {
 					 LassoDiscoResourceOffering *resourceOffering,
 					 LassoDiscoDescription *description,
 					 char *select);
-		
-	LassoDstQueryItem *initQuery(char *prefix,
-				     char *href,
-				     LassoDiscoResourceOffering *resourceOffering,
-				     LassoDiscoDescription *description,
-				     char *select);
+
+	THROW_ERROR
+	gint initQuery(const char *select);
+	END_THROW_ERROR
 					 
 	LassoXmlNode *getXmlNode(char *itemId = NULL);
 
