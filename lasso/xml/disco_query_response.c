@@ -111,6 +111,7 @@ class_init(LassoDiscoQueryResponseClass *class)
 	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "QueryResponse");
+	lasso_node_class_set_ns(nclass, LASSO_DISCO_HREF, LASSO_DISCO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
