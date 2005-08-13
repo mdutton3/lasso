@@ -818,7 +818,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 		}
 	}
 
-	/* authentication is ok, federation is ok, propagation support is ok, remove federation */
+	/* authentication is ok, federation is ok, propagation support is ok, remove assertion */
 	lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 
 	/* if at IDP and nb sp logged > 1, then backup remote provider id,
