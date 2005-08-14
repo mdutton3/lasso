@@ -180,12 +180,7 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 	if (length == 0)
 		return NULL;
 
-	if (session->private_data->providerIDs == NULL ||
-			g_list_length(session->private_data->providerIDs) != length) {
-		if (session->private_data->providerIDs) {
-			g_list_free(session->private_data->providerIDs);
-			session->private_data->providerIDs = NULL;
-		}
+	if (session->private_data->providerIDs == NULL) {
 		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
 	}
 
@@ -195,6 +190,25 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 
 	return g_strdup(element->data);
 }
+
+
+/**
+ * lasso_session_init_provider_ids:
+ * @session: a #LassoSession
+ *
+ * Initializes internal assertions providers list, used to iterate in logout
+ * process.
+ **/
+void
+lasso_session_init_provider_ids(LassoSession *session)
+{
+	if (session->private_data->providerIDs) {
+		g_list_free(session->private_data->providerIDs);
+		session->private_data->providerIDs = NULL;
+	}
+	g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+}
+
 
 /**
  * lasso_session_is_empty:

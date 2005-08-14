@@ -685,6 +685,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 {
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), -1);
+	lasso_session_init_provider_ids(LASSO_PROFILE(logout)->session);
 	logout->providerID_index = 0;
 	return 0;
 }

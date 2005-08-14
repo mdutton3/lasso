@@ -46,6 +46,8 @@ LassoSamlpStatus* lasso_session_get_status(
 gint lasso_session_remove_status(LassoSession *session, gchar *providerID);
 gint lasso_session_remove_assertion(LassoSession *session, gchar *providerID);
 
+void lasso_session_init_provider_ids(LassoSession *session);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
