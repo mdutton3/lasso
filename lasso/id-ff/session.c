@@ -181,8 +181,13 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 		return NULL;
 
 	if (session->private_data->providerIDs == NULL ||
-			g_list_length(session->private_data->providerIDs) != length)
+			g_list_length(session->private_data->providerIDs) != length) {
+		if (session->private_data->providerIDs) {
+			g_list_free(session->private_data->providerIDs);
+			session->private_data->providerIDs = NULL;
+		}
 		g_hash_table_foreach(session->assertions, (GHFunc)add_providerID, session);
+	}
 
 	element = g_list_nth(session->private_data->providerIDs, index);
 	if (element == NULL)
