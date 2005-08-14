@@ -361,28 +361,46 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
-	/* before setting profile->request, verify if it is already set */
-	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == TRUE) {
-		lasso_node_destroy(LASSO_NODE(profile->request));
-		profile->request = NULL;
-	}
-
-	/* build a new request object from single logout protocol profile */
-
 	/* get / verify http method */
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
 		http_method = lasso_provider_get_first_http_method(
 				LASSO_PROVIDER(profile->server),
 				remote_provider,
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT);
+		/* XXX: check it found a valid http method */
 	} else {
 		if (lasso_provider_accept_http_method(LASSO_PROVIDER(profile->server),
 					remote_provider,
 					LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,
 					http_method,
 					TRUE) == FALSE) {
+			if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
+				/* it was probably used as last resort, and
+				 * failed, since the remote provider doesn't
+				 * support any logout.  remove assertion
+				 * unconditionnaly. */
+				lasso_session_remove_assertion(profile->session,
+						profile->remote_providerID);
+				if (logout->initial_remote_providerID && logout->initial_request) {
+					g_free(profile->remote_providerID);
+					profile->remote_providerID = g_strdup(
+							logout->initial_remote_providerID);
+					profile->response = lasso_lib_logout_response_new_full(
+						LASSO_PROVIDER(profile->server)->ProviderID,
+						LASSO_SAML_STATUS_CODE_SUCCESS,
+						LASSO_LIB_LOGOUT_REQUEST(logout->initial_request),
+						LASSO_SIGNATURE_TYPE_NONE,
+						0);
+				}
+			}
 			return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 		}
+	}
+
+	/* before setting profile->request, verify it is not already set */
+	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == TRUE) {
+		lasso_node_destroy(LASSO_NODE(profile->request));
+		profile->request = NULL;
 	}
 
 	/* build a new request object from http method */
