@@ -27,7 +27,7 @@
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
-#include <lasso/id-ff/identityprivate.h>
+#include <lasso/id-wsf/identity.h>
 #include <lasso/id-wsf/profile_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 
