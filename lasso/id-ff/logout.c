@@ -160,20 +160,14 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 	profile = LASSO_PROFILE(logout);
 
-	/* get the provider */
-	if (profile->remote_providerID == NULL) {
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-	if (provider == NULL) {
+	if (profile->remote_providerID == NULL || profile->response == NULL) {
+		/* no remote provider id set or no response set, this means
+		 * this function got called before validate_request, probably
+		 * because there were no active session */
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	if (profile->response == NULL) {
-		/* no answer, this means this function got called before
-		 * validate_request, probably because there were no active
-		 * session */
 		if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 			profile->response = lasso_lib_logout_response_new_full(
 					LASSO_PROVIDER(profile->server)->ProviderID,
@@ -203,6 +197,13 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	}
 
 	if (profile->http_request_method == LASSO_HTTP_METHOD_REDIRECT) {
+		/* get the provider */
+		provider = g_hash_table_lookup(profile->server->providers,
+				profile->remote_providerID);
+		if (provider == NULL) {
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		}
+
 		url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
