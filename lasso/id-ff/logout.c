@@ -161,6 +161,10 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	profile = LASSO_PROFILE(logout);
 
 	/* get the provider */
+	if (profile->remote_providerID == NULL) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
+
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 	if (provider == NULL) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
