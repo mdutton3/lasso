@@ -708,6 +708,17 @@ lasso_provider_load_public_key(LassoProvider *provider)
 {
 	LassoPemFileType file_type;
 	xmlSecKey *pub_key = NULL;
+	xmlSecKeyDataFormat key_formats[] = {
+		xmlSecKeyDataFormatDer,
+		xmlSecKeyDataFormatCertDer,
+		xmlSecKeyDataFormatPkcs8Der,
+		xmlSecKeyDataFormatCertPem,
+		xmlSecKeyDataFormatPkcs8Pem,
+		xmlSecKeyDataFormatPem,
+		xmlSecKeyDataFormatBinary,
+		0
+	};
+	int i;
 
 	if (provider->public_key == NULL && provider->private_data->signing_key_descriptor == NULL)
 		return;
@@ -744,15 +755,16 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			xmlFree(b64_value);
 			g_free(value);
 		}
-		pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
-				xmlSecKeyDataFormatCertDer, NULL, NULL, NULL);
+		for (i=0; key_formats[i] && pub_key == NULL; i++) {
+			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
+					key_formats[i], NULL, NULL, NULL);
+		}
 		xmlFree(b64_value);
 		g_free(value);
-		if (pub_key == NULL) {
-			/* XXX: bad key (could try Pem now) */
-		}
 		provider->private_data->public_key = pub_key;
-		return;
+		if (pub_key) {
+			return;
+		}
 	}
 
 	file_type = lasso_get_pem_file_type(provider->public_key);
