@@ -160,13 +160,6 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 	profile = LASSO_PROFILE(logout);
 
-	if (profile->remote_providerID == NULL || profile->response == NULL) {
-		/* no remote provider id set or no response set, this means
-		 * this function got called before validate_request, probably
-		 * because there were no active session */
-		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	}
-
 	if (profile->response == NULL) {
 		if (profile->http_request_method == LASSO_HTTP_METHOD_SOAP) {
 			profile->response = lasso_lib_logout_response_new_full(
@@ -185,6 +178,13 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 					LASSO_SIGNATURE_TYPE_NONE,
 					0);
 		}
+	}
+
+	if (profile->remote_providerID == NULL || profile->response == NULL) {
+		/* no remote provider id set or no response set, this means
+		 * this function got called before validate_request, probably
+		 * because there were no active session */
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	/* build logout response message */
