@@ -30,22 +30,6 @@
 /* public methods                                                            */
 /*****************************************************************************/
 
-LassoDstModification*
-lasso_personal_profile_service_init_modify(LassoPersonalProfileService *service,
-	LassoDiscoResourceOffering *resourceOffering,
-	LassoDiscoDescription *description,
-	const gchar *select)
-{
-	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
-
-	return lasso_profile_service_init_modify(LASSO_PROFILE_SERVICE(service),
-				LASSO_PP_PREFIX,
-				LASSO_PP_HREF,
-				resourceOffering,
-				description,
-				select);
-}
-
 char*
 lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 {
