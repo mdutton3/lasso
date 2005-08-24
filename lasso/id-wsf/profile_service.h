@@ -74,53 +74,38 @@ struct _LassoProfileServiceClass {
 LASSO_EXPORT GType lasso_profile_service_get_type(void);
 
 LASSO_EXPORT LassoProfileService* lasso_profile_service_new(LassoServer *server);
-LASSO_EXPORT LassoProfileService* lasso_profile_service_new_full(LassoServer *server,
-		LassoDiscoResourceOffering *offering);
 
+LASSO_EXPORT LassoProfileService* lasso_profile_service_new_full(LassoServer *server,
+	LassoDiscoResourceOffering *offering);
 
 LASSO_EXPORT gint lasso_profile_service_init_query(LassoProfileService *service,
-		const char *select, const char *item_id);
+	const char *select, const char *item_id);
 
 LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_add_query_item(LassoProfileService *service,
-		const char *select, const char *item_id);
+	const char *select, const char *item_id);
 
 LASSO_EXPORT gint lasso_profile_service_process_query_msg(LassoProfileService *service,
-		const char *message);
+	const char *message);
 	
 LASSO_EXPORT gint lasso_profile_service_build_response_msg(LassoProfileService *service);
 
 LASSO_EXPORT gint lasso_profile_service_process_query_response_msg(LassoProfileService *service,
-		const char *message);
+	const char *message);
 
 LASSO_EXPORT xmlNode* lasso_profile_service_get_answer(LassoProfileService *service,
-		const char *select);
+	const char *select);
 
-
-LASSO_EXPORT  LassoDstModification* lasso_profile_service_init_modify(
-	LassoProfileService *service,
-	const gchar *prefix,
-	const gchar *href,
-	LassoDiscoResourceOffering *ro,
-	LassoDiscoDescription *desc,
+LASSO_EXPORT  gint lasso_profile_service_init_modify(LassoProfileService *service,
 	const gchar *select);
 
 LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(
-	LassoProfileService *service,
-	const gchar *select);
+	LassoProfileService *service, const gchar *select);
 
 LASSO_EXPORT gint lasso_profile_service_process_modify_msg(LassoProfileService *service,
-							   const gchar *prefix,
-							   const gchar *href,
-							   const gchar *soap_msg);
+	const gchar *soap_msg);
 
 LASSO_EXPORT gint lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
-								    const gchar *prefix,
-								    const gchar *href,
-								    const gchar *soap_msg);
-
-LASSO_EXPORT gint lasso_profile_service_validate_modify(LassoProfileService *service,
-					const gchar *prefix,
-					const gchar *href);
+	const gchar *soap_msg);
 
 #ifdef __cplusplus
 }
