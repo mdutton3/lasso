@@ -76,7 +76,7 @@ LASSO_EXPORT GType lasso_server_get_type(void);
 
 LASSO_EXPORT LassoServer* lasso_server_new(const gchar *metadata,
 		const gchar *private_key,
-		const gchar *secret_key,
+		const gchar *private_key_password,
 		const gchar *certificate);
 
 LASSO_EXPORT LassoServer* lasso_server_new_from_dump(const gchar *dump);
