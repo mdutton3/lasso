@@ -145,9 +145,21 @@ lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 	return 0;
 }
 
+/**
+ * lasso_discovery_add_requested_service_type:
+ * @discovery: a #LassoDiscovery
+ * @service_type: requested service type
+ * @option: option to the requested service
+ *
+ * Adds a request for service of @service_type to the disco:Query being built.
+ *
+ * Return value: a newly created #LassoDiscoRequestedServiceType with the
+ *      request.  Note that it is internally allocated and shouldn't be freed
+ *      by the caller.
+ **/
 LassoDiscoRequestedServiceType*
 lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
-					   const gchar    *serviceType,
+					   const gchar    *service_type,
 					   const gchar     *option)
 {
 	LassoDiscoQuery *query;
@@ -155,12 +167,12 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	LassoDiscoOptions *opts = NULL;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), NULL);
-	g_return_val_if_fail(serviceType != NULL, NULL);
+	g_return_val_if_fail(service_type != NULL, NULL);
 	/* option is optional */
 
 	query = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
 
-	rst = lasso_disco_requested_service_type_new(serviceType);
+	rst = lasso_disco_requested_service_type_new(service_type);
 
 	/* optionals data */
 	if (option != NULL) {
@@ -418,7 +430,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
  * lasso_discovery_init_query
  * @discovery: a #LassoDiscovery
  *
- * Initializes a disco Query message
+ * Initializes a disco:Query message.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -453,11 +465,18 @@ lasso_discovery_init_query(LassoDiscovery *discovery)
 }
 
 
-
-
+/**
+ * lasso_discovery_process_modify_msg:
+ * @discovery: a #LassoDiscovery
+ * @message: the disco:Modify SOAP message
+ *
+ * Processes a disco:Modify SOAP message.  Rebuilds a request object from the
+ * message and extracts ResourceID.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
-lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
-				   const gchar    *message)
+lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *message)
 {
 	LassoDiscoModify *request;
 
@@ -476,6 +495,19 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 	return 0;
 }
 
+
+/**
+ * lasso_discovery_build_modify_response_msg:
+ * @discovery: a #LassoDiscovery
+ *
+ * Builds a disco:ModifyResponse message; answer to the disco:Modify passed to
+ * lasso_discovery_process_modify_msg().  It inserts and removed
+ * ResourceOfferings from identity; it must be saved afterwards.
+ *
+ * Sets @msg_body to the SOAP answer.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 {
@@ -536,6 +568,15 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
 }
 
+/**
+ * lasso_discovery_process_modify_response_msg:
+ * @discovery: a #LassoDiscovery
+ * @message: the disco:ModifyResponse SOAP message
+ *
+ * Processes a disco:ModifyResponse SOAP message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
@@ -555,10 +596,10 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 /**
  * lasso_discovery_process_query_msg:
  * @discovery: a #LassoDiscovery
- * @message: the disco query message
+ * @message: the disco:Query SOAP message
  *
- * Processes a disco:Query message.  Rebuilds a request object from the message
- * and extracts ResourceID.
+ * Processes a disco:Query SOAP message.  Rebuilds a request object from the
+ * message and extracts ResourceID.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -590,8 +631,15 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 
 /**
  * lasso_discovery_build_response_msg
- * @discovery:
+ * @discovery: a #LassoDiscovery
  *
+ * Builds a disco:QueryResponse message; answer to the disco:Query passed to
+ * lasso_discovery_process_query_msg().  It looks up resource offerings in the
+ * principal identity and extracts those of the requested service type.
+ *
+ * Sets @msg_body to the SOAP answer.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
 lasso_discovery_build_response_msg(LassoDiscovery *discovery)
@@ -623,6 +671,15 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 
 }
 
+/**
+ * lasso_discovery_process_query_response_msg:
+ * @discovery: a #LassoDiscovery
+ * @message: the disco:QueryResponse message
+ *
+ * Processes a disco:QueryResponse message.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gchar *message)
 {
@@ -645,8 +702,13 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 /**
  * lasso_discovery_get_service:
  * @discovery: a #LassoDiscovery
- * @service_type: 
+ * @service_type: the requested service type
  *
+ * After a disco:query message, creates a #LassoProfileService instance for the
+ * requested @service_type.
+ *
+ * Return value: a newly created #LAssoProfileService object; or NULL if an
+ *     error occured.
  **/
 LassoProfileService*
 lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
@@ -792,6 +854,15 @@ lasso_discovery_get_type()
 	return this_type;
 }
 
+/**
+ * lasso_discovery_new:
+ * @server: the #LassoServer
+ *
+ * Creates a new #LassoDiscovery.
+ *
+ * Return value: a newly created #LassoDiscovery object; or NULL if an error
+ *      occured.
+ **/
 LassoDiscovery*
 lasso_discovery_new(LassoServer *server)
 {
