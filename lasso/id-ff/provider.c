@@ -698,12 +698,17 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
-	lasso_provider_load_public_key(provider);
+	if (lasso_provider_load_public_key(provider) == FALSE) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to load public key for %s.",
+				provider->ProviderID);
+		lasso_node_destroy(LASSO_NODE(provider));
+		return NULL;
+	}
 
 	return provider;
 }
 
-void
+gboolean
 lasso_provider_load_public_key(LassoProvider *provider)
 {
 	LassoPemFileType file_type;
@@ -721,7 +726,7 @@ lasso_provider_load_public_key(LassoProvider *provider)
 	int i;
 
 	if (provider->public_key == NULL && provider->private_data->signing_key_descriptor == NULL)
-		return;
+		return FALSE;
 
 	if (provider->public_key == NULL) {
 		xmlNode *t = provider->private_data->signing_key_descriptor->children;
@@ -755,15 +760,17 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			xmlFree(b64_value);
 			g_free(value);
 		}
+		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {
 			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
 					key_formats[i], NULL, NULL, NULL);
 		}
+		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		xmlFree(b64_value);
 		g_free(value);
 		provider->private_data->public_key = pub_key;
 		if (pub_key) {
-			return;
+			return TRUE;
 		}
 	}
 
@@ -783,6 +790,8 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			break; /* with a warning ? */
 	}
 	provider->private_data->public_key = pub_key;
+
+	return (pub_key != NULL);
 }
 
 
