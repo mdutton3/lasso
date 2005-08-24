@@ -112,8 +112,8 @@ lasso_profile_service_add_query_item(LassoProfileService *service,
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_service_init_query(LassoProfileService *service,
-		const char *select, const char *item_id)
+lasso_profile_service_init_query(LassoProfileService *service, const char *select,
+	const char *item_id)
 {
 	LassoWsfProfile *profile;
 	LassoDstQuery *query;
@@ -354,23 +354,17 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service, c
 }
 
 
-LassoDstModification*
-lasso_profile_service_init_modify(LassoProfileService *service,
-	const gchar *prefix,
-	const gchar *href,
-	LassoDiscoResourceOffering *resourceOffering,
-	LassoDiscoDescription *description,
-	const gchar *select)
+gint
+lasso_profile_service_init_modify(LassoProfileService *service, const gchar *select)
 {
 	LassoDstModification *modification;
 	LassoWsfProfile *profile;
+	LassoDiscoResourceOffering *offering;
+	LassoDiscoDescription *description;
 
 	LassoSoapEnvelope *envelope;
 	LassoDstModify *modify;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
-	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering), NULL);
-	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description), NULL);
 
 	profile = LASSO_WSF_PROFILE(service);
 
@@ -380,21 +374,35 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 	modify = lasso_dst_modify_new(modification);
 	profile->request = LASSO_NODE(modify);
 
-	LASSO_DST_MODIFY(profile->request)->prefixServiceType = g_strdup(prefix);
-	LASSO_DST_MODIFY(profile->request)->hrefServiceType = g_strdup(href);
+	offering = service->private_data->offering;
+	
+	modify->hrefServiceType = g_strdup(offering->ServiceInstance->ServiceType);
+	if (strcmp(modify->hrefServiceType, LASSO_PP_HREF) == 0) {
+		modify->prefixServiceType = g_strdup(LASSO_PP_PREFIX);
+	}
+	else if (strcmp(modify->hrefServiceType, LASSO_EP_HREF) == 0) {
+		modify->prefixServiceType = g_strdup(LASSO_EP_PREFIX);
+	}
+	else {
+		/* unknown service type, (needs registration mechanism) */
+		return LASSO_ERROR_UNDEFINED;
+	}
+
+	/* get ResourceID / EncryptedResourceID */
+	if (offering->ResourceID) {
+		modify->ResourceID = offering->ResourceID;
+	}
+	else if (offering->EncryptedResourceID) {
+	  modify->EncryptedResourceID = offering->EncryptedResourceID;
+	}
+	else {
+		/* XXX: no resource id, implied:resource, etc. */
+		return LASSO_ERROR_UNIMPLEMENTED;
+	}
 
 	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
 	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, modify);
-
-	/* get ResourceID / EncryptedResourceID */
-	if (resourceOffering->ResourceID != NULL) {
-		LASSO_DST_MODIFY(profile->request)->ResourceID = resourceOffering->ResourceID;
-	}
-	else {
-	  LASSO_DST_MODIFY(profile->request)->EncryptedResourceID = \
-		  resourceOffering->EncryptedResourceID;
-	}
 
 	/* set msg_url */
 	/* TODO : implement WSDLRef */
@@ -402,53 +410,36 @@ lasso_profile_service_init_modify(LassoProfileService *service,
 		profile->msg_url = g_strdup(description->Endpoint);
 	}
 
-	return modification;
-}
-
-
-gint
-lasso_profile_service_process_modify_msg(LassoProfileService *service,
-	const gchar *prefix, /* FIXME : must be get from message */
-	const gchar *href,   /* FIXME : must be get from message */
-	const gchar *modify_soap_msg)
-{
-	LassoDstModifyResponse *response;
-	LassoSoapBindingCorrelation *correlation;
-	LassoSoapEnvelope *envelope;
-	LassoUtilityStatus *status;
-	LassoWsfProfile *profile;
-	gchar *messageId;
-
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), -1);
-	g_return_val_if_fail(modify_soap_msg != NULL, -1);
-
-	profile = LASSO_WSF_PROFILE(service);
-
-	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(modify_soap_msg));
-	LASSO_WSF_PROFILE(service)->soap_envelope_request = envelope;
-	LASSO_WSF_PROFILE(service)->request = LASSO_NODE(envelope->Body->any->data);
-
-	correlation = envelope->Header->Other->data;
-	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
-	LASSO_WSF_PROFILE(service)->soap_envelope_response = envelope;
-
-	/* init QueryResponse */
-	status = lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK);
-	response = lasso_dst_modify_response_new(status);
-	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
-	LASSO_DST_MODIFY_RESPONSE(profile->response)->prefixServiceType = g_strdup(prefix);
-	LASSO_DST_MODIFY_RESPONSE(profile->response)->hrefServiceType = g_strdup(href);
-
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
-
 	return 0;
 }
 
+
+gint
+lasso_profile_service_process_modify_msg(LassoProfileService *service, const gchar *modify_soap_msg)
+{
+	LassoDstModify *modify;
+	LassoWsfProfile *profile;
+	int rc;
+
+	profile = LASSO_WSF_PROFILE(service);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg);
+	if (rc) {
+		return rc;
+	}
+
+	modify = LASSO_DST_MODIFY(profile->request);
+	if (modify->ResourceID)
+		service->resource_id = g_object_ref(modify->ResourceID);
+	else if (modify->EncryptedResourceID)
+		service->encrypted_resource_id = g_object_ref(modify->EncryptedResourceID);
+	else {
+		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
+	}
+
+	return 0;}
+
 gint
 lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
-	const gchar *prefix,
-	const gchar *href,
 	const gchar *soap_msg)
 {
 	LassoDstModifyResponse *response;
@@ -464,15 +455,6 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 	LASSO_WSF_PROFILE(service)->response = LASSO_NODE(response);
 
 	return 0;
-}
-
-gint
-lasso_profile_service_validate_modify(LassoProfileService *service,
-	const gchar *prefix,
-	const gchar *href)
-{
-
-	return -1;
 }
 
 
@@ -594,9 +576,8 @@ lasso_profile_service_new_full(LassoServer *server, LassoDiscoResourceOffering *
 	service = lasso_profile_service_new(server);
 	if (service == NULL)
 		return NULL;
-	
+
 	service->private_data->offering = g_object_ref(offering);
 
 	return service;
 }
-
