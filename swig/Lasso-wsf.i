@@ -3471,14 +3471,9 @@ typedef struct {
 
 	~LassoDiscovery();
 
-	/* Methods inherited from LassoNode */
-
-	%newobject dump;
-	char *dump();
-
 	/* Methods inherited from WsfProfile */
 
-        THROW_ERROR
+	THROW_ERROR
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR
 
@@ -3519,10 +3514,6 @@ typedef struct {
 								char *option = NULL);
 
 	THROW_ERROR
-	int addResourceOffering(LassoDiscoResourceOffering *resourceOffering);
-	END_THROW_ERROR
-
-	THROW_ERROR
 	int initModify(LassoDiscoResourceOffering *resourceOffering,
 			LassoDiscoDescription *description);
 	END_THROW_ERROR
@@ -3532,16 +3523,11 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int initQueryFull(LassoDiscoResourceOffering *resourceOffering,
-			LassoDiscoDescription *description);
+	int processModifyMsg(const char *modify_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processModifyMsg(char *modify_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int processModifyResponseMsg(char *modify_response_msg);
+	int processModifyResponseMsg(const char *modify_response_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -3639,10 +3625,6 @@ typedef struct {
 #define new_LassoDiscovery lasso_discovery_new
 #define delete_LassoDiscovery(self) lasso_node_destroy(LASSO_NODE(self))
 
-/* Implementations of methods inherited from LassoNode */
-
-#define LassoDiscovery_dump(self) lasso_node_dump(LASSO_NODE(self))
-
 /* Implementations of methods inherited from WsfProfile */
 
 int LassoDiscovery_setIdentityFromDump(LassoDiscovery *self, char *dump) {
@@ -3667,7 +3649,6 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_buildModifyResponseMsg lasso_discovery_build_modify_response_msg
 #define LassoDiscovery_initModify lasso_discovery_init_modify
 #define LassoDiscovery_initQuery lasso_discovery_init_query
-#define LassoDiscovery_initQueryFull lasso_discovery_init_query_full
 #define LassoDiscovery_processModifyMsg lasso_discovery_process_modify_msg
 #define LassoDiscovery_processModifyResponseMsg lasso_discovery_process_modify_response_msg
 #define LassoDiscovery_processQueryMsg lasso_discovery_process_query_msg
@@ -3933,26 +3914,17 @@ typedef struct {
 	char* getAnswer(const char *select = NULL);
 
 
-	LassoDstModification *initModify(char *prefix,
-					 char *href,
-					 LassoDiscoResourceOffering *resourceOffering,
-					 LassoDiscoDescription *description,
-					 char *select);
+	LassoDstModification *initModify(const char *select);
 
 	LassoDstModification *addModification(char *select);
 
 	THROW_ERROR
-	int processModifyMsg(char *prefix, char *href, char *soap_msg);
+	int processModifyMsg(char *soap_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
+	int processModifyResponseMsg(char *soap_msg);
 	END_THROW_ERROR
-
-	THROW_ERROR
-	int validateModify(char *prefix, char *href);
-	END_THROW_ERROR
-
 
 	/* Methods */
 
@@ -4032,7 +4004,6 @@ typedef struct {
 #define LassoPersonalProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoPersonalProfileService_processQueryMsg lasso_profile_service_process_query_msg
 #define LassoPersonalProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
-#define LassoPersonalProfileService_validateModify lasso_profile_service_validate_modify
 #define LassoPersonalProfileService_validateQuery lasso_profile_service_validate_query
 #define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
 
@@ -4121,25 +4092,16 @@ typedef struct {
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
 
-
-	LassoDstModification *initModify(char *prefix,
-					 char *href,
-					 LassoDiscoResourceOffering *resourceOffering,
-					 LassoDiscoDescription *description,
-					 char *select);
+	int initModify(char *select);
 
 	LassoDstModification *addModification(char *select);
 
 	THROW_ERROR
-	int processModifyMsg(char *prefix, char *href, char *soap_msg);
+	int processModifyMsg(char *soap_msg);
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processModifyResponseMsg(char *prefix, char *href, char *soap_msg);
-	END_THROW_ERROR
-
-	THROW_ERROR
-	int validateModify(char *prefix, char *href);
+	int processModifyResponseMsg(const char *soap_msg);
 	END_THROW_ERROR
 }
 
@@ -4219,7 +4181,6 @@ typedef struct {
 #define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
 #define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
 #define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
-#define LassoProfileService_validateModify lasso_profile_service_validate_modify
 #define LassoProfileService_validateQuery lasso_profile_service_validate_query
 #define LassoProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
 
