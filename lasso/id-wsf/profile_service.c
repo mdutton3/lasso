@@ -68,12 +68,14 @@ lasso_profile_service_add_modification(LassoProfileService *service, const gchar
 /**
  * lasso_profile_service_add_query_item:
  * @service: a #LassoProfileService
- * @select: 
- * @item_id:
+ * @select: resource selection string (typically a XPath query)
+ * @item_id: query item identifier
  *
- * Adds a dst:QueryItem to current request.
+ * Adds a dst:QueryItem to the current dst:Query request.
  *
- * Return value: a pointer to the query item that has been created.
+ * Return value: a newly created #LassoDstQueryItem with the query item that
+ *       has been created.  Note that it is internally allocated and shouldn't
+ *       be freed by the caller.
  **/
 LassoDstQueryItem*
 lasso_profile_service_add_query_item(LassoProfileService *service,
@@ -196,7 +198,7 @@ lasso_profile_service_process_query_msg(LassoProfileService *service, const char
 }
 
 /**
- * lasso_discovery_build_response_msg:
+ * lasso_profile_service_build_response_msg:
  * @service: a #LassoProfileService
  *
  * Builds a dst:QueryResponse message.
@@ -259,7 +261,7 @@ lasso_profile_service_build_response_msg(LassoProfileService *service)
 /**
  * lasso_profile_service_get_answer:
  * @service: a #LassoProfileService
- * @select: 
+ * @select: resource selection string (typically a XPath query)
  * 
  * Returns the answer for the specified @select request.
  *
@@ -561,6 +563,16 @@ lasso_profile_service_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_profile_service_new:
+ * @server: the #LassoServer
+ *
+ * Creates a new #LassoProfileService.
+ *
+ * Return value: a newly created #LassoProfileService object; or NULL if an
+ *      error occured.
+ **/
 LassoProfileService*
 lasso_profile_service_new(LassoServer *server)
 {
