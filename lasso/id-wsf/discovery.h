@@ -92,9 +92,7 @@ LASSO_EXPORT gint  lasso_discovery_add_remove_entry(LassoDiscovery *discovery,
 						    const gchar *entryID);
 
 LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_service_type(
-	LassoDiscovery *discovery,
-	const gchar *serviceType,
-	const gchar *options);
+		LassoDiscovery *discovery, const gchar *service_type, const gchar *option);
 
 LASSO_EXPORT gint lasso_discovery_add_resource_offering(
 	LassoDiscovery *discovery,
