@@ -187,25 +187,6 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	return rst;
 }
 
-gint
-lasso_discovery_add_resource_offering(LassoDiscovery             *discovery,
-				      LassoDiscoResourceOffering *resourceOffering)
-{
-	LassoDiscoQueryResponse *query_response;
-
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
-	query_response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-
-	/* add ResourceOffering */
-	query_response->ResourceOffering = g_list_append(query_response->ResourceOffering,
-							 (gpointer)resourceOffering);
-	
-	return 0;
-}
-
 /**
  * lasso_discovery_destroy:
  * @discovery: a LassoDiscovery
@@ -239,27 +220,6 @@ lasso_discovery_init_modify(LassoDiscovery                *discovery,
 	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
 	LASSO_WSF_PROFILE(discovery)->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, modify);
-
-	return lasso_discovery_init_request(discovery, resourceOffering, description);
-}
-
-gint
-lasso_discovery_init_query_full(LassoDiscovery                *discovery,
-			   LassoDiscoResourceOffering    *resourceOffering,
-			   LassoDiscoDescription         *description)
-{
-	LassoDiscoQuery *query;
-
-	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_RESOURCE_OFFERING(resourceOffering),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	
-	query = lasso_disco_query_new();
-	LASSO_WSF_PROFILE(discovery)->request = LASSO_NODE(query);
-
-	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(query));
 
 	return lasso_discovery_init_request(discovery, resourceOffering, description);
 }
@@ -874,25 +834,5 @@ lasso_discovery_new(LassoServer *server)
 	LASSO_WSF_PROFILE(discovery)->server = g_object_ref(server);
 
 	return discovery;
-}
-
-LassoDiscovery*
-lasso_discovery_new_from_dump(LassoServer *server, const gchar *dump)
-{
-	LassoDiscovery *discovery;
-	xmlDoc *doc;
-
-	discovery = g_object_new(LASSO_TYPE_DISCOVERY, NULL);
-	doc = xmlParseMemory(dump, strlen(dump));
-	init_from_xml(LASSO_NODE(discovery), xmlDocGetRootElement(doc)); 
-	LASSO_WSF_PROFILE(discovery)->server = server;
-
-	return discovery;
-}
-
-gchar*
-lasso_discovery_dump(LassoDiscovery *discovery)
-{
-	return lasso_node_dump(LASSO_NODE(discovery));
 }
 
