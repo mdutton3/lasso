@@ -3913,6 +3913,13 @@ typedef struct {
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
 
+	%newobject getAnswerForItemId;
+	char* getAnswerForItemId(const char *itemId);
+
+	LassoDstModification *initModify(const char *select);
+
+	LassoDstModification *addModification(char *select);
+
 	THROW_ERROR
 	int processModifyMsg(char *soap_msg);
 	END_THROW_ERROR
@@ -4000,6 +4007,7 @@ typedef struct {
 #define LassoPersonalProfileService_processQueryResponseMsg lasso_data_service_process_query_response_msg
 #define LassoPersonalProfileService_validateQuery lasso_data_service_validate_query
 #define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
+#define LassoPersonalProfileService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(self, itemId))
 
 
 /* Methods implementations */
