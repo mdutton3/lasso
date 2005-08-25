@@ -50,6 +50,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 
 if WSF_ENABLED
 SWIG_WSF_OUTPUTS = Authentication.java \
+	DataService.java \
 	DiscoAuthenticateRequester.java \
 	DiscoAuthenticateSessionContext.java \
 	DiscoAuthorizeRequester.java \
@@ -93,7 +94,6 @@ SWIG_WSF_OUTPUTS = Authentication.java \
 	IsText.java \
 	IsUserInteraction.java \
 	lassoConstants.java \
-	ProfileService.java \
 	SaCredentials.java \
 	SaSASLRequest.java \
 	SaSASLResponse.java \
