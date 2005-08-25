@@ -77,27 +77,30 @@ LASSO_EXPORT GType lasso_data_service_get_type(void);
 LASSO_EXPORT LassoDataService* lasso_data_service_new(LassoServer *server);
 
 LASSO_EXPORT LassoDataService* lasso_data_service_new_full(LassoServer *server,
-	LassoDiscoResourceOffering *offering);
+		LassoDiscoResourceOffering *offering);
 
 LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
-	const char *select, const char *item_id);
+		const char *select, const char *item_id);
 
 LASSO_EXPORT LassoDstQueryItem* lasso_data_service_add_query_item(LassoDataService *service,
-	const char *select, const char *item_id);
+		const char *select, const char *item_id);
 
 LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
-	const char *message);
+		const char *message);
 	
 LASSO_EXPORT gint lasso_data_service_build_response_msg(LassoDataService *service);
 
 LASSO_EXPORT gint lasso_data_service_process_query_response_msg(LassoDataService *service,
-	const char *message);
+		const char *message);
 
 LASSO_EXPORT xmlNode* lasso_data_service_get_answer(LassoDataService *service,
-	const char *select);
+		const char *select);
+
+LASSO_EXPORT xmlNode* lasso_data_service_get_answer_for_item_id(LassoDataService *service,
+		const char *item_id)
 
 LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service,
-	const gchar *select);
+		const gchar *select);
 
 LASSO_EXPORT LassoDstModification* lasso_data_service_add_modification(
 	LassoDataService *service, const gchar *select);

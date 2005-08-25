@@ -335,6 +335,45 @@ lasso_data_service_get_answer(LassoDataService *service, const char *select)
 }
 
 /**
+ * lasso_data_service_get_answer_for_item_id:
+ * @service: a #LassoDataService
+ * @item_id: query item identifier
+ * 
+ * Returns the answer for the specified @item_id query item.
+ *
+ * Return value: the node (libxml2 xmlNode*); or NULL if it was not found.
+ *      This xmlnode must be freed by caller.
+ **/
+xmlNode*
+lasso_data_service_get_answer_for_item_id(LassoDataService *service, const char *item_id)
+{
+	LassoDstQueryResponse *response;
+	LassoDstData *data = NULL;
+	GList *iter;
+
+	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
+	iter = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request)->QueryItem;
+
+	iter = response->Data;
+	while (iter && item_id) {
+		LassoDstData *t = iter->data;
+		iter = g_list_next(iter);
+		if (strcmp(t->itemIDRef, item_id) == 0) {
+			data = t;
+			break;
+		}
+	}
+	if (data == NULL) {
+		/* not found */
+		return NULL;
+	}
+
+	/* XXX: there may be more than one xmlnode */
+	return xmlCopyNode(data->any->data, 1);
+}
+
+
+/**
  * lasso_data_service_process_query_response_msg:
  * @service: a #LassoDataService
  * @message: the dst query response message
