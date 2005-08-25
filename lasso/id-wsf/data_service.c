@@ -87,10 +87,16 @@ lasso_data_service_add_query_item(LassoDataService *service,
 	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), NULL);
 	g_return_val_if_fail(select != NULL, NULL);
 
-	query = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request);
+	if (! LASSO_IS_DST_QUERY(LASSO_WSF_PROFILE(service)->request)) {
+		return NULL;
+	}
 
-	if (LASSO_DST_QUERY_ITEM(query->QueryItem->data)->itemID == NULL) {
-		/* XXX: all items must have itemID if there is more than one */
+	query = LASSO_DST_QUERY(LASSO_WSF_PROFILE(service)->request);
+	
+	if (query->QueryItem && query->QueryItem->data && 
+			LASSO_DST_QUERY_ITEM(query->QueryItem->data)->itemID == NULL) {
+		/* XXX: all items must have itemID if there is more than one,
+		 * perhaps we could generate an item id for those lacking it */
 		return NULL;
 	}
 
