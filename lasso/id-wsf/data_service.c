@@ -113,7 +113,8 @@ lasso_data_service_add_query_item(LassoDataService *service,
  * @item_id: query item identifier (optional)
  *
  * Initializes a new dst:Query request, asking for element @select (with
- * optional itemID set to @item_id)
+ * optional itemID set to @item_id).  @item_id may be NULL only if the query
+ * won't contain other query items.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
