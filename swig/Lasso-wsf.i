@@ -4015,12 +4015,12 @@ typedef struct {
 
 
 /***********************************************************************
- * lasso:ProfileService
+ * lasso:DataService
  ***********************************************************************/
 
 
 #ifndef SWIGPHP4
-%rename(ProfileService) LassoDataService;
+%rename(DataService) LassoDataService;
 #endif
 typedef struct {
 } LassoDataService;
