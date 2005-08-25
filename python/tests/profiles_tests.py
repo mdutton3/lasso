@@ -67,7 +67,9 @@ class ServerTestCase(unittest.TestCase):
 
         lassoServer = lasso.Server()
         lassoServer.addProvider(
-            lasso.PROVIDER_ROLE_IDP, os.path.join(dataDir, 'idp1-la/metadata.xml'))
+            lasso.PROVIDER_ROLE_IDP,
+            os.path.join(dataDir, 'idp1-la/metadata.xml'),
+            os.path.join(dataDir, 'idp1-la/public-key.pem'))
         dump = lassoServer.dump()
         lassoServer2 = lassoServer.newFromDump(dump)
         dump2 = lassoServer2.dump()
