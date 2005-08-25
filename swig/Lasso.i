@@ -1242,6 +1242,19 @@ static char* get_xml_string(xmlNode *xmlnode)
 	return xmlString;
 }
 
+static xmlNode *get_string_xml(const char *string) {
+	xmlDoc *doc;
+	xmlNode *node;
+
+	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
+	node = xmlDocGetRootElement(doc);
+	if (node != NULL)
+		node = xmlCopyNode(node, 1);
+	xmlFreeDoc(doc);
+
+	return node;
+}
+
 static void set_node(gpointer *nodePointer, gpointer value)
 {
 	if (*nodePointer != NULL)

@@ -3913,11 +3913,6 @@ typedef struct {
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
 
-
-	LassoDstModification *initModify(const char *select);
-
-	LassoDstModification *addModification(char *select);
-
 	THROW_ERROR
 	int processModifyMsg(char *soap_msg);
 	END_THROW_ERROR
@@ -3997,7 +3992,6 @@ typedef struct {
 #define LassoPersonalProfileService_addData lasso_data_service_add_data
 #define LassoPersonalProfileService_addModification lasso_data_service_add_modification
 #define LassoPersonalProfileService_addQueryItem lasso_data_service_add_query_item
-#define LassoPersonalProfileService_initModify lasso_data_service_init_modify
 #define LassoPersonalProfileService_initQuery lasso_data_service_init_query
 #define LassoPersonalProfileService_getXmlNode lasso_data_service_get_xmlNode
 #define LassoPersonalProfileService_processModifyMsg lasso_data_service_process_modify_msg
@@ -4017,7 +4011,6 @@ typedef struct {
 /***********************************************************************
  * lasso:DataService
  ***********************************************************************/
-
 
 #ifndef SWIGPHP4
 %rename(DataService) LassoDataService;
@@ -4092,7 +4085,7 @@ typedef struct {
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
 
-	int initModify(char *select);
+	int initModify(char *select, const char *xmlString);
 
 	LassoDstModification *addModification(char *select);
 
@@ -4174,7 +4167,7 @@ typedef struct {
 #define LassoDataService_addData lasso_data_service_add_data
 #define LassoDataService_addModification lasso_data_service_add_modification
 #define LassoDataService_addQueryItem lasso_data_service_add_query_item
-#define LassoDataService_initModify lasso_data_service_init_modify
+#define LassoDataService_initModify(self, select, xmlString) lasso_data_service_init_modify(self, select, get_string_xml(xmlString))
 #define LassoDataService_initQuery lasso_data_service_init_query
 #define LassoDataService_getXmlNode lasso_data_service_get_xmlNode
 #define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg

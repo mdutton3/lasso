@@ -100,7 +100,7 @@ LASSO_EXPORT xmlNode* lasso_data_service_get_answer_for_item_id(LassoDataService
 		const char *item_id);
 
 LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service,
-		const gchar *select);
+	const gchar *select, xmlNode *newData);
 
 LASSO_EXPORT LassoDstModification* lasso_data_service_add_modification(
 	LassoDataService *service, const gchar *select);

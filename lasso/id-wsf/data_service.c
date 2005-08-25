@@ -401,12 +401,13 @@ lasso_data_service_process_query_response_msg(LassoDataService *service, const c
 
 
 gint
-lasso_data_service_init_modify(LassoDataService *service, const gchar *select)
+lasso_data_service_init_modify(LassoDataService *service, const gchar *select, xmlNode *xmlData)
 {
 	LassoDstModification *modification;
-	LassoWsfProfile *profile;
+	LassoDstNewData *newData;
 	LassoDiscoResourceOffering *offering;
 	LassoDiscoDescription *description;
+	LassoWsfProfile *profile;
 
 	LassoSoapEnvelope *envelope;
 	LassoDstModify *modify;
@@ -416,6 +417,9 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select)
 
 	/* init Modify */
 	modification = lasso_dst_modification_new(select);
+	newData = lasso_dst_new_data_new();
+	newData->any = g_list_append(newData->any, xmlData);
+	modification->NewData = newData;
 
 	modify = lasso_dst_modify_new(modification);
 	profile->request = LASSO_NODE(modify);
