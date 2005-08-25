@@ -48,12 +48,12 @@ typedef struct _LassoDefederationClass LassoDefederationClass;
 
 struct _LassoDefederation {
 	LassoProfile parent;
+	/*< private >*/
+	void *private_data;  /* reserved for future use */
 };
 
 struct _LassoDefederationClass {
 	LassoProfileClass parent;
-	/*< private >*/
-	void *private_data;  /* reserved for future use */
 };
 
 LASSO_EXPORT GType lasso_defederation_get_type(void);
