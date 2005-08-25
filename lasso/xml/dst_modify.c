@@ -100,6 +100,28 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	return xmlnode;
 }
 
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	int rc;
+	LassoDstModify *query = LASSO_DST_MODIFY(node);
+
+	rc = parent_class->init_from_xml(node, xmlnode);
+	if (rc) return rc;
+
+	if (strcmp((char*)xmlnode->ns->href, LASSO_PP_HREF) == 0) {
+		query->hrefServiceType = g_strdup(LASSO_PP_HREF);
+		query->prefixServiceType = g_strdup(LASSO_PP_PREFIX);
+	} else if (strcmp((char*)xmlnode->ns->href, LASSO_EP_HREF) == 0) {
+		query->hrefServiceType = g_strdup(LASSO_EP_HREF);
+		query->prefixServiceType = g_strdup(LASSO_EP_PREFIX);
+	} else {
+		/* XXX */
+	}
+
+	return 0;
+}
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -114,13 +136,14 @@ instance_init(LassoDstModify *node)
 static void
 class_init(LassoDstModifyClass *klass)
 {
-	LassoNodeClass *nodeClass = LASSO_NODE_CLASS(klass);
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
-	nodeClass->get_xmlNode = get_xmlNode;
-	nodeClass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nodeClass, "Modify");
-	lasso_node_class_add_snippets(nodeClass, schema_snippets);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "Modify");
+	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType

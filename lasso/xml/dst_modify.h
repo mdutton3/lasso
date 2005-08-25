@@ -59,6 +59,7 @@ struct _LassoDstModify {
 	char *id;
 	char *itemID;
 
+	/*< private >*/
 	char *prefixServiceType;
 	char *hrefServiceType;
 };

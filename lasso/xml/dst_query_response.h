@@ -60,6 +60,7 @@ struct _LassoDstQueryResponse {
 	char *itemIDRef;
 	char *timeStamp;
 
+	/*< private >*/
 	char *prefixServiceType;
 	char *hrefServiceType;
 };

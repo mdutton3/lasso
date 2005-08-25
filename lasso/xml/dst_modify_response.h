@@ -58,6 +58,7 @@ struct _LassoDstModifyResponse {
 	char *itemIDRef;
 	char *timeStamp;
 
+	/*< private >*/
 	char *prefixServiceType;
 	char *hrefServiceType;
 };
