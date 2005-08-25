@@ -1040,6 +1040,7 @@ lasso_data_service_process_query_msg
 lasso_data_service_build_response_msg
 lasso_data_service_process_query_response_msg
 lasso_data_service_get_answer
+lasso_data_service_get_answer_for_item_id
 <SUBSECTION Standard>
 LASSO_DATA_SERVICE
 LASSO_IS_DATA_SERVICE
