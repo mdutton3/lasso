@@ -56,6 +56,8 @@
 <!ENTITY LassoServer SYSTEM "sgml/server.xml">
 <!ENTITY LassoSession SYSTEM "sgml/session.xml">
 <!ENTITY LassoStrings SYSTEM "sgml/strings.xml">
+<!ENTITY LassoDiscovery SYSTEM "sgml/discovery.xml">
+<!ENTITY LassoDataService SYSTEM "sgml/data_service.xml">
 
 <!ENTITY version SYSTEM "version.xml">
 ]>
@@ -189,8 +191,8 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
   <chapter id="idwsf">
     <title>Identity Web Services Framework</title>
 
-    <para>
-    </para>
+    &LassoDiscovery;
+    &LassoDataService;
 
   </chapter>
 

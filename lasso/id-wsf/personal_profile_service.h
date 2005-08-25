@@ -30,7 +30,7 @@ extern "C" {
 
 #endif /* __cplusplus */ 
 
-#include <lasso/id-wsf/profile_service.h>
+#include <lasso/id-wsf/data_service.h>
 #include <lasso/xml/disco_resource_id.h>
 #include <lasso/xml/disco_encrypted_resource_id.h>
 #include <lasso/xml/dst_data.h>
@@ -55,11 +55,11 @@ typedef struct _LassoPersonalProfileServiceClass LassoPersonalProfileServiceClas
 typedef struct _LassoPersonalProfileServicePrivate LassoPersonalProfileServicePrivate;
 
 struct _LassoPersonalProfileService {
-	LassoProfileService parent;
+	LassoDataService parent;
 };
 
 struct _LassoPersonalProfileServiceClass {
-	LassoProfileServiceClass parent;
+	LassoDataServiceClass parent;
 };
 
 

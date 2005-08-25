@@ -22,19 +22,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_PROFILE_SERVICE_PRIVATE_H__
-#define __LASSO_PROFILE_SERVICE_PRIVATE_H__
+#ifndef __LASSO_DATA_SERVICE_PRIVATE_H__
+#define __LASSO_DATA_SERVICE_PRIVATE_H__
 
 #ifdef __cplusplus
 extern "C" {
 
 #endif /* __cplusplus */ 
 
-void lasso_profile_service_set_offering(LassoProfileService *service,
+void lasso_data_service_set_offering(LassoDataService *service,
 		LassoDiscoResourceOffering *offering);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_PROFILE_SERVICE_PRIVATE_H__ */
+#endif /* __LASSO_DATA_SERVICE_PRIVATE_H__ */

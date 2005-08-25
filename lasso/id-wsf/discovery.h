@@ -39,7 +39,7 @@ extern "C" {
 #include <lasso/xml/disco_requested_service_type.h>
 
 #include <lasso/id-wsf/wsf_profile.h>
-#include <lasso/id-wsf/profile_service.h>
+#include <lasso/id-wsf/data_service.h>
 
 #define LASSO_TYPE_DISCOVERY (lasso_discovery_get_type())
 #define LASSO_DISCOVERY(obj) \
@@ -118,7 +118,7 @@ LASSO_EXPORT gint lasso_discovery_process_query_msg(LassoDiscovery *discovery,
 LASSO_EXPORT gint lasso_discovery_process_query_response_msg(LassoDiscovery *discovery,
 							     const gchar *message);
 
-LASSO_EXPORT LassoProfileService* lasso_discovery_get_service(LassoDiscovery *discovery,
+LASSO_EXPORT LassoDataService* lasso_discovery_get_service(LassoDiscovery *discovery,
 		const char *service_type);
 
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(

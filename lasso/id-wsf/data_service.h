@@ -22,8 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_PROFILE_SERVICE_H__
-#define __LASSO_PROFILE_SERVICE_H__
+#ifndef __LASSO_DATA_SERVICE_H__
+#define __LASSO_DATA_SERVICE_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,23 +39,23 @@ extern "C" {
 #include <lasso/xml/disco_resource_offering.h>
 #include <lasso/xml/xml.h>
 
-#define LASSO_TYPE_PROFILE_SERVICE (lasso_profile_service_get_type())
-#define LASSO_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoProfileService))
-#define LASSO_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoProfileServiceClass))
+#define LASSO_TYPE_PROFILE_SERVICE (lasso_data_service_get_type())
+#define LASSO_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
+       LASSO_TYPE_PROFILE_SERVICE, LassoDataService))
+#define LASSO_DATA_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), \
+       LASSO_TYPE_PROFILE_SERVICE, LassoDataServiceClass))
 #define LASSO_IS_PROFILE_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), \
        LASSO_TYPE_PROFILE_SERVICE))
 #define LASSO_IS_PROFILE_SERVICE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), \
        LASSO_TYPE_PROFILE_SERVICE))
-#define LASSO_PROFILE_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
-       LASSO_TYPE_PROFILE_SERVICE, LassoProfileServiceClass)) 
+#define LASSO_DATA_SERVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
+       LASSO_TYPE_PROFILE_SERVICE, LassoDataServiceClass)) 
 
-typedef struct _LassoProfileService LassoProfileService;
-typedef struct _LassoProfileServiceClass LassoProfileServiceClass;
-typedef struct _LassoProfileServicePrivate LassoProfileServicePrivate;
+typedef struct _LassoDataService LassoDataService;
+typedef struct _LassoDataServiceClass LassoDataServiceClass;
+typedef struct _LassoDataServicePrivate LassoDataServicePrivate;
 
-struct _LassoProfileService {
+struct _LassoDataService {
 	LassoWsfProfile parent;
 
 	LassoDiscoResourceID *resource_id;
@@ -63,52 +63,52 @@ struct _LassoProfileService {
 	xmlNode *resource_data;
 
 	/*< private >*/
-	LassoProfileServicePrivate *private_data;
+	LassoDataServicePrivate *private_data;
 };
 
-struct _LassoProfileServiceClass {
+struct _LassoDataServiceClass {
 	LassoWsfProfileClass parent;
 };
 
 
-LASSO_EXPORT GType lasso_profile_service_get_type(void);
+LASSO_EXPORT GType lasso_data_service_get_type(void);
 
-LASSO_EXPORT LassoProfileService* lasso_profile_service_new(LassoServer *server);
+LASSO_EXPORT LassoDataService* lasso_data_service_new(LassoServer *server);
 
-LASSO_EXPORT LassoProfileService* lasso_profile_service_new_full(LassoServer *server,
+LASSO_EXPORT LassoDataService* lasso_data_service_new_full(LassoServer *server,
 	LassoDiscoResourceOffering *offering);
 
-LASSO_EXPORT gint lasso_profile_service_init_query(LassoProfileService *service,
+LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
 	const char *select, const char *item_id);
 
-LASSO_EXPORT LassoDstQueryItem* lasso_profile_service_add_query_item(LassoProfileService *service,
+LASSO_EXPORT LassoDstQueryItem* lasso_data_service_add_query_item(LassoDataService *service,
 	const char *select, const char *item_id);
 
-LASSO_EXPORT gint lasso_profile_service_process_query_msg(LassoProfileService *service,
+LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
 	const char *message);
 	
-LASSO_EXPORT gint lasso_profile_service_build_response_msg(LassoProfileService *service);
+LASSO_EXPORT gint lasso_data_service_build_response_msg(LassoDataService *service);
 
-LASSO_EXPORT gint lasso_profile_service_process_query_response_msg(LassoProfileService *service,
+LASSO_EXPORT gint lasso_data_service_process_query_response_msg(LassoDataService *service,
 	const char *message);
 
-LASSO_EXPORT xmlNode* lasso_profile_service_get_answer(LassoProfileService *service,
+LASSO_EXPORT xmlNode* lasso_data_service_get_answer(LassoDataService *service,
 	const char *select);
 
-LASSO_EXPORT  gint lasso_profile_service_init_modify(LassoProfileService *service,
+LASSO_EXPORT  gint lasso_data_service_init_modify(LassoDataService *service,
 	const gchar *select);
 
-LASSO_EXPORT LassoDstModification* lasso_profile_service_add_modification(
-	LassoProfileService *service, const gchar *select);
+LASSO_EXPORT LassoDstModification* lasso_data_service_add_modification(
+	LassoDataService *service, const gchar *select);
 
-LASSO_EXPORT gint lasso_profile_service_process_modify_msg(LassoProfileService *service,
+LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *service,
 	const gchar *soap_msg);
 
-LASSO_EXPORT gint lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
+LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 	const gchar *soap_msg);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_PROFILE_SERVICE_H__ */
+#endif /* __LASSO_DATA_SERVICE_H__ */

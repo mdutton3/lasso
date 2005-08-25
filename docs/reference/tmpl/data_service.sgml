@@ -1,0 +1,99 @@
+<!-- ##### SECTION Title ##### -->
+LassoDataService
+
+<!-- ##### SECTION Short_Description ##### -->
+ID-WSF Data Service Profile
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoDataService ##### -->
+<para>
+
+</para>
+
+@parent: 
+@resource_id: 
+@encrypted_resource_id: 
+@resource_data: 
+
+<!-- ##### FUNCTION lasso_data_service_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_init_query ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@item_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_add_query_item ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@item_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_process_query_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_build_response_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_process_query_response_msg ##### -->
+<para>
+
+</para>
+
+@service: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_get_answer ##### -->
+<para>
+
+</para>
+
+@service: 
+@select: 
+@Returns: 
+
+

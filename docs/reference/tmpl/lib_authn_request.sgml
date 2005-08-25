@@ -21,6 +21,9 @@ profile.</para></listitem>
 </variablelist>
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT LassoLibAuthnRequest ##### -->
 <para>
 @ProviderID is the service provider identifier, this field will often be filled

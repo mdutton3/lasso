@@ -15,6 +15,9 @@ certificates to use, etc.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT LassoServer ##### -->
 <para>
 
@@ -34,9 +37,11 @@ certificates to use, etc.
 
 @metadata: 
 @private_key: 
-@secret_key: 
+@private_key_password: 
 @certificate: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@secret_key: 
 
 
 <!-- ##### FUNCTION lasso_server_new_from_dump ##### -->

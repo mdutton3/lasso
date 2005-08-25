@@ -13,11 +13,11 @@ WSF_C_FILES = \
 	discovery.c \
 	interaction_profile_service.c \
 	personal_profile_service.c \
-	profile_service.c \
+	data_service.c \
 	wsf_profile.c	
 
 lasso_private_h_sources = \
-	profile_service_private.h
+	data_service_private.h
 
 WSF_H_FILES = \
 	authentication.h \
@@ -25,7 +25,7 @@ WSF_H_FILES = \
 	identity.h \
 	interaction_profile_service.h \
 	personal_profile_service.h \
-	profile_service.h \
+	data_service.h \
 	wsf_profile.h
 endif
 

@@ -14,6 +14,9 @@ LassoSamlNameIdentifier
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT LassoSamlNameIdentifier ##### -->
 <para>
 @NameQualifier is the provider ID of the provider that created the name

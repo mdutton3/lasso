@@ -23,7 +23,7 @@
  */
 
 #include <lasso/id-wsf/personal_profile_service.h>
-#include <lasso/id-wsf/profile_service_private.h>
+#include <lasso/id-wsf/data_service_private.h>
 
 
 /*****************************************************************************/
@@ -39,7 +39,7 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 
 	g_return_val_if_fail(LASSO_IS_PERSONAL_PROFILE_SERVICE(service) == TRUE, NULL);
 
-	xmlnode = lasso_profile_service_get_answer(LASSO_PROFILE_SERVICE(service),
+	xmlnode = lasso_data_service_get_answer(LASSO_DATA_SERVICE(service),
 			"/pp:PP/pp:MsgContact");
 
 	child = xmlnode->children;
@@ -123,7 +123,7 @@ lasso_personal_profile_service_new(LassoServer *server, LassoDiscoResourceOfferi
 	g_return_val_if_fail(LASSO_IS_SERVER(server) == TRUE, NULL);
 
 	service = g_object_new(LASSO_TYPE_PERSONAL_PROFILE_SERVICE, NULL);
-	lasso_profile_service_set_offering(LASSO_PROFILE_SERVICE(service), offering);
+	lasso_data_service_set_offering(LASSO_DATA_SERVICE(service), offering);
 
 	return service;
 }

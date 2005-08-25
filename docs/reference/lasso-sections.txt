@@ -1030,23 +1030,23 @@ LASSO_DISCOVERY_GET_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>profile_service</FILE>
-<TITLE>LassoProfileService</TITLE>
-LassoProfileService
-lasso_profile_service_new
-lasso_profile_service_init_query
-lasso_profile_service_add_query_item
-lasso_profile_service_process_query_msg
-lasso_profile_service_build_response_msg
-lasso_profile_service_process_query_response_msg
-lasso_profile_service_get_answer
+<FILE>data_service</FILE>
+<TITLE>LassoDataService</TITLE>
+LassoDataService
+lasso_data_service_new
+lasso_data_service_init_query
+lasso_data_service_add_query_item
+lasso_data_service_process_query_msg
+lasso_data_service_build_response_msg
+lasso_data_service_process_query_response_msg
+lasso_data_service_get_answer
 <SUBSECTION Standard>
-LASSO_PROFILE_SERVICE
-LASSO_IS_PROFILE_SERVICE
-LASSO_TYPE_PROFILE_SERVICE
-lasso_profile_service_get_type
-LASSO_PROFILE_SERVICE_CLASS
-LASSO_IS_PROFILE_SERVICE_CLASS
-LASSO_PROFILE_SERVICE_GET_CLASS
+LASSO_DATA_SERVICE
+LASSO_IS_DATA_SERVICE
+LASSO_TYPE_DATA_SERVICE
+lasso_data_service_get_type
+LASSO_DATA_SERVICE_CLASS
+LASSO_IS_DATA_SERVICE_CLASS
+LASSO_DATA_SERVICE_GET_CLASS
 </SECTION>
 

@@ -26,8 +26,8 @@
 #include <libxml/xpathInternals.h>
 
 #include <lasso/id-wsf/discovery.h>
-#include <lasso/id-wsf/profile_service.h>
-#include <lasso/id-wsf/profile_service_private.h>
+#include <lasso/id-wsf/data_service.h>
+#include <lasso/id-wsf/data_service_private.h>
 #include <lasso/xml/dst_query.h>
 #include <lasso/xml/dst_query_response.h>
 #include <lasso/xml/dst_modify.h>
@@ -35,7 +35,7 @@
 #include <lasso/xml/soap_binding_correlation.h>
 
 
-struct _LassoProfileServicePrivate
+struct _LassoDataServicePrivate
 {
 	gboolean dispose_has_run;
 	LassoDiscoResourceOffering *offering;
@@ -47,7 +47,7 @@ struct _LassoProfileServicePrivate
 
 
 LassoDstModification*
-lasso_profile_service_add_modification(LassoProfileService *service, const gchar *select)
+lasso_data_service_add_modification(LassoDataService *service, const gchar *select)
 {
 	LassoWsfProfile *profile;
 	LassoDstModification *modification;
@@ -66,8 +66,8 @@ lasso_profile_service_add_modification(LassoProfileService *service, const gchar
 
 
 /**
- * lasso_profile_service_add_query_item:
- * @service: a #LassoProfileService
+ * lasso_data_service_add_query_item:
+ * @service: a #LassoDataService
  * @select: resource selection string (typically a XPath query)
  * @item_id: query item identifier
  *
@@ -78,7 +78,7 @@ lasso_profile_service_add_modification(LassoProfileService *service, const gchar
  *       be freed by the caller.
  **/
 LassoDstQueryItem*
-lasso_profile_service_add_query_item(LassoProfileService *service,
+lasso_data_service_add_query_item(LassoDataService *service,
 		const char *select, const char *item_id)
 {
 	LassoDstQuery *query;
@@ -101,8 +101,8 @@ lasso_profile_service_add_query_item(LassoProfileService *service,
 }
 
 /**
- * lasso_profile_service_init_query
- * @service: a #LassoProfileService
+ * lasso_data_service_init_query
+ * @service: a #LassoDataService
  * @select: resource selection string (typically a XPath query)
  * @item_id: query item identifier (optional)
  *
@@ -112,7 +112,7 @@ lasso_profile_service_add_query_item(LassoProfileService *service,
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_service_init_query(LassoProfileService *service, const char *select,
+lasso_data_service_init_query(LassoDataService *service, const char *select,
 	const char *item_id)
 {
 	LassoWsfProfile *profile;
@@ -163,8 +163,8 @@ lasso_profile_service_init_query(LassoProfileService *service, const char *selec
 }
 
 /**
- * lasso_profile_service_process_query_msg:
- * @service: a #LassoProfileService
+ * lasso_data_service_process_query_msg:
+ * @service: a #LassoDataService
  * @message: the dst query message
  *
  * Processes a dst:Query message.  Rebuilds a request object from the message
@@ -173,7 +173,7 @@ lasso_profile_service_init_query(LassoProfileService *service, const char *selec
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_service_process_query_msg(LassoProfileService *service, const char *message)
+lasso_data_service_process_query_msg(LassoDataService *service, const char *message)
 {
 	LassoDstQuery *query;
 	LassoWsfProfile *profile;
@@ -198,15 +198,15 @@ lasso_profile_service_process_query_msg(LassoProfileService *service, const char
 }
 
 /**
- * lasso_profile_service_build_response_msg:
- * @service: a #LassoProfileService
+ * lasso_data_service_build_response_msg:
+ * @service: a #LassoDataService
  *
  * Builds a dst:QueryResponse message.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_service_build_response_msg(LassoProfileService *service)
+lasso_data_service_build_response_msg(LassoDataService *service)
 {
 	LassoWsfProfile *profile;
 	LassoDstQuery *query;
@@ -259,8 +259,8 @@ lasso_profile_service_build_response_msg(LassoProfileService *service)
 }
 
 /**
- * lasso_profile_service_get_answer:
- * @service: a #LassoProfileService
+ * lasso_data_service_get_answer:
+ * @service: a #LassoDataService
  * @select: resource selection string (typically a XPath query)
  * 
  * Returns the answer for the specified @select request.
@@ -269,7 +269,7 @@ lasso_profile_service_build_response_msg(LassoProfileService *service)
  *      This xmlnode must be freed by caller.
  **/
 xmlNode*
-lasso_profile_service_get_answer(LassoProfileService *service, const char *select)
+lasso_data_service_get_answer(LassoDataService *service, const char *select)
 {
 	LassoDstQueryResponse *response;
 	LassoDstData *data = NULL;
@@ -328,8 +328,8 @@ lasso_profile_service_get_answer(LassoProfileService *service, const char *selec
 }
 
 /**
- * lasso_profile_service_process_query_response_msg:
- * @service: a #LassoProfileService
+ * lasso_data_service_process_query_response_msg:
+ * @service: a #LassoDataService
  * @message: the dst query response message
  *
  * Processes a dst:Query message.  Rebuilds a request object from the message
@@ -338,7 +338,7 @@ lasso_profile_service_get_answer(LassoProfileService *service, const char *selec
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_service_process_query_response_msg(LassoProfileService *service, const char *message)
+lasso_data_service_process_query_response_msg(LassoDataService *service, const char *message)
 {
 	int rc;
 	LassoDstQueryResponse *response;
@@ -355,7 +355,7 @@ lasso_profile_service_process_query_response_msg(LassoProfileService *service, c
 
 
 gint
-lasso_profile_service_init_modify(LassoProfileService *service, const gchar *select)
+lasso_data_service_init_modify(LassoDataService *service, const gchar *select)
 {
 	LassoDstModification *modification;
 	LassoWsfProfile *profile;
@@ -415,7 +415,7 @@ lasso_profile_service_init_modify(LassoProfileService *service, const gchar *sel
 
 
 gint
-lasso_profile_service_process_modify_msg(LassoProfileService *service, const gchar *modify_soap_msg)
+lasso_data_service_process_modify_msg(LassoDataService *service, const gchar *modify_soap_msg)
 {
 	LassoDstModify *modify;
 	LassoWsfProfile *profile;
@@ -439,7 +439,7 @@ lasso_profile_service_process_modify_msg(LassoProfileService *service, const gch
 	return 0;}
 
 gint
-lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
+lasso_data_service_process_modify_response_msg(LassoDataService *service,
 	const gchar *soap_msg)
 {
 	LassoDstModifyResponse *response;
@@ -465,7 +465,7 @@ lasso_profile_service_process_modify_response_msg(LassoProfileService *service,
 static LassoNodeClass *parent_class = NULL;
 
 void
-lasso_profile_service_set_offering(LassoProfileService *service,
+lasso_data_service_set_offering(LassoDataService *service,
 		LassoDiscoResourceOffering *offering)
 {
 	service->private_data->offering = g_object_ref(offering);
@@ -478,7 +478,7 @@ lasso_profile_service_set_offering(LassoProfileService *service,
 static void
 dispose(GObject *object)
 {
-	LassoProfileService *service = LASSO_PROFILE_SERVICE(object);
+	LassoDataService *service = LASSO_DATA_SERVICE(object);
 
 	if (service->private_data->dispose_has_run == TRUE)
 		return;
@@ -490,7 +490,7 @@ dispose(GObject *object)
 static void
 finalize(GObject *object)
 { 
-	LassoProfileService *service = LASSO_PROFILE_SERVICE(object);
+	LassoDataService *service = LASSO_DATA_SERVICE(object);
 	if (service->private_data->offering) {
 		lasso_node_destroy(LASSO_NODE(service->private_data->offering));
 		service->private_data->offering = NULL;
@@ -506,14 +506,14 @@ finalize(GObject *object)
 /*****************************************************************************/
 
 static void
-instance_init(LassoProfileService *service)
+instance_init(LassoDataService *service)
 {
 	service->resource_data = NULL;
-	service->private_data = g_new0(LassoProfileServicePrivate, 1);
+	service->private_data = g_new0(LassoDataServicePrivate, 1);
 }
 
 static void
-class_init(LassoProfileServiceClass *klass)
+class_init(LassoDataServiceClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
 	
@@ -522,43 +522,43 @@ class_init(LassoProfileServiceClass *klass)
 }
 
 GType
-lasso_profile_service_get_type()
+lasso_data_service_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof(LassoProfileServiceClass),
+			sizeof(LassoDataServiceClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoProfileService),
+			sizeof(LassoDataService),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_WSF_PROFILE,
-				"LassoProfileService", &this_info, 0);
+				"LassoDataService", &this_info, 0);
 	}
 	return this_type;
 }
 
 
 /**
- * lasso_profile_service_new:
+ * lasso_data_service_new:
  * @server: the #LassoServer
  *
- * Creates a new #LassoProfileService.
+ * Creates a new #LassoDataService.
  *
- * Return value: a newly created #LassoProfileService object; or NULL if an
+ * Return value: a newly created #LassoDataService object; or NULL if an
  *      error occured.
  **/
-LassoProfileService*
-lasso_profile_service_new(LassoServer *server)
+LassoDataService*
+lasso_data_service_new(LassoServer *server)
 {
-	LassoProfileService *service;
+	LassoDataService *service;
 
 	g_return_val_if_fail(LASSO_IS_SERVER(server) == TRUE, NULL);
 
@@ -568,12 +568,12 @@ lasso_profile_service_new(LassoServer *server)
 	return service;
 }
 
-LassoProfileService*
-lasso_profile_service_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
+LassoDataService*
+lasso_data_service_new_full(LassoServer *server, LassoDiscoResourceOffering *offering)
 {
-	LassoProfileService *service;
+	LassoDataService *service;
 
-	service = lasso_profile_service_new(server);
+	service = lasso_data_service_new(server);
 	if (service == NULL)
 		return NULL;
 

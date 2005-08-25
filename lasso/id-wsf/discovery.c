@@ -28,7 +28,7 @@
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/id-wsf/identity.h>
-#include <lasso/id-wsf/profile_service.h>
+#include <lasso/id-wsf/data_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 
 struct _LassoDiscoveryPrivate
@@ -664,19 +664,19 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
  * @discovery: a #LassoDiscovery
  * @service_type: the requested service type
  *
- * After a disco:query message, creates a #LassoProfileService instance for the
+ * After a disco:query message, creates a #LassoDataService instance for the
  * requested @service_type.
  *
  * Return value: a newly created #LAssoProfileService object; or NULL if an
  *     error occured.
  **/
-LassoProfileService*
+LassoDataService*
 lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 {
 	LassoDiscoQueryResponse *response;
 	GList *iter;
 	LassoDiscoResourceOffering *offering = NULL;
-	LassoProfileService *service;
+	LassoDataService *service;
 
 	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
 	iter = response->ResourceOffering;
@@ -702,10 +702,10 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	}
 
 	if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-		service = LASSO_PROFILE_SERVICE(lasso_personal_profile_service_new(
+		service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new(
 					LASSO_WSF_PROFILE(discovery)->server, offering));
 	} else {
-		service = lasso_profile_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
+		service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
 				offering);
 	}
 

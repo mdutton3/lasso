@@ -30,7 +30,7 @@
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/interaction_profile_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
-#include <lasso/id-wsf/profile_service.h>
+#include <lasso/id-wsf/data_service.h>
 #include <lasso/xml/disco_authenticate_requester.h>
 #include <lasso/xml/disco_authorize_requester.h>
 #include <lasso/xml/disco_authenticate_session_context.h>
@@ -3539,7 +3539,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	%newobject getService;
-	LassoProfileService* getService(const char *service_type = NULL);
+	LassoDataService* getService(const char *service_type = NULL);
 }
 
 %{
@@ -3964,22 +3964,22 @@ typedef struct {
 /* Attributes from ProfileService*/
 
 /* EncryptedResourceID */
-#define LassoPersonalProfileService_get_encryptedResourceId(self) get_node(LASSO_PROFILE_SERVICE(self)->encrypted_resource_id)
-#define LassoPersonalProfileService_encryptedResourceId_get(self) get_node(LASSO_PROFILE_SERVICE(self)->encrypted_resource_id)
-#define LassoPersonalProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->encrypted_resource_id, (value))
-#define LassoPersonalProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->encrypted_resource_id, (value))
+#define LassoPersonalProfileService_get_encryptedResourceId(self) get_node(LASSO_DATA_SERVICE(self)->encrypted_resource_id)
+#define LassoPersonalProfileService_encryptedResourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->encrypted_resource_id)
+#define LassoPersonalProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->encrypted_resource_id, (value))
+#define LassoPersonalProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->encrypted_resource_id, (value))
 
 /* ResourceID */
-#define LassoPersonalProfileService_get_resourceId(self) get_node(LASSO_PROFILE_SERVICE(self)->resource_id)
-#define LassoPersonalProfileService_resourceId_get(self) get_node(LASSO_PROFILE_SERVICE(self)->resource_id)
-#define LassoPersonalProfileService_set_resourceId(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->resource_id, (value))
-#define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_PROFILE_SERVICE(self))->resource_id, (value))
+#define LassoPersonalProfileService_get_resourceId(self) get_node(LASSO_DATA_SERVICE(self)->resource_id)
+#define LassoPersonalProfileService_resourceId_get(self) get_node(LASSO_DATA_SERVICE(self)->resource_id)
+#define LassoPersonalProfileService_set_resourceId(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->resource_id, (value))
+#define LassoPersonalProfileService_resourceId_set(self, value) set_node((gpointer *) &(LASSO_DATA_SERVICE(self))->resource_id, (value))
 
 /* resourceData */
-#define LassoPersonalProfileService_get_resourceData(self) get_xml_string(LASSO_PROFILE_SERVICE(self)->resource_data)
-#define LassoPersonalProfileService_resourceData_get(self) get_xml_string(LASSO_PROFILE_SERVICE(self)->resource_data)
-#define LassoPersonalProfileService_set_resourceData(self, value) set_xml_string(&(LASSO_PROFILE_SERVICE(self))->resource_data, (value))
-#define LassoPersonalProfileService_resourceData_set(self, value) set_xml_string(&(LASSO_PROFILE_SERVICE(self))->resource_data, (value))
+#define LassoPersonalProfileService_get_resourceData(self) get_xml_string(LASSO_DATA_SERVICE(self)->resource_data)
+#define LassoPersonalProfileService_resourceData_get(self) get_xml_string(LASSO_DATA_SERVICE(self)->resource_data)
+#define LassoPersonalProfileService_set_resourceData(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
+#define LassoPersonalProfileService_resourceData_set(self, value) set_xml_string(&(LASSO_DATA_SERVICE(self))->resource_data, (value))
 
 
 
@@ -3993,19 +3993,19 @@ typedef struct {
 #define LassoPersonalProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Implementations of methods inherited from ProfileService */
-#define LassoPersonalProfileService_buildResponseMsg lasso_profile_service_build_response_msg
-#define LassoPersonalProfileService_addData lasso_profile_service_add_data
-#define LassoPersonalProfileService_addModification lasso_profile_service_add_modification
-#define LassoPersonalProfileService_addQueryItem lasso_profile_service_add_query_item
-#define LassoPersonalProfileService_initModify lasso_profile_service_init_modify
-#define LassoPersonalProfileService_initQuery lasso_profile_service_init_query
-#define LassoPersonalProfileService_getXmlNode lasso_profile_service_get_xmlNode
-#define LassoPersonalProfileService_processModifyMsg lasso_profile_service_process_modify_msg
-#define LassoPersonalProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
-#define LassoPersonalProfileService_processQueryMsg lasso_profile_service_process_query_msg
-#define LassoPersonalProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
-#define LassoPersonalProfileService_validateQuery lasso_profile_service_validate_query
-#define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
+#define LassoPersonalProfileService_buildResponseMsg lasso_data_service_build_response_msg
+#define LassoPersonalProfileService_addData lasso_data_service_add_data
+#define LassoPersonalProfileService_addModification lasso_data_service_add_modification
+#define LassoPersonalProfileService_addQueryItem lasso_data_service_add_query_item
+#define LassoPersonalProfileService_initModify lasso_data_service_init_modify
+#define LassoPersonalProfileService_initQuery lasso_data_service_init_query
+#define LassoPersonalProfileService_getXmlNode lasso_data_service_get_xmlNode
+#define LassoPersonalProfileService_processModifyMsg lasso_data_service_process_modify_msg
+#define LassoPersonalProfileService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
+#define LassoPersonalProfileService_processQueryMsg lasso_data_service_process_query_msg
+#define LassoPersonalProfileService_processQueryResponseMsg lasso_data_service_process_query_response_msg
+#define LassoPersonalProfileService_validateQuery lasso_data_service_validate_query
+#define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
 
 
 /* Methods implementations */
@@ -4020,11 +4020,11 @@ typedef struct {
 
 
 #ifndef SWIGPHP4
-%rename(ProfileService) LassoProfileService;
+%rename(ProfileService) LassoDataService;
 #endif
 typedef struct {
-} LassoProfileService;
-%extend LassoProfileService {
+} LassoDataService;
+%extend LassoDataService {
 	/* Attributes inherited from WsfProfile */
 
 	%immutable msgBody;
@@ -4054,9 +4054,9 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoProfileService(LassoServer *server);
+	LassoDataService(LassoServer *server);
 
-	~LassoProfileService();
+	~LassoDataService();
 
 	/* Methods inherited from LassoNode */
 
@@ -4110,79 +4110,79 @@ typedef struct {
 /* Attributes inherited from WsfProfile implementations */
 
 /* msgBody */
-#define LassoProfileService_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
-#define LassoProfileService_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoDataService_get_msgBody(self) LASSO_WSF_PROFILE(self)->msg_body
+#define LassoDataService_msgBody_get(self) LASSO_WSF_PROFILE(self)->msg_body
 
 /* msgUrl */
-#define LassoProfileService_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
-#define LassoProfileService_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoDataService_get_msgUrl(self) LASSO_WSF_PROFILE(self)->msg_url
+#define LassoDataService_msgUrl_get(self) LASSO_WSF_PROFILE(self)->msg_url
 
 /* request */
-#define LassoProfileService_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
-#define LassoProfileService_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
-#define LassoProfileService_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
-#define LassoProfileService_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoDataService_get_request(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoDataService_request_get(self) get_node(LASSO_WSF_PROFILE(self)->request)
+#define LassoDataService_set_request(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
+#define LassoDataService_request_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->request, (value))
 
 /* response */
-#define LassoProfileService_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
-#define LassoProfileService_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
-#define LassoProfileService_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
-#define LassoProfileService_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoDataService_get_response(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoDataService_response_get(self) get_node(LASSO_WSF_PROFILE(self)->response)
+#define LassoDataService_set_response(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
+#define LassoDataService_response_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->response, (value))
 
 /* server */
-#define LassoProfileService_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
-#define LassoProfileService_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
-#define LassoProfileService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
-#define LassoProfileService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoDataService_get_server(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoDataService_server_get(self) get_node(LASSO_WSF_PROFILE(self)->server)
+#define LassoDataService_set_server(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
+#define LassoDataService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
 /* Attributes */
 
 /* EncryptedResourceID */
-#define LassoProfileService_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
-#define LassoProfileService_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
-#define LassoProfileService_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
-#define LassoProfileService_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoDataService_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)
+#define LassoDataService_encryptedResourceId_get(self) get_node((self)->encrypted_resource_id)
+#define LassoDataService_set_encryptedResourceId(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
+#define LassoDataService_encryptedResourceId_set(self, value) set_node((gpointer *) &(self)->encrypted_resource_id, (value))
 
 /* ResourceID */
-#define LassoProfileService_get_resourceId(self) get_node((self)->resource_id)
-#define LassoProfileService_resourceId_get(self) get_node((self)->resource_id)
-#define LassoProfileService_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
-#define LassoProfileService_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoDataService_get_resourceId(self) get_node((self)->resource_id)
+#define LassoDataService_resourceId_get(self) get_node((self)->resource_id)
+#define LassoDataService_set_resourceId(self, value) set_node((gpointer *) &(self)->resource_id, (value))
+#define LassoDataService_resourceId_set(self, value) set_node((gpointer *) &(self)->resource_id, (value))
 
 /* resourceData */
-#define LassoProfileService_get_resourceData(self) get_xml_string((self)->resource_data)
-#define LassoProfileService_resourceData_get(self) get_xml_string((self)->resource_data)
-#define LassoProfileService_set_resourceData(self, value) set_xml_string(&(self)->resource_data, (value))
-#define LassoProfileService_resourceData_set(self, value) set_xml_string(&(self)->resource_data, (value))
+#define LassoDataService_get_resourceData(self) get_xml_string((self)->resource_data)
+#define LassoDataService_resourceData_get(self) get_xml_string((self)->resource_data)
+#define LassoDataService_set_resourceData(self, value) set_xml_string(&(self)->resource_data, (value))
+#define LassoDataService_resourceData_set(self, value) set_xml_string(&(self)->resource_data, (value))
 
 
 /* Constructors, destructors & static methods implementations */
 
-#define new_LassoProfileService lasso_profile_service_new
-#define delete_LassoProfileService(self) lasso_node_destroy(LASSO_NODE(self))
+#define new_LassoDataService lasso_data_service_new
+#define delete_LassoDataService(self) lasso_node_destroy(LASSO_NODE(self))
 
 /* Implementations of methods inherited from LassoNode */
 
-#define LassoProfileService_dump(self) lasso_node_dump(LASSO_NODE(self))
+#define LassoDataService_dump(self) lasso_node_dump(LASSO_NODE(self))
 
 
 /* Implementations of methods inherited from WsfProfile */
-#define LassoProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+#define LassoDataService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
-#define LassoProfileService_buildResponseMsg lasso_profile_service_build_response_msg
-#define LassoProfileService_addData lasso_profile_service_add_data
-#define LassoProfileService_addModification lasso_profile_service_add_modification
-#define LassoProfileService_addQueryItem lasso_profile_service_add_query_item
-#define LassoProfileService_initModify lasso_profile_service_init_modify
-#define LassoProfileService_initQuery lasso_profile_service_init_query
-#define LassoProfileService_getXmlNode lasso_profile_service_get_xmlNode
-#define LassoProfileService_processModifyMsg lasso_profile_service_process_modify_msg
-#define LassoProfileService_processModifyResponseMsg lasso_profile_service_process_modify_response_msg
-#define LassoProfileService_processQueryMsg lasso_profile_service_process_query_msg
-#define LassoProfileService_processQueryResponseMsg lasso_profile_service_process_query_response_msg
-#define LassoProfileService_validateQuery lasso_profile_service_validate_query
-#define LassoProfileService_getAnswer(self,select) get_xml_string(lasso_profile_service_get_answer(self, select))
+#define LassoDataService_buildResponseMsg lasso_data_service_build_response_msg
+#define LassoDataService_addData lasso_data_service_add_data
+#define LassoDataService_addModification lasso_data_service_add_modification
+#define LassoDataService_addQueryItem lasso_data_service_add_query_item
+#define LassoDataService_initModify lasso_data_service_init_modify
+#define LassoDataService_initQuery lasso_data_service_init_query
+#define LassoDataService_getXmlNode lasso_data_service_get_xmlNode
+#define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg
+#define LassoDataService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
+#define LassoDataService_processQueryMsg lasso_data_service_process_query_msg
+#define LassoDataService_processQueryResponseMsg lasso_data_service_process_query_response_msg
+#define LassoDataService_validateQuery lasso_data_service_validate_query
+#define LassoDataService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
 
 %}
 

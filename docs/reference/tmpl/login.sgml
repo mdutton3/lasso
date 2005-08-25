@@ -129,6 +129,9 @@ printf("Location: /\n\nRedirected to site root\n");
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### STRUCT LassoLogin ##### -->
 <para>
 Single sign-on profile for the current transaction; possibly an
