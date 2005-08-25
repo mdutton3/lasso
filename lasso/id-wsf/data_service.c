@@ -216,7 +216,7 @@ gint
 lasso_data_service_build_response_msg(LassoDataService *service)
 {
 	LassoWsfProfile *profile;
-	LassoDstQuery *query;
+	LassoDstQuery *request;
 	LassoDstQueryResponse *response;
 	GList *iter;
 	xmlDoc *doc;
@@ -225,12 +225,12 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 	LassoSoapEnvelope *envelope;
 
 	profile = LASSO_WSF_PROFILE(service);
-	query = LASSO_DST_QUERY(profile->request);
+	request = LASSO_DST_QUERY(profile->request);
 
 	response = lasso_dst_query_response_new(lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
 	profile->response = LASSO_NODE(response);
-	response->prefixServiceType = g_strdup(query->prefixServiceType);
-	response->hrefServiceType = g_strdup(query->hrefServiceType);
+	response->prefixServiceType = g_strdup(request->prefixServiceType);
+	response->hrefServiceType = g_strdup(request->hrefServiceType);
 	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
@@ -241,7 +241,7 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 			(xmlChar*)response->hrefServiceType);
 
 	/* XXX: needs another level, since there may be more than one <dst:Query> */
-	iter = query->QueryItem;
+	iter = request->QueryItem;
 	while (iter) {
 		LassoDstQueryItem *item = iter->data;
 		xpathObj = xmlXPathEvalExpression((xmlChar*)item->Select, xpathCtx);

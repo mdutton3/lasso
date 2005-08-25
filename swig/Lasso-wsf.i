@@ -4083,6 +4083,10 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
+	int buildModifyResponseMsg();
+	END_THROW_ERROR
+
+	THROW_ERROR
 	int buildResponseMsg();
 	END_THROW_ERROR
 
@@ -4171,6 +4175,7 @@ typedef struct {
 #define LassoDataService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
+#define LassoDataService_buildModifyResponseMsg lasso_data_service_build_modify_response_msg
 #define LassoDataService_buildResponseMsg lasso_data_service_build_response_msg
 #define LassoDataService_addData lasso_data_service_add_data
 #define LassoDataService_addModification lasso_data_service_add_modification
