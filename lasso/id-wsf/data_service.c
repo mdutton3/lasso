@@ -204,6 +204,52 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	return 0;
 }
 
+gint
+lasso_data_service_build_modify_response_msg(LassoDataService *service) {
+	LassoWsfProfile *profile;
+	LassoDstModify *request;
+	LassoDstModifyResponse *response;
+
+	GList *iter;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+
+	LassoSoapEnvelope *envelope;
+
+	profile = LASSO_WSF_PROFILE(service);
+	request = LASSO_DST_MODIFY(profile->request);
+
+	response = lasso_dst_modify_response_new(
+		lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
+	profile->response = LASSO_NODE(response);
+	response->prefixServiceType = g_strdup(request->prefixServiceType);
+	response->hrefServiceType = g_strdup(request->hrefServiceType);
+	envelope = profile->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc, service->resource_data);
+	xpathCtx = xmlXPathNewContext(doc);
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)response->prefixServiceType,
+			(xmlChar*)response->hrefServiceType);
+
+	iter = request->Modification;
+	while (iter) {
+		LassoDstModification *modification = iter->data;
+		xmlNode *newNode = modification->NewData->any->data;
+		xpathObj = xmlXPathEvalExpression((xmlChar*)modification->Select, xpathCtx);
+		if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
+			xmlReplaceNode(node, newNode);
+		}
+
+		iter = g_list_next(iter);
+	}
+
+	return lasso_wsf_profile_build_soap_response_msg(profile);
+}
+
 /**
  * lasso_data_service_build_response_msg:
  * @service: a #LassoDataService
