@@ -26,6 +26,7 @@
 #include <libxml/xpathInternals.h>
 
 #include <xmlsec/base64.h>
+#include <xmlsec/errors.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
 
@@ -749,7 +750,7 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			t = t->next;
 		}
 		if (t == NULL)
-			return;
+			return FALSE;
 
 		b64_value = xmlNodeGetContent(t);
 		length = strlen((char*)b64_value);
