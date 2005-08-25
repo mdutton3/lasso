@@ -58,6 +58,7 @@ typedef struct _LassoDataServicePrivate LassoDataServicePrivate;
 struct _LassoDataService {
 	LassoWsfProfile parent;
 
+	/*< public >*/
 	LassoDiscoResourceID *resource_id;
 	LassoDiscoEncryptedResourceID *encrypted_resource_id;
 	xmlNode *resource_data;

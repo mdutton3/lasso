@@ -65,6 +65,7 @@ typedef struct _LassoDiscoveryPrivate LassoDiscoveryPrivate;
 struct _LassoDiscovery {
 	LassoWsfProfile parent;
 
+	/*< public >*/
 	LassoDiscoResourceID *resource_id;
 	LassoDiscoEncryptedResourceID *encrypted_resource_id;
 
