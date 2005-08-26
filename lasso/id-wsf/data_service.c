@@ -438,8 +438,11 @@ lasso_data_service_process_query_response_msg(LassoDataService *service, const c
 	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(service), message);
 	if (rc) return rc;
 
+	if (! LASSO_IS_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response))
+		return LASSO_ERROR_UNDEFINED;
+
 	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
-	if (strcmp(response->Status->code, "OK") != 0)
+	if (response->Status == NULL || strcmp(response->Status->code, "OK") != 0)
 		return LASSO_ERROR_UNDEFINED;
 
 	return 0;
