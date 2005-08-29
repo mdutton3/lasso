@@ -122,6 +122,10 @@ LASSO_EXPORT gint lasso_discovery_process_query_response_msg(LassoDiscovery *dis
 LASSO_EXPORT LassoDataService* lasso_discovery_get_service(LassoDiscovery *discovery,
 		const char *service_type);
 
+LASSO_EXPORT LassoDataService* lasso_discovery_get_service_with_providerId(
+		LassoDiscovery *discovery,
+		const char *providerId);
+
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(
 		LassoDiscoResourceOffering *offering, gchar *security_mech);
 #ifdef __cplusplus

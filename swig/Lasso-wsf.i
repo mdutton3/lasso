@@ -294,6 +294,9 @@ typedef struct {
 
 	%newobject getService;
 	LassoDataService* getService(const char *service_type = NULL);
+	
+	%newobject getServiceWithProviderId;
+	LassoDataService* getServiceWithProviderId(const char *service_type = NULL);
 }
 
 %{
@@ -408,6 +411,7 @@ int LassoDiscovery_setSessionFromDump(LassoDiscovery *self, char *dump) {
 #define LassoDiscovery_processQueryMsg lasso_discovery_process_query_msg
 #define LassoDiscovery_processQueryResponseMsg lasso_discovery_process_query_response_msg
 #define LassoDiscovery_getService(self, type) get_node(lasso_discovery_get_service(self, type))
+#define LassoDiscovery_getServiceWithProviderId(self, providerId) get_node(lasso_discovery_get_service_with_providerId(self, providerId))
 
 %}
 
