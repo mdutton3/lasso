@@ -474,10 +474,32 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	LassoDiscoModify *request = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 	LassoDiscoModifyResponse *response;
 	LassoSoapEnvelope *envelope;
+	LassoUtilityStatus *status;
 	GList *iter;
 	gboolean failure = FALSE;
 	char *new_entry_ids = NULL, *t_new_entry_ids = NULL;
-	
+
+	/* build response */
+	status = lasso_utility_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
+	response = lasso_disco_modify_response_new(status);
+	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
+	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
+	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	/* First verify remove entries are all ok */
+	iter = request->RemoveEntry;
+	while (iter) {
+		LassoDiscoRemoveEntry *entry = iter->data;
+		iter = g_list_next(iter);
+
+		if (lasso_identity_get_resource_offering(
+					LASSO_WSF_PROFILE(discovery)->identity,
+					entry->entryID) == NULL) {
+			/* FIXME: Return a better code error. */
+			return -1;
+		}
+	}
+
 	if (request->InsertEntry) {
 		new_entry_ids = g_malloc(10*g_list_length(request->InsertEntry));
 		t_new_entry_ids = new_entry_ids;
@@ -510,20 +532,13 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 		}
 	}
 
-	if (failure) {
-		/* XXX: should restore previous content */
-	}
-
-	/* build response */
-	response = lasso_disco_modify_response_new(
-			lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
 	if (new_entry_ids) {
 		response->newEntryIDs = g_strdup(new_entry_ids);
 		g_free(new_entry_ids);
 	}
-	LASSO_WSF_PROFILE(discovery)->response = LASSO_NODE(response);
-	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
-	envelope->Body->any = g_list_append(envelope->Body->any, response);
+
+	g_free(status->code);
+	status->code = g_strdup(LASSO_DISCO_STATUS_CODE_OK);
 
 	return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
 }

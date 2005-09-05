@@ -192,6 +192,24 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 	return result;
 }
 
+LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
+		LassoIdentity *identity, const char *entryID)
+{
+	GList *iter;
+	LassoDiscoResourceOffering *t;
+
+	iter = identity->private_data->resource_offerings;
+	while (iter) {
+		t = iter->data;
+		iter = g_list_next(iter);
+		if (strcmp(t->entryID, entryID) == 0) {
+			return t;
+		}
+	}
+
+	return NULL;
+}
+
 #endif
 
 

@@ -37,6 +37,8 @@ LASSO_EXPORT gboolean lasso_identity_remove_resource_offering(LassoIdentity *ide
 		const char *entryID);
 LASSO_EXPORT GList* lasso_identity_get_offerings(LassoIdentity *identity,
 		const char *service_type);
+LASSO_EXPORT LassoDiscoResourceOffering* lasso_identity_get_resource_offering(
+		LassoIdentity *identity, const char *entryID);
 
 
 #ifdef __cplusplus
