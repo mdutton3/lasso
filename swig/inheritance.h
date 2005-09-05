@@ -82,7 +82,6 @@ SET_NODE_INFO(LibRegisterNameIdentifierResponse, LibStatusResponse)
 
 /* ID-WSF */
 
-
 /* disco prefix */
 
 SET_NODE_INFO(DiscoCredentials, Node)
@@ -150,5 +149,10 @@ SET_NODE_INFO(UtilityStatus, Node)
 
 /* web service security extension */
 SET_NODE_INFO(WsseSecurity, Node)
+
+/* Profiles */
+SET_NODE_INFO(WsfProfile, Node)
+SET_NODE_INFO(DataService, WsfProfile)
+SET_NODE_INFO(PersonalProfileService, DataService)
 
 #endif /* LASSO_WSF_ENABLED */

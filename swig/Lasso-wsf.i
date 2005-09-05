@@ -818,6 +818,12 @@ typedef struct {
 	%newobject resourceData_get;
 	char *resourceData;
 
+	%immutable providerId;
+	char *providerId;
+	
+	%immutable abstractDescription;
+	char *abstractDescription;
+
 	/* Constructor, Destructor & Static Methods */
 
 	LassoDataService(LassoServer *server);
@@ -906,6 +912,14 @@ typedef struct {
 #define LassoDataService_server_set(self, value) set_node((gpointer *) &LASSO_WSF_PROFILE(self)->server, (value))
 
 /* Attributes */
+
+/* providerId */
+#define LassoDataService_get_providerId(self) self->provider_id
+#define LassoDataService_providerId_get(self) self->provider_id
+
+/* abstractDescription */
+#define LassoDataService_get_abstractDescription(self) self->abstract_description
+#define LassoDataService_abstractDescription_get(self) self->abstract_description
 
 /* EncryptedResourceID */
 #define LassoDataService_get_encryptedResourceId(self) get_node((self)->encrypted_resource_id)

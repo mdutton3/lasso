@@ -62,6 +62,9 @@ struct _LassoDataService {
 	LassoDiscoResourceID *resource_id;
 	LassoDiscoEncryptedResourceID *encrypted_resource_id;
 	xmlNode *resource_data;
+	
+	gchar *provider_id;
+	gchar *abstract_description;
 
 	/*< private >*/
 	LassoDataServicePrivate *private_data;
