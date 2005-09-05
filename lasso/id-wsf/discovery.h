@@ -126,6 +126,8 @@ LASSO_EXPORT LassoDataService* lasso_discovery_get_service_with_providerId(
 		LassoDiscovery *discovery,
 		const char *providerId);
 
+LASSO_EXPORT GList* lasso_discovery_get_services(LassoDiscovery *discovery);
+
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(
 		LassoDiscoResourceOffering *offering, gchar *security_mech);
 #ifdef __cplusplus

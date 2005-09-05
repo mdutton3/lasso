@@ -766,6 +766,48 @@ lasso_discovery_get_service_with_providerId(LassoDiscovery *discovery, const cha
 	return service;
 }
 
+/**
+ * lasso_discovery_get_services:
+ * @discovery: a #LassoDiscovery
+ *
+ * After a disco:query message, creates a #LassoDataService list.
+ *
+ * Return value: a newly created #LAssoProfileService list; or NULL if an
+ *     error occured.
+ **/
+GList*
+lasso_discovery_get_services(LassoDiscovery *discovery)
+{
+	LassoDiscoQueryResponse *response;
+	GList *iter;
+	LassoDiscoResourceOffering *offering;
+	LassoDataService *service;
+	GList *services;
+
+	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
+	iter = response->ResourceOffering;
+	if (iter == NULL) {
+		return NULL; /* resource not found */
+	}
+
+	services = NULL;
+	while (iter) {
+		offering = iter->data;
+		iter = g_list_next(iter);
+		if (offering->ServiceInstance == NULL)
+			continue;
+		if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
+			service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new(
+						LASSO_WSF_PROFILE(discovery)->server, offering));
+		} else {
+			service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
+					offering);
+		}
+		services = g_list_append(services, service);
+	}
+
+	return services;
+}
 
 /*****************************************************************************/
 /* private methods                                                           */
