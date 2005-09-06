@@ -701,7 +701,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	if (service_type == NULL) {
 		offering = iter->data;
 	} else {
-		while (iter) {maker
+		while (iter) {
 			LassoDiscoResourceOffering *t = iter->data;
 			iter = g_list_next(iter);
 			if (t->ServiceInstance == NULL)
