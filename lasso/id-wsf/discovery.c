@@ -682,7 +682,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
  * After a disco:query message, creates a #LassoDataService instance for the
  * requested @service_type.
  *
- * Return value: a newly created #LAssoProfileService object; or NULL if an
+ * Return value: a newly created #LAssoDataService object; or NULL if an
  *     error occured.
  **/
 LassoDataService*
@@ -701,7 +701,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	if (service_type == NULL) {
 		offering = iter->data;
 	} else {
-		while (iter) {
+		while (iter) {maker
 			LassoDiscoResourceOffering *t = iter->data;
 			iter = g_list_next(iter);
 			if (t->ServiceInstance == NULL)
@@ -770,9 +770,9 @@ lasso_discovery_get_service_with_providerId(LassoDiscovery *discovery, const cha
  * lasso_discovery_get_services:
  * @discovery: a #LassoDiscovery
  *
- * After a disco:query message, creates a #LassoDataService list.
+ * After a disco:query message, creates a GList object of #LassoDataService.
  *
- * Return value: a newly created #LAssoProfileService list; or NULL if an
+ * Return value: a newly created GList object of #LassoDataService; or NULL if an
  *     error occured.
  **/
 GList*
