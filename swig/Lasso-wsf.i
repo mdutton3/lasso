@@ -538,70 +538,6 @@ typedef struct {
 
 
 /***********************************************************************
- * lasso:xmlNode
- ***********************************************************************/
-
-#ifndef SWIGPHP4
-%rename(XmlNode) LassoXmlNode;
-#endif
-%{
-typedef xmlNode LassoXmlNode;
-%}
-typedef struct {
-	%extend {
-		/* Constructor, Destructor & Static Methods */
-
-		LassoXmlNode(char *name);
-
-		/* Methods */
-		void addChild(LassoXmlNode *node) {
-			xmlAddChild((xmlNode *) self, (xmlNode *) node);
-		}
-		
-		void addProperty(char *name, char *value) {
-			xmlSetProp((xmlNode *) self, (xmlChar *) name, (xmlChar *) value);
-		}
-
-		%newobject dump;
-		char *dump() {
-			char *ret;
-			xmlOutputBuffer *buf;
-
-			buf = xmlAllocOutputBuffer(NULL);
-			if (buf == NULL) {
-				return NULL;
-			}
-			xmlNodeDumpOutput(buf, NULL, (xmlNode *) self, 0, 1, NULL);
-			xmlOutputBufferFlush(buf);
-			if (buf->conv != NULL) {
-				ret = (char *) g_strdup((gchar *) buf->conv->content);
-			} else {
-				ret = (char *) g_strdup((gchar *) buf->buffer->content);
-			}
-			xmlOutputBufferClose(buf);
-
-			return ret;
-		}
-		
-		void setContent(char *content) {
-			xmlNodeSetContent((xmlNode *) self, (xmlChar *) content);
-		}
-
-	}
-} LassoXmlNode;
-
-%{
-
-/* Constructors, destructors & static methods implementations */
-
-LassoXmlNode* new_LassoXmlNode(char *name) {
-	return (LassoXmlNode *) xmlNewNode(NULL, (xmlChar *) name);
-}
-
-%}
-
-
-/***********************************************************************
  * lasso:PersonalProfileService
  ***********************************************************************/
 
@@ -762,7 +698,6 @@ typedef struct {
 #define LassoPersonalProfileService_addModification lasso_data_service_add_modification
 #define LassoPersonalProfileService_addQueryItem lasso_data_service_add_query_item
 #define LassoPersonalProfileService_initQuery lasso_data_service_init_query
-#define LassoPersonalProfileService_getXmlNode lasso_data_service_get_xmlNode
 #define LassoPersonalProfileService_processModifyMsg lasso_data_service_process_modify_msg
 #define LassoPersonalProfileService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
 #define LassoPersonalProfileService_processQueryMsg lasso_data_service_process_query_msg
@@ -961,7 +896,6 @@ typedef struct {
 #define LassoDataService_addQueryItem lasso_data_service_add_query_item
 #define LassoDataService_initModify(self, select, xmlString) lasso_data_service_init_modify(self, select, get_string_xml(xmlString))
 #define LassoDataService_initQuery lasso_data_service_init_query
-#define LassoDataService_getXmlNode lasso_data_service_get_xmlNode
 #define LassoDataService_processModifyMsg lasso_data_service_process_modify_msg
 #define LassoDataService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
 #define LassoDataService_processQueryMsg lasso_data_service_process_query_msg
