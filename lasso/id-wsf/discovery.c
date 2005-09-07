@@ -231,6 +231,10 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 	GList *assertions, *iter, *iter2, *iter3, *iter4;
 	LassoDiscoResourceOffering *resource_offering = NULL;
 
+	if (LASSO_WSF_PROFILE(discovery)->session == NULL) {
+		return NULL;
+	}
+
 	session = LASSO_WSF_PROFILE(discovery)->session;
 	assertions = lasso_session_get_assertions(session, NULL);
 	iter = assertions;
