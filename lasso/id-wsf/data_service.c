@@ -336,6 +336,8 @@ lasso_data_service_get_answer(LassoDataService *service, const char *select)
 		/* if only one element; default to first */
 		if (g_list_length(iter) > 1)
 			return NULL;
+		if (response->Data == NULL)
+			return NULL;
 		data = response->Data->data;
 	} else {
 		LassoDstQueryItem *item = NULL;
@@ -358,6 +360,8 @@ lasso_data_service_get_answer(LassoDataService *service, const char *select)
 		item_id = item->itemID;
 		if (item_id == NULL) {
 			/* item_id is not mandatory when there is only one item */
+			if (response->Data == NULL)
+				return NULL;
 			data = response->Data->data;
 		}
 
