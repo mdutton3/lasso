@@ -166,16 +166,25 @@ lasso_dst_query_get_type()
 	return this_type;
 }
 
+
+/**
+ * lasso_dst_query_new:
+ * @query_item: query item to embed in request (optional)
+ *
+ * Creates a new #LassoDstQuery object.  If @query_item is set it is added to
+ * the requested query items.
+ *
+ * Return value: a newly created #LassoDstQuery object.
+ **/
 LassoDstQuery*
 lasso_dst_query_new(LassoDstQueryItem *queryItem)
 {
 	LassoDstQuery *query;
 
-	g_return_val_if_fail(LASSO_IS_DST_QUERY_ITEM(queryItem), NULL);
-
 	query = g_object_new(LASSO_TYPE_DST_QUERY, NULL);
 
-	query->QueryItem = g_list_append(query->QueryItem, queryItem);
+	if (queryItem)
+		query->QueryItem = g_list_append(query->QueryItem, queryItem);
 
 	return query;
 }

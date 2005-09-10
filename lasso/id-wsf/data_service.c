@@ -116,6 +116,9 @@ lasso_data_service_add_query_item(LassoDataService *service,
  * optional itemID set to @item_id).  @item_id may be NULL only if the query
  * won't contain other query items.
  *
+ * If both @select and @item_id are NULL, only a skeleton request is created
+ * and calls to lasso_data_service_add_query_item() will need to be done.
+ *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
@@ -129,7 +132,11 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	profile = LASSO_WSF_PROFILE(service);
 
-	query = lasso_dst_query_new(lasso_dst_query_item_new(select, item_id));
+	if (select) {
+		query = lasso_dst_query_new(lasso_dst_query_item_new(select, item_id));
+	} else {
+		query = lasso_dst_query_new(NULL);
+	}
 	profile->request = LASSO_NODE(query);
 	
 	offering = service->private_data->offering;

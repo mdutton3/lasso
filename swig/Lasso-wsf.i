@@ -591,7 +591,7 @@ typedef struct {
 	/* Methods inherited from ProfileService */
 
 	THROW_ERROR
-	gint initQuery(const char *select, const char *item_id = NULL);
+	gint initQuery(const char *select = NULL, const char *item_id = NULL);
 	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
@@ -779,7 +779,7 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	gint initQuery(const char *select, const char *item_id = NULL);
+	gint initQuery(const char *select = NULL, const char *item_id = NULL);
 	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
@@ -802,6 +802,9 @@ typedef struct {
 
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
+
+	%newobject getAnswerForItemId;
+	char* getAnswerForItemId(const char *itemId);
 
 	int initModify(char *select, const char *xmlString);
 
@@ -902,6 +905,7 @@ typedef struct {
 #define LassoDataService_processQueryResponseMsg lasso_data_service_process_query_response_msg
 #define LassoDataService_validateQuery lasso_data_service_validate_query
 #define LassoDataService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
+#define LassoDataService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(self, itemId))
 
 %}
 
