@@ -109,14 +109,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	rc = parent_class->init_from_xml(node, xmlnode);
 	if (rc) return rc;
 
-	if (strcmp((char*)xmlnode->ns->href, LASSO_PP_HREF) == 0) {
-		query->hrefServiceType = g_strdup(LASSO_PP_HREF);
-		query->prefixServiceType = g_strdup(LASSO_PP_PREFIX);
-	} else if (strcmp((char*)xmlnode->ns->href, LASSO_EP_HREF) == 0) {
-		query->hrefServiceType = g_strdup(LASSO_EP_HREF);
-		query->prefixServiceType = g_strdup(LASSO_EP_PREFIX);
-	} else {
-		/* XXX */
+	query->hrefServiceType = g_strdup((char*)xmlnode->ns->href);
+	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
+			query->hrefServiceType);
+	if (query->prefixServiceType == NULL) {
+		/* XXX: what to do here ? */
 	}
 
 	return 0;

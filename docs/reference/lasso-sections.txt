@@ -901,6 +901,7 @@ lasso_init
 lasso_shutdown
 lasso_check_version
 LassoCheckVersionMode
+lasso_register_dst_service
 </SECTION>
 
 <SECTION>

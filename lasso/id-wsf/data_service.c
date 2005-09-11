@@ -142,12 +142,8 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 	offering = service->private_data->offering;
 
 	query->hrefServiceType = g_strdup(offering->ServiceInstance->ServiceType);
-	if (strcmp(query->hrefServiceType, LASSO_PP_HREF) == 0)
-		query->prefixServiceType = g_strdup(LASSO_PP_PREFIX);
-	else if (strcmp(query->hrefServiceType, LASSO_EP_HREF) == 0)
-		query->prefixServiceType = g_strdup(LASSO_EP_PREFIX);
-	else {
-		/* unknown service type, (needs registration mechanism) */
+	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(query->hrefServiceType);
+	if (query->prefixServiceType == NULL) {
 		return LASSO_ERROR_UNDEFINED;
 	}
 
@@ -487,14 +483,8 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select, x
 	offering = service->private_data->offering;
 	
 	modify->hrefServiceType = g_strdup(offering->ServiceInstance->ServiceType);
-	if (strcmp(modify->hrefServiceType, LASSO_PP_HREF) == 0) {
-		modify->prefixServiceType = g_strdup(LASSO_PP_PREFIX);
-	}
-	else if (strcmp(modify->hrefServiceType, LASSO_EP_HREF) == 0) {
-		modify->prefixServiceType = g_strdup(LASSO_EP_PREFIX);
-	}
-	else {
-		/* unknown service type, (needs registration mechanism) */
+	modify->prefixServiceType = lasso_get_prefix_for_dst_service_href(modify->hrefServiceType);
+	if (modify->prefixServiceType == NULL) {
 		return LASSO_ERROR_UNDEFINED;
 	}
 

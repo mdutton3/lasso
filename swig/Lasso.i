@@ -1103,6 +1103,11 @@ typedef enum {
 int lasso_check_version(int major, int minor, int subminor,
 		LassoCheckVersionMode mode = LASSO_CHECK_VERSION_NUMERIC);
 
+#ifndef SWIGPHP4
+%rename(registerDstService) lasso_register_dst_service;
+#endif
+void lasso_register_dst_service(const char *prefix, const char *href);
+
 
 /***********************************************************************
  * Utility functions to handle nodes, strings, lists...

@@ -114,7 +114,10 @@ LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *servic
 	const gchar *soap_msg);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
-	const gchar *soap_msg);
+		const gchar *soap_msg);
+
+LASSO_EXPORT void lasso_data_service_register_service(LassoDataService *service,
+		const char *prefix, const char *href);
 
 #ifdef __cplusplus
 }

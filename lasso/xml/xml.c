@@ -50,6 +50,50 @@ static
 void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippet_signature);
 
+
+GHashTable *dst_services_by_href = NULL; /* Extra DST services, indexed on href */
+GHashTable *dst_services_by_prefix = NULL; /* Extra DST services, indexed on prefix */
+
+/*****************************************************************************/
+/* global methods                                                            */
+/*****************************************************************************/
+
+
+/**
+ * lasso_register_dst_service:
+ * @prefix: prefix of DST service
+ * @href: href of DST service
+ *
+ * Registers prefix and href of a custom data service template service.
+ **/
+void
+lasso_register_dst_service(const char *prefix, const char *href)
+{
+	if (dst_services_by_href == NULL) {
+		dst_services_by_href = g_hash_table_new_full(
+				g_str_hash, g_str_equal, g_free, g_free);
+		dst_services_by_prefix = g_hash_table_new_full(
+				g_str_hash, g_str_equal, g_free, g_free);
+	}
+	g_hash_table_insert(dst_services_by_prefix, g_strdup(prefix), g_strdup(href));
+	g_hash_table_insert(dst_services_by_href, g_strdup(href), g_strdup(prefix));
+}
+
+char*
+lasso_get_prefix_for_dst_service_href(const char *href)
+{
+	if (strcmp(href, LASSO_PP_HREF) == 0)
+		return g_strdup(LASSO_PP_PREFIX);
+	if (strcmp(href, LASSO_EP_HREF) == 0)
+		return g_strdup(LASSO_EP_PREFIX);
+
+	if (dst_services_by_href == NULL)
+		return NULL;
+
+	return g_strdup(g_hash_table_lookup(dst_services_by_href, href));
+}
+
+
 /*****************************************************************************/
 /* virtual public methods                                                    */
 /*****************************************************************************/
@@ -712,6 +756,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 {
 	char *prefix = NULL;
 	char *typename;
+	char *tmp;
 	GType gtype;
 	LassoNode *node;
 	xmlChar *xsitype;
@@ -741,13 +786,12 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
 
-	/* XXX: new Dst namespaces can be added dynamically; they should not
-	 * be hardcoded here
-	 */
-	if (strcmp((char*)xmlnode->ns->href, LASSO_PP_HREF) == 0)
+	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
+	if (tmp) {
 		prefix = "Dst";
-	if (strcmp((char*)xmlnode->ns->href, LASSO_EP_HREF) == 0)
-		prefix = "Dst";
+		g_free(tmp);
+	}
+	
 	if (strcmp((char*)prefix, "Dst") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
 		prefix = "Utility";
 	if (strcmp((char*)prefix, "Disco") == 0 && strcmp((char*)xmlnode->name, "Status") == 0)
