@@ -444,11 +444,11 @@ AC_SUBST(PHP_VERSION)
 # C# binding
 # ----------
 
-AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
-              enable_csharp="yes")
+#AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
+#              enable_csharp="yes")
 
-AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
-AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
+#AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
+#AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
 
 if test -z "$CSHARPCOMPILERBIN" ; then
   case $host in
@@ -463,7 +463,7 @@ fi
 CSHARPPATHSEPARATOR="/"
 CSHARPCYGPATH_W=echo
 if test -z "$CSHARPBIN" ; then
-  languages_available="$languages_available C#($CSHARPCOMPILER)"
+  #languages_available="$languages_available C#($CSHARPCOMPILER)"
   CSHARPCILINTERPRETER=""
   if test "cscc" = "$CSHARPCOMPILER" ; then
     AC_CHECK_PROGS(CSHARPCILINTERPRETER, ilrun)
@@ -771,8 +771,6 @@ dnl ==========================================================================
 AC_CONFIG_FILES([lasso-src-config], [chmod +x lasso-src-config])
 AC_OUTPUT(
 [Makefile
-csharp/Makefile
-csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
 docs/lasso-book/figures/Makefile
@@ -831,7 +829,6 @@ Optionals builds
   
 Available languages:    ${languages_available}
 
-C# binding:             ${enable_csharp}
 Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
 PHP binding:            ${enable_php}
