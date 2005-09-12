@@ -1,8 +1,18 @@
 EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \
-	lasso.types \
+	lasso.types.in \
 	version.xml.in
+
+if WSF_ENABLED
+lasso.types: lasso.types.in
+	sed -e 's/#WSF# //g' < $(srcdir)/lasso.types.in > lasso.types
+else
+lasso.types: lasso.types.in
+	grep -v '#WSF#' $(srcdir)/lasso.types.in > lasso.types
+endif
+
+	
 
 # We need to pre-process original source files
 # because gtkdoc does not understand some C features
@@ -76,12 +86,12 @@ GTKDOC_LIBS = 	\
 GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC)
 GTKDOC_LD = $(LIBTOOL) --mode=link $(CC)
 
-scan: doc_sources
+scan: doc_sources lasso.types
 	test -d build || mkdir build
 	@echo '*** Scan sources ***'
 	cp $(srcdir)/lasso-sections.txt build/
-	if grep -l '^..*$$' $(srcdir)/lasso.types > /dev/null ; then \
-		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=lasso --types=$(srcdir)/lasso.types --output-dir=build/ ; \
+	if grep -l '^..*$$' lasso.types > /dev/null ; then \
+		CC="$(GTKDOC_CC)" LD="$(GTKDOC_LD)" CFLAGS="$(GTKDOC_CFLAGS)" LDFLAGS="$(GTKDOC_LIBS)" gtkdoc-scangobj $(SCANOBJ_OPTIONS) --module=lasso --types=lasso.types --output-dir=build/ ; \
 	else \
 		cd $(srcdir) ; \
 		for i in $(SCANOBJ_FILES) ; do \
@@ -134,6 +144,7 @@ clean-local: clean-sources
 	-rm -rf build
 	-rm -f $(SCANOBJ_FILES) index.sgml lasso-index.sgml
 	-rm -rf  $(SCANOBJ_FILES) *.o *~ *.bak *.stamp
+	-rm -f lasso.types
 
 clean-sources:
 	-rm -rf code

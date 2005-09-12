@@ -50,3 +50,8 @@ lasso_provider_get_type
 lasso_server_get_type
 lasso_identity_get_type
 lasso_session_get_type
+lasso_name_registration_get_type
+lasso_name_identifier_mapping_get_type
+
+#WSF# lasso_discovery_get_type
+#WSF# lasso_data_service_get_type
