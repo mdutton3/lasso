@@ -5260,12 +5260,10 @@ typedef struct {
 	int addResourceOffering(LassoDiscoResourceOffering *offering);
 	END_THROW_ERROR
 
-	THROW_ERROR
-	int removeResourceOffering(const char *entry_id);
-	END_THROW_ERROR
+	gboolean removeResourceOffering(const char *entry_id);
 
 	%newobject getOfferings;
-	LassoNodeList *getOfferings(const char *service_type);
+	LassoNodeList *getOfferings(const char *service_type = NULL);
 #endif
 }
 

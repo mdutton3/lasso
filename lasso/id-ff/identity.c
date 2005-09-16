@@ -184,7 +184,8 @@ lasso_identity_get_offerings(LassoIdentity *identity, const char *service_type)
 	while (iter) {
 		t = iter->data;
 		iter = g_list_next(iter);
-		if (strcmp(t->ServiceInstance->ServiceType, service_type) == 0) {
+		if (service_type == NULL || strcmp(
+					t->ServiceInstance->ServiceType, service_type) == 0) {
 			result = g_list_append(result, g_object_ref(t));
 		}
 	}
