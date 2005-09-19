@@ -246,7 +246,7 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	int initInsert(LassoDiscoResourceOffering *newOffering);
+	int initInsert(LassoDiscoResourceOffering *newOffering, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -273,7 +273,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int initQuery();
+	int initQuery(const char *security_mech_id);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -285,7 +285,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processQueryMsg(char *query_msg);
+	int processQueryMsg(char *query_msg, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -591,13 +591,13 @@ typedef struct {
 	/* Methods inherited from ProfileService */
 
 	THROW_ERROR
-	gint initQuery(const char *select = NULL, const char *item_id = NULL);
+	gint initQuery(const char *select = NULL, const char *item_id = NULL, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
 	THROW_ERROR
-	int processQueryMsg(const char *message);
+	int processQueryMsg(const char *message, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -779,13 +779,13 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	gint initQuery(const char *select = NULL, const char *item_id = NULL);
+	gint initQuery(const char *select = NULL, const char *item_id = NULL, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
 	THROW_ERROR
-	int processQueryMsg(const char *message);
+	int processQueryMsg(const char *message, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
