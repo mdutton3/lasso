@@ -35,6 +35,7 @@ extern "C" {
 #include <lasso/id-ff/session.h>
 #include <lasso/xml/soap_envelope.h>
 #include <lasso/xml/soap_binding_provider.h>
+#include <lasso/xml/saml_assertion.h>
 
 #define LASSO_TYPE_WSF_PROFILE (lasso_wsf_profile_get_type())
 #define LASSO_WSF_PROFILE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -76,6 +77,13 @@ struct _LassoWsfProfileClass {
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
+/* FIXME: Should not be here */
+LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(
+	const gchar *security_mech_id);
+
+LASSO_EXPORT gint lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile,
+	LassoSamlAssertion *credential);
+
 LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
 LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
 LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile);
@@ -87,7 +95,8 @@ LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profi
 		const gchar *dump);
 
 /* FIXME: must be private method */
-LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId);
+LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId,
+		const char *providerId);
 
 LASSO_EXPORT gint lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile);
 

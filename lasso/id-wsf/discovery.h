@@ -81,6 +81,9 @@ LASSO_EXPORT GType lasso_discovery_get_type(void);
 
 LASSO_EXPORT LassoDiscovery* lasso_discovery_new(LassoServer *server);
 
+LASSO_EXPORT gchar* lasso_discovery_build_credential(LassoDiscovery *discovery,
+	const gchar *providerId);
+
 LASSO_EXPORT LassoDiscoInsertEntry* lasso_discovery_add_insert_entry(
 	LassoDiscovery *discovery,
 	LassoDiscoServiceInstance *serviceInstance,
@@ -95,7 +98,7 @@ LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_servi
 LASSO_EXPORT void lasso_discovery_destroy(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
-		LassoDiscoResourceOffering *resourceOffering);
+		LassoDiscoResourceOffering *resourceOffering, const char *security_mech_id);
 LASSO_EXPORT gint lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id);
 
 LASSO_EXPORT gint lasso_discovery_build_response_msg(LassoDiscovery *discovery);
@@ -105,7 +108,8 @@ LASSO_EXPORT gint lasso_discovery_init_modify(LassoDiscovery *discovery,
 					      LassoDiscoResourceOffering *resourceOffering,
 					      LassoDiscoDescription *description);
 
-LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery);
+LASSO_EXPORT gint lasso_discovery_init_query(LassoDiscovery *discovery,
+	const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_discovery_process_modify_msg(LassoDiscovery *discovery,
 						     const gchar *message);
@@ -114,7 +118,7 @@ LASSO_EXPORT gint lasso_discovery_process_modify_response_msg(LassoDiscovery *di
 							      const gchar *message);
 
 LASSO_EXPORT gint lasso_discovery_process_query_msg(LassoDiscovery *discovery,
-						    const gchar *message);
+					const gchar *message, const char *security_mech_id);
 
 LASSO_EXPORT gint lasso_discovery_process_query_response_msg(LassoDiscovery *discovery,
 							     const gchar *message);
@@ -129,7 +133,7 @@ LASSO_EXPORT LassoDataService* lasso_discovery_get_service_with_providerId(
 LASSO_EXPORT GList* lasso_discovery_get_services(LassoDiscovery *discovery);
 
 LASSO_EXPORT LassoDiscoDescription* lasso_discovery_get_description_auto(
-		LassoDiscoResourceOffering *offering, gchar *security_mech);
+		LassoDiscoResourceOffering *offering, const gchar *security_mech);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

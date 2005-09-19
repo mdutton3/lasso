@@ -228,7 +228,7 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 	request = lasso_sa_sasl_request_new(mechanisms);
 	LASSO_WSF_PROFILE(authentication)->request = LASSO_NODE(request);
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL, NULL);
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 
@@ -327,7 +327,7 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 
 	correlation = envelope->Header->Other->data;
 	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId, NULL);
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_response = envelope;
 
 	status = lasso_utility_status_new(LASSO_SA_STATUS_CODE_OK);
@@ -390,7 +390,7 @@ lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 		correlation = envelope->Header->Other->data;
 		messageId = correlation->messageID;
 
-		envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+		envelope = lasso_wsf_profile_build_soap_envelope(messageId, NULL);
 		LASSO_WSF_PROFILE(authentication)->soap_envelope_request = envelope;
 
 		request = lasso_sa_sasl_request_new(g_strdup(response->serverMechanism));

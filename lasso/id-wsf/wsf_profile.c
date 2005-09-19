@@ -25,13 +25,17 @@
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/soap_binding_provider.h>
+#include <lasso/xml/wsse_security.h>
+#include <lasso/xml/saml_assertion.h>
+
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
 
 LassoSoapEnvelope*
-lasso_wsf_profile_build_soap_envelope(const char *refToMessageId)
+lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
 {
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
@@ -55,12 +59,84 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId)
 		correlation->refToMessageID = g_strdup(refToMessageId);
 	header->Other = g_list_append(header->Other, correlation);
 
+	/* Provider */
+	if (providerId) {
+		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
+		header->Other = g_list_append(header->Other, provider);
+	}
+
 	return envelope;
 }
 
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
+
+gint
+lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
+{
+	LassoSoapHeader *header;
+	LassoWsseSecurity *security = NULL;
+	LassoSamlAssertion *credential;
+	GList *iter;
+	
+	header = profile->soap_envelope_request->Header;
+
+	/* Security */
+	iter = header->Other;
+	while (iter) {
+		if (LASSO_IS_WSSE_SECURITY(iter->data) == TRUE) {
+			security = LASSO_WSSE_SECURITY(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (!security)
+		return -1;
+	
+	/* Assertion */
+	iter = security->any;
+	while (iter) {
+		if (LASSO_IS_SAML_ASSERTION(iter->data) == TRUE) {
+			credential = LASSO_SAML_ASSERTION(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (!credential)
+		return -1;
+	
+	return 0;
+}
+
+gboolean
+lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
+{
+	if (!security_mech_id)
+		return FALSE;
+
+	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 || \
+		strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 || \
+		strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
+gint
+lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile, LassoSamlAssertion *credential)
+{
+	LassoSoapHeader *header;
+	LassoWsseSecurity *security;
+	GList *iter;
+
+	security = lasso_wsse_security_new();
+	security->any = g_list_append(security->any, credential);
+	header = profile->soap_envelope_request->Header;
+	header->Other = g_list_append(header->Other, security);
+
+	return 0;
+}
 
 
 /**
@@ -184,7 +260,8 @@ lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile, LassoNode *request
 {
 	LassoSoapEnvelope *envelope;
 
-	envelope = lasso_wsf_profile_build_soap_envelope(NULL);
+	envelope = lasso_wsf_profile_build_soap_envelope(NULL,
+		LASSO_PROVIDER(profile->server)->ProviderID);
 	LASSO_WSF_PROFILE(profile)->soap_envelope_request = envelope;
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 
@@ -245,7 +322,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	correlation = envelope->Header->Other->data;
 
 	messageId = correlation->messageID;
-	envelope = lasso_wsf_profile_build_soap_envelope(messageId);
+	envelope = lasso_wsf_profile_build_soap_envelope(messageId, NULL);
 	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
 
 	return 0;

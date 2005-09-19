@@ -38,6 +38,7 @@ extern "C" {
 #include <lasso/xml/dst_query_item.h>
 #include <lasso/xml/disco_resource_offering.h>
 #include <lasso/xml/xml.h>
+#include <lasso/xml/saml_assertion.h>
 
 #define LASSO_TYPE_PROFILE_SERVICE (lasso_data_service_get_type())
 #define LASSO_DATA_SERVICE(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -82,14 +83,17 @@ LASSO_EXPORT LassoDataService* lasso_data_service_new(LassoServer *server);
 LASSO_EXPORT LassoDataService* lasso_data_service_new_full(LassoServer *server,
 		LassoDiscoResourceOffering *offering);
 
+LASSO_EXPORT gint lasso_data_service_add_credential(LassoDataService *service,
+	LassoSamlAssertion *assertion);
+
 LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
-		const char *select, const char *item_id);
+		const char *select, const char *item_id, const char *security_mech_id);
 
 LASSO_EXPORT LassoDstQueryItem* lasso_data_service_add_query_item(LassoDataService *service,
 		const char *select, const char *item_id);
 
 LASSO_EXPORT gint lasso_data_service_process_query_msg(LassoDataService *service,
-		const char *message);
+		const char *message, const char *security_mech_id);
 
 LASSO_EXPORT gint lasso_data_service_build_modify_response_msg(LassoDataService *service);
 
@@ -115,9 +119,6 @@ LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *servic
 
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 		const gchar *soap_msg);
-
-LASSO_EXPORT void lasso_data_service_register_service(LassoDataService *service,
-		const char *prefix, const char *href);
 
 #ifdef __cplusplus
 }
