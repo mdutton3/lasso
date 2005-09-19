@@ -177,6 +177,9 @@
 #define LASSO_SA_HREF "urn:liberty:sa:2004-04"
 #define LASSO_SA_PREFIX "sa"
 
+#define LASSO_SEC_HREF "urn:liberty:sec:2003-08"
+#define LASSO_SEC_PREFIX "sec"
+
 #define LASSO_SA_SASL_SERVICE_NAME "idwsf"
 
 /* Interaction Service (interact attribute of is:UserInteraction element ) */
