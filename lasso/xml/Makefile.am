@@ -56,6 +56,7 @@ WSF_C_FILES = \
 	sa_transform.c \
 	sa_sasl_request.c \
 	sa_sasl_response.c \
+	sec_resource_access_statement.c \
 	soap_binding_consent.c \
 	soap_binding_correlation.c \
 	soap_binding_processing_context.c \
@@ -118,6 +119,7 @@ WSF_H_FILES = \
 	sa_transform.h \
 	sa_sasl_request.h \
 	sa_sasl_response.h \
+	sec_resource_access_statement.h \
 	soap_binding_consent.h \
 	soap_binding_correlation.h \
 	soap_binding_processing_context.h \
