@@ -231,8 +231,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 
 	/* Verify needed credential */
 	if (lasso_security_mech_id_is_saml_authentication(security_mech_id) == TRUE) {
-		int res = lasso_wsf_profile_verify_saml_authentication(
-			LASSO_WSF_PROFILE(service);
+		int res = lasso_wsf_profile_verify_saml_authentication(LASSO_WSF_PROFILE(service));
 		if (res < 0)
 			return res;
 	}
