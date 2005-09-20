@@ -44,8 +44,15 @@ struct _LassoDiscoveryPrivate
 gchar*
 lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId)
 {
-	LassoSamlAssertion *assertion;
+	LassoSoapHeader *header;
+	LassoSoapBindingProvider *provider;
 	LassoDiscoQueryResponse *response;
+	GList *iter;
+	
+	LassoSamlAssertion *assertion;
+	LassoSamlAuthenticationStatement *authentication_statement;
+	LassoSamlSubject *subject;
+	LassoSamlNameIdentifier *identifier;
 	LassoDiscoCredentials *credentials;
 
 	assertion = lasso_saml_assertion_new();
@@ -53,13 +60,41 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	assertion->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
 	assertion->MinorVersion = LASSO_SAML_MINOR_VERSION_N;
 	assertion->IssueInstant = lasso_get_current_time();
-	assertion->Issuer = g_strdup(LASSO_PROVIDER(
-		LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
+	assertion->Issuer = g_strdup(
+		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
+		
+	authentication_statement = LASSO_SAML_AUTHENTICATION_STATEMENT(
+		lasso_saml_authentication_statement_new());
+	authentication_statement->AuthenticationInstant = lasso_get_current_time();
+	subject = LASSO_SAML_SUBJECT(lasso_saml_subject_new());
+	LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(authentication_statement)->Subject = subject;
+	identifier = lasso_saml_name_identifier_new();
+	identifier->NameQualifier = g_strdup(
+		LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
+
+	header = LASSO_WSF_PROFILE(discovery)->soap_envelope_request->Header;
+	iter = header->Other;
+	while (iter) {
+		if (LASSO_IS_SOAP_BINDING_PROVIDER(iter->data) == TRUE) {
+			provider = LASSO_SOAP_BINDING_PROVIDER(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+
+	if (provider) {
+		identifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID);
+		identifier->content = g_strdup(provider->providerID);
+	}
+	else {
+		identifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED);
+	}
+	subject->NameIdentifier = identifier;
+	assertion->AuthenticationStatement = authentication_statement;
 
 	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
 	credentials = lasso_disco_credentials_new();
 	response->Credentials = credentials;
-
 	credentials->any = g_list_append(credentials->any, LASSO_NODE(assertion));
 
 	return g_strdup(assertion->AssertionID);
@@ -225,9 +260,9 @@ lasso_discovery_destroy(LassoDiscovery *discovery)
 }
 
 gint
-lasso_discovery_init_modify(LassoDiscovery                *discovery,
-			    LassoDiscoResourceOffering    *resourceOffering,
-			    LassoDiscoDescription         *description)
+lasso_discovery_init_modify(LassoDiscovery *discovery,
+			    LassoDiscoResourceOffering *resourceOffering,
+			    LassoDiscoDescription *description)
 {
 	LassoSoapEnvelope *envelope;
 	LassoDiscoModify *modify;
