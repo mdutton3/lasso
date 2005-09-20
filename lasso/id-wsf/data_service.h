@@ -83,9 +83,6 @@ LASSO_EXPORT LassoDataService* lasso_data_service_new(LassoServer *server);
 LASSO_EXPORT LassoDataService* lasso_data_service_new_full(LassoServer *server,
 		LassoDiscoResourceOffering *offering);
 
-LASSO_EXPORT gint lasso_data_service_add_credential(LassoDataService *service,
-	LassoSamlAssertion *assertion);
-
 LASSO_EXPORT gint lasso_data_service_init_query(LassoDataService *service,
 		const char *select, const char *item_id, const char *security_mech_id);
 
