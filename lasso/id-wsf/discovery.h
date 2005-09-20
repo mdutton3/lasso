@@ -81,9 +81,6 @@ LASSO_EXPORT GType lasso_discovery_get_type(void);
 
 LASSO_EXPORT LassoDiscovery* lasso_discovery_new(LassoServer *server);
 
-LASSO_EXPORT gchar* lasso_discovery_build_credential(LassoDiscovery *discovery,
-	const gchar *providerId);
-
 LASSO_EXPORT LassoDiscoInsertEntry* lasso_discovery_add_insert_entry(
 	LassoDiscovery *discovery,
 	LassoDiscoServiceInstance *serviceInstance,
