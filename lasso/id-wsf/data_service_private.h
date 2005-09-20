@@ -33,6 +33,8 @@ extern "C" {
 void lasso_data_service_set_offering(LassoDataService *service,
 		LassoDiscoResourceOffering *offering);
 
+gint lasso_data_service_add_credential(LassoDataService *service, LassoSamlAssertion *assertion);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
