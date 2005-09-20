@@ -34,6 +34,21 @@
 /* private methods                                                           */
 /*****************************************************************************/
 
+gint
+lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile, LassoSamlAssertion *credential)
+{
+	LassoSoapHeader *header;
+	LassoWsseSecurity *security;
+	GList *iter;
+
+	security = lasso_wsse_security_new();
+	security->any = g_list_append(security->any, credential);
+	header = profile->soap_envelope_request->Header;
+	header->Other = g_list_append(header->Other, security);
+
+	return 0;
+}
+
 LassoSoapEnvelope*
 lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
 {
@@ -68,9 +83,19 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 	return envelope;
 }
 
-/*****************************************************************************/
-/* public methods                                                            */
-/*****************************************************************************/
+gboolean
+lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
+{
+	if (!security_mech_id)
+		return FALSE;
+
+	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 || \
+		strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 || \
+		strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
+		return TRUE;
+
+	return FALSE;
+}
 
 gint
 lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
@@ -109,35 +134,9 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
 	return 0;
 }
 
-gboolean
-lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
-{
-	if (!security_mech_id)
-		return FALSE;
-
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 || \
-		strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 || \
-		strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0)
-		return TRUE;
-
-	return FALSE;
-}
-
-gint
-lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile, LassoSamlAssertion *credential)
-{
-	LassoSoapHeader *header;
-	LassoWsseSecurity *security;
-	GList *iter;
-
-	security = lasso_wsse_security_new();
-	security->any = g_list_append(security->any, credential);
-	header = profile->soap_envelope_request->Header;
-	header->Other = g_list_append(header->Other, security);
-
-	return 0;
-}
-
+/*****************************************************************************/
+/* public methods                                                            */
+/*****************************************************************************/
 
 /**
  * lasso_wsf_profile_get_identity:
