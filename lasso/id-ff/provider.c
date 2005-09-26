@@ -342,6 +342,12 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+xmlSecKey*
+lasso_provider_get_public_key(LassoProvider *provider)
+{
+	return provider->private_data->public_key;
+}
+
 static void
 load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provider)
 {

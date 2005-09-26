@@ -40,6 +40,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
 LibertyConformanceLevel lasso_provider_compatibility_level(LassoProvider *provider);
 gboolean lasso_provider_load_public_key(LassoProvider *provider);
+xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
 
 
 #ifdef __cplusplus
