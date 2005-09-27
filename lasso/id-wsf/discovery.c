@@ -31,7 +31,6 @@
 #include <lasso/id-wsf/data_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 
-#include <lasso/id-wsf/discovery_private.h>
 #include <lasso/id-wsf/wsf_profile_private.h>
 
 struct _LassoDiscoveryPrivate
