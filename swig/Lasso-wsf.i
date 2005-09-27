@@ -277,7 +277,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processModifyMsg(const char *modify_msg);
+	int processModifyMsg(const char *modify_msg, const gchar *security_mech_id);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -619,7 +619,7 @@ typedef struct {
 	LassoDstModification *addModification(char *select);
 
 	THROW_ERROR
-	int processModifyMsg(char *soap_msg);
+	int processModifyMsg(char *soap_msg, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -706,9 +706,6 @@ typedef struct {
 #define LassoPersonalProfileService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(LASSO_DATA_SERVICE(self), select))
 #define LassoPersonalProfileService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(LASSO_DATA_SERVICE(self), itemId))
 #define LassoPersonalProfileService_initModify(self, select, xmlString) lasso_data_service_init_modify(LASSO_DATA_SERVICE(self), select, get_string_xml(xmlString))
-#define LassoPersonalProfileService_processModifyMsg lasso_data_service_process_modify_msg
-#define LassoPersonalProfileService_processModifyResponseMsg lasso_data_service_process_modify_response_msg
-
 
 /* Methods implementations */
 #define LassoPersonalProfileService_getEmail lasso_personal_profile_service_get_email
@@ -811,7 +808,7 @@ typedef struct {
 	LassoDstModification *addModification(char *select);
 
 	THROW_ERROR
-	int processModifyMsg(char *soap_msg);
+	int processModifyMsg(char *soap_msg, const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
@@ -1112,7 +1109,7 @@ typedef struct {
 	void buildSoapRequestMsg();
 	void buildSoapResponseMsg();
 	void initSoapRequest(LassoNode *request);
-	void processSoapRequestMsg(char *soapRequestMsg);
+	void processSoapRequestMsg(char *soapRequestMsg, char *security_mech_id = NULL);
 	void processSoapResponseMsg(char *soapResponseMsg);
 	LassoSoapBindingProvider *setProviderSoapRequest(const char *providerId);
 }
