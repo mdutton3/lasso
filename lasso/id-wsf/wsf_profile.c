@@ -24,6 +24,7 @@
 
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_modify.h>
+#include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/soap_binding_provider.h>
 #include <lasso/xml/wsse_security.h>
@@ -41,11 +42,18 @@ struct _LassoWsfProfilePrivate
 {
 	gboolean dispose_has_run;
 	char *security_mech_id;
+	LassoSoapFault *fault;
 };
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
+
+LassoSoapFault*
+lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
+{
+	return profile->private_data->fault;
+}
 
 gboolean
 lasso_security_mech_id_is_x509_authentication(const gchar *security_mech_id)
@@ -557,8 +565,10 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 {
 	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope = NULL;
+	LassoSoapFault *fault = NULL;
+	GList *iter;
 	gchar *messageId;
-	int res;
+	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
@@ -566,11 +576,17 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	profile->private_data->security_mech_id = g_strdup(security_mech_id);
 
 	xmlDoc *doc = xmlParseMemory(message, strlen(message));
+
+	/* If X509 authentication mecanism, then verify signature */
 	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE) {
-		int res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
-		if (res != 0)
-			return res;
+		res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
 	}
+	res = 101;
+	if (res != 0) {
+		fault = lasso_soap_fault_new();
+		fault->faultstring = "Invalid signature";
+	}
+
 	/* FIXME: Remove Signature element if exists, it seg fault when a call to
 			  lasso_node_new_from_xmlNode() */
 	{
@@ -583,17 +599,20 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	}
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
-
 	profile->soap_envelope_request = envelope;
-	profile->request = LASSO_NODE(envelope->Body->any->data); 
-
-	correlation = envelope->Header->Other->data;
+	profile->request = LASSO_NODE(envelope->Body->any->data);
+	correlation = LASSO_SOAP_BINDING_CORRELATION(envelope->Header->Other->data);
 	messageId = correlation->messageID;
 	envelope = lasso_wsf_profile_build_soap_envelope(messageId,
 		LASSO_PROVIDER(profile->server)->ProviderID);
 	LASSO_WSF_PROFILE(profile)->soap_envelope_response = envelope;
 
-	return 0;
+	if (fault) {
+		envelope->Body->any = g_list_append(envelope->Body->any, fault);
+		profile->private_data->fault = fault;
+	}
+		
+	return res;
 }
 
 gint
@@ -626,6 +645,12 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 
 	profile->soap_envelope_response = envelope;
+	
+	/* Soap Fault message */
+	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data) == TRUE)
+		return -1;
+	
+	/* Soap Body message */
 	profile->response = LASSO_NODE(envelope->Body->any->data);
 
 	return 0;
@@ -695,6 +720,8 @@ instance_init(LassoWsfProfile *profile)
 	
 	profile->private_data = g_new0(LassoWsfProfilePrivate, 1);
 	profile->private_data->dispose_has_run = FALSE;
+	profile->private_data->security_mech_id = NULL;
+	profile->private_data->fault = NULL;
 }
 
 static void

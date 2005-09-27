@@ -529,13 +529,15 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *messa
 	const gchar *security_mech_id)
 {
 	LassoDiscoModify *request;
+	int res = 0;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery),
-		message, security_mech_id) < 0)
-		return -1;
+	res = lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message,
+		security_mech_id);
+	if (res != 0)
+		return res;
 
 	request = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
@@ -570,6 +572,10 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	GList *iter;
 	gboolean failure = FALSE;
 	char *new_entry_ids = NULL, *t_new_entry_ids = NULL;
+
+	if (lasso_wsf_profile_get_fault(LASSO_WSF_PROFILE(discovery))) {
+		return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
+	}
 
 	/* build response */
 	status = lasso_utility_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
@@ -721,9 +727,13 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 
 	GList *offerings = NULL;
 	GList *iter, *iter2, *iter3, *iter4;
-	int res;
+	int res = 0;
 	
 	gchar *credentialRef;
+
+	if (lasso_wsf_profile_get_fault(LASSO_WSF_PROFILE(discovery))) {
+		return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
+	}
 
 	iter = request->RequestedServiceType;
 	while (iter) {
@@ -765,11 +775,9 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 		}
 	}
 
-	res = lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
-	if (res < 0)
-		return res;
+	//res = lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
 	
-	return 0;
+	return res;
 }
 
 /**
