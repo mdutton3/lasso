@@ -67,6 +67,7 @@ WSF_C_FILES = \
 	soap_binding_ext_service_instance_update.c \
 	soap_binding_ext_timeout.c \
 	soap_body.c \
+	soap_fault.c \
 	soap_envelope.c \
 	soap_header.c \
 	utility_status.c \
@@ -130,6 +131,7 @@ WSF_H_FILES = \
 	soap_binding_ext_service_instance_update.h \
 	soap_binding_ext_timeout.h \
 	soap_body.h \
+	soap_fault.h \
 	soap_envelope.h \
 	soap_header.h \
 	utility_status.h \
