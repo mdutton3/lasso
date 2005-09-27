@@ -8,8 +8,8 @@ lasso_la_SOURCES = lasso_wrap.c
 
 php_extensiondir = ${prefix}@PHP_UNPREFIXED_EXTENSION_DIR@
 
-lasso_wrap.c php_lasso.h lasso.php: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
-		$(top_srcdir)/swig/inheritance.h
+SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
+lasso_wrap.c php_lasso.h lasso.php: $(SWIG_I_FILES)
 	$(SWIG) -v -php4 -module lasso -o lasso_wrap.c -dlname lasso $(top_srcdir)/swig/Lasso.i
 	cp lasso_wrap.c lasso_wrap.c.bak
 	$(PYTHON) $(srcdir)/patch_swig_output.py < lasso_wrap.c.bak > lasso_wrap.c

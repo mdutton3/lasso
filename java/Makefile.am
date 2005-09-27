@@ -117,9 +117,8 @@ EXTRA_DIST = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 CLEANFILES = $(JAVA_CRUFT)
 MAINTAINERCLEANFILES = $(SWIG_OUTPUTS) $(SWIG_WSF_OUTPUTS)
 
-
-lasso_wrap.c lasso.java: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
-		$(top_srcdir)/swig/inheritance.h
+SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
+lasso_wrap.c lasso.java: $(SWIG_I_FILES)
 	$(SWIG) -v -java -module lasso -package com.entrouvert.lasso -o lasso_wrap.c \
 		$(top_srcdir)/swig/Lasso.i
 	cp lasso_wrap.c lasso_wrap.c.bak

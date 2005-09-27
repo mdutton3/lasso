@@ -14,8 +14,8 @@ PERL_CRUFT=pm_to_blib lasso.bs lasso_wrap.o $(PERL_MAKEFILE).old
 fakedir=$(prefix)
 fake_DATA=build-perl-stamp
 
-lasso_wrap.c lasso.pm: $(top_srcdir)/swig/Lasso.i $(top_srcdir)/swig/Lasso-wsf.i \
-		$(top_srcdir)/swig/inheritance.h
+SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
+lasso_wrap.c lasso.pm: $(SWIG_I_FILES)
 	$(SWIG) -v -perl5 -module lasso -o lasso_wrap.c $(top_srcdir)/swig/Lasso.i
 
 $(PERL_MAKEFILE): lasso.pm
