@@ -21,7 +21,7 @@ The Single Sign On process allows a user to log in once to an identity provider
 of the same user within a circle of trust to a unique IP is called "Identity
 Federation".  The liberty Alliance specifications allows, thanks to this
 federation, strong and unique authentication coupled with control by the user
-of his personnal informations. The explicit user agreement is necessary before
+of his personal informations. The explicit user agreement is necessary before
 proceeding to Identity Federation.
 
 The different SPs can't communicate directly together about users informations.
