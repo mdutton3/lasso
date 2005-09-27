@@ -112,7 +112,7 @@ LASSO_EXPORT LassoDstModification* lasso_data_service_add_modification(
 	LassoDataService *service, const gchar *select);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *service,
-	const gchar *soap_msg);
+	const gchar *soap_msg, const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 		const gchar *soap_msg);

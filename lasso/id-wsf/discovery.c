@@ -31,10 +31,14 @@
 #include <lasso/id-wsf/data_service.h>
 #include <lasso/id-wsf/personal_profile_service.h>
 
+#include <lasso/id-wsf/discovery_private.h>
+#include <lasso/id-wsf/wsf_profile_private.h>
+
 struct _LassoDiscoveryPrivate
 {
 	gboolean dispose_has_run;
 	GList *new_entry_ids;
+	char *security_mech_id;
 };
 
 /*****************************************************************************/
@@ -412,6 +416,10 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
 	} /* XXX: else, description->WsdlURLI, get endpoint automatically */
 
+	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE)
+		lasso_wsf_profile_set_security_mech_id(LASSO_WSF_PROFILE(discovery),
+			security_mech_id);
+
 	return 0;
 }
 
@@ -499,6 +507,10 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
 	} /* XXX: else, description->WsdlURLK, get endpoint automatically */
 
+	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE)
+		lasso_wsf_profile_set_security_mech_id(LASSO_WSF_PROFILE(discovery),
+			security_mech_id);
+
 	return 0;
 }
 
@@ -514,14 +526,17 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *message)
+lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *message,
+	const gchar *security_mech_id)
 {
 	LassoDiscoModify *request;
 
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message);
+	if (lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery),
+		message, security_mech_id) < 0)
+		return -1;
 
 	request = LASSO_DISCO_MODIFY(LASSO_WSF_PROFILE(discovery)->request);
 
@@ -666,7 +681,8 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 	g_return_val_if_fail(LASSO_IS_DISCOVERY(discovery), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message);
+	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery),
+		message, security_mech_id);
 
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
@@ -738,11 +754,12 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 			iter3 = description->SecurityMechID;
 			while (iter3) {
 				if (lasso_security_mech_id_is_saml_authentication(
-						iter3->data) == TRUE)
-					credentialRef = lasso_discovery_build_credential(
-						discovery, NULL);
-					description->CredentialRef = g_list_append(
-						description->CredentialRef, credentialRef);
+					iter3->data) == TRUE) {
+						credentialRef = lasso_discovery_build_credential(
+							discovery, NULL);
+						description->CredentialRef = g_list_append(
+							description->CredentialRef, credentialRef);
+				}
 				iter3 = g_list_next(iter3);
 			}
 			iter2 = g_list_next(iter2);

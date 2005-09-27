@@ -224,7 +224,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	int rc;
 
 	profile = LASSO_WSF_PROFILE(service);
-	rc = lasso_wsf_profile_process_soap_request_msg(profile, message);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, message, security_mech_id);
 	if (rc) {
 		return rc;
 	}
@@ -486,8 +486,7 @@ lasso_data_service_process_query_response_msg(LassoDataService *service,
 	int rc;
 	LassoDstQueryResponse *response;
 
-	rc = lasso_wsf_profile_process_soap_response_msg(
-		LASSO_WSF_PROFILE(service), message);
+	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(service), message);
 	if (rc) return rc;
 
 	if (! LASSO_IS_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response))
@@ -563,14 +562,14 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 
 gint
 lasso_data_service_process_modify_msg(LassoDataService *service,
-	const gchar *modify_soap_msg)
+	const gchar *modify_soap_msg, const gchar *security_mech_id)
 {
 	LassoDstModify *modify;
 	LassoWsfProfile *profile;
 	int rc;
 
 	profile = LASSO_WSF_PROFILE(service);
-	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg, security_mech_id);
 	if (rc) {
 		return rc;
 	}
@@ -587,8 +586,7 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 	return 0;}
 
 gint
-lasso_data_service_process_modify_response_msg(LassoDataService *service,
-	const gchar *soap_msg)
+lasso_data_service_process_modify_response_msg(LassoDataService *service, const gchar *soap_msg)
 {
 	LassoDstModifyResponse *response;
 	LassoSoapEnvelope *envelope;
