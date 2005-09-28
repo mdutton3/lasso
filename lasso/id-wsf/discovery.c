@@ -109,7 +109,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
  * @resourceOffering: a LassoDiscoResourceOffering
  * @description: a LassoDiscoDescription
  * 
- * Generic static method used by lasso_discovery_init_modify() and lasso_discovery_init_query() 
+ * Generic static method used by lasso_discovery_init_modify() and
+ * lasso_discovery_init_query() 
  * 
  * Return value: 0 on success and a negative value if an error occurs.
  **/
@@ -554,8 +555,8 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *messa
  * lasso_discovery_build_modify_response_msg:
  * @discovery: a #LassoDiscovery
  *
- * Builds a disco:ModifyResponse message; answer to the disco:Modify passed to
- * lasso_discovery_process_modify_msg().  It inserts and removed
+ * Builds a disco:ModifyResponse message; answer to the disco:Modify passed
+ * to lasso_discovery_process_modify_msg().  It inserts and removed
  * ResourceOfferings from identity; it must be saved afterwards.
  *
  * Sets @msg_body to the SOAP answer.
@@ -915,8 +916,8 @@ lasso_discovery_get_service_with_providerId(LassoDiscovery *discovery, const cha
  *
  * After a disco:query message, creates a GList object of #LassoDataService.
  *
- * Return value: a newly created GList object of #LassoDataService; or NULL if an
- *     error occured.
+ * Return value: a newly created GList object of #LassoDataService;
+ *     or NULL if an error occured.
  **/
 GList*
 lasso_discovery_get_services(LassoDiscovery *discovery)
