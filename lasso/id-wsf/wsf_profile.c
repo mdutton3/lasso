@@ -571,13 +571,14 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	GList *iter;
 	gchar *messageId;
 	int res = 0;
+	xmlDoc *doc;
 
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile->private_data->security_mech_id = g_strdup(security_mech_id);
 
-	xmlDoc *doc = xmlParseMemory(message, strlen(message));
+	doc = xmlParseMemory(message, strlen(message));
 
 	/* If X509 authentication mecanism, then verify signature */
 	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE) {
