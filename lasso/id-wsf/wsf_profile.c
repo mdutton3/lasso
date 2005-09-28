@@ -158,8 +158,10 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 
 	/* FIXME: X509 authentication needs X509 signature type */
-	/*key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
-	xmlSecTmplKeyInfoAddX509Data(key_info);*/
+	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
+		key_info = xmlSecTmplSignatureEnsureKeyInfo(signature, NULL);
+		xmlSecTmplKeyInfoAddX509Data(key_info);
+	}
 
 	/* Sign SOAP message */
 	sign_tmpl = xmlSecFindNode(security, xmlSecNodeSignature, xmlSecDSigNs);
@@ -217,7 +219,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 	if(node == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 
-	/*x509data = xmlSecFindNode(xmlnode, xmlSecNodeX509Data, xmlSecDSigNs);
+	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
 	if (x509data != NULL && provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				provider->ca_cert_chain);
@@ -225,7 +227,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
-	}*/
+	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
@@ -581,8 +583,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE) {
 		res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
 	}
-	res = 101;
-	if (res != 0) {
+	if (res > 0) {
 		fault = lasso_soap_fault_new();
 		fault->faultstring = "Invalid signature";
 	}
