@@ -776,7 +776,7 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 		}
 	}
 
-	//res = lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
+	res = lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
 	
 	return res;
 }
