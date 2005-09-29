@@ -6,6 +6,10 @@ INCLUDES = \
 	$(LASSO_CORE_CFLAGS) \
 	-DG_LOG_DOMAIN=\"lasso\"
 
+lasso_private_h_sources = \
+	data_service_private.h \
+	wsf_profile_private.h
+
 if WSF_ENABLED
 noinst_LTLIBRARIES = liblasso-id-wsf.la
 WSF_C_FILES = \
@@ -15,10 +19,6 @@ WSF_C_FILES = \
 	personal_profile_service.c \
 	data_service.c \
 	wsf_profile.c	
-
-lasso_private_h_sources = \
-	data_service_private.h \
-	wsf_profile_private.h
 
 WSF_H_FILES = \
 	authentication.h \
