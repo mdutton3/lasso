@@ -1,3 +1,14 @@
+lasso (0.6.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Frederic Peters <fpeters@debian.org>  Fri, 30 Sep 2005 00:23:03 +0200
+
+lasso (0.6.2-3) unstable; urgency=low
+
+  * debian/control: removed liblasso-cil package since the .net assembly
+    doesn't work (and don't even compile anymore) (closes: #320898)
+
 lasso (0.6.2-2) unstable; urgency=low
 
   * debian/rules: removed call to dh_makenetshlibs which is no longer shipped
