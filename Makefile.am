@@ -16,7 +16,7 @@ endif
 
 SUBDIRS		= lasso \
 		  swig \
-		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(CSHARP_SD) $(PERL_SD) \
+		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(PERL_SD) \
 		  tests \
 		  win32 \
 		  docs
