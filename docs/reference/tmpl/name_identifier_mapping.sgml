@@ -22,7 +22,6 @@ Name Identifier Mapping
 
 </para>
 
-@parent: 
 @targetNameIdentifier: 
 
 <!-- ##### FUNCTION lasso_name_identifier_mapping_new ##### -->

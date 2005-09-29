@@ -51,6 +51,11 @@ principal_name = lasso_data_service_get_answer(service, "/pp:PP/pp:InformalName"
 
 </para>
 
+@resource_id: 
+@encrypted_resource_id: 
+@resource_data: 
+@provider_id: 
+@abstract_description: 
 
 <!-- ##### FUNCTION lasso_data_service_new ##### -->
 <para>
@@ -119,6 +124,16 @@ principal_name = lasso_data_service_get_answer(service, "/pp:PP/pp:InformalName"
 
 @service: 
 @select: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_data_service_get_answer_for_item_id ##### -->
+<para>
+
+</para>
+
+@service: 
+@item_id: 
 @Returns: 
 
 

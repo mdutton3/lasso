@@ -31,7 +31,8 @@ lasso_discovery_init_query(discovery);
 lasso_discovery_add_requested_service(discovery, LASSO_PP_HREF);
 lasso_discovery_build_request_msg(discovery);
 
-/* service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url
+/*
+ * service must perform SOAP call to LASSO_WSF_PROFILE(discovery)->msg_url
  * the SOAP message is LASSO_WSF_PROFILE(discovery)->msg_body.  The answer
  * is stored in char* soap_answer;
  */
@@ -54,7 +55,6 @@ service = lasso_discovery_get_service(discovery);
 
 </para>
 
-@parent: 
 @resource_id: 
 @encrypted_resource_id: 
 
@@ -114,6 +114,15 @@ service = lasso_discovery_get_service(discovery);
 
 @discovery: 
 @service_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_discovery_get_services ##### -->
+<para>
+
+</para>
+
+@discovery: 
 @Returns: 
 
 
