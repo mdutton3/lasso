@@ -817,7 +817,7 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
  * After a disco:query message, creates a #LassoDataService instance for the
  * requested @service_type.
  *
- * Return value: a newly created #LAssoDataService object; or NULL if an
+ * Return value: a newly created #LassoDataService object; or NULL if an
  *     error occured.
  **/
 LassoDataService*
