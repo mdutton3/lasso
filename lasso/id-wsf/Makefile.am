@@ -17,7 +17,8 @@ WSF_C_FILES = \
 	wsf_profile.c	
 
 lasso_private_h_sources = \
-	data_service_private.h
+	data_service_private.h \
+	wsf_profile_private.h
 
 WSF_H_FILES = \
 	authentication.h \
