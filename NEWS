@@ -1,6 +1,17 @@
 NEWS
 ====
 
+0.6.3 - September 30th 2005
+---------------------------
+
+Improved behaviour when confronted to other Liberty providers that do not
+implement all the mandatory Liberty requirements, improved error status code
+reporting, completed support for public keys embedded in metadata files, fixed
+a few corner case bugs.  Also continued work on ID-WSF support, implementing
+Discovery and DST services but still considered experimental and disabled by
+default.
+	  
+
 0.6.2 - May 26th 2005
 ---------------------
 

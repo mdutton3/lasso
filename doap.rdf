@@ -23,7 +23,6 @@
     <programming-language>Java</programming-language>
     <programming-language>PHP</programming-language>
     <programming-language>Perl</programming-language>
-    <programming-language>C#</programming-language>
     <license rdf:resource="http://usefulinc.com/doap/licenses/gpl"/>
     <download-page rdf:resource="http://lasso.entrouvert.org/download/"/>
     <maintainer>
@@ -52,6 +51,10 @@
       </CVSRepository>
     </repository>
     <release>
+      <Version>
+        <created>2005-09-30</created>
+        <revision>0.6.3</revision>
+      </Version>
       <Version>
         <created>2005-05-26</created>
         <revision>0.6.2</revision>
