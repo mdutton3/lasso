@@ -1,3 +1,842 @@
+2005-09-30  fpeters
+
+	* debian/changelog: new upstream release
+
+2005-09-30  fpeters
+
+	* NEWS, doap.rdf: updated news and doap.rdf with 0.6.3 release data
+
+2005-09-29  fpeters
+
+	* lasso/id-wsf/discovery.c: fixed typo in docstring
+
+2005-09-29  fpeters
+
+	* docs/reference/tmpl/data_service.sgml,
+	docs/reference/tmpl/discovery.sgml,
+	docs/reference/tmpl/name_identifier_mapping.sgml,
+	docs/reference/tmpl/name_registration.sgml: minor automated changes
+
+2005-09-29  fpeters
+
+	* Makefile.am: removed c# dir from distribution
+
+2005-09-28  fpeters
+
+	* swig/Lasso-wsf.i: security mech id is optional
+
+2005-09-28  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Fixed local variable declaration.
+
+2005-09-28  nclapies
+
+	* lasso/id-wsf/discovery.c: Uncomment
+	lasso_wsf_profile_build_soap_response_msg() in
+	lasso_discovery_build_response_msg().
+
+2005-09-28  fpeters
+
+	* lasso/id-wsf/discovery.c: 80 cols for docstrings
+
+2005-09-28  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Added x509 certificate file tests.
+
+2005-09-28  nclapies
+
+	* lasso/id-wsf/wsf_profile_private.h: Added private function
+	lasso_wsf_profile_get_fault().
+
+2005-09-27  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/wsf_profile.c: Added a
+	first support of soap binding Fault wsf response.
+
+2005-09-27  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/soap_fault.c,
+	lasso/xml/soap_fault.h: Added soap Fault element.
+
+2005-09-27  fpeters
+
+	* configure.ac: disabled mcs test and updated version to 0.6.3
+
+2005-09-27  fpeters
+
+	* java/Makefile.am, perl/Makefile.am, php/Makefile.am,
+	python/Makefile.am: swig files were split, dependencies needed to
+	be updated
+
+2005-09-27  fpeters
+
+	* docs/reference/tmpl/login.sgml: fixed spelling
+
+2005-09-27  fpeters
+
+	* lasso/extract_symbols.py, lasso/extract_types.py: acknowledge new
+	lasso_sec_ category, only used for wsf.
+
+2005-09-27  fpeters
+
+	* docs/lasso-book/liberty-architecture.rst: fixed typo
+
+2005-09-27  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/wsf_profile_private.h:
+	Added missing wsf_profile_private.h. fixed error while attempting
+	to include non existing private header discovery_private.h
+
+2005-09-27  nclapies
+
+	* swig/Lasso-wsf.i: Updated binding for new optional security
+	mecanism parameter.
+
+2005-09-27  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h: Discovery and
+	DataSerivice can pass X509 authentication mecanism if needed.
+
+2005-09-27  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h: Added
+	X509 authentication mecanism.
+
+2005-09-26  nclapies
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h: Added
+	private method lasso_provider_get_public_key() to get public key
+	info.
+
+2005-09-20  nclapies
+
+	* lasso/id-wsf/data_service_private.h: Added private method.
+
+2005-09-20  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Ordered methods.
+
+2005-09-20  nclapies
+
+	* lasso/id-wsf/data_service.h: lasso_data_service_add_credential()
+	is not a public method.
+
+2005-09-20  nclapies
+
+	* lasso/id-wsf/discovery.h: lasso_discovery_build_credential() is
+	not a plublic method.
+
+2005-09-20  nclapies
+
+	* lasso/id-wsf/discovery.c: lasso_discovery_build_credential() adds
+	AuthenticationStatemet element in Assertion.
+
+2005-09-19  nclapies
+
+	* lasso/id-wsf/data_service.c: Fixed code typing.
+
+2005-09-19  nclapies
+
+	* swig/Lasso-wsf.i: Added optional param security_mech_id for wsf
+	methods.
+
+2005-09-19  nclapies
+
+	* lasso/id-wsf/authentication.c, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/data_service.h, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, lasso/id-wsf/wsf_profile.c,
+	lasso/id-wsf/wsf_profile.h: First attempt to implement
+	authentication security mechanism. Only SAML is implemented and it
+	needs improvement.
+
+2005-09-19  nclapies
+
+	* lasso/xml/soap_body.c, lasso/xml/soap_body.h: Added id attribute
+	in Body element.
+
+2005-09-19  nclapies
+
+	* lasso/xml/disco_credentials.c: Fixed snippet definition of
+	Credentials object.
+
+2005-09-19  nclapies
+
+	* lasso/xml/Makefile.am: Added compilation of resource access
+	statement.
+
+2005-09-19  nclapies
+
+	* lasso/xml/strings.h: Added security namespace for resource access
+	statement.
+
+2005-09-19  nclapies
+
+	* lasso/xml/sec_resource_access_statement.c,
+	lasso/xml/sec_resource_access_statement.h: Added
+	ResourceAccessStatement element from wsf Security.
+
+2005-09-16  fpeters
+
+	* lasso/id-ff/identity.c, swig/Lasso.i: getOfferings without
+	parameters will return all of them
+
+2005-09-12  fpeters
+
+	* configure.ac: disabled c# support for the time being
+
+2005-09-12  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/lasso.types,
+	docs/reference/lasso.types.in: generation of lasso.types so it only
+	includes wsf classes if wsf is compiled in.
+
+2005-09-12  fpeters
+
+	* README.JAVA: updated java note
+
+2005-09-12  fpeters
+
+	* lasso/Makefile.am: erroneously disabled symbols.sym
+
+2005-09-11  fpeters
+
+	* docs/reference/lasso-sections.txt, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/data_service.h, lasso/xml/dst_modify.c,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_query.c,
+	lasso/xml/dst_query_response.c, lasso/xml/xml.c, swig/Lasso.i,
+	lasso/xml/xml.h: possibility to register new dst services.
+
+2005-09-10  fpeters
+
+	* lasso/id-wsf/data_service.c, lasso/xml/dst_query.c,
+	lasso/xml/dst_query.h, swig/Lasso-wsf.i: data_service_init_query
+	may be called without parameters.
+
+2005-09-07  nclapies
+
+	* lasso/id-wsf/data_service.c: lasso_data_service_get_answer() :
+	verify response->Data is not NULL before accessing it.
+
+2005-09-07  nclapies
+
+	* lasso/id-wsf/discovery.c:
+	lasso_discovery_get_resource_offering_auto() : verify
+	LASSO_WSF_PROFILE(discovery)->session is not NULL before looking
+	for a resource offering.
+
+2005-09-06  nclapies
+
+	* lasso/id-wsf/discovery.c: Fixed typing code error.
+
+2005-09-06  nclapies
+
+	* java/.cvsignore: Updated ignored java files.
+
+2005-09-06  nclapies
+
+	* swig/Lasso-wsf.i: Removed XmlNode binding in swig. Not used
+	anymore.
+
+2005-09-06  nclapies
+
+	* docs/reference/lasso-sections.txt, lasso/id-wsf/discovery.c:
+	Added lasso_discovery_get_services() method documentation
+
+2005-09-05  nclapies
+
+	* lasso/id-wsf/discovery.c: Missing attributes in the last commit.
+
+2005-09-05  nclapies
+
+	* lasso/id-wsf/data_service.h, swig/Lasso-wsf.i,
+	swig/inheritance.h: Added attributes provider_id and
+	abstract_description in lassoDataService.
+
+2005-09-05  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: Added method lasso_discovery_get_services() : it
+	returns a list of available services offering resource of
+	principal.
+
+2005-09-05  nclapies
+
+	* lasso/id-ff/identity.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/identity.h: Updated
+	lasso_discovery_build_modify_response_msg() : now it sets status
+	code to OK only if every remove entry are possible.
+
+2005-08-29  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: Added
+	lasso_discovery_get_service_with_providerId()..
+
+2005-08-29  nclapies
+
+	* swig/Lasso-wsf-disco.i, swig/Lasso-wsf-dst.i,
+	swig/Lasso-wsf-is.i, swig/Lasso-wsf-sa.i, swig/Lasso-wsf-soap.i,
+	swig/Lasso-wsf.i: Splitted existing Lasso-wsf.i in several files
+	for eache wsf namespace (disco, dst, sa, is, soap)
+
+2005-08-26  fpeters
+
+	* lasso/id-wsf/data_service.c: check the query response is of the
+	correct type
+
+2005-08-25  fpeters
+
+	* swig/Lasso-wsf.i: new modify things for LassoPersonalProfile
+
+2005-08-25  nclapies
+
+	* lasso/id-wsf/data_service.c: complete last commit.
+
+2005-08-25  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	swig/Lasso-wsf.i: Now an AP can process a Modify request and return
+	an updated data resource to application.
+
+2005-08-25  fpeters
+
+	* swig/Lasso-wsf.i: added getAnswerForItemId binding
+
+2005-08-25  fpeters
+
+	* lasso/xml/dst_modify.c, lasso/xml/dst_modify.h,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_modify_response.h,
+	lasso/xml/dst_query.h, lasso/xml/dst_query_response.h: restore
+	prefix and href for dst:Modify and dst:ModifyResponse
+
+2005-08-25  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: Updated
+	lasso_data_service_init_modify(). Now it takes a select (a String
+	type) and a String xml as parameters.
+
+2005-08-25  fpeters
+
+	* docs/reference/lasso-sections.txt: added
+	lasso_data_service_get_answer_for_item_id
+
+2005-08-25  fpeters
+
+	* lasso/id-wsf/data_service.h: added missing ;
+
+2005-08-25  fpeters
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h: added
+	lasso_data_service_get_answer_for_item_id
+
+2005-08-25  fpeters
+
+	* lasso/id-wsf/data_service.h, lasso/id-wsf/discovery.h: marks
+	public structure memebers in LassoDiscovery and LassoDataService
+
+2005-08-25  fpeters
+
+	* docs/reference/tmpl/data_service.sgml: continuing on disco
+	example, use the service to retrieve principal name.
+
+2005-08-25  fpeters
+
+	* lasso/id-wsf/data_service.c: explicit cases where item_id may be
+	NULL.
+
+2005-08-25  nclapies
+
+	* java/Makefile.am: Replaced ProfileService.java by
+	DataService.java
+
+2005-08-25  fpeters
+
+	* lasso/id-wsf/data_service.c: add_query_item must checks the query
+	has been created.
+
+2005-08-25  fpeters
+
+	* swig/Lasso.i: Do not use SWIG_UnknownError but SWIG_RuntimeError
+	so it is translated to a catchable exception in Java.  Use
+	SWIG_ValueError for value errors (things like invalid args)
+
+2005-08-25  fpeters
+
+	* python/tests/profiles_tests.py: it is no longer possible to add
+	providers with unknown public keys
+
+2005-08-25  fpeters
+
+	* lasso/id-ff/defederation.h: moved private_data erroneously placed
+	in class to object; this breaks ABI for classes inheriting from
+	LassoDeferation; nobody does that, ignoring.
+
+2005-08-25  fpeters
+
+	* swig/Lasso-wsf.i: last bit of LassoProfileService got renamed
+
+2005-08-25  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/tmpl/data_service.sgml,
+	docs/reference/tmpl/defederation.sgml,
+	docs/reference/tmpl/federation.sgml,
+	docs/reference/tmpl/identity.sgml,
+	docs/reference/tmpl/lib_authn_request.sgml,
+	docs/reference/tmpl/login.sgml, docs/reference/tmpl/logout.sgml,
+	docs/reference/tmpl/name_identifier_mapping.sgml,
+	docs/reference/tmpl/name_registration.sgml,
+	docs/reference/tmpl/node.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/provider.sgml,
+	docs/reference/tmpl/saml_name_identifier.sgml,
+	docs/reference/tmpl/server.sgml, docs/reference/tmpl/session.sgml,
+	docs/reference/tmpl/strings.sgml, lasso/Makefile.am,
+	lasso/id-ff/providerprivate.h, lasso/id-wsf/Makefile.am,
+	lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	lasso/id-wsf/data_service_private.h, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	lasso/id-wsf/profile_service_private.h, swig/Lasso-wsf.i: renamed
+	ProfileService to DataService
+
+2005-08-25  fpeters
+
+	* lasso/id-ff/provider.c: include xmlsec errors.h header to get
+	function declaration; a return in the middle of load_public_key got
+	a FALSE argument.
+
+2005-08-24  fpeters
+
+	* docs/reference/tmpl/discovery.sgml: documentation for discovery
+
+2005-08-24  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/server.c: don't output xmlsec
+	errors when trying to get a working public key but fails with a
+	message if it can't find a key.
+
+2005-08-24  fpeters
+
+	* docs/reference/lasso-sections.txt: doc for discovery and
+	profile_service
+
+2005-08-24  nclapies
+
+	* swig/Lasso-wsf.i: Updated swig binding for latest id-wsf udpates.
+
+2005-08-24  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c: Removed
+	lasso_personal_profile_service_init_modify().
+
+2005-08-24  nclapies
+
+	* lasso/id-wsf/profile_service.c: Removed prefix and href in
+	lasso_profile_service_init_modify,
+	lasso_profile_service_process_modify_msg,
+	lasso_profile_service_process_response_msg,
+	lasso_profile_service_validate_modify
+
+2005-08-24  fpeters
+
+	* lasso/id-ff/logout.c: don't check for remote provider id before
+	checking for possible empty answer.
+
+2005-08-24  nclapies
+
+	* lasso/id-wsf/profile_service.h: Removed prefix and href in
+	lasso_profile_service_init_modify,
+	lasso_profile_service_process_modify_msg
+	lasso_profile_service_process_response_msg,
+	lasso_profile_service_validate_modify
+
+2005-08-24  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h: Removed
+	lasso_discovery_new_from_dump, lasso_discovery_dump,
+	lasso_discovery_add_resource_offering,
+	lasso_discovery_init_query_full
+
+2005-08-24  fpeters
+
+	* lasso/id-ff/server.h: sync arg name in header file with real arg
+	names
+
+2005-08-24  fpeters
+
+	* lasso/id-wsf/profile_service.c: documented api
+
+2005-08-24  fpeters
+
+	* lasso/id-wsf/discovery.c: documented all discovery functions used
+	by authentic / candle / unwind
+
+2005-08-24  fpeters
+
+	* lasso/id-wsf/discovery.h: fixed add_requested_service_type
+	declaration to match code
+
+2005-08-19  fpeters
+
+	* lasso/id-ff/provider.c: tries various key format before giving up
+
+2005-08-16  fpeters
+
+	* lasso/id-ff/logout.c: build_response_msg called while there was
+	no connection will build a failure message.
+
+2005-08-16  fpeters
+
+	* lasso/id-ff/logout.c: check for remote_provider_id
+
+2005-08-14  fpeters
+
+	* lasso/id-wsf/discovery.c: reference correct identity header
+
+2005-08-14  fpeters
+
+	* lasso/id-ff/logout.c, lasso/id-ff/session.c,
+	lasso/id-ff/sessionprivate.h: reinitialize assertion provider id
+	list only on reset_provider_id_index
+
+2005-08-14  fpeters
+
+	* lasso/id-ff/logout.c: counter providers that do not support any
+	single logout; they are now skipped and a correct response is
+	nevertheless sent to the originating provider
+
+2005-08-14  fpeters
+
+	* lasso/id-ff/session.c: correctly reset list before rebuilding it
+
+2005-08-13  fpeters
+
+	* lasso/id-ff/logout.c: fixed comment
+
+2005-08-13  fpeters
+
+	* lasso/id-wsf/identity.h: functions got moved from id-ff/ to
+	id-wsf/
+
+2005-08-13  fpeters
+
+	* lasso/id-ff/identityprivate.h: identity/resourceoffering
+	functions are now declared publically in id-wsf/
+
+2005-08-13  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-wsf/Makefile.am, swig/Lasso.i:
+	expose identity/resourceoffering functions to developer
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/profile_service_private.h: private profile service
+	functions
+
+2005-08-12  fpeters
+
+	* swig/Lasso-wsf.i: following-up on PersonalProfileService
+	cleaning; but I can't get getService to dynamically cast to that
+	class :(
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/discovery.c: return LassoPersonalProfileService from
+	disco->getService if appropriate
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: cleaned up
+	PersonalProfileService
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h:
+	cleaning and documenting profile service
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	lasso/xml/dst_query_item.c, lasso/xml/dst_query_item.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: fixed
+	lasso_profile_service_add_query_item so it accepts a item_id
+	parameter (since they are mandatory once there is more than one).
+	also allows init_query to specify item_id.  this gives:
+
+	service = disco.getService()
+	service.initQuery('/pp:PP/pp:CommonName'), 'name')
+	service.addQueryItem('/pp:PP/pp:MsgContact'), 'email') soap_answer
+	= liberty.root.soap_call(service.msgUrl, service.msgBody) print
+	service.getAnswer('/pp:PP/pp:CommonName') print
+	service.getAnswer('/pp:PP/pp:MsgContact')
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/discovery.c,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	lasso/xml/dst_query.c, lasso/xml/dst_query_response.c,
+	lasso/xml/xml.c, swig/Lasso-wsf.i: API after the pp:query has been
+	sent,
+
+	server:   service = lasso.ProfileService(server)
+	service.processQueryMsg(soap_message)	identity =
+	get_identity_by_resource_id(service.request.resourceId)
+	service.resourceData = identity.get_pp_view()
+	service.buildResponseMsg()   return service.msgBody
+
+	client:   service.processQueryResponseMsg(soap_answer)
+	service.getAnswer()   # or
+	service.getAnswer('/pp:PP/pp:CommonName')
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/discovery.c,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i, swig/Lasso.i: idwsf/pp on the attribute provider
+	side; sth like
+
+	service = lasso.ProfileService(server)
+	service.processQueryMsg(soap_message) identity =
+	get_from(service.request.resourceId) service.resourceData =
+	identity.convert_to_pp_xml()
+
+2005-08-12  fpeters
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i: first steps towards id-wsf/dst; something like
+	this, in Python:
+
+	service = disco.getService()
+	service.initQuery('/pp:PP/pp:CommonName') service.buildRequestMsg()
+	 -> service.msgUrl and .msgBody
+
+2005-08-12  fpeters
+
+	* lasso/errors.c, lasso/errors.h, swig/Lasso.i: added
+	LASSO_ERROR_UNIMPLEMENTED error code
+
+2005-08-12  fpeters
+
+	* lasso/xml/disco_query_response.c: disco:queryResponse missed
+	namespace definition
+
+2005-08-10  fpeters
+
+	* debian/control, debian/rules: disabled c# in debian apckage
+
+2005-08-10  fpeters
+
+	* lasso/errors.c, lasso/errors.h, lasso/id-ff/login.c,
+	swig/Lasso.i: return LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL after
+	unsuccessful logon
+
+2005-08-09  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/identityprivate.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: another id-wsf step, disco:query, looking up for
+	resource offerings in identity
+
+2005-08-09  fpeters
+
+	* lasso/id-ff/logout.c: handle the case where logout request is
+	done while there are no session; that means direct call to
+	build_response_msg, creating a status: requestdenied.
+
+2005-08-09  fpeters
+
+	* lasso/id-wsf/discovery.c: disco.processQueryMsg now sets
+	disco.resourceId
+
+2005-08-09  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, swig/Lasso-wsf.i: new remove entry;
+	correctly restore resource offerings from identity dump
+
+2005-08-09  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/identityprivate.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: renamed crunch to build since it doesn't look
+	like there is a need for an intermediate function for the moment.
+	process remove entries.  create correct answer (when everything
+	goes ok, no support for failure yet)
+
+2005-08-08  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/identityprivate.h,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: lasso_discovery_crunch_modify_msg() (waiting for
+	another name) process disco modify insertEntries and adds them to
+	active identity
+
+2005-08-08  fpeters
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: sets ResourceId (or EncryptedResourceId) in
+	LassoDiscovery object for easy usage
+
+2005-08-08  fpeters
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	swig/Lasso-wsf.i: provide resource_offering as argument to not
+	diverge too much from existing work
+
+2005-08-08  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, swig/Lasso-wsf.i: first function towards
+	easy disco api
+
+2005-08-08  fpeters
+
+	* lasso/id-ff/session.c: get_assertions() called with NULL will
+	return every assertions
+
+2005-08-08  fpeters
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h,
+	swig/Lasso-wsf.i: added session and identity to LassoWsfProfile,
+	much like LassoProfile.  Exposed them via SWIG inherited into
+	LassoDiscovery object
+
+2005-08-05  nclapies
+
+	* lasso/xml/soap_binding_ext_timeout.c: Fixed setting of attribute,
+	int not NULL pointer.
+
+2005-08-05  nclapies
+
+	* lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i: Added getXmlNode() method to LassoProfileService
+	class.
+
+2005-08-05  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h: Added getEmail() method in
+	LassoPersonalProfile class.
+
+2005-08-05  nclapies
+
+	* swig/Lasso-wsf.i: Fixed som warning about char signedness. Added
+	swig binding to getEmail() method in LassoPersonalProfile.
+
+2005-08-05  nclapies
+
+	* lasso/id-wsf/Makefile.am,
+	lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/personal_profile_service.h,
+	lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i: Added class LassoPersonalProfile. It allows to
+	load a xml doc representing PP data and to process query requests.
+	Need to complete WSC PP part.
+
+2005-08-04  fpeters
+
+	* swig/Lasso.i: fixed typo in error constant name
+
+2005-07-31  fpeters
+
+	* lasso/id-ff/federation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/xml/disco_modify_response.c,
+	lasso/xml/disco_query_response.c, lasso/xml/dst_modify.c,
+	lasso/xml/dst_modify_response.c, lasso/xml/dst_query.c,
+	lasso/xml/dst_query_response.c,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/sa_sasl_response.c, lasso/xml/saml_assertion.c,
+	lasso/xml/samlp_response.c, lasso/xml/xml.c: char signedness for
+	gcc 4 (id-wsf part has not been done)
+
+2005-07-08  fpeters
+
+	* lasso/xml/private.h: signedness change to lasso_query_sign (does
+	not break API/ABI)
+
+2005-07-08  nclapies
+
+	* lasso/id-wsf/profile_service.c, lasso/id-wsf/profile_service.h,
+	swig/Lasso-wsf.i: Now lasso_profile_service_add_data() returns a
+	LassoDstData object, so it is possible to set optional attributes.
+
+2005-07-07  fpeters
+
+	* lasso/xml/tools.c: fixed signedness differences signaled by gcc
+	4.0 (lots of others yet to do)
+
+2005-07-07  nclapies
+
+	* lasso/id-wsf/profile_service.c: Use
+	lasso_wsf_profile_process_soap_request_msg() to build soap response
+	messgae.
+
+2005-07-07  nclapies
+
+	* lasso/id-wsf/profile_service.h: Removed unused declared method
+	name :	lasso_profile_service_build_request_msg().
+
+2005-07-07  nclapies
+
+	* swig/Lasso-wsf.i: Fixed swig binding on ProfileService's
+	buildResponseMsg().
+
+2005-06-27  nclapies
+
+	* lasso/id-ff/session.c: Fixed mistake about prototype of
+	lasso_session_dump().
+
+2005-06-27  nclapies
+
+	* lasso/id-ff/identity.c, lasso/id-ff/session.c: Now
+	lasso_identity_new_from_dump() and lasso_session_new_from_dump()
+	return NULL if the root element name is wrong.
+
+2005-06-15  eraviart
+
+	* python/Makefile.am: Removed now useless sed script (now done by
+	Swig).
+
+2005-06-15  eraviart
+
+	* swig/Lasso.i: In Swig, Use g_free instead of free for strings, to
+	avoid segfault when used in Java Windows.
+
+2005-06-03  fpeters
+
+	* lasso/id-ff/defederation.c: checks identity exists before
+	referencing it
+
+2005-06-03  fpeters
+
+	* debian/changelog, debian/control, debian/rules: updated debian
+	packaging wrt new cli policy
+
+2005-06-02  fpeters
+
+	* debian/rules: new mono packages no longer have this tool
+
+2005-05-30  fpeters
+
+	* swig/Lasso.i: Give LassoServer access to
+	(LassoProvider)self->role
+
+2005-05-26  fpeters
+
+	* ChangeLog: update ChangeLog for 0.6.2
+
 2005-05-26  fpeters
 
 	* docs/reference/tmpl/login.sgml, docs/reference/tmpl/profile.sgml,
