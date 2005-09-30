@@ -127,9 +127,14 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	LassoSignatureMethod sign_method)
 {
 	xmlNode *envelope_node, *signature = NULL, *sign_tmpl, *reference, *key_info, *t;
-	xmlNode *header, *correlation = NULL, *security = NULL, *body = NULL;
+	xmlNode *header = NULL, *provider = NULL, *correlation = NULL, *security = NULL;
+	xmlNode *body = NULL;
 	xmlSecDSigCtx *dsigCtx;
 	xmlDoc *doc;
+	xmlChar *id;
+	char *uri;
+	
+	xmlAttr *id_attr;
 
 	LassoSignatureType sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 
@@ -156,6 +161,8 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	while (t) {
 		if (strcmp((char *) t->name, "Correlation") == 0)
 			correlation = t;
+		else if (strcmp((char *) t->name, "Provider") == 0)
+			provider = t;
 		else if (strcmp((char *) t->name, "Security") == 0)
 			security = t;
 		t = t->next;
@@ -178,17 +185,41 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	
 	xmlAddChild(security, signature);
 
-	/* FIXME: add real reference on SOAP elements */
-	/*id = G_STRUCT_MEMBER(char*, node, snippet_signature->offset);
+	/* Add reference of child element */
+	/* Correlation */
+	id = xmlGetProp(correlation, (xmlChar *) "id");
 	uri = g_strdup_printf("#%s", id);
-	reference = xmlSecTmplSignatureAddReference(signature,
-		xmlSecTransformSha1Id, NULL, (xmlChar*)uri, NULL);
-	g_free(uri);*/
-
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
-		NULL, NULL, NULL);
+						    NULL, (xmlChar *)uri, NULL);
+	xmlFree(uri);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
+	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
+	xmlFree(id);
+
+	/* Body */
+	id = xmlGetProp(body, (xmlChar *) "id");
+	uri = g_strdup_printf("#%s", id);
+	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
+						    NULL, (xmlChar *)uri, NULL);
+	xmlFree(uri);
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+	id_attr = xmlHasProp(body, (xmlChar *)"id");
+	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
+	xmlFree(id);
+
+	/* Provider */
+	if (provider) {
+		uri = g_strdup_printf("#%s", xmlGetProp(provider, (xmlChar *) "id"));
+		reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
+							    NULL, (xmlChar*)uri, NULL);
+		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
+		xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
+		id_attr = xmlHasProp(provider, (xmlChar *)"id");
+		xmlAddID(NULL, doc, xmlGetProp(provider, (xmlChar *) "id"), id_attr);
+	}
 
 	/* FIXME: X509 authentication needs X509 signature type */
 	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
@@ -227,10 +258,12 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 gint
 lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *doc)
 {
-	LassoProvider *provider;
-	char *providerID = NULL;
+	LassoProvider *lasso_provider;
 
-	xmlNode *provider_node, *security, *signature, *x509data, *node;
+	xmlNode *provider, *correlation, *security, *body, *signature, *x509data, *node;
+	xmlChar *id;
+	xmlAttr *id_attr;
+
 	xmlSecKeysMngr *keys_mngr = NULL;
 	xmlSecDSigCtx *dsigCtx;
 
@@ -239,23 +272,59 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 
 	xpathCtx = xmlXPathNewContext(doc);
 
+	/* Correlation */
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//sb:Correlation", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		correlation = xpathObj->nodesetval->nodeTab[0];
+	}
+	if (!correlation)
+		return -1;
+	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
+	id = xmlGetProp(correlation, (xmlChar *) "id");
+	xmlAddID(NULL, doc, id, id_attr);
+	xmlFree(id);
+
+	/* Body */
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body", xpathCtx);
+	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		body = xpathObj->nodesetval->nodeTab[0];
+	}
+	if (!body)
+		return -1;
+	id_attr = xmlHasProp(body, (xmlChar *)"id");
+	id = xmlGetProp(body, (xmlChar *) "id");
+	xmlAddID(NULL, doc, id, id_attr);
+	xmlFree(id);
+
 	/* <Provider> */
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//sb:Provider", xpathCtx);
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		provider_node = xpathObj->nodesetval->nodeTab[0];
+		provider = xpathObj->nodesetval->nodeTab[0];
 	}
-	providerID = (char *) xmlGetProp(provider_node, (xmlChar *) "providerID");
-	provider = lasso_server_get_provider(profile->server, providerID);
+	if (provider) {
+		char *providerID;
+		id_attr = xmlHasProp(provider, (xmlChar *)"id");
+		id = xmlGetProp(provider, (xmlChar *) "id");
+		xmlAddID(NULL, doc, id, id_attr);
+		xmlFree(id);
 
+		providerID = (char *) xmlGetProp(provider, (xmlChar *) "providerID");
+		lasso_provider = lasso_server_get_provider(profile->server, providerID);
+		xmlFree(providerID);
+	}
+
+	/* Verify signature */
 	node = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature, xmlSecDSigNs);
 	if(node == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 
 	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
-	if (x509data != NULL && provider->ca_cert_chain != NULL) {
+	if (x509data != NULL && lasso_provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
-				provider->ca_cert_chain);
+				lasso_provider->ca_cert_chain);
 		if (keys_mngr == NULL) {
 			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
@@ -264,7 +333,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
-		dsigCtx->signKey = lasso_provider_get_public_key(provider);
+		dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
 		if (dsigCtx->signKey == NULL) {
 			xmlSecDSigCtxDestroy(dsigCtx);
 			xmlFreeDoc(doc);
@@ -353,18 +422,20 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 	LassoSoapBindingCorrelation *correlation;
 	gchar *messageId, *timestamp;
 
-	/* set Body */
+	/* Body */
 	body = lasso_soap_body_new();
+	body->id = lasso_build_unique_id(32);
 	envelope = lasso_soap_envelope_new(body);
 
-	/* set Header */
+	/* Header */
 	header = lasso_soap_header_new();
 	envelope->Header = header;
 
-	/* set Correlation */
+	/* Correlation */
 	messageId = lasso_build_unique_id(32);
 	timestamp = lasso_get_current_time();
 	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+	correlation->id = lasso_build_unique_id(32);
 	if (refToMessageId != NULL)
 		correlation->refToMessageID = g_strdup(refToMessageId);
 	header->Other = g_list_append(header->Other, correlation);
@@ -372,6 +443,7 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 	/* Provider */
 	if (providerId) {
 		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
+		provider->id = lasso_build_unique_id(32);
 		header->Other = g_list_append(header->Other, provider);
 	}
 
