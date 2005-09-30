@@ -143,7 +143,7 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	doc = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc, envelope_node);
 
-	/* Get correlation, body and security elements */
+	/* Get Correlation, Provider, Security, Body elements */
 	t = envelope_node->children;
 	while (t) {
 		if (strcmp((char *) t->name, "Header") == 0)
@@ -185,8 +185,7 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	
 	xmlAddChild(security, signature);
 
-	/* Add reference of child element */
-	/* Correlation */
+	/* Correlation reference */
 	id = xmlGetProp(correlation, (xmlChar *) "id");
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
@@ -198,7 +197,7 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
 	xmlFree(id);
 
-	/* Body */
+	/* Body reference */
 	id = xmlGetProp(body, (xmlChar *) "id");
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
@@ -210,7 +209,7 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 	xmlAddID(NULL, doc, (xmlChar *)id, id_attr);
 	xmlFree(id);
 
-	/* Provider */
+	/* Provider reference */
 	if (provider) {
 		uri = g_strdup_printf("#%s", xmlGetProp(provider, (xmlChar *) "id"));
 		reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
