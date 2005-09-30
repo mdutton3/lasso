@@ -119,7 +119,7 @@ lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 
 void lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescription *description)
 {
-	profile->private_data->description = description;
+	profile->private_data->description = g_object_ref(description);
 }
 
 xmlNode*
