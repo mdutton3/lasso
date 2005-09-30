@@ -80,6 +80,30 @@ lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
 }
 
 gboolean
+lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
+{
+	GList *iter;
+	gchar *security_mech_id;
+
+	if (!profile->private_data->description)
+		return FALSE;
+
+	iter = profile->private_data->description->SecurityMechID;
+	while(iter) {
+		security_mech_id = iter->data;
+		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0 || \
+		    strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 || \
+		    strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0) {
+			    return TRUE;
+			    break;
+		}
+		iter = iter->next;
+	}
+
+	return FALSE;
+}
+
+gboolean
 lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 {
 	GList *iter;
