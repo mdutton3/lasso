@@ -386,7 +386,7 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 {
 	LassoDiscoModify *modify;
 	LassoDiscoResourceOffering *offering;
-	LassoDiscoDescription *description;
+	LassoDiscoDescription *description = NULL;
 
 	modify = lasso_disco_modify_new();
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(discovery), LASSO_NODE(modify));
@@ -399,10 +399,10 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	if (security_mech_id)
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	else
-		description = lasso_discovery_get_description_auto(offering,
-			LASSO_SECURITY_MECH_NULL);
+		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	if (!description)
-		return -1;
+	       return -1;
+	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
 	
 	/* XXX: EncryptedResourceID support */
 	modify->ResourceID = g_object_ref(offering->ResourceID);
@@ -415,10 +415,6 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
 	} /* XXX: else, description->WsdlURLI, get endpoint automatically */
-
-	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE)
-		lasso_wsf_profile_set_security_mech_id(LASSO_WSF_PROFILE(discovery),
-			security_mech_id);
 
 	return 0;
 }
@@ -486,16 +482,18 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
-	if (offering == NULL) {
+	if (offering == NULL)
 		return -1;
-	}
-	if (security_mech_id)
+
+	if (!security_mech_id)
+		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
+	else {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
-	else
-		description = lasso_discovery_get_description_auto(offering,
-			LASSO_SECURITY_MECH_NULL);
+	}
 	if (!description)
 		return -1;
+
+	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
 
 	/* XXX: EncryptedResourceID support */
 	query->ResourceID = g_object_ref(offering->ResourceID);
@@ -506,10 +504,6 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(discovery)->msg_url = g_strdup(description->Endpoint);
 	} /* XXX: else, description->WsdlURLK, get endpoint automatically */
-
-	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE)
-		lasso_wsf_profile_set_security_mech_id(LASSO_WSF_PROFILE(discovery),
-			security_mech_id);
 
 	return 0;
 }
@@ -536,7 +530,7 @@ lasso_discovery_process_modify_msg(LassoDiscovery *discovery, const gchar *messa
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	res = lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery), message,
-		security_mech_id);
+		LASSO_DISCO_HREF, security_mech_id);
 	if (res != 0)
 		return res;
 
@@ -688,7 +682,7 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	lasso_wsf_profile_process_soap_request_msg(LASSO_WSF_PROFILE(discovery),
-		message, security_mech_id);
+		message, LASSO_DISCO_HREF, security_mech_id);
 
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);

@@ -90,13 +90,11 @@ LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *prof
 LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
 LASSO_EXPORT gboolean lasso_wsf_profile_is_identity_dirty(LassoWsfProfile *profile);
 LASSO_EXPORT gboolean lasso_wsf_profile_is_session_dirty(LassoWsfProfile *profile);
-
 LASSO_EXPORT gint lasso_wsf_profile_set_identity_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
 LASSO_EXPORT gint lasso_wsf_profile_set_session_from_dump(LassoWsfProfile *profile,
 	const gchar *dump);
 
-/* FIXME: must be private method */
 LASSO_EXPORT LassoSoapEnvelope* lasso_wsf_profile_build_soap_envelope(const char *refToMessageId,
 	const char *providerId);
 
@@ -108,7 +106,7 @@ LASSO_EXPORT gint lasso_wsf_profile_init_soap_request(LassoWsfProfile *profile,
 	LassoNode *request);
 
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
-	const gchar *message, const gchar *security_mech_id);
+	const gchar *message, const gchar *service_type, const gchar *security_mech_id);
 
 LASSO_EXPORT gint lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile,
 	const gchar *message);

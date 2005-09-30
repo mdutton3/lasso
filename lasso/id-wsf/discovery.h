@@ -55,12 +55,6 @@ typedef struct _LassoDiscovery LassoDiscovery;
 typedef struct _LassoDiscoveryClass LassoDiscoveryClass;
 typedef struct _LassoDiscoveryPrivate LassoDiscoveryPrivate;
 
-/* typedef enum { */
-/* 	LASSO_DISCO_REQUEST_TYPE_MODIFY = 1, */
-/* 	LASSO_DISCO_REQUEST_TYPE_QUERY, */
-/* } LassoDiscoRequestType; */
-/* LASSO_EXPORT LassoRequestType
-      lasso_discovery_get_request_type_from_soap_msg(const gchar *soap); */
 
 struct _LassoDiscovery {
 	LassoWsfProfile parent;

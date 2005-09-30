@@ -32,8 +32,10 @@ extern "C" {
 
 #include <lasso/xml/soap_fault.h>
 
+void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
+				       LassoDiscoDescription *description);
 void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
-	const gchar *security_mech_id);
+					    const gchar *security_mech_id);
 LassoSoapFault* lasso_wsf_profile_get_fault(LassoWsfProfile *profile);
 
 #ifdef __cplusplus

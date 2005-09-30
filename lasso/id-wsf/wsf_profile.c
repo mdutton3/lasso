@@ -41,13 +41,37 @@
 struct _LassoWsfProfilePrivate
 {
 	gboolean dispose_has_run;
-	char *security_mech_id;
+	LassoDiscoDescription *description;
 	LassoSoapFault *fault;
 };
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
+
+LassoDiscoDescription*
+lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
+{
+	GList *iter, *iter2;
+	LassoDiscoDescription *description;
+
+	if (security_mech_id == NULL)
+		return NULL;
+
+	iter = si->Description;
+	while (iter) {
+		description = LASSO_DISCO_DESCRIPTION(iter->data);
+		iter2 = description->SecurityMechID;
+		while (iter2) {
+			if (strcmp(security_mech_id, iter->data) == 0)
+				return description;
+			iter2 = iter2->next;
+		}
+		iter = iter->next;
+	}
+
+	return NULL;
+}
 
 LassoSoapFault*
 lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
@@ -56,15 +80,25 @@ lasso_wsf_profile_get_fault(LassoWsfProfile *profile)
 }
 
 gboolean
-lasso_security_mech_id_is_x509_authentication(const gchar *security_mech_id)
+lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 {
-	if (!security_mech_id)
+	GList *iter;
+	gchar *security_mech_id;
+
+	if (!profile->private_data->description)
 		return FALSE;
 
-	if (strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0 || \
-		strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 || \
-		strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0)
-		return TRUE;
+	iter = profile->private_data->description->SecurityMechID;
+	while(iter) {
+		security_mech_id = iter->data;
+		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0 || \
+		    strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_X509) == 0 || \
+		    strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_X509) == 0) {
+			    return TRUE;
+			    break;
+		}
+		iter = iter->next;
+	}
 
 	return FALSE;
 }
@@ -83,10 +117,9 @@ lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id)
 	return FALSE;
 }
 
-void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
-	const gchar *security_mech_id)
+void lasso_wsf_profile_set_description(LassoWsfProfile *profile, LassoDiscoDescription *description)
 {
-	profile->private_data->security_mech_id = g_strdup(security_mech_id);
+	profile->private_data->description = description;
 }
 
 xmlNode*
@@ -253,7 +286,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 		xmlSecDSigCtxDestroy(dsigCtx);
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
-	fprintf(stdout, "Signature is OK\n");
+	printf("Signature is OK\n");
 
 	return 0;
 }
@@ -272,40 +305,6 @@ lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile,
 	header->Other = g_list_append(header->Other, security);
 
 	return 0;
-}
-
-LassoSoapEnvelope*
-lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
-{
-	LassoSoapEnvelope *envelope;
-	LassoSoapHeader *header;
-	LassoSoapBody *body;
-	LassoSoapBindingCorrelation *correlation;
-	gchar *messageId, *timestamp;
-
-	/* set Body */
-	body = lasso_soap_body_new();
-	envelope = lasso_soap_envelope_new(body);
-
-	/* set Header */
-	header = lasso_soap_header_new();
-	envelope->Header = header;
-
-	/* set Correlation */
-	messageId = lasso_build_unique_id(32);
-	timestamp = lasso_get_current_time();
-	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
-	if (refToMessageId != NULL)
-		correlation->refToMessageID = g_strdup(refToMessageId);
-	header->Other = g_list_append(header->Other, correlation);
-
-	/* Provider */
-	if (providerId) {
-		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
-		header->Other = g_list_append(header->Other, provider);
-	}
-
-	return envelope;
 }
 
 gint
@@ -343,6 +342,40 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
 		return -1;
 	
 	return 0;
+}
+
+LassoSoapEnvelope*
+lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *providerId)
+{
+	LassoSoapEnvelope *envelope;
+	LassoSoapHeader *header;
+	LassoSoapBody *body;
+	LassoSoapBindingCorrelation *correlation;
+	gchar *messageId, *timestamp;
+
+	/* set Body */
+	body = lasso_soap_body_new();
+	envelope = lasso_soap_envelope_new(body);
+
+	/* set Header */
+	header = lasso_soap_header_new();
+	envelope->Header = header;
+
+	/* set Correlation */
+	messageId = lasso_build_unique_id(32);
+	timestamp = lasso_get_current_time();
+	correlation = lasso_soap_binding_correlation_new(messageId, timestamp);
+	if (refToMessageId != NULL)
+		correlation->refToMessageID = g_strdup(refToMessageId);
+	header->Other = g_list_append(header->Other, correlation);
+
+	/* Provider */
+	if (providerId) {
+		LassoSoapBindingProvider *provider = lasso_soap_binding_provider_new(providerId);
+		header->Other = g_list_append(header->Other, provider);
+	}
+
+	return envelope;
 }
 
 /*****************************************************************************/
@@ -494,8 +527,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 
 	envelope = profile->soap_envelope_request;
 
-	if (lasso_security_mech_id_is_x509_authentication(
-		profile->private_data->security_mech_id) == TRUE) {
+	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		security = lasso_wsse_security_new();
 		header = envelope->Header;
 		header->Other = g_list_append(header->Other, security);
@@ -535,8 +567,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 
 	envelope = profile->soap_envelope_response;
 
-	if (lasso_security_mech_id_is_x509_authentication(
-		profile->private_data->security_mech_id) == TRUE) {
+	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		security = lasso_wsse_security_new();
 		header = envelope->Header;
 		header->Other = g_list_append(header->Other, security);
@@ -562,9 +593,10 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 }
 
 gint
-lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
-	const gchar *message, const gchar *security_mech_id)
+lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar *message,
+					   const gchar *service_type, const gchar *security_mech_id)
 {
+	LassoDiscoServiceInstance *si;
 	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSoapFault *fault = NULL;
@@ -576,14 +608,25 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile,
 	g_return_val_if_fail(LASSO_IS_WSF_PROFILE(profile), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	profile->private_data->security_mech_id = g_strdup(security_mech_id);
+	si = lasso_server_get_service(profile->server, (char *) service_type);
+
+	if (!security_mech_id) {
+		if (si)
+			profile->private_data->description = LASSO_DISCO_DESCRIPTION(
+				si->Description->data);
+		else
+			profile->private_data->description = NULL;
+	} else
+		if (!si)
+			return -1;
+		else
+			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
 
 	doc = xmlParseMemory(message, strlen(message));
 
 	/* If X509 authentication mecanism, then verify signature */
-	if (lasso_security_mech_id_is_x509_authentication(security_mech_id) == TRUE) {
+	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE)
 		res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
-	}
 	if (res > 0) {
 		fault = lasso_soap_fault_new();
 		fault->faultstring = "Invalid signature";
@@ -627,11 +670,10 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	g_return_val_if_fail(message != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	xmlDoc *doc = xmlParseMemory(message, strlen(message));
-	if (lasso_security_mech_id_is_x509_authentication(
-		profile->private_data->security_mech_id) == TRUE) {
-			int res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
-			if (res != 0)
-				return res;
+	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
+		int res = lasso_wsf_profile_verify_x509_authentication(profile, doc);
+		if (res != 0)
+			return res;
 	}
 	/* FIXME: Remove Signature element if exists, it seg fault when a call to
 			  lasso_node_new_from_xmlNode() */
@@ -722,7 +764,7 @@ instance_init(LassoWsfProfile *profile)
 	
 	profile->private_data = g_new0(LassoWsfProfilePrivate, 1);
 	profile->private_data->dispose_has_run = FALSE;
-	profile->private_data->security_mech_id = NULL;
+	profile->private_data->description = NULL;
 	profile->private_data->fault = NULL;
 }
 

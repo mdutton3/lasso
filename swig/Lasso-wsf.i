@@ -1109,7 +1109,7 @@ typedef struct {
 	void buildSoapRequestMsg();
 	void buildSoapResponseMsg();
 	void initSoapRequest(LassoNode *request);
-	void processSoapRequestMsg(char *soapRequestMsg, char *security_mech_id = NULL);
+	void processSoapRequestMsg(char *soapRequestMsg, char *service_type, char *security_mech_id = NULL);
 	void processSoapResponseMsg(char *soapResponseMsg);
 	LassoSoapBindingProvider *setProviderSoapRequest(const char *providerId);
 }
