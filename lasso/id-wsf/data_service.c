@@ -34,6 +34,11 @@
 #include <lasso/xml/dst_modify_response.h>
 #include <lasso/xml/soap_binding_correlation.h>
 
+#include <xmlsec/xmltree.h>
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+#include <xmlsec/crypto.h>
+
 
 struct _LassoDataServicePrivate
 {
@@ -222,9 +227,30 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	LassoDstQuery *query;
 	LassoWsfProfile *profile;
 	int rc;
+	gchar *service_type;
+	
+	/* FIXME: another way to get the service type ? */
+	{
+		LassoSoapEnvelope *envelope;
+		LassoDstQuery *request;
+		xmlDoc *doc;
+		doc = xmlParseMemory(message, strlen(message));
+		xmlNode *xmlnode = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature,
+						  xmlSecDSigNs);
+		if (xmlnode) {
+			xmlUnlinkNode(xmlnode);
+			xmlFreeNode(xmlnode);
+		}
+		envelope = LASSO_SOAP_ENVELOPE(
+			lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
+		request = LASSO_DST_QUERY(envelope->Body->any->data);
+		service_type = g_strdup(request->hrefServiceType);
+		xmlFreeDoc(doc);
+	}
 
 	profile = LASSO_WSF_PROFILE(service);
-	rc = lasso_wsf_profile_process_soap_request_msg(profile, message, security_mech_id);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, message, service_type,
+							security_mech_id);
 	if (rc) {
 		return rc;
 	}
@@ -567,9 +593,11 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 	LassoDstModify *modify;
 	LassoWsfProfile *profile;
 	int rc;
+	gchar *service_type;
 
 	profile = LASSO_WSF_PROFILE(service);
-	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg, security_mech_id);
+	rc = lasso_wsf_profile_process_soap_request_msg(profile, modify_soap_msg, service_type,
+							security_mech_id);
 	if (rc) {
 		return rc;
 	}
