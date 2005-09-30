@@ -105,7 +105,8 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	  g_list_append(subject_confirmation->ConfirmationMethod,
 			g_strdup(LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY));
 
-	/* Add KeyInfo */
+	/* TODO : Add KeyInfo, credential should be saved in LassoWsfProfile,
+	   and be added public keys when exporting credential to xml nodes */
 
 	subject->SubjectConfirmation = subject_confirmation;
 
