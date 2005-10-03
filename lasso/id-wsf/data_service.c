@@ -177,12 +177,11 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 	profile->soap_envelope_request->Body->any = g_list_append(
 			profile->soap_envelope_request->Body->any, query);
 
-	if (security_mech_id)
-		description = lasso_discovery_get_description_auto(
-			offering, security_mech_id);
-	else
-		description = lasso_discovery_get_description_auto(
-			offering, LASSO_SECURITY_MECH_NULL);
+	if (!security_mech_id)
+		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
+	else {
+		description = lasso_discovery_get_description_auto(offering, security_mech_id);
+	}
 	if (!description)
 		return -1;
 
