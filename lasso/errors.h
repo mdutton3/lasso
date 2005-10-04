@@ -58,6 +58,7 @@
 
 /* Single Logout */
 #define LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE        -301
+#define LASSO_LOGOUT_ERROR_REQUEST_DENIED              302
 
 /* Profile */
 #define LASSO_PROFILE_ERROR_INVALID_QUERY             -401
