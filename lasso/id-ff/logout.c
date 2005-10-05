@@ -623,6 +623,9 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 		}
 		if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_REQUEST_DENIED) == 0) {
+			/* assertion no longer on idp so removing it locally too */
+			lasso_session_remove_assertion(
+					profile->session, profile->remote_providerID);
 			return LASSO_LOGOUT_ERROR_REQUEST_DENIED;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success : %s", statusCodeValue);
