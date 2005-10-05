@@ -22,22 +22,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/saml_subject_confirmation.h>
+#include <lasso/xml/ds_key_info.h>
 
 /*
- * Schema fragment (oasis-sstc-saml-schema-assertion-1.0.xsd):
  * 
- * <element name="SubjectConfirmation" type="saml:SubjectConfirmationType"/>
- * <complexType name="SubjectConfirmationType">
- *   <sequence>
- *     <element ref="saml:ConfirmationMethod" maxOccurs="unbounded"/>
- *     <element ref="saml:SubjectConfirmationData" minOccurs="0"/>
- *     <element ref="ds:KeyInfo" minOccurs="0"/>
- *   </sequence>
- * </complexType>
- * 
- * <element name="SubjectConfirmationData" type="anyType"/>
- * <element name="ConfirmationMethod" type="anyURI"/>
  */
 
 /*****************************************************************************/
@@ -45,12 +33,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ConfirmationMethod", SNIPPET_LIST_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, ConfirmationMethod) },
-	{ "SubjectConfirmationData", SNIPPET_CONTENT,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, SubjectConfirmationData) },
-	{ "KeyInfo", SNIPPET_NODE,
-		G_STRUCT_OFFSET(LassoSamlSubjectConfirmation, KeyInfo) },
+	{ "KeyName", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyName) },
+	{ "KeyValue", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyValue) },
 	{ NULL, 0, 0}
 };
 
@@ -59,57 +43,56 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoSamlSubjectConfirmation *node)
+instance_init(LassoDsKeyInfo *node)
 {
-  node->ConfirmationMethod = NULL;
-  node->SubjectConfirmationData = NULL;
-  node->KeyInfo = NULL;
+  node->KeyName = NULL;
+  node->KeyValue = NULL;
 }
 
 static void
-class_init(LassoSamlSubjectConfirmationClass *klass)
+class_init(LassoDsKeyInfoClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "SubjectConfirmation");
-	lasso_node_class_set_ns(nclass, LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+	lasso_node_class_set_nodename(nclass, "KeyInfo");
+	lasso_node_class_set_ns(nclass, LASSO_DS_HREF, LASSO_DS_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_saml_subject_confirmation_get_type()
+lasso_ds_key_info_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoSamlSubjectConfirmationClass),
+			sizeof (LassoDsKeyInfoClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoSamlSubjectConfirmation),
+			sizeof(LassoDsKeyInfo),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoSamlSubjectConfirmation", &this_info, 0);
+				"LassoDsKeyInfo", &this_info, 0);
 	}
 	return this_type;
 }
 
 /**
- * lasso_saml_subject_confirmation_new:
+ * lasso_ds_key_info_new:
  * 
- * Creates a new #LassoSamlSubjectConfirmation object.
+ * Creates a new #LassoDsKeyInfo object.
  * 
- * Return value: a newly created #LassoSamlSubjectConfirmation object
+ * Return value: a newly created #LassoDsKeyInfo object
  **/
-LassoSamlSubjectConfirmation*
-lasso_saml_subject_confirmation_new()
+LassoDsKeyInfo*
+lasso_ds_key_info_new()
 {
-	return g_object_new(LASSO_TYPE_SAML_SUBJECT_CONFIRMATION, NULL);
+	return g_object_new(LASSO_TYPE_DS_KEY_INFO, NULL);
 }

@@ -30,6 +30,7 @@ WSF_C_FILES = \
 	disco_resource_offering.c \
 	disco_send_single_logout.c \
 	disco_service_instance.c \
+	ds_key_info.c \
 	dst_data.c \
 	dst_modification.c \
 	dst_modify.c \
@@ -94,6 +95,7 @@ WSF_H_FILES = \
 	disco_resource_offering.h \
 	disco_send_single_logout.h \
 	disco_service_instance.h \
+	ds_key_info.h \
 	dst_data.h \
 	dst_modification.h \
 	dst_modify.h \

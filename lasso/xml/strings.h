@@ -25,6 +25,10 @@
 #ifndef __LASSO_STRINGS_H__
 #define __LASSO_STRINGS_H__
 
+/* prefix & href */
+#define LASSO_DS_HREF   "http://www.w3.org/2000/09/xmldsig#"
+#define LASSO_DS_PREFIX "ds"
+
 /*****************************************************************************/
 /* Lasso                                                                     */
 /*****************************************************************************/
