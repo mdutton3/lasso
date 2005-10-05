@@ -73,6 +73,8 @@ lasso_strerror(int error_code)
 
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported protocol profile";
+		case LASSO_LOGOUT_ERROR_REQUEST_DENIED:
+			return "Request denied by identity provider";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
