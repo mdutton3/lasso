@@ -26,6 +26,11 @@
 #include <lasso/xml/saml_assertion.h>
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
+#include <lasso/xml/ds_key_info.h>
+
+#include <lasso/id-ff/server.h>
+#include <lasso/id-ff/provider.h>
+#include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/id-wsf/discovery.h>
 #include <lasso/id-wsf/identity.h>
@@ -107,6 +112,27 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 
 	/* TODO : Add KeyInfo, credential should be saved in LassoWsfProfile,
 	   and be added public keys when exporting credential to xml nodes */
+	{
+		LassoDsKeyInfo *key_info;
+		LassoProvider *lasso_provider;
+		xmlSecKeyInfoCtx *public_key_info_context;
+		xmlSecKey *public_key;
+		xmlSecKeyData *public_key_data;
+		xmlSecByte *buffer = NULL;
+		xmlSecSize size;
+
+		lasso_provider = lasso_server_get_provider(LASSO_WSF_PROFILE(discovery)->server,
+						     (char *) provider->providerID);
+		public_key = lasso_provider_get_public_key(lasso_provider);
+		public_key_data = xmlSecKeyGetValue(public_key);
+		xmlSecKeyDataBinWrite(
+			public_key_data->id, public_key, &buffer, &size, NULL);
+		key_info = lasso_ds_key_info_new();
+		key_info->KeyName = g_strdup((gchar *) xmlSecKeyGetName(public_key));
+		if (buffer)
+			key_info->KeyValue = (char *) xmlSecBase64Encode(buffer, size, 0);
+		subject_confirmation->KeyInfo = key_info;
+	}
 
 	subject->SubjectConfirmation = subject_confirmation;
 
@@ -870,7 +896,7 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 		service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
 				offering);
 	}
-	
+
 	if (response->Credentials) {
 		iter = response->Credentials->any;
 		while (iter) {
