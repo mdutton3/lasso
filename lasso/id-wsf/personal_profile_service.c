@@ -123,6 +123,7 @@ lasso_personal_profile_service_new(LassoServer *server, LassoDiscoResourceOfferi
 	g_return_val_if_fail(LASSO_IS_SERVER(server) == TRUE, NULL);
 
 	service = g_object_new(LASSO_TYPE_PERSONAL_PROFILE_SERVICE, NULL);
+	LASSO_WSF_PROFILE(service)->server = g_object_ref(server);
 	lasso_data_service_set_offering(LASSO_DATA_SERVICE(service), offering);
 
 	return service;
