@@ -66,3 +66,17 @@ Description: Liberty ID-FF library - PHP 4 bindings
  .
  Homepage: http://lasso.entrouvert.org
 
+Package: liblasso-java
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:depends}
+Description: Liberty ID-FF library - Java bindings
+ Lasso is an implementation of the Liberty Identity Federation specifications
+ defined by the Liberty Alliance consortium.  They defines processes such as
+ network identity federation and single sign-on.
+ .
+ This package provides the Java interface to liblasso, needed to use lasso in
+ Java applications.
+ .
+ Homepage: http://lasso.entrouvert.org
+

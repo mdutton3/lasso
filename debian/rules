@@ -32,7 +32,7 @@ major=`ls src/.libs/lib*.so.* | \
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-java --disable-gtk-doc --disable-perl --disable-csharp
+	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-tests=no --disable-gtk-doc --disable-perl --disable-csharp
 	# be sure not to call swig:
 	touch php/lasso_wrap.c php/php_lasso.h php/lasso.php
 	touch python/lasso_wrap.c python/lasso.py
@@ -74,6 +74,8 @@ install: build
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp \
 		GACUTIL="/usr/bin/gacutil -root $(CURDIR)/debian/tmp/usr/lib"
+	mkdir $(CURDIR)/debian/tmp/usr/lib/jni/
+	mv $(CURDIR)/debian/tmp/usr/lib/java/*.so $(CURDIR)/debian/tmp/usr/lib/jni/
 
 
 # Build architecture-independent files here.
