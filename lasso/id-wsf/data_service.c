@@ -172,10 +172,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 		return LASSO_ERROR_UNIMPLEMENTED;
 	}
 
-	profile->soap_envelope_request = lasso_wsf_profile_build_soap_envelope(
-		NULL, NULL);
-	profile->soap_envelope_request->Body->any = g_list_append(
-			profile->soap_envelope_request->Body->any, query);
+	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(query));
 
 	if (!security_mech_id)
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
@@ -184,6 +181,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 	}
 	if (!description)
 		return -1;
+	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);

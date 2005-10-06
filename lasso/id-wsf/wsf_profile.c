@@ -47,11 +47,19 @@ struct _LassoWsfProfilePrivate
 	gboolean dispose_has_run;
 	LassoDiscoDescription *description;
 	LassoSoapFault *fault;
+	gchar *public_key;
 };
 
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
+
+void
+lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key)
+{
+	if (public_key)
+		profile->private_data->public_key = g_strdup(public_key);
+}
 
 LassoDiscoDescription*
 lasso_wsf_profile_get_description_auto(LassoDiscoServiceInstance *si, const gchar *security_mech_id)
@@ -285,9 +293,10 @@ lasso_wsf_profile_add_x509_authentication(LassoWsfProfile *profile, LassoNode *e
 gint
 lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *doc)
 {
-	LassoProvider *lasso_provider;
+	LassoProvider *lasso_provider = NULL;
 
-	xmlNode *provider, *correlation, *security, *body, *signature, *x509data, *node;
+	xmlNode *provider = NULL, *correlation = NULL, *security = NULL, *body = NULL;
+	xmlNode *signature = NULL, *x509data = NULL, *node;
 	xmlChar *id;
 	xmlAttr *id_attr;
 
@@ -348,8 +357,9 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 	if(node == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 
+	/* Case of X509 signature type */
 	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
-	if (x509data != NULL && lasso_provider->ca_cert_chain != NULL) {
+	if (x509data != NULL && lasso_provider != NULL && lasso_provider->ca_cert_chain != NULL) {
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				lasso_provider->ca_cert_chain);
 		if (keys_mngr == NULL) {
@@ -357,10 +367,20 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
 	}
+	else if (x509data != NULL) {
+		xmlFreeDoc(doc);
+		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
+	}
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
+
+	/* Case of simple public key signature type */
 	if (keys_mngr == NULL) {
-		dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
+		if (lasso_provider != NULL)
+			dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
+		else if (profile->private_data->public_key) {
+			/* TODO: load public key from private attribute */
+		}
 		if (dsigCtx->signKey == NULL) {
 			xmlSecDSigCtxDestroy(dsigCtx);
 			xmlFreeDoc(doc);
@@ -382,7 +402,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 		xmlSecDSigCtxDestroy(dsigCtx);
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
-	printf("Signature is OK\n");
+	/*printf("Signature is OK\n");*/
 
 	return 0;
 }
@@ -843,6 +863,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 		fault = lasso_soap_fault_new();
 		fault->faultstring = "Invalid signature";
 	}
+	else if (res < 0)
+		return res;
 
 	/* FIXME: Remove Signature element if exists, it seg fault when a call to
 			  lasso_node_new_from_xmlNode() */

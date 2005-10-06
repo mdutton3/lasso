@@ -38,6 +38,8 @@ void lasso_wsf_profile_set_security_mech_id(LassoWsfProfile *profile,
 					    const gchar *security_mech_id);
 LassoSoapFault* lasso_wsf_profile_get_fault(LassoWsfProfile *profile);
 
+void lasso_wsf_profile_set_public_key(LassoWsfProfile *profile, const char *public_key); 
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
