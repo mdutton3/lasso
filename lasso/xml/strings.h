@@ -286,7 +286,7 @@
 	"urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"
 
 /*****************************************************************************/
-/* SOAP                                                                      */
+/* SOAP BINDING                                                              */
 /*****************************************************************************/
 
 #define LASSO_SOAP_ENV_HREF   "http://schemas.xmlsoap.org/soap/envelope/"
@@ -300,6 +300,13 @@
 
 #define LASSO_WSSE_HREF "http://schemas.xmlsoap.org/ws/2002/07/secext"
 #define LASSO_WSSE_PREFIX "wsse"
+
+#define LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_OFFLINE \
+	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOffline"
+#define LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_ONLINE \
+	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOnline"
+#define LASSO_SOAP_BINDING_PROCESS_CONTEXT_SIMULATE \
+	"urn:liberty:sb:2003-08:ProcessingContext:Simulate"
 
 /*****************************************************************************/
 /* Others                                                                    */

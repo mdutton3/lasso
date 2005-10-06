@@ -54,6 +54,7 @@ struct _LassoSoapBindingProcessingContext {
 	gchar *id;
 	gchar *mustUnderstand;
 	gchar *actor;
+	gchar *content;
 };
 
 struct _LassoSoapBindingProcessingContextClass {

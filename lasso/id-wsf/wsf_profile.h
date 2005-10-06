@@ -116,6 +116,15 @@ LASSO_EXPORT LassoSoapBindingProvider* lasso_wsf_profile_set_provider_soap_reque
 
 LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
 
+LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile);
+
+LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
+							 const char *status);
+
+LASSO_EXPORT void lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile);
+
+LASSO_EXPORT void lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

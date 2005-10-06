@@ -690,7 +690,6 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 #define LassoPersonalProfileService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
-#define LassoPersonalProfileService_buildResponseMsg(self) lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(self))
 
 /* Implementations of methods inherited from DataService */
 #define LassoPersonalProfileService_buildResponseMsg lasso_data_service_build_response_msg
@@ -776,7 +775,8 @@ typedef struct {
 	/* Methods */
 
 	THROW_ERROR
-	gint initQuery(const char *select = NULL, const char *item_id = NULL, const char *security_mech_id = NULL);
+	gint initQuery(const char *select = NULL, const char *item_id = NULL,
+		       const char *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
@@ -814,6 +814,11 @@ typedef struct {
 	THROW_ERROR
 	int processModifyResponseMsg(const char *soap_msg);
 	END_THROW_ERROR
+
+	gboolean isPrincipalOnline();
+	void setPrincipalStatus(const char *status);
+	void setPrincipalOnline();
+	void setPrincipalOffline();
 }
 
 %{
@@ -887,6 +892,11 @@ typedef struct {
 
 /* Implementations of methods inherited from WsfProfile */
 #define LassoDataService_buildRequestMsg(self) lasso_wsf_profile_build_soap_request_msg(LASSO_WSF_PROFILE(self))
+
+#define LassoDataService_isPrincipalOnline(self) lasso_wsf_profile_principal_is_online(LASSO_WSF_PROFILE(self))
+#define LassoDataService_setPrincipalStatus(self, status) lasso_wsf_profile_set_principal_status(LASSO_WSF_PROFILE(self), status)
+#define LassoDataService_setPrincipalOnline(self) lasso_wsf_profile_set_principal_online(LASSO_WSF_PROFILE(self))
+#define LassoDataService_setPrincipalOffline(self) lasso_wsf_profile_set_principal_offline(LASSO_WSF_PROFILE(self))
 
 /* Methods implementations */
 #define LassoDataService_buildModifyResponseMsg lasso_data_service_build_modify_response_msg
@@ -1109,9 +1119,14 @@ typedef struct {
 	void buildSoapRequestMsg();
 	void buildSoapResponseMsg();
 	void initSoapRequest(LassoNode *request);
-	void processSoapRequestMsg(char *soapRequestMsg, char *service_type, char *security_mech_id = NULL);
+	void processSoapRequestMsg(char *soapRequestMsg, char *service_type,
+				   char *security_mech_id = NULL);
 	void processSoapResponseMsg(char *soapResponseMsg);
 	LassoSoapBindingProvider *setProviderSoapRequest(const char *providerId);
+	gboolean isPrincipalOnline();
+	void setPrincipalStatus(const char *status);
+	void setPrincipalOnline();
+	void setPrincipalOffline();
 }
 
 %{
@@ -1139,5 +1154,8 @@ typedef struct {
 #define LassoWsfProfile_processSoapRequestMsg lasso_wsf_profile_process_soap_request_msg
 #define LassoWsfProfile_processSoapResponseMsg lasso_wsf_profile_process_soap_response_msg
 #define LassoWsfProfile_setProviderSoapRequest lasso_wsf_profile_set_provider_soap_request
-
+#define LassoWsfProfile_isPrincipalOnline lasso_wsf_profile_principal_is_online
+#define LassoWsfProfile_setPrincipalStatus lasso_wsf_profile_set_principal_status
+#define LassoWsfProfile_setPrincipalOnline lasso_wsf_profile_set_principal_online
+#define LassoWsfProfile_setPrincipalOffline lasso_wsf_profile_set_principal_offline
 %}

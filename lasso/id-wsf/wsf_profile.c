@@ -27,8 +27,12 @@
 #include <lasso/xml/soap_fault.h>
 #include <lasso/xml/soap_binding_correlation.h>
 #include <lasso/xml/soap_binding_provider.h>
+#include <lasso/xml/soap_binding_processing_context.h>
 #include <lasso/xml/wsse_security.h>
 #include <lasso/xml/saml_assertion.h>
+#include <lasso/xml/saml_authentication_statement.h>
+#include <lasso/xml/saml_subject_statement_abstract.h>
+#include <lasso/xml/saml_subject.h>
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
@@ -321,7 +325,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile, xmlDoc *d
 	xmlAddID(NULL, doc, id, id_attr);
 	xmlFree(id);
 
-	/* <Provider> */
+	/* Provider */
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//sb:Provider", xpathCtx);
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
@@ -405,8 +409,12 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
 	LassoSoapHeader *header;
 	LassoWsseSecurity *security = NULL;
 	LassoSamlAssertion *credential;
+	LassoSamlAuthenticationStatement *authentication_statement;
+	LassoSamlSubject *subject;
+	LassoSamlNameIdentifier *name_identifier;
+	LassoSamlSubjectConfirmation *subject_confirmation;
 	GList *iter;
-	
+
 	header = profile->soap_envelope_request->Header;
 
 	/* Security */
@@ -433,6 +441,18 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
 	if (!credential)
 		return -1;
 	
+	/* Authentication Statement */
+	authentication_statement = credential->AuthenticationStatement;
+	subject = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(authentication_statement)->Subject;
+	name_identifier = subject->NameIdentifier;
+
+	subject_confirmation = subject->SubjectConfirmation;
+	if (subject_confirmation) {
+		/* TODO: Get public key value */
+	}
+
+	/* ResourceStatement */
+
 	return 0;
 }
 
@@ -476,6 +496,103 @@ lasso_wsf_profile_build_soap_envelope(const char *refToMessageId, const char *pr
 /*****************************************************************************/
 /* public methods                                                            */
 /*****************************************************************************/
+
+/**
+ * lasso_wsf_profile_is_principal_online():
+ * @profile: a #LassoWsfProfile
+ *
+ * Check if the principal is set to be online.
+ *
+ **/
+gboolean
+lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile)
+{
+	LassoSoapHeader *header;
+	LassoSoapBindingProcessingContext *processing_context = NULL;
+	GList *iter;
+
+	header = profile->soap_envelope_request->Header;
+	iter = header->Other;
+	while (iter) {
+		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data) == TRUE) {
+			processing_context = iter->data;
+			break;
+		}
+		iter = g_list_next(iter);
+	}
+	if (!processing_context)
+		return FALSE;
+	if (!processing_context->content)
+		return FALSE;
+
+	if (strcmp(processing_context->content,
+		   LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_ONLINE) == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
+/**
+ * lasso_wsf_profile_set_principal_online():
+ * @profile: a #LassoWsfProfile
+ * @status : a char* representing status of principal.
+ *
+ * Set the status of the principal.
+ *
+ **/
+void
+lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile, const char *status)
+{
+	LassoSoapHeader *header;
+	LassoSoapBindingProcessingContext *processing_context = NULL;
+	GList *iter;
+
+	header = profile->soap_envelope_request->Header;
+	iter = header->Other;
+	while (iter) {
+		if (LASSO_IS_SOAP_BINDING_PROCESSING_CONTEXT(iter->data) == TRUE) {
+			processing_context = iter->data;
+			break;
+		}
+		iter = g_list_next(iter);
+	}
+	if (!processing_context) {
+		processing_context = LASSO_SOAP_BINDING_PROCESSING_CONTEXT(
+			lasso_soap_binding_processing_context_new());
+		header->Other = g_list_append(header->Other, processing_context);
+	}
+	if (processing_context->content)
+		g_free(processing_context->content);
+	processing_context->content = g_strdup(status);		
+}
+
+/**
+ * lasso_wsf_profile_set_principal_online():
+ * @profile: a #LassoWsfProfile
+ *
+ * Set the principal status as offline.
+ *
+ **/
+void
+lasso_wsf_profile_set_principal_online(LassoWsfProfile *profile)
+{
+	lasso_wsf_profile_set_principal_status(
+		profile, LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_ONLINE);
+}
+
+/**
+ * lasso_wsf_profile_set_principal_offline():
+ * @profile: a #LassoWsfProfile
+ *
+ * Set the principal status as offline.
+ *
+ **/
+void
+lasso_wsf_profile_set_principal_offline(LassoWsfProfile *profile)
+{
+	lasso_wsf_profile_set_principal_status(
+		profile, LASSO_SOAP_BINDING_PROCESS_CONTEXT_PRINCIPAL_OFFLINE);
+}
 
 /**
  * lasso_wsf_profile_get_identity:
