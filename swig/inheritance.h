@@ -151,8 +151,7 @@ SET_NODE_INFO(UtilityStatus, Node)
 SET_NODE_INFO(WsseSecurity, Node)
 
 /* Profiles */
-SET_NODE_INFO(WsfProfile, Node)
-SET_NODE_INFO(DataService, WsfProfile)
+SET_NODE_INFO(DataService, Node)
 SET_NODE_INFO(PersonalProfileService, DataService)
 
 #endif /* LASSO_WSF_ENABLED */
