@@ -909,44 +909,6 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	return service;
 }
 
-LassoDataService*
-lasso_discovery_get_service_with_providerId(LassoDiscovery *discovery, const char *providerId)
-{
-	LassoDiscoQueryResponse *response;
-	GList *iter;
-	LassoDiscoResourceOffering *offering = NULL;
-	LassoDataService *service;
-
-	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-	iter = response->ResourceOffering;
-	if (iter == NULL) {
-		return NULL; /* resource not found */
-	}
-
-	while (iter) {
-		LassoDiscoResourceOffering *t = iter->data;
-		iter = g_list_next(iter);
-		if (t->ServiceInstance == NULL)
-			continue;
-		if (strcmp(t->ServiceInstance->ProviderID, providerId) == 0) {
-			offering = t;
-			break;
-		}
-	}
-	if (offering == NULL) {
-		return NULL; /* resource not found */
-	}
-
-	if (strcmp(offering->ServiceInstance->ServiceType, LASSO_PP_HREF) == 0) {
-		service = LASSO_DATA_SERVICE(lasso_personal_profile_service_new(
-					LASSO_WSF_PROFILE(discovery)->server, offering));
-	} else {
-		service = lasso_data_service_new_full(LASSO_WSF_PROFILE(discovery)->server,
-				offering);
-	}
-
-	return service;
-}
 
 /**
  * lasso_discovery_get_services:
