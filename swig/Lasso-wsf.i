@@ -295,9 +295,6 @@ typedef struct {
 	%newobject getService;
 	LassoDataService* getService(const char *service_type = NULL);
 	
-	%newobject getServiceWithProviderId;
-	LassoDataService* getServiceWithProviderId(const char *service_type = NULL);
-	
 	%newobject getServices;
 	LassoNodeList* getServices();
 }
