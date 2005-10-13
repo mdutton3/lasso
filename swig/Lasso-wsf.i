@@ -277,7 +277,7 @@ typedef struct {
 	END_THROW_ERROR
 
 	THROW_ERROR
-	int processModifyMsg(const char *modify_msg, const gchar *security_mech_id);
+	int processModifyMsg(const char *modify_msg, const gchar *security_mech_id = NULL);
 	END_THROW_ERROR
 
 	THROW_ERROR
