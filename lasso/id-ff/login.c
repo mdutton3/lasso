@@ -806,6 +806,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	g_free(md_authnRequestsSigned);
 	provider->role = role;
 
+	if (!must_sign)
+		LASSO_SAMLP_REQUEST_ABSTRACT(
+			profile->request)->sign_type = LASSO_SIGNATURE_TYPE_NONE;
+
 	if (login->http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		/* REDIRECT -> query */
 		if (must_sign) {
