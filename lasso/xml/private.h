@@ -52,12 +52,14 @@ typedef enum {
 	SNIPPET_LASSO_DUMP = 1 << 22,
 	SNIPPET_OPTIONAL = 1 << 23, /* optional, ignored if 0 */
 	SNIPPET_OPTIONAL_NEG = 1 << 24, /* optional, ignored if -1 */
+	SNIPPET_ANY = 1 << 25, /* ##any node */
 } SnippetType;
 
 struct XmlSnippet {
 	char *name;
 	SnippetType type;
 	guint offset;
+	char *class_name;
 };
 
 struct QuerySnippet {
@@ -82,8 +84,8 @@ void lasso_node_class_add_query_snippets(LassoNodeClass *klass, struct QuerySnip
 
 gchar* lasso_node_build_query_from_snippets(LassoNode *node);
 gboolean lasso_node_init_from_query_fields(LassoNode *node, char **query_fields);
-
-
+gboolean lasso_node_init_from_saml2_query_fields(LassoNode *node,
+		char **query_fields, char **relay_state);
 
 typedef enum {
 	LASSO_PEM_FILE_TYPE_UNKNOWN,
@@ -112,6 +114,10 @@ int lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_v
 		const char *private_key_file, const char *certificate_file);
 
 void xmlCleanNs(xmlNode *root_node);
+
+gchar* lasso_node_build_deflated_query(LassoNode *node);
+
+gboolean lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string);
 
 void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
