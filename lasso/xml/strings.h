@@ -309,6 +309,94 @@
 	"urn:liberty:sb:2003-08:ProcessingContext:Simulate"
 
 /*****************************************************************************/
+/* SAML 2.0                                                                  */
+/*****************************************************************************/
+
+#define LASSO_SAML20_METADATA_HREF "urn:oasis:names:tc:SAML:2.0:metadata"
+
+#define LASSO_SAML20_METADATA_BINDING_SOAP "urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+#define LASSO_SAML20_METADATA_BINDING_REDIRECT "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+#define LASSO_SAML20_METADATA_BINDING_POST "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#define LASSO_SAML20_METADATA_BINDING_ARTIFACT "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+
+#define LASSO_SAML2_PROTOCOL_HREF "urn:oasis:names:tc:SAML:2.0:protocol"
+#define LASSO_SAML2_PROTOCOL_PREFIX "samlp"
+
+#define LASSO_SAML2_ASSERTION_HREF "urn:oasis:names:tc:SAML:2.0:assertion"
+#define LASSO_SAML2_ASSERTION_PREFIX "saml"
+
+#define LASSO_SAML2_DEFLATE_ENCODING "urn:oasis:names:tc:SAML:2.0:bindings:URL-Encoding:DEFLATE"
+
+
+/* Name Identifier Format */
+
+/* note that SAML 2.0 can also use SAML 1.1 name identifier formats */
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_KERBEROS \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:kerberos"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENTITY \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+
+
+/* Consent */
+#define LASSO_SAML2_CONSENT_OBTAINED "urn:oasis:names:tc:SAML:2.0:consent:obtained"
+#define LASSO_SAML2_CONSENT_PRIOR "urn:oasis:names:tc:SAML:2.0:consent:prior"
+#define LASSO_SAML2_CONSENT_IMPLICIT "urn:oasis:names:tc:SAML:2.0:consent:current-implicit"
+#define LASSO_SAML2_CONSENT_EXPLICIT "urn:oasis:names:tc:SAML:2.0:consent:current-explicit"
+#define LASSO_SAML2_CONSENT_UNAVAILABLE "urn:oasis:names:tc:SAML:2.0:consent:unavailable"
+#define LASSO_SAML2_CONSENT_INAPPLICABLE "urn:oasis:names:tc:SAML:2.0:consent:inapplicable"
+
+/* Status Code */
+#define LASSO_SAML2_STATUS_CODE_SUCCESS "urn:oasis:names:tc:SAML:2.0:status:Success"
+#define LASSO_SAML2_STATUS_CODE_REQUESTER "urn:oasis:names:tc:SAML:2.0:status:Requester"
+#define LASSO_SAML2_STATUS_CODE_RESPONDER "urn:oasis:names:tc:SAML:2.0:status:Responder"
+#define LASSO_SAML2_STATUS_CODE_VERSION_MISMATCH \
+		"urn:oasis:names:tc:SAML:2.0:status:VersionMismatch"
+#define LASSO_SAML2_STATUS_CODE_AUTHN_FAILED "urn:oasis:names:tc:SAML:2.0:status:AuthnFailed"
+#define LASSO_SAML2_STATUS_CODE_INVALID_ATTR_NAME \
+		"urn:oasis:names:tc:SAML:2.0:status:InvalidAttrNameOrValue"
+#define LASSO_SAML2_STATUS_CODE_INVALID_NAME_ID_POLICY \
+		"urn:oasis:names:tc:SAML:2.0:status:InvalidNameIDPolicy"
+#define LASSO_SAML2_STATUS_CODE_NO_AUTHN_CONTEXT \
+		"urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext"
+#define LASSO_SAML2_STATUS_CODE_NO_AVAILABLE_IDP \
+		"urn:oasis:names:tc:SAML:2.0:status:NoAvailableIDP"
+#define LASSO_SAML2_STATUS_CODE_NO_PASSIVE \
+		"urn:oasis:names:tc:SAML:2.0:status:NoPassive"
+#define LASSO_SAML2_STATUS_CODE_NO_SUPPORTED_IDP \
+		"urn:oasis:names:tc:SAML:2.0:status:NoSupportedIDP"
+#define LASSO_SAML2_STATUS_CODE_PARTIAL_LOGOUT \
+		"urn:oasis:names:tc:SAML:2.0:status:PartialLogout"
+#define LASSO_SAML2_STATUS_CODE_PROXY_COUNT_EXCEEDED \
+		"urn:oasis:names:tc:SAML:2.0:status:ProxyCountExceeded"
+#define LASSO_SAML2_STATUS_CODE_REQUEST_DENIED \
+		"urn:oasis:names:tc:SAML:2.0:status:RequestDenied"
+#define LASSO_SAML2_STATUS_CODE_REQUEST_UNSUPPORTED \
+		"urn:oasis:names:tc:SAML:2.0:status:RequestUnsupported"
+#define LASSO_SAML2_STATUS_CODE_REQUEST_VERSION_DEPRECATED \
+		"urn:oasis:names:tc:SAML:2.0:status:RequestVersionDeprecated"
+#define LASSO_SAML2_STATUS_CODE_REQUEST_VERSION_TOO_HIGH \
+		"urn:oasis:names:tc:SAML:2.0:status:RequestVersionTooHigh"
+#define LASSO_SAML2_STATUS_CODE_REQUEST_VERSION_TOO_LOW \
+		"urn:oasis:names:tc:SAML:2.0:status:RequestVersionTooLow"
+#define LASSO_SAML2_STATUS_CODE_RESOURCE_NOT_RECOGNIZED \
+		"urn:oasis:names:tc:SAML:2.0:status:ResourceNotRecognized"
+#define LASSO_SAML2_STATUS_CODE_TOO_MANY_RESPONSES \
+		"urn:oasis:names:tc:SAML:2.0:status:TooManyResponses"
+#define LASSO_SAML2_STATUS_CODE_UNKNOWN_ATTR_PROFILE \
+		"urn:oasis:names:tc:SAML:2.0:status:UnknownAttrProfile"
+#define LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL \
+		"urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal"
+#define LASSO_SAML2_STATUS_CODE_UNSUPPORTED_BINDING \
+		"urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding"
+
+
+
+
+/*****************************************************************************/
 /* Others                                                                    */
 /*****************************************************************************/
 
