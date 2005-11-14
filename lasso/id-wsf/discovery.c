@@ -67,6 +67,20 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 
 	LassoSamlSubjectConfirmation *subject_confirmation;
 
+	/*
+	  Assertion
+	      AuthenticationStatement
+	          Subject
+		      NameIdentifier
+		      SubjectConfirmation
+		          ConfirmationMethod
+			  KeyInfo
+
+	  NameIdentifier : format is entity id if resource requester is a provider, else federated
+	  KeyInfo : add key info of the resource requester
+	*/
+
+	/* Init assertion informations */
 	assertion = lasso_saml_assertion_new();
 	assertion->AssertionID = lasso_build_unique_id(32);
 	assertion->MajorVersion = LASSO_SAML_MAJOR_VERSION_N;
@@ -75,7 +89,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	assertion->Issuer = \
 	  g_strdup(LASSO_PROVIDER(LASSO_WSF_PROFILE(discovery)->server)->ProviderID);
 
-	/* AuthenticationStatement */
+	/* Add AuthenticationStatement */
 	authentication_statement = LASSO_SAML_AUTHENTICATION_STATEMENT(
 		lasso_saml_authentication_statement_new());
 	authentication_statement->AuthenticationInstant = lasso_get_current_time();
@@ -110,32 +124,52 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	  g_list_append(subject_confirmation->ConfirmationMethod,
 			g_strdup(LASSO_SAML_CONFIRMATION_METHOD_HOLDER_OF_KEY));
 
-	/* TODO : Add KeyInfo, credential should be saved in LassoWsfProfile,
-	   and be added public keys when exporting credential to xml nodes */
+	/* Add public key value in credential */
 	{
 		LassoDsKeyInfo *key_info;
 		LassoProvider *lasso_provider;
-		xmlSecKeyInfoCtx *public_key_info_context;
+		xmlSecKeyInfoCtx *ctx;
 		xmlSecKey *public_key;
 		xmlSecKeyData *public_key_data;
-		xmlSecByte *buffer = NULL;
-		xmlSecSize size;
+
+		xmlDoc *doc;
+		xmlNode *key_info_node, *key_value, *modulus;
+
+		xmlXPathContext *xpathCtx = NULL;
+		xmlXPathObject *xpathObj;
 
 		lasso_provider = lasso_server_get_provider(LASSO_WSF_PROFILE(discovery)->server,
 						     (char *) provider->providerID);
 		public_key = lasso_provider_get_public_key(lasso_provider);
 		public_key_data = xmlSecKeyGetValue(public_key);
-		xmlSecKeyDataBinWrite(
-			public_key_data->id, public_key, &buffer, &size, NULL);
+
+		ctx = xmlSecKeyInfoCtxCreate(NULL);
+		xmlSecKeyInfoCtxInitialize(ctx, NULL);
+		ctx->mode = xmlSecKeyInfoModeWrite;
+		ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
+
+		doc = xmlSecCreateTree("KeyInfo", "http://www.w3.org/2000/09/xmldsig#");
+		key_info_node = xmlDocGetRootElement(doc);
+		key_value = xmlSecAddChild(key_info_node,
+					   "KeyValue", "http://www.w3.org/2000/09/xmldsig#");
+
+		xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
+
+		xpathCtx = xmlXPathNewContext(doc);
+		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds", "http://www.w3.org/2000/09/xmldsig#");
+		xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
+		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		  modulus = xpathObj->nodesetval->nodeTab[0];
+		}
+
 		key_info = lasso_ds_key_info_new();
-		key_info->KeyName = g_strdup((gchar *) xmlSecKeyGetName(public_key));
-		if (buffer)
-			key_info->KeyValue = (char *) xmlSecBase64Encode(buffer, size, 0);
+		if (modulus) {
+		  key_info->KeyValue = g_strdup((gchar *) xmlNodeGetContent(modulus));
+		}
 		subject_confirmation->KeyInfo = key_info;
 	}
 
 	subject->SubjectConfirmation = subject_confirmation;
-
 	assertion->AuthenticationStatement = authentication_statement;
 
 	/* Add credential to disco:QueryResponse */
