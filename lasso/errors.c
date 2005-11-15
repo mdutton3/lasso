@@ -133,6 +133,9 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
 			return "Unknown principal";
 
+	        case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
+		        return "Redirect request from Attribute Provider";
+
 		default:
 			return "Undefined error code.";
 	}

@@ -100,3 +100,5 @@
 /* Federation Termination Notification */
 #define LASSO_DEFEDERATION_ERROR_MISSING_NAME_IDENTIFIER  -700
 
+/* Soap */
+#define LASSO_SOAP_FAULT_REDIRECT_REQUEST                800
