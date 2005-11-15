@@ -815,6 +815,11 @@ typedef struct {
 	void setPrincipalStatus(const char *status);
 	void setPrincipalOnline();
 	void setPrincipalOffline();
+
+	%newobject getRedirectRequestUrl;
+	char* getRedirectRequestUrl();
+
+	int needUserInteraction(const char *redirectUrl);
 }
 
 %{
@@ -909,6 +914,9 @@ typedef struct {
 #define LassoDataService_validateQuery lasso_data_service_validate_query
 #define LassoDataService_getAnswer(self,select) get_xml_string(lasso_data_service_get_answer(self, select))
 #define LassoDataService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(self, itemId))
+
+#define LassoDataService_getRedirectRequestUrl lasso_data_service_get_redirect_request_url
+#define LassoDataService_needUserInteraction lasso_data_service_need_user_interaction
 
 %}
 
