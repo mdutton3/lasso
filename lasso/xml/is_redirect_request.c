@@ -39,7 +39,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "redirectURL", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoIsRedirectRequest, redirectURL) },
+	{ "redirectURL", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsRedirectRequest, redirectURL) },
 	{ NULL, 0, 0}
 };
 
