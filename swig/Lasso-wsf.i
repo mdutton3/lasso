@@ -819,7 +819,7 @@ typedef struct {
 	%newobject getRedirectRequestUrl;
 	char* getRedirectRequestUrl();
 
-	int needUserInteraction(const char *redirectUrl);
+	int needRedirectUser(const char *redirectUrl);
 }
 
 %{
@@ -916,7 +916,7 @@ typedef struct {
 #define LassoDataService_getAnswerForItemId(self,itemId) get_xml_string(lasso_data_service_get_answer_for_item_id(self, itemId))
 
 #define LassoDataService_getRedirectRequestUrl lasso_data_service_get_redirect_request_url
-#define LassoDataService_needUserInteraction lasso_data_service_need_user_interaction
+#define LassoDataService_needRedirectUser lasso_data_service_need_redirect_user
 
 %}
 

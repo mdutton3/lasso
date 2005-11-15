@@ -117,8 +117,8 @@ LASSO_EXPORT gint lasso_data_service_process_modify_msg(LassoDataService *servic
 LASSO_EXPORT gint lasso_data_service_process_modify_response_msg(LassoDataService *service,
 		const gchar *soap_msg);
 
-LASSO_EXPORT gboolean lasso_data_service_need_user_interaction(LassoDataService *service,
-							       const char *redirectUrl);
+LASSO_EXPORT gboolean lasso_data_service_need_redirect_user(LassoDataService *service,
+							    const char *redirectUrl);
 
 LASSO_EXPORT  gchar* lasso_data_service_get_redirect_request_url(LassoDataService *service);
 

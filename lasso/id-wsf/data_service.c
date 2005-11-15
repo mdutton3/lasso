@@ -124,7 +124,7 @@ lasso_data_service_add_query_item(LassoDataService *service,
 }
 
 gint
-lasso_data_service_need_user_interaction(LassoDataService *service, const char *redirectUrl)
+lasso_data_service_need_redirect_user(LassoDataService *service, const char *redirectUrl)
 {
 	LassoWsfProfile *profile;
 	LassoSoapBody *body;
@@ -289,7 +289,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	LassoWsfProfile *profile;
 	int rc;
 	gchar *service_type;
-	
+
 	/* FIXME: another way to get the service type ? */
 	{
 		LassoSoapEnvelope *envelope;
