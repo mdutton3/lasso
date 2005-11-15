@@ -33,6 +33,8 @@
 #include <lasso/xml/dst_modify.h>
 #include <lasso/xml/dst_modify_response.h>
 #include <lasso/xml/soap_binding_correlation.h>
+#include <lasso/xml/soap_fault.h>
+#include <lasso/xml/is_redirect_request.h>
 
 #include <xmlsec/xmltree.h>
 #include <xmlsec/xmldsig.h>
@@ -45,6 +47,7 @@ struct _LassoDataServicePrivate
 	gboolean dispose_has_run;
 	LassoDiscoResourceOffering *offering;
 	GList *credentials;
+	LassoSoapFault *fault;
 };
 
 /*****************************************************************************/
@@ -120,6 +123,26 @@ lasso_data_service_add_query_item(LassoDataService *service,
 	return item;
 }
 
+gint
+lasso_data_service_need_user_interaction(LassoDataService *service, const char *redirectUrl)
+{
+	LassoWsfProfile *profile;
+	LassoSoapBody *body;
+	LassoSoapFault *fault;
+	LassoUtilityStatus *status;
+	LassoSoapDetail *detail;
+	GList *iter;
+
+	/* Find a SOAP fault element */
+	service->private_data->fault = lasso_soap_fault_new();
+	service->private_data->fault->faultcode = g_strdup(LASSO_SOAP_FAULT_CODE_SERVER);
+	detail = lasso_soap_detail_new();
+	detail->any = g_list_append(detail->any, lasso_is_redirect_request_new(redirectUrl));
+	service->private_data->fault->Detail = detail;
+
+	return 0;
+}
+
 /**
  * lasso_data_service_init_query
  * @service: a #LassoDataService
@@ -190,7 +213,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 		return LASSO_ERROR_UNIMPLEMENTED;
 	}
 
-	/* Added needed credential for remote service */
+	/* Added needd credential for remote service */
 	if (description->CredentialRef) {
 			char *credentialRef = description->CredentialRef->data;
 			iter = service->private_data->credentials;
@@ -205,6 +228,47 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 	}
 
 	return 0;
+}
+
+/**
+ * lasso_data_service_get_redirect_request_url:
+ * @service: a #LassoDataService
+ * @message: the dst query message
+ *
+ * Tells if Attribute Provider needs user interaction.
+ *
+ * Return value: TRUE if needed; or FALSE otherwise.
+ **/
+gchar*
+lasso_data_service_get_redirect_request_url(LassoDataService *service)
+{
+	LassoSoapFault *fault = NULL;
+	LassoIsRedirectRequest *redirect_request = NULL;
+	GList *iter;
+
+	iter = LASSO_WSF_PROFILE(service)->soap_envelope_response->Body->any;
+	while (iter) {
+		if (LASSO_IS_SOAP_FAULT(iter->data) == TRUE) {
+			fault = LASSO_SOAP_FAULT(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (!fault)
+		return NULL;
+
+	iter = fault->Detail->any;
+	while (iter) {
+		if (LASSO_IS_IS_REDIRECT_REQUEST(iter->data) == TRUE) {
+			redirect_request = LASSO_IS_REDIRECT_REQUEST(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (!redirect_request)
+		return NULL;
+
+	return g_strdup(redirect_request->redirectURL);
 }
 
 /**
@@ -341,12 +405,19 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 	profile = LASSO_WSF_PROFILE(service);
 	request = LASSO_DST_QUERY(profile->request);
 
+	envelope = profile->soap_envelope_response;
+
+	if (service->private_data->fault != NULL) {
+		envelope->Body->any = g_list_append(
+			envelope->Body->any, service->private_data->fault);
+		return lasso_wsf_profile_build_soap_response_msg(profile);
+	}
+
 	response = lasso_dst_query_response_new(
 		lasso_utility_status_new(LASSO_DST_STATUS_CODE_OK));
 	profile->response = LASSO_NODE(response);
 	response->prefixServiceType = g_strdup(request->prefixServiceType);
 	response->hrefServiceType = g_strdup(request->hrefServiceType);
-	envelope = profile->soap_envelope_response;
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -508,16 +579,44 @@ lasso_data_service_process_query_response_msg(LassoDataService *service,
 {
 	int rc;
 	LassoDstQueryResponse *response;
+	LassoSoapFault *fault = NULL;
+	LassoIsRedirectRequest *redirect_request = NULL;
+	GList *iter;
 
 	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(service), message);
 	if (rc) return rc;
 
-	if (! LASSO_IS_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response))
+	/* Process Soap Faults response */
+	iter = LASSO_WSF_PROFILE(service)->soap_envelope_response->Body->any;
+	while (iter) {
+		if (LASSO_IS_SOAP_FAULT(iter->data) == TRUE) {
+			fault = LASSO_SOAP_FAULT(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (!fault)
+		return 0;
+
+	iter = fault->Detail->any;
+	while (iter) {
+		if (LASSO_IS_IS_REDIRECT_REQUEST(iter->data) == TRUE) {
+			redirect_request = LASSO_IS_REDIRECT_REQUEST(iter->data);
+			break;
+		}
+		iter = iter->next;
+	}
+	if (redirect_request)
+		return LASSO_SOAP_FAULT_REDIRECT_REQUEST;
+
+	return 0;
+
+	/*if (! LASSO_IS_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response))
 		return LASSO_ERROR_UNDEFINED;
 
 	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
 	if (response->Status == NULL || strcmp(response->Status->code, "OK") != 0)
-		return LASSO_ERROR_UNDEFINED;
+	return LASSO_ERROR_UNDEFINED;*/
 
 	return 0;
 }
@@ -642,6 +741,7 @@ lasso_data_service_set_offering(LassoDataService *service,
 	service->private_data->offering = g_object_ref(offering);
 }
 
+
 /*****************************************************************************/
 /* overrided parent class methods */
 /*****************************************************************************/
@@ -681,6 +781,7 @@ instance_init(LassoDataService *service)
 {
 	service->resource_data = NULL;
 	service->private_data = g_new0(LassoDataServicePrivate, 1);
+	service->private_data->fault = NULL;
 }
 
 static void
