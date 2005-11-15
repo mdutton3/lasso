@@ -404,4 +404,6 @@
 #define LASSO_XSI_HREF "http://www.w3.org/2001/XMLSchema-instance"
 #define LASSO_XSI_PREFIX "xsi"
 
+#define LASSO_SOAP_FAULT_CODE_SERVER "Server"
+
 #endif /* __LASSO_STRINGS_H__ */
