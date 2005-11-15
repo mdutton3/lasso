@@ -461,17 +461,21 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile)
 	if (!credential)
 		return -1;
 	
+	/* FIXME: Verify credential signature (supposed to be signed by IDP) */
+
 	/* Authentication Statement */
 	authentication_statement = credential->AuthenticationStatement;
 	subject = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(authentication_statement)->Subject;
 	name_identifier = subject->NameIdentifier;
 
-	subject_confirmation = subject->SubjectConfirmation;
-	if (subject_confirmation) {
-		/* TODO: Get public key value */
-	}
+	if (!subject->SubjectConfirmation)
+		return -1;
+	if (!subject_confirmation->KeyInfo)
+		return -1;
 
-	/* ResourceStatement */
+	key_value = subject_confirmation->KeyInfo->KeyValue;
+
+	/* FIXME: verify soap request signature with embedded public key */
 
 	return 0;
 }
