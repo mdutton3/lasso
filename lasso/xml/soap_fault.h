@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/soap_detail.h>
 
 #define LASSO_TYPE_SOAP_FAULT (lasso_soap_fault_get_type())
 #define LASSO_SOAP_FAULT(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), \
@@ -51,7 +52,7 @@ struct _LassoSoapFault {
 	gchar *faultcode;
 	gchar *faultstring;
 	GList *faultactor;
-	GList *detail;
+	LassoSoapDetail *Detail;
 };
 
 struct _LassoSoapFaultClass {
