@@ -923,13 +923,10 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
 
 	profile->soap_envelope_response = envelope;
-	
+
 	/* Soap Fault message */
-	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data) == TRUE)
-		return -1;
-	
-	/* Soap Body message */
-	profile->response = LASSO_NODE(envelope->Body->any->data);
+	if (LASSO_IS_SOAP_FAULT(envelope->Body->any->data) == FALSE)
+	  profile->response = LASSO_NODE(envelope->Body->any->data);
 
 	return 0;
 }
