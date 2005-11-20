@@ -55,6 +55,8 @@ typedef struct _LassoProviderPrivate LassoProviderPrivate;
  * @LASSO_HTTP_METHOD_POST: Browser POST
  * @LASSO_HTTP_METHOD_REDIRECT: HTTP-Redirect based
  * @LASSO_HTTP_METHOD_SOAP: SOAP/HTTP based
+ * @LASSO_HTTP_METHOD_ARTIFACT_GET: Artifact by HTTP GET (SAML 2.0)
+ * @LASSO_HTTP_METHOD_ARTIFACT_POST: Artifact by HTTP POST (SAML 2.0)
  *
  * Method.
  **/
@@ -65,7 +67,9 @@ typedef enum {
 	LASSO_HTTP_METHOD_GET,
 	LASSO_HTTP_METHOD_POST,
 	LASSO_HTTP_METHOD_REDIRECT,
-	LASSO_HTTP_METHOD_SOAP
+	LASSO_HTTP_METHOD_SOAP,
+	LASSO_HTTP_METHOD_ARTIFACT_GET,
+	LASSO_HTTP_METHOD_ARTIFACT_POST
 } LassoHttpMethod;
 
 
@@ -76,6 +80,9 @@ typedef enum {
  * @LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER: Name Registration
  * @LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT: Single Logout
  * @LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON: Single Sign-On and Federation
+ * @LASSO_MD_PROTOCOL_TYPE_ARTIFACT_RESOLUTION: Artifact Resolution (SAML 2.0)
+ * @LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID: Manage Name Identifier (SAML 2.0)
+ * @LASSO_MD_PROTOCOL_TYPE_ASSERTION_ID_REQUEST: Assertion ID Request (SAML 2.0)
  *
  * Liberty Metadata Type.
  **/
@@ -84,7 +91,10 @@ typedef enum {
 	LASSO_MD_PROTOCOL_TYPE_NAME_IDENTIFIER_MAPPING,
 	LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER,
 	LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT,
-	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON
+	LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON,
+	LASSO_MD_PROTOCOL_TYPE_ARTIFACT_RESOLUTION,
+	LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID,
+	LASSO_MD_PROTOCOL_TYPE_ASSERTION_ID_REQUEST
 } LassoMdProtocolType;
 
 
@@ -101,6 +111,23 @@ typedef enum {
 	LASSO_PROVIDER_ROLE_SP,
 	LASSO_PROVIDER_ROLE_IDP
 } LassoProviderRole;
+
+
+/**
+ * LassoProtocolConformance:
+ * LASSO_PROTOCOL_LIBERTY_1_0: Liberty ID-FF 1.0
+ * LASSO_PROTOCOL_LIBERTY_1_1: Liberty ID-FF 1.1
+ * LASSO_PROTOCOL_LIBERTY_1_2: Liberty ID-FF 1.2 / ID-WSF 1.0
+ * LASSO_PROTOCOL_SAML_2_0: SAML 2.0
+ *
+ * Provider protocol conformance.
+ **/
+typedef enum {
+	LASSO_PROTOCOL_LIBERTY_1_0,
+	LASSO_PROTOCOL_LIBERTY_1_1,
+	LASSO_PROTOCOL_LIBERTY_1_2,
+	LASSO_PROTOCOL_SAML_2_0
+} LassoProtocolConformance;
 
 
 struct _LassoProvider {
@@ -145,6 +172,9 @@ LASSO_EXPORT gboolean lasso_provider_has_protocol_profile(LassoProvider *provide
 LASSO_EXPORT gchar* lasso_provider_get_base64_succinct_id(LassoProvider *provider);
 
 LASSO_EXPORT xmlNode* lasso_provider_get_organization(LassoProvider *provider);
+
+LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
+		LassoProvider *provider);
 
 #ifdef __cplusplus
 }

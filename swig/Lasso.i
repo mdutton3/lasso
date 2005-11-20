@@ -40,6 +40,11 @@
 #define LASSO_WSF_ENABLED
 #endif
 
+#ifndef SWIGPHP4
+%rename(SAML2_SUPPORT) LASSO_SAML2_SUPPORT;
+#endif
+%include Lasso-saml2.i
+
 %{
 
 #if defined(SWIGRUBY) || defined (PHP_VERSION)
@@ -518,7 +523,7 @@ typedef struct node_info {
 #endif
 } node_info;
 
-static node_info node_infos[100]; /* FIXME: Size should be computed */
+static node_info node_infos[250]; /* FIXME: Size should be computed */
 
 /* Cast a LassoNode into the appropriate derivated class. */
 static swig_type_info *dynamic_cast_node(void **nodePointer) {
@@ -649,6 +654,7 @@ DYNAMIC_CAST(SWIGTYPE_p_LassoSamlpResponseAbstract, dynamic_cast_node);
 
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
+%include saml-2.0/inheritance.h
 
 #else /* ifdef SWIGCSHARP */
 
@@ -663,6 +669,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 
 SET_NODE_INFO(Node, DowncastableNode)
 %include inheritance.h
+%include saml-2.0/inheritance.h
 
 #else /* ifdef SWIGJAVA */
 
@@ -684,6 +691,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 #endif
 
 #include <swig/inheritance.h>
+#include <swig/saml-2.0/inheritance.h>
 
 	info->name = NULL;
 	info->swig = NULL;
@@ -716,6 +724,8 @@ SET_NODE_INFO(Node, DowncastableNode)
 %rename(HTTP_METHOD_POST) LASSO_HTTP_METHOD_POST;
 %rename(HTTP_METHOD_REDIRECT) LASSO_HTTP_METHOD_REDIRECT;
 %rename(HTTP_METHOD_SOAP) LASSO_HTTP_METHOD_SOAP;
+%rename(HTTP_METHOD_ARTIFACT_GET) LASSO_HTTP_METHOD_ARTIFACT_GET;
+%rename(HTTP_METHOD_ARTIFACT_POST) LASSO_HTTP_METHOD_ARTIFACT_POST;
 %rename(HttpMethod) LassoHttpMethod;
 #endif
 typedef enum {
@@ -725,7 +735,9 @@ typedef enum {
 	LASSO_HTTP_METHOD_GET,
 	LASSO_HTTP_METHOD_POST,
 	LASSO_HTTP_METHOD_REDIRECT,
-	LASSO_HTTP_METHOD_SOAP
+	LASSO_HTTP_METHOD_SOAP,
+	LASSO_HTTP_METHOD_ARTIFACT_GET,
+	LASSO_HTTP_METHOD_ARTIFACT_POST
 } LassoHttpMethod;
 
 /* Consent */
@@ -815,6 +827,21 @@ typedef enum {
 	LASSO_PROVIDER_ROLE_SP,
 	LASSO_PROVIDER_ROLE_IDP
 } LassoProviderRole;
+
+/* ProtocolConformance */
+#ifndef SWIGPHP4
+%rename(PROTOCOL_LIBERTY_1_0) LASSO_PROTOCOL_LIBERTY_1_0;
+%rename(PROTOCOL_LIBERTY_1_1) LASSO_PROTOCOL_LIBERTY_1_1;
+%rename(PROTOCOL_LIBERTY_1_2) LASSO_PROTOCOL_LIBERTY_1_2;
+%rename(PROTOCOL_SAML_2_0) LASSO_PROTOCOL_SAML_2_0;
+%rename(ProtocolConformance) LassoProtocolConformance;
+#endif
+typedef enum {
+	LASSO_PROTOCOL_LIBERTY_1_0,
+	LASSO_PROTOCOL_LIBERTY_1_1,
+	LASSO_PROTOCOL_LIBERTY_1_2,
+	LASSO_PROTOCOL_SAML_2_0
+} LassoProtocolConformance;
 
 /* RequestType */
 #ifndef SWIGPHP4
@@ -4903,7 +4930,7 @@ typedef struct {
 	char* getOrganization();
 
 	LassoHttpMethod getFirstHttpMethod(
-			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+			LassoProvider *remote_provider, int protocol_type);
 
 	// FIXME: GList* lasso_provider_get_metadata_list(char *name);
 
@@ -4911,6 +4938,8 @@ typedef struct {
 	char* getMetadataOne(char *name);
 
 	gboolean hasProtocolProfile(LassoMdProtocolType protocol_type, char *protocol_profile);
+
+	LassoProtocolConformance getProtocolConformance();
 }
 
 %{
@@ -4936,8 +4965,10 @@ typedef struct {
 #define LassoProvider_getBase64SuccinctId lasso_provider_get_base64_succinct_id
 #define LassoProvider_getFirstHttpMethod lasso_provider_get_first_http_method
 #define LassoProvider_getMetadataOne lasso_provider_get_metadata_one
+#define LassoProvider_getProtocolConformance lasso_provider_get_protocol_conformance
 #define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
 #define LassoProvider_getOrganization(self) get_xml_string(lasso_provider_get_organization(self))
+
 
 %}
 
@@ -5027,7 +5058,7 @@ typedef struct {
 	char* getOrganization();
 
 	LassoHttpMethod getFirstHttpMethod(
-			LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+			LassoProvider *remote_provider, int protocol_type);
 
 	// FIXME: GList* lasso_provider_get_metadata_list(char *name);
 
@@ -5035,6 +5066,8 @@ typedef struct {
 	char* getMetadataOne(char *name);
 
 	gboolean hasProtocolProfile(LassoMdProtocolType protocol_type, char *protocol_profile);
+
+	LassoProtocolConformance getProtocolConformance();
 
 	/* Methods */
 
@@ -5120,6 +5153,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 #define LassoServer_getBase64SuccinctId(server) lasso_provider_get_base64_succinct_id(LASSO_PROVIDER(server))
 #define LassoServer_getFirstHttpMethod(server, remote_provider, protocol_type) lasso_provider_get_first_http_method(LASSO_PROVIDER(server), remote_provider, protocol_type)
 #define LassoServer_getMetadataOne(server, name) lasso_provider_get_metadata_one(LASSO_PROVIDER(server), name)
+#define LassoServer_getProtocolConformance(server) lasso_provider_get_protocol_conformance(LASSO_PROVIDER(server))
 #define LassoServer_hasProtocolProfile(server, protocol_type, protocol_profile) lasso_provider_has_protocol_profile(LASSO_PROVIDER(server), protocol_type, protocol_profile)
 #define LassoServer_getOrganization(server) get_xml_string(lasso_provider_get_organization(LASSO_PROVIDER(server)))
 
@@ -5157,13 +5191,13 @@ typedef struct {
 	%rename(localNameIdentifier) local_nameIdentifier;
 #endif
 	%newobject local_nameIdentifier_get;
-	LassoSamlNameIdentifier *local_nameIdentifier;
+	LassoNode *local_nameIdentifier;
 
 #ifndef SWIGPHP4
 	%rename(remoteNameIdentifier) remote_nameIdentifier;
 #endif
 	%newobject remote_nameIdentifier_get;
-	LassoSamlNameIdentifier *remote_nameIdentifier;
+	LassoNode *remote_nameIdentifier;
 
 	/* Constructor, Destructor & Static Methods */
 
@@ -5435,6 +5469,10 @@ typedef struct {
 } LassoDefederation;
 %extend LassoDefederation {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -5455,15 +5493,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -5516,6 +5554,16 @@ typedef struct {
 #define LassoDefederation_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoDefederation_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoDefederation_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoDefederation_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoDefederation_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoDefederation_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoDefederation_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoDefederation_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoDefederation_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
 
 /* isIdentityDirty */
 #define LassoDefederation_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -5617,6 +5665,10 @@ typedef struct {
 } LassoLogin;
 %extend LassoLogin {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -5637,15 +5689,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -5766,6 +5818,16 @@ typedef struct {
 #define LassoLogin_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoLogin_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 
+/* artifact */
+#define LassoLogin_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoLogin_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoLogin_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLogin_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLogin_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoLogin_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+
 /* isIdentityDirty */
 #define LassoLogin_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
 #define LassoLogin_isIdentityDirty_get(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -5880,6 +5942,10 @@ typedef struct {
 } LassoLogout;
 %extend LassoLogout {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -5900,15 +5966,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -5982,6 +6048,16 @@ typedef struct {
 #define LassoLogout_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLogout_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoLogout_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoLogout_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoLogout_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoLogout_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLogout_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLogout_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoLogout_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
 
 /* isIdentityDirty */
 #define LassoLogout_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -6089,6 +6165,10 @@ typedef struct {
 } LassoLecp;
 %extend LassoLecp {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -6109,15 +6189,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -6207,6 +6287,16 @@ typedef struct {
 #define LassoLecp_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoLecp_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoLecp_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoLecp_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoLecp_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoLecp_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLecp_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoLecp_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoLecp_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
 
 /* isIdentityDirty */
 #define LassoLecp_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -6333,6 +6423,10 @@ typedef struct {
 } LassoNameIdentifierMapping;
 %extend LassoNameIdentifierMapping {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -6350,15 +6444,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -6418,6 +6512,16 @@ typedef struct {
 #define LassoNameIdentifierMapping_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoNameIdentifierMapping_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoNameIdentifierMapping_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoNameIdentifierMapping_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoNameIdentifierMapping_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoNameIdentifierMapping_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameIdentifierMapping_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameIdentifierMapping_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoNameIdentifierMapping_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
 
 /* isIdentityDirty */
 #define LassoNameIdentifierMapping_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -6514,6 +6618,10 @@ typedef struct {
 } LassoNameRegistration;
 %extend LassoNameRegistration {
 	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
 
 	%newobject identity_get;
 	LassoIdentity *identity;
@@ -6534,15 +6642,15 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier;
 
 	char *remoteProviderId;
 
 	%newobject request_get;
-	LassoSamlpRequestAbstract *request;
+	LassoNode *request;
 
 	%newobject response_get;
-	LassoSamlpResponseAbstract *response;
+	LassoNode *response;
 
 	%newobject server_get;
 	LassoServer *server;
@@ -6614,6 +6722,16 @@ typedef struct {
 #define LassoNameRegistration_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
 #define LassoNameRegistration_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
 #define LassoNameRegistration_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoNameRegistration_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoNameRegistration_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoNameRegistration_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameRegistration_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameRegistration_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoNameRegistration_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
 
 /* isIdentityDirty */
 #define LassoNameRegistration_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
@@ -6714,4 +6832,6 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 #ifdef LASSO_WSF_ENABLED
 %include Lasso-wsf.i
 #endif
+
+%include saml-2.0/main.h
 

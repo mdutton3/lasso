@@ -68,9 +68,9 @@ struct _LassoLibLogoutRequestClass {
 };
 
 LASSO_EXPORT GType lasso_lib_logout_request_get_type(void);
-LASSO_EXPORT LassoSamlpRequestAbstract* lasso_lib_logout_request_new(void);
+LASSO_EXPORT LassoNode* lasso_lib_logout_request_new(void);
 
-LASSO_EXPORT LassoSamlpRequestAbstract* lasso_lib_logout_request_new_full(
+LASSO_EXPORT LassoNode* lasso_lib_logout_request_new_full(
 		char *providerID, LassoSamlNameIdentifier *nameIdentifier,
 		LassoSignatureType sign_type, LassoSignatureMethod sign_method);
 

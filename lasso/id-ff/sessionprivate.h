@@ -34,11 +34,11 @@ extern "C" {
 #include <lasso/id-ff/session.h>
 
 gint lasso_session_add_assertion(LassoSession *session,
-		char *providerID, LassoSamlAssertion *assertion);
+		char *providerID, LassoNode *assertion);
 gint lasso_session_add_status(LassoSession *session,
 		char *providerID, LassoSamlpStatus *authn_response);
 
-LassoSamlAssertion* lasso_session_get_assertion(
+LassoNode* lasso_session_get_assertion(
 		LassoSession *session, gchar *providerID);
 LassoSamlpStatus* lasso_session_get_status(
 		LassoSession *session, gchar *providerID);

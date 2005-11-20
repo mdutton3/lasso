@@ -127,7 +127,7 @@ lasso_lib_name_identifier_mapping_request_get_type()
  *
  * Return value: a newly created #LassoLibNameIdentifierMappingRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_name_identifier_mapping_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_NAME_IDENTIFIER_MAPPING_REQUEST, NULL);
@@ -147,7 +147,7 @@ lasso_lib_name_identifier_mapping_request_new()
  *
  * Return value: a newly created #LassoLibNameIdentifierMappingRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 		LassoSamlNameIdentifier *nameIdentifier, const char *targetNamespace,
 		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
@@ -173,5 +173,5 @@ lasso_lib_name_identifier_mapping_request_new_full(char *providerID,
 
 	/* XXX: consent ?  */
 
-	return request;
+	return LASSO_NODE(request);
 }

@@ -151,7 +151,7 @@ lasso_samlp_response_get_type()
  *
  * Return value: a newly created #LassoSamlpResponse object
  **/
-LassoSamlpResponseAbstract*
+LassoNode*
 lasso_samlp_response_new()
 {
 	LassoSamlpResponseAbstract *response;
@@ -172,5 +172,5 @@ lasso_samlp_response_new()
 	status->StatusCode = status_code;
 	LASSO_SAMLP_RESPONSE(response)->Status = status;
 
-	return response;
+	return LASSO_NODE(response);
 }

@@ -1,3 +1,5 @@
+SUBDIRS = saml-2.0
+
 liblassoincludedir = $(includedir)/lasso/xml
 
 INCLUDES = \

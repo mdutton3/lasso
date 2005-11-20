@@ -68,7 +68,7 @@ struct _LassoLibAuthnResponseClass {
 };
 
 LASSO_EXPORT GType lasso_lib_authn_response_get_type(void);
-LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_authn_response_new(
+LASSO_EXPORT LassoNode* lasso_lib_authn_response_new(
 		char *providerID, LassoLibAuthnRequest *request);
 
 #ifdef __cplusplus

@@ -47,7 +47,7 @@ struct _LassoSessionPrivate
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_add_assertion(LassoSession *session, char *providerID, LassoSamlAssertion *assertion)
+lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *assertion)
 {
 	g_return_val_if_fail(session != NULL, -1);
 	g_return_val_if_fail(providerID != NULL, -2);
@@ -96,7 +96,7 @@ lasso_session_add_status(LassoSession *session, char *providerID, LassoSamlpStat
  *      #LassoSamlAssertion is internally allocated and must not be freed by
  *      the caller.
  **/
-LassoSamlAssertion*
+LassoNode*
 lasso_session_get_assertion(LassoSession *session, gchar *providerID)
 {
 	return g_hash_table_lookup(session->assertions, providerID);

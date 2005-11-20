@@ -33,7 +33,7 @@ struct _LassoFederationPrivate
 /* static methods/functions                                                  */
 /*****************************************************************************/
 
-static LassoSamlNameIdentifier*
+static LassoNode*
 lasso_federation_build_name_identifier(const gchar *nameQualifier,
 		const gchar *format, const gchar *content)
 {
@@ -49,7 +49,7 @@ lasso_federation_build_name_identifier(const gchar *nameQualifier,
 	nameIdentifier->NameQualifier = g_strdup(nameQualifier);
 	nameIdentifier->Format = g_strdup(format);
 
-	return nameIdentifier;
+	return LASSO_NODE(nameIdentifier);
 }
 
 /*****************************************************************************/
@@ -107,7 +107,7 @@ lasso_federation_verify_name_identifier(LassoFederation *federation,
 
 	/* verify local name identifier */
 	if (federation->local_nameIdentifier != NULL) {
-		s = federation->local_nameIdentifier->content;
+		s = LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier)->content;
 		if (strcmp(s, name_identifier->content) == 0) {
 			return TRUE;
 		}
@@ -115,7 +115,7 @@ lasso_federation_verify_name_identifier(LassoFederation *federation,
 
 	/* verify remote name identifier */
 	if (federation->remote_nameIdentifier != NULL) {
-		s = federation->remote_nameIdentifier->content;
+		s = LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier)->content;
 		if (strcmp(s, name_identifier->content) == 0) {
 			return TRUE;
 		}

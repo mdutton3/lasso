@@ -29,21 +29,12 @@
 #include <xmlsec/errors.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
+#include <xmlsec/templates.h>
 
 #include <lasso/id-ff/provider.h>
 #include <lasso/id-ff/providerprivate.h>
 
-struct _LassoProviderPrivate
-{
-	gboolean dispose_has_run;
-	LibertyConformanceLevel conformance;
-	GHashTable *SPDescriptor;
-	char *default_assertion_consumer;
-	GHashTable *IDPDescriptor;
-	xmlNode *organization;
-	xmlSecKey *public_key;
-	xmlNode *signing_key_descriptor;
-};
+#include <lasso/saml-2.0/providerprivate.h>
 
 static char *protocol_uris[] = {
 	"http://projectliberty.org/profiles/fedterm",
@@ -166,7 +157,8 @@ lasso_provider_get_metadata_list(LassoProvider *provider, const char *name)
  *
  * Return value: the #LassoHttpMethod
  **/
-LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
+LassoHttpMethod
+lasso_provider_get_first_http_method(LassoProvider *provider,
 		LassoProvider *remote_provider, LassoMdProtocolType protocol_type)
 {
 	char *protocol_profile_prefix;
@@ -174,6 +166,11 @@ LassoHttpMethod lasso_provider_get_first_http_method(LassoProvider *provider,
 	GList *remote_supported_profiles;
 	GList *t1, *t2 = NULL;
 	gboolean found;
+
+	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
+		return lasso_saml20_provider_get_first_http_method(
+				provider, remote_provider, protocol_type);
+	}
 
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
 		provider->role = LASSO_PROVIDER_ROLE_IDP;
@@ -581,8 +578,8 @@ lasso_provider_get_type()
 	return this_type;
 }
 
-LibertyConformanceLevel
-lasso_provider_compatibility_level(LassoProvider *provider)
+LassoProtocolConformance
+lasso_provider_get_protocol_conformance(LassoProvider *provider)
 {
 	return provider->private_data->conformance;
 }
@@ -601,9 +598,19 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	doc = xmlParseFile(metadata);
 	if (doc == NULL)
 		return FALSE;
+	
+	node = xmlDocGetRootElement(doc);
+	if (node == NULL || node->ns == NULL)
+		return FALSE;
 
 	provider->metadata_filename = g_strdup(metadata);
-	provider->private_data->conformance = LIBERTY_1_2;
+
+	if (strcmp((char*)node->ns->href, LASSO_SAML20_METADATA_HREF) == 0) {
+		provider->private_data->conformance = LASSO_PROTOCOL_SAML_2_0;
+		return lasso_saml20_provider_load_metadata(provider, node);
+	}
+
+	provider->private_data->conformance = LASSO_PROTOCOL_LIBERTY_1_2;
 
 	xpathCtx = xmlXPathNewContext(doc);
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"md", (xmlChar*)LASSO_METADATA_HREF);
@@ -621,7 +628,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 			xmlXPathFreeContext(xpathCtx);
 			return FALSE;
 		}
-		provider->private_data->conformance = LIBERTY_1_1;
+		provider->private_data->conformance = LASSO_PROTOCOL_LIBERTY_1_1;
 		xpath_idp = "/md11:IDPDescriptor";
 		xpath_sp = "/md11:SPDescriptor";
 	}
@@ -632,7 +639,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->IDPDescriptor, provider);
-		if (provider->private_data->conformance < LIBERTY_1_2) {
+		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
@@ -650,7 +657,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
 		load_descriptor(xpathObj->nodesetval->nodeTab[0],
 				provider->private_data->SPDescriptor, provider);
-		if (provider->private_data->conformance < LIBERTY_1_2) {
+		if (provider->private_data->conformance < LASSO_PROTOCOL_LIBERTY_1_2) {
 			/* lookup ProviderID */
 			node = xpathObj->nodesetval->nodeTab[0]->children;
 			while (node) {
@@ -711,6 +718,46 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
+/*
+	xmlSecKeyDataIdListDebugDump(xmlSecKeyDataIdsGet(), stdout);
+	*/
+	fprintf(stderr, "key: %p\n", LASSO_PROVIDER(provider)->private_data->public_key);
+	fprintf(stderr, "key: %p\n", LASSO_PROVIDER(provider)->private_data->public_key->value);
+	xmlSecKeyDataDebugXmlDump(
+			LASSO_PROVIDER(provider)->private_data->public_key->value,
+			stdout);
+
+	/*
+	xmlSecKeyDataDebugXmlDump(
+			xmlSecKeyGetData(LASSO_PROVIDER(provider)->private_data->public_key,
+				xmlSecKeyDataValueGetKlass()),
+			stdout);
+			*/
+	{
+		xmlNode *node, *ki_node;
+		xmlSecKeyInfoCtxPtr ctx;
+		xmlOutputBufferPtr buf;
+		xmlCharEncodingHandlerPtr handler = NULL;
+		xmlChar *buffer;
+
+		ctx = xmlSecKeyInfoCtxCreate(NULL);
+		ctx->mode = xmlSecKeyInfoModeWrite;
+		xmlSecKeyDebugDump(provider->private_data->public_key, stdout);
+		xmlSecKeyInfoCtxDebugDump(ctx, stdout);
+		node = xmlNewNode(NULL, "Toto");
+		ki_node = xmlSecAddChild(node, xmlSecNodeKeyInfo, xmlSecDSigNs);
+		xmlSecTmplKeyInfoAddKeyName(ki_node, NULL);
+		xmlSecTmplKeyInfoAddKeyValue(ki_node);
+		xmlSecKeyInfoNodeWrite(ki_node, provider->private_data->public_key, ctx);
+
+		handler = xmlFindCharEncodingHandler("utf-8");
+		buf = xmlAllocOutputBuffer(handler);
+		xmlNodeDumpOutput(buf, NULL, node, 0, 0, "utf-8");
+		xmlOutputBufferFlush(buf);
+		buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+		fprintf(stderr, "buffer: \n%s\n", buffer);
+
+	}
 
 	return provider;
 }
@@ -741,12 +788,21 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		xmlSecByte *value;
 		int length;
 		int rc;
+		xmlSecKey *xmlseckey;
+		xmlSecKeyInfoCtxPtr ctx;
+
+		xmlseckey = xmlSecKeyCreate();
+
+		ctx = xmlSecKeyInfoCtxCreate(NULL);
+		ctx->mode = xmlSecKeyInfoModeRead;
 
 		/* could use XPath but going down manually will do */
 		while (t) {
 			if (t->type == XML_ELEMENT_NODE) {
 				if (strcmp((char*)t->name, "KeyInfo") == 0 ||
 						strcmp((char*)t->name, "X509Data") == 0) {
+					xmlSecKeyInfoNodeRead(t, xmlseckey, ctx);
+					break;
 					t = t->children;
 					continue;
 				}
@@ -767,12 +823,12 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			xmlFree(b64_value);
 			g_free(value);
 		}
-		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+		//xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {
 			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
 					key_formats[i], NULL, NULL, NULL);
 		}
-		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+		//xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		xmlFree(b64_value);
 		g_free(value);
 		provider->private_data->public_key = pub_key;

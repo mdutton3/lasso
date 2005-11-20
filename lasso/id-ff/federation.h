@@ -52,8 +52,8 @@ struct _LassoFederation {
 
 	/*< public >*/
 	gchar *remote_providerID;
-	LassoSamlNameIdentifier *local_nameIdentifier;
-	LassoSamlNameIdentifier *remote_nameIdentifier;
+	LassoNode *local_nameIdentifier;
+	LassoNode *remote_nameIdentifier;
 
 	/*< private >*/
 	LassoFederationPrivate *private_data;

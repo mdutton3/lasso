@@ -563,6 +563,41 @@ AC_MSG_RESULT($enable_perl)
 AC_SUBST(PERL_VERSION)
 
 
+dnl Checks for zlib library (code adapted from libxml2 configure.in)
+_cppflags="${CPPFLAGS}" 
+_ldflags="${LDFLAGS}"
+
+AC_ARG_WITH(zlib,
+[  --with-zlib[[=DIR]]       use libz in DIR],[
+  if test "$withval" != "no" -a "$withval" != "yes"; then
+    Z_DIR=$withval
+    CPPFLAGS="${CPPFLAGS} -I$withval/include"
+    LDFLAGS="${LDFLAGS} -L$withval/lib"
+  fi
+]) 
+AC_CHECK_HEADERS(zlib.h,
+    AC_CHECK_LIB(z, gzread,[
+        AC_DEFINE([HAVE_LIBZ], [], [Have compression library])
+        if test "x${Z_DIR}" != "x"; then
+            Z_CFLAGS="-I${Z_DIR}/include"
+            Z_LIBS="-L${Z_DIR}/lib -lz"
+            [case ${host} in
+                *-*-solaris*)
+                    Z_LIBS="-L${Z_DIR}/lib -R${Z_DIR}/lib -lz"
+                    ;;
+            esac]
+        else
+            Z_LIBS="-lz"
+        fi]))
+
+test "z$Z_LIBS" != "z" || AC_MSG_ERROR(missing zlib)
+
+AC_SUBST(Z_CFLAGS)
+AC_SUBST(Z_LIBS)
+
+CPPFLAGS=${_cppflags}
+LDFLAGS=${_ldflags}
+
 dnl ==========================================================================
 dnl Test suite (requires check)
 dnl ==========================================================================
@@ -740,7 +775,7 @@ dnl ==========================================================================
 dnl Final steps: lasso config
 dnl ==========================================================================
 LASSO_PUB_CFLAGS="$LASSO_DEFINES"
-LASSO_CORE_CFLAGS="$LASSO_CFLAGS $LASSO_DEFINES -DLASSO_INTERNALS" 
+LASSO_CORE_CFLAGS="$LASSO_CFLAGS $LASSO_DEFINES $Z_CFLAGS -DLASSO_INTERNALS" 
 if test $MINGW -eq 1; then 
   LASSO_CORE_LIBS="-llasso-0"
 else
@@ -749,7 +784,8 @@ fi
 AC_SUBST(LASSO_CORE_CFLAGS)
 AC_SUBST(LASSO_CORE_LIBS)
 
-LASSO_LIBS="-L${libdir} $LASSO_LIBS"
+LASSO_CFLAGS="$LASSO_CFLAGS"
+LASSO_LIBS="-L${libdir} $Z_LIBS $LASSO_LIBS"
 AC_SUBST(LASSO_CFLAGS)
 AC_SUBST(LASSO_LIBS)
 
@@ -780,12 +816,15 @@ java/Makefile
 lasso/Makefile
 lasso/id-ff/Makefile
 lasso/id-wsf/Makefile
+lasso/saml-2.0/Makefile
 lasso/xml/Makefile
+lasso/xml/saml-2.0/Makefile
 perl/Makefile
 php/Makefile
 python/Makefile
 swig/Makefile
 swig/wsf-support.i
+swig/saml-2.0/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/data/ca1-la/Makefile

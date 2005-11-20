@@ -29,16 +29,22 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
-typedef enum {
-	LIBERTY_1_0,
-	LIBERTY_1_1,
-	LIBERTY_1_2,
-} LibertyConformanceLevel;
+struct _LassoProviderPrivate
+{
+	gboolean dispose_has_run;
+	LassoProtocolConformance conformance;
+	GHashTable *SPDescriptor;
+	char *default_assertion_consumer;
+	GHashTable *IDPDescriptor;
+	xmlNode *organization;
+	xmlSecKey *public_key;
+	xmlNode *signing_key_descriptor;
+};
+
 
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
-LibertyConformanceLevel lasso_provider_compatibility_level(LassoProvider *provider);
 gboolean lasso_provider_load_public_key(LassoProvider *provider);
 xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
 

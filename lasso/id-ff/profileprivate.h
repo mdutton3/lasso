@@ -32,6 +32,13 @@ extern "C" {
 
 #include <lasso/id-ff/profile.h>
 
+struct _LassoProfilePrivate
+{
+	char *artifact;
+	char *artifact_message;
+	gboolean dispose_has_run;
+};
+
 void lasso_profile_set_response_status(LassoProfile *profile, const gchar *statusCodeValue);
 
 #ifdef __cplusplus

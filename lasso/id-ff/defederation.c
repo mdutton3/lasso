@@ -83,8 +83,10 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 		/* build the logout request message */
 		profile->msg_url = lasso_provider_get_metadata_one(
 				remote_provider, "SoapEndpoint");
-		profile->request->private_key_file = profile->server->private_key;
-		profile->request->certificate_file = profile->server->certificate;
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file = 
+			profile->server->private_key;
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
+			profile->server->certificate;
 		profile->msg_body = lasso_node_export_to_soap(LASSO_NODE(profile->request));
 		return 0;
 	}
@@ -232,9 +234,9 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 			g_strdup(profile->msg_relayState);
 	}
 
-	if (lasso_provider_compatibility_level(remote_provider) < LIBERTY_1_2) {
-		profile->request->MajorVersion = 1;
-		profile->request->MinorVersion = 1;
+	if (lasso_provider_get_protocol_conformance(remote_provider) < LASSO_PROTOCOL_LIBERTY_1_2) {
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MajorVersion = 1;
+		LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->MinorVersion = 1;
 	}
 
 	/* remove federation with remote provider id */

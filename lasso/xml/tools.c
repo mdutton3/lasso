@@ -37,6 +37,8 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
 
+#include <zlib.h>
+
 #include <lasso/xml/xml.h>
 
 /**
@@ -655,5 +657,130 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlFreeDoc(doc);
 
 	return 0;
+}
+
+gchar*
+lasso_node_build_deflated_query(LassoNode *node)
+{
+	/* actually deflated and b64'ed and url-escaped */
+	xmlNode *message;
+	xmlOutputBufferPtr buf;
+	xmlCharEncodingHandlerPtr handler = NULL;
+	xmlChar *buffer;
+	xmlChar *ret, *orig_ret, *b64_ret;
+	z_stream zstr;
+	int z_err;
+	int buf_size;
+	char *rret;
+
+	message = lasso_node_get_xmlNode(node, FALSE);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+
+
+	zstr.zalloc = NULL;
+	zstr.zfree = NULL;
+	zstr.opaque = NULL;
+
+	zstr.avail_in = strlen((char*)buffer);
+	buf_size = zstr.avail_in*2;
+	ret = orig_ret = g_malloc(buf_size);
+		/* deflating should never increase the required size but we are
+		 * more conservative than that.  Twice the size should be
+		 * enough. */
+	zstr.next_in = buffer;
+	zstr.total_in = 0;
+	zstr.next_out = ret;
+
+	z_err = deflateInit(&zstr, 6);
+	if (z_err != Z_OK) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to deflateInit");
+		return NULL;
+	}
+	do {
+		z_err = deflate(&zstr, Z_FINISH);
+		if (z_err == Z_OK) {
+			buf_size *= 2;
+			ret = g_realloc(ret, buf_size);
+			zstr.next_out = (xmlChar*) orig_ret-zstr.next_out+ret;
+			orig_ret = ret;
+		}
+	} while (z_err == Z_OK);
+	if (z_err != Z_STREAM_END) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to deflate");
+		return NULL;
+	}
+
+	b64_ret = xmlSecBase64Encode(ret, zstr.total_out, 0);
+	xmlOutputBufferClose(buf);
+	free(ret);
+
+	ret = xmlURIEscapeStr(b64_ret, NULL);
+	rret = g_strdup((char*)ret);
+	xmlFree(b64_ret);
+	xmlFree(ret);
+
+	return rret;
+}
+
+gboolean
+lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
+{
+	int len;
+	xmlChar *b64_zre, *zre, *re;
+	z_stream zstr;
+	int z_err;
+	xmlDoc *doc;
+	xmlNode *root;
+
+	b64_zre = (xmlChar*)xmlURIUnescapeString(deflate_string, 0, NULL);
+	len = strlen((char*)b64_zre);
+	zre = xmlMalloc(len*4);
+	len = xmlSecBase64Decode(b64_zre, zre, len*4);
+	xmlFree(b64_zre);
+
+	zstr.zalloc = NULL;
+	zstr.zfree = NULL;
+	zstr.opaque = NULL;
+
+	zstr.avail_in = len;
+	re = xmlMalloc(len*10);
+	zstr.next_in = (xmlChar*)zre;
+	zstr.total_in = 0;
+	zstr.avail_out = len*10;
+	zstr.total_out = 0;
+	zstr.next_out = re;
+
+	z_err = inflateInit(&zstr);
+	if (z_err != Z_OK) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to inflateInit");
+		xmlFree(zre);
+		xmlFree(re);
+		return FALSE;
+	}
+
+	z_err = inflate(&zstr, Z_FINISH);
+	if (z_err != Z_STREAM_END) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to inflate");
+		inflateEnd(&zstr);
+		xmlFree(zre);
+		xmlFree(re);
+		return FALSE;
+	}
+	re[zstr.total_out] = 0;
+	inflateEnd(&zstr);
+	xmlFree(zre);
+
+	doc = xmlParseMemory((char*)re, strlen((char*)re));
+	xmlFree(re);
+	root = xmlDocGetRootElement(doc);
+	lasso_node_init_from_xml(node, root);
+	xmlFreeDoc(doc);
+
+	return TRUE;
 }
 

@@ -122,7 +122,7 @@ lasso_lib_authn_response_get_type()
  *
  * Return value: a newly created #LassoLibAuthnResponse object
  **/
-LassoSamlpResponseAbstract*
+LassoNode*
 lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 {
 	LassoLibAuthnResponse *response;
@@ -138,5 +138,5 @@ lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 		response->RelayState = g_strdup(request->RelayState);
 	}
 
-	return LASSO_SAMLP_RESPONSE_ABSTRACT(response);
+	return LASSO_NODE(response);
 }

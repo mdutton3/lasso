@@ -61,8 +61,8 @@ struct _LassoLibRegisterNameIdentifierResponseClass {
 };
 
 LASSO_EXPORT GType lasso_lib_register_name_identifier_response_get_type(void);
-LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_register_name_identifier_response_new(void);
-LASSO_EXPORT LassoSamlpResponseAbstract* lasso_lib_register_name_identifier_response_new_full(
+LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_response_new(void);
+LASSO_EXPORT LassoNode* lasso_lib_register_name_identifier_response_new_full(
 		const char *providerID, const char *statusCodeValue,
 		LassoLibRegisterNameIdentifierRequest *request,
 		LassoSignatureType sign_type, LassoSignatureMethod sign_method);

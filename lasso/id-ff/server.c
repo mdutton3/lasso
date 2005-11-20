@@ -65,6 +65,18 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 		return critical_error(LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
 	}
 
+	if (LASSO_PROVIDER(server)->private_data->conformance == LASSO_PROTOCOL_SAML_2_0 &&
+			provider->private_data->conformance != LASSO_PROTOCOL_SAML_2_0) {
+		lasso_node_destroy(LASSO_NODE(provider));
+		return LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH;
+	}
+
+	if (LASSO_PROVIDER(server)->private_data->conformance == LASSO_PROTOCOL_LIBERTY_1_2 &&
+			provider->private_data->conformance > LASSO_PROTOCOL_LIBERTY_1_2) {
+		lasso_node_destroy(LASSO_NODE(provider));
+		return LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH;
+	}
+
 	g_hash_table_insert(server->providers, g_strdup(provider->ProviderID), provider);
 
 	return 0;

@@ -17,7 +17,8 @@ else:
 regex = re.compile('LASSO_EXPORT.*(lasso_[a-zA-Z0-9_]+).*\(')
 
 symbols = []
-for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir):
+for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir) + \
+        glob.glob('%s/*/*/*.h' % srcdir):
     symbols.extend(regex.findall(file(header_file).read().replace('\\\n', '')))
 
 wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service',

@@ -176,7 +176,7 @@ lasso_lib_logout_request_get_type()
  *
  * Return value: a newly created #LassoLibLogoutRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_logout_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_LOGOUT_REQUEST, NULL);
@@ -195,7 +195,7 @@ lasso_lib_logout_request_new()
  *
  * Return value: a newly created #LassoLibLogoutRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nameIdentifier,
 		LassoSignatureType sign_type, LassoSignatureMethod sign_method)
 {
@@ -212,5 +212,5 @@ lasso_lib_logout_request_new_full(char *providerID, LassoSamlNameIdentifier *nam
 	LASSO_LIB_LOGOUT_REQUEST(request)->ProviderID = g_strdup(providerID);
 	LASSO_LIB_LOGOUT_REQUEST(request)->NameIdentifier = g_object_ref(nameIdentifier);
 
-	return request;
+	return LASSO_NODE(request);
 }

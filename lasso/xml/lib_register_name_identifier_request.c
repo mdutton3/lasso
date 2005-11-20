@@ -202,7 +202,7 @@ lasso_lib_register_name_identifier_request_get_type()
  *
  * Return value: a newly created #LassoLibRegisterNameIdentifierRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_register_name_identifier_request_new()
 {
 	return g_object_new(LASSO_TYPE_LIB_REGISTER_NAME_IDENTIFIER_REQUEST, NULL);
@@ -223,7 +223,7 @@ lasso_lib_register_name_identifier_request_new()
  *
  * Return value: a newly created #LassoLibRegisterNameIdentifierRequest object
  **/
-LassoSamlpRequestAbstract*
+LassoNode*
 lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 		LassoSamlNameIdentifier *idpNameIdentifier,
 		LassoSamlNameIdentifier *spNameIdentifier,
@@ -248,5 +248,5 @@ lasso_lib_register_name_identifier_request_new_full(const char *providerID,
 	request->SPProvidedNameIdentifier = spNameIdentifier;
 	request->OldProvidedNameIdentifier = oldNameIdentifier;
 
-	return request_base;
+	return LASSO_NODE(request_base);
 }

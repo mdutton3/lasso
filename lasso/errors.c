@@ -67,9 +67,11 @@ lasso_strerror(int error_code)
 			return "Signature template has not been found.";
 
 		case LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND:
-			return "ProviderID unknown to LassoServer";
+			return "ProviderID unknown to LassoServer.";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED:
 			return "Failed to add new provider.";
+		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
+			return "Failed to add new provider (protocol mismatch).";
 
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported protocol profile";
