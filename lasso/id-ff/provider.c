@@ -718,46 +718,6 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
-/*
-	xmlSecKeyDataIdListDebugDump(xmlSecKeyDataIdsGet(), stdout);
-	*/
-	fprintf(stderr, "key: %p\n", LASSO_PROVIDER(provider)->private_data->public_key);
-	fprintf(stderr, "key: %p\n", LASSO_PROVIDER(provider)->private_data->public_key->value);
-	xmlSecKeyDataDebugXmlDump(
-			LASSO_PROVIDER(provider)->private_data->public_key->value,
-			stdout);
-
-	/*
-	xmlSecKeyDataDebugXmlDump(
-			xmlSecKeyGetData(LASSO_PROVIDER(provider)->private_data->public_key,
-				xmlSecKeyDataValueGetKlass()),
-			stdout);
-			*/
-	{
-		xmlNode *node, *ki_node;
-		xmlSecKeyInfoCtxPtr ctx;
-		xmlOutputBufferPtr buf;
-		xmlCharEncodingHandlerPtr handler = NULL;
-		xmlChar *buffer;
-
-		ctx = xmlSecKeyInfoCtxCreate(NULL);
-		ctx->mode = xmlSecKeyInfoModeWrite;
-		xmlSecKeyDebugDump(provider->private_data->public_key, stdout);
-		xmlSecKeyInfoCtxDebugDump(ctx, stdout);
-		node = xmlNewNode(NULL, "Toto");
-		ki_node = xmlSecAddChild(node, xmlSecNodeKeyInfo, xmlSecDSigNs);
-		xmlSecTmplKeyInfoAddKeyName(ki_node, NULL);
-		xmlSecTmplKeyInfoAddKeyValue(ki_node);
-		xmlSecKeyInfoNodeWrite(ki_node, provider->private_data->public_key, ctx);
-
-		handler = xmlFindCharEncodingHandler("utf-8");
-		buf = xmlAllocOutputBuffer(handler);
-		xmlNodeDumpOutput(buf, NULL, node, 0, 0, "utf-8");
-		xmlOutputBufferFlush(buf);
-		buffer = buf->conv ? buf->conv->content : buf->buffer->content;
-		fprintf(stderr, "buffer: \n%s\n", buffer);
-
-	}
 
 	return provider;
 }
