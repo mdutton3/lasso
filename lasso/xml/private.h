@@ -162,6 +162,10 @@ static inline void message(GLogLevelFlags level, const char *format, ...)
 
 #define critical_error(rc) error_code(G_LOG_LEVEL_CRITICAL, rc)
 
+#define IF_SAML2(profile) \
+	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
+			LASSO_PROTOCOL_SAML_2_0)
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

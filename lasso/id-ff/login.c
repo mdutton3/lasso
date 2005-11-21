@@ -218,8 +218,7 @@ lasso_login_build_assertion(LassoLogin *login,
 	if (profile->identity == NULL)
 		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_build_assertion(login,
 				authenticationMethod, authenticationInstant,
 				reauthenticateOnOrAfter, notBefore, notOnOrAfter);
@@ -582,8 +581,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	if (profile->response == NULL)
 		return LASSO_ERROR_UNDEFINED;
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_accept_sso(login);
 	}
 
@@ -671,8 +669,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_build_artifact_msg(login, http_method);
 	}
 
@@ -803,8 +800,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_build_authn_request_msg(login, remote_provider);
 	}
 
@@ -964,8 +960,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_build_request_msg(login);
 	}
 
@@ -1007,8 +1002,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) ==
-			LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_build_response_msg(login, remote_providerID);
 	}
 
@@ -1142,8 +1136,7 @@ lasso_login_init_authn_request(LassoLogin *login, const gchar *remote_providerID
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-			LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_init_authn_request(login, remote_provider, http_method);
 	}
 
@@ -1213,8 +1206,7 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 	
 	profile = LASSO_PROFILE(login);
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_init_request(login, response_msg,
 				response_http_method);
 	}
@@ -1328,8 +1320,7 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_must_ask_for_consent(login);
 	}
 
@@ -1359,8 +1350,7 @@ lasso_login_must_authenticate(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
 	
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_must_authenticate(login);
 	}
 
@@ -1410,8 +1400,7 @@ lasso_login_process_authn_request_msg(LassoLogin *login, const char *authn_reque
 
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_process_authn_request_msg(login, authn_request_msg);
 	}
 
@@ -1590,8 +1579,7 @@ lasso_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_process_request_msg(login, request_msg);
 	}
 
@@ -1632,8 +1620,7 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_process_response_msg(login, response_msg);
 	}
 
@@ -1916,8 +1903,7 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 
 	profile = LASSO_PROFILE(login);
 
-	if (lasso_provider_get_protocol_conformance(LASSO_PROVIDER(profile->server)) == \
-				LASSO_PROTOCOL_SAML_2_0) {
+	IF_SAML2(profile) {
 		return lasso_saml20_login_validate_request_msg(login,
 				authentication_result, is_consent_obtained);
 	}

@@ -250,8 +250,8 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 	} else {
 		response->sign_type = LASSO_SIGNATURE_TYPE_SIMPLE;
 	}
-	response->private_key_file = profile->server->private_key;
-	response->certificate_file = profile->server->certificate;
+	response->private_key_file = g_strdup(profile->server->private_key);
+	response->certificate_file = g_strdup(profile->server->certificate);
 	
 	profile->response = LASSO_NODE(response);
 	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);

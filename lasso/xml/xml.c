@@ -1121,6 +1121,7 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_LASSO_DUMP:
 			case SNIPPET_OPTIONAL:
 			case SNIPPET_OPTIONAL_NEG:
+			case SNIPPET_ANY:
 				g_assert_not_reached();
 		}
 		if (snippet->type & SNIPPET_INTEGER)

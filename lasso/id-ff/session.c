@@ -333,8 +333,9 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
 			
 			if (n) {
-				LassoLibAssertion *assertion;
-				assertion = LASSO_LIB_ASSERTION(lasso_node_new_from_xmlNode(n));
+				LassoNode *assertion;
+
+				assertion = lasso_node_new_from_xmlNode(n);
 				g_hash_table_insert(session->assertions,
 						xmlGetProp(t, (xmlChar*)"RemoteProviderID"),
 						assertion);

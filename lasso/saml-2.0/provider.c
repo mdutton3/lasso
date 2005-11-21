@@ -27,6 +27,17 @@
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 
+const char *profile_names[] = {
+	"", /* No fedterm in SAML 2.0 */
+	"NameIDMappingService",
+	"", /* No rni in SAML 2.0 */
+	"SingleLogoutService",
+	"SingleSignOnService",
+	"ArtifactResolutionService",
+	"ManageNameIDService",
+	"AssertionIDRequestService",
+	NULL
+};
 
 static void
 load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provider)
@@ -35,8 +46,8 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 	int i;
 	xmlNode *t;
 	GList *elements;
-	char *name, *binding;
-	xmlChar *value;
+	char *name, *binding, *response_name;
+	xmlChar *value, *response_value;
 
 	t = xmlnode->children;
 	while (t) {
@@ -91,6 +102,15 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				name = g_strdup_printf("%s %s", t->name, binding_s);
 			}
 			xmlFree(binding);
+
+			response_value = xmlGetProp(t, (xmlChar*)"ResponseLocation");
+			if (response_value) {
+				response_name = g_strdup_printf("%s ResponseLocation", name);
+				elements = g_hash_table_lookup(descriptor, response_name);
+				elements = g_list_append(elements, g_strdup((char*)response_value));
+				g_hash_table_insert(descriptor, response_name, elements);
+				xmlFree(response_value);
+			}
 		} else {
 			name = g_strdup((char*)t->name);
 			value = xmlNodeGetContent(t);
@@ -183,18 +203,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 	LassoHttpMethod method_bindings[] = {
 		LASSO_HTTP_METHOD_SOAP, LASSO_HTTP_METHOD_REDIRECT, LASSO_HTTP_METHOD_POST
 	};
-	const char *profiles[] = {
-		"", /* No fedterm in SAML 2.0 */
-		"NameIDMappingService",
-		"", /* No rni in SAML 2.0 */
-		"SingleLogoutService",
-		"SingleSignOnService",
-		"ArtifactResolutionService",
-		"ManageNameIDService",
-		"AssertionIDRequestService",
-		NULL
-	};
-		
+			
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
 		provider->role = LASSO_PROVIDER_ROLE_IDP;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP)
@@ -204,7 +213,7 @@ lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
 		char *s;
 		GList *l1, *l2;
 
-		s = g_strdup_printf("%s %s", profiles[protocol_type], possible_bindings[i]);
+		s = g_strdup_printf("%s %s", profile_names[protocol_type], possible_bindings[i]);
 		l1 = lasso_provider_get_metadata_list(provider, s);
 		l2 = lasso_provider_get_metadata_list(remote_provider, s);
 		if (l1 && l2) {
@@ -251,4 +260,46 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 		return g_strdup(l->data);
 	return NULL;
 }
+
+gboolean
+lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
+		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,
+		gboolean initiate_profile)
+{       
+	LassoProviderRole initiating_role;
+	char *protocol_profile;
+	char *http_methods[] = {
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		"HTTP-Post",
+		"HTTP-Redirect",
+		"SOAP",
+		"HTTP-Artifact",
+		NULL
+	};
+
+
+	initiating_role = remote_provider->role;
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+		provider->role = LASSO_PROVIDER_ROLE_IDP;
+	}
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP) {
+		provider->role = LASSO_PROVIDER_ROLE_SP;
+	}
+	if (initiate_profile)
+		initiating_role = provider->role;
+
+	protocol_profile = g_strdup_printf("%s %s", profile_names[protocol_type],
+			http_methods[http_method+1]);
+
+	if (lasso_provider_get_metadata_list(provider, protocol_profile) &&
+			lasso_provider_get_metadata_list(remote_provider, protocol_profile)) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 

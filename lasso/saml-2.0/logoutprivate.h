@@ -22,32 +22,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SAML20_PROVIDER_PRIVATE_H__
-#define __LASSO_SAML20_PROVIDER_PRIVATE_H__
+#ifndef __LASSO_SAML20_LOGOUT_PRIVATE_H__
+#define __LASSO_SAML20_LOGOUT_PRIVATE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
-#include <lasso/id-ff/provider.h>
+#include <lasso/id-ff/logout.h>
 
-gboolean lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node);
+int lasso_saml20_logout_init_request(LassoLogout *logout,
+		LassoProvider *remote_provider, LassoHttpMethod http_method);
 
-LassoHttpMethod lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
+int lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote_provider);
 
-gboolean lasso_saml20_provider_accept_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
-		LassoHttpMethod http_method, gboolean initiate_profile);
+int lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg);
 
-char* lasso_saml20_provider_build_artifact(LassoProvider *provider);
+int lasso_saml20_logout_validate_request(LassoLogout *logout);
 
-gchar* lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider,
-		int service_id);
+int lasso_saml20_logout_build_response_msg(LassoLogout *logout);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SAML20_PROVIDER_PRIVATE_H__ */
+#endif /* __LASSO_SAML20_LOGOUT_PRIVATE_H__ */

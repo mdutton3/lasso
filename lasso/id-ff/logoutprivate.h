@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id$ 
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
@@ -22,32 +22,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_SAML20_PROVIDER_PRIVATE_H__
-#define __LASSO_SAML20_PROVIDER_PRIVATE_H__
+#ifndef __LASSO_LOGOUT_PRIVATE_H__
+#define __LASSO_LOGOUT_PRIVATE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
 
-#include <lasso/xml/xml.h>
-#include <lasso/id-ff/provider.h>
 
-gboolean lasso_saml20_provider_load_metadata(LassoProvider *provider, xmlNode *root_node);
-
-LassoHttpMethod lasso_saml20_provider_get_first_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type);
-
-gboolean lasso_saml20_provider_accept_http_method(LassoProvider *provider,
-		LassoProvider *remote_provider, LassoMdProtocolType protocol_type,
-		LassoHttpMethod http_method, gboolean initiate_profile);
-
-char* lasso_saml20_provider_build_artifact(LassoProvider *provider);
-
-gchar* lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider,
-		int service_id);
+struct _LassoLogoutPrivate
+{
+	gboolean dispose_has_run;
+	gboolean all_soap;
+};
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_SAML20_PROVIDER_PRIVATE_H__ */
+#endif /* __LASSO_LOGOUT_PRIVATE_H__ */

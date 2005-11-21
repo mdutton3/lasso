@@ -234,6 +234,12 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 	LassoProviderRole initiating_role;
 	char *protocol_profile;
 
+	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
+		return lasso_saml20_provider_accept_http_method(
+				provider, remote_provider, protocol_type,
+				http_method, initiate_profile);
+	}
+
 	initiating_role = remote_provider->role;
 	if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
 		provider->role = LASSO_PROVIDER_ROLE_IDP;

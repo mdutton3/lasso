@@ -152,6 +152,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *nameIdentifier;
+	LassoNode *nameIdentifier_n;
 
 	g_return_val_if_fail(LASSO_IS_DEFEDERATION(defederation),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
@@ -183,10 +184,11 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 	}
 
 	/* get the nameIdentifier to send the federation termination notification */
-	nameIdentifier = lasso_profile_get_nameIdentifier(profile);
+	nameIdentifier_n = lasso_profile_get_nameIdentifier(profile);
 	if (nameIdentifier == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
+	nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_n);
 
 	if (federation->local_nameIdentifier) {
 		profile->nameIdentifier = g_object_ref(federation->local_nameIdentifier);
@@ -393,7 +395,8 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 	}
 
-	if (lasso_federation_verify_name_identifier(federation, nameIdentifier) == FALSE) {
+	if (lasso_federation_verify_name_identifier(federation,
+				LASSO_NODE(nameIdentifier)) == FALSE) {
 		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 

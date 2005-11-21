@@ -68,6 +68,17 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, Consent) },
 	{ "Signature", SNIPPET_SIGNATURE,
 		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, ID) },
+
+	/* hidden fields; used in lasso dumps */
+	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_type) },
+	{ "SignMethod", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, sign_method) },
+	{ "PrivateKeyFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, private_key_file) },
+	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSamlp2RequestAbstract, certificate_file) },
+
 	{NULL, 0, 0}
 };
 

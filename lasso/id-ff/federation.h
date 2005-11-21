@@ -73,7 +73,7 @@ LASSO_EXPORT void lasso_federation_build_local_name_identifier(LassoFederation *
 LASSO_EXPORT void lasso_federation_destroy(LassoFederation *federation);
 
 LASSO_EXPORT gboolean lasso_federation_verify_name_identifier(
-		LassoFederation *federation, LassoSamlNameIdentifier *name_identifier);
+		LassoFederation *federation, LassoNode *name_identifier);
 
 #ifdef __cplusplus
 }

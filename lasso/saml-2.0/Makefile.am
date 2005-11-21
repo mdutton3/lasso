@@ -12,12 +12,14 @@ liblasso_saml_20_la_SOURCES = \
 	federation.c \
 	profile.c \
 	provider.c \
-	login.c
+	login.c \
+	logout.c
 
 lasso_private_h_sources = \
 	federationprivate.h \
 	profileprivate.h \
 	providerprivate.h \
-	loginprivate.h
+	loginprivate.h \
+	logoutprivate.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

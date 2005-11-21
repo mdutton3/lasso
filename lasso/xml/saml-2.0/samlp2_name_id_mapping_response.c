@@ -56,6 +56,32 @@ static struct XmlSnippet schema_snippets[] = {
 static LassoNodeClass *parent_class = NULL;
 
 
+static gchar*
+build_query(LassoNode *node)
+{
+	char *ret, *deflated_message;
+
+	deflated_message = lasso_node_build_deflated_query(node);
+	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
+	/* XXX: must support RelayState (which profiles?) */
+	g_free(deflated_message);
+	return ret;
+}
+
+
+static gboolean
+init_from_query(LassoNode *node, char **query_fields)
+{
+	gboolean rc;
+	char *relay_state = NULL;
+	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
+	if (rc && relay_state != NULL) {
+		/* XXX: support RelayState? */
+	}
+	return rc;
+}
+
+
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
@@ -73,6 +99,8 @@ class_init(LassoSamlp2NameIDMappingResponseClass *klass)
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
+	nclass->build_query = build_query;
+	nclass->init_from_query = init_from_query;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "NameIDMappingResponse"); 
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);

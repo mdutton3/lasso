@@ -39,16 +39,16 @@
 
 /**
  * lasso_profile_get_nameIdentifier:
- * @profile: a #LassoProifle
+ * @profile: a #LassoProfile
  *
  * Looks up appropriate federation in object and gets the service provider name
- * identifier.
+ * identifier (which is actually a #LassoSamlNameIdentifier in ID-FF 1.2 and
+ * #LassoSaml2NameID in SAML 2.0).
  *
- * Return value: the name identifier or NULL if none was found.  The
- *     #LassoSamlNameIdentifier object is internally allocated and must not be
- *     freed by the caller.
+ * Return value: the name identifier or NULL if none was found.  The #LassoNode
+ *     object is internally allocated and must not be *     freed by the caller.
  **/
-LassoSamlNameIdentifier*
+LassoNode*
 lasso_profile_get_nameIdentifier(LassoProfile *profile)
 {
 	LassoProvider *remote_provider;
@@ -71,9 +71,9 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 		return NULL;
 
 	if (federation->remote_nameIdentifier)
-		return LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier);
+		return federation->remote_nameIdentifier;
 
-	return LASSO_SAML_NAME_IDENTIFIER(federation->local_nameIdentifier);
+	return federation->local_nameIdentifier;
 }
 
 /**

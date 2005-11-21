@@ -133,9 +133,9 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		/* POST and Artifact-GET|POST */
 		if (must_sign) {
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file = 
-				profile->server->private_key;
+				g_strdup(profile->server->private_key);
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
-				profile->server->certificate;
+				g_strdup(profile->server->certificate);
 		}
 
 		if (login->http_method == LASSO_HTTP_METHOD_POST) {
@@ -189,6 +189,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	response->IssueInstant = lasso_get_current_time();
 	response->InResponseTo = g_strdup(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+	/* XXX: adds signature */
 
 	return 0;
 }
@@ -485,9 +486,9 @@ lasso_saml20_login_build_request_msg(LassoLogin *login)
 	profile->msg_body = lasso_node_export_to_soap(profile->request);
 
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
-		profile->server->private_key;
+		g_strdup(profile->server->private_key);
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
-		profile->server->certificate;
+		g_strdup(profile->server->certificate);
 	profile->msg_body = lasso_node_export_to_soap(profile->request);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,

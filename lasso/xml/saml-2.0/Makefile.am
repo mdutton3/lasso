@@ -43,7 +43,9 @@ liblasso_xml_saml2_la_SOURCES = \
 	samlp2_idp_entry.c \
 	samlp2_idp_list.c \
 	samlp2_logout_request.c \
+	samlp2_logout_response.c \
 	samlp2_manage_name_id_request.c \
+	samlp2_manage_name_id_response.c \
 	samlp2_name_id_mapping_request.c \
 	samlp2_name_id_mapping_response.c \
 	samlp2_name_id_policy.c \
@@ -93,7 +95,9 @@ liblassoinclude_HEADERS = \
 	samlp2_idp_entry.h \
 	samlp2_idp_list.h \
 	samlp2_logout_request.h \
+	samlp2_logout_response.h \
 	samlp2_manage_name_id_request.h \
+	samlp2_manage_name_id_response.h \
 	samlp2_name_id_mapping_request.h \
 	samlp2_name_id_mapping_response.h \
 	samlp2_name_id_policy.h \
