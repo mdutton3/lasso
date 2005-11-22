@@ -962,6 +962,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 
 	if (strchr(msg, '&')) {
 		/* looks like a query string */
+		/* XXX: detect SAML artifact messages to return a different status code ? */
 		if (lasso_node_init_from_query(node, msg) == FALSE) {
 			return LASSO_MESSAGE_FORMAT_ERROR;
 		}

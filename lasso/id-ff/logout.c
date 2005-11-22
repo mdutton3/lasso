@@ -555,9 +555,13 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 
 	profile = LASSO_PROFILE(logout);
 
+	IF_SAML2(profile) {
+		return lasso_saml20_process_response_msg(logout, response_msg);
+	}
+
 	/* before verify if profile->response is set */
 	if (LASSO_IS_LIB_LOGOUT_RESPONSE(profile->response) == TRUE) {
-		lasso_node_destroy(LASSO_NODE(profile->response));
+		lasso_node_destroy(profile->response);
 		profile->response = NULL;
 	}
 

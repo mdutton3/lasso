@@ -264,6 +264,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	response->IssueInstant = lasso_get_current_time();
 	response->InResponseTo = g_strdup(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
 
 	response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	if (profile->server->certificate) {
@@ -277,7 +278,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	/* verify signature status */
 	if (profile->signature_status != 0) {
 		/* XXX: which SAML2 Status Code ? */
-		lasso_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile, 
 				LASSO_LIB_STATUS_CODE_INVALID_SIGNATURE);
 		return profile->signature_status;
 	}
@@ -287,13 +288,14 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	if (name_id == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
 		/* XXX: which status code in SAML 2.0 ? */
-		lasso_profile_set_response_status(
+		lasso_saml20_profile_set_response_status(
 				profile, LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
 	if (profile->session == NULL) {
-		lasso_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		lasso_saml20_profile_set_response_status(profile,
+				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return critical_error(LASSO_PROFILE_ERROR_SESSION_NOT_FOUND);
 	}
 
@@ -301,7 +303,8 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	assertion_n = lasso_session_get_assertion(profile->session, profile->remote_providerID);
 	if (assertion_n == NULL) {
 		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
-		lasso_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
+		lasso_saml20_profile_set_response_status(profile,
+				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_ERROR_UNDEFINED;
 	}
 
@@ -311,7 +314,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	if (strcmp(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
 			/* XXX: which SAML 2 status code ? */
-			lasso_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
@@ -319,7 +322,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 				profile->remote_providerID);
 		if (LASSO_IS_FEDERATION(federation) == FALSE) {
 			/* XXX: which status code in SAML 2 ? */
-			lasso_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 		}
@@ -328,7 +331,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 					LASSO_NODE(name_id)) == FALSE) {
 			message(G_LOG_LEVEL_WARNING, "No name identifier for %s",
 					profile->remote_providerID);
-			lasso_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return LASSO_ERROR_UNDEFINED;
 		}
@@ -346,7 +349,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 				(GHFunc)check_soap_support, profile);
 
 		if (logout->private_data->all_soap == FALSE) {
-			lasso_profile_set_response_status(profile,
+			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_UNSUPPORTED_PROFILE);
 			return LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE;
 		}
@@ -417,7 +420,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 		response->IssueInstant = lasso_get_current_time();
 		response->InResponseTo = g_strdup(
 				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
-		lasso_profile_set_response_status(profile, 
+		lasso_saml20_profile_set_response_status(profile, 
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
 		response->sign_method = LASSO_SIGNATURE_METHOD_RSA_SHA1;
@@ -480,3 +483,122 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 
 }
 
+int
+lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg)
+{
+	LassoProfile *profile = LASSO_PROFILE(logout);
+	LassoHttpMethod response_method;
+	LassoProvider *remote_provider;
+	LassoSamlp2StatusResponse *response;
+	LassoMessageFormat format;
+	char *status_code_value;
+	int rc;
+
+	if (LASSO_IS_SAMLP2_LOGOUT_RESPONSE(profile->response) == TRUE) {
+		lasso_node_destroy(profile->response);
+		profile->response = NULL;
+	}
+
+	profile->response = lasso_samlp2_logout_response_new();
+	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
+
+	switch (format) {
+		case LASSO_MESSAGE_FORMAT_SOAP:
+			response_method = LASSO_HTTP_METHOD_SOAP;
+			break;
+		case LASSO_MESSAGE_FORMAT_QUERY:
+			response_method = LASSO_HTTP_METHOD_REDIRECT;
+			break;
+		default:
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	profile->remote_providerID = g_strdup(
+			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
+
+	/* get the provider */
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
+
+	/* verify signature */
+	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
+	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+		/* This message SHOULD be signed.
+		 *  -- draft-liberty-idff-protocols-schema-1.2-errata-v2.0.pdf - p38
+		 * XXX: is this also true for SAML 2.0?
+		 */
+		message(G_LOG_LEVEL_WARNING, "No signature on response");
+		rc = 0;
+	}
+
+	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
+
+	if (response->Status == NULL || response->Status->StatusCode == NULL
+			|| response->Status->StatusCode->Value == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "No Status in LogoutResponse !");
+		return LASSO_ERROR_UNDEFINED;
+	}
+	status_code_value = response->Status->StatusCode->Value;
+
+	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
+		/* If at SP, if the request method was a SOAP type, then
+		 * rebuild the request message with HTTP method */
+		/* XXX is this still what to do for SAML 2.0? */
+
+		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
+			/* assertion no longer on IdP so removing it locally
+			 * too */
+			lasso_session_remove_assertion(
+					profile->session, profile->remote_providerID);
+			return LASSO_LOGOUT_ERROR_REQUEST_DENIED;
+		}
+		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
+		return LASSO_ERROR_UNDEFINED;
+	}
+	
+	/* LogoutResponse status code value is ok */
+	/* XXX: handle RelayState if necessary */
+
+	/* if SOAP method or, if IDP provider type and HTTP Redirect,
+	 * then remove assertion */
+	if ( response_method == LASSO_HTTP_METHOD_SOAP ||
+			(remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
+			 response_method == LASSO_HTTP_METHOD_REDIRECT) ) {
+		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
+	}
+
+	/* If at IDP and if there is no more assertion, IDP has logged out
+	 * every SPs, return the initial response to initial SP.  Caution: We
+	 * can't use the test (remote_provider->role == LASSO_PROVIDER_ROLE_SP)
+	 * to know whether the server is acting as an IDP or a SP, because it
+	 * can be a proxy. So we have to use the role of the initial remote
+	 * provider instead.
+	 */
+	if (logout->initial_remote_providerID && 
+			g_hash_table_size(profile->session->assertions) == 0) {
+		remote_provider = g_hash_table_lookup(profile->server->providers,
+				logout->initial_remote_providerID);
+		if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) {
+			if (profile->remote_providerID != NULL)
+				g_free(profile->remote_providerID);
+			if (profile->request != NULL)
+				lasso_node_destroy(LASSO_NODE(profile->request));
+			if (profile->response != NULL)
+				lasso_node_destroy(LASSO_NODE(profile->response));
+
+			profile->remote_providerID = logout->initial_remote_providerID;
+			profile->request = logout->initial_request;
+			profile->response = logout->initial_response;
+
+			logout->initial_remote_providerID = NULL;
+			logout->initial_request = NULL;
+			logout->initial_response = NULL;
+		}
+	}
+
+	return rc;
+
+}
