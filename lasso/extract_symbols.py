@@ -4,10 +4,10 @@ import glob
 import re
 import sys
 
-enable_wsf = 0
+enable_wsf = False
 
 if '-wsf' in sys.argv:
-    enable_wsf = 1
+    enable_wsf = True
 
 if len(sys.argv) == 2+enable_wsf:
     srcdir = sys.argv[1]
@@ -19,6 +19,8 @@ regex = re.compile('LASSO_EXPORT.*(lasso_[a-zA-Z0-9_]+).*\(')
 symbols = []
 for header_file in glob.glob('%s/*/*.h' % srcdir) + glob.glob('%s/*.h' % srcdir) + \
         glob.glob('%s/*/*/*.h' % srcdir):
+    if '/id-wsf/' in header_file and not enable_wsf:
+        continue
     symbols.extend(regex.findall(file(header_file).read().replace('\\\n', '')))
 
 wsf = ['lasso_disco_', 'lasso_dst_', 'lasso_is_', 'lasso_profile_service',
