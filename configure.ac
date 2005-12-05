@@ -36,45 +36,12 @@ dnl ==========================================================================
 dnl Perform host specific configuration
 dnl ==========================================================================
 NULL=
-MINGW=0
-DARWIN=0
-dnl For java sun environment automagic include subdir guessing. (dirty ? No...)
+
+### Sun Java environment needs to be told about platform...
 SUN_EXTRA_INCLUDE=
 case "${host}" in
-    *aix* )
-	CFLAGS="${CFLAGS} -D_ALL_SOURCE"
-	;;
     *-pc-mingw32)
-        case "${build}" in
-            *-pc-cygwin)
-                CC="gcc -mno-cygwin"
-                CFLAGS="${CFLAGS} -D_MSC_VER -DIN_LASSO -DMINGW -DWIN32 -D_WIN32 -I/usr/local/include"
-                LDFLAGS="${LDFLAGS} -L/usr/local/lib"
-                MINGW=1
-                SUN_EXTRA_INCLUDE="win32" 
-                ;;
-            dnl ==========================================================================
-            dnl Workaround for non libtool standard library name specs.
-            dnl ==========================================================================
-            *)
-            SUN_EXTRA_INCLUDE="win32" 
-            ;;
-        esac
-
-dnl         if test -f "/cygdrive/c/windows/system/user32.dll"; then
-dnl             dnl make symbolic link.
-dnl             if test ! -f "/usr/local/lib/libuser32.dll"; then
-dnl                 AC_MSG_WARN([Create workaround symbolic links: user32.dll])
-dnl                 ln -s   /cygdrive/c/windows/system/user32.dll \
-dnl                         /usr/local/lib/libuser32.dll
-dnl             fi
-dnl             if test ! -f "/usr/local/lib/libkernel32.dll"; then
-dnl                 AC_MSG_WARN([Create workaround symbolic links: kernel32.dll])
-dnl                 ln -s   /cygdrive/c/windows/system/kernel32.dll \
-dnl                         /usr/local/lib/libkernel32.dll
-dnl             fi
-dnl         fi
-        dnl FIXME: This is a guessing, no test yet under windows with sun JDK
+        SUN_EXTRA_INCLUDE="win32" 
         ;;
     *-pc-cygwin)
         SUN_EXTRA_INCLUDE="win32" 
@@ -82,12 +49,29 @@ dnl         fi
     *linux*)
         SUN_EXTRA_INCLUDE="linux"
         ;;
-    *darwin*)
+esac
+
+### adapting build environment for different platforms...
+MINGW=0
+DARWIN=0
+case "${host}" in
+    *aix*)
+        CFLAGS="${CFLAGS} -D_ALL_SOURCE"
+        ;;
+    *-pc-mingw32)
+        case "${build}" in
+            *-pc-cygwin)
+                CC="gcc -mno-cygwin"
+                CFLAGS="${CFLAGS} -D_MSC_VER -DIN_LASSO -DMINGW -DWIN32 -D_WIN32 -I/usr/local/include"
+                LDFLAGS="${LDFLAGS} -L/usr/local/lib"
+                MINGW=1
+                ;;
+        esac
+        ;;
+    *-darwin*)
         DARWIN=1
         ;;
 esac
-
-
 
 # OSX Fink
 if test -d /sw/bin ; then
@@ -444,11 +428,11 @@ AC_SUBST(PHP_VERSION)
 # C# binding
 # ----------
 
-#AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
-#              enable_csharp="yes")
+AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
+              enable_csharp="yes")
 
-#AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
-#AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
+AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
+AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
 
 if test -z "$CSHARPCOMPILERBIN" ; then
   case $host in
@@ -462,7 +446,7 @@ fi
 
 CSHARPPATHSEPARATOR="/"
 CSHARPCYGPATH_W=echo
-if false and test -z "$CSHARPBIN" ; then
+if test -z "$CSHARPBIN" ; then
   #languages_available="$languages_available C#($CSHARPCOMPILER)"
   CSHARPCILINTERPRETER=""
   if test "cscc" = "$CSHARPCOMPILER" ; then
@@ -807,6 +791,8 @@ dnl ==========================================================================
 AC_CONFIG_FILES([lasso-src-config], [chmod +x lasso-src-config])
 AC_OUTPUT(
 [Makefile
+csharp/Makefile
+csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
 docs/lasso-book/figures/Makefile
@@ -872,6 +858,7 @@ Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
 PHP binding:            ${enable_php}
 Python binding:         ${enable_python}
+C# binding:             ${enable_csharp}
 
 C API references:       ${enable_gtk_doc}
 Tests suite:            ${enable_tests}
