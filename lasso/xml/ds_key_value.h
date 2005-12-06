@@ -22,48 +22,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LASSO_DS_KEY_INFO_H__
-#define __LASSO_DS_KEY_INFO_H__
+#ifndef __LASSO_DS_KEY_VALUE_H__
+#define __LASSO_DS_KEY_VALUE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/ds_rsa_key_value.h>
 
-#define LASSO_TYPE_DS_KEY_INFO (lasso_ds_key_info_get_type())
-#define LASSO_DS_KEY_INFO(obj) \
-	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DS_KEY_INFO, \
-				    LassoDsKeyInfo))
-#define LASSO_DS_KEY_INFO_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DS_KEY_INFO, \
-				 LassoDsKeyInfoClass))
-#define LASSO_IS_DS_KEY_INFO(obj) \
-	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DS_KEY_INFO))
-#define LASSO_IS_DS_KEY_INFO_CLASS(klass) \
-	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DS_KEY_INFO))
-#define LASSO_DS_KEY_INFO_GET_CLASS(o) \
-	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DS_KEY_INFO, \
-				    LassoDsKeyInfoClass)) 
+#define LASSO_TYPE_DS_KEY_VALUE (lasso_ds_key_value_get_type())
+#define LASSO_DS_KEY_VALUE(obj) \
+	(G_TYPE_CHECK_INSTANCE_CAST((obj), LASSO_TYPE_DS_KEY_VALUE, \
+				    LassoDsKeyValue))
+#define LASSO_DS_KEY_VALUE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_CAST((klass), LASSO_TYPE_DS_KEY_VALUE, \
+				 LassoDsKeyValueClass))
+#define LASSO_IS_DS_KEY_VALUE(obj) \
+	(G_TYPE_CHECK_INSTANCE_TYPE((obj), LASSO_TYPE_DS_KEY_VALUE))
+#define LASSO_IS_DS_KEY_VALUE_CLASS(klass) \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), LASSO_TYPE_DS_KEY_VALUE))
+#define LASSO_DS_KEY_VALUE_GET_CLASS(o) \
+	(G_TYPE_INSTANCE_GET_CLASS ((o), LASSO_TYPE_DS_KEY_VALUE, \
+				    LassoDsKeyValueClass)) 
 
-typedef struct _LassoDsKeyInfo LassoDsKeyInfo;
-typedef struct _LassoDsKeyInfoClass LassoDsKeyInfoClass;
+typedef struct _LassoDsKeyValue LassoDsKeyValue;
+typedef struct _LassoDsKeyValueClass LassoDsKeyValueClass;
 
-struct _LassoDsKeyInfo {
+struct _LassoDsKeyValue {
 	LassoNode parent;
 
-	LassoDsKeyValue *KeyValue;
+	LassoDsRsaKeyValue *RSAKeyValue;
 };
 
-struct _LassoDsKeyInfoClass {
+struct _LassoDsKeyValueClass {
 	LassoNodeClass parent;
 };
 
-LASSO_EXPORT GType lasso_ds_key_info_get_type(void);
-LASSO_EXPORT LassoDsKeyInfo* lasso_ds_key_info_new(void);
+LASSO_EXPORT GType lasso_ds_key_value_get_type(void);
+LASSO_EXPORT LassoDsKeyValue* lasso_ds_key_value_new(void);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LASSO_DS_KEY_INFO_H__ */
+#endif /* __LASSO_DS_KEY_VALUE_H__ */

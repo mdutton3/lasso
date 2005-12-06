@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/ds_key_info.h>
+#include <lasso/xml/ds_key_value.h>
 
 /*
  * 
@@ -33,7 +33,7 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "KeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyValue) },
+	{ "RSAKeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyValue, RSAKeyValue) },
 	{ NULL, 0, 0}
 };
 
@@ -42,56 +42,55 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDsKeyInfo *node)
+instance_init(LassoDsKeyValue *node)
 {
-  node->KeyName = NULL;
-  node->KeyValue = NULL;
+  node->RSAKeyValue = NULL;
 }
 
 static void
-class_init(LassoDsKeyInfoClass *klass)
+class_init(LassoDsKeyValueClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "KeyInfo");
+	lasso_node_class_set_nodename(nclass, "KeyValue");
 	lasso_node_class_set_ns(nclass, LASSO_DS_HREF, LASSO_DS_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_ds_key_info_get_type()
+lasso_ds_key_value_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDsKeyInfoClass),
+			sizeof (LassoDsKeyValueClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDsKeyInfo),
+			sizeof(LassoDsKeyValue),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDsKeyInfo", &this_info, 0);
+				"LassoDsKeyValue", &this_info, 0);
 	}
 	return this_type;
 }
 
 /**
- * lasso_ds_key_info_new:
+ * lasso_ds_key_value_new:
  * 
- * Creates a new #LassoDsKeyInfo object.
+ * Creates a new #LassoDsKeyValue object.
  * 
- * Return value: a newly created #LassoDsKeyInfo object
+ * Return value: a newly created #LassoDsKeyValue object
  **/
-LassoDsKeyInfo*
-lasso_ds_key_info_new()
+LassoDsKeyValue*
+lasso_ds_key_value_new()
 {
-	return g_object_new(LASSO_TYPE_DS_KEY_INFO, NULL);
+	return g_object_new(LASSO_TYPE_DS_KEY_VALUE, NULL);
 }

@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <lasso/xml/ds_key_info.h>
+#include <lasso/xml/ds_rsa_key_value.h>
 
 /*
  * 
@@ -33,7 +33,8 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "KeyValue", SNIPPET_NODE, G_STRUCT_OFFSET(LassoDsKeyInfo, KeyValue) },
+	{ "Modulus", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Modulus) },
+	{ "Exponent", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoDsRsaKeyValue, Exponent) },
 	{ NULL, 0, 0}
 };
 
@@ -42,56 +43,56 @@ static struct XmlSnippet schema_snippets[] = {
 /*****************************************************************************/
 
 static void
-instance_init(LassoDsKeyInfo *node)
+instance_init(LassoDsRsaKeyValue *node)
 {
-  node->KeyName = NULL;
-  node->KeyValue = NULL;
+	node->Modulus = NULL;
+	node->Exponent = NULL;
 }
 
 static void
-class_init(LassoDsKeyInfoClass *klass)
+class_init(LassoDsRsaKeyValueClass *klass)
 {
 	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
 
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "KeyInfo");
+	lasso_node_class_set_nodename(nclass, "RsaKeyValue");
 	lasso_node_class_set_ns(nclass, LASSO_DS_HREF, LASSO_DS_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
 
 GType
-lasso_ds_key_info_get_type()
+lasso_ds_rsa_key_value_get_type()
 {
 	static GType this_type = 0;
 
 	if (!this_type) {
 		static const GTypeInfo this_info = {
-			sizeof (LassoDsKeyInfoClass),
+			sizeof (LassoDsRsaKeyValueClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) class_init,
 			NULL,
 			NULL,
-			sizeof(LassoDsKeyInfo),
+			sizeof(LassoDsRsaKeyValue),
 			0,
 			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_NODE,
-				"LassoDsKeyInfo", &this_info, 0);
+				"LassoDsRsaKeyValue", &this_info, 0);
 	}
 	return this_type;
 }
 
 /**
- * lasso_ds_key_info_new:
+ * lasso_ds_rsa_key_value_new:
  * 
- * Creates a new #LassoDsKeyInfo object.
+ * Creates a new #LassoDsRsaKeyValue object.
  * 
- * Return value: a newly created #LassoDsKeyInfo object
+ * Return value: a newly created #LassoDsRsaKeyValue object
  **/
-LassoDsKeyInfo*
-lasso_ds_key_info_new()
+LassoDsRsaKeyValue*
+lasso_ds_rsa_key_value_new()
 {
-	return g_object_new(LASSO_TYPE_DS_KEY_INFO, NULL);
+	return g_object_new(LASSO_TYPE_DS_RSA_KEY_VALUE, NULL);
 }
