@@ -213,7 +213,7 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 		return LASSO_ERROR_UNIMPLEMENTED;
 	}
 
-	/* Added needd credential for remote service */
+	/* Added needed credential for remote service */
 	if (description->CredentialRef) {
 			char *credentialRef = description->CredentialRef->data;
 			iter = service->private_data->credentials;
@@ -221,8 +221,8 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 				LassoSamlAssertion *credential = LASSO_SAML_ASSERTION(
 					iter->data);
 				if (strcmp(credentialRef, credential->AssertionID) == 0)
-					lasso_wsf_profile_add_saml_authentication(
-						LASSO_WSF_PROFILE(service), credential);
+				  //lasso_wsf_profile_add_saml_authentication(
+				  //	LASSO_WSF_PROFILE(service), credential);
 				iter = iter->next;
 			}
 	}
@@ -312,16 +312,8 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	profile = LASSO_WSF_PROFILE(service);
 	rc = lasso_wsf_profile_process_soap_request_msg(profile, message, service_type,
 							security_mech_id);
-	if (rc) {
+	if (rc)
 		return rc;
-	}
-
-	/* Verify needed credential */
-	if (lasso_wsf_profile_has_saml_authentication(LASSO_WSF_PROFILE(service)) == TRUE) {
-		int res = lasso_wsf_profile_verify_saml_authentication(LASSO_WSF_PROFILE(service));
-		if (res < 0)
-			return res;
-	}
 
 	query = LASSO_DST_QUERY(profile->request);
 	if (query->ResourceID)

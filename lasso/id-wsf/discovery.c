@@ -27,6 +27,9 @@
 #include <lasso/xml/saml_attribute_value.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/ds_key_info.h>
+#include <lasso/xml/ds_key_value.h>
+#include <lasso/xml/ds_rsa_key_value.h>
+
 
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/provider.h>
@@ -66,19 +69,6 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	LassoSamlNameIdentifier *identifier;
 
 	LassoSamlSubjectConfirmation *subject_confirmation;
-
-	/*
-	  Assertion
-	      AuthenticationStatement
-	          Subject
-		      NameIdentifier
-		      SubjectConfirmation
-		          ConfirmationMethod
-			  KeyInfo
-
-	  NameIdentifier : format is entity id if resource requester is a provider, else federated
-	  KeyInfo : add key info of the resource requester
-	*/
 
 	/* Init assertion informations */
 	assertion = lasso_saml_assertion_new();
@@ -127,13 +117,17 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	/* Add public key value in credential */
 	{
 		LassoDsKeyInfo *key_info;
+		LassoDsRsaKeyValue *rsa_key_value;
+		LassoDsKeyValue *key_value;
+
 		LassoProvider *lasso_provider;
+
 		xmlSecKeyInfoCtx *ctx;
 		xmlSecKey *public_key;
 		xmlSecKeyData *public_key_data;
 
 		xmlDoc *doc;
-		xmlNode *key_info_node, *key_value, *modulus;
+		xmlNode *key_info_node, *xmlnode;
 
 		xmlXPathContext *xpathCtx = NULL;
 		xmlXPathObject *xpathObj;
@@ -142,7 +136,6 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 						     (char *) provider->providerID);
 		public_key = lasso_provider_get_public_key(lasso_provider);
 		public_key_data = xmlSecKeyGetValue(public_key);
-
 		ctx = xmlSecKeyInfoCtxCreate(NULL);
 		xmlSecKeyInfoCtxInitialize(ctx, NULL);
 		ctx->mode = xmlSecKeyInfoModeWrite;
@@ -150,22 +143,31 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 
 		doc = xmlSecCreateTree("KeyInfo", "http://www.w3.org/2000/09/xmldsig#");
 		key_info_node = xmlDocGetRootElement(doc);
-		key_value = xmlSecAddChild(key_info_node,
-					   "KeyValue", "http://www.w3.org/2000/09/xmldsig#");
+		xmlSecAddChild(key_info_node,
+			       "KeyValue", "http://www.w3.org/2000/09/xmldsig#");
 
 		xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
 
 		xpathCtx = xmlXPathNewContext(doc);
 		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds", "http://www.w3.org/2000/09/xmldsig#");
+
+		rsa_key_value = lasso_ds_rsa_key_value_new();
 		xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		  modulus = xpathObj->nodesetval->nodeTab[0];
+			xmlnode = xpathObj->nodesetval->nodeTab[0];
+			rsa_key_value->Modulus = (gchar *) xmlNodeGetContent(xmlnode);
 		}
 
-		key_info = lasso_ds_key_info_new();
-		if (modulus) {
-		  key_info->KeyValue = g_strdup((gchar *) xmlNodeGetContent(modulus));
+		xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Exponent", xpathCtx);
+		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+			xmlnode = xpathObj->nodesetval->nodeTab[0];
+			rsa_key_value->Exponent = (gchar *) xmlNodeGetContent(xmlnode);
 		}
+
+		key_value = lasso_ds_key_value_new();
+		key_value->RSAKeyValue = rsa_key_value;
+		key_info = lasso_ds_key_info_new();
+		key_info->KeyValue = key_value;
 		subject_confirmation->KeyInfo = key_info;
 	}
 
@@ -836,11 +838,12 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 			iter3 = description->SecurityMechID;
 			while (iter3) {
 				if (lasso_security_mech_id_is_saml_authentication(
-					iter3->data) == TRUE) {
-						credentialRef = lasso_discovery_build_credential(
-							discovery, NULL);
-						description->CredentialRef = g_list_append(
-							description->CredentialRef, credentialRef);
+					    iter3->data) == TRUE) {
+					printf("At disco, add credential\n");
+					credentialRef = lasso_discovery_build_credential(
+						discovery, NULL);
+					description->CredentialRef = g_list_append(
+						description->CredentialRef, credentialRef);
 				}
 				iter3 = g_list_next(iter3);
 			}
@@ -931,14 +934,8 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 				offering);
 	}
 
-	if (response->Credentials) {
-		iter = response->Credentials->any;
-		while (iter) {
-			lasso_data_service_add_credential(LASSO_DATA_SERVICE(service),
-				LASSO_SAML_ASSERTION(iter->data));
-			iter = iter->next;
-		}
-	}
+	lasso_wsf_profile_move_credentials(LASSO_WSF_PROFILE(discovery),
+					   LASSO_WSF_PROFILE(service));
 
 	return service;
 }
@@ -1113,4 +1110,3 @@ lasso_discovery_new(LassoServer *server)
 
 	return discovery;
 }
-
