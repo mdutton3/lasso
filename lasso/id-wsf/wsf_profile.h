@@ -79,12 +79,9 @@ struct _LassoWsfProfileClass {
 
 LASSO_EXPORT GType lasso_wsf_profile_get_type(void);
 
-/* FIXME: Should not be here */
-LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(
-	const gchar *security_mech_id);
+LASSO_EXPORT gboolean lasso_security_mech_id_is_saml_authentication(const gchar *security_mech_id);
 
-LASSO_EXPORT gint lasso_wsf_profile_add_saml_authentication(LassoWsfProfile *profile,
-	LassoSamlAssertion *credential);
+LASSO_EXPORT gint lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest);
 
 LASSO_EXPORT LassoIdentity* lasso_wsf_profile_get_identity(LassoWsfProfile *profile);
 LASSO_EXPORT LassoSession* lasso_wsf_profile_get_session(LassoWsfProfile *profile);
