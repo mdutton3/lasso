@@ -112,7 +112,7 @@
 
 %}
 
-#define %nonewobject %feature("new","")
+/*#define %nonewobject %feature("new","")*/
 
 /*
  * In Windows, function free() segfaults when used for strings allocated 
@@ -158,12 +158,11 @@
 /* Override default typemap, to accept NULL pointer. Because SWIG_ConvertPtr doesn't accept NULL */
 /* values. */
 %typemap(in) SWIGTYPE * %{
-	if (SWIG_ConvertPtr(*$input, (void **) &$1, $1_descriptor) < 0) {
+	if (SWIG_ConvertPtr(*$input, (void **) &$1, $1_descriptor, 0) < 0) {
 		if ((*$input)->type == IS_NULL)
 			$1 = 0;
 		else
-			zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
-				   $argnum-argbase, $1_descriptor->name);
+			zend_error(E_ERROR, "Type error in argument of $symname.");
 	}
 %}
 
@@ -601,12 +600,11 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 			for (super = info; super; super = super->super)
 				if (super->swig == $1_descriptor)
 					break;
-			if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig) >= 0)
+			if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig, 0) >= 0)
 				break;
 		}
 		if (! info->swig)
-			zend_error(E_ERROR, "Type error in argument %d of $symname. Expected %s",
-				   $argnum-argbase, $1_descriptor->name);
+			zend_error(E_ERROR, "Type error in argument of $symname.");
 	}
 #else /* SWIGPYTHON */
 	for (info = node_infos; info->swig; info++) {
@@ -3628,11 +3626,7 @@ typedef struct {
 
 #define new_LassoLibAssertion lasso_lib_assertion_new
 #define delete_LassoLibAssertion(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibAssertion_newFull lasso_lib_assertion_new_full
-#else
-#define LibAssertion_newFull lasso_lib_assertion_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4115,11 +4109,7 @@ typedef struct {
 
 #define new_LassoLibFederationTerminationNotification lasso_lib_federation_termination_notification_new
 #define delete_LassoLibFederationTerminationNotification(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibFederationTerminationNotification_newFull lasso_lib_federation_termination_notification_new_full
-#else
-#define LibFederationTerminationNotification_newFull lasso_lib_federation_termination_notification_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4317,11 +4307,7 @@ typedef struct {
 
 #define new_LassoLibLogoutRequest lasso_lib_logout_request_new
 #define delete_LassoLibLogoutRequest(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibLogoutRequest_newFull lasso_lib_logout_request_new_full
-#else
-#define LibLogoutRequest_newFull lasso_lib_logout_request_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4415,11 +4401,7 @@ typedef struct {
 
 #define new_LassoLibLogoutResponse lasso_lib_logout_response_new
 #define delete_LassoLibLogoutResponse(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibLogoutResponse_newFull lasso_lib_logout_response_new_full
-#else
-#define LibLogoutResponse_newFull lasso_lib_logout_response_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4632,11 +4614,7 @@ typedef struct {
 
 #define new_LassoLibRegisterNameIdentifierRequest lasso_lib_register_name_identifier_request_new
 #define delete_LassoLibRegisterNameIdentifierRequest(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibRegisterNameIdentifierRequest_newFull lasso_lib_register_name_identifier_request_new_full
-#else
-#define LibRegisterNameIdentifierRequest_newFull lasso_lib_register_name_identifier_request_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4730,11 +4708,7 @@ typedef struct {
 
 #define new_LassoLibRegisterNameIdentifierResponse lasso_lib_register_name_identifier_response_new
 #define delete_LassoLibRegisterNameIdentifierResponse(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLibRegisterNameIdentifierResponse_newFull lasso_lib_register_name_identifier_response_new_full
-#else
-#define LibRegisterNameIdentifierResponse_newFull lasso_lib_register_name_identifier_response_new_full
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -4970,11 +4944,7 @@ typedef struct {
 
 #define new_LassoProvider lasso_provider_new
 #define delete_LassoProvider(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoProvider_newFromDump lasso_provider_new_from_dump
-#else
-#define Provider_newFromDump lasso_provider_new_from_dump
-#endif
 
 /* Implementations of methods inherited from LassoNode */
 
@@ -5162,11 +5132,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 
 #define new_LassoServer lasso_server_new
 #define delete_LassoServer(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoServer_newFromDump lasso_server_new_from_dump
-#else
-#define Server_newFromDump lasso_server_new_from_dump
-#endif
 
 /* Implementations of methods inherited from Provider */
 
@@ -5236,7 +5202,7 @@ typedef struct {
 
 	void buildLocalNameIdentifier(char *nameQualifier, char *format, char *content);
 
-	gboolean verifyNameIdentifier(LassoSamlNameIdentifier *nameIdentifier);
+	gboolean verifyNameIdentifier(LassoNode *nameIdentifier);
 }
 
 %{
@@ -5340,11 +5306,7 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 
 #define new_LassoIdentity lasso_identity_new
 #define delete_LassoIdentity(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoIdentity_newFromDump lasso_identity_new_from_dump
-#else
-#define Identity_newFromDump lasso_identity_new_from_dump
-#endif
 
 /* Methods implementations */
 
@@ -5430,11 +5392,7 @@ LassoStringList *LassoSession_providerIds_get(LassoSession *self) {
 
 #define new_LassoSession lasso_session_new
 #define delete_LassoSession(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoSession_newFromDump lasso_session_new_from_dump
-#else
-#define Session_newFromDump lasso_session_new_from_dump
-#endif
 
 /* Methods implementations */
 
@@ -5910,11 +5868,7 @@ typedef struct {
 
 #define new_LassoLogin lasso_login_new
 #define delete_LassoLogin(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLogin_newFromDump lasso_login_new_from_dump
-#else
-#define Login_newFromDump lasso_login_new_from_dump
-#endif
 
 /* Implementations of methods inherited from Profile */
 
@@ -6141,11 +6095,7 @@ typedef struct {
 
 #define new_LassoLogout lasso_logout_new
 #define delete_LassoLogout(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoLogout_newFromDump lasso_logout_new_from_dump
-#else
-#define Logout_newFromDump lasso_logout_new_from_dump
-#endif
 
 /* Implementations of methods inherited from Profile */
 
@@ -6823,11 +6773,7 @@ typedef struct {
 
 #define new_LassoNameRegistration lasso_name_registration_new
 #define delete_LassoNameRegistration(self) lasso_node_destroy(LASSO_NODE(self))
-#ifdef PHP_VERSION
 #define LassoNameRegistration_newFromDump lasso_name_registration_new_from_dump
-#else
-#define NameRegistration_newFromDump lasso_name_registration_new_from_dump
-#endif
 
 /* Implementations of methods inherited from Profile */
 

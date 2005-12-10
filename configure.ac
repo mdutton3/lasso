@@ -173,7 +173,7 @@ AC_SUBST(DLL_FILENAME)
 dnl ==========================================================================
 dnl Swig
 dnl ==========================================================================
-SWIG_MIN_VERSION=1.3
+SWIG_MIN_VERSION=1.3.27
 AC_MSG_CHECKING(SWIG support)
 if test "X$SWIG" != "X"; then
   SWIG_VERSION=`$SWIG -version 2>&1 | $SED -ne 's/^SWIG Version //p'`
