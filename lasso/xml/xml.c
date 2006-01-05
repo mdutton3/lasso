@@ -803,6 +803,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Lib";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_LASSO_HREF) == 0)
 		prefix = "";
+	if (strcmp((char*)xmlnode->ns->href, LASSO_IS_HREF) == 0)
+		prefix = "Is";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_SA_HREF) == 0)
 		prefix = "Sa";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_SAML_ASSERTION_HREF) == 0)
@@ -815,7 +817,6 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		prefix = "Samlp2";
 	if (strcmp((char*)xmlnode->ns->href, LASSO_WSSE_HREF) == 0)
 		prefix = "Wsse";
-
 	tmp = lasso_get_prefix_for_dst_service_href((char*)xmlnode->ns->href);
 	if (tmp) {
 		prefix = "Dst";
