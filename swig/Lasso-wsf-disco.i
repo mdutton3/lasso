@@ -485,17 +485,9 @@ typedef struct {
 #define LassoDiscoDescription_SecurityMechID_set(self, value) set_string_list(&(self)->SecurityMechID, (value))
 
 /* Constructors, destructors & static methods implementations */
-#ifdef PHP_VERSION
 #define LassoDiscoDescription_newWithWsdlRef lasso_disco_description_new_with_WsdlRef
-#else
-#define DiscoDescription_newWithWsdlRef lasso_disco_description_new_with_WsdlRef
-#endif
 
-#ifdef PHP_VERSION
 #define LassoDiscoDescription_newWithBriefSoapHttpDescription lasso_disco_description_new_with_BriefSoapHttpDescription
-#else
-#define DiscoDescription_newWithBriefSoapHttpDescription lasso_disco_description_new_with_BriefSoapHttpDescription
-#endif
 
 #define new_LassoDiscoDescription lasso_disco_description_new
 #define delete_LassoDiscoDescription(self) lasso_node_destroy(LASSO_NODE(self))
