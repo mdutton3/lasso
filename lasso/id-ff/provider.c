@@ -348,7 +348,7 @@ static LassoNodeClass *parent_class = NULL;
 xmlSecKey*
 lasso_provider_get_public_key(LassoProvider *provider)
 {
-	return provider->private_data->public_key;
+	return xmlSecKeyDuplicate(provider->private_data->public_key);
 }
 
 static void
@@ -871,7 +871,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		return -2;
 
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
-		return lasso_query_verify_signature(message, provider->private_data->public_key);
+		return lasso_query_verify_signature(message,
+				lasso_provider_get_public_key(provider));
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_BASE64) {
@@ -941,7 +942,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
-		dsigCtx->signKey = provider->private_data->public_key;
+		dsigCtx->signKey = lasso_provider_get_public_key(provider);
 		if (dsigCtx->signKey == NULL) {
 			/* XXX: should this be detected on lasso_provider_new ? */
 			xmlSecDSigCtxDestroy(dsigCtx);
