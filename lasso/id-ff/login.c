@@ -80,6 +80,7 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 static void
 lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
 {
+	fprintf(stderr, "lasso_login_assertion_add_discovery\n");
 #ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
@@ -669,6 +670,11 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 	profile = LASSO_PROFILE(login);
 
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_artifact_msg(login, http_method);
 	}
@@ -792,6 +798,11 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
+
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
 
 	provider = LASSO_PROVIDER(profile->server);
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -962,6 +973,11 @@ lasso_login_build_request_msg(LassoLogin *login)
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_request_msg(login);
+	}
+
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
 	LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file =

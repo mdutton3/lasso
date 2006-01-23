@@ -69,6 +69,11 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 
 	profile = LASSO_PROFILE(defederation);
 
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	/* get the remote provider object */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);

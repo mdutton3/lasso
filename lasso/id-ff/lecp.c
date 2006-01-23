@@ -118,6 +118,11 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 
 	profile = LASSO_PROFILE(lecp);
 
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 

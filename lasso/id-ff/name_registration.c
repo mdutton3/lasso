@@ -65,6 +65,11 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 
 	profile = LASSO_PROFILE(name_registration);
 
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
@@ -145,6 +150,11 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
 
 	profile = LASSO_PROFILE(name_registration);
+
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
