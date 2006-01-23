@@ -76,6 +76,11 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 
 	profile = LASSO_PROFILE(logout);
 
+	if (profile->remote_providerID == NULL) {
+		/* this means lasso_logout_init_request was not called before */
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+	}
+
 	/* get remote provider */
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
@@ -215,6 +220,8 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 
 		url = lasso_provider_get_metadata_one(provider, "SingleLogoutServiceReturnURL");
 		if (url == NULL) {
+			/* XXX: but wouldn't it be nice to provide a fallback msgUrl,
+			 * something like the document root of the other site ? */
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 		query = lasso_node_export_to_query(profile->response,
