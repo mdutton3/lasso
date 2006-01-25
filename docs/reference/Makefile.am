@@ -2,7 +2,8 @@ EXTRA_DIST = \
 	lasso-sections.txt \
 	lasso.sgml \
 	lasso.types.in \
-	version.xml.in
+	version.xml.in \
+	style.css
 
 if WSF_ENABLED
 lasso.types: lasso.types.in
@@ -33,6 +34,7 @@ html: sgml lasso.sgml lasso-index
 	@echo '*** Building HTML ***'
 	test -d html || mkdir html
 	cd html && gtkdoc-mkhtml lasso ../build/lasso.sgml
+	cp style.css html/
 
 SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisites lasso.args
 

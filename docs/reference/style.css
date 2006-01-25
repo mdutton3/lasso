@@ -1,0 +1,79 @@
+/* modified from gtk-doc style.css */
+
+body    {
+    margin: 0 8em;
+    padding: 0;
+}
+
+
+.synopsis, .classsynopsis, .programlisting 
+{
+    padding: 6px;
+    -moz-border-radius: 8px;
+    background-color: #F6F6F6;
+    border: solid 1px #DDDDDD;
+    color: #222;
+}
+.variablelist 
+{
+  padding: 4px;
+  margin-left: 3em;
+}
+.variablelist td:first-child
+{
+  vertical-align: top;
+}
+table.navigation 
+{
+	background-color: #BD2C4A;
+	border: 1px solid #000000;
+	color: white;
+	margin: 1em 0 1ex 0;
+}
+.navigation a 
+{
+  color: white;
+}
+.navigation a:visited 
+{
+  color: #770000;
+}
+.navigation .title 
+{
+  font-size: 200%;
+}
+div.refnamediv 
+{
+  margin-top: 2em;
+}
+div.gallery-float 
+{
+  float: left;
+  padding: 10px;
+}
+div.gallery-float img 
+{
+  border-style: none;
+}
+div.gallery-spacer 
+{
+  clear: both;
+}
+a
+{
+  text-decoration: none;
+}
+a:hover
+{
+  text-decoration: underline;
+}
+
+table.navigation th {
+	padding: 0.4ex 0;
+	font-size: 150%;
+}
+
+p.releaseinfo {
+	font-weight: bold;
+}
+
