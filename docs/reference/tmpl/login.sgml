@@ -120,7 +120,7 @@ if (lasso_profile_is_session_dirty(LASSO_PROFILE(login))) {
 }
 
 /* redirect user anywhere */
-printf("Location: /\n\nRedirected to site root\n");
+printf("Location: %s\n\nRedirected to site root\n", login->msg_url);
 </programlisting>
 </example>
 
