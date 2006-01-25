@@ -80,7 +80,6 @@ static void lasso_login_build_assertion_artifact(LassoLogin *login);
 static void
 lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion)
 {
-	fprintf(stderr, "lasso_login_assertion_add_discovery\n");
 #ifdef LASSO_WSF_ENABLED
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoDiscoResourceOffering *resourceOffering;
@@ -99,7 +98,8 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 	gboolean found;
 
 	serviceInstance = lasso_server_get_service(profile->server, LASSO_DISCO_HREF);
-	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance)) {
+	if (LASSO_IS_DISCO_SERVICE_INSTANCE(serviceInstance) && 
+			login->private_data->resourceId) {
 		newServiceInstance = lasso_disco_service_instance_copy(serviceInstance);
 
 		resourceOffering = lasso_disco_resource_offering_new(newServiceInstance);
@@ -1770,6 +1770,14 @@ dispose(GObject *object)
 	LassoLogin *login = LASSO_LOGIN(object);
 	g_free(login->private_data->soap_request_msg);
 	login->private_data->soap_request_msg = NULL;
+#ifdef LASSO_WSF_ENABLED
+	if (login->private_data->resourceId)
+		lasso_node_destroy(LASSO_NODE(login->private_data->resourceId));
+	login->private_data->resourceId = NULL;
+	if (login->private_data->encryptedResourceId)
+		lasso_node_destroy(LASSO_NODE(login->private_data->encryptedResourceId));
+	login->private_data->encryptedResourceId = NULL;
+#endif
 	G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
@@ -1791,6 +1799,10 @@ instance_init(LassoLogin *login)
 {
 	login->private_data = g_new(LassoLoginPrivate, 1);
 	login->private_data->soap_request_msg = NULL;
+#ifdef LASSO_WSF_ENABLED
+	login->private_data->resourceId = NULL;
+	login->private_data->encryptedResourceId = NULL;
+#endif
 
 	login->protocolProfile = 0;
 	login->assertionArtifact = NULL;
