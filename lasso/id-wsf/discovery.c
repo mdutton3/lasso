@@ -417,8 +417,11 @@ lasso_discovery_get_resource_offering_auto(LassoDiscovery *discovery, const gcha
 end:
 
 	/* XXX lasso_node_destroy(assertions) */
+	if (resource_offering) {
+		return g_object_ref(resource_offering);
+	}
 
-	return g_object_ref(resource_offering);
+	return NULL;
 }
 
 /**
