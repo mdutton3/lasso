@@ -52,6 +52,8 @@ It holds all the data about a provider.
   service and identity providers
 @LASSO_HTTP_METHOD_SOAP: use a SOAP call to post message between service and
   identity providers
+@LASSO_HTTP_METHOD_ARTIFACT_GET: 
+@LASSO_HTTP_METHOD_ARTIFACT_POST: 
 
 <!-- ##### ENUM LassoMdProtocolType ##### -->
 <para>
@@ -64,6 +66,9 @@ It holds all the data about a provider.
 @LASSO_MD_PROTOCOL_TYPE_REGISTER_NAME_IDENTIFIER: Name Registration
 @LASSO_MD_PROTOCOL_TYPE_SINGLE_LOGOUT: Single Logout
 @LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON: Single Sign-On and Federation
+@LASSO_MD_PROTOCOL_TYPE_ARTIFACT_RESOLUTION: 
+@LASSO_MD_PROTOCOL_TYPE_MANAGE_NAME_ID: 
+@LASSO_MD_PROTOCOL_TYPE_ASSERTION_ID_REQUEST: 
 
 <!-- ##### FUNCTION lasso_provider_new ##### -->
 <para>

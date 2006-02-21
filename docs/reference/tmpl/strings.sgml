@@ -2,7 +2,7 @@
 strings
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Useful string constants
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -19,26 +19,42 @@ strings
 
 <!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED ##### -->
 <para>
+<emphasis>Federated</emphasis> name identifier constant, used in
+#LassoNameIdentifier.  It implies the name identifier belongs to
+a federation established between SP and IdP.
+</para>
+
+<para>
+Its value is urn:liberty:iff:nameid:federated.
 </para>
 
 
 
 <!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME ##### -->
 <para>
+"One-time" name identifier constant, used in #LassoNameIdentifier.
+</para>
+
+<para>
+Its value is urn:liberty:iff:nameid:one-time.
 </para>
 
 
 
 <!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENCRYPTED ##### -->
 <para>
+"Encrypted" name identifier constant, used in #LassoNameIdentifier.
+</para>
 
+<para>
+Its value is urn:liberty:iff:nameid:encrypted.
 </para>
 
 
 
 <!-- ##### MACRO LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID ##### -->
 <para>
-
+Its value is urn:liberty:iff:nameid:entityID.
 </para>
 
 

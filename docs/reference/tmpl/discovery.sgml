@@ -55,6 +55,7 @@ service = lasso_discovery_get_service(discovery);
 
 </para>
 
+@parent: 
 @resource_id: 
 @encrypted_resource_id: 
 
@@ -132,8 +133,12 @@ service = lasso_discovery_get_service(discovery);
 </para>
 
 @discovery: 
-@resourceOffering: 
+@new_offering: 
+@security_mech_id: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@resource_offering: 
+@resourceOffering: 
 
 
 <!-- ##### FUNCTION lasso_discovery_init_query ##### -->
@@ -142,6 +147,7 @@ service = lasso_discovery_get_service(discovery);
 </para>
 
 @discovery: 
+@security_mech_id: 
 @Returns: 
 
 
@@ -162,6 +168,7 @@ service = lasso_discovery_get_service(discovery);
 
 @discovery: 
 @message: 
+@security_mech_id: 
 @Returns: 
 
 
@@ -182,6 +189,7 @@ service = lasso_discovery_get_service(discovery);
 
 @discovery: 
 @message: 
+@security_mech_id: 
 @Returns: 
 
 
