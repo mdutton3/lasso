@@ -770,7 +770,6 @@ lasso_node_new_from_soap(const char *soap)
 /**
  * lasso_node_new_from_xmlNode:
  * @node: an xmlNode
- * @class_name: lasso type to use for node (NULL means autodetected)
  * 
  * Builds a new #LassoNode from an xmlNode.
  * 

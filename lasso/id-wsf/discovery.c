@@ -458,6 +458,7 @@ lasso_discovery_get_description_auto(LassoDiscoResourceOffering *offering,
  * lasso_discovery_init_insert
  * @discovery: a #LassoDiscovery
  * @new_offering: the new service offered
+ * @security_mech_id: the security mechanism identifier
  *
  * Initializes a disco Modify/InsertEntry
  *

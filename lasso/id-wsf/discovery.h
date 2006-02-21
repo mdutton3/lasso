@@ -87,7 +87,7 @@ LASSO_EXPORT LassoDiscoRequestedServiceType* lasso_discovery_add_requested_servi
 LASSO_EXPORT void lasso_discovery_destroy(LassoDiscovery *discovery);
 
 LASSO_EXPORT gint lasso_discovery_init_insert(LassoDiscovery *discovery,
-	LassoDiscoResourceOffering *resourceOffering, const char *security_mech_id);
+	LassoDiscoResourceOffering *new_offering, const char *security_mech_id);
 
 LASSO_EXPORT gint lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id);
 

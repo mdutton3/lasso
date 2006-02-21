@@ -48,7 +48,7 @@ typedef struct _LassoProviderPrivate LassoProviderPrivate;
 
 /**
  * LassoHttpMethod:
- * @LASSO_HTTP_METHOD_NONE:
+ * @LASSO_HTTP_METHOD_NONE: invalid value (internal use)
  * @LASSO_HTTP_METHOD_ANY: any method will do
  * @LASSO_HTTP_METHOD_IDP_INITIATED: not a method, for IdP initiated profile
  * @LASSO_HTTP_METHOD_GET: HTTP GET
@@ -100,7 +100,7 @@ typedef enum {
 
 /**
  * LassoProviderRole:
- * @LASSO_PROVIDER_ROLE_NONE:
+ * @LASSO_PROVIDER_ROLE_NONE: unitialized value (internal use)
  * @LASSO_PROVIDER_ROLE_SP: service provider
  * @LASSO_PROVIDER_ROLE_IDP: identity provider
  *
