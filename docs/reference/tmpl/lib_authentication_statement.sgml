@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibAuthenticationStatement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:AuthenticationStatement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibAuthenticationStatement ##### -->
+<para>
+
+</para>
+
+@AuthnContext: 
+@ReauthenticateOnOrAfter: 
+@SessionIndex: 
+
+<!-- ##### FUNCTION lasso_lib_authentication_statement_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_authentication_statement_new_full ##### -->
+<para>
+
+</para>
+
+@authenticationMethod: 
+@authenticationInstant: 
+@reauthenticateOnOrAfter: 
+@sp_identifier: 
+@idp_identifier: 
+@Returns: 
+
+

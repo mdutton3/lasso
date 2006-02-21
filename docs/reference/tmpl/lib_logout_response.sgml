@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibLogoutResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:LogoutResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibLogoutResponse ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION lasso_lib_logout_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_logout_response_new_full ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@statusCodeValue: 
+@request: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

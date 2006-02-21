@@ -1,0 +1,53 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibRegisterNameIdentifierRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:RegisterNameIdentifierRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibRegisterNameIdentifierRequest ##### -->
+<para>
+
+</para>
+
+@Extension: 
+@ProviderID: 
+@IDPProvidedNameIdentifier: 
+@SPProvidedNameIdentifier: 
+@OldProvidedNameIdentifier: 
+@RelayState: 
+
+<!-- ##### FUNCTION lasso_lib_register_name_identifier_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_lib_register_name_identifier_request_new_full ##### -->
+<para>
+
+</para>
+
+@providerID: 
+@idpNameIdentifier: 
+@spNameIdentifier: 
+@oldNameIdentifier: 
+@sign_type: 
+@sign_method: 
+@Returns: 
+
+

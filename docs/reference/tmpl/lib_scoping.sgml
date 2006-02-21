@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibScoping
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:Scoping&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibScoping ##### -->
+<para>
+
+</para>
+
+@ProxyCount: 
+@IDPList: 
+
+<!-- ##### FUNCTION lasso_lib_scoping_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

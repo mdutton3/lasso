@@ -1,0 +1,34 @@
+<!-- ##### SECTION Title ##### -->
+LassoLibSubject
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;lib:Subject&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoLibSubject ##### -->
+<para>
+
+</para>
+
+@IDPProvidedNameIdentifier: 
+
+<!-- ##### FUNCTION lasso_lib_subject_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
