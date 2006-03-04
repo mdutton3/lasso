@@ -386,10 +386,12 @@ finalize(GObject *object)
 
 	g_free(server->private_key);
 	if (server->private_key_password) {
+		/* don't use memset() because it may be optimised away by
+		 * compiler (since the string is freeed just after */
 		while (server->private_key_password[i])
 			server->private_key_password[i++] = 0;
+		g_free(server->private_key_password);
 	}
-	g_free(server->private_key_password);
 	g_free(server->certificate);
 	g_free(server->private_data);
 
