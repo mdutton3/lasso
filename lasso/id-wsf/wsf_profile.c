@@ -1017,7 +1017,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	LassoSoapEnvelope *envelope;
 	LassoSoapHeader *header;
 	LassoWsseSecurity *security = NULL;
-	char *ret;
+	int ret;
 
 	GList *iter;
 
