@@ -592,8 +592,8 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlNode *xmlnode;
 
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
-	xmlNodeSetName(xmlnode, "Authentication");
-	xmlSetProp(xmlnode, "AuthenticationDumpVersion", "2");
+	xmlNodeSetName(xmlnode, (xmlChar*)"Authentication");
+	xmlSetProp(xmlnode, (xmlChar*)"AuthenticationDumpVersion", (xmlChar*)"2");
 
 	return xmlnode;
 }
