@@ -1328,7 +1328,7 @@ static void set_node(gpointer *nodePointer, gpointer value)
 		return;
 	}
 	
-	if (*nodePointer != NULL)
+	if (*nodePointer != NULL) {
 		/* Test added to help debugging. */
 		if (LASSO_IS_NODE(*nodePointer)) {
 			lasso_node_destroy(LASSO_NODE(*nodePointer));
