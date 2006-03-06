@@ -29,25 +29,107 @@ javashare_DATA = lasso.jar
 SWIG_OUTPUTS = lasso_wrap.c \
 	Defederation.java \
 	DowncastableNode.java \
-	Federation.java Identity.java \
-	lassoConstants.java lasso.java lassoJNI.java Lecp.java \
-	LibAssertion.java LibAuthnRequest.java LibAuthnResponse.java \
-	LibFederationTerminationNotification.java LibLogoutRequest.java \
-	LibLogoutResponse.java LibRegisterNameIdentifierRequest.java \
-	LibRegisterNameIdentifierResponse.java LibRequestAuthnContext.java \
-	LibStatusResponse.java Login.java Logout.java NameIdentifierMapping.java \
-	NameRegistration.java Node.java NodeList.java Provider.java \
-	SamlAdvice.java SamlAssertion.java SamlAttributeDesignator.java SamlAttribute.java \
-	SamlAttributeStatement.java SamlAttributeValue.java SamlAudienceRestrictionCondition.java \
-	SamlAuthenticationStatement.java SamlAuthorityBinding.java \
-	SamlConditionAbstract.java SamlConditions.java SamlNameIdentifier.java \
-	SamlpRequestAbstract.java SamlpRequest.java SamlpResponseAbstract.java \
-	SamlpResponse.java SamlpStatusCode.java SamlpStatus.java SamlStatementAbstract.java \
-	SamlSubjectConfirmation.java SamlSubject.java SamlSubjectLocality.java \
-	SamlSubjectStatementAbstract.java SamlSubjectStatement.java Server.java \
-	Session.java StringList.java SWIGTYPE_p_LassoMdProtocolType.java \
-	SWIGTYPE_p_LassoSignatureType.java SWIGTYPE_p_void.java
-
+	Federation.java \
+	Identity.java \
+	lassoConstants.java \
+	lasso.java \
+	lassoJNI.java \
+	Lecp.java \
+	LibAssertion.java \
+	LibAuthnRequest.java \
+	LibAuthnResponse.java \
+	LibFederationTerminationNotification.java \
+	LibLogoutRequest.java \
+	LibLogoutResponse.java \
+	LibRegisterNameIdentifierRequest.java \
+	LibRegisterNameIdentifierResponse.java \
+	LibRequestAuthnContext.java \
+	LibStatusResponse.java \
+	Login.java \
+	Logout.java \
+	NameIdentifierMapping.java \
+	NameRegistration.java \
+	Node.java \
+	NodeList.java \
+	Provider.java \
+	Saml2Action.java \
+	Saml2Advice.java \
+	Saml2Assertion.java \
+	Saml2Attribute.java \
+	Saml2AttributeStatement.java \
+	Saml2AudienceRestriction.java \
+	Saml2AuthnContext.java \
+	Saml2AuthnStatement.java \
+	Saml2AuthzDecisionStatement.java \
+	Saml2BaseIDAbstract.java \
+	Saml2ConditionAbstract.java \
+	Saml2Conditions.java \
+	Saml2EncryptedElement.java \
+	Saml2Evidence.java \
+	Saml2KeyInfoConfirmationData.java \
+	Saml2NameID.java \
+	Saml2OneTimeUse.java \
+	Saml2ProxyRestriction.java \
+	Saml2StatementAbstract.java \
+	Saml2SubjectConfirmationData.java \
+	Saml2SubjectConfirmation.java \
+	Saml2Subject.java \
+	Saml2SubjectLocality.java \
+	SamlAdvice.java \
+	SamlAssertion.java \
+	SamlAttributeDesignator.java \
+	SamlAttribute.java \
+	SamlAttributeStatement.java \
+	SamlAttributeValue.java \
+	SamlAudienceRestrictionCondition.java \
+	SamlAuthenticationStatement.java \
+	SamlAuthorityBinding.java \
+	SamlConditionAbstract.java \
+	SamlConditions.java \
+	SamlNameIdentifier.java \
+	Samlp2ArtifactResolve.java \
+	Samlp2ArtifactResponse.java \
+	Samlp2AssertionIDRequest.java \
+	Samlp2AttributeQuery.java \
+	Samlp2AuthnQuery.java \
+	Samlp2AuthnRequest.java \
+	Samlp2AuthzDecisionQuery.java \
+	Samlp2Extensions.java \
+	Samlp2IDPEntry.java \
+	Samlp2IDPList.java \
+	Samlp2LogoutRequest.java \
+	Samlp2ManageNameIDRequest.java \
+	Samlp2NameIDMappingRequest.java \
+	Samlp2NameIDMappingResponse.java \
+	Samlp2NameIDPolicy.java \
+	Samlp2RequestAbstract.java \
+	Samlp2RequestedAuthnContext.java \
+	Samlp2Response.java \
+	Samlp2Scoping.java \
+	Samlp2StatusCode.java \
+	Samlp2StatusDetail.java \
+	Samlp2Status.java \
+	Samlp2StatusResponse.java \
+	Samlp2SubjectQueryAbstract.java \
+	Samlp2Terminate.java \
+	SamlpRequestAbstract.java \
+	SamlpRequest.java \
+	SamlpResponseAbstract.java \
+	SamlpResponse.java \
+	SamlpStatusCode.java \
+	SamlpStatus.java \
+	SamlStatementAbstract.java \
+	SamlSubjectConfirmation.java \
+	SamlSubject.java \
+	SamlSubjectLocality.java \
+	SamlSubjectStatementAbstract.java \
+	SamlSubjectStatement.java \
+	Server.java \
+	Session.java \
+	StringList.java \
+	SWIGTYPE_p_LassoSignatureType.java \
+	SWIGTYPE_p_void.java
+	
 if WSF_ENABLED
 SWIG_WSF_OUTPUTS = Authentication.java \
 	DataService.java \
