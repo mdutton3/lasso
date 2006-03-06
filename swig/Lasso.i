@@ -159,10 +159,11 @@
 /* values. */
 %typemap(in) SWIGTYPE * %{
 	if (SWIG_ConvertPtr(*$input, (void **) &$1, $1_descriptor, 0) < 0) {
-		if ((*$input)->type == IS_NULL)
+		if ((*$input)->type == IS_NULL) {
 			$1 = 0;
-		else
+		} else {
 			zend_error(E_ERROR, "Type error in argument of $symname.");
+		}
 	}
 %}
 
@@ -198,15 +199,12 @@
 
 static void throw_exception_msg(int errorCode) {
 	char errorMsg[256];
-	if (errorCode > 0)
-        {
-	    sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
-            zend_error(E_WARNING, errorMsg);
-        }
-	else
-        {
-	    sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
-            zend_error(E_ERROR, errorMsg);
+	if (errorCode > 0) {
+		sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
+		zend_error(E_WARNING, errorMsg);
+        } else {
+		sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
+		zend_error(E_ERROR, errorMsg);
         }
 }
 
@@ -240,8 +238,7 @@ static void lasso_exception(int errorCode) {
 		errorTuple = Py_BuildValue("(is)", errorCode, errorMsg);
 		PyErr_SetObject(lassoWarning, errorTuple);
 		Py_DECREF(errorTuple);
-	}
-	else {
+	} else {
 		sprintf(errorMsg, "Lasso Error: %s", lasso_strerror(errorCode));
 		errorTuple = Py_BuildValue("(is)", errorCode, errorMsg);
 		PyErr_SetObject(lassoError, errorTuple);
@@ -282,10 +279,11 @@ Warning = _lasso.Warning
 %{
 
 static void build_exception_msg(int errorCode, char *errorMsg) {
-	if (errorCode > 0)
+	if (errorCode > 0) {
 		sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
-	else
+	} else {
 		sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
+	}
 }
 
 %}
@@ -567,8 +565,9 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 			       superName, name);
 			super = NULL;
 		}
-	} else
+	} else {
 		super = NULL;
+	}
 	info->super = super;
 	info->swig = swig;
 #ifdef PHP_VERSION
@@ -589,13 +588,14 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		if (super && SWIG_ConvertPtr($input, (void **) &$1, info->swig, 0) >= 0)
 			break;
 	}
-	if (! info->swig)
+	if (! info->swig) {
 		SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle");
+	}
 #else
 #ifdef SWIGPHP4
-	if ((*$input)->type == IS_NULL)
+	if ((*$input)->type == IS_NULL) {
 		$1=0;
-	else {
+	} else {
 		for (info = node_infos; info->swig; info++) {
 			for (super = info; super; super = super->super)
 				if (super->swig == $1_descriptor)
@@ -603,8 +603,9 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 			if (super && SWIG_ConvertPtr(*$input, (void **) &$1, info->swig, 0) >= 0)
 				break;
 		}
-		if (! info->swig)
+		if (! info->swig) {
 			zend_error(E_ERROR, "Type error in argument of $symname.");
+		}
 	}
 #else /* SWIGPYTHON */
 	for (info = node_infos; info->swig; info++) {
@@ -1170,15 +1171,17 @@ static void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
 
 static void add_node_to_array(gpointer node, GPtrArray *array)
 {
-	if (node != NULL)
+	if (node != NULL) {
 		g_object_ref(node);
+	}
         g_ptr_array_add(array, node);
 }
 
 static void add_string_to_array(char *string, GPtrArray *array)
 {
-	if (string != NULL)
+	if (string != NULL) {
 		string = g_strdup(string);
+	}
         g_ptr_array_add(array, string);
 }
 
@@ -1188,15 +1191,16 @@ static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 	gchar *xmlString;
 
 	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL)
+	if (buf == NULL) {
 		xmlString = NULL;
-	else {
+	} else {
 		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL)
+		if (buf->conv == NULL) {
 			xmlString = g_strdup(buf->buffer->content);
-		else
+		} else {
 			xmlString = g_strdup(buf->conv->content);
+		}
 		xmlOutputBufferClose(buf);
 	}
 	g_ptr_array_add(array, xmlString);
@@ -1204,34 +1208,40 @@ static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
 
 static void free_node_array_item(gpointer node, gpointer unused)
 {
-	if (node != NULL)
+	if (node != NULL) {
 		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(node))
+		if (LASSO_IS_NODE(node)) {
 			lasso_node_destroy(LASSO_NODE(node));
-		else
+		} else {
 			g_object_unref(node);
+		}
+	}
 }
 
 static void free_node_list_item(gpointer node, gpointer unused)
 {
-	if (node != NULL)
+	if (node != NULL) {
 		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(node))
+		if (LASSO_IS_NODE(node)) {
 			lasso_node_destroy(LASSO_NODE(node));
-		else
+		} else {
 			g_object_unref(node);
+		}
+	}
 }
 
 static void free_string_list_item(char *string, gpointer unused)
 {
-	if (string != NULL)
+	if (string != NULL) {
 		g_free(string);
+	}
 }
 
 static void free_xml_list_item(xmlNode *xmlnode, gpointer unused)
 {
-	if (xmlnode != NULL)
+	if (xmlnode != NULL) {
 		xmlFreeNode(xmlnode);
+	}
 }
 
 static gpointer get_node(gpointer node)
@@ -1242,8 +1252,9 @@ static gpointer get_node(gpointer node)
 static GPtrArray *get_node_list(GList *nodeList) {
 	GPtrArray *nodeArray;
 
-	if (nodeList == NULL)
+	if (nodeList == NULL) {
 		return NULL;
+	}
 	nodeArray = g_ptr_array_sized_new(g_list_length(nodeList));
 	g_list_foreach(nodeList, (GFunc) add_node_to_array, nodeArray);
 	return nodeArray;
@@ -1252,8 +1263,9 @@ static GPtrArray *get_node_list(GList *nodeList) {
 static GPtrArray *get_string_list(GList *stringList) {
 	GPtrArray *stringArray;
 
-	if (stringList == NULL)
+	if (stringList == NULL) {
 		return NULL;
+	}
 	stringArray = g_ptr_array_sized_new(g_list_length(stringList));
 	g_list_foreach(stringList, (GFunc) add_string_to_array, stringArray);
 	return stringArray;
@@ -1262,8 +1274,9 @@ static GPtrArray *get_string_list(GList *stringList) {
 static GPtrArray *get_xml_list(GList *xmlList) {
 	GPtrArray *xmlArray;
 
-	if (xmlList == NULL)
+	if (xmlList == NULL) {
 		return NULL;
+	}
 	xmlArray = g_ptr_array_sized_new(g_list_length(xmlList));
 	g_list_foreach(xmlList, (GFunc) add_xml_to_array, xmlArray);
 	return xmlArray;
@@ -1279,15 +1292,16 @@ static char* get_xml_string(xmlNode *xmlnode)
 	}
 
 	buf = xmlAllocOutputBuffer(NULL);
-	if (buf == NULL)
+	if (buf == NULL) {
 		xmlString = NULL;
-	else {
+	} else {
 		xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 1, NULL);
 		xmlOutputBufferFlush(buf);
-		if (buf->conv == NULL)
+		if (buf->conv == NULL) {
 			xmlString = g_strdup(buf->buffer->content);
-		else
+		} else {
 			xmlString = g_strdup(buf->conv->content);
+		}
 		xmlOutputBufferClose(buf);
 	}
 	xmlFreeNode(xmlnode);
@@ -1300,8 +1314,9 @@ static xmlNode *get_string_xml(const char *string) {
 
 	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
 	node = xmlDocGetRootElement(doc);
-	if (node != NULL)
+	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
+	}
 	xmlFreeDoc(doc);
 
 	return node;
@@ -1309,15 +1324,18 @@ static xmlNode *get_string_xml(const char *string) {
 
 static void set_node(gpointer *nodePointer, gpointer value)
 {
-	if (*nodePointer == value)
+	if (*nodePointer == value) {
 		return;
+	}
 	
 	if (*nodePointer != NULL)
 		/* Test added to help debugging. */
-		if (LASSO_IS_NODE(*nodePointer))
+		if (LASSO_IS_NODE(*nodePointer)) {
 			lasso_node_destroy(LASSO_NODE(*nodePointer));
-		else
+		} else {
 			g_object_unref(*nodePointer);
+		}
+	}
 	*nodePointer = value == NULL ? NULL : g_object_ref(value);
 }
 
@@ -1326,16 +1344,18 @@ static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
 		g_list_foreach(*nodeListPointer, (GFunc) free_node_list_item, NULL);
 		g_list_free(*nodeListPointer);
 	}
-	if (nodeArray == NULL)
+
+	if (nodeArray == NULL) {
 		*nodeListPointer = NULL;
-	else {
+	} else {
 		gpointer node;
 		int index;
 
 		for (index = 0; index < nodeArray->len; index ++) {
 			node = g_ptr_array_index(nodeArray, index);
-			if (node != NULL)
+			if (node != NULL) {
 				g_object_ref(node);
+			}
 			*nodeListPointer = g_list_append(*nodeListPointer, node);
 		}
 	}
@@ -1343,8 +1363,9 @@ static void set_node_list(GList **nodeListPointer, GPtrArray *nodeArray) {
 
 static void set_string(char **pointer, char *value)
 {
-	if (*pointer != NULL)
+	if (*pointer != NULL) {
 		g_free(*pointer);
+	}
 	*pointer = value == NULL ? NULL : strdup(value);
 }
 
@@ -1353,16 +1374,17 @@ static void set_string_list(GList **stringListPointer, GPtrArray *stringArray) {
 		g_list_foreach(*stringListPointer, (GFunc) free_string_list_item, NULL);
 		g_list_free(*stringListPointer);
 	}
-	if (stringArray == NULL)
+	if (stringArray == NULL) {
 		*stringListPointer = NULL;
-	else {
+	} else {
 		char *string;
 		int index;
 
 		for (index = 0; index < stringArray->len; index ++) {
 			string = g_ptr_array_index(stringArray, index);
-			if (string != NULL)
+			if (string != NULL) {
 				string = g_strdup(string);
+			}
 			*stringListPointer = g_list_append(*stringListPointer, string);
 		}
 	}
@@ -1373,9 +1395,9 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 		g_list_foreach(*xmlListPointer, (GFunc) free_xml_list_item, NULL);
 		g_list_free(*xmlListPointer);
 	}
-	if (xmlArray == NULL)
+	if (xmlArray == NULL) {
 		*xmlListPointer = NULL;
-	else {
+	} else {
 		xmlDoc *doc;
 		int index;
 		xmlNode *node;
@@ -1383,16 +1405,18 @@ static void set_xml_list(GList **xmlListPointer, GPtrArray *xmlArray) {
 
 		for (index = 0; index < xmlArray->len; index ++) {
 			xmlString = g_ptr_array_index(xmlArray, index);
-			if (xmlString == NULL)
+			if (xmlString == NULL) {
 				node = NULL;
-			else {
+			} else {
 				doc = xmlReadDoc(g_ptr_array_index(xmlArray, index), NULL, NULL,
 						 XML_PARSE_NONET);
-				if (doc == NULL)
+				if (doc == NULL) {
 					continue;
+				}
 				node = xmlDocGetRootElement(doc);
-				if (node != NULL)
+				if (node != NULL) {
 					node = xmlCopyNode(node, 1);
+				}
 				xmlFreeDoc(doc);
 			}
 			*xmlListPointer = g_list_append(*xmlListPointer, node);
@@ -1407,12 +1431,14 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 
 	doc = xmlReadDoc(string, NULL, NULL, XML_PARSE_NONET);
 	node = xmlDocGetRootElement(doc);
-	if (node != NULL)
+	if (node != NULL) {
 		node = xmlCopyNode(node, 1);
+	}
 	xmlFreeDoc(doc);
 
-	if (*xmlnode)
+	if (*xmlnode) {
 		xmlFreeNode(*xmlnode);
+	}
 
 	*xmlnode = node;
 }
@@ -1595,16 +1621,19 @@ typedef struct {
 			if (*itemPointer == item)
 				return;
 
-			if (*itemPointer != NULL)
+			if (*itemPointer != NULL) {
 				/* Test added to help debugging. */
-				if (LASSO_IS_NODE(*itemPointer))
+				if (LASSO_IS_NODE(*itemPointer)) {
 					lasso_node_destroy(LASSO_NODE(*itemPointer));
-				else
+				} else {
 					g_object_unref(*itemPointer);
-			if (item == NULL)
+				}
+			}
+			if (item == NULL) {
 				*itemPointer = NULL;
-			else
+			} else {
 				*itemPointer = g_object_ref(item);
+			}
 		}
 		%exception setItem;
 	}
@@ -1695,12 +1724,14 @@ typedef struct {
 		}
 		void setItem(int index, char *item) {
 			char **itemPointer = (char **) &g_ptr_array_index(self, index);
-			if (*itemPointer != NULL)
+			if (*itemPointer != NULL) {
 				g_free(*itemPointer);
-			if (item == NULL)
+			}
+			if (item == NULL) {
 				*itemPointer = NULL;
-			else
+			} else {
 				*itemPointer = g_strdup(item);
+			}
 		}
 		%exception setItem;
 	}
@@ -5412,8 +5443,9 @@ LassoNodeList *LassoSession_getAssertions(LassoSession *self, char *providerId) 
 		assertionsArray = get_node_list(assertionsList);
 		g_list_foreach(assertionsList, (GFunc) free_node_list_item, NULL);
 		g_list_free(assertionsList);
-	} else
+	} else {
 		assertionsArray = NULL;
+	}
 	return assertionsArray;
 }
 
