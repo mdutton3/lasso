@@ -9,7 +9,7 @@ FIGURES_PNG_FILES = \
 	slo-sp-soap-3.png   slo-sp-soap-4.png slo-sp-soap-5.png \
 	slo-sp-soap-6.png
 
-FIGURES_SVG_FILES = \
+GENERATED_FIGURES_SVG_FILES = \
 	sso-brws-art-1.svg sso-brws-art-2.svg sso-brws-art-3.svg \
 	sso-brws-art-4.svg sso-brws-art-5.svg \
 	sso-brws-post-1.svg sso-brws-post-2.svg sso-brws-post-3.svg \
@@ -20,11 +20,11 @@ FIGURES_SVG_FILES = \
 
 figures_DATA = $(FIGURES_PNG_FILES)
 
-CLEANFILES = $(FIGURES_PNG_FILES) $(FIGURES_SVG_FILES)
+CLEANFILES = $(FIGURES_PNG_FILES) $(GENERATED_FIGURES_SVG_FILES)
 
 %.svg:
-	$(XSLTPROC) --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` $(srcdir)/step.xsl \
-		$< > $@
+	$(XSLTPROC) --stringparam stepno `echo $@ | sed -e 's/[^0-9]//g'` \
+		$(srcdir)/step.xsl $(srcdir)/$< > $@
 
 %.png: %.svg
 	$(INKSCAPE) -d 150 --export-png=$@ $<
