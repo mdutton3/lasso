@@ -74,6 +74,17 @@ class ErrorCheckingTestCase(unittest.TestCase):
         except lasso.Error:
             pass
 
+    def test04(self):
+        server = lasso.Server(
+            os.path.join(dataDir, 'sp1-la/metadata.xml'),
+            os.path.join(dataDir, 'sp1-la/private-key-raw.pem'),
+            None,
+            os.path.join(dataDir, 'sp1-la/certificate.pem'))
+        logout = lasso.Logout(server)
+        logout.initRequest(None, lasso.HTTP_METHOD_REDIRECT)
+        logout.buildRequestMsg()
+
+
 
 suite1 = unittest.makeSuite(ErrorCheckingTestCase, 'test')
 
