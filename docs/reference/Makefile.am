@@ -34,7 +34,7 @@ html: sgml lasso.sgml lasso-index
 	@echo '*** Building HTML ***'
 	test -d html || mkdir html
 	cd html && gtkdoc-mkhtml lasso ../build/lasso.sgml
-	cp style.css html/
+	cp $(srcdir)/style.css html/
 
 SCANOBJ_FILES = lasso.hierarchy	lasso.signals lasso.interfaces lasso.prerequisites lasso.args
 
