@@ -227,70 +227,70 @@ typedef struct {
 
 	/* Methods inherited from WsfProfile */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int setSessionFromDump(char *dump);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildRequestMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int initInsert(LassoDiscoResourceOffering *newOffering, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int initRemove(const char *entryId);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildModifyResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	LassoDiscoInsertEntry* addInsertEntry(LassoDiscoServiceInstance *serviceInstance,
 					      LassoDiscoResourceID *resourceID);
 
-	THROW_ERROR
+	THROW_ERROR()
 	int addRemoveEntry(char *entryID);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	LassoDiscoRequestedServiceType *addRequestedServiceType(char *serviceType,
 								char *option = NULL);
 
-	THROW_ERROR
+	THROW_ERROR()
 	int initModify(LassoDiscoResourceOffering *resourceOffering,
 			LassoDiscoDescription *description);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int initQuery(const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyMsg(const char *modify_msg, const gchar *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyResponseMsg(const char *modify_response_msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryMsg(char *query_msg, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryResponseMsg(char *query_response_msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	%newobject getService;
 	LassoDataService* getService(const char *service_type = NULL);
@@ -457,27 +457,27 @@ typedef struct {
 
 	/* Methods inherited from WsfProfile */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildRequestMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int initRequest();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processRequestMsg(char *msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processResponseMsg(char *msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 }
 
@@ -580,29 +580,29 @@ typedef struct {
 
 	/* Methods inherited from WsfProfile */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildRequestMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods inherited from ProfileService */
 
-	THROW_ERROR
+	THROW_ERROR()
 	gint initQuery(const char *select = NULL, const char *item_id = NULL, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryMsg(const char *message, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryResponseMsg(const char *message);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
@@ -614,13 +614,13 @@ typedef struct {
 
 	LassoDstModification *addModification(char *select);
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyMsg(char *soap_msg, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyResponseMsg(char *soap_msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods */
 
@@ -764,34 +764,34 @@ typedef struct {
 
 	/* Methods inherited from WsfProfile */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildRequestMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods */
 
-	THROW_ERROR
+	THROW_ERROR()
 	gint initQuery(const char *select = NULL, const char *item_id = NULL,
 		       const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	LassoDstQueryItem *addQueryItem(const char *select, const char *item_id);
 		
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryMsg(const char *message, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildModifyResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processQueryResponseMsg(const char *message);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	%newobject getAnswer;
 	char* getAnswer(const char *select = NULL);
@@ -803,13 +803,13 @@ typedef struct {
 
 	LassoDstModification *addModification(char *select);
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyMsg(char *soap_msg, const char *security_mech_id = NULL);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int processModifyResponseMsg(const char *soap_msg);
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	gboolean isPrincipalOnline();
 	void setPrincipalStatus(const char *status);
@@ -983,22 +983,22 @@ typedef struct {
 
 	/* Methods inherited from WsfProfile */
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildRequestMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
-	THROW_ERROR
+	THROW_ERROR()
 	int buildResponseMsg();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	/* Methods */
 	int clientStart();
 
 	int clientStep();
 
-	THROW_ERROR
+	THROW_ERROR()
 	int getMechanismList();
-	END_THROW_ERROR
+	END_THROW_ERROR()
 
 	int initRequest(LassoDiscoDescription *description, char *mechanisms, LassoUserAccount *account = NULL);
 
