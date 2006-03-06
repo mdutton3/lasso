@@ -1309,6 +1309,9 @@ static xmlNode *get_string_xml(const char *string) {
 
 static void set_node(gpointer *nodePointer, gpointer value)
 {
+	if (*nodePointer == value)
+		return;
+	
 	if (*nodePointer != NULL)
 		/* Test added to help debugging. */
 		if (LASSO_IS_NODE(*nodePointer))
@@ -1589,6 +1592,9 @@ typedef struct {
 		}
 		void setItem(int index, LassoNode *item) {
 			LassoNode **itemPointer = (LassoNode **) &g_ptr_array_index(self, index);
+			if (*itemPointer == item)
+				return;
+
 			if (*itemPointer != NULL)
 				/* Test added to help debugging. */
 				if (LASSO_IS_NODE(*itemPointer))
