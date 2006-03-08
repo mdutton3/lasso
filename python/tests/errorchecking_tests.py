@@ -71,8 +71,9 @@ class ErrorCheckingTestCase(unittest.TestCase):
         login = lasso.Login(server)
         try:
             login.processAuthnRequestMsg("")
-        except lasso.Error:
-            pass
+        except lasso.Error, error:
+            if error[0] != -407:
+                raise
 
     def test04(self):
         server = lasso.Server(
@@ -81,8 +82,11 @@ class ErrorCheckingTestCase(unittest.TestCase):
             None,
             os.path.join(dataDir, 'sp1-la/certificate.pem'))
         logout = lasso.Logout(server)
-        logout.initRequest(None, lasso.HTTP_METHOD_REDIRECT)
-        logout.buildRequestMsg()
+        try:
+            logout.initRequest(None, lasso.HTTP_METHOD_REDIRECT)
+        except lasso.Error, error:
+            if error[0] != -418:
+                raise
 
 
 
