@@ -1,3 +1,811 @@
+2006-03-08  fpeters
+
+	* debian/changelog: update to 0.6.4
+
+2006-03-08  fpeters
+
+	* python/tests/errorchecking_tests.py: fixing python test.
+
+2006-03-08  fpeters
+
+	* java/.cvsignore: ignoring generated saml2 files
+
+2006-03-08  fpeters
+
+	* doap.rdf: info about 0.6.4
+
+2006-03-08  fpeters
+
+	* README: updated (c) years and gforge url
+
+2006-03-08  fpeters
+
+	* COPYING: updated FSF address
+
+2006-03-08  fpeters
+
+	* NEWS: releasing 0.6.4
+
+2006-03-08  fpeters
+
+	* configure.ac: don't ship c# in this release
+
+2006-03-06  fpeters
+
+	* python/tests/errorchecking_tests.py: new error check test
+
+2006-03-06  fpeters
+
+	* lasso/id-ff/Makefile.am: ship logoutprivate.h
+
+2006-03-06  fpeters
+
+	* docs/reference/Makefile.am: ship style.css
+
+2006-03-06  fpeters
+
+	* docs/lasso-book/figures/Makefile.am: don't ship
+	fedterm-redirect.svg for now
+
+2006-03-06  fpeters
+
+	* java/Makefile.am: updated generated java files list
+
+2006-03-06  fpeters
+
+	* swig/Lasso.i: missing brace
+
+2006-03-06  fpeters
+
+	* swig/Lasso.i: adding braces
+
+2006-03-06  fpeters
+
+	* swig/Lasso.i: don't unref/affect the same pointer; this will
+	cause segfaults (seen in java)
+
+2006-03-06  fpeters
+
+	* swig/saml-2.0/.cvsignore: ignoring generated Makefile and
+	Makefile.in
+
+2006-03-06  fpeters
+
+	* swig/Lasso-wsf.i, swig/Lasso.i: SWIG upgrade (->1.3.28) broke
+	once again bindings; this time thanks to macros that are now
+	required to have args (looks like that anyway, nothing is
+	documented); fixing this.
+
+2006-03-04  fpeters
+
+	* lasso/id-wsf/wsf_profile.c: fixed variable type; how bad
+
+2006-03-04  fpeters
+
+	* lasso/id-wsf/authentication.c: cast strings to xmlChar* for
+	correct signedness
+
+2006-03-04  fpeters
+
+	* lasso/id-ff/server.c: added comment about why not to use memset
+
+2006-02-21  fpeters
+
+	* docs/reference/tmpl/lasso.sgml: added short desc for lasso.h
+
+2006-02-21  fpeters
+
+	* docs/reference/tmpl/lib_assertion.sgml,
+	docs/reference/tmpl/lib_authentication_statement.sgml,
+	docs/reference/tmpl/lib_authn_context.sgml,
+	docs/reference/tmpl/lib_authn_request_envelope.sgml,
+	docs/reference/tmpl/lib_authn_response.sgml,
+	docs/reference/tmpl/lib_authn_response_envelope.sgml,
+	docs/reference/tmpl/lib_federation_termination_notification.sgml,
+	docs/reference/tmpl/lib_idp_entries.sgml,
+	docs/reference/tmpl/lib_idp_entry.sgml,
+	docs/reference/tmpl/lib_idp_list.sgml,
+	docs/reference/tmpl/lib_logout_request.sgml,
+	docs/reference/tmpl/lib_logout_response.sgml,
+	docs/reference/tmpl/lib_name_identifier_mapping_request.sgml,
+	docs/reference/tmpl/lib_name_identifier_mapping_response.sgml,
+	docs/reference/tmpl/lib_register_name_identifier_request.sgml,
+	docs/reference/tmpl/lib_register_name_identifier_response.sgml,
+	docs/reference/tmpl/lib_request_authn_context.sgml,
+	docs/reference/tmpl/lib_scoping.sgml,
+	docs/reference/tmpl/lib_status_response.sgml,
+	docs/reference/tmpl/lib_subject.sgml: added short descriptions to
+	every lib: classes
+
+2006-02-21  fpeters
+
+	* docs/reference/tmpl/data_service.sgml,
+	docs/reference/tmpl/discovery.sgml,
+	docs/reference/tmpl/provider.sgml,
+	docs/reference/tmpl/strings.sgml: more doc
+
+2006-02-21  fpeters
+
+	* lasso/id-ff/provider.h, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/discovery.h, lasso/xml/xml.c: documentation fixes
+
+2006-02-06  fpeters
+
+	* lasso/id-wsf/discovery.c: don't g_object_ref what can be NULL
+
+2006-01-25  fpeters
+
+	* docs/reference/Makefile.am, docs/reference/style.css: own style
+	for reference doc
+
+2006-01-25  fpeters
+
+	* docs/reference/tmpl/login.sgml: fixing redirect example
+
+2006-01-25  fpeters
+
+	* lasso/id-ff/login.c: fix memory management for ID-WSF ResourceId
+
+2006-01-23  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c: check for remote provider id
+	before looking it in GHashTable
+
+2006-01-23  fpeters
+
+	* lasso/id-ff/logout.c: don't segfault when
+	lasso_logout_build_request_msg is erroneously called without
+	lasso_logout_init_request before
+
+2006-01-21  fpeters
+
+	* swig/Lasso-wsf-disco.i: fix swig id-wsf disco for new version of
+	swig
+
+2006-01-12  fpeters
+
+	* lasso/id-ff/provider.c: duplicate key to fix consecutive calls to
+	xmlsec
+
+2006-01-05  nclapies
+
+	* swig/Lasso-wsf-disco.i: Fixed symbol error about
+	LassoDiscoDescription_newWithBriefSoapHttpDescription.
+
+2006-01-05  nclapies
+
+	* lasso/xml/xml.c: Fixed node prefix from interaction service
+	namespace element.
+
+2005-12-10  fpeters
+
+	* configure.ac, php/patch_swig_output.py, swig/Lasso.i: bindings
+	working with swig 1.3.27
+
+2005-12-06  nclapies
+
+	* lasso/xml/ds_key_info.c, lasso/xml/ds_key_info.h: Fixed missing
+	declaration and settings.
+
+2005-12-06  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/wsf_profile.c, lasso/id-wsf/discovery.h: AP now verify
+	SP signature.
+
+2005-12-06  nclapies
+
+	* lasso/id-wsf/wsf_profile.h: [no log message]
+
+2005-12-06  nclapies
+
+	* lasso/xml/Makefile.am: [no log message]
+
+2005-12-06  nclapies
+
+	* lasso/xml/ds_key_info.c, lasso/xml/ds_key_info.h,
+	lasso/xml/ds_key_value.c, lasso/xml/ds_key_value.h,
+	lasso/xml/ds_rsa_key_value.c, lasso/xml/ds_rsa_key_value.h: Only
+	KeyValue in KeyInfo. Added KeyValue and RsaKeyValue element.
+
+2005-12-05  fpeters
+
+	* configure.ac: fixed host specific architecture changes
+
+2005-12-05  fpeters
+
+	* lasso/extract_symbols.py: dont parse files in id-wsf/ when not
+	compiled with id-wsf support (required for mac os x nmedit)
+
+2005-11-22  fpeters
+
+	* swig/Lasso-saml2.i: missing saml 2 file
+
+2005-11-22  fpeters
+
+	* lasso/id-ff/logout.c, lasso/saml-2.0/logout.c,
+	lasso/saml-2.0/logoutprivate.h, lasso/xml/xml.c,
+	lasso/xml/saml-2.0/samlp2_logout_response.h,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_response.h, swig/Lasso.i,
+	swig/saml-2.0/main.h: Completed first go of SAML 2.0 single logout
+	and added some missing files
+
+2005-11-21  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/logoutprivate.h,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h, lasso/id-ff/provider.c,
+	lasso/id-ff/provider.h, lasso/id-ff/session.c,
+	lasso/saml-2.0/Makefile.am, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/logout.c, lasso/saml-2.0/logoutprivate.h,
+	lasso/saml-2.0/profile.c, lasso/saml-2.0/provider.c,
+	lasso/saml-2.0/providerprivate.h, lasso/xml/private.h,
+	lasso/xml/xml.c, lasso/xml/saml-2.0/Makefile.am,
+	lasso/xml/saml-2.0/saml2_action.c,
+	lasso/xml/saml-2.0/saml2_action.h,
+	lasso/xml/saml-2.0/saml2_advice.c,
+	lasso/xml/saml-2.0/saml2_advice.h,
+	lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/saml2_assertion.h,
+	lasso/xml/saml-2.0/saml2_attribute.c,
+	lasso/xml/saml-2.0/saml2_attribute.h,
+	lasso/xml/saml-2.0/saml2_attribute_statement.c,
+	lasso/xml/saml-2.0/saml2_attribute_statement.h,
+	lasso/xml/saml-2.0/saml2_audience_restriction.c,
+	lasso/xml/saml-2.0/saml2_audience_restriction.h,
+	lasso/xml/saml-2.0/saml2_authn_context.c,
+	lasso/xml/saml-2.0/saml2_authn_context.h,
+	lasso/xml/saml-2.0/saml2_authn_statement.c,
+	lasso/xml/saml-2.0/saml2_authn_statement.h,
+	lasso/xml/saml-2.0/saml2_authz_decision_statement.c,
+	lasso/xml/saml-2.0/saml2_authz_decision_statement.h,
+	lasso/xml/saml-2.0/saml2_base_idabstract.c,
+	lasso/xml/saml-2.0/saml2_base_idabstract.h,
+	lasso/xml/saml-2.0/saml2_condition_abstract.c,
+	lasso/xml/saml-2.0/saml2_condition_abstract.h,
+	lasso/xml/saml-2.0/saml2_conditions.c,
+	lasso/xml/saml-2.0/saml2_conditions.h,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h,
+	lasso/xml/saml-2.0/saml2_evidence.c,
+	lasso/xml/saml-2.0/saml2_evidence.h,
+	lasso/xml/saml-2.0/saml2_key_info_confirmation_data.c,
+	lasso/xml/saml-2.0/saml2_key_info_confirmation_data.h,
+	lasso/xml/saml-2.0/saml2_name_id.c,
+	lasso/xml/saml-2.0/saml2_name_id.h,
+	lasso/xml/saml-2.0/saml2_one_time_use.c,
+	lasso/xml/saml-2.0/saml2_one_time_use.h,
+	lasso/xml/saml-2.0/saml2_proxy_restriction.c,
+	lasso/xml/saml-2.0/saml2_proxy_restriction.h,
+	lasso/xml/saml-2.0/saml2_statement_abstract.c,
+	lasso/xml/saml-2.0/saml2_statement_abstract.h,
+	lasso/xml/saml-2.0/saml2_subject.c,
+	lasso/xml/saml-2.0/saml2_subject.h,
+	lasso/xml/saml-2.0/saml2_subject_confirmation.c,
+	lasso/xml/saml-2.0/saml2_subject_confirmation.h,
+	lasso/xml/saml-2.0/saml2_subject_confirmation_data.c,
+	lasso/xml/saml-2.0/saml2_subject_confirmation_data.h,
+	lasso/xml/saml-2.0/saml2_subject_locality.c,
+	lasso/xml/saml-2.0/saml2_subject_locality.h,
+	lasso/xml/saml-2.0/samlp2_artifact_resolve.c,
+	lasso/xml/saml-2.0/samlp2_artifact_resolve.h,
+	lasso/xml/saml-2.0/samlp2_artifact_response.c,
+	lasso/xml/saml-2.0/samlp2_artifact_response.h,
+	lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	lasso/xml/saml-2.0/samlp2_assertion_idrequest.h,
+	lasso/xml/saml-2.0/samlp2_attribute_query.c,
+	lasso/xml/saml-2.0/samlp2_attribute_query.h,
+	lasso/xml/saml-2.0/samlp2_authn_query.c,
+	lasso/xml/saml-2.0/samlp2_authn_query.h,
+	lasso/xml/saml-2.0/samlp2_authn_request.c,
+	lasso/xml/saml-2.0/samlp2_authn_request.h,
+	lasso/xml/saml-2.0/samlp2_authz_decision_query.c,
+	lasso/xml/saml-2.0/samlp2_authz_decision_query.h,
+	lasso/xml/saml-2.0/samlp2_extensions.c,
+	lasso/xml/saml-2.0/samlp2_extensions.h,
+	lasso/xml/saml-2.0/samlp2_idp_entry.c,
+	lasso/xml/saml-2.0/samlp2_idp_entry.h,
+	lasso/xml/saml-2.0/samlp2_idp_list.c,
+	lasso/xml/saml-2.0/samlp2_idp_list.h,
+	lasso/xml/saml-2.0/samlp2_logout_request.c,
+	lasso/xml/saml-2.0/samlp2_logout_request.h,
+	lasso/xml/saml-2.0/samlp2_logout_response.c,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_request.c,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_request.h,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_response.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_request.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_request.h,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_response.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_response.h,
+	lasso/xml/saml-2.0/samlp2_name_id_policy.c,
+	lasso/xml/saml-2.0/samlp2_name_id_policy.h,
+	lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	lasso/xml/saml-2.0/samlp2_request_abstract.h,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.h,
+	lasso/xml/saml-2.0/samlp2_response.c,
+	lasso/xml/saml-2.0/samlp2_response.h,
+	lasso/xml/saml-2.0/samlp2_scoping.c,
+	lasso/xml/saml-2.0/samlp2_scoping.h,
+	lasso/xml/saml-2.0/samlp2_status.c,
+	lasso/xml/saml-2.0/samlp2_status.h,
+	lasso/xml/saml-2.0/samlp2_status_code.c,
+	lasso/xml/saml-2.0/samlp2_status_code.h,
+	lasso/xml/saml-2.0/samlp2_status_detail.c,
+	lasso/xml/saml-2.0/samlp2_status_detail.h,
+	lasso/xml/saml-2.0/samlp2_status_response.c,
+	lasso/xml/saml-2.0/samlp2_status_response.h,
+	lasso/xml/saml-2.0/samlp2_subject_query_abstract.c,
+	lasso/xml/saml-2.0/samlp2_subject_query_abstract.h,
+	lasso/xml/saml-2.0/samlp2_terminate.c,
+	lasso/xml/saml-2.0/samlp2_terminate.h: starting SAML 2 logout
+
+2005-11-20  fpeters
+
+	* swig/saml-2.0/inheritance.h: swig inheritance for SAML 2 elements
+
+2005-11-20  fpeters
+
+	* lasso/id-ff/provider.c: removing xmlsec debug code
+
+2005-11-20  fpeters
+
+	* configure.ac, lasso/Makefile.am, lasso/errors.c, lasso/errors.h,
+	lasso/extract_symbols.py, lasso/extract_types.py,
+	lasso/id-ff/defederation.c, lasso/id-ff/federation.c,
+	lasso/id-ff/federation.h, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/profile.h, swig/Lasso.i, swig/Makefile.am,
+	swig/saml-2.0/Makefile.am, swig/saml-2.0/saml2_action.i,
+	swig/saml-2.0/saml2_advice.i, swig/saml-2.0/saml2_assertion.i,
+	swig/saml-2.0/saml2_attribute.i,
+	swig/saml-2.0/saml2_attribute_statement.i,
+	swig/saml-2.0/saml2_audience_restriction.i,
+	swig/saml-2.0/saml2_authn_context.i,
+	swig/saml-2.0/saml2_authn_statement.i,
+	swig/saml-2.0/saml2_authz_decision_statement.i,
+	swig/saml-2.0/saml2_base_idabstract.i,
+	swig/saml-2.0/saml2_condition_abstract.i,
+	swig/saml-2.0/saml2_conditions.i,
+	swig/saml-2.0/saml2_encrypted_element.i,
+	swig/saml-2.0/saml2_evidence.i,
+	swig/saml-2.0/saml2_key_info_confirmation_data.i,
+	swig/saml-2.0/saml2_name_id.i, swig/saml-2.0/saml2_one_time_use.i,
+	swig/saml-2.0/saml2_proxy_restriction.i,
+	swig/saml-2.0/saml2_statement_abstract.i,
+	swig/saml-2.0/saml2_subject.i,
+	swig/saml-2.0/saml2_subject_confirmation.i,
+	swig/saml-2.0/saml2_subject_confirmation_data.i,
+	swig/saml-2.0/saml2_subject_locality.i,
+	swig/saml-2.0/samlp2_artifact_resolve.i,
+	swig/saml-2.0/samlp2_artifact_response.i,
+	swig/saml-2.0/samlp2_assertion_idrequest.i,
+	swig/saml-2.0/samlp2_attribute_query.i,
+	swig/saml-2.0/samlp2_authn_query.i,
+	swig/saml-2.0/samlp2_authn_request.i,
+	swig/saml-2.0/samlp2_authz_decision_query.i,
+	swig/saml-2.0/samlp2_extensions.i,
+	swig/saml-2.0/samlp2_idp_entry.i, swig/saml-2.0/samlp2_idp_list.i,
+	swig/saml-2.0/samlp2_logout_request.i,
+	swig/saml-2.0/samlp2_manage_name_id_request.i,
+	swig/saml-2.0/samlp2_name_id_mapping_request.i,
+	swig/saml-2.0/samlp2_name_id_mapping_response.i,
+	swig/saml-2.0/samlp2_name_id_policy.i,
+	swig/saml-2.0/samlp2_request_abstract.i,
+	swig/saml-2.0/samlp2_requested_authn_context.i,
+	swig/saml-2.0/samlp2_response.i, swig/saml-2.0/samlp2_scoping.i,
+	swig/saml-2.0/samlp2_status.i, swig/saml-2.0/samlp2_status_code.i,
+	swig/saml-2.0/samlp2_status_detail.i,
+	swig/saml-2.0/samlp2_status_response.i,
+	swig/saml-2.0/samlp2_subject_query_abstract.i,
+	swig/saml-2.0/samlp2_terminate.i, lasso/id-ff/profileprivate.h,
+	lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h, lasso/id-ff/server.c,
+	lasso/id-ff/session.c, lasso/id-ff/sessionprivate.h,
+	lasso/saml-2.0/Makefile.am, lasso/saml-2.0/federation.c,
+	lasso/saml-2.0/federationprivate.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/loginprivate.h, lasso/saml-2.0/profile.c,
+	lasso/saml-2.0/profileprivate.h, lasso/saml-2.0/provider.c,
+	lasso/saml-2.0/providerprivate.h, lasso/xml/Makefile.am,
+	lasso/xml/lib_authn_response.c, lasso/xml/lib_authn_response.h,
+	lasso/xml/lib_federation_termination_notification.c,
+	lasso/xml/lib_federation_termination_notification.h,
+	lasso/xml/lib_logout_request.c, lasso/xml/lib_logout_request.h,
+	lasso/xml/lib_logout_response.c, lasso/xml/lib_logout_response.h,
+	lasso/xml/lib_name_identifier_mapping_request.c,
+	lasso/xml/lib_name_identifier_mapping_request.h,
+	lasso/xml/lib_name_identifier_mapping_response.c,
+	lasso/xml/lib_name_identifier_mapping_response.h,
+	lasso/xml/lib_register_name_identifier_request.c,
+	lasso/xml/lib_register_name_identifier_request.h,
+	lasso/xml/lib_register_name_identifier_response.c,
+	lasso/xml/lib_register_name_identifier_response.h,
+	lasso/xml/samlp_response.c, lasso/xml/samlp_response.h,
+	lasso/xml/tools.c, lasso/xml/saml-2.0/Makefile.am,
+	lasso/xml/saml-2.0/saml2_action.c,
+	lasso/xml/saml-2.0/saml2_action.h,
+	lasso/xml/saml-2.0/saml2_advice.c,
+	lasso/xml/saml-2.0/saml2_advice.h,
+	lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/saml2_assertion.h,
+	lasso/xml/saml-2.0/saml2_attribute.c,
+	lasso/xml/saml-2.0/saml2_attribute.h,
+	lasso/xml/saml-2.0/saml2_attribute_statement.c,
+	lasso/xml/saml-2.0/saml2_attribute_statement.h,
+	lasso/xml/saml-2.0/saml2_audience_restriction.c,
+	lasso/xml/saml-2.0/saml2_audience_restriction.h,
+	lasso/xml/saml-2.0/saml2_authn_context.c,
+	lasso/xml/saml-2.0/saml2_authn_context.h,
+	lasso/xml/saml-2.0/saml2_authn_statement.c,
+	lasso/xml/saml-2.0/saml2_authn_statement.h,
+	lasso/xml/saml-2.0/saml2_authz_decision_statement.c,
+	lasso/xml/saml-2.0/saml2_authz_decision_statement.h,
+	lasso/xml/saml-2.0/saml2_base_idabstract.c,
+	lasso/xml/saml-2.0/saml2_base_idabstract.h,
+	lasso/xml/saml-2.0/saml2_condition_abstract.c,
+	lasso/xml/saml-2.0/saml2_condition_abstract.h,
+	lasso/xml/saml-2.0/saml2_conditions.c,
+	lasso/xml/saml-2.0/saml2_conditions.h,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h,
+	lasso/xml/saml-2.0/saml2_evidence.c,
+	lasso/xml/saml-2.0/saml2_evidence.h,
+	lasso/xml/saml-2.0/saml2_key_info_confirmation_data.c,
+	lasso/xml/saml-2.0/saml2_key_info_confirmation_data.h,
+	lasso/xml/saml-2.0/saml2_name_id.c,
+	lasso/xml/saml-2.0/saml2_name_id.h,
+	lasso/xml/saml-2.0/saml2_one_time_use.c,
+	lasso/xml/saml-2.0/saml2_one_time_use.h,
+	lasso/xml/saml-2.0/saml2_proxy_restriction.c,
+	lasso/xml/saml-2.0/saml2_proxy_restriction.h,
+	lasso/xml/saml-2.0/saml2_statement_abstract.c,
+	lasso/xml/saml-2.0/saml2_statement_abstract.h,
+	lasso/xml/saml-2.0/saml2_subject.c,
+	lasso/xml/saml-2.0/saml2_subject.h,
+	lasso/xml/saml-2.0/saml2_subject_confirmation.c,
+	lasso/xml/saml-2.0/saml2_subject_confirmation.h,
+	lasso/xml/saml-2.0/saml2_subject_confirmation_data.c,
+	lasso/xml/saml-2.0/saml2_subject_confirmation_data.h,
+	lasso/xml/saml-2.0/saml2_subject_locality.c,
+	lasso/xml/saml-2.0/saml2_subject_locality.h,
+	lasso/xml/saml-2.0/samlp2_artifact_resolve.c,
+	lasso/xml/saml-2.0/samlp2_artifact_resolve.h,
+	lasso/xml/saml-2.0/samlp2_artifact_response.c,
+	lasso/xml/saml-2.0/samlp2_artifact_response.h,
+	lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	lasso/xml/saml-2.0/samlp2_assertion_idrequest.h,
+	lasso/xml/saml-2.0/samlp2_attribute_query.c,
+	lasso/xml/saml-2.0/samlp2_attribute_query.h,
+	lasso/xml/saml-2.0/samlp2_authn_query.c,
+	lasso/xml/saml-2.0/samlp2_authn_query.h,
+	lasso/xml/saml-2.0/samlp2_authn_request.c,
+	lasso/xml/saml-2.0/samlp2_authn_request.h,
+	lasso/xml/saml-2.0/samlp2_authz_decision_query.c,
+	lasso/xml/saml-2.0/samlp2_authz_decision_query.h,
+	lasso/xml/saml-2.0/samlp2_extensions.c,
+	lasso/xml/saml-2.0/samlp2_extensions.h,
+	lasso/xml/saml-2.0/samlp2_idp_entry.c,
+	lasso/xml/saml-2.0/samlp2_idp_entry.h,
+	lasso/xml/saml-2.0/samlp2_idp_list.c,
+	lasso/xml/saml-2.0/samlp2_idp_list.h,
+	lasso/xml/saml-2.0/samlp2_logout_request.c,
+	lasso/xml/saml-2.0/samlp2_logout_request.h,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_request.c,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_request.h,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_request.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_request.h,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_response.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_response.h,
+	lasso/xml/saml-2.0/samlp2_name_id_policy.c,
+	lasso/xml/saml-2.0/samlp2_name_id_policy.h,
+	lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	lasso/xml/saml-2.0/samlp2_request_abstract.h,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.h,
+	lasso/xml/saml-2.0/samlp2_response.c,
+	lasso/xml/saml-2.0/samlp2_response.h,
+	lasso/xml/saml-2.0/samlp2_scoping.c,
+	lasso/xml/saml-2.0/samlp2_scoping.h,
+	lasso/xml/saml-2.0/samlp2_status.c,
+	lasso/xml/saml-2.0/samlp2_status.h,
+	lasso/xml/saml-2.0/samlp2_status_code.c,
+	lasso/xml/saml-2.0/samlp2_status_code.h,
+	lasso/xml/saml-2.0/samlp2_status_detail.c,
+	lasso/xml/saml-2.0/samlp2_status_detail.h,
+	lasso/xml/saml-2.0/samlp2_status_response.c,
+	lasso/xml/saml-2.0/samlp2_status_response.h,
+	lasso/xml/saml-2.0/samlp2_subject_query_abstract.c,
+	lasso/xml/saml-2.0/samlp2_subject_query_abstract.h,
+	lasso/xml/saml-2.0/samlp2_terminate.c,
+	lasso/xml/saml-2.0/samlp2_terminate.h: SAML 2.0 support (only
+	web-sso for the moment)
+
+2005-11-15  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Little modif about SAML
+	authentication verification
+
+2005-11-15  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h,
+	swig/Lasso-wsf.i: Renamed
+	lasso_data_service_need_user_interaction() to
+	lasso_data_service_need_redirect_user().
+
+2005-11-15  nclapies
+
+	* lasso/extract_symbols.py, lasso/extract_types.py: Only add
+	lasso_ds_* for id-wsf.
+
+2005-11-15  nclapies
+
+	* swig/Lasso-wsf.i: Added binding for user interaction in data
+	service.
+
+2005-11-15  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/data_service.h: Added
+	some user interaction support :
+	lasso_data_service_need_user_interaction() sets soap response with
+	a soap fault asking redirect request.
+	lasso_data_service_get_redirect_request_url() retrieves the
+	redirect request url. DataService raises a redirect request warning
+	exception if a fault was found in soap response after a
+	lasso_data_service_process_query_response_msg().
+
+2005-11-15  nclapies
+
+	* lasso/xml/strings.h: Added soap fault code server.
+
+2005-11-15  nclapies
+
+	* lasso/xml/soap_fault.c, lasso/xml/soap_fault.h: Fixed snippet
+	type and name of Detail attribute.
+
+2005-11-15  nclapies
+
+	* lasso/xml/is_redirect_request.c: Fixed snippet type of
+	redirectURL from content to attribute.
+
+2005-11-15  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Check if a soap fault is found in
+	response message. If no fault found, then set response.
+
+2005-11-15  nclapies
+
+	* lasso/errors.c, lasso/errors.h: Added a first soap fault code
+	error.
+
+2005-11-15  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/soap_detail.c,
+	lasso/xml/soap_detail.h: Added soap Detail element.
+
+2005-11-14  fpeters
+
+	* lasso/xml/strings.h: SAML 2.0 string constants
+
+2005-11-14  nclapies
+
+	* lasso/id-wsf/discovery.c: Now discovery service includes a key
+	value in credential added to disco:QueryResponse.
+
+2005-11-13  fpeters
+
+	* lasso/xml/private.h, lasso/xml/xml.c: starting to commit SAML 2
+	changes; minor changes (and bugfix) to lasso_node_new_from_xmlNode
+	as well as code to recreate SAML2 object from SAML2 query string.
+
+2005-10-14  nclapies
+
+	* lasso/id-ff/login.c: Fixed signature template problem : now if
+	metadata's service provider has AuthnRequestsSigned set to false
+	and HTTP method is POST, then template is not added anymore to
+	AuthnRequest xml message.
+
+2005-10-13  nclapies
+
+	* swig/Lasso-wsf.i: Fixed optional param of processModifyMsg().
+
+2005-10-11  nclapies
+
+	* lasso/id-wsf/discovery.h, swig/Lasso-wsf.i: Fixed
+	getServiceWithProviderId method.
+
+2005-10-10  nclapies
+
+	* lasso/id-wsf/discovery.c: Removed useless discovery method
+	lasso_discovery_get_service_with_providerId(). Removed useless Swig
+	binding of LassoWsfProfile class.
+
+2005-10-10  nclapies
+
+	* swig/Lasso-wsf.i, swig/inheritance.h: Removed useless discovery
+	method lasso_discovery_get_service_with_providerId(). Removed
+	useless Swig binding of LassoWsfProfile
+	class.lasso/id-wsf/discovery.c
+
+2005-10-06  fpeters
+
+	* debian/.cvsignore: updating ignored files with new packages
+
+2005-10-06  fpeters
+
+	* debian/liblasso1.postinst.debhelper,
+	debian/liblasso1.postrm.debhelper: remove old and never necessary
+	debhelper generated files
+
+2005-10-06  fpeters
+
+	* debian/control, debian/liblasso-java.dirs,
+	debian/liblasso-java.files, debian/rules: new liblasso-java package
+
+2005-10-06  fpeters
+
+	* debian/control: removed mono packages from build-depends
+
+2005-10-06  fpeters
+
+	* debian/changelog: updated debian changelog with uploaded
+	packages.
+
+2005-10-06  fpeters
+
+	* debian/rules: don't build wsf; touch swig files so they are not
+	rebuilt even if swig is detected.
+
+2005-10-06  fpeters
+
+	* debian/copyright: updated FSF address
+
+2005-10-06  nclapies
+
+	* swig/Lasso-wsf-disco.i: Added binding to set more than one
+	security mecanism authentication in DiscoDescription.
+
+2005-10-06  nclapies
+
+	* lasso/id-wsf/data_service.c, lasso/id-wsf/wsf_profile.c,
+	lasso/id-wsf/wsf_profile_private.h: Added check by AP if it wants
+	X509 authentication of SP. Does not work yet, need to fix
+	retrieving public key from credential before.
+
+2005-10-06  nclapies
+
+	* lasso/id-wsf/personal_profile_service.c: Set server attribute in
+	LassoPersonalProfileService
+
+2005-10-06  nclapies
+
+	* lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h,
+	lasso/xml/soap_binding_processing_context.c,
+	lasso/xml/soap_binding_processing_context.h, lasso/xml/strings.h,
+	swig/Lasso-wsf.i: Added support of principal state : now it is
+	possible a SP informs an AP if principal is considered to be online
+	or not. To tell principal is online, just add a call to
+	lasso_wsf_profile_set_principal_online() after
+	lasso_data_service_init_query(), and offline a call to
+	lasso_wsf_profile_set_principal_offline(). At AP, to known if
+	principal is to be considered online just test if
+	lasso_wsf_profile_principal_is_online() returns TRUE or FALSE.
+
+2005-10-05  nclapies
+
+	* lasso/id-wsf/discovery.c: A first attempt to include a KeyInfo in
+	credential.
+
+2005-10-05  nclapies
+
+	* lasso/id-wsf/data_service.c: Verify if a saml security
+	authentication is available.
+
+2005-10-05  nclapies
+
+	* lasso/xml/Makefile.am, lasso/xml/ds_key_info.c,
+	lasso/xml/ds_key_info.h, lasso/xml/saml_subject_confirmation.c,
+	lasso/xml/saml_subject_confirmation.h, lasso/xml/strings.h,
+	lasso/xml/xml.c: Added LassoDsKeyInfo oject. It allows to add it to
+	LassoSamlSubjectConfirmation object.
+
+2005-10-05  fpeters
+
+	* php/Makefile.am: don't patch a lasso_wrap.c that was not just
+	generated by swig.
+
+2005-10-05  fpeters
+
+	* lasso/id-ff/logout.c: no session on idp -> requestdenied ->
+	removing no longer valid session on sp.
+
+2005-10-05  fpeters
+
+	* lasso/errors.c: added error string for
+	LASSO_LOGOUT_ERROR_REQUEST_DENIED (...)
+
+2005-10-04  fpeters
+
+	* swig/Lasso.i: handle new error code
+
+2005-10-04  fpeters
+
+	* lasso/errors.h, lasso/id-ff/logout.c: returns
+	LASSO_LOGOUT_ERROR_REQUEST_DENIED if appropriate.
+
+2005-10-03  nclapies
+
+	* lasso/id-wsf/data_service.c: Fixed the way getting description in
+	lasso_data_service_init_query().
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/discovery.c: A little comment to note that some code
+	is needed to add KeyInfo in Assertion when returning it to SP from
+	IDP / Disco service.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Added private function
+	lasso_wsf_profile_has_saml_authentication() to know if a saml
+	authentication mecanism exists in current description.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/discovery.c: lasso_discovery_build_credential() adds
+	ConfirmationMethod element.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Updated comments.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Added reference binding when signing
+	soap messages.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/data_service.c: Updated data service with
+	service_type parameter.
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/wsf_profile.c: Added a g_object_ref on private
+	attribute description in lasso_wsf_profile_set_description().
+
+2005-09-30  nclapies
+
+	* lasso/id-wsf/discovery.c, lasso/id-wsf/discovery.h,
+	lasso/id-wsf/wsf_profile.c, lasso/id-wsf/wsf_profile.h,
+	lasso/id-wsf/wsf_profile_private.h, swig/Lasso-wsf.i: If a service
+	found in server object, retrieve needed description depending on an
+	optional security mechanism id.lasso/id-wsf/data_service.c
+
+2005-09-30  fpeters
+
+	* swig/Makefile.am: the "how could I not curse those adding files
+	without checking them in Makefile.am?" commit.
+
+2005-09-30  fpeters
+
+	* lasso/id-wsf/Makefile.am: I'm so glad for tests; another
+	emergency change.
+
+2005-09-30  fpeters
+
+	* lasso/id-wsf/Makefile.am: last emergency fix:
+	wsf_profile_private.h must be included in .tar.gz
+
+2005-09-30  fpeters
+
+	* ChangeLog: updated ChangeLog for 0.6.3
+
+
 2005-09-30  fpeters
 
 	* debian/changelog: new upstream release
