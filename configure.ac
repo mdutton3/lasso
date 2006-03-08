@@ -15,7 +15,7 @@ dnl - Second number is the number of supported API versions where API version >
 dnl   first number.
 dnl - Third number is the current API version implementation version number.
 dnl See libtool explanations about current, age and release, later in this file.
-AC_INIT([Liberty Alliance Single Sign On], 0.6.3, lasso-devel@lists.labs.libre-entreprise.org)
+AC_INIT([Liberty Alliance Single Sign On], 0.6.4, lasso-devel@lists.labs.libre-entreprise.org)
 dnl Check if autoconf ver > 2.53
 AC_PREREQ(2.53)
 dnl Check existence of a relative pathed source file.
@@ -24,7 +24,7 @@ dnl Copy stamp REVISIO-INFO in the configure script.
 AC_REVISION($Revision$)
 
 dnl Run many macros mostly needed by configure.ac.
-AM_INIT_AUTOMAKE(lasso, 0.6.3)
+AM_INIT_AUTOMAKE(lasso, 0.6.4)
 dnl Create rules to automaticaly regenerate the config header.
 AM_CONFIG_HEADER(lasso/lasso_config.h)
 dnl Add --enable-maintainer-mode option to configure.
@@ -160,7 +160,7 @@ dnl - interfaces removed -> AGE = 0
 # m = a
 # r = r
 current=`expr $VERSION_MAJOR + $VERSION_MINOR`
-LASSO_VERSION_INFO="5:0:2"
+LASSO_VERSION_INFO="6:0:3"
 AC_SUBST(LASSO_VERSION_INFO)
 
 dnl Compute the minimal supported ABI version for Win32 scripts and resources files.
@@ -424,62 +424,62 @@ AC_SUBST(PHP_VERSION)
 
 
 
-# ----------
-# C# binding
-# ----------
-
-AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
-              enable_csharp="yes")
-
-AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
-AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
-
-if test -z "$CSHARPCOMPILERBIN" ; then
-  case $host in
-  *-*-cygwin* | *-*-mingw*)
-    AC_CHECK_PROGS(CSHARPCOMPILER, mcs.bat cscc csc);;
-  *)AC_CHECK_PROGS(CSHARPCOMPILER, mcs cscc);;
-  esac
-else
-  CSHARPCOMPILER="$CSHARPCOMPILERBIN"
-fi
-
-CSHARPPATHSEPARATOR="/"
-CSHARPCYGPATH_W=echo
-if test -z "$CSHARPBIN" ; then
-  #languages_available="$languages_available C#($CSHARPCOMPILER)"
-  CSHARPCILINTERPRETER=""
-  if test "cscc" = "$CSHARPCOMPILER" ; then
-    AC_CHECK_PROGS(CSHARPCILINTERPRETER, ilrun)
-  else
-    if test "mcs" = "$CSHARPCOMPILER"; then
-      # Check that mcs is the C# compiler and not the Unix mcs utility by examining the output of 'mcs --version'
-      # The Mono compiler should emit: Mono C# compiler version a.b.c.d
-      csharp_version_raw=`(mcs --version) 2>/dev/null`
-      csharp_version_searched=`(mcs --version | sed -n "/C#\|Mono/p") 2>/dev/null`
-      CSHARPCOMPILER="";
-      if test -n "$csharp_version_raw" ; then
-        if test "$csharp_version_raw" = "$csharp_version_searched" ; then
-          CSHARPCOMPILER="mcs"
-        fi
-      fi
-
-      # mono interpreter (ver 0.26 doesn't seem to work on Windows platforms)
-      case $host in
-      *-*-cygwin* | *-*-mingw*)
-        ;;
-      *)AC_CHECK_PROGS(CSHARPCILINTERPRETER, mint);;
-      esac
-    else 
-      if test "csc" = "$CSHARPCOMPILER"; then
-          CSHARPPATHSEPARATOR="\\\\"
-          CSHARPCYGPATH_W='cygpath -w'
-      fi
-    fi
-  fi
-else
-  CSHARPCILINTERPRETER="$CSHARPBIN"
-fi
+### # ----------
+### # C# binding (disabled for the moment)
+### # ----------
+### 
+### AC_ARG_ENABLE(csharp, [  --disable-csharp        disable the C Sharp binding],,
+###               enable_csharp="yes")
+### 
+### AC_ARG_WITH(cil-interpreter, [  --with-cil-interpreter=path     set location of CIL interpreter for CSharp],[CSHARPBIN="$withval"], [CSHARPBIN=])
+### AC_ARG_WITH(csharp-compiler, [  --with-csharp-compiler=path     set location of CSharp compiler],[CSHARPCOMPILERBIN="$withval"], [CSHARPCOMPILERBIN=])
+### 
+### if test -z "$CSHARPCOMPILERBIN" ; then
+###   case $host in
+###   *-*-cygwin* | *-*-mingw*)
+###     AC_CHECK_PROGS(CSHARPCOMPILER, mcs.bat cscc csc);;
+###   *)AC_CHECK_PROGS(CSHARPCOMPILER, mcs cscc);;
+###   esac
+### else
+###   CSHARPCOMPILER="$CSHARPCOMPILERBIN"
+### fi
+### 
+### CSHARPPATHSEPARATOR="/"
+### CSHARPCYGPATH_W=echo
+### if test -z "$CSHARPBIN" ; then
+###   #languages_available="$languages_available C#($CSHARPCOMPILER)"
+###   CSHARPCILINTERPRETER=""
+###   if test "cscc" = "$CSHARPCOMPILER" ; then
+###     AC_CHECK_PROGS(CSHARPCILINTERPRETER, ilrun)
+###   else
+###     if test "mcs" = "$CSHARPCOMPILER"; then
+###       # Check that mcs is the C# compiler and not the Unix mcs utility by examining the output of 'mcs --version'
+###       # The Mono compiler should emit: Mono C# compiler version a.b.c.d
+###       csharp_version_raw=`(mcs --version) 2>/dev/null`
+###       csharp_version_searched=`(mcs --version | sed -n "/C#\|Mono/p") 2>/dev/null`
+###       CSHARPCOMPILER="";
+###       if test -n "$csharp_version_raw" ; then
+###         if test "$csharp_version_raw" = "$csharp_version_searched" ; then
+###           CSHARPCOMPILER="mcs"
+###         fi
+###       fi
+### 
+###       # mono interpreter (ver 0.26 doesn't seem to work on Windows platforms)
+###       case $host in
+###       *-*-cygwin* | *-*-mingw*)
+###         ;;
+###       *)AC_CHECK_PROGS(CSHARPCILINTERPRETER, mint);;
+###       esac
+###     else 
+###       if test "csc" = "$CSHARPCOMPILER"; then
+###           CSHARPPATHSEPARATOR="\\\\"
+###           CSHARPCYGPATH_W='cygpath -w'
+###       fi
+###     fi
+###   fi
+### else
+###   CSHARPCILINTERPRETER="$CSHARPBIN"
+### fi
 
 # Cygwin requires the Windows standard (Pascal) calling convention as it is a Windows executable and not a Cygwin built executable
 case $host in
@@ -791,8 +791,6 @@ dnl ==========================================================================
 AC_CONFIG_FILES([lasso-src-config], [chmod +x lasso-src-config])
 AC_OUTPUT(
 [Makefile
-csharp/Makefile
-csharp/lasso-sharp.pc
 docs/Makefile
 docs/lasso-book/Makefile
 docs/lasso-book/figures/Makefile
@@ -858,7 +856,6 @@ Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
 PHP binding:            ${enable_php}
 Python binding:         ${enable_python}
-C# binding:             ${enable_csharp}
 
 C API references:       ${enable_gtk_doc}
 Tests suite:            ${enable_tests}
