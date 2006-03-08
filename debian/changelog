@@ -1,3 +1,9 @@
+lasso (0.6.4-0) unofficial; urgency=low
+
+  * unofficial build.
+
+ -- Frederic Peters <fpeters@debian.org>  Wed,  8 Mar 2006 13:08:34 +0100
+
 lasso (0.6.3-4) unstable; urgency=low
 
   * debian/control: removed mono packages from build-depends since the -cil
