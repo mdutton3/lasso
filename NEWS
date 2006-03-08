@@ -2,7 +2,7 @@ NEWS
 ====
 
 0.6.4 - March 8th 2006
--------------------------
+----------------------
 
 Added first draft of ID-WSF Interaction Service support, added message
 signatures to ID-WSF messages, added first draft of SAML 2 support (only
