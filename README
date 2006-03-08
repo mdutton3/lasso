@@ -13,7 +13,7 @@ both a C library and bindings for different languages.
 
 
 The latest version of Lasso can be found on the labs.libre-entreprise.org
-website, <http://labs.libre-entreprise.org/project/showfiles.php?group_id=31>
+website, <http://labs.libre-entreprise.org/frs/?group_id=31>
 
 
 Lasso has several mailing lists:
@@ -43,7 +43,7 @@ for a detailed listing of all contributions.
 
 ::
 
-  Copyright (c) 2004, 2005 Entr'ouvert
+  Copyright (c) 2004, 2005, 2006 Entr'ouvert
   Excepted the Lasso logo, copyright (c) 2004, Entr'ouvert & Florent Monnier
 
 
