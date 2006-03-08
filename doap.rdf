@@ -47,10 +47,14 @@
       <CVSRepository>
         <anon-root>:pserver:anonymous@cvs.labs.libre-entreprise.org:/cvsroot/lasso</anon-root>
         <module>lasso</module>
-        <browse rdf:resource="http://cvs.labs.libre-entreprise.org/cgi-bin/cvsweb.cgi/lasso/?cvsroot=lasso"/>
+        <browse rdf:resource="http://labs.libre-entreprise.org/plugins/scmcvs/cvsweb.php/lasso/?cvsroot=lasso"/>
       </CVSRepository>
     </repository>
     <release>
+      <Version>
+        <created>2006-03-08</created>
+        <revision>0.6.4</revision>
+      </Version>
       <Version>
         <created>2005-09-30</created>
         <revision>0.6.3</revision>
