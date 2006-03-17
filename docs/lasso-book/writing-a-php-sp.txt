@@ -64,7 +64,7 @@ The ``LassoServer`` object may be created as follows::
 
   lasso_init();
   $server = &new LassoServer("sp-metadata.xml", "sp-private-key.pem",
-                              "sp-crt.pem", LASSO_SIGNATURE_METHOD_SHA1);
+                              "sp-crt.pem", LASSO_SIGNATURE_METHOD_RSA_SHA1);
   $server->addProvider(LASSO_PROVIDER_ROLE_IDP, "idp-metadata.xml",
                        "idp-public-key.pem", "ca-crt.pem");
   lasso_shutdown();
