@@ -2,11 +2,11 @@
 Writing a Liberty service provider in C
 =======================================
 
-:Author: Frederic Peters
-:Contact: fpeters@entrouvert.com
+:author: Frederic Peters
+:contact: fpeters@entrouvert.com
 :date: $Date$
 :revision: $Revision$
-:copyright: Copyright © 2004, 2005 Entr'ouvert
+:copyright: Copyright © 2004, 2005, 2006 Entr'ouvert
 
 .. contents:: Table of Contents
 .. section-numbering::
@@ -77,7 +77,7 @@ are:
 - Name Identifier Encryption
 
 Each profile maps to a Lasso object such as ``LassoLogin``, ``LassoLogout``...
-Those are initialized with data known about identity and service providers,
+Those are initialised with data known about identity and service providers,
 available in a ``LassoServer`` object.
 
 The ``LassoServer`` object may be created as follows:
@@ -109,10 +109,10 @@ if there are more than one identity provider.
           document are quite helpful in figuring out the message passing.
 
 
-Serialization
+Serialisation
 -------------
 
-``LassoServer`` objects can be serialized into XML files::
+``LassoServer`` objects can be serialised into XML files::
 
   gchar *dump;
   FILE *fd;
@@ -133,7 +133,7 @@ It is then really easy to get back properly constructed objects::
   /* restore dump from file, database, whatever */
   server = lasso_server_new_from_dump(dump);
 
-.. warning:: The server dump only contains the filenames; not the actual file
+.. warning:: The server dump only contains the file names; not the actual file
              contents.  Files should not be moved afterwards.
 
 
@@ -143,7 +143,7 @@ Liberty Metadata Files
 
 
 They are descriptions of a provider containing ``providerID`` and various
-norminative URLs::
+normative URLs::
 
   <?xml version="1.0"?>
   <EntityDescriptor
@@ -235,7 +235,7 @@ The users are defined by a ``nameIdentifier`` (accessible through
 and sessions in some database on the service provider.  If existing; the
 session should probably contains a ``session_dump`` element and the user a
 ``identity_dump`` element.  See `Database Considerations`_ below for more
-informations.
+information.
 
 It is now time to get them out of the database and apply them to the ``login``
 object.
@@ -251,7 +251,7 @@ object.
   lasso_login_accept_sso(login);
 
 After ``lasso_login_accept_sso`` the session and the identity are updated (or
-created) and should then be saved.  If the identity has not regnogized by the
+created) and should then be saved.  If the identity has not recognised by the
 service provider an account will probably have to be created on the service
 provider; this is a good opportunity to ask the user for more information.
 

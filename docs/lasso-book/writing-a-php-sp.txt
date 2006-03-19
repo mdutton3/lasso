@@ -2,11 +2,12 @@
 Writing a Liberty service Provider in PHP
 =========================================
 
-:Author: Romain Chantereau
-:Contact: rchantereau@entrouvert.com
+:author: Romain Chantereau
+:author: Damien Laniel
+:contact: rchantereau@entrouvert.com
 :date: $Date$
 :revision: $Revision$
-:copyright: Copyright © 2005 Entr'ouvert
+:copyright: Copyright © 2005, 2006 Entr'ouvert
 
 .. contents:: Table of Contents
 .. section-numbering::
@@ -14,29 +15,30 @@ Writing a Liberty service Provider in PHP
 Lasso PHP Binding Basics
 ========================
 
-Lasso functions are available from the Lasso php extension.
+Lasso functions are available from the Lasso PHP extension.
 
 There are two ways to load this extension.
 
-This first one is to add the line :
+This first one is to add the line::
 
   extension = lasso.so
 
-in your ``php.ini`` configuration file, which can be found in something like /etc/php4/apache2/php.ini
-(if you're using apache2 and php4, otherwise adpat the path to your configuration).
+in your ``php.ini`` configuration file, which can be found in something like
+``/etc/php4/apache2/php.ini`` (if you're using apache2 and php4 on Debian,
+otherwise you may need to adapt the path to your local configuration).
 
 
-The other way is to load it dynamicaly, like::
+The other way is to load it dynamically, like::
 
   if (!extension_loaded('lasso')) {
       $prefix = (PHP_SHLIB_SUFFIX == 'dll') ? 'php_' : '';
       dl($prefix . 'lasso.' . PHP_SHLIB_SUFFIX);
   }
 
-You can easily include this code everytime you need lasso.
+You can easily include this code every time you need lasso.
 
 
-The first thing to do is to call ``lasso_init()``. Similary, the last thing
+The first thing to do is to call ``lasso_init()``. Similarly, the last thing
 should be to call ``lasso_shutdown()``.
 
 Once ``lasso_init()`` is called. The smallest and useless Lasso project will
@@ -65,7 +67,7 @@ are:
 - Name Identifier Encryption
 
 Each profile maps to a Lasso object such as ``LassoLogin``, ``LassoLogout``...
-Those are initialized with data known about identity and service providers,
+Those are initialised with data known about identity and service providers,
 available in a ``LassoServer`` object.
 
 The ``LassoServer`` object may be created as follows::
@@ -89,15 +91,15 @@ The ``LassoServer`` object may be created as follows::
   identity provider.
 
 It is of course possible to have several calls to the ``addProvider`` method of
-an instanciated ``LassoServer`` object if there are more than one identity provider.
+an instantiated ``LassoServer`` object if there are more than one identity provider.
 
 .. note:: Figures in the previously referred Binding and Profiles specification
           document are quite helpful in figuring out the message passing.
 
-Serialization
+Serialisation
 -------------
 
-``LassoServer`` objects can be serialized into a XML formated string::
+``LassoServer`` objects can be serialised into a XML formatted string::
 
   $dump = $server->dump();
 
@@ -105,7 +107,7 @@ It is then really easy to get back properly constructed objects::
   
   $server = LassoServer::newFromDump($dump);
 
-.. warning:: The server dump only contains the filenames, not the actual file
+.. warning:: The server dump only contains the file names, not the actual file
              contents.  Files should not be moved afterwards.
 
 
@@ -114,7 +116,7 @@ Liberty Metadata Files
 
 
 They are descriptions of a provider containing ``providerID`` and various
-norminative URLs::
+normative URLs::
 
   <?xml version="1.0"?>
   <EntityDescriptor
@@ -152,7 +154,7 @@ service.
 .. note:: the login URL is not normative; any name will do.
 
 
-``$server`` is a instanciated ``LassoServer`` as seen earlier and
+``$server`` is a instantiated ``LassoServer`` as seen earlier and
 ``$idpProviderId`` is a string with the identity provider Id (the string must
 match a providerID defined in the metadata file).
 
@@ -203,7 +205,7 @@ The users are defined by a ``nameIdentifier`` (accessible through
 and sessions in some database on the service provider.  If existing; the
 session should probably contains a ``session_dump`` element and the user a
 ``identity_dump`` element.  See `Database Considerations`_ below for more
-informations.
+information.
 
 It is now time to get them out of the database and apply them to the ``login``
 object.
@@ -219,7 +221,7 @@ object.
   $lassoLogin->acceptSso();
 
 After ``lassoLogin->acceptSso()`` the session and the identity are updated (or
-created) and should then be saved.  If the identity has not regnogized by the
+created) and should then be saved.  If the identity has not recognised by the
 service provider an account will probably have to be created on the service
 provider; this is a good opportunity to ask the user for more information.
 
