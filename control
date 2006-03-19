@@ -55,7 +55,7 @@ Description: Liberty ID-FF library - Python 2.3 bindings
 Package: php4-lasso
 Section: web
 Architecture: any
-Depends: phpapi-20050606, ${shlibs:Depends}, ${misc:depends}
+Depends: ${php:Depends}, ${shlibs:Depends}, ${misc:depends}
 Description: Liberty ID-FF library - PHP 4 bindings
  Lasso is an implementation of the Liberty Identity Federation specifications
  defined by the Liberty Alliance consortium.  They defines processes such as

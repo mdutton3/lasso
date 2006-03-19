@@ -29,6 +29,8 @@ version=`ls src/.libs/lib*.so.* | \
 major=`ls src/.libs/lib*.so.* | \
  awk '{if (match($$0,/\.so\.[0-9]+$$/)) print substr($$0,RSTART+4)}'`
 
+phpapiver=$(shell php-config --phpapi)
+
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
@@ -99,6 +101,7 @@ binary-arch: build install
 	#dh_clideps -L liblasso-cil -r -d
 	dh_installdeb
 	dh_shlibdeps -a
+	echo "php:Depends=phpapi-$(phpapiver)" >> debian/php4-lasso.substvars
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
