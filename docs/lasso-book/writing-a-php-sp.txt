@@ -28,10 +28,9 @@ in your ``php.ini`` configuration file, which can be found in something like /et
 
 The other way is to load it dynamicaly, like::
 
-  if (!extension_loaded('lasso'))
-  {
-    $prefix = (PHP_SHLIB_SUFFIX == 'dll') ? 'php_' : '';
-    dl($prefix . 'lasso.' . PHP_SHLIB_SUFFIX);
+  if (!extension_loaded('lasso')) {
+      $prefix = (PHP_SHLIB_SUFFIX == 'dll') ? 'php_' : '';
+      dl($prefix . 'lasso.' . PHP_SHLIB_SUFFIX);
   }
 
 You can easily include this code everytime you need lasso.
@@ -104,7 +103,7 @@ Serialization
 
 It is then really easy to get back properly constructed objects::
   
-  $lspk_server = LassoServer::newFromDump($dump);
+  $server = LassoServer::newFromDump($dump);
 
 .. warning:: The server dump only contains the filenames, not the actual file
              contents.  Files should not be moved afterwards.
@@ -187,7 +186,7 @@ passed in the query parameter.
 
 ::
 
-  $lassoLogin = new LassoLogin($lspk_server);
+  $lassoLogin = new LassoLogin($server);
   $lassoLogin->initRequest($query_string, LASSO_HTTP_METHOD_REDIRECT);
   $lassoLogin->buildRequestMsg();
   
@@ -226,12 +225,12 @@ provider; this is a good opportunity to ask the user for more information.
 
 You can get respective dumps like this::
 
-  if($lassoLogin->isIdentityDirty) {
+  if ($lassoLogin->isIdentityDirty) {
       $lassoIdentity = $lassoLogin->identity;
       $lassoIdentityDump = $lassoIdentity->dump();
   }
 
-  if($lassoLogin->isSessionDirty) {
+  if ($lassoLogin->isSessionDirty) {
       $lassoSession = $lassoLogin->session;
       $lassoSessionDump = $lassoSession->dump();
   }
@@ -287,9 +286,8 @@ Most Lasso functions raise PHP error (fatal) or warning (non-fatal).
 
 It is strongly advised to code an user error handler::
 
-  function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
-  {
-    print("No: ".$errno."  -  ".$errmsg." at ".$filename.", line: ".$linenum."\n");
+  function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars) {
+      print("No: ".$errno."  -  ".$errmsg." at ".$filename.", line: ".$linenum."\n");
   }
 
 and to set up the script to use it::
@@ -303,10 +301,9 @@ PHP warning, the code resume after the call to the error handler function.
 ::
 
   $lrv = $lassoLogin->processResponseMsg($responseMsg);
-  if($lrv > 0)
-  {
-    print("Lasso Error: ".$lrv."\n");
-    /* handling error; most probably bailing out */
+  if ($lrv > 0) {
+      print("Lasso Error: ".$lrv."\n");
+      /* handling error; most probably bailing out */
   }
 
 
