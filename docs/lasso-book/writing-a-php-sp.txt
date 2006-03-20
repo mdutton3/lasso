@@ -4,7 +4,7 @@ Writing a Liberty service Provider in PHP
 
 :author: Romain Chantereau
 :author: Damien Laniel
-:contact: rchantereau@entrouvert.com
+:contact: dlaniel@entrouvert.com
 :date: $Date$
 :revision: $Revision$
 :copyright: Copyright © 2005, 2006 Entr'ouvert
