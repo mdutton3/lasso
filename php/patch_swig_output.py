@@ -142,24 +142,24 @@ wrap = sys.stdin.read()
 
 # (1)
 begin = """
-    }
-    
-    /* Wrap this return value */
+  }
+  
+  /* Wrap this return value */
 """
 end = """
-        *return_value=*obj;
-    }
+    *return_value=*obj;
+  }
 """
 i = wrap.find(begin)
 while i >= 0:
     j = wrap.find(end, i) + len(end)
     segment = wrap[i:j]
     segment = segment.replace(begin, """
-    /* Wrap this return value */
+  /* Wrap this return value */
 """)
     segment = segment.replace(end, """
-        *return_value=*obj;
-    }}
+    *return_value=*obj;
+  }}
 """)
     wrap = '%s%s%s' % (wrap[:i], segment, wrap[j:])
     i = wrap.find(begin, i + len(segment))
@@ -167,12 +167,13 @@ while i >= 0:
 # (2)
 begin = 'swig_type_info *ty = SWIG_TypeDynamicCast('
 end = """
-        *return_value=*obj;
-    }}
+    *return_value=*obj;
+  }}
 """
 i = wrap.find(begin)
 while i >= 0:
     j = wrap.find(end, i) + len(end)
+    print >> sys.stderr, "END:", j, len(end)
     if j < len(end): # bails out if not found
         break
     segment = wrap[i:j]
