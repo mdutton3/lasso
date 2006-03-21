@@ -529,16 +529,39 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		/* FIXME: verify assertion signature */
 
 		/* store NameIdentifier */
-		if (assertion->AuthenticationStatement == NULL) {
-			return LASSO_ERROR_UNDEFINED;
+		if (assertion->AuthenticationStatement) {
+			LassoSamlSubjectStatementAbstract *sssa;
+			sssa = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
+					assertion->AuthenticationStatement);
+			if (sssa->Subject && sssa->Subject->NameIdentifier) {
+				profile->nameIdentifier = g_object_ref(
+						sssa->Subject->NameIdentifier);
+			}
 		}
 
-		profile->nameIdentifier = g_object_ref(
-				LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-					assertion->AuthenticationStatement
-					)->Subject->NameIdentifier);
+		if (profile->nameIdentifier == NULL) {
+			/* it was not found in AuthenticationStatement, look it
+			 * up in AttributeStatement */
+			LassoSamlAttributeStatement *sas;
+			LassoNode *n;
+			GList *t;
 
-		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
+			sas = LASSO_SAML_ATTRIBUTE_STATEMENT(assertion->AttributeStatement);
+			t = sas->Attribute;
+			while (t) {
+				if (t->data && LASSO_IS_SAML_SUBJECT(t->data) == TRUE) {
+					if (LASSO_SAML_SUBJECT(t->data)->NameIdentifier) {
+						profile->nameIdentifier = g_object_ref(
+								LASSO_SAML_SUBJECT(
+									t->data)->NameIdentifier);
+						break;
+					}
+				}
+				t = g_list_next(t);
+			}
+		}
+
+		if (profile->nameIdentifier == NULL)
 			return LASSO_ERROR_UNDEFINED;
 	}
 
