@@ -1,6 +1,6 @@
 # Define java Package directory, the tailing '/' is mandatory.
 JAVA_PATH = com/entrouvert/lasso/
-JDK_INCLUDES = @JDK_INCLUDE@
+JDK_INCLUDES = @JDK_INCLUDE@ -I$(top_builddir)
 CLASSPATH = .
 
 javalibdir = $(prefix)/lib/java

@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_srcdir)
 
-AM_CPPFLAGS=@CPPFLAGS@ -I$(top_srcdir) -I$(top_builddir)/lasso @LASSO_CFLAGS@
+AM_CPPFLAGS=@CPPFLAGS@ -I$(top_srcdir) -I$(top_builddir) -I$(top_builddir)/lasso @LASSO_CFLAGS@
 AM_CFLAGS=@CFLAGS@ @LASSO_CORE_CFLAGS@
 AM_STANDARD_CFLAGS=@LASSO_CORE_CFLAGS@
 

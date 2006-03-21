@@ -1,4 +1,5 @@
 INCLUDES = -I$(top_srcdir) \
+	-I$(top_builddir) \
 	$(SASL_CFLAGS)
 
 pythondir= $(PY_SITE_PACKAGES)
