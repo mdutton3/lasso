@@ -1,3 +1,68 @@
+2006-03-21  fpeters
+
+	* NEWS, configure.ac, doap.rdf, debian/changelog: note about 0.6.5
+
+2006-03-21  fpeters
+
+	* lasso/id-ff/login.c: try to find nameidentifier in alternative
+	location; for compatibity with some idp
+
+2006-03-21  fpeters
+
+	* java/Makefile.am, lasso/Makefile.am, lasso/id-ff/Makefile.am,
+	lasso/saml-2.0/Makefile.am, php/Makefile.am, python/Makefile.am,
+	perl/Makefile.am: Helps building outside srcdir
+
+2006-03-21  fpeters
+
+	* win32/msvc/lasso.dsp.in, win32/nsis/jlasso-lite.nsi.in: fixed a
+	few win32 versioning issues
+
+2006-03-20  fpeters
+
+	* php/patch_swig_output.py: killed a chicken to restore swig
+	voodoo; hope it is enough, I'm running out of virgins.
+
+2006-03-20  dlaniel
+
+	* docs/lasso-book/writing-a-php-sp.txt: changed contact address for
+	php documentation to mine
+
+2006-03-19  fpeters
+
+	* docs/lasso-book/writing-a-c-sp.txt,
+	docs/lasso-book/writing-a-php-sp.txt: update copyright year, add
+	Damien to the php doc authors, run a spellchecker on the doc
+
+2006-03-19  fpeters
+
+	* docs/lasso-book/writing-a-php-sp.txt: unified braces on if line,
+	spaces between if and parenthesis and indentation; also use the
+	same $server variable name everywhere
+
+2006-03-19  dlaniel
+
+	* docs/lasso-book/writing-a-php-sp.txt: fixed doc
+	writing-a-php-sp.txt
+
+2006-03-19  fpeters
+
+	* debian/rules, debian/control: removed hardcoded php dependency,
+	added php:Depends substvar
+
+2006-03-17  fpeters
+
+	* docs/lasso-book/writing-a-php-sp.txt: fixed RSA_SHA1 constant
+	name
+
+2006-03-08  fpeters
+
+	* NEWS: fixed underline
+
+2006-03-08  fpeters
+
+	* ChangeLog: updated changelog to 0.6.4
+
 2006-03-08  fpeters
 
 	* debian/changelog: update to 0.6.4
