@@ -4,7 +4,9 @@ NEWS
 0.6.5 - March 21st 2006
 -----------------------
 
-Fixed support for SWIG 1.3.28 (now required), fixed a win3 build issue.
+Fixed support for SWIG 1.3.28 (now required), fixed a win3 build issue, fixed
+documentation.
+
 
 0.6.4 - March 8th 2006
 ----------------------
