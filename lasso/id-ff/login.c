@@ -523,8 +523,9 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSamlAssertion *assertion = response->Assertion->data;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-		if (idp == NULL)
+		if (idp == NULL) {
 			return LASSO_ERROR_UNDEFINED;
+		}
 
 		/* FIXME: verify assertion signature */
 
@@ -541,28 +542,19 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 
 		if (profile->nameIdentifier == NULL) {
 			/* it was not found in AuthenticationStatement, look it
-			 * up in AttributeStatement */
-			LassoSamlAttributeStatement *sas;
-			LassoNode *n;
-			GList *t;
+			 * up in saml:AttributeStatement */
+			LassoSamlSubjectStatementAbstract *sas;
 
-			sas = LASSO_SAML_ATTRIBUTE_STATEMENT(assertion->AttributeStatement);
-			t = sas->Attribute;
-			while (t) {
-				if (t->data && LASSO_IS_SAML_SUBJECT(t->data) == TRUE) {
-					if (LASSO_SAML_SUBJECT(t->data)->NameIdentifier) {
-						profile->nameIdentifier = g_object_ref(
-								LASSO_SAML_SUBJECT(
-									t->data)->NameIdentifier);
-						break;
-					}
-				}
-				t = g_list_next(t);
+			sas = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AttributeStatement);
+			if (sas->Subject && sas->Subject->NameIdentifier) {
+				profile->nameIdentifier = g_object_ref(
+						sas->Subject->NameIdentifier);
 			}
 		}
 
-		if (profile->nameIdentifier == NULL)
+		if (profile->nameIdentifier == NULL) {
 			return LASSO_ERROR_UNDEFINED;
+		}
 	}
 
 	return ret;
@@ -1662,6 +1654,7 @@ lasso_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	IF_SAML2(profile) {
 		return lasso_saml20_login_process_response_msg(login, response_msg);
 	}
+
 
 	/* rebuild samlp:Response with response_msg */
 	profile->response = lasso_node_new_from_soap(response_msg);
