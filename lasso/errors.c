@@ -31,6 +31,8 @@ const char*
 lasso_strerror(int error_code)
 {
 	switch (error_code) {
+		case LASSO_ERROR_UNDEFINED:
+			return "Undefined error case";
 		case LASSO_ERROR_UNIMPLEMENTED:
 			return "Unimplemented part of Lasso";
 		case LASSO_XML_ERROR_NODE_NOT_FOUND:
@@ -134,11 +136,13 @@ lasso_strerror(int error_code)
 			return "Name identifier not found in request";
 		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
 			return "Unknown principal";
+		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found";
 
 	        case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 		        return "Redirect request from Attribute Provider";
 
 		default:
-			return "Undefined error code.";
+			return "Error";
 	}
 }
