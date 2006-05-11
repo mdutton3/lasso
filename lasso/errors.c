@@ -138,6 +138,8 @@ lasso_strerror(int error_code)
 			return "Unknown principal";
 		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found";
+		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
+			return "Request denied"
 
 	        case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 		        return "Redirect request from Attribute Provider";
