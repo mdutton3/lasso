@@ -807,7 +807,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	LassoProvider *provider, *remote_provider;
 	LassoProfile *profile;
 	char *md_authnRequestsSigned, *url, *query, *lareq, *protocolProfile;
-	LassoProviderRole role;
+	LassoProviderRole role, remote_role;
 	gboolean must_sign;
 	gint ret = 0;
 
@@ -836,10 +836,13 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 
 	role = provider->role;
 	provider->role = LASSO_PROVIDER_ROLE_SP; /* we act as an SP for sure here */
+	remote_role = remote_provider->role;
+	remote_provider->role = LASSO_PROVIDER_ROLE_IDP; /* and remote is IdP */
 
 	if (lasso_provider_has_protocol_profile(remote_provider,
 				LASSO_MD_PROTOCOL_TYPE_SINGLE_SIGN_ON, protocolProfile) == FALSE) {
 		provider->role = role;
+		remote_provider->role = remote_role;
 		return LASSO_PROFILE_ERROR_UNSUPPORTED_PROFILE;
 	}
 
@@ -847,7 +850,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	md_authnRequestsSigned = lasso_provider_get_metadata_one(provider, "AuthnRequestsSigned");
 	must_sign = (md_authnRequestsSigned && strcmp(md_authnRequestsSigned, "true") == 0);
 	g_free(md_authnRequestsSigned);
+
+	/* restore original roles */
 	provider->role = role;
+	remote_provider->role = remote_role;
 
 	if (!must_sign)
 		LASSO_SAMLP_REQUEST_ABSTRACT(
