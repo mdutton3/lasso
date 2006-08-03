@@ -289,6 +289,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	LassoWsfProfile *profile;
 	int rc;
 	gchar *service_type;
+	GList *node_list;
 
 	/* FIXME: another way to get the service type ? */
 	{
@@ -314,6 +315,16 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 							security_mech_id);
 	if (rc)
 		return rc;
+	
+	/* get provider id from soap:Header */
+	for (node_list = profile->soap_envelope_request->Header->Other;
+			node_list; node_list = g_list_next(node_list)) {
+		LassoNode *node = node_list->data;
+		if (LASSO_IS_SOAP_BINDING_PROVIDER(node)) {
+			service->provider_id = g_strdup(
+				LASSO_SOAP_BINDING_PROVIDER(node)->providerID);
+		}
+	}
 	
 	query = LASSO_DST_QUERY(profile->request);
 	if (query->ResourceID)
@@ -745,6 +756,8 @@ dispose(GObject *object)
 
 	if (service->private_data->dispose_has_run == TRUE)
 		return;
+	g_free(service->provider_id);
+	service->provider_id = NULL;
 	service->private_data->dispose_has_run = TRUE;
 
 	G_OBJECT_CLASS(parent_class)->dispose(object);
