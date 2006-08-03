@@ -314,7 +314,7 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 							security_mech_id);
 	if (rc)
 		return rc;
-
+	
 	query = LASSO_DST_QUERY(profile->request);
 	if (query->ResourceID)
 		service->resource_id = g_object_ref(query->ResourceID);
