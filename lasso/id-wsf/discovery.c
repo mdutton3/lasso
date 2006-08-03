@@ -478,14 +478,14 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL) {
-		return -1;
+		return LASSO_DISCO_ERROR_MISSING_RESOURCE_OFFERING;
 	}
 	if (security_mech_id)
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	else
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	if (!description)
-	       return -1;
+	       return LASSO_DISCO_ERROR_MISSING_SERVICE_DESCRIPTION;
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
 	
 	/* XXX: EncryptedResourceID support */
