@@ -86,8 +86,7 @@ The ``LassoServer`` object may be created as follows:
 
   LassoServer *server;
   server = lasso_server_new("sp-metadata.xml",
-  		"sp-private-key.pem", "sp-crt.pem",
-		LASSO_SIGNATURE_METHOD_RSA_SHA1);
+  		"sp-private-key.pem", NULL, "sp-crt.pem");
   lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_IDP,
   		"idp-metadata.xml", "idp-public-key.pem", "ca-crt.pem");
 
@@ -100,7 +99,9 @@ The ``LassoServer`` object may be created as follows:
 - ``idp-public-key.pem`` is the identity provider public key; used to verify
   signature in documents sent by the identity provider
 - ``ca-crt.pem`` is the certificate of the certification authority used by the
-  identity provider.
+  identity provider
+- NULL, the third argument, would be used if the private key was protected by a
+  password.
 
 It is of course possible to have several calls so ``lasso_server_add_provider``
 if there are more than one identity provider.
