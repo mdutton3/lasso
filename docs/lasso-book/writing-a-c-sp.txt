@@ -87,6 +87,7 @@ The ``LassoServer`` object may be created as follows:
   LassoServer *server;
   server = lasso_server_new("sp-metadata.xml",
   		"sp-private-key.pem", NULL, "sp-crt.pem");
+
   lasso_server_add_provider(server, LASSO_PROVIDER_ROLE_IDP,
   		"idp-metadata.xml", "idp-public-key.pem", "ca-crt.pem");
 
