@@ -657,9 +657,19 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 		}
 		if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_REQUEST_DENIED) == 0) {
 			/* assertion no longer on idp so removing it locally too */
+			message(G_LOG_LEVEL_WARNING, "SP answer is request denied");
 			lasso_session_remove_assertion(
 					profile->session, profile->remote_providerID);
 			return LASSO_LOGOUT_ERROR_REQUEST_DENIED;
+		}
+		if (strcmp(statusCodeValue,
+					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST) == 0) {
+			/* how could this happen ?  probably error in SP */
+			/* let's remove the assertion nevertheless */
+			message(G_LOG_LEVEL_WARNING, "SP answer is federation does not exist");
+			lasso_session_remove_assertion(
+					profile->session, profile->remote_providerID);
+			return LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success : %s", statusCodeValue);
 		return LASSO_ERROR_UNDEFINED;
@@ -703,6 +713,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			if (profile->response != NULL)
 				lasso_node_destroy(LASSO_NODE(profile->response));
 
+			profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 			profile->remote_providerID = logout->initial_remote_providerID;
 			profile->request = logout->initial_request;
 			profile->response = logout->initial_response;

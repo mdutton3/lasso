@@ -79,6 +79,8 @@ lasso_strerror(int error_code)
 			return "Unsupported protocol profile";
 		case LASSO_LOGOUT_ERROR_REQUEST_DENIED:
 			return "Request denied by identity provider";
+		case LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND:
+			return "Federation not found on logout";
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
@@ -137,7 +139,7 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_UNKNOWN_PRINCIPAL:
 			return "Unknown principal";
 		case LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND:
-			return "Federation not found";
+			return "Federation not found on login";
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
 			return "Request denied";
 
