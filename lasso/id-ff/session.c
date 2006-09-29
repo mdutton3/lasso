@@ -125,6 +125,10 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
 	GList *r = NULL;
 	LassoSamlAssertion *assertion;
 
+	if (session == NULL) {
+		return NULL;
+	}
+
 	if (provider_id == NULL) {
 		g_hash_table_foreach(session->assertions, (GHFunc)add_assertion_to_list, &r);
 	} else {
@@ -149,6 +153,9 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
 LassoSamlpStatus*
 lasso_session_get_status(LassoSession *session, gchar *providerID)
 {
+	if (session == NULL) {
+		return NULL;
+	}
 	return g_hash_table_lookup(session->private_data->status, providerID);
 }
 
@@ -174,6 +181,10 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 {
 	GList *element;
 	int length;
+
+	if (session == NULL) {
+		return NULL;
+	}
 
 	length = g_hash_table_size(session->assertions);
 
@@ -202,6 +213,10 @@ lasso_session_get_provider_index(LassoSession *session, gint index)
 void
 lasso_session_init_provider_ids(LassoSession *session)
 {
+	if (session == NULL) {
+		return;
+	}
+
 	if (session->private_data->providerIDs) {
 		g_list_free(session->private_data->providerIDs);
 		session->private_data->providerIDs = NULL;
@@ -243,6 +258,10 @@ lasso_session_is_empty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 {
+	if (session == NULL) {
+		return LASSO_ERROR_UNDEFINED;
+	}
+
 	if (g_hash_table_remove(session->assertions, providerID)) {
 		session->is_dirty = TRUE;
 		return 0;
@@ -263,6 +282,10 @@ lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 gint
 lasso_session_remove_status(LassoSession *session, gchar *providerID)
 {
+	if (session == NULL) {
+		return LASSO_ERROR_UNDEFINED;
+	}
+
 	if (g_hash_table_remove(session->private_data->status, providerID)) {
 		session->is_dirty = TRUE;
 		return 0;
