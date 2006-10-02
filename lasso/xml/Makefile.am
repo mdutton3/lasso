@@ -32,9 +32,6 @@ WSF_C_FILES = \
 	disco_resource_offering.c \
 	disco_send_single_logout.c \
 	disco_service_instance.c \
-	ds_key_info.c \
-	ds_key_value.c \
-	ds_rsa_key_value.c \
 	dst_data.c \
 	dst_modification.c \
 	dst_modify.c \
@@ -100,9 +97,6 @@ WSF_H_FILES = \
 	disco_resource_offering.h \
 	disco_send_single_logout.h \
 	disco_service_instance.h \
-	ds_key_info.h \
-	ds_key_value.h \
-	ds_rsa_key_value.h \
 	dst_data.h \
 	dst_modification.h \
 	dst_modify.h \
@@ -151,6 +145,9 @@ endif
 liblasso_xml_la_SOURCES = \
 	tools.c \
 	xml.c \
+	ds_key_info.c \
+	ds_key_value.c \
+	ds_rsa_key_value.c \
 	lib_assertion.c	\
 	lib_authentication_statement.c \
 	lib_authn_context.c	\
@@ -201,6 +198,9 @@ liblasso_xml_la_SOURCES = \
 liblassoinclude_HEADERS = \
 	strings.h \
 	xml.h \
+	ds_key_info.h \
+	ds_key_value.h \
+	ds_rsa_key_value.h \
 	lib_assertion.h	\
 	lib_authentication_statement.h \
 	lib_authn_context.h	\
