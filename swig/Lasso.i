@@ -5992,7 +5992,7 @@ typedef struct {
 	char *msgUrl;
 
 	%newobject nameIdentifier_get;
-	LassoNode *nameIdentifier;
+	LassoSamlNameIdentifier *nameIdentifier;
 
 	char *remoteProviderId;
 
