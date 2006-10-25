@@ -314,6 +314,9 @@ lasso_discovery_add_requested_service_type(LassoDiscovery *discovery,
 	/* option is optional */
 
 	query = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
+	if (query == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+	}
 
 	rst = lasso_disco_requested_service_type_new(service_type);
 
