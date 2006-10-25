@@ -911,6 +911,11 @@ lasso_discovery_get_service(LassoDiscovery *discovery, const char *service_type)
 	LassoDataService *service;
 
 	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
+	if (response == NULL) {
+		/* no response; probably called at wrong time */
+		return NULL;
+	}
+
 	iter = response->ResourceOffering;
 	if (iter == NULL) {
 		return NULL; /* resource not found */
