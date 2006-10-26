@@ -667,11 +667,10 @@ lasso_node_build_deflated_query(LassoNode *node)
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer;
-	xmlChar *ret, *orig_ret, *b64_ret;
-	z_stream zstr;
-	int z_err;
-	int buf_size;
+	xmlChar *ret, *b64_ret;
 	char *rret;
+	unsigned long in_len, out_len;
+	int rc;
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
@@ -681,41 +680,22 @@ lasso_node_build_deflated_query(LassoNode *node)
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
 
-
-	zstr.zalloc = NULL;
-	zstr.zfree = NULL;
-	zstr.opaque = NULL;
-
-	zstr.avail_in = strlen((char*)buffer);
-	buf_size = zstr.avail_in*2;
-	ret = orig_ret = g_malloc(buf_size);
+	in_len = strlen((char*)buffer);
+	ret = g_malloc(in_len * 2);
 		/* deflating should never increase the required size but we are
 		 * more conservative than that.  Twice the size should be
 		 * enough. */
-	zstr.next_in = buffer;
-	zstr.total_in = 0;
-	zstr.next_out = ret;
 
-	z_err = deflateInit(&zstr, 6);
-	if (z_err != Z_OK) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to deflateInit");
-		return NULL;
-	}
-	do {
-		z_err = deflate(&zstr, Z_FINISH);
-		if (z_err == Z_OK) {
-			buf_size *= 2;
-			ret = g_realloc(ret, buf_size);
-			zstr.next_out = (xmlChar*) orig_ret-zstr.next_out+ret;
-			orig_ret = ret;
-		}
-	} while (z_err == Z_OK);
-	if (z_err != Z_STREAM_END) {
+	rc = compress2((unsigned char*)ret, &out_len,
+			(unsigned char*)buffer, in_len,
+			Z_DEFAULT_COMPRESSION);
+	
+	if (rc != Z_OK) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to deflate");
 		return NULL;
 	}
 
-	b64_ret = xmlSecBase64Encode(ret, zstr.total_out, 0);
+	b64_ret = xmlSecBase64Encode(ret, out_len, 0);
 	xmlOutputBufferClose(buf);
 	free(ret);
 
