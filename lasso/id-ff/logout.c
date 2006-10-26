@@ -713,7 +713,6 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			if (profile->response != NULL)
 				lasso_node_destroy(LASSO_NODE(profile->response));
 
-			profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 			profile->remote_providerID = logout->initial_remote_providerID;
 			profile->request = logout->initial_request;
 			profile->response = logout->initial_response;
