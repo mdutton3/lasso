@@ -382,8 +382,18 @@ lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_response = envelope;
 
+	if (envelope == NULL || envelope->Body == NULL || envelope->Body->any == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
+	}
 	response = envelope->Body->any->data;
+	if (response == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
+	}
 	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(response);
+
+	if (response->Status == NULL || response->Status->code == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
+	}
 
 	/* if continue, init another request */
 	if (g_str_equal(response->Status->code, LASSO_SA_STATUS_CODE_CONTINUE) == TRUE) {
