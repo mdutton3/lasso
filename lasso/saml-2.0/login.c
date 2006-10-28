@@ -31,6 +31,7 @@
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
+#include <lasso/id-ff/loginprivate.h>
 
 #include <lasso/xml/saml-2.0/samlp2_authn_request.h>
 #include <lasso/xml/saml-2.0/samlp2_response.h>
@@ -167,6 +168,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	LassoMessageFormat format;
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSamlp2StatusResponse *response;
+	gchar *protocol_binding;
 
 	request = lasso_samlp2_authn_request_new();
 	format = lasso_node_init_from_message(request, authn_request_msg);
@@ -178,6 +180,20 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	profile->request = request;
 	profile->remote_providerID = g_strdup(
 			LASSO_SAMLP2_REQUEST_ABSTRACT(request)->Issuer->content);
+
+	protocol_binding = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->ProtocolBinding;
+	if (protocol_binding == NULL) {
+		/* XXX: what does spec say when protocol binding is not set ? */
+		message(G_LOG_LEVEL_WARNING, "undefined protocol binding");
+	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_ARTIFACT) == 0) {
+		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
+	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_POST) == 0) {
+		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+	} else {
+		/* XXX: are there other protocols to handle ? */
+		message(G_LOG_LEVEL_WARNING,
+				"unhandled protocol binding: %s", protocol_binding);
+	}
 
 	/* XXX: checks authn request signature */
 
@@ -639,5 +655,48 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	}
 
 	return 0;
+}
+
+gint
+lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
+{
+	LassoProfile *profile = LASSO_PROFILE(login);
+	LassoProvider *remote_provider;
+
+	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
+	}
+
+	if (login->private_data->saml2_assertion) {
+		LassoSaml2Assertion *assertion = login->private_data->saml2_assertion;
+		/* XXX ?*/
+	}
+
+	if (profile->server->certificate)
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+			LASSO_SIGNATURE_TYPE_WITHX509;
+	else
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+			LASSO_SIGNATURE_TYPE_SIMPLE;
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
+		LASSO_SIGNATURE_METHOD_RSA_SHA1;
+
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file = 
+		g_strdup(profile->server->private_key);
+	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
+		g_strdup(profile->server->certificate);
+
+	/* build an lib:AuthnResponse base64 encoded */
+	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
+
+	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
+			LASSO_PROFILE(login)->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
+			LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceURL);
+
+	return 0;
+
 }
 
