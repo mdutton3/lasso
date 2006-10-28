@@ -46,15 +46,19 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "ResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionRequest, ResourceID) },
-	{ "EncryptedResourceID", SNIPPET_NODE, G_STRUCT_OFFSET(LassoIsInteractionRequest,
-							       EncryptedResourceID) },
-	{ "Inquiry", SNIPPET_LIST_NODES, G_STRUCT_OFFSET(LassoIsInteractionRequest, Inquiry) },
+	{ "ResourceID", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, ResourceID) },
+	{ "EncryptedResourceID", SNIPPET_NODE,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, EncryptedResourceID) },
+	{ "Inquiry", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, Inquiry) },
 	/* TODO : KeyInfo */
-	{ "id", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInteractionRequest, id) },
-	{ "language", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInteractionRequest, language) },
-	{ "maxInteractTime", SNIPPET_ATTRIBUTE, G_STRUCT_OFFSET(LassoIsInteractionRequest,
-								maxInteractTime) },
+	{ "id", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, id) },
+	{ "language", SNIPPET_ATTRIBUTE,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, language) },
+	{ "maxInteractTime", SNIPPET_ATTRIBUTE | SNIPPET_OPTIONAL,
+		G_STRUCT_OFFSET(LassoIsInteractionRequest, maxInteractTime) },
 	/* TODO : signed */
 	{ NULL, 0, 0}
 };
@@ -72,7 +76,7 @@ instance_init(LassoIsInteractionRequest *node)
 	/* TODO : KeyInfo */
 	node->id = NULL;
 	node->language = NULL;
-	node->maxInteractTime = 0; /* FIXME : optional integer attribute */
+	node->maxInteractTime = 0;
 	/* TODO : signed */
 }
 
