@@ -1221,6 +1221,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
 
 	doc = xmlParseMemory(message, strlen(message));
+	/* FIXME: doc will never be freed */
 
 	/* Verify authentication mecanisms */
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
