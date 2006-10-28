@@ -138,6 +138,8 @@ instance_init(LassoSaml2Assertion *node)
 	node->ID = NULL;
 	node->IssueInstant = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
+	node->private_key_file = NULL;
+	node->certificate_file = NULL;
 }
 
 static void

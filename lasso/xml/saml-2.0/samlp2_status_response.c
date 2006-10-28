@@ -154,6 +154,8 @@ instance_init(LassoSamlp2StatusResponse *node)
 	node->Destination = NULL;
 	node->Consent = NULL;
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
+	node->private_key_file = NULL;
+	node->certificate_file = NULL;
 }
 
 static void
