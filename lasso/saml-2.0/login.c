@@ -479,6 +479,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	} else {
 		/* XXX: ARTIFACT POST */
 	}
+	g_free(url);
 	return 0;
 }
 
@@ -693,8 +694,12 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
-			LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceURL);
+
+	profile->msg_url = lasso_saml20_provider_get_assertion_consumer_service_url(
+			remote_provider,
+			LASSO_SAMLP2_AUTHN_REQUEST(
+				profile->request)->AssertionConsumerServiceIndex);
+
 
 	return 0;
 
