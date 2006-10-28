@@ -11,19 +11,22 @@ LASSOBOOK_FILES = book.rst common-knowledge.rst getting-lasso.rst \
 		  liberty-architecture.rst other-profiles.rst preface.rst \
 		  single-sign-on.rst
 
+SP_DOC_FILES = writing-a-c-sp.txt writing-a-php-sp.txt writing-a-java-sp.txt
+
+SP_DOC_HTML = writing-a-c-sp.html writing-a-php-sp.html writing-a-java-sp.html
+
 if HAVE_REST2HTML
-doc_DATA = writing-a-c-sp.html book.html
+doc_DATA = $(SP_DOC_HTML) book.html
 else
-doc_DATA = writing-a-c-sp.txt $(LASSOBOOK_FILES)
+doc_DATA = $(SP_DOC_FILES) $(LASSOBOOK_FILES)
 endif
 
 %.html: %.txt
-	$(REST2HTML) $? > $@
+	$(REST2HTML) --stylesheet=default.css --link-stylesheet $? > $@
 
 %.html: %.rst
 	$(REST2HTML) $? > $@
 
-CLEANFILES = writing-a-c-sp.html book.html
-EXTRA_DIST = lasso-book.txt writing-a-c-sp.txt $(LASSOBOOK_FILES)
-
+CLEANFILES = $(SP_DOC_HTML) book.html
+EXTRA_DIST = lasso-book.txt $(LASSOBOOK_FILES) $(SP_DOC_FILES)
 
