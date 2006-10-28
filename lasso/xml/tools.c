@@ -671,6 +671,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 	char *rret;
 	unsigned long in_len, out_len;
 	int rc;
+	z_stream stream;
 
 	message = lasso_node_get_xmlNode(node, FALSE);
 
@@ -686,18 +687,38 @@ lasso_node_build_deflated_query(LassoNode *node)
 		 * more conservative than that.  Twice the size should be
 		 * enough. */
 
-	rc = compress2((unsigned char*)ret, &out_len,
-			(unsigned char*)buffer, in_len,
-			Z_DEFAULT_COMPRESSION);
-	
+	stream.next_in = buffer;
+	stream.avail_in = in_len;
+	stream.next_out = ret;
+	stream.avail_out = in_len * 2;
+
+	stream.zalloc = NULL;
+	stream.zfree = NULL;
+	stream.opaque = NULL;
+
+	/* -MAX_WBITS to disable zib headers */
+	rc = deflateInit2(&stream, Z_DEFAULT_COMPRESSION,
+		Z_DEFLATED, -MAX_WBITS, 5, 0);
+	if (rc == Z_OK) {
+		rc = deflate(&stream, Z_FINISH);
+		if (rc != Z_STREAM_END) {
+			deflateEnd(&stream);
+			if (rc == Z_OK) {
+				rc = Z_BUF_ERROR;
+			}
+		} else {
+			rc = deflateEnd(&stream);
+		}
+	}
 	if (rc != Z_OK) {
+		g_free(ret);
 		message(G_LOG_LEVEL_CRITICAL, "Failed to deflate");
 		return NULL;
 	}
 
 	b64_ret = xmlSecBase64Encode(ret, out_len, 0);
 	xmlOutputBufferClose(buf);
-	free(ret);
+	g_free(ret);
 
 	ret = xmlURIEscapeStr(b64_ret, NULL);
 	rret = g_strdup((char*)ret);
@@ -735,7 +756,7 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	zstr.total_out = 0;
 	zstr.next_out = re;
 
-	z_err = inflateInit(&zstr);
+	z_err = inflateInit2(&zstr, -MAX_WBITS);
 	if (z_err != Z_OK) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to inflateInit");
 		xmlFree(zre);
