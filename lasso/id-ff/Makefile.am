@@ -29,7 +29,8 @@ lasso_private_h_sources = \
 	providerprivate.h \
 	serverprivate.h \
 	sessionprivate.h \
-	logoutprivate.h
+	logoutprivate.h \
+	loginprivate.h
 
 liblassoinclude_HEADERS = \
 	defederation.h \

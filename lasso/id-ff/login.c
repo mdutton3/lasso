@@ -48,17 +48,9 @@
 #include <lasso/id-ff/serverprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
 #include <lasso/id-ff/identityprivate.h>
+#include <lasso/id-ff/loginprivate.h>
 
 #include <lasso/saml-2.0/loginprivate.h>
-
-struct _LassoLoginPrivate
-{
-	char *soap_request_msg;
-#ifdef LASSO_WSF_ENABLED
-	LassoDiscoResourceID *resourceId;
-	LassoDiscoEncryptedResourceID *encryptedResourceId;
-#endif
-};
 
 
 static void lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *assertion);
@@ -886,6 +878,10 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	}
 	if (login->http_method == LASSO_HTTP_METHOD_POST) {
 		if (must_sign) {
+			/* XXX: private_key_file is not declared within request
+			 * snippets so it is not freed on destroy, so it is
+			 * normal to not strdup() it; nevertheless it would
+			 * probably be more clean not to to it this way */
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->private_key_file = 
 				profile->server->private_key;
 			LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->certificate_file = 
@@ -928,6 +924,10 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
+
+	IF_SAML2(profile) {
+		return lasso_saml20_login_build_authn_response_msg(login);
+	}
 
 	/* ProtocolProfile must be BrwsPost */
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST &&
@@ -1792,6 +1792,9 @@ dispose(GObject *object)
 	LassoLogin *login = LASSO_LOGIN(object);
 	g_free(login->private_data->soap_request_msg);
 	login->private_data->soap_request_msg = NULL;
+	if (login->private_data->saml2_assertion)
+		lasso_node_destroy(LASSO_NODE(login->private_data->saml2_assertion));
+	login->private_data->saml2_assertion = NULL;
 #ifdef LASSO_WSF_ENABLED
 	if (login->private_data->resourceId)
 		lasso_node_destroy(LASSO_NODE(login->private_data->resourceId));
@@ -1821,6 +1824,7 @@ instance_init(LassoLogin *login)
 {
 	login->private_data = g_new(LassoLoginPrivate, 1);
 	login->private_data->soap_request_msg = NULL;
+	login->private_data->saml2_assertion = NULL;
 #ifdef LASSO_WSF_ENABLED
 	login->private_data->resourceId = NULL;
 	login->private_data->encryptedResourceId = NULL;
