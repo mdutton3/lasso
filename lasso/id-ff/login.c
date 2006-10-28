@@ -494,7 +494,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 	if (response->Status == NULL || ! LASSO_IS_SAMLP_STATUS(response->Status) || 
 			response->Status->StatusCode == NULL ||
 			response->Status->StatusCode->Value == NULL) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
 
 	status_value = response->Status->StatusCode->Value;
