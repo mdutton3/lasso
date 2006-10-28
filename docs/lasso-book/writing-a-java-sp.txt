@@ -15,23 +15,30 @@ Writing a Liberty Service Provider in Java
 Lasso Java Binding Settings
 ===========================
 
-Java binding of Lasso is implemented by the Java package lasso.jar. In order to compile Java sources importing this package, you need to set environment variable CLASSPATH :
+Java binding of Lasso is implemented by the Java package lasso.jar. In order to
+compile Java sources importing this package, you need to set environment
+variable CLASSPATH::
 
-``export CLASSPATH=$CLASSPATH:/path/to/lasso/jar/lasso.jar``
+  export CLASSPATH=$CLASSPATH:/path/to/lasso/jar/lasso.jar
 
-Lasso Java package is linked to C Lasso library thanks to JNI interface library. Under UNIXes like Linux, the library is named linjlasso.so. Under Mac OS X, library is named libjlasso.dynlib. Windows systems need jlasso.dll. You need to add library directory path to system library loader.
+Lasso Java package is linked to C Lasso library thanks to JNI interface
+library. Under UNIXes like Linux, the library is named linjlasso.so. Under Mac
+OS X, library is named libjlasso.dynlib. Windows systems need jlasso.dll. You
+need to add library directory path to system library loader.
 
-For UNIXes system with bash, command is like :
+For UNIXes system with bash, command is like::
 
-``export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/lasso/jni/interface/``
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/lasso/jni/interface/
 
-where /path/to/lasso/jni/interface/ is the Lasso JNI interface hosting directory.
+where /path/to/lasso/jni/interface/ is the Lasso JNI interface hosting
+directory.
 
 
 Liberty and Lasso profiles
 ==========================
 
-Lasso provides the necessary functions to implement Liberty Alliance profiles, as defined in the `Liberty ID-FF Bindings and Profiles Specification`_ :
+Lasso provides the necessary functions to implement Liberty Alliance profiles,
+as defined in the `Liberty ID-FF Bindings and Profiles Specification`_ :
 
 - Single Sign-On and Federation
 - Single Logout
@@ -41,13 +48,9 @@ Lasso provides the necessary functions to implement Liberty Alliance profiles, a
 Lasso settings
 ==============
 
-Java applications first need to import Lasso package :
+Java applications first need to import Lasso package::
 
-``import com.entrouvert.lasso.*;```
-
-At start, one and only one time, Java applications need to initialise Lasso library thanks to the following call :
-
-``lasso.init();``
+  import com.entrouvert.lasso.*;
 
 
 Service Provider keys and metadata files
@@ -56,23 +59,29 @@ Service Provider keys and metadata files
 Liberty key files
 -----------------
 
-Service Provider needs private and public keys to sign sent messages. It also needs Identity Provider public key to verify received messages. Private and public keys are loaded from PEM files by Lasso.
+Service Provider needs private and public keys to sign sent messages. It also
+needs Identity Provider public key to verify received messages. Private and
+public keys are loaded from PEM files by Lasso.
 
 Liberty Metadata files
 ----------------------
 
-Service Provider need to get Identity Provider metadata to know where to send requests and how to process received requests from Identity Provider. Metadata are xml document describing provider identifier, deployed urls where to send requests and initiate profile and methods describing how to send or process requests.
+Service Provider need to get Identity Provider metadata to know where to send
+requests and how to process received requests from Identity Provider. Metadata
+are xml document describing provider identifier, deployed urls where to send
+requests and initiate profile and methods describing how to send or process
+requests.
 
 Service provider typically describe metadata like this::
 
   <?xml version="1.0"?>
   <EntityDescriptor
-    providerID="http://my-domain/liberty/metadata" 
+    providerID="http://sp.example.com/liberty/metadata" 
     xmlns="urn:liberty:metadata:2003-08">
     <SPDescriptor protocolSupportEnumeration="urn:liberty:iff:2003-08">
-        <SoapEndpoint>http://my-domain/liberty/soap-endpoint</SoapEndpoint>
-        <SingleLogoutServiceURL>my-domain/liberty/single-logout</SingleLogoutServiceURL>
-        <AssertionConsumerServiceURL id="AssertionConsumerService1"isDefault="true">http://my-domain/liberty/assertion-consumer-service</AssertionConsumerServiceURL>
+        <SoapEndpoint>http://sp.example.com/liberty/soap-endpoint</SoapEndpoint>
+        <SingleLogoutServiceURL>sp.example.com/liberty/single-logout</SingleLogoutServiceURL>
+        <AssertionConsumerServiceURL id="AssertionConsumerService1"isDefault="true">http://sp.example.com/liberty/assertion-consumer-service</AssertionConsumerServiceURL>
         <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-soap</FederationTerminationNotificationProtocolProfile>
         <FederationTerminationNotificationProtocolProfile>http://projectliberty.org/profiles/fedterm-idp-http</FederationTerminationNotificationProtocolProfile>
         <SingleLogoutProtocolProfile>http://projectliberty.org/profiles/slo-idp-soap</SingleLogoutProtocolProfile>
@@ -81,20 +90,26 @@ Service provider typically describe metadata like this::
         <AuthnRequestsSigned>true</AuthnRequestsSigned>
     </SPDescriptor>
     <Organization>
-        <OrganizationName>Mon organisme</OrganizationName>
+        <OrganizationName>Example Organization</OrganizationName>
     </Organization>
   </EntityDescriptor>
 
-Where my-domain is the domain name of Service Provider.
+Where sp.example.com is the domain name of Service Provider.
 
-``http://my-domain/liberty/metadata`` is the Service Provider Liberty identifier.
+``http://sp.example.com/liberty/metadata`` is the Service Provider Liberty
+identifier.
 
-``http://my-domain/liberty/soap-endpoint`` is the Service Provider SOAP endpoint where Identity Provider send SOAP single logout or defederation requests.
+``http://sp.example.com/liberty/soap-endpoint`` is the Service Provider SOAP
+endpoint where Identity Provider send SOAP single logout or defederation
+requests.
 
-``http://my-domain/liberty/assertion-consumer-service`` is the Service Provider assertion consumer url where Identity Provider must return single sign on authentication response.
+``http://sp.example.com/liberty/assertion-consumer-service`` is the Service
+Provider assertion consumer url where Identity Provider must return single sign
+on authentication response.
 
-``http://my-domain/liberty/single-logout`` is the Service Provider single logout url. Service Provider can initiate single logout from this url or process HTTP single logout request from Identity Provider.
-`
+``http://sp.example.com/liberty/single-logout`` is the Service Provider single
+logout url. Service Provider can initiate single logout from this url or
+process HTTP single logout request from Identity Provider.  `
 
 Lasso Server and remote providers settings
 ==========================================
@@ -102,28 +117,35 @@ Lasso Server and remote providers settings
 LassoServer
 -----------
 
-Every time needing to initiate a Liberty Profile or process a Liberty request, Lasso needs to set a Lasso Profile object with a Lasso Server to set Service Provider informations (private key and metadata) and identity Provider informations (public key, certificate and metadata).
+Every time needing to initiate a Liberty Profile or process a Liberty request,
+Lasso needs to set a Lasso Profile object with a Lasso Server to set Service
+Provider informations (private key and metadata) and identity Provider
+informations (public key, certificate and metadata).
 
 The Server object may be created as follows::
 
-  Server lassoServer = new Server("sp-metadata.xml", "sp-privatekey.pem", null, null);
-  lassoServer.addProvider(lasso.PROVIDER_ROLE_IDP, "idp-metadata.xml", "idp-publickey.pem", null);
+  Server lassoServer = new Server("sp-metadata.xml",
+                  "sp-privatekey.pem", null, null);
+  lassoServer.addProvider(lasso.PROVIDER_ROLE_IDP,
+                  "idp-metadata.xml", "idp-publickey.pem", null);
 
-* sp-metadata.xml is the Liberty metadata file of the service provider
-* idp-metadata.xml is the Liberty metadata file for the identity provider
-* sp-privatekey.pem is the service provider private key; used to sign documents
-* idp-publickey.pem is the identity provider public key; used to verify signature in documents sent by the identity provider
+- sp-metadata.xml is the Liberty metadata file of the service provider
+- idp-metadata.xml is the Liberty metadata file for the identity provider
+- sp-privatekey.pem is the service provider private key; used to sign documents
+- idp-publickey.pem is the identity provider public key; used to verify
+  signature in documents sent by the identity provider
 
 Serialisation
 -------------
 
-It can be useful to dumps Server object and save it for next use. LassoServer objects can be serialised into a XML formatted string:
+It can be useful to dumps Server object and save it for next use. LassoServer
+objects can be serialised into a XML formatted string::
 
-``String lassoServerDump = lassoServer->dump();``
+  String lassoServerDump = lassoServer->dump();`
 
-It is then really easy to get back properly constructed objects:
+It is then really easy to get back properly constructed objects::
 
-``Server lassoServer = Server.newFromDump(lassoServerDump);``
+  Server lassoServer = Server.newFromDump(lassoServerDump);
 
 
 Single Sign On
@@ -132,14 +154,16 @@ Single Sign On
 Initiating Single Sign On::
 
   Login lassoLogin = new Login(lassoServer);
-  lassoLogin.initAuthnRequest(lassoServer.getProviderIds().getItem(0), lasso.HTTP_METHOD_REDIRECT);
+  lassoLogin.initAuthnRequest(lassoServer.getProviderIds().getItem(0),
+                  lasso.HTTP_METHOD_REDIRECT);
   LibAuthnRequest authnRequest = (LibAuthnRequest) login.getRequest();
   authnRequest.setNameIdPolicy(lasso.LIB_NAMEID_POLICY_TYPE_FEDERATED);
   authnRequest.setProtocolProfile(lasso.LIB_PROTOCOL_PROFILE_BRWS_ARTIFACT);
   lassoLogin.buildAuthnRequestMsg();
   String msgUrl = lassoLogin.getMsgUrl();
 
-Processing Single Sign On Identity Provider Artifact response from AssertionConsumerServiceURL metadata url::
+Processing Single Sign On Identity Provider Artifact response from
+AssertionConsumerServiceURL metadata URL::
 
   lassoLogin.initRequest(queryString, lasso.HTTP_METHOD_REDIRECT);
   lassoLogin.buildRequestMsg();
@@ -150,8 +174,7 @@ Processing Single Sign On Identity Provider Artifact response from AssertionCons
   lassoLogin.setIdentityFromDump(lassoIdentityDump);
   try {
     lassoLogin.acceptSso();
-  }
-  catch (RuntimeException e) {
+  } catch (RuntimeException e) {
   }
   String lassoSessionDump = lassoLogin.getSession().dump();
   String lassoIdentityDump = lassoLogin.getIdentity().dump();
@@ -169,17 +192,17 @@ Initiating single logout from SingleLogoutServiceURL metadata url::
   Logout lassoLogout = new Logout(sp.server);
   lassoLogout.setSessionFromDump(lassoSessionDump);
   lassoLogout.setIdentityFromDump(lassoIdentityDump);
-  lassoLogout.initRequest(sp.server.getProviderIds().getItem(0), lasso.HTTP_METHOD_SOAP);
+  lassoLogout.initRequest(sp.server.getProviderIds().getItem(0),
+                lasso.HTTP_METHOD_SOAP);
   lassoLogout.buildRequestMsg();
   String soapEndpoint = lassoLogout.getMsgUrl();
   String soapRequestMsg = lassoLogout.getMsgBody();
   // Send SOAP request and get SOAP response ...
   try {
     lassoLogout.processResponseMsg(soapResponseMsg);
-  }
-  catch (RuntimeException e) {
+  } catch (RuntimeException e) {
     // an error occured
-    returns;
+    return;
   }
   // Everything is ok, remove lasso session dump from application storage
 
@@ -194,8 +217,7 @@ Process single logout from SoapEndpoint metadata url::
   lassoLogout.setSessionFromDump(lassoSessionDump);
   try {
      lassoLogout.validateRequest();
-  }
-  catch (RuntimeException e) {    
+  } catch (RuntimeException e) {    
   }
   lassoLogout.buildResponseMsg();
   String soapResponseMsg = lassoLogout.getMsgBody();
@@ -212,8 +234,7 @@ Processing SOAP defederation from SoapEndpoint metadata url::
     lassoDefederation.setIdentityFromDump(lassoIdentityDump);
     try {
         lassoDefederation.validateNotification();
-    }
-    catch () {
+    } catch () {
       // an error occured
     }
     // return 204 HTTP status code
