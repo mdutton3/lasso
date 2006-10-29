@@ -263,6 +263,40 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 	return NULL;
 }
 
+gchar*
+lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *provider,
+		int service_id)
+{
+	GHashTable *descriptor;
+	GList *l = NULL;
+	char *sid;
+	char *name;
+	char *binding;
+	const char *possible_bindings[] = {
+		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", NULL
+	};
+	int i;
+
+	sid = g_strdup_printf("%d", service_id);
+
+	descriptor = provider->private_data->SPDescriptor;
+	if (descriptor == NULL)
+		return NULL;
+
+	for (i=0; possible_bindings[i]; i++) {
+		name = g_strdup_printf("AssertionConsumerService %s %s",
+				possible_bindings[i], sid);
+		l = g_hash_table_lookup(descriptor, name);
+		g_free(name);
+		if (l != NULL) {
+			return g_strdup(possible_bindings[i]);
+		}
+	}
+	return NULL;
+}
+
+
+
 gboolean
 lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote_provider,
 		LassoMdProtocolType protocol_type, LassoHttpMethod http_method,

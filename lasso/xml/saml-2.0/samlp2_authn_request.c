@@ -126,7 +126,7 @@ instance_init(LassoSamlp2AuthnRequest *node)
 	node->ForceAuthn = FALSE;
 	node->IsPassive = FALSE;
 	node->ProtocolBinding = NULL;
-	node->AssertionConsumerServiceIndex = 0;
+	node->AssertionConsumerServiceIndex = -1;
 	node->AssertionConsumerServiceURL = NULL;
 	node->AttributeConsumingServiceIndex = 0;
 	node->ProviderName = NULL;
