@@ -198,6 +198,10 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 			remote_provider = g_hash_table_lookup(profile->server->providers,
 					profile->remote_providerID);
+			if (remote_provider == NULL) {
+				return critical_error(
+						LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+			}
 
 			binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
 					remote_provider, service_index);
@@ -498,7 +502,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	artifact = lasso_saml20_profile_generate_artifact(profile, 1);
 	login->assertionArtifact = g_strdup(artifact);
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-		profile->msg_url = g_strdup_printf("%s?SAMLArt=%s", url, artifact);
+		profile->msg_url = g_strdup_printf("%s?SAMLart=%s", url, artifact);
 		/* XXX: RelayState */
 	} else {
 		/* XXX: ARTIFACT POST */
