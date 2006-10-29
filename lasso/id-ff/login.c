@@ -1267,6 +1267,9 @@ lasso_login_init_request(LassoLogin *login, gchar *response_msg,
 			xmlFree(query_fields[i]);
 		}
 		g_free(query_fields);
+		if (artifact_b64 == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ARTIFACT;
+		}
 	}
 	if (response_http_method == LASSO_HTTP_METHOD_POST) {
 		artifact_b64 = g_strdup(response_msg);

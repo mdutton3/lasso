@@ -140,7 +140,7 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	if (method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		query_fields = urlencoded_to_strings(msg);
 		for (i=0; query_fields[i]; i++) {
-			if (strncmp(query_fields[i], "SAMLArt=", 8) != 0) {
+			if (strncmp(query_fields[i], "SAMLart=", 8) != 0) {
 				xmlFree(query_fields[i]);
 				continue;
 			}
@@ -148,6 +148,9 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 			xmlFree(query_fields[i]);
 		}
 		g_free(query_fields);
+		if (artifact_b64 == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ARTIFACT;
+		}
 	} else {
 		artifact_b64 = g_strdup(msg);
 	}
