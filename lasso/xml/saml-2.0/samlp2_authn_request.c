@@ -71,11 +71,13 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, IsPassive) },
 	{ "ProtocolBinding", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProtocolBinding) },
-	{ "AssertionConsumerServiceIndex", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
+	{ "AssertionConsumerServiceIndex",
+		SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceIndex) },
 	{ "AssertionConsumerServiceURL", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AssertionConsumerServiceURL) },
-	{ "AttributeConsumingServiceIndex", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER,
+	{ "AttributeConsumingServiceIndex",
+		SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_OPTIONAL_NEG,
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, AttributeConsumingServiceIndex) },
 	{ "ProviderName", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSamlp2AuthnRequest, ProviderName) },
@@ -128,7 +130,7 @@ instance_init(LassoSamlp2AuthnRequest *node)
 	node->ProtocolBinding = NULL;
 	node->AssertionConsumerServiceIndex = -1;
 	node->AssertionConsumerServiceURL = NULL;
-	node->AttributeConsumingServiceIndex = 0;
+	node->AttributeConsumingServiceIndex = -1;
 	node->ProviderName = NULL;
 }
 
