@@ -150,7 +150,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 			url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-Artifact");
 			if (login->http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-				profile->msg_url = g_strdup_printf("%s?SAMLArt=%s",
+				profile->msg_url = g_strdup_printf("%s?SAMLart=%s",
 						url, artifact);
 			} else {
 				/* TODO: ARTIFACT POST */
@@ -183,35 +183,31 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 
 	protocol_binding = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->ProtocolBinding;
 	if (protocol_binding == NULL) {
-		/* protocol binding not set; will look into
-		 * AssertionConsumingServiceIndex */
+		/* protocol binding not set; so it will look into
+		 * AssertionConsumingServiceIndex
+		 * Also, if AssertionConsumerServiceIndex is not set in request,
+		 * its value will be -1, which is just the right value to get
+		 * default assertion consumer...  (convenient)
+		 */
+		gchar *binding;
+		LassoProvider *remote_provider;
 		int service_index = LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex;
-		if (service_index == -1) {
-			/* XXX: what does spec say when protocol binding and
-			 * attribute consuming service index are both unset ?
-			 */
-			message(G_LOG_LEVEL_WARNING, "missing service index");
-		} else {
-			gchar *binding;
-			LassoProvider *remote_provider;
 
-			remote_provider = g_hash_table_lookup(profile->server->providers,
-					profile->remote_providerID);
-			if (remote_provider == NULL) {
-				return critical_error(
-						LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
-			}
+		remote_provider = g_hash_table_lookup(profile->server->providers,
+				profile->remote_providerID);
+		if (remote_provider == NULL) {
+			return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
+		}
 
-			binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
-					remote_provider, service_index);
-			if (binding == NULL) {
-				message(G_LOG_LEVEL_WARNING, "can't find binding for index");
-			} else if (strcmp(binding, "HTTP-Artifact") == 0) {
-				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
-			} else if (strcmp(binding, "HTTP-POST") == 0) {
-				login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
-			}
+		binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
+				remote_provider, service_index);
+		if (binding == NULL) {
+			message(G_LOG_LEVEL_WARNING, "can't find binding for index");
+		} else if (strcmp(binding, "HTTP-Artifact") == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
+		} else if (strcmp(binding, "HTTP-POST") == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 		}
 	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_ARTIFACT) == 0) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
