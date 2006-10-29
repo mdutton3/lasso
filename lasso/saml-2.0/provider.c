@@ -240,11 +240,10 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 	int i;
 
 	if (service_id == -1) {
-		sid = provider->private_data->default_assertion_consumer;
+		sid = g_strdup(provider->private_data->default_assertion_consumer);
 	} else {
 		sid = g_strdup_printf("%d", service_id);
 	}
-		
 
 	descriptor = provider->private_data->SPDescriptor;
 	if (descriptor == NULL)
@@ -258,6 +257,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 		if (l != NULL)
 			break;
 	}
+	g_free(sid);
 	if (l)
 		return g_strdup(l->data);
 	return NULL;
@@ -271,13 +271,17 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *prov
 	GList *l = NULL;
 	char *sid;
 	char *name;
-	char *binding;
+	char *binding = NULL;
 	const char *possible_bindings[] = {
 		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", NULL
 	};
 	int i;
 
-	sid = g_strdup_printf("%d", service_id);
+	if (service_id == -1) {
+		sid = g_strdup(provider->private_data->default_assertion_consumer);
+	} else {
+		sid = g_strdup_printf("%d", service_id);
+	}
 
 	descriptor = provider->private_data->SPDescriptor;
 	if (descriptor == NULL)
@@ -289,10 +293,12 @@ lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *prov
 		l = g_hash_table_lookup(descriptor, name);
 		g_free(name);
 		if (l != NULL) {
-			return g_strdup(possible_bindings[i]);
+			binding = g_strdup(possible_bindings[i]);
+			break;
 		}
 	}
-	return NULL;
+	g_free(sid);
+	return binding;
 }
 
 
