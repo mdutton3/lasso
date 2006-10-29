@@ -235,7 +235,7 @@ lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *provider
 	char *sid;
 	char *name;
 	const char *possible_bindings[] = {
-		"HTTP-Artifact", "HTTP-Post", NULL
+		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", NULL
 	};
 	int i;
 

@@ -728,6 +728,9 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex);
 
+	if (profile->msg_url == NULL) {
+		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
+	}
 
 	return 0;
 

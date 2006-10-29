@@ -967,6 +967,9 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	profile->msg_url = lasso_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_LIB_AUTHN_REQUEST(profile->request)->AssertionConsumerServiceID);
+	if (profile->msg_url == NULL) {
+		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
+	}
 
 	return 0;
 }
