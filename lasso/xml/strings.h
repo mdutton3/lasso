@@ -318,6 +318,7 @@
 #define LASSO_SAML20_METADATA_BINDING_REDIRECT "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
 #define LASSO_SAML20_METADATA_BINDING_POST "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
 #define LASSO_SAML20_METADATA_BINDING_ARTIFACT "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+#define LASSO_SAML20_METADATA_BINDING_PAOS "urn:oasis:names:tc:SAML:2.0:bindings:PAOS"
 
 #define LASSO_SAML2_PROTOCOL_HREF "urn:oasis:names:tc:SAML:2.0:protocol"
 #define LASSO_SAML2_PROTOCOL_PREFIX "samlp"

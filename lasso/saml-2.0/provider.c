@@ -75,6 +75,8 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				binding_s = "HTTP-POST";
 			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_ARTIFACT) == 0) {
 				binding_s = "HTTP-Artifact";
+			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_PAOS) == 0) {
+				binding_s = "PAOS";
 			} else {
 				message(G_LOG_LEVEL_CRITICAL, "XXX: unknown binding: %s", binding);
 				xmlFree(binding);
