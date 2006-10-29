@@ -669,7 +669,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 	xmlChar *buffer;
 	xmlChar *ret, *b64_ret;
 	char *rret;
-	unsigned long in_len, out_len;
+	unsigned long in_len;
 	int rc;
 	z_stream stream;
 
@@ -716,7 +716,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 		return NULL;
 	}
 
-	b64_ret = xmlSecBase64Encode(ret, out_len, 0);
+	b64_ret = xmlSecBase64Encode(ret, stream.total_out, 0);
 	xmlOutputBufferClose(buf);
 	g_free(ret);
 
