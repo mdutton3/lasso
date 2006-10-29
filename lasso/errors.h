@@ -85,6 +85,7 @@
 #define LASSO_PROFILE_ERROR_BAD_SESSION_DUMP          -420
 #define LASSO_PROFILE_ERROR_MISSING_RESPONSE          -421
 #define LASSO_PROFILE_ERROR_MISSING_STATUS_CODE       -422
+#define LASSO_PROFILE_ERROR_MISSING_ARTIFACT          -423
 
 /* functions/methods parameters checking */
 #define LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ        -501

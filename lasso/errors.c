@@ -125,6 +125,8 @@ lasso_strerror(int error_code)
 			return "Missing response";
 		case LASSO_PROFILE_ERROR_MISSING_STATUS_CODE:
 			return "Missing status code";
+		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
+			return "Missing SAML artifact";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
