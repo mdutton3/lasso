@@ -438,7 +438,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					(*(int*)value) = val;
 					xmlFree(tmp);
 				} else if (snippet->type & SNIPPET_BOOLEAN) {
-					int val = (strcmp((char*)tmp, "true") == 0);
+					int val = 0;
+					if (strcmp((char*)tmp, "true") == 0) {
+						val = 1;
+					} else if (strcmp((char*)tmp, "1") == 0) {
+						val = 1;
+					}
 					(*(int*)value) = val;
 					xmlFree(tmp);
 				} else {
@@ -471,7 +476,12 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				(*(int*)value) = val;
 				xmlFree(tmp);
 			} else if (snippet->type & SNIPPET_BOOLEAN) {
-				int val = (strcmp((char*)tmp, "true") == 0);
+				int val = 0;
+				if (strcmp((char*)tmp, "true") == 0) {
+					val = 1;
+				} else if (strcmp((char*)tmp, "1") == 0) {
+					val = 1;
+				}
 				(*(int*)value) = val;
 				xmlFree(tmp);
 			} else {
