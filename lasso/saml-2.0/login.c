@@ -59,7 +59,6 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_p
 	}
 
 	login->http_method = http_method;
-	/* XXX: check this protocol profile is supported */
 
 	profile->request = lasso_samlp2_authn_request_new();
 	if (profile->request == NULL) {
@@ -215,8 +214,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_POST) == 0) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
 	} else {
-		/* XXX: are there other protocols to handle ? */
-		message(G_LOG_LEVEL_WARNING,
+		message(G_LOG_LEVEL_CRITICAL,
 				"unhandled protocol binding: %s", protocol_binding);
 	}
 
