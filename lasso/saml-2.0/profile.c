@@ -72,7 +72,7 @@ lasso_saml20_profile_generate_artifact(LassoProfile *profile, int part)
 static char*
 lasso_saml20_profile_build_artifact(LassoProvider *provider)
 {
-	xmlSecByte samlArt[42], *b64_samlArt;
+	xmlSecByte samlArt[44], *b64_samlArt;
 	char *source_succinct_id;
 	char *ret;
 
@@ -80,11 +80,12 @@ lasso_saml20_profile_build_artifact(LassoProvider *provider)
 
 	/* Artifact Format is described in saml-bindings-2.0-os, 3.6.4.2. */
 	memcpy(samlArt, "\000\004", 2); /* type code */
-	memcpy(samlArt+2, source_succinct_id, 20);
-	lasso_build_random_sequence((char*)samlArt+22, 20);
+	memcpy(samlArt+2, "\000\000", 2); /* XXX: Endpoint index */
+	memcpy(samlArt+4, source_succinct_id, 20);
+	lasso_build_random_sequence((char*)samlArt+24, 20);
 
 	xmlFree(source_succinct_id);
-	b64_samlArt = xmlSecBase64Encode(samlArt, 42, 0);
+	b64_samlArt = xmlSecBase64Encode(samlArt, 44, 0);
 
 	ret = g_strdup((char*)b64_samlArt);
 	xmlFree(b64_samlArt);
