@@ -394,8 +394,56 @@
 #define LASSO_SAML2_STATUS_CODE_UNSUPPORTED_BINDING \
 		"urn:oasis:names:tc:SAML:2.0:status:UnsupportedBinding"
 
+/* AuthnClassRef */
 
-
+#define LASSO_SAML2_AUTHN_CONTEXT_AUTHENTICATED_TELEPHONY \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:AuthenticatedTelephony"
+#define LASSO_SAML2_AUTHN_CONTEXT_INTERNET_PROTOCOL \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:InternetProtocol"
+#define LASSO_SAML2_AUTHN_CONTEXT_INTERNET_PROTOCOL_PASSWORD \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:InternetProtocolPassword"
+#define LASSO_SAML2_AUTHN_CONTEXT_KERBEROS \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos"
+#define LASSO_SAML2_AUTHN_CONTEXT_MOBILE_ONE_FACTOR_CONTRACT \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorContract"
+#define LASSO_SAML2_AUTHN_CONTEXT_MOBILE_ONE_FACTOR_UNREGISTERED \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorUnregistered"
+#define LASSO_SAML2_AUTHN_CONTEXT_MOBILE_TWO_FACTOR_CONTRACT \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract"
+#define LASSO_SAML2_AUTHN_CONTEXT_MOBILE_TWO_FACTOR_UNREGISTERED \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorUnregistered"
+#define LASSO_SAML2_AUTHN_CONTEXT_NOMAD_TELEPHONY \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:NomadTelephony"
+#define LASSO_SAML2_AUTHN_CONTEXT_PERSONALIZED_TELEPHONY \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:PersonalizedTelephony"
+#define LASSO_SAML2_AUTHN_CONTEXT_PGP \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:PGP"
+#define LASSO_SAML2_AUTHN_CONTEXT_PASSWORD_PROTECTED_TRANSPORT \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+#define LASSO_SAML2_AUTHN_CONTEXT_PASSWORD \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:Password"
+#define LASSO_SAML2_AUTHN_CONTEXT_PREVIOUS_SESSION \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession"
+#define LASSO_SAML2_AUTHN_CONTEXT_SMARTCARD \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard"
+#define LASSO_SAML2_AUTHN_CONTEXT_SMARTCARD_PKI \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI"
+#define LASSO_SAML2_AUTHN_CONTEXT_SOFTWARE_PKI \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI"
+#define LASSO_SAML2_AUTHN_CONTEXT_SPKI \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:SPKI"
+#define LASSO_SAML2_AUTHN_CONTEXT_SECURE_REMOTE_PASSWORD \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:SecureRemotePassword"
+#define LASSO_SAML2_AUTHN_CONTEXT_TLS_CLIENT \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient"
+#define LASSO_SAML2_AUTHN_CONTEXT_X509 \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:X509"
+#define LASSO_SAML2_AUTHN_CONTEXT_TELEPHONY \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:Telephony"
+#define LASSO_SAML2_AUTHN_CONTEXT_TIME_SYNC_TOKEN \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken"
+#define LASSO_SAML2_AUTHN_CONTEXT_XMLDSIG \
+	"urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig"
 
 /*****************************************************************************/
 /* Others                                                                    */

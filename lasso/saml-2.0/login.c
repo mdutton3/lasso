@@ -37,6 +37,7 @@
 #include <lasso/xml/saml-2.0/samlp2_response.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 #include <lasso/xml/saml-2.0/saml2_audience_restriction.h>
+#include <lasso/xml/saml-2.0/saml2_authn_statement.h>
 
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
@@ -409,6 +410,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSaml2AudienceRestriction *audience_restriction;
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	LassoSaml2NameID *name_id = NULL;
+	LassoSaml2AuthnStatement *authentication_statement;
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			                        profile->remote_providerID);
@@ -448,6 +450,16 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 					federation->local_nameIdentifier);
 		}
 	}
+
+	authentication_statement = LASSO_SAML2_AUTHN_STATEMENT(lasso_saml2_authn_statement_new());
+	authentication_statement->AuthnInstant = g_strdup(authenticationInstant);
+	authentication_statement->SessionNotOnOrAfter = g_strdup(notOnOrAfter);
+	authentication_statement->AuthnContext = LASSO_SAML2_AUTHN_CONTEXT(
+			lasso_saml2_authn_context_new());
+	authentication_statement->AuthnContext->AuthnContextClassRef = g_strdup(
+			authenticationMethod);
+
+	assertion->AuthnStatement = g_list_append(NULL, authentication_statement);
 
 	if (profile->server->certificate) {
 		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
