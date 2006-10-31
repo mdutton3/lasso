@@ -197,7 +197,7 @@ defined in the metadata file).
   LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->ForceAuthn = TRUE;
   LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->IsPassive = FALSE;
   LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->NameIDPolicy =
-      strdup(LASSO_LIB_NAME_ID_POLICY_TYPE_FEDERATED);
+      strdup(LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED);
   LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->consent =
       strdup(LASSO_LIB_CONSENT_OBTAINED);
   lasso_login_build_authn_request_msg(login);
