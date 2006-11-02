@@ -230,6 +230,9 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 
 	envelope = lasso_wsf_profile_build_soap_envelope(NULL, NULL);
 	LASSO_WSF_PROFILE(authentication)->soap_envelope_request = envelope;
+	if (envelope == NULL || envelope->Body == NULL || envelope->Body->any == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+	}
 	envelope->Body->any = g_list_append(envelope->Body->any, request);
 
 	/* set up default logging callback */
@@ -333,6 +336,9 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	status = lasso_utility_status_new(LASSO_SA_STATUS_CODE_OK);
 	response = lasso_sa_sasl_response_new(status);
 	LASSO_WSF_PROFILE(authentication)->response = LASSO_NODE(response);
+	if (envelope == NULL || envelope->Body == NULL || envelope->Body->any == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_RESPONSE);
+	}
 	envelope->Body->any = g_list_append(envelope->Body->any, response);
 
 	/* liberty-idwsf-authn-svc-1.1.pdf - page 13 - lignes 359 / 361 :

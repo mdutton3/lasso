@@ -730,12 +730,19 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 		LassoSamlSubjectStatementAbstract *ss;
 
 		ss = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement);
-		if (assertion->MajorVersion == 1 && assertion->MinorVersion == 0) {
-			ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
-					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
-		} else {
-			ss->Subject->SubjectConfirmation->ConfirmationMethod = g_list_append(NULL,
-					g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
+		/* Subject and SubjectConfirmation should never be NULL
+		 * because they're built by Lasso
+		 */
+		if (ss->Subject != NULL && ss->Subject->SubjectConfirmation != NULL) {
+			if (assertion->MajorVersion == 1 && assertion->MinorVersion == 0) {
+				ss->Subject->SubjectConfirmation->ConfirmationMethod =
+				    g_list_append(NULL,
+				        g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT01));
+			} else {
+				ss->Subject->SubjectConfirmation->ConfirmationMethod =
+				    g_list_append(NULL,
+				        g_strdup(LASSO_SAML_CONFIRMATION_METHOD_ARTIFACT));
+			}
 		}
 	}
 

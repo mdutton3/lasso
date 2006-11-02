@@ -345,6 +345,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	LassoProfile  *profile;
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
+	LassoLibNameIdentifierMappingResponse *response;
 	int rc;
 	char *statusCodeValue;
 
@@ -360,8 +361,9 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
-			LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response)->ProviderID);
+    response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response);
+
+	remote_provider = g_hash_table_lookup(profile->server->providers, response->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -369,11 +371,14 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	/* verify signature */
 	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
-	statusCodeValue = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(
-			profile->response)->Status->StatusCode->Value;
+	if (response->Status == NULL || response->Status->StatusCode == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+
+	statusCodeValue = response->Status->StatusCode->Value;
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		message(G_LOG_LEVEL_CRITICAL, "%s", statusCodeValue);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_ERROR_UNDEFINED; /* this function is never used, don't take care */
 	}
 
 	/* Set the target name identifier */
