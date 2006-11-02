@@ -64,6 +64,7 @@ lasso_server_add_provider(LassoServer *server, LassoProviderRole role,
 	if (provider == NULL) {
 		return critical_error(LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED);
 	}
+	provider->role = role;
 
 	if (LASSO_PROVIDER(server)->private_data->conformance == LASSO_PROTOCOL_SAML_2_0 &&
 			provider->private_data->conformance != LASSO_PROTOCOL_SAML_2_0) {
