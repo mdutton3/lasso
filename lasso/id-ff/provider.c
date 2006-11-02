@@ -789,12 +789,12 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			xmlFree(b64_value);
 			g_free(value);
 		}
-		//xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {
 			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
 					key_formats[i], NULL, NULL, NULL);
 		}
-		//xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		xmlFree(b64_value);
 		g_free(value);
 		provider->private_data->public_key = pub_key;
