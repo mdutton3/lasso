@@ -129,9 +129,9 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 		}
 	} else if (strcmp(name, "Modify") == 0) {
 		if (strcmp((char*)ns->href, LASSO_DISCO_HREF) == 0) {
-			type =LASSO_REQUEST_TYPE_DISCO_MODIFY;
+			type = LASSO_REQUEST_TYPE_DISCO_MODIFY;
 		} else {
-			type =LASSO_REQUEST_TYPE_DST_MODIFY;	
+			type = LASSO_REQUEST_TYPE_DST_MODIFY;	
 		}
 	} else if (strcmp(name, "SASLRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_SASL_REQUEST;
