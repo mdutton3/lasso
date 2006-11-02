@@ -153,7 +153,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
  * Tests the query string to know if the URL is called as the result of a
  * Liberty redirect (action initiated elsewhere) or not.
  *
- * Return value: TRUE if lasso query, FALSE otherwise
+ * Return value: TRUE if Liberty query, FALSE otherwise
  **/
 gboolean
 lasso_profile_is_liberty_query(const gchar *query)

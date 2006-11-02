@@ -279,4 +279,27 @@ lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char
 	return 0;
 }
 
+/**
+ * lasso_saml20_profile_is_saml_query:
+ * @query: HTTP query string
+ *
+ * Tests the query string to know if the URL is called as the result of a
+ * SAML redirect (action initiated elsewhere) or not.
+ *
+ * Return value: TRUE if SAML query, FALSE otherwise
+ **/
+gboolean
+lasso_profile_is_saml_query(const gchar *query)
+{
+	gchar *parameters[] = {
+		"SAMLRequest=", "SAMLResponse=", "SAMLart=", NULL };
+	gint i;
+
+	for (i=0; parameters[i]; i++) {
+		if (strstr(query, parameters[i]))
+			return TRUE;
+	}
+
+	return FALSE;
+}
 

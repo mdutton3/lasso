@@ -16,6 +16,9 @@ liblasso_saml_20_la_SOURCES = \
 	login.c \
 	logout.c
 
+liblassoinclude_HEADERS = \
+	profile.h
+
 lasso_private_h_sources = \
 	federationprivate.h \
 	profileprivate.h \
