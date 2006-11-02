@@ -786,8 +786,8 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		rc = xmlSecBase64Decode(b64_value, value, length);
 		if (rc < 0) {
 			/* bad base-64 */
-			xmlFree(b64_value);
 			g_free(value);
+			value = g_strdup(b64_value);
 		}
 		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {
