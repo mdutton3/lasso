@@ -503,8 +503,15 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
+	if (profile->remote_providerID) {
+		g_free(profile->remote_providerID);
+	}
+
+	profile->remote_providerID = g_strdup(
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -791,6 +798,10 @@ lasso_logout_validate_request(LassoLogout *logout)
 	/* verify logout request */
 	if (LASSO_IS_LIB_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+
+	if (profile->remote_providerID) {
+		g_free(profile->remote_providerID);
+	}
 
 	profile->remote_providerID = g_strdup(
 			LASSO_LIB_LOGOUT_REQUEST(profile->request)->ProviderID);

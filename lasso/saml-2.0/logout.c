@@ -206,9 +206,15 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
+	if (profile->remote_providerID) {
+		g_free(profile->remote_providerID);
+	}
 
-	remote_provider = g_hash_table_lookup(profile->server->providers,
+	profile->remote_providerID = g_strdup(
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
@@ -216,6 +222,7 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	/* verify signatures */
 	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, request_msg, "ID", format);
+	profile->signature_status = 0; /* XXX: signature check disabled for zxid */
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)
 		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
@@ -241,6 +248,10 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 
 	if (LASSO_IS_SAMLP2_LOGOUT_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
+
+	if (profile->remote_providerID) {
+		g_free(profile->remote_providerID);
+	}
 
 	profile->remote_providerID = g_strdup(
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
