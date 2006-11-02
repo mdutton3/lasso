@@ -482,16 +482,18 @@ lasso_discovery_init_insert(LassoDiscovery *discovery,
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL) {
-		return LASSO_DISCO_ERROR_MISSING_RESOURCE_OFFERING;
+		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 	}
-	if (security_mech_id)
+	if (security_mech_id) {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
-	else
+	} else {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
-	if (!description)
-	       return LASSO_DISCO_ERROR_MISSING_SERVICE_DESCRIPTION;
+	}
+	if (!description) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
+	}
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
-	
+
 	/* XXX: EncryptedResourceID support */
 	modify->ResourceID = g_object_ref(offering->ResourceID);
 	lasso_node_destroy(LASSO_NODE(offering));
@@ -530,7 +532,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL) {
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	description = lasso_discovery_get_description_auto(offering,
 		LASSO_SECURITY_MECH_NULL);
@@ -571,7 +573,7 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	if (!security_mech_id)
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
@@ -579,7 +581,7 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	}
 	if (!description)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
 
@@ -677,7 +679,7 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 					LASSO_WSF_PROFILE(discovery)->identity,
 					entry->entryID) == NULL) {
 			/* FIXME: Return a better code error. */
-			return -1;
+			return LASSO_ERROR_UNDEFINED;
 		}
 	}
 

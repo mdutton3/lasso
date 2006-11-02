@@ -127,6 +127,12 @@ lasso_strerror(int error_code)
 			return "Missing status code";
 		case LASSO_PROFILE_ERROR_MISSING_ARTIFACT:
 			return "Missing SAML artifact";
+		case LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING:
+			return "Missing ressource offering";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION:
+			return "Missing service description";
+		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
+			return "Missing service type";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
@@ -149,8 +155,8 @@ lasso_strerror(int error_code)
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
 			return "Request denied";
 
-	        case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
-		        return "Redirect request from Attribute Provider";
+		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
+			return "Redirect request from Attribute Provider";
 
 		default:
 			return "Error";

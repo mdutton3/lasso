@@ -176,14 +176,22 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 		query = lasso_dst_query_new(NULL);
 	}
 	profile->request = LASSO_NODE(query);
-	
+
+	if (service == NULL || service->private_data == NULL
+			|| service->private_data->offering == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
+	}
 	offering = service->private_data->offering;
 
+	if (offering->ServiceInstance == NULL
+			|| offering->ServiceInstance->ServiceType == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
+	}
 	query->hrefServiceType = g_strdup(offering->ServiceInstance->ServiceType);
 	query->prefixServiceType = lasso_get_prefix_for_dst_service_href(
 		query->hrefServiceType);
 	if (query->prefixServiceType == NULL) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
 	}
 
 	if (offering->ResourceID) {
@@ -197,13 +205,13 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(query));
 
-	if (!security_mech_id)
+	if (!security_mech_id) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
-	else {
+	} else {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	}
 	if (!description)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
 	if (description->Endpoint != NULL) {
