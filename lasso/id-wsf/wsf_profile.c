@@ -205,10 +205,10 @@ lasso_wsf_profile_verify_credential_signature(LassoWsfProfile *profile,
 	/* Retrieve provider id of credential signer . Issuer could be the right place */
 	issuer = xmlGetProp(credential, "Issuer");
 	if (!issuer)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	lasso_provider = lasso_server_get_provider(profile->server, issuer);
 	if (!lasso_provider)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	/* Set credential reference */
 	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
@@ -311,26 +311,26 @@ lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
 	/* Sign SOAP message */
 	sign_tmpl = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
 	if (sign_tmpl == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	dsigCtx = xmlSecDSigCtxCreate(NULL);
 	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(profile->server->private_key,
 		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	if (dsigCtx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
 		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
 			xmlSecKeyDataFormatPem) < 0) {
 				xmlSecDSigCtxDestroy(dsigCtx);
-				return -1;
+				return LASSO_ERROR_UNDEFINED;
 		}
 	}
 
 	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	xmlSecDSigCtxDestroy(dsigCtx);
 
@@ -470,7 +470,7 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr)
 		printf("OK ca a l'air bon ...\n");
 	else
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	
 
 	credential = xpathObj->nodesetval->nodeTab[0];
@@ -481,7 +481,7 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	public_key = lasso_wsf_profile_get_public_key_from_credential(profile, credential);
 	
 	if (!public_key)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	printf("Xml sec public key found\n");
 
 	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, public_key);
@@ -517,9 +517,9 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile, xmlDoc *doc, xmlN
 		t = t->next;
 	}
 	if (header == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	if (body == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	t = header->children;
 	while (t) {
@@ -532,9 +532,9 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile, xmlDoc *doc, xmlN
 		t = t->next;
 	}
 	if (correlation == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	if (security == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	/* Add signature template */
 	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
@@ -593,7 +593,7 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile, xmlDoc *doc, xmlN
 	/* Sign SOAP message */
 	/*sign_tmpl = xmlSecFindNode(security, xmlSecNodeSignature, xmlSecDSigNs);
 	if (sign_tmpl == NULL)
-	return -1;*/
+	return LASSO_ERROR_UNDEFINED;*/
 	sign_tmpl = signature;
 
 	dsigCtx = xmlSecDSigCtxCreate(NULL);
@@ -601,18 +601,18 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile, xmlDoc *doc, xmlN
 		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	if (dsigCtx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
 		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
 			xmlSecKeyDataFormatPem) < 0) {
 				xmlSecDSigCtxDestroy(dsigCtx);
-				return -1;
+				return LASSO_ERROR_UNDEFINED;
 		}
 	}
 	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	xmlSecDSigCtxDestroy(dsigCtx);
 
@@ -645,7 +645,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		correlation = xpathObj->nodesetval->nodeTab[0];
 	}
 	if (!correlation)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
 	id = xmlGetProp(correlation, (xmlChar *) "id");
 	xmlAddID(NULL, doc, id, id_attr);
@@ -658,7 +658,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		body = xpathObj->nodesetval->nodeTab[0];
 	}
 	if (!body)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	id_attr = xmlHasProp(body, (xmlChar *)"id");
 	id = xmlGetProp(body, (xmlChar *) "id");
 	xmlAddID(NULL, doc, id, id_attr);
@@ -1216,7 +1216,7 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 			profile->private_data->description = NULL;
 	} else
 		if (!si)
-			return -1;
+			return LASSO_ERROR_UNDEFINED;
 		else
 			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
 

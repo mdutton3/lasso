@@ -142,7 +142,7 @@ lasso_get_pem_file_type(const char *pem_file)
 	bio = BIO_new_file(pem_file, "rb");
 	if (bio == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file", pem_file);
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);

@@ -1249,13 +1249,13 @@ find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet
 		if (t) {
 			tnode = G_STRUCT_MEMBER(LassoNode*, tnode, tsnippet->offset);
 			if (tnode == NULL)
-				return -1;
+				return LASSO_ERROR_UNDEFINED;
 		}
 		s = t+1;
 	}
 
 	if (tsnippet == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	*snippet = tsnippet;
 	*value_node = tnode;
@@ -1366,7 +1366,7 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 	void *value;
 	
 	if (find_path(node, path, &value_node, &snippet) != 0)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	value = G_STRUCT_MEMBER_P(value_node, snippet->offset);
 

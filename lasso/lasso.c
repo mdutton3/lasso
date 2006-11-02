@@ -82,7 +82,7 @@ int lasso_init()
 	/* Init xmlsec library */
 	if (xmlSecInit() < 0) {
 		message(G_LOG_LEVEL_CRITICAL, "XMLSec initialization failed.");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* Load default crypto engine if we are supporting dynamic
@@ -96,20 +96,20 @@ int lasso_init()
 				"Unable to load default xmlsec-crypto library. Make sure"
 				"that you have it installed and check shared libraries path"
 				"(LD_LIBRARY_PATH) environment variable.");
-		return -1;	
+		return LASSO_ERROR_UNDEFINED;
 	}
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
 	/* Init crypto library */
 	if (xmlSecCryptoAppInit(NULL) < 0) {
 		message(G_LOG_LEVEL_CRITICAL, "Crypto initialization failed.");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 
 	/* Init xmlsec-crypto library */
 	if (xmlSecCryptoInit() < 0) {
 		message(G_LOG_LEVEL_CRITICAL, "xmlsec-crypto initialization failed.");
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 	}
 	return 0;
 }
@@ -197,7 +197,7 @@ lasso_check_version(int major, int minor, int subminor, LassoCheckVersionMode mo
 	}
 
 	if (mode > LASSO_CHECK_VERSION_NUMERIC)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	return 1;
 }
