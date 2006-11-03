@@ -134,7 +134,7 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	char **query_fields;
 	char *artifact_b64 = NULL, *provider_succinct_id_b64;
 	char provider_succinct_id[21];
-	char artifact[43];
+	char artifact[45];
 	LassoSamlp2RequestAbstract *request;
 	int i;
 
@@ -156,8 +156,8 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 		artifact_b64 = g_strdup(msg);
 	}
 
-	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 43);
-	if (i < 0 || i > 42) {
+	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 45);
+	if (i < 0 || i > 44) {
 		g_free(artifact_b64);
 		return LASSO_ERROR_UNDEFINED;
 	}
@@ -167,7 +167,9 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 		return LASSO_ERROR_UNDEFINED;
 	}
 
-	memcpy(provider_succinct_id, artifact+2, 20);
+	/* XXX: index endpoint */
+
+	memcpy(provider_succinct_id, artifact+4, 20);
 	provider_succinct_id[20] = 0;
 
 	provider_succinct_id_b64 = (char*)xmlSecBase64Encode((xmlChar*)provider_succinct_id, 20, 0);
