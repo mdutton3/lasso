@@ -413,10 +413,78 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 }
 
 
+/*****************************************************************************/
+/* private methods                                                           */
+/*****************************************************************************/
+
+static struct XmlSnippet schema_snippets[] = {
+	{ NULL, 0, 0}
+};
+
+static LassoNodeClass *parent_class = NULL;
+
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+	xmlNodeSetName(xmlnode, (xmlChar*)"NameIdManagement");
+	xmlSetProp(xmlnode, (xmlChar*)"NameIdManagementDumpVersion", (xmlChar*)"1");
+
+	return xmlnode;
+}
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	return parent_class->init_from_xml(node, xmlnode);
+}
+
+/*****************************************************************************/
+/* overridden parent class methods                                           */
+/*****************************************************************************/
+
+static void
+dispose(GObject *object)
+{
+	G_OBJECT_CLASS(parent_class)->dispose(object);
+}
+
+static void
+finalize(GObject *object)
+{  
+	G_OBJECT_CLASS(parent_class)->finalize(object);
+}
+
+
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
 /*****************************************************************************/
+
+static void
+instance_init(LassoNameIdManagement *name_id_management)
+{
+}
+
+static void
+class_init(LassoNameIdManagementClass *klass)
+{
+	LassoNodeClass *nclass = LASSO_NODE_CLASS(klass);
+
+	parent_class = g_type_class_peek_parent(klass);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
+	nclass->node_data = g_new0(LassoNodeClassData, 1);
+	lasso_node_class_set_nodename(nclass, "NameIdManagement");
+	lasso_node_class_add_snippets(nclass, schema_snippets);
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
+	G_OBJECT_CLASS(klass)->finalize = finalize;
+}
+
+
 
 GType
 lasso_name_id_management_get_type()
@@ -472,3 +540,38 @@ lasso_name_id_management_destroy(LassoNameIdManagement *name_id_management)
 	g_object_unref(G_OBJECT(name_id_management));
 }
 
+/**
+ * lasso_name_id_management_new_from_dump:
+ * @server: the #LassoServer
+ * @dump: XML name_id_management dump
+ *
+ * Restores the @dump to a new #LassoLogout.
+ *
+ * Return value: a newly created #LassoLogout; or NULL if an error occured
+ **/
+LassoNameIdManagement*
+lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
+{
+	LassoNameIdManagement *name_id_management;
+	xmlDoc *doc;
+
+	name_id_management = lasso_name_id_management_new(g_object_ref(server));
+	doc = xmlParseMemory(dump, strlen(dump));
+	init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc)); 
+
+	return name_id_management;
+}
+
+/**
+ * lasso_name_id_management_dump:
+ * @name_id_management: a #LassoLogout
+ *
+ * Dumps @name_id_management content to an XML string.
+ *
+ * Return value: the dump string.  It must be freed by the caller.
+ **/
+gchar*
+lasso_name_id_management_dump(LassoNameIdManagement *name_id_management)
+{
+	return lasso_node_dump(LASSO_NODE(name_id_management));
+}

@@ -63,6 +63,9 @@ struct _LassoNameIdManagementClass {
 LASSO_EXPORT GType lasso_name_id_management_get_type(void);
 
 LASSO_EXPORT LassoNameIdManagement *lasso_name_id_management_new(LassoServer *server);
+LASSO_EXPORT LassoNameIdManagement *lasso_name_id_management_new_from_dump(
+		LassoServer *server, const char *dump);
+LASSO_EXPORT char* lasso_name_id_management_dump(LassoNameIdManagement *name_id_management);
  
 LASSO_EXPORT void lasso_name_id_management_destroy(LassoNameIdManagement *name_id_management);
 
