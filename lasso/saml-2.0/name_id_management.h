@@ -70,7 +70,7 @@ LASSO_EXPORT gint lasso_name_id_management_init_request(
 		LassoNameIdManagement *name_id_management,
 		char *remote_provider_id,
 		LassoHttpMethod http_method,
-		LassoSaml2NameID *new_name_id);
+		char *new_name_id);
 LASSO_EXPORT gint lasso_name_id_management_build_request_msg(
 		LassoNameIdManagement *name_id_management);
 

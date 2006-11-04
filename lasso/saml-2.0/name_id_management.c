@@ -43,7 +43,7 @@
 gint
 lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 		char *remote_provider_id, LassoHttpMethod http_method,
-		LassoSaml2NameID *new_name_id)
+		char *new_name_id)
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
@@ -103,8 +103,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 			profile->nameIdentifier);
 
 	if (new_name_id) {
-		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->NewID = g_object_ref( \
-				new_name_id);
+		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->NewID = g_strdup(new_name_id);
 	} else {
 		LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(request)->Terminate = \
 				LASSO_SAMLP2_TERMINATE(lasso_samlp2_terminate_new());
