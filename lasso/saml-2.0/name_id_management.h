@@ -69,8 +69,8 @@ LASSO_EXPORT void lasso_name_id_management_destroy(LassoNameIdManagement *name_i
 LASSO_EXPORT gint lasso_name_id_management_init_request(
 		LassoNameIdManagement *name_id_management,
 		char *remote_provider_id,
-		LassoHttpMethod http_method,
-		char *new_name_id);
+		char *new_name_id,
+		LassoHttpMethod http_method);
 LASSO_EXPORT gint lasso_name_id_management_build_request_msg(
 		LassoNameIdManagement *name_id_management);
 

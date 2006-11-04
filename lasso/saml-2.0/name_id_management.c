@@ -32,9 +32,9 @@
  * lasso_name_id_management_init_request:
  * @name_id_management: a #LassoNameIdManagement
  * @remote_providerID: the providerID of the remote provider.
+ * @new_name_id: the new NameId or NULL to terminate a federation
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
- * @new_name_id: the new NameId or NULL to terminate a federation
  *
  * ...
  *
@@ -42,8 +42,9 @@
  **/
 gint
 lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
-		char *remote_provider_id, LassoHttpMethod http_method,
-		char *new_name_id)
+		char *remote_provider_id,
+		char *new_name_id,
+		LassoHttpMethod http_method)
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
