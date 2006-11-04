@@ -412,6 +412,14 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 }
 
+gint
+lasso_name_id_management_process_response_msg(
+		LassoNameIdManagement *name_id_management,
+		gchar *response_msg)
+{
+	return LASSO_ERROR_UNIMPLEMENTED;
+}
+
 
 /*****************************************************************************/
 /* private methods                                                           */

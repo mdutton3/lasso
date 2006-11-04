@@ -84,6 +84,9 @@ LASSO_EXPORT gint lasso_name_id_management_validate_request(
 		LassoNameIdManagement *name_id_management);
 LASSO_EXPORT int lasso_name_id_management_build_response_msg(
 		LassoNameIdManagement *name_id_management);
+LASSO_EXPORT gint lasso_name_id_management_process_response_msg(
+		LassoNameIdManagement *name_id_management,
+		gchar *response_msg);
 
 
 #ifdef __cplusplus
