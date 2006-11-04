@@ -44,6 +44,7 @@ extern "C" {
 #include <lasso/id-ff/logout.h>
 #include <lasso/id-ff/name_identifier_mapping.h>
 #include <lasso/id-ff/name_registration.h>
+#include <lasso/saml-2.0/name_id_management.h>
 
 LASSO_EXPORT int lasso_init(void);
 LASSO_EXPORT int lasso_shutdown(void);
