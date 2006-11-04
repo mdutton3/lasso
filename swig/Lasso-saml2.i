@@ -1,5 +1,15 @@
 #define LASSO_SAML2_SUPPORT 1
 
+/* Utiliy functions */
+
+#ifdef SWIGPHP4
+%rename(lasso_isSamlQuery) lasso_profile_is_saml_query;
+#else
+%rename(isSamlQuery) lasso_profile_is_saml_query;
+#endif
+gboolean lasso_profile_is_saml_query(char *query);
+
+
 /* NameIdPolicy */
 #ifndef SWIGPHP4
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
@@ -109,5 +119,214 @@
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken"
 #define LASSO_SAML2_AUTHN_CONTEXT_XMLDSIG \
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig"
+
+/***********************************************************************
+ * lasso:NameIdMangement
+ ***********************************************************************/
+
+
+#ifndef SWIGPHP4
+%rename(NameIdManagement) LassoNameIdManagement;
+#endif
+typedef struct {
+} LassoNameIdManagement;
+%extend LassoNameIdManagement {
+	/* Attributes inherited from Profile */
+	%immutable artifact;
+	char *artifact;
+
+	char *artifactMessage;
+
+	%newobject identity_get;
+	LassoIdentity *identity;
+
+	%immutable isIdentityDirty;
+	gboolean isIdentityDirty;
+
+	%immutable isSessionDirty;
+	gboolean isSessionDirty;
+
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject nameIdentifier_get;
+	LassoNode *nameIdentifier;
+
+	char *remoteProviderId;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%newobject server_get;
+	LassoServer *server;
+
+	%newobject session_get;
+	LassoSession *session;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoNameIdManagement(LassoServer *server);
+
+	~LassoNameIdManagement();
+
+	%newobject newFromDump;
+	static LassoNameIdManagement *newFromDump(LassoServer *server, char *dump);
+
+	/* Methods inherited from Profile */
+
+        THROW_ERROR()
+	int setIdentityFromDump(char *dump);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int setSessionFromDump(char *dump);
+	END_THROW_ERROR()
+
+	/* Methods */
+
+	THROW_ERROR()
+	int buildRequestMsg();
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int buildResponseMsg();
+	END_THROW_ERROR()
+
+	%newobject dump;
+	char *dump();
+
+	THROW_ERROR()
+	int initRequest(char *remoteProviderId = NULL,
+                         char *new_name_id = NULL,
+			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processRequestMsg(char *requestMsg);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processResponseMsg(char *responseMsg);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int validateRequest();
+	END_THROW_ERROR()
+}
+
+%{
+
+/* Implementations of attributes inherited from Profile */
+
+/* identity */
+#define LassoNameIdManagement_get_identity(self) lasso_profile_get_identity(LASSO_PROFILE(self))
+#define LassoNameIdManagement_identity_get(self) lasso_profile_get_identity(LASSO_PROFILE(self))
+#define LassoNameIdManagement_set_identity(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+#define LassoNameIdManagement_identity_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->identity, (value))
+
+/* artifact */
+#define LassoNameIdManagement_get_artifact(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+#define LassoNameIdManagement_artifact_get(self) lasso_profile_get_artifact(LASSO_PROFILE(self))
+
+/* artifactMessage */
+#define LassoNameIdManagement_get_artifactMessage(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameIdManagement_artifactMessage_get(self) lasso_profile_get_artifact_message(LASSO_PROFILE(self))
+#define LassoNameIdManagement_set_artifactMessage(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+#define LassoNameIdManagement_artifactMessage_set(self, value) lasso_profile_set_artifact_message(LASSO_PROFILE(self), value)
+
+/* isIdentityDirty */
+#define LassoNameIdManagement_get_isIdentityDirty(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
+#define LassoNameIdManagement_isIdentityDirty_get(self) lasso_profile_is_identity_dirty(LASSO_PROFILE(self))
+
+/* isSessionDirty */
+#define LassoNameIdManagement_get_isSessionDirty(self) lasso_profile_is_session_dirty(LASSO_PROFILE(self))
+#define LassoNameIdManagement_isSessionDirty_get(self) lasso_profile_is_session_dirty(LASSO_PROFILE(self))
+
+/* msgBody */
+#define LassoNameIdManagement_get_msgBody(self) LASSO_PROFILE(self)->msg_body
+#define LassoNameIdManagement_msgBody_get(self) LASSO_PROFILE(self)->msg_body
+
+/* msgRelayState */
+#define LassoNameIdManagement_get_msgRelayState(self) LASSO_PROFILE(self)->msg_relayState
+#define LassoNameIdManagement_msgRelayState_get(self) LASSO_PROFILE(self)->msg_relayState
+
+/* msgUrl */
+#define LassoNameIdManagement_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
+#define LassoNameIdManagement_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
+
+/* nameIdentifier */
+#define LassoNameIdManagement_get_nameIdentifier(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameIdManagement_nameIdentifier_get(self) get_node(LASSO_PROFILE(self)->nameIdentifier)
+#define LassoNameIdManagement_set_nameIdentifier(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+#define LassoNameIdManagement_nameIdentifier_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->nameIdentifier, (value))
+
+/* remoteProviderId */
+#define LassoNameIdManagement_get_remoteProviderId(self) LASSO_PROFILE(self)->remote_providerID
+#define LassoNameIdManagement_remoteProviderId_get(self) LASSO_PROFILE(self)->remote_providerID
+#define LassoNameIdManagement_set_remoteProviderId(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
+#define LassoNameIdManagement_remoteProviderId_set(self, value) set_string(&LASSO_PROFILE(self)->remote_providerID, (value))
+
+/* request */
+#define LassoNameIdManagement_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameIdManagement_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoNameIdManagement_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoNameIdManagement_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoNameIdManagement_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameIdManagement_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoNameIdManagement_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoNameIdManagement_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+
+/* server */
+#define LassoNameIdManagement_get_server(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameIdManagement_server_get(self) get_node(LASSO_PROFILE(self)->server)
+#define LassoNameIdManagement_set_server(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+#define LassoNameIdManagement_server_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->server, (value))
+
+/* session */
+#define LassoNameIdManagement_get_session(self) lasso_profile_get_session(LASSO_PROFILE(self))
+#define LassoNameIdManagement_session_get(self) lasso_profile_get_session(LASSO_PROFILE(self))
+#define LassoNameIdManagement_set_session(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+#define LassoNameIdManagement_session_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->session, (value))
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoNameIdManagement lasso_name_id_management_new
+#define delete_LassoNameIdManagement(self) lasso_node_destroy(LASSO_NODE(self))
+#define LassoNameIdManagement_newFromDump lasso_name_id_management_new_from_dump
+
+/* Implementations of methods inherited from Profile */
+
+int LassoNameIdManagement_setIdentityFromDump(LassoNameIdManagement *self, char *dump) {
+	return lasso_profile_set_identity_from_dump(LASSO_PROFILE(self), dump);
+}
+
+int LassoNameIdManagement_setSessionFromDump(LassoNameIdManagement *self, char *dump) {
+	return lasso_profile_set_session_from_dump(LASSO_PROFILE(self), dump);
+}
+
+/* Methods implementations */
+
+#define LassoNameIdManagement_buildRequestMsg lasso_name_id_management_build_request_msg
+#define LassoNameIdManagement_buildResponseMsg lasso_name_id_management_build_response_msg
+#define LassoNameIdManagement_dump lasso_name_id_management_dump
+#define LassoNameIdManagement_getNextProviderId lasso_name_id_management_get_next_providerID
+#define LassoNameIdManagement_initRequest lasso_name_id_management_init_request
+#define LassoNameIdManagement_processRequestMsg lasso_name_id_management_process_request_msg
+#define LassoNameIdManagement_processResponseMsg lasso_name_id_management_process_response_msg
+#define LassoNameIdManagement_resetProviderIdIndex lasso_name_id_management_reset_providerID_index
+#define LassoNameIdManagement_validateRequest lasso_name_id_management_validate_request
+
+%}
 
 

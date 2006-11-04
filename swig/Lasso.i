@@ -43,7 +43,6 @@
 #ifndef SWIGPHP4
 %rename(SAML2_SUPPORT) LASSO_SAML2_SUPPORT;
 #endif
-%include Lasso-saml2.i
 
 %{
 
@@ -6850,5 +6849,6 @@ int LassoNameRegistration_setSessionFromDump(LassoNameRegistration *self, char *
 %include Lasso-wsf.i
 #endif
 
+%include Lasso-saml2.i
 %include saml-2.0/main.h
 
