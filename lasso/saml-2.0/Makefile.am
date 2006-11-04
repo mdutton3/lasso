@@ -14,10 +14,12 @@ liblasso_saml_20_la_SOURCES = \
 	profile.c \
 	provider.c \
 	login.c \
-	logout.c
+	logout.c \
+	name_id_management.c
 
 liblassoinclude_HEADERS = \
-	profile.h
+	profile.h \
+	name_id_management.h
 
 lasso_private_h_sources = \
 	federationprivate.h \
