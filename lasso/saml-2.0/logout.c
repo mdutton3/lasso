@@ -185,6 +185,8 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_body = NULL;
+		g_free(url);
 		return 0;
 	}
 	
