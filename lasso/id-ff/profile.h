@@ -64,6 +64,7 @@ typedef struct _LassoProfilePrivate LassoProfilePrivate;
  * @LASSO_REQUEST_TYPE_DST_QUERY:
  * @LASSO_REQUEST_TYPE_DST_MODIFY:
  * @LASSO_REQUEST_TYPE_SASL_REQUEST:
+ * @LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT:
  *
  * Request types (known for SOAP endpoints)
  **/
@@ -80,6 +81,7 @@ typedef enum {
 	LASSO_REQUEST_TYPE_DST_QUERY = 9,
 	LASSO_REQUEST_TYPE_DST_MODIFY = 10,
 	LASSO_REQUEST_TYPE_SASL_REQUEST = 11,
+	LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT = 12,
 } LassoRequestType;
 
 
