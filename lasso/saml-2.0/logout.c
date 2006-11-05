@@ -552,7 +552,7 @@ lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg)
 	if (response->Status == NULL || response->Status->StatusCode == NULL
 			|| response->Status->StatusCode->Value == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "No Status in LogoutResponse !");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 	}
 	status_code_value = response->Status->StatusCode->Value;
 
