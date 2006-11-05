@@ -290,7 +290,8 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	/* Get the name identifier */
 	name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
 	if (name_id == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
+		message(G_LOG_LEVEL_CRITICAL,
+				"Name identifier not found in name id management request");
 		/* XXX: which status code in SAML 2.0 ? */
 		lasso_saml20_profile_set_response_status(
 				profile, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL);
@@ -417,7 +418,112 @@ lasso_name_id_management_process_response_msg(
 		LassoNameIdManagement *name_id_management,
 		gchar *response_msg)
 {
-	return LASSO_ERROR_UNIMPLEMENTED;
+	LassoProfile *profile = LASSO_PROFILE(name_id_management);
+	LassoHttpMethod response_method;
+	LassoProvider *remote_provider;
+	LassoSamlp2StatusResponse *response;
+	LassoMessageFormat format;
+	char *status_code_value;
+	int rc;
+
+	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_RESPONSE(profile->response) == TRUE) {
+		lasso_node_destroy(profile->response);
+		profile->response = NULL;
+	}
+
+	profile->response = lasso_samlp2_manage_name_id_response_new();
+	format = lasso_node_init_from_message(LASSO_NODE(profile->response), response_msg);
+
+	switch (format) {
+		case LASSO_MESSAGE_FORMAT_SOAP:
+			response_method = LASSO_HTTP_METHOD_SOAP;
+			break;
+		case LASSO_MESSAGE_FORMAT_QUERY:
+			response_method = LASSO_HTTP_METHOD_REDIRECT;
+			break;
+		default:
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	profile->remote_providerID = g_strdup(
+			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
+
+	/* get the provider */
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
+
+	/* verify signature */
+	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ID", format);
+	if (rc == LASSO_DS_ERROR_SIGNATURE_NOT_FOUND) {
+		/* XXX: is signature mandatory ? */
+		message(G_LOG_LEVEL_WARNING, "No signature on response");
+		rc = 0;
+	}
+
+	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
+
+	if (response->Status == NULL || response->Status->StatusCode == NULL
+			|| response->Status->StatusCode->Value == NULL) {
+		message(G_LOG_LEVEL_CRITICAL, "No Status in ManageNameIDResponse !");
+		return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+	}
+	status_code_value = response->Status->StatusCode->Value;
+
+	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
+		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
+		/* XXX: look for common occurence */
+		return LASSO_ERROR_UNDEFINED;
+	}
+
+	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
+		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
+	} else {
+		LassoSaml2NameID *new_name_id, *name_id;
+	LassoFederation *federation;
+
+		name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
+
+		new_name_id = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new());
+		new_name_id->Format = g_strdup(name_id->Format);
+		new_name_id->NameQualifier = g_strdup(name_id->NameQualifier);
+		new_name_id->SPNameQualifier = g_strdup(name_id->SPNameQualifier);
+		if (LASSO_PROVIDER(profile->server)->role == LASSO_PROVIDER_ROLE_SP) {
+			/* if the requester is the service provider, the new
+			 * identifier MUST appear in subsequent <NameID>
+			 * elements in the SPProvidedID attribute
+			 *  -- saml-core-2.0-os.pdf, page 58
+			 */
+			new_name_id->SPProvidedID = g_strdup(
+				LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NewID);
+			new_name_id->content = g_strdup(name_id->content);
+		} else {
+			/* If the requester is the identity provider, the new
+			 * value will appear in subsequent <NameID> elements as
+			 * the element's content.
+			 * -- saml-core-2.0-os.pdf, page 58
+			 */
+			new_name_id->content = g_strdup(
+				LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NewID);
+		}
+
+		/* Get federation */
+		federation = g_hash_table_lookup(profile->identity->federations,
+				profile->remote_providerID);
+		if (LASSO_IS_FEDERATION(federation) == FALSE) {
+			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
+		}
+
+		if (federation->local_nameIdentifier)
+			lasso_node_destroy(LASSO_NODE(federation->local_nameIdentifier));
+		federation->local_nameIdentifier = g_object_ref(new_name_id);
+		profile->identity->is_dirty = TRUE;
+
+	}
+
+	return 0;
 }
 
 
