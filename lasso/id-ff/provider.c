@@ -767,12 +767,12 @@ lasso_provider_load_public_key(LassoProvider *provider)
 			if (t->type == XML_ELEMENT_NODE) {
 				if (strcmp((char*)t->name, "KeyInfo") == 0 ||
 						strcmp((char*)t->name, "X509Data") == 0) {
-					xmlSecKeyInfoNodeRead(t, xmlseckey, ctx);
-					break;
 					t = t->children;
 					continue;
 				}
 				if (strcmp((char*)t->name, "X509Certificate") == 0)
+					break;
+				if (strcmp((char*)t->name, "KeyValue") == 0)
 					break;
 			}
 			t = t->next;
@@ -783,13 +783,15 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		b64_value = xmlNodeGetContent(t);
 		length = strlen((char*)b64_value);
 		value = g_malloc(length);
+		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 		rc = xmlSecBase64Decode(b64_value, value, length);
 		if (rc < 0) {
 			/* bad base-64 */
 			g_free(value);
 			value = g_strdup(b64_value);
+			rc = strlen(value);
 		}
-		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {
 			pub_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
 					key_formats[i], NULL, NULL, NULL);
