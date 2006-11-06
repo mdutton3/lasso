@@ -445,6 +445,10 @@
 #define LASSO_SAML2_AUTHN_CONTEXT_XMLDSIG \
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig"
 
+/* Confirmation methods */
+
+#define LASSO_SAML2_CONFIRMATION_METHOD_BEARER "urn:oasis:names:tc:SAML:2.0:cm:bearer"
+
 /*****************************************************************************/
 /* Others                                                                    */
 /*****************************************************************************/
