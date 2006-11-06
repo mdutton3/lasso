@@ -36,11 +36,11 @@ extern "C" {
 gint lasso_session_add_assertion(LassoSession *session,
 		char *providerID, LassoNode *assertion);
 gint lasso_session_add_status(LassoSession *session,
-		char *providerID, LassoSamlpStatus *authn_response);
+		char *providerID, LassoNode *status);
 
 LassoNode* lasso_session_get_assertion(
 		LassoSession *session, gchar *providerID);
-LassoSamlpStatus* lasso_session_get_status(
+LassoNode* lasso_session_get_status(
 		LassoSession *session, gchar *providerID);
 
 gint lasso_session_remove_status(LassoSession *session, gchar *providerID);

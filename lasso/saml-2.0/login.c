@@ -502,11 +502,6 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 
 	profile = LASSO_PROFILE(login);
 
-	assertion = login->private_data->saml2_assertion;
-	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
-		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
-	}
-
 	if (profile->remote_providerID == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 
@@ -518,7 +513,11 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex);
-	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = g_strdup(url);
+	assertion = login->private_data->saml2_assertion;
+	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = 
+			g_strdup(url);
+	}
 
 	artifact = lasso_saml20_profile_generate_artifact(profile, 1);
 	login->assertionArtifact = g_strdup(artifact);
@@ -529,6 +528,19 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 		/* XXX: ARTIFACT POST */
 	}
 	g_free(url);
+
+	if (strcmp(LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value,
+				"samlp:Success") != 0) {
+		if (profile->session == NULL)
+			profile->session = lasso_session_new();
+
+		lasso_session_add_status(profile->session, profile->remote_providerID,
+				g_object_ref(LASSO_SAMLP2_STATUS_RESPONSE(
+						profile->response)->Status));
+	} else {
+		lasso_session_remove_status(profile->session, profile->remote_providerID);
+	}
+
 	return 0;
 }
 
@@ -718,11 +730,6 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	assertion = login->private_data->saml2_assertion;
-	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
-		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
-	}
-
 	if (profile->server->certificate)
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_WITHX509;
@@ -746,11 +753,15 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			remote_provider,
 			LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex);
-	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = g_strdup(
-			profile->msg_url);
 
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
+	}
+
+	assertion = login->private_data->saml2_assertion;
+	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
+		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient =
+			g_strdup(profile->msg_url);
 	}
 
 	/* build an lib:AuthnResponse base64 encoded */

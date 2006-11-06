@@ -71,7 +71,7 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_session_add_status(LassoSession *session, char *providerID, LassoSamlpStatus *status)
+lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *status)
 {
 	g_return_val_if_fail(session != NULL, -1);
 	g_return_val_if_fail(providerID != NULL, -2);
@@ -150,7 +150,7 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
  * Return value: the status or NULL if it didn't exist.  This #LassoSamlpStatus
  *      is internally allocated and must not be freed by the caller.
  **/
-LassoSamlpStatus*
+LassoNode*
 lasso_session_get_status(LassoSession *session, gchar *providerID)
 {
 	if (session == NULL) {
@@ -369,8 +369,8 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			while (n && n->type != XML_ELEMENT_NODE) n = n->next;
 			
 			if (n) {
-				LassoSamlpStatus *status;
-				status = LASSO_SAMLP_STATUS(lasso_node_new_from_xmlNode(n));
+				LassoNode *status;
+				status = lasso_node_new_from_xmlNode(n);
 				g_hash_table_insert(session->private_data->status,
 						xmlGetProp(t, (xmlChar*)"RemoteProviderID"),
 						status);

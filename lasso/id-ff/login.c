@@ -1095,7 +1095,8 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 			LassoSamlAssertion *assertion;
 			LassoSamlpStatus *status;
 
-			status = lasso_session_get_status(profile->session, remote_providerID);
+			status = LASSO_SAMLP_STATUS(lasso_session_get_status(
+						profile->session, remote_providerID));
 			assertion = LASSO_SAML_ASSERTION(
 					lasso_session_get_assertion(profile->session,
 						profile->remote_providerID));
