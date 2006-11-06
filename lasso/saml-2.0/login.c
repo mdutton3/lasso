@@ -429,6 +429,13 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	name_id_policy = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy;
 	assertion->Subject = LASSO_SAML2_SUBJECT(lasso_saml2_subject_new());
+	assertion->Subject->SubjectConfirmation = LASSO_SAML2_SUBJECT_CONFIRMATION(
+			lasso_saml2_subject_confirmation_new());
+	assertion->Subject->SubjectConfirmation->Method = g_strdup(
+			LASSO_SAML2_CONFIRMATION_METHOD_BEARER);
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData = 
+		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
+			lasso_saml2_subject_confirmation_data_new());
 	if (name_id_policy == NULL || strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		/* transient -> don't use a federation */
@@ -490,8 +497,14 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	LassoProvider *remote_provider;
 	char *artifact;
 	char *url;
+	LassoSaml2Assertion *assertion;
 
 	profile = LASSO_PROFILE(login);
+
+	assertion = login->private_data->saml2_assertion;
+	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
+	}
 
 	if (profile->remote_providerID == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
@@ -504,6 +517,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
 			LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex);
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = g_strdup(url);
 
 	artifact = lasso_saml20_profile_generate_artifact(profile, 1);
 	login->assertionArtifact = g_strdup(artifact);
@@ -697,14 +711,15 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoProvider *remote_provider;
+	LassoSaml2Assertion *assertion;
 
 	if (login->protocolProfile != LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	if (login->private_data->saml2_assertion) {
-		LassoSaml2Assertion *assertion = login->private_data->saml2_assertion;
-		/* XXX ?*/
+	assertion = login->private_data->saml2_assertion;
+	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 
 	if (profile->server->certificate)
@@ -721,9 +736,6 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
 		g_strdup(profile->server->certificate);
 
-	/* build an lib:AuthnResponse base64 encoded */
-	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
-
 	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
 			LASSO_PROFILE(login)->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
@@ -733,10 +745,16 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 			remote_provider,
 			LASSO_SAMLP2_AUTHN_REQUEST(
 				profile->request)->AssertionConsumerServiceIndex);
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = g_strdup(
+			profile->msg_url);
 
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
 	}
+
+	/* build an lib:AuthnResponse base64 encoded */
+	profile->msg_body = lasso_node_export_to_base64(LASSO_NODE(profile->response));
+
 
 	return 0;
 
