@@ -138,7 +138,7 @@ lasso_profile_get_request_type_from_soap_msg(const gchar *soap)
 	} else if (strcmp(name, "ManageNameIDRequest") == 0) {
 		type = LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT;
 	} else {
-		message(G_LOG_LEVEL_WARNING, "Unkown node name : %s", name);
+		message(G_LOG_LEVEL_WARNING, "Unknown node name : %s", name);
 	}
 
 	xmlFreeDoc(doc);
