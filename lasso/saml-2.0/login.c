@@ -485,6 +485,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			g_object_ref(assertion));
 
 	LASSO_SAMLP2_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
+	login->private_data->saml2_assertion = g_object_ref(assertion);
 
 	return 0;
 }
