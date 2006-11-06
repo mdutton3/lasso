@@ -133,6 +133,8 @@ lasso_strerror(int error_code)
 			return "Missing service description";
 		case LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE:
 			return "Missing service type";
+		case LASSO_PROFILE_ERROR_MISSING_ASSERTION:
+			return "Missing assertion";
 
 		case LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ:
 			return "An object type provided as parameter "\
