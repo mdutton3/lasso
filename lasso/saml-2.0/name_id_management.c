@@ -608,10 +608,12 @@ lasso_name_id_management_get_type()
 	if (!this_type) {
 		static const GTypeInfo this_info = {
 			sizeof (LassoNameIdManagementClass),
-			NULL, NULL, NULL, NULL, NULL,
+			NULL, NULL, 
+			(GClassInitFunc) class_init,
+			NULL, NULL,
 			sizeof(LassoNameIdManagement),
 			0,
-			NULL,
+			(GInstanceInitFunc) instance_init,
 		};
 
 		this_type = g_type_register_static(LASSO_TYPE_PROFILE,
