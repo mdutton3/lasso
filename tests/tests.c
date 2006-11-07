@@ -31,6 +31,7 @@
 extern Suite* basic_suite();
 extern Suite* login_suite();
 extern Suite* random_suite();
+extern Suite* metadata_suite();
 
 typedef Suite* (*SuiteFunction) ();
 
@@ -38,6 +39,7 @@ SuiteFunction suites[] = {
 	basic_suite,
 	login_suite,
 	random_suite,
+	metadata_suite,
 	NULL
 };
 
