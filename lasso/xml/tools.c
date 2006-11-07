@@ -785,3 +785,13 @@ lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string)
 	return TRUE;
 }
 
+char*
+lasso_concat_url_query(char *url, char *query)
+{
+	if (strchr(url, '?')) {
+		return g_strdup_printf("%s&%s", url, query);
+	} else {
+		return g_strdup_printf("%s?%s", url, query);
+	}
+}
+

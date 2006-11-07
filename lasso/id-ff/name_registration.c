@@ -103,7 +103,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		profile->msg_body = NULL;
 		g_free(url);
 		g_free(query);
@@ -186,7 +186,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		g_free(url);
 		g_free(query);
 		profile->msg_body = NULL;

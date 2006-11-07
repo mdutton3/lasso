@@ -119,6 +119,8 @@ gchar* lasso_node_build_deflated_query(LassoNode *node);
 
 gboolean lasso_node_init_from_deflated_query_part(LassoNode *node, char *deflate_string);
 
+char* lasso_concat_url_query(char *url, char *query);
+
 void _debug(GLogLevelFlags level, const char *filename, int line,
 		const char *function, const char *format, ...);
 

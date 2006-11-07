@@ -752,13 +752,17 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 
 	if (http_method == LASSO_HTTP_METHOD_REDIRECT) {
 		xmlChar *escaped_artifact = xmlURIEscapeStr(b64_samlArt, NULL);
+		gchar *query;
+
 		if (relayState == NULL) {
-			profile->msg_url = g_strdup_printf("%s?SAMLart=%s", url, escaped_artifact);
+			query = g_strdup_printf("SAMLart=%s", escaped_artifact);
 		} else {
-			profile->msg_url = g_strdup_printf(
-					"%s?SAMLart=%s&RelayState=%s", 
-					url, escaped_artifact, relayState);
+			query = g_strdup_printf("SAMLart=%s&RelayState=%s", 
+					escaped_artifact, relayState);
 		}
+		profile->msg_url = lasso_concat_url_query(url, query);
+		g_free(query);
+
 		xmlFree(escaped_artifact);
 	}
 
@@ -878,7 +882,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		profile->msg_body = NULL;
 		g_free(query);
 		g_free(url);

@@ -120,7 +120,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 		/* build the msg_url */
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		g_free(url);
 		g_free(query);
 		profile->msg_body = NULL;
@@ -231,7 +231,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 			g_free(url);
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		profile->msg_body = NULL;
 		g_free(url);
 		g_free(query);
@@ -651,7 +651,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 				g_free(url);
 				return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 			}
-			profile->msg_url = g_strdup_printf("%s?%s", url, query);
+			profile->msg_url = lasso_concat_url_query(url, query);
 			g_free(url);
 			g_free(query);
 			profile->msg_body = NULL;

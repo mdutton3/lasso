@@ -113,7 +113,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		profile->msg_body = NULL;
 		g_free(url);
 		g_free(query);
@@ -375,9 +375,10 @@ lasso_defederation_validate_notification(LassoDefederation *defederation)
 		/* if a relay state, then build the query part */
 		if (profile->msg_relayState) {
 			gchar *url;
-			url = g_strdup_printf("%s?RelayState=%s",
-					profile->msg_url, profile->msg_relayState);
+			gchar *query = g_strdup_printf("RelayState=%s", profile->msg_relayState);
+			url = lasso_concat_url_query(profile->msg_url, query);
 			g_free(profile->msg_url);
+			g_free(query);
 			profile->msg_url = url;
 		}
 	}

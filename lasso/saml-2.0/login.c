@@ -126,7 +126,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
 
-		profile->msg_url = g_strdup_printf("%s?%s", url, query);
+		profile->msg_url = lasso_concat_url_query(url, query);
 		profile->msg_body = NULL;
 		g_free(query);
 		g_free(url);
@@ -150,8 +150,9 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 			url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-Artifact");
 			if (login->http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-				profile->msg_url = g_strdup_printf("%s?SAMLart=%s",
-						url, artifact);
+				gchar *query = g_strdup_printf("SAMLart=%s", artifact);
+				profile->msg_url = lasso_concat_url_query(url, query);
+				g_free(query);
 			} else {
 				/* TODO: ARTIFACT POST */
 			}
@@ -522,7 +523,9 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	artifact = lasso_saml20_profile_generate_artifact(profile, 1);
 	login->assertionArtifact = g_strdup(artifact);
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-		profile->msg_url = g_strdup_printf("%s?SAMLart=%s", url, artifact);
+		gchar *query = g_strdup_printf("SAMLart=%s", artifact);
+		profile->msg_url = lasso_concat_url_query(url, query);
+		g_free(query);
 		/* XXX: RelayState */
 	} else {
 		/* XXX: ARTIFACT POST */
