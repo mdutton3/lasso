@@ -43,6 +43,8 @@
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
 static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
+static char* lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
+		LassoProvider *remote_provider);
 
 gint
 lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_provider,
@@ -169,9 +171,10 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	LassoMessageFormat format;
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSamlp2StatusResponse *response;
+	LassoSamlp2AuthnRequest *authn_request;
 	gchar *protocol_binding;
 
-	request = lasso_samlp2_authn_request_new();
+	request = authn_request = lasso_samlp2_authn_request_new();
 	format = lasso_node_init_from_message(request, authn_request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
 			format == LASSO_MESSAGE_FORMAT_ERROR) {
@@ -182,7 +185,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	profile->remote_providerID = g_strdup(
 			LASSO_SAMLP2_REQUEST_ABSTRACT(request)->Issuer->content);
 
-	protocol_binding = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->ProtocolBinding;
+	protocol_binding = authn_request->ProtocolBinding;
 	if (protocol_binding == NULL) {
 		/* protocol binding not set; so it will look into
 		 * AssertionConsumingServiceIndex
@@ -192,8 +195,7 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		 */
 		gchar *binding;
 		LassoProvider *remote_provider;
-		int service_index = LASSO_SAMLP2_AUTHN_REQUEST(
-				profile->request)->AssertionConsumerServiceIndex;
+		int service_index = authn_request->AssertionConsumerServiceIndex;
 
 		remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
@@ -510,10 +512,8 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-
-	url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
-			LASSO_SAMLP2_AUTHN_REQUEST(
-				profile->request)->AssertionConsumerServiceIndex);
+	
+	url = lasso_saml20_login_get_assertion_consumer_service_url(login, remote_provider);
 	assertion = login->private_data->saml2_assertion;
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
 		assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = 
@@ -752,10 +752,8 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	profile->msg_url = lasso_saml20_provider_get_assertion_consumer_service_url(
-			remote_provider,
-			LASSO_SAMLP2_AUTHN_REQUEST(
-				profile->request)->AssertionConsumerServiceIndex);
+	profile->msg_url = lasso_saml20_login_get_assertion_consumer_service_url(
+			login, remote_provider);
 
 	if (profile->msg_url == NULL) {
 		return LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL;
@@ -773,5 +771,26 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 
 	return 0;
 
+}
+
+static char*
+lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
+	LassoProvider *remote_provider)
+{
+	char *url;
+	LassoSamlp2AuthnRequest *request = LASSO_PROFILE(login)->request;
+
+	if (request->AssertionConsumerServiceURL) {
+		return g_strdup(request->AssertionConsumerServiceURL);
+	}
+
+	if (request->AssertionConsumerServiceIndex != -1 || request->ProtocolBinding == NULL) {
+		return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
+				request->AssertionConsumerServiceIndex);
+	}
+
+	message(G_LOG_LEVEL_WARNING, "can't find assertion consumer service url");
+
+	return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
 }
 
