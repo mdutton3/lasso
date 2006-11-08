@@ -729,7 +729,7 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
-	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNATURE) == FALSE) {
+	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to load signing public key for %s.",
 				provider->ProviderID);
 		lasso_node_destroy(LASSO_NODE(provider));
@@ -760,7 +760,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	};
 	int i;
 
-	if (public_key_type == LASSO_PUBLIC_KEY_SIGNATURE) {
+	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
 		public_key = provider->public_key;
 		key_descriptor = provider->private_data->signing_key_descriptor;
 	} else {
@@ -822,7 +822,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		xmlFree(b64_value);
 		g_free(value);
 
-		if (public_key_type == LASSO_PUBLIC_KEY_SIGNATURE) {
+		if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
 			provider->private_data->public_key = pub_key;
 		} else {
 			provider->private_data->encryption_public_key = pub_key;
@@ -877,7 +877,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
 
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNATURE);
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return provider;
