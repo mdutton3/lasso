@@ -537,7 +537,6 @@ instance_init(LassoProvider *provider)
 	provider->ProviderID = NULL;
 	provider->metadata_filename = NULL;
 	provider->public_key = NULL;
-	provider->encryption_public_key = NULL;
 	provider->ca_cert_chain = NULL;
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
@@ -768,7 +767,6 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		public_key = provider->public_key;
 		key_descriptor = provider->private_data->signing_key_descriptor;
 	} else {
-		public_key = provider->encryption_public_key;
 		key_descriptor = provider->private_data->encryption_key_descriptor;	
 	}
 
@@ -838,6 +836,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		}
 	}
 
+	/* encryption public key can never be set by filename */
 	file_type = lasso_get_pem_file_type(public_key);
 	switch (file_type) {
 		case LASSO_PEM_FILE_TYPE_UNKNOWN:
@@ -853,11 +852,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 			break; /* with a warning ? */
 	}
 
-	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
-		provider->private_data->public_key = pub_key;
-	} else {
-		provider->private_data->encryption_public_key = pub_key;
-	}
+	provider->private_data->public_key = pub_key;
 
 	return (pub_key != NULL);
 }
