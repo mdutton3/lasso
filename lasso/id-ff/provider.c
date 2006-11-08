@@ -371,8 +371,8 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
 			if (use && strcmp(use, "encryption") == 0) {
-				provider->private_data->encryption_key_descriptor
-									= xmlCopyNode(t, 1);
+				provider->private_data->encryption_key_descriptor = 
+					xmlCopyNode(t, 1);
 			}
 			t = t->next;
 			continue;
@@ -729,17 +729,14 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
-	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING) == FALSE) {
+	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNATURE) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to load signing public key for %s.",
 				provider->ProviderID);
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
 
-	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION) == FALSE) {
-		message(G_LOG_LEVEL_WARNING, "Failed to load encryption public key for %s.",
-				provider->ProviderID);
-	}
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return provider;
 }
@@ -763,11 +760,11 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 	};
 	int i;
 
-	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
+	if (public_key_type == LASSO_PUBLIC_KEY_SIGNATURE) {
 		public_key = provider->public_key;
 		key_descriptor = provider->private_data->signing_key_descriptor;
 	} else {
-		key_descriptor = provider->private_data->encryption_key_descriptor;	
+		key_descriptor = provider->private_data->encryption_key_descriptor;
 	}
 
 	if (public_key == NULL && key_descriptor == NULL)
@@ -825,7 +822,7 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		xmlFree(b64_value);
 		g_free(value);
 
-		if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
+		if (public_key_type == LASSO_PUBLIC_KEY_SIGNATURE) {
 			provider->private_data->public_key = pub_key;
 		} else {
 			provider->private_data->encryption_public_key = pub_key;
@@ -836,7 +833,11 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		}
 	}
 
-	/* encryption public key can never be set by filename */
+	if (public_key_type == LASSO_PUBLIC_KEY_ENCRYPTION) {
+		/* encryption public key can never be set by filename */
+		return FALSE;
+	}
+
 	file_type = lasso_get_pem_file_type(public_key);
 	switch (file_type) {
 		case LASSO_PEM_FILE_TYPE_UNKNOWN:
@@ -876,7 +877,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
 
-	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNATURE);
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return provider;

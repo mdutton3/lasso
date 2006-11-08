@@ -220,8 +220,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				}
 				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
-				if (lasso_provider_load_public_key(p, LASSO_PUBLIC_KEY_SIGNING)
-											 == TRUE) {
+				if (lasso_provider_load_public_key(p, LASSO_PUBLIC_KEY_SIGNATURE)) {
 					g_hash_table_insert(server->providers,
 							g_strdup(p->ProviderID), p);
 				} else {

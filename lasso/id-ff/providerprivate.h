@@ -31,13 +31,13 @@ extern "C" {
 
 /**
  * LassoPublicKeyType:
- * LASSO_PUBLIC_KEY_SIGNING: Signing public key
+ * LASSO_PUBLIC_KEY_SIGNATURE: Signing public key
  * LASSO_PUBLIC_KEY_ENCRYPTION: Encryption public key
  *
  * Public key type.
  **/
 typedef enum {
-	LASSO_PUBLIC_KEY_SIGNING,
+	LASSO_PUBLIC_KEY_SIGNATURE,
 	LASSO_PUBLIC_KEY_ENCRYPTION,
 } LassoPublicKeyType;
 
@@ -61,7 +61,7 @@ gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *meta
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
 gboolean lasso_provider_load_public_key(LassoProvider *provider,
-					LassoPublicKeyType public_key_type);
+		LassoPublicKeyType public_key_type);
 xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
 
 
