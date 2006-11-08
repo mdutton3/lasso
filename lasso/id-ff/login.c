@@ -1407,6 +1407,8 @@ lasso_login_must_authenticate(LassoLogin *login)
 {
 	LassoLibAuthnRequest *request;
 	LassoProfile *profile;
+	gboolean matched = TRUE;
+	GList *assertions = NULL;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
@@ -1420,11 +1422,76 @@ lasso_login_must_authenticate(LassoLogin *login)
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
 	}
 
-	/* get IsPassive and ForceAuthn in AuthnRequest if exists */
-	if ((request->ForceAuthn || LASSO_PROFILE(login)->session == NULL) &&
-			request->IsPassive == FALSE)
+	if (request->ForceAuthn == TRUE && request->IsPassive == FALSE)
 		return TRUE;
-	
+
+	assertions = lasso_session_get_assertions(profile->session, NULL);
+	if (request->RequestAuthnContext) {
+		char *comparison = request->RequestAuthnContext->AuthnContextComparison;
+		char *class_ref;
+		GList *class_refs = request->RequestAuthnContext->AuthnContextClassRef;
+		GList *t1, *t2;
+		int compa;
+
+		if (comparison == NULL || strcmp(comparison, "exact") == 0) {
+			compa = 0;
+		} else if (strcmp(comparison, "minimum") == 0) {
+			message(G_LOG_LEVEL_CRITICAL, "'minimum' comparison is not implemented");
+			compa = 0;
+		} else if (strcmp(comparison, "better") == 0) {
+			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
+			compa = 0;
+		}
+
+		if (class_refs) {
+			matched = FALSE;
+		}
+
+		for (t1 = class_refs; t1 && !matched; t1 = g_list_next(t1)) {
+			class_ref = t1->data;
+			for (t2 = assertions; t2 && !matched; t2 = g_list_next(t2)) {
+				LassoSamlAssertion *assertion = t2->data;
+				LassoSamlAuthenticationStatement *as;
+				char *method;
+
+				as = LASSO_SAML_AUTHENTICATION_STATEMENT(
+						assertion->AuthenticationStatement);
+				method = as->AuthenticationMethod;
+
+				if (strcmp(method, LASSO_SAML_AUTHENTICATION_METHOD_PASSWORD) == 0)
+				{
+					/* mapping between SAML authentication
+					 * methods and Liberty authentication
+					 * context is not possible (excepted on
+					 * that one)
+					 */
+					method = LASSO_LIB_AUTHN_CONTEXT_CLASS_REF_PASSWORD;
+				}
+				
+				if (compa == 0) { /* exact */
+					if (strcmp(method, class_ref) == 0) {
+						matched = TRUE;
+						break;
+					}
+				} else if (compa == 1) { /* minimum */
+					/* XXX: implement 'minimum' comparison */
+				} else if (compa == 2) { /* better */
+					/* XXX: implement 'better' comparison */
+				}
+			}
+		}
+
+	} else {
+		/* if nothing specific was asked; don't look for any
+		 * assertions, a session is enough
+		 */
+		matched = (profile->session != NULL);
+	}
+	g_list_free(assertions);
+
+	if (matched == FALSE && request->IsPassive == FALSE)
+		return TRUE;
+
 	if (LASSO_PROFILE(login)->identity == NULL && request->IsPassive &&
 			login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST) {
 		lasso_profile_set_response_status(LASSO_PROFILE(login),
