@@ -39,13 +39,16 @@ struct _LassoProviderPrivate
 	xmlNode *organization;
 	xmlSecKey *public_key;
 	xmlNode *signing_key_descriptor;
+	xmlSecKey *encryption_public_key;
+	xmlNode *encryption_key_descriptor;
 };
 
 
 gboolean lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata);
 int lasso_provider_verify_signature(LassoProvider *provider,
 		const char *message, const char *id_attr_name, LassoMessageFormat format);
-gboolean lasso_provider_load_public_key(LassoProvider *provider);
+gboolean lasso_provider_load_public_key(LassoProvider *provider,
+					LassoPublicKeyType public_key_type);
 xmlSecKey* lasso_provider_get_public_key(LassoProvider *provider);
 
 

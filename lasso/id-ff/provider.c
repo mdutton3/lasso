@@ -370,6 +370,10 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
+			if (use && strcmp(use, "encryption") == 0) {
+				provider->private_data->encryption_key_descriptor
+									= xmlCopyNode(t, 1);
+			}
 			t = t->next;
 			continue;
 		}
@@ -498,6 +502,11 @@ dispose(GObject *object)
 		provider->private_data->signing_key_descriptor = NULL;
 	}
 
+	if (provider->private_data->encryption_key_descriptor) {
+		xmlFreeNode(provider->private_data->encryption_key_descriptor);
+		provider->private_data->encryption_key_descriptor = NULL;
+	}
+
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
 
@@ -528,13 +537,16 @@ instance_init(LassoProvider *provider)
 	provider->ProviderID = NULL;
 	provider->metadata_filename = NULL;
 	provider->public_key = NULL;
+	provider->encryption_public_key = NULL;
 	provider->ca_cert_chain = NULL;
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
 	provider->private_data->organization = NULL;
 	provider->private_data->public_key = NULL;
+	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->signing_key_descriptor = NULL;
+	provider->private_data->encryption_key_descriptor = NULL;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
@@ -718,20 +730,27 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 	provider->public_key = g_strdup(public_key);
 	provider->ca_cert_chain = g_strdup(ca_cert_chain);
 
-	if (lasso_provider_load_public_key(provider) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Failed to load public key for %s.",
+	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING) == FALSE) {
+		message(G_LOG_LEVEL_CRITICAL, "Failed to load signing public key for %s.",
 				provider->ProviderID);
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
+	}
+
+	if (lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION) == FALSE) {
+		message(G_LOG_LEVEL_WARNING, "Failed to load encryption public key for %s.",
+				provider->ProviderID);
 	}
 
 	return provider;
 }
 
 gboolean
-lasso_provider_load_public_key(LassoProvider *provider)
+lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType public_key_type)
 {
 	LassoPemFileType file_type;
+	gchar *public_key = NULL;
+	xmlNode	*key_descriptor = NULL;
 	xmlSecKey *pub_key = NULL;
 	xmlSecKeyDataFormat key_formats[] = {
 		xmlSecKeyDataFormatDer,
@@ -745,11 +764,19 @@ lasso_provider_load_public_key(LassoProvider *provider)
 	};
 	int i;
 
-	if (provider->public_key == NULL && provider->private_data->signing_key_descriptor == NULL)
+	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
+		public_key = provider->public_key;
+		key_descriptor = provider->private_data->signing_key_descriptor;
+	} else {
+		public_key = provider->encryption_public_key;
+		key_descriptor = provider->private_data->encryption_key_descriptor;	
+	}
+
+	if (public_key == NULL && key_descriptor == NULL)
 		return FALSE;
 
-	if (provider->public_key == NULL) {
-		xmlNode *t = provider->private_data->signing_key_descriptor->children;
+	if (public_key == NULL) {
+		xmlNode *t = key_descriptor->children;
 		xmlChar *b64_value;
 		xmlSecByte *value;
 		int length;
@@ -799,28 +826,38 @@ lasso_provider_load_public_key(LassoProvider *provider)
 		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 		xmlFree(b64_value);
 		g_free(value);
-		provider->private_data->public_key = pub_key;
+
+		if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
+			provider->private_data->public_key = pub_key;
+		} else {
+			provider->private_data->encryption_public_key = pub_key;
+		}
+
 		if (pub_key) {
 			return TRUE;
 		}
 	}
 
-	file_type = lasso_get_pem_file_type(provider->public_key);
+	file_type = lasso_get_pem_file_type(public_key);
 	switch (file_type) {
 		case LASSO_PEM_FILE_TYPE_UNKNOWN:
 			break; /* with a warning ? */
 		case LASSO_PEM_FILE_TYPE_CERT:
-			pub_key = lasso_get_public_key_from_pem_cert_file(
-					provider->public_key);
+			pub_key = lasso_get_public_key_from_pem_cert_file(public_key);
 			break;
 		case LASSO_PEM_FILE_TYPE_PUB_KEY:
-			pub_key = xmlSecCryptoAppKeyLoad(provider->public_key,
+			pub_key = xmlSecCryptoAppKeyLoad(public_key,
 					xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 			break;
 		case LASSO_PEM_FILE_TYPE_PRIVATE_KEY:
 			break; /* with a warning ? */
 	}
-	provider->private_data->public_key = pub_key;
+
+	if (public_key_type == LASSO_PUBLIC_KEY_SIGNING) {
+		provider->private_data->public_key = pub_key;
+	} else {
+		provider->private_data->encryption_public_key = pub_key;
+	}
 
 	return (pub_key != NULL);
 }
@@ -844,7 +881,8 @@ lasso_provider_new_from_dump(const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
 
-	lasso_provider_load_public_key(provider);
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
+	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	return provider;
 }

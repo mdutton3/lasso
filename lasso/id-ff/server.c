@@ -220,12 +220,13 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 				}
 				p = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 				LASSO_NODE_GET_CLASS(p)->init_from_xml(LASSO_NODE(p), t2);
-				if (lasso_provider_load_public_key(p) == TRUE) {
+				if (lasso_provider_load_public_key(p, LASSO_PUBLIC_KEY_SIGNING)
+											 == TRUE) {
 					g_hash_table_insert(server->providers,
 							g_strdup(p->ProviderID), p);
 				} else {
 					message(G_LOG_LEVEL_CRITICAL,
-							"Failed to load public key for %s.",
+							"Failed to load signing public key for %s.",
 							p->ProviderID);
 				}
 				t2 = t2->next;

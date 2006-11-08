@@ -130,6 +130,19 @@ typedef enum {
 } LassoProtocolConformance;
 
 
+/**
+ * LassoPublicKeyType:
+ * LASSO_PUBLIC_KEY_SIGNING: Signing public key
+ * LASSO_PUBLIC_KEY_ENCRYPTION: Encryption public key
+ *
+ * Public key type.
+ **/
+typedef enum {
+	LASSO_PUBLIC_KEY_SIGNING,
+	LASSO_PUBLIC_KEY_ENCRYPTION,
+} LassoPublicKeyType;
+
+
 struct _LassoProvider {
 	LassoNode parent;
 
@@ -139,6 +152,7 @@ struct _LassoProvider {
 
 	char *metadata_filename;
 	gchar *public_key;
+	gchar *encryption_public_key;
 	gchar *ca_cert_chain;
 
 	/*< private >*/
