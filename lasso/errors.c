@@ -156,6 +156,8 @@ lasso_strerror(int error_code)
 			return "Federation not found on login";
 		case LASSO_LOGIN_ERROR_REQUEST_DENIED:
 			return "Request denied";
+		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
+			return "No default endpoint";
 
 		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 			return "Redirect request from Attribute Provider";

@@ -220,7 +220,8 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 		binding = lasso_saml20_provider_get_assertion_consumer_service_binding(
 				remote_provider, service_index);
 		if (binding == NULL) {
-			message(G_LOG_LEVEL_WARNING, "can't find binding for index");
+			if (service_index == -1)
+				return LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT;
 		} else if (strcmp(binding, "HTTP-Artifact") == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 		} else if (strcmp(binding, "HTTP-POST") == 0) {
