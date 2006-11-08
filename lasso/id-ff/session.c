@@ -117,7 +117,7 @@ add_assertion_to_list(gchar *key, LassoLibAssertion *value, GList **list)
  * Gets the assertions for the given @provider_id.
  *
  * Return value: a GList* of #LassoSamlAssertion.  Caller must free the GList
- *     and the assertions it contains.
+ *     but NOT the assertions it contains.
  **/
 GList*
 lasso_session_get_assertions(LassoSession *session, const char *provider_id)
@@ -134,7 +134,7 @@ lasso_session_get_assertions(LassoSession *session, const char *provider_id)
 	} else {
 		assertion = g_hash_table_lookup(session->assertions, provider_id);
 		if (assertion)
-			r = g_list_append(r, g_object_ref(assertion));
+			r = g_list_append(r, assertion);
 	}
 	return r;
 }

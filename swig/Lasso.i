@@ -5456,7 +5456,6 @@ LassoNodeList *LassoSession_getAssertions(LassoSession *self, char *providerId) 
 	assertionsList = lasso_session_get_assertions(self, providerId);
 	if (assertionsList) {
 		assertionsArray = get_node_list(assertionsList);
-		g_list_foreach(assertionsList, (GFunc) free_node_list_item, NULL);
 		g_list_free(assertionsList);
 	} else {
 		assertionsArray = NULL;
