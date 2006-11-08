@@ -1349,10 +1349,16 @@ lasso_login_init_idp_initiated_authn_request(LassoLogin *login,
 	int rc;
 	LassoProfile *profile;
 
+	profile = LASSO_PROFILE(login);
+
+	IF_SAML2(profile) {
+		return lasso_saml20_login_init_idp_initiated_authn_request(login,
+				remote_providerID);
+	}
+
 	rc = lasso_login_init_authn_request(login, remote_providerID, LASSO_HTTP_METHOD_POST);
 	if (rc)
 		return rc;
-	profile = LASSO_PROFILE(login);
 
 	/* no RequestID attribute or it would be used in response assertion */
 	g_free(LASSO_SAMLP_REQUEST_ABSTRACT(profile->request)->RequestID);

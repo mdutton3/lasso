@@ -149,15 +149,18 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		} else {
 			/* artifact method */
 			char *artifact = lasso_saml20_profile_generate_artifact(profile, 0);
+			char *url_artifact = xmlURIEscapeStr((xmlChar*)artifact, NULL);
 			url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-Artifact");
 			if (login->http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-				gchar *query = g_strdup_printf("SAMLart=%s", artifact);
+				gchar *query = g_strdup_printf("SAMLart=%s", url_artifact);
 				profile->msg_url = lasso_concat_url_query(url, query);
 				g_free(query);
+				g_free(url);
 			} else {
 				/* TODO: ARTIFACT POST */
 			}
+			xmlFree(url_artifact);
 		}
 	}
 
@@ -174,12 +177,23 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	LassoSamlp2AuthnRequest *authn_request;
 	gchar *protocol_binding;
 
-	request = authn_request = lasso_samlp2_authn_request_new();
-	format = lasso_node_init_from_message(request, authn_request_msg);
-	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
-			format == LASSO_MESSAGE_FORMAT_ERROR) {
-		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	if (authn_request_msg == NULL) {
+		if (profile->request == NULL) {
+			return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
+		}
+
+		/* AuthnRequest already set by .._init_idp_initiated_authn_request */
+		request = profile->request;
+	} else {
+		request = lasso_samlp2_authn_request_new();
+		format = lasso_node_init_from_message(request, authn_request_msg);
+		if (format == LASSO_MESSAGE_FORMAT_UNKNOWN ||
+				format == LASSO_MESSAGE_FORMAT_ERROR) {
+			return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+		}
 	}
+
+	authn_request = LASSO_SAMLP2_AUTHN_REQUEST(request);
 
 	profile->request = request;
 	profile->remote_providerID = g_strdup(
@@ -523,9 +537,12 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	artifact = lasso_saml20_profile_generate_artifact(profile, 1);
 	login->assertionArtifact = g_strdup(artifact);
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
-		gchar *query = g_strdup_printf("SAMLart=%s", artifact);
+		gchar *query;
+		char *url_artifact = xmlURIEscapeStr((xmlChar*)artifact, NULL);
+		query = g_strdup_printf("SAMLart=%s", url_artifact);
 		profile->msg_url = lasso_concat_url_query(url, query);
 		g_free(query);
+		xmlFree(url_artifact);
 		/* XXX: RelayState */
 	} else {
 		/* XXX: ARTIFACT POST */
@@ -778,7 +795,9 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	LassoProvider *remote_provider)
 {
 	char *url;
-	LassoSamlp2AuthnRequest *request = LASSO_PROFILE(login)->request;
+	LassoSamlp2AuthnRequest *request;
+	
+	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
 
 	if (request->AssertionConsumerServiceURL) {
 		return g_strdup(request->AssertionConsumerServiceURL);
@@ -793,4 +812,26 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 
 	return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
 }
+
+gint
+lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
+		const gchar *remote_providerID)
+{
+	LassoProfile *profile = LASSO_PROFILE(login);
+	int rc;
+
+	rc = lasso_login_init_authn_request(login, remote_providerID, LASSO_HTTP_METHOD_POST);
+	if (rc)
+		return rc;
+
+	g_free(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID = NULL;
+
+	g_free(LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content);
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Issuer->content =
+		g_strdup(remote_providerID);
+
+	return 0;
+}
+
 
