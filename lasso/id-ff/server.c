@@ -122,12 +122,25 @@ lasso_server_destroy(LassoServer *server)
 	lasso_node_destroy(LASSO_NODE(server));
 }
 
+
+/**
+ * lasso_server_set_encryption_private_key:
+ * @server: a #LassoServer
+ * @file_name: file name of the encryption key to load
+ *
+ * Load an encryption private key from a file and set it in the server object
+ *
+ * Return value: 0 on success; another value if an error occured.
+ **/
 int
 lasso_server_set_encryption_private_key(LassoServer *server, gchar *file_name)
 {
 	LassoPemFileType file_type;
 
-	server->private_data->encryption_private_key = NULL;
+	if (server->private_data->encryption_private_key != NULL) {
+		g_free(server->private_data->encryption_private_key);
+		server->private_data->encryption_private_key = NULL;
+	}
 	file_type = lasso_get_pem_file_type(file_name);
 	if (file_type == LASSO_PEM_FILE_TYPE_PRIVATE_KEY) {
 		server->private_data->encryption_private_key = xmlSecCryptoAppKeyLoad(file_name,
