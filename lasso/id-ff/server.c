@@ -122,8 +122,8 @@ lasso_server_destroy(LassoServer *server)
 	lasso_node_destroy(LASSO_NODE(server));
 }
 
-gboolean
-lasso_set_encryption_private_key(LassoServer *server, gchar *file_name)
+int
+lasso_server_set_encryption_private_key(LassoServer *server, gchar *file_name)
 {
 	LassoPemFileType file_type;
 
@@ -134,7 +134,9 @@ lasso_set_encryption_private_key(LassoServer *server, gchar *file_name)
 			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	}
 
-	return (server->private_data->encryption_private_key != NULL);
+	if (server->private_data->encryption_private_key == NULL)
+		return LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
+	return 0;
 }
 
 

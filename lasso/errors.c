@@ -74,6 +74,8 @@ lasso_strerror(int error_code)
 			return "Failed to add new provider.";
 		case LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH:
 			return "Failed to add new provider (protocol mismatch).";
+		case LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED:
+			return "Failed to load encryption private key.";
 
 		case LASSO_LOGOUT_ERROR_UNSUPPORTED_PROFILE:
 			return "Unsupported protocol profile";

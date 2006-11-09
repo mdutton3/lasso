@@ -96,7 +96,7 @@ LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar
 LASSO_EXPORT LassoDiscoServiceInstance* lasso_server_get_service(LassoServer *server,
 								 gchar *serviceType);
 
-LASSO_EXPORT gboolean lasso_set_encryption_private_key(LassoServer *server, gchar *file_name);
+LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server, gchar *file_name);
 
 #ifdef __cplusplus
 }
