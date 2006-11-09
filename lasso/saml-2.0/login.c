@@ -268,8 +268,9 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 	assertions = lasso_session_get_assertions(profile->session, NULL);
 	if (request->RequestedAuthnContext) {
 		char *comparison = request->RequestedAuthnContext->Comparison;
-		char *class_ref = request->RequestedAuthnContext->AuthnContextClassRef;
-		GList *t3, *t2;
+		GList *class_refs = request->RequestedAuthnContext->AuthnContextClassRef;
+		char *class_ref;
+		GList *t1, *t2, *t3;
 		int compa;
 
 		if (comparison == NULL || strcmp(comparison, "exact") == 0) {
@@ -280,48 +281,56 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		} else if (strcmp(comparison, "better") == 0) {
 			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
 			compa = 0;
+		} else if (strcmp(comparison, "maximum") == 0) {
+			message(G_LOG_LEVEL_CRITICAL, "'maximum' comparison is not implemented");
+			compa = 0;
 		}
 
-		if (class_ref) {
+		if (class_refs) {
 			matched = FALSE;
 		}
 
-		for (t2 = assertions; t2 && !matched; t2 = g_list_next(t2)) {
-			LassoSaml2Assertion *assertion;
-			LassoSaml2AuthnStatement *as = NULL;
-			char *method;
-			GList *t3;
+		for (t1 = class_refs; t1 && !matched; t1 = g_list_next(t1)) {
+			class_ref = t1->data;
+			for (t2 = assertions; t2 && !matched; t2 = g_list_next(t2)) {
+				LassoSaml2Assertion *assertion;
+				LassoSaml2AuthnStatement *as = NULL;
+				char *method;
+				GList *t3;
 
-			if (LASSO_IS_SAML2_ASSERTION(t2->data) == FALSE) {
-				continue;
-			}
-
-			assertion = t2->data;
-
-			for (t3 = assertion->AuthnStatement; t3; t3 = g_list_next(t3)) {
-				if (LASSO_IS_SAML2_AUTHN_STATEMENT(t3->data)) {
-					as = t3->data;
-					break;
+				if (LASSO_IS_SAML2_ASSERTION(t2->data) == FALSE) {
+					continue;
 				}
-			}
 
-			if (as == NULL)
-				continue;
+				assertion = t2->data;
 
-			if (as->AuthnContext == NULL)
-				continue;
-
-			method = as->AuthnContext->AuthnContextClassRef;
-
-			if (compa == 0) { /* exact */
-				if (strcmp(method, class_ref) == 0) {
-					matched = TRUE;
-					break;
+				for (t3 = assertion->AuthnStatement; t3; t3 = g_list_next(t3)) {
+					if (LASSO_IS_SAML2_AUTHN_STATEMENT(t3->data)) {
+						as = t3->data;
+						break;
+					}
 				}
-			} else if (compa == 1) { /* minimum */
-				/* XXX: implement 'minimum' comparison */
-			} else if (compa == 2) { /* better */
-				/* XXX: implement 'better' comparison */
+
+				if (as == NULL)
+					continue;
+
+				if (as->AuthnContext == NULL)
+					continue;
+
+				method = as->AuthnContext->AuthnContextClassRef;
+
+				if (compa == 0) { /* exact */
+					if (strcmp(method, class_ref) == 0) {
+						matched = TRUE;
+						break;
+					}
+				} else if (compa == 1) { /* minimum */
+					/* XXX: implement 'minimum' comparison */
+				} else if (compa == 2) { /* better */
+					/* XXX: implement 'better' comparison */
+				} else if (compa == 3) { /* maximum */
+					/* XXX: implement 'maximum' comparison */
+				}
 			}
 		}
 
