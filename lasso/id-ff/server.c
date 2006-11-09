@@ -33,6 +33,7 @@
 struct _LassoServerPrivate
 {
 	gboolean dispose_has_run;
+	xmlSecKey *encryption_private_key;
 };
 
 /*****************************************************************************/
@@ -119,6 +120,21 @@ void
 lasso_server_destroy(LassoServer *server)
 {
 	lasso_node_destroy(LASSO_NODE(server));
+}
+
+gboolean
+lasso_set_encryption_private_key(LassoServer *server, gchar *file_name)
+{
+	LassoPemFileType file_type;
+
+	server->private_data->encryption_private_key = NULL;
+	file_type = lasso_get_pem_file_type(file_name);
+	if (file_type == LASSO_PEM_FILE_TYPE_PRIVATE_KEY) {
+		server->private_data->encryption_private_key = xmlSecCryptoAppKeyLoad(file_name,
+			xmlSecKeyDataFormatPem, NULL, NULL, NULL);
+	}
+
+	return (server->private_data->encryption_private_key != NULL);
 }
 
 
