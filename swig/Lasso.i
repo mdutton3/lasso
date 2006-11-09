@@ -5119,6 +5119,10 @@ typedef struct {
 			char *caCertChain = NULL);
 	END_THROW_ERROR()
 
+	THROW_ERROR()
+	int setEncryptionPrivateKey(char *file_name);
+	END_THROW_ERROR()
+
 #ifdef LASSO_WSF_ENABLED
 	THROW_ERROR()
 	int addService(LassoDiscoServiceInstance *service);
@@ -5203,6 +5207,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 #define LassoServer_dump lasso_server_dump
 #define LassoServer_getProvider lasso_server_get_provider
 #define LassoServer_getService lasso_server_get_service
+#define LassoServer_setEncryptionPrivateKey lasso_server_set_encryption_private_key
 
 %}
 
