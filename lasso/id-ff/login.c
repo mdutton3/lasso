@@ -1450,9 +1450,15 @@ lasso_login_must_authenticate(LassoLogin *login)
 		for (t1 = class_refs; t1 && !matched; t1 = g_list_next(t1)) {
 			class_ref = t1->data;
 			for (t2 = assertions; t2 && !matched; t2 = g_list_next(t2)) {
-				LassoSamlAssertion *assertion = t2->data;
+				LassoSamlAssertion *assertion;
 				LassoSamlAuthenticationStatement *as;
 				char *method;
+
+				if (LASSO_IS_SAML_ASSERTION(t2->data) == FALSE) {
+					continue;
+				}
+
+				assertion = t2->data;
 
 				as = LASSO_SAML_AUTHENTICATION_STATEMENT(
 						assertion->AuthenticationStatement);
