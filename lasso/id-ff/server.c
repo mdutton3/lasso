@@ -439,6 +439,7 @@ instance_init(LassoServer *server)
 {
 	server->private_data = g_new(LassoServerPrivate, 1);
 	server->private_data->dispose_has_run = FALSE;
+	server->private_data->encryption_private_key = NULL;
 
 	server->providers = g_hash_table_new_full(
 			g_str_hash, g_str_equal, g_free,
