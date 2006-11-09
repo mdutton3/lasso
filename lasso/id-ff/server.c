@@ -138,7 +138,7 @@ lasso_server_set_encryption_private_key(LassoServer *server, gchar *file_name)
 	LassoPemFileType file_type;
 
 	if (server->private_data->encryption_private_key != NULL) {
-		g_free(server->private_data->encryption_private_key);
+		xmlSecKeyDestroy(server->private_data->encryption_private_key);
 		server->private_data->encryption_private_key = NULL;
 	}
 	file_type = lasso_get_pem_file_type(file_name);
