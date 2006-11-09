@@ -3,12 +3,17 @@
 %rename(Samlp2RequestedAuthnContext) LassoSamlp2RequestedAuthnContext;
 #endif
 typedef struct {
-	char *AuthnContextClassRef;
-	char *AuthnContextDeclRef;
+#ifndef SWIGPHP4
+	%rename(comparison) Comparison;
+#endif
 	char *Comparison;
 } LassoSamlp2RequestedAuthnContext;
 %extend LassoSamlp2RequestedAuthnContext {
+	%newobject authnContextClassRef_get;
+	LassoStringList *authnContextClassRef;
 
+	%newobject authnContextDeclRef_get;
+	LassoStringList *authnContextDeclRef;
 
 	/* Constructor, Destructor & Static Methods */
 	LassoSamlp2RequestedAuthnContext();
@@ -20,6 +25,18 @@ typedef struct {
 }
 
 %{
+
+/* authnContextClassRef */
+#define LassoSamlp2RequestedAuthnContext_get_authnContextClassRef(self) get_string_list((self)->AuthnContextClassRef)
+#define LassoSamlp2RequestedAuthnContext_authnContextClassRef_get(self) get_string_list((self)->AuthnContextClassRef)
+#define LassoSamlp2RequestedAuthnContext_set_authnContextClassRef(self, value) set_string_list(&(self)->AuthnContextClassRef, (value))
+#define LassoSamlp2RequestedAuthnContext_authnContextClassRef_set(self, value) set_string_list(&(self)->AuthnContextClassRef, (value))
+
+/* authnContextDeclRef */
+#define LassoSamlp2RequestedAuthnContext_get_authnContextDeclRef(self) get_string_list((self)->AuthnContextDeclRef)
+#define LassoSamlp2RequestedAuthnContext_authnContextDeclRef_get(self) get_string_list((self)->AuthnContextDeclRef)
+#define LassoSamlp2RequestedAuthnContext_set_authnContextDeclRef(self, value) set_string_list(&(self)->AuthnContextDeclRef, (value))
+#define LassoSamlp2RequestedAuthnContext_authnContextDeclRef_set(self, value) set_string_list(&(self)->AuthnContextDeclRef, (value))
 
 
 /* Constructors, destructors & static methods implementations */
