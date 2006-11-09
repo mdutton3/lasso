@@ -60,6 +60,10 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
+			if (use && strcmp(use, "encryption") == 0) {
+				provider->private_data->encryption_key_descriptor = 
+					xmlCopyNode(t, 1);
+			}
 			t = t->next;
 			continue;
 		}

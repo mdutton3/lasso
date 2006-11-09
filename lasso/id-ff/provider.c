@@ -370,10 +370,6 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			if (use && strcmp(use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
 			}
-			if (use && strcmp(use, "encryption") == 0) {
-				provider->private_data->encryption_key_descriptor = 
-					xmlCopyNode(t, 1);
-			}
 			t = t->next;
 			continue;
 		}
@@ -767,8 +763,9 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		key_descriptor = provider->private_data->encryption_key_descriptor;
 	}
 
-	if (public_key == NULL && key_descriptor == NULL)
+	if (public_key == NULL && key_descriptor == NULL) {
 		return FALSE;
+	}
 
 	if (public_key == NULL) {
 		xmlNode *t = key_descriptor->children;
@@ -799,8 +796,9 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 			}
 			t = t->next;
 		}
-		if (t == NULL)
+		if (t == NULL) {
 			return FALSE;
+		}
 
 		b64_value = xmlNodeGetContent(t);
 		length = strlen((char*)b64_value);
