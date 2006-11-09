@@ -256,18 +256,94 @@ gboolean
 lasso_saml20_login_must_authenticate(LassoLogin *login)
 {
 	LassoSamlp2AuthnRequest *request;
+	gboolean matched = TRUE;
+	GList *assertions = NULL;
+	LassoProfile *profile = LASSO_PROFILE(login);
 
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
-	if (request == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
-	}
 
-	/* get IsPassive and ForceAuthn in AuthnRequest if exists */
-	if ((request->ForceAuthn || LASSO_PROFILE(login)->session == NULL) &&
-			request->IsPassive == FALSE)
+	if (request->ForceAuthn == TRUE && request->IsPassive == FALSE)
 		return TRUE;
 
+	assertions = lasso_session_get_assertions(profile->session, NULL);
+	if (request->RequestedAuthnContext) {
+		char *comparison = request->RequestedAuthnContext->Comparison;
+		char *class_ref = request->RequestedAuthnContext->AuthnContextClassRef;
+		GList *t3, *t2;
+		int compa;
+
+		if (comparison == NULL || strcmp(comparison, "exact") == 0) {
+			compa = 0;
+		} else if (strcmp(comparison, "minimum") == 0) {
+			message(G_LOG_LEVEL_CRITICAL, "'minimum' comparison is not implemented");
+			compa = 0;
+		} else if (strcmp(comparison, "better") == 0) {
+			message(G_LOG_LEVEL_CRITICAL, "'better' comparison is not implemented");
+			compa = 0;
+		}
+
+		if (class_ref) {
+			matched = FALSE;
+		}
+
+		for (t2 = assertions; t2 && !matched; t2 = g_list_next(t2)) {
+			LassoSaml2Assertion *assertion;
+			LassoSaml2AuthnStatement *as = NULL;
+			char *method;
+			GList *t3;
+
+			if (LASSO_IS_SAML2_ASSERTION(t2->data) == FALSE) {
+				continue;
+			}
+
+			assertion = t2->data;
+
+			for (t3 = assertion->AuthnStatement; t3; t3 = g_list_next(t3)) {
+				if (LASSO_IS_SAML2_AUTHN_STATEMENT(t3->data)) {
+					as = t3->data;
+					break;
+				}
+			}
+
+			if (as == NULL)
+				continue;
+
+			if (as->AuthnContext == NULL)
+				continue;
+
+			method = as->AuthnContext->AuthnContextClassRef;
+
+			if (compa == 0) { /* exact */
+				if (strcmp(method, class_ref) == 0) {
+					matched = TRUE;
+					break;
+				}
+			} else if (compa == 1) { /* minimum */
+				/* XXX: implement 'minimum' comparison */
+			} else if (compa == 2) { /* better */
+				/* XXX: implement 'better' comparison */
+			}
+		}
+
+	} else {
+		/* if nothing specific was asked; don't look for any
+		 * assertions, a session is enough
+		 */
+		matched = (profile->session != NULL);
+	}
+	g_list_free(assertions);
+
+	if (matched == FALSE && request->IsPassive == FALSE)
+		return TRUE;
+
+	if (profile->identity == NULL && request->IsPassive) {
+		lasso_saml20_profile_set_response_status(LASSO_PROFILE(login),
+				LASSO_SAML2_STATUS_CODE_NO_PASSIVE);
+		return FALSE;
+	}
+
 	return FALSE;
+
 }
 
 static gboolean
