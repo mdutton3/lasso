@@ -432,8 +432,10 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 		response->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 				LASSO_PROVIDER(profile->server)->ProviderID));
 		response->IssueInstant = lasso_get_current_time();
-		response->InResponseTo = g_strdup(
-				LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+		if (profile->request) {
+			response->InResponseTo = g_strdup(
+					LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->ID);
+		}
 		lasso_saml20_profile_set_response_status(profile, 
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
 
@@ -493,8 +495,6 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 	}
 
 	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
-
-
 }
 
 int
