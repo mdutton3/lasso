@@ -941,6 +941,8 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoLogout, initial_response) },
 	{ "InitialRemoteProviderID", SNIPPET_CONTENT,
 		G_STRUCT_OFFSET(LassoLogout, initial_remote_providerID) },
+	{ "InitialHttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
+		G_STRUCT_OFFSET(LassoLogout, initial_http_request_method) },
 	/* "ProviderIdIndex" must not be dumped (since apps assume to get
 	 * it back to 0 after a restore from dump) (maybe this behaviour should
 	 * be fixed)

@@ -381,6 +381,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "MsgUrl", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_url) },
 	{ "MsgBody", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_body) },
 	{ "MsgRelayState", SNIPPET_CONTENT, G_STRUCT_OFFSET(LassoProfile, msg_relayState) },
+	{ "HttpRequestMethod", SNIPPET_CONTENT | SNIPPET_INTEGER,
+		G_STRUCT_OFFSET(LassoProfile, http_request_method) },
 	{ NULL, 0, 0}
 };
 
