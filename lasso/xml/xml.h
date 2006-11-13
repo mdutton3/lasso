@@ -38,6 +38,8 @@ extern "C" {
 #include <libxml/uri.h>
 #include <libxml/tree.h>
 
+#include <xmlsec/xmlenc.h>
+
 #include <lasso/export.h>
 #include <lasso/errors.h>
 #include <lasso/xml/strings.h>
@@ -136,6 +138,8 @@ LASSO_EXPORT char* lasso_node_export_to_query(LassoNode *node,
 		LassoSignatureMethod sign_method, const char *private_key_file);
 
 LASSO_EXPORT char* lasso_node_export_to_soap(LassoNode *node);
+
+LASSO_EXPORT xmlNode* lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key);
 
 LASSO_EXPORT xmlNode* lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump);
 
