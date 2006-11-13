@@ -41,7 +41,7 @@
 
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "EncryptedData", SNIPPET_NODE,
+	{ "EncryptedData", SNIPPET_XMLNODE,
 		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedData) },
 	{ "EncryptedKey", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSaml2EncryptedElement, EncryptedKey) },

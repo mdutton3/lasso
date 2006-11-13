@@ -39,7 +39,6 @@
 #include <lasso/xml/saml-2.0/saml2_audience_restriction.h>
 #include <lasso/xml/saml-2.0/saml2_authn_statement.h>
 
-
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
 static gint lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login);
@@ -497,6 +496,7 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	return 0;
 }
 
+
 int
 lasso_saml20_login_build_assertion(LassoLogin *login,
 		const char *authenticationMethod,
@@ -512,6 +512,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	LassoSaml2NameID *name_id = NULL;
 	LassoSaml2AuthnStatement *authentication_statement;
+	LassoProvider *provider = NULL;
+	xmlNode *encrypted_node = NULL;
+	LassoSaml2EncryptedElement *encrypted_name_id = NULL;
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			                        profile->remote_providerID);
@@ -556,6 +559,21 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		} else {
 			assertion->Subject->NameID = g_object_ref(
 					federation->local_nameIdentifier);
+		}
+	}
+	
+	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+
+	/* If there is a key, encrypt. Maybe there should be another condition ? */
+	if (provider && provider->private_data->encryption_public_key != NULL) {
+		encrypted_node = lasso_node_encrypt(LASSO_NODE(assertion->Subject->NameID),
+			provider->private_data->encryption_public_key);
+		if (encrypted_node != NULL) {
+			encrypted_name_id = LASSO_SAML2_ENCRYPTED_ELEMENT(
+				lasso_saml2_encrypted_element_new());
+			encrypted_name_id->EncryptedData = encrypted_node;
+			assertion->Subject->EncryptedID = encrypted_name_id;
+			assertion->Subject->NameID = NULL;
 		}
 	}
 

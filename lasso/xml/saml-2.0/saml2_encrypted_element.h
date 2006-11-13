@@ -55,7 +55,7 @@ struct _LassoSaml2EncryptedElement {
 
 	/*< public >*/
 	/* elements */
-	/* XXX */ void *EncryptedData;
+	xmlNode *EncryptedData;
 	/* XXX */ void *EncryptedKey;
 };
 

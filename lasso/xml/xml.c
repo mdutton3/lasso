@@ -746,6 +746,9 @@ lasso_node_dispose(GObject *object)
 				case SNIPPET_NODE_IN_CHILD:
 					lasso_node_destroy(*value);
 					break;
+				case SNIPPET_XMLNODE:
+					xmlFreeNode(*value);
+					break;
 				case SNIPPET_EXTENSION:
 				case SNIPPET_LIST_NODES:
 				case SNIPPET_LIST_CONTENT:
@@ -1264,6 +1267,9 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					xmlAddChild(xmlnode, xmlCopyNode(elem->data, 1));
 					elem = g_list_next(elem);
 				}
+				break;
+			case SNIPPET_XMLNODE:
+				xmlAddChild(xmlnode, xmlCopyNode((xmlNode *)value, 1));
 				break;
 			case SNIPPET_SIGNATURE:
 				lasso_node_add_signature_template(node, xmlnode, snippet);
