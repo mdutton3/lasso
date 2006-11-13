@@ -554,7 +554,8 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 						type == SNIPPET_LIST_XMLNODES) {
 					GList **location = value;
 					*location = g_list_append(*location, xmlCopyNode(t, 1));
-				}
+				} else if (type == SNIPPET_XMLNODE)
+					tmp = xmlCopyNode(t, 1);
 
 				if (tmp == NULL)
 					break;
