@@ -388,6 +388,67 @@ static struct XmlSnippet schema_snippets[] = {
 
 static LassoNodeClass *parent_class = NULL;
 
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	xmlNode *xmlnode;
+	LassoProfile *profile = LASSO_PROFILE(node);
+
+	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
+
+	if (profile->private_data->artifact) {
+		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Artifact",
+			profile->private_data->artifact);
+	}
+
+	if (profile->private_data->artifact_message) {
+		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ArtifactMessage",
+			profile->private_data->artifact_message);
+	}
+
+	return xmlnode;
+}
+
+
+static int
+init_from_xml(LassoNode *node, xmlNode *xmlnode)
+{
+	LassoProfile *profile = LASSO_PROFILE(node);
+	xmlNode *t;
+
+	parent_class->init_from_xml(node, xmlnode);
+	
+	if (xmlnode == NULL)
+		return LASSO_ERROR_UNDEFINED;
+
+	t = xmlnode->children;
+	while (t) {
+		xmlNode *t2 = t->children;
+		xmlChar *s;
+
+		if (t->type != XML_ELEMENT_NODE) {
+			t = t->next;
+			continue;
+		}
+
+		if (strcmp((char*)t->name, "Artifact") == 0) {
+			s = xmlNodeGetContent(t);
+			profile->private_data->artifact = g_strdup(s);
+			xmlFree(s);
+		} else if (strcmp((char*)t->name, "ArtifactMessage") == 0) {
+			s = xmlNodeGetContent(t);
+			profile->private_data->artifact_message = g_strdup(s);
+			xmlFree(s);
+		}
+
+		t = t->next;
+	}
+
+	return 0;
+}
+
+
+
 /*****************************************************************************/
 /* overridden parent class methods                                           */
 /*****************************************************************************/
@@ -460,6 +521,8 @@ class_init(LassoProfileClass *klass)
 	lasso_node_class_set_nodename(nclass, "Profile");
 	lasso_node_class_set_ns(nclass, LASSO_LASSO_HREF, LASSO_LASSO_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
+	nclass->get_xmlNode = get_xmlNode;
+	nclass->init_from_xml = init_from_xml;
 
 	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
