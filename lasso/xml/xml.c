@@ -32,6 +32,7 @@
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/templates.h>
 #include <xmlsec/crypto.h>
+#include <xmlsec/xmlenc.h>
 
 #include <lasso/xml/xml.h>
 #include <lasso/xml/saml_name_identifier.h>
@@ -254,6 +255,131 @@ lasso_node_export_to_soap(LassoNode *node)
 	xmlFreeNode(envelope);
 
 	return ret;
+}
+
+xmlNode*
+lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
+{
+	xmlDocPtr doc = NULL;
+	xmlNodePtr orig_node = NULL;
+	xmlNodePtr encrypted_data_node = NULL;
+	xmlSecKeysMngrPtr key_manager = NULL;
+	xmlSecKeyPtr key = NULL;
+	xmlNodePtr key_info_node = NULL;
+	xmlNodePtr encrypted_key_node = NULL;
+	xmlNodePtr key_info_node2 = NULL;
+	xmlSecEncCtxPtr enc_ctx = NULL;
+
+	/* Create a document to contain the node to encrypt */
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	orig_node = lasso_node_get_xmlNode(lasso_node, 1);
+	xmlDocSetRootElement(doc, orig_node);
+
+	/* Create encryption template */
+	encrypted_data_node = xmlSecTmplEncDataCreate(doc, xmlSecTransformDes3CbcId,
+		NULL, xmlSecTypeEncElement, NULL, NULL);
+	if (encrypted_data_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
+		return NULL;
+	}
+
+	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_data_node) == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
+		return NULL;
+	}
+
+	/* create and initialize keys manager, we use a simple list based
+	 * keys manager, implement your own xmlSecKeysStore klass if you need
+	 * something more sophisticated 
+	 */
+	key_manager = xmlSecKeysMngrCreate();
+	if (key_manager == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create keys manager");
+		return NULL;
+	}
+
+	if (xmlSecCryptoAppDefaultKeysMngrInit(key_manager) < 0) {
+		message(G_LOG_LEVEL_WARNING, "Failed to initialize keys manager");
+		xmlSecKeysMngrDestroy(key_manager);
+		return NULL;
+	}
+
+	/* add key to keys manager, from now on keys manager is responsible 
+	 * for destroying key 
+	 */
+	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
+		xmlSecKeysMngrDestroy(key_manager);
+		return NULL;
+	}
+
+	/* add <dsig:KeyInfo/> */
+	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_data_node, NULL);
+	if (key_info_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
+		return NULL;
+	}
+
+	/* add <enc:EncryptedKey/> to store the encrypted session key */
+	encrypted_key_node = xmlSecTmplKeyInfoAddEncryptedKey(key_info_node,
+		xmlSecTransformRsaPkcs1Id, NULL, NULL, NULL);
+	if (encrypted_key_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
+		return NULL;
+	}
+
+	/* we want to put encrypted key in the <enc:CipherValue/> node */
+	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_key_node) == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
+		return NULL;
+	}
+
+	/* add <dsig:KeyInfo/> and <dsig:KeyName/> nodes to <enc:EncryptedKey/> */
+	key_info_node2 = xmlSecTmplEncDataEnsureKeyInfo(encrypted_key_node, NULL);
+	if (key_info_node2 == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
+		return NULL;
+	}
+    
+	/* set key name so we can lookup key when needed */
+/* 	if (xmlSecTmplKeyInfoAddKeyName(key_info_node2, "this is the key name") == NULL) { */
+/* 		message(G_LOG_LEVEL_WARNING, "Failed to add key name"); */
+/* 		return NULL; */
+/* 	} */
+
+	/* create encryption context */
+	enc_ctx = (xmlSecEncCtxPtr)xmlSecEncCtxCreate(key_manager);
+	if (enc_ctx == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
+		return NULL;
+	}
+
+	/* generate a Triple DES key */
+	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192, xmlSecKeyDataTypeSession);
+	if (enc_ctx->encKey == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to generate session des key");
+		return NULL;
+	}
+
+	/* encrypt the data */
+	if(xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data_node, orig_node) < 0) {
+		message(G_LOG_LEVEL_WARNING, "Encryption failed");
+		return NULL;
+	}
+	
+	/* cleanup */
+	if(enc_ctx != NULL) {
+		xmlSecEncCtxDestroy(enc_ctx);
+	}
+
+/* 	if (encrypted_data_node != NULL) { */
+/* 		xmlFreeNode(encrypted_data_node); */
+/* 	} */
+
+/* 	if (doc != NULL) { */
+/* 		xmlFreeDoc(doc); */
+/* 	} */
+
+	return encrypted_data_node;
 }
 
 
