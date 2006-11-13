@@ -72,6 +72,12 @@ SNIPPET_LIST_XMLNODES
     <Value-3/>
   </Parent>
 
+SNIPPET_XMLNODE
+
+  <Parent>
+    <Value/>
+  </Parent>
+
 
 SNIPPET_EXTENSION
 
