@@ -781,6 +781,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	if (LASSO_SAMLP2_RESPONSE(response)->Assertion) {
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
+		if (profile->remote_providerID == NULL)
+			return LASSO_ERROR_UNDEFINED;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL)
 			return LASSO_ERROR_UNDEFINED;
@@ -793,7 +795,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 		profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
-
+		
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
 			return LASSO_ERROR_UNDEFINED;
 	}
