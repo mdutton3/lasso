@@ -5718,7 +5718,7 @@ typedef struct {
 	%immutable msgBody;
 	char *msgBody;
 
-	%immutable msgRelayState;
+	/*%immutable msgRelayState;*/
 	char *msgRelayState;
 
 	%immutable msgUrl;
@@ -5879,6 +5879,8 @@ typedef struct {
 /* msgRelayState */
 #define LassoLogin_get_msgRelayState(self) LASSO_PROFILE(self)->msg_relayState
 #define LassoLogin_msgRelayState_get(self) LASSO_PROFILE(self)->msg_relayState
+#define LassoLogin_set_msgRelayState(self, value) set_string(&LASSO_PROFILE(self)->msg_relayState, (value))
+#define LassoLogin_msgRelayState_set(self, value) set_string(&LASSO_PROFILE(self)->msg_relayState, (value))
 
 /* msgUrl */
 #define LassoLogin_get_msgUrl(self) LASSO_PROFILE(self)->msg_url

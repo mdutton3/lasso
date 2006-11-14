@@ -329,4 +329,96 @@ int LassoNameIdManagement_setSessionFromDump(LassoNameIdManagement *self, char *
 
 %}
 
+/***********************************************************************
+ * lasso:Ecp
+ ***********************************************************************/
 
+
+#ifndef SWIGPHP4
+%rename(Ecp) LassoEcp;
+#endif
+typedef struct {
+} LassoEcp;
+%extend LassoEcp {
+	%immutable msgBody;
+	char *msgBody;
+
+	%immutable msgRelayState;
+	char *msgRelayState;
+
+	%immutable msgUrl;
+	char *msgUrl;
+
+	%newobject request_get;
+	LassoNode *request;
+
+	%newobject response_get;
+	LassoNode *response;
+
+	%immutable assertionConsumerURL;
+	char *assertionConsumerURL;
+
+	/* Constructor, Destructor & Static Methods */
+
+	LassoEcp();
+
+	~LassoEcp();
+
+	/* Methods inherited from Profile */
+
+	/* Methods */
+
+	THROW_ERROR()
+	int processAuthnRequestMsg(char *authnRequestMsg);
+	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processResponseMsg(char *responseMsg);
+	END_THROW_ERROR()
+
+}
+
+%{
+
+/* Implementations of attributes inherited from Profile */
+
+/* msgBody */
+#define LassoEcp_get_msgBody(self) LASSO_PROFILE(self)->msg_body
+#define LassoEcp_msgBody_get(self) LASSO_PROFILE(self)->msg_body
+
+/* msgRelayState */
+#define LassoEcp_get_msgRelayState(self) LASSO_PROFILE(self)->msg_relayState
+#define LassoEcp_msgRelayState_get(self) LASSO_PROFILE(self)->msg_relayState
+
+/* msgUrl */
+#define LassoEcp_get_msgUrl(self) LASSO_PROFILE(self)->msg_url
+#define LassoEcp_msgUrl_get(self) LASSO_PROFILE(self)->msg_url
+
+/* request */
+#define LassoEcp_get_request(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoEcp_request_get(self) get_node(LASSO_PROFILE(self)->request)
+#define LassoEcp_set_request(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+#define LassoEcp_request_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->request, (value))
+
+/* response */
+#define LassoEcp_get_response(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoEcp_response_get(self) get_node(LASSO_PROFILE(self)->response)
+#define LassoEcp_set_response(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+#define LassoEcp_response_set(self, value) set_node((gpointer *) &LASSO_PROFILE(self)->response, (value))
+
+/* assertionConsumerURL */
+#define LassoEcp_get_assertionConsumerURL(self) self->assertionConsumerURL
+#define LassoEcp_assertionConsumerURL_get(self) self->assertionConsumerURL
+
+/* Constructors, destructors & static methods implementations */
+
+#define new_LassoEcp lasso_ecp_new
+#define delete_LassoEcp(self) lasso_node_destroy(LASSO_NODE(self))
+
+/* Implementations of methods inherited from Profile */
+
+/* Methods implementations */
+#define LassoEcp_processAuthnRequestMsg lasso_ecp_process_authn_request_msg
+#define LassoEcp_processResponseMsg lasso_ecp_process_response_msg
+
+%}
