@@ -22,6 +22,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
+#include <xmlsec/xmltree.h>
+#include <xmlsec/xmldsig.h>
+#include <xmlsec/templates.h>
+#include <xmlsec/crypto.h>
+
 #include <lasso/id-wsf/wsf_profile.h>
 #include <lasso/xml/disco_modify.h>
 #include <lasso/xml/soap_fault.h>
@@ -37,11 +45,6 @@
 #include <lasso/id-ff/server.h>
 #include <lasso/id-ff/providerprivate.h>
 
-#include <xmlsec/xmltree.h>
-#include <xmlsec/xmldsig.h>
-#include <xmlsec/templates.h>
-#include <xmlsec/crypto.h>
-
 struct _LassoWsfProfilePrivate
 {
 	gboolean dispose_has_run;
@@ -50,6 +53,9 @@ struct _LassoWsfProfilePrivate
 	gchar *public_key;
 	GList *credentials;
 };
+
+gint lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
+		xmlDoc *doc, xmlSecKey *public_key);
 
 /*****************************************************************************/
 /* private methods                                                           */
@@ -200,13 +206,13 @@ lasso_wsf_profile_verify_credential_signature(LassoWsfProfile *profile,
 
 	xmlSecDSigCtx *dsigCtx;
 
-	char *issuer;
+	xmlChar *issuer;
 
 	/* Retrieve provider id of credential signer . Issuer could be the right place */
-	issuer = xmlGetProp(credential, "Issuer");
+	issuer = xmlGetProp(credential, (xmlChar*)"Issuer");
 	if (!issuer)
 		return LASSO_ERROR_UNDEFINED;
-	lasso_provider = lasso_server_get_provider(profile->server, issuer);
+	lasso_provider = lasso_server_get_provider(profile->server, (char*)issuer);
 	if (!lasso_provider)
 		return LASSO_ERROR_UNDEFINED;
 
@@ -272,8 +278,7 @@ lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
 					   xmlDoc *doc, xmlNode *credential,
 					   LassoSignatureMethod sign_method)
 {
-	xmlNode *signature = NULL, *sign_tmpl, *reference, *key_info, *t;
-	xmlChar *id;
+	xmlNode *signature = NULL, *sign_tmpl, *reference, *key_info;
 	char *uri;
 	
 	xmlAttr *id_attr;
@@ -348,7 +353,7 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 	authentication_statement = credential->children;
 	while (authentication_statement) {
 		if (authentication_statement->type == XML_ELEMENT_NODE && \
-		    strcmp(authentication_statement->name, "AuthenticationStatement") == 0)
+		    strcmp((char*)authentication_statement->name, "AuthenticationStatement") == 0)
 			break;
 		authentication_statement = authentication_statement->next;
 	}
@@ -359,7 +364,8 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 	/* get Subject element */
 	subject = authentication_statement->children;
 	while (subject) {
-		if (subject->type == XML_ELEMENT_NODE && strcmp(subject->name, "Subject") == 0)
+		if (subject->type == XML_ELEMENT_NODE &&
+				strcmp((char*)subject->name, "Subject") == 0)
 			break;
 		subject = subject->next;
 	}
@@ -370,8 +376,8 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 	/* get SubjectConfirmation */
 	subject_confirmation = subject->children;
 	while (subject_confirmation) {
-		if (subject_confirmation->type == XML_ELEMENT_NODE && \
-		    strcmp(subject_confirmation->name, "SubjectConfirmation") == 0)
+		if (subject_confirmation->type == XML_ELEMENT_NODE &&
+		    strcmp((char*)subject_confirmation->name, "SubjectConfirmation") == 0)
 			break;
 		subject_confirmation = subject_confirmation->next;
 	}
@@ -382,7 +388,8 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 	/* get KeyInfo */
 	key_info = subject_confirmation->children;
 	while (key_info) {
-		if (key_info->type == XML_ELEMENT_NODE && strcmp(key_info->name, "KeyInfo") == 0)
+		if (key_info->type == XML_ELEMENT_NODE &&
+				strcmp((char*)key_info->name, "KeyInfo") == 0)
 			break;
 		key_info = key_info->next;
 	}
@@ -402,45 +409,46 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 
 	{
 		xmlDoc *doc;
-		char *modulus_value, *exponent_value;
+		xmlChar *modulus_value, *exponent_value;
 		xmlNode *rsa_key_value, *xmlnode, *modulus, *exponent;
 
 		xmlnode = key_info->children;
 		while (xmlnode) {
-			if (strcmp(xmlnode->name, "KeyValue") == 0) {
+			if (strcmp((char*)xmlnode->name, "KeyValue") == 0) {
 				break;
 			}
 			xmlnode = xmlnode->next;
 		}
 		rsa_key_value = xmlnode->children;
 		while (rsa_key_value) {
-			if (strcmp(rsa_key_value->name, "RsaKeyValue") == 0) {
+			if (strcmp((char*)rsa_key_value->name, "RsaKeyValue") == 0) {
 				break;
 			}
 			rsa_key_value = rsa_key_value->next;
 		}
 		xmlnode = rsa_key_value->children;
 		while (xmlnode) {
-			if (strcmp(xmlnode->name, "Modulus") == 0)
+			if (strcmp((char*)xmlnode->name, "Modulus") == 0)
 				modulus_value = xmlNodeGetContent(xmlnode);
-			else if (strcmp(xmlnode->name, "Exponent") == 0)
+			else if (strcmp((char*)xmlnode->name, "Exponent") == 0)
 				exponent_value = xmlNodeGetContent(xmlnode);
 			xmlnode = xmlnode->next;
 		}
 		
-		doc = xmlSecCreateTree("KeyInfo", "http://www.w3.org/2000/09/xmldsig#");
+		doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 		key_info = xmlDocGetRootElement(doc);
 
-		xmlnode = xmlSecAddChild(key_info,
-					 "KeyValue", "http://www.w3.org/2000/09/xmldsig#");
-		xmlnode = xmlSecAddChild(xmlnode,
-					 "RSAKeyValue", "http://www.w3.org/2000/09/xmldsig#");
-		modulus = xmlSecAddChild(xmlnode,
-					 "Modulus", "http://www.w3.org/2000/09/xmldsig#");
+		xmlnode = xmlSecAddChild(key_info, (xmlChar*)"KeyValue",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+		xmlnode = xmlSecAddChild(xmlnode, (xmlChar*)"RSAKeyValue",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
+		modulus = xmlSecAddChild(xmlnode, (xmlChar*)"Modulus",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 		xmlNodeSetContent(modulus, modulus_value);
 		
-		exponent = xmlSecAddChild(xmlnode,
-					  "Exponent", "http://www.w3.org/2000/09/xmldsig#");
+		exponent = xmlSecAddChild(xmlnode, (xmlChar*)"Exponent",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 		xmlNodeSetContent(exponent, exponent_value);
 	}
 	
@@ -457,7 +465,7 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	xmlXPathObject *xpathObj;
 	xmlNode *credential;
 	xmlSecKey *public_key;
-	int i, res;
+	int res;
 
 	xpathCtx = xmlXPathNewContext(doc);
 
@@ -502,10 +510,7 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile, xmlDoc *doc, xmlN
 	xmlSecDSigCtx *dsigCtx;
 	xmlChar *id;
 	char *uri;
-	
 	xmlAttr *id_attr;
-
-	LassoSignatureType sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 
 	/* Get Correlation, Provider, Security, Body elements */
 	t = envelope_node->children;
@@ -625,8 +630,8 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 {
 	LassoProvider *lasso_provider = NULL;
 
-	xmlNode *provider = NULL, *correlation = NULL, *security = NULL, *body = NULL;
-	xmlNode *signature = NULL, *x509data = NULL, *node;
+	xmlNode *provider = NULL, *correlation = NULL, *body = NULL;
+	xmlNode *x509data = NULL, *node;
 	xmlChar *id;
 	xmlAttr *id_attr;
 
@@ -1064,9 +1069,11 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 				
 				/* FIXME: not sure it's the proper way to avoid ns error */
 				xmlNewNs(envelope_node,
-				 LASSO_SAML_ASSERTION_HREF, LASSO_SAML_ASSERTION_PREFIX);
+						(xmlChar*)LASSO_SAML_ASSERTION_HREF,
+						(xmlChar*)LASSO_SAML_ASSERTION_PREFIX);
 				xmlNewNs(envelope_node,
-					 LASSO_DS_HREF, LASSO_DS_PREFIX);
+						(xmlChar*)LASSO_DS_HREF,
+						(xmlChar*)LASSO_DS_PREFIX);
 				
 				while (iter) {
 					credential = (xmlNode *) iter->data;
@@ -1110,12 +1117,9 @@ lasso_wsf_profile_ensure_soap_credentials_signature(LassoWsfProfile *profile,
 						    xmlDoc *doc,
 						    xmlNode *soap_envelope)
 {
-	int i;
-	xmlNode *credential;
-	GList *iter;
-	
 	xmlXPathContext *xpathCtx = NULL;
 	xmlXPathObject *xpathObj;
+	int i;
 
 	xpathCtx = xmlXPathNewContext(doc);
 
@@ -1141,9 +1145,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	LassoSoapHeader *header;
 	LassoWsseSecurity *security;
 
-	xmlNode *soap_envelope, *credential;
-	gchar *credentialRef;
-	GList *iter;
+	xmlNode *soap_envelope;
 
 	xmlDoc *doc;
 
@@ -1198,7 +1200,6 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	LassoSoapBindingCorrelation *correlation;
 	LassoSoapEnvelope *envelope = NULL;
 	LassoSoapFault *fault = NULL;
-	GList *iter;
 	gchar *messageId;
 	int res = 0;
 	xmlDoc *doc;

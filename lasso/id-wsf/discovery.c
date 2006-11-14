@@ -22,6 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
 #include <xmlsec/xmltree.h>
 
 #include <lasso/xml/soap_binding_correlation.h>
@@ -143,15 +146,17 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 		ctx->mode = xmlSecKeyInfoModeWrite;
 		ctx->keyReq.keyType = xmlSecKeyDataTypePublic;
 
-		doc = xmlSecCreateTree("KeyInfo", "http://www.w3.org/2000/09/xmldsig#");
+		doc = xmlSecCreateTree((xmlChar*)"KeyInfo",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 		key_info_node = xmlDocGetRootElement(doc);
-		xmlSecAddChild(key_info_node,
-			       "KeyValue", "http://www.w3.org/2000/09/xmldsig#");
+		xmlSecAddChild(key_info_node, (xmlChar*)"KeyValue",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 
 		xmlSecKeyInfoNodeWrite(key_info_node, public_key, ctx);
 
 		xpathCtx = xmlXPathNewContext(doc);
-		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds", "http://www.w3.org/2000/09/xmldsig#");
+		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds",
+				(xmlChar*)"http://www.w3.org/2000/09/xmldsig#");
 
 		rsa_key_value = lasso_ds_rsa_key_value_new();
 		xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Modulus", xpathCtx);
@@ -811,10 +816,8 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 	LassoDiscoQueryResponse *response;
 	LassoSoapEnvelope *envelope;
 
-	LassoSoapBindingProvider *provider = NULL;
-
 	GList *offerings = NULL;
-	GList *iter, *iter2, *iter3, *iter4;
+	GList *iter, *iter2, *iter3;
 	int res = 0;
 	
 	gchar *credentialRef;

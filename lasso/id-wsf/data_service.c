@@ -61,6 +61,7 @@ lasso_data_service_add_credential(LassoDataService *service,
 	service->private_data->credentials = g_list_append(
 		service->private_data->credentials,
 		g_object_ref(assertion));
+	return 0;
 }
 
 LassoDstModification*
@@ -126,12 +127,7 @@ lasso_data_service_add_query_item(LassoDataService *service,
 gint
 lasso_data_service_need_redirect_user(LassoDataService *service, const char *redirectUrl)
 {
-	LassoWsfProfile *profile;
-	LassoSoapBody *body;
-	LassoSoapFault *fault;
-	LassoUtilityStatus *status;
 	LassoSoapDetail *detail;
-	GList *iter;
 
 	/* Find a SOAP fault element */
 	service->private_data->fault = lasso_soap_fault_new();
@@ -589,7 +585,6 @@ lasso_data_service_process_query_response_msg(LassoDataService *service,
 	const char *message)
 {
 	int rc;
-	LassoDstQueryResponse *response;
 	LassoSoapFault *fault = NULL;
 	LassoIsRedirectRequest *redirect_request = NULL;
 	GList *iter;

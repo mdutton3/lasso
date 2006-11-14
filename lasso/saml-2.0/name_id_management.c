@@ -23,6 +23,10 @@
  */
 
 #include <lasso/saml-2.0/name_id_management.h>
+#include <lasso/saml-2.0/providerprivate.h>
+#include <lasso/saml-2.0/profileprivate.h>
+#include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/identityprivate.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -129,9 +133,6 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 {
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
-	LassoFederation *federation;
-	LassoSaml2NameID *name_id, *name_id_n;
-	LassoSamlp2RequestAbstract *request;
 
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management), -1);
 

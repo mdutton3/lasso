@@ -398,12 +398,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 
 	if (profile->private_data->artifact) {
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"Artifact",
-			profile->private_data->artifact);
+			(xmlChar*)profile->private_data->artifact);
 	}
 
 	if (profile->private_data->artifact_message) {
 		xmlNewTextChild(xmlnode, NULL, (xmlChar*)"ArtifactMessage",
-			profile->private_data->artifact_message);
+			(xmlChar*)profile->private_data->artifact_message);
 	}
 
 	return xmlnode;
@@ -423,7 +423,6 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 	t = xmlnode->children;
 	while (t) {
-		xmlNode *t2 = t->children;
 		xmlChar *s;
 
 		if (t->type != XML_ELEMENT_NODE) {
@@ -433,11 +432,11 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 
 		if (strcmp((char*)t->name, "Artifact") == 0) {
 			s = xmlNodeGetContent(t);
-			profile->private_data->artifact = g_strdup(s);
+			profile->private_data->artifact = g_strdup((char*)s);
 			xmlFree(s);
 		} else if (strcmp((char*)t->name, "ArtifactMessage") == 0) {
 			s = xmlNodeGetContent(t);
-			profile->private_data->artifact_message = g_strdup(s);
+			profile->private_data->artifact_message = g_strdup((char*)s);
 			xmlFree(s);
 		}
 

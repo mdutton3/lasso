@@ -22,6 +22,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/saml-2.0/loginprivate.h>
 #include <lasso/saml-2.0/profileprivate.h>
@@ -161,7 +164,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		} else {
 			/* artifact method */
 			char *artifact = lasso_saml20_profile_generate_artifact(profile, 0);
-			char *url_artifact = xmlURIEscapeStr((xmlChar*)artifact, NULL);
+			char *url_artifact = (char*)xmlURIEscapeStr((xmlChar*)artifact, NULL);
 			url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-Artifact");
 			if (login->http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
@@ -286,7 +289,7 @@ lasso_saml20_login_must_authenticate(LassoLogin *login)
 		char *comparison = request->RequestedAuthnContext->Comparison;
 		GList *class_refs = request->RequestedAuthnContext->AuthnContextClassRef;
 		char *class_ref;
-		GList *t1, *t2, *t3;
+		GList *t1, *t2;
 		int compa;
 
 		if (comparison == NULL || strcmp(comparison, "exact") == 0) {
@@ -659,7 +662,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	login->assertionArtifact = g_strdup(artifact);
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		gchar *query;
-		char *url_artifact = xmlURIEscapeStr((xmlChar*)artifact, NULL);
+		char *url_artifact = (char*)xmlURIEscapeStr((xmlChar*)artifact, NULL);
 		query = g_strdup_printf("SAMLart=%s", url_artifact);
 		profile->msg_url = lasso_concat_url_query(url, query);
 		g_free(query);
@@ -818,7 +821,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		LASSO_PROFILE(login)->msg_relayState = xmlNodeGetContent(xmlnode);
+		LASSO_PROFILE(login)->msg_relayState = (char*)xmlNodeGetContent(xmlnode);
 	}
 
 	profile->response = response;
@@ -1008,7 +1011,6 @@ static char*
 lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	LassoProvider *remote_provider)
 {
-	char *url;
 	LassoSamlp2AuthnRequest *request;
 	
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);

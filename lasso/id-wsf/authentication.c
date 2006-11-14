@@ -69,7 +69,7 @@ lasso_sasl_cb_pass(sasl_conn_t* conn, void* context, int id, sasl_secret_t** pse
 	if (account != NULL && account->password != NULL) {
 		s = (sasl_secret_t*) g_malloc0(sizeof(sasl_secret_t) + strlen(account->password));
 
-		strcpy(s->data, account->password);
+		strcpy((char*)s->data, account->password);
 		s->len = strlen(account->password);
 
 		*psecret = s;
@@ -114,7 +114,7 @@ lasso_authentication_client_start(LassoAuthentication *authentication)
 	}
        
 	if (outlen > 0) {
-		outbase64 = xmlSecBase64Encode(out, outlen, 0);
+		outbase64 = xmlSecBase64Encode((xmlChar*)out, outlen, 0);
 		request->Data = g_list_append(request->Data, outbase64);
 	}
 
@@ -143,8 +143,8 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 
 	if (response->Data != NULL) {
 		inbase64 = response->Data->data;
-		in = g_malloc(strlen(inbase64));
-		inlen = xmlSecBase64Decode(inbase64, in, strlen(inbase64));
+		in = g_malloc(strlen((char*)inbase64));
+		inlen = xmlSecBase64Decode(inbase64, in, strlen((char*)inbase64));
 
 		res = sasl_client_step(authentication->connection, /* our context */
 				       in,    /* the data from the server */

@@ -115,6 +115,10 @@ LASSO_EXPORT LassoWsfProfile* lasso_wsf_profile_new(LassoServer *server);
 
 LASSO_EXPORT gboolean lasso_wsf_profile_principal_is_online(LassoWsfProfile *profile);
 
+LASSO_EXPORT gint lasso_wsf_profile_add_credential(LassoWsfProfile *profile, xmlNode *credential);
+
+LASSO_EXPORT void lasso_wsf_profile_set_description(LassoWsfProfile *profile,
+		LassoDiscoDescription *description);
 LASSO_EXPORT void lasso_wsf_profile_set_principal_status(LassoWsfProfile *profile,
 							 const char *status);
 

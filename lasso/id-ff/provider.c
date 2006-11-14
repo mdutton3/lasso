@@ -808,8 +808,8 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		if (rc < 0) {
 			/* bad base-64 */
 			g_free(value);
-			value = g_strdup(b64_value);
-			rc = strlen(value);
+			value = (xmlSecByte*)g_strdup((char*)b64_value);
+			rc = strlen((char*)value);
 		}
 
 		for (i=0; key_formats[i] && pub_key == NULL; i++) {

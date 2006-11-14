@@ -34,6 +34,7 @@ extern "C" {
 gint lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_provider,
 		LassoHttpMethod http_method);
 gint lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *remote_provider);
+gint lasso_saml20_login_build_authn_response_msg(LassoLogin *login);
 gint lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *authn_request_msg);
 gboolean lasso_saml20_login_must_authenticate(LassoLogin *login);
 gboolean lasso_saml20_login_must_ask_for_consent(LassoLogin *login);
