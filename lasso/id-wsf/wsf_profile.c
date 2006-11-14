@@ -1163,7 +1163,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 
 	/* Apply wsf authentication */
 	doc = xmlNewDoc((xmlChar*)"1.0");
-	soap_envelope = lasso_node_get_xmlNode(envelope, TRUE);
+	soap_envelope = lasso_node_get_xmlNode(LASSO_NODE(envelope), TRUE);
 	xmlDocSetRootElement(doc, soap_envelope);
 
 	/* SAML authentication, if credentials in response, verify they are signed */
