@@ -126,7 +126,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	xmlNode *envelope, *new_envelope, *header, *poas_response, *ecp_relay_state
+	xmlNode *envelope, *new_envelope, *header, *poas_response, *ecp_relay_state;
 	xmlNode *body = NULL;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
