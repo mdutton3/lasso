@@ -188,6 +188,140 @@ lasso_node_export_to_base64(LassoNode *node)
 }
 
 /**
+ * lasso_node_export_to_ecp_soap_response:
+ * @node: a #LassoNode
+ * 
+ * Exports @node to a ECP SOAP message.
+ * 
+ * Return value: a ECP SOAP export of @node.  The string must be freed by the
+ *      caller.
+ **/
+char*
+lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionConsumerURL)
+{
+	xmlNode *envelope, *body, *message, *header, *ecp_response;
+	xmlNs *soap_env_ns, *ecp_ns;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
+	char *ret;
+
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	message = lasso_node_get_xmlNode(node, FALSE);
+
+	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
+	soap_env_ns = xmlNewNs(envelope,
+				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
+	xmlSetNs(envelope, soap_env_ns);
+
+	header = xmlNewTextChild(envelope, NULL, (xmlChar*)"Header", NULL);
+
+	/* ECP response header block */
+	ecp_response = xmlNewNode(NULL, (xmlChar*)"Response");
+	ecp_ns = xmlNewNs(ecp_response, (xmlChar*)LASSO_ECP_HREF, (xmlChar*)LASSO_ECP_PREFIX);
+	xmlSetNs(ecp_response, ecp_ns);
+	xmlSetNsProp(ecp_response, soap_env_ns, "mustUnderstand", "1");
+	xmlSetNsProp(ecp_response, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	xmlSetProp(ecp_response, "AssertionConsumerURL", assertionConsumerURL);
+	xmlAddChild(header, ecp_response);
+
+	/* Body block */
+	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
+	xmlAddChild(body, message);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	ret = g_strdup( (char*)(buf->conv ? buf->conv->content : buf->buffer->content) );
+	xmlOutputBufferClose(buf);
+
+	xmlFreeNode(envelope);
+
+	return ret;
+}
+
+/**
+ * lasso_node_export_to_poas_request:
+ * @node: a #LassoNode
+ * 
+ * Exports @node to a PAOS message.
+ * 
+ * Return value: a POAS export of @node.  The string must be freed by the
+ *      caller.
+ **/
+char*
+lasso_node_export_to_poas_request(LassoNode *node, const char *issuer,
+				  const char *responseConsumerURL, const char *relay_state)
+{
+	xmlNode *envelope, *body, *header, *poas_request, *ecp_request, *ecp_relay_state, *message;
+	xmlNs *soap_env_ns, *saml_ns, *ecp_ns;
+	xmlOutputBuffer *buf;
+	xmlCharEncodingHandler *handler;
+	char *ret;
+
+	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
+
+	message = lasso_node_get_xmlNode(node, FALSE);
+
+	envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
+	soap_env_ns = xmlNewNs(envelope,
+				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
+	xmlSetNs(envelope, soap_env_ns);
+
+	header = xmlNewTextChild(envelope, NULL, (xmlChar*)"Header", NULL);
+
+	/* POAS request header block */
+	poas_request = xmlNewNode(NULL, (xmlChar*)"Request");
+	xmlSetNs(poas_request, xmlNewNs(poas_request,
+					(xmlChar*)LASSO_POAS_HREF, (xmlChar*)LASSO_POAS_PREFIX));
+	xmlSetProp(poas_request, "service", LASSO_POAS_HREF);
+	xmlSetNsProp(poas_request, soap_env_ns, "mustUnderstand", "1");
+	xmlSetNsProp(poas_request, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	xmlAddChild(header, poas_request);
+
+	/* ECP request header block */
+	ecp_request = xmlNewNode(NULL, (xmlChar*)"Request");
+	ecp_ns = xmlNewNs(ecp_request, (xmlChar*)LASSO_ECP_HREF, (xmlChar*)LASSO_ECP_PREFIX);
+	xmlSetNs(ecp_request, ecp_ns);
+	xmlSetProp(ecp_request, "responseConsumerURL", responseConsumerURL);
+	xmlSetNsProp(ecp_request, soap_env_ns, "mustUnderstand", "1");
+	xmlSetNsProp(ecp_request, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	saml_ns = xmlNewNs(ecp_request,
+				(xmlChar*)LASSO_SAML_ASSERTION_HREF,
+				(xmlChar*)LASSO_SAML_ASSERTION_PREFIX);
+	xmlNewTextChild(ecp_request, saml_ns, (xmlChar*)"Issuer", issuer);
+	xmlAddChild(header, ecp_request);
+    
+	/* ECP relay state block */
+	if (relay_state) {
+		ecp_relay_state = xmlNewNode(NULL, (xmlChar*)"RelayState");
+		xmlNodeSetContent(ecp_relay_state, relay_state);
+		ecp_ns = xmlNewNs(ecp_relay_state, (xmlChar*)LASSO_ECP_HREF,
+					(xmlChar*)LASSO_ECP_PREFIX);
+		xmlSetNs(ecp_relay_state, ecp_ns);
+		xmlSetNsProp(ecp_relay_state, soap_env_ns, "mustUnderstand", "1");
+		xmlSetNsProp(ecp_relay_state, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+		xmlAddChild(header, ecp_relay_state);
+	}
+
+	/* Body block */
+	body = xmlNewTextChild(envelope, NULL, (xmlChar*)"Body", NULL);
+	xmlAddChild(body, message);
+
+	handler = xmlFindCharEncodingHandler("utf-8");
+	buf = xmlAllocOutputBuffer(handler);
+	xmlNodeDumpOutput(buf, NULL, envelope, 0, 0, "utf-8");
+	xmlOutputBufferFlush(buf);
+	ret = g_strdup( (char*)(buf->conv ? buf->conv->content : buf->buffer->content) );
+	xmlOutputBufferClose(buf);
+
+	xmlFreeNode(envelope);
+
+	return ret;
+}
+
+/**
  * lasso_node_export_to_query:
  * @node: a #LassoNode
  * @sign_method: the Signature transform method
