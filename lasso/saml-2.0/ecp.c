@@ -126,7 +126,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	xmlNode *envelope, *new_envelope, *header, *poas_response, *ecp_relay_state;
+	xmlNode *envelope, *new_envelope, *header, *paos_response, *ecp_relay_state;
 	xmlNode *body = NULL;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
@@ -153,21 +153,21 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	new_envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
 	xmlSetNs(new_envelope, xmlNewNs(new_envelope,
 		(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX));
-	xmlNewNs(poas_response,
-		(xmlChar*)LASSO_POAS_HREF, (xmlChar*)LASSO_POAS_PREFIX);
+	xmlNewNs(paos_response,
+		(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX);
 	xmlNewNs(new_envelope,
 		(xmlChar*)LASSO_SAML_ASSERTION_HREF, (xmlChar*)LASSO_SAML_ASSERTION_PREFIX);
 	header = xmlNewTextChild(new_envelope, NULL, (xmlChar*)"Header", NULL);
 
-	/* POAS request header block */
+	/* PAOS request header block */
 	soap_env_ns = xmlNewNs(envelope,
 				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
-	poas_response = xmlNewNode(NULL, (xmlChar*)"Response");
-	xmlSetNs(poas_response, xmlNewNs(poas_response,
-				(xmlChar*)LASSO_POAS_HREF, (xmlChar*)LASSO_POAS_PREFIX));
-	xmlSetNsProp(poas_response, soap_env_ns, "mustUnderstand", "1");
-	xmlSetNsProp(poas_response, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
-	xmlAddChild(header, poas_response);
+	paos_response = xmlNewNode(NULL, (xmlChar*)"Response");
+	xmlSetNs(paos_response, xmlNewNs(paos_response,
+				(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX));
+	xmlSetNsProp(paos_response, soap_env_ns, "mustUnderstand", "1");
+	xmlSetNsProp(paos_response, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	xmlAddChild(header, paos_response);
 
 	/* ECP relay state block */
 	if (LASSO_PROFILE(ecp)->msg_relayState) {

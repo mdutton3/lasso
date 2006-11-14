@@ -155,7 +155,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 				lasso_saml20_login_get_assertion_consumer_service_url(
 				       login, LASSO_PROVIDER(profile->server));
 			profile->msg_url = NULL;
-			profile->msg_body = lasso_node_export_to_poas_request(profile->request,
+			profile->msg_body = lasso_node_export_to_paos_request(profile->request,
 							issuer, responseConsumerURL,
 							profile->msg_relayState);
 		} else {
@@ -799,6 +799,20 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 
 	doc = xmlParseMemory(msg, strlen(msg));
 	xpathCtx = xmlXPathNewContext(doc);
+
+	/* check PAOS response */
+	xmlnode = NULL;
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Response", xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+	}
+	if (xmlnode == NULL) {
+		xmlFreeDoc(doc);
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
+	}
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);

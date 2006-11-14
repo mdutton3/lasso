@@ -314,8 +314,8 @@
 /* POAS BINDING                                                              */
 /*****************************************************************************/
 
-#define LASSO_POAS_HREF   "urn:liberty:paos:2003-08"
-#define LASSO_POAS_PREFIX "poas"
+#define LASSO_PAOS_HREF   "urn:liberty:paos:2003-08"
+#define LASSO_PAOS_PREFIX "paos"
 
 /*****************************************************************************/
 /* ECP BINDING                                                              */

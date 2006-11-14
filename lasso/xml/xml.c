@@ -242,19 +242,19 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 }
 
 /**
- * lasso_node_export_to_poas_request:
+ * lasso_node_export_to_paos_request:
  * @node: a #LassoNode
  * 
  * Exports @node to a PAOS message.
  * 
- * Return value: a POAS export of @node.  The string must be freed by the
+ * Return value: a PAOS export of @node.  The string must be freed by the
  *      caller.
  **/
 char*
-lasso_node_export_to_poas_request(LassoNode *node, const char *issuer,
+lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 				  const char *responseConsumerURL, const char *relay_state)
 {
-	xmlNode *envelope, *body, *header, *poas_request, *ecp_request, *ecp_relay_state, *message;
+	xmlNode *envelope, *body, *header, *paos_request, *ecp_request, *ecp_relay_state, *message;
 	xmlNs *soap_env_ns, *saml_ns, *ecp_ns;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
@@ -271,14 +271,14 @@ lasso_node_export_to_poas_request(LassoNode *node, const char *issuer,
 
 	header = xmlNewTextChild(envelope, NULL, (xmlChar*)"Header", NULL);
 
-	/* POAS request header block */
-	poas_request = xmlNewNode(NULL, (xmlChar*)"Request");
-	xmlSetNs(poas_request, xmlNewNs(poas_request,
-					(xmlChar*)LASSO_POAS_HREF, (xmlChar*)LASSO_POAS_PREFIX));
-	xmlSetProp(poas_request, "service", LASSO_POAS_HREF);
-	xmlSetNsProp(poas_request, soap_env_ns, "mustUnderstand", "1");
-	xmlSetNsProp(poas_request, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
-	xmlAddChild(header, poas_request);
+	/* PAOS request header block */
+	paos_request = xmlNewNode(NULL, (xmlChar*)"Request");
+	xmlSetNs(paos_request, xmlNewNs(paos_request,
+					(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX));
+	xmlSetProp(paos_request, "service", LASSO_PAOS_HREF);
+	xmlSetNsProp(paos_request, soap_env_ns, "mustUnderstand", "1");
+	xmlSetNsProp(paos_request, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	xmlAddChild(header, paos_request);
 
 	/* ECP request header block */
 	ecp_request = xmlNewNode(NULL, (xmlChar*)"Request");
