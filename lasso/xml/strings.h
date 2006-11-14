@@ -292,6 +292,8 @@
 #define LASSO_SOAP_ENV_HREF   "http://schemas.xmlsoap.org/soap/envelope/"
 #define LASSO_SOAP_ENV_PREFIX "s"
 
+#define LASSO_SOAP_ENV_ACTOR "http://schemas.xmlsoap.org/soap/actor/next"
+
 #define LASSO_SOAP_BINDING_HREF   "urn:liberty:sb:2003-08"
 #define LASSO_SOAP_BINDING_PREFIX "sb"
 
@@ -307,6 +309,20 @@
 	"urn:liberty:sb:2003-08:ProcessingContext:PrincipalOnline"
 #define LASSO_SOAP_BINDING_PROCESS_CONTEXT_SIMULATE \
 	"urn:liberty:sb:2003-08:ProcessingContext:Simulate"
+
+/*****************************************************************************/
+/* POAS BINDING                                                              */
+/*****************************************************************************/
+
+#define LASSO_POAS_HREF   "urn:liberty:paos:2003-08"
+#define LASSO_POAS_PREFIX "poas"
+
+/*****************************************************************************/
+/* ECP BINDING                                                              */
+/*****************************************************************************/
+
+#define LASSO_ECP_HREF   "urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp"
+#define LASSO_ECP_PREFIX "ecp"
 
 /*****************************************************************************/
 /* SAML 2.0                                                                  */

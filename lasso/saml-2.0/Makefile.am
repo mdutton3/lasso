@@ -10,6 +10,7 @@ INCLUDES = \
 noinst_LTLIBRARIES = liblasso-saml-20.la
 
 liblasso_saml_20_la_SOURCES = \
+	ecp.c \
 	federation.c \
 	profile.c \
 	provider.c \
@@ -18,6 +19,7 @@ liblasso_saml_20_la_SOURCES = \
 	name_id_management.c
 
 liblassoinclude_HEADERS = \
+	ecp.h \
 	profile.h \
 	name_id_management.h
 

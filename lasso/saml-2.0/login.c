@@ -55,7 +55,8 @@ lasso_saml20_login_init_authn_request(LassoLogin *login, LassoProvider *remote_p
 	if (http_method != LASSO_HTTP_METHOD_REDIRECT &&
 			http_method != LASSO_HTTP_METHOD_POST &&
 			http_method != LASSO_HTTP_METHOD_ARTIFACT_GET &&
-			http_method != LASSO_HTTP_METHOD_ARTIFACT_POST) {
+			http_method != LASSO_HTTP_METHOD_ARTIFACT_POST &&
+			http_method != LASSO_HTTP_METHOD_SOAP) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 	}
 
@@ -132,7 +133,7 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 		g_free(query);
 		g_free(url);
 	} else {
-		/* POST and Artifact-GET|POST */
+		/* POST, SOAP and Artifact-GET|POST */
 		if (must_sign) {
 			LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file = 
 				g_strdup(profile->server->private_key);
@@ -145,6 +146,18 @@ lasso_saml20_login_build_authn_request_msg(LassoLogin *login, LassoProvider *rem
 			profile->msg_url = lasso_provider_get_metadata_one(
 					remote_provider, "SingleSignOnService HTTP-POST");
 			profile->msg_body = lareq;
+		} else if (login->http_method == LASSO_HTTP_METHOD_SOAP) {
+			const char *issuer;
+			const char *responseConsumerURL;
+
+			issuer = LASSO_PROVIDER(LASSO_PROFILE(login)->server)->ProviderID;
+			responseConsumerURL = \
+				lasso_saml20_login_get_assertion_consumer_service_url(
+				       login, LASSO_PROVIDER(profile->server));
+			profile->msg_url = NULL;
+			profile->msg_body = lasso_node_export_to_poas_request(profile->request,
+							issuer, responseConsumerURL,
+							profile->msg_relayState);
 		} else {
 			/* artifact method */
 			char *artifact = lasso_saml20_profile_generate_artifact(profile, 0);
@@ -225,11 +238,15 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 		} else if (strcmp(binding, "HTTP-POST") == 0) {
 			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+		} else if (strcmp(binding, "SOAP") == 0) {
+			login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 		}
 	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_ARTIFACT) == 0) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_ART;
 	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_POST) == 0) {
 		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_POST;
+	} else if (strcmp(protocol_binding, LASSO_SAML20_METADATA_BINDING_SOAP) == 0) {
+		login->protocolProfile = LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP;
 	} else {
 		message(G_LOG_LEVEL_CRITICAL,
 				"unhandled protocol binding: %s", protocol_binding);
@@ -721,7 +738,80 @@ lasso_saml20_login_process_request_msg(LassoLogin *login, gchar *request_msg)
 gint
 lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 {
+	LassoProfile *profile = LASSO_PROFILE(login);
+	LassoProvider *remote_provider;
+	LassoSaml2Assertion *assertion;
+
+	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
+		const char *assertionConsumerURL;
+
+		if (profile->server->certificate)
+			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+				LASSO_SIGNATURE_TYPE_WITHX509;
+		else
+			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
+				LASSO_SIGNATURE_TYPE_SIMPLE;
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
+			LASSO_SIGNATURE_METHOD_RSA_SHA1;
+
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->private_key_file = 
+			g_strdup(profile->server->private_key);
+		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
+			g_strdup(profile->server->certificate);
+
+		remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
+			LASSO_PROFILE(login)->remote_providerID);
+		if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+			return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+
+		assertionConsumerURL = lasso_saml20_login_get_assertion_consumer_service_url(
+						login, remote_provider);
+
+		assertion = login->private_data->saml2_assertion;
+		if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
+			assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient\
+						= g_strdup(assertionConsumerURL);
+		}
+
+		/* build an ECP SOAP Response */
+		profile->msg_body = lasso_node_export_to_ecp_soap_response(
+					LASSO_NODE(profile->response), assertionConsumerURL);
+		return 0;
+	}
+
 	return lasso_saml20_profile_build_artifact_response(LASSO_PROFILE(login));
+}
+
+gint
+lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
+{
+	LassoProfile *profile = LASSO_PROFILE(login);
+	LassoNode *response;
+	xmlDoc *doc;
+	xmlXPathContext *xpathCtx;
+	xmlXPathObject *xpathObj;
+	xmlNode *xmlnode;
+
+	response = lasso_node_new_from_soap(msg);
+	if (response == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	doc = xmlParseMemory(msg, strlen(msg));
+	xpathCtx = xmlXPathNewContext(doc);
+
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		xmlnode = xpathObj->nodesetval->nodeTab[0];
+		LASSO_PROFILE(login)->msg_relayState = xmlNodeGetContent(xmlnode);
+	}
+
+	profile->response = response;
+	profile->remote_providerID = g_strdup(
+			LASSO_SAMLP2_STATUS_RESPONSE(response)->Issuer->content);
+
+	return 0;
 }
 
 gint
@@ -730,6 +820,10 @@ lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	LassoProfile *profile = LASSO_PROFILE(login);
 	int rc;
 
+	rc = lasso_saml20_login_process_paos_response_msg(login, response_msg);
+	if (rc == 0) {
+		return lasso_saml20_login_process_response_status_and_assertion(login);
+	}
 	rc = lasso_saml20_profile_process_artifact_response(profile, response_msg);
 	if (rc) {
 		return rc;
