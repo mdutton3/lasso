@@ -782,22 +782,22 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
 		if (profile->remote_providerID == NULL)
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL)
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 
 		/* FIXME: verify assertion signature */
 
 		/* store NameIdentifier */
 		if (assertion->Subject == NULL) {
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 		}
 
 		profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
 		
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	return ret;
@@ -814,11 +814,11 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	profile = LASSO_PROFILE(login);
 
 	if (LASSO_SAMLP2_RESPONSE(profile->response)->Assertion == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
 	assertion = LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data;
 	if (assertion == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			g_object_ref(assertion));
@@ -826,7 +826,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	ni = assertion->Subject->NameID;
 
 	if (ni == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 
 
 	/* create federation, only if nameidentifier format is Federated */

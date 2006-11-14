@@ -159,12 +159,12 @@ lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 	i = xmlSecBase64Decode((xmlChar*)artifact_b64, (xmlChar*)artifact, 45);
 	if (i < 0 || i > 44) {
 		g_free(artifact_b64);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
 	}
 
 	if (artifact[0] != 0 || artifact[1] != 4) { /* wrong type code */
 		g_free(artifact_b64);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
 	}
 
 	/* XXX: index endpoint */
