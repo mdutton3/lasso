@@ -1653,39 +1653,46 @@ lasso_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_
 	gint ret1 = 0, ret2 = 0;
 	LassoMessageFormat format;
 	LassoProvider *remote_provider;
+	LassoProfile *profile;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	profile = LASSO_PROFILE(login);
+
+	IF_SAML2(profile) {
+		return lasso_saml20_login_process_authn_response_msg(login, authn_response_msg);
+	}
 	
 	/* clean state */
-	if (LASSO_PROFILE(login)->remote_providerID)
+	if (profile->remote_providerID)
 		g_free(LASSO_PROFILE(login)->remote_providerID);
-	if (LASSO_PROFILE(login)->response)
-		lasso_node_destroy(LASSO_NODE(LASSO_PROFILE(login)->response));
+	if (profile->response)
+		lasso_node_destroy(LASSO_NODE(profile->response));
 
-	LASSO_PROFILE(login)->response = lasso_lib_authn_response_new(NULL, NULL);
+	profile->response = lasso_lib_authn_response_new(NULL, NULL);
 	format = lasso_node_init_from_message(
-			LASSO_NODE(LASSO_PROFILE(login)->response), authn_response_msg);
+			LASSO_NODE(profile->response), authn_response_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-	LASSO_PROFILE(login)->remote_providerID = g_strdup(
-			LASSO_LIB_AUTHN_RESPONSE(LASSO_PROFILE(login)->response)->ProviderID);
+	profile->remote_providerID = g_strdup(
+			LASSO_LIB_AUTHN_RESPONSE(profile->response)->ProviderID);
 
-	if (LASSO_PROFILE(login)->remote_providerID == NULL) {
+	if (profile->remote_providerID == NULL) {
 		ret1 = critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
-	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	LASSO_PROFILE(login)->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
-			LASSO_PROFILE(login)->response)->RelayState);
+	profile->msg_relayState = g_strdup(LASSO_LIB_AUTHN_RESPONSE(
+			profile->response)->RelayState);
 
-	LASSO_PROFILE(login)->signature_status = lasso_provider_verify_signature(
+	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, authn_response_msg, "ResponseID", format);
 	ret2 = lasso_login_process_response_status_and_assertion(login);
 

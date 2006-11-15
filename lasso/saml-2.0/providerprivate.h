@@ -47,6 +47,8 @@ gchar* lasso_saml20_provider_get_assertion_consumer_service_url(LassoProvider *p
 		int service_id);
 gchar* lasso_saml20_provider_get_assertion_consumer_service_binding(LassoProvider *provider,
 		int service_id);
+gchar* lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvider *provider,
+		gchar *binding);
 
 #ifdef __cplusplus
 }

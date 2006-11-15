@@ -833,6 +833,50 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 }
 
 gint
+lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg)
+{
+	LassoMessageFormat format;
+	LassoProvider *remote_provider;
+	LassoProfile *profile;
+
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(authn_response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	profile = LASSO_PROFILE(login);
+
+	/* clean state */
+	if (profile->remote_providerID)
+		g_free(LASSO_PROFILE(login)->remote_providerID);
+	if (profile->response)
+		lasso_node_destroy(LASSO_NODE(profile->response));
+
+	profile->response = lasso_samlp2_response_new();
+	format = lasso_node_init_from_message(
+			LASSO_NODE(profile->response), authn_response_msg);
+	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
+		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
+
+	profile->remote_providerID = g_strdup(
+			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Issuer->content);
+
+	if (profile->remote_providerID == NULL) {
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+
+	/* XXX: verify signature ? */
+
+	return lasso_saml20_login_process_response_status_and_assertion(login);
+}
+
+
+
+gint
 lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
@@ -1059,9 +1103,10 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	if (url == NULL) {
 		message(G_LOG_LEVEL_WARNING,
 				"can't find assertion consumer service url (going for default)");
+		url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
 	}
 
-	return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
+	return url;
 }
 
 gint
