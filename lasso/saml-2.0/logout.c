@@ -498,7 +498,7 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 }
 
 int
-lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg)
+lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *response_msg)
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
 	LassoHttpMethod response_method;
@@ -578,7 +578,7 @@ lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg)
 
 	/* if SOAP method or, if IDP provider type and HTTP Redirect,
 	 * then remove assertion */
-	if ( response_method == LASSO_HTTP_METHOD_SOAP ||
+	if (response_method == LASSO_HTTP_METHOD_SOAP ||
 			(remote_provider->role == LASSO_PROVIDER_ROLE_SP &&
 			 response_method == LASSO_HTTP_METHOD_REDIRECT) ) {
 		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
@@ -611,6 +611,12 @@ lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg)
 			logout->initial_request = NULL;
 			logout->initial_response = NULL;
 		}
+	}
+
+	/* if at SP */
+	if (remote_provider->role == LASSO_PROVIDER_ROLE_IDP &&
+			response_method == LASSO_HTTP_METHOD_REDIRECT) {
+		lasso_session_remove_assertion(profile->session, profile->remote_providerID);
 	}
 
 	return rc;

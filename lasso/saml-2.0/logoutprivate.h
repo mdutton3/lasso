@@ -42,7 +42,7 @@ int lasso_saml20_logout_validate_request(LassoLogout *logout);
 
 int lasso_saml20_logout_build_response_msg(LassoLogout *logout);
 
-int lasso_saml20_process_response_msg(LassoLogout *logout, const char *response_msg);
+int lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *response_msg);
 
 #ifdef __cplusplus
 }
