@@ -618,7 +618,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 
 	provider->metadata_filename = g_strdup(metadata);
 
-	if (strcmp((char*)node->ns->href, LASSO_SAML20_METADATA_HREF) == 0) {
+	if (strcmp((char*)node->ns->href, LASSO_SAML2_METADATA_HREF) == 0) {
 		provider->private_data->conformance = LASSO_PROTOCOL_SAML_2_0;
 		return lasso_saml20_provider_load_metadata(provider, node);
 	}

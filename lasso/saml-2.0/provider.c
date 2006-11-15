@@ -71,15 +71,15 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 		if (binding) {
 			/* Endpoint type */
 			char *binding_s = NULL;
-			if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_SOAP) == 0) {
+			if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_SOAP) == 0) {
 				binding_s = "SOAP";
-			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_REDIRECT) == 0) {
+			} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_REDIRECT) == 0) {
 				binding_s = "HTTP-Redirect";
-			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_POST) == 0) {
+			} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_POST) == 0) {
 				binding_s = "HTTP-POST";
-			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_ARTIFACT) == 0) {
+			} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_ARTIFACT) == 0) {
 				binding_s = "HTTP-Artifact";
-			} else if (strcmp(binding, LASSO_SAML20_METADATA_BINDING_PAOS) == 0) {
+			} else if (strcmp(binding, LASSO_SAML2_METADATA_BINDING_PAOS) == 0) {
 				binding_s = "PAOS";
 			} else {
 				message(G_LOG_LEVEL_CRITICAL, "XXX: unknown binding: %s", binding);

@@ -11,6 +11,9 @@ typedef struct {
 	%rename(isPassive) IsPassive;
 #endif
 	gboolean IsPassive;
+#ifndef SWIGPHP4
+	%rename(protocolBinding) ProtocolBinding;
+#endif
 	char *ProtocolBinding;
 #ifndef SWIGPHP4
 	%rename(assertionConsumerServiceIndex) AssertionConsumerServiceIndex;
