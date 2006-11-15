@@ -31,6 +31,7 @@
 #include <lasso/saml-2.0/federationprivate.h>
 
 #include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/serverprivate.h>
 #include <lasso/id-ff/login.h>
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
@@ -892,6 +893,10 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	if (LASSO_SAMLP2_RESPONSE(response)->Assertion) {
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
+		LassoNode *id_node = NULL;
+		xmlNode *encrypted_data = NULL;
+		xmlSecKey *encryption_private_key = NULL;
+		
 		if (profile->remote_providerID == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
@@ -905,8 +910,29 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 		}
 
-		profile->nameIdentifier = g_object_ref(assertion->Subject->NameID);
+		if (assertion->Subject->NameID != NULL) {
+			id_node = g_object_ref(assertion->Subject->NameID);
+			if (id_node != NULL) {
+				profile->nameIdentifier = id_node;
+				return ret;
+			}
+		}
 		
+		id_node = g_object_ref(assertion->Subject->EncryptedID);
+		if (id_node == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
+		}
+
+		encrypted_data = LASSO_SAML2_ENCRYPTED_ELEMENT(id_node)->EncryptedData;
+		encryption_private_key = profile->server->private_data->encryption_private_key;
+		if (encrypted_data != NULL && encryption_private_key != NULL) {
+			LASSO_PROFILE(login)->nameIdentifier =
+				lasso_node_decrypt(encrypted_data, encryption_private_key);
+			assertion->Subject->NameID =
+				LASSO_SAML2_NAME_ID(LASSO_PROFILE(login)->nameIdentifier);
+			assertion->Subject->EncryptedID = NULL;
+		}
+
 		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}

@@ -396,6 +396,17 @@ lasso_node_export_to_soap(LassoNode *node)
 	return ret;
 }
 
+/**
+ * lasso_node_encrypt:
+ * @lasso_node: a #LassoNode to encrypt
+ * @encryption_public_key : RSA public key the node will be encrypted with
+ *
+ * Generate a DES key and encrypt it with the RSA key.
+ * Then encrypt @lasso_node with the DES key.
+ * 
+ * Return value: an xmlNode which is the @node in an encrypted fashion.
+ * It must be freed by the caller.
+ **/
 xmlNode*
 lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 {
@@ -442,7 +453,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 		return NULL;
 	}
 
-	/* add key to keys manager, from now on keys manager is responsible 
+	/* add key to keys manager, from now on keys manager is responsible
 	 * for destroying key 
 	 */
 	if (xmlSecCryptoAppDefaultKeysMngrAdoptKey(key_manager, encryption_public_key) < 0) {
@@ -499,15 +510,13 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	}
 
 	/* encrypt the data */
-	if(xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data_node, orig_node) < 0) {
+	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data_node, orig_node) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		return NULL;
 	}
 	
 	/* cleanup */
-	if(enc_ctx != NULL) {
-		xmlSecEncCtxDestroy(enc_ctx);
-	}
+	xmlSecEncCtxDestroy(enc_ctx);
 
 /* 	if (encrypted_data_node != NULL) { */
 /* 		xmlFreeNode(encrypted_data_node); */
@@ -520,6 +529,84 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	return encrypted_data_node;
 }
 
+
+/**
+ * lasso_node_decrypt:
+ * @xml_node: an EncryptedData #xmlNode to decrypt
+ * @encryption_private_key : RSA private key to decrypt the node
+ *
+ * Decrypt a DES EncryptedKey with the RSA key.
+ * Then decrypt @xml_node with the DES key.
+ * 
+ * Return value: a LassoNode which is the decrypted @xml_node.
+ * It must be freed by the caller.
+ **/
+LassoNode*
+lasso_node_decrypt(xmlNode* xml_node, xmlSecKey *encryption_private_key)
+{
+	xmlDocPtr doc = NULL;
+	xmlSecEncCtxPtr encCtx = NULL;
+	xmlSecKeyPtr des_key = NULL;
+	xmlSecBufferPtr key_buffer;
+	LassoNode *decrypted_node;
+
+	/* Create a document to contain the node to decrypt */
+	doc = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc, xml_node);
+	
+	xmlNode *t = xml_node;
+	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
+		if (strcmp((char*)t->name, "EncryptedData") == 0 ||
+				strcmp((char*)t->name, "KeyInfo") == 0)
+			t = t->children;
+		t = t->next;
+	}
+	if (t == NULL)
+		return NULL;
+
+	/* create encryption context, with RSA key */
+	encCtx = xmlSecEncCtxCreate(NULL);
+	if (encCtx == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
+		return NULL;
+	}
+	encCtx->encKey = encryption_private_key;
+	encCtx->mode = xmlEncCtxModeEncryptedKey;
+
+	/* decrypt the EncryptedKey */
+	key_buffer = xmlSecEncCtxDecryptToBuffer(encCtx, t);
+	if (key_buffer != NULL) {
+		des_key = xmlSecKeyReadBuffer(xmlSecKeyDataDesId, key_buffer);
+	}
+	if (des_key == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Decryption failed");
+		return NULL;
+	}
+
+	/* create encryption context, with DES key */
+	xmlSecEncCtxDestroy(encCtx);
+	encCtx = xmlSecEncCtxCreate(NULL);
+	if (encCtx == NULL) {
+		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
+		return NULL;
+	}
+	encCtx->encKey = des_key;
+	encCtx->mode = xmlEncCtxModeEncryptedData;
+
+	/* decrypt the EncryptedData */
+	if ((xmlSecEncCtxDecrypt(encCtx, xml_node) < 0) || (encCtx->result == NULL)) {
+		message(G_LOG_LEVEL_WARNING, "Decryption failed");
+		return NULL;
+	}
+
+	decrypted_node = lasso_node_new_from_xmlNode(doc->children);
+
+	/* cleanup */
+	xmlSecEncCtxDestroy(encCtx);
+	xmlFreeDoc(doc);
+
+	return decrypted_node;
+}
 
 /**
  * lasso_node_init_from_query:

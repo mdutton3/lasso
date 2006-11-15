@@ -29,6 +29,12 @@
 extern "C" {
 #endif /* __cplusplus */ 
 
+struct _LassoServerPrivate
+{
+	gboolean dispose_has_run;
+	xmlSecKey *encryption_private_key;
+};
+
 gchar* lasso_server_get_first_providerID(LassoServer *server);
 gchar* lasso_server_get_providerID_from_hash(LassoServer *server, gchar *b64_hash);
 

@@ -30,11 +30,6 @@
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/serverprivate.h>
 
-struct _LassoServerPrivate
-{
-	gboolean dispose_has_run;
-	xmlSecKey *encryption_private_key;
-};
 
 /*****************************************************************************/
 /* public methods                                                            */
