@@ -1038,6 +1038,7 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	LassoProvider *remote_provider)
 {
 	LassoSamlp2AuthnRequest *request;
+	char *url = NULL;
 	
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
 
@@ -1046,11 +1047,19 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	}
 
 	if (request->AssertionConsumerServiceIndex != -1 || request->ProtocolBinding == NULL) {
-		return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
+		url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider,
 				request->AssertionConsumerServiceIndex);
 	}
 
-	message(G_LOG_LEVEL_WARNING, "can't find assertion consumer service url");
+	if (url == NULL && request->ProtocolBinding) {
+		url = lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(
+				remote_provider, request->ProtocolBinding);
+	}
+
+	if (url == NULL) {
+		message(G_LOG_LEVEL_WARNING,
+				"can't find assertion consumer service url (going for default)");
+	}
 
 	return lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
 }
