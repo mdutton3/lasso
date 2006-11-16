@@ -145,9 +145,6 @@ LASSO_EXPORT char* lasso_node_export_to_paos_request(LassoNode *node, const char
 LASSO_EXPORT char* lasso_node_export_to_ecp_soap_response(LassoNode *node,
 				const char *assertionConsumerURL);
 
-LASSO_EXPORT xmlNode* lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key);
-LASSO_EXPORT LassoNode* lasso_node_decrypt(xmlNode* xml_node, xmlSecKey *encryption_private_key);
-
 LASSO_EXPORT xmlNode* lasso_node_get_xmlNode(LassoNode *node, gboolean lasso_dump);
 
 LASSO_EXPORT LassoMessageFormat lasso_node_init_from_message(LassoNode *node, const char *message);

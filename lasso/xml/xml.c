@@ -35,6 +35,7 @@
 #include <xmlsec/xmlenc.h>
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml_name_identifier.h>
 
 
@@ -407,17 +408,19 @@ lasso_node_export_to_soap(LassoNode *node)
  * Return value: an xmlNode which is the @node in an encrypted fashion.
  * It must be freed by the caller.
  **/
-xmlNode*
+LassoSaml2EncryptedElement*
 lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr orig_node = NULL;
-	xmlNodePtr encrypted_data_node = NULL;
+	LassoSaml2EncryptedElement *encrypted_element = NULL;
 	xmlSecKeysMngrPtr key_manager = NULL;
 	xmlNodePtr key_info_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
+
+	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
 
 	/* Create a document to contain the node to encrypt */
 	doc = xmlNewDoc((xmlChar*)"1.0");
@@ -425,14 +428,14 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	xmlDocSetRootElement(doc, orig_node);
 
 	/* Create encryption template */
-	encrypted_data_node = xmlSecTmplEncDataCreate(doc, xmlSecTransformDes3CbcId,
+	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformDes3CbcId,
 		NULL, xmlSecTypeEncElement, NULL, NULL);
-	if (encrypted_data_node == NULL) {
+	if (encrypted_element->EncryptedData == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
 		return NULL;
 	}
 
-	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_data_node) == NULL) {
+	if (xmlSecTmplEncDataEnsureCipherValue(encrypted_element->EncryptedData) == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add CipherValue node");
 		return NULL;
 	}
@@ -462,7 +465,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	}
 
 	/* add <dsig:KeyInfo/> */
-	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_data_node, NULL);
+	key_info_node = xmlSecTmplEncDataEnsureKeyInfo(encrypted_element->EncryptedData, NULL);
 	if (key_info_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
 		return NULL;
@@ -472,7 +475,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	encrypted_key_node = xmlSecTmplKeyInfoAddEncryptedKey(key_info_node,
 		xmlSecTransformRsaPkcs1Id, NULL, NULL, NULL);
 	if (encrypted_key_node == NULL) {
-		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
+		message(G_LOG_LEVEL_WARNING, "Failed to add encrypted key");
 		return NULL;
 	}
 
@@ -510,23 +513,23 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	}
 
 	/* encrypt the data */
-	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_data_node, orig_node) < 0) {
+	if (xmlSecEncCtxXmlEncrypt(enc_ctx, encrypted_element->EncryptedData, orig_node) < 0) {
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		return NULL;
 	}
 	
+	encrypted_element->EncryptedKey = g_list_append(encrypted_element->EncryptedKey,
+			xmlCopyNode(encrypted_key_node, 1));
+	key_info_node->children = NULL;
+	
 	/* cleanup */
 	xmlSecEncCtxDestroy(enc_ctx);
-
-/* 	if (encrypted_data_node != NULL) { */
-/* 		xmlFreeNode(encrypted_data_node); */
-/* 	} */
 
 /* 	if (doc != NULL) { */
 /* 		xmlFreeDoc(doc); */
 /* 	} */
 
-	return encrypted_data_node;
+	return encrypted_element;
 }
 
 
@@ -542,27 +545,59 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
  * It must be freed by the caller.
  **/
 LassoNode*
-lasso_node_decrypt(xmlNode* xml_node, xmlSecKey *encryption_private_key)
+lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
+			xmlSecKey *encryption_private_key)
 {
 	xmlDocPtr doc = NULL;
+	xmlDocPtr doc2 = NULL;
 	xmlSecEncCtxPtr encCtx = NULL;
 	xmlSecKeyPtr des_key = NULL;
 	xmlSecBufferPtr key_buffer;
 	LassoNode *decrypted_node;
+	xmlNodePtr encrypted_data_node = NULL;
+	xmlNodePtr encrypted_key_node = NULL;
+	GList *encrypted_key_list = NULL;
+
+	encrypted_data_node = encrypted_element->EncryptedData;
+
+	if (encrypted_element->EncryptedKey == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node\n");
+		return NULL;
+	}
+
+	encrypted_key_list = g_list_next(encrypted_element->EncryptedKey);
+
+	if (encrypted_key_list == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n");
+		return NULL;
+	}
+
+	encrypted_key_node = (xmlNode *)(encrypted_key_list->data);
+
+	if (encrypted_key_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n");
+		return NULL;
+	}
 
 	/* Create a document to contain the node to decrypt */
 	doc = xmlNewDoc((xmlChar*)"1.0");
-	xmlDocSetRootElement(doc, xml_node);
-	
-	xmlNode *t = xml_node;
-	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
-		if (strcmp((char*)t->name, "EncryptedData") == 0 ||
-				strcmp((char*)t->name, "KeyInfo") == 0)
-			t = t->children;
-		t = t->next;
-	}
-	if (t == NULL)
-		return NULL;
+	xmlDocSetRootElement(doc, encrypted_data_node);
+
+	doc2 = xmlNewDoc((xmlChar*)"1.0");
+	xmlDocSetRootElement(doc2, encrypted_key_node);
+
+	/* This block can be used in case we must be compatible with an EncryptedKey
+	* inside the EncryptedData
+	*/
+/* 	xmlNode *t = xml_node; */
+/* 	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) { */
+/* 		if (strcmp((char*)t->name, "EncryptedData") == 0 || */
+/* 				strcmp((char*)t->name, "KeyInfo") == 0) */
+/* 			t = t->children; */
+/* 		t = t->next; */
+/* 	} */
+/* 	if (t == NULL) */
+/* 		return NULL; */
 
 	/* create encryption context, with RSA key */
 	encCtx = xmlSecEncCtxCreate(NULL);
@@ -574,7 +609,7 @@ lasso_node_decrypt(xmlNode* xml_node, xmlSecKey *encryption_private_key)
 	encCtx->mode = xmlEncCtxModeEncryptedKey;
 
 	/* decrypt the EncryptedKey */
-	key_buffer = xmlSecEncCtxDecryptToBuffer(encCtx, t);
+	key_buffer = xmlSecEncCtxDecryptToBuffer(encCtx, encrypted_key_node);
 	if (key_buffer != NULL) {
 		des_key = xmlSecKeyReadBuffer(xmlSecKeyDataDesId, key_buffer);
 	}
@@ -594,7 +629,7 @@ lasso_node_decrypt(xmlNode* xml_node, xmlSecKey *encryption_private_key)
 	encCtx->mode = xmlEncCtxModeEncryptedData;
 
 	/* decrypt the EncryptedData */
-	if ((xmlSecEncCtxDecrypt(encCtx, xml_node) < 0) || (encCtx->result == NULL)) {
+	if ((xmlSecEncCtxDecrypt(encCtx, encrypted_data_node) < 0) || (encCtx->result == NULL)) {
 		message(G_LOG_LEVEL_WARNING, "Decryption failed");
 		return NULL;
 	}

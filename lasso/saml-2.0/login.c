@@ -534,8 +534,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSaml2NameID *name_id = NULL;
 	LassoSaml2AuthnStatement *authentication_statement;
 	LassoProvider *provider = NULL;
-	xmlNode *encrypted_node = NULL;
-	LassoSaml2EncryptedElement *encrypted_name_id = NULL;
+	LassoSaml2EncryptedElement *encrypted_element = NULL;
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			                        profile->remote_providerID);
@@ -587,13 +586,11 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	/* If there is a key, encrypt. Maybe there should be another condition ? */
 	if (provider && provider->private_data->encryption_public_key != NULL) {
-		encrypted_node = lasso_node_encrypt(LASSO_NODE(assertion->Subject->NameID),
-			provider->private_data->encryption_public_key);
-		if (encrypted_node != NULL) {
-			encrypted_name_id = LASSO_SAML2_ENCRYPTED_ELEMENT(
-				lasso_saml2_encrypted_element_new());
-			encrypted_name_id->EncryptedData = encrypted_node;
-			assertion->Subject->EncryptedID = encrypted_name_id;
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
+			LASSO_NODE(assertion->Subject->NameID),
+			provider->private_data->encryption_public_key));
+		if (encrypted_element != NULL) {
+			assertion->Subject->EncryptedID = encrypted_element;
 			assertion->Subject->NameID = NULL;
 		}
 	}
@@ -938,7 +935,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoProfile *profile = LASSO_PROFILE(login);
 		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
 		LassoNode *id_node = NULL;
-		xmlNode *encrypted_data = NULL;
+		LassoSaml2EncryptedElement* encrypted_element = NULL;
+/* 		xmlNode *encrypted_data = NULL; */
 		xmlSecKey *encryption_private_key = NULL;
 		
 		if (profile->remote_providerID == NULL)
@@ -967,11 +965,11 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 		}
 
-		encrypted_data = LASSO_SAML2_ENCRYPTED_ELEMENT(id_node)->EncryptedData;
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(id_node);
 		encryption_private_key = profile->server->private_data->encryption_private_key;
-		if (encrypted_data != NULL && encryption_private_key != NULL) {
-			LASSO_PROFILE(login)->nameIdentifier =
-				lasso_node_decrypt(encrypted_data, encryption_private_key);
+		if (encrypted_element != NULL && encryption_private_key != NULL) {
+			LASSO_PROFILE(login)->nameIdentifier = LASSO_NODE(
+				lasso_node_decrypt(encrypted_element, encryption_private_key));
 			assertion->Subject->NameID =
 				LASSO_SAML2_NAME_ID(LASSO_PROFILE(login)->nameIdentifier);
 			assertion->Subject->EncryptedID = NULL;

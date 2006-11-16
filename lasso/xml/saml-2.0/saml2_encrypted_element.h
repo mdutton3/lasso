@@ -29,6 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#include <glib/glist.h>
+
 #include <lasso/xml/xml.h>
 
 #define LASSO_TYPE_SAML2_ENCRYPTED_ELEMENT (lasso_saml2_encrypted_element_get_type())
@@ -56,7 +58,7 @@ struct _LassoSaml2EncryptedElement {
 	/*< public >*/
 	/* elements */
 	xmlNode *EncryptedData;
-	/* XXX */ void *EncryptedKey;
+	GList *EncryptedKey;
 };
 
 
