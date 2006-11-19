@@ -1385,12 +1385,11 @@ lasso_login_must_ask_for_consent(LassoLogin *login)
 		return lasso_saml20_login_must_ask_for_consent(login);
 	}
 
-	if (lasso_login_must_ask_for_consent_private(login)) {
-		if (LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->IsPassive)
-			return FALSE;
-		return TRUE;
+	if (LASSO_LIB_AUTHN_REQUEST(LASSO_PROFILE(login)->request)->IsPassive) {
+		return FALSE;
 	}
-	return FALSE;
+
+	return lasso_login_must_ask_for_consent_private(login);
 }
 
 
