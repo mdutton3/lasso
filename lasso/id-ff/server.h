@@ -91,12 +91,14 @@ LASSO_EXPORT void lasso_server_destroy(LassoServer *server);
 
 LASSO_EXPORT gchar* lasso_server_dump(LassoServer *server);
 
-LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server, gchar *providerID);
+LASSO_EXPORT LassoProvider* lasso_server_get_provider(LassoServer *server,
+		const gchar *providerID);
 
 LASSO_EXPORT LassoDiscoServiceInstance* lasso_server_get_service(LassoServer *server,
-								 gchar *serviceType);
+		const gchar *serviceType);
 
-LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server, gchar *filename);
+LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server,
+		const gchar *filename);
 
 #ifdef __cplusplus
 }

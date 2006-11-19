@@ -128,7 +128,7 @@ lasso_server_destroy(LassoServer *server)
  * Return value: 0 on success; another value if an error occured.
  **/
 int
-lasso_server_set_encryption_private_key(LassoServer *server, gchar *filename)
+lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filename)
 {
 	LassoPemFileType file_type;
 
@@ -319,7 +319,7 @@ lasso_server_get_first_providerID(LassoServer *server)
  *     #LassoProvider is owned by Lasso and should not be freed.
  **/
 LassoProvider*
-lasso_server_get_provider(LassoServer *server, gchar *providerID)
+lasso_server_get_provider(LassoServer *server, const gchar *providerID)
 {
 	return g_hash_table_lookup(server->providers, providerID);
 }
@@ -337,7 +337,7 @@ lasso_server_get_provider(LassoServer *server, gchar *providerID)
  *     freed.
  **/
 LassoDiscoServiceInstance*
-lasso_server_get_service(LassoServer *server, gchar *serviceType)
+lasso_server_get_service(LassoServer *server, const gchar *serviceType)
 {
 	return g_hash_table_lookup(server->services, serviceType);
 }
