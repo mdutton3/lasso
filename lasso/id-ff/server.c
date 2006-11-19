@@ -30,6 +30,8 @@
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/serverprivate.h>
 
+#include <lasso/saml-2.0/serverprivate.h>
+
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -148,6 +150,46 @@ lasso_server_set_encryption_private_key(LassoServer *server, const gchar *filena
 	return 0;
 }
 
+
+/**
+ * lasso_server_load_affiliation:
+ * @server: a #LassoServer
+ * @filename: file name of the affiliation metadata to load
+ *
+ * Load an affiliation metadata file into @server; this must be called after
+ * providers have been added to @server.
+ *
+ * Return value: 0 on success; another value if an error occured.
+ **/
+int
+lasso_server_load_affiliation(LassoServer *server, const gchar *filename)
+{
+	LassoProvider *provider = LASSO_PROVIDER(server);
+	xmlDoc *doc;
+	xmlNode *node;
+	int rc;
+
+	doc = xmlParseFile(filename);
+	if (doc == NULL) {
+		return LASSO_XML_ERROR_INVALID_FILE;
+	}
+
+	node = xmlDocGetRootElement(doc);
+	if (node == NULL || node->ns == NULL) {
+		return LASSO_XML_ERROR_NODE_NOT_FOUND;
+	}
+
+	if (provider->private_data->conformance == LASSO_PROTOCOL_SAML_2_0) {
+		rc = lasso_saml20_server_load_affiliation(server, doc, node);
+	} else {
+		/* affiliations are not supported in ID-FF 1.2 mode */
+		rc = LASSO_ERROR_UNIMPLEMENTED;
+	}
+
+	xmlFreeDoc(doc);
+
+	return rc;
+}
 
 /*****************************************************************************/
 /* private methods                                                           */

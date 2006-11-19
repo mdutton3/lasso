@@ -43,6 +43,9 @@ lasso_strerror(int error_code)
 			return "Unable to get attribute of element.";
 		case LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND:
 			return "Unable to get attribute value of element.";
+		case LASSO_XML_ERROR_INVALID_FILE:
+			return "Invalid XML file";
+
 		case LASSO_DS_ERROR_SIGNATURE_NOT_FOUND:
 			return "Signature element not found.";
 		case LASSO_DS_ERROR_INVALID_SIGNATURE:

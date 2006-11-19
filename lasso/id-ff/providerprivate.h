@@ -45,11 +45,15 @@ typedef enum {
 struct _LassoProviderPrivate
 {
 	gboolean dispose_has_run;
+
 	LassoProtocolConformance conformance;
 	GHashTable *SPDescriptor;
 	char *default_assertion_consumer;
 	GHashTable *IDPDescriptor;
 	xmlNode *organization;
+
+	char *affiliation_owner_id;
+
 	xmlSecKey *public_key;
 	xmlNode *signing_key_descriptor;
 	xmlSecKey *encryption_public_key;

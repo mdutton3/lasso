@@ -100,6 +100,8 @@ LASSO_EXPORT LassoDiscoServiceInstance* lasso_server_get_service(LassoServer *se
 LASSO_EXPORT int lasso_server_set_encryption_private_key(LassoServer *server,
 		const gchar *filename);
 
+LASSO_EXPORT int lasso_server_load_affiliation(LassoServer *server, const gchar* filename);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -16,7 +16,8 @@ liblasso_saml_20_la_SOURCES = \
 	provider.c \
 	login.c \
 	logout.c \
-	name_id_management.c
+	name_id_management.c \
+	server.c
 
 liblassoinclude_HEADERS = \
 	ecp.h \
@@ -28,6 +29,7 @@ lasso_private_h_sources = \
 	profileprivate.h \
 	providerprivate.h \
 	loginprivate.h \
-	logoutprivate.h
+	logoutprivate.h \
+	serverprivate.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

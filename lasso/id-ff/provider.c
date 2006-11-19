@@ -537,6 +537,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
+	provider->private_data->affiliation_owner_id = NULL;
 	provider->private_data->organization = NULL;
 	provider->private_data->public_key = NULL;
 	provider->private_data->encryption_public_key = NULL;

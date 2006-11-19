@@ -1020,6 +1020,7 @@ typedef enum {
 %rename(XML_ERROR_NODE_CONTENT_NOT_FOUND) LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND;
 %rename(XML_ERROR_ATTR_NOT_FOUND) LASSO_XML_ERROR_ATTR_NOT_FOUND;
 %rename(XML_ERROR_ATTR_VALUE_NOT_FOUND) LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND;
+%rename(XML_ERROR_INVALID_XML) LASSO_XML_ERROR_INVALID_XML;
 #endif
 
 /* XMLDSig */
@@ -5120,8 +5121,12 @@ typedef struct {
 	END_THROW_ERROR()
 
 	THROW_ERROR()
-	int setEncryptionPrivateKey(char *file_name);
+	int setEncryptionPrivateKey(char *filename);
 	END_THROW_ERROR()
+
+        THROW_ERROR()
+        int loadAffiliation(char *filename);
+        END_THROW_ERROR()
 
 #ifdef LASSO_WSF_ENABLED
 	THROW_ERROR()
@@ -5208,6 +5213,7 @@ LassoStringList *LassoServer_providerIds_get(LassoServer *self) {
 #define LassoServer_getProvider lasso_server_get_provider
 #define LassoServer_getService lasso_server_get_service
 #define LassoServer_setEncryptionPrivateKey lasso_server_set_encryption_private_key
+#define LassoServer_loadAffiliation lasso_server_load_affiliation
 
 %}
 
