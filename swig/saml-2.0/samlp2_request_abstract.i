@@ -7,6 +7,9 @@ typedef struct {
 	char *Version;
 	char *IssueInstant;
 	char *Destination;
+#ifndef SWIGPHP4
+	%rename(consent) Consent;
+#endif
 	char *Consent;
 } LassoSamlp2RequestAbstract;
 %extend LassoSamlp2RequestAbstract {
