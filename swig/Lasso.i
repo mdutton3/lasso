@@ -5724,7 +5724,7 @@ typedef struct {
 	%immutable msgBody;
 	char *msgBody;
 
-	/*%immutable msgRelayState;*/
+	%immutable msgRelayState;
 	char *msgRelayState;
 
 	%immutable msgUrl;
