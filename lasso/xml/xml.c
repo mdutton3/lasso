@@ -630,7 +630,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 #endif
 
-	/* create encryption context, with RSA key */
+	/* create encryption context to decrypt EncryptedKey */
 	encCtx = xmlSecEncCtxCreate(NULL);
 	if (encCtx == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
@@ -649,7 +649,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 	}
 
-	/* create encryption context, with DES key */
+	/* create encryption context to decrypt EncryptedData */
 	xmlSecEncCtxDestroy(encCtx);
 	encCtx = xmlSecEncCtxCreate(NULL);
 	if (encCtx == NULL) {
