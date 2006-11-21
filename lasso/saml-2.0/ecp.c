@@ -98,7 +98,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		LASSO_PROFILE(ecp)->msg_relayState = (char *)xmlNodeGetContent(xmlnode);
+		LASSO_PROFILE(ecp)->msg_relayState = (char*)xmlNodeGetContent(xmlnode);
 	}
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
@@ -165,7 +165,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	paos_response = xmlNewNode(NULL, (xmlChar*)"Response");
 	xmlSetNs(paos_response, xmlNewNs(paos_response,
 				(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX));
-	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar *)"1");
+	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
 	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"actor",
 				(xmlChar*)LASSO_SOAP_ENV_ACTOR);
 	xmlAddChild(header, paos_response);
