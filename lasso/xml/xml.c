@@ -598,7 +598,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 	}
 	for (i = encrypted_element->EncryptedKey; i->data != NULL; i = i->next) {
-		if (!strcmp(((xmlNode *)(i->data))->name, "EncryptedKey")) {
+		if (strcmp(((xmlNode *)(i->data))->name, "EncryptedKey") == 0) {
 			encrypted_key_node = (xmlNode *)(i->data);
 			break;
 		}
@@ -1297,13 +1297,13 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 
 	node_name = (char*)xmlnode->name;
-	if (!strcmp((char*)node_name, "EncryptedAssertion")) {
-		node_name = strdup("EncryptedElement");
+	if (strcmp((char*)node_name, "EncryptedAssertion") == 0) {
+		node_name = g_strdup("EncryptedElement");
 	}
 
 	typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	
-	if (!strcmp((char*)node_name, "EncryptedElement")) {
+	if (strcmp((char*)node_name, "EncryptedElement") == 0) {
 		g_free(node_name);
 	}
 
