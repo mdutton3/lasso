@@ -1533,9 +1533,15 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 			case SNIPPET_LIST_NODES:
 				elem = (GList *)value;
 				while (elem) {
-					xmlAddChild(xmlnode, lasso_node_get_xmlNode(
-								LASSO_NODE(elem->data),
-								lasso_dump));
+					xmlNode *subnode = lasso_node_get_xmlNode(
+							LASSO_NODE(elem->data), lasso_dump);
+					if (subnode) {
+						if (snippet->name && snippet->name[0]) {
+							xmlNodeSetName(subnode,
+									(xmlChar*)snippet->name);
+						}
+						xmlAddChild(xmlnode, subnode);
+					}
 					elem = g_list_next(elem);
 				}
 				break;
