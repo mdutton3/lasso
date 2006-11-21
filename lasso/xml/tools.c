@@ -151,25 +151,19 @@ lasso_get_pem_file_type(const char *pem_file)
 		type = LASSO_PEM_FILE_TYPE_PUB_KEY;
 		EVP_PKEY_free(pkey);
 	} else {
-		reset_success = BIO_reset(bio);
-		if (reset_success == -1) {
-			BIO_free(bio);
-			return LASSO_PEM_FILE_TYPE_UNKNOWN;
-		}
-		pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-		if (pkey != NULL) {
-			type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
-			EVP_PKEY_free(pkey);
-		} else {
-			reset_success = BIO_reset(bio);
-			if (reset_success == -1) {
-				BIO_free(bio);
-				return LASSO_PEM_FILE_TYPE_UNKNOWN;
-			}
-			cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
-			if (cert != NULL) {
-				type = LASSO_PEM_FILE_TYPE_CERT;
-				X509_free(cert);
+		if (BIO_reset(bio) == 0) {
+			pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+			if (pkey != NULL) {
+				type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
+				EVP_PKEY_free(pkey);
+			} else {
+				if (BIO_reset(bio) == 0) {
+					cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
+					if (cert != NULL) {
+						type = LASSO_PEM_FILE_TYPE_CERT;
+						X509_free(cert);
+					}
+				}
 			}
 		}
 	}
