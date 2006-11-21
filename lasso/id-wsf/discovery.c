@@ -669,6 +669,10 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 	if (lasso_wsf_profile_get_fault(LASSO_WSF_PROFILE(discovery))) {
 		return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
 	}
+	
+	if (LASSO_WSF_PROFILE(discovery)->identity == NULL) {
+		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
+	}
 
 	/* build response */
 	status = lasso_utility_status_new(LASSO_DISCO_STATUS_CODE_FAILED);
@@ -824,6 +828,10 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 
 	if (lasso_wsf_profile_get_fault(LASSO_WSF_PROFILE(discovery))) {
 		return lasso_wsf_profile_build_soap_response_msg(LASSO_WSF_PROFILE(discovery));
+	}
+
+	if (LASSO_WSF_PROFILE(discovery)->identity == NULL) {
+		return LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND;
 	}
 
 	iter = request->RequestedServiceType;
