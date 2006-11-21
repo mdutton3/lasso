@@ -43,10 +43,10 @@
 /*****************************************************************************/
 
 static struct XmlSnippet schema_snippets[] = {
-	{ "any", SNIPPET_LIST_NODES,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtCredential, any) },
+	{ "", SNIPPET_LIST_NODES,
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredential, any) },
 	{ "notOnOrAfter", SNIPPET_ATTRIBUTE,
-	  G_STRUCT_OFFSET(LassoSoapBindingExtCredential, notOnOrAfter) },
+		G_STRUCT_OFFSET(LassoSoapBindingExtCredential, notOnOrAfter) },
 	{ NULL, 0, 0}
 };
 
