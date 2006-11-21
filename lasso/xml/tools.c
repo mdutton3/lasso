@@ -136,13 +136,14 @@ lasso_get_pem_file_type(const char *pem_file)
 	EVP_PKEY *pkey;
 	X509 *cert;
 	LassoPemFileType type = LASSO_PEM_FILE_TYPE_UNKNOWN;
+	int reset_success;
 
 	g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	bio = BIO_new_file(pem_file, "rb");
 	if (bio == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Failed to open %s pem file", pem_file);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PEM_FILE_TYPE_UNKNOWN;
 	}
 
 	pkey = PEM_read_bio_PUBKEY(bio, NULL, NULL, NULL);
@@ -150,13 +151,17 @@ lasso_get_pem_file_type(const char *pem_file)
 		type = LASSO_PEM_FILE_TYPE_PUB_KEY;
 		EVP_PKEY_free(pkey);
 	} else {
-		BIO_reset(bio);
+		reset_success = BIO_reset(bio);
+		if (reset_success == -1)
+			return LASSO_PEM_FILE_TYPE_UNKNOWN;
 		pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
 		if (pkey != NULL) {
 			type = LASSO_PEM_FILE_TYPE_PRIVATE_KEY;
 			EVP_PKEY_free(pkey);
 		} else {
-			BIO_reset(bio);
+			reset_success = BIO_reset(bio);
+			if (reset_success == -1)
+				return LASSO_PEM_FILE_TYPE_UNKNOWN;
 			cert = PEM_read_bio_X509(bio, NULL, NULL, NULL);
 			if (cert != NULL) {
 				type = LASSO_PEM_FILE_TYPE_CERT;

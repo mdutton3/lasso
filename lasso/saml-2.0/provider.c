@@ -282,13 +282,11 @@ lasso_saml20_provider_get_assertion_consumer_service_url_by_binding(LassoProvide
 {
 	GHashTable *descriptor;
 	GList *l = NULL, *r = NULL;
-	char *sid;
 	char *name;
 	char *binding_s;
-	const char *possible_bindings[] = {
-		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "SOAP", NULL
-	};
-	int i;
+/* 	const char *possible_bindings[] = { */
+/* 		"HTTP-Artifact", "HTTP-Post", "HTTP-POST", "SOAP", NULL */
+/* 	}; */
 	int lname;
 
 	descriptor = provider->private_data->SPDescriptor;

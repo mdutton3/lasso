@@ -56,7 +56,7 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *
 	for (t = t->children; t; t = t->next) {
 		if (t->type == XML_ELEMENT_NODE && 
 				strcmp((char*)t->name, "AffiliateMember") == 0) {
-			member_id = xmlNodeGetContent(t);
+			member_id = (char*)xmlNodeGetContent(t);
 			provider = lasso_server_get_provider(server, member_id);
 			if (provider == NULL) {
 				message(G_LOG_LEVEL_WARNING,

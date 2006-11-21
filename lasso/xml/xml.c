@@ -556,7 +556,6 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	LassoNode *decrypted_node;
 	xmlNodePtr encrypted_data_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
-	GList *encrypted_key_list = NULL;
 	xmlNodePtr encryption_method_node = NULL;
 	char *algorithm;
 	xmlSecKeyDataId key_type;
@@ -578,7 +577,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod node in EncryptedData");
 		return NULL;
 	}
-	algorithm = (char *)xmlGetNoNsProp(encryption_method_node, "Algorithm");
+	algorithm = (char*)xmlGetNoNsProp(encryption_method_node, (xmlChar *)"Algorithm");
 	if (algorithm == NULL) {
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod");
 		return NULL;
@@ -598,8 +597,8 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 	}
 	for (i = encrypted_element->EncryptedKey; i->data != NULL; i = i->next) {
-		if (strcmp(((xmlNode *)(i->data))->name, "EncryptedKey") == 0) {
-			encrypted_key_node = (xmlNode *)(i->data);
+		if (strcmp((char*)((xmlNode*)i->data)->name, "EncryptedKey") == 0) {
+			encrypted_key_node = (xmlNode*)(i->data);
 			break;
 		}
 	}

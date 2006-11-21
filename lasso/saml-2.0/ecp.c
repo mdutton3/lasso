@@ -98,7 +98,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		LASSO_PROFILE(ecp)->msg_relayState = xmlNodeGetContent(xmlnode);
+		LASSO_PROFILE(ecp)->msg_relayState = (char *)xmlNodeGetContent(xmlnode);
 	}
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
@@ -143,8 +143,8 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:Response", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		ecp->assertionConsumerURL = \
-			xmlGetProp(xpathObj->nodesetval->nodeTab[0], "AssertionConsumerURL");
+		ecp->assertionConsumerURL = (char*)xmlGetProp(
+			xpathObj->nodesetval->nodeTab[0], (xmlChar*)"AssertionConsumerURL");
 	}
 
 	xmlXPathFreeContext(xpathCtx);
@@ -165,19 +165,22 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	paos_response = xmlNewNode(NULL, (xmlChar*)"Response");
 	xmlSetNs(paos_response, xmlNewNs(paos_response,
 				(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX));
-	xmlSetNsProp(paos_response, soap_env_ns, "mustUnderstand", "1");
-	xmlSetNsProp(paos_response, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar *)"1");
+	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"actor",
+				(xmlChar*)LASSO_SOAP_ENV_ACTOR);
 	xmlAddChild(header, paos_response);
 
 	/* ECP relay state block */
 	if (LASSO_PROFILE(ecp)->msg_relayState) {
 		ecp_relay_state = xmlNewNode(NULL, (xmlChar*)"RelayState");
-		xmlNodeSetContent(ecp_relay_state, LASSO_PROFILE(ecp)->msg_relayState);
+		xmlNodeSetContent(ecp_relay_state, (xmlChar*)LASSO_PROFILE(ecp)->msg_relayState);
 		ecp_ns = xmlNewNs(ecp_relay_state, (xmlChar*)LASSO_ECP_HREF,
 					(xmlChar*)LASSO_ECP_PREFIX);
 		xmlSetNs(ecp_relay_state, ecp_ns);
-		xmlSetNsProp(ecp_relay_state, soap_env_ns, "mustUnderstand", "1");
-		xmlSetNsProp(ecp_relay_state, soap_env_ns, "actor", LASSO_SOAP_ENV_ACTOR);
+		xmlSetNsProp(ecp_relay_state, soap_env_ns, (xmlChar*)"mustUnderstand",
+					(xmlChar*)"1");
+		xmlSetNsProp(ecp_relay_state, soap_env_ns, (xmlChar*)"actor",
+					(xmlChar*)LASSO_SOAP_ENV_ACTOR);
 		xmlAddChild(header, ecp_relay_state);
 	}
 

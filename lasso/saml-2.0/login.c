@@ -37,6 +37,8 @@
 #include <lasso/id-ff/sessionprivate.h>
 #include <lasso/id-ff/loginprivate.h>
 
+#include <lasso/xml/xml_enc.h>
+
 #include <lasso/xml/saml-2.0/samlp2_authn_request.h>
 #include <lasso/xml/saml-2.0/samlp2_response.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
