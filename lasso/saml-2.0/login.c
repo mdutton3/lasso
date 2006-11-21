@@ -42,6 +42,7 @@
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 #include <lasso/xml/saml-2.0/saml2_audience_restriction.h>
 #include <lasso/xml/saml-2.0/saml2_authn_statement.h>
+#include <lasso/xml/saml-2.0/saml2_encrypted_element.h>
 
 static int lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obtained);
 static gboolean lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login);
@@ -535,6 +536,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSaml2AuthnStatement *authentication_statement;
 	LassoProvider *provider = NULL;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
+	LassoSamlp2Response *response = NULL;
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			                        profile->remote_providerID);
@@ -581,10 +583,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 					federation->local_nameIdentifier);
 		}
 	}
-	
+
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
-	/* If there is a key, encrypt. Maybe there should be another condition ? */
+	/* If there is a key, encrypt NameID. Maybe there should be another condition ? */
 	if (provider && provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion->Subject->NameID),
@@ -623,7 +625,20 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			profile->remote_providerID,
 			g_object_ref(assertion));
 
-	LASSO_SAMLP2_RESPONSE(profile->response)->Assertion = g_list_append(NULL, assertion);
+	response = LASSO_SAMLP2_RESPONSE(profile->response);
+
+	/* If there is a key, encrypt Assertion. Maybe there should be another condition ? */
+	if (provider && provider->private_data->encryption_public_key != NULL) {
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
+			LASSO_NODE(assertion),
+			provider->private_data->encryption_public_key));
+		if (encrypted_element != NULL) {
+			response->EncryptedAssertion = g_list_append(NULL, encrypted_element);
+		}
+	} else {
+		response->Assertion = g_list_append(NULL, assertion);
+	}
+
 	login->private_data->saml2_assertion = g_object_ref(assertion);
 
 	return 0;
@@ -648,7 +663,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
-	
+
 	url = lasso_saml20_login_get_assertion_consumer_service_url(login, remote_provider);
 	assertion = login->private_data->saml2_assertion;
 	if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
@@ -770,7 +785,7 @@ lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_providerI
 
 		assertion = login->private_data->saml2_assertion;
 		if (LASSO_IS_SAML2_ASSERTION(assertion) == TRUE) {
-			assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient\
+			assertion->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient
 						= g_strdup(assertionConsumerURL);
 		}
 
@@ -896,13 +911,16 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 {
 	LassoProvider *idp;
 	LassoSamlp2StatusResponse *response;
+	LassoProfile *profile;
+	LassoSaml2EncryptedElement* encrypted_element = NULL;
+	xmlSecKey *encryption_private_key = NULL;
+	LassoNode *decrypted_node = NULL;
 	char *status_value;
 	int ret = 0;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	response = LASSO_SAMLP2_STATUS_RESPONSE(LASSO_PROFILE(login)->response);
-
 	if (response->Status == NULL || ! LASSO_IS_SAMLP2_STATUS(response->Status) || 
 			response->Status->StatusCode == NULL ||
 			response->Status->StatusCode->Value == NULL) {
@@ -931,19 +949,34 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
-	if (LASSO_SAMLP2_RESPONSE(response)->Assertion) {
-		LassoProfile *profile = LASSO_PROFILE(login);
-		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
-		LassoNode *id_node = NULL;
-		LassoSaml2EncryptedElement* encrypted_element = NULL;
-/* 		xmlNode *encrypted_data = NULL; */
-		xmlSecKey *encryption_private_key = NULL;
-		
+	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL ||
+			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
+		profile = LASSO_PROFILE(login);
+		encryption_private_key = profile->server->private_data->encryption_private_key;
 		if (profile->remote_providerID == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
+	}
+
+	if (LASSO_SAMLP2_RESPONSE(response)->Assertion == NULL &&
+			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
+
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(
+			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion->data);
+		if (encrypted_element != NULL && encryption_private_key != NULL) {
+			decrypted_node = LASSO_NODE(lasso_node_decrypt(encrypted_element,
+				encryption_private_key));
+			LASSO_SAMLP2_RESPONSE(response)->Assertion =
+				g_list_append(NULL, LASSO_SAML2_ASSERTION(decrypted_node));
+			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion = NULL;
+		}
+	}
+
+	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL) {
+		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
+		LassoNode *id_node = NULL;
 
 		/* FIXME: verify assertion signature */
 
@@ -959,14 +992,13 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 				return ret;
 			}
 		}
-		
+
 		id_node = g_object_ref(assertion->Subject->EncryptedID);
 		if (id_node == NULL) {
 			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 		}
 
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(id_node);
-		encryption_private_key = profile->server->private_data->encryption_private_key;
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
 			LASSO_PROFILE(login)->nameIdentifier = LASSO_NODE(
 				lasso_node_decrypt(encrypted_element, encryption_private_key));
@@ -991,7 +1023,6 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	LassoFederation *federation;
 
 	profile = LASSO_PROFILE(login);
-
 	if (LASSO_SAMLP2_RESPONSE(profile->response)->Assertion == NULL)
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
@@ -1081,7 +1112,7 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 {
 	LassoSamlp2AuthnRequest *request;
 	char *url = NULL;
-	
+
 	request = LASSO_SAMLP2_AUTHN_REQUEST(LASSO_PROFILE(login)->request);
 
 	if (request->AssertionConsumerServiceURL) {
@@ -1101,7 +1132,8 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	if (url == NULL) {
 		message(G_LOG_LEVEL_WARNING,
 				"can't find assertion consumer service url (going for default)");
-		url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
+		url = lasso_saml20_provider_get_assertion_consumer_service_url(
+			remote_provider, -1);
 	}
 
 	return url;

@@ -23,7 +23,7 @@
  */
 
 #include "samlp2_response.h"
-
+#include "saml2_encrypted_element.h"
 /*
  * Schema fragment (saml-schema-protocol-2.0.xsd):
  *

@@ -242,7 +242,6 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 	LassoNode *resp = lasso_node_new_from_dump(profile->private_data->artifact_message);
 	if (resp == NULL)
 		return LASSO_ERROR_UNDEFINED;
-
 	response = LASSO_SAMLP2_STATUS_RESPONSE(lasso_samlp2_artifact_response_new());
 	LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any = resp;
 	response->ID = lasso_build_unique_id(32);
@@ -262,7 +261,6 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 	
 	profile->response = LASSO_NODE(response);
 	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
-
 	profile->msg_body = lasso_node_export_to_soap(profile->response);
 	return 0;
 }
@@ -274,7 +272,6 @@ lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char
 
 	response = lasso_node_new_from_soap(msg);
 	/* XXX: check status code */
-
 	profile->response = g_object_ref(LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any);
 	lasso_node_destroy(response);
 

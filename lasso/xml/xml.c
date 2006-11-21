@@ -558,6 +558,15 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	xmlNodePtr encrypted_key_node = NULL;
 	GList *encrypted_key_list = NULL;
 
+
+	if (encryption_private_key == NULL || !xmlSecKeyIsValid(encryption_private_key)) {
+		message(G_LOG_LEVEL_WARNING, "Invalid decryption key\n");
+		return NULL;
+	}
+
+	/* Need to duplicate it because xmlSecKey will destroy it */
+	encryption_private_key = xmlSecKeyDuplicate(encryption_private_key);
+
 	encrypted_data_node = encrypted_element->EncryptedData;
 
 	if (encrypted_element->EncryptedKey == NULL) {
@@ -565,17 +574,25 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 	}
 
-	encrypted_key_list = g_list_next(encrypted_element->EncryptedKey);
-
-	if (encrypted_key_list == NULL) {
-		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n");
-		return NULL;
+	GList *i = NULL;
+	for (i = encrypted_element->EncryptedKey; i->data != NULL; i = i->next) {
+		if (!strcmp(((xmlNode *)(i->data))->name, "EncryptedKey")) {
+			encrypted_key_node = (xmlNode *)(i->data);
+			break;
+		}
 	}
+	
+/* 	encrypted_key_list = g_list_next(encrypted_element->EncryptedKey); */	
+	
+/* 	if (encrypted_key_list == NULL) { */
+/* 		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n"); */
+/* 		return NULL; */
+/* 	} */
 
-	encrypted_key_node = (xmlNode *)(encrypted_key_list->data);
+/* 	encrypted_key_node = (xmlNode *)(encrypted_key_list->data); */
 
 	if (encrypted_key_node == NULL) {
-		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n");
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey data\n");
 		return NULL;
 	}
 
@@ -1143,6 +1160,7 @@ lasso_node_new_from_dump(const char *dump)
 		return NULL;
 
 	node = lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc));
+
 	xmlFreeDoc(doc);
 	return node;
 }
@@ -1196,6 +1214,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	char *prefix = NULL;
 	char *typename;
 	char *tmp;
+	char *node_name;
 	xmlChar *xsitype;
 	LassoNode *node;
 
@@ -1263,7 +1282,16 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 	if (prefix == NULL)
 		return NULL;
 
-	typename = g_strdup_printf("Lasso%s%s", prefix, xmlnode->name);
+	node_name = (char*)xmlnode->name;
+	if (!strcmp((char*)node_name, "EncryptedAssertion")) {
+		node_name = strdup("EncryptedElement");
+	}
+
+	typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
+	
+	if (!strcmp((char*)node_name, "EncryptedElement")) {
+		g_free(node_name);
+	}
 
 	node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
 	g_free(typename);

@@ -674,7 +674,7 @@ lasso_node_build_deflated_query(LassoNode *node)
 	z_stream stream;
 
 	message = lasso_node_get_xmlNode(node, FALSE);
-
+	
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");

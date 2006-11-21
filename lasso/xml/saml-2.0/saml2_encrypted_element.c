@@ -2,7 +2,7 @@
  *
  * Lasso - A free implementation of the Liberty Alliance specifications.
  *
- * Copyright (C) 2004, 2005 Entr'ouvert
+ * Copyright (C) 2004, 2005, 2006 Entr'ouvert
  * http://lasso.entrouvert.org
  * 
  * Authors: See AUTHORS file in top-level directory.
@@ -69,7 +69,11 @@ class_init(LassoSaml2EncryptedElementClass *klass)
 
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
-	lasso_node_class_set_nodename(nclass, "EncryptedElement"); 
+
+	/* EncryptedAssertion are in a GList so they will use this name,
+	* whereas EncryptedID will use their snippet name
+	*/
+	lasso_node_class_set_nodename(nclass, "EncryptedAssertion");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }
