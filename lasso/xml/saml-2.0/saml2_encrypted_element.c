@@ -73,7 +73,7 @@ class_init(LassoSaml2EncryptedElementClass *klass)
 	/* EncryptedAssertion are in a GList so they will use this name,
 	* whereas EncryptedID will use their snippet name
 	*/
-	lasso_node_class_set_nodename(nclass, "EncryptedAssertion");
+	lasso_node_class_set_nodename(nclass, "EncryptedElement");
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_ASSERTION_HREF, LASSO_SAML2_ASSERTION_PREFIX);
 	lasso_node_class_add_snippets(nclass, schema_snippets);
 }

@@ -1132,8 +1132,7 @@ lasso_saml20_login_get_assertion_consumer_service_url(LassoLogin *login,
 	if (url == NULL) {
 		message(G_LOG_LEVEL_WARNING,
 				"can't find assertion consumer service url (going for default)");
-		url = lasso_saml20_provider_get_assertion_consumer_service_url(
-			remote_provider, -1);
+		url = lasso_saml20_provider_get_assertion_consumer_service_url(remote_provider, -1);
 	}
 
 	return url;
