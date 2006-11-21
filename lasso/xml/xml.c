@@ -427,8 +427,8 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	orig_node = lasso_node_get_xmlNode(lasso_node, 1);
 	xmlDocSetRootElement(doc, orig_node);
 
-	/* Create encryption template */
-	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformDes3CbcId,
+	/* Create encryption template for a 256-bit AES key */
+	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformAes256CbcId,
 		NULL, xmlSecTypeEncElement, NULL, NULL);
 	if (encrypted_element->EncryptedData == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
@@ -505,8 +505,8 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 		return NULL;
 	}
 
-	/* generate a Triple DES key */
-	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192, xmlSecKeyDataTypeSession);
+	/* generate a 256-bit AES key */
+	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 256, xmlSecKeyDataTypeSession);
 	if (enc_ctx->encKey == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to generate session des key");
 		return NULL;
@@ -551,16 +551,19 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	xmlDocPtr doc = NULL;
 	xmlDocPtr doc2 = NULL;
 	xmlSecEncCtxPtr encCtx = NULL;
-	xmlSecKeyPtr des_key = NULL;
+	xmlSecKeyPtr sym_key = NULL;
 	xmlSecBufferPtr key_buffer;
 	LassoNode *decrypted_node;
 	xmlNodePtr encrypted_data_node = NULL;
 	xmlNodePtr encrypted_key_node = NULL;
 	GList *encrypted_key_list = NULL;
-
+	xmlNodePtr encryption_method_node = NULL;
+	char *algorithm;
+	xmlSecKeyDataId key_type;
+	GList *i = NULL;
 
 	if (encryption_private_key == NULL || !xmlSecKeyIsValid(encryption_private_key)) {
-		message(G_LOG_LEVEL_WARNING, "Invalid decryption key\n");
+		message(G_LOG_LEVEL_WARNING, "Invalid decryption key");
 		return NULL;
 	}
 
@@ -569,28 +572,37 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 
 	encrypted_data_node = encrypted_element->EncryptedData;
 
-	if (encrypted_element->EncryptedKey == NULL) {
-		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node\n");
+	/* Get the encryption algorithm for EncryptedData in its EncryptionMethod node */
+	encryption_method_node = xmlSecTmplEncDataGetEncMethodNode(encrypted_data_node);
+	if (encryption_method_node == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod node in EncryptedData");
+		return NULL;
+	}
+	algorithm = (char *)xmlGetNoNsProp(encryption_method_node, "Algorithm");
+	if (algorithm == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod");
+		return NULL;
+	}
+	if (strstr(algorithm , "#aes")) {
+		key_type = xmlSecKeyDataAesId;
+	} else if (strstr(algorithm , "des")) {
+		key_type = xmlSecKeyDataDesId;
+	} else {
+		message(G_LOG_LEVEL_WARNING, "Unknown EncryptionMethod");
 		return NULL;
 	}
 
-	GList *i = NULL;
+	/* Get the EncryptedKey */
+	if (encrypted_element->EncryptedKey == NULL) {
+		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node");
+		return NULL;
+	}
 	for (i = encrypted_element->EncryptedKey; i->data != NULL; i = i->next) {
 		if (!strcmp(((xmlNode *)(i->data))->name, "EncryptedKey")) {
 			encrypted_key_node = (xmlNode *)(i->data);
 			break;
 		}
 	}
-	
-/* 	encrypted_key_list = g_list_next(encrypted_element->EncryptedKey); */	
-	
-/* 	if (encrypted_key_list == NULL) { */
-/* 		message(G_LOG_LEVEL_WARNING, "No EncryptedKey\n"); */
-/* 		return NULL; */
-/* 	} */
-
-/* 	encrypted_key_node = (xmlNode *)(encrypted_key_list->data); */
-
 	if (encrypted_key_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "No EncryptedKey data\n");
 		return NULL;
@@ -603,18 +615,20 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	doc2 = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc2, encrypted_key_node);
 
+#if 0
 	/* This block can be used in case we must be compatible with an EncryptedKey
 	* inside the EncryptedData
 	*/
-/* 	xmlNode *t = xml_node; */
-/* 	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) { */
-/* 		if (strcmp((char*)t->name, "EncryptedData") == 0 || */
-/* 				strcmp((char*)t->name, "KeyInfo") == 0) */
-/* 			t = t->children; */
-/* 		t = t->next; */
-/* 	} */
-/* 	if (t == NULL) */
-/* 		return NULL; */
+	xmlNode *t = xml_node;
+	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
+		if (strcmp((char*)t->name, "EncryptedData") == 0 ||
+				strcmp((char*)t->name, "KeyInfo") == 0)
+			t = t->children;
+		t = t->next;
+	}
+	if (t == NULL)
+		return NULL;
+#endif
 
 	/* create encryption context, with RSA key */
 	encCtx = xmlSecEncCtxCreate(NULL);
@@ -628,10 +642,10 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	/* decrypt the EncryptedKey */
 	key_buffer = xmlSecEncCtxDecryptToBuffer(encCtx, encrypted_key_node);
 	if (key_buffer != NULL) {
-		des_key = xmlSecKeyReadBuffer(xmlSecKeyDataDesId, key_buffer);
+		sym_key = xmlSecKeyReadBuffer(key_type, key_buffer);
 	}
-	if (des_key == NULL) {
-		message(G_LOG_LEVEL_WARNING, "Decryption failed");
+	if (sym_key == NULL) {
+		message(G_LOG_LEVEL_WARNING, "EncryptedKey decryption failed");
 		return NULL;
 	}
 
@@ -642,12 +656,12 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption context");
 		return NULL;
 	}
-	encCtx->encKey = des_key;
+	encCtx->encKey = sym_key;
 	encCtx->mode = xmlEncCtxModeEncryptedData;
 
 	/* decrypt the EncryptedData */
 	if ((xmlSecEncCtxDecrypt(encCtx, encrypted_data_node) < 0) || (encCtx->result == NULL)) {
-		message(G_LOG_LEVEL_WARNING, "Decryption failed");
+		message(G_LOG_LEVEL_WARNING, "EncryptedData decryption failed");
 		return NULL;
 	}
 
