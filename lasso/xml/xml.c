@@ -577,7 +577,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod node in EncryptedData");
 		return NULL;
 	}
-	algorithm = (char*)xmlGetNoNsProp(encryption_method_node, (xmlChar *)"Algorithm");
+	algorithm = (char*)xmlGetProp(encryption_method_node, (xmlChar *)"Algorithm");
 	if (algorithm == NULL) {
 		message(G_LOG_LEVEL_WARNING, "No EncryptionMethod");
 		return NULL;
