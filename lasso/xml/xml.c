@@ -1296,8 +1296,8 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		return NULL;
 
 	node_name = (char*)xmlnode->name;
-	if (strcmp((char*)node_name, "EncryptedAssertion") == 0) {
-		typename = g_strdup("LassoEncryptedElement");
+	if (strcmp(node_name, "EncryptedAssertion") == 0) {
+		typename = g_strdup("LassoSaml2EncryptedElement");
 	} else {
 		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}
