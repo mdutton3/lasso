@@ -136,7 +136,7 @@ gboolean lasso_profile_is_saml_query(char *query);
 	"urn:oasis:names:tc:SAML:2.0:ac:classes:XMLDSig"
 
 /***********************************************************************
- * lasso:NameIdMangement
+ * lasso:NameIdManagement
  ***********************************************************************/
 
 
@@ -375,7 +375,7 @@ typedef struct {
 
 	/* Constructor, Destructor & Static Methods */
 
-	LassoEcp();
+	LassoEcp(LassoServer *server);
 
 	~LassoEcp();
 
