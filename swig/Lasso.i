@@ -4988,6 +4988,9 @@ typedef struct {
 	gboolean hasProtocolProfile(LassoMdProtocolType protocol_type, char *protocol_profile);
 
 	LassoProtocolConformance getProtocolConformance();
+
+	%newobject setEncryption;
+	void setEncryption(gboolean encryption_activation);
 }
 
 %{
@@ -5012,7 +5015,7 @@ typedef struct {
 #define LassoProvider_getProtocolConformance lasso_provider_get_protocol_conformance
 #define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
 #define LassoProvider_getOrganization(self) get_xml_string(lasso_provider_get_organization(self))
-
+#define LassoProvider_setEncryption lasso_provider_set_encryption
 
 %}
 
