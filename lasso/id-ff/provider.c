@@ -735,7 +735,7 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
-	provider->private_data->encryption = FALSE;
+	provider->private_data->encryption_enabled = FALSE;
 	
 	return provider;
 }
@@ -1017,5 +1017,5 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 void
 lasso_provider_set_encryption(LassoProvider *provider, gboolean encryption_activation)
 {
-	provider->private_data->encryption = encryption_activation;
+	provider->private_data->encryption_enabled = encryption_activation;
 }

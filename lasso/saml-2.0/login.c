@@ -588,8 +588,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
-	/* If there is a key, encrypt NameID. Maybe there should be another condition ? */
-	if (provider && provider->private_data->encryption
+	/* Encrypt NameID */
+	if (provider && provider->private_data->encryption_enabled
 			&& provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion->Subject->NameID),
@@ -630,8 +630,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	response = LASSO_SAMLP2_RESPONSE(profile->response);
 
-	/* If there is a key, encrypt Assertion. Maybe there should be another condition ? */
-	if (provider && provider->private_data->encryption
+	/* Encrypt Assertion */
+	if (provider && provider->private_data->encryption_enabled
 			&& provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion),

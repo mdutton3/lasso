@@ -58,7 +58,7 @@ struct _LassoProviderPrivate
 	xmlNode *signing_key_descriptor;
 	xmlSecKey *encryption_public_key;
 	xmlNode *encryption_key_descriptor;
-	gboolean encryption;
+	gboolean encryption_enabled;
 };
 
 
