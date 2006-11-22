@@ -1297,15 +1297,11 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 
 	node_name = (char*)xmlnode->name;
 	if (strcmp((char*)node_name, "EncryptedAssertion") == 0) {
-		node_name = g_strdup("EncryptedElement");
+		typename = g_strdup("LassoEncryptedElement");
+	} else {
+		typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	}
-
-	typename = g_strdup_printf("Lasso%s%s", prefix, node_name);
 	
-	if (strcmp((char*)node_name, "EncryptedElement") == 0) {
-		g_free(node_name);
-	}
-
 	node = lasso_node_new_from_xmlNode_with_type(xmlnode, typename);
 	g_free(typename);
 
