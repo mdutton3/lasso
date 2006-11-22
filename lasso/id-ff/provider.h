@@ -130,6 +130,21 @@ typedef enum {
 } LassoProtocolConformance;
 
 
+/**
+ * LassoEncryptionMode:
+ * LASSO_ENCRYPTION_MODE_NONE: Encrypt nothing
+ * LASSO_ENCRYPTION_MODE_NAMEID: Encrypt NameIDs
+ * LASSO_ENCRYPTION_MODE_ASSERTION : Encrypt Assertions
+ *
+ * Encryption mode.
+ **/
+typedef enum {
+	LASSO_ENCRYPTION_MODE_NONE,
+	LASSO_ENCRYPTION_MODE_NAMEID,
+	LASSO_ENCRYPTION_MODE_ASSERTION,
+} LassoEncryptionMode;
+
+
 struct _LassoProvider {
 	LassoNode parent;
 
@@ -176,8 +191,8 @@ LASSO_EXPORT xmlNode* lasso_provider_get_organization(LassoProvider *provider);
 LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
 		LassoProvider *provider);
 
-LASSO_EXPORT void lasso_provider_set_encryption(LassoProvider *provider,
-		gboolean encryption_activation);
+LASSO_EXPORT void lasso_provider_set_encryption_mode(LassoProvider *provider,
+		LassoEncryptionMode encryption_mode);
 
 #ifdef __cplusplus
 }

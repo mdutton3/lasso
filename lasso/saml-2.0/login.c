@@ -589,7 +589,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
 	/* Encrypt NameID */
-	if (provider && provider->private_data->encryption_enabled
+	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
 			&& provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion->Subject->NameID),
@@ -631,7 +631,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	response = LASSO_SAMLP2_RESPONSE(profile->response);
 
 	/* Encrypt Assertion */
-	if (provider && provider->private_data->encryption_enabled
+	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_ASSERTION
 			&& provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion),
