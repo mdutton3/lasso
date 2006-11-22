@@ -176,6 +176,9 @@ LASSO_EXPORT xmlNode* lasso_provider_get_organization(LassoProvider *provider);
 LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
 		LassoProvider *provider);
 
+LASSO_EXPORT void lasso_provider_set_encryption(LassoProvider *provider,
+		gboolean encryption_activation);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -735,6 +735,8 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
+	provider->private_data->encryption = FALSE;
+	
 	return provider;
 }
 
@@ -1003,4 +1005,17 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	xmlFreeDoc(doc);
 	return 0;
+}
+
+/**
+ * lasso_provider_set_encryption:
+ * @provider: provider to set encryption for
+ * @encryption_activation: TRUE to activate, FALSE, to desactivate
+ *
+ * Activate or desactivate encryption
+ **/
+void
+lasso_provider_set_encryption(LassoProvider *provider, gboolean encryption_activation)
+{
+	provider->private_data->encryption = encryption_activation;
 }

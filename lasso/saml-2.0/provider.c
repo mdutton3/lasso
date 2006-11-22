@@ -412,5 +412,3 @@ lasso_saml20_provider_accept_http_method(LassoProvider *provider, LassoProvider 
 
 	return FALSE;
 }
-
-
