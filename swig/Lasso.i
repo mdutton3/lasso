@@ -1002,6 +1002,18 @@ typedef enum {
 	LASSO_SIGNATURE_METHOD_DSA_SHA1
 } LassoSignatureMethod;
 
+/* Encryption mode */
+#ifndef SWIGPHP4
+%rename(ENCRYPTION_MODE_NONE) LASSO_ENCRYPTION_MODE_NONE;
+%rename(ENCRYPTION_MODE_NAMEID) LASSO_ENCRYPTION_MODE_NAMEID;
+%rename(ENCRYPTION_MODE_ASSERTION) LASSO_ENCRYPTION_MODE_ASSERTION;
+%rename(EncryptionMode) LassoEncryptionMode;
+#endif
+typedef enum {
+	LASSO_ENCRYPTION_MODE_NONE,
+	LASSO_ENCRYPTION_MODE_NAMEID,
+	LASSO_ENCRYPTION_MODE_ASSERTION
+} LassoEncryptionMode;
 
 /***********************************************************************
  * Errors
@@ -4989,8 +5001,8 @@ typedef struct {
 
 	LassoProtocolConformance getProtocolConformance();
 
-	%newobject setEncryption;
-	void setEncryption(gboolean encryption_activation);
+	%newobject setEncryptionMode;
+	void setEncryptionMode(LassoEncryptionMode encryption_mode);
 }
 
 %{
@@ -5015,7 +5027,7 @@ typedef struct {
 #define LassoProvider_getProtocolConformance lasso_provider_get_protocol_conformance
 #define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
 #define LassoProvider_getOrganization(self) get_xml_string(lasso_provider_get_organization(self))
-#define LassoProvider_setEncryption lasso_provider_set_encryption
+#define LassoProvider_setEncryptionMode lasso_provider_set_encryption_mode
 
 %}
 
