@@ -25,6 +25,11 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include <lasso/saml-2.0/providerprivate.h>
+#include <lasso/saml-2.0/profileprivate.h>
+#include <lasso/id-ff/providerprivate.h>
+#include <lasso/id-ff/identityprivate.h>
+
 #include <lasso/saml-2.0/ecp.h>
 
 /*****************************************************************************/
@@ -87,6 +92,10 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xmlNode *xmlnode;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
+	LassoProfile *profile;
+	LassoProvider *remote_provider;
+
+	profile = LASSO_PROFILE(ecp);
 
 	if (authn_request_msg == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
@@ -116,6 +125,22 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	LASSO_PROFILE(ecp)->msg_body = \
 		g_strdup((char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
+
+	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
+	if (profile->remote_providerID == NULL) {
+	  return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
+
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+				profile->remote_providerID);
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+
+	profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
+				"SingleSignOnService SOAP");
+	if (profile->msg_url == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+	}
 
 	return 0;
 }
@@ -232,11 +257,12 @@ lasso_ecp_get_type()
  *     occured
  **/
 LassoEcp*
-lasso_ecp_new()
+lasso_ecp_new(LassoServer *server)
 {
 	LassoEcp *ecp;
 
 	ecp = g_object_new(LASSO_TYPE_ECP, NULL);
+	LASSO_PROFILE(ecp)->server = g_object_ref(server);
 
 	return ecp;
 }

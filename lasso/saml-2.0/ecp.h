@@ -59,7 +59,7 @@ struct _LassoEcpClass {
 
 LASSO_EXPORT GType lasso_ecp_get_type(void);
 
-LASSO_EXPORT LassoEcp* lasso_ecp_new();
+LASSO_EXPORT LassoEcp* lasso_ecp_new(LassoServer *server);
 
 LASSO_EXPORT int lasso_ecp_process_authn_request_msg(LassoEcp *ecp,
 		const char *authn_request_msg);
