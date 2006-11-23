@@ -29,6 +29,7 @@
 #include <lasso/saml-2.0/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/identityprivate.h>
+#include <lasso/id-ff/serverprivate.h>
 
 #include <lasso/saml-2.0/ecp.h>
 
@@ -122,8 +123,8 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
-	LASSO_PROFILE(ecp)->msg_body = \
-		g_strdup((char*)(buf->conv ? buf->conv->content : buf->buffer->content));
+	LASSO_PROFILE(ecp)->msg_body = g_strdup(
+			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 
 	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
@@ -215,8 +216,8 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	buf = xmlAllocOutputBuffer(handler);
 	xmlNodeDumpOutput(buf, NULL, new_envelope, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
-	LASSO_PROFILE(ecp)->msg_body = \
-		g_strdup((char*)(buf->conv ? buf->conv->content : buf->buffer->content));
+	LASSO_PROFILE(ecp)->msg_body = g_strdup(
+			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
 
 	xmlFreeDoc(doc);
