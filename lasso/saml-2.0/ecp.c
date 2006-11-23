@@ -128,7 +128,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 
 	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
 	if (profile->remote_providerID == NULL) {
-	  return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
