@@ -921,6 +921,8 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	LassoNode *decrypted_node = NULL;
 	char *status_value;
 	int ret = 0;
+	LassoSaml2Assertion * assertion;
+	LassoNode *id_node = NULL;
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
@@ -979,8 +981,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 	}
 
 	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL) {
-		LassoSaml2Assertion *assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
-		LassoNode *id_node = NULL;
+		assertion = LASSO_SAMLP2_RESPONSE(response)->Assertion->data;
 
 		/* FIXME: verify assertion signature */
 
