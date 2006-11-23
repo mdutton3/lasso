@@ -22,8 +22,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <xmlsec/keys.h>
-
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/saml-2.0/logoutprivate.h>
 #include <lasso/saml-2.0/profileprivate.h>
@@ -38,7 +36,6 @@
 #include <lasso/id-ff/serverprivate.h>
 
 #include <lasso/xml/xml_enc.h>
-#include <lasso/xml/xml.h>
 
 #include <lasso/xml/saml-2.0/samlp2_logout_request.h>
 #include <lasso/xml/saml-2.0/samlp2_logout_response.h>
