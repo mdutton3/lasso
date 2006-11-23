@@ -22,6 +22,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <xmlsec/keys.h>
+
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/saml-2.0/logoutprivate.h>
 #include <lasso/saml-2.0/profileprivate.h>
@@ -33,6 +35,10 @@
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/sessionprivate.h>
 #include <lasso/id-ff/profileprivate.h>
+#include <lasso/id-ff/serverprivate.h>
+
+#include <lasso/xml/xml_enc.h>
+#include <lasso/xml/xml.h>
 
 #include <lasso/xml/saml-2.0/samlp2_logout_request.h>
 #include <lasso/xml/saml-2.0/samlp2_logout_response.h>
@@ -51,6 +57,8 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	LassoFederation *federation;
 	LassoSession *session;
 	LassoSamlp2RequestAbstract *request;
+	LassoProvider *provider = NULL;
+	LassoSaml2EncryptedElement *encrypted_element = NULL;
 
 	/* session existence has been checked in id-ff/ */
 	session = lasso_profile_get_session(profile);
@@ -145,6 +153,21 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID = g_object_ref(profile->nameIdentifier);
 
+	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+		
+	/* Encrypt NameID */
+	if (remote_provider &&
+		remote_provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
+			&& remote_provider->private_data->encryption_public_key != NULL) {
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
+			LASSO_NODE(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID),
+			remote_provider->private_data->encryption_public_key));
+		if (encrypted_element != NULL) {
+			LASSO_SAMLP2_LOGOUT_REQUEST(request)->EncryptedID = encrypted_element;
+			LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID = NULL;
+		}
+	}
+
 	/* XXX: SessionIndex */
 
 	logout->initial_http_request_method = http_method;
@@ -202,6 +225,11 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	LassoProfile *profile = LASSO_PROFILE(logout);
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
+	LassoSaml2NameID *name_id;
+	LassoSaml2EncryptedElement *encrypted_id;
+	LassoSaml2EncryptedElement* encrypted_element = NULL;
+	xmlSecKey *encryption_private_key = NULL;
+	LassoNode *decrypted_node = NULL;
 
 	profile->request = lasso_samlp2_logout_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
@@ -232,8 +260,24 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	profile->nameIdentifier = g_object_ref(
-			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID);
+	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
+	encrypted_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID;
+
+	if (name_id == NULL && encrypted_id != NULL) {
+		encryption_private_key = profile->server->private_data->encryption_private_key;
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
+		if (encrypted_element != NULL && encryption_private_key != NULL) {
+			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
+				encrypted_id, encryption_private_key));
+			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID = LASSO_SAML2_NAME_ID(
+				profile->nameIdentifier);
+			LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->EncryptedID = NULL;
+
+		}
+	} else {
+		profile->nameIdentifier = g_object_ref(name_id);
+	}
+
 
 	return profile->signature_status;
 }
@@ -298,7 +342,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 	}
 
 	/* Get the name identifier */
-	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;
+	name_id = LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->NameID;	
 	if (name_id == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Name identifier not found in logout request");
 		/* XXX: which status code in SAML 2.0 ? */
