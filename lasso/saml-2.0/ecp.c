@@ -179,8 +179,6 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	new_envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
 	xmlSetNs(new_envelope, xmlNewNs(new_envelope,
 		(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX));
-	xmlNewNs(paos_response,
-		(xmlChar*)LASSO_PAOS_HREF, (xmlChar*)LASSO_PAOS_PREFIX);
 	xmlNewNs(new_envelope,
 		(xmlChar*)LASSO_SAML_ASSERTION_HREF, (xmlChar*)LASSO_SAML_ASSERTION_PREFIX);
 	header = xmlNewTextChild(new_envelope, NULL, (xmlChar*)"Header", NULL);
