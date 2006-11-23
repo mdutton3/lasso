@@ -334,13 +334,18 @@ lasso_profile_set_identity_from_dump(LassoProfile *profile, const gchar *dump)
  * Return value: 0 on success; or a negative value otherwise.
  **/
 gint
-lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar  *dump)
+lasso_profile_set_session_from_dump(LassoProfile *profile, const gchar *dump)
 {
 	g_return_val_if_fail(dump != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile->session = lasso_session_new_from_dump(dump);
 	if (profile->session == NULL)
 		return critical_error(LASSO_PROFILE_ERROR_BAD_SESSION_DUMP);
+	
+	IF_SAML2(profile) {
+		lasso_saml20_profile_set_session_from_dump(profile);
+	}
+
 	profile->session->is_dirty = FALSE;
 
 	return 0;

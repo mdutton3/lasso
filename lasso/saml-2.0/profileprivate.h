@@ -38,6 +38,7 @@ int lasso_saml20_profile_init_artifact_resolve(LassoProfile *profile,
 int lasso_saml20_profile_process_artifact_resolve(LassoProfile *profile, const char *msg);
 int lasso_saml20_profile_build_artifact_response(LassoProfile *profile);
 int lasso_saml20_profile_process_artifact_response(LassoProfile *profile, const char *msg);
+gint lasso_saml20_profile_set_session_from_dump(LassoProfile *profile);
 
 #ifdef __cplusplus
 }

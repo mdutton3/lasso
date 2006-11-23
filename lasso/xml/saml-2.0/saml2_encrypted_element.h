@@ -59,6 +59,7 @@ struct _LassoSaml2EncryptedElement {
 	/* elements */
 	xmlNode *EncryptedData;
 	GList *EncryptedKey;
+	LassoNode *original_data;
 };
 
 

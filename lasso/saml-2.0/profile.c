@@ -38,7 +38,7 @@
 #include <lasso/xml/saml-2.0/samlp2_name_id_mapping_response.h>
 #include <lasso/xml/saml-2.0/samlp2_status_response.h>
 #include <lasso/xml/saml-2.0/samlp2_response.h>
-
+#include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 static char* lasso_saml20_profile_build_artifact(LassoProvider *provider);
 
@@ -302,3 +302,37 @@ lasso_profile_is_saml_query(const gchar *query)
 	return FALSE;
 }
 
+
+static void
+add_value_to_array(gpointer key, gpointer value, GPtrArray *array)
+{
+	g_ptr_array_add(array, value);
+}
+
+gint
+lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
+{
+	GPtrArray *assertions = NULL;
+	LassoSaml2Assertion *assertion = NULL;
+	int i;
+
+	if (profile->session->assertions != NULL) {
+		assertions = g_ptr_array_sized_new(g_hash_table_size(profile->session->assertions));
+		g_hash_table_foreach(profile->session->assertions, (GHFunc) add_value_to_array,
+				assertions);
+	}
+
+	if (assertions == NULL)
+		return -1;
+
+	for (i = 0; i < assertions->len; ++i) {
+		assertion = g_ptr_array_index(assertions, i);
+		if (assertion != NULL && assertion->Subject->EncryptedID != NULL) {
+			assertion->Subject->NameID = LASSO_SAML2_NAME_ID(
+					assertion->Subject->EncryptedID->original_data);
+			assertion->Subject->EncryptedID = NULL;
+		}
+	}
+	
+	return 0;
+}
