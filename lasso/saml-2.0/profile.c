@@ -323,7 +323,7 @@ lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
 	}
 
 	if (assertions == NULL)
-		return -1;
+		return LASSO_ERROR_UNDEFINED;
 
 	for (i = 0; i < assertions->len; ++i) {
 		assertion = g_ptr_array_index(assertions, i);
