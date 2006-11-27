@@ -226,7 +226,6 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	LassoSaml2EncryptedElement *encrypted_id;
 	LassoSaml2EncryptedElement* encrypted_element = NULL;
 	xmlSecKey *encryption_private_key = NULL;
-	LassoNode *decrypted_node = NULL;
 
 	profile->request = lasso_samlp2_logout_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);

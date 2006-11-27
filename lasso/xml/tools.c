@@ -136,7 +136,6 @@ lasso_get_pem_file_type(const char *pem_file)
 	EVP_PKEY *pkey;
 	X509 *cert;
 	LassoPemFileType type = LASSO_PEM_FILE_TYPE_UNKNOWN;
-	int reset_success;
 
 	g_return_val_if_fail(pem_file != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
