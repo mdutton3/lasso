@@ -173,7 +173,7 @@ end = """
 i = wrap.find(begin)
 while i >= 0:
     j = wrap.find(end, i) + len(end)
-    print >> sys.stderr, "END:", j, len(end)
+    #print >> sys.stderr, "END:", j, len(end)
     if j < len(end): # bails out if not found
         break
     segment = wrap[i:j]
