@@ -539,10 +539,13 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoProvider *provider = NULL;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
 	LassoSamlp2Response *response = NULL;
-	gboolean name_id_encryption = FALSE;
 
-	federation = g_hash_table_lookup(profile->identity->federations,
-			                        profile->remote_providerID);
+	if (profile->identity) {
+		federation = g_hash_table_lookup(profile->identity->federations,
+				profile->remote_providerID);
+	} else {
+		federation = NULL;
+	}
 
 	assertion = LASSO_SAML2_ASSERTION(lasso_saml2_assertion_new());
 	assertion->ID = lasso_build_unique_id(32);
