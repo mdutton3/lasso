@@ -33,6 +33,8 @@
 #include <lasso/id-ff/profile.h>
 #include <lasso/id-ff/profileprivate.h>
 
+#include <lasso/saml-2.0/profileprivate.h>
+
 /*****************************************************************************/
 /* public functions                                                          */
 /*****************************************************************************/
