@@ -539,6 +539,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoProvider *provider = NULL;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
 	LassoSamlp2Response *response = NULL;
+	gboolean name_id_encryption = FALSE;
 
 	federation = g_hash_table_lookup(profile->identity->federations,
 			                        profile->remote_providerID);
@@ -566,6 +567,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData = 
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
+
+	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+
 	if (name_id_policy == NULL || strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		/* transient -> don't use a federation */
@@ -577,6 +581,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 		assertion->Subject->NameID = name_id;
 	} else {
+		if (provider && strcmp(name_id_policy->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) == 0) {
+			provider->private_data->encryption_mode |= LASSO_ENCRYPTION_MODE_NAMEID;
+		}
 		if (federation->remote_nameIdentifier) {
 			assertion->Subject->NameID = g_object_ref(
 					federation->remote_nameIdentifier);
@@ -585,8 +593,6 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 					federation->local_nameIdentifier);
 		}
 	}
-
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
 	/* Encrypt NameID */
 	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID

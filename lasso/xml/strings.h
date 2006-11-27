@@ -356,6 +356,8 @@
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
 
 
 /* Consent */

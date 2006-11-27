@@ -14,11 +14,14 @@ gboolean lasso_profile_is_saml_query(char *query);
 #ifndef SWIGPHP4
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
 %rename(SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT;
+%rename(SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED;
 #endif
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 #define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT \
 		"urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+#define LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED \
+		"urn:oasis:names:tc:SAML:2.0:nameid-format:encrypted"
 
 /* Protocol Bindings */
 #ifndef SWIGPHP4
