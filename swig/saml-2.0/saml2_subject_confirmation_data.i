@@ -3,23 +3,23 @@
 %rename(Saml2SubjectConfirmationData) LassoSaml2SubjectConfirmationData;
 #endif
 typedef struct {
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(notBefore) NotBefore;
 #endif
 	char *NotBefore;
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(notOnOrAfter) NotOnOrAfter;
 #endif
 	char *NotOnOrAfter;
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(recipient) Recipient;
 #endif
 	char *Recipient;
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(inResponseTo) InResponseTo;
 #endif
 	char *InResponseTo;
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(address) Address;
 #endif
 	char *Address;

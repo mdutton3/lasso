@@ -3,11 +3,11 @@
 %rename(Saml2Conditions) LassoSaml2Conditions;
 #endif
 typedef struct {
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(notBefore) NotBefore;
 #endif
 	char *NotBefore;
-#ifndef SWIG_PHP4
+#ifndef SWIGPHP4
 	%rename(notOnOrAfter) NotOnOrAfter;
 #endif
 	char *NotOnOrAfter;
