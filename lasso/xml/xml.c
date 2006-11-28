@@ -428,7 +428,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 
 	/* Create a document to contain the node to encrypt */
 	doc = xmlNewDoc((xmlChar*)"1.0");
-	orig_node = lasso_node_get_xmlNode(lasso_node, 1);
+	orig_node = lasso_node_get_xmlNode(lasso_node, FALSE);
 	xmlDocSetRootElement(doc, orig_node);
 
 	/* Create encryption template for a 256-bit AES key */
