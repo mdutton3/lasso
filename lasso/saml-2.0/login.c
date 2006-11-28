@@ -983,6 +983,9 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(
 			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion->data);
+		if (encrypted_element != NULL && encryption_private_key == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		}
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
 			decrypted_node = LASSO_NODE(lasso_node_decrypt(encrypted_element,
 				encryption_private_key));
@@ -1016,6 +1019,10 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(id_node);
+		if (encrypted_element != NULL && encryption_private_key == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		}
+
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
 			LASSO_PROFILE(login)->nameIdentifier = LASSO_NODE(
 				lasso_node_decrypt(encrypted_element, encryption_private_key));

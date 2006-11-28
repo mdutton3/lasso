@@ -262,6 +262,9 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	if (name_id == NULL && encrypted_id != NULL) {
 		encryption_private_key = profile->server->private_data->encryption_private_key;
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
+		if (encrypted_element != NULL && encryption_private_key == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		}
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
 			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
 				encrypted_id, encryption_private_key));
