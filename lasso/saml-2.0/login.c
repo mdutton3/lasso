@@ -554,8 +554,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 			LASSO_PROVIDER(profile->server)->ProviderID));
 	assertion->Conditions = LASSO_SAML2_CONDITIONS(lasso_saml2_conditions_new());
-	assertion->Conditions->NotBefore = g_strdup(notBefore);
-	assertion->Conditions->NotOnOrAfter = g_strdup(notOnOrAfter);
+
 	audience_restriction = LASSO_SAML2_AUDIENCE_RESTRICTION(
 			lasso_saml2_audience_restriction_new());
 	audience_restriction->Audience = g_strdup(profile->remote_providerID);
@@ -570,6 +569,10 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData = 
 		LASSO_SAML2_SUBJECT_CONFIRMATION_DATA(
 			lasso_saml2_subject_confirmation_data_new());
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotBefore = g_strdup(
+		notBefore);
+	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
+		notOnOrAfter);
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 
@@ -1033,6 +1036,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 {
 	LassoProfile *profile;
 	LassoSaml2Assertion *assertion;
+	GList *previous_assertions, *t;
 	LassoSaml2NameID *ni, *idp_ni = NULL;
 	LassoFederation *federation;
 
@@ -1043,6 +1047,24 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	assertion = LASSO_SAMLP2_RESPONSE(profile->response)->Assertion->data;
 	if (assertion == NULL)
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
+
+	previous_assertions = lasso_session_get_assertions(profile->session,
+			profile->remote_providerID);
+	for (t = previous_assertions; t; t = g_list_next(t)) {
+		LassoSaml2Assertion *ta;
+
+		if (! LASSO_IS_SAML2_ASSERTION(t->data)) {
+			continue;
+		}
+
+		ta = t->data;
+
+		if (strcmp(ta->ID, assertion->ID) == 0) {
+			g_list_free(previous_assertions);
+			return LASSO_LOGIN_ERROR_ASSERTION_REPLAY;
+		}
+	}
+	g_list_free(previous_assertions);
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			g_object_ref(assertion));

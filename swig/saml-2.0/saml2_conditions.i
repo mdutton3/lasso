@@ -3,11 +3,27 @@
 %rename(Saml2Conditions) LassoSaml2Conditions;
 #endif
 typedef struct {
+#ifndef SWIG_PHP4
+	%rename(notBefore) NotBefore;
+#endif
 	char *NotBefore;
+#ifndef SWIG_PHP4
+	%rename(notOnOrAfter) NotOnOrAfter;
+#endif
 	char *NotOnOrAfter;
 } LassoSaml2Conditions;
 %extend LassoSaml2Conditions {
+#ifndef SWIGPHP4
+	%rename(condition) Condition;
+#endif
+	%newobject Condition_get;
+	LassoNodeList *Condition;
 
+#ifndef SWIGPHP4
+	%rename(audienceRestriction) AudienceRestriction;
+#endif
+	%newobject AudienceRestriction_get;
+	LassoNodeList *AudienceRestriction;
 
 	/* Constructor, Destructor & Static Methods */
 	LassoSaml2Conditions();
@@ -19,6 +35,22 @@ typedef struct {
 }
 
 %{
+
+/* Condition */
+
+#define LassoSaml2Conditions_get_Condition(self) get_node_list((self)->Condition)
+#define LassoSaml2Conditions_Condition_get(self) get_node_list((self)->Condition)
+#define LassoSaml2Conditions_set_Condition(self, value) set_node_list(&(self)->Condition, (value))
+#define LassoSaml2Conditions_Condition_set(self, value) set_node_list(&(self)->Condition, (value))
+
+/* AudienceRestriction */
+
+#define LassoSaml2Conditions_get_AudienceRestriction(self) get_node_list((self)->AudienceRestriction)
+#define LassoSaml2Conditions_AudienceRestriction_get(self) get_node_list((self)->AudienceRestriction)
+#define LassoSaml2Conditions_set_AudienceRestriction(self, value) set_node_list(&(self)->AudienceRestriction, (value))
+#define LassoSaml2Conditions_AudienceRestriction_set(self, value) set_node_list(&(self)->AudienceRestriction, (value))
+
+
 
 
 /* Constructors, destructors & static methods implementations */

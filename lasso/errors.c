@@ -169,6 +169,8 @@ lasso_strerror(int error_code)
 			return "Request denied";
 		case LASSO_LOGIN_ERROR_NO_DEFAULT_ENDPOINT:
 			return "No default endpoint";
+		case LASSO_LOGIN_ERROR_ASSERTION_REPLAY:
+			return "Assertion replay";
 
 		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 			return "Redirect request from Attribute Provider";

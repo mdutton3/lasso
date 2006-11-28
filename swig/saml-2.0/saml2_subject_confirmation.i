@@ -3,6 +3,9 @@
 %rename(Saml2SubjectConfirmation) LassoSaml2SubjectConfirmation;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(method) Method;
+#endif
 	char *Method;
 } LassoSaml2SubjectConfirmation;
 %extend LassoSaml2SubjectConfirmation {

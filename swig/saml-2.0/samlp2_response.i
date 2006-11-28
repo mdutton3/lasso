@@ -50,6 +50,12 @@ typedef struct {
 #endif
 	char *Consent;
 
+#ifndef SWIGPHP4
+	%rename(assertion) Assertion;
+#endif
+	%newobject Assertion_get;
+	LassoNodeList *Assertion;
+
 	/* Constructor, Destructor & Static Methods */
 	LassoSamlp2Response();
 	~LassoSamlp2Response();
@@ -134,6 +140,14 @@ typedef struct {
 
 #define LassoSamlp2Response_set_Consent(self,value) set_string(&LASSO_SAMLP2_STATUS_RESPONSE(self)->Consent, (value))
 #define LassoSamlp2Response_Consent_set(self,value) set_string(&LASSO_SAMLP2_STATUS_RESPONSE(self)->Consent, (value))
+
+
+/* Assertion */
+
+#define LassoSamlp2Response_get_Assertion(self) get_node_list((self)->Assertion)
+#define LassoSamlp2Response_Assertion_get(self) get_node_list((self)->Assertion)
+#define LassoSamlp2Response_set_Assertion(self, value) set_node_list(&(self)->Assertion, (value))
+#define LassoSamlp2Response_Assertion_set(self, value) set_node_list(&(self)->Assertion, (value))
 
 
 /* Constructors, destructors & static methods implementations */

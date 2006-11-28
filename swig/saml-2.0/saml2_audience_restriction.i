@@ -3,6 +3,9 @@
 %rename(Saml2AudienceRestriction) LassoSaml2AudienceRestriction;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(audience) Audience;
+#endif
 	char *Audience;
 } LassoSaml2AudienceRestriction;
 %extend LassoSaml2AudienceRestriction {
