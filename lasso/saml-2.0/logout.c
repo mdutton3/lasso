@@ -249,7 +249,6 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	/* verify signatures */
 	profile->signature_status = lasso_provider_verify_signature(
 			remote_provider, request_msg, "ID", format);
-	profile->signature_status = 0; /* XXX: signature check disabled for zxid */
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP)
 		profile->http_request_method = LASSO_HTTP_METHOD_SOAP;
