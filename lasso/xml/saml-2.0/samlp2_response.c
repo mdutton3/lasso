@@ -85,78 +85,25 @@ init_from_query(LassoNode *node, char **query_fields)
 static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
-	LassoSamlp2Response *request = LASSO_SAMLP2_RESPONSE(node);
-/* 	xmlNode *xmlnode; */
-	int rc;
-	LassoNode *encrypted_element = NULL;
+	LassoSamlp2Response *response = LASSO_SAMLP2_RESPONSE(node);
 	GList *assertion_item = NULL;
 	LassoSaml2Assertion *assertion = NULL;
-/* 	xmlnode = parent_class->get_xmlNode(node, lasso_dump); */
+	LassoNode *encrypted_element = NULL;
 
-	if (request->Assertion != NULL && request->Assertion->data != NULL)
-		assertion = request->Assertion->data;
+	if (response->Assertion != NULL && response->Assertion->data != NULL)
+		assertion = response->Assertion->data;
 
-	/* Return response xmlnode with cleartext assertion */
-	if (lasso_dump == TRUE || request->Assertion == NULL) {
-		return parent_class->get_xmlNode(node, lasso_dump);
-	}
-
-	/* Encrypt Assertions */
-	for (assertion_item = request->Assertion;
-			assertion_item != NULL && assertion_item->data != NULL;
-			assertion_item = assertion_item->next) {
-		assertion = assertion_item->data;
-		if (! assertion->encryption_activated ||
-				assertion->encryption_public_key_str == NULL) {
-			continue;
-		}
-		/* Load the encryption key*/
-		xmlChar *b64_value;
-		xmlSecByte *value;
-		int length;
-		int rc;
-		xmlSecKeyInfoCtxPtr ctx;
-		xmlSecKey *encryption_public_key = NULL;
-		int i;
-
-		xmlSecKeyDataFormat key_formats[] = {
-			xmlSecKeyDataFormatDer,
-			xmlSecKeyDataFormatCertDer,
-			xmlSecKeyDataFormatPkcs8Der,
-			xmlSecKeyDataFormatCertPem,
-			xmlSecKeyDataFormatPkcs8Pem,
-			xmlSecKeyDataFormatPem,
-			xmlSecKeyDataFormatBinary,
-			0
-		};
-	
-		b64_value = (xmlChar*)g_strdup(assertion->encryption_public_key_str);
-		length = strlen((char*)b64_value);
-		value = g_malloc(length);
-		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-		rc = xmlSecBase64Decode(b64_value, value, length);
-		if (rc < 0) {
-			/* bad base-64 */
-			g_free(value);
-			value = (xmlSecByte*)g_strdup((char*)b64_value);
-			rc = strlen((char*)value);
-		}
-
-		for (i=0; key_formats[i] && encryption_public_key == NULL; i++) {
-			encryption_public_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
-					key_formats[i], NULL, NULL, NULL);
-		}
-		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
-		xmlFree(b64_value);
-		g_free(value);
-		
-		/* Finally encrypt the assertion */
-		encrypted_element = LASSO_NODE(lasso_node_encrypt(assertion,
-				encryption_public_key));
-		if (encrypted_element != NULL) {
-			request->EncryptedAssertion = g_list_append(request->EncryptedAssertion,
-					encrypted_element);
-			request->Assertion = g_list_remove(request->Assertion, assertion);
+	/* Encrypt Assertions for messages but not for dumps */
+	if (lasso_dump == FALSE && response->Assertion != NULL) {
+		for (assertion_item = response->Assertion;
+				assertion_item != NULL && assertion_item->data != NULL;
+				assertion_item = assertion_item->next) {
+			encrypted_element = lasso_assertion_encrypt(assertion_item->data, response);
+			if (encrypted_element != NULL) {
+				response->EncryptedAssertion = g_list_append(
+					response->EncryptedAssertion, encrypted_element);
+				response->Assertion = g_list_remove(response->Assertion, assertion);
+			}
 		}
 	}
 	
