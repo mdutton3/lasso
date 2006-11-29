@@ -631,6 +631,13 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->private_key_file = g_strdup(profile->server->private_key);
 	assertion->certificate_file = g_strdup(profile->server->certificate);
 
+	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_ASSERTION
+			&& provider->private_data->encryption_public_key != NULL) {
+		assertion->encryption_activated = TRUE;
+		assertion->encryption_public_key_str =
+			provider->private_data->encryption_public_key_str;
+	}
+
 	/* store assertion in session object */
 	if (profile->session == NULL) {
 		profile->session = lasso_session_new();
@@ -641,19 +648,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			g_object_ref(assertion));
 
 	response = LASSO_SAMLP2_RESPONSE(profile->response);
-
-	/* Encrypt Assertion */
-	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_ASSERTION
-			&& provider->private_data->encryption_public_key != NULL) {
-		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
-			LASSO_NODE(assertion),
-			provider->private_data->encryption_public_key));
-		if (encrypted_element != NULL) {
-			response->EncryptedAssertion = g_list_append(NULL, encrypted_element);
-		}
-	} else {
-		response->Assertion = g_list_append(NULL, assertion);
-	}
+	response->Assertion = g_list_append(NULL, assertion);
 
 	login->private_data->saml2_assertion = g_object_ref(assertion);
 

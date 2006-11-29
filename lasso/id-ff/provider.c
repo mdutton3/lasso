@@ -733,6 +733,8 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 		return NULL;
 	}
 
+	provider->private_data->encryption_public_key_str = NULL;
+
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
 	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
@@ -776,13 +778,6 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		xmlSecByte *value;
 		int length;
 		int rc;
-		xmlSecKey *xmlseckey;
-		xmlSecKeyInfoCtxPtr ctx;
-
-		xmlseckey = xmlSecKeyCreate();
-
-		ctx = xmlSecKeyInfoCtxCreate(NULL);
-		ctx->mode = xmlSecKeyInfoModeRead;
 
 		/* could use XPath but going down manually will do */
 		while (t) {
@@ -804,6 +799,10 @@ lasso_provider_load_public_key(LassoProvider *provider, LassoPublicKeyType publi
 		}
 
 		b64_value = xmlNodeGetContent(t);
+		if (public_key_type == LASSO_PUBLIC_KEY_ENCRYPTION) {
+			provider->private_data->encryption_public_key_str =
+				g_strdup((char*)b64_value);
+		}
 		length = strlen((char*)b64_value);
 		value = g_malloc(length);
 		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);

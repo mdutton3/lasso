@@ -23,7 +23,9 @@
  */
 
 #include "samlp2_response.h"
+#include "saml2_assertion.h"
 #include "saml2_encrypted_element.h"
+
 /*
  * Schema fragment (saml-schema-protocol-2.0.xsd):
  *
@@ -80,6 +82,86 @@ init_from_query(LassoNode *node, char **query_fields)
 	return rc;
 }
 
+static xmlNode*
+get_xmlNode(LassoNode *node, gboolean lasso_dump)
+{
+	LassoSamlp2Response *request = LASSO_SAMLP2_RESPONSE(node);
+/* 	xmlNode *xmlnode; */
+	int rc;
+	LassoNode *encrypted_element = NULL;
+	GList *assertion_item = NULL;
+	LassoSaml2Assertion *assertion = NULL;
+/* 	xmlnode = parent_class->get_xmlNode(node, lasso_dump); */
+
+	if (request->Assertion != NULL && request->Assertion->data != NULL)
+		assertion = request->Assertion->data;
+
+	/* Return response xmlnode with cleartext assertion */
+	if (lasso_dump == TRUE || request->Assertion == NULL) {
+		return parent_class->get_xmlNode(node, lasso_dump);
+	}
+
+	/* Encrypt Assertions */
+	for (assertion_item = request->Assertion;
+			assertion_item != NULL && assertion_item->data != NULL;
+			assertion_item = assertion_item->next) {
+		assertion = assertion_item->data;
+		if (! assertion->encryption_activated ||
+				assertion->encryption_public_key_str == NULL) {
+			continue;
+		}
+		/* Load the encryption key*/
+		xmlChar *b64_value;
+		xmlSecByte *value;
+		int length;
+		int rc;
+		xmlSecKeyInfoCtxPtr ctx;
+		xmlSecKey *encryption_public_key = NULL;
+		int i;
+
+		xmlSecKeyDataFormat key_formats[] = {
+			xmlSecKeyDataFormatDer,
+			xmlSecKeyDataFormatCertDer,
+			xmlSecKeyDataFormatPkcs8Der,
+			xmlSecKeyDataFormatCertPem,
+			xmlSecKeyDataFormatPkcs8Pem,
+			xmlSecKeyDataFormatPem,
+			xmlSecKeyDataFormatBinary,
+			0
+		};
+	
+		b64_value = (xmlChar*)g_strdup(assertion->encryption_public_key_str);
+		length = strlen((char*)b64_value);
+		value = g_malloc(length);
+		xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
+		rc = xmlSecBase64Decode(b64_value, value, length);
+		if (rc < 0) {
+			/* bad base-64 */
+			g_free(value);
+			value = (xmlSecByte*)g_strdup((char*)b64_value);
+			rc = strlen((char*)value);
+		}
+
+		for (i=0; key_formats[i] && encryption_public_key == NULL; i++) {
+			encryption_public_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
+					key_formats[i], NULL, NULL, NULL);
+		}
+		xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
+		xmlFree(b64_value);
+		g_free(value);
+		
+		/* Finally encrypt the assertion */
+		encrypted_element = LASSO_NODE(lasso_node_encrypt(assertion,
+				encryption_public_key));
+		if (encrypted_element != NULL) {
+			request->EncryptedAssertion = g_list_append(request->EncryptedAssertion,
+					encrypted_element);
+			request->Assertion = g_list_remove(request->Assertion, assertion);
+		}
+	}
+	
+	return parent_class->get_xmlNode(node, lasso_dump);
+}
 
 /*****************************************************************************/
 /* instance and class init functions                                         */
@@ -100,6 +182,7 @@ class_init(LassoSamlp2ResponseClass *klass)
 	parent_class = g_type_class_peek_parent(klass);
 	nclass->build_query = build_query;
 	nclass->init_from_query = init_from_query;
+	nclass->get_xmlNode = get_xmlNode;
 	nclass->node_data = g_new0(LassoNodeClassData, 1);
 	lasso_node_class_set_nodename(nclass, "Response"); 
 	lasso_node_class_set_ns(nclass, LASSO_SAML2_PROTOCOL_HREF, LASSO_SAML2_PROTOCOL_PREFIX);

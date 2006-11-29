@@ -124,7 +124,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	LassoSamlp2StatusResponse *request = LASSO_SAMLP2_STATUS_RESPONSE(node);
 	xmlNode *xmlnode;
 	int rc;
-	
+
 	xmlnode = parent_class->get_xmlNode(node, lasso_dump);
 
 	if (lasso_dump == FALSE && request->sign_type) {

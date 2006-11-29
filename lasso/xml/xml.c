@@ -420,6 +420,11 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
 
+	if (encryption_public_key == NULL || !xmlSecKeyIsValid(encryption_public_key)) {
+		message(G_LOG_LEVEL_WARNING, "Invalid encryption key");
+		return NULL;
+	}
+
 	/* Create a new EncryptedElement */
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
 
@@ -521,10 +526,9 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 		message(G_LOG_LEVEL_WARNING, "Encryption failed");
 		return NULL;
 	}
-	
+
 	encrypted_element->EncryptedKey = g_list_append(encrypted_element->EncryptedKey,
 			xmlCopyNode(encrypted_key_node, 1));
-	key_info_node->children = NULL;
 	
 	/* cleanup */
 	xmlSecEncCtxDestroy(enc_ctx);
@@ -570,7 +574,7 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		return NULL;
 	}
 
-	/* Need to duplicate it because xmlSecKey will destroy it */
+	/* Need to duplicate it because xmlSecEncCtxDestroy(encCtx); will destroy it */
 	encryption_private_key = xmlSecKeyDuplicate(encryption_private_key);
 
 	encrypted_data_node = encrypted_element->EncryptedData;

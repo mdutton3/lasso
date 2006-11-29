@@ -92,6 +92,10 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSaml2Assertion, private_key_file) },
 	{ "CertificateFile", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
 		G_STRUCT_OFFSET(LassoSaml2Assertion, certificate_file) },
+	{ "EncryptionActivated", SNIPPET_ATTRIBUTE | SNIPPET_BOOLEAN | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSaml2Assertion, encryption_activated) },
+	{ "EncryptionPublicKeyStr", SNIPPET_CONTENT | SNIPPET_LASSO_DUMP,
+		G_STRUCT_OFFSET(LassoSaml2Assertion, encryption_public_key_str) },
 
 	{NULL, 0, 0}
 };
@@ -140,6 +144,8 @@ instance_init(LassoSaml2Assertion *node)
 	node->sign_type = LASSO_SIGNATURE_TYPE_NONE;
 	node->private_key_file = NULL;
 	node->certificate_file = NULL;
+	node->encryption_activated = FALSE;
+	node->encryption_public_key_str = NULL;
 }
 
 static void
