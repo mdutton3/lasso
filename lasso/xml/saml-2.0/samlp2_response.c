@@ -88,29 +88,39 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSamlp2Response *response = LASSO_SAMLP2_RESPONSE(node);
-	GList *assertions;
+	GList *assertions, *assertions_copy;
 	LassoNode *encrypted_element = NULL;
 	xmlNode *result;
 
-	assertions = response->Assertion;
+
 	/* Encrypt Assertions for messages but not for dumps */
-	if (lasso_dump == FALSE && response->Assertion != NULL) {
+	if (lasso_dump == FALSE) {
+		assertions_copy = g_list_copy(response->Assertion);
 		for (assertions = response->Assertion;
 				assertions != NULL; assertions = g_list_next(assertions)) {
 			encrypted_element = lasso_assertion_encrypt(assertions->data);
 			if (encrypted_element != NULL) {
+				/* use EncryptedAssertion */
 				response->EncryptedAssertion = g_list_append(
 					response->EncryptedAssertion, encrypted_element);
-				/* if there is at least one encrypted
-				 * assertion; consider all of them to be
-				 * encrypted */
-				response->Assertion = NULL;
+				/* and remove original unencrypted from Assertion */
+				response->Assertion = g_list_remove(response->Assertion,
+					assertions->data);
 			}
 		}
 	}
 
 	result = parent_class->get_xmlNode(node, lasso_dump);
-	response->Assertion = assertions;
+
+	if (lasso_dump == FALSE) {
+		g_list_free(response->Assertion);
+		response->Assertion = assertions_copy;
+		for (assertions = response->EncryptedAssertion; assertions != NULL;
+				assertions = g_list_next(assertions)) {
+			lasso_node_destroy(assertions->data);
+		}
+		g_list_free(response->EncryptedAssertion);
+	}
 
 	return result;
 }
