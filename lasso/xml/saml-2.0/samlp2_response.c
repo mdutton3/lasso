@@ -97,7 +97,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	if (lasso_dump == FALSE && response->Assertion != NULL) {
 		for (assertion_item = response->Assertion;
 				assertion_item != NULL && assertion_item->data != NULL;
-				assertion_item = g_list_next(assertion)) {
+				assertion_item = g_list_next(assertion_item)) {
 			encrypted_element = lasso_assertion_encrypt(assertion_item->data, response);
 			if (encrypted_element != NULL) {
 				response->EncryptedAssertion = g_list_append(
