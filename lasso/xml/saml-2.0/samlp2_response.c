@@ -41,6 +41,8 @@
  * </complexType>
  */
 
+extern LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
+
 /*****************************************************************************/
 /* private methods                                                           */
 /*****************************************************************************/
@@ -86,28 +88,29 @@ static xmlNode*
 get_xmlNode(LassoNode *node, gboolean lasso_dump)
 {
 	LassoSamlp2Response *response = LASSO_SAMLP2_RESPONSE(node);
-	GList *assertion_item = NULL;
-	LassoSaml2Assertion *assertion = NULL;
+	GList *assertions;
 	LassoNode *encrypted_element = NULL;
+	xmlNode *result;
 
-	if (response->Assertion != NULL && response->Assertion->data != NULL)
-		assertion = response->Assertion->data;
-
+	assertions = response->Assertion;
 	/* Encrypt Assertions for messages but not for dumps */
 	if (lasso_dump == FALSE && response->Assertion != NULL) {
-		for (assertion_item = response->Assertion;
-				assertion_item != NULL && assertion_item->data != NULL;
-				assertion_item = g_list_next(assertion_item)) {
-			encrypted_element = lasso_assertion_encrypt(assertion_item->data, response);
+		for (assertions = response->Assertion;
+				assertions != NULL; assertions = g_list_next(assertions)) {
+			encrypted_element = lasso_assertion_encrypt(assertions->data);
 			if (encrypted_element != NULL) {
 				response->EncryptedAssertion = g_list_append(
 					response->EncryptedAssertion, encrypted_element);
-				response->Assertion = g_list_remove(response->Assertion, assertion);
+				/* XXX: side effect is emptyying response->Assertion */
 			}
 		}
+		response->Assertion = NULL;
 	}
-	
-	return parent_class->get_xmlNode(node, lasso_dump);
+
+	result = parent_class->get_xmlNode(node, lasso_dump);
+	response->Assertion = assertions;
+
+	return result;
 }
 
 /*****************************************************************************/

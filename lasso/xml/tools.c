@@ -405,24 +405,17 @@ done:
 	return s_new_query;
 }
 
-LassoNode *
+LassoNode*
 lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 {
 	LassoNode *encrypted_element = NULL;
-	xmlChar *b64_value;
+	gchar *b64_value;
 	xmlSecByte *value;
 	int length;
 	int rc;
 	xmlSecKeyInfoCtxPtr ctx;
 	xmlSecKey *encryption_public_key = NULL;
 	int i;
-
-	if (! assertion->encryption_activated ||
-			assertion->encryption_public_key_str == NULL) {
-		return NULL;
-	}
-
-	/* Load the encryption key*/
 	xmlSecKeyDataFormat key_formats[] = {
 		xmlSecKeyDataFormatDer,
 		xmlSecKeyDataFormatCertDer,
@@ -434,30 +427,34 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 		0
 	};
 
-	b64_value = (xmlChar*)g_strdup(assertion->encryption_public_key_str);
-	length = strlen((char*)b64_value);
-	value = g_malloc(length);
-	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
-	rc = xmlSecBase64Decode(b64_value, value, length);
+	if (assertion->encryption_activated == FALSE ||
+			assertion->encryption_public_key_str == NULL) {
+		return NULL;
+	}
+
+	b64_value = g_strdup(assertion->encryption_public_key_str);
+	length = strlen(b64_value);
+	value = g_malloc(length*4); /* enough place for decoding */
+	rc = xmlSecBase64Decode((xmlChar*)b64_value, value, length);
 	if (rc < 0) {
 		/* bad base-64 */
 		g_free(value);
-		value = (xmlSecByte*)g_strdup((char*)b64_value);
-		rc = strlen((char*)value);
+		g_free(b64_value);
+		return NULL;
 	}
 
+	xmlSecErrorsDefaultCallbackEnableOutput(FALSE);
 	for (i = 0; key_formats[i] && encryption_public_key == NULL; i++) {
 		encryption_public_key = xmlSecCryptoAppKeyLoadMemory(value, rc,
 				key_formats[i], NULL, NULL, NULL);
 	}
+	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 
 	/* Finally encrypt the assertion */
 	encrypted_element = LASSO_NODE(lasso_node_encrypt(assertion, encryption_public_key));
 
-	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
-	xmlFree(b64_value);
+	g_free(b64_value);
 	g_free(value);	
-/* 	g_free(assertion->encryption_public_key_str); */
 
 	return encrypted_element;
 }
