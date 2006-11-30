@@ -101,10 +101,12 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 			if (encrypted_element != NULL) {
 				response->EncryptedAssertion = g_list_append(
 					response->EncryptedAssertion, encrypted_element);
-				/* XXX: side effect is emptyying response->Assertion */
+				/* if there is at least one encrypted
+				 * assertion; consider all of them to be
+				 * encrypted */
+				response->Assertion = NULL;
 			}
 		}
-		response->Assertion = NULL;
 	}
 
 	result = parent_class->get_xmlNode(node, lasso_dump);
