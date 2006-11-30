@@ -178,6 +178,15 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 {
 	LassoProfile *profile = LASSO_PROFILE(logout);
 
+	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_method =
+		LASSO_SIGNATURE_METHOD_RSA_SHA1;
+	if (profile->server->certificate) {
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =	
+			LASSO_SIGNATURE_TYPE_WITHX509;
+	} else {
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->sign_type =
+			LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->private_key_file =
 		g_strdup(profile->server->private_key);
 	LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->certificate_file = 
