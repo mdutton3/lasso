@@ -498,9 +498,20 @@ dispose(GObject *object)
 		provider->private_data->signing_key_descriptor = NULL;
 	}
 
+	provider->private_data->encryption_public_key = NULL;
 	if (provider->private_data->encryption_key_descriptor) {
 		xmlFreeNode(provider->private_data->encryption_key_descriptor);
 		provider->private_data->encryption_key_descriptor = NULL;
+	}
+
+	if (provider->private_data->encryption_public_key_str) {
+	 	g_free(provider->private_data->encryption_public_key_str);
+	 	provider->private_data->encryption_public_key_str = NULL;
+	}
+
+	if (provider->private_data->encryption_public_key) {
+	 	xmlSecKeyDestroy(provider->private_data->encryption_public_key);
+	 	provider->private_data->encryption_public_key_str = NULL;
 	}
 
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
@@ -540,9 +551,11 @@ instance_init(LassoProvider *provider)
 	provider->private_data->affiliation_owner_id = NULL;
 	provider->private_data->organization = NULL;
 	provider->private_data->public_key = NULL;
-	provider->private_data->encryption_public_key = NULL;
 	provider->private_data->signing_key_descriptor = NULL;
 	provider->private_data->encryption_key_descriptor = NULL;
+	provider->private_data->encryption_public_key_str = NULL;
+	provider->private_data->encryption_public_key = NULL;
+	provider->private_data->encryption_mode = LASSO_ENCRYPTION_MODE_NONE;
 
 	/* no value_destroy_func since it shouldn't destroy the GList on insert */
 	provider->private_data->IDPDescriptor = g_hash_table_new_full(
@@ -732,8 +745,6 @@ lasso_provider_new(LassoProviderRole role, const char *metadata,
 		lasso_node_destroy(LASSO_NODE(provider));
 		return NULL;
 	}
-
-	provider->private_data->encryption_public_key_str = NULL;
 
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);
 
