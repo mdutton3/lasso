@@ -68,12 +68,12 @@ dispose(GObject *object)
 	LassoEcp *ecp = LASSO_ECP(object);
 
 	if (ecp->private_data->messageID) {
-		//xmlFree(ecp->private_data->messageID);
+		xmlFree(ecp->private_data->messageID);
 		ecp->private_data->messageID = NULL;
 	}
 
 	if (ecp->private_data->relay_state) {
-		//xmlFree(ecp->private_data->relay_state);
+		xmlFree(ecp->private_data->relay_state);
 		ecp->private_data->relay_state = NULL;
 	}
 
