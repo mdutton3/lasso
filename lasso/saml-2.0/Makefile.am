@@ -30,6 +30,7 @@ lasso_private_h_sources = \
 	providerprivate.h \
 	loginprivate.h \
 	logoutprivate.h \
-	serverprivate.h
+	serverprivate.h \
+	ecpprivate.h
 
 EXTRA_DIST = $(lasso_private_h_sources)

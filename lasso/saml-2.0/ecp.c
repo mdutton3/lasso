@@ -31,6 +31,8 @@
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/serverprivate.h>
 
+#include <lasso/saml-2.0/ecpprivate.h>
+
 #include <lasso/saml-2.0/ecp.h>
 
 /*****************************************************************************/
@@ -61,8 +63,18 @@ static LassoNodeClass *parent_class = NULL;
 /*****************************************************************************/
 
 static void
+dispose(GObject *object)
+{
+	LassoEcp *ecp = LASSO_ECP(object);
+	g_free(ecp->private_data->messageID);
+	ecp->private_data->messageID = NULL;
+}
+static void
 finalize(GObject *object)
-{  
+{
+	LassoEcp *ecp = LASSO_ECP(object);
+	g_free(ecp->private_data);
+	ecp->private_data = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -73,6 +85,10 @@ finalize(GObject *object)
 static void
 instance_init(LassoEcp *ecp)
 {
+	ecp->private_data = g_new(LassoEcpPrivate, 1);
+	ecp->private_data->messageID = NULL;
+	ecp->private_data->relay_state = NULL;
+
 	ecp->assertionConsumerURL = NULL;
 }
 
@@ -80,7 +96,8 @@ static void
 class_init(LassoEcpClass *klass)
 {
 	parent_class = g_type_class_peek_parent(klass);
-	
+
+	G_OBJECT_CLASS(klass)->dispose = dispose;
 	G_OBJECT_CLASS(klass)->finalize = finalize;
 }
 
@@ -108,7 +125,14 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		LASSO_PROFILE(ecp)->msg_relayState = (char*)xmlNodeGetContent(xmlnode);
+		ecp->private_data->relay_state = (char*)xmlNodeGetContent(xmlnode);
+	}
+
+	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
+	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Request", xpathCtx);
+	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
+		ecp->private_data->messageID = (char*)xmlGetProp(
+			xpathObj->nodesetval->nodeTab[0], (xmlChar*)"messageID");
 	}
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
@@ -192,12 +216,16 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
 	xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"actor",
 				(xmlChar*)LASSO_SOAP_ENV_ACTOR);
+	if (ecp->private_data->messageID) {
+		xmlSetNsProp(paos_response, soap_env_ns, (xmlChar*)"refToMessageID",
+			(xmlChar*)ecp->private_data->messageID);
+	}
 	xmlAddChild(header, paos_response);
 
 	/* ECP relay state block */
-	if (LASSO_PROFILE(ecp)->msg_relayState) {
+	if (ecp->private_data->relay_state) {
 		ecp_relay_state = xmlNewNode(NULL, (xmlChar*)"RelayState");
-		xmlNodeSetContent(ecp_relay_state, (xmlChar*)LASSO_PROFILE(ecp)->msg_relayState);
+		xmlNodeSetContent(ecp_relay_state, (xmlChar*)ecp->private_data->relay_state);
 		ecp_ns = xmlNewNs(ecp_relay_state, (xmlChar*)LASSO_ECP_HREF,
 					(xmlChar*)LASSO_ECP_PREFIX);
 		xmlSetNs(ecp_relay_state, ecp_ns);

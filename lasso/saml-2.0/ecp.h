@@ -42,6 +42,7 @@ extern "C" {
 
 typedef struct _LassoEcp LassoEcp;
 typedef struct _LassoEcpClass LassoEcpClass;
+typedef struct _LassoEcpPrivate LassoEcpPrivate;
 
 struct _LassoEcp {
 	LassoProfile parent;
@@ -50,7 +51,7 @@ struct _LassoEcp {
 	gchar *assertionConsumerURL;
 
 	/*< private >*/
-	void *private_data;  /* reserved for future use */
+	LassoEcpPrivate *private_data;
 };
 
 struct _LassoEcpClass {
