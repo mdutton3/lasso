@@ -33,8 +33,8 @@ extern "C" {
 
 struct _LassoEcpPrivate
 {
-	char *messageID;
-	char *relay_state;
+	xmlChar *messageID;
+	xmlChar *relay_state;
 };
 
 #ifdef __cplusplus

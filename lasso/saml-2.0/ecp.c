@@ -66,15 +66,27 @@ static void
 dispose(GObject *object)
 {
 	LassoEcp *ecp = LASSO_ECP(object);
-	g_free(ecp->private_data->messageID);
-	ecp->private_data->messageID = NULL;
+
+	if (ecp->private_data->messageID) {
+		//xmlFree(ecp->private_data->messageID);
+		ecp->private_data->messageID = NULL;
+	}
+
+	if (ecp->private_data->relay_state) {
+		//xmlFree(ecp->private_data->relay_state);
+		ecp->private_data->relay_state = NULL;
+	}
+
+	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(ecp));
 }
+
 static void
 finalize(GObject *object)
 {
 	LassoEcp *ecp = LASSO_ECP(object);
 	g_free(ecp->private_data);
 	ecp->private_data = NULL;
+
 	G_OBJECT_CLASS(parent_class)->finalize(object);
 }
 
@@ -125,13 +137,13 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
-		ecp->private_data->relay_state = (char*)xmlNodeGetContent(xmlnode);
+		ecp->private_data->relay_state = xmlNodeGetContent(xmlnode);
 	}
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Request", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		ecp->private_data->messageID = (char*)xmlGetProp(
+		ecp->private_data->messageID = xmlGetProp(
 			xpathObj->nodesetval->nodeTab[0], (xmlChar*)"messageID");
 	}
 
