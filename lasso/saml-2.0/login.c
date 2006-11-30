@@ -905,10 +905,14 @@ lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 	LassoProfile *profile = LASSO_PROFILE(login);
 	int rc;
 
-	rc = lasso_saml20_login_process_paos_response_msg(login, response_msg);
-	if (rc == 0) {
-		return lasso_saml20_login_process_response_status_and_assertion(login);
+	if (strstr(response_msg, LASSO_PAOS_HREF)) {
+		rc = lasso_saml20_login_process_paos_response_msg(login, response_msg);
+		if (rc == 0) {
+			return lasso_saml20_login_process_response_status_and_assertion(login);
+		}
+		return rc;
 	}
+
 	rc = lasso_saml20_profile_process_artifact_response(profile, response_msg);
 	if (rc) {
 		return rc;
