@@ -5393,6 +5393,9 @@ LassoStringList *LassoIdentity_providerIds_get(LassoIdentity *self) {
 #define LassoIdentity_getFederation lasso_identity_get_federation
 
 #ifdef LASSO_WSF_ENABLED
+
+#include <lasso/id-wsf/identity.h>
+
 #define LassoIdentity_addResourceOffering lasso_identity_add_resource_offering
 #define LassoIdentity_removeResourceOffering lasso_identity_remove_resource_offering
 
