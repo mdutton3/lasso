@@ -514,6 +514,11 @@ dispose(GObject *object)
 	 	provider->private_data->encryption_public_key_str = NULL;
 	}
 
+	g_free(provider->private_data->affiliation_id);
+	provider->private_data->affiliation_id = NULL;
+	g_free(provider->private_data->affiliation_owner_id);
+	provider->private_data->affiliation_owner_id = NULL;
+
 	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(provider));
 }
 
@@ -548,6 +553,7 @@ instance_init(LassoProvider *provider)
 	provider->private_data = g_new(LassoProviderPrivate, 1);
 	provider->private_data->dispose_has_run = FALSE;
 	provider->private_data->default_assertion_consumer = NULL;
+	provider->private_data->affiliation_id = NULL;
 	provider->private_data->affiliation_owner_id = NULL;
 	provider->private_data->organization = NULL;
 	provider->private_data->public_key = NULL;
