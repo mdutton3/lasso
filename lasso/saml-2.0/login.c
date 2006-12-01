@@ -622,6 +622,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 	assertion->AuthnStatement = g_list_append(NULL, authentication_statement);
 
+	/* Save signing material in assertion private datas to be able to sign later */
 	if (profile->server->certificate) {
 		assertion->sign_type = LASSO_SIGNATURE_TYPE_WITHX509;
 	} else {
@@ -631,11 +632,12 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->private_key_file = g_strdup(profile->server->private_key);
 	assertion->certificate_file = g_strdup(profile->server->certificate);
 
+	/* Save encryption material in assertion private datas to be able to encrypt later */
 	if (provider && provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_ASSERTION
 			&& provider->private_data->encryption_public_key != NULL) {
 		assertion->encryption_activated = TRUE;
-		assertion->encryption_public_key_str =
-			provider->private_data->encryption_public_key_str;
+		assertion->encryption_public_key_str = g_strdup(
+			provider->private_data->encryption_public_key_str);
 	}
 
 	/* store assertion in session object */
