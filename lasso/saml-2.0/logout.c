@@ -613,6 +613,15 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 		 * rebuild the request message with HTTP method */
 		/* XXX is this still what to do for SAML 2.0? */
 
+		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_RESPONDER) == 0) {
+			/* Responder -> look inside */
+			if (response->Status->StatusCode->StatusCode) {
+				status_code_value = response->Status->StatusCode->StatusCode->Value;
+			}
+			if (status_code_value == NULL) {
+				return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
+			}
+		}
 		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUEST_DENIED) == 0) {
 			/* assertion no longer on IdP so removing it locally
 			 * too */
