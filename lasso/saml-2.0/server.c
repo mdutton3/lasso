@@ -31,7 +31,7 @@ int
 lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *node)
 {
 	xmlNode *t;
-	char *id, *member_id;
+	char *owner_id, *member_id, *affiliation_id;
 	LassoProvider *provider;
 
 	if (strcmp((char*)node->ns->href, LASSO_SAML2_METADATA_HREF) != 0) {
@@ -51,7 +51,8 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *
 		return LASSO_XML_ERROR_NODE_NOT_FOUND;
 	}
 
-	id = (char*)xmlGetProp(t, (xmlChar*)"affiliationOwnerID");
+	affiliation_id = (char*)xmlGetProp(node, (xmlChar*)"entityID");
+	owner_id = (char*)xmlGetProp(t, (xmlChar*)"affiliationOwnerID");
 
 	for (t = t->children; t; t = t->next) {
 		if (t->type == XML_ELEMENT_NODE && 
@@ -70,10 +71,13 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *
 						provider->ProviderID);
 				g_free(provider->private_data->affiliation_owner_id);
 			}
-			provider->private_data->affiliation_owner_id = g_strdup(member_id);
+			provider->private_data->affiliation_owner_id = g_strdup(owner_id);
+			provider->private_data->affiliation_id = g_strdup(affiliation_id);
 			xmlFree(member_id);
 		}
 	}
+
+	xmlFree(affiliation_id);
 
 	return 0;
 }

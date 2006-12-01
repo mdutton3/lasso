@@ -475,6 +475,8 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	char *name_id_policy_format = NULL;
 	LassoFederation *federation;
+	char *name_id_sp_name_qualifier = NULL;
+	LassoProvider *remote_provider;
 
 	/* verify if identity already exists else create it */
 	if (profile->identity == NULL) {
@@ -492,9 +494,16 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 		return 0;
 	}
 
-	/* search a federation in the identity */
-	federation = g_hash_table_lookup(profile->identity->federations,
+	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
+	if (remote_provider->private_data->affiliation_id) {
+		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
+	} else {
+		name_id_sp_name_qualifier = profile->remote_providerID;
+	}
+
+	/* search a federation in the identity */
+	federation = g_hash_table_lookup(profile->identity->federations, name_id_sp_name_qualifier);
 	if (name_id_policy->AllowCreate == FALSE) {
 		/* a federation MUST exist */
 		if (federation == NULL) {
@@ -507,11 +516,13 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	}
 
 	if (federation == NULL) {
-		federation = lasso_federation_new(profile->remote_providerID);
+		federation = lasso_federation_new(name_id_sp_name_qualifier);
 		lasso_saml20_federation_build_local_name_identifier(federation,
 				LASSO_PROVIDER(profile->server)->ProviderID,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT,
 				NULL);
+		LASSO_SAML2_NAME_ID(federation->local_nameIdentifier)->SPNameQualifier = g_strdup(
+				name_id_sp_name_qualifier);
 		lasso_identity_add_federation(profile->identity, federation);
 	}
 
@@ -540,9 +551,20 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
 	LassoSamlp2Response *response = NULL;
 
+	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
+
 	if (profile->identity) {
+		char *name_id_sp_name_qualifier;
+		if (provider->private_data->affiliation_id) {
+			name_id_sp_name_qualifier = provider->private_data->affiliation_id;
+		} else {
+			name_id_sp_name_qualifier = profile->remote_providerID;
+		}
 		federation = g_hash_table_lookup(profile->identity->federations,
-				profile->remote_providerID);
+			name_id_sp_name_qualifier);
+		if (federation == NULL) {
+			message(G_LOG_LEVEL_WARNING, "can't find federation for identity");
+		}
 	} else {
 		federation = NULL;
 	}
@@ -574,9 +596,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
 		notOnOrAfter);
 
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-
-	if (name_id_policy == NULL || strcmp(name_id_policy->Format,
+	if (name_id_policy == NULL || federation == NULL || 
+			strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
 		/* transient -> don't use a federation */
 		name_id = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(

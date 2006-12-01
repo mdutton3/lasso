@@ -53,6 +53,7 @@ struct _LassoProviderPrivate
 	xmlNode *organization;
 
 	char *affiliation_owner_id;
+	char *affiliation_id;
 
 	xmlSecKey *public_key;
 	xmlNode *signing_key_descriptor;
