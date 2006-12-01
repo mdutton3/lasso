@@ -3,7 +3,13 @@
 %rename(Samlp2NameIDPolicy) LassoSamlp2NameIDPolicy;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(format) Format;
+#endif
 	char *Format;
+#ifndef SWIGPHP4
+	%rename(spNameQualifier) SPNameQualifier;
+#endif
 	char *SPNameQualifier;
 #ifndef SWIGPHP4
 	%rename(allowCreate) AllowCreate;
