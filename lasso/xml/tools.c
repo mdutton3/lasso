@@ -36,10 +36,12 @@
 #include <xmlsec/templates.h>
 #include <xmlsec/xmldsig.h>
 #include <xmlsec/xmltree.h>
+#include <xmlsec/errors.h>
 
 #include <zlib.h>
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 
 /**
@@ -413,7 +415,6 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 	xmlSecByte *value;
 	int length;
 	int rc;
-	xmlSecKeyInfoCtxPtr ctx;
 	xmlSecKey *encryption_public_key = NULL;
 	int i;
 	xmlSecKeyDataFormat key_formats[] = {
@@ -451,7 +452,8 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 	xmlSecErrorsDefaultCallbackEnableOutput(TRUE);
 
 	/* Finally encrypt the assertion */
-	encrypted_element = LASSO_NODE(lasso_node_encrypt(assertion, encryption_public_key));
+	encrypted_element = LASSO_NODE(lasso_node_encrypt(LASSO_NODE(assertion),
+		encryption_public_key));
 
 	g_free(b64_value);
 	g_free(value);	
