@@ -429,7 +429,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_saml2_encrypted_element_new());
 
 	/* Save the original data for dumps */
-	encrypted_element->original_data = lasso_node;
+	encrypted_element->original_data = g_object_ref(lasso_node);
 
 	/* Create a document to contain the node to encrypt */
 	doc = xmlNewDoc((xmlChar*)"1.0");
