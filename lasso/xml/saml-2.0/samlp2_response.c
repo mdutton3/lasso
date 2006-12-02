@@ -119,6 +119,7 @@ get_xmlNode(LassoNode *node, gboolean lasso_dump)
 				assertions = g_list_next(assertions)) {
 			lasso_node_destroy(assertions->data);
 		}
+		g_list_free(response->EncryptedAssertion);
 		response->EncryptedAssertion = NULL;
 	}
 
