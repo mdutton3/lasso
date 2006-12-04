@@ -3,8 +3,19 @@
 %rename(Samlp2LogoutRequest) LassoSamlp2LogoutRequest;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(sessionIndex) SessionIndex;
+#endif
 	char *SessionIndex;
+
+#ifndef SWIGPHP4
+	%rename(reason) Reason;
+#endif
 	char *Reason;
+
+#ifndef SWIGPHP4
+	%rename(notOnOrAfter) NotOnOrAfter;
+#endif
 	char *NotOnOrAfter;
 } LassoSamlp2LogoutRequest;
 %extend LassoSamlp2LogoutRequest {
