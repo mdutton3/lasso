@@ -377,14 +377,22 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 
 	/* If name identifier is federated, then verify federation */
 	if (strcmp(name_id->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
+		char *name_id_sp_name_qualifier = NULL;
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
 			/* XXX: which SAML 2 status code ? */
 			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
+
+		if (remote_provider->private_data->affiliation_id) {
+			name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
+		} else {
+			name_id_sp_name_qualifier = profile->remote_providerID;
+		}
+
 		federation = g_hash_table_lookup(profile->identity->federations,
-				profile->remote_providerID);
+				name_id_sp_name_qualifier);
 		if (LASSO_IS_FEDERATION(federation) == FALSE) {
 			/* XXX: which status code in SAML 2 ? */
 			lasso_saml20_profile_set_response_status(profile,
