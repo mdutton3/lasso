@@ -54,7 +54,6 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	LassoFederation *federation;
 	LassoSession *session;
 	LassoSamlp2RequestAbstract *request;
-	LassoProvider *provider = NULL;
 	LassoSaml2EncryptedElement *encrypted_element = NULL;
 
 	/* session existence has been checked in id-ff/ */
@@ -75,11 +74,20 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 	name_id = assertion->Subject->NameID;
 	if (name_id->Format && strcmp(name_id->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
+		char *name_id_sp_name_qualifier = NULL;
+
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
 			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}
+
+		if (remote_provider->private_data->affiliation_id) {
+			name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
+		} else {
+			name_id_sp_name_qualifier = profile->remote_providerID;
+		}
+			
 		federation = g_hash_table_lookup(profile->identity->federations,
-				profile->remote_providerID);
+				name_id_sp_name_qualifier);
 		if (federation == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND);
 		}
@@ -150,8 +158,6 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID = g_object_ref(profile->nameIdentifier);
 
-	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
-		
 	/* Encrypt NameID */
 	if (remote_provider &&
 		remote_provider->private_data->encryption_mode & LASSO_ENCRYPTION_MODE_NAMEID
