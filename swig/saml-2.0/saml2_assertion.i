@@ -33,6 +33,11 @@ typedef struct {
 	%newobject *Advice_get;
 	LassoSaml2Advice *Advice;
 
+#ifndef SWIGPHP4
+	%rename(authnStatement) AuthnStatement;
+#endif
+	%newobject AuthnStatement_get;
+	LassoNodeList *AuthnStatement;
 
 	/* Constructor, Destructor & Static Methods */
 	LassoSaml2Assertion();
@@ -76,6 +81,12 @@ typedef struct {
 #define LassoSaml2Assertion_set_Advice(self,value) set_node((gpointer*)&(self)->Advice, (value))
 #define LassoSaml2Assertion_Advice_set(self,value) set_node((gpointer*)&(self)->Advice, (value))
                     
+/* AuthnStatement */
+
+#define LassoSaml2Assertion_get_AuthnStatement(self) get_node_list((self)->AuthnStatement)
+#define LassoSaml2Assertion_AuthnStatement_get(self) get_node_list((self)->AuthnStatement)
+#define LassoSaml2Assertion_set_AuthnStatement(self, value) set_node_list(&(self)->AuthnStatement, (value))
+#define LassoSaml2Assertion_AuthnStatement_set(self, value) set_node_list(&(self)->AuthnStatement, (value))
 
 
 /* Constructors, destructors & static methods implementations */
