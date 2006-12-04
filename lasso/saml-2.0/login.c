@@ -916,6 +916,10 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
 	/* XXX: verify signature ? */
+	profile->signature_status = lasso_provider_verify_signature(
+		remote_provider, authn_response_msg, "ID", format);
+	if (profile->signature_status != 0)
+		return profile->signature_status;
 
 	return lasso_saml20_login_process_response_status_and_assertion(login);
 }

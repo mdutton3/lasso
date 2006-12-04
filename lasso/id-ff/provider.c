@@ -916,12 +916,12 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	msg = (char*)message;
 
 	if (message == NULL)
-		return -2;
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
 
 	if (format == LASSO_MESSAGE_FORMAT_ERROR)
-		return -2;
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN)
-		return -2;
+		return LASSO_PROFILE_ERROR_INVALID_MSG;
 
 	if (format == LASSO_MESSAGE_FORMAT_QUERY) {
 		return lasso_query_verify_signature(message,
@@ -933,7 +933,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		rc = xmlSecBase64Decode((xmlChar*)message, (xmlChar*)msg, strlen(message));
 		if (rc < 0) {
 			g_free(msg);
-			return -3;
+			return LASSO_PROFILE_ERROR_INVALID_MSG;
 		}
 	}
 
@@ -957,7 +957,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		xmlXPathFreeContext(xpathCtx);
 		if (xmlnode == NULL) {
 			xmlFreeDoc(doc);
-			return -4;
+			return LASSO_PROFILE_ERROR_INVALID_MSG;
 		}
 	} else {
 		xmlnode = xmlDocGetRootElement(doc);
