@@ -60,6 +60,8 @@ static struct XmlSnippet schema_snippets[] = {
 	{ "Issuer", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSaml2Assertion, Issuer),
 		"LassoSaml2NameID" },
+	{ "Signature", SNIPPET_SIGNATURE,
+		G_STRUCT_OFFSET(LassoSaml2Assertion, ID) },
 	{ "Subject", SNIPPET_NODE,
 		G_STRUCT_OFFSET(LassoSaml2Assertion, Subject) },
 	{ "Conditions", SNIPPET_NODE,
@@ -80,8 +82,6 @@ static struct XmlSnippet schema_snippets[] = {
 		G_STRUCT_OFFSET(LassoSaml2Assertion, ID) },
 	{ "IssueInstant", SNIPPET_ATTRIBUTE,
 		G_STRUCT_OFFSET(LassoSaml2Assertion, IssueInstant) },
-	{ "Signature", SNIPPET_SIGNATURE,
-		G_STRUCT_OFFSET(LassoSaml2Assertion, ID) },
 
 	/* hidden fields; used in lasso dumps */
 	{ "SignType", SNIPPET_ATTRIBUTE | SNIPPET_INTEGER | SNIPPET_LASSO_DUMP,
