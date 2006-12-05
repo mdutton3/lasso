@@ -613,8 +613,20 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		}
 	}
 	if (encrypted_key_node == NULL) {
-		message(G_LOG_LEVEL_WARNING, "No EncryptedKey data\n");
-		return NULL;
+		/* Look an EncryptedKey inside the EncryptedData */
+		xmlNode *t = encrypted_data_node;
+		while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
+			if (strcmp((char*)t->name, "EncryptedData") == 0 ||
+					strcmp((char*)t->name, "KeyInfo") == 0)
+				t = t->children;
+			t = t->next;
+		}
+
+		if (t == NULL) {
+			message(G_LOG_LEVEL_WARNING, "No EncryptedKey data");
+			return NULL;
+		}
+		encrypted_key_node = t;
 	}
 
 	/* Create a document to contain the node to decrypt */
@@ -623,21 +635,6 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 
 	doc2 = xmlNewDoc((xmlChar*)"1.0");
 	xmlDocSetRootElement(doc2, encrypted_key_node);
-
-#if 0
-	/* This block can be used in case we must be compatible with an EncryptedKey
-	* inside the EncryptedData
-	*/
-	xmlNode *t = xml_node;
-	while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
-		if (strcmp((char*)t->name, "EncryptedData") == 0 ||
-				strcmp((char*)t->name, "KeyInfo") == 0)
-			t = t->children;
-		t = t->next;
-	}
-	if (t == NULL)
-		return NULL;
-#endif
 
 	/* create encryption context to decrypt EncryptedKey */
 	encCtx = xmlSecEncCtxCreate(NULL);
