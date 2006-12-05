@@ -3,6 +3,9 @@
 %rename(Samlp2IDPList) LassoSamlp2IDPList;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(getComplete) GetComplete;
+#endif
 	char *GetComplete;
 } LassoSamlp2IDPList;
 %extend LassoSamlp2IDPList {

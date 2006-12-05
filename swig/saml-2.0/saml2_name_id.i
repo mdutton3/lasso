@@ -4,9 +4,21 @@
 #endif
 typedef struct {
 	char *content;
+#ifndef SWIGPHP4
+	%rename(format) Format;
+#endif
 	char *Format;
+#ifndef SWIGPHP4
+	%rename(spProviderId) SPProviderID;
+#endif
 	char *SPProvidedID;
+#ifndef SWIGPHP4
+	%rename(nameQualifier) NameQualifier;
+#endif
 	char *NameQualifier;
+#ifndef SWIGPHP4
+	%rename(spNameQualifier) SPNameQualifier;
+#endif
 	char *SPNameQualifier;
 } LassoSaml2NameID;
 %extend LassoSaml2NameID {

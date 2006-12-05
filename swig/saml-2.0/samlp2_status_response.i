@@ -3,11 +3,29 @@
 %rename(Samlp2StatusResponse) LassoSamlp2StatusResponse;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(iD) ID;
+#endif
 	char *ID;
+#ifndef SWIGPHP4
+	%rename(inResponseTo) InResponseTo;
+#endif
 	char *InResponseTo;
+#ifndef SWIGPHP4
+	%rename(version) Version;
+#endif
 	char *Version;
+#ifndef SWIGPHP4
+	%rename(issueInstant) IssueInstant;
+#endif
 	char *IssueInstant;
+#ifndef SWIGPHP4
+	%rename(destination) Destination;
+#endif
 	char *Destination;
+#ifndef SWIGPHP4
+	%rename(consent) Consent;
+#endif
 	char *Consent;
 } LassoSamlp2StatusResponse;
 %extend LassoSamlp2StatusResponse {

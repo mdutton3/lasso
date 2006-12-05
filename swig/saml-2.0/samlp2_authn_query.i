@@ -3,6 +3,9 @@
 %rename(Samlp2AuthnQuery) LassoSamlp2AuthnQuery;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(sessionIndex) SessionIndex;
+#endif
 	char *SessionIndex;
 } LassoSamlp2AuthnQuery;
 %extend LassoSamlp2AuthnQuery {

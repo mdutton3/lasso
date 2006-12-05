@@ -3,8 +3,17 @@
 %rename(Saml2Assertion) LassoSaml2Assertion;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(version) Version;
+#endif
 	char *Version;
+#ifndef SWIGPHP4
+	%rename(iD) ID;
+#endif
 	char *ID;
+#ifndef SWIGPHP4
+	%rename(issueInstant) IssueInstant;
+#endif
 	char *IssueInstant;
 } LassoSaml2Assertion;
 %extend LassoSaml2Assertion {

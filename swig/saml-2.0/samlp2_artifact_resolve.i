@@ -3,6 +3,9 @@
 %rename(Samlp2ArtifactResolve) LassoSamlp2ArtifactResolve;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(artifact) Artifact;
+#endif
 	char *Artifact;
 } LassoSamlp2ArtifactResolve;
 %extend LassoSamlp2ArtifactResolve {

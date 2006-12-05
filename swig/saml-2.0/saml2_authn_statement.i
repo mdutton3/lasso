@@ -3,8 +3,17 @@
 %rename(Saml2AuthnStatement) LassoSaml2AuthnStatement;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(authnInstant) AuthnInstant;
+#endif
 	char *AuthnInstant;
+#ifndef SWIGPHP4
+	%rename(sessionIndex) SessionIndex;
+#endif
 	char *SessionIndex;
+#ifndef SWIGPHP4
+	%rename(sessionNotOnOrAfter) SessionNotOnOrAfter;
+#endif
 	char *SessionNotOnOrAfter;
 } LassoSaml2AuthnStatement;
 %extend LassoSaml2AuthnStatement {

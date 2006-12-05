@@ -3,8 +3,17 @@
 %rename(Saml2Attribute) LassoSaml2Attribute;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(name) Name;
+#endif
 	char *Name;
+#ifndef SWIGPHP4
+	%rename(nameFormat) NameFormat;
+#endif
 	char *NameFormat;
+#ifndef SWIGPHP4
+	%rename(friendlyName) FriendlyName;
+#endif
 	char *FriendlyName;
 } LassoSaml2Attribute;
 %extend LassoSaml2Attribute {

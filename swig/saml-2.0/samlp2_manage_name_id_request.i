@@ -3,6 +3,9 @@
 %rename(Samlp2ManageNameIDRequest) LassoSamlp2ManageNameIDRequest;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(newId) NewID;
+#endif
 	char *NewID;
 } LassoSamlp2ManageNameIDRequest;
 %extend LassoSamlp2ManageNameIDRequest {

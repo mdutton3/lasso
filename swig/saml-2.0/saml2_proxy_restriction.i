@@ -3,7 +3,13 @@
 %rename(Saml2ProxyRestriction) LassoSaml2ProxyRestriction;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(audience) Audience;
+#endif
 	char *Audience;
+#ifndef SWIGPHP4
+	%rename(count) Count;
+#endif
 	char *Count;
 } LassoSaml2ProxyRestriction;
 %extend LassoSaml2ProxyRestriction {

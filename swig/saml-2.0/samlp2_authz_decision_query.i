@@ -3,6 +3,9 @@
 %rename(Samlp2AuthzDecisionQuery) LassoSamlp2AuthzDecisionQuery;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(resource) Resource;
+#endif
 	char *Resource;
 } LassoSamlp2AuthzDecisionQuery;
 %extend LassoSamlp2AuthzDecisionQuery {

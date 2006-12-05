@@ -3,6 +3,9 @@
 %rename(Samlp2StatusCode) LassoSamlp2StatusCode;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(value) Value;
+#endif
 	char *Value;
 } LassoSamlp2StatusCode;
 %extend LassoSamlp2StatusCode {

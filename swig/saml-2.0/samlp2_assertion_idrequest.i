@@ -3,6 +3,9 @@
 %rename(Samlp2AssertionIDRequest) LassoSamlp2AssertionIDRequest;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(assertionIdRef) AssertionIDRef;
+#endif
 	char *AssertionIDRef;
 } LassoSamlp2AssertionIDRequest;
 %extend LassoSamlp2AssertionIDRequest {

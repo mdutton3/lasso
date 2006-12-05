@@ -4,6 +4,9 @@
 #endif
 typedef struct {
 	char *content;
+#ifndef SWIGPHP4
+	%rename(namespace) Namespace;
+#endif
 	char *Namespace;
 } LassoSaml2Action;
 %extend LassoSaml2Action {

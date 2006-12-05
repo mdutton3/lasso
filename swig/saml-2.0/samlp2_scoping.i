@@ -3,7 +3,13 @@
 %rename(Samlp2Scoping) LassoSamlp2Scoping;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(requesterId) RequesterID;
+#endif
 	char *RequesterID;
+#ifndef SWIGPHP4
+	%rename(proxyCount) ProxyCount;
+#endif
 	char *ProxyCount;
 } LassoSamlp2Scoping;
 %extend LassoSamlp2Scoping {

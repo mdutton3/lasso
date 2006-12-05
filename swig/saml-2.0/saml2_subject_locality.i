@@ -3,7 +3,13 @@
 %rename(Saml2SubjectLocality) LassoSaml2SubjectLocality;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(address) Address;
+#endif
 	char *Address;
+#ifndef SWIGPH4
+	%rename(dnsName) DNSName;
+#endif
 	char *DNSName;
 } LassoSaml2SubjectLocality;
 %extend LassoSaml2SubjectLocality {

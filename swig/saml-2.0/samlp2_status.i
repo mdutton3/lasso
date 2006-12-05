@@ -3,6 +3,9 @@
 %rename(Samlp2Status) LassoSamlp2Status;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(statusMessage) StatusMessage;
+#endif
 	char *StatusMessage;
 } LassoSamlp2Status;
 %extend LassoSamlp2Status {

@@ -3,8 +3,17 @@
 %rename(Samlp2IDPEntry) LassoSamlp2IDPEntry;
 #endif
 typedef struct {
+#ifndef SWIGPHP4
+	%rename(providerId) ProviderID;
+#endif
 	char *ProviderID;
+#ifndef SWIGPHP4
+	%rename(name) Name;
+#endif
 	char *Name;
+#ifndef SWIGPHP4
+	%rename(loc) Loc;
+#endif
 	char *Loc;
 } LassoSamlp2IDPEntry;
 %extend LassoSamlp2IDPEntry {
