@@ -376,7 +376,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
 		lasso_saml20_profile_set_response_status(profile,
 				LASSO_SAML2_STATUS_CODE_REQUEST_DENIED);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 
 	assertion = LASSO_SAML2_ASSERTION(assertion_n);
