@@ -53,6 +53,7 @@ gint lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_prov
 gint lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg);
 gint lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_response_msg);
 gint lasso_saml20_login_accept_sso(LassoLogin *login);
+gint lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *paos_response_msg);
 
 gint lasso_saml20_login_init_idp_initiated_authn_request(LassoLogin *login,
 		const gchar *remote_providerID);

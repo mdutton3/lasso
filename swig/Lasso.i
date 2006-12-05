@@ -5868,6 +5868,10 @@ typedef struct {
 	THROW_ERROR()
 	int validateRequestMsg(gboolean authenticationResult, gboolean isConsentObtained);
 	END_THROW_ERROR()
+
+	THROW_ERROR()
+	int processPaosResponseMsg(gchar *msg);
+	END_THROW_ERROR()
 }
 
 %{
@@ -5986,6 +5990,7 @@ int LassoLogin_setSessionFromDump(LassoLogin *self, char *dump) {
 #define LassoLogin_setEncryptedResourceId lasso_login_set_encryptedResourceId 
 #define LassoLogin_setResourceId lasso_login_set_resourceId
 #define LassoLogin_validateRequestMsg lasso_login_validate_request_msg
+#define LassoLogin_processPaosResponseMsg lasso_login_process_paos_response_msg
 
 %}
 

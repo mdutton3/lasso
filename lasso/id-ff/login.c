@@ -2097,3 +2097,19 @@ lasso_login_validate_request_msg(LassoLogin *login, gboolean authentication_resu
 
 	return ret;
 }
+
+int
+lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
+{
+	LassoProfile *profile;
+
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+
+	profile = LASSO_PROFILE(login);
+
+	IF_SAML2(profile) {
+		return lasso_saml20_login_process_paos_response_msg(login, msg);
+	}
+
+    return 0;
+}

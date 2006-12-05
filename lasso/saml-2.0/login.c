@@ -855,7 +855,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	xpathCtx = xmlXPathNewContext(doc);
 
 	/* check PAOS response */
-	xmlnode = NULL;
+	/*xmlnode = NULL;
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Response", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
@@ -866,7 +866,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return LASSO_PROFILE_ERROR_INVALID_MSG;
-	}
+	}*/
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:RelayState", xpathCtx);
@@ -879,7 +879,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	profile->remote_providerID = g_strdup(
 			LASSO_SAMLP2_STATUS_RESPONSE(response)->Issuer->content);
 
-	return 0;
+	return lasso_saml20_login_process_response_status_and_assertion(login);
 }
 
 gint
@@ -928,21 +928,11 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	return lasso_saml20_login_process_response_status_and_assertion(login);
 }
 
-
-
 gint
 lasso_saml20_login_process_response_msg(LassoLogin *login, gchar *response_msg)
 {
 	LassoProfile *profile = LASSO_PROFILE(login);
 	int rc;
-
-	if (strstr(response_msg, LASSO_PAOS_HREF)) {
-		rc = lasso_saml20_login_process_paos_response_msg(login, response_msg);
-		if (rc == 0) {
-			return lasso_saml20_login_process_response_status_and_assertion(login);
-		}
-		return rc;
-	}
 
 	rc = lasso_saml20_profile_process_artifact_response(profile, response_msg);
 	if (rc) {

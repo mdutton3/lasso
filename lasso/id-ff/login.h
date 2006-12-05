@@ -133,6 +133,7 @@ LASSO_EXPORT int lasso_login_set_resourceId(LassoLogin *login, const char *conte
 LASSO_EXPORT int lasso_login_validate_request_msg(LassoLogin *login,
 		gboolean authentication_result, gboolean is_consent_obtained);
 
+LASSO_EXPORT int lasso_login_process_paos_response_msg(LassoLogin *login, gchar *msg);
 
 #ifdef __cplusplus
 }
