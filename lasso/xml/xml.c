@@ -436,8 +436,8 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	orig_node = lasso_node_get_xmlNode(lasso_node, FALSE);
 	xmlDocSetRootElement(doc, orig_node);
 
-	/* Create encryption template for a 256-bit AES key */
-	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformAes256CbcId,
+	/* Create encryption template for a 128-bit AES key */
+	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformAes128CbcId,
 		NULL, xmlSecTypeEncElement, NULL, NULL);
 	if (encrypted_element->EncryptedData == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
@@ -514,8 +514,8 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 		return NULL;
 	}
 
-	/* generate a 256-bit AES key */
-	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 256, xmlSecKeyDataTypeSession);
+	/* generate a 128-bit AES key */
+	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 128, xmlSecKeyDataTypeSession);
 	if (enc_ctx->encKey == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to generate session des key");
 		return NULL;
