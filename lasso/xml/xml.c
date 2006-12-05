@@ -604,7 +604,9 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node");
 		return NULL;
 	}
-	for (i = encrypted_element->EncryptedKey; i->data != NULL; i = i->next) {
+	for (i = encrypted_element->EncryptedKey; i; i = g_list_next(i)) {
+		if (i->data == NULL)
+			continue;
 		if (strcmp((char*)((xmlNode*)i->data)->name, "EncryptedKey") == 0) {
 			encrypted_key_node = (xmlNode*)(i->data);
 			break;
