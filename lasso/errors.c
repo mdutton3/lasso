@@ -86,6 +86,9 @@ lasso_strerror(int error_code)
 			return "Request denied by identity provider";
 		case LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND:
 			return "Federation not found on logout";
+		case LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL:
+			return "Unknown principal on logout";
+
 		case LASSO_PROFILE_ERROR_INVALID_QUERY:
 			return "Invalid URL query";
 		case LASSO_PROFILE_ERROR_INVALID_POST_MSG:
