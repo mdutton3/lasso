@@ -105,9 +105,11 @@ init_from_query(LassoNode *node, char **query_fields)
 {
 	gboolean rc;
 	char *relay_state = NULL;
+	LassoSamlp2AuthnRequest *request = LASSO_SAMLP2_AUTHN_REQUEST(node);
+
 	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
 	if (rc && relay_state != NULL) {
-		/* XXX: support RelayState? */
+		request->relayState = relay_state;
 	}
 	return rc;
 }
@@ -132,6 +134,7 @@ instance_init(LassoSamlp2AuthnRequest *node)
 	node->AssertionConsumerServiceURL = NULL;
 	node->AttributeConsumingServiceIndex = -1;
 	node->ProviderName = NULL;
+	node->relayState = NULL;
 }
 
 static void

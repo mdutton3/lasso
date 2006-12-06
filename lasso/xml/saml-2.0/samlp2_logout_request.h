@@ -65,6 +65,8 @@ struct _LassoSamlp2LogoutRequest {
 	/* attributes */
 	char *Reason;
 	char *NotOnOrAfter;
+
+	char *relayState;
 };
 
 

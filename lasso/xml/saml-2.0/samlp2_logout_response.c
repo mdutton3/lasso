@@ -46,9 +46,15 @@ static gchar*
 build_query(LassoNode *node)
 {
 	char *ret, *deflated_message;
+	LassoSamlp2LogoutResponse *response = LASSO_SAMLP2_LOGOUT_RESPONSE(node);
 
 	deflated_message = lasso_node_build_deflated_query(node);
-	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
+	if (response->relayState) {
+		ret = g_strdup_printf("SAMLResponse=%s&RelayState=%s",
+				deflated_message, response->relayState);
+	} else {
+		ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
+	}
 	/* XXX: must support RelayState (which profiles?) */
 	g_free(deflated_message);
 	return ret;
@@ -75,6 +81,7 @@ init_from_query(LassoNode *node, char **query_fields)
 static void
 instance_init(LassoSamlp2LogoutResponse *node)
 {
+	node->relayState = NULL; /* XXX: free me sometimes */
 }
 
 static void

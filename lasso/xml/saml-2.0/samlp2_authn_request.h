@@ -73,6 +73,9 @@ struct _LassoSamlp2AuthnRequest {
 	char *AssertionConsumerServiceURL;
 	int AttributeConsumingServiceIndex;
 	char *ProviderName;
+
+	/* out of schema */
+	char *relayState;
 };
 
 

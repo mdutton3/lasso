@@ -54,6 +54,7 @@ struct _LassoSamlp2LogoutResponse {
 	LassoSamlp2StatusResponse parent;
 
 	/*< public >*/
+	char *relayState;
 };
 
 

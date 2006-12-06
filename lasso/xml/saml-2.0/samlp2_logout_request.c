@@ -88,9 +88,11 @@ init_from_query(LassoNode *node, char **query_fields)
 {
 	gboolean rc;
 	char *relay_state = NULL;
+	LassoSamlp2LogoutRequest *request = LASSO_SAMLP2_LOGOUT_REQUEST(node);
+
 	rc = lasso_node_init_from_saml2_query_fields(node, query_fields, &relay_state);
 	if (rc && relay_state != NULL) {
-		/* XXX: support RelayState? */
+		request->relayState = relay_state;
 	}
 	return rc;
 }
@@ -109,6 +111,7 @@ instance_init(LassoSamlp2LogoutRequest *node)
 	node->SessionIndex = NULL;
 	node->Reason = NULL;
 	node->NotOnOrAfter = NULL;
+	node->relayState = NULL;
 }
 
 static void
