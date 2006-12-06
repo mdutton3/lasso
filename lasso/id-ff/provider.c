@@ -963,14 +963,6 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		xmlnode = xmlDocGetRootElement(doc);
 	}
 
-	if (id_attr_name) {
-		xmlChar *id_value = xmlGetProp(xmlnode, (xmlChar*)id_attr_name);
-		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
-		if (id_value) {
-			xmlAddID(NULL, doc, id_value, id_attr);
-			xmlFree(id_value);
-		}
-	}
 
 	sign = NULL;
 	for (sign = xmlnode->children; sign; sign = sign->next) {
@@ -978,9 +970,34 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 			break;
 	}
 
+	/* If no signature was found, look for one in assertion */
+	if (sign == NULL) {
+		for (sign = xmlnode->children; sign; sign = sign->next) {
+			if (strcmp((char*)sign->name, "Assertion") == 0)
+				break;
+		}
+		if (sign != NULL) {
+			xmlnode = sign;
+			for (sign = xmlnode->children; sign; sign = sign->next) {
+				if (strcmp((char*)sign->name, "Signature") == 0)
+					break;
+			}
+		}
+	}
+
+
 	if (sign == NULL) {
 		xmlFreeDoc(doc);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+	}
+
+	if (id_attr_name) {
+		xmlChar *id_value = xmlGetProp(xmlnode, (xmlChar*)id_attr_name);
+		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
+		if (id_value) {
+			xmlAddID(NULL, doc, id_value, id_attr);
+			xmlFree(id_value);
+		}
 	}
 
 	x509data = xmlSecFindNode(xmlnode, xmlSecNodeX509Data, xmlSecDSigNs);
@@ -1024,7 +1041,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 }
 
 /**
- * lasso_provider_set_encryption:
+ * lasso_provider_set_encryption_mode:
  * @provider: provider to set encryption for
  * @encryption_activation: TRUE to activate, FALSE, to desactivate
  *
