@@ -85,7 +85,7 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 		} else {
 			name_id_sp_name_qualifier = profile->remote_providerID;
 		}
-			
+		
 		federation = g_hash_table_lookup(profile->identity->federations,
 				name_id_sp_name_qualifier);
 		if (federation == NULL) {
@@ -201,6 +201,8 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 	if (logout->initial_http_request_method == LASSO_HTTP_METHOD_SOAP) {
 		profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
 				"SingleLogoutService SOAP");
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Destination = g_strdup(
+				profile->msg_url);
 		profile->msg_body = lasso_node_export_to_soap(profile->request);
 		return 0;
 	}
@@ -212,6 +214,7 @@ lasso_saml20_logout_build_request_msg(LassoLogout *logout, LassoProvider *remote
 		if (url == NULL) {
 			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 		}
+		LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Destination = g_strdup(url);
 		query = lasso_node_export_to_query(profile->request,
 					profile->server->signature_method,
 					profile->server->private_key);
@@ -250,6 +253,11 @@ lasso_saml20_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 
 	if (profile->remote_providerID) {
 		g_free(profile->remote_providerID);
+	}
+
+	if (LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->relayState) {
+		profile->msg_relayState = g_strdup(
+				LASSO_SAMLP2_LOGOUT_REQUEST(profile->request)->relayState);
 	}
 
 	profile->remote_providerID = g_strdup(
@@ -545,6 +553,8 @@ lasso_saml20_logout_build_response_msg(LassoLogout *logout)
 				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
 			}
 		}
+		LASSO_SAMLP2_LOGOUT_RESPONSE(profile->response)->relayState = g_strdup(
+				profile->msg_relayState);
 		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
 				profile->server->signature_method,
 				profile->server->private_key);
@@ -642,6 +652,9 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			lasso_session_remove_assertion(
 					profile->session, profile->remote_providerID);
 			return LASSO_LOGOUT_ERROR_REQUEST_DENIED;
+		}
+		if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_UNKNOWN_PRINCIPAL) == 0) {
+			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
 		return LASSO_ERROR_UNDEFINED;
