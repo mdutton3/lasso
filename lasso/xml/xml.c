@@ -224,7 +224,7 @@ lasso_node_export_to_ecp_soap_response(LassoNode *node, const char *assertionCon
 	xmlSetNsProp(ecp_response, soap_env_ns, (xmlChar*)"mustUnderstand", (xmlChar*)"1");
 	xmlSetNsProp(ecp_response, soap_env_ns,
 			(xmlChar*)"actor", (xmlChar*)LASSO_SOAP_ENV_ACTOR);
-	xmlSetProp(ecp_response, (xmlChar*)"AssertionConsumerURL",
+	xmlSetProp(ecp_response, (xmlChar*)"AssertionConsumerServiceURL",
 			(const xmlChar*)assertionConsumerURL);
 	xmlAddChild(header, ecp_response);
 
