@@ -600,33 +600,30 @@ lasso_node_decrypt(LassoSaml2EncryptedElement* encrypted_element,
 	}
 
 	/* Get the EncryptedKey */
-	if (encrypted_element->EncryptedKey == NULL) {
+	if (encrypted_element->EncryptedKey != NULL) {
+		for (i = encrypted_element->EncryptedKey; i; i = g_list_next(i)) {
+			if (i->data == NULL)
+				continue;
+			if (strcmp((char*)((xmlNode*)i->data)->name, "EncryptedKey") == 0) {
+				encrypted_key_node = (xmlNode*)(i->data);
+				break;
+			}
+		}
+	} else {
+		/* Look an EncryptedKey inside the EncryptedData */
+		encrypted_key_node = encrypted_data_node;
+		while (encrypted_key_node &&
+				strcmp((char*)encrypted_key_node->name, "EncryptedKey") != 0 ) {
+			if (strcmp((char*)encrypted_key_node->name, "EncryptedData") == 0 ||
+					strcmp((char*)encrypted_key_node->name, "KeyInfo") == 0)
+				encrypted_key_node = encrypted_key_node->children;
+			encrypted_key_node = encrypted_key_node->next;
+		}
+	}
+
+	if (encrypted_key_node == NULL) {
 		message(G_LOG_LEVEL_WARNING, "No EncryptedKey node");
 		return NULL;
-	}
-	for (i = encrypted_element->EncryptedKey; i; i = g_list_next(i)) {
-		if (i->data == NULL)
-			continue;
-		if (strcmp((char*)((xmlNode*)i->data)->name, "EncryptedKey") == 0) {
-			encrypted_key_node = (xmlNode*)(i->data);
-			break;
-		}
-	}
-	if (encrypted_key_node == NULL) {
-		/* Look an EncryptedKey inside the EncryptedData */
-		xmlNode *t = encrypted_data_node;
-		while (t && strcmp((char*)t->name, "EncryptedKey") != 0 ) {
-			if (strcmp((char*)t->name, "EncryptedData") == 0 ||
-					strcmp((char*)t->name, "KeyInfo") == 0)
-				t = t->children;
-			t = t->next;
-		}
-
-		if (t == NULL) {
-			message(G_LOG_LEVEL_WARNING, "No EncryptedKey data");
-			return NULL;
-		}
-		encrypted_key_node = t;
 	}
 
 	/* Create a document to contain the node to decrypt */
