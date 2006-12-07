@@ -418,7 +418,11 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 		url = lasso_provider_get_metadata_one(provider,
 				"ManageNameIDService HTTP-Redirect ResponseLocation");
 		if (url == NULL) {
-			return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+			url = lasso_provider_get_metadata_one(provider,
+					"ManageNameIDService HTTP-Redirect");
+			if (url == NULL) {
+				return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);
+			}
 		}
 		query = lasso_node_export_to_query(LASSO_NODE(profile->response),
 				profile->server->signature_method,
