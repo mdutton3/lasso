@@ -492,10 +492,17 @@ typedef struct {
 
 DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNode.
 
+#if SWIG_VERSION < 0x010330
 %typemap(javaout) NODE_SUPERCLASS * {
 	long cPtr = $jnicall;
 	return (cPtr == 0) ? null : ($javaclassname) lassoJNI.downcast_node(cPtr);
 }
+#else
+%typemap(javaout) NODE_SUPERCLASS * {
+	long cPtr = $jnicall;
+	return (cPtr == 0) ? null : ($javaclassname) lassoJNI.downcast_node(cPtr, null);
+}
+#endif
 
 %apply NODE_SUPERCLASS * {LassoNode *, LassoSamlpRequestAbstract *,
 		LassoSamlpResponseAbstract *};
