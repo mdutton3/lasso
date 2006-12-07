@@ -1147,11 +1147,17 @@ typedef struct {
 typedef struct {
 	/* Attributes */
 
+#ifndef SWIGPHP4
+  /* XXX: SWIG 1.3.31 fails to compile the PHP binding it generates if this
+   * part is present */
+
 #if !defined(SWIGPHP4) && !defined(SWIGCSHARP)
 	/* "abstract" is a reserved word in C#. */
 	%rename(abstract) Abstract;
 #endif
 	char *Abstract;
+
+#endif /* !SWIGPHP4 */
 
 #ifndef SWIGPHP4
 	%rename(entryId) entryID;
