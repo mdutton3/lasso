@@ -27,6 +27,7 @@
 #include <lasso/saml-2.0/profileprivate.h>
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/identityprivate.h>
+#include <lasso/id-ff/serverprivate.h>
 
 /*****************************************************************************/
 /* public methods                                                            */
@@ -185,6 +186,10 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	LassoProfile *profile = LASSO_PROFILE(name_id_management);
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
+	LassoSaml2NameID *name_id;
+	LassoSaml2EncryptedElement *encrypted_id;
+	LassoSaml2EncryptedElement* encrypted_element = NULL;
+	xmlSecKey *encryption_private_key = NULL;
 
 	profile->request = lasso_samlp2_manage_name_id_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
@@ -215,8 +220,26 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		profile->http_request_method = LASSO_HTTP_METHOD_REDIRECT;
 
-	profile->nameIdentifier = g_object_ref(
-			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID);
+	name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
+	encrypted_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID;
+
+	if (name_id == NULL && encrypted_id != NULL) {
+		encryption_private_key = profile->server->private_data->encryption_private_key;
+		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(encrypted_id);
+		if (encrypted_element != NULL && encryption_private_key == NULL) {
+			return LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+		}
+		if (encrypted_element != NULL && encryption_private_key != NULL) {
+			profile->nameIdentifier = LASSO_NODE(lasso_node_decrypt(
+				encrypted_id, encryption_private_key));
+			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID = \
+				LASSO_SAML2_NAME_ID(profile->nameIdentifier);
+			LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->EncryptedID = NULL;
+
+		}
+	} else {
+		profile->nameIdentifier = g_object_ref(name_id);
+	}
 
 	return profile->signature_status;
 }
