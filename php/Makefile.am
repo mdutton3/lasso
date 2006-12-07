@@ -10,7 +10,7 @@ php_extensiondir = ${prefix}@PHP_UNPREFIXED_EXTENSION_DIR@
 
 SWIG_I_FILES=$(shell find $(top_srcdir)/swig/ -name '*.[ih]')
 lasso_wrap.c php_lasso.h lasso.php: $(SWIG_I_FILES)
-	$(SWIG) -v -php4 -module lasso -o lasso_wrap.c -dlname lasso $(top_srcdir)/swig/Lasso.i
+	$(SWIG) -v -php4 -module lasso -o lasso_wrap.c $(top_srcdir)/swig/Lasso.i
 	cp lasso_wrap.c lasso_wrap.c.bak
 	test x"$(SWIG)" = xecho || \
 		$(PYTHON) $(srcdir)/patch_swig_output.py < lasso_wrap.c.bak > lasso_wrap.c
