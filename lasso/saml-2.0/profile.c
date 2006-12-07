@@ -103,7 +103,8 @@ lasso_saml20_profile_set_response_status(LassoProfile *profile, const char *stat
 	status->StatusCode->Value = g_strdup(status_code_value);
 
 	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0 &&
-			strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_VERSION_MISMATCH) != 0) {
+			strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_VERSION_MISMATCH) != 0 &&
+			strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_REQUESTER) != 0) {
 		status->StatusCode->Value = g_strdup(LASSO_SAML2_STATUS_CODE_RESPONDER);
 		status->StatusCode->StatusCode = LASSO_SAMLP2_STATUS_CODE(
 				lasso_samlp2_status_code_new());
@@ -238,11 +239,14 @@ int
 lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 {
 	LassoSamlp2StatusResponse *response;
-	LassoNode *resp = lasso_node_new_from_dump(profile->private_data->artifact_message);
-	if (resp == NULL)
-		return LASSO_ERROR_UNDEFINED;
+	LassoNode *resp = NULL;
+
+
 	response = LASSO_SAMLP2_STATUS_RESPONSE(lasso_samlp2_artifact_response_new());
-	LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any = resp;
+	if (profile->private_data->artifact_message) {
+		resp = lasso_node_new_from_dump(profile->private_data->artifact_message);
+		LASSO_SAMLP2_ARTIFACT_RESPONSE(response)->any = resp;
+	}
 	response->ID = lasso_build_unique_id(32);
 	response->Version = g_strdup("2.0");
 	response->Issuer = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
@@ -257,9 +261,15 @@ lasso_saml20_profile_build_artifact_response(LassoProfile *profile)
 	}
 	response->private_key_file = g_strdup(profile->server->private_key);
 	response->certificate_file = g_strdup(profile->server->certificate);
-	
+
 	profile->response = LASSO_NODE(response);
-	lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	
+	if (resp == NULL) {
+		lasso_saml20_profile_set_response_status(profile,
+				LASSO_SAML2_STATUS_CODE_REQUESTER);
+	} else {
+		lasso_saml20_profile_set_response_status(profile, LASSO_SAML2_STATUS_CODE_SUCCESS);
+	}
 	profile->msg_body = lasso_node_export_to_soap(profile->response);
 	return 0;
 }

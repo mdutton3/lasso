@@ -213,6 +213,9 @@ lasso_saml20_login_process_authn_request_msg(LassoLogin *login, const char *auth
 	}
 
 	authn_request = LASSO_SAMLP2_AUTHN_REQUEST(request);
+	if (authn_request->relayState) {
+		profile->msg_relayState = g_strdup(authn_request->relayState);
+	}
 
 	profile->request = request;
 	profile->remote_providerID = g_strdup(
@@ -388,6 +391,9 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 	LassoProfile *profile = LASSO_PROFILE(login);
 	LassoSamlp2NameIDPolicy *name_id_policy;
 	char *consent;
+	LassoFederation *federation;
+	char *name_id_sp_name_qualifier = NULL;
+	LassoProvider *remote_provider;
 
 	name_id_policy = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy;
 
@@ -398,9 +404,26 @@ lasso_saml20_login_must_ask_for_consent_private(LassoLogin *login)
 		}
 	}
 
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
+	if (remote_provider->private_data->affiliation_id) {
+		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
+	} else {
+		name_id_sp_name_qualifier = profile->remote_providerID;
+	}
+
+	if (profile->identity && profile->identity->federations) {
+		/* search a federation in the identity */
+		federation = g_hash_table_lookup(profile->identity->federations,
+				name_id_sp_name_qualifier);
+		if (federation) {
+			return FALSE;
+		}
+	}
+
 	consent = LASSO_SAMLP2_REQUEST_ABSTRACT(profile->request)->Consent;
 	if (consent == NULL)
-		return TRUE;
+		return FALSE;
 
 	if (strcmp(consent, LASSO_SAML2_CONSENT_OBTAINED) == 0)
 		return FALSE;
@@ -488,10 +511,11 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 	}
 
 	name_id_policy = LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy;
-	if (name_id_policy)
+	if (name_id_policy) {
 		name_id_policy_format = name_id_policy->Format;
-	else
-		return 0; /* XXX: ? */
+	} else {
+		name_id_policy_format = LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
+	}
 
 	if (name_id_policy_format && strcmp(name_id_policy_format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
@@ -508,11 +532,30 @@ lasso_saml20_login_process_federation(LassoLogin *login, gboolean is_consent_obt
 
 	/* search a federation in the identity */
 	federation = g_hash_table_lookup(profile->identity->federations, name_id_sp_name_qualifier);
-	if (name_id_policy->AllowCreate == FALSE) {
+	if (name_id_policy == NULL || name_id_policy->AllowCreate == FALSE) {
+		if (LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
+			/* it tried to get a federation, it failed, this is not
+			 * a problem */
+			return 0;
+		}
 		/* a federation MUST exist */
 		if (federation == NULL) {
 			return LASSO_LOGIN_ERROR_FEDERATION_NOT_FOUND;
 		}
+	}
+
+	if (federation == NULL &&
+			LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
+		/* it didn't find a federation, and name id policy was not
+		 * specified, don't create a federation */
+		return 0;
+	}
+	
+	if (federation && LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy == NULL) {
+		LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy = \
+			LASSO_SAMLP2_NAME_ID_POLICY(lasso_samlp2_name_id_policy_new());
+		LASSO_SAMLP2_AUTHN_REQUEST(profile->request)->NameIDPolicy->Format = 
+			g_strdup(LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT);
 	}
 
 	if (lasso_saml20_login_must_ask_for_consent_private(login) && !is_consent_obtained) {
@@ -600,9 +643,9 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 	assertion->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = g_strdup(
 		notOnOrAfter);
 
-	if (name_id_policy == NULL || federation == NULL || 
-			strcmp(name_id_policy->Format,
-				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0) {
+	if (federation == NULL || 
+			(name_id_policy && strcmp(name_id_policy->Format,
+				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_TRANSIENT) == 0)) {
 		/* transient -> don't use a federation */
 		name_id = LASSO_SAML2_NAME_ID(lasso_saml2_name_id_new_with_string(
 					lasso_build_unique_id(32)));
@@ -612,7 +655,7 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 
 		assertion->Subject->NameID = name_id;
 	} else {
-		if (provider && strcmp(name_id_policy->Format,
+		if (provider && name_id_policy && strcmp(name_id_policy->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_ENCRYPTED) == 0) {
 			provider->private_data->encryption_mode |= LASSO_ENCRYPTION_MODE_NAMEID;
 		}
@@ -714,11 +757,16 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	if (http_method == LASSO_HTTP_METHOD_ARTIFACT_GET) {
 		gchar *query;
 		char *url_artifact = (char*)xmlURIEscapeStr((xmlChar*)artifact, NULL);
-		query = g_strdup_printf("SAMLart=%s", url_artifact);
+
+		if (profile->msg_relayState) {
+			query = g_strdup_printf("SAMLart=%s&RelayState=%s",
+					url_artifact, profile->msg_relayState);
+		} else {
+			query = g_strdup_printf("SAMLart=%s", url_artifact);
+		}
 		profile->msg_url = lasso_concat_url_query(url, query);
 		g_free(query);
 		xmlFree(url_artifact);
-		/* XXX: RelayState */
 	} else {
 		/* XXX: ARTIFACT POST */
 	}
@@ -919,11 +967,11 @@ lasso_saml20_login_process_authn_response_msg(LassoLogin *login, gchar *authn_re
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 
-	/* XXX: verify signature ? */
 	profile->signature_status = lasso_provider_verify_signature(
 		remote_provider, authn_response_msg, "ID", format);
-	if (profile->signature_status != 0)
+	if (profile->signature_status != 0) {
 		return profile->signature_status;
+	}
 
 	return lasso_saml20_login_process_response_status_and_assertion(login);
 }
@@ -984,6 +1032,7 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 				}
 			}
 		}
+		
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 

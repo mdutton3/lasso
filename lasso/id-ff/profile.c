@@ -32,6 +32,7 @@
 
 #include <lasso/id-ff/profile.h>
 #include <lasso/id-ff/profileprivate.h>
+#include <lasso/id-ff/providerprivate.h>
 
 #include <lasso/saml-2.0/profileprivate.h>
 
@@ -55,6 +56,7 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 {
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
+	char *name_id_sp_name_qualifier;
 
 	g_return_val_if_fail(LASSO_IS_PROFILE(profile), NULL);
 
@@ -67,8 +69,15 @@ lasso_profile_get_nameIdentifier(LassoProfile *profile)
 	if (remote_provider == NULL)
 		return NULL;
 
+	if (remote_provider->private_data->affiliation_id) {
+		name_id_sp_name_qualifier = remote_provider->private_data->affiliation_id;
+	} else {
+		name_id_sp_name_qualifier = profile->remote_providerID;
+	}
+
 	federation = g_hash_table_lookup(
-			profile->identity->federations, profile->remote_providerID);
+			profile->identity->federations,
+			name_id_sp_name_qualifier);
 	if (federation == NULL)
 		return NULL;
 
