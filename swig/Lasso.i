@@ -445,7 +445,7 @@ DowncastableNode *downcast_node(LassoNode *node); // FIXME: Replace with LassoNo
   }
 %}
 
-%typemap(javadestruct, methodname="delete") NODE_SUBCLASS {
+%typemap(javadestruct, methodname="delete", methodmodifiers="public") NODE_SUBCLASS {
   super.delete();
 }
 
