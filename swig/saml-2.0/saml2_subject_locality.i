@@ -7,7 +7,7 @@ typedef struct {
 	%rename(address) Address;
 #endif
 	char *Address;
-#ifndef SWIGPH4
+#ifndef SWIGPHP4
 	%rename(dnsName) DNSName;
 #endif
 	char *DNSName;
