@@ -356,10 +356,10 @@ AC_SUBST(PYTHON_VERSION)
 # -----------
 
 dnl Check if php is explicitly disabled.
-AC_ARG_ENABLE(php4, [  --disable-php4         disable the PHP 4 binding],,
+AC_ARG_ENABLE(php4, [  --disable-php4          disable the PHP 4 binding],,
               enable_php4="yes")
 
-AC_ARG_ENABLE(php4-force, [  --enable-php4-force    always enable of the PHP 4 binding (win32)],
+AC_ARG_ENABLE(php4-force, [  --enable-php4-force     always enable of the PHP 4 binding (win32)],
               [ENABLE_PHP4_FORCE="yes"],
               [ENABLE_PHP4_FORCE="no"])
 
@@ -429,10 +429,10 @@ AC_SUBST(PHP4_VERSION)
 # -----------
 
 dnl Check if php is explicitly disabled.
-AC_ARG_ENABLE(php5, [  --disable-php5         disable the PHP 5 binding],,
+AC_ARG_ENABLE(php5, [  --disable-php5          disable the PHP 5 binding],,
               enable_php5="yes")
 
-AC_ARG_ENABLE(php5-force, [  --enable-php5-force    always enable of the PHP 5 binding (win32)],
+AC_ARG_ENABLE(php5-force, [  --enable-php5-force     always enable of the PHP 5 binding (win32)],
               [ENABLE_PHP5_FORCE="yes"],
               [ENABLE_PHP5_FORCE="no"])
 
