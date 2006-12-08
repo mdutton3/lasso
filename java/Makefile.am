@@ -29,6 +29,7 @@ javashare_DATA = lasso.jar
 SWIG_OUTPUTS = lasso_wrap.c \
 	Defederation.java \
 	DowncastableNode.java \
+	Ecp.java \
 	Federation.java \
 	Identity.java \
 	lassoConstants.java \
@@ -48,6 +49,7 @@ SWIG_OUTPUTS = lasso_wrap.c \
 	Login.java \
 	Logout.java \
 	NameIdentifierMapping.java \
+	NameIdManagement.java \
 	NameRegistration.java \
 	Node.java \
 	NodeList.java \
