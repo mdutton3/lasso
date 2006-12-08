@@ -521,7 +521,7 @@ typedef struct node_info {
 	char *name;
 	struct node_info *super;
 	swig_type_info *swig;
-#ifdef PHP_VERSION
+#if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 	zend_class_entry *php;
 #endif
 } node_info;
@@ -553,7 +553,7 @@ static node_info *get_node_info_with_swig(swig_type_info *swig) {
 	return NULL;
 }
 
-#ifdef PHP_VERSION
+#if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 static void set_node_info(node_info *info, char *name, char *superName, swig_type_info *swig,
 			  zend_class_entry *php) {
 #else
@@ -576,7 +576,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 	}
 	info->super = super;
 	info->swig = swig;
-#ifdef PHP_VERSION
+#if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 	info->php = php;
 #endif
 }
@@ -598,7 +598,7 @@ static void set_node_info(node_info *info, char *name, char *superName, swig_typ
 		SWIG_croak("Type error in argument $argnum of $symname. Expected $1_mangle");
 	}
 #else
-#ifdef SWIGPHP4
+#if defined(SWIGPHP4) || defined(SWIGPHP5)
 	if ((*$input)->type == IS_NULL) {
 		$1=0;
 	} else {
@@ -683,7 +683,7 @@ SET_NODE_INFO(Node, DowncastableNode)
 	node_info *info;
 
 	info = node_infos;
-#ifdef PHP_VERSION
+#if defined(PHP_VERSION) && ! defined(PHP_VERSION_ID)
 	set_node_info(info++, "LassoNode", NULL, SWIGTYPE_p_LassoNode, &ce_swig_LassoNode);
 #define SET_NODE_INFO(className, superClassName)\
 	set_node_info(info++, "Lasso"#className, "Lasso"#superClassName,\
