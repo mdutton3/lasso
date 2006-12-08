@@ -249,6 +249,7 @@ liblassoinclude_HEADERS = \
 	$(WSF_H_FILES)
 
 lasso_private_h_sources = \
-	private.h
+	private.h \
+	xml_enc.h
 
 EXTRA_DIST = $(lasso_private_h_sources)
