@@ -8,6 +8,7 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lasso \
 	-DTESTSDATADIR=\"$(srcdir)/data/\" \
+	-DTESTSMETADATADIR=\"$(srcdir)/metadata/\" \
 	$(LASSO_CFLAGS) \
 	$(CHECK_CFLAGS)
 

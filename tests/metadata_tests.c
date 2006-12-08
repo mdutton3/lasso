@@ -32,7 +32,7 @@
 START_TEST(test01_metadata_load_der_certificate_from_x509_cert)
 {
 	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
-			"metadata/metadata_01.xml", NULL, NULL);
+			TESTSMETADATADIR "/metadata_01.xml", NULL, NULL);
 	fail_unless(provider != NULL, "Can't load DER certificate from <ds:X509Certificate>");
 }
 END_TEST
@@ -40,7 +40,7 @@ END_TEST
 START_TEST(test02_metadata_load_pem_certificate_from_x509_cert)
 {
 	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
-			"metadata/metadata_02.xml", NULL, NULL);
+			TESTSMETADATADIR "/metadata_02.xml", NULL, NULL);
 	fail_unless(provider != NULL, "Can't load PEM certificate from <ds:X509Certificate>");
 }
 END_TEST
@@ -48,7 +48,7 @@ END_TEST
 START_TEST(test03_metadata_load_der_public_key_from_keyvalue)
 {
 	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
-			"metadata/metadata_03.xml", NULL, NULL);
+			TESTSMETADATADIR "/metadata_03.xml", NULL, NULL);
 	fail_unless(provider != NULL, "Can't load DER public key from <ds:KeyValue>");
 }
 END_TEST
@@ -56,7 +56,7 @@ END_TEST
 START_TEST(test04_metadata_load_pem_public_key_from_keyvalue)
 {
 	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
-			"metadata/metadata_04.xml", NULL, NULL);
+			TESTSMETADATADIR "/metadata_04.xml", NULL, NULL);
 	fail_unless(provider != NULL, "Can't load PEM public key from <ds:KeyValue>");
 }
 END_TEST
@@ -64,7 +64,7 @@ END_TEST
 START_TEST(test05_metadata_load_public_key_from_x509_cert)
 {
 	LassoProvider *provider = lasso_provider_new(LASSO_PROVIDER_ROLE_SP,
-			"metadata/metadata_05.xml", NULL, NULL);
+			TESTSMETADATADIR "/metadata_05.xml", NULL, NULL);
 	fail_unless(provider != NULL, "Can't load DER public key from <ds:X509Certificate>");
 }
 END_TEST
