@@ -24,7 +24,7 @@ endif
 
 EXTRA_DIST = tests.c login_tests.c basic_tests.c random_tests.c metadata_tests.c
 
-SUBDIRS = data
+SUBDIRS = data metadata
 
 CLEANFILES = result.xml
 
