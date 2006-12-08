@@ -102,9 +102,10 @@ AC_CHECK_PROGS(JAVA, java)
 AC_CHECK_PROGS(JAVAC, gcj javac)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PERL, perl)
-AC_CHECK_PROGS(PHP, php)
-AC_CHECK_PROG(PHP_CONFIG, php-config, php-config)
-AC_PATH_PROGS(PHP_PATH, php)
+AC_CHECK_PROGS(PHP4, php4 php)
+AC_CHECK_PROGS(PHP5, php4 php)
+AC_CHECK_PROGS(PHP4_CONFIG, php-config4 php-config)
+AC_CHECK_PROGS(PHP5_CONFIG, php-config5 php-config)
 AC_CHECK_PROGS(PYTHON, python)
 AC_CHECK_PROGS(SWIG, swig)
 
@@ -355,48 +356,48 @@ AC_SUBST(PYTHON_VERSION)
 # -----------
 
 dnl Check if php is explicitly disabled.
-AC_ARG_ENABLE(php, [  --disable-php           disable the PHP binding],,
-              enable_php="yes")
+AC_ARG_ENABLE(php4, [  --disable-php4         disable the PHP 4 binding],,
+              enable_php4="yes")
 
-AC_ARG_ENABLE(php-force, [  --enable-php-force      always enable of the PHP binding (win32)],
-              [ENABLE_PHP_FORCE="yes"],
-              [ENABLE_PHP_FORCE="no"])
+AC_ARG_ENABLE(php4-force, [  --enable-php4-force    always enable of the PHP 4 binding (win32)],
+              [ENABLE_PHP4_FORCE="yes"],
+              [ENABLE_PHP4_FORCE="no"])
 
-AC_ARG_WITH(php-config,
-            [  --with-php-config=(PHP_CONFIG)      Specify full path to php-config.])
+AC_ARG_WITH(php4-config,
+            [  --with-php4-config=(PHP4_CONFIG)      Specify full path to php-config4.])
 
-AC_ARG_WITH(php-extension-dir,
-            [  --with-php-extension-dir=(PHP_EXTENSION_DIR)      Specify full path to php extension dir.],
-            [PHP_EXTENSION_DIR="$withval"],[PHP_EXTENSION_DIR=])
+AC_ARG_WITH(php4-extension-dir,
+            [  --with-php4-extension-dir=(PHP4_EXTENSION_DIR)      Specify full path to php 4 extension dir.],
+            [PHP4_EXTENSION_DIR="$withval"],[PHP4_EXTENSION_DIR=])
 
 dnl Check if user passed a specific php-config program.
-if test "X$with_php_config" != "X" ; then
-    PHP_CONFIG=$with_php_config
+if test "X$with_php4_config" != "X" ; then
+    PHP4_CONFIG=$with_php4_config
 fi
 
-if test "X$PHP_CONFIG" != "X" ; then
-  PHP_INCLUDES=`$PHP_CONFIG --includes`
-  PHP_LDFLAGS=`$PHP_CONFIG --ldflags`
-  PHP_LIBS=`$PHP_CONFIG --libs`
-  PHP_UNPREFIXED_EXTENSION_DIR=`$PHP_CONFIG --extension-dir | $SED 's/\/usr//g'`
-  PHP_PREFIX=`$PHP_CONFIG --prefix`
+if test "X$PHP4_CONFIG" != "X" ; then
+  PHP4_INCLUDES=`$PHP4_CONFIG --includes`
+  PHP4_LDFLAGS=`$PHP4_CONFIG --ldflags`
+  PHP4_LIBS=`$PHP4_CONFIG --libs`
+  PHP4_UNPREFIXED_EXTENSION_DIR=`$PHP4_CONFIG --extension-dir | $SED 's/\/usr//g'`
+  PHP4_PREFIX=`$PHP4_CONFIG --prefix`
 else
-  # We assumes PHP are in /usr/local directory.
+  # We assume PHP are in /usr/local directory.
   if test $MINGW -eq 1; then 
     CFLAGS="$CFLAGS -DZTS -DZEND_WIN32 -DWIN32 -D_MBCS"
   fi
-  PHP_INCLUDES="-I/usr/local/include/php4 -I/usr/local/include/php4/main -I/usr/local/include/php4/Zend -I/usr/local/include/php4/TSRM -I/usr/local/include/php4/win32"
-  PHP_LDFLAGS=
-  PHP_LIBS=-lphp4ts -lxmlparse -lxmltok
-  PHP_UNPREFIXED_EXTENSION_DIR=
-  PHP_PREFIX=
+  PHP4_INCLUDES="-I/usr/local/include/php4 -I/usr/local/include/php4/main -I/usr/local/include/php4/Zend -I/usr/local/include/php4/TSRM -I/usr/local/include/php4/win32"
+  PHP4_LDFLAGS=
+  PHP4_LIBS=-lphp4ts -lxmlparse -lxmltok
+  PHP4_UNPREFIXED_EXTENSION_DIR=
+  PHP4_PREFIX=
 fi
-AC_SUBST(PHP_INCLUDES)
-AC_SUBST(PHP_LDFLAGS)
-AC_SUBST(PHP_LIBS)
-AC_SUBST(PHP_UNPREFIXED_EXTENSION_DIR)
-AC_SUBST(PHP_EXTENSION_DIR)
-AC_SUBST(PHP_PREFIX)
+AC_SUBST(PHP4_INCLUDES)
+AC_SUBST(PHP4_LDFLAGS)
+AC_SUBST(PHP4_LIBS)
+AC_SUBST(PHP4_UNPREFIXED_EXTENSION_DIR)
+AC_SUBST(PHP4_EXTENSION_DIR)
+AC_SUBST(PHP4_PREFIX)
 
 dnl Check for expat
 have_expat_include=no
@@ -407,21 +408,21 @@ else
 fi
   
 if test x$have_expat_lib = xno; then
-    enable_php=no
+    enable_php4=no
 fi
 
-AC_MSG_CHECKING(for PHP development files)
-PHP_VERSION=`$PHP_CONFIG --version 2>/dev/null`
-dnl Check if we were be able to extract a good version number.
-if test "X$PHP_VERSION" != "X" || test "X$ENABLE_PHP_FORCE" == "Xyes"; then
-    languages_available="$languages_available php($PHP_VERSION)"
+AC_MSG_CHECKING(for PHP 4 development files)
+if $PHP4_CONFIG --version | grep -q 4 || test "x$ENABLE_PHP4_FORCE" == "xyes"
+then
+	PHP4_VERSION=`$PHP4_CONFIG --version 2> /dev/null`
+	languages_available="$languages_available php4($PHP4_VERSION)"
 else
-    enable_php=no
+	enable_php4=no
 fi
-AC_MSG_RESULT($enable_php)
-AM_CONDITIONAL([PHP_ENABLED], [test "x$enable_php" = "xyes"])
-AC_SUBST(PHP_VERSION)
 
+AC_MSG_RESULT($enable_php4)
+AM_CONDITIONAL([PHP4_ENABLED], [test "x$enable_php4" = "xyes"])
+AC_SUBST(PHP4_VERSION)
 
 
 ### # ----------
@@ -854,7 +855,7 @@ Available languages:    ${languages_available}
 
 Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
-PHP binding:            ${enable_php}
+PHP 4 binding:          ${enable_php4}
 Python binding:         ${enable_python}
 
 C API references:       ${enable_gtk_doc}

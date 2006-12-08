@@ -4,8 +4,8 @@ endif
 if JAVA_ENABLED
     JAVA_SD = java
 endif
-if PHP_ENABLED
-    PHP_SD = php
+if PHP4_ENABLED
+    PHP4_SD = php
 endif
 if CSHARP_ENABLED
     CSHARP_SD = csharp
@@ -16,7 +16,7 @@ endif
 
 SUBDIRS		= lasso \
 		  swig \
-		  $(PHP_SD) $(PYTHON_SD) $(JAVA_SD) $(PERL_SD) \
+		  $(PHP4_SD) $(PYTHON_SD) $(JAVA_SD) $(PERL_SD) \
 		  tests \
 		  win32 \
 		  docs
