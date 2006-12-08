@@ -103,7 +103,7 @@ AC_CHECK_PROGS(JAVAC, gcj javac)
 AC_CHECK_PROGS(JAR, fastjar jar)
 AC_CHECK_PROGS(PERL, perl)
 AC_CHECK_PROGS(PHP4, php4 php)
-AC_CHECK_PROGS(PHP5, php4 php)
+AC_CHECK_PROGS(PHP5, php5 php)
 AC_CHECK_PROGS(PHP4_CONFIG, php-config4 php-config)
 AC_CHECK_PROGS(PHP5_CONFIG, php-config5 php-config)
 AC_CHECK_PROGS(PYTHON, python)
@@ -352,7 +352,7 @@ AC_MSG_RESULT($enable_python)
 AC_SUBST(PYTHON_VERSION)
 
 # -----------
-# PHP binding
+# PHP 4 binding
 # -----------
 
 dnl Check if php is explicitly disabled.
@@ -423,6 +423,79 @@ fi
 AC_MSG_RESULT($enable_php4)
 AM_CONDITIONAL([PHP4_ENABLED], [test "x$enable_php4" = "xyes"])
 AC_SUBST(PHP4_VERSION)
+
+# -----------
+# PHP 5 binding
+# -----------
+
+dnl Check if php is explicitly disabled.
+AC_ARG_ENABLE(php5, [  --disable-php5         disable the PHP 5 binding],,
+              enable_php5="yes")
+
+AC_ARG_ENABLE(php5-force, [  --enable-php5-force    always enable of the PHP 5 binding (win32)],
+              [ENABLE_PHP5_FORCE="yes"],
+              [ENABLE_PHP5_FORCE="no"])
+
+AC_ARG_WITH(php5-config,
+            [  --with-php5-config=(PHP5_CONFIG)      Specify full path to php-config5.])
+
+AC_ARG_WITH(php5-extension-dir,
+            [  --with-php5-extension-dir=(PHP5_EXTENSION_DIR)      Specify full path to php 5 extension dir.],
+            [PHP5_EXTENSION_DIR="$withval"],[PHP5_EXTENSION_DIR=])
+
+dnl Check if user passed a specific php-config program.
+if test "X$with_php5_config" != "X" ; then
+    PHP5_CONFIG=$with_php5_config
+fi
+
+if test "X$PHP5_CONFIG" != "X" ; then
+  PHP5_INCLUDES=`$PHP5_CONFIG --includes`
+  PHP5_LDFLAGS=`$PHP5_CONFIG --ldflags`
+  PHP5_LIBS=`$PHP5_CONFIG --libs`
+  PHP5_UNPREFIXED_EXTENSION_DIR=`$PHP5_CONFIG --extension-dir | $SED 's/\/usr//g'`
+  PHP5_PREFIX=`$PHP5_CONFIG --prefix`
+else
+  # We assume PHP are in /usr/local directory.
+  if test $MINGW -eq 1; then 
+    CFLAGS="$CFLAGS -DZTS -DZEND_WIN32 -DWIN32 -D_MBCS"
+  fi
+  PHP5_INCLUDES="-I/usr/local/include/php5 -I/usr/local/include/php5/main -I/usr/local/include/php5/Zend -I/usr/local/include/php5/TSRM -I/usr/local/include/php5/win32"
+  PHP5_LDFLAGS=
+  PHP5_LIBS=-lphp5ts -lxmlparse -lxmltok
+  PHP5_UNPREFIXED_EXTENSION_DIR=
+  PHP5_PREFIX=
+fi
+AC_SUBST(PHP5_INCLUDES)
+AC_SUBST(PHP5_LDFLAGS)
+AC_SUBST(PHP5_LIBS)
+AC_SUBST(PHP5_UNPREFIXED_EXTENSION_DIR)
+AC_SUBST(PHP5_EXTENSION_DIR)
+AC_SUBST(PHP5_PREFIX)
+
+dnl Check for expat
+have_expat_include=no
+if test $MINGW -eq 1; then 
+    AC_CHECK_LIB(xmlparse, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+else
+    AC_CHECK_LIB(expat, XML_ParserCreate, have_expat_lib=yes, have_expat_lib=no)
+fi
+  
+if test x$have_expat_lib = xno; then
+    enable_php5=no
+fi
+
+AC_MSG_CHECKING(for PHP 5 development files)
+if $PHP5_CONFIG --version | grep -q 5 || test "x$ENABLE_PHP5_FORCE" == "xyes"
+then
+	PHP5_VERSION=`$PHP5_CONFIG --version 2> /dev/null`
+	languages_available="$languages_available php5($PHP5_VERSION)"
+else
+	enable_php5=no
+fi
+
+AC_MSG_RESULT($enable_php5)
+AM_CONDITIONAL([PHP5_ENABLED], [test "x$enable_php5" = "xyes"])
+AC_SUBST(PHP5_VERSION)
 
 
 ### # ----------
@@ -806,6 +879,7 @@ lasso/xml/Makefile
 lasso/xml/saml-2.0/Makefile
 perl/Makefile
 php/Makefile
+php5/Makefile
 python/Makefile
 swig/Makefile
 swig/wsf-support.i
@@ -856,6 +930,7 @@ Available languages:    ${languages_available}
 Java binding:           ${enable_java}
 Perl binding:           ${enable_perl}
 PHP 4 binding:          ${enable_php4}
+PHP 5 binding:          ${enable_php5}
 Python binding:         ${enable_python}
 
 C API references:       ${enable_gtk_doc}
