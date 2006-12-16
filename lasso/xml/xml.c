@@ -1565,7 +1565,13 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 				 * no attrs, just content) */
 				elem = (GList *)value;
 				while (elem) {
-					xmlNewTextChild(xmlnode, NULL, (xmlChar*)snippet->name,
+					xmlNs *content_ns = NULL;
+					if (snippet->ns_name) {
+						content_ns = xmlNewNs(xmlnode,
+								snippet->ns_uri, snippet->ns_name);
+					}
+					xmlNewTextChild(xmlnode, content_ns,
+							(xmlChar*)snippet->name,
 							(xmlChar*)(elem->data));
 					elem = g_list_next(elem);
 				}

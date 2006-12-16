@@ -26,7 +26,7 @@ SNIPPET_TEXT_CHILD
 
 SNIPPET_NAME_IDENTIFIER
 
-  (same result as SNIPPET_NODE)
+  (same result as SNIPPET_NODE (with Value forced as a LassoSamlNameIdentifier))
 
 
 SNIPPET_ATTRIBUTE
@@ -63,6 +63,10 @@ SNIPPET_LIST_CONTENT
     <Name>Value-2</Name>
     <Name>Value-n</Name>
   </Parent>
+
+[note: Name will be in the same namespace as Parent by default but it is
+ possible to set 4th and 5th members of snippet to get a different namespace
+ (name, uri).]
 
 SNIPPET_LIST_XMLNODES
 

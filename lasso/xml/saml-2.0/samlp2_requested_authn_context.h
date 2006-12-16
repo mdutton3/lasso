@@ -55,8 +55,8 @@ struct _LassoSamlp2RequestedAuthnContext {
 
 	/*< public >*/
 	/* elements */
-	GList *AuthnContextClassRef;
-	GList *AuthnContextDeclRef;
+	GList *AuthnContextClassRef; /* of strings */
+	GList *AuthnContextDeclRef; /* of strings */
 	/* attributes */
 	char *Comparison;
 };

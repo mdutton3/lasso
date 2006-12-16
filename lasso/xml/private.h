@@ -61,6 +61,8 @@ struct XmlSnippet {
 	SnippetType type;
 	guint offset;
 	char *class_name;
+	char *ns_name;
+	char *ns_uri;
 };
 
 struct QuerySnippet {
