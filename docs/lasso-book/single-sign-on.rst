@@ -219,6 +219,7 @@ Process the authentication request, this will update (or create) the identity
 and session.
 
 ::
+
   lasso_login_accept_sso(login);
 
 Identity and session must then be saved and finally the ``login`` object can be
