@@ -495,6 +495,7 @@ typedef struct {
 /* Implementations of methods */
 
 /* Implementations of methods inherited from LassoNode */
+void
 LassoDiscoDescription_addSecurityMechId(LassoDiscoDescription *self, const char *security_mech_id) {
 	self->SecurityMechID = g_list_append(self->SecurityMechID, g_strdup(security_mech_id));
 }
