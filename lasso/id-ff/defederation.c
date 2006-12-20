@@ -190,7 +190,7 @@ lasso_defederation_init_notification(LassoDefederation *defederation, gchar *rem
 
 	/* get the nameIdentifier to send the federation termination notification */
 	nameIdentifier_n = lasso_profile_get_nameIdentifier(profile);
-	if (nameIdentifier == NULL) {
+	if (nameIdentifier_n == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND);
 	}
 	nameIdentifier = LASSO_SAML_NAME_IDENTIFIER(nameIdentifier_n);
