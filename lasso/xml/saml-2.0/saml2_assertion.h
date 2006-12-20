@@ -53,6 +53,8 @@ typedef struct _LassoSaml2AssertionClass LassoSaml2AssertionClass;
 #include "saml2_subject.h"
 #include "saml2_name_id.h"
 
+#include <lasso/xml/xml_enc.h>
+
 struct _LassoSaml2Assertion {
 	LassoNode parent;
 
@@ -78,6 +80,7 @@ struct _LassoSaml2Assertion {
 	char *certificate_file;
 	gboolean encryption_activated;
 	char *encryption_public_key_str;
+	LassoEncryptionSymKeyType encryption_sym_key_type;
 };
 
 

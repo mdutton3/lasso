@@ -164,7 +164,8 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 			&& remote_provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID),
-			remote_provider->private_data->encryption_public_key));
+			remote_provider->private_data->encryption_public_key,
+			remote_provider->private_data->encryption_sym_key_type));
 		if (encrypted_element != NULL) {
 			LASSO_SAMLP2_LOGOUT_REQUEST(request)->EncryptedID = encrypted_element;
 			LASSO_SAMLP2_LOGOUT_REQUEST(request)->NameID = NULL;

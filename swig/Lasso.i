@@ -1022,6 +1022,22 @@ typedef enum {
 	LASSO_ENCRYPTION_MODE_ASSERTION
 } LassoEncryptionMode;
 
+
+/* Encryption symetric key type */
+#ifndef SWIGPHP4
+%rename(ENCRYPTION_SYM_KEY_TYPE_DEFAULT) LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT;
+%rename(ENCRYPTION_SYM_KEY_TYPE_AES_256) LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256;
+%rename(ENCRYPTION_SYM_KEY_TYPE_AES_128) LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128;
+%rename(ENCRYPTION_SYM_KEY_TYPE_3DES) LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES;
+#endif
+typedef enum {
+	LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT,
+	LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256,
+	LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128,
+	LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES
+} LassoEncryptionSymKeyType;
+
+
 /***********************************************************************
  * Errors
  ***********************************************************************/
@@ -5013,6 +5029,9 @@ typedef struct {
 
 	%newobject setEncryptionMode;
 	void setEncryptionMode(LassoEncryptionMode encryption_mode);
+
+	%newobject setEncryptionSymKeyType;
+	void setEncryptionSymKeyType(LassoEncryptionSymKeyType encryption_sym_key_type);
 }
 
 %{
@@ -5038,6 +5057,7 @@ typedef struct {
 #define LassoProvider_hasProtocolProfile lasso_provider_has_protocol_profile
 #define LassoProvider_getOrganization(self) get_xml_string(lasso_provider_get_organization(self))
 #define LassoProvider_setEncryptionMode lasso_provider_set_encryption_mode
+#define LassoProvider_setEncryptionSymKeyType lasso_provider_set_encryption_sym_key_type
 
 %}
 
@@ -5149,9 +5169,9 @@ typedef struct {
 	int setEncryptionPrivateKey(char *filename);
 	END_THROW_ERROR()
 
-        THROW_ERROR()
-        int loadAffiliation(char *filename);
-        END_THROW_ERROR()
+	THROW_ERROR()
+	int loadAffiliation(char *filename);
+	END_THROW_ERROR()
 
 #ifdef LASSO_WSF_ENABLED
 	THROW_ERROR()

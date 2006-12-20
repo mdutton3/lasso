@@ -30,6 +30,7 @@ extern "C" {
 #endif /* __cplusplus */ 
 
 #include <lasso/xml/xml.h>
+#include <lasso/xml/xml_enc.h>
 
 #define LASSO_TYPE_PROVIDER (lasso_provider_get_type())
 #define LASSO_PROVIDER(obj) \
@@ -193,6 +194,9 @@ LASSO_EXPORT LassoProtocolConformance lasso_provider_get_protocol_conformance(
 
 LASSO_EXPORT void lasso_provider_set_encryption_mode(LassoProvider *provider,
 		LassoEncryptionMode encryption_mode);
+
+LASSO_EXPORT void lasso_provider_set_encryption_sym_key_type(LassoProvider *provider,
+		LassoEncryptionSymKeyType encryption_sym_key_type);
 
 #ifdef __cplusplus
 }

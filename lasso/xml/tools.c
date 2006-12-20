@@ -453,7 +453,7 @@ lasso_assertion_encrypt(LassoSaml2Assertion *assertion)
 
 	/* Finally encrypt the assertion */
 	encrypted_element = LASSO_NODE(lasso_node_encrypt(LASSO_NODE(assertion),
-		encryption_public_key));
+		encryption_public_key, assertion->encryption_sym_key_type));
 
 	g_free(b64_value);
 	g_free(value);	

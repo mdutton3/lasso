@@ -411,7 +411,8 @@ lasso_node_export_to_soap(LassoNode *node)
  * It must be freed by the caller.
  **/
 LassoSaml2EncryptedElement*
-lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
+lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
+		LassoEncryptionSymKeyType encryption_sym_key_type)
 {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr orig_node = NULL;
@@ -421,6 +422,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	xmlNodePtr encrypted_key_node = NULL;
 	xmlNodePtr key_info_node2 = NULL;
 	xmlSecEncCtxPtr enc_ctx = NULL;
+	xmlSecTransformId xmlsec_encryption_sym_key_type;
 
 	if (encryption_public_key == NULL || !xmlSecKeyIsValid(encryption_public_key)) {
 		message(G_LOG_LEVEL_WARNING, "Invalid encryption key");
@@ -438,9 +440,23 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 	orig_node = lasso_node_get_xmlNode(lasso_node, FALSE);
 	xmlDocSetRootElement(doc, orig_node);
 
-	/* Create encryption template for a 128-bit AES key */
-	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc, xmlSecTransformAes128CbcId,
-		NULL, xmlSecTypeEncElement, NULL, NULL);
+	/* Get the symetric key type */
+	switch (encryption_sym_key_type) {
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256:
+			xmlsec_encryption_sym_key_type = xmlSecTransformAes256CbcId;
+			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128:
+		default:
+			xmlsec_encryption_sym_key_type = xmlSecTransformAes128CbcId;
+			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
+			xmlsec_encryption_sym_key_type = xmlSecTransformDes3CbcId;
+			break;
+	}
+
+	/* Create encryption template for a specific symetric key type */
+	encrypted_element->EncryptedData = xmlSecTmplEncDataCreate(doc,
+		xmlsec_encryption_sym_key_type,	NULL, xmlSecTypeEncElement, NULL, NULL);
 	if (encrypted_element->EncryptedData == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to create encryption template");
 		return NULL;
@@ -516,8 +532,23 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key)
 		return NULL;
 	}
 
-	/* generate a 128-bit AES key */
-	enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 128, xmlSecKeyDataTypeSession);
+	/* generate a symetric key */
+	switch (encryption_sym_key_type) {
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256:
+			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 256,
+				xmlSecKeyDataTypeSession);
+			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128:
+		default:
+			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 128,
+				xmlSecKeyDataTypeSession);
+			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
+			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192,
+				xmlSecKeyDataTypeSession);
+			break;
+	}
+
 	if (enc_ctx->encKey == NULL) {
 		message(G_LOG_LEVEL_WARNING, "Failed to generate session des key");
 		return NULL;

@@ -673,7 +673,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 			&& provider->private_data->encryption_public_key != NULL) {
 		encrypted_element = LASSO_SAML2_ENCRYPTED_ELEMENT(lasso_node_encrypt(
 			LASSO_NODE(assertion->Subject->NameID),
-			provider->private_data->encryption_public_key));
+			provider->private_data->encryption_public_key,
+			provider->private_data->encryption_sym_key_type));
 		if (encrypted_element != NULL) {
 			assertion->Subject->EncryptedID = encrypted_element;
 			assertion->Subject->NameID = NULL;
@@ -706,6 +707,8 @@ lasso_saml20_login_build_assertion(LassoLogin *login,
 		assertion->encryption_activated = TRUE;
 		assertion->encryption_public_key_str = g_strdup(
 			provider->private_data->encryption_public_key_str);
+		assertion->encryption_sym_key_type =
+			provider->private_data->encryption_sym_key_type;
 	}
 
 	/* store assertion in session object */

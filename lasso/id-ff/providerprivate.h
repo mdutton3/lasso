@@ -61,6 +61,7 @@ struct _LassoProviderPrivate
 	char *encryption_public_key_str;
 	xmlSecKey *encryption_public_key;
 	LassoEncryptionMode encryption_mode;
+	LassoEncryptionSymKeyType encryption_sym_key_type;
 };
 
 
