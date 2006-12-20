@@ -11,9 +11,11 @@ LASSOBOOK_FILES = book.rst common-knowledge.rst getting-lasso.rst \
 		  liberty-architecture.rst other-profiles.rst preface.rst \
 		  single-sign-on.rst
 
-SP_DOC_FILES = writing-a-c-sp.txt writing-a-php-sp.txt writing-a-java-sp.txt
+SP_DOC_FILES = writing-a-c-sp.txt writing-a-php-sp.txt writing-a-java-sp.txt \
+		  writing-a-saml2-php-sp.txt
 
-SP_DOC_HTML = writing-a-c-sp.html writing-a-php-sp.html writing-a-java-sp.html
+SP_DOC_HTML = writing-a-c-sp.html writing-a-php-sp.html writing-a-java-sp.html \
+		  writing-a-saml2-php-sp.html
 
 if HAVE_REST2HTML
 doc_DATA = $(SP_DOC_HTML) book.html
