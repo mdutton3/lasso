@@ -28,6 +28,7 @@
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/identityprivate.h>
 #include <lasso/id-ff/serverprivate.h>
+#include <lasso/xml/xml_enc.h>
 
 /*****************************************************************************/
 /* public methods                                                            */

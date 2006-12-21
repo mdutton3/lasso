@@ -44,6 +44,8 @@
 #include <lasso/xml/xml_enc.h>
 #include <lasso/xml/saml-2.0/saml2_assertion.h>
 
+LassoNode* lasso_assertion_encrypt(LassoSaml2Assertion *assertion);
+
 /**
  * lasso_build_random_sequence:
  * @buffer: buffer to fill with random sequence

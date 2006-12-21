@@ -826,13 +826,15 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			if (t->type == XML_TEXT_NODE) {
 				for (snippet = class->node_data->snippets;
 						snippet && snippet->name; snippet++) {
+					GList **location = NULL;
+
 					type = snippet->type & 0xff;
 					value = G_STRUCT_MEMBER_P(node, snippet->offset);
 
 					if (type != SNIPPET_LIST_XMLNODES)
 						continue;
 
-					GList **location = value;
+					location = value;
 					*location = g_list_append(*location, xmlCopyNode(t, 1));
 				}
 				continue;
@@ -1599,7 +1601,8 @@ lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 					xmlNs *content_ns = NULL;
 					if (snippet->ns_name) {
 						content_ns = xmlNewNs(xmlnode,
-								snippet->ns_uri, snippet->ns_name);
+								(const xmlChar*)snippet->ns_uri,
+								(const xmlChar*)snippet->ns_name);
 					}
 					xmlNewTextChild(xmlnode, content_ns,
 							(xmlChar*)snippet->name,

@@ -26,6 +26,7 @@
 
 #include <lasso/saml-2.0/providerprivate.h>
 #include <lasso/saml-2.0/profileprivate.h>
+#include <lasso/saml-2.0/profile.h>
 
 #include <lasso/id-ff/providerprivate.h>
 #include <lasso/id-ff/profile.h>
