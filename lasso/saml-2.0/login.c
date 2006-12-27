@@ -1039,9 +1039,10 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		return LASSO_LOGIN_ERROR_STATUS_NOT_SUCCESS;
 	}
 
+	profile = LASSO_PROFILE(login);
+
 	if (LASSO_SAMLP2_RESPONSE(response)->Assertion != NULL ||
 			LASSO_SAMLP2_RESPONSE(response)->EncryptedAssertion != NULL) {
-		profile = LASSO_PROFILE(login);
 		encryption_private_key = profile->server->private_data->encryption_private_key;
 		if (profile->remote_providerID == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;

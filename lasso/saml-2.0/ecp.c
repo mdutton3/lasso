@@ -188,7 +188,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlDoc *doc;
 	xmlXPathContext *xpathCtx;
 	xmlXPathObject *xpathObj;
-	xmlNode *envelope, *new_envelope, *header, *paos_response, *ecp_relay_state;
+	xmlNode *new_envelope, *header, *paos_response, *ecp_relay_state;
 	xmlNode *body = NULL;
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
@@ -220,7 +220,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	header = xmlNewTextChild(new_envelope, NULL, (xmlChar*)"Header", NULL);
 
 	/* PAOS request header block */
-	soap_env_ns = xmlNewNs(envelope,
+	soap_env_ns = xmlNewNs(new_envelope,
 				(xmlChar*)LASSO_SOAP_ENV_HREF, (xmlChar*)LASSO_SOAP_ENV_PREFIX);
 	paos_response = xmlNewNode(NULL, (xmlChar*)"Response");
 	xmlSetNs(paos_response, xmlNewNs(paos_response,
