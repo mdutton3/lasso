@@ -332,10 +332,7 @@ lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
 				assertions);
 	}
 
-	if (assertions == NULL)
-		return LASSO_ERROR_UNDEFINED;
-
-	for (i = 0; i < assertions->len; ++i) {
+	for (i = 0; assertions && i < assertions->len; ++i) {
 		assertion = g_ptr_array_index(assertions, i);
 		if (assertion != NULL && assertion->Subject->EncryptedID != NULL) {
 			assertion->Subject->NameID = LASSO_SAML2_NAME_ID(
