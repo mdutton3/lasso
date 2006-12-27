@@ -2013,7 +2013,7 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, ch
 {
 	int i;
 	char *field, *t;
-	char *req;
+	char *req = NULL;
 	char *enc = NULL;
 	gboolean rc;
 
@@ -2039,6 +2039,10 @@ lasso_node_init_from_saml2_query_fields(LassoNode *node, char **query_fields, ch
 	if (enc && strcmp(enc, LASSO_SAML2_DEFLATE_ENCODING) != 0) {
 		/* unknown encoding */
 		message(G_LOG_LEVEL_CRITICAL, "Unknown URL encoding: %s", enc);
+		return FALSE;
+	}
+
+	if (req == NULL) {
 		return FALSE;
 	}
 
