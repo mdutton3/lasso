@@ -43,9 +43,9 @@ static char* lasso_node_build_query(LassoNode *node);
 static void lasso_node_build_xmlNode_from_snippets(LassoNode *node, xmlNode *xmlnode,
 		struct XmlSnippet *snippets, gboolean lasso_dump);
 static struct XmlSnippet* find_xml_snippet_by_name(LassoNode *node, char *name);
-static int set_value_at_path(LassoNode *node, char *path, char *query_value);
+static gboolean set_value_at_path(LassoNode *node, char *path, char *query_value);
 static char* get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet);
-static int find_path(LassoNode *node, char *path, LassoNode **value_node,
+static gboolean find_path(LassoNode *node, char *path, LassoNode **value_node,
 		struct XmlSnippet **snippet);
 
 static void lasso_node_add_signature_template(LassoNode *node, xmlNode *xmlnode,
@@ -1716,7 +1716,7 @@ find_xml_snippet_by_name(LassoNode *node, char *name)
 	return NULL;
 }
 
-static int
+static gboolean
 find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet **snippet)
 {
 	char *s, *t;
@@ -1731,17 +1731,17 @@ find_path(LassoNode *node, char *path, LassoNode **value_node, struct XmlSnippet
 		if (t) {
 			tnode = G_STRUCT_MEMBER(LassoNode*, tnode, tsnippet->offset);
 			if (tnode == NULL)
-				return LASSO_ERROR_UNDEFINED;
+				return FALSE;
 		}
 		s = t+1;
 	}
 
 	if (tsnippet == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return FALSE;
 
 	*snippet = tsnippet;
 	*value_node = tnode;
-	return 0;
+	return TRUE;
 }
 
 
@@ -1751,7 +1751,7 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 	struct XmlSnippet *snippet;
 	LassoNode *value_node;
 	
-	if (find_path(node, path, &value_node, &snippet) != 0)
+	if (find_path(node, path, &value_node, &snippet) != TRUE)
 		return NULL;
 
 	*xml_snippet = *snippet;
@@ -1840,15 +1840,15 @@ get_value_by_path(LassoNode *node, char *path, struct XmlSnippet *xml_snippet)
 	return NULL;
 }
 
-static int
+static gboolean
 set_value_at_path(LassoNode *node, char *path, char *query_value)
 {
 	struct XmlSnippet *snippet;
 	LassoNode *value_node;
 	void *value;
 	
-	if (find_path(node, path, &value_node, &snippet) != 0)
-		return LASSO_ERROR_UNDEFINED;
+	if (find_path(node, path, &value_node, &snippet) != TRUE)
+		return FALSE;
 
 	value = G_STRUCT_MEMBER_P(value_node, snippet->offset);
 
@@ -1878,7 +1878,7 @@ set_value_at_path(LassoNode *node, char *path, char *query_value)
 		(*(char**)value) = g_strdup(query_value);
 	}
 
-	return 0;
+	return TRUE;
 }
 
 
@@ -1985,7 +1985,7 @@ lasso_node_init_from_query_fields(LassoNode *node, char **query_fields)
 			LassoNode *value_node;
 			GList **value;
 			xmlNode *xmlnode, *xmlchild;
-			if (find_path(node, "Extension", &value_node, &extension_snippet) == 0) {
+			if (find_path(node, "Extension", &value_node, &extension_snippet) == TRUE) {
 				value = G_STRUCT_MEMBER_P(value_node, extension_snippet->offset);
 				if (*value) {
 					xmlnode = (*value)->data;
