@@ -347,8 +347,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	/* get assertion */
 	assertion_n = lasso_session_get_assertion(session, profile->remote_providerID);
 	if (LASSO_IS_SAML_ASSERTION(assertion_n) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Assertion not found");
-		return LASSO_ERROR_UNDEFINED;
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 	}
 	
 	assertion = LASSO_SAML_ASSERTION(assertion_n);
@@ -620,8 +619,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 
 	if (response->Status == NULL || response->Status->StatusCode == NULL
 			|| response->Status->StatusCode->Value == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No Status in LogoutResponse !");
-		return LASSO_ERROR_UNDEFINED;
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
 	}
 	statusCodeValue = response->Status->StatusCode->Value;
 
@@ -679,7 +677,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 			return LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success : %s", statusCodeValue);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	/* LogoutResponse status code value is ok */
@@ -861,7 +859,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 	if (assertion_n == NULL) {
 		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
 		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 
 	assertion = LASSO_SAML_ASSERTION(assertion_n);
@@ -887,7 +885,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 					profile->remote_providerID);
 			lasso_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND;
 		}
 	}
 

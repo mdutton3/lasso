@@ -61,14 +61,13 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 
 	assertion_n = lasso_session_get_assertion(session, profile->remote_providerID);
 	if (LASSO_IS_SAML2_ASSERTION(assertion_n) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "Assertion not found");
-		return LASSO_ERROR_UNDEFINED;
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_ASSERTION);
 	}
 
 	assertion = LASSO_SAML2_ASSERTION(assertion_n);
 
 	if (assertion->Subject == NULL) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 	}
 
 	name_id = assertion->Subject->NameID;
@@ -421,7 +420,7 @@ lasso_saml20_logout_validate_request(LassoLogout *logout)
 					profile->remote_providerID);
 			lasso_saml20_profile_set_response_status(profile,
 					LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_LOGOUT_ERROR_FEDERATION_NOT_FOUND;
 		}
 	}
 
@@ -658,7 +657,7 @@ lasso_saml20_logout_process_response_msg(LassoLogout *logout, const char *respon
 			return LASSO_LOGOUT_ERROR_UNKNOWN_PRINCIPAL;
 		}
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 	
 	/* LogoutResponse status code value is ok */
