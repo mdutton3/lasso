@@ -2016,6 +2016,9 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	LassoLogin *login;
 	xmlDoc *doc;
 
+	if (dump == NULL)
+		return NULL;
+
 	login = g_object_new(LASSO_TYPE_LOGIN, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc)); 

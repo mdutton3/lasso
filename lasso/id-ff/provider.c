@@ -890,6 +890,9 @@ lasso_provider_new_from_dump(const gchar *dump)
 	LassoProvider *provider;
 	xmlDoc *doc;
 
+	if (dump == NULL)
+		return NULL;
+
 	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
