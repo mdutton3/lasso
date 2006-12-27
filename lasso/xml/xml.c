@@ -445,12 +445,12 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256:
 			xmlsec_encryption_sym_key_type = xmlSecTransformAes256CbcId;
 			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
+			xmlsec_encryption_sym_key_type = xmlSecTransformDes3CbcId;
+			break;
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128:
 		default:
 			xmlsec_encryption_sym_key_type = xmlSecTransformAes128CbcId;
-			break;
-		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
-			xmlsec_encryption_sym_key_type = xmlSecTransformDes3CbcId;
 			break;
 	}
 
@@ -538,13 +538,13 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 256,
 				xmlSecKeyDataTypeSession);
 			break;
+		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
+			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192,
+				xmlSecKeyDataTypeSession);
+			break;
 		case LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128:
 		default:
 			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataAesId, 128,
-				xmlSecKeyDataTypeSession);
-			break;
-		case LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES:
-			enc_ctx->encKey = xmlSecKeyGenerate(xmlSecKeyDataDesId, 192,
 				xmlSecKeyDataTypeSession);
 			break;
 	}

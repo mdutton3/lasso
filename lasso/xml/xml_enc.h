@@ -34,7 +34,7 @@ extern "C" {
 
 /**
  * LassoEncryptionSymKeyType:
- * @LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT : Default type (Aes 256)
+ * @LASSO_ENCRYPTION_SYM_KEY_TYPE_DEFAULT : Default type (AES 128)
  * @LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_256 : Aes 256 bits key
  * @LASSO_ENCRYPTION_SYM_KEY_TYPE_AES_128 : Aes 128 bits key
  * @LASSO_ENCRYPTION_SYM_KEY_TYPE_3DES : Triple DES 192 bits key
