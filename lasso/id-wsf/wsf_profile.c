@@ -85,7 +85,7 @@ lasso_wsf_profile_move_credentials(LassoWsfProfile *src, LassoWsfProfile *dest)
 	GList *iter;
 
 	iter = src->private_data->credentials;
-	while(iter) {
+	while (iter) {
 		credential = (xmlNode *) iter->data;
 		lasso_wsf_profile_add_credential(dest, credential);
 		iter = iter->next;
@@ -151,13 +151,12 @@ lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 		return FALSE;
 
 	iter = profile->private_data->description->SecurityMechID;
-	while(iter) {
+	while (iter) {
 		security_mech_id = iter->data;
 		if (strcmp(security_mech_id, LASSO_SECURITY_MECH_CLIENT_TLS_SAML) == 0 ||
 				strcmp(security_mech_id, LASSO_SECURITY_MECH_TLS_SAML) == 0 ||
 				strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0) {
 			return TRUE;
-			break;
 		}
 		iter = iter->next;
 	}
@@ -267,7 +266,7 @@ lasso_wsf_profile_verify_credential_signature(
 	}
 
 	node = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
-	if(xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
+	if (xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
 		if (keys_mngr)
 			xmlSecKeysMngrDestroy(keys_mngr);
@@ -711,7 +710,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		node = xpathObj->nodesetval->nodeTab[0];
 	}
-	if(node == NULL)
+	if (node == NULL)
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 
 	/* Case of X509 signature type */
@@ -743,7 +742,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		}
 	}
 
-	if(xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
+	if (xmlSecDSigCtxVerify(dsigCtx, node) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
 		if (keys_mngr)
 			xmlSecKeysMngrDestroy(keys_mngr);

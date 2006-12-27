@@ -118,7 +118,7 @@ lasso_login_assertion_add_discovery(LassoLogin *login, LassoSamlAssertion *asser
 			description = LASSO_DISCO_DESCRIPTION(listDescriptions->data);
 			listSecurityMechIds = description->SecurityMechID;
 			found = FALSE;
-			while(listSecurityMechIds) {
+			while (listSecurityMechIds) {
 				securityMechId = listSecurityMechIds->data;
 				if (g_str_equal(securityMechId,
 						LASSO_SECURITY_MECH_SAML)==TRUE || \
