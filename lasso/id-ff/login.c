@@ -516,7 +516,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		LassoSamlAssertion *assertion = response->Assertion->data;
 		idp = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
 		if (idp == NULL) {
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 		}
 
 		/* FIXME: verify assertion signature */
@@ -545,7 +545,7 @@ lasso_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 		if (profile->nameIdentifier == NULL) {
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		}
 	}
 
@@ -587,18 +587,18 @@ lasso_login_accept_sso(LassoLogin *login)
 		profile->session = lasso_session_new();
 
 	if (profile->response == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_accept_sso(login);
 	}
 
 	if (LASSO_SAMLP_RESPONSE(profile->response)->Assertion == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
 	assertion = LASSO_SAMLP_RESPONSE(profile->response)->Assertion->data;
 	if (assertion == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			g_object_ref(assertion));
@@ -608,7 +608,7 @@ lasso_login_accept_sso(LassoLogin *login)
 	ni = authentication_statement->Subject->NameIdentifier;
 
 	if (ni == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 
 	if (LASSO_IS_LIB_SUBJECT(authentication_statement->Subject)) {
 		idp_ni = LASSO_LIB_SUBJECT(
