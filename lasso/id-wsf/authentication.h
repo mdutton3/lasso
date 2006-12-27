@@ -82,6 +82,8 @@ LASSO_EXPORT GType lasso_authentication_get_type(void);
 
 LASSO_EXPORT LassoAuthentication* lasso_authentication_new(LassoServer *server);
 
+LASSO_EXPORT void lasso_authentication_destroy(LassoAuthentication *authentication);
+
 LASSO_EXPORT gint lasso_authentication_client_start(LassoAuthentication *authentication);
 
 LASSO_EXPORT gint lasso_authentication_client_step(LassoAuthentication *authentication);

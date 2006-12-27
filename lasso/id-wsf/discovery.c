@@ -57,7 +57,9 @@ struct _LassoDiscoveryPrivate
 /* static methods/functions */
 /*****************************************************************************/
 
-gchar*
+static gchar* lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId);
+
+static gchar*
 lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *providerId)
 {
 	LassoSoapHeader *header;
@@ -863,7 +865,6 @@ lasso_discovery_build_response_msg(LassoDiscovery *discovery)
 			while (iter3) {
 				if (lasso_security_mech_id_is_saml_authentication(
 					    iter3->data) == TRUE) {
-					printf("At disco, add credential\n");
 					credentialRef = lasso_discovery_build_credential(
 						discovery, NULL);
 					description->CredentialRef = g_list_append(

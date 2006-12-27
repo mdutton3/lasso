@@ -34,8 +34,6 @@ static sasl_callback_t lasso_sasl_callbacks[5];
 static int
 lasso_sasl_cb_log(void* context, int priority, const char* message)
 {
-	printf("SASL lasso_sasl_cb_log() : %s\n", message);
-
 	return SASL_OK;
 }
 

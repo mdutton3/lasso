@@ -58,6 +58,7 @@ struct _LassoSoapDetailClass {
 LASSO_EXPORT GType lasso_soap_detail_get_type(void);
 
 LASSO_EXPORT LassoSoapDetail* lasso_soap_detail_new(void);
+LASSO_EXPORT LassoSoapDetail* lasso_soap_detail_new_from_message(const gchar *message);
 
 #ifdef __cplusplus
 }
