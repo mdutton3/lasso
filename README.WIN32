@@ -5,11 +5,9 @@ Using Lasso Win32 Port
 Compile
 =======
 
-Launch:
+Execute::
 
-::
-
-./autogen.sh --host=i686-pc-mingw32 --with-pkg-config-path=/usr/local/lib/pkgconfig
+  ./autogen.sh --host=i686-pc-mingw32 --with-pkg-config-path=/usr/local/lib/pkgconfig
 
 and next ``make``.
 
@@ -37,9 +35,11 @@ Installation
 Description
 -----------
 
-The dll is not copied to his destination directory.
+The ``.dll`` file is not copied to his destination directory.
 
 Fix
 ---
 
-Manualy copy the dll (lasso/.lib/liblasso-3.dll) to his destination directory.
+Manually copy the ``.dll`` file (``lasso/.libs/liblasso-3.dll``) to its
+destination directory.
+
