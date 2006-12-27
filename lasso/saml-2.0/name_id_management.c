@@ -503,8 +503,7 @@ lasso_name_id_management_process_response_msg(
 
 	if (strcmp(status_code_value, LASSO_SAML2_STATUS_CODE_SUCCESS) != 0) {
 		message(G_LOG_LEVEL_CRITICAL, "Status code is not success: %s", status_code_value);
-		/* XXX: look for common occurence */
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	if (LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->Terminate) {
