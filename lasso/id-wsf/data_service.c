@@ -301,6 +301,8 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 
 	/* FIXME: another way to get the service type ? */
 
+	g_return_val_if_fail(essage != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	doc = xmlParseMemory(message, strlen(message));
 	if (doc == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);

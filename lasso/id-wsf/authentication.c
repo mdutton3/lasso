@@ -139,7 +139,7 @@ lasso_authentication_client_step(LassoAuthentication *authentication)
 
 	/* sasl part */
 
-	if (response->Data != NULL) {
+	if (response->Data != NULL && response->Data->data != NULL) {
 		inbase64 = response->Data->data;
 		in = g_malloc(strlen((char*)inbase64));
 		inlen = xmlSecBase64Decode(inbase64, in, strlen((char*)inbase64));
@@ -497,7 +497,7 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 	}
 
 	/* decode Data if not NULL */
-	if (request->Data != NULL) {
+	if (request->Data != NULL && request->Data->data != NULL) {
 		inbase64 = request->Data->data;
 		in = g_malloc(strlen(inbase64));
 		inlen = xmlSecBase64Decode(inbase64, in, strlen(inbase64));
@@ -560,7 +560,7 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 		return 0;
 	}
 
-	if (request->Data != NULL) {
+	if (request->Data != NULL && request->Data->data != NULL) {
 		inbase64 = request->Data->data;
 		in = g_malloc(strlen(inbase64));
 		inlen = xmlSecBase64Decode(inbase64, in, strlen(inbase64));
