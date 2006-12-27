@@ -15,6 +15,7 @@ Core
 - Nicolas Clapiès <nclapies@entrouvert.com>
 - Valéry Febvre <vfebvre@easter-eggs.com>
 - Frédéric Péters <fpeters@entrouvert.com>
+- Damien Laniel <dlaniel@entrouvert.com>
 
 
 SWIG Bindings
@@ -35,10 +36,7 @@ Unit Tests
 
 - Emmanuel Raviart <eraviart@entrouvert.com>
 
-with help from:
-
-- Frédéric Péters <fpeters@entrouvert.com>
-
+with help from the core developers
 
 Packaging
 =========
@@ -84,3 +82,4 @@ Web Site Design
 with help from:
 
 - Cédric Musso (initial design) <cedric.musso@labor-liber.net>
+
