@@ -50,7 +50,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(lecp);
 
@@ -114,7 +114,7 @@ lasso_lecp_build_authn_request_msg(LassoLecp *lecp)
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(lecp);
 
@@ -151,7 +151,7 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 {
 	LassoProfile *profile;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(lecp);
 	profile->msg_url = g_strdup(lecp->assertionConsumerServiceURL);
@@ -183,7 +183,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	LassoProvider *provider;
 	gchar *assertionConsumerServiceURL;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(lecp);
 
@@ -244,7 +244,7 @@ lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
 {
 	gint res;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* FIXME : BAD usage of http_method
 	   using POST method so that the lib:AuthnRequest is initialize with
@@ -269,8 +269,8 @@ lasso_lecp_init_authn_request(LassoLecp *lecp, const char *remote_providerID)
 int
 lasso_lecp_process_authn_request_msg(LassoLecp *lecp, const char *authn_request_msg)
 {
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
-	g_return_val_if_fail(authn_request_msg != NULL, -1);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	return lasso_login_process_authn_request_msg(LASSO_LOGIN(lecp), authn_request_msg);
 }
@@ -353,8 +353,8 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *resp
 	LassoProfile *profile;
 	LassoMessageFormat format;
 
-	g_return_val_if_fail(LASSO_IS_LECP(lecp), -1);
-	g_return_val_if_fail(response_msg!=NULL, -2);
+	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(lecp);
 

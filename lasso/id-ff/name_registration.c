@@ -61,7 +61,8 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 	LassoProvider *remote_provider;
 	char *url, *query;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -147,7 +148,8 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 	LassoProvider *remote_provider;
 	char *url, *query;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -232,8 +234,9 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *spNameIdentifier, *idpNameIdentifier, *oldNameIdentifier = NULL;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -370,8 +373,10 @@ gint lasso_name_registration_process_request_msg(LassoNameRegistration *name_reg
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoLibRegisterNameIdentifierRequest *request;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-	g_return_val_if_fail(request_msg != NULL, -1);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(request_msg != NULL,
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -444,8 +449,9 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	int rc;
 	char *statusCodeValue;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
-	g_return_val_if_fail(response_msg != NULL, -1);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 
@@ -538,7 +544,8 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	LassoLibRegisterNameIdentifierRequest *request;
 	LassoSamlNameIdentifier *providedNameIdentifier = NULL;
 
-	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_REGISTRATION(name_registration),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
 

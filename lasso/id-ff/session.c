@@ -49,9 +49,9 @@ struct _LassoSessionPrivate
 gint
 lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *assertion)
 {
-	g_return_val_if_fail(session != NULL, -1);
-	g_return_val_if_fail(providerID != NULL, -2);
-	g_return_val_if_fail(assertion != NULL, -3);
+	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(assertion != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	g_hash_table_insert(session->assertions, g_strdup(providerID), assertion);
 
@@ -73,9 +73,9 @@ lasso_session_add_assertion(LassoSession *session, char *providerID, LassoNode *
 gint
 lasso_session_add_status(LassoSession *session, char *providerID, LassoNode *status)
 {
-	g_return_val_if_fail(session != NULL, -1);
-	g_return_val_if_fail(providerID != NULL, -2);
-	g_return_val_if_fail(status != NULL, -3);
+	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(status != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	g_hash_table_insert(session->private_data->status, g_strdup(providerID), status);
 
@@ -258,16 +258,15 @@ lasso_session_is_empty(LassoSession *session)
 gint
 lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 {
-	if (session == NULL) {
-		return LASSO_ERROR_UNDEFINED;
-	}
+	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (g_hash_table_remove(session->assertions, providerID)) {
 		session->is_dirty = TRUE;
 		return 0;
 	}
 
-	return LASSO_ERROR_UNDEFINED; /* assertion not found */
+	return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 }
 
 /**
@@ -282,16 +281,15 @@ lasso_session_remove_assertion(LassoSession *session, gchar *providerID)
 gint
 lasso_session_remove_status(LassoSession *session, gchar *providerID)
 {
-	if (session == NULL) {
-		return LASSO_ERROR_UNDEFINED;
-	}
+	g_return_val_if_fail(session != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	if (g_hash_table_remove(session->private_data->status, providerID)) {
 		session->is_dirty = TRUE;
 		return 0;
 	}
 
-	return LASSO_ERROR_UNDEFINED; /* status not found */
+	return LASSO_PROFILE_ERROR_MISSING_STATUS_CODE;
 }
 
 /*****************************************************************************/

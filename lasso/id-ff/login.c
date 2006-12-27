@@ -901,9 +901,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 		lareq = lasso_node_export_to_base64(profile->request);
 
 		if (lareq == NULL) {
-			message(G_LOG_LEVEL_CRITICAL,
-					"Failed to export AuthnRequest (Base64 encoded).");
-			return -5;
+			return critical_error(LASSO_PROFILE_ERROR_BUILDING_QUERY_FAILED);
 		}
 
 		profile->msg_url = lasso_provider_get_metadata_one(
@@ -1050,7 +1048,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 	LassoProfile *profile;
 	gint ret = 0;
 
-	g_return_val_if_fail(LASSO_IS_LOGIN(login), -1);
+	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
 
 	IF_SAML2(profile) {

@@ -58,8 +58,9 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
 	LassoSaml2NameID *name_id, *name_id_n;
 	LassoSamlp2RequestAbstract *request;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management), -1);
-	g_return_val_if_fail(remote_provider_id != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(remote_provider_id != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_id_management);
 
@@ -136,7 +137,8 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 
-	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_id_management);
 

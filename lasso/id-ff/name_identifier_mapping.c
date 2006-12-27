@@ -57,7 +57,8 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 
-	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
 
@@ -126,7 +127,8 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 
-	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping), -1);
+	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
 
