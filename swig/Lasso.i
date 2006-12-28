@@ -201,10 +201,10 @@ static void throw_exception_msg(int errorCode) {
 	if (errorCode > 0) {
 		sprintf(errorMsg, "%d / Lasso Warning: %s", errorCode, lasso_strerror(errorCode));
 		zend_error(E_WARNING, errorMsg);
-        } else {
+	} else {
 		sprintf(errorMsg, "%d / Lasso Error: %s", errorCode, lasso_strerror(errorCode));
 		zend_error(E_ERROR, errorMsg);
-        }
+	}
 }
 
 %}
@@ -1055,7 +1055,8 @@ typedef enum {
 %rename(XML_ERROR_NODE_CONTENT_NOT_FOUND) LASSO_XML_ERROR_NODE_CONTENT_NOT_FOUND;
 %rename(XML_ERROR_ATTR_NOT_FOUND) LASSO_XML_ERROR_ATTR_NOT_FOUND;
 %rename(XML_ERROR_ATTR_VALUE_NOT_FOUND) LASSO_XML_ERROR_ATTR_VALUE_NOT_FOUND;
-%rename(XML_ERROR_INVALID_XML) LASSO_XML_ERROR_INVALID_XML;
+%rename(FILE_ERROR_INVALID_FILE) LASSO_FILE_ERROR_INVALID_FILE;
+%rename(_XML_ERROR_OBJECT_CONSTRUCTION_FAILED) %LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
 #endif
 
 /* XMLDSig */
@@ -1074,12 +1075,15 @@ typedef enum {
 %rename(DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED) LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 %rename(DS_ERROR_INVALID_SIGALG) LASSO_DS_ERROR_INVALID_SIGALG;
 %rename(DS_ERROR_DIGEST_COMPUTE_FAILED) LASSO_DS_ERROR_DIGEST_COMPUTE_FAILED;
+%rename(DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND) LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
 #endif
 
 /* Server */
 #ifndef SWIGPHP4
 %rename(SERVER_ERROR_PROVIDER_NOT_FOUND) LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
 %rename(SERVER_ERROR_ADD_PROVIDER_FAILED) LASSO_SERVER_ERROR_ADD_PROVIDER_FAILED;
+%rename(SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH) \
+		LASSO_SERVER_ERROR_ADD_PROVIDER_PROTOCOL_MISMATCH;
 %rename(SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED) LASSO_SERVER_ERROR_SET_ENCRYPTION_PRIVATE_KEY_FAILED;
 #endif
 
@@ -1120,6 +1124,12 @@ typedef enum {
 %rename(PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION) LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
 %rename(PROFILE_ERROR_MISSING_SERVICE_TYPE) LASSO_PROFILE_ERROR_MISSING_SERVICE_TYPE;
 %rename(PROFILE_ERROR_MISSING_ASSERTION) LASSO_PROFILE_ERROR_MISSING_ASSERTION;
+%rename(PROFILE_ERROR_MISSING_SUBJECT) LASSO_PROFILE_ERROR_MISSING_SUBJECT;
+%rename(PROFILE_ERROR_MISSING_NAME_IDENTIFIER) LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
+%rename(PROFILE_ERROR_INVALID_ARTIFACT) LASSO_PROFILE_ERROR_INVALID_ARTIFACT;
+%rename(PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY) \
+		LASSO_PROFILE_ERROR_MISSING_ENCRYPTION_PRIVATE_KEY;
+%rename(PROFILE_ERROR_STATUS_NOT_SUCCESS) LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 #endif
 
 /* functions/methods parameters checking */
@@ -1151,6 +1161,14 @@ typedef enum {
 /* Soap */
 #ifndef SWIGPHP4
 %rename(SOAP_FAULT_REDIRECT_REQUEST) LASSO_SOAP_FAULT_REDIRECT_REQUEST;
+#endif
+
+/* Name Identifier Mapping */
+#ifndef SWIGPHP4
+%rename(NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE) \
+		LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE;
+%rename(NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE) \
+		LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE;
 #endif
 
 #ifndef SWIGPHP4
@@ -1194,9 +1212,9 @@ int lasso_shutdown(void);
 %rename(CheckVersionMode) LassoCheckVersionMode;
 #endif
 typedef enum {
-        LASSO_CHECK_VERSION_EXACT = 0,
-        LASSO_CHECK_VERSIONABI_COMPATIBLE,
-        LASSO_CHECK_VERSION_NUMERIC
+	LASSO_CHECK_VERSION_EXACT = 0,
+	LASSO_CHECK_VERSIONABI_COMPATIBLE,
+	LASSO_CHECK_VERSION_NUMERIC
 } LassoCheckVersionMode;
 
 #ifndef SWIGPHP4
@@ -1220,7 +1238,7 @@ void lasso_register_dst_service(const char *prefix, const char *href);
 
 static void add_key_to_array(char *key, gpointer pointer, GPtrArray *array)
 {
-        g_ptr_array_add(array, g_strdup(key));
+	g_ptr_array_add(array, g_strdup(key));
 }
 
 static void add_node_to_array(gpointer node, GPtrArray *array)
@@ -1228,7 +1246,7 @@ static void add_node_to_array(gpointer node, GPtrArray *array)
 	if (node != NULL) {
 		g_object_ref(node);
 	}
-        g_ptr_array_add(array, node);
+	g_ptr_array_add(array, node);
 }
 
 static void add_string_to_array(char *string, GPtrArray *array)
@@ -1236,7 +1254,7 @@ static void add_string_to_array(char *string, GPtrArray *array)
 	if (string != NULL) {
 		string = g_strdup(string);
 	}
-        g_ptr_array_add(array, string);
+	g_ptr_array_add(array, string);
 }
 
 static void add_xml_to_array(xmlNode *xmlnode, GPtrArray *array)
@@ -1520,22 +1538,22 @@ static void set_xml_string(xmlNode **xmlnode, const char* string)
 #else /* ifdef SWIGCSHARP */
 #ifdef SWIGJAVA
 %pragma(java) jniclasscode=%{
-  static {
-    try {
-      // Load a library whose "core" name is "jlasso".
-      // Operating system specific stuff will be added to make an
-      // actual filename from this: Under Unix this will become
-      // libjlasso.so while under Windows it will likely become
-      // something like jlasso.dll.
-      System.loadLibrary("jlasso");
-    }
-    catch (UnsatisfiedLinkError e) {
-      System.err.println("Native code library failed to load. \n" + e);
-      System.exit(1);
-    }
-    // Initialize Lasso.
-    init();
-  }
+	static {
+		try {
+			// Load a library whose "core" name is "jlasso".
+			// Operating system specific stuff will be added to make an
+			// actual filename from this: Under Unix this will become
+			// libjlasso.so while under Windows it will likely become
+			// something like jlasso.dll.
+			System.loadLibrary("jlasso");
+		}
+		catch (UnsatisfiedLinkError e) {
+			System.err.println("Native code library failed to load. \n" + e);
+			System.exit(1);
+		}
+		// Initialize Lasso.
+		init();
+	}
 %}
 #else /* ifdef SWIGJAVA */
 
@@ -5607,7 +5625,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -5806,7 +5824,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -6086,7 +6104,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -6302,7 +6320,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -6557,7 +6575,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -6763,7 +6781,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
