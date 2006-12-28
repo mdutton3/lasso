@@ -1,6 +1,10 @@
+%{
+#include <lasso/saml-2.0/profile.h>
+%}
+
 #define LASSO_SAML2_SUPPORT 1
 
-/* Utiliy functions */
+/* Utility functions */
 
 #ifdef SWIGPHP4
 %rename(lasso_isSamlQuery) lasso_profile_is_saml_query;
@@ -201,7 +205,7 @@ typedef struct {
 
 	/* Methods inherited from Profile */
 
-        THROW_ERROR()
+	THROW_ERROR()
 	int setIdentityFromDump(char *dump);
 	END_THROW_ERROR()
 
@@ -224,7 +228,7 @@ typedef struct {
 
 	THROW_ERROR()
 	int initRequest(char *remoteProviderId = NULL,
-                         char *new_name_id = NULL,
+			char *new_name_id = NULL,
 			 LassoHttpMethod httpMethod = LASSO_HTTP_METHOD_ANY);
 	END_THROW_ERROR()
 
