@@ -171,8 +171,6 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 		}
 	}
 
-	/* XXX: SessionIndex */
-
 	logout->initial_http_request_method = http_method;
 
 	return 0;
