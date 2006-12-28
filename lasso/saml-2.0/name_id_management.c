@@ -186,7 +186,7 @@ gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
 {
-	LassoProfile *profile = LASSO_PROFILE(name_id_management);
+	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
 	LassoSaml2NameID *name_id;
@@ -194,6 +194,10 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	LassoSaml2EncryptedElement* encrypted_element = NULL;
 	xmlSecKey *encryption_private_key = NULL;
 
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	
+	profile = LASSO_PROFILE(name_id_management);
 	profile->request = lasso_samlp2_manage_name_id_request_new();
 	format = lasso_node_init_from_message(LASSO_NODE(profile->request), request_msg);
 	if (format == LASSO_MESSAGE_FORMAT_UNKNOWN || format == LASSO_MESSAGE_FORMAT_ERROR) {
@@ -250,11 +254,15 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 int
 lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_management)
 {
-	LassoProfile *profile = LASSO_PROFILE(name_id_management);
+	LassoProfile *profile;
 	LassoProvider *remote_provider;
 	LassoFederation *federation;
 	LassoSamlp2StatusResponse *response;
 	LassoSaml2NameID *name_id;
+
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	profile = LASSO_PROFILE(name_id_management);
 
 	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request) == FALSE)
 		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
@@ -366,10 +374,14 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 int
 lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_management)
 {
-	LassoProfile *profile = LASSO_PROFILE(name_id_management);
+	LassoProfile *profile;
 	LassoSamlp2StatusResponse *response;
 	LassoProvider *provider;
 	char *url, *query;
+
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	profile = LASSO_PROFILE(name_id_management);
 
 	if (profile->response == NULL) {
 		/* no response set here means request denied */
@@ -449,13 +461,19 @@ lasso_name_id_management_process_response_msg(
 		LassoNameIdManagement *name_id_management,
 		gchar *response_msg)
 {
-	LassoProfile *profile = LASSO_PROFILE(name_id_management);
+	LassoProfile *profile;
 	LassoHttpMethod response_method;
 	LassoProvider *remote_provider;
 	LassoSamlp2StatusResponse *response;
 	LassoMessageFormat format;
 	char *status_code_value;
 	int rc;
+
+	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
+			LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
+	profile = LASSO_PROFILE(name_id_management);
 
 	if (LASSO_IS_SAMLP2_MANAGE_NAME_ID_RESPONSE(profile->response) == TRUE) {
 		lasso_node_destroy(profile->response);
@@ -683,7 +701,7 @@ lasso_name_id_management_new(LassoServer *server)
 void
 lasso_name_id_management_destroy(LassoNameIdManagement *name_id_management)
 {
-	g_object_unref(G_OBJECT(name_id_management));
+	lasso_node_destroy(LASSO_NODE(name_id_management));
 }
 
 /**
@@ -700,6 +718,9 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 {
 	LassoNameIdManagement *name_id_management;
 	xmlDoc *doc;
+
+	if (dump == NULL)
+		return NULL;
 
 	name_id_management = lasso_name_id_management_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));

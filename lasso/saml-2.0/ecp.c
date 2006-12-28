@@ -49,7 +49,7 @@
 void
 lasso_ecp_destroy(LassoEcp *ecp)
 {
-	g_object_unref(G_OBJECT(ecp));
+	lasso_node_destroy(LASSO_NODE(ecp));
 }
 
 /*****************************************************************************/
@@ -125,11 +125,11 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	LassoProfile *profile;
 	LassoProvider *remote_provider;
 
+	g_return_val_if_fail(LASSO_IS_ECP(ecp), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(authn_request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+
 	profile = LASSO_PROFILE(ecp);
 
-	if (authn_request_msg == NULL) {
-		return critical_error(LASSO_PROFILE_ERROR_MISSING_REQUEST);
-	}
 	doc = xmlParseMemory(authn_request_msg, strlen(authn_request_msg));
 	xpathCtx = xmlXPathNewContext(doc);
 
@@ -193,6 +193,9 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlOutputBuffer *buf;
 	xmlCharEncodingHandler *handler;
 	xmlNs *soap_env_ns, *ecp_ns;
+
+	g_return_val_if_fail(LASSO_IS_ECP(ecp), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	doc = xmlParseMemory(response_msg, strlen(response_msg));
 	xpathCtx = xmlXPathNewContext(doc);
