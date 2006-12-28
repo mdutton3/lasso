@@ -53,11 +53,11 @@
 #define SASL_TRYAGAIN   -8   /* transient failure (e.g., weak key) */
 #define SASL_BADMAC	-9   /* integrity check failed */
 #define SASL_NOTINIT    -12  /* SASL library not initialized */
-                             /* -- client only codes -- */
+			     /* -- client only codes -- */
 #define SASL_INTERACT    2   /* needs user interaction */
 #define SASL_BADSERV    -10  /* server failed mutual authentication step */
 #define SASL_WRONGMECH  -11  /* mechanism doesn't support requested feature */
-                             /* -- server only codes -- */
+			     /* -- server only codes -- */
 #define SASL_BADAUTH    -13  /* authentication failure */
 #define SASL_NOAUTHZ    -14  /* authorization failure */
 #define SASL_TOOWEAK    -15  /* mechanism too weak for this user */
