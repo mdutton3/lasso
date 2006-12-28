@@ -755,7 +755,7 @@ lasso_node_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 {
 	LassoNodeClass *class;
 
-	g_return_val_if_fail(LASSO_IS_NODE(node), -1);
+	g_return_val_if_fail(LASSO_IS_NODE(node), LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED);
 	class = LASSO_NODE_GET_CLASS(node);
 
 	return class->init_from_xml(node, xmlnode);

@@ -421,7 +421,7 @@ init_from_xml(LassoNode *node, xmlNode *xmlnode)
 	parent_class->init_from_xml(node, xmlnode);
 	
 	if (xmlnode == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_XML_ERROR_OBJECT_CONSTRUCTION_FAILED;
 
 	s = xmlGetProp(xmlnode, (xmlChar*)"ProviderRole");
 	if (s && strcmp((char*)s, "SP") == 0)

@@ -182,6 +182,9 @@ lasso_strerror(int error_code)
 		case LASSO_SOAP_FAULT_REDIRECT_REQUEST:
 			return "Redirect request from Attribute Provider";
 
+		case LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE:
+			return "Target name space not found";
+
 		default:
 			return "Error";
 	}

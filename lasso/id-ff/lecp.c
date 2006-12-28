@@ -61,8 +61,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	}
 
 	if (profile->request == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "AuthnRequest not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
 
 	lecp->authnRequestEnvelope = lasso_lib_authn_request_envelope_new_full(
@@ -91,9 +90,7 @@ lasso_lecp_build_authn_request_envelope_msg(LassoLecp *lecp)
 	xmlFreeNode(msg);
 
 	if (profile->msg_body == NULL) {
-		message(G_LOG_LEVEL_CRITICAL,
-				"Error while exporting the AuthnRequestEnvelope to POST msg");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_BUILDING_REQUEST_FAILED;
 	}
 
 	return 0;
@@ -188,8 +185,7 @@ lasso_lecp_build_authn_response_envelope_msg(LassoLecp *lecp)
 	profile = LASSO_PROFILE(lecp);
 
 	if (LASSO_IS_LIB_AUTHN_RESPONSE(profile->response) == FALSE) {
-		message(G_LOG_LEVEL_CRITICAL, "AuthnResponse not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 
 	provider = g_hash_table_lookup(profile->server->providers, profile->remote_providerID);
@@ -367,8 +363,7 @@ lasso_lecp_process_authn_response_envelope_msg(LassoLecp *lecp, const char *resp
 
 	profile->response = g_object_ref(lecp->authnResponseEnvelope->AuthnResponse);
 	if (profile->response == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "AuthnResponse not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_RESPONSE;
 	}
 
 	lecp->assertionConsumerServiceURL = g_strdup(

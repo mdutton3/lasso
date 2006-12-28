@@ -76,7 +76,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
 		message(G_LOG_LEVEL_CRITICAL, "Build request msg method is forbidden at IDP");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE;
 	}
 
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider, "SoapEndpoint");
@@ -145,7 +145,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_SP) {
 		message(G_LOG_LEVEL_CRITICAL, "Build response msg method is forbidden at SP");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE;
 	}
 
 	/* verify the provider type is a service provider type */
@@ -220,7 +220,7 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 	}
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_IDP) {
 		message(G_LOG_LEVEL_CRITICAL, "Init request method is forbidden for an IDP");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE;
 	}
 
 	/* get federation */
@@ -363,7 +363,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
-    response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response);
+	response = LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers, response->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
@@ -379,8 +379,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 
 	statusCodeValue = response->Status->StatusCode->Value;
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "%s", statusCodeValue);
-		return LASSO_ERROR_UNDEFINED; /* this function is never used, don't take care */
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	/* Set the target name identifier */
@@ -427,13 +426,13 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 
 	if (remote_provider->role != LASSO_PROVIDER_ROLE_SP) {
 		message(G_LOG_LEVEL_CRITICAL, "Build request msg method is forbidden at SP");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_FORBIDDEN_CALL_ON_THIS_SIDE;
 	}
 
 	/* verify request attribute of mapping is a name identifier mapping request */
 	if (LASSO_IS_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Invalid NameIdentifierMappingRequest");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
 
 	if (profile->http_request_method != LASSO_HTTP_METHOD_SOAP) {
@@ -480,21 +479,19 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 	if (nameIdentifier == NULL) {
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_UNKNOWN_PRINCIPAL);
-		message(G_LOG_LEVEL_CRITICAL, "Name identifier of federation not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
 	/* get the federation of the target name space and his name identifier */
 	if (request->TargetNamespace == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Target name space not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_NAMESPACE;
 	}
 	federation = g_hash_table_lookup(profile->identity->federations, request->TargetNamespace);
 	if (LASSO_IS_FEDERATION(federation) == FALSE) {
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
 		message(G_LOG_LEVEL_CRITICAL, "Target name space federation not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
 	}
 
 	targetNameIdentifier = LASSO_SAML_NAME_IDENTIFIER(federation->remote_nameIdentifier);
@@ -507,7 +504,7 @@ lasso_name_identifier_mapping_validate_request(LassoNameIdentifierMapping *mappi
 				"Name identifier for target name space federation not found");
 		lasso_profile_set_response_status(profile,
 				LASSO_LIB_STATUS_CODE_FEDERATION_DOES_NOT_EXIST);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 	}
 
 	LASSO_LIB_NAME_IDENTIFIER_MAPPING_RESPONSE(profile->response)->NameIdentifier =

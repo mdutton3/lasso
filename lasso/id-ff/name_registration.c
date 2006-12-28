@@ -287,8 +287,7 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	} else { /* if (remote_provider->role == LASSO_PROVIDER_ROLE_SP) { */
 		/* Initiating it, from an IdP */
 		if (federation->local_nameIdentifier == NULL) {
-			message(G_LOG_LEVEL_CRITICAL, "Local name identifier not found");
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_NAME_IDENTIFIER_NOT_FOUND;
 		}
 
 		oldNameIdentifier = g_object_ref(federation->local_nameIdentifier);
@@ -308,8 +307,8 @@ lasso_name_registration_init_request(LassoNameRegistration *name_registration,
 	}
 
 	if (oldNameIdentifier == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid provider type");
-		return LASSO_ERROR_UNDEFINED;
+		message(G_LOG_LEVEL_CRITICAL, "Invalid provider type"); /* ??? */
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	if (http_method == LASSO_HTTP_METHOD_ANY) {
@@ -477,8 +476,8 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 
 	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
-		message(G_LOG_LEVEL_CRITICAL, "%s", statusCodeValue);
-		return LASSO_ERROR_UNDEFINED;
+		message(G_LOG_LEVEL_CRITICAL, "Status code not success: %s", statusCodeValue);
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
 	/* Update federation with the nameIdentifier attribute. NameQualifier
@@ -508,8 +507,8 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 				profile->request)->SPProvidedNameIdentifier;
 	}
 	if (nameIdentifier == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "Invalid provider role");
-		return LASSO_ERROR_UNDEFINED;
+		message(G_LOG_LEVEL_CRITICAL, "Invalid provider role"); /* ??? */
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	if (federation->local_nameIdentifier)
@@ -552,7 +551,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	/* verify the register name identifier request */
 	if (LASSO_IS_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "Register Name Identifier request not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 	}
 
 	request = LASSO_LIB_REGISTER_NAME_IDENTIFIER_REQUEST(profile->request);
@@ -560,8 +559,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	/* set the remote provider id from the request */
 	profile->remote_providerID = g_strdup(request->ProviderID);
 	if (profile->remote_providerID == NULL) {
-		message(G_LOG_LEVEL_CRITICAL, "No provider id found in name registration request");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID;
 	}
 
 	/* set register name identifier response */
@@ -589,13 +587,13 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 
 	if (request->OldProvidedNameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Old provided name identifier not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	if (lasso_federation_verify_name_identifier(federation, LASSO_NODE(
 					request->OldProvidedNameIdentifier)) == FALSE) {
 		message(G_LOG_LEVEL_CRITICAL, "No name identifier");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
@@ -613,7 +611,7 @@ lasso_name_registration_validate_request(LassoNameRegistration *name_registratio
 	}
 	if (providedNameIdentifier == NULL) {
 		message(G_LOG_LEVEL_CRITICAL, "Sp provided name identifier not found");
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
 	if (federation->remote_nameIdentifier)

@@ -91,7 +91,7 @@ gint
 lasso_identity_remove_federation(LassoIdentity *identity, const char *providerID)
 {
 	if (g_hash_table_remove(identity->federations, providerID) == FALSE) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_FEDERATION_NOT_FOUND;
 	}
 	identity->is_dirty = TRUE;
 	return 0;
