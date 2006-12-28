@@ -225,11 +225,14 @@ lasso_wsf_profile_verify_credential_signature(
 
 	/* Retrieve provider id of credential signer . Issuer could be the right place */
 	issuer = xmlGetProp(credential, (xmlChar*)"Issuer");
-	if (!issuer)
-		return LASSO_ERROR_UNDEFINED;
+	if (issuer == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_ISSUER;
+	}
+
 	lasso_provider = lasso_server_get_provider(profile->server, (char*)issuer);
-	if (!lasso_provider)
-		return LASSO_ERROR_UNDEFINED;
+	if (lasso_provider == NULL) {
+		return LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND;
+	}
 
 	/* Set credential reference */
 	id_attr = xmlHasProp(credential, (xmlChar *)"AssertionID");
@@ -330,26 +333,26 @@ lasso_wsf_profile_add_credential_signature(LassoWsfProfile *profile,
 	/* Sign SOAP message */
 	sign_tmpl = xmlSecFindNode(credential, xmlSecNodeSignature, xmlSecDSigNs);
 	if (sign_tmpl == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DS_ERROR_SIGNATURE_TEMPLATE_NOT_FOUND;
 
 	dsigCtx = xmlSecDSigCtxCreate(NULL);
 	dsigCtx->signKey = xmlSecCryptoAppKeyLoad(profile->server->private_key,
 		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	if (dsigCtx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
 	}
 	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
 		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
-			xmlSecKeyDataFormatPem) < 0) {
-				xmlSecDSigCtxDestroy(dsigCtx);
-				return LASSO_ERROR_UNDEFINED;
+					xmlSecKeyDataFormatPem) < 0) {
+			xmlSecDSigCtxDestroy(dsigCtx);
+			return LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
 		}
 	}
 
 	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DS_ERROR_SIGNATURE_FAILED;
 	}
 	xmlSecDSigCtxDestroy(dsigCtx);
 
@@ -491,7 +494,7 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 
 	/* FIXME: Need to consider more every credentials. */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 	
 
@@ -502,8 +505,9 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	
 	public_key = lasso_wsf_profile_get_public_key_from_credential(profile, credential);
 	
-	if (public_key == NULL)
-		return LASSO_ERROR_UNDEFINED;
+	if (public_key == NULL) {
+		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
+	}
 
 	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, public_key);
 	if (res != 0)
@@ -534,9 +538,10 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 		t = t->next;
 	}
 	if (header == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_SOAP_ERROR_MISSING_HEADER;
+
 	if (body == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_SOAP_ERROR_MISSING_BODY;
 
 	t = header->children;
 	while (t) {
@@ -549,9 +554,9 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 		t = t->next;
 	}
 	if (correlation == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
 	if (security == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_WSF_PROFILE_ERROR_MISSING_SECURITY;
 
 	/* Add signature template */
 	if (sign_method == LASSO_SIGNATURE_METHOD_RSA_SHA1) {
@@ -608,9 +613,6 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 	}
 
 	/* Sign SOAP message */
-	/*sign_tmpl = xmlSecFindNode(security, xmlSecNodeSignature, xmlSecDSigNs);
-	if (sign_tmpl == NULL)
-	return LASSO_ERROR_UNDEFINED;*/
 	sign_tmpl = signature;
 
 	dsigCtx = xmlSecDSigCtxCreate(NULL);
@@ -618,18 +620,18 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 		xmlSecKeyDataFormatPem, NULL, NULL, NULL);
 	if (dsigCtx->signKey == NULL) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DS_ERROR_PRIVATE_KEY_LOAD_FAILED;
 	}
 	if (profile->server->certificate != NULL && profile->server->certificate[0] != 0) {
 		if (xmlSecCryptoAppKeyCertLoad(dsigCtx->signKey, profile->server->certificate,
-			xmlSecKeyDataFormatPem) < 0) {
-				xmlSecDSigCtxDestroy(dsigCtx);
-				return LASSO_ERROR_UNDEFINED;
+					xmlSecKeyDataFormatPem) < 0) {
+			xmlSecDSigCtxDestroy(dsigCtx);
+			return LASSO_DS_ERROR_CERTIFICATE_LOAD_FAILED;
 		}
 	}
 	if (xmlSecDSigCtxSign(dsigCtx, sign_tmpl) < 0) {
 		xmlSecDSigCtxDestroy(dsigCtx);
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DS_ERROR_SIGNATURE_FAILED;
 	}
 	xmlSecDSigCtxDestroy(dsigCtx);
 
@@ -661,8 +663,10 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		correlation = xpathObj->nodesetval->nodeTab[0];
 	}
-	if (!correlation)
-		return LASSO_ERROR_UNDEFINED;
+	if (correlation == NULL) {
+		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
+	}
+
 	id_attr = xmlHasProp(correlation, (xmlChar *)"id");
 	id = xmlGetProp(correlation, (xmlChar *) "id");
 	xmlAddID(NULL, doc, id, id_attr);
@@ -674,8 +678,9 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		body = xpathObj->nodesetval->nodeTab[0];
 	}
-	if (!body)
-		return LASSO_ERROR_UNDEFINED;
+	if (body == NULL)
+		return LASSO_SOAP_ERROR_MISSING_BODY;
+
 	id_attr = xmlHasProp(body, (xmlChar *)"id");
 	id = xmlGetProp(body, (xmlChar *) "id");
 	xmlAddID(NULL, doc, id, id_attr);
@@ -1229,8 +1234,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 		else
 			profile->private_data->description = NULL;
 	} else
-		if (!si)
-			return LASSO_ERROR_UNDEFINED;
+		if (si == NULL)
+			return LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE;
 		else
 			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
 

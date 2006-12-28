@@ -201,13 +201,15 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	lasso_wsf_profile_init_soap_request(LASSO_WSF_PROFILE(service), LASSO_NODE(query));
 
-	if (!security_mech_id) {
+	if (security_mech_id == NULL) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
 	} else {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	}
-	if (!description)
-		return LASSO_ERROR_UNDEFINED;
+
+	if (description == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
+	}
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(service), description);
 
 	if (description->Endpoint != NULL) {
@@ -339,11 +341,11 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 	}
 	
 	query = LASSO_DST_QUERY(profile->request);
-	if (query->ResourceID)
+	if (query->ResourceID) {
 		service->resource_id = g_object_ref(query->ResourceID);
-	else if (query->EncryptedResourceID)
+	} else if (query->EncryptedResourceID) {
 		service->encrypted_resource_id = g_object_ref(query->EncryptedResourceID);
-	else {
+	} else {
 		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
 	}
 
@@ -624,15 +626,6 @@ lasso_data_service_process_query_response_msg(LassoDataService *service,
 		return LASSO_SOAP_FAULT_REDIRECT_REQUEST;
 
 	return 0;
-
-	/*if (! LASSO_IS_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response))
-		return LASSO_ERROR_UNDEFINED;
-
-	response = LASSO_DST_QUERY_RESPONSE(LASSO_WSF_PROFILE(service)->response);
-	if (response->Status == NULL || strcmp(response->Status->code, "OK") != 0)
-	return LASSO_ERROR_UNDEFINED;*/
-
-	return 0;
 }
 
 
@@ -665,19 +658,17 @@ lasso_data_service_init_modify(LassoDataService *service, const gchar *select,
 	
 	modify->hrefServiceType = g_strdup(offering->ServiceInstance->ServiceType);
 	modify->prefixServiceType = lasso_get_prefix_for_dst_service_href(
-		modify->hrefServiceType);
+			modify->hrefServiceType);
 	if (modify->prefixServiceType == NULL) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_DATA_SERVICE_ERROR_UNREGISTERED_DST;
 	}
 
 	/* get ResourceID / EncryptedResourceID */
 	if (offering->ResourceID) {
 		modify->ResourceID = offering->ResourceID;
-	}
-	else if (offering->EncryptedResourceID) {
+	} else if (offering->EncryptedResourceID) {
 	  modify->EncryptedResourceID = offering->EncryptedResourceID;
-	}
-	else {
+	} else {
 		/* XXX: no resource id, implied:resource, etc. */
 		return LASSO_ERROR_UNIMPLEMENTED;
 	}
@@ -713,11 +704,11 @@ lasso_data_service_process_modify_msg(LassoDataService *service,
 	}
 
 	modify = LASSO_DST_MODIFY(profile->request);
-	if (modify->ResourceID)
+	if (modify->ResourceID) {
 		service->resource_id = g_object_ref(modify->ResourceID);
-	else if (modify->EncryptedResourceID)
+	} else if (modify->EncryptedResourceID) {
 		service->encrypted_resource_id = g_object_ref(modify->EncryptedResourceID);
-	else {
+	} else {
 		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
 	}
 

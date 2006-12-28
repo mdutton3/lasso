@@ -542,7 +542,7 @@ lasso_discovery_init_remove(LassoDiscovery *discovery, const char *entry_id)
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL) {
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 	}
 	description = lasso_discovery_get_description_auto(offering,
 		LASSO_SECURITY_MECH_NULL);
@@ -583,15 +583,15 @@ lasso_discovery_init_query(LassoDiscovery *discovery, const gchar *security_mech
 	/* get discovery service resource id from principal assertion */
 	offering = lasso_discovery_get_resource_offering_auto(discovery, LASSO_DISCO_HREF);
 	if (offering == NULL)
-		return LASSO_ERROR_UNDEFINED;
+		return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 
-	if (!security_mech_id)
+	if (security_mech_id == NULL) {
 		description = LASSO_DISCO_DESCRIPTION(offering->ServiceInstance->Description->data);
-	else {
+	} else {
 		description = lasso_discovery_get_description_auto(offering, security_mech_id);
 	}
-	if (!description)
-		return LASSO_ERROR_UNDEFINED;
+	if (description == NULL)
+		return LASSO_PROFILE_ERROR_MISSING_SERVICE_DESCRIPTION;
 
 	lasso_wsf_profile_set_description(LASSO_WSF_PROFILE(discovery), description);
 
@@ -692,8 +692,7 @@ lasso_discovery_build_modify_response_msg(LassoDiscovery *discovery)
 		if (lasso_identity_get_resource_offering(
 					LASSO_WSF_PROFILE(discovery)->identity,
 					entry->entryID) == NULL) {
-			/* FIXME: Return a better code error. */
-			return LASSO_ERROR_UNDEFINED;
+			return LASSO_PROFILE_ERROR_MISSING_RESOURCE_OFFERING;
 		}
 	}
 
@@ -756,11 +755,14 @@ lasso_discovery_process_modify_response_msg(LassoDiscovery *discovery, const gch
 	LassoDiscoModifyResponse *response;
 	
 	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
-	if (rc) return rc;
+	if (rc) {
+		return rc;
+	}
 
 	response = LASSO_DISCO_MODIFY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-	if (strcmp(response->Status->code, "OK") != 0)
-		return LASSO_ERROR_UNDEFINED;
+	if (strcmp(response->Status->code, "OK") != 0) {
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
+	}
 
 	return 0;
 }
@@ -897,11 +899,14 @@ lasso_discovery_process_query_response_msg(LassoDiscovery *discovery, const gcha
 	LassoDiscoQueryResponse *response;
 
 	rc = lasso_wsf_profile_process_soap_response_msg(LASSO_WSF_PROFILE(discovery), message);
-	if (rc) return rc;
+	if (rc) {
+		return rc;
+	}
 
 	response = LASSO_DISCO_QUERY_RESPONSE(LASSO_WSF_PROFILE(discovery)->response);
-	if (strcmp(response->Status->code, "OK") != 0)
-		return LASSO_ERROR_UNDEFINED;
+	if (strcmp(response->Status->code, "OK") != 0) {
+		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
+	}
 
 	/* XXX: anything else to do ? */
 
