@@ -1011,7 +1011,7 @@ lasso_node_impl_get_xmlNode(LassoNode *node, gboolean lasso_dump)
 	xmlCleanNs(xmlnode);
 
 	/* backward compatibility with Liberty ID-FF 1.1; */
-	if (find_path(node, "MajorVersion", &value_node, &version_snippet) == 0) {
+	if (find_path(node, "MajorVersion", &value_node, &version_snippet) == TRUE) {
 		int *value;
 		int major_version, minor_version;
 
