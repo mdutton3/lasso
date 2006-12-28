@@ -50,8 +50,9 @@ struct _LassoIdentityPrivate
 gint
 lasso_identity_add_federation(LassoIdentity *identity, LassoFederation *federation)
 {
-	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_INVALID_VALUE);
-	g_return_val_if_fail(LASSO_IS_FEDERATION(federation), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_IDENTITY(identity), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(LASSO_IS_FEDERATION(federation),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	/* add the federation, replace if one already exists */
 	g_hash_table_insert(identity->federations,

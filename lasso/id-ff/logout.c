@@ -487,7 +487,7 @@ lasso_logout_process_request_msg(LassoLogout *logout, char *request_msg)
 	LassoProvider *remote_provider;
 	LassoMessageFormat format;
 
-	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(logout);
@@ -564,7 +564,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
 	int rc;
 
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(logout);
 
@@ -742,7 +742,7 @@ lasso_logout_process_response_msg(LassoLogout *logout, gchar *response_msg)
  **/
 gint lasso_logout_reset_providerID_index(LassoLogout *logout)
 {
-	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	lasso_session_init_provider_ids(LASSO_PROFILE(logout)->session);
 	logout->providerID_index = 0;
 	return 0;

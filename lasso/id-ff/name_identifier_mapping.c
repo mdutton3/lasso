@@ -199,8 +199,8 @@ lasso_name_identifier_mapping_init_request(LassoNameIdentifierMapping *mapping,
 
 	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(targetNamespace != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(targetNamespace != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(remote_providerID != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
 
@@ -289,7 +289,7 @@ lasso_name_identifier_mapping_process_request_msg(LassoNameIdentifierMapping *ma
 
 	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(request_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
 
@@ -353,7 +353,7 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 
 	g_return_val_if_fail(LASSO_IS_NAME_IDENTIFIER_MAPPING(mapping),
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(response_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
 

@@ -720,7 +720,8 @@ lasso_data_service_process_modify_response_msg(LassoDataService *service, const 
 	LassoDstModifyResponse *response;
 	LassoSoapEnvelope *envelope;
 
-	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service), LASSO_PARAM_ERROR_INVALID_VALUE);
+	g_return_val_if_fail(LASSO_IS_PROFILE_SERVICE(service),
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_dump(soap_msg));

@@ -206,10 +206,10 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 	static sasl_callback_t global_callbacks[2];
 
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_DISCO_DESCRIPTION(description),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(mechanisms != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(mechanisms != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 
 	if (description->Endpoint != NULL) {
@@ -298,11 +298,10 @@ lasso_authentication_process_request_msg(LassoAuthentication *authentication,
 	int res = 0;
 	
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* if a previous request and response, then remove */
 	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_response) \
@@ -362,8 +361,8 @@ lasso_authentication_process_response_msg(LassoAuthentication *authentication,
 	gchar *messageId;
 
 	g_return_val_if_fail(LASSO_IS_AUTHENTICATION(authentication),
-			     LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
-	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
+	g_return_val_if_fail(soap_msg != NULL, LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	/* if a previous request or response, remove */
 	if (LASSO_IS_SOAP_ENVELOPE(LASSO_WSF_PROFILE(authentication)->soap_envelope_request) \
