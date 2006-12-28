@@ -49,6 +49,9 @@ build_query(LassoNode *node)
 	LassoSamlp2LogoutResponse *response = LASSO_SAMLP2_LOGOUT_RESPONSE(node);
 
 	deflated_message = lasso_node_build_deflated_query(node);
+	if (deflated_message == NULL) {
+		return NULL;
+	}
 	if (response->relayState) {
 		ret = g_strdup_printf("SAMLResponse=%s&RelayState=%s",
 				deflated_message, response->relayState);

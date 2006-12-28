@@ -65,6 +65,9 @@ build_query(LassoNode *node)
 	char *ret, *deflated_message;
 
 	deflated_message = lasso_node_build_deflated_query(node);
+	if (deflated_message == NULL) {
+		return NULL;
+	}
 	ret = g_strdup_printf("SAMLResponse=%s", deflated_message);
 	/* XXX: must support RelayState (which profiles?) */
 	g_free(deflated_message);
