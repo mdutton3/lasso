@@ -248,8 +248,7 @@ lasso_wsf_profile_verify_credential_signature(
 		if (keys_mngr == NULL) {
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
-	}
-	else if (x509data != NULL) {
+	} else if (x509data != NULL) {
 		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 	}
 
@@ -257,9 +256,9 @@ lasso_wsf_profile_verify_credential_signature(
 
 	/* Case of simple public key signature type */
 	if (keys_mngr == NULL) {
-		if (lasso_provider != NULL)
+		if (lasso_provider != NULL) {
 			dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
-		else if (profile->private_data->public_key) {
+		} else if (profile->private_data->public_key) {
 			/* TODO */
 		}
 		if (dsigCtx->signKey == NULL) {
@@ -446,10 +445,11 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 		}
 		xmlnode = rsa_key_value->children;
 		while (xmlnode) {
-			if (strcmp((char*)xmlnode->name, "Modulus") == 0)
+			if (strcmp((char*)xmlnode->name, "Modulus") == 0) {
 				modulus_value = xmlNodeGetContent(xmlnode);
-			else if (strcmp((char*)xmlnode->name, "Exponent") == 0)
+			} else if (strcmp((char*)xmlnode->name, "Exponent") == 0) {
 				exponent_value = xmlNodeGetContent(xmlnode);
+			}
 			xmlnode = xmlnode->next;
 		}
 		
@@ -531,10 +531,11 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 	/* Get Correlation, Provider, Security, Body elements */
 	t = envelope_node->children;
 	while (t) {
-		if (strcmp((char *) t->name, "Header") == 0)
+		if (strcmp((char *) t->name, "Header") == 0) {
 			header = t;
-		else if (strcmp((char *) t->name, "Body") == 0)
+		} else if (strcmp((char *) t->name, "Body") == 0) {
 			body = t;
+		}
 		t = t->next;
 	}
 	if (header == NULL)
@@ -545,12 +546,13 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 
 	t = header->children;
 	while (t) {
-		if (strcmp((char *) t->name, "Correlation") == 0)
+		if (strcmp((char *) t->name, "Correlation") == 0) {
 			correlation = t;
-		else if (strcmp((char *) t->name, "Provider") == 0)
+		} else if (strcmp((char *) t->name, "Provider") == 0) {
 			provider = t;
-		else if (strcmp((char *) t->name, "Security") == 0)
+		} else if (strcmp((char *) t->name, "Security") == 0) {
 			security = t;
+		}
 		t = t->next;
 	}
 	if (correlation == NULL)
@@ -726,8 +728,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		if (keys_mngr == NULL) {
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
-	}
-	else if (x509data != NULL) {
+	} else if (x509data != NULL) {
 		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 	}
 
@@ -737,8 +738,7 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	if (keys_mngr == NULL) {
 		if (lasso_provider != NULL) {
 			dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
-		}
-		else if (public_key) {
+		} else if (public_key) {
 			dsigCtx->signKey = public_key;
 		}
 		if (dsigCtx->signKey == NULL) {
@@ -1227,17 +1227,20 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 
 	si = lasso_server_get_service(profile->server, (char *) service_type);
 
-	if (!security_mech_id) {
-		if (si)
+	if (security_mech_id == NULL) {
+		if (si) {
 			profile->private_data->description = LASSO_DISCO_DESCRIPTION(
 				si->Description->data);
-		else
+		} else {
 			profile->private_data->description = NULL;
-	} else
-		if (si == NULL)
+		}
+	} else {
+		if (si == NULL) {
 			return LASSO_PROFILE_ERROR_MISSING_SERVICE_INSTANCE;
-		else
+		} else {
 			lasso_wsf_profile_get_description_auto(si, security_mech_id);	
+		}
+	}
 
 	doc = xmlParseMemory(message, strlen(message));
 	/* FIXME: doc will never be freed */
@@ -1245,17 +1248,15 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	/* Verify authentication mecanisms */
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
-	}
-	else if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE) {
+	} else if (lasso_wsf_profile_has_saml_authentication(profile) == TRUE) {
 		res = lasso_wsf_profile_verify_saml_authentication(profile, doc);
 	}
 
 	/* FIXME: Return a soap fault if authentication verification failed ? */
 	if (res > 0) {
 		fault = lasso_soap_fault_new();
-		fault->faultstring = "Invalid signature";
-	}
-	else if (res < 0)
+		fault->faultstring = g_strdup("Invalid signature");
+	} else if (res < 0)
 		return res;
 
 	/* FIXME: Remove Signature element if exists, it seg fault when a call to

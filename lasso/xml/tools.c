@@ -369,8 +369,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		/* sign digest message */
 		status = RSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, rsa);
 		RSA_free(rsa);
-	}
-	else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
+	} else if (sign_method == LASSO_SIGNATURE_METHOD_DSA_SHA1) {
 		dsa = PEM_read_bio_DSAPrivateKey(bio, NULL, NULL, NULL);
 		if (dsa == NULL) {
 			goto done;
@@ -379,6 +378,7 @@ lasso_query_sign(char *query, LassoSignatureMethod sign_method, const char *priv
 		status = DSA_sign(NID_sha1, (unsigned char*)digest, 20, sigret, &siglen, dsa);
 		DSA_free(dsa);
 	}
+
 	if (status == 0) {
 		goto done;
 	}

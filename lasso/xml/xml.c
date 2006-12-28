@@ -350,10 +350,11 @@ lasso_node_export_to_query(LassoNode *node,
 	g_return_val_if_fail (LASSO_IS_NODE(node), NULL);
 
 	unsigned_query = lasso_node_build_query(node);
-	if (private_key_file)
+	if (private_key_file) {
 		query = lasso_query_sign(unsigned_query, sign_method, private_key_file);
-	else
+	} else {
 		query = g_strdup(unsigned_query);
+	}
 	g_free(unsigned_query);
 
 	return query;
@@ -866,11 +867,11 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					if (t2)
 						tmp = lasso_node_new_from_xmlNode_with_type(t2,
 								snippet->class_name);
-				} else if (type == SNIPPET_CONTENT)
+				} else if (type == SNIPPET_CONTENT) {
 					tmp = xmlNodeGetContent(t);
-				else if (type == SNIPPET_NAME_IDENTIFIER)
+				} else if (type == SNIPPET_NAME_IDENTIFIER) {
 					tmp = lasso_saml_name_identifier_new_from_xmlNode(t);
-				else if (type == SNIPPET_LIST_NODES) {
+				} else if (type == SNIPPET_LIST_NODES) {
 					GList **location = value;
 					LassoNode *n = lasso_node_new_from_xmlNode_with_type(t,
 							snippet->class_name);

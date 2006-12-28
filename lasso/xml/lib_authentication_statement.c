@@ -156,10 +156,11 @@ lasso_lib_authentication_statement_new_full(const char *authenticationMethod,
 	statement = g_object_new(LASSO_TYPE_LIB_AUTHENTICATION_STATEMENT, NULL);
 	statement->AuthenticationMethod = g_strdup(authenticationMethod);
 
-	if (authenticationInstant == NULL)
+	if (authenticationInstant == NULL) {
 		time = lasso_get_current_time();
-	else
+	} else {
 		time = g_strdup(authenticationInstant);
+	}
 
 	statement->AuthenticationInstant = time;
 

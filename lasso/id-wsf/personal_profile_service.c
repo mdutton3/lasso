@@ -51,8 +51,7 @@ lasso_personal_profile_service_get_email(LassoPersonalProfileService *service)
 
 		if (strcmp((char *)child->name, "MsgAccount") == 0) {
 			msgAccount = xmlNodeGetContent(child);
-		}
-		else if (strcmp((char *)child->name, "MsgProvider") == 0) {
+		} else if (strcmp((char *)child->name, "MsgProvider") == 0) {
 			msgProvider = xmlNodeGetContent(child);
 		}
 				

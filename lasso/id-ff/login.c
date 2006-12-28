@@ -954,12 +954,13 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 
 	/* Countermeasure: The issuer should sign <lib:AuthnResponse> messages.
 	 * (binding and profiles (1.2errata2, page 65) */
-	if (profile->server->certificate)
+	if (profile->server->certificate) {
 		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_WITHX509;
-	else
+	} else {
 		LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 	LASSO_SAMLP_RESPONSE_ABSTRACT(profile->response)->private_key_file = 

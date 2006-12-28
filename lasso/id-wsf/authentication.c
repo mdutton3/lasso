@@ -214,8 +214,7 @@ lasso_authentication_init_request(LassoAuthentication *authentication,
 
 	if (description->Endpoint != NULL) {
 		LASSO_WSF_PROFILE(authentication)->msg_url = g_strdup(description->Endpoint);
-	}
-	else if (description->WsdlURI != NULL) {
+	} else if (description->WsdlURI != NULL) {
 
 	}
 
@@ -523,9 +522,8 @@ lasso_authentication_server_start(LassoAuthentication *authentication)
 				outbase64 = xmlSecBase64Encode(out, outlen, 0);
 				response->Data = g_list_append(response->Data, outbase64);
 			}
-		}
-		/* abort authentication */
-		else {
+		} else {
+			/* abort authentication */
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		}
 	}
@@ -583,9 +581,8 @@ lasso_authentication_server_step(LassoAuthentication *authentication)
 				outbase64 = xmlSecBase64Encode(out, outlen, 0);
 				response->Data = g_list_append(response->Data, outbase64);
 			}
-		}
+		} else  {
 		/* authentication failed, abort exchange */
-		else  {
 			response->Status->code = g_strdup(LASSO_SA_STATUS_CODE_ABORT);
 		}
 	}

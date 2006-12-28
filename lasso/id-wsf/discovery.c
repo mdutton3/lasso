@@ -109,8 +109,7 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 	if (provider) {
 		identifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_ENTITYID);
 		identifier->content = g_strdup(provider->providerID);
-	}
-	else {
+	} else {
 		identifier->Format = g_strdup(LASSO_LIB_NAME_IDENTIFIER_FORMAT_FEDERATED);
 	}
 	subject->NameIdentifier = identifier;
@@ -222,19 +221,16 @@ lasso_discovery_init_request(LassoDiscovery *discovery,
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
 			LASSO_DISCO_MODIFY(profile->request)->ResourceID = \
 				resourceOffering->ResourceID;
-		}
-		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
+		} else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->ResourceID = \
 				resourceOffering->ResourceID;
 		}
-	}
-	else if (resourceOffering->EncryptedResourceID != NULL) {
+	} else if (resourceOffering->EncryptedResourceID != NULL) {
 		g_object_ref(resourceOffering->EncryptedResourceID);
 		if (LASSO_IS_DISCO_MODIFY(profile->request)) {
 			LASSO_DISCO_MODIFY(profile->request)->EncryptedResourceID = \
 				resourceOffering->EncryptedResourceID;
-		}
-		else if (LASSO_IS_DISCO_QUERY(profile->request)) {
+		} else if (LASSO_IS_DISCO_QUERY(profile->request)) {
 			LASSO_DISCO_QUERY(profile->request)->EncryptedResourceID = \
 				resourceOffering->EncryptedResourceID;
 		}
@@ -242,8 +238,7 @@ lasso_discovery_init_request(LassoDiscovery *discovery,
 
 	if (description->Endpoint != NULL) {
 		profile->msg_url = g_strdup(description->Endpoint);
-	}
-	else if (description->WsdlURI != NULL) {
+	} else if (description->WsdlURI != NULL) {
 		/* TODO: get Endpoint at WsdlURI */
 	}
 
@@ -793,11 +788,11 @@ lasso_discovery_process_query_msg(LassoDiscovery *discovery, const gchar *messag
 	envelope = LASSO_WSF_PROFILE(discovery)->soap_envelope_response;
 	request = LASSO_DISCO_QUERY(LASSO_WSF_PROFILE(discovery)->request);
 	
-	if (request->ResourceID)
+	if (request->ResourceID) {
 		discovery->resource_id = g_object_ref(request->ResourceID);
-	else if (request->EncryptedResourceID)
+	} else if (request->EncryptedResourceID) {
 		discovery->encrypted_resource_id = g_object_ref(request->EncryptedResourceID);
-	else {
+	} else {
 		return LASSO_ERROR_UNIMPLEMENTED; /* implied ? */
 	}
 

@@ -850,12 +850,13 @@ lasso_saml20_login_build_response_msg(LassoLogin *login, gchar *remote_providerI
 	if (login->protocolProfile == LASSO_LOGIN_PROTOCOL_PROFILE_BRWS_LECP) {
 		const char *assertionConsumerURL;
 
-		if (profile->server->certificate)
+		if (profile->server->certificate) {
 			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
 				LASSO_SIGNATURE_TYPE_WITHX509;
-		else
+		} else {
 			LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
 				LASSO_SIGNATURE_TYPE_SIMPLE;
+		}
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
 			LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
@@ -1182,12 +1183,13 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_PROTOCOLPROFILE);
 	}
 
-	if (profile->server->certificate)
+	if (profile->server->certificate) {
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_WITHX509;
-	else
+	} else {
 		LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_type =
 			LASSO_SIGNATURE_TYPE_SIMPLE;
+	}
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->sign_method =
 		LASSO_SIGNATURE_METHOD_RSA_SHA1;
 
