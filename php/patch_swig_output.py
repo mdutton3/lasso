@@ -125,7 +125,7 @@ with:
         *return_value=*obj;
     }}
 
-This program corrects (3), by replacing things like:
+In old SWIG versions, this program corrects (3), by replacing things like:
     if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SUCCESS)
 with:
     if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)
@@ -133,6 +133,12 @@ and by replacing:
     if(arg_count > 1) {
 with:
     if(arg_count > 1 - argbase) {
+
+In newer SWIG versions, this program corrects (3), by replacing code like:
+    if(arg_count<2 || arg_count>4)
+with:
+    if(arg_count<1 || arg_count>3)
+whenever the function uses a this_ptr.
 """
 
 import re
@@ -188,14 +194,24 @@ wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SU
                     'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
 
 
+pattern = re.compile(
+        'This function uses a this_ptr\*/\n  arg_count.*\n  if\(arg_count<(\d) \|\| arg_count>(\d)')
+
+def rep(match):
+    arg1 = int(match.group(1)) - 1
+    arg2 = int(match.group(2)) - 1
+    return """This function uses a this_ptr*/
+  arg_count = ZEND_NUM_ARGS();
+  if(arg_count<%s || arg_count>%s""" % (arg1, arg2)
+
+wrap = pattern.sub(rep, wrap)
+
+
 wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
     r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
 
 wrap = re.sub('zend_rsrc_list_get_rsrc_type(.*)lval',
     r'zend_rsrc_list_get_rsrc_type\1lval TSRMLS_CC', wrap)
-
-wrap = wrap.replace('zval *return_value=&_return_value;',
-    'zval *return_value=&_return_value;\n    TSRMLS_FETCH();\n')
 
 
 print wrap
