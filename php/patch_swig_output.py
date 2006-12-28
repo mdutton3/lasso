@@ -194,18 +194,38 @@ wrap = wrap.replace('if(zend_get_parameters_array_ex(arg_count-argbase,args)!=SU
                     'if(zend_get_parameters_array_ex(arg_count,args)!=SUCCESS)')
 
 
-pattern = re.compile(
-        'This function uses a this_ptr\*/\n  arg_count.*\n  if\(arg_count<(\d) \|\| arg_count>(\d)')
+function_pattern = re.compile('ZEND_NAMED_FUNCTION(.*?)\n}', re.DOTALL)
+argcount_less_pattern = re.compile('if\(arg_count<(\d) \|\| arg_count>(\d)')
+argcount_more_pattern = re.compile('if\(arg_count > (\d)\)')
 
-def rep(match):
+
+def rep2(match):
     arg1 = int(match.group(1)) - 1
     arg2 = int(match.group(2)) - 1
-    return """This function uses a this_ptr*/
-  arg_count = ZEND_NUM_ARGS();
-  if(arg_count<%s || arg_count>%s""" % (arg1, arg2)
+    return 'if(arg_count<%s || arg_count>%s' % (arg1, arg2)
 
-wrap = pattern.sub(rep, wrap)
+def rep3(match):
+    arg1 = int(match.group(1)) - 1
+    return 'if(arg_count > %s)' % arg1
 
+def rep(match):
+    m = match.group(0)
+    if not 'This function uses a this_ptr' in m:
+        return m
+    if not 'arg_count<' in m:
+        return m
+    lines = match.group(0).splitlines()
+    s = []
+    for l in lines:
+        if l.startswith('if(arg_count<'):
+            l = argcount_less_pattern.sub(rep2, l)
+        elif l.startswith('  if(arg_count >'):
+            l = argcount_more_pattern.sub(rep3, l)
+        s.append(l)
+
+    return ''.join(s)
+
+wrap = function_pattern.sub(rep, wrap)
 
 wrap = re.sub(r'zend_register_internal_class_ex(.*)NULL,NULL\)',
     r'zend_register_internal_class_ex\1NULL,NULL TSRMLS_CC)',  wrap)
