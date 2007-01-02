@@ -73,14 +73,14 @@ available in a ``LassoServer`` object.
 The ``LassoServer`` object may be created as follows::
 
   lasso_init();
-  $server = new LassoServer("sp-metadata.xml", "sp-private-key.pem",
+  $server = new LassoServer("sp-saml2-metadata.xml", "sp-private-key.pem",
                               NULL, "sp-crt.pem");
-  $server->addProvider(LASSO_PROVIDER_ROLE_IDP, "idp-metadata.xml",
+  $server->addProvider(LASSO_PROVIDER_ROLE_IDP, "idp-saml2-metadata.xml",
                        "idp-public-key.pem", "ca-crt.pem");
   lasso_shutdown();
 
-- ``sp-metadata.xml`` is the Liberty metadata file for the service provider
-- ``idp-metadata.xml`` is the Liberty metadata file for the identity provider
+- ``sp-saml2-metadata.xml`` is the Liberty metadata file for the service provider
+- ``idp-saml2-metadata.xml`` is the Liberty metadata file for the identity provider
 - ``sp-private-key.pem`` is the service provider private key; used to sign
   documents
 - ``sp-crt.pem`` is the service provider certificate; sent inside signed
@@ -201,7 +201,7 @@ match a entityID defined in the metadata file).
   $lassoLogin->initAuthnRequest($idpEntityId, LASSO_HTTP_METHOD_REDIRECT);
 
   $lassoRequest = $lassoLogin->request;
-  $lassoRequest->ProtocolBinding = LASSO_SAML2_METADATA_BINDING_POST;
+  $lassoRequest->ProtocolBinding = LASSO_SAML2_METADATA_BINDING_ARTIFACT;
 
   $lassoNameIdPolicy = $lassoRequest->NameIDPolicy;
   $lassoNameIdPolicy->Format = LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT;
