@@ -856,7 +856,7 @@ lasso_logout_validate_request(LassoLogout *logout)
 
 	/* verify authentication */
 	assertion_n = lasso_session_get_assertion(profile->session, profile->remote_providerID);
-	if (assertion_n == NULL) {
+	if (LASSO_IS_SAML_ASSERTION(assertion_n) == FALSE) {
 		message(G_LOG_LEVEL_WARNING, "%s has no assertion", profile->remote_providerID);
 		lasso_profile_set_response_status(profile, LASSO_SAML_STATUS_CODE_REQUEST_DENIED);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
@@ -961,8 +961,9 @@ check_soap_support(gchar *key, LassoProvider *provider, LassoProfile *profile)
 		return; /* original service provider (initiated logout) */
 
 	assertion_n = lasso_session_get_assertion(profile->session, provider->ProviderID);
-	if (assertion_n == NULL)
+	if (LASSO_IS_SAML_ASSERTION(assertion_n) == FALSE) {
 		return; /* not authenticated with this provider */
+	}
 	assertion = LASSO_SAML_ASSERTION(assertion_n);
 
 	supported_profiles = lasso_provider_get_metadata_list(provider,
