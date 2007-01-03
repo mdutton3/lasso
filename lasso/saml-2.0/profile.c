@@ -314,32 +314,28 @@ lasso_profile_is_saml_query(const gchar *query)
 
 
 static void
-add_value_to_array(gpointer key, gpointer value, GPtrArray *array)
+lasso_saml20_profile_set_session_from_dump_decrypt(
+		gpointer key, LassoSaml2Assertion *assertion, gpointer data)
 {
-	g_ptr_array_add(array, value);
+	if (LASSO_IS_SAML2_ASSERTION(assertion) == FALSE) {
+		return;
+	}
+
+	if (assertion->Subject != NULL && assertion->Subject->EncryptedID != NULL) {
+		assertion->Subject->NameID = LASSO_SAML2_NAME_ID(
+				assertion->Subject->EncryptedID->original_data);
+		assertion->Subject->EncryptedID = NULL;
+	}
 }
 
 gint
 lasso_saml20_profile_set_session_from_dump(LassoProfile *profile)
 {
-	GPtrArray *assertions = NULL;
-	LassoSaml2Assertion *assertion = NULL;
-	int i;
-
-	if (profile->session->assertions != NULL) {
-		assertions = g_ptr_array_sized_new(g_hash_table_size(profile->session->assertions));
-		g_hash_table_foreach(profile->session->assertions, (GHFunc) add_value_to_array,
-				assertions);
+	if (profile->session != NULL && profile->session->assertions != NULL) {
+		g_hash_table_foreach(profile->session->assertions,
+				(GHFunc)lasso_saml20_profile_set_session_from_dump_decrypt,
+				NULL);
 	}
 
-	for (i = 0; assertions && i < assertions->len; ++i) {
-		assertion = g_ptr_array_index(assertions, i);
-		if (assertion != NULL && assertion->Subject->EncryptedID != NULL) {
-			assertion->Subject->NameID = LASSO_SAML2_NAME_ID(
-					assertion->Subject->EncryptedID->original_data);
-			assertion->Subject->EncryptedID = NULL;
-		}
-	}
-	
 	return 0;
 }
