@@ -1134,7 +1134,7 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	for (t = previous_assertions; t; t = g_list_next(t)) {
 		LassoSaml2Assertion *ta;
 
-		if (! LASSO_IS_SAML2_ASSERTION(t->data)) {
+		if (LASSO_IS_SAML2_ASSERTION(t->data) == FALSE) {
 			continue;
 		}
 
