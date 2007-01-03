@@ -307,6 +307,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 	LassoSamlNameIdentifier *nameIdentifier;
 	LassoNode *assertion_n, *name_identifier_n;
 	LassoSamlAssertion *assertion;
+	LassoSamlSubjectStatementAbstract *subject_statement;
 	LassoFederation   *federation = NULL;
 	gboolean           is_http_redirect_get_method = FALSE;
 	LassoSession *session;
@@ -360,12 +361,21 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
 			session_index = g_strdup(as->SessionIndex);
 	}
 
-
 	/* if format is one time, then get name identifier from assertion,
 	   else get name identifier from federation */
-	nameIdentifier = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
-			assertion->AuthenticationStatement)->Subject->NameIdentifier;
-	if (strcmp(nameIdentifier->Format, LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0) {
+	subject_statement = NULL;
+	nameIdentifier = NULL;
+	if (LASSO_IS_SAML_SUBJECT_STATEMENT_ABSTRACT(assertion->AuthenticationStatement)) {
+		subject_statement = LASSO_SAML_SUBJECT_STATEMENT_ABSTRACT(
+				assertion->AuthenticationStatement);
+		if (subject_statement && subject_statement->Subject) {
+			nameIdentifier = subject_statement->Subject->NameIdentifier;
+		}
+	}
+
+
+	if (nameIdentifier && strcmp(nameIdentifier->Format,
+				LASSO_LIB_NAME_IDENTIFIER_FORMAT_ONE_TIME) != 0) {
 		if (LASSO_IS_IDENTITY(profile->identity) == FALSE) {
 			return critical_error(LASSO_PROFILE_ERROR_IDENTITY_NOT_FOUND);
 		}

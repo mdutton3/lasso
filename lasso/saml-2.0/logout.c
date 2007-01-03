@@ -70,6 +70,10 @@ lasso_saml20_logout_init_request(LassoLogout *logout, LassoProvider *remote_prov
 		return LASSO_PROFILE_ERROR_MISSING_SUBJECT;
 	}
 
+	if (assertion->Subject->NameID == NULL) {
+		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
+	}
+
 	name_id = assertion->Subject->NameID;
 	if (name_id->Format && strcmp(name_id->Format,
 				LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {

@@ -444,6 +444,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	LassoFederation *federation;
 	LassoSamlNameIdentifier *nameIdentifier = NULL;
 	LassoHttpMethod response_method;
+	LassoLibStatusResponse *response;
 	LassoMessageFormat format;
 	int rc;
 	char *statusCodeValue;
@@ -474,7 +475,13 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 	/* verify signature */
 	rc = lasso_provider_verify_signature(remote_provider, response_msg, "ResponseID", format);
 
-	statusCodeValue = LASSO_LIB_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value;
+	response = LASSO_LIB_STATUS_RESPONSE(profile->response);
+	if (response->Status == NULL || response->Status->StatusCode == NULL
+			|| response->Status->StatusCode->Value == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
+	}
+	statusCodeValue = response->Status->StatusCode->Value;
+
 	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		message(G_LOG_LEVEL_CRITICAL, "Status code not success: %s", statusCodeValue);
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;

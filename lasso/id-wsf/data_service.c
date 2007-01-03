@@ -221,16 +221,16 @@ lasso_data_service_init_query(LassoDataService *service, const char *select,
 
 	/* Added needed credential for remote service */
 	if (description->CredentialRef) {
-			char *credentialRef = description->CredentialRef->data;
-			iter = service->private_data->credentials;
-			while (iter) {
-				LassoSamlAssertion *credential = LASSO_SAML_ASSERTION(
-					iter->data);
-				if (strcmp(credentialRef, credential->AssertionID) == 0)
-				  //lasso_wsf_profile_add_saml_authentication(
-				  //	LASSO_WSF_PROFILE(service), credential);
+		char *credentialRef = description->CredentialRef->data;
+		iter = service->private_data->credentials;
+		while (iter) {
+			LassoSamlAssertion *credential = LASSO_SAML_ASSERTION(iter->data);
+			if (strcmp(credentialRef, credential->AssertionID) == 0) {
+				//lasso_wsf_profile_add_saml_authentication(
+				//	LASSO_WSF_PROFILE(service), credential);
 				iter = iter->next;
 			}
+		}
 	}
 
 	return 0;
@@ -252,6 +252,11 @@ lasso_data_service_get_redirect_request_url(LassoDataService *service)
 	LassoIsRedirectRequest *redirect_request = NULL;
 	GList *iter;
 
+	if (LASSO_WSF_PROFILE(service)->soap_envelope_response == NULL ||
+			LASSO_WSF_PROFILE(service)->soap_envelope_response->Body == NULL) {
+		return NULL;
+	}
+
 	iter = LASSO_WSF_PROFILE(service)->soap_envelope_response->Body->any;
 	while (iter) {
 		if (LASSO_IS_SOAP_FAULT(iter->data) == TRUE) {
@@ -260,7 +265,7 @@ lasso_data_service_get_redirect_request_url(LassoDataService *service)
 		}
 		iter = iter->next;
 	}
-	if (!fault)
+	if (fault == NULL || fault->Detail == NULL)
 		return NULL;
 
 	iter = fault->Detail->any;
@@ -269,9 +274,9 @@ lasso_data_service_get_redirect_request_url(LassoDataService *service)
 			redirect_request = LASSO_IS_REDIRECT_REQUEST(iter->data);
 			break;
 		}
-		iter = iter->next;
+		iter = g_list_next(iter);
 	}
-	if (!redirect_request)
+	if (redirect_request == NULL)
 		return NULL;
 
 	return g_strdup(redirect_request->redirectURL);
@@ -392,9 +397,14 @@ lasso_data_service_build_modify_response_msg(LassoDataService *service) {
 			xmlNode *node = xpathObj->nodesetval->nodeTab[0];
 			xmlReplaceNode(node, newNode);
 		}
+		xmlXPathFreeObject(xpathObj);
+		xpathObj = NULL;
 
 		iter = g_list_next(iter);
 	}
+
+	xmlXPathFreeContext(xpathCtx);
+	xmlFreeDoc(doc);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);
 }
@@ -459,10 +469,13 @@ lasso_data_service_build_response_msg(LassoDataService *service)
 			}
 			response->Data = g_list_append(response->Data, data);
 		}
+		xmlXPathFreeObject(xpathObj);
+		xpathObj = NULL;
 		iter = g_list_next(iter);
 	}
 
 	xmlUnlinkNode(service->resource_data);
+	xmlXPathFreeContext(xpathCtx);
 	xmlFreeDoc(doc);
 
 	return lasso_wsf_profile_build_soap_response_msg(profile);

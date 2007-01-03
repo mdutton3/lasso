@@ -737,6 +737,7 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 	char *artifact;
 	char *url;
 	LassoSaml2Assertion *assertion;
+	LassoSamlp2StatusResponse *response;
 
 	profile = LASSO_PROFILE(login);
 
@@ -774,6 +775,12 @@ lasso_saml20_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_me
 		/* XXX: ARTIFACT POST */
 	}
 	g_free(url);
+
+	response = LASSO_SAMLP2_STATUS_RESPONSE(profile->response);
+	if (response->Status == NULL || response->Status->StatusCode == NULL
+			|| response->Status->StatusCode->Value == NULL) {
+		return critical_error(LASSO_PROFILE_ERROR_MISSING_STATUS_CODE);
+	}
 
 	if (strcmp(LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->Status->StatusCode->Value,
 				"samlp:Success") != 0) {
@@ -906,6 +913,7 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 	doc = xmlParseMemory(msg, strlen(msg));
 	xpathCtx = xmlXPathNewContext(doc);
 
+	/* XXX:BEFORE-LASSO-2.0 */
 	/* check PAOS response */
 	/*xmlnode = NULL;
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
@@ -926,6 +934,9 @@ lasso_saml20_login_process_paos_response_msg(LassoLogin *login, gchar *msg)
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
 		LASSO_PROFILE(login)->msg_relayState = (char*)xmlNodeGetContent(xmlnode);
 	}
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
+	xmlFreeDoc(doc);
 
 	profile->response = response;
 	profile->remote_providerID = g_strdup(
@@ -1098,14 +1109,13 @@ lasso_saml20_login_process_response_status_and_assertion(LassoLogin *login)
 		}
 
 		if (encrypted_element != NULL && encryption_private_key != NULL) {
-			LASSO_PROFILE(login)->nameIdentifier = LASSO_NODE(
+			profile->nameIdentifier = LASSO_NODE(
 				lasso_node_decrypt(encrypted_element, encryption_private_key));
-			assertion->Subject->NameID =
-				LASSO_SAML2_NAME_ID(LASSO_PROFILE(login)->nameIdentifier);
+			assertion->Subject->NameID = LASSO_SAML2_NAME_ID(profile->nameIdentifier);
 			assertion->Subject->EncryptedID = NULL;
 		}
 
-		if (LASSO_PROFILE(login)->nameIdentifier == NULL)
+		if (profile->nameIdentifier == NULL)
 			return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
 	}
 
@@ -1150,11 +1160,11 @@ lasso_saml20_login_accept_sso(LassoLogin *login)
 	lasso_session_add_assertion(profile->session, profile->remote_providerID,
 			g_object_ref(assertion));
 
-	ni = assertion->Subject->NameID;
-
-	if (ni == NULL)
+	if (assertion->Subject && assertion->Subject->NameID) {
+		ni = assertion->Subject->NameID;
+	} else {
 		return LASSO_PROFILE_ERROR_MISSING_NAME_IDENTIFIER;
-
+	}
 
 	/* create federation, only if nameidentifier format is Federated */
 	if (strcmp(ni->Format, LASSO_SAML2_NAME_IDENTIFIER_FORMAT_PERSISTENT) == 0) {
@@ -1198,8 +1208,8 @@ lasso_saml20_login_build_authn_response_msg(LassoLogin *login)
 	LASSO_SAMLP2_STATUS_RESPONSE(profile->response)->certificate_file = 
 		g_strdup(profile->server->certificate);
 
-	remote_provider = g_hash_table_lookup(LASSO_PROFILE(login)->server->providers,
-			LASSO_PROFILE(login)->remote_providerID);
+	remote_provider = g_hash_table_lookup(profile->server->providers,
+			profile->remote_providerID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
 

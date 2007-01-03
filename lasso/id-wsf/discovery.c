@@ -165,18 +165,23 @@ lasso_discovery_build_credential(LassoDiscovery *discovery, const gchar *provide
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 			rsa_key_value->Modulus = (gchar *) xmlNodeGetContent(xmlnode);
 		}
+		xmlXPathFreeObject(xpathObj);
 
 		xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Exponent", xpathCtx);
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 			rsa_key_value->Exponent = (gchar *) xmlNodeGetContent(xmlnode);
 		}
+		xmlXPathFreeObject(xpathObj);
 
 		key_value = lasso_ds_key_value_new();
 		key_value->RSAKeyValue = rsa_key_value;
 		key_info = lasso_ds_key_info_new();
 		key_info->KeyValue = key_value;
 		subject_confirmation->KeyInfo = key_info;
+
+		xmlXPathFreeContext(xpathCtx);
+		xmlFreeDoc(doc);
 	}
 
 	subject->SubjectConfirmation = subject_confirmation;

@@ -1425,7 +1425,7 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 		xmlDoc *doc;
 		xmlNode *root;
 		xmlXPathContext *xpathCtx = NULL;
-		xmlXPathObject *xpathObj;
+		xmlXPathObject *xpathObj = NULL;
 
 		doc = xmlParseMemory(msg, strlen(msg));
 		if (doc == NULL)
@@ -1438,13 +1438,16 @@ lasso_node_init_from_message(LassoNode *node, const char *message)
 			if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
 				root = xpathObj->nodesetval->nodeTab[0];
 			}
-			xmlXPathFreeObject(xpathObj);
-			xmlXPathFreeContext(xpathCtx);
 		}
 		lasso_node_init_from_xml(node, root);
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
 		xmlFreeDoc(doc);
-		if (xpathCtx)
+		if (xpathCtx) {
+			/* this tests a pointer which has been freed, it works
+			 * but is not really elegant */
 			return LASSO_MESSAGE_FORMAT_SOAP;
+		}
 		if (b64) {
 			g_free(msg);
 			return LASSO_MESSAGE_FORMAT_BASE64;

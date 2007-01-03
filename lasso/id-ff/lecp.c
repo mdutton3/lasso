@@ -301,16 +301,24 @@ lasso_lecp_process_authn_request_envelope_msg(LassoLecp *lecp, const char *reque
 	/* TODO: will need to use another href for id-ff 1.1 support */
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//lib:AuthnRequest", xpathCtx);
 
-	if (xpathObj == NULL)
+	if (xpathObj == NULL) {
+		xmlXPathFreeContext(xpathCtx);
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
+	}
 
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+		xmlXPathFreeContext(xpathCtx);
 		xmlXPathFreeObject(xpathObj);
 		return critical_error(LASSO_PROFILE_ERROR_INVALID_MSG);
 	}
 
 	authn_request = xmlCopyNode(xpathObj->nodesetval->nodeTab[0], 1);
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
 	xmlFreeDoc(doc);
+	xpathCtx = NULL;
+	xpathObj = NULL;
+	doc = NULL;
 
 	soap_envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
 	xmlSetNs(soap_envelope, xmlNewNs(soap_envelope,

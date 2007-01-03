@@ -378,13 +378,20 @@ lasso_name_identifier_mapping_process_response_msg(LassoNameIdentifierMapping *m
 	}
 
 	statusCodeValue = response->Status->StatusCode->Value;
-	if (strcmp(statusCodeValue, LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
+	if (statusCodeValue == NULL || strcmp(statusCodeValue,
+				LASSO_SAML_STATUS_CODE_SUCCESS) != 0) {
 		return LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS;
 	}
 
+	
 	/* Set the target name identifier */
-	mapping->targetNameIdentifier = g_strdup(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
-			profile->request)->NameIdentifier->content);
+	if (LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(profile->request)->NameIdentifier) {
+		mapping->targetNameIdentifier = g_strdup(LASSO_LIB_NAME_IDENTIFIER_MAPPING_REQUEST(
+					profile->request)->NameIdentifier->content);
+	} else {
+		mapping->targetNameIdentifier = NULL;
+		return LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER;
+	}
 
 	return rc;
 }

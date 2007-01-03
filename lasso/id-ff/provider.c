@@ -667,6 +667,7 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 	}
 	node = xpathObj->nodesetval->nodeTab[0];
 	provider->ProviderID = (char*)xmlGetProp(node, (xmlChar*)"providerID");
+	xmlXPathFreeObject(xpathObj);
 
 	xpathObj = xmlXPathEvalExpression((xmlChar*)xpath_idp, xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr == 1) {
@@ -915,6 +916,9 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	xmlSecKeysMngr *keys_mngr = NULL;
 	xmlSecDSigCtx *dsigCtx;
 	int rc;
+	xmlXPathContext *xpathCtx = NULL;
+	xmlXPathObject *xpathObj = NULL;
+
 
 	msg = (char*)message;
 
@@ -947,19 +951,16 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 	}
 
 	if (format == LASSO_MESSAGE_FORMAT_SOAP) {
-		xmlXPathContext *xpathCtx = NULL;
-		xmlXPathObject *xpathObj;
-
 		xpathCtx = xmlXPathNewContext(doc);
 		xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 		xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body/*", xpathCtx);
 		if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr ) {
 			xmlnode = xpathObj->nodesetval->nodeTab[0];
 		}
-		xmlXPathFreeObject(xpathObj);
-		xmlXPathFreeContext(xpathCtx);
 		if (xmlnode == NULL) {
 			xmlFreeDoc(doc);
+			xmlXPathFreeContext(xpathCtx);
+			xmlXPathFreeObject(xpathObj);
 			return LASSO_PROFILE_ERROR_INVALID_MSG;
 		}
 	} else {
@@ -991,6 +992,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	if (sign == NULL) {
 		xmlFreeDoc(doc);
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
 	}
 
@@ -1009,6 +1012,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 				provider->ca_cert_chain);
 		if (keys_mngr == NULL) {
 			xmlFreeDoc(doc);
+			xmlXPathFreeContext(xpathCtx);
+			xmlXPathFreeObject(xpathObj);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
 	}
@@ -1019,6 +1024,8 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		if (dsigCtx->signKey == NULL) {
 			/* XXX: should this be detected on lasso_provider_new ? */
 			xmlSecDSigCtxDestroy(dsigCtx);
+			xmlXPathFreeContext(xpathCtx);
+			xmlXPathFreeObject(xpathObj);
 			xmlFreeDoc(doc);
 			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
 		}
@@ -1029,16 +1036,23 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		if (keys_mngr)
 			xmlSecKeysMngrDestroy(keys_mngr);
 		xmlFreeDoc(doc);
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
 	if (keys_mngr)
 		xmlSecKeysMngrDestroy(keys_mngr);
+
 	if (dsigCtx->status != xmlSecDSigStatusSucceeded) {
 		xmlSecDSigCtxDestroy(dsigCtx);
 		xmlFreeDoc(doc);
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
 
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
 	xmlFreeDoc(doc);
 	return 0;
 }

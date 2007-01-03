@@ -147,7 +147,7 @@ lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 	GList *iter;
 	gchar *security_mech_id;
 
-	if (!profile->private_data->description)
+	if (profile->private_data->description == NULL)
 		return FALSE;
 
 	iter = profile->private_data->description->SecurityMechID;
@@ -158,7 +158,7 @@ lasso_wsf_profile_has_saml_authentication(LassoWsfProfile *profile)
 				strcmp(security_mech_id, LASSO_SECURITY_MECH_SAML) == 0) {
 			return TRUE;
 		}
-		iter = iter->next;
+		iter = g_list_next(iter);
 	}
 
 	return FALSE;
@@ -170,7 +170,7 @@ lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 	GList *iter;
 	gchar *security_mech_id;
 
-	if (!profile->private_data->description)
+	if (profile->private_data->description == NULL)
 		return FALSE;
 
 	iter = profile->private_data->description->SecurityMechID;
@@ -181,7 +181,7 @@ lasso_wsf_profile_has_x509_authentication(LassoWsfProfile *profile)
 				strcmp(security_mech_id, LASSO_SECURITY_MECH_X509) == 0) {
 			return TRUE;
 		}
-		iter = iter->next;
+		iter = g_list_next(iter);
 	}
 
 	return FALSE;
@@ -494,16 +494,24 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 
 	/* FIXME: Need to consider more every credentials. */
 	if (xpathObj->nodesetval == NULL || xpathObj->nodesetval->nodeNr == 0) {
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return LASSO_PROFILE_ERROR_MISSING_ASSERTION;
 	}
 	
 
 	credential = xpathObj->nodesetval->nodeTab[0];
+
 	res = lasso_wsf_profile_verify_credential_signature(profile, doc, credential);
-	if (res < 0)
+	if (res < 0) {
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return res;
+	}
 	
 	public_key = lasso_wsf_profile_get_public_key_from_credential(profile, credential);
+	xmlXPathFreeContext(xpathCtx);
+	xmlXPathFreeObject(xpathObj);
 	
 	if (public_key == NULL) {
 		return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
@@ -666,6 +674,8 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		correlation = xpathObj->nodesetval->nodeTab[0];
 	}
 	if (correlation == NULL) {
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
 		return LASSO_WSF_PROFILE_ERROR_MISSING_CORRELATION;
 	}
 
@@ -674,19 +684,28 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	xmlAddID(NULL, doc, id, id_attr);
 	xmlFree(id);
 
+	xmlXPathFreeObject(xpathObj);
+	xpathObj = NULL;
+
 	/* Body */
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body", xpathCtx);
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		body = xpathObj->nodesetval->nodeTab[0];
 	}
-	if (body == NULL)
+	if (body == NULL) {
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
 		return LASSO_SOAP_ERROR_MISSING_BODY;
+	}
 
 	id_attr = xmlHasProp(body, (xmlChar *)"id");
 	id = xmlGetProp(body, (xmlChar *) "id");
 	xmlAddID(NULL, doc, id, id_attr);
 	xmlFree(id);
+
+	xmlXPathFreeObject(xpathObj);
+	xpathObj = NULL;
 
 	/* Provider */
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"sb", (xmlChar*)LASSO_SOAP_BINDING_HREF);
@@ -706,19 +725,21 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		xmlFree(providerID);
 	}
 
-	/* Verify signature */
-	//node = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeSignature, xmlSecDSigNs);
+	xmlXPathFreeObject(xpathObj);
+	xpathObj = NULL;
 
-	//xpathObj =xmlXPathEvalExpression((xmlChar*)"/s:Envelope/s:Header/s:Security/ds:Signature",
-	//				  xpathCtx);
+	/* Verify signature */
 	node = NULL;
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ds", (xmlChar*)LASSO_DS_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ds:Signature", xpathCtx);
 	if (xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
 		node = xpathObj->nodesetval->nodeTab[0];
 	}
-	if (node == NULL)
+	if (node == NULL) {
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 		return LASSO_DS_ERROR_SIGNATURE_NOT_FOUND;
+	}
 
 	/* Case of X509 signature type */
 	x509data = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeX509Data, xmlSecDSigNs);
@@ -726,9 +747,13 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		keys_mngr = lasso_load_certs_from_pem_certs_chain_file(
 				lasso_provider->ca_cert_chain);
 		if (keys_mngr == NULL) {
+			xmlXPathFreeObject(xpathObj);
+			xmlXPathFreeContext(xpathCtx);
 			return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 		}
 	} else if (x509data != NULL) {
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
 		return LASSO_DS_ERROR_CA_CERT_CHAIN_LOAD_FAILED;
 	}
 
@@ -743,6 +768,8 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		}
 		if (dsigCtx->signKey == NULL) {
 			xmlSecDSigCtxDestroy(dsigCtx);
+			xmlXPathFreeObject(xpathObj);
+			xmlXPathFreeContext(xpathCtx);
 			return LASSO_DS_ERROR_PUBLIC_KEY_LOAD_FAILED;
 		}
 	}
@@ -751,8 +778,13 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 		xmlSecDSigCtxDestroy(dsigCtx);
 		if (keys_mngr)
 			xmlSecKeysMngrDestroy(keys_mngr);
+		xmlXPathFreeObject(xpathObj);
+		xmlXPathFreeContext(xpathCtx);
 		return LASSO_DS_ERROR_SIGNATURE_VERIFICATION_FAILED;
 	}
+
+	xmlXPathFreeObject(xpathObj);
+	xmlXPathFreeContext(xpathCtx);
 
 	if (keys_mngr)
 		xmlSecKeysMngrDestroy(keys_mngr);
@@ -1315,8 +1347,10 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 		int res;
 
 		res = lasso_wsf_profile_verify_x509_authentication(profile, doc, NULL);
-		if (res != 0)
+		if (res != 0) {
+			xmlFreeDoc(doc);
 			return res;
+		}
 
 		/* FIXME: Remove Signature element if exists, it seg fault when a call to
 		   lasso_node_new_from_xmlNode() */
@@ -1327,8 +1361,11 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 			xmlFreeNode(xmlnode);
 		}
 	}
-	if (res != 0)
+
+	if (res != 0) {
+		xmlFreeDoc(doc);
 		return res;
+	}
 
 	/* If credentials are found, save and remove them from message */
 	{
@@ -1344,9 +1381,12 @@ lasso_wsf_profile_process_soap_response_msg(LassoWsfProfile *profile, const gcha
 				lasso_wsf_profile_add_credential(profile, credential);
 			}
 		}
+		xmlXPathFreeContext(xpathCtx);
+		xmlXPathFreeObject(xpathObj);
 	}
 	
 	envelope = LASSO_SOAP_ENVELOPE(lasso_node_new_from_xmlNode(xmlDocGetRootElement(doc)));
+	xmlFreeDoc(doc);
 
 	profile->soap_envelope_response = envelope;
 

@@ -139,6 +139,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
 		ecp->private_data->relay_state = xmlNodeGetContent(xmlnode);
 	}
+	xmlXPathFreeObject(xpathObj);
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"paos", (xmlChar*)LASSO_PAOS_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//paos:Request", xpathCtx);
@@ -146,6 +147,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 		ecp->private_data->messageID = xmlGetProp(
 			xpathObj->nodesetval->nodeTab[0], (xmlChar*)"messageID");
 	}
+	xmlXPathFreeObject(xpathObj);
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Header", xpathCtx);
@@ -153,6 +155,10 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 		xmlnode = xpathObj->nodesetval->nodeTab[0];
 		xmlUnlinkNode(xmlnode);
 	}
+	xmlXPathFreeObject(xpathObj);
+	xmlXPathFreeContext(xpathCtx);
+	xpathCtx = NULL;
+	xpathObj = NULL;
 
 	xmlnode = xmlDocGetRootElement(doc);
 	handler = xmlFindCharEncodingHandler("utf-8");
@@ -162,6 +168,7 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 	LASSO_PROFILE(ecp)->msg_body = g_strdup(
 			(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
+	xmlFreeDoc(doc);
 
 	profile->remote_providerID = lasso_server_get_first_providerID(profile->server);
 	if (profile->remote_providerID == NULL) {
@@ -170,8 +177,9 @@ lasso_ecp_process_authn_request_msg(LassoEcp *ecp, const char *authn_request_msg
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 				profile->remote_providerID);
-	if (LASSO_IS_PROVIDER(remote_provider) == FALSE)
+	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {
 		return critical_error(LASSO_SERVER_ERROR_PROVIDER_NOT_FOUND);
+	}
 
 	profile->msg_url = lasso_provider_get_metadata_one(remote_provider,
 				"SingleSignOnService SOAP");
@@ -202,8 +210,9 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"s", (xmlChar*)LASSO_SOAP_ENV_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//s:Body", xpathCtx);
 	if (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeNr) {
-		body = xpathObj->nodesetval->nodeTab[0];
+		body = xmlCopyNode(xpathObj->nodesetval->nodeTab[0], 1);
 	}
+	xmlXPathFreeObject(xpathObj);
 
 	xmlXPathRegisterNs(xpathCtx, (xmlChar*)"ecp", (xmlChar*)LASSO_ECP_HREF);
 	xpathObj = xmlXPathEvalExpression((xmlChar*)"//ecp:Response", xpathCtx);
@@ -211,9 +220,10 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 		ecp->assertionConsumerURL = (char*)xmlGetProp(
 			xpathObj->nodesetval->nodeTab[0], (xmlChar*)"AssertionConsumerURL");
 	}
-
-	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
+	xmlXPathFreeContext(xpathCtx);
+	xpathCtx = NULL;
+	xpathObj = NULL;
 
 	new_envelope = xmlNewNode(NULL, (xmlChar*)"Envelope");
 	xmlSetNs(new_envelope, xmlNewNs(new_envelope,
@@ -251,7 +261,7 @@ lasso_ecp_process_response_msg(LassoEcp *ecp, const char *response_msg)
 		xmlAddChild(header, ecp_relay_state);
 	}
 
-	xmlAddChild(new_envelope, xmlCopyNode(body, 1));
+	xmlAddChild(new_envelope, body);
 
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
