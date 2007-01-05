@@ -1139,15 +1139,19 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 		/* FIXME: do we need to sign if SAML authentication or X509 authentication ? */
 		ret = lasso_wsf_profile_add_soap_signature(profile, doc, envelope_node,
 							   LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (ret != 0)
+		if (ret != 0) {
+			xmlFreeDoc(doc);
 			return ret;
+		}
 	}
 
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		ret = lasso_wsf_profile_add_soap_signature(profile, doc, envelope_node,
 							   LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (ret != 0)
+		if (ret != 0) {
+			xmlFreeDoc(doc);
 			return ret;
+		}
 	}
 
 	/* Dump soap request */
@@ -1158,6 +1162,7 @@ lasso_wsf_profile_build_soap_request_msg(LassoWsfProfile *profile)
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
+	xmlFreeDoc(doc);
 
 	return 0;
 }
@@ -1227,8 +1232,10 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
 		int res = lasso_wsf_profile_add_soap_signature(profile, doc, soap_envelope,
 							       LASSO_SIGNATURE_METHOD_RSA_SHA1);
-		if (res != 0)
+		if (res != 0) {
+			xmlFreeDoc(doc);
 			return res;
+		}
 	}
 
 	/* Dump soap response */
@@ -1239,7 +1246,7 @@ lasso_wsf_profile_build_soap_response_msg(LassoWsfProfile *profile)
 	profile->msg_body = g_strdup(
 		(char*)(buf->conv ? buf->conv->content : buf->buffer->content));
 	xmlOutputBufferClose(buf);
-	xmlFreeNode(soap_envelope);
+	xmlFreeDoc(doc);
 
 	return 0;
 }

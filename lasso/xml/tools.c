@@ -727,7 +727,7 @@ gchar*
 lasso_node_build_deflated_query(LassoNode *node)
 {
 	/* actually deflated and b64'ed and url-escaped */
-	xmlNode *message;
+	xmlNode *xmlnode;
 	xmlOutputBufferPtr buf;
 	xmlCharEncodingHandlerPtr handler = NULL;
 	xmlChar *buffer;
@@ -737,13 +737,16 @@ lasso_node_build_deflated_query(LassoNode *node)
 	int rc;
 	z_stream stream;
 
-	message = lasso_node_get_xmlNode(node, FALSE);
+	xmlnode = lasso_node_get_xmlNode(node, FALSE);
 	
 	handler = xmlFindCharEncodingHandler("utf-8");
 	buf = xmlAllocOutputBuffer(handler);
-	xmlNodeDumpOutput(buf, NULL, message, 0, 0, "utf-8");
+	xmlNodeDumpOutput(buf, NULL, xmlnode, 0, 0, "utf-8");
 	xmlOutputBufferFlush(buf);
 	buffer = buf->conv ? buf->conv->content : buf->buffer->content;
+
+	xmlFreeNode(xmlnode);
+	xmlnode = NULL;
 
 	in_len = strlen((char*)buffer);
 	ret = g_malloc(in_len * 2);

@@ -185,6 +185,8 @@ lasso_node_export_to_base64(LassoNode *node)
 	ret = (char*)xmlSecBase64Encode(buffer, strlen((char*)buffer), 0);
 	xmlOutputBufferClose(buf);
 
+	xmlFreeNode(message);
+
 	return ret;
 }
 
