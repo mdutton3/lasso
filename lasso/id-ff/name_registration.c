@@ -65,6 +65,7 @@ lasso_name_registration_build_request_msg(LassoNameRegistration *name_registrati
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
@@ -152,6 +153,7 @@ lasso_name_registration_build_response_msg(LassoNameRegistration *name_registrat
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_registration);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */

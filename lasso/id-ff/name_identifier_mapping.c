@@ -61,6 +61,7 @@ lasso_name_identifier_mapping_build_request_msg(LassoNameIdentifierMapping *mapp
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
@@ -131,6 +132,7 @@ lasso_name_identifier_mapping_build_response_msg(LassoNameIdentifierMapping *map
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(mapping);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */

@@ -68,6 +68,7 @@ lasso_defederation_build_notification_msg(LassoDefederation *defederation)
 			LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(defederation);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_defederation_init_notification was not called before */

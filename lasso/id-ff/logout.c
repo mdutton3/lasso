@@ -75,6 +75,7 @@ lasso_logout_build_request_msg(LassoLogout *logout)
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(logout);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
@@ -167,6 +168,7 @@ lasso_logout_build_response_msg(LassoLogout *logout)
 	g_return_val_if_fail(LASSO_IS_LOGOUT(logout), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(logout);
+	lasso_profile_clean_msg_info(profile);
 
 	IF_SAML2(profile) {
 		return lasso_saml20_logout_build_response_msg(logout);

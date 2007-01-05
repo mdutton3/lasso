@@ -151,6 +151,8 @@ lasso_lecp_build_authn_response_msg(LassoLecp *lecp)
 	g_return_val_if_fail(LASSO_IS_LECP(lecp), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(lecp);
+	lasso_profile_clean_msg_info(profile);
+
 	profile->msg_url = g_strdup(lecp->assertionConsumerServiceURL);
 	if (profile->msg_url == NULL) {
 		return critical_error(LASSO_PROFILE_ERROR_UNKNOWN_PROFILE_URL);

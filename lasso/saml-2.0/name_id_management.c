@@ -141,6 +141,7 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 
 	profile = LASSO_PROFILE(name_id_management);
+	lasso_profile_clean_msg_info(profile);
 
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			profile->remote_providerID);
@@ -382,6 +383,7 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	g_return_val_if_fail(LASSO_IS_NAME_ID_MANAGEMENT(name_id_management),
 			LASSO_PARAM_ERROR_INVALID_VALUE);
 	profile = LASSO_PROFILE(name_id_management);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->response == NULL) {
 		/* no response set here means request denied */

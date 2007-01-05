@@ -681,6 +681,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
@@ -821,6 +822,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
+	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
 		/* this means lasso_logout_init_request was not called before */
@@ -938,6 +940,7 @@ lasso_login_build_authn_response_msg(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
+	lasso_profile_clean_msg_info(profile);
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_authn_response_msg(login);
@@ -1011,6 +1014,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 
 	profile = LASSO_PROFILE(login);
+	lasso_profile_clean_msg_info(profile);
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_request_msg(login);
@@ -1058,6 +1062,7 @@ lasso_login_build_response_msg(LassoLogin *login, gchar *remote_providerID)
 
 	g_return_val_if_fail(LASSO_IS_LOGIN(login), LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ);
 	profile = LASSO_PROFILE(login);
+	lasso_profile_clean_msg_info(profile);
 
 	IF_SAML2(profile) {
 		return lasso_saml20_login_build_response_msg(login, remote_providerID);

@@ -312,6 +312,19 @@ lasso_profile_set_response_status(LassoProfile *profile, const char *statusCodeV
 	g_assert_not_reached();
 } 
 
+void
+lasso_profile_clean_msg_info(LassoProfile *profile)
+{
+	if (profile->msg_url) {
+		g_free(profile->msg_url);
+		profile->msg_url = NULL;
+	}
+	if (profile->msg_body) {
+		g_free(profile->msg_body);
+		profile->msg_body = NULL;
+	}
+}
+
 
 /**
  * lasso_profile_set_identity_from_dump:
