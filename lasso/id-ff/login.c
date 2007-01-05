@@ -779,7 +779,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 			profile->msg_relayState = g_strdup(relayState);
 		}
 	}
-	xmlFree(url);
+	g_free(url);
 	xmlFree(b64_samlArt);
 	xmlFree(relayState);
 

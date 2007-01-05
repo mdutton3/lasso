@@ -1331,6 +1331,7 @@ lasso_node_new_from_xmlNode(xmlNode *xmlnode)
 		if (strncmp((char*)xsitype, "lib:", 4) == 0)
 			prefix = "Lib";
 		xmlFree(xsitype);
+		xsitype = NULL;
 	}
 
 	if (prefix == NULL)

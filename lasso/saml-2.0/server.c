@@ -78,6 +78,7 @@ lasso_saml20_server_load_affiliation(LassoServer *server, xmlDoc *doc, xmlNode *
 	}
 
 	xmlFree(affiliation_id);
+	xmlFree(owner_id);
 
 	return 0;
 }

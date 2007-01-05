@@ -286,7 +286,7 @@ lasso_wsf_profile_verify_credential_signature(
 
 	/* Remove uneeded signature node */
 	xmlUnlinkNode(node);
-	xmlFree(node);
+	xmlFreeNode(node);
 
 	return 0;
 }
@@ -599,7 +599,7 @@ lasso_wsf_profile_add_soap_signature(LassoWsfProfile *profile,
 	uri = g_strdup_printf("#%s", id);
 	reference = xmlSecTmplSignatureAddReference(signature, xmlSecTransformSha1Id,
 						    NULL, (xmlChar *)uri, NULL);
-	xmlFree(uri);
+	g_free(uri);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformEnvelopedId);
 	xmlSecTmplReferenceAddTransform(reference, xmlSecTransformExclC14NId);
 	id_attr = xmlHasProp(body, (xmlChar *)"id");
