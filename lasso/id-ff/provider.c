@@ -348,7 +348,7 @@ static LassoNodeClass *parent_class = NULL;
 xmlSecKey*
 lasso_provider_get_public_key(LassoProvider *provider)
 {
-	return xmlSecKeyDuplicate(provider->private_data->public_key);
+	return provider->private_data->public_key;
 }
 
 static void
@@ -366,9 +366,12 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 			continue;
 		}
 		if (strcmp((char*)t->name, "KeyDescriptor") == 0) {
-			char *use = (char*)xmlGetProp(t, (xmlChar*)"use");
-			if (use && strcmp(use, "signing") == 0) {
+			xmlChar *use = xmlGetProp(t, (xmlChar*)"use");
+			if (use && strcmp((char*)use, "signing") == 0) {
 				provider->private_data->signing_key_descriptor = xmlCopyNode(t, 1);
+			}
+			if (use) {
+				xmlFree(use);
 			}
 			t = t->next;
 			continue;
@@ -1021,7 +1024,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 
 	dsigCtx = xmlSecDSigCtxCreate(keys_mngr);
 	if (keys_mngr == NULL) {
-		dsigCtx->signKey = lasso_provider_get_public_key(provider);
+		dsigCtx->signKey = xmlSecKeyDuplicate(lasso_provider_get_public_key(provider));
 		if (dsigCtx->signKey == NULL) {
 			/* XXX: should this be detected on lasso_provider_new ? */
 			xmlSecDSigCtxDestroy(dsigCtx);
@@ -1052,6 +1055,7 @@ int lasso_provider_verify_signature(LassoProvider *provider,
 		return LASSO_DS_ERROR_INVALID_SIGNATURE;
 	}
 
+	xmlSecDSigCtxDestroy(dsigCtx);
 	xmlXPathFreeContext(xpathCtx);
 	xmlXPathFreeObject(xpathObj);
 	xmlFreeDoc(doc);

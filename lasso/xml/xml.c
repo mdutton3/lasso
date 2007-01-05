@@ -931,7 +931,6 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 			if (snippet->type & SNIPPET_INTEGER) {
 				int val = atoi(tmp);
 				(*(int*)value) = val;
-				xmlFree(tmp);
 			} else if (snippet->type & SNIPPET_BOOLEAN) {
 				int val = 0;
 				if (strcmp((char*)tmp, "true") == 0) {
@@ -940,10 +939,10 @@ lasso_node_impl_init_from_xml(LassoNode *node, xmlNode *xmlnode)
 					val = 1;
 				}
 				(*(int*)value) = val;
-				xmlFree(tmp);
 			} else {
-				(*(char**)value) = tmp;
+				(*(char**)value) = g_strdup(tmp);
 			}
+			xmlFree(tmp);
 
 		}
 

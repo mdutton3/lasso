@@ -257,7 +257,8 @@ lasso_wsf_profile_verify_credential_signature(
 	/* Case of simple public key signature type */
 	if (keys_mngr == NULL) {
 		if (lasso_provider != NULL) {
-			dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
+			dsigCtx->signKey = xmlSecKeyDuplicate(
+					lasso_provider_get_public_key(lasso_provider));
 		} else if (profile->private_data->public_key) {
 			/* TODO */
 		}
@@ -374,7 +375,7 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 			break;
 		authentication_statement = authentication_statement->next;
 	}
-	if (!authentication_statement) {
+	if (authentication_statement == NULL) {
 		return NULL;
 	}
 
@@ -386,7 +387,7 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 			break;
 		subject = subject->next;
 	}
-	if (!subject) {
+	if (subject == NULL) {
 		return NULL;
 	}
 
@@ -398,7 +399,7 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 			break;
 		subject_confirmation = subject_confirmation->next;
 	}
-	if (!subject_confirmation) {
+	if (subject_confirmation == NULL) {
 		return NULL;
 	}
 
@@ -471,7 +472,6 @@ lasso_wsf_profile_get_public_key_from_credential(LassoWsfProfile *profile, xmlNo
 	}
 	
 	xmlSecKeyInfoNodeRead(key_info, public_key, ctx);
-	/*xmlSecKeyDebugXmlDump(public_key, stdout);*/
 
 	return public_key;
 }
@@ -518,6 +518,7 @@ lasso_wsf_profile_verify_saml_authentication(LassoWsfProfile *profile, xmlDoc *d
 	}
 
 	res = lasso_wsf_profile_verify_x509_authentication(profile, doc, public_key);
+	xmlSecKeyDestroy(public_key);
 	if (res != 0)
 		return res;
 
@@ -762,9 +763,10 @@ lasso_wsf_profile_verify_x509_authentication(LassoWsfProfile *profile,
 	/* Case of simple public key signature type */
 	if (keys_mngr == NULL) {
 		if (lasso_provider != NULL) {
-			dsigCtx->signKey = lasso_provider_get_public_key(lasso_provider);
+			dsigCtx->signKey = xmlSecKeyDuplicate(
+					lasso_provider_get_public_key(lasso_provider));
 		} else if (public_key) {
-			dsigCtx->signKey = public_key;
+			dsigCtx->signKey = xmlSecKeyDuplicate(public_key);
 		}
 		if (dsigCtx->signKey == NULL) {
 			xmlSecDSigCtxDestroy(dsigCtx);
