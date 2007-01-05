@@ -76,9 +76,11 @@ START_TEST(test01_generateServersContextDumps)
 	identityProviderContextDump = generateIdentityProviderContextDump();
 	fail_unless(identityProviderContextDump != NULL,
 			"generateIdentityProviderContextDump should not return NULL");
+	g_free(identityProviderContextDump);
 	serviceProviderContextDump = generateServiceProviderContextDump();
 	fail_unless(serviceProviderContextDump != NULL,
 			"generateServiceProviderContextDump should not return NULL");
+	g_free(serviceProviderContextDump);
 }
 END_TEST
 
@@ -161,7 +163,7 @@ START_TEST(test02_serviceProviderLogin)
 	responseQuery = strchr(responseUrl, '?')+1;
 	fail_unless(strlen(responseQuery) > 0,
 			"responseQuery shouldn't be an empty string");
-	serviceProviderId = strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
+	serviceProviderId = g_strdup(LASSO_PROFILE(idpLoginContext)->remote_providerID);
 	fail_unless(serviceProviderId != NULL,
 		    "lasso_profile_get_remote_providerID shouldn't return NULL");
 
@@ -210,6 +212,10 @@ START_TEST(test02_serviceProviderLogin)
 	spIdentityContextDump = lasso_identity_dump(LASSO_PROFILE(spLoginContext)->identity);
 	fail_unless(spIdentityContextDump != NULL, "lasso_identity_dump failed");
 	spSessionDump = lasso_session_dump(LASSO_PROFILE(spLoginContext)->session);
+
+	g_free(serviceProviderId);
+	g_free(serviceProviderContextDump);
+	g_free(identityProviderContextDump);
 }
 END_TEST
 
