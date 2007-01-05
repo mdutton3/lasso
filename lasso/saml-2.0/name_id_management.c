@@ -725,6 +725,7 @@ lasso_name_id_management_new_from_dump(LassoServer *server, const char *dump)
 	name_id_management = lasso_name_id_management_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(name_id_management), xmlDocGetRootElement(doc)); 
+	xmlFreeDoc(doc);
 
 	return name_id_management;
 }

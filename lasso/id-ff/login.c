@@ -2029,6 +2029,7 @@ lasso_login_new_from_dump(LassoServer *server, const gchar *dump)
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(login), xmlDocGetRootElement(doc)); 
 	LASSO_PROFILE(login)->server = g_object_ref(server);
+	xmlFreeDoc(doc);
 
 	return login;
 }

@@ -897,6 +897,7 @@ lasso_provider_new_from_dump(const gchar *dump)
 	provider = g_object_new(LASSO_TYPE_PROVIDER, NULL);
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(provider), xmlDocGetRootElement(doc)); 
+	xmlFreeDoc(doc);
 
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_SIGNING);
 	lasso_provider_load_public_key(provider, LASSO_PUBLIC_KEY_ENCRYPTION);

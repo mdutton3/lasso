@@ -1275,7 +1275,6 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	}
 
 	doc = xmlParseMemory(message, strlen(message));
-	/* FIXME: doc will never be freed */
 
 	/* Verify authentication mecanisms */
 	if (lasso_wsf_profile_has_x509_authentication(profile) == TRUE) {
@@ -1288,8 +1287,10 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 	if (res > 0) {
 		fault = lasso_soap_fault_new();
 		fault->faultstring = g_strdup("Invalid signature");
-	} else if (res < 0)
+	} else if (res < 0) {
+		xmlFreeDoc(doc);
 		return res;
+	}
 
 	/* FIXME: Remove Signature element if exists, it seg fault when a call to
 			  lasso_node_new_from_xmlNode() */
@@ -1321,6 +1322,8 @@ lasso_wsf_profile_process_soap_request_msg(LassoWsfProfile *profile, const gchar
 		/* FIXME: Need to store it in private data's profile ? */
 		profile->private_data->fault = fault;
 	}
+
+	xmlFreeDoc(doc);
 
 	return res;
 }

@@ -1132,6 +1132,7 @@ lasso_logout_new_from_dump(LassoServer *server, const char *dump)
 	logout = lasso_logout_new(g_object_ref(server));
 	doc = xmlParseMemory(dump, strlen(dump));
 	init_from_xml(LASSO_NODE(logout), xmlDocGetRootElement(doc)); 
+	xmlFreeDoc(doc);
 
 	return logout;
 }

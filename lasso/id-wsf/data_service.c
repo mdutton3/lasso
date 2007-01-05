@@ -340,6 +340,8 @@ lasso_data_service_process_query_msg(LassoDataService *service, const char *mess
 			node_list; node_list = g_list_next(node_list)) {
 		LassoNode *node = node_list->data;
 		if (LASSO_IS_SOAP_BINDING_PROVIDER(node)) {
+			if (service->provider_id)
+				g_free(service->provider_id);
 			service->provider_id = g_strdup(
 				LASSO_SOAP_BINDING_PROVIDER(node)->providerID);
 		}
