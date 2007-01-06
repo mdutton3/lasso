@@ -62,7 +62,7 @@ lasso_sasl_cb_pass(sasl_conn_t* conn, void* context, int id, sasl_secret_t** pse
 	static sasl_secret_t *s;
 	LassoUserAccount *account;
 	int ret = SASL_FAIL;
-   
+
 	account = (LassoUserAccount *)context;
 	if (account != NULL && account->password != NULL) {
 		s = (sasl_secret_t*) g_malloc0(sizeof(sasl_secret_t) + strlen(account->password));
