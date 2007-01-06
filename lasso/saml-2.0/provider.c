@@ -64,6 +64,7 @@ load_descriptor(xmlNode *xmlnode, GHashTable *descriptor, LassoProvider *provide
 				provider->private_data->encryption_key_descriptor = 
 					xmlCopyNode(t, 1);
 			}
+			xmlFree(use);
 			t = t->next;
 			continue;
 		}
