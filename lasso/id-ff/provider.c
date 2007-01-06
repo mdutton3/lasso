@@ -636,14 +636,19 @@ lasso_provider_load_metadata(LassoProvider *provider, const gchar *metadata)
 		return FALSE;
 	
 	node = xmlDocGetRootElement(doc);
-	if (node == NULL || node->ns == NULL)
+	if (node == NULL || node->ns == NULL) {
+		xmlFreeDoc(doc);
 		return FALSE;
+	}
 
 	provider->metadata_filename = g_strdup(metadata);
 
 	if (strcmp((char*)node->ns->href, LASSO_SAML2_METADATA_HREF) == 0) {
+		gboolean result;
 		provider->private_data->conformance = LASSO_PROTOCOL_SAML_2_0;
-		return lasso_saml20_provider_load_metadata(provider, node);
+		result = lasso_saml20_provider_load_metadata(provider, node);
+		xmlFreeDoc(doc);
+		return result;
 	}
 
 	provider->private_data->conformance = LASSO_PROTOCOL_LIBERTY_1_2;
