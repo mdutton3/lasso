@@ -467,7 +467,7 @@ lasso_name_registration_process_response_msg(LassoNameRegistration *name_registr
 		response_method = LASSO_HTTP_METHOD_SOAP;
 	if (format == LASSO_MESSAGE_FORMAT_QUERY)
 		response_method = LASSO_HTTP_METHOD_REDIRECT;
- 
+
 	remote_provider = g_hash_table_lookup(profile->server->providers,
 			LASSO_LIB_STATUS_RESPONSE(profile->response)->ProviderID);
 	if (LASSO_IS_PROVIDER(remote_provider) == FALSE) {

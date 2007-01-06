@@ -128,7 +128,7 @@ lasso_lib_authn_response_new(char *providerID, LassoLibAuthnRequest *request)
 	LassoLibAuthnResponse *response;
 
 	response = g_object_new(LASSO_TYPE_LIB_AUTHN_RESPONSE, NULL);
- 
+
 	if (providerID) {
 		lasso_samlp_response_abstract_fill(
 				LASSO_SAMLP_RESPONSE_ABSTRACT(response),
