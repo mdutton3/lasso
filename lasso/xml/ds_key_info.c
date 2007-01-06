@@ -44,7 +44,7 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoDsKeyInfo *node)
 {
-  node->KeyValue = NULL;
+	node->KeyValue = NULL;
 }
 
 static void

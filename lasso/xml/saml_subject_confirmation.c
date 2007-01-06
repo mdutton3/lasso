@@ -61,9 +61,9 @@ static struct XmlSnippet schema_snippets[] = {
 static void
 instance_init(LassoSamlSubjectConfirmation *node)
 {
-  node->ConfirmationMethod = NULL;
-  node->SubjectConfirmationData = NULL;
-  node->KeyInfo = NULL;
+	node->ConfirmationMethod = NULL;
+	node->SubjectConfirmationData = NULL;
+	node->KeyInfo = NULL;
 }
 
 static void
