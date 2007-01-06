@@ -110,7 +110,7 @@ lasso_authentication_client_start(LassoAuthentication *authentication)
 		g_free(request->mechanism);
 		request->mechanism = g_strdup(mechusing);
 	}
-       
+
 	if (outlen > 0) {
 		outbase64 = xmlSecBase64Encode((xmlChar*)out, outlen, 0);
 		request->Data = g_list_append(request->Data, outbase64);

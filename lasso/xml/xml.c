@@ -300,7 +300,7 @@ lasso_node_export_to_paos_request(LassoNode *node, const char *issuer,
 			(xmlChar*)LASSO_SAML2_ASSERTION_PREFIX);
 	xmlNewTextChild(ecp_request, saml_ns, (xmlChar*)"Issuer", (const xmlChar*)issuer);
 	xmlAddChild(header, ecp_request);
-    
+
 	/* ECP relay state block */
 	if (relay_state) {
 		ecp_relay_state = xmlNewNode(NULL, (xmlChar*)"RelayState");
@@ -521,7 +521,7 @@ lasso_node_encrypt(LassoNode *lasso_node, xmlSecKey *encryption_public_key,
 		message(G_LOG_LEVEL_WARNING, "Failed to add key info");
 		return NULL;
 	}
-    
+
 	/* set key name so we can lookup key when needed */
 /* 	if (xmlSecTmplKeyInfoAddKeyName(key_info_node2, "this is the key name") == NULL) { */
 /* 		message(G_LOG_LEVEL_WARNING, "Failed to add key name"); */
