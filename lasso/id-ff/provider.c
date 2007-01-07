@@ -507,7 +507,6 @@ dispose(GObject *object)
 		provider->private_data->signing_key_descriptor = NULL;
 	}
 
-	provider->private_data->encryption_public_key = NULL;
 	if (provider->private_data->encryption_key_descriptor) {
 		xmlFreeNode(provider->private_data->encryption_key_descriptor);
 		provider->private_data->encryption_key_descriptor = NULL;
@@ -520,7 +519,7 @@ dispose(GObject *object)
 
 	if (provider->private_data->encryption_public_key) {
 	 	xmlSecKeyDestroy(provider->private_data->encryption_public_key);
-	 	provider->private_data->encryption_public_key_str = NULL;
+		provider->private_data->encryption_public_key = NULL;
 	}
 
 	g_free(provider->private_data->affiliation_id);
@@ -536,10 +535,6 @@ finalize(GObject *object)
 {
 	LassoProvider *provider = LASSO_PROVIDER(object);
 
-	g_free(provider->public_key);
-	provider->public_key = NULL;
-	g_free(provider->ca_cert_chain);
-	provider->ca_cert_chain = NULL;
 	g_free(provider->private_data);
 	provider->private_data = NULL;
 
