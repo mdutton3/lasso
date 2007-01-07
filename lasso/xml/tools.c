@@ -718,7 +718,12 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlSecDSigCtxDestroy(dsig_ctx);
 	xmlUnlinkNode(xmlnode);
 	xmlnode->parent = old_parent;
+#if 0
+	/* memory leak since we don't free doc but it causes some little memory
+	 * corruption; probably caused by the direct manipulation of xmlnode
+	 * parent attribute. */
 	xmlFreeDoc(doc);
+#endif
 
 	return 0;
 }
