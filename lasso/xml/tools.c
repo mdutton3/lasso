@@ -673,6 +673,7 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlDoc *doc;
 	xmlNode *sign_tmpl, *old_parent;
 	xmlSecDSigCtx *dsig_ctx;
+	xmlAttr *id_attr = NULL;
 
 	sign_tmpl = NULL;
 	for (sign_tmpl = xmlnode->children; sign_tmpl; sign_tmpl = sign_tmpl->next) {
@@ -689,11 +690,9 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	xmlnode->parent = NULL;
 	xmlDocSetRootElement(doc, xmlnode);
 	xmlSetTreeDoc(sign_tmpl, doc);
-	if (id_attr_name) {
-		xmlAttr *id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
-		if (id_value) {
-			xmlAddID(NULL, doc, (xmlChar*)id_value, id_attr);
-		}
+	if (id_attr_name && id_value) {
+		id_attr = xmlHasProp(xmlnode, (xmlChar*)id_attr_name);
+		xmlAddID(NULL, doc, (xmlChar*)id_value, id_attr);
 	}
 
 	dsig_ctx = xmlSecDSigCtxCreate(NULL);
@@ -717,6 +716,8 @@ lasso_sign_node(xmlNode *xmlnode, const char *id_attr_name, const char *id_value
 	}
 	xmlSecDSigCtxDestroy(dsig_ctx);
 	xmlUnlinkNode(xmlnode);
+	xmlRemoveID(doc, id_attr);
+
 	xmlnode->parent = old_parent;
 #if 0
 	/* memory leak since we don't free doc but it causes some little memory
