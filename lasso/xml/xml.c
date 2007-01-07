@@ -1919,6 +1919,7 @@ lasso_node_build_query_from_snippets(LassoNode *node)
 			if (s->len)
 				g_string_append(s, "&");
 			g_string_append(s, v);
+			g_free(v);
 			continue;
 		}
 		if (v) {
