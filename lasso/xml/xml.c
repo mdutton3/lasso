@@ -1111,7 +1111,11 @@ lasso_node_dispose(GObject *object)
 					g_assert_not_reached();
 			}
 
-			*value = NULL;
+			if (type != SNIPPET_SIGNATURE) {
+				/* Signature snippet is not something to free,
+				 * so don't set the value to NULL */
+				*value = NULL;
+			}
 		}
 		class = g_type_class_peek_parent(class);
 	}
