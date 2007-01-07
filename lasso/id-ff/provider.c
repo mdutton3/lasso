@@ -256,12 +256,18 @@ lasso_provider_accept_http_method(LassoProvider *provider, LassoProvider *remote
 			protocol_methods[http_method+1]);
 
 	if (lasso_provider_has_protocol_profile(provider,
-				protocol_type, protocol_profile) == FALSE)
+				protocol_type, protocol_profile) == FALSE) {
+		g_free(protocol_profile);
 		return FALSE;
+	}
 
 	if (lasso_provider_has_protocol_profile(remote_provider,
-				protocol_type, protocol_profile) == FALSE)
+				protocol_type, protocol_profile) == FALSE) {
+		g_free(protocol_profile);
 		return FALSE;
+	}
+
+	g_free(protocol_profile);
 
 	return TRUE;
 }
