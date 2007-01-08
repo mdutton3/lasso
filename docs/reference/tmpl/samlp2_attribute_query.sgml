@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2AttributeQuery
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:AttributeQuery&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2AttributeQuery ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Attribute: 
+
+<!-- ##### FUNCTION lasso_samlp2_attribute_query_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

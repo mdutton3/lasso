@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2AuthzDecisionQuery
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:AuthzDecisionQuery&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2AuthzDecisionQuery ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Action: 
+@Evidence: 
+@Resource: 
+
+<!-- ##### FUNCTION lasso_samlp2_authz_decision_query_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

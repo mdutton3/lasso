@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2AuthnQuery
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:AuthnQuery&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2AuthnQuery ##### -->
+<para>
+
+</para>
+
+@parent: 
+@RequestedAuthnContext: 
+@SessionIndex: 
+
+<!-- ##### FUNCTION lasso_samlp2_authn_query_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

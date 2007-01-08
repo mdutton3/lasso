@@ -1,0 +1,41 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2LogoutRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:LogoutRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2LogoutRequest ##### -->
+<para>
+
+</para>
+
+@parent: 
+@BaseID: 
+@NameID: 
+@EncryptedID: 
+@SessionIndex: 
+@Reason: 
+@NotOnOrAfter: 
+@relayState: 
+
+<!-- ##### FUNCTION lasso_samlp2_logout_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

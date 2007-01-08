@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2StatusCode
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:StatusCode&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2StatusCode ##### -->
+<para>
+
+</para>
+
+@parent: 
+@StatusCode: 
+@Value: 
+
+<!-- ##### FUNCTION lasso_samlp2_status_code_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

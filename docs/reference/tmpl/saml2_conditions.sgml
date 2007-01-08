@@ -1,0 +1,40 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Conditions
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Conditions&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Conditions ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Condition: 
+@AudienceRestriction: 
+@OneTimeUse: 
+@ProxyRestriction: 
+@NotBefore: 
+@NotOnOrAfter: 
+
+<!-- ##### FUNCTION lasso_saml2_conditions_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

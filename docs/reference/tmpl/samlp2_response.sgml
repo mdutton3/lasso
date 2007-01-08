@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2Response
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:Response&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2Response ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Assertion: 
+@EncryptedAssertion: 
+
+<!-- ##### FUNCTION lasso_samlp2_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

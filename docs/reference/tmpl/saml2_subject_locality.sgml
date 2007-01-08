@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2SubjectLocality
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:SubjectLocality&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2SubjectLocality ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Address: 
+@DNSName: 
+
+<!-- ##### FUNCTION lasso_saml2_subject_locality_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

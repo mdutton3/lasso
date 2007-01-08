@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2SubjectConfirmationData
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:SubjectConfirmationData&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2SubjectConfirmationData ##### -->
+<para>
+
+</para>
+
+@parent: 
+@NotBefore: 
+@NotOnOrAfter: 
+@Recipient: 
+@InResponseTo: 
+@Address: 
+
+<!-- ##### FUNCTION lasso_saml2_subject_confirmation_data_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

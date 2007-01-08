@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2AuthzDecisionStatement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:AuthzDecisionStatement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2AuthzDecisionStatement ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Action: 
+@Evidence: 
+@Resource: 
+@Decision: 
+
+<!-- ##### FUNCTION lasso_saml2_authz_decision_statement_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

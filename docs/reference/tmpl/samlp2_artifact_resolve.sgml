@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2ArtifactResolve
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:ArtifactResolve&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2ArtifactResolve ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Artifact: 
+
+<!-- ##### FUNCTION lasso_samlp2_artifact_resolve_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

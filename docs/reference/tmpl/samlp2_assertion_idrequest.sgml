@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2AssertionIDRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:AssertionIDRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2AssertionIDRequest ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AssertionIDRef: 
+
+<!-- ##### FUNCTION lasso_samlp2_assertion_idrequest_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

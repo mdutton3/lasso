@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlAssertion
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Assertion&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlAssertion ##### -->
+<para>
+
+</para>
+
+@Conditions: 
+@Advice: 
+@Statement: 
+@SubjectStatement: 
+@AuthenticationStatement: 
+@AuthorizationDecisionStatement: 
+@AttributeStatement: 
+@MajorVersion: 
+@MinorVersion: 
+@AssertionID: 
+@Issuer: 
+@IssueInstant: 
+@sign_type: 
+@sign_method: 
+@private_key_file: 
+@certificate_file: 
+
+<!-- ##### FUNCTION lasso_saml_assertion_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

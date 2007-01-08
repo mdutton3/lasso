@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlSubjectConfirmation
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:SubjectConfirmation&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlSubjectConfirmation ##### -->
+<para>
+
+</para>
+
+@ConfirmationMethod: 
+@SubjectConfirmationData: 
+@KeyInfo: 
+
+<!-- ##### FUNCTION lasso_saml_subject_confirmation_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

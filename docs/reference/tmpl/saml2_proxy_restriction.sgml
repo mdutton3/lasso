@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2ProxyRestriction
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:ProxyRestriction&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2ProxyRestriction ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Audience: 
+@Count: 
+
+<!-- ##### FUNCTION lasso_saml2_proxy_restriction_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

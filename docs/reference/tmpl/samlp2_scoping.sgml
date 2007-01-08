@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2Scoping
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:Scoping&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2Scoping ##### -->
+<para>
+
+</para>
+
+@parent: 
+@IDPList: 
+@RequesterID: 
+@ProxyCount: 
+
+<!-- ##### FUNCTION lasso_samlp2_scoping_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

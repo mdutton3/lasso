@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2RequestedAuthnContext
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:RequestedAuthnContext&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2RequestedAuthnContext ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AuthnContextClassRef: 
+@AuthnContextDeclRef: 
+@Comparison: 
+
+<!-- ##### FUNCTION lasso_samlp2_requested_authn_context_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

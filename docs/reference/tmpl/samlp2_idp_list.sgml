@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2IDPList
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:IDPList&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2IDPList ##### -->
+<para>
+
+</para>
+
+@parent: 
+@IDPEntry: 
+@GetComplete: 
+
+<!-- ##### FUNCTION lasso_samlp2_idp_list_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

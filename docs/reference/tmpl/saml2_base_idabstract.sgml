@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2BaseIDAbstract
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:BaseIDAbstract&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2BaseIDAbstract ##### -->
+<para>
+
+</para>
+
+@parent: 
+@NameQualifier: 
+@SPNameQualifier: 
+
+<!-- ##### FUNCTION lasso_saml2_base_idabstract_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

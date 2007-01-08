@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2IDPEntry
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:IDPEntry&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2IDPEntry ##### -->
+<para>
+
+</para>
+
+@parent: 
+@ProviderID: 
+@Name: 
+@Loc: 
+
+<!-- ##### FUNCTION lasso_samlp2_idp_entry_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

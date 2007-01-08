@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2ArtifactResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:ArtifactResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2ArtifactResponse ##### -->
+<para>
+
+</para>
+
+@parent: 
+@any: 
+
+<!-- ##### FUNCTION lasso_samlp2_artifact_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

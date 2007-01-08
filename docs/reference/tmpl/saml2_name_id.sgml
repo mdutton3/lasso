@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2NameID
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:NameID&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2NameID ##### -->
+<para>
+
+</para>
+
+@parent: 
+@content: 
+@Format: 
+@SPProvidedID: 
+@NameQualifier: 
+@SPNameQualifier: 
+
+<!-- ##### FUNCTION lasso_saml2_name_id_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,43 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2StatusResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:StatusResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2StatusResponse ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Issuer: 
+@Extensions: 
+@Status: 
+@ID: 
+@InResponseTo: 
+@Version: 
+@IssueInstant: 
+@Destination: 
+@Consent: 
+
+<!-- ##### FUNCTION lasso_samlp2_status_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

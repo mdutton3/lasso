@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Advice
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Advice&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Advice ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AssertionIDRef: 
+@AssertionURIRef: 
+@Assertion: 
+@EncryptedAssertion: 
+
+<!-- ##### FUNCTION lasso_saml2_advice_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

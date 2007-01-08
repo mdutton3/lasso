@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2NameIDMappingResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:NameIDMappingResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2NameIDMappingResponse ##### -->
+<para>
+
+</para>
+
+@parent: 
+@NameID: 
+@EncryptedID: 
+
+<!-- ##### FUNCTION lasso_samlp2_name_id_mapping_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

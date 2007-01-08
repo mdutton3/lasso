@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2AuthnContext
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:AuthnContext&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2AuthnContext ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AuthnContextClassRef: 
+@AuthnContextDecl: 
+@AuthnContextDeclRef: 
+@AuthenticatingAuthority: 
+
+<!-- ##### FUNCTION lasso_saml2_authn_context_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

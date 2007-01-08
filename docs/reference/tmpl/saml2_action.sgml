@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Action
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Action&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Action ##### -->
+<para>
+
+</para>
+
+@parent: 
+@content: 
+@Namespace: 
+
+<!-- ##### FUNCTION lasso_saml2_action_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

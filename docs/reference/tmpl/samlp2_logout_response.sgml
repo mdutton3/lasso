@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2LogoutResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:LogoutResponse&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2LogoutResponse ##### -->
+<para>
+
+</para>
+
+@parent: 
+@relayState: 
+
+<!-- ##### FUNCTION lasso_samlp2_logout_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2EncryptedElement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:EncryptedElement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2EncryptedElement ##### -->
+<para>
+
+</para>
+
+@parent: 
+@EncryptedData: 
+@EncryptedKey: 
+@original_data: 
+
+<!-- ##### FUNCTION lasso_saml2_encrypted_element_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

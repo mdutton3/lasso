@@ -1,0 +1,45 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Assertion
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Assertion&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Assertion ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Issuer: 
+@Subject: 
+@Conditions: 
+@Advice: 
+@Statement: 
+@AuthnStatement: 
+@AuthzDecisionStatement: 
+@AttributeStatement: 
+@Version: 
+@ID: 
+@IssueInstant: 
+
+<!-- ##### FUNCTION lasso_saml2_assertion_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

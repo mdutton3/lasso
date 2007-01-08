@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2SubjectQueryAbstract
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:SubjectQueryAbstract&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2SubjectQueryAbstract ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Subject: 
+
+<!-- ##### FUNCTION lasso_samlp2_subject_query_abstract_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

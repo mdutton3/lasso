@@ -1,0 +1,37 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2NameIDPolicy
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:NameIDPolicy&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2NameIDPolicy ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Format: 
+@SPNameQualifier: 
+@AllowCreate: 
+
+<!-- ##### FUNCTION lasso_samlp2_name_id_policy_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

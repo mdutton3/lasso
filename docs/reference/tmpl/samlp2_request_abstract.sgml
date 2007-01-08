@@ -1,0 +1,41 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2RequestAbstract
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:RequestAbstract&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2RequestAbstract ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Issuer: 
+@Extensions: 
+@ID: 
+@Version: 
+@IssueInstant: 
+@Destination: 
+@Consent: 
+
+<!-- ##### FUNCTION lasso_samlp2_request_abstract_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

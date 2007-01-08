@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2AuthnRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:AuthnRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2AuthnRequest ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Subject: 
+@NameIDPolicy: 
+@Conditions: 
+@RequestedAuthnContext: 
+@Scoping: 
+@ForceAuthn: 
+@IsPassive: 
+@ProtocolBinding: 
+@AssertionConsumerServiceIndex: 
+@AssertionConsumerServiceURL: 
+@AttributeConsumingServiceIndex: 
+@ProviderName: 
+@relayState: 
+
+<!-- ##### FUNCTION lasso_samlp2_authn_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

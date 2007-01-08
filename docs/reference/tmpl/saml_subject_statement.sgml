@@ -1,0 +1,34 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlSubjectStatement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:SubjectStatement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlSubjectStatement ##### -->
+<para>
+
+</para>
+
+@parent: 
+
+<!-- ##### FUNCTION lasso_saml_subject_statement_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

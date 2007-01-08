@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2KeyInfoConfirmationData
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:KeyInfoConfirmationData&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2KeyInfoConfirmationData ##### -->
+<para>
+
+</para>
+
+@parent: 
+@KeyInfo: 
+
+<!-- ##### FUNCTION lasso_saml2_key_info_confirmation_data_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

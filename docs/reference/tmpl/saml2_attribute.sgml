@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Attribute
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Attribute&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Attribute ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AttributeValue: 
+@Name: 
+@NameFormat: 
+@FriendlyName: 
+
+<!-- ##### FUNCTION lasso_saml2_attribute_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

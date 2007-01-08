@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2NameIDMappingRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:NameIDMappingRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2NameIDMappingRequest ##### -->
+<para>
+
+</para>
+
+@parent: 
+@BaseID: 
+@NameID: 
+@EncryptedID: 
+@NameIDPolicy: 
+
+<!-- ##### FUNCTION lasso_samlp2_name_id_mapping_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

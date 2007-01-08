@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlpResponse
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:Response&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlpResponse ##### -->
+<para>
+
+</para>
+
+@Status: 
+@Assertion: 
+
+<!-- ##### FUNCTION lasso_samlp_response_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

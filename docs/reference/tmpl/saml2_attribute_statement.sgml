@@ -1,0 +1,36 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2AttributeStatement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:AttributeStatement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2AttributeStatement ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Attribute: 
+@EncryptedAttribute: 
+
+<!-- ##### FUNCTION lasso_saml2_attribute_statement_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

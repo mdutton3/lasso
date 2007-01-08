@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2Evidence
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:Evidence&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2Evidence ##### -->
+<para>
+
+</para>
+
+@parent: 
+@AssertionIDRef: 
+@AssertionURIRef: 
+@Assertion: 
+@EncryptedAssertion: 
+
+<!-- ##### FUNCTION lasso_saml2_evidence_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

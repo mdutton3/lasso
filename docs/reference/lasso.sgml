@@ -281,17 +281,17 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoSamlConditionAbstract;
     &LassoSamlConditions;
     &LassoSamlNameIdentifier;
+    &LassoSamlStatementAbstract;
+    &LassoSamlSubject;
+    &LassoSamlSubjectConfirmation;
+    &LassoSamlSubjectLocality;
+    &LassoSamlSubjectStatementAbstract;
     &LassoSamlpRequest;
     &LassoSamlpRequestAbstract;
     &LassoSamlpResponse;
     &LassoSamlpResponseAbstract;
     &LassoSamlpStatus;
     &LassoSamlpStatusCode;
-    &LassoSamlStatementAbstract;
-    &LassoSamlSubject;
-    &LassoSamlSubjectConfirmation;
-    &LassoSamlSubjectLocality;
-    &LassoSamlSubjectStatementAbstract;
   </chapter>
 
   <chapter id="xml-samlv2">
@@ -341,9 +341,9 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoSamlp2RequestedAuthnContext;
     &LassoSamlp2Response;
     &LassoSamlp2Scoping;
+    &LassoSamlp2Status;
     &LassoSamlp2StatusCode;
     &LassoSamlp2StatusDetail;
-    &LassoSamlp2Status;
     &LassoSamlp2StatusResponse;
     &LassoSamlp2SubjectQueryAbstract;
     &LassoSamlp2Terminate;

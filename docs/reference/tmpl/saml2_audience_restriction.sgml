@@ -1,0 +1,35 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2AudienceRestriction
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:AudienceRestriction&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2AudienceRestriction ##### -->
+<para>
+
+</para>
+
+@parent: 
+@Audience: 
+
+<!-- ##### FUNCTION lasso_saml2_audience_restriction_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

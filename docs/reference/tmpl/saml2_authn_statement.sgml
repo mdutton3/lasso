@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2AuthnStatement
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:AuthnStatement&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2AuthnStatement ##### -->
+<para>
+
+</para>
+
+@parent: 
+@SubjectLocality: 
+@AuthnContext: 
+@AuthnInstant: 
+@SessionIndex: 
+@SessionNotOnOrAfter: 
+
+<!-- ##### FUNCTION lasso_saml2_authn_statement_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

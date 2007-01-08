@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoSaml2SubjectConfirmation
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;saml:SubjectConfirmation&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSaml2SubjectConfirmation ##### -->
+<para>
+
+</para>
+
+@parent: 
+@BaseID: 
+@NameID: 
+@EncryptedID: 
+@SubjectConfirmationData: 
+@Method: 
+
+<!-- ##### FUNCTION lasso_saml2_subject_confirmation_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

@@ -1,0 +1,39 @@
+<!-- ##### SECTION Title ##### -->
+LassoSamlp2ManageNameIDRequest
+
+<!-- ##### SECTION Short_Description ##### -->
+&lt;samlp:ManageNameIDRequest&gt;
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoSamlp2ManageNameIDRequest ##### -->
+<para>
+
+</para>
+
+@parent: 
+@NameID: 
+@EncryptedID: 
+@NewID: 
+@NewEncryptedID: 
+@Terminate: 
+
+<!-- ##### FUNCTION lasso_samlp2_manage_name_id_request_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
