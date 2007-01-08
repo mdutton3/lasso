@@ -296,7 +296,7 @@ lasso_logout_get_next_providerID(LassoLogout *logout)
  * @request_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  *
- * Initializes a new lib:LogoutRequest.
+ * Initializes a new SLO request.
  * 
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -487,7 +487,7 @@ lasso_logout_init_request(LassoLogout *logout, char *remote_providerID,
  * @logout: a #LassoLogout
  * @request_msg: the logout request message
  * 
- * Processes a lib:LogoutRequest message.  Rebuilds a request object from the
+ * Processes a SLO LogoutRequest message.  Rebuilds a request object from the
  * message and optionally verifies its signature.
  *
  * Return value: 0 on success; or a negative value otherwise.

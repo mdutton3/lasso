@@ -684,7 +684,7 @@ lasso_login_build_artifact_msg(LassoLogin *login, LassoHttpMethod http_method)
 	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
+		/* this means lasso_login_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
@@ -825,7 +825,7 @@ lasso_login_build_authn_request_msg(LassoLogin *login)
 	lasso_profile_clean_msg_info(profile);
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
+		/* this means lasso_login_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
@@ -1021,7 +1021,7 @@ lasso_login_build_request_msg(LassoLogin *login)
 	}
 
 	if (profile->remote_providerID == NULL) {
-		/* this means lasso_logout_init_request was not called before */
+		/* this means lasso_login_init_request was not called before */
 		return critical_error(LASSO_PROFILE_ERROR_MISSING_REMOTE_PROVIDERID);
 	}
 
@@ -1161,7 +1161,7 @@ lasso_login_destroy(LassoLogin *login)
  * @remote_providerID: the providerID of the identity provider (may be NULL)
  * @http_method: HTTP method to use for request transmission
  *
- * Initializes a new lib:AuthnRequest from current service provider to remote
+ * Initializes a new AuthnRequest from current service provider to remote
  * identity provider specified in @remote_providerID (if NULL the first known
  * identity provider is used).
  *
