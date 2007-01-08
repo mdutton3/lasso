@@ -49,6 +49,7 @@
 <!ENTITY LassoDefederation SYSTEM "sgml/defederation.xml">
 <!ENTITY LassoNameRegistration SYSTEM "sgml/name_registration.xml">
 <!ENTITY LassoNameIdentifierMapping SYSTEM "sgml/name_identifier_mapping.xml">
+<!ENTITY LassoNameIdManagement SYSTEM "sgml/name_id_management.xml">
 <!ENTITY LassoIdentity SYSTEM "sgml/identity.xml">
 <!ENTITY LassoLogin SYSTEM "sgml/login.xml">
 <!ENTITY LassoLogout SYSTEM "sgml/logout.xml">
@@ -76,7 +77,7 @@
     </legalnotice>
 
     <copyright>
-      <year>2004, 2005</year>
+      <year>2004, 2005, 2006, 2007</year>
       <holder>Entr'ouvert</holder>
     </copyright>
 
@@ -155,7 +156,7 @@ development, without calling into question its architecture.  Lasso is a
 library written in C Language.
     </para>
 
-<para>
+    <para>
 Lasso is built on top of <ulink url="http://www.xmlsoft.org">libxml2</ulink>,
 <ulink url="http://www.aleksey.com/xmlsec/">XMLSec</ulink> and
 <ulink url="http://www.openssl.org">OpenSSL</ulink> and is licensed under
@@ -185,6 +186,7 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
     &LassoDefederation;
     &LassoNameRegistration;
     &LassoNameIdentifierMapping;
+    &LassoNameIdManagement;
 
   </chapter>
 

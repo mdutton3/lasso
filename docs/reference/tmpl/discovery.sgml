@@ -85,9 +85,6 @@ service = lasso_discovery_get_service(discovery);
 @service_type: 
 @option: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@serviceType: 
-@options: 
 
 
 <!-- ##### FUNCTION lasso_discovery_build_modify_response_msg ##### -->
@@ -136,9 +133,6 @@ service = lasso_discovery_get_service(discovery);
 @new_offering: 
 @security_mech_id: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@resource_offering: 
-@resourceOffering: 
 
 
 <!-- ##### FUNCTION lasso_discovery_init_query ##### -->

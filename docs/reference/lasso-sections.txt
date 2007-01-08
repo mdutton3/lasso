@@ -261,6 +261,29 @@ LASSO_NAME_IDENTIFIER_MAPPING_GET_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>name_id_management</FILE>
+<TITLE>LassoNameIdManagement</TITLE>
+LassoNameIdManagement
+lasso_name_id_management_new
+lasso_name_id_management_destroy
+lasso_name_id_management_new_from_dump
+lasso_name_id_management_build_request_msg
+lasso_name_id_management_build_response_msg
+lasso_name_id_management_init_request
+lasso_name_id_management_process_request_msg
+lasso_name_id_management_process_response_msg
+lasso_name_id_management_validate_request
+<SUBSECTION Standard>
+LASSO_NAME_ID_MANAGEMENT
+LASSO_IS_NAME_ID_MANAGEMENT
+LASSO_TYPE_NAME_ID_MANAGEMENT
+lasso_name_id_management_get_type
+LASSO_NAME_ID_MANAGEMENT_CLASS
+LASSO_IS_NAME_ID_MANAGEMENT_CLASS
+LASSO_NAME_ID_MANAGEMENT_GET_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>lib_assertion</FILE>
 <TITLE>LassoLibAssertion</TITLE>
 LassoLibAssertion

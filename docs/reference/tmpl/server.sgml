@@ -40,8 +40,6 @@ certificates to use, etc.
 @private_key_password: 
 @certificate: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@secret_key: 
 
 
 <!-- ##### FUNCTION lasso_server_new_from_dump ##### -->
@@ -74,9 +72,6 @@ certificates to use, etc.
 @server: 
 @service: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@service_type: 
-@service_endpoint: 
 
 
 <!-- ##### FUNCTION lasso_server_destroy ##### -->

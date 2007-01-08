@@ -2,7 +2,7 @@
 LassoDefederation
 
 <!-- ##### SECTION Short_Description ##### -->
-Federation Termination Notification Profile
+Federation Termination Notification Profile (ID-FF)
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -58,8 +58,6 @@ Federation Termination Notification Profile
 @remote_providerID: 
 @http_method: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@notification_method: 
 
 
 <!-- ##### FUNCTION lasso_defederation_process_notification_msg ##### -->

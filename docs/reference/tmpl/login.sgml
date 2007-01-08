@@ -378,7 +378,5 @@ Identifies the two possible profiles for Single Sign-On and Federation.
 @login: 
 @content: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@resourceId: 
 
 

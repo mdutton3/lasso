@@ -42,7 +42,7 @@
  * @http_method: if set, then it get the protocol profile in metadata
  *     corresponding of this HTTP request method.
  *
- * ...
+ * Initializes a new Name Id Management Request.
  *
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -127,7 +127,7 @@ lasso_name_id_management_init_request(LassoNameIdManagement *name_id_management,
  * lasso_name_id_management_build_request_msg:
  * @name_id_management: a #LassoNameIdManagement
  *
- * ...
+ * Builds the Name Id Management request message.
  * 
  * Return value: 0 on success; or a negative value otherwise.
  **/
@@ -183,6 +183,17 @@ lasso_name_id_management_build_request_msg(LassoNameIdManagement *name_id_manage
 	return critical_error(LASSO_PROFILE_ERROR_INVALID_HTTP_METHOD);
 }
 
+
+/**
+ * lasso_name_id_management_process_request_msg:
+ * @name_id_management: a #LassoNameIdManagement
+ * @request_msg: the Name Id Management request message
+ * 
+ * Processes a Name Id Management request message.  Rebuilds a request object
+ * from the message and check its signature.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_management,
 		char *request_msg)
@@ -252,6 +263,16 @@ lasso_name_id_management_process_request_msg(LassoNameIdManagement *name_id_mana
 	return profile->signature_status;
 }
 
+
+/**
+ * lasso_name_id_management_validate_request:
+ * @name_id_management: a #LassoNameIdManagement
+ * 
+ * Processes a Name Id Management request, performing requested actions against
+ * principal federations.  Profile identity may have to be saved afterwards.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_management)
 {
@@ -372,6 +393,14 @@ lasso_name_id_management_validate_request(LassoNameIdManagement *name_id_managem
 	return 0;
 }
 
+/**
+ * lasso_name_id_management_build_response_msg:
+ * @name_id_management: a #LassoNameIdManagement
+ * 
+ * Builds the Name Id Management response message.
+ * 
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 int
 lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_management)
 {
@@ -458,6 +487,18 @@ lasso_name_id_management_build_response_msg(LassoNameIdManagement *name_id_manag
 	return LASSO_PROFILE_ERROR_MISSING_REQUEST;
 }
 
+
+/**
+ * lasso_name_id_management_process_response_msg:
+ * @name_id_management: a #LassoNameIdManagement
+ * @response_msg: the response message
+ * 
+ * Parses the response message and builds the corresponding response object.
+ * Performs requested actions against principal federations.  Profile identity
+ * may have to be saved afterwards.
+ *
+ * Return value: 0 on success; or a negative value otherwise.
+ **/
 gint
 lasso_name_id_management_process_response_msg(
 		LassoNameIdManagement *name_id_management,
@@ -532,7 +573,7 @@ lasso_name_id_management_process_response_msg(
 		lasso_identity_remove_federation(profile->identity, profile->remote_providerID);
 	} else {
 		LassoSaml2NameID *new_name_id, *name_id;
-	LassoFederation *federation;
+		LassoFederation *federation;
 
 		name_id = LASSO_SAMLP2_MANAGE_NAME_ID_REQUEST(profile->request)->NameID;
 

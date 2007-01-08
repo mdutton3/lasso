@@ -1,0 +1,111 @@
+<!-- ##### SECTION Title ##### -->
+LassoNameIdManagement
+
+<!-- ##### SECTION Short_Description ##### -->
+Name Id Management Profile (SAMLv2)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoNameIdManagement ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION lasso_name_id_management_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_destroy ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_new_from_dump ##### -->
+<para>
+
+</para>
+
+@server: 
+@dump: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_build_request_msg ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_build_response_msg ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_init_request ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@remote_provider_id: 
+@new_name_id: 
+@http_method: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_process_request_msg ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_process_response_msg ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@response_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_name_id_management_validate_request ##### -->
+<para>
+
+</para>
+
+@name_id_management: 
+@Returns: 
+
+

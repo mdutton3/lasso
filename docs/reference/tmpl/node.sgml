@@ -91,9 +91,6 @@ defined in glib.
 
 @node: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@encoding: 
-@format: 
 
 
 <!-- ##### FUNCTION lasso_node_export_to_base64 ##### -->

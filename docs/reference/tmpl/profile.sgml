@@ -2,7 +2,7 @@
 LassoProfile
 
 <!-- ##### SECTION Short_Description ##### -->
-Base class for all ID-FF profiles
+Base class for all identity profiles
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
@@ -34,6 +34,7 @@ Base class for all ID-FF profiles
 @LASSO_REQUEST_TYPE_DST_QUERY: 
 @LASSO_REQUEST_TYPE_DST_MODIFY: 
 @LASSO_REQUEST_TYPE_SASL_REQUEST: 
+@LASSO_REQUEST_TYPE_NAME_ID_MANAGEMENT: 
 
 <!-- ##### STRUCT LassoProfile ##### -->
 <para>
@@ -56,8 +57,6 @@ Base class for all ID-FF profiles
 
 @profile: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_get_session ##### -->
@@ -67,8 +66,6 @@ Base class for all ID-FF profiles
 
 @profile: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_is_identity_dirty ##### -->
@@ -78,8 +75,6 @@ Base class for all ID-FF profiles
 
 @profile: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_is_session_dirty ##### -->
@@ -89,8 +84,6 @@ Base class for all ID-FF profiles
 
 @profile: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_set_identity_from_dump ##### -->
@@ -101,8 +94,6 @@ Base class for all ID-FF profiles
 @profile: 
 @dump: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_set_session_from_dump ##### -->
@@ -113,8 +104,6 @@ Base class for all ID-FF profiles
 @profile: 
 @dump: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@ctx: 
 
 
 <!-- ##### FUNCTION lasso_profile_get_request_type_from_soap_msg ##### -->
