@@ -50,6 +50,7 @@
 <!ENTITY LassoNameRegistration SYSTEM "sgml/name_registration.xml">
 <!ENTITY LassoNameIdentifierMapping SYSTEM "sgml/name_identifier_mapping.xml">
 <!ENTITY LassoNameIdManagement SYSTEM "sgml/name_id_management.xml">
+<!ENTITY LassoEcp SYSTEM "sgml/ecp.xml">
 <!ENTITY LassoIdentity SYSTEM "sgml/identity.xml">
 <!ENTITY LassoLogin SYSTEM "sgml/login.xml">
 <!ENTITY LassoLogout SYSTEM "sgml/logout.xml">
@@ -232,12 +233,13 @@ the <ulink url="http://lasso.entrouvert.org/license">GNU General Public License<
 
     &LassoProfile;
     &LassoLogin;
-    &LassoLecp;
     &LassoLogout;
     &LassoDefederation;
     &LassoNameRegistration;
     &LassoNameIdentifierMapping;
     &LassoNameIdManagement;
+    &LassoLecp;
+    &LassoEcp;
 
   </chapter>
 

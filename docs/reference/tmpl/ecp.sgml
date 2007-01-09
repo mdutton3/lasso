@@ -1,0 +1,63 @@
+<!-- ##### SECTION Title ##### -->
+LassoEcp
+
+<!-- ##### SECTION Short_Description ##### -->
+Enhanced Client or Proxy Profile (SAMLv2)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT LassoEcp ##### -->
+<para>
+
+</para>
+
+@assertionConsumerURL: 
+
+<!-- ##### FUNCTION lasso_ecp_new ##### -->
+<para>
+
+</para>
+
+@server: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_ecp_destroy ##### -->
+<para>
+
+</para>
+
+@ecp: 
+
+
+<!-- ##### FUNCTION lasso_ecp_process_authn_request_msg ##### -->
+<para>
+
+</para>
+
+@ecp: 
+@authn_request_msg: 
+@Returns: 
+
+
+<!-- ##### FUNCTION lasso_ecp_process_response_msg ##### -->
+<para>
+
+</para>
+
+@ecp: 
+@response_msg: 
+@Returns: 
+
+

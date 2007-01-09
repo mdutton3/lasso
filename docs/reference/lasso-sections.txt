@@ -932,11 +932,11 @@ lasso_register_dst_service
 <TITLE>LassoLecp</TITLE>
 LassoLecp
 lasso_lecp_new
+lasso_lecp_destroy
 lasso_lecp_build_authn_request_envelope_msg
 lasso_lecp_build_authn_request_msg
 lasso_lecp_build_authn_response_msg
 lasso_lecp_build_authn_response_envelope_msg
-lasso_lecp_destroy
 lasso_lecp_init_authn_request
 lasso_lecp_process_authn_request_msg
 lasso_lecp_process_authn_request_envelope_msg
@@ -951,6 +951,23 @@ LASSO_IS_LECP_CLASS
 LASSO_LECP_GET_CLASS
 </SECTION>
 
+<SECTION>
+<FILE>ecp</FILE>
+<TITLE>LassoEcp</TITLE>
+LassoEcp
+lasso_ecp_new
+lasso_ecp_destroy
+lasso_ecp_process_authn_request_msg
+lasso_ecp_process_response_msg
+<SUBSECTION Standard>
+LASSO_LECP
+LASSO_IS_LECP
+LASSO_TYPE_LECP
+lasso_lecp_get_type
+LASSO_LECP_CLASS
+LASSO_IS_LECP_CLASS
+LASSO_LECP_GET_CLASS
+</SECTION>
 
 <SECTION>
 <FILE>strings</FILE>
