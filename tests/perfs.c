@@ -146,6 +146,8 @@ main(int argc, char *argv[])
 			(double)usec/1000000,
 			(double)n/usec*1000000,
 			(double)usec/1000/n);
+	
+	g_free(authn_response_msg);
 
 
 

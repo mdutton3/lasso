@@ -216,6 +216,8 @@ START_TEST(test02_serviceProviderLogin)
 	g_free(serviceProviderId);
 	g_free(serviceProviderContextDump);
 	g_free(identityProviderContextDump);
+	lasso_server_destroy(spContext);
+	lasso_server_destroy(idpContext);
 }
 END_TEST
 
