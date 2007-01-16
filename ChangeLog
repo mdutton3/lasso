@@ -1,3 +1,1824 @@
+2007-01-16  fpeters
+
+        * tests/login_tests.c, tests/perfs.c: fixed memory leaks
+
+2007-01-16  fpeters
+
+	* configure.ac: updated version number and required swig version
+
+2007-01-09  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/lasso.types.in, docs/reference/tmpl/ecp.sgml,
+	docs/reference/tmpl/lecp.sgml: added section for ECP (and titled
+	LECP)
+
+2007-01-08  fpeters
+
+	* docs/reference/lasso.sgml, docs/reference/tmpl/saml2_action.sgml,
+	docs/reference/tmpl/saml2_advice.sgml,
+	docs/reference/tmpl/saml2_assertion.sgml,
+	docs/reference/tmpl/saml2_attribute.sgml,
+	docs/reference/tmpl/saml2_attribute_statement.sgml,
+	docs/reference/tmpl/saml2_audience_restriction.sgml,
+	docs/reference/tmpl/saml2_authn_context.sgml,
+	docs/reference/tmpl/saml2_authn_statement.sgml,
+	docs/reference/tmpl/saml2_authz_decision_statement.sgml,
+	docs/reference/tmpl/saml2_base_idabstract.sgml,
+	docs/reference/tmpl/saml2_condition_abstract.sgml,
+	docs/reference/tmpl/saml2_conditions.sgml,
+	docs/reference/tmpl/saml2_encrypted_element.sgml,
+	docs/reference/tmpl/saml2_evidence.sgml,
+	docs/reference/tmpl/saml2_key_info_confirmation_data.sgml,
+	docs/reference/tmpl/saml2_name_id.sgml,
+	docs/reference/tmpl/saml2_one_time_use.sgml,
+	docs/reference/tmpl/saml2_proxy_restriction.sgml,
+	docs/reference/tmpl/saml2_statement_abstract.sgml,
+	docs/reference/tmpl/saml2_subject.sgml,
+	docs/reference/tmpl/saml2_subject_confirmation.sgml,
+	docs/reference/tmpl/saml2_subject_confirmation_data.sgml,
+	docs/reference/tmpl/saml2_subject_locality.sgml,
+	docs/reference/tmpl/saml_advice.sgml,
+	docs/reference/tmpl/saml_assertion.sgml,
+	docs/reference/tmpl/saml_attribute.sgml,
+	docs/reference/tmpl/saml_attribute_designator.sgml,
+	docs/reference/tmpl/saml_attribute_statement.sgml,
+	docs/reference/tmpl/saml_audience_restriction_condition.sgml,
+	docs/reference/tmpl/saml_authentication_statement.sgml,
+	docs/reference/tmpl/saml_authority_binding.sgml,
+	docs/reference/tmpl/saml_condition_abstract.sgml,
+	docs/reference/tmpl/saml_conditions.sgml,
+	docs/reference/tmpl/saml_statement_abstract.sgml,
+	docs/reference/tmpl/saml_subject.sgml,
+	docs/reference/tmpl/saml_subject_confirmation.sgml,
+	docs/reference/tmpl/saml_subject_locality.sgml,
+	docs/reference/tmpl/saml_subject_statement.sgml,
+	docs/reference/tmpl/saml_subject_statement_abstract.sgml,
+	docs/reference/tmpl/samlp2_artifact_resolve.sgml,
+	docs/reference/tmpl/samlp2_artifact_response.sgml,
+	docs/reference/tmpl/samlp2_assertion_idrequest.sgml,
+	docs/reference/tmpl/samlp2_attribute_query.sgml,
+	docs/reference/tmpl/samlp2_authn_query.sgml,
+	docs/reference/tmpl/samlp2_authn_request.sgml,
+	docs/reference/tmpl/samlp2_authz_decision_query.sgml,
+	docs/reference/tmpl/samlp2_extensions.sgml,
+	docs/reference/tmpl/samlp2_idp_entry.sgml,
+	docs/reference/tmpl/samlp2_idp_list.sgml,
+	docs/reference/tmpl/samlp2_logout_request.sgml,
+	docs/reference/tmpl/samlp2_logout_response.sgml,
+	docs/reference/tmpl/samlp2_manage_name_id_request.sgml,
+	docs/reference/tmpl/samlp2_manage_name_id_response.sgml,
+	docs/reference/tmpl/samlp2_name_id_mapping_request.sgml,
+	docs/reference/tmpl/samlp2_name_id_mapping_response.sgml,
+	docs/reference/tmpl/samlp2_name_id_policy.sgml,
+	docs/reference/tmpl/samlp2_request_abstract.sgml,
+	docs/reference/tmpl/samlp2_requested_authn_context.sgml,
+	docs/reference/tmpl/samlp2_response.sgml,
+	docs/reference/tmpl/samlp2_scoping.sgml,
+	docs/reference/tmpl/samlp2_status.sgml,
+	docs/reference/tmpl/samlp2_status_code.sgml,
+	docs/reference/tmpl/samlp2_status_detail.sgml,
+	docs/reference/tmpl/samlp2_status_response.sgml,
+	docs/reference/tmpl/samlp2_subject_query_abstract.sgml,
+	docs/reference/tmpl/samlp2_terminate.sgml,
+	docs/reference/tmpl/samlp_request.sgml,
+	docs/reference/tmpl/samlp_request_abstract.sgml,
+	docs/reference/tmpl/samlp_response.sgml,
+	docs/reference/tmpl/samlp_response_abstract.sgml,
+	docs/reference/tmpl/samlp_status.sgml,
+	docs/reference/tmpl/samlp_status_code.sgml: reordered some elements
+	in index and added short descriptions to all elements
+
+2007-01-08  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: fixed docstring parameter
+	name
+
+2007-01-08  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml:
+	added all classes for SAMLv2 schema elements
+
+2007-01-08  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c: un-idff'ied docstrings
+	(and fixed a few comments)
+
+2007-01-08  fpeters
+
+	* docs/reference/lasso-sections.txt, docs/reference/lasso.sgml,
+	docs/reference/lasso.types.in,
+	docs/reference/tmpl/defederation.sgml,
+	docs/reference/tmpl/discovery.sgml,
+	docs/reference/tmpl/federation.sgml,
+	docs/reference/tmpl/login.sgml,
+	docs/reference/tmpl/name_id_management.sgml,
+	docs/reference/tmpl/name_identifier_mapping.sgml,
+	docs/reference/tmpl/name_registration.sgml,
+	docs/reference/tmpl/node.sgml, docs/reference/tmpl/profile.sgml,
+	docs/reference/tmpl/server.sgml,
+	lasso/saml-2.0/name_id_management.c: added documentation about
+	SAMLv2 Name Id Management profile; and by the same time updated all
+	tmpl/ files with a newer gtk-doc
+
+2007-01-07  fpeters
+
+	* lasso/id-ff/provider.c: fixed
+	provider->private_data->encryption_public_key memory leak and
+	removed duplicate freeing for public_key and ca_cert_chain
+
+2007-01-07  fpeters
+
+	* lasso/xml/tools.c: mitigate memory leak (?)
+
+2007-01-07  fpeters
+
+	* lasso/xml/xml.c: fixed memory leak occuring near
+	SNIPPET_SIGNATURE
+
+2007-01-07  fpeters
+
+	* lasso/xml/xml.c: fixed memory leak in Extension to query string
+	conversion
+
+2007-01-07  fpeters
+
+	* lasso/id-ff/provider.c: fixed memory leak
+
+2007-01-07  fpeters
+
+	* lasso/xml/tools.c: unfixed memory leak, because strange
+	manipulations to xmlnode structures could cause memory corruption
+
+2007-01-06  fpeters
+
+	* lasso/id-ff/profile.c: removing white space lost in a tab
+
+2007-01-06  fpeters
+
+	* lasso/id-ff/name_registration.c, lasso/xml/lib_authn_response.c:
+	removing white spaces on blank lines
+
+2007-01-06  fpeters
+
+	* lasso/xml/ds_key_info.c, lasso/xml/ds_key_value.c,
+	lasso/xml/saml_subject_confirmation.c: fixing indentation
+
+2007-01-06  fpeters
+
+	* lasso/id-wsf/authentication.c: removing white space on blank line
+
+2007-01-06  fpeters
+
+	* lasso/xml/xml.c, lasso/id-wsf/authentication.c: removing spaces
+	from otherwise white lines
+
+2007-01-06  fpeters
+
+	* lasso/id-ff/login.c: fixed indentation & param checking
+
+2007-01-06  fpeters
+
+	* lasso/id-ff/provider.c: fixed memory leak
+
+2007-01-06  fpeters
+
+	* lasso/saml-2.0/provider.c: fixed little memory leak
+
+2007-01-05  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-wsf/wsf_profile.c,
+	lasso/saml-2.0/server.c, lasso/xml/xml.c: replace some xmlFree that
+	should have been g_free and added some xmlFree where required.
+
+2007-01-05  fpeters
+
+	* lasso/id-wsf/wsf_profile.c, lasso/xml/tools.c, lasso/xml/xml.c:
+	even more memory leak tracking
+
+2007-01-05  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/lecp.c,
+	lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/profileprivate.h, lasso/saml-2.0/name_id_management.c:
+	new lasso_profile_clean_msg_info function used to clean msg_url and
+	msg_body (free()ing and setting to NULL) in functions where those
+	variables are later set.
+
+2007-01-05  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-wsf/wsf_profile.c,
+	lasso/xml/xml.c: fixed some memory leaks (tracked with valgrind)
+
+2007-01-05  fpeters
+
+	* tests/login_tests.c: cleaning up memory allocated for tests; so
+	valgrind logs are cleaner
+
+2007-01-05  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-ff/server.c, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/wsf_profile.c, lasso/saml-2.0/name_id_management.c:
+	memory management, avoid leaking xmlDoc*
+
+2007-01-04  fpeters
+
+	* lasso/xml/tools.c: directly include headers from xmlsec/openssl/;
+	at least required to compile on Fedora Cora 6.
+
+2007-01-04  fpeters
+
+	* configure.ac: bumped version to 1.9.9 (and updated libtool
+	version accordingly) and disabled PHP5 support by default.
+
+2007-01-04  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c,
+	lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/wsf_profile.c, lasso/saml-2.0/ecp.c,
+	lasso/saml-2.0/login.c, lasso/saml-2.0/logout.c, lasso/xml/xml.c:
+	misc fixes for 1) memory leaks around XPath usage and 2) potential
+	segfaults from untested pointers
+
+2007-01-04  fpeters
+
+	* lasso/errors.h, swig/Lasso.i: new
+	LASSO_NAME_IDENTIFIER_MAPPING_ERROR_MISSING_TARGET_IDENTIFIER error
+	code
+
+2007-01-03  fpeters
+
+	* lasso/id-ff/logout.c: make ID-FF SLO works even when there are
+	SAMLv2 assertions in the session
+
+2007-01-03  fpeters
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/logout.c: insure sso and
+	slo from SAML2 work even when there are active ID-FF sessions.
+
+2007-01-03  fpeters
+
+	* lasso/saml-2.0/profile.c: removed memory leak (GPtrArray was not
+	freed) by directly accessing assertions from their hash table
+	instead of an intermediary GPtrArray.
+
+2007-01-02  nclapies
+
+	* docs/lasso-book/writing-a-saml2-php-sp.txt: Updated metadata
+	saml2 saming files. Fixed protocol binding setting when initiating
+	sso.
+
+2006-12-28  fpeters
+
+	* lasso/saml-2.0/logout.c: removed XXX comment about SessionIndex
+	since it is handled in the application, not in Lasso
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-wsf/authentication.c, lasso/id-wsf/data_service.c:
+	harmonized LASSO_PARAM_ERROR_BAD_TYPE_OR_NULL_OBJ and
+	LASSO_PARAM_ERROR_INVALID_VALUE usage
+
+2006-12-28  fpeters
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/name_id_management.c: extra
+	checking for wrong or NULL parameters
+
+2006-12-28  fpeters
+
+	* php/patch_swig_output.py: more fixes for optional arg support in
+	PHP
+
+2006-12-28  fpeters
+
+	* php/patch_swig_output.py: optional args are handled differently
+	in newer SWIG versions
+
+2006-12-28  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_assertion_idrequest.c,
+	lasso/xml/saml-2.0/samlp2_authn_request.c,
+	lasso/xml/saml-2.0/samlp2_logout_request.c,
+	lasso/xml/saml-2.0/samlp2_logout_response.c,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_request.c,
+	lasso/xml/saml-2.0/samlp2_manage_name_id_response.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_request.c,
+	lasso/xml/saml-2.0/samlp2_name_id_mapping_response.c,
+	lasso/xml/saml-2.0/samlp2_response.c,
+	lasso/xml/saml-2.0/samlp2_status_response.c,
+	lasso/xml/saml-2.0/samlp2_subject_query_abstract.c: notice when
+	building deflated query fails, and don't include (null) as query
+	component in this case.
+
+2006-12-28  fpeters
+
+	* lasso/xml/xml.c: fixed crashed added when changing find_path
+	return type
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-wsf/authentication.c,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/personal_profile_service.c,
+	lasso/id-wsf/wsf_profile.c, lasso/saml-2.0/login.c,
+	lasso/xml/lib_authentication_statement.c, lasso/xml/tools.c,
+	lasso/xml/xml.c: coding style improvements
+
+2006-12-28  fpeters
+
+	* lasso/errors.h, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/wsf_profile.c: replaced
+	remaining LASSO_ERROR_UNDEFINED by appropriate error codes
+
+2006-12-28  fpeters
+
+	* swig/Lasso.i: new error codes and coding style
+
+2006-12-28  fpeters
+
+	* swig/Lasso-saml2.i: missing include, typo in comment and coding
+	style
+
+2006-12-28  fpeters
+
+	* swig/Lasso-wsf-sa.i: coding style
+
+2006-12-28  fpeters
+
+	* lasso/errors.c, lasso/errors.h, lasso/id-ff/identity.c,
+	lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/profile.c,
+	lasso/id-ff/provider.c, lasso/xml/xml.c: replaced
+	LASSO_ERROR_UNDEFINED by appropriate error codes in all of xml/ and
+	id-ff/
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-wsf/wsf_profile.c: coding style:
+	added spaces at appropriate places
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/login.c: replaced most LASSO_ERROR_UNDEFINED by
+	appropriate error codes (two occurences are remaining)
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/identity.c, lasso/id-ff/lecp.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/session.c,
+	lasso/id-wsf/data_service.c, lasso/saml-2.0/name_id_management.c:
+	fixed all occurences of returning a negative number unspecified in
+	errors.h
+
+2006-12-28  fpeters
+
+	* lasso/id-ff/logout.c, lasso/saml-2.0/logout.c: replaced all usage
+	of UNDEFINED error code in logout profiles (both ID-FF and SAMLv2)
+	by appropriate error codes
+
+2006-12-27  fpeters
+
+	* lasso/errors.c, lasso/errors.h,
+	lasso/saml-2.0/name_id_management.c: new
+	LASSO_PROFILE_ERROR_STATUS_NOT_SUCCESS error code
+
+2006-12-27  fpeters
+
+	* lasso/id-wsf/data_service.c: typo fix
+
+2006-12-27  fpeters
+
+	* lasso/saml-2.0/profile.c: changed test against assertions which
+	could yield a useless LASSO_ERROR_UNDEFINED
+
+2006-12-27  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/logout.c,
+	lasso/id-ff/name_registration.c, lasso/id-ff/provider.c: avoid
+	segfaults when passing NULL to *_new_from_dump
+
+2006-12-27  fpeters
+
+	* lasso/id-wsf/authentication.c, lasso/id-wsf/data_service.c:
+	fixing a bunch of possible segfaults (NULL passed to strlen)
+
+2006-12-27  fpeters
+
+	* lasso/id-wsf/authentication.c, lasso/id-wsf/authentication.h,
+	lasso/id-wsf/data_service.c, lasso/id-wsf/discovery.c,
+	lasso/id-wsf/wsf_profile.c, lasso/xml/soap_detail.h: fixing a bunch
+	of undeclared functions and possible segfaults; also removed some
+	debugging printf.  (ID-WSF is now warning-free (but char
+	signedness))
+
+2006-12-27  fpeters
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c: fixing some usage of unitialized
+	variables in SAMLv2 support
+
+2006-12-27  fpeters
+
+	* lasso/xml/xml.c: correctly initialize req at top of function and
+	don't try to get the deflated samlv2 query if the parameter was not
+	present
+
+2006-12-27  fpeters
+
+	* lasso/xml/xml.c: moved find_path and set_value_at_path from
+	returning int to returning gboolean; this gets rid of ugly and
+	useless LASSO_ERROR_UNDEFINED in thos functions.
+
+2006-12-27  fpeters
+
+	* lasso/xml/xml.c, lasso/xml/xml_enc.h: default encryption type is
+	AES-128, rearranged code so that is clearer (let default handling
+	be at the end)
+
+2006-12-27  fpeters
+
+	* lasso/id-ff/provider.h, lasso/xml/xml_enc.h: fixed gtk-doc for
+	some enums
+
+2006-12-27  fpeters
+
+	* AUTHORS: Adding Damien to developers
+
+2006-12-27  fpeters
+
+	* README.WIN32: fixing minor typo
+
+2006-12-27  fpeters
+
+	* README.JAVA: added libgcj7-dev for gcj 4.1
+
+2006-12-21  fpeters
+
+	* lasso/saml-2.0/name_id_management.c, lasso/saml-2.0/profile.c,
+	lasso/xml/tools.c, lasso/xml/xml.c: fixed a few (harmless) warnings
+	detected when compiling with -Wall -Wmissing-declarations
+	-Wdeclaration-after-statement
+
+2006-12-21  fpeters
+
+	* swig/Lasso-wsf-disco.i: set return type
+
+2006-12-20  fpeters
+
+	* lasso/id-ff/defederation.c: fixed used of unitialized variable
+
+2006-12-20  nclapies
+
+	* docs/lasso-book/Makefile.am,
+	docs/lasso-book/writing-a-saml2-php-sp.txt: Added SAML2 PHP
+	documentation. Need to complete with some Login and Logout details.
+	Need to add description of Name Id Management profile.
+
+2006-12-20  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/logout.c, lasso/xml/tools.c, lasso/xml/xml.c,
+	lasso/xml/xml_enc.h, lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/saml2_assertion.h, swig/Lasso.i: Allow the
+	choice of the encryption algorithm to use
+
+2006-12-19  fpeters
+
+	* tests/metadata/Makefile.am: include all testing metadata
+
+2006-12-18  fpeters
+
+	* docs/lasso-book/single-sign-on.rst: fix rst syntax
+
+2006-12-16  fpeters
+
+	* docs/reference/snippet-types.rst, lasso/xml/private.h,
+	lasso/xml/xml.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.h: Added (and
+	documented) new members to snippet, necessary to fix namespace for
+	saml:AuthnContextClassRef used in samlp:RequestedAuthnContext
+
+2006-12-08  fpeters
+
+	* tests/Makefile.am, tests/metadata_tests.c: testing metadata files
+	are in $(srcdir)
+
+2006-12-08  fpeters
+
+	* tests/Makefile.am: include tests metadata subdir
+
+2006-12-08  fpeters
+
+	* configure.ac, tests/metadata/Makefile.am: ship metadata files
+	used in tests
+
+2006-12-08  fpeters
+
+	* configure.ac: fixed php configure options indentation
+
+2006-12-08  fpeters
+
+	* Makefile.am, configure.ac, php5/Makefile.am: added support for
+	PHP5
+
+2006-12-08  fpeters
+
+	* swig/Lasso.i: compile PHP5 binding fine (using PHP_VERSION_ID to
+	see if this is PHP 5)
+
+2006-12-08  fpeters
+
+	* Makefile.am, configure.ac, php/Makefile.am: try to avoid
+	detecting php5 as a compatible php version
+
+2006-12-08  fpeters
+
+	* java/Makefile.am: tarball have to ship two new Java file
+
+2006-12-08  fpeters
+
+	* lasso/xml/Makefile.am: ship xml_enc.h
+
+2006-12-07  fpeters
+
+	* php/Makefile.am: removed -dlname argument which disappeared in
+	SWIG 1.3.31 and was already optional in 1.3.29
+
+2006-12-07  fpeters
+
+	* swig/Lasso-wsf-disco.i: abstract is a reserved java keyword
+
+2006-12-07  fpeters
+
+	* swig/Lasso.i: different code path for SWIG >= 1.3.31 for downcast
+	in java
+
+2006-12-07  fpeters
+
+	* swig/Lasso.i: added (required in swig 1.3.31) methodmodifiers for
+	javadestruct delete typemap
+
+2006-12-07  fpeters
+
+	* swig/Lasso-wsf-disco.i: abstract attribute breaks php binding
+	with SWIG 1.3.31
+
+2006-12-07  fpeters
+
+	* swig/saml-2.0/saml2_subject_locality.i: fixed PHP4 #ifdef
+
+2006-12-07  fpeters
+
+	* swig/Lasso.i: binding for new error code
+
+2006-12-07  fpeters
+
+	* lasso/xml/xml.c: ECP fixes
+
+2006-12-07  fpeters
+
+	* lasso/id-ff/profile.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/profile.c: SAMLv2 compliance fix (mostly RelayState
+	and affiliations related)
+
+2006-12-07  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: use Location when
+	ResponseLocation is not available
+
+2006-12-07  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: minimal support for
+	EncryptedID in federation termiation
+
+2006-12-06  dlaniel
+
+	* lasso/xml/xml.c: Better parse xml to find and EncryptedKey
+
+2006-12-06  fpeters
+
+	* lasso/id-ff/provider.c: if signature element is not found, look
+	for it in an assertion element (this is not perfect since it should
+	be possibly to check *both* signatures and we don't care for the
+	moment)
+
+2006-12-06  fpeters
+
+	* lasso/errors.c, lasso/errors.h: new logout error code
+
+2006-12-06  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_authn_request.c,
+	lasso/xml/saml-2.0/samlp2_authn_request.h,
+	lasso/xml/saml-2.0/samlp2_logout_request.c,
+	lasso/xml/saml-2.0/samlp2_logout_request.h,
+	lasso/xml/saml-2.0/samlp2_logout_response.c,
+	lasso/xml/saml-2.0/samlp2_logout_response.h: relaystate handling
+
+2006-12-06  fpeters
+
+	* lasso/saml-2.0/logout.c: set Destination and handle relayState
+
+2006-12-06  fpeters
+
+	* lasso/xml/xml.c: fixed ecp attribute name
+
+2006-12-05  nclapies
+
+	* lasso/id-ff/login.c, lasso/id-ff/login.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/loginprivate.h, swig/Lasso.i: Added paos response
+	message process support in LassoLogin object.
+
+2006-12-05  fpeters
+
+	* lasso/xml/xml.c: look up harder for encypted stuff
+
+2006-12-05  fpeters
+
+	* lasso/xml/xml.c: avoid segfaults looking for decryption key
+
+2006-12-05  fpeters
+
+	* lasso/saml-2.0/logout.c: return missing assertion error on
+	missing assertion
+
+2006-12-05  fpeters
+
+	* lasso/saml-2.0/login.c: removed conflicting change
+
+2006-12-05  fpeters
+
+	* lasso/xml/xml.c: use 128-bit AES which seems better supported by
+	other applications
+
+2006-12-05  fpeters
+
+	* swig/saml-2.0/saml2_action.i, swig/saml-2.0/saml2_assertion.i,
+	swig/saml-2.0/saml2_attribute.i,
+	swig/saml-2.0/saml2_authn_context.i,
+	swig/saml-2.0/saml2_authn_statement.i,
+	swig/saml-2.0/saml2_authz_decision_statement.i,
+	swig/saml-2.0/saml2_base_idabstract.i,
+	swig/saml-2.0/saml2_name_id.i,
+	swig/saml-2.0/saml2_proxy_restriction.i,
+	swig/saml-2.0/saml2_subject_locality.i,
+	swig/saml-2.0/samlp2_artifact_resolve.i,
+	swig/saml-2.0/samlp2_assertion_idrequest.i,
+	swig/saml-2.0/samlp2_authn_query.i,
+	swig/saml-2.0/samlp2_authz_decision_query.i,
+	swig/saml-2.0/samlp2_idp_entry.i, swig/saml-2.0/samlp2_idp_list.i,
+	swig/saml-2.0/samlp2_manage_name_id_request.i,
+	swig/saml-2.0/samlp2_request_abstract.i,
+	swig/saml-2.0/samlp2_scoping.i, swig/saml-2.0/samlp2_status.i,
+	swig/saml-2.0/samlp2_status_code.i,
+	swig/saml-2.0/samlp2_status_response.i: fixed casing for all saml2
+	attribute members
+
+2006-12-04  nclapies
+
+	* lasso/saml-2.0/login.c: Moved ECP protocol binding detection from
+	to PAOS.
+
+2006-12-04  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/saml-2.0/login.c: Verify message
+	signature in lasso_saml20_login_process_authn_response_msg
+
+2006-12-04  fpeters
+
+	* lasso/saml-2.0/logout.c: look up for the right federation based
+	on affiliation in logout
+
+2006-12-04  fpeters
+
+	* lasso/saml-2.0/logout.c: use federation from affiliation if
+	necessary in logout
+
+2006-12-04  fpeters
+
+	* swig/saml-2.0/samlp2_logout_request.i: correctly rename
+	attributes to camelCase
+
+2006-12-04  fpeters
+
+	* lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/samlp2_status_response.c,
+	lasso/xml/saml-2.0/samlp2_request_abstract.c: fixed signature
+	element position
+
+2006-12-04  fpeters
+
+	* swig/saml-2.0/saml2_assertion.i: binding for authnStatement
+
+2006-12-02  dlaniel
+
+	* lasso/xml/saml-2.0/samlp2_response.c: Fixed memory management
+
+2006-12-02  dlaniel
+
+	* lasso/xml/xml.c, lasso/xml/saml-2.0/samlp2_response.c: Fixed
+	memory management problems
+
+2006-12-02  dlaniel
+
+	* lasso/xml/tools.c: Fixed a few warnings with -Wall
+
+2006-12-01  fpeters
+
+	* lasso/id-ff/provider.c: (stupid me) initialize and destroy
+	correctly affiliation variables
+
+2006-12-01  fpeters
+
+	* lasso/id-ff/providerprivate.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/server.c: achieved support for using affiliations
+
+2006-12-01  fpeters
+
+	* swig/saml-2.0/samlp2_name_id_policy.i: fixing case for
+	NameIdPolicy binding
+
+2006-12-01  fpeters
+
+	* swig/Lasso.i: include id-wsf/identity.h to get
+	identity_get_offerings prototype
+
+2006-12-01  dlaniel
+
+	* swig/Lasso.i: Added an error code in bindings
+
+2006-12-01  fpeters
+
+	* lasso/saml-2.0/logout.c: on logout response, if responder then
+	look inside for real value
+
+2006-12-01  dlaniel
+
+	* lasso/saml-2.0/login.c: Fixed a memory problem (was double free)
+
+2006-11-30  dlaniel
+
+	* lasso/saml-2.0/logout.c: Fixed logout request signature
+
+2006-11-30  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h: Initialise
+	and destroy correctly provider private datas
+
+2006-11-30  fpeters
+
+	* lasso/saml-2.0/login.c: only call into
+	lasso_saml20_login_process_paos_response_msg if PAOS namespace is
+	visible; this avoids parsing three times the same message for the
+	common case of *not* PAOS.
+
+2006-11-30  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_response.c: removed side effects in
+	samlp2_response/get_xmlNode
+
+2006-11-30  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_response.c: fixed case when not using
+	encrypted assertion
+
+2006-11-30  fpeters
+
+	* lasso/xml/tools.c, lasso/xml/saml-2.0/samlp2_response.c: fixing
+	memory leaks, side effects and more in EncryptedAssertion
+
+2006-11-30  nclapies
+
+	* lasso/saml-2.0/ecp.c: Uncommented xml free.
+
+2006-11-30  nclapies
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/ecpprivate.h: Fixed memory
+	use.
+
+2006-11-30  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_response.c: naming lists "item" is
+	confusin
+
+2006-11-30  nclapies
+
+	* lasso/saml-2.0/ecpprivate.h: Added missing ecp private header
+	file.
+
+2006-11-30  nclapies
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/ecp.c,
+	lasso/saml-2.0/ecp.h: Added private structure for LassoEcp to keep
+	relayed data.
+
+2006-11-30  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_response.c: use appropriate functions
+	for g_list_
+
+2006-11-30  fpeters
+
+	* lasso/saml-2.0/logout.c, lasso/saml-2.0/profile.c: re-enabling
+	saml2 signature check
+
+2006-11-29  dlaniel
+
+	* lasso/xml/tools.c, lasso/xml/saml-2.0/samlp2_response.c: Moved
+	assertion encryption code out of saml2_response.c to tools.c
+
+2006-11-29  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/saml-2.0/login.c, lasso/xml/xml.c,
+	lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/saml2_assertion.h,
+	lasso/xml/saml-2.0/samlp2_response.c,
+	lasso/xml/saml-2.0/samlp2_status_response.c: Encrypt Assertions at
+	the last moment, so that the assertions should be fully built
+	before that
+
+2006-11-28  dlaniel
+
+	* lasso/xml/xml.c: Don't include the internal datas of the nodes in
+	encrypted elements
+
+2006-11-28  dlaniel
+
+	* lasso/errors.c, lasso/errors.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/logout.c: Added an error type when there is no key
+	to decrypt some encrypted elements
+
+2006-11-28  fpeters
+
+	* swig/saml-2.0/saml2_conditions.i,
+	swig/saml-2.0/saml2_subject_confirmation_data.i: fixed references
+	to SWIGPHP4
+
+2006-11-28  fpeters
+
+	* lasso/errors.c, lasso/errors.h, lasso/saml-2.0/login.c,
+	swig/Lasso.i, swig/saml-2.0/saml2_audience_restriction.i,
+	swig/saml-2.0/saml2_conditions.i,
+	swig/saml-2.0/saml2_subject_confirmation.i,
+	swig/saml-2.0/saml2_subject_confirmation_data.i,
+	swig/saml-2.0/samlp2_response.i: extra checks to pass negative
+	testing steps
+
+2006-11-27  fpeters
+
+	* lasso/id-ff/profile.c: include header file for
+	lasso_saml20_profile_set_session_from_dump
+
+2006-11-27  fpeters
+
+	* lasso/saml-2.0/login.c: removed unused variable and added check
+	for identity before accessing it
+
+2006-11-27  fpeters
+
+	* lasso/xml/tools.c, lasso/saml-2.0/logout.c: removed unused
+	variable
+
+2006-11-27  fpeters
+
+	* php/patch_swig_output.py: removed debugging output
+
+2006-11-27  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/xml/strings.h, swig/Lasso-saml2.i:
+	Support for name-id:format:encrypted in NameIdPolicy in
+	Authnrequest
+
+2006-11-24  dlaniel
+
+	* lasso/saml-2.0/profile.c: return -1 was not cute
+
+2006-11-23  dlaniel
+
+	* lasso/id-ff/profile.c, lasso/saml-2.0/profile.c,
+	lasso/saml-2.0/profileprivate.h, lasso/xml/xml.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h: Added an original
+	node to encrypted elements, only in dumps, for the dump to be
+	readable
+
+2006-11-23  dlaniel
+
+	* lasso/saml-2.0/logout.c: Removed useless headers
+
+2006-11-23  dlaniel
+
+	* lasso/saml-2.0/logout.c: Encrypt and decrypt NameID in logout
+	requests
+
+2006-11-23  dlaniel
+
+	* lasso/saml-2.0/login.c: Coding style fix
+
+2006-11-23  fpeters
+
+	* lasso/saml-2.0/ecp.c: removed use of unallocated variable
+
+2006-11-23  fpeters
+
+	* lasso/saml-2.0/ecp.c: style and missing header
+
+2006-11-23  fpeters
+
+	* lasso/saml-2.0/ecp.c: fixing indentation
+
+2006-11-23  nclapies
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/ecp.h: Added missing updates
+	about LassoEcp object.
+
+2006-11-22  nclapies
+
+	* swig/Lasso-saml2.i: Updated binding for LassoEcp object.
+
+2006-11-22  dlaniel
+
+	* swig/Lasso.i: Binding for setEncryptionMode
+
+2006-11-22  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h, lasso/saml-2.0/login.c: Changed
+	setEncryption(boolean) to setEncryptionMode(enum mode)
+
+2006-11-22  dlaniel
+
+	* swig/Lasso.i: Binding for setEncryption method
+
+2006-11-22  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/saml-2.0/login.c: changed provider->private_data->encryption
+	name to provider->private_data->encryption_enabled
+
+2006-11-22  dlaniel
+
+	* lasso/xml/xml.c: Fix LassoSaml2EncryptedElement name
+
+2006-11-22  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c: Added lasso_provider_set_encryption
+	method to activate or desactive encryption
+
+2006-11-22  fpeters
+
+	* lasso/xml/xml.c: reduced memory allocation (and loc)
+
+2006-11-22  dlaniel
+
+	* lasso/xml/xml.c: Changed xmlGetNoNsProp with xmlGetProp in
+	lasso_decrypt
+
+2006-11-21  fpeters
+
+	* lasso/xml/tools.c: fixed pkey memory leak
+
+2006-11-21  dlaniel
+
+	* lasso/saml-2.0/ecp.c: coding style fixes
+
+2006-11-21  dlaniel
+
+	* lasso/xml/tools.c: Free bio on error in lasso_get_pem_file_type
+
+2006-11-21  dlaniel
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c, lasso/saml-2.0/server.c,
+	lasso/xml/tools.c, lasso/xml/xml.c: Fixed -Wall warnings and
+	replaced a LASSO_ERROR_UNDEFINED
+
+2006-11-21  dlaniel
+
+	* lasso/xml/xml.c, lasso/xml/saml-2.0/saml2_encrypted_element.c:
+	Coding style fixes + removed the obsolete comment about
+	set_nodename in LassoSaml2EncryptedElementClass
+
+2006-11-21  dlaniel
+
+	* lasso/saml-2.0/login.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c: Set nodename
+	"EncryptedElement" in LassoSaml2EncryptedElementClass
+
+2006-11-21  dlaniel
+
+	* lasso/xml/xml.c: updated comments
+
+2006-11-21  dlaniel
+
+	* lasso/xml/xml.c: - Can use AES EncryptedKey as well as DES to
+	decrypted the EncryptedData - Encrypt nodes with 256-bit AES
+
+2006-11-21  fpeters
+
+	* lasso/xml/xml.c: in LIST_NODES, if snippet->name is set; use it.
+
+2006-11-21  fpeters
+
+	* lasso/xml/soap_binding_ext_credential.c: ##any nodes needs empty
+	snippet name
+
+2006-11-21  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c,
+	lasso/xml/tools.c, lasso/xml/xml.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h,
+	lasso/xml/saml-2.0/samlp2_response.c: Encrypt and decrypt Assertion
+
+2006-11-21  fpeters
+
+	* lasso/id-wsf/discovery.c: check for identity before accessing it
+
+2006-11-20  nclapies
+
+	* swig/Lasso.i: Restored immutable attribute msg_relayState in
+	LassoLogin object.
+
+2006-11-20  nclapies
+
+	* lasso/saml-2.0/provider.c: Moved SOAP value as last element in
+	lists.
+
+2006-11-20  fpeters
+
+	* lasso/saml-2.0/server.c: new server method, for saml2
+	affiliations
+
+2006-11-20  fpeters
+
+	* lasso/saml-2.0/serverprivate.h: saml2 server private functions
+
+2006-11-19  fpeters
+
+	* swig/Lasso.i, lasso/errors.c, lasso/errors.h,
+	lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c, lasso/id-ff/server.h,
+	lasso/saml-2.0/Makefile.am: added loading of affiliation metadata
+	(not yet acted upon)
+
+2006-11-19  fpeters
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: const'ified some
+	char*
+
+2006-11-19  fpeters
+
+	* lasso/id-ff/login.c: rewritten in a shorter form
+
+2006-11-19  fpeters
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: s/file_name/filename/
+
+2006-11-19  fpeters
+
+	* swig/saml-2.0/samlp2_artifact_resolve.i,
+	swig/saml-2.0/samlp2_artifact_response.i,
+	swig/saml-2.0/samlp2_assertion_idrequest.i,
+	swig/saml-2.0/samlp2_attribute_query.i,
+	swig/saml-2.0/samlp2_authn_query.i,
+	swig/saml-2.0/samlp2_authn_request.i,
+	swig/saml-2.0/samlp2_authz_decision_query.i,
+	swig/saml-2.0/samlp2_logout_request.i,
+	swig/saml-2.0/samlp2_manage_name_id_request.i,
+	swig/saml-2.0/samlp2_name_id_mapping_request.i,
+	swig/saml-2.0/samlp2_name_id_mapping_response.i,
+	swig/saml-2.0/samlp2_request_abstract.i,
+	swig/saml-2.0/samlp2_response.i,
+	swig/saml-2.0/samlp2_subject_query_abstract.i: don't include * in
+	%rename() statements
+
+2006-11-16  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/xml/xml.c, lasso/xml/xml.h,
+	lasso/xml/xml_enc.h, lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h: - Moved the
+	EncryptedKey to the same level as EncryptedData in xml - Changed
+	the prototype for lasso_node_encrypt and lasso_node_encrypt - Moved
+	lasso_node_encrypt and lasso_node_encrypt declaration to xml_enc.h
+	- Added a GList for EncryptedKey in EncryptedElement
+
+2006-11-16  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/loginprivate.h, lasso/saml-2.0/provider.c,
+	lasso/saml-2.0/providerprivate.h: process_authn_response_msg for
+	saml2; this is similar to id-ff even if the underlying messages are
+	different
+
+2006-11-16  fpeters
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/provider.c: correctly
+	looks up assertionconsumerservice url, even with just the binding
+
+2006-11-15  fpeters
+
+	* lasso/id-ff/provider.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c, lasso/xml/strings.h, swig/Lasso-saml2.i,
+	swig/saml-2.0/samlp2_authn_request.i: binding for SAML2 binding
+	uri; and fixed SAML20 to SAML2 for coherence
+
+2006-11-15  dlaniel
+
+	* lasso/id-ff/server.c, lasso/id-ff/serverprivate.h,
+	lasso/saml-2.0/login.c, lasso/xml/xml.c, lasso/xml/xml.h:
+	Decryption of EncryptedID in Assertion
+
+2006-11-15  fpeters
+
+	* lasso/id-ff/logout.c, lasso/saml-2.0/logout.c,
+	lasso/saml-2.0/logoutprivate.h: fixed up
+	lasso_saml20_logout_process_response_msg function name; and remove
+	assertion on SP when initiated on SP.
+
+2006-11-14  fpeters
+
+	* lasso/id-ff/profile.c, lasso/id-ff/provider.c,
+	lasso/id-wsf/authentication.c, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/discovery.c, lasso/id-wsf/wsf_profile.c,
+	lasso/id-wsf/wsf_profile.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/loginprivate.h, lasso/saml-2.0/name_id_management.c,
+	lasso/xml/xml.c: random fixage of warning displayed with -Wall
+
+2006-11-14  nclapies
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/login.c,
+	lasso/xml/strings.h, lasso/xml/xml.c, lasso/xml/xml.h: Fixed big
+	mistake about PAOS naming. Added more strict check when trying to
+	process PAOS response in login.c.
+
+2006-11-14  nclapies
+
+	* lasso/saml-2.0/ecp.c: Fixed declaration line ending.
+
+2006-11-14  nclapies
+
+	* lasso/saml-2.0/ecp.c, lasso/saml-2.0/ecp.h: Added ecp files.
+
+2006-11-14  fpeters
+
+	* lasso/id-wsf/wsf_profile.c: downcast soapenvelope to LassoNode
+
+2006-11-14  fpeters
+
+	* lasso/id-wsf/discovery.c: include header from xmlsec to get
+	xmlSecCreateTree declaration
+
+2006-11-14  nclapies
+
+	* lasso/lasso.h: Added ecp.h in public declarations.
+
+2006-11-14  nclapies
+
+	* swig/Lasso-saml2.i, swig/Lasso.i: Added binding for ECP. Modified
+	binding in Lasso.si to allow setting LassoProfile's msg_relayState.
+
+2006-11-14  nclapies
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c, lasso/xml/strings.h: Added ECP profile
+	(client, SP and IDP parts).
+
+2006-11-14  nclapies
+
+	* lasso/xml/xml.c, lasso/xml/xml.h: Added functions to export to
+	PAOS request and ECP response.
+
+2006-11-14  dlaniel
+
+	* lasso/errors.c, lasso/errors.h, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/profile.c: Replaced some  LASSO_ERROR_UNDEFINED with
+	real error codes
+
+2006-11-14  dlaniel
+
+	* lasso/saml-2.0/login.c: Test on a possibly NULL pointer to avoid
+	seg fault
+
+2006-11-13  dlaniel
+
+	* lasso/xml/xml.c: Read SNIPPET_XMLNODE from XML
+
+2006-11-13  dlaniel
+
+	* docs/reference/snippet-types.rst: Added documentation for
+	SNIPPET_XMLNODE
+
+2006-11-13  dlaniel
+
+	* lasso/saml-2.0/login.c, lasso/xml/private.h, lasso/xml/xml.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.c,
+	lasso/xml/saml-2.0/saml2_encrypted_element.h: Added EncryptedID as
+	SNIPPET_XMLNODE in Subject in Assertion
+
+2006-11-13  dlaniel
+
+	* lasso/xml/xml.h: Header for lasso_node_encrypt
+
+2006-11-13  fpeters
+
+	* lasso/id-ff/profile.c: also dump private data; necessary for
+	saml2 artifact support
+
+2006-11-13  dlaniel
+
+	* lasso/xml/xml.c: Added lasso_node_encrypt to encrypt a Lasso node
+
+2006-11-10  fpeters
+
+	* lasso/saml-2.0/logout.c: don't set inResponseTo if there is no
+	request
+
+2006-11-10  fpeters
+
+	* lasso/id-ff/logout.c, lasso/id-ff/profile.c: include http request
+	method in profile dumps
+
+2006-11-09  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/saml-2.0/provider.c: moved
+	encryption key loading from id-ff to saml-2.0
+
+2006-11-09  dlaniel
+
+	* lasso/id-ff/server.c: properly initialise encryption_private_key
+
+2006-11-09  dlaniel
+
+	* lasso/id-ff/server.c: Use xmlSecKeyDestroy to free the key in
+	lasso_server_set_encryption_private_key
+
+2006-11-09  dlaniel
+
+	* lasso/id-ff/server.c: Fix a possible memory leak in
+	lasso_server_set_encryption_private_key and add a comment
+
+2006-11-09  dlaniel
+
+	* swig/Lasso.i: binding for lasso_server_set_encryption_private_key
+
+2006-11-09  dlaniel
+
+	* lasso/errors.c, lasso/errors.h, lasso/id-ff/server.c,
+	lasso/id-ff/server.h: changed prototype for
+	lasso_server_set_encryption_private_key and added error handling
+
+2006-11-09  fpeters
+
+	* swig/saml-2.0/samlp2_requested_authn_context.i: Change from
+	string to list in requestedAuthnContext.
+
+2006-11-09  fpeters
+
+	* lasso/saml-2.0/login.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.c,
+	lasso/xml/saml-2.0/samlp2_requested_authn_context.h:
+	AuthnContextClassRef is a list; treat is as such
+
+2006-11-09  fpeters
+
+	* lasso/id-ff/login.c: only compare saml1 assertion
+
+2006-11-09  dlaniel
+
+	* lasso/id-ff/server.c, lasso/id-ff/server.h: load encryption
+	private key
+
+2006-11-09  fpeters
+
+	* lasso/saml-2.0/login.c: filled login_must_authenticate with
+	intelligence about authncontext
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/login.c: support for RequestAuthnContext in
+	must_authenticate (incomplete but not likely to do much more here;
+	I'll do it better in SAML2)
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/session.c, lasso/id-wsf/discovery.c, swig/Lasso.i:
+	changed lasso_session_get_assertions not to g_object_ref
+	assertions, so they don't have to be freed.
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c: spec refers to signing/encryption so use that
+	vocabulary (even if I don't like it)
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/providerprivate.h,
+	lasso/id-ff/server.c: minor changes & fix to coding style for enc
+	public key loading
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h: encryption_public_key will always be
+	set from metadata; no need for filename stuff and to touch the
+	public struct.
+
+2006-11-08  dlaniel
+
+	* lasso/id-ff/provider.c, lasso/id-ff/provider.h,
+	lasso/id-ff/providerprivate.h, lasso/id-ff/server.c: load
+	encryption key from metadatas
+
+2006-11-08  fpeters
+
+	* lasso/saml-2.0/login.c: more appropriate error code
+
+2006-11-08  fpeters
+
+	* lasso/errors.c, lasso/errors.h, lasso/saml-2.0/login.c,
+	swig/Lasso.i: error on sso initiated by idp and no endpoint defined
+	as default for sp
+
+2006-11-08  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/loginprivate.h: saml2 sso initiated by idp
+
+2006-11-07  fpeters
+
+	* lasso/saml-2.0/login.c: can get assertion consumer service url
+	from that very same attribute
+
+2006-11-07  fpeters
+
+	* lasso/id-ff/defederation.c, lasso/id-ff/login.c,
+	lasso/id-ff/logout.c, lasso/id-ff/name_registration.c,
+	lasso/saml-2.0/login.c, lasso/saml-2.0/logout.c,
+	lasso/saml-2.0/name_id_management.c, lasso/xml/private.h,
+	lasso/xml/tools.c: fixed url/query construction for endpoints with
+	query part (zxid)
+
+2006-11-07  dlaniel
+
+	* tests/metadata/metadata_02.xml: fix metadata test
+
+2006-11-07  dlaniel
+
+	* tests/Makefile.am, tests/metadata_tests.c, tests/tests.c,
+	tests/metadata/metadata_01.xml, tests/metadata/metadata_02.xml,
+	tests/metadata/metadata_03.xml, tests/metadata/metadata_04.xml,
+	tests/metadata/metadata_05.xml: tests for loading certs and keys
+	from metadata
+
+2006-11-07  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: fixed dump/restore from dump
+	for name id management profile
+
+2006-11-06  fpeters
+
+	* lasso/id-ff/login.c, lasso/id-ff/session.c,
+	lasso/id-ff/sessionprivate.h, lasso/saml-2.0/login.c: fixing saml2
+	sso error cases (on ispassive)
+
+2006-11-06  fpeters
+
+	* lasso/id-ff/profile.c: spelling
+
+2006-11-06  fpeters
+
+	* lasso/id-ff/provider.c: better loading of public key from
+	metadata; full support for embedded PEM, and suppressed output when
+	not base64.
+
+2006-11-06  fpeters
+
+	* lasso/saml-2.0/login.c: keep a copy of assertion easily
+	accessible for further changes
+
+2006-11-06  fpeters
+
+	* lasso/xml/strings.h: added LASSO_SAML2_CONFIRMATION_METHOD_BEARER
+
+2006-11-06  fpeters
+
+	* lasso/saml-2.0/login.c: set subject confirmation method and
+	recipient; to be conformant.
+
+2006-11-06  fpeters
+
+	* lasso/errors.c, lasso/errors.h, swig/Lasso.i: error code for
+	missing assertion
+
+2006-11-05  fpeters
+
+	* lasso/saml-2.0/name_id_management.c: implementation of
+	lasso_name_id_management_process_response_msg
+
+2006-11-05  fpeters
+
+	* lasso/saml-2.0/logout.c: appropriate return code
+
+2006-11-05  fpeters
+
+	* lasso/id-ff/profile.c, lasso/id-ff/profile.h, swig/Lasso.i:
+	detection of SOAP name id management
+
+2006-11-04  fpeters
+
+	* swig/Lasso-saml2.i, swig/Lasso.i: bindings for new
+	LassoNameIdManagement profile
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/name_id_management.c,
+	lasso/saml-2.0/name_id_management.h: empty _process_response_msg
+
+2006-11-04  fpeters
+
+	* lasso/lasso.h: LassoNameIdManagement is first class profile ->
+	included in lasso.h
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/name_id_management.c,
+	lasso/saml-2.0/name_id_management.h: dump handling
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/name_id_management.c,
+	lasso/saml-2.0/name_id_management.h: invert args
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/name_id_management.c,
+	lasso/saml-2.0/name_id_management.h: fixed new id param format
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/Makefile.am, lasso/saml-2.0/name_id_management.c,
+	lasso/saml-2.0/name_id_management.h: name id management saml2
+	profile (lacks process_response)
+
+2006-11-04  fpeters
+
+	* lasso/saml-2.0/logout.c: fixed small memory leak in saml2 slo
+
+2006-11-03  fpeters
+
+	* lasso/saml-2.0/profile.c: fix saml2 artifact decoding
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/provider.c: if node was not base64, use its original
+	value for key loading.
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/server.c: set provider role; so mixed sp/idp metadata
+	is ok.
+
+2006-11-02  dlaniel
+
+	* swig/Lasso.i: Added back LASSO_PROFILE_ERROR_MISSING_ARTIFACT
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/profile.c, lasso/saml-2.0/Makefile.am,
+	lasso/saml-2.0/profile.c, lasso/saml-2.0/profile.h: new
+	lasso_profile_is_saml_query function
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/provider.c: uncomment xmlsec output directives; that
+	should not have been commented
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/logout.c, lasso/saml-2.0/logout.c: already set
+	remote_provider_id in process_request
+
+2006-11-02  dlaniel
+
+	* lasso/lasso.c, lasso/id-ff/defederation.c,
+	lasso/id-wsf/wsf_profile.c, lasso/xml/tools.c, lasso/xml/xml.c:
+	Replaced return -1 with return LASSO_ERROR_UNDEFINED
+
+2006-11-02  dlaniel
+
+	* lasso/errors.c, lasso/errors.h, lasso/id-wsf/data_service.c,
+	lasso/id-wsf/discovery.c, swig/Lasso.i: Added some error cases
+
+2006-11-02  dlaniel
+
+	* lasso/id-ff/login.c, lasso/id-ff/name_identifier_mapping.c,
+	lasso/id-wsf/authentication.c: tests on possibly null pointers
+
+2006-11-02  fpeters
+
+	* lasso/id-ff/profile.c: coding style
+
+2006-11-02  fpeters
+
+	* swig/Lasso.i: downcast nameidentifier to LassoNode*  in
+	LassoLogout; so that it works with both ID-FF
+	(LassoSamlNameIdentifier) and SAML2 (LassoSaml2NameID)
+
+2006-10-31  dlaniel
+
+	* docs/lasso-book/writing-a-c-sp.txt: changed
+	LASSO_LIB_NAME_ID_POLICY_TYPE_FEDERATED to
+	LASSO_LIB_NAMEID_POLICY_TYPE_FEDERATED according to the code
+
+2006-10-30  fpeters
+
+	* lasso/saml-2.0/login.c: removed XXX comments after Damien looked
+	at them
+
+2006-10-30  fpeters
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/profile.c,
+	lasso/xml/strings.h, swig/Lasso-saml2.i: include authentication
+	statement in saml2 assertion
+
+2006-10-30  fpeters
+
+	* lasso/saml-2.0/profile.c: saml2 artifacts include an endpoint
+	index; fill it with 0 for the moment.
+
+2006-10-29  fpeters
+
+	* lasso/saml-2.0/login.c: deal with default assertion consumer
+	service url
+
+2006-10-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/profile.c: use new error code
+	for missing artifact
+
+2006-10-29  fpeters
+
+	* lasso/errors.c, lasso/errors.h, swig/Lasso.i: new error code for
+	missing artifact
+
+2006-10-29  fpeters
+
+	* lasso/saml-2.0/provider.c: correctly clean memory
+
+2006-10-29  fpeters
+
+	* lasso/xml/tools.c: fixed reference to length when inflating
+
+2006-10-29  fpeters
+
+	* lasso/xml/saml-2.0/samlp2_authn_request.c: default value set to
+	-1 and marked as optionals
+
+2006-10-29  fpeters
+
+	* lasso/id-ff/login.c, lasso/saml-2.0/login.c,
+	lasso/saml-2.0/provider.c: saml-2.0 more POST support
+
+2006-10-29  fpeters
+
+	* lasso/saml-2.0/login.c: s/SAMLArt/SAMLart/ (+ check for remote
+	provider)
+
+2006-10-29  fpeters
+
+	* lasso/xml/xml.c: handle "1" as well as "true" in booleans
+
+2006-10-29  fpeters
+
+	* lasso/saml-2.0/login.c, lasso/saml-2.0/provider.c,
+	lasso/saml-2.0/providerprivate.h,
+	lasso/xml/saml-2.0/samlp2_authn_request.c: started support for
+	AssertionConsumerServiceIndex (as alternative to ProtocolBinding)
+	(used by zxid)
+
+2006-10-29  fpeters
+
+	* lasso/xml/xml.c: saml2 query strings are often limited to one
+	single arg
+
+2006-10-29  fpeters
+
+	* lasso/saml-2.0/provider.c, lasso/xml/strings.h: accept PAOS
+	binding
+
+2006-10-28  fpeters
+
+	* lasso/saml-2.0/login.c: finished saml2/sso/post
+
+2006-10-28  fpeters
+
+	* lasso/id-wsf/wsf_profile.c: note about memory leak
+
+2006-10-28  fpeters
+
+	* lasso/saml-2.0/.cvsignore: standard .cvsignoe
+
+2006-10-28  fpeters
+
+	* lasso/saml-2.0/login.c: handle saml2/sso/post (almost)
+
+2006-10-28  fpeters
+
+	* lasso/id-ff/Makefile.am, lasso/id-ff/login.c,
+	lasso/id-ff/loginprivate.h: handle saml2/sso/post (almost, need to
+	fix return url)
+
+2006-10-28  fpeters
+
+	* lasso/xml/saml-2.0/saml2_assertion.c,
+	lasso/xml/saml-2.0/samlp2_request_abstract.c,
+	lasso/xml/saml-2.0/samlp2_status_response.c: initialize
+	private_key_file and certificate_file properly
+
+2006-10-28  fpeters
+
+	* docs/lasso-book/writing-a-java-sp.txt: formatting
+
+2006-10-28  fpeters
+
+	* docs/lasso-book/Makefile.am, docs/lasso-book/default.css: use
+	external stylesheet
+
+2006-10-28  fpeters
+
+	* configure.ac: rest2html is now shipped as rst2html, also looks
+	for this one
+
+2006-10-28  fpeters
+
+	* lasso/id-ff/login.c: return defined error code
+
+2006-10-28  fpeters
+
+	* lasso/id-ff/server.c: cast function reference
+
+2006-10-28  fpeters
+
+	* lasso/xml/saml-2.0/.cvsignore: standard .cvsignore for saml-2.0/
+	dir
+
+2006-10-28  fpeters
+
+	* lasso/xml/is_interaction_request.c: marked maxInteractTime as
+	optional
+
+2006-10-28  fpeters
+
+	* lasso/id-ff/server.c: LassoDiscoServiceInstance are freed through
+	lasso_node_destroy
+
+2006-10-28  fpeters
+
+	* lasso/xml/tools.c: fixed deflate, tested against
+	lightbulb(opensso-php)
+
+2006-10-27  nclapies
+
+	* docs/lasso-book/writing-a-java-sp.txt: Added documentation about
+	writing a sp in java.
+
+2006-10-26  fpeters
+
+	* lasso/xml/tools.c: use zlib compress2 instead of lowlevel
+	functions, this fixes inflate.
+
+2006-10-26  fpeters
+
+	* lasso/id-ff/logout.c: don't automatically fallback to redirect,
+	this breaks some cases....
+
+2006-10-26  fpeters
+
+	* lasso/errors.c, lasso/errors.h, lasso/id-wsf/authentication.c,
+	swig/Lasso.i: checking pointers...
+
+2006-10-25  fpeters
+
+	* lasso/id-wsf/discovery.c: return NULL; not an error code
+
+2006-10-25  fpeters
+
+	* lasso/id-wsf/discovery.c: check for response before accessing it
+
+2006-10-25  fpeters
+
+	* lasso/id-wsf/discovery.c: check for query before accessing it
+
+2006-10-12  fpeters
+
+	* swig/Lasso.i: nameIdentifier is now a LassoSamlNameIdentifier;
+	which should help Java
+
+2006-10-09  fpeters
+
+	* lasso/xml/saml_attribute_value.c: revert to SNIPPET_LIST_NODES;
+	which is required for ID-WSF to work
+
+2006-10-02  fpeters
+
+	* lasso/xml/Makefile.am: ds_* are now also used out of id-wsf
+
+2006-09-29  fpeters
+
+	* lasso/id-ff/session.c: check session is not NULL even in
+	functions where it shouldn't happen; since developer may always
+	call functions out of order.
+
+2006-09-28  fpeters
+
+	* lasso/errors.c, lasso/errors.h, swig/Lasso.i,
+	lasso/id-ff/logout.c: better error handling in slo
+
+2006-09-21  dlaniel
+
+	* docs/lasso-book/writing-a-c-sp.txt,
+	docs/lasso-book/writing-a-php-sp.txt: updated documentation for
+	lasso server creation prototype change
+
+2006-09-19  fpeters
+
+	* docs/lasso-book/writing-a-c-sp.txt: fixed lasso_server_new
+	prototype
+
+2006-08-03  fpeters
+
+	* lasso/id-wsf/discovery.c: use specific error messages
+
+2006-08-03  fpeters
+
+	* lasso/id-wsf/data_service.c: fill LassoDataService provider_id
+	member on process_request
+
+2006-08-03  fpeters
+
+	* swig/Lasso.i, lasso/errors.h, lasso/id-wsf/data_service.c: define
+	and use specific error codes
+
+2006-05-16  fpeters
+
+	* autogen.sh: SWIG 1.3.28 is required.
+
+2006-05-16  fpeters
+
+	* lasso/id-ff/login.c: be more specific in role
+
+2006-05-16  fpeters
+
+	* lasso/xml/saml_attribute_value.c, lasso/xml/xml.c: support for
+	SNIPPET_LIST_XMLNODES (very old patch)
+
+2006-05-11  fpeters
+
+	* lasso/errors.c: added missing comma
+
+2006-05-11  fpeters
+
+	* lasso/errors.c: error message
+
+2006-05-10  fpeters
+
+	* lasso/errors.c: don't say undefined when it is, just lacking a
+	description string, bugger.
+
+2006-05-10  fpeters
+
+	* lasso/id-ff/login.c: looking up NameIdentifier in
+	AttributeStatement (old patch)
+
+2006-03-21  fpeters
+
+	* swig/Makefile.am: ship Lasso-saml2.i; part of 0.6.5
+
+2006-03-21  fpeters
+
+	* ChangeLog: updated to 0.6.5
+
+2006-03-21  fpeters
+
+	* NEWS: fixed doc
+
 2006-03-21  fpeters
 
 	* NEWS, configure.ac, doap.rdf, debian/changelog: note about 0.6.5

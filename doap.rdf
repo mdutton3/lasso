@@ -12,7 +12,7 @@
       Lasso (Liberty Alliance Single Sign On) is a free (GNU GPL) implementation
       of the Liberty Alliance specifications.  Those define protocols for
       federated identities, single sign-on, etc.  Lasso provides both a C
-      library and bindings for several languages (Python, Java, Perl, PHP and C# for
+      library and bindings for several languages (Python, Java, Perl, PHP for
       now).
     </description>
     <shortdesc>Free Software implementation of Liberty Alliance specifications</shortdesc>
@@ -27,18 +27,6 @@
     <download-page rdf:resource="http://lasso.entrouvert.org/download/"/>
     <maintainer>
       <foaf:Person>
-        <foaf:name>Nicolas Clapiès</foaf:name>
-        <foaf:mbox rdf:resource="mailto:nclapies@entrouvert.com"/>
-      </foaf:Person>
-    </maintainer>
-    <maintainer>
-      <foaf:Person>
-        <foaf:name>Valéry Febvre</foaf:name>
-        <foaf:mbox rdf:resource="mailto:vfebvre@easter-eggs.com"/>
-      </foaf:Person>
-    </maintainer>
-    <maintainer>
-      <foaf:Person>
         <foaf:name>Frédéric Péters</foaf:name>
         <foaf:mbox rdf:resource="mailto:fpeters@entrouvert.com"/>
       </foaf:Person>
@@ -51,6 +39,18 @@
       </CVSRepository>
     </repository>
     <release>
+      <Version>
+        <created>2007-01-16</created>
+        <revision>2.0.0</revision>
+      </Version>
+      <Version>
+        <created>2006-12-19</created>
+        <revision>1.9.9</revision>
+      </Version>
+      <Version>
+        <created>2006-10-16</created>
+        <revision>0.6.6</revision>
+      </Version>
       <Version>
         <created>2006-03-21</created>
         <revision>0.6.5</revision>
